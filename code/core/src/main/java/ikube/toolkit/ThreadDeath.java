@@ -20,12 +20,13 @@ public class ThreadDeath {
 	public void main() {
 		// Start some threads
 		final List<Thread> threads = new ArrayList<Thread>();
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 100; i++) {
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
 					try {
 						while (true) {
 							// Do nothing
+							ThreadUtilities.sleep(100);
 						}
 					} catch (Exception e) {
 						LOGGER.error(null, e);

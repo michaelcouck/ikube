@@ -46,7 +46,7 @@ public class BackupTest extends AbstractTest {
 
 	@Test
 	public void execute() throws Exception {
-		createIndex(indexContext, "Some strings, like Michael Couck");
+		createIndexFileSystem(indexContext, "Some strings, like Michael Couck");
 
 		backup.execute(indexContext);
 

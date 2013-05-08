@@ -32,7 +32,6 @@ public abstract class Resource {
 	public static final String MULTI_SPATIAL = "/multi/spatial";
 	public static final String MULTI_SPATIAL_ALL = "/multi/spatial/all";
 	public static final String MULTI_ADVANCED = "/multi/advanced";
-	public static final String MULTI_ADVANCED_ALL = "/multi/advanced/all";
 	public static final String NUMERIC_ALL = "/numeric/all";
 	public static final String NUMERIC_RANGE = "/numeric/range";
 	public static final String COMPLEX = "/complex";

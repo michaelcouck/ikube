@@ -1,6 +1,8 @@
 package ikube.geospatial;
 
 import ikube.database.IDataBase;
+import ikube.model.Persistable;
+import ikube.model.geospatial.AlternateName;
 import ikube.model.geospatial.GeoName;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
@@ -33,27 +35,27 @@ public class GeonamePopulator {
 	}
 
 	public static void main(String[] args) throws Exception {
-		System.setProperty("ikube.configuration", "file:/usr/share/eclipse/workspace/ikube/code/tool/ikube/spring.xml");
-		persist();
+		// persist(GeoName.class);
+		persist(AlternateName.class);
 	}
 
-	protected static void persist() {
-		String sessionName = "geoname";
+	protected static void persist(final Class<? extends Persistable> clazz) {
+		String sessionName = "alternatename";
 		Session session = SessionFactory.getSession(sessionName);
 		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
-		new ThreadUtilities().destroy();
+		ThreadUtilities.destroy();
 		int batchSize = 1000;
-		List<GeoName> geoNames = new ArrayList<GeoName>();
+		List<Persistable> geoNames = new ArrayList<Persistable>();
 		int count = 0;
-		while (session.hasNext(GeoName.class)) {
+		while (session.hasNext(clazz)) {
 			count++;
 			try {
-				GeoName geoName = session.next(GeoName.class);
+				Persistable geoName = session.next(clazz);
 				if (count % 10000 == 0) {
 					LOGGER.info("Count : " + count);
 				}
 				geoNames.add(geoName);
-				if (geoNames.size() >= batchSize || !session.hasNext(GeoName.class)) {
+				if (geoNames.size() >= batchSize || !session.hasNext(clazz)) {
 					persistBatch(dataBase, geoNames);
 				}
 			} catch (Exception e) {
@@ -63,7 +65,7 @@ public class GeonamePopulator {
 		}
 	}
 
-	private static void persistBatch(IDataBase dataBase, List<GeoName> geoNames) {
+	private static void persistBatch(IDataBase dataBase, List<Persistable> geoNames) {
 		try {
 			// LOGGER.info("Persisting batch : " + geoNames.size());
 			dataBase.persistBatch(geoNames);
@@ -71,7 +73,7 @@ public class GeonamePopulator {
 		} catch (Exception e) {
 			LOGGER.error("Exception inserting geoname : ", e);
 		} finally {
-			for (GeoName geoName : geoNames) {
+			for (Persistable geoName : geoNames) {
 				try {
 					if (geoName.getId() != 0) {
 						continue;

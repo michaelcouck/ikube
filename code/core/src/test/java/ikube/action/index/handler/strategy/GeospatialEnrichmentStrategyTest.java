@@ -55,7 +55,7 @@ public class GeospatialEnrichmentStrategyTest extends AbstractTest {
 
 	@Test
 	public void aroundProcess() throws Exception {
-		Document document = getDocument(RandomStringUtils.random(16), "Some string to index", Index.ANALYZED);
+		Document document = getDocument(RandomStringUtils.random(16), "Some string to index", IConstants.CONTENTS, Index.ANALYZED);
 		Deencapsulation.setField(geospatialEnrichmentStrategy, geocoder);
 
 		IndexableTable indexableTable = new IndexableTable();

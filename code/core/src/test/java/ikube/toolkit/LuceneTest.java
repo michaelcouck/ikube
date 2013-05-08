@@ -7,11 +7,8 @@ import ikube.IConstants;
 import ikube.action.index.IndexManager;
 import ikube.mock.SpellingCheckerMock;
 import ikube.search.SearchSingle;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +22,6 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SearcherFactory;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.search.TermQuery;
@@ -109,7 +105,7 @@ public class LuceneTest extends AbstractTest {
 		final long sleep = 100;
 		final int iterations = 3;
 		long time = System.currentTimeMillis();
-		final File indexDirectory = createIndex(indexContext, time, "127.0.0.1", "the", "quick", "brown", "fox", "jumped");
+		final File indexDirectory = createIndexFileSystem(indexContext, time, "127.0.0.1", "the", "quick", "brown", "fox", "jumped");
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		for (int i = 0; i < 3; i++) {
 			Future<?> future = ThreadUtilities.submit(Integer.toHexString(i), new Runnable() {
@@ -149,7 +145,8 @@ public class LuceneTest extends AbstractTest {
 					int index = iterations;
 					while (index-- > 0) {
 						IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, indexDirectory, Boolean.FALSE);
-						Document document = getDocument(Long.toHexString(System.currentTimeMillis()), string, Index.ANALYZED);
+						Document document = getDocument(Long.toHexString(System.currentTimeMillis()), string, IConstants.CONTENTS,
+								Index.ANALYZED);
 						indexWriter.addDocument(document);
 						indexWriter.commit();
 						indexWriter.close(Boolean.TRUE);
@@ -165,11 +162,12 @@ public class LuceneTest extends AbstractTest {
 	}
 
 	@Test
-	public void searcherManagerReadAndWrite() throws IOException {
+	public void searcherManagerReadAndWrite() throws Exception {
 		final long sleep = 100;
 		final int iterations = 3;
 		long time = System.currentTimeMillis();
-		final IndexWriter indexWriter = createIndexReturnWriter(indexContext, time, "127.0.0.1", "the", "quick", "brown", "fox", "jumped");
+		File indexDirectory = createIndexFileSystem(indexContext, time, "127.0.0.1", "the", "quick", "brown", "fox", "jumped");
+		final IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, indexDirectory, false);
 		final SearcherManager searcherManager = new SearcherManager(indexWriter, true, new SearcherFactory());
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		for (int i = 0; i < 3; i++) {
@@ -207,7 +205,8 @@ public class LuceneTest extends AbstractTest {
 				try {
 					int index = iterations;
 					while (index-- > 0) {
-						Document document = getDocument(Long.toHexString(System.currentTimeMillis()), string, Index.ANALYZED);
+						Document document = getDocument(Long.toHexString(System.currentTimeMillis()), string, IConstants.CONTENTS,
+								Index.ANALYZED);
 						indexWriter.addDocument(document);
 						indexWriter.commit();
 						// indexWriter.close(Boolean.TRUE);
@@ -225,22 +224,13 @@ public class LuceneTest extends AbstractTest {
 
 	@Test
 	@SuppressWarnings("resource")
-	public void numeric() throws Exception {
-		// Doesn't work
-		// new QueryParser(IConstants.VERSION, IConstants.CONTENTS, IConstants.ANALYZER).parse(somethingNumeric.trim())
-
-		File serverDirectory = createIndex(indexContext, russian, german, french, somethingElseAlToGether, string, somethingNumeric.trim());
-		Directory directory = FSDirectory.open(serverDirectory);
+	public void numericSearch() throws Exception {
+		Directory directory = createIndexRam(indexContext, russian, german, french, somethingElseAlToGether, string,
+				somethingNumeric.trim());
 		IndexReader indexReader = IndexReader.open(directory);
-		printIndex(indexReader, 10);
-
 		IndexSearcher indexSearcher = new IndexSearcher(indexReader);
 		TermQuery numberQuery = new TermQuery(new Term(IConstants.CONTENTS, NumericUtils.doubleToPrefixCoded(123456789L)));
 		TopDocs topDocs = indexSearcher.search(numberQuery, 100);
-		logger.info("Top docs : " + topDocs);
-		for (final ScoreDoc scoreDoc : topDocs.scoreDocs) {
-			logger.info("Score doc : " + scoreDoc);
-		}
 		assertEquals("There must be exactly one result from the search : ", 1, topDocs.scoreDocs.length);
 	}
 

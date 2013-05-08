@@ -42,9 +42,9 @@ public class Search extends Persistable {
 	private int results;
 	@Column
 	private String indexName;
-	@Column(length = 2048)
+	@Column(length = 256)
 	private String searchStrings;
-	@Column(length = 2048)
+	@Column(length = 256)
 	private String correctedSearchStrings;
 	@Column
 	private double highScore;

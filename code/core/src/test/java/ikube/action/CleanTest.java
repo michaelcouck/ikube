@@ -61,7 +61,7 @@ public class CleanTest extends AbstractTest {
 	 */
 	@Test
 	public void execute() throws Exception {
-		File latestIndexDirectory = createIndex(indexContext, "some words to index");
+		File latestIndexDirectory = createIndexFileSystem(indexContext, "some words to index");
 
 		// Running the clean the locked index directory should be un-locked
 		Clean<IndexContext<?>, Boolean> clean = new Clean<IndexContext<?>, Boolean>();
@@ -83,7 +83,7 @@ public class CleanTest extends AbstractTest {
 		clean.execute(indexContext);
 		assertFalse("The index directory should have been deleted because it is corrupt : ", latestIndexDirectory.exists());
 
-		latestIndexDirectory = createIndex(indexContext, "some words to index");
+		latestIndexDirectory = createIndexFileSystem(indexContext, "some words to index");
 		Lock lock = getLock(FSDirectory.open(latestIndexDirectory), latestIndexDirectory);
 		boolean isLocked = lock.isLocked();
 		assertTrue("We should be able to get the lock from the index directory : ", isLocked);

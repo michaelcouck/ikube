@@ -206,98 +206,87 @@ public abstract class AbstractTest {
 		return IndexManager.getIndexDirectory(indexContext, System.currentTimeMillis(), ip);
 	}
 
-	protected File createIndex(final IndexContext<?> indexContext, final String... strings) {
-		return createIndex(indexContext, System.currentTimeMillis(), ip, strings);
+	protected File createIndexFileSystem(final IndexContext<?> indexContext, final String... strings) {
+		return createIndexFileSystem(indexContext, System.currentTimeMillis(), ip, strings);
 	}
 
-	/**
-	 * This method creates an index using the index path in the context, the time and the ip and returns the latest index directory, i.e.
-	 * the index that has just been created. Note that if there are still cascading mocks from JMockit, the index writer sill not create the
-	 * index! So you have to tear down all mocks prior to using this method.
-	 * 
-	 * @param indexContext the index context to use for the path to the index
-	 * @param strings the data that must be in the index
-	 * @return the latest index directory, i.e. the one that has just been created
-	 */
-	protected File createIndex(final IndexContext<?> indexContext, final long time, final String ip, final String... strings) {
-		if (strings == null || strings.length == 0) {
-			throw new RuntimeException("There must be some strings to index : " + strings);
-		}
+	protected Directory createIndexRam(final IndexContext<?> indexContext, final String... strings) {
 		IndexWriter indexWriter = null;
 		try {
-			indexWriter = createIndexReturnWriter(indexContext, time, ip, strings);
+			Directory directory = new RAMDirectory();
+			indexWriter = IndexManager.openIndexWriter(indexContext, directory, true);
+			addDocuments(indexWriter, IConstants.CONTENTS, strings);
+			return directory;
 		} catch (Exception e) {
 			logger.error("Exception creating the index : ", e);
 		} finally {
 			IndexManager.closeIndexWriter(indexWriter);
 		}
-		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
-		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
-		File serverIndexDirectory = new File(latestIndexDirectory, ip);
-		logger.info("Created index in : " + serverIndexDirectory.getAbsolutePath());
-		return serverIndexDirectory;
+		return null;
 	}
 
-	/**
-	 * This method will create an index in the index context directory and return the writer without closing it.
-	 * 
-	 * @param indexContext the context to create the index for
-	 * @param time the time for the directory
-	 * @param ip the ip of the server creating the index
-	 * @param strings the data to put in the index
-	 * @return the index writer that was used to create the index
-	 */
-	protected IndexWriter createIndexReturnWriter(final IndexContext<?> indexContext, final long time, final String ip,
-			final String... strings) {
-		if (strings == null || strings.length == 0) {
-			throw new RuntimeException("There must be some strings to index : " + strings);
-		}
+	protected File createIndexFileSystem(final IndexContext<?> indexContext, final long time, final String ip, final String... strings) {
 		IndexWriter indexWriter = null;
 		try {
 			indexWriter = IndexManager.openIndexWriter(indexContext, time, ip);
-			for (String string : strings) {
-				String id = Long.toString(System.currentTimeMillis());
-				Document document = getDocument(id, string, Index.ANALYZED);
-				indexWriter.addDocument(document);
-			}
+			addDocuments(indexWriter, IConstants.CONTENTS, strings);
+			File indexDirectory = ((FSDirectory) indexWriter.getDirectory()).getDirectory();
+			return indexDirectory;
 		} catch (Exception e) {
 			logger.error("Exception creating the index : ", e);
+		} finally {
+			IndexManager.closeIndexWriter(indexWriter);
 		}
-		return indexWriter;
+		return null;
 	}
 
-	protected Document getDocument(final String id, final String string, final Index analyzed) {
-		Document document = new Document();
-		IndexManager.addStringField(IConstants.ID, id, document, Store.YES, analyzed, TermVector.YES);
-		if (StringUtils.isNumeric(string.trim())) {
-			logger.info("Adding numeric field : " + string);
-			IndexManager.addNumericField(IConstants.CONTENTS, string.trim(), document, Store.YES);
-		} else {
-			IndexManager.addStringField(IConstants.CONTENTS, string, document, Store.YES, Index.ANALYZED, TermVector.NO);
-		}
-		IndexManager.addStringField(IConstants.NAME, string, document, Store.YES, analyzed, TermVector.YES);
-		return document;
-	}
-
-	/**
-	 * This method will create multiple indexes and return the index directories.
-	 * 
-	 * @param indexContext the index context to create the indexes from
-	 * @param time the time of the indexes
-	 * @param ips the ip's of the servers that are creating the indexes
-	 * @param strings the data that should be indexed
-	 * @return the list of files that are the index directories
-	 */
-	protected List<File> createIndexes(final IndexContext<?> indexContext, final long time, final String[] ips, final String... strings) {
-		if (strings == null || strings.length == 0) {
-			throw new RuntimeException("There must be some strings to index : " + strings);
-		}
+	protected List<File> createIndexesFileSystem(final IndexContext<?> indexContext, final long time, final String[] ips,
+			final String... strings) {
 		List<File> serverIndexDirectories = new ArrayList<File>();
 		for (String ip : ips) {
-			File serverIndexDirectory = createIndex(indexContext, time, ip, strings);
+			File serverIndexDirectory = createIndexFileSystem(indexContext, time, ip, strings);
 			serverIndexDirectories.add(serverIndexDirectory);
 		}
 		return serverIndexDirectories;
+	}
+
+	public <T extends Search> T createIndexAndSearch(final Class<T> searchClass, final Analyzer analyzer, final String field,
+			final String... strings) throws Exception {
+		IndexWriterConfig conf = new IndexWriterConfig(IConstants.VERSION, analyzer);
+		Directory directory = new RAMDirectory();
+		IndexWriter indexWriter = new IndexWriter(directory, conf);
+		try {
+			addDocuments(indexWriter, field, strings);
+		} finally {
+			IndexManager.closeIndexWriter(indexWriter);
+		}
+		IndexReader indexReader = IndexReader.open(directory);
+		Searcher searcher = new IndexSearcher(indexReader);
+		return searchClass.getConstructor(Searcher.class, Analyzer.class).newInstance(searcher, analyzer);
+	}
+
+	protected void addDocuments(final IndexWriter indexWriter, final String field, final String... strings) {
+		for (String string : strings) {
+			String id = Long.toString(System.currentTimeMillis());
+			Document document = getDocument(id, string, field, Index.ANALYZED);
+			try {
+				indexWriter.addDocument(document);
+			} catch (Exception e) {
+				logger.error(null, e);
+			}
+		}
+	}
+
+	protected Document getDocument(final String id, final String string, final String field, final Index analyzed) {
+		Document document = new Document();
+		IndexManager.addStringField(IConstants.ID, id, document, Store.YES, analyzed, TermVector.YES);
+		IndexManager.addStringField(IConstants.NAME, string, document, Store.YES, analyzed, TermVector.YES);
+		if (StringUtils.isNumeric(string.trim())) {
+			IndexManager.addNumericField(field, string.trim(), document, Store.YES);
+		} else {
+			IndexManager.addStringField(field, string, document, Store.YES, Index.ANALYZED, TermVector.NO);
+		}
+		return document;
 	}
 
 	protected Lock getLock(Directory directory, File serverIndexDirectory) throws IOException {
@@ -306,63 +295,12 @@ public abstract class AbstractTest {
 		boolean gotLock = lock.obtain(Lock.LOCK_OBTAIN_WAIT_FOREVER);
 		logger.info("Got lock : " + gotLock + ", is locked : " + lock.isLocked());
 		if (!gotLock) {
-			// If the lock is not created then we have to create it. Sometimes
-			// this fails to create a lock for some unknown reason, similar to the index writer
-			// not really creating the index in AbstractTest, strange!!
 			FileUtilities.getFile(new File(serverIndexDirectory, IndexWriter.WRITE_LOCK_NAME).getAbsolutePath(), Boolean.FALSE);
 		} else {
 			assertTrue(IndexWriter.isLocked(directory));
 		}
 		logger.info("Is now locked : " + IndexWriter.isLocked(directory));
 		return lock;
-	}
-
-	/**
-	 * This method will create an index using the analyzer specified with the field and the strings to index, in memory. Then open a
-	 * searcher on the index and a {@link Search} class with the analyzer and the searcher for immediate use.
-	 * 
-	 * @param searchClass the class of search to instantiate with the searcher and the analyzer
-	 * @param analyzer the analyzer to use for the indexing and the searching
-	 * @param field the field in the index to create
-	 * @param strings the string to index into the index
-	 * @return the search class with the searcher and analyzer ready for use
-	 * @throws Exception
-	 */
-	public static <T extends Search> T createIndexAndSearch(final Class<T> searchClass, final Analyzer analyzer, final String field,
-			final String... strings) throws Exception {
-		IndexWriterConfig conf = new IndexWriterConfig(IConstants.VERSION, analyzer);
-		Directory directory = new RAMDirectory();
-		IndexWriter indexWriter = new IndexWriter(directory, conf);
-
-		for (final String string : strings) {
-			Document document = new Document();
-			if (StringUtils.isNumeric(string.trim())) {
-				System.out.println("Adding numeric field : " + string);
-				IndexManager.addNumericField(field, string.trim(), document, Store.YES);
-			} else {
-				IndexManager.addStringField(field, string, document, Store.YES, Index.ANALYZED, TermVector.YES);
-			}
-			indexWriter.addDocument(document, analyzer);
-		}
-
-		IndexManager.closeIndexWriter(indexWriter);
-
-		IndexReader indexReader = IndexReader.open(directory);
-		Searcher searcher = new IndexSearcher(indexReader);
-
-		return searchClass.getConstructor(Searcher.class, Analyzer.class).newInstance(searcher, analyzer);
-	}
-
-	public static Search getSearch(final Class<? extends Search> searchClass, final File indexDirectory) throws Exception {
-		Directory directory = FSDirectory.open(indexDirectory);
-		IndexReader indexReader = IndexReader.open(directory);
-		MultiSearcher searcher = new MultiSearcher(new IndexSearcher(indexReader));
-		return searchClass.getConstructor(Searcher.class, Analyzer.class).newInstance(searcher, IConstants.ANALYZER);
-	}
-
-	protected void printIndex(final Searchable multiSearcher, final int numDocs) throws Exception {
-		IndexReader indexReader = indexSearcher.getIndexReader();
-		printIndex(indexReader, numDocs);
 	}
 
 	/**

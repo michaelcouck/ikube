@@ -4,6 +4,7 @@ import ikube.IConstants;
 import ikube.database.IDataBase;
 import ikube.model.IndexContext;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -37,7 +38,10 @@ public class Prune extends Action<IndexContext<?>, Boolean> {
 		List<?> entities = dataBase.find(klass, fieldsToSortOn, directionOfSort, 0, batchSize);
 		if (entities.size() >= batchSize) {
 			do {
-				dataBase.removeBatch(entities);
+				Iterator<?> iterator = entities.iterator();
+				while (iterator.hasNext()) {
+					dataBase.remove(iterator.next());
+				}
 				entities = dataBase.find(klass, fieldsToSortOn, directionOfSort, 0, batchSize);
 			} while (entities.size() >= batchSize);
 		}

@@ -180,24 +180,6 @@ public class SearcherJson extends Searcher {
 	 */
 	@GET
 	@Override
-	@Path(SearcherJson.MULTI_ADVANCED_ALL)
-	@Consumes(MediaType.APPLICATION_XML)
-	public Response searchMultiAdvancedAll(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
-			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings,
-			@QueryParam(value = IConstants.FRAGMENT) final boolean fragment,
-			@QueryParam(value = IConstants.FIRST_RESULT) final int firstResult,
-			@QueryParam(value = IConstants.MAX_RESULTS) final int maxResults) {
-		String[] searchStringsArray = StringUtils.split(searchStrings, SEPARATOR);
-		ArrayList<HashMap<String, String>> results = searcherService.searchMultiAdvancedAll(indexName, searchStringsArray, fragment,
-				firstResult, maxResults);
-		return buildResponse(results);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@GET
-	@Override
 	@Path(SearcherJson.NUMERIC_ALL)
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response searchNumericAll(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,

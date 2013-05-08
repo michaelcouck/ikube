@@ -78,8 +78,7 @@
 		property:showSql="false" />
 	<util:map id="jpaPropertyMap">
 		<entry key="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" />
-		<entry key="openjpa.Log" 
-			value="DefaultLevel=ERROR,JDBC=ERROR,SQL=ERROR,File=ikube/openjpa.log,Runtime=ERROR,Tool=ERROR" />
+		<entry key="ikube/openjpa.Log" value="DefaultLevel=ERROR,JDBC=ERROR,SQL=ERROR,File=ikube/openjpa.log,Runtime=ERROR,Tool=ERROR" />
 
 		<entry key="openjpa.DataCache" value="true(CacheSize=100000,SoftReferenceSize=100000)" />
 		<entry key="openjpa.QueryCache" value="true(CacheSize=100000,SoftReferenceSize=100000)" />
@@ -126,7 +125,7 @@
 	<bean
 		id="ikube.database.IDataBase"
 		name="ikube.database.IDataBase"
-		class="ikube.database.jpa.DataBaseJpa"
+		class="${ikube.dataBaseClass}"
 		lazy-init="false" />
 	
 	<bean 

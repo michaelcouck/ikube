@@ -42,7 +42,7 @@ public class IsBackupIndexCurrentTest extends AbstractTest {
 
 	@Test
 	public void evaluate() throws IOException {
-		File latestIndexDirectory = createIndex(indexContext, "some strings");
+		File latestIndexDirectory = createIndexFileSystem(indexContext, "some strings");
 		boolean result = isBackupIndexCurrent.evaluate(indexContext);
 		assertFalse(result);
 

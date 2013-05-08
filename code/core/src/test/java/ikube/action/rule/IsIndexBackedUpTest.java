@@ -46,7 +46,7 @@ public class IsIndexBackedUpTest extends AbstractTest {
 
 	@Test
 	public void evaluate() throws IOException {
-		File latestIndexDirectory = createIndex(indexContext, "some strings");
+		File latestIndexDirectory = createIndexFileSystem(indexContext, "some strings");
 		boolean result = isIndexBackedUp.evaluate(indexContext);
 		assertFalse(result);
 

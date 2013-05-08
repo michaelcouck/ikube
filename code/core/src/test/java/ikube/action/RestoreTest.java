@@ -55,11 +55,11 @@ public class RestoreTest extends AbstractTest {
 	@Test
 	public void execute() throws Exception {
 		// Create an index in the normal directory
-		File latestIndexDirectory = createIndex(indexContext, "the original text fragment");
+		File latestIndexDirectory = createIndexFileSystem(indexContext, "the original text fragment");
 
 		// Create an index in the backup directory
 		when(indexContext.getIndexDirectoryPath()).thenReturn(indexDirectoryPathBackup);
-		createIndex(indexContext, "a little text");
+		createIndexFileSystem(indexContext, "a little text");
 		when(indexContext.getIndexDirectoryPath()).thenReturn(indexDirectoryPath);
 
 		// Corrupt the index

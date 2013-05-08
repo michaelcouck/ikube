@@ -12,7 +12,7 @@
             http://www.springframework.org/schema/context
             http://www.springframework.org/schema/context/spring-context-3.0.xsd">
     
-    <bean id="nonXaDataSourcePostgresql"
+    <!-- <bean id="nonXaDataSourcePostgresql"
 		class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close"
 		property:user="${postgres.jdbc.userid}"
@@ -38,16 +38,6 @@
 				<ref local="nonXaDataSourcePostgresql" />
 			</array>
 		</property>
-	</bean>
-	
-	<bean id="postgresqlSequenceCreator" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-		property:staticMethod="ikube.toolkit.DatabaseUtilities.executeStatement">
-		<property name="arguments">
-			<array>
-				<ref bean="nonXaDataSourcePostgresql" />
-				<value type="java.lang.String">CREATE SEQUENCE persistable START 1</value>
-			</array>
-		</property>
-	</bean>
+	</bean> -->
 	
 </beans>

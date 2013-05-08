@@ -53,7 +53,7 @@ public class DeleteListenerTest extends AbstractTest {
 		Mockito.when(message.getMessageObject()).thenReturn(event);
 
 		Mockito.when(monitorService.getIndexContext(Mockito.anyString())).thenReturn(indexContext);
-		File indexDirectory = createIndex(indexContext, "and some", "data to add", "to the index");
+		File indexDirectory = createIndexFileSystem(indexContext, "and some", "data to add", "to the index");
 		String indexDirectoryBackupPath = IndexManager.getIndexDirectoryPath(indexContext);
 		FileUtils.copyDirectory(indexDirectory, new File(indexDirectoryBackupPath));
 

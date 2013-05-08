@@ -149,11 +149,10 @@ public class UriUtilitiesTest extends AbstractTest {
 		assertEquals("http://www.google.com/ikube/java", strippedUri.toString());
 	}
 
-	// @Test
-	// @Ignore
-	// public void getIp() throws Exception {
-	// String ipAddress = UriUtilities.getIp();
-	// assertFalse(ipAddress.equals("127.0.0.1"));
-	// assertFalse(ipAddress.equals("127.0.1.1"));
-	// }
+	@Test
+	public void getIp() throws Exception {
+		String ipAddress = UriUtilities.getIp();
+		assertFalse(ipAddress.equals("127.0.0.1"));
+		assertFalse(ipAddress.equals("127.0.1.1"));
+	}
 }

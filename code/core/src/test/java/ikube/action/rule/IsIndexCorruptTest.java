@@ -40,7 +40,7 @@ public class IsIndexCorruptTest extends AbstractTest {
 	@Test
 	public void evaluate() throws IOException {
 		// Create an index
-		File latestIndexDirectory = createIndex(indexContext, "a little text for good will");
+		File latestIndexDirectory = createIndexFileSystem(indexContext, "a little text for good will");
 		Directory directory = FSDirectory.open(latestIndexDirectory);
 		// Lock the index
 		Lock lock = getLock(directory, latestIndexDirectory);

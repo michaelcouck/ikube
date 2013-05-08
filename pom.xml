@@ -56,7 +56,7 @@
 	<modules>
 		<module>code/core</module>
 		<module>code/war</module>
-		<!-- <module>code/site</module> -->
+		<module>code/site</module>
 		<!-- <module>code/libs</module> -->
 		<!-- <module>code/tool</module> -->
 	</modules>

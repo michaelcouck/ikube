@@ -50,7 +50,7 @@ public class IsThisIndexCreatedTest extends AbstractTest {
 		boolean isIndexCreated = isThisIndexCreated.evaluate(indexContext);
 		assertFalse("This index should not be created yet : ", isIndexCreated);
 
-		createIndex(indexContext, "Some data : ");
+		createIndexFileSystem(indexContext, "Some data : ");
 
 		isIndexCreated = isThisIndexCreated.evaluate(indexContext);
 		assertTrue("This index should be created : ", isIndexCreated);

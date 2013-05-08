@@ -59,7 +59,7 @@ public class DeleteTest extends AbstractTest {
 		boolean deleted = delete.execute(indexContext);
 		assertFalse("There are not indexes to delete : ", deleted);
 
-		File latestIndexDirectory = createIndex(indexContext, "whatever");
+		File latestIndexDirectory = createIndexFileSystem(indexContext, "whatever");
 		assertTrue("Server index directory created : ", latestIndexDirectory.exists());
 
 		// 2) Only one directory so nothing to delete
@@ -67,14 +67,14 @@ public class DeleteTest extends AbstractTest {
 		assertFalse("The index should not have been deleted : ", deleted);
 		assertEquals("There should be only one index : ", 1, latestIndexDirectory.getParentFile().listFiles().length);
 
-		latestIndexDirectory = createIndex(indexContext, "some more whatever");
+		latestIndexDirectory = createIndexFileSystem(indexContext, "some more whatever");
 		assertEquals(2, latestIndexDirectory.getParentFile().getParentFile().listFiles().length);
 		// 3) Two directories so both should stay
 		deleted = delete.execute(indexContext);
 		assertFalse(deleted);
 		assertEquals(2, latestIndexDirectory.getParentFile().getParentFile().listFiles().length);
 
-		latestIndexDirectory = createIndex(indexContext, "Tired of this?");
+		latestIndexDirectory = createIndexFileSystem(indexContext, "Tired of this?");
 		assertEquals(3, latestIndexDirectory.getParentFile().getParentFile().listFiles().length);
 
 		Directory directory = FSDirectory.open(latestIndexDirectory);
@@ -88,7 +88,7 @@ public class DeleteTest extends AbstractTest {
 		lock.release();
 		directory.clearLock(IndexWriter.WRITE_LOCK_NAME);
 
-		latestIndexDirectory = createIndex(indexContext, "some strings");
+		latestIndexDirectory = createIndexFileSystem(indexContext, "some strings");
 		assertEquals(3, latestIndexDirectory.getParentFile().getParentFile().listFiles().length);
 
 		directory = FSDirectory.open(latestIndexDirectory);

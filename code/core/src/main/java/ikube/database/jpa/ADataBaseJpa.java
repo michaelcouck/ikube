@@ -39,7 +39,7 @@ public abstract class ADataBaseJpa implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T> Long count(Class<T> klass) {
+	public <T> Long count(final Class<T> klass) {
 		StringBuilder query = new StringBuilder("select count(c) from ");
 		query.append(klass.getSimpleName());
 		query.append(" as c ");
@@ -50,7 +50,7 @@ public abstract class ADataBaseJpa implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T> Long count(Class<T> klass, Map<String, Object> parameters) {
+	public <T> Long count(final Class<T> klass, final Map<String, Object> parameters) {
 		StringBuilder stringBuilder = new StringBuilder("select count(c) from ");
 		stringBuilder.append(klass.getSimpleName());
 		stringBuilder.append(" as c ");
@@ -77,10 +77,10 @@ public abstract class ADataBaseJpa implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T> T remove(final Class<T> klass, Long id) {
+	public <T> T remove(final Class<T> klass, final Long id) {
 		T toBeRemoved = find(klass, id);
 		if (toBeRemoved != null) {
-			getEntityManager().remove(toBeRemoved);
+			remove(toBeRemoved);
 		}
 		return toBeRemoved;
 	}
@@ -90,12 +90,9 @@ public abstract class ADataBaseJpa implements IDataBase {
 	 */
 	@Override
 	public <T> void removeBatch(final List<T> batch) {
-		for (T t : batch) {
-			t = getEntityManager().merge(t);
-			getEntityManager().remove(t);
+		for (final T t : batch) {
+			remove(t);
 		}
-		getEntityManager().flush();
-		getEntityManager().clear();
 	}
 
 	/**
@@ -133,8 +130,8 @@ public abstract class ADataBaseJpa implements IDataBase {
 	 */
 	@Override
 	public <T> void persistBatch(final List<T> list) {
-		for (T t : list) {
-			getEntityManager().persist(t);
+		for (final T t : list) {
+			persist(t);
 		}
 	}
 
@@ -156,8 +153,8 @@ public abstract class ADataBaseJpa implements IDataBase {
 	 */
 	@Override
 	public <T> void mergeBatch(final List<T> batch) {
-		for (T t : batch) {
-			t = getEntityManager().merge(t);
+		for (final T t : batch) {
+			merge(t);
 		}
 	}
 
@@ -192,7 +189,8 @@ public abstract class ADataBaseJpa implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T> List<T> find(Class<T> klass, String[] fieldsToSortOn, Boolean[] directionOfSort, int firstResult, int maxResults) {
+	public <T> List<T> find(final Class<T> klass, final String[] fieldsToSortOn, final Boolean[] directionOfSort, final int firstResult,
+			final int maxResults) {
 		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
 		CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(klass);
 		Root<T> root = criteriaQuery.from(klass);

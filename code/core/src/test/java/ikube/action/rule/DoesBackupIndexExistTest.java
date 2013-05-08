@@ -38,7 +38,7 @@ public class DoesBackupIndexExistTest extends AbstractTest {
 		// Create a backup index
 		String indexDirectoryPathBackup = indexContext.getIndexDirectoryPathBackup();
 		when(indexContext.getIndexDirectoryPath()).thenReturn(indexDirectoryPathBackup);
-		createIndex(indexContext, "Some data");
+		createIndexFileSystem(indexContext, "Some data");
 		backupIndexExists = new DoesBackupIndexExist().evaluate(indexContext);
 		assertTrue("The backup index should exist : ", backupIndexExists);
 	}

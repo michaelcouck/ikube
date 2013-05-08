@@ -75,7 +75,7 @@ public class ValidatorTest extends AbstractTest {
 		int invocations = 3;
 		verify(validator, Mockito.times(invocations)).sendNotification(anyString(), anyString());
 
-		File latestIndexDirectory = createIndex(indexContext, "a little sentence");
+		File latestIndexDirectory = createIndexFileSystem(indexContext, "a little sentence");
 		result = validator.execute(indexContext);
 		assertFalse("There is an index created but no backup : ", result);
 		// There should be no mail sent because there is an index generated

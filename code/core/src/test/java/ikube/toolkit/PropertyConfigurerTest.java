@@ -16,8 +16,8 @@ import org.junit.Test;
  */
 public class PropertyConfigurerTest extends AbstractTest {
 
-	private String				fileBatchSize	= "file.batch.size";
-	private PropertyConfigurer	propertyConfigurer;
+	private String fileBatchSize = "file.batch.size";
+	private PropertyConfigurer propertyConfigurer;
 
 	public PropertyConfigurerTest() {
 		super(PropertyConfigurer.class);

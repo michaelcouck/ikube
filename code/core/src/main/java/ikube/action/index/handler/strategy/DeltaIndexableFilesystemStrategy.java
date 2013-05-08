@@ -44,14 +44,14 @@ public class DeltaIndexableFilesystemStrategy extends AStrategy {
 		String lastModified = Long.toString(file.lastModified());
 		Long identifier = HashUtilities.hash(path, length, lastModified);
 		int index = Collections.binarySearch(indexContext.getHashes(), identifier);
-		logger.info("Key for, proceeding with file : " + identifier + ", " + length + ", " + lastModified + ", " + path);
+		// logger.info("Key for, proceeding with file : " + identifier + ", " + length + ", " + lastModified + ", " + path);
 		if (index >= 0) {
 			mustProceed = Boolean.FALSE;
 			// Remove the key because at the end of processing we will delete
 			// all the documents in the index that are still in the hash list
 			indexContext.getHashes().remove(index);
 		}
-		logger.info("Around process delta file strategy : " + mustProceed);
+		// logger.info("Around process delta file strategy : " + mustProceed);
 		return mustProceed && super.aroundProcess(indexContext, indexable, document, resource);
 	}
 

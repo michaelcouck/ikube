@@ -20,8 +20,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
- * This class will index the text files with the words form various languages in them, and check tokens or words against the index of words. To add languages
- * the logic of this class has to change a little, the word file needs to become words files, and iterate over the array of files rather than the first one.
+ * This class will index the text files with the words form various languages in them, and check tokens or words against the index of words.
+ * To add languages the logic of this class has to change a little, the word file needs to become words files, and iterate over the array of
+ * files rather than the first one.
  * 
  * @author Michael Couck
  * @since 05.03.10
@@ -77,12 +78,13 @@ public class SpellingChecker {
 	}
 
 	/**
-	 * This method will check the strings in the search string by breaking them up into tokens and checking them against the spelling index. If there are no
-	 * matches for some tokens, then the best match will be added to the result. If there are no spelling errors then this method will return null, indicating
-	 * that there were no corrections to be made.
+	 * This method will check the strings in the search string by breaking them up into tokens and checking them against the spelling index.
+	 * If there are no matches for some tokens, then the best match will be added to the result. If there are no spelling errors then this
+	 * method will return null, indicating that there were no corrections to be made.
 	 * 
 	 * @param searchString the search string with typically words in it
-	 * @return the tokens in the original search string with the mis-spelled tokens corrected with the best result, or null if there were no spelling errors
+	 * @return the tokens in the original search string with the mis-spelled tokens corrected with the best result, or null if there were no
+	 *         spelling errors
 	 */
 	public final String checkWords(String searchString) {
 		try {

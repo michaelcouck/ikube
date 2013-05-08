@@ -14,64 +14,55 @@
 		<!-- Deploy the configuration and ikube and start the servers -->
 		<antcall target="go-server" inheritall="true">
 			<param name="server-ip" value="ikube.be" />
-			<param name="tomcat-home" value="/usr/share/apache-tomcat-6.0.29-1" />
+			<param name="tomcat-home" value="${tomcat-directory}" />
 		</antcall>
-		<!-- antcall target="go-server" inheritall="true">
-			<param name="server-ip" value="192.168.1.6" />
-			<param name="tomcat-home" value="/usr/share/apache-tomcat-6.0.29-1" />
-		</antcall>
-		<antcall target="go-server" inheritall="true">
-			<param name="server-ip" value="192.168.1.7" />
-			<param name="tomcat-home" value="/usr/share/apache-tomcat-6.0.29-1" />
-		</antcall -->
 	</target>
 
 	<target name="stop-servers">
 		<!-- Stop all the processes, the only way to stop Tomcat -->
 		<antcall target="execute-remote-command">
 			<param name="server-ip" value="ikube.be" />
-			<param name="command" value="cd /usr/share/apache-tomcat-6.0.29-1/bin; ./shutdown.sh;" />
+			<param name="command" value="cd ${tomcat-bin-directory}; ./shutdown.sh;" />
 		</antcall>
 		<sleep seconds="15" />
-		<!-- antcall target="execute-remote-command">
-			<param name="server-ip" value="192.168.1.6" />
-			<param name="command" value="killall java" />
-		</antcall>
-		<sleep seconds="15" />
-		<antcall target="execute-remote-command">
-			<param name="server-ip" value="192.168.1.7" />
-			<param name="command" value="killall java" />
-		</antcall>
-		<sleep seconds="15" / -->
 	</target>
 
 	<target name="deploy-site">
 		<antcall target="execute-remote-command">
 			<param name="server-ip" value="ikube.be" />
-			<param name="command" value="cd /usr/share/apache-tomcat-7.0.27/bin; ./shutdown.sh;" />
+			<param name="command" value="cd ${tomcat-bin-directory}; ./shutdown.sh;" />
 		</antcall>
 		<sleep seconds="15" />
 		<antcall target="execute-remote-command">
 			<param name="server-ip" value="ikube.be" />
 			<param name="command" value="
-				rm -r /usr/share/apache-tomcat-7.0.27/webapps/site*;
-				rm -r /usr/share/apache-tomcat-7.0.27/logs;
-				mkdir -p /usr/share/apache-tomcat-7.0.27/logs;" />
+				rm -rf ${tomcat-webapps-directory}/site*;
+				rm -rf ${tomcat-directory}/logs;
+				mkdir -p ${tomcat-directory}/logs;" />
 		</antcall>
 		<antcall target="deploy-ikube-site">
 			<param name="server-ip" value="ikube.be" />
-			<param name="tomcat-home" value="/usr/share/apache-tomcat-7.0.27" />
+			<param name="tomcat-home" value="${tomcat-directory}" />
+		</antcall>
+		<antcall target="execute-remote-command">
+			<param name="server-ip" value="ikube.be" />
+			<param name="command" value="chmod 777 -R ${tomcat-directory};" />
 		</antcall>
 		<antcall target="execute-remote-command">
 			<param name="server-ip" value="ikube.be" />
 			<param name="command" value="
-				chmod 777 -R /usr/share/apache-tomcat-7.0.27;
-				cd /usr/share/apache-tomcat-7.0.27/bin; ./startup.sh;" />
+						cd ${tomcat-bin-directory};
+						./startup.sh;" />
 		</antcall>
 	</target>
 
 	<target name="deploy-ikube-site">
-		<scp file="code/site/target/site.war" todir="${userid}:${password}@${server-ip}:${tomcat-home}/webapps" trust="true" failonerror="false" verbose="${verbose}" />
+		<scp 
+			file="code/site/target/site.war" 
+			todir="${userid}:${password}@${server-ip}:${tomcat-home}/webapps" 
+			trust="true" 
+			failonerror="false" 
+			verbose="${verbose}" />
 	</target>
 
 	<target name="go-server">
@@ -79,9 +70,9 @@
 		<antcall target="execute-remote-command">
 			<param name="server-ip" value="${server-ip}" />
 			<param name="command" value="
-				rm -r ${tomcat-home}/bin/ikube;
-				rm -r ${tomcat-home}/webapps/ikube*;
-				rm -r ${tomcat-home}/logs;
+				rm -rf ${tomcat-home}/bin/ikube;
+				rm -rf ${tomcat-home}/webapps/ikube*;
+				rm -rf ${tomcat-home}/logs;
 				mkdir -p ${tomcat-home}/bin/ikube;
 				mkdir -p ${tomcat-home}/logs;" />
 		</antcall>
@@ -104,7 +95,9 @@
 		<!-- Start the server -->
 		<antcall target="execute-remote-command">
 			<param name="server-ip" value="${server-ip}" />
-			<param name="command" value="cd ${tomcat-home}/bin; ./startup.sh;" />
+			<param name="command" value="
+				cd ${tomcat-home}/bin;
+				./startup.sh;" />
 		</antcall>
 	</target>
 
@@ -125,7 +118,14 @@
 	</target>
 
 	<target name="execute-remote-command">
-		<sshexec host="${server-ip}" trust="true" username="${userid}" password="${password}" command="${command}" failonerror="false" />
+		<sshexec 
+			host="${server-ip}" 
+			trust="true" 
+			username="${userid}" 
+			password="${password}" 
+			command="${command}" 
+			failonerror="false"
+			usepty="true" />
 	</target>
 
 	<target name="deploy-configuration-for-jetty" description="Copies the configuration folder to the base of the project modules so Jetty can start">

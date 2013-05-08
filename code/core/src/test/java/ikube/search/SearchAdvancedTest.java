@@ -35,12 +35,12 @@ import org.junit.Test;
 public class SearchAdvancedTest extends AbstractTest {
 
 	private Searcher searcher;
-	private int maxResults = 10;
 	// (cape AND town AND university) AND ("cape town") AND (one OR two OR three) NOT (caucasian)
 	private String[] contentStrings = { //
 	"cape town university", //
 			"cape university town caucasian", //
-			"cape one", "cape town", //
+			"cape one", //
+			"cape town", //
 			"cape town university one" };
 
 	public SearchAdvancedTest() {
@@ -71,66 +71,49 @@ public class SearchAdvancedTest extends AbstractTest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks();
+		Mockit.tearDownMocks(SpellingCheckerMock.class);
 	}
 
 	@Test
 	public void searchAdvanced() throws Exception {
-		SearchAdvanced searchAdvanced = new SearchAdvanced(searcher);
-
+		SearchAdvanced searchAdvanced = new SearchAdvanced(searcher, IConstants.ANALYZER);
 		searchAdvanced.setFirstResult(0);
 		searchAdvanced.setFragment(Boolean.TRUE);
-		searchAdvanced.setMaxResults(maxResults);
-		searchAdvanced.setSearchField(IConstants.CONTENTS);
+		searchAdvanced.setMaxResults(Integer.MAX_VALUE);
+		searchAdvanced.setSearchField(IConstants.CONTENTS, IConstants.CONTENTS, IConstants.CONTENTS, IConstants.CONTENTS);
+
+		// No results
 		searchAdvanced.setSearchString("all of these", "exact phrase", "any of these", "none of these");
 		ArrayList<HashMap<String, String>> results = searchAdvanced.execute();
 		assertEquals("There should be just a statistics map : ", 1, results.size());
 
-		searchAdvanced.setSearchString("cape town university", "cape town", "one cape town university", "caucasian");
+		// Simple query
+		searchAdvanced.setSearchString("cape town university");
 		results = searchAdvanced.execute();
-		assertEquals("There should be two results and a statistics : ", 3, results.size());
+		assertEquals("There should be all results and a statistics : ", 6, results.size());
 
-		SearchSingle searchSingle = new SearchSingle(searcher);
-		searchSingle.setFirstResult(0);
-		searchSingle.setFragment(true);
-		searchSingle.setMaxResults(10);
-		searchSingle.setSearchField(IConstants.CONTENTS);
-		searchSingle.setSearchString("cape town");
-		searchSingle.setSortField(IConstants.CONTENTS);
+		// Phrase query
+		searchAdvanced.setSearchString(null, "cape town");
+		results = searchAdvanced.execute();
+		assertEquals("There should be three results and a statistics : ", 4, results.size());
 
-		searchSingle
-				.setSearchString("(cape AND town AND university) AND (\"cape town\") AND (one OR cape OR town OR university) NOT (caucasian)");
-		results = searchSingle.execute();
-		assertEquals("There should be two results and a statistics : ", 3, results.size());
-	}
-	
-	@Test
-	public void searchAdvancedAll() throws Exception {
-		SearchAdvancedAll searchAdvancedAll = new SearchAdvancedAll(searcher);
+		// TODO Review, at least one of these
+		searchAdvanced.setSearchString("university", null, "eclipse");
+		results = searchAdvanced.execute();
+		assertEquals("There should be no results and a statistics : ", 4, results.size());
 
-		searchAdvancedAll.setFirstResult(0);
-		searchAdvancedAll.setFragment(Boolean.TRUE);
-		searchAdvancedAll.setMaxResults(maxResults);
-		searchAdvancedAll.setSearchString("all of these", "exact phrase", "any of these", "none of these");
-		ArrayList<HashMap<String, String>> results = searchAdvancedAll.execute();
-		assertEquals("There should be just a statistics map : ", 1, results.size());
+		searchAdvanced.setSearchString("university", null, "cape");
+		results = searchAdvanced.execute();
+		assertEquals("There should be no results and a statistics : ", 4, results.size());
 
-		searchAdvancedAll.setSearchString("cape town university", "cape town", "one cape town university", "caucasian");
-		results = searchAdvancedAll.execute();
-		assertEquals("There should be two results and a statistics : ", 3, results.size());
+		// Should not
+		searchAdvanced.setSearchString("cape", null, null, "eclipse");
+		results = searchAdvanced.execute();
+		assertEquals("There should be no results and a statistics : ", 6, results.size());
 
-		SearchSingle searchSingle = new SearchSingle(searcher);
-		searchSingle.setFirstResult(0);
-		searchSingle.setFragment(true);
-		searchSingle.setMaxResults(10);
-		searchSingle.setSearchField(IConstants.CONTENTS);
-		searchSingle.setSearchString("cape town");
-		searchSingle.setSortField(IConstants.CONTENTS);
-
-		searchSingle
-				.setSearchString("(cape AND town AND university) AND (\"cape town\") AND (one OR cape OR town OR university) NOT (caucasian)");
-		results = searchSingle.execute();
-		assertEquals("There should be two results and a statistics : ", 3, results.size());
+		searchAdvanced.setSearchString("university", null, null, "caucasian");
+		results = searchAdvanced.execute();
+		assertEquals("There should be no results and a statistics : ", 3, results.size());
 	}
 
 }

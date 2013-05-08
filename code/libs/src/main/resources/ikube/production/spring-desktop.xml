@@ -32,10 +32,10 @@
 		property:mergeFactor="${merge.factor}"
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
-		property:throttle="100"
+		property:throttle="0"
 		property:delta="false"
 		property:indexDirectoryPath="${index.directory.path}"
-		property:indexDirectoryPathBackup="${index.directory.path.backup}/backup"
+		property:indexDirectoryPathBackup="${index.directory.path}"
 		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer"
 		property:children-ref="desktopFolders" />
 	<util:list id="desktopFolders">

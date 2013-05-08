@@ -3,7 +3,6 @@ package ikube.web.service;
 import static org.junit.Assert.assertTrue;
 import ikube.Base;
 import ikube.IConstants;
-import ikube.web.service.SearcherXml;
 
 import java.net.URL;
 
@@ -206,38 +205,6 @@ public class SearcherXmlIntegration extends Base {
 				"10", //
 				"-33.9693580", //
 				"18.4622110" };
-		NameValuePair[] params = getNameValuePairs(names, values);
-
-		GetMethod getMethod = new GetMethod(url);
-		getMethod.setQueryString(params);
-		logger.info("Query string : " + getMethod.getQueryString());
-		int result = HTTP_CLIENT.executeMethod(getMethod);
-		String actual = getMethod.getResponseBodyAsString();
-		logger.info("Results : " + actual);
-		assertTrue("We should get something : " + result + ", " + actual, actual.length() > 0);
-	}
-
-	@Test
-	public void searchMultiAdvancedAll() throws Exception {
-		// String, String, boolean, int, int, int, String, String
-		String path = IConstants.SEP + IConstants.IKUBE + SERVICE + SearcherXml.SEARCH + SearcherXml.MULTI_ADVANCED_ALL;
-		String url = new URL("http", LOCALHOST, SERVER_PORT, path).toString();
-		logger.info("Looking for url : " + url);
-
-		String[] names = { //
-		IConstants.INDEX_NAME, //
-				IConstants.SEARCH_STRINGS, //
-				IConstants.SEARCH_FIELDS, //
-				IConstants.FRAGMENT, //
-				IConstants.FIRST_RESULT,//
-				IConstants.MAX_RESULTS };
-		String[] values = { //
-		IConstants.GEOSPATIAL, //
-				"cape town university", //
-				IConstants.NAME, //
-				Boolean.TRUE.toString(), //
-				"0", //
-				"10" };
 		NameValuePair[] params = getNameValuePairs(names, values);
 
 		GetMethod getMethod = new GetMethod(url);

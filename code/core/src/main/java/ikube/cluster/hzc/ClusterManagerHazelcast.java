@@ -45,7 +45,6 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 	public void setListeners(final List<MessageListener<Object>> listeners) {
 		ip = UriUtilities.getIp();
 		address = ip + "-" + Hazelcast.getCluster().getLocalMember().getInetSocketAddress().getPort();
-		logger.info("Cluster manager : " + ip + ", " + address);
 		Hazelcast.getConfig().getNetworkConfig().getInterfaces().setInterfaces(Arrays.asList(ip));
 		for (final MessageListener<Object> listener : listeners) {
 			if (listener == null) {

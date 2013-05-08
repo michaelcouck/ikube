@@ -30,7 +30,7 @@
 		property:maxReadLength="${max.read.length}"
 		property:throttle="${throttle}"
 		property:indexDirectoryPath="${index.directory.path}"
-		property:indexDirectoryPathBackup="${index.directory.path.backup}"
+		property:indexDirectoryPathBackup="${index.directory.path}"
 		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer"
 		property:children-ref="okiIndexables" />
 	<util:list id="okiIndexables">

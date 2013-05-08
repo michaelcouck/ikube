@@ -29,8 +29,8 @@
 		property:maxFieldLength="${history.max.field.length}"
 		property:maxReadLength="${history.max.read.length}"
 		property:throttle="0"
-		property:indexDirectoryPath="${index.directory.path}/languages/arwiki/index"
-		property:indexDirectoryPathBackup="${index.directory.path.backup}/languages/arwiki/index"
+		property:indexDirectoryPath="${index.directory.path}"
+		property:indexDirectoryPathBackup="${index.directory.path}"
 		property:children-ref="wikiHistoryIndexablesArabic" />
 	<util:list id="wikiHistoryIndexablesArabic">
 		<ref local="wikiHistoryDataArabic" />
@@ -39,7 +39,7 @@
 		id="wikiHistoryDataArabic"
 		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataArabic"
-		property:path="/media/nas/xfs-one/languages/arwiki"
+		property:path="/tmp/nas/xfs-one/languages/arwiki"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
@@ -69,8 +69,8 @@
 		property:maxFieldLength="${history.max.field.length}"
 		property:maxReadLength="${history.max.read.length}"
 		property:throttle="0"
-		property:indexDirectoryPath="${index.directory.path}/languages/nlwiki/index"
-		property:indexDirectoryPathBackup="${index.directory.path.backup}/languages/nlwiki/index"
+		property:indexDirectoryPath="${index.directory.path}"
+		property:indexDirectoryPathBackup="${index.directory.path}"
 		property:children-ref="wikiHistoryIndexablesDutch" />
 	<util:list id="wikiHistoryIndexablesDutch">
 		<ref local="wikiHistoryDataDutch" />
@@ -79,7 +79,7 @@
 		id="wikiHistoryDataDutch"
 		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataDutch"
-		property:path="/media/nas/xfs-one/languages/nlwiki"
+		property:path="/tmp/nas/xfs-one/languages/nlwiki"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
@@ -108,8 +108,8 @@
 		property:maxFieldLength="${history.max.field.length}"
 		property:maxReadLength="${history.max.read.length}"
 		property:throttle="0"
-		property:indexDirectoryPath="${index.directory.path}/languages/frwiki/index"
-		property:indexDirectoryPathBackup="${index.directory.path.backup}/languages/frwiki/index"
+		property:indexDirectoryPath="${index.directory.path}"
+		property:indexDirectoryPathBackup="${index.directory.path}"
 		property:children-ref="wikiHistoryIndexablesFrench" />
 	<util:list id="wikiHistoryIndexablesFrench">
 		<ref local="wikiHistoryDataFrench" />
@@ -118,7 +118,7 @@
 		id="wikiHistoryDataFrench"
 		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataFrench"
-		property:path="/media/nas/xfs-two/languages/frwiki"
+		property:path="/tmp/nas/xfs-two/languages/frwiki"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
@@ -148,8 +148,8 @@
 		property:maxFieldLength="${history.max.field.length}"
 		property:maxReadLength="${history.max.read.length}"
 		property:throttle="0"
-		property:indexDirectoryPath="${index.directory.path}/languages/dewiki/index"
-		property:indexDirectoryPathBackup="${index.directory.path.backup}/languages/dewiki/index"
+		property:indexDirectoryPath="${index.directory.path}"
+		property:indexDirectoryPathBackup="${index.directory.path}"
 		property:children-ref="wikiHistoryIndexablesGerman" />
 	<util:list id="wikiHistoryIndexablesGerman">
 		<ref local="wikiHistoryDataGerman" />
@@ -158,7 +158,7 @@
 		id="wikiHistoryDataGerman"
 		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataGerman"
-		property:path="/media/nas/xfs-two/languages/dewiki"
+		property:path="/tmp/nas/xfs-two/languages/dewiki"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
@@ -188,8 +188,8 @@
 		property:maxFieldLength="${history.max.field.length}"
 		property:maxReadLength="${history.max.read.length}"
 		property:throttle="0"
-		property:indexDirectoryPath="${index.directory.path}/languages/plwiki/index"
-		property:indexDirectoryPathBackup="${index.directory.path.backup}/languages/plwiki/index"
+		property:indexDirectoryPath="${index.directory.path}"
+		property:indexDirectoryPathBackup="${index.directory.path}"
 		property:children-ref="wikiHistoryIndexablesPolish" />
 	<util:list id="wikiHistoryIndexablesPolish">
 		<ref local="wikiHistoryDataPolish" />
@@ -198,7 +198,7 @@
 		id="wikiHistoryDataPolish"
 		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataPolish"
-		property:path="/media/nas/xfs-three/languages/plwiki"
+		property:path="/tmp/nas/xfs-three/languages/plwiki"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
@@ -228,8 +228,8 @@
 		property:maxFieldLength="${history.max.field.length}"
 		property:maxReadLength="${history.max.read.length}"
 		property:throttle="0"
-		property:indexDirectoryPath="${index.directory.path}/languages/ptwiki/index"
-		property:indexDirectoryPathBackup="${index.directory.path.backup}/languages/ptwiki/index"
+		property:indexDirectoryPath="${index.directory.path}"
+		property:indexDirectoryPathBackup="${index.directory.path}"
 		property:children-ref="wikiHistoryIndexablesPortuguese" />
 	<util:list id="wikiHistoryIndexablesPortuguese">
 		<ref local="wikiHistoryDataPortuguese" />
@@ -238,7 +238,7 @@
 		id="wikiHistoryDataPortuguese"
 		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataPortuguese"
-		property:path="/media/nas/xfs-three/languages/ptwiki"
+		property:path="/tmp/nas/xfs-three/languages/ptwiki"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
@@ -268,8 +268,8 @@
 		property:maxFieldLength="${history.max.field.length}"
 		property:maxReadLength="${history.max.read.length}"
 		property:throttle="0"
-		property:indexDirectoryPath="${index.directory.path}/languages/ruwiki/index"
-		property:indexDirectoryPathBackup="${index.directory.path.backup}/languages/ruwiki/index"
+		property:indexDirectoryPath="${index.directory.path}"
+		property:indexDirectoryPathBackup="${index.directory.path}"
 		property:children-ref="wikiHistoryIndexablesRussian" />
 	<util:list id="wikiHistoryIndexablesRussian">
 		<ref local="wikiHistoryDataRussian" />
@@ -278,7 +278,7 @@
 		id="wikiHistoryDataRussian"
 		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataRussian"
-		property:path="/media/nas/xfs-four/languages/ruwiki"
+		property:path="/tmp/nas/xfs-four/languages/ruwiki"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
@@ -308,8 +308,8 @@
 		property:maxFieldLength="${history.max.field.length}"
 		property:maxReadLength="${history.max.read.length}"
 		property:throttle="0"
-		property:indexDirectoryPath="${index.directory.path}/languages/itwiki/index"
-		property:indexDirectoryPathBackup="${index.directory.path.backup}/languages/itwiki/index"
+		property:indexDirectoryPath="${index.directory.path}"
+		property:indexDirectoryPathBackup="${index.directory.path}"
 		property:children-ref="wikiHistoryIndexablesItalian" />
 	<util:list id="wikiHistoryIndexablesItalian">
 		<ref local="wikiHistoryDataItalian" />
@@ -318,7 +318,7 @@
 		id="wikiHistoryDataItalian"
 		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataItalian"
-		property:path="/media/nas/xfs-four/languages/itwiki"
+		property:path="/tmp/nas/xfs-four/languages/itwiki"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
@@ -348,8 +348,8 @@
 		property:maxFieldLength="${history.max.field.length}"
 		property:maxReadLength="${history.max.read.length}"
 		property:throttle="0"
-		property:indexDirectoryPath="${index.directory.path}/languages/eswiki/index"
-		property:indexDirectoryPathBackup="${index.directory.path.backup}/languages/eswiki/index"
+		property:indexDirectoryPath="${index.directory.path}"
+		property:indexDirectoryPathBackup="${index.directory.path}"
 		property:children-ref="wikiHistoryIndexablesSpanish" />
 	<util:list id="wikiHistoryIndexablesSpanish">
 		<ref local="wikiHistoryDataSpanish" />
@@ -358,7 +358,7 @@
 		id="wikiHistoryDataSpanish"
 		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataSpanish"
-		property:path="/media/nas/xfs-five/languages/eswiki"
+		property:path="/tmp/nas/xfs-five/languages/eswiki"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"

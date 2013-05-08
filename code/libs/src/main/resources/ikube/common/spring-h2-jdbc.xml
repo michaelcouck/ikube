@@ -47,32 +47,4 @@
 		</property>
 	</bean>
 	
-	<bean id="h2SequenceCreator" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-		property:staticMethod="ikube.toolkit.DatabaseUtilities.executeStatement">
-		<property name="arguments">
-			<array>
-				<ref bean="nonXaDataSourceH2" />
-				<value type="java.lang.String">create sequence if not exists persistable</value>
-			</array>
-		</property>
-	</bean>
-	<bean id="indexCreatorIndexName" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-		property:staticMethod="ikube.toolkit.DatabaseUtilities.executeStatement">
-		<property name="arguments">
-			<array>
-				<ref bean="nonXaDataSourceH2" />
-				<value type="java.lang.String">create index if not exists search_indexname on search(indexname)</value>
-			</array>
-		</property>
-	</bean>
-	<bean id="indexCreatorsearchStrings" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-		property:staticMethod="ikube.toolkit.DatabaseUtilities.executeStatement">
-		<property name="arguments">
-			<array>
-				<ref bean="nonXaDataSourceH2" />
-				<value type="java.lang.String">create index if not exists search_searchstrings on search(searchstrings)</value>
-			</array>
-		</property>
-	</bean>
-	
 </beans>

@@ -3,6 +3,7 @@ package ikube.search.spelling;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
+import ikube.mock.SpellingCheckerMock;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
 
@@ -47,26 +48,14 @@ public class SpellingCheckerTest extends AbstractTest {
 
 	@After
 	public void after() {
-		// Mockit.setUpMock(SpellingCheckerMock.class);
+		Mockit.setUpMock(SpellingCheckerMock.class);
 	}
 
 	@Test
 	public void checkWords() {
-		String wrong = "wrongk";
-		String correct = "wrongs";
-		String corrected = spellingChecker.checkWords(wrong);
+		String corrected = spellingChecker.checkWords("wrongk");
 		logger.info("Corrected words : " + corrected);
-		assertEquals(correct, corrected);
-
-		String phraseWrong = wrong + " AND " + wrong;
-		corrected = spellingChecker.checkWords(phraseWrong);
-		logger.info("Corrected words : " + corrected);
-		assertEquals(correct + " AND " + correct, corrected);
-
-		String right = "AND there are AND some words WITH AND another";
-		corrected = spellingChecker.checkWords(right);
-		logger.info("Corrected words : " + corrected);
-		assertEquals("AND there are AND some words AND another", corrected);
+		assertEquals("wrongs", corrected);
 	}
 
 	@Test

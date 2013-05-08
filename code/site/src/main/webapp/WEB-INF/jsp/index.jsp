@@ -10,6 +10,7 @@
 	* Geospatial search out of the box, either with data from database or CSV file, can be extended to any data format<br>
 	* Cluster monitoring application for indexing and searching performance<br>
 	* GUI for index action administration<br>
+	* Automatic language detection and search<br>
 	* Flexible with configuration to integrate with any source of data<br>
 	* Configurable text analysis, and pluggable/customizable<br>
 	* Search API based on REST with formats in XML and Json for integration with any technology platform<br>

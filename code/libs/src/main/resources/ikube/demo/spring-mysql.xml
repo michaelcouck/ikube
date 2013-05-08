@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.springframework.org/schema/beans" xmlns:property="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:util="http://www.springframework.org/schema/util"
+
+	xsi:schemaLocation="
+   http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.0.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<bean 
+		id="mysql" 
+		class="ikube.model.IndexContext" 
+		property:name="mysql" 
+		property:maxAge="600" 
+		property:compoundFile="true"
+		property:bufferedDocs="1000" 
+		property:bufferSize="256" 
+		property:batchSize="1000" 
+		property:internetBatchSize="1000" 
+		property:mergeFactor="1000"
+		property:maxFieldLength="10000" 
+		property:maxReadLength="1000000" 
+		property:address="true" 
+		property:throttle="0"
+		property:indexDirectoryPath="${index.directory.path}" 
+		property:indexDirectoryPathBackup="${index.directory.path.backup}"
+		property:strategies-ref="mysql-system-strategies" 
+		property:children-ref="mysqlIndexables" />
+	<util:list id="mysqlIndexables">
+		<ref local="mysql-data-source" />
+	</util:list>
+
+	<util:list id="mysql-system-strategies">
+		<ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
+	</util:list>
+
+	<bean 
+		id="mysql-data-source" 
+		class="ikube.model.IndexableDataSource" 
+		property:name="mysql" 
+		property:dataSource-ref="nonXaDataSourceMysql"
+		property:excludedTablePatterns="SYS:$" />
+
+	<bean 
+		id="nonXaDataSourceMysql" 
+		class="com.mchange.v2.c3p0.ComboPooledDataSource" 
+		destroy-method="close" 
+		property:user="${mysql-userid}"
+		property:password="${mysql-password}" 
+		property:driverClass="com.mysql.jdbc.Driver" 
+		property:jdbcUrl="jdbc:mysql://localhost:3306/otrsdatabase"
+		property:initialPoolSize="${jdbc.minPoolSize}" 
+		property:maxPoolSize="${jdbc.maxPoolSize}" 
+		property:maxStatements="${jdbc.maxStatements}"
+		property:maxStatementsPerConnection="${jdbc.maxStatements}" 
+		property:checkoutTimeout="${jdbc.checkOutTimeout}" 
+		property:numHelperThreads="${jdbc.numHelperThreads}"
+		property:breakAfterAcquireFailure="${jdbc.breakAfterAcquireFailure}" 
+		property:debugUnreturnedConnectionStackTraces="${jdbc.debugUnreturnedConnectionStackTraces}"
+		property:testConnectionOnCheckin="${jdbc.testConnectionOnCheckin}" 
+		property:testConnectionOnCheckout="${jdbc.testConnectionOnCheckout}"
+		property:unreturnedConnectionTimeout="${jdbc.unreturnedConnectionTimeout}" />
+
+</beans>

@@ -37,9 +37,7 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.ReaderUtil;
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -70,16 +68,6 @@ public class SearchTest extends AbstractTest {
 
 	private static String[] strings = { russian, german, french, somthingElseAlToGether, string, somethingNumeric, "123.456789",
 			"123.456790", "123.456791", "123.456792", "123.456793", "123.456794", "123456789", "123456790" };
-
-	@Before
-	public void before() {
-		Mockit.setUpMock(SpellingCheckerMock.class);
-	}
-
-	@After
-	public void after() {
-		Mockit.tearDownMocks(SpellingChecker.class);
-	}
 
 	@BeforeClass
 	public static void beforeClass() throws Exception {
@@ -264,16 +252,28 @@ public class SearchTest extends AbstractTest {
 	}
 
 	@Test
-	public void getCorrections() {
-		Mockit.tearDownMocks();
-		String[] searchStrings = { "some words", "are niet corect", "AND there are AND some words WITH AND another" };
-		Search search = new SearchSingle(SEARCHER);
-		search.setSearchString(searchStrings);
-		String[] correctedSearchStrings = search.getCorrections();
-		String correctedSearchString = Arrays.deepToString(correctedSearchStrings);
-		logger.info("Corrected : " + correctedSearchString);
-		assertEquals("Only the completely incorrect words should be replaced : ",
-				"[and there are and some words with and another, are niet corect, some words]", correctedSearchString);
+	public void getCorrections() throws Exception {
+		try {
+			Mockit.tearDownMocks(SpellingChecker.class);
+			SpellingChecker spellingChecker = new SpellingChecker();
+			File languagesWordFileDirectory = FileUtilities.findFileRecursively(new File("."), "english.txt").getParentFile();
+			Deencapsulation.setField(spellingChecker, "languageWordListsDirectory", languagesWordFileDirectory.getAbsolutePath());
+			Deencapsulation.setField(spellingChecker, "spellingIndexDirectoryPath", "./spellingIndex");
+			spellingChecker.initialize();
+
+			String[] searchStrings = { "some correct words", "unt soome are niet corekt",
+					"AND there are AND some gobblie words WITH AND another" };
+			Search search = new SearchSingle(SEARCHER);
+			search.setSearchString(searchStrings);
+			String[] correctedSearchStrings = search.getCorrections();
+			String correctedSearchString = Arrays.deepToString(correctedSearchStrings);
+			logger.info("Corrected : " + correctedSearchString);
+			assertEquals("Only the completely incorrect words should be replaced : ",
+					"[some correct words, unct sooke are net coreen, AND there are AND some gobble words WITH AND another]",
+					correctedSearchString);
+		} finally {
+			Mockit.setUpMock(SpellingCheckerMock.class);
+		}
 	}
 
 }

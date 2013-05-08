@@ -37,7 +37,7 @@
 		property:address="false"
 		property:throttle="${throttle}"
 		property:indexDirectoryPath="${index.directory.path}"
-		property:indexDirectoryPathBackup="${index.directory.path.backup}"
+		property:indexDirectoryPathBackup="${index.directory.path}"
 		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer"
 		property:strategies-ref="ikube-system-strategies"
 		property:children-ref="ikube-system-indexables" />

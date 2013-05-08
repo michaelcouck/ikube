@@ -50,7 +50,7 @@ public class IsNewIndexCreatedTest extends AbstractTest {
 		boolean result = isNewIndexCreated.evaluate(indexContext);
 		assertFalse("There is no index created : ", result);
 
-		File indexDirectory = createIndex(indexContext, "Some data : ");
+		File indexDirectory = createIndexFileSystem(indexContext, "Some data");
 
 		result = isNewIndexCreated.evaluate(indexContext);
 		assertTrue("The index is created : ", result);
@@ -60,7 +60,7 @@ public class IsNewIndexCreatedTest extends AbstractTest {
 		result = isNewIndexCreated.evaluate(indexContext);
 		assertFalse("The latest index is already opened : ", result);
 
-		createIndex(indexContext, "Some more data : ");
+		createIndexFileSystem(indexContext, "Some more data");
 		result = isNewIndexCreated.evaluate(indexContext);
 		assertTrue("There is a new index, and the searcher is open on the old one : ", result);
 	}

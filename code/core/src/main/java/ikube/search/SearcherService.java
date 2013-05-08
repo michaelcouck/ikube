@@ -59,13 +59,10 @@ public class SearcherService implements ISearcherService {
 	@Override
 	@WebMethod
 	@WebResult(name = "result")
-	public ArrayList<HashMap<String, String>> searchSingle(@WebParam(name = "indexName")
-	final String indexName, @WebParam(name = "searchString")
-	final String searchString, @WebParam(name = "searchField")
-	final String searchField, @WebParam(name = "fragment")
-	final boolean fragment, @WebParam(name = "firstResult")
-	final int firstResult, @WebParam(name = "maxResults")
-	final int maxResults) {
+	public ArrayList<HashMap<String, String>> searchSingle(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchString") final String searchString, @WebParam(name = "searchField") final String searchField,
+			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
+			@WebParam(name = "maxResults") final int maxResults) {
 		try {
 			SearchSingle searchSingle = getSearch(SearchSingle.class, indexName);
 			if (searchSingle != null) {
@@ -80,7 +77,8 @@ public class SearcherService implements ISearcherService {
 				return results;
 			}
 		} catch (Exception e) {
-			String message = Logging.getString("Exception doing search on index : ", indexName, searchString, searchField, fragment, firstResult, maxResults);
+			String message = Logging.getString("Exception doing search on index : ", indexName, searchString, searchField, fragment,
+					firstResult, maxResults);
 			LOGGER.error(message, e);
 		}
 		return getMessageResults(indexName);
@@ -92,13 +90,10 @@ public class SearcherService implements ISearcherService {
 	@Override
 	@WebMethod
 	@WebResult(name = "result")
-	public ArrayList<HashMap<String, String>> searchMulti(@WebParam(name = "indexName")
-	final String indexName, @WebParam(name = "searchStrings")
-	final String[] searchStrings, @WebParam(name = "searchFields")
-	final String[] searchFields, @WebParam(name = "fragment")
-	final boolean fragment, @WebParam(name = "firstResult")
-	final int firstResult, @WebParam(name = "maxResults")
-	final int maxResults) {
+	public ArrayList<HashMap<String, String>> searchMulti(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
+			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
+			@WebParam(name = "maxResults") final int maxResults) {
 		try {
 			SearchMulti searchMulti = getSearch(SearchMulti.class, indexName);
 			if (searchMulti != null) {
@@ -113,7 +108,8 @@ public class SearcherService implements ISearcherService {
 				return results;
 			}
 		} catch (Exception e) {
-			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, searchFields, fragment, firstResult, maxResults);
+			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, searchFields, fragment,
+					firstResult, maxResults);
 			LOGGER.error(message, e);
 		}
 		return getMessageResults(indexName);
@@ -125,14 +121,10 @@ public class SearcherService implements ISearcherService {
 	@Override
 	@WebMethod
 	@WebResult(name = "result")
-	public ArrayList<HashMap<String, String>> searchMultiSorted(@WebParam(name = "indexName")
-	final String indexName, @WebParam(name = "searchStrings")
-	final String[] searchStrings, @WebParam(name = "searchFields")
-	final String[] searchFields, @WebParam(name = "sortFields")
-	final String[] sortFields, @WebParam(name = "fragment")
-	final boolean fragment, @WebParam(name = "firstResult")
-	final int firstResult, @WebParam(name = "maxResults")
-	final int maxResults) {
+	public ArrayList<HashMap<String, String>> searchMultiSorted(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
+			@WebParam(name = "sortFields") final String[] sortFields, @WebParam(name = "fragment") final boolean fragment,
+			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults) {
 		try {
 			SearchMultiSorted searchMultiSorted = getSearch(SearchMultiSorted.class, indexName);
 			if (searchMultiSorted != null) {
@@ -148,8 +140,8 @@ public class SearcherService implements ISearcherService {
 				return results;
 			}
 		} catch (Exception e) {
-			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, searchFields, Arrays.asList(sortFields),
-					fragment, firstResult, maxResults);
+			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, searchFields,
+					Arrays.asList(sortFields), fragment, firstResult, maxResults);
 			LOGGER.error(message, e);
 		}
 		return getMessageResults(indexName);
@@ -161,12 +153,9 @@ public class SearcherService implements ISearcherService {
 	@Override
 	@WebMethod
 	@WebResult(name = "result")
-	public ArrayList<HashMap<String, String>> searchMultiAll(@WebParam(name = "indexName")
-	final String indexName, @WebParam(name = "searchStrings")
-	final String[] searchStrings, @WebParam(name = "fragment")
-	final boolean fragment, @WebParam(name = "firstResult")
-	final int firstResult, @WebParam(name = "maxResults")
-	final int maxResults) {
+	public ArrayList<HashMap<String, String>> searchMultiAll(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "fragment") final boolean fragment,
+			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults) {
 		try {
 			SearchMultiAll searchMultiAll = getSearch(SearchMultiAll.class, indexName);
 			if (searchMultiAll != null) {
@@ -180,7 +169,8 @@ public class SearcherService implements ISearcherService {
 				return results;
 			}
 		} catch (Exception e) {
-			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, fragment, firstResult, maxResults);
+			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, fragment, firstResult,
+					maxResults);
 			LOGGER.error(message, e);
 		}
 		return getMessageResults(indexName);
@@ -192,16 +182,11 @@ public class SearcherService implements ISearcherService {
 	@Override
 	@WebMethod
 	@WebResult(name = "result")
-	public ArrayList<HashMap<String, String>> searchMultiSpacial(@WebParam(name = "indexName")
-	final String indexName, @WebParam(name = "searchStrings")
-	final String[] searchStrings, @WebParam(name = "searchFields")
-	final String[] searchFields, @WebParam(name = "fragment")
-	final boolean fragment, @WebParam(name = "firstResult")
-	final int firstResult, @WebParam(name = "maxResults")
-	final int maxResults, @WebParam(name = "distance")
-	final int distance, @WebParam(name = "latitude")
-	final double latitude, @WebParam(name = "longitude")
-	final double longitude) {
+	public ArrayList<HashMap<String, String>> searchMultiSpacial(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
+			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
+			@WebParam(name = "maxResults") final int maxResults, @WebParam(name = "distance") final int distance,
+			@WebParam(name = "latitude") final double latitude, @WebParam(name = "longitude") final double longitude) {
 		try {
 			SearchSpatial searchSpatial = getSearch(SearchSpatial.class, indexName);
 			if (searchSpatial != null) {
@@ -218,8 +203,8 @@ public class SearcherService implements ISearcherService {
 				return results;
 			}
 		} catch (Exception e) {
-			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, fragment, firstResult, maxResults, latitude,
-					longitude, distance);
+			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, fragment, firstResult,
+					maxResults, latitude, longitude, distance);
 			LOGGER.error(message, e);
 		}
 		return getMessageResults(indexName);
@@ -231,15 +216,11 @@ public class SearcherService implements ISearcherService {
 	@Override
 	@WebMethod
 	@WebResult(name = "result")
-	public ArrayList<HashMap<String, String>> searchMultiSpacialAll(@WebParam(name = "indexName")
-	final String indexName, @WebParam(name = "searchStrings")
-	final String[] searchStrings, @WebParam(name = "fragment")
-	final boolean fragment, @WebParam(name = "firstResult")
-	final int firstResult, @WebParam(name = "maxResults")
-	final int maxResults, @WebParam(name = "distance")
-	final int distance, @WebParam(name = "latitude")
-	final double latitude, @WebParam(name = "longitude")
-	final double longitude) {
+	public ArrayList<HashMap<String, String>> searchMultiSpacialAll(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "fragment") final boolean fragment,
+			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults,
+			@WebParam(name = "distance") final int distance, @WebParam(name = "latitude") final double latitude,
+			@WebParam(name = "longitude") final double longitude) {
 		try {
 			SearchSpatialAll searchSpatialAll = getSearch(SearchSpatialAll.class, indexName);
 			if (searchSpatialAll != null) {
@@ -255,8 +236,8 @@ public class SearcherService implements ISearcherService {
 				return results;
 			}
 		} catch (Exception e) {
-			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, fragment, firstResult, maxResults, latitude,
-					longitude, distance);
+			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, fragment, firstResult,
+					maxResults, latitude, longitude, distance);
 			LOGGER.error(message, e);
 		}
 		return getMessageResults(indexName);
@@ -268,13 +249,10 @@ public class SearcherService implements ISearcherService {
 	@Override
 	@WebMethod
 	@WebResult(name = "result")
-	public ArrayList<HashMap<String, String>> searchMultiAdvanced(@WebParam(name = "indexName")
-	final String indexName, @WebParam(name = "searchStrings")
-	final String[] searchStrings, @WebParam(name = "searchFields")
-	final String[] searchFields, @WebParam(name = "fragment")
-	final boolean fragment, @WebParam(name = "firstResult")
-	final int firstResult, @WebParam(name = "maxResults")
-	final int maxResults) {
+	public ArrayList<HashMap<String, String>> searchMultiAdvanced(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
+			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
+			@WebParam(name = "maxResults") final int maxResults) {
 		try {
 			SearchAdvanced searchAdvanced = getSearch(SearchAdvanced.class, indexName);
 			if (searchAdvanced != null) {
@@ -289,7 +267,8 @@ public class SearcherService implements ISearcherService {
 				return results;
 			}
 		} catch (Exception e) {
-			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, searchFields, fragment, firstResult, maxResults);
+			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, searchFields, fragment,
+					firstResult, maxResults);
 			LOGGER.error(message, e);
 		}
 		return getMessageResults(indexName);
@@ -299,38 +278,8 @@ public class SearcherService implements ISearcherService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@WebMethod
-	@WebResult(name = "result")
-	public ArrayList<HashMap<String, String>> searchMultiAdvancedAll(@WebParam(name = "indexName")
-	final String indexName, @WebParam(name = "searchStrings")
-	final String[] searchStrings, @WebParam(name = "fragment")
-	final boolean fragment, @WebParam(name = "firstResult")
-	final int firstResult, @WebParam(name = "maxResults")
-	final int maxResults) {
-		try {
-			SearchAdvancedAll searchAdvancedAll = getSearch(SearchAdvancedAll.class, indexName);
-			if (searchAdvancedAll != null) {
-				searchAdvancedAll.setFirstResult(firstResult);
-				searchAdvancedAll.setFragment(fragment);
-				searchAdvancedAll.setMaxResults(maxResults);
-				searchAdvancedAll.setSearchString(searchStrings);
-				ArrayList<HashMap<String, String>> results = searchAdvancedAll.execute();
-				String[] searchStringsCorrected = searchAdvancedAll.getCorrections();
-				persistSearch(indexName, searchStrings, searchStringsCorrected, results);
-				return results;
-			}
-		} catch (Exception e) {
-			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, fragment, firstResult, maxResults);
-			LOGGER.error(message, e);
-		}
-		return getMessageResults(indexName);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ArrayList<HashMap<String, String>> searchNumericAll(String indexName, String[] searchStrings, boolean fragment, int firstResult, int maxResults) {
+	public ArrayList<HashMap<String, String>> searchNumericAll(String indexName, String[] searchStrings, boolean fragment, int firstResult,
+			int maxResults) {
 		try {
 			SearchNumericAll searchNumericAll = getSearch(SearchNumericAll.class, indexName);
 			if (searchNumericAll != null) {
@@ -344,7 +293,8 @@ public class SearcherService implements ISearcherService {
 				return results;
 			}
 		} catch (Exception e) {
-			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, fragment, firstResult, maxResults);
+			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, fragment, firstResult,
+					maxResults);
 			LOGGER.error(message, e);
 		}
 		return getMessageResults(indexName);
@@ -354,7 +304,8 @@ public class SearcherService implements ISearcherService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ArrayList<HashMap<String, String>> searchNumericRange(String indexName, String[] searchStrings, boolean fragment, int firstResult, int maxResults) {
+	public ArrayList<HashMap<String, String>> searchNumericRange(String indexName, String[] searchStrings, boolean fragment,
+			int firstResult, int maxResults) {
 		try {
 			SearchNumericRange searchNumericAll = getSearch(SearchNumericRange.class, indexName);
 			if (searchNumericAll != null) {
@@ -368,7 +319,8 @@ public class SearcherService implements ISearcherService {
 				return results;
 			}
 		} catch (Exception e) {
-			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, fragment, firstResult, maxResults);
+			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, fragment, firstResult,
+					maxResults);
 			LOGGER.error(message, e);
 		}
 		return getMessageResults(indexName);
@@ -380,14 +332,10 @@ public class SearcherService implements ISearcherService {
 	@Override
 	@WebMethod
 	@WebResult(name = "result")
-	public ArrayList<HashMap<String, String>> searchComplex(@WebParam(name = "indexName")
-	final String indexName, @WebParam(name = "searchStrings")
-	final String[] searchStrings, @WebParam(name = "searchFields")
-	final String[] searchFields, @WebParam(name = "typeFields")
-	final String[] typeFields, @WebParam(name = "fragment")
-	final boolean fragment, @WebParam(name = "firstResult")
-	final int firstResult, @WebParam(name = "maxResults")
-	final int maxResults) {
+	public ArrayList<HashMap<String, String>> searchComplex(@WebParam(name = "indexName") final String indexName,
+			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
+			@WebParam(name = "typeFields") final String[] typeFields, @WebParam(name = "fragment") final boolean fragment,
+			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults) {
 		try {
 			SearchComplex searchComplex = getSearch(SearchComplex.class, indexName);
 			if (searchComplex != null) {
@@ -403,15 +351,17 @@ public class SearcherService implements ISearcherService {
 				return results;
 			}
 		} catch (Exception e) {
-			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, searchFields, fragment, firstResult, maxResults);
+			String message = Logging.getString("Exception doing search on index : ", indexName, searchStrings, searchFields, fragment,
+					firstResult, maxResults);
 			LOGGER.error(message, e);
 		}
 		return getMessageResults(indexName);
 	}
 
 	/**
-	 * This method will return an instance of the search class, based on the class in the parameter list and the index context name. For each search there is an
-	 * instance created for the searcher classes to avoid thread overlap. The instance is created using reflection :( but is there a more elegant way?
+	 * This method will return an instance of the search class, based on the class in the parameter list and the index context name. For
+	 * each search there is an instance created for the searcher classes to avoid thread overlap. The instance is created using reflection
+	 * :( but is there a more elegant way?
 	 * 
 	 * @param <T> the type of class that is expected as a result
 	 * @param klass the class of the searcher
@@ -457,7 +407,8 @@ public class SearcherService implements ISearcherService {
 	}
 
 	/**
-	 * This method returns the default message if there is no searcher defined for the index context, or the index is not generated or opened.
+	 * This method returns the default message if there is no searcher defined for the index context, or the index is not generated or
+	 * opened.
 	 * 
 	 * @param indexName the name of the index
 	 * @return the message/map that will be sent to the client
@@ -491,8 +442,12 @@ public class SearcherService implements ISearcherService {
 		statistics.put(IConstants.INDEX_NAME, indexName);
 		for (int i = 0; i < searchStrings.length; i++) {
 			String searchString = searchStrings[i];
-			String correctSearchString = searchStringsCorrected[i];
-			Search dbSearch = dataBase.findCriteria(Search.class, new String[] { "indexName", "searchStrings" }, new Object[] { indexName, searchString });
+			String correctSearchString = null;
+			if (searchStringsCorrected != null && searchStringsCorrected.length > i) {
+				correctSearchString = searchStringsCorrected[i];
+			}
+			Search dbSearch = dataBase.findCriteria(Search.class, new String[] { "indexName", "searchStrings" }, new Object[] { indexName,
+					searchString });
 			if (dbSearch == null) {
 				Search search = new Search();
 				search.setCount(1);

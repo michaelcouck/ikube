@@ -62,7 +62,7 @@
 		id="ikubeLog"
 		class="ikube.model.IndexableFileSystemLog"
 		property:name="ikubeLog"
-		property:path="/usr/share/apache-tomcat-6.0.29-1/logs" 
+		property:path="/opt/apache-tomcat-7.0.33/logs" 
 		property:fileFieldName="file-name"
 		property:pathFieldName="file-path"
 		property:lineFieldName="line" 

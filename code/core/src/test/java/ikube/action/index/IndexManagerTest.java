@@ -159,7 +159,7 @@ public class IndexManagerTest extends AbstractTest {
 		latest = IndexManager.getLatestIndexDirectory(indexFolderThree.getParentFile().getParentFile(), null);
 		assertEquals(indexFolderTwo.getParentFile(), latest);
 
-		createIndex(indexContext, "The data in the index");
+		createIndexFileSystem(indexContext, "The data in the index");
 		latest = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
 		assertTrue(latest != null && latest.exists());
 	}
@@ -172,7 +172,7 @@ public class IndexManagerTest extends AbstractTest {
 
 	@Test
 	public void getLatestIndexDirectoryDate() throws Exception {
-		File latestIndexDirectory = createIndex(indexContext, "Any kind of data for the index");
+		File latestIndexDirectory = createIndexFileSystem(indexContext, "Any kind of data for the index");
 		Date latestIndexDirectoryDate = IndexManager.getLatestIndexDirectoryDate(indexContext);
 		logger.info("Latest index directory date : " + latestIndexDirectoryDate.getTime());
 		assertTrue(latestIndexDirectoryDate.getTime() == Long.parseLong(latestIndexDirectory.getParentFile().getName()));
@@ -219,10 +219,10 @@ public class IndexManagerTest extends AbstractTest {
 
 	@Test
 	public void getIndexSize() throws Exception {
-		createIndex(indexContext, "the ", "string ", "to add");
+		createIndexFileSystem(indexContext, "the ", "string ", "to add");
 		IndexManager.getIndexSize(indexContext);
 		Mockito.when(indexContext.getIndexName()).thenReturn("anotherIndexName");
-		createIndex(indexContext, "the ", "string ", "to add", "bigger");
+		createIndexFileSystem(indexContext, "the ", "string ", "to add", "bigger");
 		Mockito.when(indexContext.getIndexName()).thenReturn("index");
 
 		long indexSize = IndexManager.getIndexSize(indexContext);
@@ -239,7 +239,7 @@ public class IndexManagerTest extends AbstractTest {
 		long time = System.currentTimeMillis();
 		String[] ips = { "127.0.0.1", "127.0.0.2", "127.0.0.3" };
 		String[] strings = { "The ", "quick ", "brown ", "fox ", "jumped" };
-		createIndexes(indexContext, time, ips, strings);
+		createIndexesFileSystem(indexContext, time, ips, strings);
 		indexWriters = IndexManager.openIndexWriterDelta(indexContext);
 		for (final IndexWriter indexWriter : indexWriters) {
 			IndexManager.closeIndexWriter(indexWriter);

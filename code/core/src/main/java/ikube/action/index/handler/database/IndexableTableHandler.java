@@ -84,11 +84,9 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		for (int i = 0; i < getThreads(); i++) {
 			// Because the transient state data is stored in the indexable during indexing we have
 			// to clone the indexable for each thread
-			logger.info("Indexable : " + indexable.getName());
 			final IndexableTable cloneIndexableTable = (IndexableTable) SerializationUtilities.clone(indexable);
 			cloneIndexableTable.setStrategies(indexable.getStrategies());
 			if (cloneIndexableTable.isAllColumns()) {
-				logger.info("Adding all columns to table : " + cloneIndexableTable.getName());
 				addAllColumns(cloneIndexableTable, dataSource);
 			}
 			final Runnable runnable = new Runnable() {
@@ -194,14 +192,13 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		Connection connection = getConnection(dataSource);
 		ResultSet resultSet = getResultSet(indexContext, indexableTable, connection, currentId);
 		try {
-			while (!resultSet.next()) {
+			if (!resultSet.next()) {
 				DatabaseUtilities.closeAll(resultSet);
-				if (currentId.get() >= indexableTable.getMaximumId()) {
+				if (currentId.get() > indexableTable.getMaximumId()) {
 					// Finished indexing the table hierarchy
 					return null;
 				}
-				connection = getConnection(dataSource);
-				resultSet = getResultSet(indexContext, indexableTable, connection, currentId);
+				resultSet = getResultSet(indexContext, indexableTable, dataSource, currentId);
 			}
 			return resultSet;
 		} catch (SQLException e) {
@@ -228,7 +225,6 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			final Connection connection, final AtomicLong currentId) {
 		try {
 			// Build the sql based on the columns defined in the configuration
-			// String sql = buildSql(indexableTable, indexContext.getBatchSize(), currentId.get());
 			String sql = new QueryBuilder().buildQuery(indexableTable, currentId.get(), indexContext.getBatchSize());
 			currentId.set(currentId.get() + indexContext.getBatchSize());
 			PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY,
@@ -266,7 +262,6 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			maximumId = getIdFunction(indexableTable, connection, "max");
 			indexableTable.setMaximumId(maximumId);
 		}
-		logger.info("Min and max id : " + indexableTable.getMinimumId() + ", " + indexableTable.getMaximumId());
 		DatabaseUtilities.close(connection);
 	}
 
@@ -343,7 +338,6 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			}
 			return result;
 		} catch (SQLException e) {
-			logger.error("", e);
 			throw new RuntimeException(e);
 		} finally {
 			DatabaseUtilities.close(resultSet);

@@ -42,7 +42,7 @@ public class AreUnopenedIndexesTest extends AbstractTest {
 		boolean result = areUnopenedIndexes.evaluate(indexContext);
 		assertFalse(result);
 
-		File latestIndexDirectory = createIndex(indexContext, "some words to index");
+		File latestIndexDirectory = createIndexFileSystem(indexContext, "some words to index");
 		result = areUnopenedIndexes.evaluate(indexContext);
 		assertTrue(result);
 

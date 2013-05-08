@@ -31,6 +31,10 @@
     
     <!-- External file system resources. -->
 	<import resource="file:site/*.xml" />
+	<import resource="classpath:site/*-spring.xml" />
+	<import resource="classpath:**/*-spring.xml" />
+	<import resource="classpath*:**/*-spring.xml" />
+	<import resource="classpath*:site/*-spring.xml" />
     
 	<!-- This configures the tiles container. -->
 	<bean 

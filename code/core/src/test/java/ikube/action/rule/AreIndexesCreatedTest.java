@@ -45,7 +45,7 @@ public class AreIndexesCreatedTest extends AbstractTest {
 		// This seems to fail in Maven, probably because of
 		// conflicts in the creation of the indexes
 		assertFalse(result);
-		createIndex(indexContext, "soem data, wif wong smelling");
+		createIndexFileSystem(indexContext, "soem data, wif wong smelling");
 		result = indexesCreated.evaluate(indexContext);
 		assertTrue(result);
 	}

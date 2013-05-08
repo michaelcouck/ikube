@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -76,7 +77,7 @@ public final class ThreadUtilities {
 					int maxRetryCount = MAX_RETRY_COUNT;
 					while (maxRetryCount-- > 0) {
 						if (future.cancel(true) || future.isCancelled()) {
-							LOGGER.info("Cancelled future : " + name + ", " + future + ", " + maxRetryCount);
+							// LOGGER.info("Cancelled future : " + name + ", " + future + ", " + maxRetryCount);
 							break;
 						}
 						ThreadUtilities.sleep(10);
@@ -120,10 +121,13 @@ public final class ThreadUtilities {
 		try {
 			future.get(maxWait, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
-			LOGGER.debug(null, e);
 			LOGGER.warn("Coitus interruptus... : " + e.getMessage());
+			LOGGER.debug(null, e);
 		} catch (TimeoutException e) {
 			LOGGER.info("Timed out waiting for future : " + e.getMessage());
+		} catch (CancellationException e) {
+			LOGGER.info("Future cancelled : " + e.getMessage());
+			LOGGER.debug(null, e);
 		} catch (Exception e) {
 			LOGGER.error("Exception waiting for future : ", e);
 		}
@@ -164,7 +168,7 @@ public final class ThreadUtilities {
 		try {
 			Thread.sleep(sleep);
 		} catch (InterruptedException e) {
-			LOGGER.error("Sleep interrupted : " + Thread.currentThread());
+			// LOGGER.error("Sleep interrupted : " + Thread.currentThread());
 			Thread.currentThread().interrupt();
 			throw new RuntimeException(e);
 		}
