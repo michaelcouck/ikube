@@ -27,6 +27,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
+ * This schedule will take a snapshot of various system states periodically, including the cpu, how many searches there have been on all the
+ * indexes etc. Snapshots are then persisted to the database, and cleaned from time to time in the {@link Purge} action so the database
+ * doesn't fill up. Typically we only need a few snapshots and not two weeks worth. This schedule should run every minute.
+ * 
  * @author Michael Couck
  * @since 22.07.12
  * @version 01.00
@@ -62,7 +66,7 @@ public class SnapshotSchedule extends Schedule {
 		server.setFreeMemory(Runtime.getRuntime().freeMemory() / IConstants.MILLION);
 		server.setMaxMemory(Runtime.getRuntime().maxMemory() / IConstants.MILLION);
 		server.setTotalMemory(Runtime.getRuntime().totalMemory() / IConstants.MILLION);
-		clusterManager.putObject(server.getAddress(), server);
+		clusterManager.put(server.getAddress(), server);
 
 		Map<String, IndexContext> indexContexts = monitorService.getIndexContexts();
 		for (Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
@@ -105,15 +109,11 @@ public class SnapshotSchedule extends Schedule {
 	@SuppressWarnings("rawtypes")
 	protected long getTotalSearchesForIndex(final IndexContext indexContext) {
 		int totalSearchesForIndex = 0;
-		List<Search> searches = null;
-		try {
-			searches = dataBase.find(Search.class, Search.SELECT_FROM_SEARCH_BY_INDEX_NAME, new String[] { "indexName" },
-					new Object[] { indexContext.getIndexName() }, 0, Integer.MAX_VALUE);
-			for (Search search : searches) {
-				totalSearchesForIndex += search.getCount();
-			}
-		} catch (Exception e) {
-			LOGGER.info("Error getting the search results : ", e);
+		// TODO Re-do this, there could potentially be millions of searches
+		List<Search> searches = dataBase.find(Search.class, Search.SELECT_FROM_SEARCH_BY_INDEX_NAME, new String[] { "indexName" },
+				new Object[] { indexContext.getIndexName() }, 0, Integer.MAX_VALUE);
+		for (Search search : searches) {
+			totalSearchesForIndex += search.getCount();
 		}
 		return totalSearchesForIndex;
 	}
@@ -126,8 +126,7 @@ public class SnapshotSchedule extends Schedule {
 		Snapshot previous = snapshots.get(snapshots.size() - 1);
 		double interval = snapshot.getTimestamp().getTime() - previous.getTimestamp().getTime();
 		double ratio = interval / 60000;
-		long searchesPerMinute = (long) ((snapshot.getTotalSearches() - previous.getTotalSearches()) / ratio);
-		return searchesPerMinute;
+		return (long) ((snapshot.getTotalSearches() - previous.getTotalSearches()) / ratio);
 	}
 
 	protected long getDocsPerMinute(final IndexContext<?> indexContext, final Snapshot snapshot) {
@@ -139,7 +138,6 @@ public class SnapshotSchedule extends Schedule {
 		double interval = snapshot.getTimestamp().getTime() - previous.getTimestamp().getTime();
 		double ratio = interval / 60000;
 		long docsPerMinute = (long) ((snapshot.getNumDocs() - previous.getNumDocs()) / ratio);
-		// LOGGER.info("Docs per minute : " + indexContext.getName() + ", " + indexContext.hashCode() + ", " + docsPerMinute);
 		return docsPerMinute < 0 ? 0 : Math.min(docsPerMinute, 1000000);
 	}
 

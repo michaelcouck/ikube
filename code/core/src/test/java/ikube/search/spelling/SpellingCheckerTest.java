@@ -53,7 +53,7 @@ public class SpellingCheckerTest extends AbstractTest {
 
 	@Test
 	public void checkWords() {
-		String corrected = spellingChecker.checkWords("wrongk");
+		String corrected = spellingChecker.checkWord("wrongk");
 		logger.info("Corrected words : " + corrected);
 		assertEquals("wrongs", corrected);
 	}
@@ -63,14 +63,14 @@ public class SpellingCheckerTest extends AbstractTest {
 		double iterationsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			@Override
 			public void execute() throws Throwable {
-				spellingChecker.checkWords("michael");
+				spellingChecker.checkWord("michael");
 			}
 		}, "Spelling checking performance : ", 1000, Boolean.FALSE);
 		assertTrue(iterationsPerSecond > 100);
 		iterationsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			@Override
 			public void execute() throws Throwable {
-				spellingChecker.checkWords("couck");
+				spellingChecker.checkWord("couck");
 			}
 		}, "Spelling checking performance : ", 1000, Boolean.FALSE);
 		assertTrue(iterationsPerSecond > 100);

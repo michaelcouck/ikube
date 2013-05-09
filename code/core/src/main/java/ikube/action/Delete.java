@@ -24,17 +24,11 @@ public class Delete extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	boolean internalExecute(final IndexContext<?> indexContext) {
-		ikube.model.Action action = null;
-		try {
-			action = start(indexContext.getIndexName(), "");
-			String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
-			String indexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
-			boolean deletedBoth = deleteOldIndexes(indexDirectoryPath);
-			deletedBoth |= deleteOldIndexes(indexDirectoryPathBackup);
-			return deletedBoth;
-		} finally {
-			stop(action);
-		}
+		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
+		String indexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
+		boolean deletedBoth = deleteOldIndexes(indexDirectoryPath);
+		deletedBoth |= deleteOldIndexes(indexDirectoryPathBackup);
+		return deletedBoth;
 	}
 
 	private boolean deleteOldIndexes(String indexDirectoryPath) {
@@ -53,7 +47,7 @@ public class Delete extends Action<IndexContext<?>, Boolean> {
 		boolean latestIndexDirectoryIsLocked = Boolean.FALSE;
 		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
 		File[] serverIndexDirectories = latestIndexDirectory.listFiles();
-		for (File serverIndexDirectory : serverIndexDirectories) {
+		for (final File serverIndexDirectory : serverIndexDirectories) {
 			if (new DirectoryExistsAndIsLocked().evaluate(serverIndexDirectory)) {
 				latestIndexDirectoryIsLocked = Boolean.TRUE;
 				break;

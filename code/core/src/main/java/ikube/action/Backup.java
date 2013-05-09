@@ -23,38 +23,31 @@ public class Backup extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	boolean internalExecute(final IndexContext<?> indexContext) {
-		ikube.model.Action action = null;
+		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
+		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
+		if (latestIndexDirectory == null || !latestIndexDirectory.exists()) {
+			logger.warn("No index created for context : " + indexContext.getName());
+			return Boolean.FALSE;
+		}
+		String indexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
+		File indexDirectoryBackup = FileUtilities.getFile(indexDirectoryPathBackup, Boolean.TRUE);
+		if (indexDirectoryBackup == null || !indexDirectoryBackup.exists()) {
+			logger.warn("Backup directory could not be created : " + indexDirectoryBackup);
+		}
+		if (indexDirectoryPath.equals(indexDirectoryPathBackup)) {
+			// The index and the backup are the same to save disk space
+			return Boolean.TRUE;
+		}
 		try {
-			action = start(indexContext.getIndexName(), "");
-			String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
-			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
-			if (latestIndexDirectory == null || !latestIndexDirectory.exists()) {
-				logger.warn("No index created for context : " + indexContext.getName());
-				return Boolean.FALSE;
-			}
-			String indexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
-			File indexDirectoryBackup = FileUtilities.getFile(indexDirectoryPathBackup, Boolean.TRUE);
-			if (indexDirectoryBackup == null || !indexDirectoryBackup.exists()) {
-				logger.warn("Backup directory could not be created : " + indexDirectoryBackup);
-			}
-			if (indexDirectoryPath.equals(indexDirectoryPathBackup)) {
-				// The index and the backup are the same to save disk space
-				return Boolean.TRUE;
-			}
-			try {
-				String latestIndexDirectoryBackupPath = indexDirectoryPathBackup + IConstants.SEP + latestIndexDirectory.getName();
-				File latestIndexDirectoryBackup = FileUtilities.getFile(latestIndexDirectoryBackupPath, Boolean.TRUE);
-				logger.info("Backing up index from : " + latestIndexDirectory + ", to : " + latestIndexDirectoryBackup);
-				// Copy the index to the designated place on the network
-				// FileUtilities.copyFiles(latestIndexDirectory, latestIndexDirectoryBackup);
-				FileUtils.copyDirectory(latestIndexDirectory, latestIndexDirectoryBackup);
-				logger.info("Backed up index from : " + latestIndexDirectory + ", to : " + latestIndexDirectoryBackup);
-			} catch (Exception e) {
-				logger.error("Exception backing up indexes : ", e);
-				return Boolean.FALSE;
-			}
-		} finally {
-			stop(action);
+			String latestIndexDirectoryBackupPath = indexDirectoryPathBackup + IConstants.SEP + latestIndexDirectory.getName();
+			File latestIndexDirectoryBackup = FileUtilities.getFile(latestIndexDirectoryBackupPath, Boolean.TRUE);
+			logger.info("Backing up index from : " + latestIndexDirectory + ", to : " + latestIndexDirectoryBackup);
+			// Copy the index to the designated place on the network
+			FileUtils.copyDirectory(latestIndexDirectory, latestIndexDirectoryBackup);
+			logger.info("Backed up index from : " + latestIndexDirectory + ", to : " + latestIndexDirectoryBackup);
+		} catch (Exception e) {
+			logger.error("Exception backing up indexes : ", e);
+			return Boolean.FALSE;
 		}
 		return Boolean.TRUE;
 	}

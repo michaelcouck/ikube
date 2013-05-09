@@ -40,15 +40,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	public boolean internalExecute(final IndexContext<?> indexContext) {
-		boolean succeeded = Boolean.FALSE;
-		ikube.model.Action action = null;
-		try {
-			action = start(indexContext.getIndexName(), "");
-			succeeded = openOnFile(indexContext);
-			return succeeded;
-		} finally {
-			stop(action);
-		}
+		return openOnFile(indexContext);
 	}
 
 	private boolean openOnFile(final IndexContext<?> indexContext) {
@@ -67,7 +59,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 		IndexReader reader = null;
 		Searchable searcher = null;
 		boolean exceptionOpening = Boolean.FALSE;
-		for (File serverIndexDirectory : serverIndexDirectories) {
+		for (final File serverIndexDirectory : serverIndexDirectories) {
 			try {
 				directory = FSDirectory.open(serverIndexDirectory);
 				boolean exists = IndexReader.indexExists(directory);
@@ -98,7 +90,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 		return !exceptionOpening & open(indexContext, searchers);
 	}
 
-	private boolean open(IndexContext<?> indexContext, List<Searchable> searchers) {
+	private boolean open(final IndexContext<?> indexContext, final List<Searchable> searchers) {
 		try {
 			if (!searchers.isEmpty()) {
 				Searchable[] searchables = searchers.toArray(new IndexSearcher[searchers.size()]);
@@ -107,7 +99,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 				return Boolean.TRUE;
 			}
 		} catch (Exception e) {
-			logger.error("Exception opening the multi searcher", e);
+			throw new RuntimeException(e);
 		}
 		return Boolean.FALSE;
 	}

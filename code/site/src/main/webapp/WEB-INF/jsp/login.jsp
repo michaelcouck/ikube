@@ -15,7 +15,7 @@
 <div id="maincontent">
 	<h2>Login</h2>
 
-	For access to advanced documentation registration is required. Please mail Michael Couck at michael.couck@gmail.com<br> 
+	For access to advanced documentation registration is required. Please mail Michael Couck at michael.couck at gmail.com<br> 
 	
 	<form id="form" name="form" action="<spring:url value="/login" htmlEscape="true" />" method="POST">
 		<c:if test="${not empty SPRING_SECURITY_LAST_EXCEPTION.message}">
@@ -23,8 +23,8 @@
 		</c:if>
 		<table width="100%">
 			<tr>
-				<td width="100px"><spring:message code="login.user" />:</td>
-				<td width="150px"><input size="150" id="j_username" tabindex="1" type="text" name="j_username" value=""></td>
+				<td><spring:message code="login.user" />:</td>
+				<td><input width="150px" id="j_username" tabindex="1" type="text" name="j_username" value=""></td>
 			</tr>
 			<tr>
 				<td><spring:message code="login.password" />:</td>

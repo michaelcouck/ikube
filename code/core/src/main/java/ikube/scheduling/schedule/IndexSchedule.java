@@ -36,6 +36,9 @@ public class IndexSchedule extends Schedule {
 	@Autowired
 	private List<IAction<IndexContext<?>, Boolean>> actions;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	@SuppressWarnings("rawtypes")
 	public void run() {
@@ -53,6 +56,9 @@ public class IndexSchedule extends Schedule {
 				Runnable runnable = new Runnable() {
 					public void run() {
 						try {
+							// The action will be intercepted by the rule interceptor, and the rules
+							// will be evaluated against the cluster. If they result in a true then the action
+							// will be allowed to execute the logic
 							action.execute(indexContext);
 						} catch (Throwable e) {
 							LOGGER.error("Exception executing action : " + action, e);

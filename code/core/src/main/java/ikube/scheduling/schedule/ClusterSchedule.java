@@ -26,6 +26,6 @@ public class ClusterSchedule extends Schedule {
 	public void run() {
 		Server server = clusterManager.getServer();
 		server.setAge(System.currentTimeMillis());
-		clusterManager.putObject(server.getAddress(), server);
+		clusterManager.put(server.getAddress(), server);
 	}
 }

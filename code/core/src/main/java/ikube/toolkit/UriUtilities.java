@@ -40,6 +40,8 @@ public final class UriUtilities {
 	protected static final Pattern ANCHOR_PATTERN;
 	/** The carriage return/line feed pattern. */
 	protected static final Pattern CARRIAGE_LINE_FEED_PATTERN;
+	/** The pattern for ip addresses, i.e. 192.168.1.0 etc. */
+	protected static final Pattern IP_PATTERN;
 
 	static {
 		ANCHOR_PATTERN = Pattern.compile("#[^#]*$");
@@ -47,10 +49,13 @@ public final class UriUtilities {
 		PROTOCOL_PATTERN = Pattern.compile("(http).*|(www).*|(https).*|(ftp).*");
 		EXCLUDED_PATTERN = Pattern.compile("^news.*|^javascript.*|^mailto.*|^plugintest.*|^skype.*");
 		JSESSIONID_PATTERN = Pattern.compile("([;_]?((?i)l|j|bv_)?((?i)sid|phpsessid|sessionid)=.*?)(\\?|&amp;|#|$)");
+		IP_PATTERN = Pattern
+				.compile("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$");
 	}
 
 	/**
-	 * Resolves a URI reference against a base URI. Work-around for bug in java.net.URI (<http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4708535>)
+	 * Resolves a URI reference against a base URI. Work-around for bug in java.net.URI
+	 * (<http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4708535>)
 	 * 
 	 * @param baseURI the base URI
 	 * @param reference the URI reference
@@ -80,7 +85,8 @@ public final class UriUtilities {
 	}
 
 	/**
-	 * Resolves a URI reference against a base URI. Work-around for bugs in java.net.URI (e.g. <http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4708535>)
+	 * Resolves a URI reference against a base URI. Work-around for bugs in java.net.URI (e.g.
+	 * <http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4708535>)
 	 * 
 	 * @param baseURI the base URI
 	 * @param reference the URI reference
@@ -230,19 +236,19 @@ public final class UriUtilities {
 	}
 
 	/**
-	 * This method will get the ip address of the machine. If the machine is connected to the net then the first ip that is not the home interface, i.e. not the
-	 * localhost which is not particularly useful in a cluster. So essentially we are looking for the ip that looks like 192.... or 10.215.... could be the real
-	 * ip from the DNS on the ISP servers of course, but not 127.0.0.1, or on Linux 127.0.1.1 it turns out.
+	 * This method will get the ip address of the machine. If the machine is connected to the net then the first ip that is not the home
+	 * interface, i.e. not the localhost which is not particularly useful in a cluster. So essentially we are looking for the ip that looks
+	 * like 192.... or 10.215.... could be the real ip from the DNS on the ISP servers of course, but not 127.0.0.1, or on Linux 127.0.1.1
+	 * it turns out.
 	 * 
 	 * @return the first ip address that is not the localhost, something meaningful
 	 */
 	public static String getIp() {
-		Pattern ipPattern = Pattern.compile("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$");
 		Enumeration<NetworkInterface> networkInterfaces;
 		try {
 			networkInterfaces = NetworkInterface.getNetworkInterfaces();
 		} catch (SocketException e) {
-			LOGGER.error("No interfaces? Connected to anything?", e);
+			LOGGER.warn("No interfaces? Connected to anything?", e);
 			throw new RuntimeException("Couldn't access the interfaces of this machine : ");
 		}
 		String ip = "127.0.0.1";
@@ -268,7 +274,7 @@ public final class UriUtilities {
 						// The preferred ip address
 						ip = hostAddress;
 						break outer;
-					} else if (ipPattern.matcher(hostAddress).matches()) {
+					} else if (IP_PATTERN.matcher(hostAddress).matches()) {
 						ip = hostAddress;
 					}
 				} catch (IOException e) {
@@ -277,7 +283,6 @@ public final class UriUtilities {
 				}
 			}
 		}
-		LOGGER.info("Ip address : " + ip);
 		return ip;
 	}
 

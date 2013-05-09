@@ -12,7 +12,7 @@ import ikube.model.Server;
 import ikube.model.Snapshot;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ObjectToolkit;
-import ikube.toolkit.PerformanceTester;
+import ikube.web.toolkit.PerformanceTester;
 
 import java.io.File;
 import java.io.IOException;

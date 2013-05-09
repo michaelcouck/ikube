@@ -95,7 +95,7 @@ public interface IClusterManager {
 	 * @param key the unique key of the object in the cache
 	 * @return the object ith the specified key or null if there is no such object with the key
 	 */
-	<T> T getObject(final Object key);
+	<T> T get(final Object key);
 
 	/**
 	 * This method will put an object in the cache with the specified key. Note that the keys should be globally unique for the cluster. If
@@ -105,7 +105,7 @@ public interface IClusterManager {
 	 * @param value the object to put in the cache. Note also that this object needs to be serializable and of course the entire graph needs
 	 *        to be serializable
 	 */
-	void putObject(final Object key, final Object value);
+	void put(final Object key, final Object value);
 	
 	/**
 	 * This method will remove an object from the grid.

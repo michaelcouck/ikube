@@ -27,6 +27,9 @@ public class ServerRemovalSchedule extends Schedule {
 	@Autowired
 	private IClusterManager clusterManager;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void run() {
 		// Remove all servers that are past the max age

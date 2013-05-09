@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.handler.ResourceHandlerBase;
-import ikube.action.index.handler.internet.IndexableInternetHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
@@ -14,13 +13,10 @@ import ikube.toolkit.ThreadUtilities;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 
 import mockit.Deencapsulation;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Fieldable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,7 +46,7 @@ public class IndexableInternetHandlerTest extends AbstractTest {
 		indexableInternet.setIdFieldName(IConstants.ID);
 		indexableInternet.setTitleFieldName(IConstants.TITLE);
 		indexableInternet.setContentFieldName(IConstants.CONTENT);
-		indexableInternet.setUrl("http://www.ikube.be/site");
+		indexableInternet.setUrl("https://code.google.com/p/ikube/");
 
 		indexableInternetHandler = new IndexableInternetHandler();
 		indexableInternetHandler.setThreads(1);
@@ -68,21 +64,6 @@ public class IndexableInternetHandlerTest extends AbstractTest {
 	@After
 	public void after() {
 		ThreadUtilities.destroy();
-	}
-
-	@Test
-	public void handleIndexable() throws Exception {
-		List<Future<?>> futures = indexableInternetHandler.handleIndexable(indexContext, indexableInternet);
-		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
-		for (final Document document : documents) {
-			List<Fieldable> fieldables = document.getFields();
-			for (final Fieldable fieldable : fieldables) {
-				Field field = (Field) fieldable;
-				if (field.isStored()) {
-					assertNotNull(field.stringValue());
-				}
-			}
-		}
 	}
 
 	@Test

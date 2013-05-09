@@ -32,79 +32,70 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	boolean internalExecute(final IndexContext<?> indexContext) {
-		String subject = null;
-		String body = null;
 		boolean everythingInitialized = Boolean.TRUE;
-		ikube.model.Action action = start(indexContext.getIndexName(), "");
-		try {
-			IsIndexCurrent isIndexCurrent = new IsIndexCurrent();
-			IsIndexCorrupt isIndexCorrupt = new IsIndexCorrupt();
-			AreIndexesCreated areIndexesCreated = new AreIndexesCreated();
-			IsIndexBackedUp isIndexBackedUp = new IsIndexBackedUp();
-			String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
-			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
-			// Are there any indexes at all
-			if (!areIndexesCreated.evaluate(indexContext)) {
-				if (latestIndexDirectory == null || !latestIndexDirectory.exists()) {
-					subject = "No index : " + indexContext.getIndexName();
-					body = "No index : " + indexContext.toString();
+
+		IsIndexCurrent isIndexCurrent = new IsIndexCurrent();
+		IsIndexCorrupt isIndexCorrupt = new IsIndexCorrupt();
+		AreIndexesCreated areIndexesCreated = new AreIndexesCreated();
+		IsIndexBackedUp isIndexBackedUp = new IsIndexBackedUp();
+		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
+		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
+		// Are there any indexes at all
+		if (!areIndexesCreated.evaluate(indexContext)) {
+			if (latestIndexDirectory == null || !latestIndexDirectory.exists()) {
+				String subject = "No index : " + indexContext.getIndexName();
+				String body = "No index : " + indexContext.toString();
+				everythingInitialized &= Boolean.FALSE;
+				sendNotification(subject, body);
+			}
+		}
+		// Is the index corrupt for some reason
+		if (isIndexCorrupt.evaluate(indexContext)) {
+			String subject = "Index corrupt : " + indexContext.getIndexName();
+			String body = "There is an index but it is corrupt. Generally another index will be generated immediately, but "
+					+ "if there is a backup for the index the restore will be invoked first, depending on the position of the action "
+					+ "in the action set.";
+			everythingInitialized &= Boolean.FALSE;
+			sendNotification(subject, body);
+		}
+		// Is the index current
+		if (!isIndexCurrent.evaluate(indexContext)) {
+			String subject = "Index not current : " + indexContext.getIndexName();
+			String body = "The index for " + indexContext.getName() + " is not current. Generally another index "
+					+ "wil be generated immediately, this message is just for information.";
+			everythingInitialized &= Boolean.FALSE;
+			sendNotification(subject, body);
+		}
+		// Is there an index being generated
+		if (latestIndexDirectory != null) {
+			DirectoryExistsAndIsLocked directoryExistsAndIsLocked = new DirectoryExistsAndIsLocked();
+			File[] serverIndexDirectories = latestIndexDirectory.listFiles();
+			for (File serverIndexDirectory : serverIndexDirectories) {
+				if (directoryExistsAndIsLocked.evaluate(serverIndexDirectory)) {
+					String subject = "Index being generated : " + indexContext.getIndexName();
+					String body = "The index is being generated for index context " + indexContext.getName()
+							+ ". This message is just for informational purposes, no action is required.";
 					everythingInitialized &= Boolean.FALSE;
 					sendNotification(subject, body);
+					break;
 				}
 			}
-			// Is the index corrupt for some reason
-			if (isIndexCorrupt.evaluate(indexContext)) {
-				subject = "Index corrupt : " + indexContext.getIndexName();
-				body = "There is an index but it is corrupt. Generally another index will be generated immediately, but "
-						+ "if there is a backup for the index the restore will be invoked first, depending on the position of the action "
-						+ "in the action set.";
-				everythingInitialized &= Boolean.FALSE;
-				sendNotification(subject, body);
-			}
-			// Is the index current
-			if (!isIndexCurrent.evaluate(indexContext)) {
-				subject = "Index not current : " + indexContext.getIndexName();
-				body = "The index for " + indexContext.getName() + " is not current. Generally another index "
-						+ "wil be generated immediately, this message is just for information.";
-				everythingInitialized &= Boolean.FALSE;
-				sendNotification(subject, body);
-			}
-			// Is there an index being generated
-			if (latestIndexDirectory != null) {
-				DirectoryExistsAndIsLocked directoryExistsAndIsLocked = new DirectoryExistsAndIsLocked();
-				File[] serverIndexDirectories = latestIndexDirectory.listFiles();
-				for (File serverIndexDirectory : serverIndexDirectories) {
-					if (directoryExistsAndIsLocked.evaluate(serverIndexDirectory)) {
-						subject = "Index being generated : " + indexContext.getIndexName();
-						body = "The index is being generated for index context " + indexContext.getName()
-								+ ". This message is just for informational purposes, no action is required.";
-						everythingInitialized &= Boolean.FALSE;
-						sendNotification(subject, body);
-						break;
-					}
-				}
-			}
-			// Is the index open, and if not why not
-			if (indexContext.getMultiSearcher() == null) {
-				subject = "Index not open : " + indexContext.getIndexName();
-				body = "Searcher not opened for index " + indexContext.getIndexName()
-						+ ". This could require some investigation from the administrator.";
-				everythingInitialized &= Boolean.FALSE;
-				sendNotification(subject, body);
-			}
-			// Check that the index is backed up
-			if (!isIndexBackedUp.evaluate(indexContext)) {
-				subject = "Index not backed up : " + indexContext.getIndexName();
-				body = "The index is not backed up. Generally this is temporary and the next iteration over the actions "
-						+ "will cause the index to be backed up. This can be regarded as an informational message.";
-				everythingInitialized &= Boolean.FALSE;
-				sendNotification(subject, body);
-			}
-		} catch (Exception e) {
-			logger.error("Exception validating the system : " + indexContext, e);
+		}
+		// Is the index open, and if not why not
+		if (indexContext.getMultiSearcher() == null) {
+			String subject = "Index not open : " + indexContext.getIndexName();
+			String body = "Searcher not opened for index " + indexContext.getIndexName()
+					+ ". This could require some investigation from the administrator.";
 			everythingInitialized &= Boolean.FALSE;
-		} finally {
-			stop(action);
+			sendNotification(subject, body);
+		}
+		// Check that the index is backed up
+		if (!isIndexBackedUp.evaluate(indexContext)) {
+			String subject = "Index not backed up : " + indexContext.getIndexName();
+			String body = "The index is not backed up. Generally this is temporary and the next iteration over the actions "
+					+ "will cause the index to be backed up. This can be regarded as an informational message.";
+			everythingInitialized &= Boolean.FALSE;
+			sendNotification(subject, body);
 		}
 		return everythingInitialized;
 	}

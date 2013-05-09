@@ -49,7 +49,7 @@ public class MonitorService implements IMonitorService {
 		@SuppressWarnings("rawtypes")
 		Map<String, IndexContext> indexContexts = getIndexContexts();
 		List<String> indexNames = new ArrayList<String>();
-		for (IndexContext<?> indexContext : indexContexts.values()) {
+		for (final IndexContext<?> indexContext : indexContexts.values()) {
 			indexNames.add(indexContext.getIndexName());
 		}
 		return indexNames.toArray(new String[indexNames.size()]);
@@ -76,7 +76,7 @@ public class MonitorService implements IMonitorService {
 		Map<String, IndexContext> indexContexts = new HashMap<String, IndexContext>();
 		indexContexts.putAll(ApplicationContextManager.getBeans(IndexContext.class));
 		Collection<IndexContext> dbIndexContexts = dataBase.find(IndexContext.class, 0, Integer.MAX_VALUE);
-		for (IndexContext<?> dbIndexContext : dbIndexContexts) {
+		for (final IndexContext<?> dbIndexContext : dbIndexContexts) {
 			indexContexts.put(dbIndexContext.getName(), dbIndexContext);
 		}
 		return indexContexts;
@@ -129,7 +129,7 @@ public class MonitorService implements IMonitorService {
 	 */
 	@SuppressWarnings("rawtypes")
 	public IndexContext<?> getIndexContext(final String indexName) {
-		for (Map.Entry<String, IndexContext> mapEntry : getIndexContexts().entrySet()) {
+		for (final Map.Entry<String, IndexContext> mapEntry : getIndexContexts().entrySet()) {
 			if (mapEntry.getValue() == null || mapEntry.getValue().getIndexName() == null) {
 				continue;
 			}
@@ -153,7 +153,7 @@ public class MonitorService implements IMonitorService {
 		Map<String, String> filesAndProperties = new HashMap<String, String>();
 		File dotFolder = new File(ikubeConfiguration);
 		List<File> propertyFiles = FileUtilities.findFilesRecursively(dotFolder, new ArrayList<File>(), "spring.properties");
-		for (File propertyFile : propertyFiles) {
+		for (final File propertyFile : propertyFiles) {
 			try {
 				if (propertyFile == null || !propertyFile.canRead() || propertyFile.isDirectory()) {
 					continue;
@@ -218,7 +218,7 @@ public class MonitorService implements IMonitorService {
 	 */
 	protected Set<String> getFields(final List<Indexable<?>> indexables, final Set<String> fieldNames) {
 		if (indexables != null) {
-			for (Indexable<?> indexable : indexables) {
+			for (final Indexable<?> indexable : indexables) {
 				getFields(indexable, fieldNames);
 			}
 		}
@@ -233,7 +233,7 @@ public class MonitorService implements IMonitorService {
 			return fieldNames;
 		}
 		Field[] fields = indexable.getClass().getDeclaredFields();
-		for (Field field : fields) {
+		for (final Field field : fields) {
 			Attribute annotation = field.getAnnotation(Attribute.class);
 			if (annotation != null && annotation.field()) {
 				try {

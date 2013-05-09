@@ -29,35 +29,29 @@ public class Clean<E, F> extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	boolean internalExecute(final IndexContext<?> indexContext) {
-		ikube.model.Action action = null;
-		try {
-			action = start(indexContext.getIndexName(), "");
-			String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
-			File baseIndexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
-			File[] timeIndexDirectories = baseIndexDirectory.listFiles();
-			if (timeIndexDirectories == null || timeIndexDirectories.length == 0) {
-				return Boolean.FALSE;
-			}
-			// Check all the directories to see if they are partially deleted or if
-			// they appear not to be complete or corrupt then delete them
-			for (File timeIndexDirectory : timeIndexDirectories) {
-				File[] serverIndexDirectories = timeIndexDirectory.listFiles();
-				if (serverIndexDirectories == null || serverIndexDirectories.length == 0) {
-					// return Boolean.FALSE;
-					continue;
-				}
-				processDirectories(serverIndexDirectories);
-			}
-			// Try to delete the temporary unzipped files
-			FileUtilities.deleteFile(new File(IConstants.TMP_UNZIPPED_FOLDER), 1);
-			return Boolean.TRUE;
-		} finally {
-			stop(action);
+		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
+		File baseIndexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
+		File[] timeIndexDirectories = baseIndexDirectory.listFiles();
+		if (timeIndexDirectories == null || timeIndexDirectories.length == 0) {
+			return Boolean.FALSE;
 		}
+		// Check all the directories to see if they are partially deleted or if
+		// they appear not to be complete or corrupt then delete them
+		for (final File timeIndexDirectory : timeIndexDirectories) {
+			File[] serverIndexDirectories = timeIndexDirectory.listFiles();
+			if (serverIndexDirectories == null || serverIndexDirectories.length == 0) {
+				// return Boolean.FALSE;
+				continue;
+			}
+			processDirectories(serverIndexDirectories);
+		}
+		// Try to delete the temporary unzipped files
+		FileUtilities.deleteFile(new File(IConstants.TMP_UNZIPPED_FOLDER), 1);
+		return Boolean.TRUE;
 	}
 
 	private void processDirectories(File... serverIndexDirectories) {
-		for (File serverIndexDirectory : serverIndexDirectories) {
+		for (final File serverIndexDirectory : serverIndexDirectories) {
 			Directory directory = null;
 			boolean corrupt = Boolean.TRUE;
 			try {

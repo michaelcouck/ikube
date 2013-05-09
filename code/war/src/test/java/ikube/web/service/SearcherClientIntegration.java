@@ -28,21 +28,20 @@ public class SearcherClientIntegration {
 	@Test
 	public void main() throws Exception {
 		String path = "/ikube/service/search/multi/spatial/all";
-		String url = new URL("http", "ikube.be", 80, path).toString();
+		URL url = new URL("http", "localhost", 9090, path);
 
 		String[] names = { "indexName", "searchStrings", "fragment", "firstResult", "maxResults", "distance", "latitude", "longitude" };
 		String[] values = { "geospatial", "berlin", "true", "0", "10", "10", "52.52274", "13.4166" };
 		NameValuePair[] params = getNameValuePairs(names, values);
 
-		GetMethod getMethod = new GetMethod(url);
+		GetMethod getMethod = new GetMethod(url.toString());
 		getMethod.setQueryString(params);
 		HttpClient httpClient = new HttpClient();
-		authenticate(httpClient, "ikube.be", 80, "guest", "guest");
+		authenticate(httpClient, url.getHost(), url.getPort(), "guest", "guest");
 
+		@SuppressWarnings("unused")
 		int result = httpClient.executeMethod(getMethod);
 		String results = getMethod.getResponseBodyAsString();
-		System.out.println("Result : " + result);
-		System.out.println("Results : " + results);
 		Object deserialized = SerializationUtilities.deserialize(results);
 		assertNotNull(deserialized);
 		assertTrue(List.class.isAssignableFrom(deserialized.getClass()));

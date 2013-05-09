@@ -60,13 +60,15 @@ public class IndexableFilesystemLogHandler extends IndexableHandler<IndexableFil
 							return pathname.getName().contains("log") || pathname.isDirectory();
 						}
 					});
-					for (File logFile : logFiles) {
-						if (logFile.isDirectory()) {
-							indexLogs(logFile);
-							continue;
+					if (logFiles != null) {
+						for (File logFile : logFiles) {
+							if (logFile.isDirectory()) {
+								indexLogs(logFile);
+								continue;
+							}
+							logger.info("Indexing file : " + logFile);
+							handleFile(indexContext, indexableFileSystem, logFile);
 						}
-						logger.info("Indexing file : " + logFile);
-						handleFile(indexContext, indexableFileSystem, logFile);
 					}
 				}
 			};

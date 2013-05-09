@@ -4,16 +4,17 @@ import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.mock.ReaderUtilMock;
+import ikube.mock.SpellingCheckerMock;
 import ikube.search.SearcherService;
-import ikube.search.spelling.SpellingChecker;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import mockit.Cascading;
 import mockit.Deencapsulation;
 import mockit.Mockit;
 
+import org.apache.lucene.util.ReaderUtil;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -23,9 +24,6 @@ public class SearcherServiceTest extends AbstractTest {
 
 	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(SearcherServiceTest.class);
-
-	@Cascading
-	private SpellingChecker spellingChecker;
 
 	/** Class under test. */
 	private SearcherService searcherService;
@@ -49,97 +47,77 @@ public class SearcherServiceTest extends AbstractTest {
 	@Before
 	public void before() {
 		searcherService = new SearcherService();
-
-		Mockit.setUpMocks();
-		Mockit.setUpMocks(ReaderUtilMock.class);
+		Mockit.setUpMocks(SpellingCheckerMock.class, ReaderUtilMock.class);
 		Deencapsulation.setField(searcherService, monitorService);
+		Deencapsulation.setField(searcherService, dataBase);
 		indexName = indexContext.getIndexName();
 	}
 
-	private void initialize() {
-		Deencapsulation.setField(searcherService, dataBase);
-		Deencapsulation.setField(searcherService, spellingChecker);
+	@After
+	public void after() {
+		Mockit.tearDownMocks(ReaderUtil.class);
 	}
 
 	@Test
 	public void searchSingle() {
-		initialize();
 		ArrayList<HashMap<String, String>> results = searcherService
 				.searchSingle(indexName, searchStrings[0], searchFields[0], true, 0, 10);
-		verifyResults(results);
+		assertTrue(results.size() > 0);
 	}
 
 	@Test
 	public void searchMulti() {
-		initialize();
 		ArrayList<HashMap<String, String>> results = searcherService.searchMulti(indexName, searchStrings, searchFields, fragment,
 				firstResult, maxResults);
-		verifyResults(results);
+		assertTrue(results.size() > 0);
 	}
 
 	@Test
 	public void searchMultiSorted() {
-		initialize();
 		ArrayList<HashMap<String, String>> results = searcherService.searchMultiSorted(indexName, searchStrings, searchFields, sortFields,
 				fragment, firstResult, maxResults);
-		verifyResults(results);
+		assertTrue(results.size() > 0);
 	}
 
 	@Test
 	public void searchMultiAll() {
-		initialize();
 		ArrayList<HashMap<String, String>> results = searcherService.searchMultiAll(indexName, searchStrings, fragment, firstResult,
 				maxResults);
-		logger.info("Results : " + results);
-		verifyResults(results);
+		assertTrue(results.size() > 0);
 	}
 
 	@Test
 	public void searchMultiSpacial() {
-		initialize();
 		ArrayList<HashMap<String, String>> results = searcherService.searchMultiSpacial(indexName, searchStrings, searchFields, fragment,
 				firstResult, maxResults, distance, latitude, longitude);
-		verifyResults(results);
+		assertTrue(results.size() > 0);
 	}
 
 	@Test
 	public void searchMultiSpacialAll() {
-		initialize();
 		ArrayList<HashMap<String, String>> results = searcherService.searchMultiSpacialAll(indexName, searchStrings, fragment, firstResult,
 				maxResults, distance, latitude, longitude);
-		verifyResults(results);
+		assertTrue(results.size() > 0);
 	}
 
 	@Test
 	public void searchNumericAll() {
-		initialize();
 		ArrayList<HashMap<String, String>> results = searcherService.searchNumericAll(indexName, searchStrings, fragment, firstResult,
 				maxResults);
-		verifyResults(results);
+		assertTrue(results.size() > 0);
 	}
 
 	@Test
 	public void searchNumericRange() {
-		initialize();
-		ArrayList<HashMap<String, String>> results = searcherService.searchNumericRange(indexName, searchStrings, fragment, firstResult,
-				maxResults);
-		verifyResults(results);
+		ArrayList<HashMap<String, String>> results = searcherService.searchNumericRange(indexName, new String[] { "0.0", "0.0" }, fragment,
+				firstResult, maxResults);
+		assertTrue(results.size() > 0);
 	}
 
 	@Test
 	public void searchComplex() {
-		initialize();
 		ArrayList<HashMap<String, String>> results = searcherService.searchComplex(indexName, searchStrings, searchFields, typeFields,
 				fragment, firstResult, maxResults);
-		verifyResults(results);
-	}
-
-	@Test
-	public void addSearchStatistics() {
-		// searcherService.addSearchStatistics(indexName, searchStrings, 0, new ArrayList<HashMap<String,String>>());
-	}
-
-	private void verifyResults(final ArrayList<HashMap<String, String>> results) {
 		assertTrue(results.size() > 0);
 	}
 

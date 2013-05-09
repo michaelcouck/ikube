@@ -12,6 +12,7 @@ import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.IMailer;
 import ikube.toolkit.UriUtilities;
 
+import java.io.Closeable;
 import java.util.List;
 import java.util.Map;
 
@@ -120,7 +121,7 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	 * @param indexableName the name of the indexable that the action is performing on
 	 * @return the action that is returned by the cluster manager
 	 */
-	protected ikube.model.Action start(String indexName, String indexableName) {
+	protected ikube.model.Action start(final String indexName, final String indexableName) {
 		return clusterManager.startWorking(getClass().getSimpleName(), indexName, indexableName);
 	}
 
@@ -129,7 +130,7 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	 * 
 	 * @param action the action to announce to the cluster that is ended
 	 */
-	protected void stop(ikube.model.Action action) {
+	protected void stop(final ikube.model.Action action) {
 		clusterManager.stopWorking(action);
 	}
 
@@ -165,7 +166,14 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 		this.rules = rules;
 	}
 
-	protected ikube.model.Action getAction(Server server, long id) {
+	/**
+	 * This method returns the model action based on the id.
+	 * 
+	 * @param server the server to get the action from
+	 * @param id the id of the action to get
+	 * @return the action with tht especified id or null if no such action exists in the server
+	 */
+	protected ikube.model.Action getAction(final Server server, final long id) {
 		for (ikube.model.Action action : server.getActions()) {
 			if (action.getId() == id) {
 				return action;
@@ -185,12 +193,11 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	protected IIndexableHandler<Indexable<?>> getHandler(final Indexable<?> indexable) {
 		@SuppressWarnings("rawtypes")
 		Map<String, IIndexableHandler> indexableHandlers = ApplicationContextManager.getBeans(IIndexableHandler.class);
-		for (IIndexableHandler<Indexable<?>> handler : indexableHandlers.values()) {
+		for (final IIndexableHandler<Indexable<?>> handler : indexableHandlers.values()) {
 			if (handler.getIndexableClass().equals(indexable.getClass())) {
 				return handler;
 			}
 		}
-		logger.warn("No handler for type : " + indexable.getName());
 		throw new RuntimeException("No handler defined for indexable : " + indexable);
 	}
 
@@ -200,31 +207,32 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	 * 
 	 * @param indexContext the index context to close the searchables for
 	 */
-	protected void closeSearchables(IndexContext<?> indexContext) {
+	protected void closeSearchables(final IndexContext<?> indexContext) {
 		MultiSearcher multiSearcher = indexContext.getMultiSearcher();
-		if (multiSearcher != null) {
-			// Get all the searchables from the searcher and close them one by one
-			Searchable[] searchables = multiSearcher.getSearchables();
-			if (searchables != null) {
-				for (Searchable searchable : searchables) {
-					try {
-						IndexSearcher indexSearcher = (IndexSearcher) searchable;
-						IndexReader reader = indexSearcher.getIndexReader();
-						Directory directory = reader.directory();
-						if (IndexWriter.isLocked(directory)) {
-							IndexWriter.unlock(directory);
-						}
-						close(directory, reader, searchable);
-					} catch (NullPointerException e) {
-						logger.error("Reader closed perhaps?");
-						logger.debug(null, e);
-					} catch (Exception e) {
-						logger.error("Exception trying to close the searcher", e);
+		if (multiSearcher == null) {
+			return;
+		}
+		// Get all the searchables from the searcher and close them one by one
+		Searchable[] searchables = multiSearcher.getSearchables();
+		if (searchables != null) {
+			for (final Searchable searchable : searchables) {
+				try {
+					IndexSearcher indexSearcher = (IndexSearcher) searchable;
+					IndexReader reader = indexSearcher.getIndexReader();
+					Directory directory = reader.directory();
+					if (IndexWriter.isLocked(directory)) {
+						IndexWriter.unlock(directory);
 					}
+					close(directory, reader, searchable);
+				} catch (NullPointerException e) {
+					logger.error("Reader closed perhaps?");
+					logger.debug(null, e);
+				} catch (Exception e) {
+					logger.error("Exception trying to close the searcher", e);
 				}
 			}
-			indexContext.setMultiSearcher(null);
 		}
+		indexContext.setMultiSearcher(null);
 	}
 
 	/**
@@ -234,36 +242,21 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	 * @param reader the Lucene reader to close
 	 * @param searcher the Lucene searchable to close
 	 */
-	protected void close(Directory directory, IndexReader reader, Searchable searcher) {
-		try {
-			if (directory != null) {
-				directory.close();
-			}
-		} catch (NullPointerException e) {
-			logger.error("Already closed perhaps?");
-			logger.debug(null, e);
-		} catch (Exception e) {
-			logger.error("Exception closing the directory : ", e);
+	protected void close(final Closeable... closeables) {
+		if (closeables == null) {
+			return;
 		}
-		try {
-			if (reader != null) {
-				reader.close();
+		for (final Closeable closeable : closeables) {
+			try {
+				if (closeable != null) {
+					closeable.close();
+				}
+			} catch (NullPointerException e) {
+				logger.error("Already closed perhaps?");
+				logger.debug(null, e);
+			} catch (Exception e) {
+				logger.error("Exception closing the directory : ", e);
 			}
-		} catch (NullPointerException e) {
-			logger.error("Already closed perhaps?");
-			logger.debug(null, e);
-		} catch (Exception e) {
-			logger.error("Exception closing the reader : ", e);
-		}
-		try {
-			if (searcher != null) {
-				searcher.close();
-			}
-		} catch (NullPointerException e) {
-			logger.error("Already closed perhaps?");
-			logger.debug(null, e);
-		} catch (Exception e) {
-			logger.error("Exception closing the searcher : ", e);
 		}
 	}
 
@@ -290,7 +283,7 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	 * 
 	 * @param dependent the action that this action is dependent on
 	 */
-	public void setDependent(IAction<IndexContext<?>, Boolean> dependent) {
+	public void setDependent(final IAction<IndexContext<?>, Boolean> dependent) {
 		this.dependent = dependent;
 	}
 

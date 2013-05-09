@@ -10,8 +10,6 @@
 	for search '{{searchParameters.searchStrings}}', 
 	duration : {{statistics.duration}}
 	
-	<!-- TODO : If the corrections are not empty then do a 'did you mean row' -->
-	<!-- corrections : {{statistics.corrections}}, -->
 	<br><br>
 	<span ng-repeat="page in pagination">
 		<a style="font-color : {{page.active}}" href="#" 

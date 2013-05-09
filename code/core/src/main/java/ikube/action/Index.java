@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -44,16 +45,14 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 		logger.info("Pre process action : " + this.getClass() + ", " + indexContext.getName());
 		long startTime = System.currentTimeMillis();
 
+		IndexWriter[] indexWriters = null;
 		if (!indexContext.isDelta()) {
 			Server server = clusterManager.getServer();
 			// Start the indexing for this server
 			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, startTime, server.getAddress());
-			IndexWriter[] indexWriters = new IndexWriter[] { indexWriter };
-			indexContext.setIndexWriters(indexWriters);
+			indexWriters = new IndexWriter[] { indexWriter };
 		} else {
-			IndexWriter[] indexWriters = IndexManager.openIndexWriterDelta(indexContext);
-			indexContext.setIndexWriters(indexWriters);
-
+			indexWriters = IndexManager.openIndexWriterDelta(indexContext);
 			List<Long> hashes = new ArrayList<Long>();
 			for (final Indexable<?> indexable : indexContext.getChildren()) {
 				if (IndexableFileSystem.class.isAssignableFrom(indexable.getClass())) {
@@ -78,7 +77,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 			Collections.sort(hashes);
 			indexContext.setHashes(hashes);
 		}
-
+		indexContext.setIndexWriters(indexWriters);
 		return Boolean.TRUE;
 	}
 
@@ -91,23 +90,39 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 		List<Indexable<?>> indexables = indexContext.getIndexables();
 		Iterator<Indexable<?>> iterator = new ArrayList(indexables).iterator();
 		while (iterator.hasNext()) {
-			ikube.model.Action action = null;
-			try {
-				Indexable<?> indexable = iterator.next();
-				// Get the right handler for this indexable
-				IIndexableHandler<Indexable<?>> handler = getHandler(indexable);
-				action = start(indexContext.getIndexName(), indexable.getName());
-				logger.info("Indexable : " + indexable.getName());
-				// Execute the handler and wait for the threads to finish
-				List<Future<?>> futures = handler.handleIndexable(indexContext, indexable);
-				ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
-			} catch (Exception e) {
-				logger.error("Exception indexing data : " + indexContext.getIndexName(), e);
-			} finally {
-				stop(action);
-			}
+			// Update the action with the new indexable
+			Indexable<?> indexable = iterator.next();
+			Server server = clusterManager.getServer();
+			ikube.model.Action action = getAction(server, indexContext);
+			action.setIndexableName(indexable.getName());
+			clusterManager.put(server.getAddress(), server);
+
+			// Get the right handler for this indexable
+			IIndexableHandler<Indexable<?>> handler = getHandler(indexable);
+			logger.info("Indexable : " + indexable.getName());
+			// Execute the handler and wait for the threads to finish
+			List<Future<?>> futures = handler.handleIndexable(indexContext, indexable);
+			ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
 		}
 		return Boolean.TRUE;
+	}
+
+	private ikube.model.Action getAction(final Server server, final IndexContext<?> indexContext) {
+		for (final ikube.model.Action action : server.getActions()) {
+			if (action.getActionName().equals(this.getClass().getSimpleName())) {
+				if (StringUtils.isEmpty(action.getIndexableName())) {
+					return action;
+				}
+				// Look for the action that has an indexable name in the context children
+				for (final Indexable<?> indexable : indexContext.getChildren()) {
+					if (action.getIndexableName().equals(indexable.getName())) {
+						return action;
+					}
+				}
+				return action;
+			}
+		}
+		throw new RuntimeException("Action not found for class : " + this.getClass().getSimpleName());
 	}
 
 	/**
@@ -116,10 +131,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 	@Override
 	public boolean postExecute(final IndexContext<?> indexContext) throws Exception {
 		logger.info("Post process action : " + this.getClass() + ", " + indexContext.getName());
-		if (!indexContext.isDelta()) {
-			IndexManager.closeIndexWriters(indexContext);
-			indexContext.setIndexWriters();
-		} else {
+		if (indexContext.isDelta()) {
 			List<Long> hashes = indexContext.getHashes();
 			for (final Indexable<?> indexable : indexContext.getChildren()) {
 				if (IndexableFileSystem.class.isAssignableFrom(indexable.getClass())) {
@@ -143,7 +155,6 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 								Query termQuery = new TermQuery(new Term(IConstants.FILE_ID, fileId));
 								booleanQuery.add(termQuery, BooleanClause.Occur.MUST);
 								indexWriter.deleteDocuments(booleanQuery);
-
 								logger.info("Removed old file : " + identifier + ", " + length + ", " + lastModified + ", " + path + ", "
 										+ indexWriter.numDocs());
 							}
@@ -153,9 +164,9 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 				}
 			}
 			hashes.clear();
-			IndexManager.closeIndexWriters(indexContext);
-			indexContext.setIndexWriters();
 		}
+		IndexManager.closeIndexWriters(indexContext);
+		indexContext.setIndexWriters();
 		return Boolean.TRUE;
 	}
 

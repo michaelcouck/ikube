@@ -1,22 +1,15 @@
 package ikube.action;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
 import ikube.action.index.IndexManager;
-import ikube.action.index.handler.IIndexableHandler;
 import ikube.action.index.handler.database.IndexableTableHandler;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.IndexManagerMock;
-import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableTable;
-import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
@@ -34,8 +27,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 /**
  * @author Michael Couck
@@ -44,31 +35,22 @@ import org.mockito.stubbing.Answer;
  */
 public class IndexTest extends AbstractTest {
 
-	private Index index = mock(Index.class);
-	@SuppressWarnings("rawtypes")
-	private IIndexableHandler indexableHandler = mock(IIndexableHandler.class);
+	private Index index;
 
 	public IndexTest() {
 		super(IndexTest.class);
 	}
 
 	@Before
-	@SuppressWarnings({ "unchecked" })
 	public void before() throws Exception {
+		index = new Index();
+
 		Mockit.setUpMocks(IndexManagerMock.class, ApplicationContextManagerMock.class);
+
 		when(clusterManager.startWorking(anyString(), anyString(), anyString())).thenReturn(action);
 		when(clusterManager.getServer()).thenReturn(server);
 		when(action.getStartTime()).thenReturn(new Timestamp(System.currentTimeMillis()));
-		when(index.getAction(any(Server.class), anyLong())).thenReturn(action);
-		when(index.execute(any(IndexContext.class))).thenCallRealMethod();
-		when(index.internalExecute(any(IndexContext.class))).thenCallRealMethod();
-		doAnswer(new Answer<Object>() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				return invocation.callRealMethod();
-			}
-		}).when(index).internalExecute(any(IndexContext.class));
-		when(index.getHandler(any(Indexable.class))).thenReturn(indexableHandler);
+		when(action.getActionName()).thenReturn(Index.class.getSimpleName());
 		Logger logger = Mockito.mock(Logger.class);
 		Deencapsulation.setField(index, logger);
 		Deencapsulation.setField(index, clusterManager);
@@ -78,26 +60,26 @@ public class IndexTest extends AbstractTest {
 	public void after() {
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 		Mockit.tearDownMocks(IndexManager.class, ApplicationContextManager.class);
-		// ThreadUtilities.destroy();
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	public void preExecute() throws Exception {
+		// TODO Re-implement this in the delta strategy?
+	}
+
+	@Test
 	public void execute() throws Exception {
-		Deencapsulation.setField(index, clusterManager);
-		boolean result = index.execute(indexContext);
-		assertTrue(result);
-		Mockito.verify(indexableHandler, Mockito.atLeastOnce()).handleIndexable(any(IndexContext.class), any(Indexable.class));
-	}
-
-	@Test
-	public void executeSuccess() throws Exception {
 		indexableTable = new IndexableTable();
 		List<Indexable<?>> indexables = new ArrayList<Indexable<?>>(Arrays.asList(indexableTable));
 		Mockito.when(indexContext.getIndexables()).thenReturn(indexables);
 		boolean result = index.execute(indexContext);
 		logger.info("Result from index action : " + result);
 		assertTrue("The index must execute properly : ", result);
+	}
+
+	@Test
+	public void postExecute() {
+		// TODO Re-implement this in the delta strategy?
 	}
 
 	@Test

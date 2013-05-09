@@ -243,7 +243,7 @@ public class SearchTest extends AbstractTest {
 		search.setSearchString(searchString);
 
 		ArrayList<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
-		search.addStatistics(results, 79, 23, null);
+		search.addStatistics(results, 79, 0.0f, 23, null);
 		Map<String, String> statistics = results.get(results.size() - 1);
 		logger.info("Search strings : " + statistics.get(IConstants.SEARCH_STRINGS));
 		logger.info("Corrected search strings : " + statistics.get(IConstants.CORRECTIONS));

@@ -17,7 +17,7 @@
 		This is the configuration of the Db2 database on the Ikube server.
 	</description>
 	
-	<bean 
+	<!-- <bean 
 		id="nonXaDataSourceDb2"
 		class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close"
@@ -45,6 +45,6 @@
 				<ref local="nonXaDataSourceDb2" />
 			</array>
 		</property>
-	</bean>
+	</bean> -->
 
 </beans>

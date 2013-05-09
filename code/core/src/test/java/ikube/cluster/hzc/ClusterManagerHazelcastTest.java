@@ -15,6 +15,7 @@ import ikube.cluster.listener.IListener;
 import ikube.cluster.listener.hzc.StartListener;
 import ikube.cluster.listener.hzc.StopListener;
 import ikube.database.IDataBase;
+import ikube.mock.SpellingCheckerMock;
 import ikube.model.Action;
 import ikube.model.Server;
 import ikube.scheduling.schedule.Event;
@@ -92,7 +93,6 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 	@Before
 	@SuppressWarnings("unchecked")
 	public void before() {
-		Mockit.setUpMocks();
 		Mockit.setUpMocks(HazelcastMock.class);
 		clusterManagerHazelcast = new ClusterManagerHazelcast();
 
@@ -103,17 +103,21 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 		when(entry.getValue()).thenReturn(server);
 		when(HazelcastMock.servers.entrySet()).thenReturn(entrySet);
 		when(HazelcastMock.servers.get(anyString())).thenReturn(server);
+
+		Deencapsulation.setField(clusterManagerHazelcast, dataBase);
+		Deencapsulation.setField(clusterManagerHazelcast, monitorService);
+		List<MessageListener<Object>> listeners = new ArrayList<MessageListener<Object>>(Arrays.asList(startListener, stopListener));
+		clusterManagerHazelcast.setListeners(listeners);
 	}
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks();
+		Mockit.tearDownMocks(HazelcastMock.class);
 		clusterManagerHazelcast.unlock(IConstants.IKUBE);
 	}
 
 	@Test
 	public void lock() throws Exception {
-		injectServices();
 		boolean gotLock = clusterManagerHazelcast.lock(IConstants.IKUBE);
 		assertTrue(gotLock);
 		Thread thread = new Thread(new Runnable() {
@@ -128,7 +132,6 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 
 	@Test
 	public void unlock() throws Exception {
-		injectServices();
 		boolean gotLock = clusterManagerHazelcast.lock(IConstants.IKUBE);
 		assertTrue(gotLock);
 		Thread thread = new Thread(new Runnable() {
@@ -154,7 +157,6 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 
 	@Test
 	public void anyWorking() {
-		injectServices();
 		boolean anyworking = clusterManagerHazelcast.anyWorking();
 		assertFalse(anyworking);
 
@@ -164,7 +166,7 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 
 		Action action = new Action();
 		server.setActions(Arrays.asList(action));
-		clusterManagerHazelcast.putObject(server.getIp(), server);
+		clusterManagerHazelcast.put(server.getIp(), server);
 
 		anyworking = clusterManagerHazelcast.anyWorking();
 		assertTrue(anyworking);
@@ -172,7 +174,6 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 
 	@Test
 	public void anyWorkingIndex() {
-		injectServices();
 		boolean anyWorkingIndex = clusterManagerHazelcast.anyWorking(indexName);
 		assertFalse(anyWorkingIndex);
 
@@ -187,14 +188,12 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 
 	@Test
 	public void startWorking() {
-		injectServices();
 		Action action = clusterManagerHazelcast.startWorking(actionName, indexName, indexableName);
 		assertEquals(indexName, action.getIndexName());
 	}
 
 	@Test
 	public void stopWorking() {
-		injectServices();
 		Action action = new Action();
 		action.setStartTime(new Date());
 		action.setEndTime(new Date());
@@ -209,7 +208,6 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 
 	@Test
 	public void getServerAndServers() {
-		injectServices();
 		Mockit.tearDownMocks();
 		monitorService = mock(MonitorService.class);
 		Deencapsulation.setField(clusterManagerHazelcast, monitorService);
@@ -222,7 +220,6 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 	@Test
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void sendMessage() {
-		injectServices();
 		MessageListener messageListener = Mockito.mock(MessageListener.class);
 		Hazelcast.getTopic(IConstants.TOPIC).addMessageListener(messageListener);
 		clusterManagerHazelcast.sendMessage(new Event());
@@ -232,32 +229,32 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 
 	@Test
 	public void submitDestroy() {
-		Mockit.tearDownMocks();
-		injectServices();
-		ThreadUtilities.initialize();
-
-		Runnable runnable = new Runnable() {
-			@Override
-			public void run() {
-				while (true) {
-					ThreadUtilities.sleep(1000);
+		try {
+			Mockit.tearDownMocks();
+			ThreadUtilities.initialize();
+			Runnable runnable = new Runnable() {
+				@Override
+				public void run() {
+					while (true) {
+						ThreadUtilities.sleep(1000);
+					}
 				}
-			}
-		};
-		String name = "name";
-		Future<?> future = ThreadUtilities.submit(name, runnable);
-		logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
-
-		Event event = IListener.EventGenerator.getEvent(Event.TERMINATE, System.currentTimeMillis(), name, Boolean.FALSE);
-		clusterManagerHazelcast.sendMessage(event);
-		ThreadUtilities.sleep(1000);
-		assertTrue(future.isCancelled());
-		ThreadUtilities.destroy();
+			};
+			String name = "name";
+			Future<?> future = ThreadUtilities.submit(name, runnable);
+			logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
+			Event event = IListener.EventGenerator.getEvent(Event.TERMINATE, System.currentTimeMillis(), name, Boolean.FALSE);
+			clusterManagerHazelcast.sendMessage(event);
+			ThreadUtilities.sleep(1000);
+			assertTrue(future.isCancelled());
+			ThreadUtilities.destroy();
+		} finally {
+			Mockit.setUpMock(SpellingCheckerMock.class);
+		}
 	}
 
 	@Test
 	public void threaded() {
-		injectServices();
 		Hazelcast.getLock(IConstants.IKUBE).forceUnlock();
 		ThreadUtilities.initialize();
 		int threads = 3;
@@ -283,14 +280,6 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 			futures.add(future);
 		}
 		ThreadUtilities.waitForFutures(futures, Long.MAX_VALUE);
-	}
-
-	@SuppressWarnings("unchecked")
-	private void injectServices() {
-		Deencapsulation.setField(clusterManagerHazelcast, dataBase);
-		Deencapsulation.setField(clusterManagerHazelcast, monitorService);
-		List<MessageListener<Object>> listeners = new ArrayList<MessageListener<Object>>(Arrays.asList(startListener, stopListener));
-		clusterManagerHazelcast.setListeners(listeners);
 	}
 
 	private void validate(final Boolean[] locks) {

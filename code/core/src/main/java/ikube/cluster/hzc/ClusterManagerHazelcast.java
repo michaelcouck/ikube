@@ -93,7 +93,7 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 	@Override
 	public boolean anyWorking() {
 		Map<String, Server> servers = getServers();
-		for (Map.Entry<String, Server> mapEntry : servers.entrySet()) {
+		for (final Map.Entry<String, Server> mapEntry : servers.entrySet()) {
 			Server server = mapEntry.getValue();
 			if (server.isWorking()) {
 				return true;
@@ -108,7 +108,7 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 	@Override
 	public boolean anyWorking(final String indexName) {
 		Map<String, Server> servers = getServers();
-		for (Map.Entry<String, Server> mapEntry : servers.entrySet()) {
+		for (final Map.Entry<String, Server> mapEntry : servers.entrySet()) {
 			Server server = mapEntry.getValue();
 			if (!server.isWorking() || server.getActions() == null) {
 				continue;
@@ -134,7 +134,7 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 			action = getAction(actionName, indexName, indexableName);
 			server.getActions().add(action);
 			server = (Server) SerializationUtilities.clone(server);
-			Hazelcast.getMap(IConstants.IKUBE).put(server.getAddress(), server);
+			put(server.getAddress(), server);
 			Hazelcast.getTransaction().commit();
 		} catch (Exception e) {
 			logger.error("Exception starting action : " + actionName + ", " + indexName + ", " + indexableName, e);
@@ -185,7 +185,7 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 			}
 			if (removedFromServerActions) {
 				server = (Server) SerializationUtilities.clone(server);
-				Hazelcast.getMap(IConstants.IKUBE).put(server.getAddress(), server);
+				put(server.getAddress(), server);
 			}
 			// Commit the grid because the database is not as important as the cluster
 			Hazelcast.getTransaction().commit();
@@ -236,11 +236,10 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 	@SuppressWarnings("rawtypes")
 	public Server getServer() {
 		try {
-			Server server = (Server) Hazelcast.getMap(IConstants.IKUBE).get(address);
+			Server server = (Server) get(address);
 			if (server != null) {
-				// We set the instance server to the one in
-				// Hazelcast so if Hazelcast drops the server we have a
-				// copy to replace it
+				// We set the instance server to the one in Hazelcast so if
+				// Hazelcast drops the server we have a copy to replace it
 				this.server = server;
 			} else {
 				// First check if the instance server is still active
@@ -250,7 +249,7 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 					try {
 						Hazelcast.getTransaction().begin();
 						server = (Server) SerializationUtilities.clone(server);
-						Hazelcast.getMap(IConstants.IKUBE).put(server.getAddress(), server);
+						put(server.getAddress(), server);
 						Hazelcast.getTransaction().commit();
 					} catch (Exception e) {
 						logger.error("Exception re-injecting the server in the grid : " + server.getAddress(), e);
@@ -290,7 +289,7 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T getObject(final Object key) {
+	public <T> T get(final Object key) {
 		return (T) Hazelcast.getMap(IConstants.IKUBE).get(key);
 	}
 
@@ -298,7 +297,7 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void putObject(final Object key, final Object value) {
+	public void put(final Object key, final Object value) {
 		Hazelcast.getMap(IConstants.IKUBE).put(key, value);
 	}
 

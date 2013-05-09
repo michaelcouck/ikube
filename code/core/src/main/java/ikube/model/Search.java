@@ -39,7 +39,7 @@ public class Search extends Persistable {
 	@Column
 	private int count;
 	@Column
-	private int results;
+	private int totalResults;
 	@Column
 	private String indexName;
 	@Column(length = 256)
@@ -61,12 +61,12 @@ public class Search extends Persistable {
 		this.count = count;
 	}
 
-	public int getResults() {
-		return results;
+	public int getTotalResults() {
+		return totalResults;
 	}
 
-	public void setResults(int results) {
-		this.results = results;
+	public void setTotalResults(int results) {
+		this.totalResults = results;
 	}
 
 	public String getIndexName() {

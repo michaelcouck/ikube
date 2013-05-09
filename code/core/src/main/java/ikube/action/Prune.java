@@ -21,16 +21,9 @@ public class Prune extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	boolean internalExecute(final IndexContext<?> indexContext) {
-		ikube.model.Action action = null;
-		try {
-			action = start(indexContext.getIndexName(), "");
-			delete(dataBase, ikube.model.Action.class, new String[] { "startTime" }, new Boolean[] { true },
-					(int) IConstants.MAX_ACTIONS / 4);
-			delete(dataBase, ikube.model.Snapshot.class, new String[] {}, new Boolean[] {}, (int) IConstants.MAX_SNAPSHOTS / 4);
-			return Boolean.TRUE;
-		} finally {
-			stop(action);
-		}
+		delete(dataBase, ikube.model.Action.class, new String[] { "startTime" }, new Boolean[] { true }, (int) IConstants.MAX_ACTIONS / 4);
+		delete(dataBase, ikube.model.Snapshot.class, new String[] {}, new Boolean[] {}, (int) IConstants.MAX_SNAPSHOTS / 4);
+		return Boolean.TRUE;
 	}
 
 	protected void delete(final IDataBase dataBase, final Class<?> klass, final String[] fieldsToSortOn, final Boolean[] directionOfSort,

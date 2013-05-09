@@ -32,45 +32,67 @@ public class SpellingChecker {
 
 	private static SpellingChecker INSTANCE;
 
-	private Logger logger = LoggerFactory.getLogger(SpellingChecker.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SpellingChecker.class);
+
+	/** The 'real' spelling checker from Lucene. */
 	private SpellChecker spellChecker;
+
+	/** The path to the word files in different languages. */
 	@Value("${language.word.lists.directory}")
 	private String languageWordListsDirectory = "./ikube/common/languages";
+
+	/** The path to the index that is created from the word files. */
 	@Value("${language.word.lists.directory.index}")
 	private String spellingIndexDirectoryPath = "./ikube/common/languages/index";
 
-	public static final SpellingChecker getSpellingChecker() {
+	/**
+	 * Static access to the system spelling checker.
+	 * 
+	 * @return the spelling checker
+	 */
+	public static SpellingChecker getSpellingChecker() {
 		return SpellingChecker.INSTANCE;
 	}
 
+	/**
+	 * The constructor sets the system wide statis spelling checker.
+	 */
 	public SpellingChecker() {
 		SpellingChecker.INSTANCE = this;
 	}
 
+	/**
+	 * Initializes the spelling checker, by indexing all the language files on each start.
+	 * 
+	 * @throws Exception
+	 */
 	public void initialize() throws Exception {
 		File spellingIndexDirectory = FileUtilities.getFile(spellingIndexDirectoryPath, Boolean.TRUE);
-		logger.info("Spelling directory : " + spellingIndexDirectory + ", " + spellingIndexDirectoryPath);
+		LOGGER.info("Spelling directory : " + spellingIndexDirectory + ", " + spellingIndexDirectoryPath);
 		Directory directory = FSDirectory.open(spellingIndexDirectory);
 		spellChecker = new SpellChecker(directory);
 		indexLanguageFiles();
-		logger.info("Opened spelling index on : " + spellingIndexDirectory);
+		LOGGER.info("Opened spelling index on : " + spellingIndexDirectory);
 	}
 
+	/**
+	 * Indexes all the language files it finds in the language directory.
+	 */
 	private void indexLanguageFiles() {
 		File wordListDirectory = new File(languageWordListsDirectory);
-		logger.info("Word list directory : " + languageWordListsDirectory + ", " + wordListDirectory);
+		LOGGER.info("Word list directory : " + languageWordListsDirectory + ", " + wordListDirectory);
 		List<File> languageDictionaryFiles = FileUtilities.findFilesRecursively(wordListDirectory, new ArrayList<File>(), "txt");
-		logger.info("Language files : " + languageDictionaryFiles);
+		LOGGER.info("Language files : " + languageDictionaryFiles);
 		for (File languageDictionaryFile : languageDictionaryFiles) {
 			InputStream inputStream = null;
 			try {
-				logger.info("Language file : " + languageDictionaryFile);
+				LOGGER.info("Language file : " + languageDictionaryFile);
 				inputStream = new FileInputStream(languageDictionaryFile);
-				logger.info("Input stream : " + inputStream);
+				LOGGER.info("Input stream : " + inputStream);
 				IndexWriterConfig indexWriterConfig = new IndexWriterConfig(IConstants.VERSION, IConstants.ANALYZER);
 				spellChecker.indexDictionary(new PlainTextDictionary(inputStream), indexWriterConfig, Boolean.TRUE);
 			} catch (Exception e) {
-				logger.error("Exception indexing language file : " + languageDictionaryFile, e);
+				LOGGER.error("Exception indexing language file : " + languageDictionaryFile, e);
 			} finally {
 				FileUtilities.close(inputStream);
 			}
@@ -78,18 +100,15 @@ public class SpellingChecker {
 	}
 
 	/**
-	 * This method will check the strings in the search string by breaking them up into tokens and checking them against the spelling index.
-	 * If there are no matches for some tokens, then the best match will be added to the result. If there are no spelling errors then this
-	 * method will return null, indicating that there were no corrections to be made.
+	 * This method will check one word against all the words in the language index and return the best suggestion for correction.
 	 * 
-	 * @param searchString the search string with typically words in it
-	 * @return the tokens in the original search string with the mis-spelled tokens corrected with the best result, or null if there were no
-	 *         spelling errors
+	 * @param word the word to check against all the words in the language files
+	 * @return the first corrected spelling suggestion, probably based on a Levinshtein distance
 	 */
-	public final String checkWords(String searchString) {
+	public String checkWord(String word) {
 		try {
-			if (!spellChecker.exist(searchString)) {
-				String[] searchStringCorrection = spellChecker.suggestSimilar(searchString, 1);
+			if (!spellChecker.exist(word)) {
+				String[] searchStringCorrection = spellChecker.suggestSimilar(word, 1);
 				if (searchStringCorrection != null && searchStringCorrection.length > 0) {
 					return searchStringCorrection[0];
 				}
@@ -100,12 +119,15 @@ public class SpellingChecker {
 		return null;
 	}
 
+	/**
+	 * Closes the spelling checker, releasing file system resources.
+	 */
 	public void destroy() {
 		if (this.spellChecker != null) {
 			try {
 				this.spellChecker.close();
 			} catch (Exception e) {
-				logger.error("Exception closing the spelling checker : ", e);
+				LOGGER.error("Exception closing the spelling checker : ", e);
 			}
 		}
 	}

@@ -320,7 +320,7 @@ ul#menu li.right {
 /* -------------------------------- Form styles -------------------------------- */
 
 input {
-	width: 50%;
+	/* width: 50%; */
 	color: #999;
 	background: #FFF;
 	border: 1px solid #CCC;

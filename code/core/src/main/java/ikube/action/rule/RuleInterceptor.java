@@ -5,6 +5,7 @@ import ikube.action.IAction;
 import ikube.action.Index;
 import ikube.action.Open;
 import ikube.cluster.IClusterManager;
+import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.toolkit.ThreadUtilities;
 
@@ -87,16 +88,18 @@ public class RuleInterceptor implements IRuleInterceptor {
 			// We set the working flag in the action within the cluster lock when setting to true
 			Runnable runnable = new Runnable() {
 				public void run() {
+					Action action = null;
 					try {
-						Object returnValue = proceedingJoinPoint.proceed();
-						LOGGER.debug("Returned from join point : " + returnValue);
+						// Start the action in the cluster
+						String actionName = proceedingJoinPoint.getTarget().getClass().getSimpleName();
+						action = clusterManager.startWorking(actionName, indexContext.getIndexName(), null);
+						// Execute the action logic
+						proceedingJoinPoint.proceed();
 					} catch (Throwable e) {
 						LOGGER.error("Exception proceeding on join point : " + proceedingJoinPoint, e);
 					} finally {
-						if (LOGGER.isDebugEnabled()) {
-							Object[] objects = new Object[] { proceedingJoinPoint, indexContext.getIndexName() };
-							LOGGER.debug("Action finished : " + objects);
-						}
+						// Remove the action in the cluster
+						clusterManager.stopWorking(action);
 					}
 				}
 			};

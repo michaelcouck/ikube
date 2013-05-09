@@ -217,6 +217,7 @@ public final class FileUtilities {
 			if (directory) {
 				if (!file.exists() || !file.isDirectory()) {
 					boolean created = file.mkdirs();
+					makeReadWrite(file);
 					if (!created) {
 						LOGGER.warn("Didn't create directory/file : " + file);
 					}
@@ -229,6 +230,7 @@ public final class FileUtilities {
 						if (parent != null) {
 							try {
 								boolean created = file.createNewFile();
+								makeReadWrite(file);
 								if (!created) {
 									LOGGER.warn("Didn't create directory/file : " + file);
 								}
@@ -239,12 +241,15 @@ public final class FileUtilities {
 					}
 				}
 			}
-			file.setReadable(true, false);
-			file.setWritable(true, false);
 			return file;
 		} finally {
 			FileUtilities.class.notifyAll();
 		}
+	}
+	
+	protected static void makeReadWrite(final File file) {
+		file.setReadable(true, false);
+		file.setWritable(true, false);
 	}
 
 	protected static boolean deleteFile(final File file, final int maxRetryCount, final int retryCount) {

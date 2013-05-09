@@ -295,14 +295,21 @@ public abstract class ADataBaseJpa implements IDataBase {
 		return query.getResultList();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public <T> T find(Class<T> klass, String sql, String[] names, Object[] values) {
+	public <T> T find(final Class<T> klass, final String sql, final String[] names, final Object[] values) {
 		Map<String, Object> parameters = getParameterMap(names, values);
 		return find(klass, sql, parameters);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public <T> List<T> find(Class<T> klass, String sql, String[] names, Object[] values, int startPosition, int maxResults) {
+	public <T> List<T> find(final Class<T> klass, final String sql, final String[] names, final Object[] values, final int startPosition,
+			final int maxResults) {
 		Map<String, Object> parameters = getParameterMap(names, values);
 		return find(klass, sql, parameters, startPosition, maxResults);
 	}
@@ -321,7 +328,7 @@ public abstract class ADataBaseJpa implements IDataBase {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T execute(Class<T> klass, String sql, Map<String, Object> parameters) {
+	public <T> T execute(final Class<T> klass, final String sql, final Map<String, Object> parameters) {
 		Query query = getEntityManager().createNamedQuery(sql);
 		setParameters(query, parameters);
 		return (T) query.getSingleResult();

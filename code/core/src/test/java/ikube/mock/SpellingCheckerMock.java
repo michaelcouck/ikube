@@ -10,13 +10,13 @@ import org.mockito.Mockito;
 public class SpellingCheckerMock {
 
 	@Mock
-	public static final SpellingChecker getSpellingChecker() {
+	public static SpellingChecker getSpellingChecker() {
 		return Mockito.mock(SpellingChecker.class);
 	}
 
 	@Mock
-	public final String checkWords(String searchString) {
-		return searchString;
+	public String checkWord(final String word) {
+		return word;
 	}
 
 }

@@ -6,6 +6,7 @@ import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.io.FileSystemUtils;
 
@@ -28,55 +29,49 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	boolean internalExecute(final IndexContext<?> indexContext) {
-		ikube.model.Action action = null;
-		try {
-			action = start(indexContext.getIndexName(), "");
-			File indexesDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
-			if (indexesDirectory == null || !indexesDirectory.exists() || !indexesDirectory.isDirectory()) {
-				return Boolean.FALSE;
-			}
-			String drive = null;
-			String directoryPath = indexesDirectory.getAbsolutePath();
-			if (directoryPath.startsWith(IConstants.SEP + IConstants.SEP)
-					|| directoryPath.startsWith(IConstants.BCK_SEP + IConstants.BCK_SEP)) {
-				// This drive is on the network we can't check the space
-			} else if (directoryPath.startsWith(IConstants.SEP)) {
-				// This is unix, just get the space on the drive
-				drive = directoryPath;
-			} else {
-				// Windows
-				char driveCharacter = indexesDirectory.getAbsolutePath().charAt(0);
-				drive = driveCharacter + ":";
-			}
+		File indexesDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
+		if (indexesDirectory == null || !indexesDirectory.exists() || !indexesDirectory.isDirectory()) {
+			return Boolean.FALSE;
+		}
+		String drive = null;
+		String directoryPath = indexesDirectory.getAbsolutePath();
+		if (directoryPath.startsWith(IConstants.SEP + IConstants.SEP) || directoryPath.startsWith(IConstants.BCK_SEP + IConstants.BCK_SEP)) {
+			// This drive is on the network we can't check the space
+		} else if (directoryPath.startsWith(IConstants.SEP)) {
+			// This is unix, just get the space on the drive
+			drive = directoryPath;
+		} else {
+			// Windows
+			char driveCharacter = indexesDirectory.getAbsolutePath().charAt(0);
+			drive = driveCharacter + ":";
+		}
+		if (drive != null) {
+			Long freeSpaceKilobytes = null;
 			try {
-				if (drive != null) {
-					Long freeSpaceKilobytes = FileSystemUtils.freeSpaceKb(drive);
-					Long freeSpaceMegabytes = freeSpaceKilobytes / 1000;
-					String subject = "No more disk space on server!";
-					if (freeSpaceMegabytes < MINIMUM_FREE_SPACE) {
-						// We need to exit this server as the disk will crash
-						String body = buildMessage("We have run out of disk space on this drive : ", indexesDirectory.toString(),
-								"All indexing will be terminated immediately : ", freeSpaceMegabytes.toString());
-						logger.error(subject + " " + body);
-						sendNotification(subject, body);
-						// Terminate all indexing
-						ThreadUtilities.destroy();
-						// System.exit(0);
-						return Boolean.TRUE;
-					}
-					if (freeSpaceMegabytes < MINIMUM_FREE_SPACE_FOR_NOTIFICATIONS) {
-						String body = buildMessage("We have run out of disk space on this drive : ", indexesDirectory.toString(),
-								"Please clean this disk, free space available : ", freeSpaceMegabytes.toString());
-						logger.error(subject + " " + body);
-						sendNotification(subject, body);
-						return Boolean.TRUE;
-					}
-				}
-			} catch (Exception e) {
-				logger.error("Exception looking for the free space : " + indexesDirectory, e);
+				freeSpaceKilobytes = FileSystemUtils.freeSpaceKb(drive);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
-		} finally {
-			stop(action);
+			Long freeSpaceMegabytes = freeSpaceKilobytes / 1000;
+			String subject = "No more disk space on server!";
+			if (freeSpaceMegabytes < MINIMUM_FREE_SPACE) {
+				// We need to exit this server as the disk will crash
+				String body = buildMessage("We have run out of disk space on this drive : ", indexesDirectory.toString(),
+						"All indexing will be terminated immediately : ", freeSpaceMegabytes.toString());
+				logger.error(subject + " " + body);
+				sendNotification(subject, body);
+				// Terminate all indexing
+				ThreadUtilities.destroy();
+				// System.exit(0);
+				return Boolean.TRUE;
+			}
+			if (freeSpaceMegabytes < MINIMUM_FREE_SPACE_FOR_NOTIFICATIONS) {
+				String body = buildMessage("We have run out of disk space on this drive : ", indexesDirectory.toString(),
+						"Please clean this disk, free space available : ", freeSpaceMegabytes.toString());
+				logger.error(subject + " " + body);
+				sendNotification(subject, body);
+				return Boolean.TRUE;
+			}
 		}
 		return Boolean.FALSE;
 	}

@@ -39,10 +39,10 @@
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
 		property:children-ref="geospatialIndexablesOracle" />
 	<util:list id="geospatialIndexablesOracle">
-		<ref local="geonameOracle" />
+		<!-- <ref local="geonameOracle" /> -->
 	</util:list>
 	
-	<bean
+<!-- 	<bean
 		id="geonameOracle"
 		class="ikube.model.IndexableTable"
 		property:name="geoname"
@@ -74,6 +74,6 @@
 		<ref bean="geospatialPopulation" />
 		<ref bean="geospatialElevation" />
 		<ref bean="geospatialGtopo30" />
-	</util:list>
+	</util:list> -->
 	
 </beans>

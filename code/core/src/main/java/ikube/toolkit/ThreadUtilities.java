@@ -43,7 +43,7 @@ public final class ThreadUtilities {
 	public synchronized static Future<?> submit(final String name, final Runnable runnable) {
 		try {
 			if (EXECUTER_SERVICE == null || EXECUTER_SERVICE.isShutdown()) {
-				LOGGER.info("Executer service is shutdown : " + runnable);
+				LOGGER.debug("Executer service is shutdown : " + runnable);
 				return null;
 			}
 			Future<?> future = EXECUTER_SERVICE.submit(runnable);

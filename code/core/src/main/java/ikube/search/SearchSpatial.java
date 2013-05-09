@@ -77,6 +77,7 @@ public class SearchSpatial extends SearchMulti {
 		}
 		long totalHits = 0;
 		long scoreHits = 0;
+		float highScore = 0;
 		ArrayList<HashMap<String, String>> results = null;
 		long start = System.currentTimeMillis();
 		Exception exception = null;
@@ -85,6 +86,7 @@ public class SearchSpatial extends SearchMulti {
 			TopDocs topDocs = search(query);
 			totalHits = topDocs.totalHits;
 			scoreHits = topDocs.scoreDocs.length;
+			highScore = topDocs.getMaxScore();
 			results = getResults(topDocs, query);
 			if (distances != null) {
 				for (int i = 0, j = 0; i < totalHits && i < scoreHits; i++) {
@@ -106,7 +108,7 @@ public class SearchSpatial extends SearchMulti {
 		}
 		long duration = System.currentTimeMillis() - start;
 		// Add the search results size as a last result
-		addStatistics(results, totalHits, duration, exception);
+		addStatistics(results, totalHits, highScore, duration, exception);
 		return results;
 	}
 

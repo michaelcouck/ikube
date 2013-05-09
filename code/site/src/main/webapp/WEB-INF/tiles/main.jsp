@@ -20,6 +20,7 @@
 	<meta name="Description" content="Ikube Enterprise Search." />
 	
 	<link rel="stylesheet" href="<c:url value="/style/style.css" />" />
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
 	
 	<script src="https://www.google.com/jsapi" type="text/javascript" ></script>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript"></script>

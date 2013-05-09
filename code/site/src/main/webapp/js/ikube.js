@@ -40,22 +40,21 @@ var searcherController = module.controller('SearcherController', function($http,
 	// 10 th page the first result would then be 100 probably
 	$scope.doSearch = function(firstResult) {
 		var searchString = document.getElementById('search-form').searchString.value;
-		// Numeric search against all the fields
 		$scope.url = 'http://www.ikube.be/ikube/service/search/json/complex';
 		$scope.searchParameters.firstResult = firstResult;
 		$scope.searchParameters['searchStrings'] = searchString;
 		delete $http.defaults.headers.common['X-Requested-With'];
 		var promise = $http.get($scope.url, $scope.config);
 		promise.success(function(data, status) {
-			// Pop the statistics Json off the array
 			$scope.data = data;
 			$scope.status = status;
+			// Pop the statistics Json off the array
 			$scope.statistics = $scope.data.pop();
 			$scope.doPagination($scope.data);
 		});
 		promise.error(function(data, status, config, errorResponse) {
 			$scope.status = status;
-			alert('Search error : sstatus : ' + status + ', response : ' + errorResponse);
+			// alert('Search error : status : ' + status + ', response : ' + errorResponse);
 		});
 	};
 			
@@ -84,6 +83,37 @@ var searcherController = module.controller('SearcherController', function($http,
 });
 
 searcherController.$inject = ['$scope', '$routeParams', '$filter', 'storage', '$location'];
+
+function AutoCompleteController($scope) {
+	 $scope.names = [ "john", "bill", "charlie", "robert", "alban", "oscar",
+			"marie", "celine", "brad", "drew", "rebecca", "michel", "francis",
+			"jean", "paul", "pierre", "nicolas", "alfred", "gerard", "louis",
+			"albert", "edouard", "benoit", "guillaume", "nicolas", "joseph" ];
+	// $scope.names = function() {
+	// var url = '"http://www.ikube.be/ikube/service/auto/complete"';
+	// var promise = $http.get(url);
+	// promise.success(function(data, status) {
+	// alert('Suggestions : ' + data);
+	// suggestions = data;
+	// });
+	// promise.error(function(data, status) {
+	// // TODO Something
+	// });
+	//	};
+}
+
+module.directive('autoComplete', function($timeout) {
+	return function(scope, iElement, iAttrs) {
+		iElement.autocomplete({
+			source : scope[iAttrs.uiItems],
+			select : function() {
+				$timeout(function() {
+					iElement.trigger('input');
+				}, 0);
+			}
+		});
+	};
+});
 
 /**
  * This function will track the page view for Google Analytics.
@@ -217,18 +247,3 @@ function popup(mylink, windowname) {
 String.prototype.capitalize = function() {
 	return this.charAt(0).toUpperCase() + this.slice(1);
 };
-
-/**
- * This function builds the url to the rest search service.
- * 
- * @param the path part of the url  
- * @returns the url to the search rest web service
- */
-function getServiceUrl(path) {
-	var url = [];
-	url.push(window.location.protocol);
-	url.push('//');
-	url.push(window.location.host);
-	url.push(path);
-	return url.join('');
-}

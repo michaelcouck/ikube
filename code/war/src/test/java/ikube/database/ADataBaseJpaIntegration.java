@@ -1,6 +1,7 @@
 package ikube.database;
 
 import static org.junit.Assert.assertEquals;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -13,7 +14,7 @@ import ikube.model.IndexContext;
 import ikube.model.Snapshot;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.PerformanceTester;
+import ikube.web.toolkit.PerformanceTester;
 
 import java.util.ArrayList;
 import java.util.Arrays;
