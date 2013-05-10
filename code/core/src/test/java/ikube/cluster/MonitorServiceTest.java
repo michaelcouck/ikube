@@ -47,7 +47,7 @@ public class MonitorServiceTest extends AbstractTest {
 		indexContext.setIndexName("indexName");
 		indexContext.setIndexDirectoryPath("./indexes");
 		List<Indexable<?>> indexables = new ArrayList<Indexable<?>>(Arrays.asList(new IndexableFileSystem()));
-		indexContext.setIndexables(indexables);
+		indexContext.setChildren(indexables);
 
 		Mockit.setUpMocks(ApplicationContextManagerMock.class);
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);

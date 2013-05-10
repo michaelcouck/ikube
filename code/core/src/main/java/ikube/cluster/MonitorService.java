@@ -62,7 +62,7 @@ public class MonitorService implements IMonitorService {
 	public String[] getIndexFieldNames(final String indexName) {
 		IndexContext<?> indexContext = getIndexContext(indexName);
 		if (indexContext != null) {
-			Set<String> fieldNames = getFields(indexContext.getIndexables(), new TreeSet<String>());
+			Set<String> fieldNames = getFields(indexContext.getChildren(), new TreeSet<String>());
 			return fieldNames.toArray(new String[fieldNames.size()]);
 		}
 		return new String[0];

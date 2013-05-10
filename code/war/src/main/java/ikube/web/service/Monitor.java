@@ -103,7 +103,6 @@ public class Monitor extends Resource {
 		indexContext.getLatestIndexTimestamp();
 		IndexContext cloneIndexContext = (IndexContext) SerializationUtilities.clone(indexContext);
 		cloneIndexContext.setChildren(null);
-		cloneIndexContext.setIndexables(null);
 		cloneIndexContext.setSnapshots(null);
 		return cloneIndexContext;
 	}

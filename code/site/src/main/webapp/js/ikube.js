@@ -11,7 +11,7 @@ var module = angular.module('site', []);
 
 // The controller that does the search
 var searcherController = module.controller('SearcherController', function($http, $scope, $location, $rootScope) {
-			
+	
 	// The model data that we bind to in the form
 	$scope.pageBlock = 10; // Results per page
 	$scope.endResult = 0;
@@ -51,10 +51,11 @@ var searcherController = module.controller('SearcherController', function($http,
 			// Pop the statistics Json off the array
 			$scope.statistics = $scope.data.pop();
 			$scope.doPagination($scope.data);
+			alert('Search : data : ' + data + ', status : ' + status);
 		});
 		promise.error(function(data, status, config, errorResponse) {
 			$scope.status = status;
-			// alert('Search error : status : ' + status + ', response : ' + errorResponse);
+			alert('Search error, status : ' + status + ', response : ' + errorResponse);
 		});
 	};
 			

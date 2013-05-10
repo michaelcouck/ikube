@@ -42,7 +42,7 @@
 		property:children-ref="ikubeIndexables" />
 	<util:list id="ikubeIndexables">
 		<ref local="ikubeInternet" />
-		<ref local="ikubeLog" />
+		<!-- <ref local="ikubeLog" /> -->
 	</util:list>
 	
 	<bean

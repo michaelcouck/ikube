@@ -145,7 +145,7 @@ public abstract class AbstractTest {
 		when(indexContext.getIndexDirectoryPath()).thenReturn(indexDirectoryPath);
 		when(indexContext.getIndexDirectoryPathBackup()).thenReturn(indexDirectoryPathBackup);
 		when(indexContext.getIndexName()).thenReturn("index");
-		when(indexContext.getIndexables()).thenReturn(indexables);
+		when(indexContext.getChildren()).thenReturn(indexables);
 
 		when(indexContext.getMultiSearcher()).thenReturn(multiSearcher);
 

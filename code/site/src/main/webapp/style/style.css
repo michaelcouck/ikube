@@ -92,7 +92,7 @@ blockquote {
 
 body {
 	text-align: center; 
-	background: #FFF url("images/bg-main.jpg") no-repeat center top;
+	/* background: #FFF url("images/bg-main.jpg") no-repeat center top; */
 }
 
 div#page {

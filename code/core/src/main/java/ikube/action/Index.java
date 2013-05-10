@@ -27,9 +27,8 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 
 /**
- * This class executes the handlers on the indexables, effectively creating the index. Each indexable has a handler that is implemented to
- * handle it. Each handler will return a list of threads that will do the indexing. The caller(in this case, this class) must then wait for
- * the threads to finish.
+ * This class executes the handlers on the indexables, effectively creating the index. Each indexable has a handler that is implemented to handle it. Each
+ * handler will return a list of threads that will do the indexing. The caller(in this case, this class) must then wait for the threads to finish.
  * 
  * @author Michael Couck
  * @since 21.11.10
@@ -87,7 +86,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected boolean internalExecute(final IndexContext<?> indexContext) throws Exception {
-		List<Indexable<?>> indexables = indexContext.getIndexables();
+		List<Indexable<?>> indexables = indexContext.getChildren();
 		Iterator<Indexable<?>> iterator = new ArrayList(indexables).iterator();
 		while (iterator.hasNext()) {
 			// Update the action with the new indexable
@@ -107,19 +106,18 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 		return Boolean.TRUE;
 	}
 
-	private ikube.model.Action getAction(final Server server, final IndexContext<?> indexContext) {
+	ikube.model.Action getAction(final Server server, final IndexContext<?> indexContext) {
 		for (final ikube.model.Action action : server.getActions()) {
 			if (action.getActionName().equals(this.getClass().getSimpleName())) {
-				if (StringUtils.isEmpty(action.getIndexableName())) {
-					return action;
+				if (!action.getIndexName().equals(indexContext.getName())) {
+					continue;
 				}
 				// Look for the action that has an indexable name in the context children
 				for (final Indexable<?> indexable : indexContext.getChildren()) {
-					if (action.getIndexableName().equals(indexable.getName())) {
+					if (StringUtils.isEmpty(action.getIndexableName()) || action.getIndexableName().equals(indexable.getName())) {
 						return action;
 					}
 				}
-				return action;
 			}
 		}
 		throw new RuntimeException("Action not found for class : " + this.getClass().getSimpleName());

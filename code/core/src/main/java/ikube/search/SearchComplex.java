@@ -24,7 +24,7 @@ import org.apache.lucene.util.NumericUtils;
  * @version 01.00
  */
 @SuppressWarnings("deprecation")
-public class SearchComplex extends SearchSpatial {
+public class SearchComplex extends Search {
 
 	public SearchComplex(final Searcher searcher) {
 		this(searcher, IConstants.ANALYZER);
@@ -39,9 +39,6 @@ public class SearchComplex extends SearchSpatial {
 	 */
 	@Override
 	protected TopDocs search(final Query query) throws IOException {
-		if (coordinate != null) {
-			return super.search(query);
-		}
 		return searcher.search(query, firstResult + maxResults);
 	}
 

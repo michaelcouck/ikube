@@ -39,16 +39,15 @@ import org.apache.lucene.search.highlight.Scorer;
 import org.apache.lucene.util.ReaderUtil;
 
 /**
- * This action does the actual search on the index. The searcher that is current in the Instance is passed to this action. The search is
- * done on the index. The results are then processed for use in the front end. A list of maps is generated from the results. There are three
- * standard fields in each map. Each map then represents one record or result from the search. The three standard items in the map are the
- * index in the lucene result set, id of the record and the score that the result got. Optionally the fragment generated from the result if
- * this is specified.
+ * This action does the actual search on the index. The searcher that is current in the Instance is passed to this action. The search is done on the index. The
+ * results are then processed for use in the front end. A list of maps is generated from the results. There are three standard fields in each map. Each map then
+ * represents one record or result from the search. The three standard items in the map are the index in the lucene result set, id of the record and the score
+ * that the result got. Optionally the fragment generated from the result if this is specified.
  * 
  * The id of the record generated using the name of the object indexed and the primary field in the database.
  * 
- * For paging functionality the search method can be called specifying the start and end parameters which will give logical paging. Although
- * the search will be done for each page forward the search is so fast that this is not relevant.
+ * For paging functionality the search method can be called specifying the start and end parameters which will give logical paging. Although the search will be
+ * done for each page forward the search is so fast that this is not relevant.
  * 
  * @author Michael Couck
  * @since 22.08.08
@@ -107,10 +106,9 @@ public abstract class Search {
 	}
 
 	/**
-	 * Takes a result from the Lucene search query and selects the fragments that have the search word(s) in it, taking only the first few
-	 * instances of the data where the term appears and returns the fragments. For example in the document the data is the following
-	 * "The quick brown fox jumps over the lazy dog" and we search for 'quick', 'fox' and 'lazy'. The result will be '...The quick brown fox
-	 * jumps...the lazy dog...'.<br>
+	 * Takes a result from the Lucene search query and selects the fragments that have the search word(s) in it, taking only the first few instances of the data
+	 * where the term appears and returns the fragments. For example in the document the data is the following "The quick brown fox jumps over the lazy dog" and
+	 * we search for 'quick', 'fox' and 'lazy'. The result will be '...The quick brown fox jumps...the lazy dog...'.<br>
 	 * <br>
 	 * The fragments are from the current document, so calling get next document will move the document to the next on in the Hits object.
 	 * 
@@ -183,8 +181,8 @@ public abstract class Search {
 	/**
 	 * This executed the search with the parameters set for the search fields and the search strings.
 	 * 
-	 * @return the results which are a list of maps. Each map has the fields in it if they are strings, not readers, and the map entries for
-	 *         index, score, fragment, total and duration
+	 * @return the results which are a list of maps. Each map has the fields in it if they are strings, not readers, and the map entries for index, score,
+	 *         fragment, total and duration
 	 */
 	public ArrayList<HashMap<String, String>> execute() {
 		long totalHits = 0;
@@ -278,8 +276,7 @@ public abstract class Search {
 	 * @throws IOException
 	 * @throws CorruptIndexException
 	 */
-	protected ArrayList<HashMap<String, String>> getResults(final TopDocs topDocs, final Query query) throws CorruptIndexException,
-			IOException {
+	protected ArrayList<HashMap<String, String>> getResults(final TopDocs topDocs, final Query query) throws CorruptIndexException, IOException {
 		ArrayList<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
 		long totalHits = topDocs.totalHits;
 		long scoreHits = topDocs.scoreDocs.length;
@@ -327,8 +324,7 @@ public abstract class Search {
 		for (final Fieldable field : document.getFields()) {
 			String fieldName = field.name();
 			// Don't add the latitude and longitude tier field, very ugly data, and not useful
-			if (fieldName != null
-					&& ((fieldName.equals(IConstants.LAT) || fieldName.equals(IConstants.LNG)) || (fieldName.contains(IConstants.TIER)))) {
+			if (fieldName != null && ((fieldName.equals(IConstants.LAT) || fieldName.equals(IConstants.LNG)) || (fieldName.contains(IConstants.TIER)))) {
 				continue;
 			}
 			String stringValue = field.stringValue();
@@ -348,25 +344,24 @@ public abstract class Search {
 	 * @param totalHits the total hits
 	 * @param duration how long the search took in milliseconds
 	 */
-	protected void addStatistics(final ArrayList<HashMap<String, String>> results, final long totalHits, final float highScore,
-			final long duration, final Exception exception) {
+	protected void addStatistics(final ArrayList<HashMap<String, String>> results, final long totalHits, final float highScore, final long duration,
+			final Exception exception) {
 		// Add the search results size as a last result
 		HashMap<String, String> statistics = new HashMap<String, String>();
+		String[] correctedSearchStrings = getCorrections();
+		String searchString = StringUtils.strip(Arrays.deepToString(searchStrings), IConstants.STRIP_CHARACTERS);
+		String correctedSearchString = StringUtils.strip(Arrays.deepToString(correctedSearchStrings), IConstants.STRIP_CHARACTERS);
+
 		statistics.put(IConstants.TOTAL, Long.toString(totalHits));
 		statistics.put(IConstants.DURATION, Long.toString(duration));
 		statistics.put(IConstants.SCORE, Float.toString(highScore));
-
-		String[] correctedSearchStrings = getCorrections();
-
-		String searchString = StringUtils.strip(Arrays.deepToString(searchStrings), IConstants.STRIP_CHARACTERS);
-		String correctedSearchString = StringUtils.strip(Arrays.deepToString(correctedSearchStrings), IConstants.STRIP_CHARACTERS);
 		statistics.put(IConstants.SEARCH_STRINGS, searchString);
 		statistics.put(IConstants.CORRECTIONS, correctedSearchString);
 
 		if (exception != null) {
-			statistics.put(IConstants.EXCEPTION, exception.getMessage());
 			OutputStream outputStream = new ByteArrayOutputStream();
 			exception.printStackTrace(new PrintWriter(outputStream));
+			statistics.put(IConstants.EXCEPTION, exception.getMessage());
 			statistics.put(IConstants.EXCEPTION_STACK, outputStream.toString());
 			statistics.put(IConstants.EXCEPTION_MESSAGE, exception.getMessage());
 		}
@@ -375,8 +370,8 @@ public abstract class Search {
 	}
 
 	/**
-	 * This method will return an array of strings that have been corrected using the spelling and words defined in the languages directory.
-	 * If there are no corrections, i.e. the strings are all correct then this array will be empty.
+	 * This method will return an array of strings that have been corrected using the spelling and words defined in the languages directory. If there are no
+	 * corrections, i.e. the strings are all correct then this array will be empty.
 	 * 
 	 * @return the array of strings that have been corrected using the language and word lists in the language directory
 	 */
@@ -396,8 +391,7 @@ public abstract class Search {
 				String correctedSearchStringToken = spellingChecker.checkWord(searchStringToken);
 				if (correctedSearchStringToken != null) {
 					// Replace the incorrect token in the original string
-					correctedSearchStrings[i] = StringUtils.replace(correctedSearchStrings[i], searchStringToken,
-							correctedSearchStringToken);
+					correctedSearchStrings[i] = StringUtils.replace(correctedSearchStrings[i], searchStringToken, correctedSearchStringToken);
 					corrections = Boolean.TRUE;
 				}
 			}

@@ -81,8 +81,6 @@ public class SearchComplexTest extends AbstractTest {
 		// TODO When we get the min-eco data with the coordinates
 		// then update this test to search against the geospatial data too
 		// Coordinate coordinate = new Coordinate(52.52274, 13.4166);
-		searchComplex.setCoordinate(null);
-		searchComplex.setDistance(10);
 		searchComplex.setFirstResult(0);
 		searchComplex.setFragment(Boolean.TRUE);
 		searchComplex.setMaxResults(10);

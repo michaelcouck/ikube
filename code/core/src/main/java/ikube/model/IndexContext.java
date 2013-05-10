@@ -28,9 +28,9 @@ import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Searchable;
 
 /**
- * This is the context for a single index. It has the properties that define the index like what it is going to index, i.e. the databases,
- * intranets etc., and properties relating to the Lucene index. This object acts a like the command in the 'Command Pattern' as in this
- * context is passed to handlers that will perform certain logic based on the properties of this context.
+ * This is the context for a single index. It has the properties that define the index like what it is going to index, i.e. the databases, intranets etc., and
+ * properties relating to the Lucene index. This object acts a like the command in the 'Command Pattern' as in this context is passed to handlers that will
+ * perform certain logic based on the properties of this context.
  * 
  * @author Michael Couck
  * @since 21.11.10
@@ -251,14 +251,6 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 
 	public void setIndexDirectoryPathBackup(final String indexDirectoryPathBackup) {
 		this.indexDirectoryPathBackup = indexDirectoryPathBackup;
-	}
-
-	public List<Indexable<?>> getIndexables() {
-		return super.getChildren();
-	}
-
-	public void setIndexables(final List<Indexable<?>> indexables) {
-		super.setChildren(indexables);
 	}
 
 	public IndexWriter[] getIndexWriters() {

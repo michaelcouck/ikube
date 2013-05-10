@@ -10,7 +10,7 @@
 
 	<target name="go">
 		<antcall target="prepare" />
-		<antcall target="stop-server" />
+		<!-- antcall target="stop-server" / -->
 		<!-- Deploy the configuration and ikube and start the servers -->
 		<antcall target="go-server" inheritall="true">
 			<param name="tomcat-home" value="${tomcat-directory}" />
@@ -25,31 +25,31 @@
 	</target>
 
 	<target name="deploy-site">
-		<antcall target="execute-remote-command">
+		<!-- antcall target="execute-remote-command">
 			<param name="command" value="cd ${tomcat-bin-directory}; ./shutdown.sh;" />
 		</antcall>
-		<sleep seconds="15" />
-		<antcall target="execute-remote-command">
+		<sleep seconds="15" / -->
+		<!-- antcall target="execute-remote-command">
 			<param name="command" value="
 				rm -rf ${tomcat-webapps-directory}/site*;
 				rm -rf ${tomcat-directory}/logs;
 				mkdir -p ${tomcat-directory}/logs;" />
-		</antcall>
+		</antcall -->
 		<antcall target="deploy-ikube-site">
 			<param name="tomcat-home" value="${tomcat-directory}" />
 		</antcall>
-		<antcall target="execute-remote-command">
+		<!-- antcall target="execute-remote-command">
 			<param name="command" value="chmod 777 -R ${tomcat-directory};" />
 		</antcall>
 		<antcall target="execute-remote-command">
 			<param name="command" value="
 						cd ${tomcat-bin-directory};
-						./startup.sh;" />
+						./startup.sh;" / -->
 		</antcall>
 	</target>
 
 	<target name="deploy-ikube-site">
-		<scp file="code/site/target/site.war" todir="${userid}:${password}@${server-ip}:${tomcat-home}/webapps" trust="true" failonerror="false" verbose="${verbose}" />
+		<scp file="code/site/target/site.war" todir="${userid}:${password}@${server-ip}:${tomcat-home}/webapps" trust="true" failonerror="true" verbose="${verbose}" />
 	</target>
 
 	<target name="go-servers">
@@ -93,14 +93,14 @@
 
 	<target name="go-server">
 		<!-- Clean all the output folders and the configuration -->
-		<antcall target="execute-remote-command">
+		<!-- antcall target="execute-remote-command">
 			<param name="command" value="
 				rm -rf ${tomcat-home}/bin/ikube;
 				rm -rf ${tomcat-home}/webapps/ikube*;
 				rm -rf ${tomcat-home}/logs;
 				mkdir -p ${tomcat-home}/bin/ikube;
 				mkdir -p ${tomcat-home}/logs;" />
-		</antcall>
+		</antcall -->
 		<!-- Deploy the configuration to the server -->
 		<antcall target="copy-directory-to-server">
 			<param name="directory-to-copy" value="${configuration-directory}" />
@@ -112,15 +112,15 @@
 			<param name="server-directory" value="${tomcat-home}/webapps" />
 		</antcall>
 		<!-- Change the directory permissions just in case -->
-		<antcall target="execute-remote-command">
+		<!-- antcall target="execute-remote-command">
 			<param name="command" value="chmod 777 -R ${tomcat-home};" />
-		</antcall>
+		</antcall -->
 		<!-- Start the server -->
-		<antcall target="execute-remote-command">
+		<!-- antcall target="execute-remote-command">
 			<param name="command" value="
 				cd ${tomcat-home}/bin;
 				./startup.sh;" />
-		</antcall>
+		</antcall -->
 	</target>
 
 	<target name="prepare">
@@ -128,19 +128,19 @@
 	</target>
 
 	<target name="copy-directory-to-server">
-		<scp todir="${userid}:${password}@${server-ip}:${server-directory}" trust="true" failonerror="false" verbose="${verbose}">
+		<scp todir="${userid}:${password}@${server-ip}:${server-directory}" trust="true" failonerror="true" verbose="${verbose}">
 			<fileset dir="${directory-to-copy}" />
 		</scp>
 	</target>
 
 	<target name="copy-file-to-server">
-		<scp todir="${userid}:${password}@${server-ip}:${server-directory}" trust="true" failonerror="false" verbose="${verbose}">
+		<scp todir="${userid}:${password}@${server-ip}:${server-directory}" trust="true" failonerror="true" verbose="${verbose}">
 			<fileset file="${file-to-copy}" />
 		</scp>
 	</target>
 
 	<target name="execute-remote-command">
-		<sshexec host="${server-ip}" trust="true" username="${userid}" password="${password}" command="${command}" failonerror="false" usepty="true" />
+		<sshexec host="${server-ip}" trust="true" username="${userid}" password="${password}" command="${command}" failonerror="true" usepty="true" />
 	</target>
 
 	<target name="deploy-configuration-for-jetty" description="Copies the configuration folder to the base of the project modules so Jetty can start">

@@ -1,5 +1,6 @@
 package ikube.action;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
@@ -8,6 +9,7 @@ import ikube.action.index.IndexManager;
 import ikube.action.index.handler.database.IndexableTableHandler;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.IndexManagerMock;
+import ikube.model.Action;
 import ikube.model.Indexable;
 import ikube.model.IndexableTable;
 import ikube.toolkit.ApplicationContextManager;
@@ -44,6 +46,9 @@ public class IndexTest extends AbstractTest {
 	@Before
 	public void before() throws Exception {
 		index = new Index();
+		indexableTable = new IndexableTable();
+		indexableTable.setName("indexableName");
+		List<Indexable<?>> indexables = new ArrayList<Indexable<?>>(Arrays.asList(indexableTable));
 
 		Mockit.setUpMocks(IndexManagerMock.class, ApplicationContextManagerMock.class);
 
@@ -51,6 +56,11 @@ public class IndexTest extends AbstractTest {
 		when(clusterManager.getServer()).thenReturn(server);
 		when(action.getStartTime()).thenReturn(new Timestamp(System.currentTimeMillis()));
 		when(action.getActionName()).thenReturn(Index.class.getSimpleName());
+		when(action.getIndexName()).thenReturn("indexName");
+		when(action.getIndexableName()).thenReturn(indexableTable.getName());
+		when(indexContext.getName()).thenReturn("indexName");
+		when(indexContext.getChildren()).thenReturn(indexables);
+
 		Logger logger = Mockito.mock(Logger.class);
 		Deencapsulation.setField(index, logger);
 		Deencapsulation.setField(index, clusterManager);
@@ -69,9 +79,6 @@ public class IndexTest extends AbstractTest {
 
 	@Test
 	public void execute() throws Exception {
-		indexableTable = new IndexableTable();
-		List<Indexable<?>> indexables = new ArrayList<Indexable<?>>(Arrays.asList(indexableTable));
-		Mockito.when(indexContext.getIndexables()).thenReturn(indexables);
 		boolean result = index.execute(indexContext);
 		logger.info("Result from index action : " + result);
 		assertTrue("The index must execute properly : ", result);
@@ -80,6 +87,12 @@ public class IndexTest extends AbstractTest {
 	@Test
 	public void postExecute() {
 		// TODO Re-implement this in the delta strategy?
+	}
+
+	@Test
+	public void getAction() {
+		Action action = index.getAction(server, indexContext);
+		assertNotNull(action);
 	}
 
 	@Test
