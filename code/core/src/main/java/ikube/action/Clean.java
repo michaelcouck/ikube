@@ -50,16 +50,13 @@ public class Clean<E, F> extends Action<IndexContext<?>, Boolean> {
 		return Boolean.TRUE;
 	}
 
-	private void processDirectories(File... serverIndexDirectories) {
+	private void processDirectories(final File... serverIndexDirectories) {
 		for (final File serverIndexDirectory : serverIndexDirectories) {
 			Directory directory = null;
 			boolean corrupt = Boolean.TRUE;
 			try {
 				directory = FSDirectory.open(serverIndexDirectory);
 				if (IndexWriter.isLocked(directory)) {
-					// IndexWriter.unlock(directory);
-					// if (IndexWriter.isLocked(directory)) {
-					// }
 					logger.warn("Directory still locked : " + serverIndexDirectory);
 					corrupt = Boolean.FALSE;
 					continue;

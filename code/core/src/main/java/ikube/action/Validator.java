@@ -34,14 +34,10 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 	boolean internalExecute(final IndexContext<?> indexContext) {
 		boolean everythingInitialized = Boolean.TRUE;
 
-		IsIndexCurrent isIndexCurrent = new IsIndexCurrent();
-		IsIndexCorrupt isIndexCorrupt = new IsIndexCorrupt();
-		AreIndexesCreated areIndexesCreated = new AreIndexesCreated();
-		IsIndexBackedUp isIndexBackedUp = new IsIndexBackedUp();
 		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
 		// Are there any indexes at all
-		if (!areIndexesCreated.evaluate(indexContext)) {
+		if (!new AreIndexesCreated().evaluate(indexContext)) {
 			if (latestIndexDirectory == null || !latestIndexDirectory.exists()) {
 				String subject = "No index : " + indexContext.getIndexName();
 				String body = "No index : " + indexContext.toString();
@@ -50,7 +46,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 			}
 		}
 		// Is the index corrupt for some reason
-		if (isIndexCorrupt.evaluate(indexContext)) {
+		if (new IsIndexCorrupt().evaluate(indexContext)) {
 			String subject = "Index corrupt : " + indexContext.getIndexName();
 			String body = "There is an index but it is corrupt. Generally another index will be generated immediately, but "
 					+ "if there is a backup for the index the restore will be invoked first, depending on the position of the action "
@@ -59,7 +55,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 			sendNotification(subject, body);
 		}
 		// Is the index current
-		if (!isIndexCurrent.evaluate(indexContext)) {
+		if (!new IsIndexCurrent().evaluate(indexContext)) {
 			String subject = "Index not current : " + indexContext.getIndexName();
 			String body = "The index for " + indexContext.getName() + " is not current. Generally another index "
 					+ "wil be generated immediately, this message is just for information.";
@@ -90,7 +86,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 			sendNotification(subject, body);
 		}
 		// Check that the index is backed up
-		if (!isIndexBackedUp.evaluate(indexContext)) {
+		if (!new IsIndexBackedUp().evaluate(indexContext)) {
 			String subject = "Index not backed up : " + indexContext.getIndexName();
 			String body = "The index is not backed up. Generally this is temporary and the next iteration over the actions "
 					+ "will cause the index to be backed up. This can be regarded as an informational message.";

@@ -31,7 +31,7 @@ public class Delete extends Action<IndexContext<?>, Boolean> {
 		return deletedBoth;
 	}
 
-	private boolean deleteOldIndexes(String indexDirectoryPath) {
+	private boolean deleteOldIndexes(final String indexDirectoryPath) {
 		File baseIndexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
 		File[] timeIndexDirectories = baseIndexDirectory.listFiles();
 		if (timeIndexDirectories == null || timeIndexDirectories.length <= 2) {

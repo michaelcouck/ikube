@@ -40,8 +40,8 @@ public class Restore extends Action<IndexContext<?>, Boolean> {
 		String restoredIndexDirectoryPath = indexDirectoryPath + IConstants.SEP + time;
 		restoredIndexDirectory = FileUtilities.getFile(restoredIndexDirectoryPath, Boolean.TRUE);
 		logger.info("Restoring index from : " + latestIndexDirectoryBackup + ", to : " + restoredIndexDirectory);
-		// Copy the backup to the index directory
 		try {
+			// Copy the backup to the index directory
 			FileUtils.copyDirectory(latestIndexDirectoryBackup, restoredIndexDirectory);
 		} catch (IOException e) {
 			throw new RuntimeException(e);

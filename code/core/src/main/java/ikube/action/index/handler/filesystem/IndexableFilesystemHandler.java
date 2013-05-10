@@ -78,7 +78,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 					handleFile(indexContext, indexableFileSystem, file);
 					Thread.sleep(indexContext.getThrottle());
 					if (Thread.currentThread().isInterrupted()) {
-						throw new InterruptedException("Table indexing teminated : ");
+						throw new RuntimeException("Table indexing teminated : ");
 					}
 				} catch (InterruptedException e) {
 					logger.error("Thread terminated, and indexing stopped : ", e);

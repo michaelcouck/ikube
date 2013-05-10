@@ -16,6 +16,11 @@ import org.nfunk.jep.JEP;
  */
 public interface IAction<E, F> {
 
+	/**
+	 * Sets the predicate that is a rule in a format that the rules engine can process.
+	 * 
+	 * @param predicate the predicate for the rules engine
+	 */
 	void setRuleExpression(final String predicate);
 
 	/**
@@ -42,6 +47,9 @@ public interface IAction<E, F> {
 	 */
 	List<IRule<E>> getRules();
 
+	/**
+	 * TODO Move this logic to the strategies
+	 */
 	boolean preExecute(final E indexContext) throws Exception;
 
 	/**
@@ -55,6 +63,9 @@ public interface IAction<E, F> {
 	 */
 	F execute(final E indexContext) throws Exception;
 
+	/**
+	 * TODO Move this logic to the strategies
+	 */
 	boolean postExecute(final E indexContext) throws Exception;
 
 }

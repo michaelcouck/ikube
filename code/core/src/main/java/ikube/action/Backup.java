@@ -6,6 +6,7 @@ import ikube.model.IndexContext;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 
@@ -38,16 +39,15 @@ public class Backup extends Action<IndexContext<?>, Boolean> {
 			// The index and the backup are the same to save disk space
 			return Boolean.TRUE;
 		}
+		String latestIndexDirectoryBackupPath = indexDirectoryPathBackup + IConstants.SEP + latestIndexDirectory.getName();
+		File latestIndexDirectoryBackup = FileUtilities.getFile(latestIndexDirectoryBackupPath, Boolean.TRUE);
+		logger.info("Backing up index from : " + latestIndexDirectory + ", to : " + latestIndexDirectoryBackup);
+		// Copy the index to the designated place on the network
 		try {
-			String latestIndexDirectoryBackupPath = indexDirectoryPathBackup + IConstants.SEP + latestIndexDirectory.getName();
-			File latestIndexDirectoryBackup = FileUtilities.getFile(latestIndexDirectoryBackupPath, Boolean.TRUE);
-			logger.info("Backing up index from : " + latestIndexDirectory + ", to : " + latestIndexDirectoryBackup);
-			// Copy the index to the designated place on the network
 			FileUtils.copyDirectory(latestIndexDirectory, latestIndexDirectoryBackup);
 			logger.info("Backed up index from : " + latestIndexDirectory + ", to : " + latestIndexDirectoryBackup);
-		} catch (Exception e) {
-			logger.error("Exception backing up indexes : ", e);
-			return Boolean.FALSE;
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 		return Boolean.TRUE;
 	}

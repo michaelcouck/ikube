@@ -88,8 +88,7 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 				result &= dependent.execute(indexContext);
 			}
 			return result;
-		} catch (Exception e) {
-			logger.error(null, e);
+		} catch (final Exception e) {
 			throw e;
 		} finally {
 			postExecute(indexContext);
@@ -224,10 +223,10 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 						IndexWriter.unlock(directory);
 					}
 					close(directory, reader, searchable);
-				} catch (NullPointerException e) {
+				} catch (final NullPointerException e) {
 					logger.error("Reader closed perhaps?");
 					logger.debug(null, e);
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					logger.error("Exception trying to close the searcher", e);
 				}
 			}

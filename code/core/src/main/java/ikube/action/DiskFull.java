@@ -73,7 +73,7 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 				return Boolean.TRUE;
 			}
 		}
-		return Boolean.FALSE;
+		return Boolean.TRUE;
 	}
 
 	private String buildMessage(final String... strings) {

@@ -44,18 +44,11 @@ public class Reset extends Action<IndexContext<?>, Boolean> {
 
 	protected synchronized void delete(final IDataBase dataBase, final Class<?> klass, final String sql,
 			final Map<String, Object> parameters) {
-		try {
-			List<?> list = dataBase.find(klass, sql, parameters, 0, IConstants.RESET_DELETE_BATCH_SIZE);
-			do {
-				if (list.size() > 0) {
-					logger.info("Removing size : " + list.size() + ", " + klass);
-				}
-				dataBase.removeBatch(list);
-				list = dataBase.find(klass, sql, parameters, 0, IConstants.RESET_DELETE_BATCH_SIZE);
-			} while (list.size() > 0);
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-		}
+		List<?> list = dataBase.find(klass, sql, parameters, 0, IConstants.RESET_DELETE_BATCH_SIZE);
+		do {
+			dataBase.removeBatch(list);
+			list = dataBase.find(klass, sql, parameters, 0, IConstants.RESET_DELETE_BATCH_SIZE);
+		} while (list.size() > 0);
 	}
 
 }
