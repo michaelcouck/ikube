@@ -34,11 +34,13 @@
 			searchStrings.push($scope.noneOfTheseWords);
 			return searchStrings.join('');
 		};
+		$scope.searchFields = 'contents;contents;contents;contents';
 		
 		// The form parameters we send to the server
 		$scope.searchParameters = { 
 			indexName : 'desktop', // The default is the desktop index
 			searchStrings : $scope.doSearchStrings(),
+			searchFields : $scope.searchFields,
 			fragment : true,
 			firstResult : 0,
 			maxResults : $scope.pageBlock
@@ -50,7 +52,7 @@
 		// Go to the web service for the results
 		$scope.doSearch = function() {
 			// Advanced search
-			$scope.url = getServiceUrl('/ikube/service/search/json/multi/advanced/all');
+			$scope.url = getServiceUrl('/ikube/service/search/json/multi/advanced');
 			$scope.searchParameters['searchStrings'] = $scope.doSearchStrings();
 			delete $scope.searchParameters['distance'];
 			delete $scope.searchParameters['latitude'];

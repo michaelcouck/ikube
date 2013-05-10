@@ -169,8 +169,8 @@ public class SearcherJson extends Searcher {
 			@QueryParam(value = IConstants.FIRST_RESULT) final int firstResult,
 			@QueryParam(value = IConstants.MAX_RESULTS) final int maxResults) {
 		String[] searchStringsArray = StringUtils.split(searchStrings, SEPARATOR);
-		String[] searchFields = { searchField };
-		ArrayList<HashMap<String, String>> results = searcherService.searchMultiAdvanced(indexName, searchStringsArray, searchFields,
+		String[] searchFieldsArray = StringUtils.split(searchField, SEPARATOR);
+		ArrayList<HashMap<String, String>> results = searcherService.searchMultiAdvanced(indexName, searchStringsArray, searchFieldsArray,
 				fragment, firstResult, maxResults);
 		return buildResponse(results);
 	}

@@ -350,7 +350,6 @@ public class SearcherService implements ISearcherService {
 					searchString });
 			if (dbSearch == null) {
 				Search search = new Search();
-				search.setCount(1);
 				search.setSearchStrings(searchString);
 				search.setIndexName(indexName);
 				search.setTotalResults(Integer.parseInt(statistics.get(IConstants.TOTAL)));

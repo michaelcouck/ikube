@@ -51,7 +51,6 @@ var searcherController = module.controller('SearcherController', function($http,
 			// Pop the statistics Json off the array
 			$scope.statistics = $scope.data.pop();
 			$scope.doPagination($scope.data);
-			alert('Search : data : ' + data + ', status : ' + status);
 		});
 		promise.error(function(data, status, config, errorResponse) {
 			$scope.status = status;
