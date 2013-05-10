@@ -337,7 +337,7 @@ public class SearcherService implements ISearcherService {
 		if (IConstants.AUTOCOMPLETE.equals(indexName)) {
 			return;
 		}
-		Map<String, String> statistics = results.get(0);
+		Map<String, String> statistics = results.get(results.size() - 1);
 		// Add the index name to the statistics here, not elegant, I know
 		statistics.put(IConstants.INDEX_NAME, indexName);
 		for (int i = 0; i < searchStrings.length; i++) {
