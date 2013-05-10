@@ -2,8 +2,6 @@ package ikube.search;
 
 import ikube.IConstants;
 
-import java.io.IOException;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.Term;
@@ -14,7 +12,6 @@ import org.apache.lucene.search.NumericRangeQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.util.NumericUtils;
 
 /**
@@ -24,7 +21,7 @@ import org.apache.lucene.util.NumericUtils;
  * @version 01.00
  */
 @SuppressWarnings("deprecation")
-public class SearchComplex extends Search {
+public class SearchComplex extends SearchSingle {
 
 	public SearchComplex(final Searcher searcher) {
 		this(searcher, IConstants.ANALYZER);
@@ -32,14 +29,6 @@ public class SearchComplex extends Search {
 
 	public SearchComplex(final Searcher searcher, final Analyzer analyzer) {
 		super(searcher, analyzer);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected TopDocs search(final Query query) throws IOException {
-		return searcher.search(query, firstResult + maxResults);
 	}
 
 	/**

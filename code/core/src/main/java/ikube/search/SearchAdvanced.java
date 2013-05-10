@@ -2,8 +2,6 @@ package ikube.search;
 
 import ikube.IConstants;
 
-import java.io.IOException;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.Term;
@@ -14,12 +12,11 @@ import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TopDocs;
 
 /**
- * This is the complex search for combinations of queries, like all of these words and none of these. There are four categories/strings. The
- * first is all the words in the string. The second is an exact phrase. The third is any of the following words and the fourth is none of
- * the words in the string. The result of this query would be something like:
+ * This is the complex search for combinations of queries, like all of these words and none of these. There are four categories/strings. The first is all the
+ * words in the string. The second is an exact phrase. The third is any of the following words and the fourth is none of the words in the string. The result of
+ * this query would be something like:
  * 
  * <pre>
  * 		Data:
@@ -29,8 +26,8 @@ import org.apache.lucene.search.TopDocs;
  * 		(cape AND town AND university) AND ("cape town") AND (one OR two OR three) NOT (caucasian)
  * </pre>
  * 
- * In a data set where the content is as in the data above, there will be one result. But in fact in the test there are two results,
- * something in Lucene perhaps? Perhaps my logic is not working correctly?
+ * In a data set where the content is as in the data above, there will be one result. But in fact in the test there are two results, something in Lucene
+ * perhaps? Perhaps my logic is not working correctly?
  * 
  * @see Search
  * @author Michael Couck
@@ -38,7 +35,7 @@ import org.apache.lucene.search.TopDocs;
  * @version 01.00
  */
 @SuppressWarnings("deprecation")
-public class SearchAdvanced extends Search {
+public class SearchAdvanced extends SearchSingle {
 
 	public SearchAdvanced(final Searcher searcher) {
 		this(searcher, IConstants.ANALYZER);
@@ -46,14 +43,6 @@ public class SearchAdvanced extends Search {
 
 	public SearchAdvanced(final Searcher searcher, final Analyzer analyzer) {
 		super(searcher, analyzer);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected TopDocs search(final Query query) throws IOException {
-		return searcher.search(query, firstResult + maxResults);
 	}
 
 	/**

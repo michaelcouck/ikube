@@ -24,7 +24,7 @@ import org.apache.lucene.util.NumericUtils;
  * @version 01.00
  */
 @SuppressWarnings("deprecation")
-public class SearchNumericAll extends SearchMultiAll {
+public class SearchNumericAll extends SearchSingle {
 
 	public SearchNumericAll(final Searcher searcher) {
 		this(searcher, IConstants.ANALYZER);
