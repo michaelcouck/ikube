@@ -29,8 +29,8 @@
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
 		property:throttle="${wiki.history.throttle}"
-		property:indexDirectoryPath="${index.directory.path}"
-		property:indexDirectoryPathBackup="${index.directory.path}"
+		property:indexDirectoryPath="/mnt/nas-one/history/index"
+		property:indexDirectoryPathBackup="/mnt/nas-one/history/index"
 		property:children-ref="wikiHistoryIndexablesOne" />
 	<util:list id="wikiHistoryIndexablesOne">
 		<ref local="wikiHistoryDataOne" />
@@ -39,7 +39,7 @@
 		id="wikiHistoryDataOne"
 		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataOne"
-		property:path="/tmp/nas/xfs-one/history"
+		property:path="/mnt/nas-one/history"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
@@ -69,8 +69,8 @@
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
 		property:throttle="${wiki.history.throttle}"
-		property:indexDirectoryPath="${index.directory.path}"
-		property:indexDirectoryPathBackup="${index.directory.path}"
+		property:indexDirectoryPath="/mnt/nas-two/history/index"
+		property:indexDirectoryPathBackup="/mnt/nas-two/history/index"
 		property:children-ref="wikiHistoryIndexablesTwo" />
 	<util:list id="wikiHistoryIndexablesTwo">
 		<ref local="wikiHistoryDataTwo" />
@@ -79,7 +79,7 @@
 		id="wikiHistoryDataTwo"
 		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataTwo"
-		property:path="/tmp/nas/xfs-two/history"
+		property:path="/mnt/nas-two/history"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
@@ -109,8 +109,8 @@
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
 		property:throttle="${wiki.history.throttle}"
-		property:indexDirectoryPath="${index.directory.path}"
-		property:indexDirectoryPathBackup="${index.directory.path}"
+		property:indexDirectoryPath="/mnt/nas-three/history/index"
+		property:indexDirectoryPathBackup="/mnt/nas-three/history/index"
 		property:children-ref="wikiHistoryIndexablesThree" />
 	<util:list id="wikiHistoryIndexablesThree">
 		<ref local="wikiHistoryDataThree" />
@@ -119,7 +119,7 @@
 		id="wikiHistoryDataThree"
 		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataThree"
-		property:path="/tmp/nas/xfs-three/history"
+		property:path="/mnt/nas-three/history"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
@@ -149,8 +149,8 @@
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
 		property:throttle="${wiki.history.throttle}"
-		property:indexDirectoryPath="${index.directory.path}"
-		property:indexDirectoryPathBackup="${index.directory.path}"
+		property:indexDirectoryPath="/mnt/nas-four/history/index"
+		property:indexDirectoryPathBackup="/mnt/nas-four/history/index"
 		property:children-ref="wikiHistoryIndexablesFour" />
 	<util:list id="wikiHistoryIndexablesFour">
 		<ref local="wikiHistoryDataFour" />
@@ -159,7 +159,7 @@
 		id="wikiHistoryDataFour"
 		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataFour"
-		property:path="/tmp/nas/xfs-four/history"
+		property:path="/mnt/nas-four/history"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
@@ -189,8 +189,8 @@
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
 		property:throttle="${wiki.history.throttle}"
-		property:indexDirectoryPath="${index.directory.path}"
-		property:indexDirectoryPathBackup="${index.directory.path}"
+		property:indexDirectoryPath="/mnt/nas-five/history/index"
+		property:indexDirectoryPathBackup="/mnt/nas-five/history/index"
 		property:children-ref="wikiHistoryIndexablesFive" />
 	<util:list id="wikiHistoryIndexablesFive">
 		<ref local="wikiHistoryDataFive" />
@@ -199,7 +199,7 @@
 		id="wikiHistoryDataFive"
 		class="ikube.model.IndexableFileSystemWiki"
 		property:name="wikiHistoryDataFive"
-		property:path="/tmp/nas/xfs-five/history"
+		property:path="/mnt/nas-five/history"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"

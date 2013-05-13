@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.hazelcast.core.Hazelcast;
@@ -199,6 +201,10 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 		} catch (HazelcastSerializationException e) {
 			logger.warn("Concurrent error, will retry : " + e.getMessage());
 			Hazelcast.getTransaction().rollback();
+		} catch (EntityNotFoundException e) {
+			// Means that the action was removed in another thread, and we sill commit
+			logger.warn("Entity not found : " + e.getMessage());
+			logger.debug(null, e);
 		} catch (Exception e) {
 			logger.error("Exception stopping action : " + action, e);
 			logger.error("Removed action not comitted : " + toRemoveAction);
