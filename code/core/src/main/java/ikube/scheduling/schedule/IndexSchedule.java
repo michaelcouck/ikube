@@ -6,7 +6,8 @@ import ikube.model.IndexContext;
 import ikube.scheduling.Schedule;
 import ikube.toolkit.ThreadUtilities;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Future;
@@ -43,8 +44,10 @@ public class IndexSchedule extends Schedule {
 	@SuppressWarnings("rawtypes")
 	public void run() {
 		Random random = new Random();
-		Collection<IndexContext> indexContexts = monitorService.getIndexContexts().values();
-		for (IndexContext<?> indexContext : indexContexts) {
+		List<IndexContext> indexContexts = new ArrayList<IndexContext>(monitorService.getIndexContexts().values());
+		// We shuffle the contexts so they all get a chance to get processed
+		Collections.shuffle(indexContexts);
+		for (final IndexContext<?> indexContext : indexContexts) {
 			processIndexContext(indexContext, random);
 		}
 	}
@@ -53,6 +56,7 @@ public class IndexSchedule extends Schedule {
 	private void processIndexContext(final IndexContext indexContext, final Random random) {
 		for (final IAction<IndexContext<?>, Boolean> action : actions) {
 			try {
+				ThreadUtilities.sleep(random.nextInt(10));
 				Runnable runnable = new Runnable() {
 					public void run() {
 						try {

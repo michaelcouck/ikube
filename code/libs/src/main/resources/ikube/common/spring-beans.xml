@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+7
 <beans
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.springframework.org/schema/beans"
@@ -80,13 +80,13 @@
 		<entry key="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" />
 		<entry key="ikube/openjpa.Log" value="DefaultLevel=ERROR,JDBC=ERROR,SQL=ERROR,File=ikube/openjpa.log,Runtime=ERROR,Tool=ERROR" />
 
-		<entry key="openjpa.DataCache" value="true(CacheSize=100000,SoftReferenceSize=100000)" />
-		<entry key="openjpa.QueryCache" value="true(CacheSize=100000,SoftReferenceSize=100000)" />
+		<entry key="openjpa.DataCache" value="true(CacheSize=0,SoftReferenceSize=0)" />
+		<entry key="openjpa.QueryCache" value="true(CacheSize=0,SoftReferenceSize=0)" />
 
 		<entry key="openjpa.Optimistic" value="false" />
-		<entry key="openjpa.ReadLockLevel" value="write" />
+		<entry key="openjpa.ReadLockLevel" value="read" />
 		<entry key="openjpa.WriteLockLevel" value="write" />
-		<entry key="openjpa.NontransactionalRead" value="true" />
+		<entry key="openjpa.NontransactionalRead" value="false" />
 		<entry key="openjpa.LockTimeout" value="60000" />
 
 		<entry key="openjpa.Multithreaded" value="true" />

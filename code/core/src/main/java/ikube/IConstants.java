@@ -143,7 +143,7 @@ public interface IConstants {
 
 	String STRIP_CHARACTERS = "|!,[]{};:/\\.-_";
 
-	long MAX_ACTIONS = 10000;
+	long MAX_ACTIONS = 100000;
 	double MAX_SNAPSHOTS = 90;
 	String TIER = "tier";
 
