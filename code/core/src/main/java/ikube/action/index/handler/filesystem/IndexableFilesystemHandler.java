@@ -73,7 +73,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			final Pattern pattern) {
 		List<File> files = getBatch(indexableFileSystem, directories, pattern);
 		outer : do {
-			for (File file : files) {
+			for (final File file : files) {
 				try {
 					handleFile(indexContext, indexableFileSystem, file);
 					Thread.sleep(indexContext.getThrottle());
@@ -114,7 +114,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 				TFile[] tFiles = trueZipFile.listFiles();
 				if (tFiles != null) {
 					Pattern pattern = getPattern(indexableFileSystem.getExcludedPattern());
-					for (File innerTFile : tFiles) {
+					for (final File innerTFile : tFiles) {
 						if (isExcluded(innerTFile, pattern)) {
 							continue;
 						}
@@ -125,7 +125,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		}
 		// And now the files
 		if (file.isDirectory()) {
-			for (File innerFile : file.listFiles()) {
+			for (final File innerFile : file.listFiles()) {
 				handleFile(indexContext, indexableFileSystem, innerFile);
 			}
 		} else {
@@ -143,7 +143,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			// Get the files for our directory that we are going to index
 			File[] files = directory.listFiles();
 			if (files != null && files.length > 0) {
-				for (File file : files) {
+				for (final File file : files) {
 					if (isExcluded(file, pattern)) {
 						continue;
 					}

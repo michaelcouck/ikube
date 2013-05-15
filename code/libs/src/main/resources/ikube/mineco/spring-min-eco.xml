@@ -46,7 +46,7 @@
 		id="min-eco-csv-files"
 		class="ikube.model.IndexableFileSystemCsv"
 		property:name="min-eco-csv-files"
-		property:path="/tmp/nas/xfs-five/geoname/geoname.csv"
+		property:path="${index.root}/nas-five/geoname/geoname.csv"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"

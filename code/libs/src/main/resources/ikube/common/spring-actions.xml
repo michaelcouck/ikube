@@ -36,7 +36,7 @@
 		<ref bean="ikube.action.Delete" />
 		<ref bean="ikube.action.Clean" />
 		<ref bean="ikube.action.Backup" />
-		<ref bean="ikube.action.DiskFull" />
+		<!-- <ref bean="ikube.action.DiskFull" /> -->
 		<ref bean="ikube.action.Validator" />
 		<ref bean="ikube.action.Prune" />
 	</util:list>
@@ -176,7 +176,7 @@
 			</util:list>
 		</property>
 	</bean>
-	<bean 
+	<!-- <bean 
 		id="ikube.action.DiskFull" 
 		class="ikube.action.DiskFull" 
 		property:ruleExpression="
@@ -186,7 +186,7 @@
 				<ref local="ikube.action.rule.AnyServersWorking" />
 			</util:list>
 		</property>
-	</bean>
+	</bean> -->
 	<bean 
 		id="ikube.action.Validator" 
 		class="ikube.action.Validator" 

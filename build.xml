@@ -44,8 +44,8 @@
 		<antcall target="execute-remote-command">
 			<param name="command" value="
 						cd ${tomcat-bin-directory};
-						./startup.sh;" / -->
-		</antcall>
+						./startup.sh;" />
+		</antcall -->
 	</target>
 
 	<target name="deploy-ikube-site">
@@ -93,14 +93,14 @@
 
 	<target name="go-server">
 		<!-- Clean all the output folders and the configuration -->
-		<!-- antcall target="execute-remote-command">
+		<antcall target="execute-remote-command">
 			<param name="command" value="
 				rm -rf ${tomcat-home}/bin/ikube;
 				rm -rf ${tomcat-home}/webapps/ikube*;
 				rm -rf ${tomcat-home}/logs;
 				mkdir -p ${tomcat-home}/bin/ikube;
 				mkdir -p ${tomcat-home}/logs;" />
-		</antcall -->
+		</antcall>
 		<!-- Deploy the configuration to the server -->
 		<antcall target="copy-directory-to-server">
 			<param name="directory-to-copy" value="${configuration-directory}" />

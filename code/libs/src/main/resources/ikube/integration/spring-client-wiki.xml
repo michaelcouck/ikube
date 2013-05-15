@@ -29,8 +29,8 @@
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
 		property:throttle="${throttle}"
-		property:indexDirectoryPath="/mnt/xfs-one/data/index"
-		property:indexDirectoryPathBackup="/mnt/xfs-one/data/index"
+		property:indexDirectoryPath="${index.root}/nas-one/data/index"
+		property:indexDirectoryPathBackup="${index.root}/nas-one/data/index"
 		property:delta="false"
 		property:children-ref="wikiIndexables" />
 	<util:list id="wikiIndexables">
@@ -41,7 +41,7 @@
 		id="wikidata"
 		class="ikube.model.IndexableFileSystem"
 		property:name="wikidata"
-		property:path="/mnt/xfs-one/data"
+		property:path="${index.root}/nas-one/data"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
