@@ -64,7 +64,7 @@ public class IndexableFilesystemCsvHandlerTest extends AbstractTest {
 
 	@Test
 	public void handleFile() throws Exception {
-		File file = FileUtilities.findFileRecursively(new File("."), Boolean.FALSE, "csv.csv");
+		File file = FileUtilities.findFileRecursively(new File("."), "csv.csv");
 		indexableFileSystem.setEncoding(IConstants.ENCODING);
 		indexableFileSystem.setSeparator(",");
 
@@ -82,7 +82,7 @@ public class IndexableFilesystemCsvHandlerTest extends AbstractTest {
 
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			public void execute() throws Throwable {
-				File file = FileUtilities.findFileRecursively(new File("."), Boolean.FALSE, "csv-large.csv");
+				File file = FileUtilities.findFileRecursively(new File("."), "csv-large.csv");
 				filesystemCsvHandler.handleFile(indexContext, indexableFileSystem, file);
 			}
 		}, "Csv file reader performance : ", 1, Boolean.TRUE);

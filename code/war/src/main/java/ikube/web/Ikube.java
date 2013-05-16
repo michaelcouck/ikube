@@ -43,7 +43,7 @@ public final class Ikube {
 			WebAppContext webAppContext = new WebAppContext();
 			webAppContext.setContextPath(IConstants.SEP + IConstants.IKUBE);
 			// This is path to .war OR TO expanded, existing webapp; WILL FIND web.xml and parse it
-			File warFile = FileUtilities.findFileRecursively(new File("."), Boolean.FALSE, "ikube.war");
+			File warFile = FileUtilities.findFileRecursively(new File("."), "ikube.war");
 			webAppContext.setWar(warFile.getAbsolutePath());
 			server.setHandler(webAppContext);
 			server.setStopAtShutdown(true);

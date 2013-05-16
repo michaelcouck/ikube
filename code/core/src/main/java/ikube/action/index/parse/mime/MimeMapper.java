@@ -30,7 +30,7 @@ public final class MimeMapper {
 	public MimeMapper(final String fileName) {
 		InputStream inputStream = null;
 		try {
-			File file = FileUtilities.findFileRecursively(new File("."), Boolean.FALSE, fileName);
+			File file = FileUtilities.findFileRecursively(new File("."), fileName);
 			inputStream = new FileInputStream(file);
 			SAXReader reader = new SAXReader();
 			Document doc = reader.read(inputStream);

@@ -13,7 +13,7 @@ public class WikiDataUnpacker7ZFileWorkerTest {
 
 	@Test
 	public void run() throws Exception {
-		File file = FileUtilities.findFileRecursively(new File("."), false, "7z");
+		File file = FileUtilities.findFileRecursively(new File("."), "7z");
 		File[] outputDisks = File.listRoots();
 		WikiDataUnpacker7ZFileWorker wikiDataUnpacker7ZWorker = new WikiDataUnpacker7ZFileWorker(file, outputDisks);
 		wikiDataUnpacker7ZWorker.run();

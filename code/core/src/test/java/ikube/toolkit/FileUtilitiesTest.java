@@ -120,54 +120,21 @@ public class FileUtilitiesTest extends AbstractTest {
 	}
 
 	@Test
-	public void getContentsFromEnd() {
-		// Create a file with 1024 bytes and try to read 512 bytes
-		byte[] bytes = new byte[1024];
-		for (int i = 0; i < bytes.length; i++) {
-			bytes[i] = (byte) i;
-		}
-		file = FileUtilities.getFile(file.getAbsolutePath(), Boolean.FALSE);
-		FileUtilities.setContents(file.getAbsolutePath(), bytes);
-
-		byte[] readBytes = FileUtilities.getContentsFromEnd(file, 512).toByteArray();
-		assertTrue("There must be some bytes in the array : ", readBytes.length > 0);
-		for (int i = readBytes.length - 1; i >= 0; i--) {
-			assertEquals("The bytes must be the same in the ", bytes[i], readBytes[i]);
-		}
-		// Now read 2048 bytes from the same file
-		readBytes = FileUtilities.getContentsFromEnd(file, 2048).toByteArray();
-		assertTrue("There must be some bytes in the array : ", readBytes.length > 0);
-		for (int i = bytes.length - 1; i >= 0; i--) {
-			assertEquals("The bytes must be the same in the ", bytes[i], readBytes[i]);
-		}
-	}
-
-	@Test
-	public void unzip() {
-		try {
-			File jarFile = FileUtilities.findFileRecursively(new File("."), false, "jar.jar\\Z");
-			File unzipedDirectory = FileUtilities.unzip(jarFile.getAbsolutePath(), "./deleteMe");
-			assertNotNull(unzipedDirectory);
-			assertTrue(unzipedDirectory.exists());
-			File ruleInterceptorFile = FileUtilities.findFileRecursively(unzipedDirectory, "RuleInterceptor.java");
-			assertNotNull(ruleInterceptorFile);
-			assertTrue(ruleInterceptorFile.exists());
-			FileUtilities.deleteFile(unzipedDirectory, 1);
-		} finally {
-			FileUtilities.deleteFile(new File("./deleteMe"), 1);
-		}
-	}
-
-	@Test
-	public void findFileRecursivelyOnlyFile() {
-		File file = FileUtilities.findFileRecursively(new File("."), false, "doctors.xml");
-		assertNotNull(file);
-		assertTrue(file.isFile());
-		assertTrue(file.exists());
-		file = FileUtilities.findFileRecursively(new File("."), true, "data");
+	public void findDirectoryRecursively() {
+		File file = FileUtilities.findDirectoryRecursively(new File("."), "data");
+		logger.info("Data directory : " + file.getAbsolutePath());
 		assertNotNull(file);
 		assertTrue(file.exists());
 		assertTrue(file.isDirectory());
+	}
+	
+	@Test
+	public void findFileRecursivelyUp() {
+		File folder = new File(".").getAbsoluteFile();
+		folder = FileUtilities.findFileRecursively(folder, "wiki");
+		logger.info("Folder : " + folder.getAbsolutePath());
+		File pomFile = FileUtilities.findFileRecursively(folder, 5, "pom.xml");
+		assertNotNull(pomFile);
 	}
 
 }

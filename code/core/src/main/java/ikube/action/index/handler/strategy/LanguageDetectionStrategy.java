@@ -74,8 +74,7 @@ public final class LanguageDetectionStrategy extends AStrategy {
 	 */
 	@Override
 	public void initialize() {
-		File profileDirectory = FileUtilities.findFileRecursively(new File("." + IConstants.SEP + IConstants.IKUBE + IConstants.SEP),
-				Boolean.TRUE, IConstants.LANGUAGE_DETECT_PROFILES_DIRECTORY);
+		File profileDirectory = FileUtilities.findFileRecursively(new File("." + IConstants.SEP + IConstants.IKUBE + IConstants.SEP), IConstants.LANGUAGE_DETECT_PROFILES_DIRECTORY);
 		try {
 			logger.info("Loading language profiles from : " + profileDirectory.getAbsolutePath());
 			DetectorFactory.loadProfile(profileDirectory);

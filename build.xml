@@ -20,32 +20,34 @@
 	<target name="stop-server">
 		<!-- Stop all the processes, the only way to stop Tomcat -->
 		<antcall target="execute-remote-command">
-			<param name="command" value="cd ${tomcat-bin-directory}; ./shutdown.sh;" />
+			<param name="command" 
+				value="sudo -n cd ${tomcat-bin-directory}; 
+				sudo -n ./shutdown.sh;" />
 		</antcall>
 	</target>
 
 	<target name="deploy-site">
-		<!-- antcall target="execute-remote-command">
-			<param name="command" value="cd ${tomcat-bin-directory}; ./shutdown.sh;" />
+		<antcall target="execute-remote-command">
+			<param name="command" value="cd ${tomcat-bin-directory}; sudo -n ./shutdown.sh;" />
 		</antcall>
-		<sleep seconds="15" / -->
-		<!-- antcall target="execute-remote-command">
+		<sleep seconds="15" />
+		<antcall target="execute-remote-command">
 			<param name="command" value="
-				rm -rf ${tomcat-webapps-directory}/site*;
-				rm -rf ${tomcat-directory}/logs;
-				mkdir -p ${tomcat-directory}/logs;" />
-		</antcall -->
+				sudo -n rm -rf ${tomcat-webapps-directory}/site*;
+				sudo -n rm -rf ${tomcat-directory}/logs;
+				sudo -n mkdir -p ${tomcat-directory}/logs;" />
+		</antcall>
 		<antcall target="deploy-ikube-site">
 			<param name="tomcat-home" value="${tomcat-directory}" />
 		</antcall>
-		<!-- antcall target="execute-remote-command">
-			<param name="command" value="chmod 777 -R ${tomcat-directory};" />
+		<antcall target="execute-remote-command">
+			<param name="command" value="sudo -n chmod 777 -R ${tomcat-directory};" />
 		</antcall>
 		<antcall target="execute-remote-command">
 			<param name="command" value="
-						cd ${tomcat-bin-directory};
-						./startup.sh;" />
-		</antcall -->
+				cd ${tomcat-bin-directory};
+				sudo -n ./startup.sh;" />
+		</antcall>
 	</target>
 
 	<target name="deploy-ikube-site">
@@ -69,25 +71,25 @@
 
 	<target name="stop-servers">
 		<antcall target="execute-remote-command">
-			<param name="command" value="cd ${tomcat-bin-directory-one}; ./shutdown.sh;" />
+			<param name="command" value="cd ${tomcat-bin-directory-one}; sudo -n ./shutdown.sh;" />
 		</antcall>
 		<antcall target="execute-remote-command">
-			<param name="command" value="cd ${tomcat-bin-directory-two}; ./shutdown.sh;" />
+			<param name="command" value="cd ${tomcat-bin-directory-two}; sudo -n ./shutdown.sh;" />
 		</antcall>
 		<antcall target="execute-remote-command">
-			<param name="command" value="cd ${tomcat-bin-directory-three}; ./shutdown.sh;" />
+			<param name="command" value="cd ${tomcat-bin-directory-three}; sudo -n ./shutdown.sh;" />
 		</antcall>
 	</target>
 
 	<target name="start-servers">
 		<antcall target="execute-remote-command">
-			<param name="command" value="cd ${tomcat-bin-directory-one}; ./startup.sh;" />
+			<param name="command" value="cd ${tomcat-bin-directory-one}; sudo -n ./startup.sh;" />
 		</antcall>
 		<antcall target="execute-remote-command">
-			<param name="command" value="cd ${tomcat-bin-directory-two}; ./startup.sh;" />
+			<param name="command" value="cd ${tomcat-bin-directory-two}; sudo -n ./startup.sh;" />
 		</antcall>
 		<antcall target="execute-remote-command">
-			<param name="command" value="cd ${tomcat-bin-directory-three}; ./startup.sh;" />
+			<param name="command" value="cd ${tomcat-bin-directory-three}; sudo -n ./startup.sh;" />
 		</antcall>
 	</target>
 
@@ -95,11 +97,11 @@
 		<!-- Clean all the output folders and the configuration -->
 		<antcall target="execute-remote-command">
 			<param name="command" value="
-				rm -rf ${tomcat-home}/bin/ikube;
-				rm -rf ${tomcat-home}/webapps/ikube*;
-				rm -rf ${tomcat-home}/logs;
-				mkdir -p ${tomcat-home}/bin/ikube;
-				mkdir -p ${tomcat-home}/logs;" />
+				sudo -n rm -rf ${tomcat-home}/bin/ikube;
+				sudo -n rm -rf ${tomcat-home}/webapps/ikube*;
+				sudo -n rm -rf ${tomcat-home}/logs;
+				sudo -n mkdir -p ${tomcat-home}/bin/ikube;
+				sudo -n mkdir -p ${tomcat-home}/logs;" />
 		</antcall>
 		<!-- Deploy the configuration to the server -->
 		<antcall target="copy-directory-to-server">
@@ -112,15 +114,15 @@
 			<param name="server-directory" value="${tomcat-home}/webapps" />
 		</antcall>
 		<!-- Change the directory permissions just in case -->
-		<!-- antcall target="execute-remote-command">
-			<param name="command" value="chmod 777 -R ${tomcat-home};" />
-		</antcall -->
+		<antcall target="execute-remote-command">
+			<param name="command" value="sudo -n chmod 777 -R ${tomcat-home};" />
+		</antcall>
 		<!-- Start the server -->
-		<!-- antcall target="execute-remote-command">
+		<antcall target="execute-remote-command">
 			<param name="command" value="
 				cd ${tomcat-home}/bin;
-				./startup.sh;" />
-		</antcall -->
+				sudo -n ./startup.sh;" />
+		</antcall>
 	</target>
 
 	<target name="prepare">

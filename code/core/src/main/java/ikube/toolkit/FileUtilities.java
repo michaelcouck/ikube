@@ -1,9 +1,5 @@
 package ikube.toolkit;
 
-import ikube.IConstants;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
@@ -16,19 +12,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -42,6 +30,198 @@ public final class FileUtilities {
 	 */
 	private FileUtilities() {
 		// Documented
+	}
+
+	/**
+	 * This method looks through all the files defined in the folder in the parameter list, recursively, and gets the first one that matches the pattern.
+	 * 
+	 * @param folder the folder to start looking through
+	 * @param stringPatterns the patterns to look for in the file paths
+	 * @return the first file that was encountered that has the specified pattern(s) in it
+	 */
+	public static final File findFileRecursively(final File folder, final String... stringPatterns) {
+		List<File> files = findFilesRecursively(folder, new ArrayList<File>(), stringPatterns);
+		return !files.isEmpty() ? files.get(0) : null;
+	}
+
+	/**
+	 * This method will recursively look for a directory in the file system starting at the specified abstract file position and return the first one that is
+	 * encountered.
+	 * 
+	 * @param folder the folder to start looking for the patterns
+	 * @param stringPatterns the patterns of the folder to look for
+	 * @return the first folder that satisfies the patterns specified
+	 */
+	public static final File findDirectoryRecursively(final File folder, final String... stringPatterns) {
+		List<File> files = findFilesRecursively(folder, new ArrayList<File>(), stringPatterns);
+		Iterator<File> fileIterator = files.iterator();
+		while (fileIterator.hasNext()) {
+			if (!fileIterator.next().isDirectory()) {
+				fileIterator.remove();
+			}
+		}
+		return !files.isEmpty() ? files.get(0) : null;
+	}
+
+	/**
+	 * This method looks through all the files defined in the folder in the parameter list, recursively, and gets the first one that matches the pattern.
+	 * 
+	 * @param folder the folder to start looking through
+	 * @param stringPatterns the patterns to look for in the file paths
+	 * @param upDirectories the number of directories to go up before starting the search, i.e. the parent and grandparent directories
+	 * @return the first file that was encountered that has the specified pattern(s) in it
+	 */
+	public static final File findFileRecursively(final File folder, final int upDirectories, final String... stringPatterns) {
+		int directories = upDirectories;
+		File upFolder = folder;
+		do {
+			upFolder = upFolder.getParentFile();
+		} while (--directories > 0 && upFolder != null);
+		List<File> files = findFilesRecursively(upFolder, new ArrayList<File>(), stringPatterns);
+		return !files.isEmpty() ? files.get(0) : null;
+	}
+
+	/**
+	 * This method will look through all the files in the top level folder, and all the sub folders, adding files to the list when they match the patterns that
+	 * are provided.
+	 * 
+	 * @param folder the folder to start looking through
+	 * @param stringPatterns the patterns to match the file paths with
+	 * @param files the files list to add all the files to
+	 * @return the list of files that match the patterns
+	 */
+	public static final List<File> findFilesRecursively(final File folder, final List<File> files, final String... stringPatterns) {
+		if (folder.isDirectory()) {
+			File[] folderFiles = findFiles(folder, stringPatterns);
+			if (folderFiles != null) {
+				files.addAll(Arrays.asList(folderFiles));
+				File[] childFolders = folder.listFiles();
+				for (File childFolder : childFolders) {
+					findFilesRecursively(childFolder, files, stringPatterns);
+				}
+			}
+		}
+		return files;
+	}
+
+	/**
+	 * Finds files with the specified pattern only in the folder specified in the parameter list, i.e. not recursively.
+	 * 
+	 * @param folder the folder to look for files in
+	 * @param stringPatterns the pattern to look for in the file path
+	 * @return an array of files with the specified pattern in the path
+	 */
+	public static final File[] findFiles(final File folder, final String... stringPatterns) {
+		final Pattern pattern = getPattern(stringPatterns);
+		File[] files = folder.listFiles(new FileFilter() {
+			@Override
+			public boolean accept(final File file) {
+				String pathName = file.getAbsolutePath();
+				boolean match = pattern.matcher(pathName).matches();
+				return match;
+			}
+		});
+		return files;
+	}
+
+	/**
+	 * Gets a single file. First looking to find it, if it can not be found then it is created.
+	 * 
+	 * @param filePath the path to the file that is requested
+	 * @return the found or newly created {@link File} or <code>null</code> if something went wrong.
+	 */
+	public static final synchronized File getOrCreateFile(final String filePath) {
+		return (filePath == null) ? null : getOrCreateFile(new File(filePath));
+	}
+
+	/**
+	 * Gets a single directory. First looking to find it, if it can not be found then it is created.
+	 * 
+	 * @param filePath the path to the directory that is requested
+	 * @return the found or newly created {@link File} or <code>null</code> if something went wrong.
+	 */
+	public static final synchronized File getOrCreateDirectory(final String filePath) {
+		return (filePath == null) ? null : getOrCreateDirectory(new File(filePath));
+	}
+
+	/**
+	 * Gets a single file. First looking to find it, if it can not be found then it is created.
+	 * 
+	 * @param file the file that is requested
+	 * @return the found or newly created {@link File} or <code>null</code> if something went wrong.
+	 */
+	public static final synchronized File getOrCreateFile(final File file) {
+		try {
+			if (file.exists() && file.isFile()) {
+				return file;
+			}
+			File parent = file.getParentFile();
+			parent = getOrCreateDirectory(parent.getAbsolutePath());
+			if (parent != null) {
+				try {
+					LOGGER.debug("creating file " + file.getAbsolutePath());
+					boolean created = file.createNewFile();
+					if (created && file.exists()) {
+						return file;
+					}
+				} catch (IOException e) {
+					LOGGER.error("Exception creating file : " + file, e);
+				}
+			}
+			return null;
+		} finally {
+			FileUtilities.class.notifyAll();
+		}
+	}
+
+	/**
+	 * Gets a single directory. First looking to find it, if it can not be found then it is created.
+	 * 
+	 * @param file the directory that is requested
+	 * @return the found or newly created {@link File} or <code>null</code> if something went wrong.
+	 */
+	public static final synchronized File getOrCreateDirectory(final File file) {
+		try {
+			if (file.exists() && file.isDirectory()) {
+				return file;
+			}
+			LOGGER.debug("creating directory " + file.getAbsolutePath());
+			boolean created = file.mkdirs();
+			if (created && file.exists()) {
+				return file;
+			}
+			return null;
+		} finally {
+			FileUtilities.class.notifyAll();
+		}
+	}
+
+	/**
+	 * Gets all the content from the file and puts it into a string, assuming the default encoding for the platform and file contents are in fact strings.
+	 * 
+	 * @param file the file to read into a string
+	 * @return the contents of the file or null if there was an exception reading the file
+	 */
+	public static final String getContent(final File file) {
+		FileInputStream fileInputStream = null;
+		try {
+			fileInputStream = new FileInputStream(file);
+			byte[] bytes = new byte[(int) file.length()];
+			fileInputStream.read(bytes);
+			fileInputStream.close();
+			return new String(bytes);
+		} catch (Exception e) {
+			LOGGER.error("Exception creating file : " + file, e);
+		} finally {
+			if (fileInputStream != null) {
+				try {
+					fileInputStream.close();
+				} catch (Exception e) {
+					LOGGER.error("Exception closing the file stream : " + file, e);
+				}
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -91,105 +271,6 @@ public final class FileUtilities {
 	}
 
 	/**
-	 * Finds files with the specified pattern only in the folder specified in the parameter list, i.e. not recursively.
-	 * 
-	 * @param folder the folder to look for files in
-	 * @param stringPatterns the pattern to look for in the file path
-	 * @return an array of files with the specified pattern in the path
-	 */
-	public static File[] findFiles(final File folder, final String[] stringPatterns) {
-		final Pattern pattern = getPattern(stringPatterns);
-		File[] files = folder.listFiles(new FileFilter() {
-			@Override
-			public boolean accept(final File file) {
-				String pathName = file.getName();
-				if (pattern.matcher(pathName).matches()) {
-					return Boolean.TRUE;
-				}
-				return Boolean.FALSE;
-			}
-		});
-		return files;
-	}
-
-	/**
-	 * This method looks through all the files defined in the folder in the parameter list, recursively, and gets the first one that matches the pattern.
-	 * 
-	 * @param folder the folder to start looking through
-	 * @param stringPatterns the patterns to look for in the file paths
-	 * @return the first file that was encountered that has the specified pattern(s) in it
-	 */
-	public static File findFileRecursively(final File folder, final String... stringPatterns) {
-		List<File> files = FileUtilities.findFilesRecursively(folder, new ArrayList<File>(), stringPatterns);
-		return !files.isEmpty() ? files.get(0) : null;
-	}
-
-	public static File findFileRecursively(final File folder, final boolean directory, final String... stringPatterns) {
-		List<File> files = FileUtilities.findFilesRecursively(folder, new ArrayList<File>(), stringPatterns);
-		for (File file : files) {
-			if (directory) {
-				if (file.isDirectory()) {
-					return file;
-				}
-			} else {
-				if (file.isFile()) {
-					return file;
-				}
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * This method will look through all the files in the top level folder, and all the sub folders, adding files to the list when they match the patterns that
-	 * are provided.
-	 * 
-	 * @param folder the folder to start looking through
-	 * @param stringPatterns the patterns to match the file paths with
-	 * @param files the files list to add all the files to
-	 * @return the list of files that match the patterns
-	 */
-	public static List<File> findFilesRecursively(final File folder, final List<File> files, final String... stringPatterns) {
-		if (folder.isDirectory()) {
-			File[] folderFiles = FileUtilities.findFiles(folder, stringPatterns);
-			if (folderFiles != null && folderFiles.length > 0) {
-				files.addAll(Arrays.asList(folderFiles));
-			}
-			File[] childFolders = folder.listFiles();
-			if (childFolders != null && childFolders.length > 0) {
-				for (File childFolder : childFolders) {
-					findFilesRecursively(childFolder, files, stringPatterns);
-				}
-			}
-		}
-		return files;
-	}
-
-	public static Collection<File> findDuplicateFilesRecursively(final File folder) {
-		Set<File> allFiles = new TreeSet<File>();
-		Set<File> duplicateFiles = new TreeSet<File>();
-		File[] files = folder.listFiles();
-		allFiles.addAll(Arrays.asList(files));
-		do {
-			if (files == null || files.length == 0) {
-				return duplicateFiles;
-			}
-			for (final File file : files) {
-				if (file.isDirectory()) {
-					continue;
-				}
-				Iterator<File> allFilesIterator = allFiles.iterator();
-				while (allFilesIterator.hasNext()) {
-					File next = allFilesIterator.next();
-					if (file.getName().equals(next.getName()) && file.length() == next.length()) {
-						duplicateFiles.add(file);
-					}
-				}
-			}
-		} while (true);
-	}
-
-	/**
 	 * Deletes the file/folder recursively. If the file cannot be deleted then the file is set to delete on exit of the JVM, which doesn't generally work of
 	 * course, but we try anyway.
 	 * 
@@ -200,53 +281,6 @@ public final class FileUtilities {
 		return FileUtilities.deleteFile(file, maxRetryCount, 0);
 	}
 
-	/**
-	 * Gets a single file. First looking to find it, if it can not be found then it is created.
-	 * 
-	 * @param filePath the path to the file that is requested
-	 * @param directory whether the file is a directory of a file
-	 * @return
-	 */
-	public static synchronized File getFile(final String filePath, final boolean directory) {
-		if (filePath == null) {
-			return null;
-		}
-		File file = null;
-		try {
-			file = new File(filePath);
-			if (directory) {
-				if (!file.exists() || !file.isDirectory()) {
-					boolean created = file.mkdirs();
-					makeReadWrite(file);
-					if (!created) {
-						LOGGER.warn("Didn't create directory/file : " + file);
-					}
-				}
-			} else {
-				if (!file.exists() || !file.isFile()) {
-					File parent = file.getParentFile();
-					if (parent != null) {
-						parent = FileUtilities.getFile(parent.getAbsolutePath(), Boolean.TRUE);
-						if (parent != null) {
-							try {
-								boolean created = file.createNewFile();
-								makeReadWrite(file);
-								if (!created) {
-									LOGGER.warn("Didn't create directory/file : " + file);
-								}
-							} catch (IOException e) {
-								LOGGER.error("Exception creating file : " + file, e);
-							}
-						}
-					}
-				}
-			}
-			return file;
-		} finally {
-			FileUtilities.class.notifyAll();
-		}
-	}
-	
 	protected static void makeReadWrite(final File file) {
 		file.setReadable(true, false);
 		file.setWritable(true, false);
@@ -287,6 +321,41 @@ public final class FileUtilities {
 	public static void setContents(final String filePath, final byte[] bytes) {
 		File file = FileUtilities.getFile(filePath, Boolean.FALSE);
 		setContents(file, bytes);
+	}
+
+	/**
+	 * Gets a single file. First looking to find it, if it can not be found then it is created.
+	 * 
+	 * @param filePath the path to the file that is requested
+	 * @param directory whether the file is a directory of a file
+	 * @return
+	 */
+	public static synchronized File getFile(final String filePath, final boolean directory) {
+		if (filePath == null) {
+			return null;
+		}
+		File file = null;
+		try {
+			file = new File(filePath);
+			if (directory) {
+				file = getOrCreateDirectory(file);
+				if (!file.exists() || !file.isDirectory()) {
+					makeReadWrite(file);
+				} else {
+					LOGGER.warn("Didn't create directory/file : " + file);
+				}
+			} else {
+				file = getOrCreateFile(file);
+				if (!file.exists() || !file.isFile()) {
+					makeReadWrite(file);
+				} else {
+					LOGGER.warn("Didn't create directory/file : " + file);
+				}
+			}
+			return file;
+		} finally {
+			FileUtilities.class.notifyAll();
+		}
 	}
 
 	/**
@@ -375,34 +444,6 @@ public final class FileUtilities {
 	}
 
 	/**
-	 * This method will read the contents of a file from the end, reading the number of bytes specified in the parameter list.
-	 * 
-	 * @param file the file to read from the end
-	 * @param bytesToRead the number of bytes to read
-	 * @return the byte array with the bytes read, could be empty if there is no data in the file or if there is an exception
-	 */
-	public static ByteArrayOutputStream getContentsFromEnd(final File file, final long bytesToRead) {
-		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-		FileInputStream fileInputStream = null;
-		try {
-			long length = file.length();
-			fileInputStream = new FileInputStream(file);
-			ByteBuffer byteBuffer = ByteBuffer.allocate((int) bytesToRead);
-			long position = length - bytesToRead;
-			if (position < 0) {
-				position = 0;
-			}
-			fileInputStream.getChannel().read(byteBuffer, position);
-			byteArrayOutputStream.write(byteBuffer.array());
-		} catch (Exception e) {
-			LOGGER.error("Exception reading from the end of the file : ", e);
-		} finally {
-			close(fileInputStream);
-		}
-		return byteArrayOutputStream;
-	}
-
-	/**
 	 * Reads the contents of the stream and returns the contents in a byte array form.
 	 * 
 	 * @param inputStream the file to read the contents from
@@ -455,120 +496,6 @@ public final class FileUtilities {
 				LOGGER.error("Exception closing input stream " + reader, e);
 			}
 		}
-	}
-
-	public static void copyFile(File in, File out) {
-		if (!in.exists() || !in.canRead()) {
-			LOGGER.warn("Can't copy file : " + in);
-			return;
-		}
-		if (!out.getParentFile().exists()) {
-			FileUtilities.getFile(out.getParentFile().getAbsolutePath(), Boolean.TRUE);
-		}
-		if (!out.exists()) {
-			FileUtilities.getFile(out.getAbsolutePath(), Boolean.FALSE);
-		}
-		LOGGER.debug("Copying file : " + in + ", to : " + out);
-		FileChannel inChannel = null;
-		FileChannel outChannel = null;
-		FileInputStream fileInputStream = null;
-		FileOutputStream fileOutputStream = null;
-		try {
-			fileInputStream = new FileInputStream(in);
-			inChannel = fileInputStream.getChannel();
-			fileOutputStream = new FileOutputStream(out);
-			outChannel = fileOutputStream.getChannel();
-			inChannel.transferTo(0, inChannel.size(), outChannel);
-		} catch (Exception e) {
-			LOGGER.error("Exception copying file : " + in + ", to : " + out, e);
-		} finally {
-			close(fileInputStream);
-			close(fileOutputStream);
-			if (inChannel != null) {
-				try {
-					inChannel.close();
-				} catch (Exception e) {
-					LOGGER.error("Exception closing input channel : ", e);
-				}
-			}
-			if (outChannel != null) {
-				try {
-					outChannel.close();
-				} catch (Exception e) {
-					LOGGER.error("Exception closing output channel : ", e);
-				}
-			}
-		}
-	}
-
-	private static final int BUFFER = 2048;
-
-	/**
-	 * This method unzips a file to a folder in the user directory with the name of the file.
-	 * 
-	 * @param zipFile the zip file to unpack, this file name sill be used for the folder to unzip to
-	 * @return the folder where the file was unpacked to
-	 */
-	public static File unzip(String zipFile, String toDir) {
-		File file;
-		ZipFile zip;
-		try {
-			file = new File(zipFile);
-			zip = new ZipFile(file);
-		} catch (Exception e) {
-			LOGGER.error("Exception opening zip file : " + zipFile, e);
-			return null;
-		}
-		File destinationFolder = null;
-		try {
-			Enumeration<? extends ZipEntry> zipFileEntries = zip.entries();
-			// Process each entry
-			destinationFolder = FileUtilities.getFile(toDir + IConstants.SEP + file.getName(), Boolean.TRUE);
-			while (zipFileEntries.hasMoreElements()) {
-				// Grab a zip file entry
-				ZipEntry entry = zipFileEntries.nextElement();
-				if (entry.isDirectory()) {
-					continue;
-				}
-				String destinationPath = destinationFolder.getAbsolutePath() + IConstants.SEP + entry.getName();
-				File destinationFile = FileUtilities.getFile(destinationPath, Boolean.FALSE);
-				// LOGGER.info("Unzipped file : " +
-				// destinationFile.getAbsolutePath());
-				InputStream inputStream = null;
-				OutputStream outputStream = null;
-				OutputStream destinationOutputStream = null;
-				try {
-					if (!entry.isDirectory()) {
-						inputStream = new BufferedInputStream(zip.getInputStream(entry));
-						int currentByte;
-						// establish buffer for writing file
-						byte data[] = new byte[BUFFER];
-						// write the current file to disk
-						outputStream = new FileOutputStream(destinationFile);
-						destinationOutputStream = new BufferedOutputStream(outputStream, BUFFER);
-						// read and write until last byte is encountered
-						while ((currentByte = inputStream.read(data, 0, BUFFER)) != -1) {
-							destinationOutputStream.write(data, 0, currentByte);
-						}
-					}
-				} catch (Exception e) {
-					LOGGER.error("Exception extracting zip entry : " + entry, e);
-				} finally {
-					close(inputStream);
-					close(outputStream);
-					// close(destinationOutputStream);
-				}
-			}
-		} catch (Exception e) {
-			LOGGER.error("Exception extracting zip file : " + zipFile + ", " + zip, e);
-		} finally {
-			try {
-				zip.close();
-			} catch (Exception e) {
-				LOGGER.error("Exception closing zip file : " + zip, e);
-			}
-		}
-		return destinationFolder;
 	}
 
 	public static void close(Reader reader) {

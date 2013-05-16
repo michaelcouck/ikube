@@ -28,7 +28,7 @@ public class WikiDataUnpackerWorkerTest {
 
 	@Before
 	public void before() {
-		bZip2File = FileUtilities.findFileRecursively(new File("."), Boolean.FALSE, "bzip2");
+		bZip2File = FileUtilities.findFileRecursively(new File("."), "bzip2");
 		folder = bZip2File.getParentFile();
 		wikiDataUnpackerWorker = new WikiDataUnpackerWorker(folder);
 	}

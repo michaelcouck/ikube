@@ -51,7 +51,7 @@ public class IndexableFilesystemLogHandlerTest extends AbstractTest {
 	@SuppressWarnings("unchecked")
 	public void handle() throws Exception {
 		IndexableFileSystemLog indexableFileSystemLog = new IndexableFileSystemLog();
-		File logDirectory = FileUtilities.findFileRecursively(new File("."), true, "logs");
+		File logDirectory = FileUtilities.findFileRecursively(new File("."), "logs");
 		indexableFileSystemLog.setPath(logDirectory.getAbsolutePath());
 		indexableFileSystemLog.setFileFieldName("fileName");
 		indexableFileSystemLog.setPathFieldName("filePath");

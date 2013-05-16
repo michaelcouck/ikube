@@ -46,7 +46,7 @@ public final class MimeTypes {
 	public MimeTypes(final String fileName) {
 		InputStream inputStream = null;
 		try {
-			File file = FileUtilities.findFileRecursively(new File("."), Boolean.FALSE, fileName);
+			File file = FileUtilities.findFileRecursively(new File("."), fileName);
 			inputStream = new FileInputStream(file);
 			MimeTypes instance = null;
 			synchronized (INSTANCES) {

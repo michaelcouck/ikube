@@ -60,7 +60,7 @@ public class IndexDeltaIntegration extends Integration {
 		try {
 			String inserted = "Delta file data";
 			// Create the index, delta or otherwise
-			File deltaFile = FileUtilities.findFileRecursively(new File("."), Boolean.FALSE, "delta.txt");
+			File deltaFile = FileUtilities.findFileRecursively(new File("."), "delta.txt");
 			OutputStream outputStream = new FileOutputStream(deltaFile);
 			IOUtils.write(inserted.getBytes(), outputStream);
 			IOUtils.closeQuietly(outputStream);

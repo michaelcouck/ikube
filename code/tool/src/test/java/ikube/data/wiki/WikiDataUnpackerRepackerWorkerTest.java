@@ -25,7 +25,7 @@ public class WikiDataUnpackerRepackerWorkerTest {
 
 	@After
 	public void after() {
-		File outputFile = FileUtilities.findFileRecursively(new File(baseDirectory), Boolean.FALSE, "gig.bz2");
+		File outputFile = FileUtilities.findFileRecursively(new File(baseDirectory), "gig.bz2");
 		if (outputFile != null) {
 			FileUtilities.deleteFile(outputFile, 1);
 		}
@@ -35,7 +35,7 @@ public class WikiDataUnpackerRepackerWorkerTest {
 	public void run() {
 		wikiDataUnpackerRepackerWorker.run();
 		// Verify that there is another file with the same name
-		File outputFile = FileUtilities.findFileRecursively(new File(baseDirectory), Boolean.FALSE, "gig.bz2");
+		File outputFile = FileUtilities.findFileRecursively(new File(baseDirectory), "gig.bz2");
 		assertNotNull("There should be an output file at least : ", outputFile);
 	}
 
