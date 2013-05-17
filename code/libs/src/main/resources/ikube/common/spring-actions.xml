@@ -190,7 +190,7 @@
 		class="ikube.action.DiskFull" 
 		property:ruleExpression="
 			AnyServersWorking"
-		property:requiresClusterLock="true">
+		property:requiresClusterLock="false">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.AnyServersWorking" />
