@@ -54,7 +54,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 					proceedLocked = clusterManager.lock(IConstants.IKUBE);
 					LOGGER.info("Got lock : " + action);
 				}
-				if (proceedLocked) {
+				if (!proceedLocked) {
 					LOGGER.info("Couldn't get cluster lock : " + proceedingJoinPoint.getTarget());
 					proceed = Boolean.FALSE;
 				} else {
