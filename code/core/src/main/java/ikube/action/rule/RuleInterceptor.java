@@ -18,11 +18,10 @@ import org.nfunk.jep.SymbolTable;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * This class is implemented as an intercepter, and typically configured in Spring. The intercepter will intercept the execution of the
- * actions, like {@link Index} and {@link Open}. Each action has associated with it rules, like whether any other servers are currently
- * working on this index or if the index is current and already open. The rules for the action will then be executed, and based on the
- * result of the boolean predicate parameterized with the results of each rule, the action will either be executed or not. {@link JEP} is
- * the expression parser for the rules.
+ * This class is implemented as an intercepter, and typically configured in Spring. The intercepter will intercept the execution of the actions, like
+ * {@link Index} and {@link Open}. Each action has associated with it rules, like whether any other servers are currently working on this index or if the index
+ * is current and already open. The rules for the action will then be executed, and based on the result of the boolean predicate parameterized with the results
+ * of each rule, the action will either be executed or not. {@link JEP} is the expression parser for the rules.
  * 
  * @see IRuleInterceptor
  * @author Michael Couck
@@ -43,13 +42,12 @@ public class RuleInterceptor implements IRuleInterceptor {
 	@SuppressWarnings("rawtypes")
 	public Object decide(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 		Object target = proceedingJoinPoint.getTarget();
-		boolean proceed = Boolean.FALSE;
+		boolean proceed = Boolean.TRUE;
 		IndexContext<?> indexContext = null;
-		try {
-			if (!IAction.class.isAssignableFrom(target.getClass())) {
-				LOGGER.warn("Can't intercept non action class, proceeding : " + target);
-				proceed = Boolean.TRUE;
-			} else {
+		if (!IAction.class.isAssignableFrom(target.getClass())) {
+			LOGGER.warn("Can't intercept non action class, proceeding : " + target);
+		} else {
+			try {
 				IAction action = (IAction) target;
 				if (action.requiresClusterLock() && !clusterManager.lock(IConstants.IKUBE)) {
 					LOGGER.info("Couldn't get cluster lock : " + proceedingJoinPoint.getTarget());
@@ -57,31 +55,27 @@ public class RuleInterceptor implements IRuleInterceptor {
 				} else {
 					// Find the index context
 					indexContext = getIndexContext(proceedingJoinPoint);
-					if (indexContext == null) {
-						LOGGER.warn("Couldn't find the index context : " + proceedingJoinPoint);
-					} else {
-						proceed = evaluateRules(indexContext, action);
-					}
+					proceed = evaluateRules(indexContext, action);
 				}
+			} catch (NullPointerException e) {
+				LOGGER.warn("Context closing down : ");
+			} catch (Exception t) {
+				LOGGER.error("Exception proceeding on target : " + target, t);
+			} finally {
+				boolean unlocked = clusterManager.unlock(IConstants.IKUBE);
+				LOGGER.info("Unlocked : " + unlocked);
 			}
-			if (proceed) {
-				proceed(indexContext, proceedingJoinPoint);
-			}
-		} catch (NullPointerException e) {
-			LOGGER.warn("Context closing down : ");
-		} catch (Exception t) {
-			LOGGER.error("Exception proceeding on target : " + target, t);
-		} finally {
-			boolean unlocked = clusterManager.unlock(IConstants.IKUBE);
-			LOGGER.debug("Unlocked : " + unlocked);
+		}
+		if (proceed) {
+			proceed(indexContext, proceedingJoinPoint);
 		}
 		return Boolean.TRUE;
 	}
 
 	/**
-	 * Proceeds on the join point. A scheduled task will be started by the scheduler. The task is the action that has been given the green
-	 * light to start. The current thread will wait for the action to complete, but will only wait for a few seconds then continue. The
-	 * action is started in a separate thread because we don't want a queue of actions building up.
+	 * Proceeds on the join point. A scheduled task will be started by the scheduler. The task is the action that has been given the green light to start. The
+	 * current thread will wait for the action to complete, but will only wait for a few seconds then continue. The action is started in a separate thread
+	 * because we don't want a queue of actions building up.
 	 * 
 	 * @param proceedingJoinPoint the intercepted action join point
 	 */
