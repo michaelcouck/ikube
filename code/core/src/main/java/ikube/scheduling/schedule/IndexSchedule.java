@@ -18,9 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * This class is the central class for creating indexes.
  * 
- * This class then only looks up the index contexts and executes actions on them. The index engine registers a listener with the scheduler
- * and responds to the {@link Event#TIMER} type of event. This event schedule can be configured in the configuration, as can most schedules
- * and executors.
+ * This class then only looks up the index contexts and executes actions on them. The index engine registers a listener with the scheduler and responds to the
+ * {@link Event#TIMER} type of event. This event schedule can be configured in the configuration, as can most schedules and executors.
  * 
  * Index contexts contain parameters and indexables. Indexables are objects that can be indexed, like files and databases.
  * 
@@ -54,15 +53,17 @@ public class IndexSchedule extends Schedule {
 
 	@SuppressWarnings("rawtypes")
 	private void processIndexContext(final IndexContext indexContext, final Random random) {
+		// Lets try to shuffel the actions too!
+		List<IAction<IndexContext<?>, Boolean>> actions = new ArrayList<IAction<IndexContext<?>, Boolean>>(this.actions);
+		Collections.shuffle(actions);
 		for (final IAction<IndexContext<?>, Boolean> action : actions) {
 			try {
-				ThreadUtilities.sleep(random.nextInt(10));
+				ThreadUtilities.sleep(random.nextInt(30));
 				Runnable runnable = new Runnable() {
 					public void run() {
 						try {
-							// The action will be intercepted by the rule interceptor, and the rules
-							// will be evaluated against the cluster. If they result in a true then the action
-							// will be allowed to execute the logic
+							// The action will be intercepted by the rule interceptor, and the rules will be evaluated
+							// against the cluster. If they result in a true then the action will be allowed to execute the logic
 							action.execute(indexContext);
 						} catch (Throwable e) {
 							LOGGER.error("Exception executing action : " + action, e);
@@ -71,7 +72,7 @@ public class IndexSchedule extends Schedule {
 				};
 				Future<?> future = ThreadUtilities.submit(this.getClass().getSimpleName(), runnable);
 				// We'll wait a few seconds for this action, perhaps it is a fast one
-				ThreadUtilities.waitForFuture(future, Math.max(3, random.nextInt(15)));
+				ThreadUtilities.waitForFuture(future, Math.max(15, random.nextInt(15)));
 			} catch (Exception e) {
 				LOGGER.error("Exception executing action : " + action, e);
 			}
