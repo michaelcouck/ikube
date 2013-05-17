@@ -47,9 +47,14 @@ public class RuleInterceptor implements IRuleInterceptor {
 		if (!IAction.class.isAssignableFrom(target.getClass())) {
 			LOGGER.warn("Can't intercept non action class, proceeding : " + target);
 		} else {
+			IAction action = (IAction) target;
 			try {
-				IAction action = (IAction) target;
-				if (action.requiresClusterLock() && !clusterManager.lock(IConstants.IKUBE)) {
+				boolean proceedLocked = Boolean.TRUE;
+				if (action.requiresClusterLock()) {
+					proceedLocked = clusterManager.lock(IConstants.IKUBE);
+					LOGGER.info("Got lock : " + action);
+				}
+				if (proceedLocked) {
 					LOGGER.info("Couldn't get cluster lock : " + proceedingJoinPoint.getTarget());
 					proceed = Boolean.FALSE;
 				} else {
@@ -63,7 +68,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 				LOGGER.error("Exception proceeding on target : " + target, t);
 			} finally {
 				boolean unlocked = clusterManager.unlock(IConstants.IKUBE);
-				LOGGER.info("Unlocked : " + unlocked);
+				LOGGER.info("Unlocked : " + unlocked + ", " + action);
 			}
 		}
 		if (proceed) {
