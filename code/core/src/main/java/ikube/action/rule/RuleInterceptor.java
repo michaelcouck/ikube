@@ -49,17 +49,19 @@ public class RuleInterceptor implements IRuleInterceptor {
 			if (!IAction.class.isAssignableFrom(target.getClass())) {
 				LOGGER.warn("Can't intercept non action class, proceeding : " + target);
 				proceed = Boolean.TRUE;
-			} else if (!clusterManager.lock(IConstants.IKUBE)) {
-				LOGGER.info("Couldn't get cluster lock : " + proceedingJoinPoint.getTarget());
-				proceed = Boolean.FALSE;
 			} else {
-				// Find the index context
-				indexContext = getIndexContext(proceedingJoinPoint);
-				if (indexContext == null) {
-					LOGGER.warn("Couldn't find the index context : " + proceedingJoinPoint);
+				IAction action = (IAction) target;
+				if (action.requiresClusterLock() && !clusterManager.lock(IConstants.IKUBE)) {
+					LOGGER.info("Couldn't get cluster lock : " + proceedingJoinPoint.getTarget());
+					proceed = Boolean.FALSE;
 				} else {
-					IAction action = (IAction) target;
-					proceed = evaluateRules(indexContext, action);
+					// Find the index context
+					indexContext = getIndexContext(proceedingJoinPoint);
+					if (indexContext == null) {
+						LOGGER.warn("Couldn't find the index context : " + proceedingJoinPoint);
+					} else {
+						proceed = evaluateRules(indexContext, action);
+					}
 				}
 			}
 			if (proceed) {

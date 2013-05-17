@@ -67,5 +67,7 @@ public interface IAction<E, F> {
 	 * TODO Move this logic to the strategies
 	 */
 	boolean postExecute(final E indexContext) throws Exception;
+	
+	boolean requiresClusterLock();
 
 }

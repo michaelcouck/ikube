@@ -67,6 +67,11 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	 * holders and the expression evaluated by {@link JEP}.
 	 */
 	private String predicate;
+	
+	/**
+	 * Flag to exclude actions that don't need a cluster lock to perform the execution of the rules.
+	 */
+	private boolean requiresClusterLock;
 
 	/**
 	 * {@inheritDoc}
@@ -93,6 +98,14 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 		} finally {
 			postExecute(indexContext);
 		}
+	}
+	
+	public boolean requiresClusterLock() {
+		return requiresClusterLock;
+	}
+
+	public void setRequiresClusterLock(final boolean requiresClusterLock) {
+		this.requiresClusterLock = requiresClusterLock;
 	}
 
 	/**
