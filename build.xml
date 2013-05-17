@@ -10,7 +10,7 @@
 
 	<target name="go">
 		<antcall target="prepare" />
-		<!-- antcall target="stop-server" / -->
+		<antcall target="stop-server" />
 		<!-- Deploy the configuration and ikube and start the servers -->
 		<antcall target="go-server" inheritall="true">
 			<param name="tomcat-home" value="${tomcat-directory}" />
@@ -20,9 +20,42 @@
 	<target name="stop-server">
 		<!-- Stop all the processes, the only way to stop Tomcat -->
 		<antcall target="execute-remote-command">
-			<param name="command" 
-				value="sudo -n cd ${tomcat-bin-directory}; 
+			<param name="command" value="cd ${tomcat-bin-directory}; 
 				sudo -n ./shutdown.sh;" />
+		</antcall>
+	</target>
+
+	<target name="go-server">
+		<!-- Clean all the output folders and the configuration -->
+		<antcall target="execute-remote-command">
+			<param name="command" value="
+					sudo -n chmod 777 -R ${tomcat-home};
+					sudo -n rm -rf ${tomcat-home}/bin/ikube;
+					sudo -n rm -rf ${tomcat-home}/webapps/ikube*;
+					sudo -n rm -rf ${tomcat-home}/logs;
+					sudo -n mkdir -p ${tomcat-home}/bin/ikube;
+					sudo -n mkdir -p ${tomcat-home}/logs;
+					sudo -n chmod 777 -R ${tomcat-home};" />
+		</antcall>
+		<!-- Deploy the configuration to the server -->
+		<antcall target="copy-directory-to-server">
+			<param name="directory-to-copy" value="${configuration-directory}" />
+			<param name="server-directory" value="${tomcat-home}/bin/ikube" />
+		</antcall>
+		<!-- Deploy Ikube to the server -->
+		<antcall target="copy-file-to-server">
+			<param name="file-to-copy" value="${target-directory}/${ikube-war}" />
+			<param name="server-directory" value="${tomcat-home}/webapps" />
+		</antcall>
+		<!-- Change the directory permissions just in case -->
+		<antcall target="execute-remote-command">
+			<param name="command" value="sudo -n chmod 777 -R ${tomcat-home};" />
+		</antcall>
+		<!-- Start the server -->
+		<antcall target="execute-remote-command">
+			<param name="command" value="
+					cd ${tomcat-home}/bin;
+					sudo -n ./startup.sh;" />
 		</antcall>
 	</target>
 
@@ -33,9 +66,11 @@
 		<sleep seconds="15" />
 		<antcall target="execute-remote-command">
 			<param name="command" value="
+				sudo -n chmod 777 -R ${tomcat-home};
 				sudo -n rm -rf ${tomcat-webapps-directory}/site*;
 				sudo -n rm -rf ${tomcat-directory}/logs;
-				sudo -n mkdir -p ${tomcat-directory}/logs;" />
+				sudo -n mkdir -p ${tomcat-directory}/logs;
+				sudo -n chmod 777 -R ${tomcat-home};" />
 		</antcall>
 		<antcall target="deploy-ikube-site">
 			<param name="tomcat-home" value="${tomcat-directory}" />
@@ -90,38 +125,6 @@
 		</antcall>
 		<antcall target="execute-remote-command">
 			<param name="command" value="cd ${tomcat-bin-directory-three}; sudo -n ./startup.sh;" />
-		</antcall>
-	</target>
-
-	<target name="go-server">
-		<!-- Clean all the output folders and the configuration -->
-		<antcall target="execute-remote-command">
-			<param name="command" value="
-				sudo -n rm -rf ${tomcat-home}/bin/ikube;
-				sudo -n rm -rf ${tomcat-home}/webapps/ikube*;
-				sudo -n rm -rf ${tomcat-home}/logs;
-				sudo -n mkdir -p ${tomcat-home}/bin/ikube;
-				sudo -n mkdir -p ${tomcat-home}/logs;" />
-		</antcall>
-		<!-- Deploy the configuration to the server -->
-		<antcall target="copy-directory-to-server">
-			<param name="directory-to-copy" value="${configuration-directory}" />
-			<param name="server-directory" value="${tomcat-home}/bin/ikube" />
-		</antcall>
-		<!-- Deploy Ikube to the server -->
-		<antcall target="copy-file-to-server">
-			<param name="file-to-copy" value="${target-directory}/${ikube-war}" />
-			<param name="server-directory" value="${tomcat-home}/webapps" />
-		</antcall>
-		<!-- Change the directory permissions just in case -->
-		<antcall target="execute-remote-command">
-			<param name="command" value="sudo -n chmod 777 -R ${tomcat-home};" />
-		</antcall>
-		<!-- Start the server -->
-		<antcall target="execute-remote-command">
-			<param name="command" value="
-				cd ${tomcat-home}/bin;
-				sudo -n ./startup.sh;" />
 		</antcall>
 	</target>
 

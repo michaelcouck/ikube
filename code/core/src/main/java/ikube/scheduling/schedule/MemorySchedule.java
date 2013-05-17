@@ -4,6 +4,8 @@ import ikube.IConstants;
 import ikube.scheduling.Schedule;
 import ikube.toolkit.ThreadUtilities;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
@@ -14,16 +16,19 @@ import org.springframework.beans.factory.annotation.Value;
  * @version 01.00
  */
 public class MemorySchedule extends Schedule {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(MemorySchedule.class);
 
 	@Value("${max.memory}")
-	private String maxMemory = "2000";
+	private int maxMemory = 2000;
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void run() {
-		if (Runtime.getRuntime().totalMemory() / IConstants.MILLION > Integer.parseInt(maxMemory)) {
+		if ((Runtime.getRuntime().totalMemory() / IConstants.MILLION) > maxMemory) {
+			LOGGER.info("Terminating schedules due to memory exceeded : ");
 			ThreadUtilities.destroy();
 		}
 	}

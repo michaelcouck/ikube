@@ -339,14 +339,14 @@ public final class FileUtilities {
 			file = new File(filePath);
 			if (directory) {
 				file = getOrCreateDirectory(file);
-				if (!file.exists() || !file.isDirectory()) {
+				if (file.exists()) {
 					makeReadWrite(file);
 				} else {
 					LOGGER.warn("Didn't create directory/file : " + file);
 				}
 			} else {
 				file = getOrCreateFile(file);
-				if (!file.exists() || !file.isFile()) {
+				if (!file.exists()) {
 					makeReadWrite(file);
 				} else {
 					LOGGER.warn("Didn't create directory/file : " + file);

@@ -191,6 +191,7 @@ public final class ThreadUtilities {
 	 * and exit the run method.
 	 */
 	public static synchronized void destroy() {
+		Thread.dumpStack();
 		try {
 			if (EXECUTER_SERVICE == null || EXECUTER_SERVICE.isShutdown()) {
 				LOGGER.info("Executer service already shutdown : ");

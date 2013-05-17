@@ -27,7 +27,7 @@ public class StopListener implements IListener<Message<Object>>, MessageListener
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onMessage(Message<Object> message) {
+	public void onMessage(final Message<Object> message) {
 		// If this is a stop working message then find the future in the thread utilities and kill it
 		@SuppressWarnings("unused")
 		Object source = message.getSource();
@@ -35,6 +35,10 @@ public class StopListener implements IListener<Message<Object>>, MessageListener
 		if (object != null && Event.class.isAssignableFrom(object.getClass())) {
 			// logger.info("Got message : " + source + ", " + object);
 			Event event = (Event) object;
+			if (event.isConsumed()) {
+				return;
+			}
+			event.setConsumed(Boolean.TRUE);
 			if (Event.TERMINATE.equals(event.getType())) {
 				Object indexName = event.getObject();
 				if (indexName != null && String.class.isAssignableFrom(indexName.getClass())) {
