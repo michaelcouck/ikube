@@ -36,7 +36,7 @@
 		<ref bean="ikube.action.Delete" />
 		<ref bean="ikube.action.Clean" />
 		<ref bean="ikube.action.Backup" />
-		<!-- <ref bean="ikube.action.DiskFull" /> -->
+		<ref bean="ikube.action.DiskFull" />
 		<ref bean="ikube.action.Validator" />
 		<ref bean="ikube.action.Prune" />
 	</util:list>
@@ -45,7 +45,8 @@
 		id="ikube.action.Reset" 
 		class="ikube.action.Reset" 
 		property:ruleExpression="
-			!AnyServersWorkingThisIndex">
+			!AnyServersWorkingThisIndex"
+		property:requiresClusterLock="false">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.AnyServersWorkingThisIndex" />
@@ -56,7 +57,8 @@
 		id="ikube.action.Prune" 
 		class="ikube.action.Prune" 
 		property:ruleExpression="
-			!IsThisServerWorking">
+			!IsThisServerWorking"
+		property:requiresClusterLock="false">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />
@@ -71,7 +73,8 @@
 			!IsThisServerWorking &#38;&#38; 
 			!AnyServersWorking &#38;&#38;
 			DoesBackupIndexExist &#38;&#38;
-			(!AreIndexesCreated || IsIndexCorrupt)">
+			(!AreIndexesCreated || IsIndexCorrupt)"
+		property:requiresClusterLock="true">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsNewIndexCreated" />
@@ -87,7 +90,8 @@
 		id="ikube.action.Close" 
 		class="ikube.action.Close" 
 		property:ruleExpression="
-			IsIndexCorrupt">
+			IsIndexCorrupt"
+		property:requiresClusterLock="false">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsIndexCorrupt" />
@@ -104,7 +108,8 @@
 			  (!IsMultiSearcherInitialised ||  
 			    !AreSearchablesInitialised) &#38;&#38;
 			  (AreIndexesCreated || 
-			    AreUnopenedIndexes))">
+			    AreUnopenedIndexes))"
+		property:requiresClusterLock="false">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsNewIndexCreated" />
@@ -121,7 +126,8 @@
 		class="ikube.action.Index" 
 		property:ruleExpression="
 			!IsIndexCurrent &#38;&#38; !AnyServersWorkingThisIndex &#38;&#38; !TooManyActionsRule &#38;&#38; 
-			!(IsThisServerWorking &#38;&#38; AreOtherServers &#38;&#38; AnyServersIdle)">
+			!(IsThisServerWorking &#38;&#38; AreOtherServers &#38;&#38; AnyServersIdle)"
+		property:requiresClusterLock="true">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />
@@ -140,7 +146,8 @@
 		class="ikube.action.Delete" 
 		property:ruleExpression="
 			!IsThisServerWorking &#38;&#38; 
-			!AnyServersWorking">
+			!AnyServersWorking"
+		property:requiresClusterLock="false">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />
@@ -153,7 +160,8 @@
 		class="ikube.action.Clean" 
 		property:ruleExpression="
 			!IsThisServerWorking &#38;&#38; 
-			!AnyServersWorking">
+			!AnyServersWorking"
+		property:requiresClusterLock="true">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />
@@ -167,7 +175,8 @@
 		property:ruleExpression="
 			!IsThisServerWorking &#38;&#38; 
 			!AnyServersWorking &#38;&#38;  
-			!IsIndexBackedUp">
+			!IsIndexBackedUp"
+		property:requiresClusterLock="true">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />
@@ -176,23 +185,25 @@
 			</util:list>
 		</property>
 	</bean>
-	<!-- <bean 
+	<bean 
 		id="ikube.action.DiskFull" 
 		class="ikube.action.DiskFull" 
 		property:ruleExpression="
-			AnyServersWorking">
+			AnyServersWorking"
+		property:requiresClusterLock="true">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.AnyServersWorking" />
 			</util:list>
 		</property>
-	</bean> -->
+	</bean>
 	<bean 
 		id="ikube.action.Validator" 
 		class="ikube.action.Validator" 
 		property:ruleExpression="
 			!IsThisServerWorking &#38;&#38; 
-			!AnyServersWorking">
+			!AnyServersWorking"
+		property:requiresClusterLock="false">
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsThisServerWorking" />
