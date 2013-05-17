@@ -20,8 +20,7 @@
 	<target name="stop-server">
 		<!-- Stop all the processes, the only way to stop Tomcat -->
 		<antcall target="execute-remote-command">
-			<param name="command" value="cd ${tomcat-bin-directory}; 
-				sudo -n ./shutdown.sh;" />
+			<param name="command" value=". /etc/profile; sudo -n ${tomcat-bin-directory}/catalina.sh -force stop;" />
 		</antcall>
 	</target>
 
@@ -53,79 +52,12 @@
 		</antcall>
 		<!-- Start the server -->
 		<antcall target="execute-remote-command">
-			<param name="command" value="
-					cd ${tomcat-home}/bin;
-					sudo -n ./startup.sh;" />
-		</antcall>
-	</target>
-
-	<target name="deploy-site">
-		<antcall target="execute-remote-command">
-			<param name="command" value="cd ${tomcat-bin-directory}; sudo -n ./shutdown.sh;" />
-		</antcall>
-		<sleep seconds="15" />
-		<antcall target="execute-remote-command">
-			<param name="command" value="
-				sudo -n chmod 777 -R ${tomcat-home};
-				sudo -n rm -rf ${tomcat-webapps-directory}/site*;
-				sudo -n rm -rf ${tomcat-directory}/logs;
-				sudo -n mkdir -p ${tomcat-directory}/logs;
-				sudo -n chmod 777 -R ${tomcat-home};" />
-		</antcall>
-		<antcall target="deploy-ikube-site">
-			<param name="tomcat-home" value="${tomcat-directory}" />
-		</antcall>
-		<antcall target="execute-remote-command">
-			<param name="command" value="sudo -n chmod 777 -R ${tomcat-directory};" />
-		</antcall>
-		<antcall target="execute-remote-command">
-			<param name="command" value="
-				cd ${tomcat-bin-directory};
-				sudo -n ./startup.sh;" />
+			<param name="command" value=". /etc/profile; sudo -n ${tomcat-bin-directory}/catalina.sh start;" />
 		</antcall>
 	</target>
 
 	<target name="deploy-ikube-site">
 		<scp file="code/site/target/site.war" todir="${userid}:${password}@${server-ip}:${tomcat-home}/webapps" trust="true" failonerror="true" verbose="${verbose}" />
-	</target>
-
-	<target name="go-servers">
-		<antcall target="prepare" />
-		<antcall target="stop-servers" />
-		<antcall target="go-server">
-			<param name="tomcat-home" value="${tomcat-directory-one}" />
-		</antcall>
-		<antcall target="go-server">
-			<param name="tomcat-home" value="${tomcat-directory-two}" />
-		</antcall>
-		<antcall target="go-server">
-			<param name="tomcat-home" value="${tomcat-directory-three}" />
-		</antcall>
-		<antcall target="start-servers" />
-	</target>
-
-	<target name="stop-servers">
-		<antcall target="execute-remote-command">
-			<param name="command" value="cd ${tomcat-bin-directory-one}; sudo -n ./shutdown.sh;" />
-		</antcall>
-		<antcall target="execute-remote-command">
-			<param name="command" value="cd ${tomcat-bin-directory-two}; sudo -n ./shutdown.sh;" />
-		</antcall>
-		<antcall target="execute-remote-command">
-			<param name="command" value="cd ${tomcat-bin-directory-three}; sudo -n ./shutdown.sh;" />
-		</antcall>
-	</target>
-
-	<target name="start-servers">
-		<antcall target="execute-remote-command">
-			<param name="command" value="cd ${tomcat-bin-directory-one}; sudo -n ./startup.sh;" />
-		</antcall>
-		<antcall target="execute-remote-command">
-			<param name="command" value="cd ${tomcat-bin-directory-two}; sudo -n ./startup.sh;" />
-		</antcall>
-		<antcall target="execute-remote-command">
-			<param name="command" value="cd ${tomcat-bin-directory-three}; sudo -n ./startup.sh;" />
-		</antcall>
 	</target>
 
 	<target name="prepare">
