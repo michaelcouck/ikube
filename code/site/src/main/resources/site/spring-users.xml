@@ -21,9 +21,9 @@
 	</beans:description>
 	
 	<user-service id="userService">
-	    <user name="nico" password="Bp0st2013" authorities="ROLE_USER,ROLE_ADMIN" />
-	    <user name="pascal" password="Bp0st2013" authorities="ROLE_USER,ROLE_ADMIN" />
-	    <user name="michael" password="Bp0st2013" authorities="ROLE_USER,ROLE_ADMIN" />
+	    <user name="nico" password="Caherl1ne2013" authorities="ROLE_USER,ROLE_ADMIN" />
+	    <user name="pascal" password="Caherl1ne2013" authorities="ROLE_USER,ROLE_ADMIN" />
+	    <user name="michael" password="Caherl1ne2013" authorities="ROLE_USER,ROLE_ADMIN" />
   	</user-service>
   	
 </beans:beans>
