@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -263,8 +264,7 @@ public final class FileUtilities {
 			} else {
 				first = Boolean.FALSE;
 			}
-			// Concatenate the 'any character' regular expression to the string
-			// pattern
+			// Concatenate the 'any character' regular expression to the string pattern
 			builder.append(".*(").append(stringPattern).append(").*");
 		}
 		return Pattern.compile(builder.toString());
@@ -497,7 +497,7 @@ public final class FileUtilities {
 			}
 		}
 	}
-
+	
 	public static void close(Reader reader) {
 		if (reader != null) {
 			try {

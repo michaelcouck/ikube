@@ -181,53 +181,50 @@
 	});
 </script>
 
-<table ng-app="ikube" ng-controller="GeospatialSearcherController" width="100%">
-	<form ng-submit="doSearch()">
+<table ng-app="ikube" ng-controller="GeospatialSearcherController" style="border : 1px solid #aaaaaa;" width="100%">
 	<tr>
-		<td width="100%" valign="top">
-			<table width="100%">
-				<tr>
-					<td>Collection : </td>
-					<td>
-						<select ng-controller="IndexesController" ng-model="searchParameters.indexName">
-   							<option ng-repeat="index in indexes" value="{{index}}">{{index}}</option>
-						</select>
-					</td>
-				</tr>
-				<tr>
-					<td>All of these words:</td>
-					<td><input id="allWords" name="allWords" ng-model="allWords"></td>
-				</tr>
-				<tr>
-					<td>Latitude:</td>
-					<td><input id="latitude" ng-model="latitude" placeholder="latitude"></td>
-				</tr>
-				<tr>
-					<td>Longitude:</td>
-					<td><input id="longitude" ng-model="longitude" placeholder="longitude"></td>
-				</tr>
-				<tr>
-					<td>Distance:</td>
-					<td><input id="distance" ng-model="distance" placeholder="distance"></td>
-				</tr>
-				<tr>
-					<td colspan="2">
-						<button>Go!</button>
-					</td>
-				</tr>
-			</table>
+		<th colspan="3"><img src="<c:url value="/images/icons/launch_run.gif" />">&nbsp;Geospatial search</th>
+	</tr>
+	
+	<tr class="odd" nowrap="nowrap" valign="bottom">
+		<td>&nbsp;&nbsp;&nbsp;<b>Collection:</b></td>
+		<td>
+			<select ng-controller="IndexesController" ng-model="searchParameters.indexName">
+				<option ng-repeat="index in indexes" value="{{index}}">{{index}}</option>
+			</select>
 		</td>
-		<td width="340px" align="left">
+					
+		<td width="340px" align="left" rowspan="6">
 			<div id="map_canvas" google-map style="height: 340px; width: 550px; border : 1px solid black;"></div>
+		</td>
+					
+	</tr>
+	<tr class="even" nowrap="nowrap" valign="bottom">
+		<td>&nbsp;&nbsp;&nbsp;<b>All of these words:</b></td>
+		<td><input id="allWords" name="allWords" ng-model="allWords"></td>
+	</tr>
+	<tr class="odd" nowrap="nowrap" valign="bottom">
+		<td>&nbsp;&nbsp;&nbsp;<b>Latitude:</b></td>
+		<td><input id="latitude" ng-model="latitude" placeholder="latitude"></td>
+	</tr>
+	<tr class="even" nowrap="nowrap" valign="bottom">
+		<td>&nbsp;&nbsp;&nbsp;<b>Longitude:</b></td>
+		<td><input id="longitude" ng-model="longitude" placeholder="longitude"></td>
+	</tr>
+	<tr class="odd" nowrap="nowrap" valign="bottom">
+		<td>&nbsp;&nbsp;&nbsp;<b>Distance:</b></td>
+		<td><input id="distance" ng-model="distance" placeholder="distance"></td>
+	</tr>
+	<tr class="even" nowrap="nowrap" valign="top">
+		<td colspan="2">
+			<input type="submit" ng-click="doSearch();" value="Go!">
 		</td>
 	</tr>
 	
-	</form>
-	
 	<tr><td colspan="2">&nbsp;</td></tr>
 	
-	<tr>
-		<td colspan="2">
+	<tr nowrap="nowrap" valign="bottom">
+		<td colspan="3">
 			Showing results '{{searchParameters.firstResult}} 
 			to {{endResult}} 
 			of {{statistics.total}}' 
@@ -236,8 +233,8 @@
 			duration : {{statistics.duration}}</td>
 	</tr>
 	
-	<tr>
-		<td colspan="2" nowrap="nowrap">
+	<tr nowrap="nowrap" valign="bottom">
+		<td colspan="3" nowrap="nowrap">
 			<span ng-repeat="page in pagination">
 				<a style="font-color : {{page.active}}" href="#" ng-click="
 					doFirstResult(page.firstResult);
@@ -246,10 +243,10 @@
 		</td>
 	</tr>
 	
-	<tr><td colspan="2">&nbsp;</td></tr>
+	<tr><td colspan="3">&nbsp;</td></tr>
 	
-	<tr ng-repeat="datum in data">
-		<td colspan="2">
+	<tr ng-repeat="datum in data" ng-class-odd="'odd'" ng-class-even="'even'">
+		<td colspan="3">
 			<span ng-hide="!datum.id"><b>Identifier</b> : {{datum.id}}<br></span> 
 			<b>Score</b> : {{datum.score}}<br>
 			<b>Fragment</b> : <span ng-bind-html-unsafe="datum.fragment"></span><br>
@@ -261,10 +258,10 @@
 		</td>
 	</tr>
 	
-	<tr><td colspan="2">&nbsp;</td></tr>
+	<tr><td colspan="3">&nbsp;</td></tr>
 	
 	<tr>
-		<td colspan="2" nowrap="nowrap">
+		<td colspan="3" nowrap="nowrap">
 			<span ng-repeat="page in pagination">
 				<a style="font-color : {{page.active}}" href="#" 
 					ng-click="doFirstResult(page.firstResult);doSearch();">{{page.page}}</a>

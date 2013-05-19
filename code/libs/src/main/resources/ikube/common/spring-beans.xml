@@ -288,12 +288,6 @@
 		<bean 
 		   	id="ikube.cluster.listener.hzc.DeleteListener" 
 		   	class="ikube.cluster.listener.hzc.DeleteListener" />
-		<bean
-			id="ikube.cluster.listener.hzc.StartupListener" 
-			class="ikube.cluster.listener.hzc.StartupListener" />
-		<bean 
-			id="ikube.cluster.listener.hzc.TerminationListener"
-			class="ikube.cluster.listener.hzc.TerminationListener" />
 	</util:list>
 	
 	<!-- The handlers that do the indexing logic. -->

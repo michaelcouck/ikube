@@ -109,10 +109,50 @@ module.controller('ServersController', function($http, $scope) {
 			$scope.status = status;
 		});
 	}
+
 	$scope.refreshServers();
 	setInterval(function() {
 		$scope.refreshServers();
 	}, refreshInterval);
+	
+	$scope.startupAll = function() {
+		if (confirm('Re-start all schedules and actions in the cluster : ')) {
+			$scope.url = getServiceUrl('/ikube/service/monitor/startup-all');
+			$scope.parameters = {};
+			// The configuration for the request to the server
+			$scope.config = { params : $scope.parameters };
+			// And start all the schedules again
+			var promise = $http.get($scope.url, $scope.config);
+			promise.success(function(data, status) {
+				$scope.status = status;
+			});
+			promise.error(function(data, status) {
+				$scope.status = status;
+			});
+		}
+	}
+	
+	$scope.terminateAll = function() {
+		if (confirm('Terminate all schedules and actions in the cluster : ')) {
+			$scope.url = getServiceUrl('/ikube/service/monitor/terminate-all');
+			$scope.parameters = {};
+			// The configuration for the request to the server
+			$scope.config = { params : $scope.parameters };
+			// And terminate the schedules in the cluster
+			var promise = $http.get($scope.url, $scope.config);
+			promise.success(function(data, status) {
+				$scope.status = status;
+			});
+			promise.error(function(data, status) {
+				$scope.status = status;
+			});
+		}
+	}
+	
+	$scope.date = function(millis) {
+		return new Date(millis).toLocaleTimeString();
+	};
+	
 });
 
 /**
@@ -141,62 +181,6 @@ module.controller('ActionsController', function($http, $scope) {
 	setInterval(function() {
 		$scope.getActions();
 	}, refreshInterval);
-	// This function will send a terminate event to the cluster
-	$scope.terminateIndexing = function(indexName) {
-		if (confirm('Terminate indexing of index : ' + indexName)) {
-			$scope.url = getServiceUrl('/ikube/service/monitor/terminate');
-			// The parameters for the terminate
-			$scope.parameters = { 
-				indexName : indexName
-			};
-			// The configuration for the request to the server
-			$scope.config = { params : $scope.parameters };
-			// And terminate the indexing for the index
-			var promise = $http.get($scope.url, $scope.config);
-			promise.success(function(data, status) {
-				$scope.status = status;
-			});
-			promise.error(function(data, status) {
-				$scope.status = status;
-			});
-			// $scope.getActions();
-		}
-	}
-});
-
-module.controller('StartupController', function($http, $scope) {
-	$scope.startupAll = function() {
-		if (confirm('Re-start all schedules and actions in the cluster : ')) {
-			$scope.url = getServiceUrl('/ikube/service/monitor/startup-all');
-			$scope.parameters = {};
-			// The configuration for the request to the server
-			$scope.config = { params : $scope.parameters };
-			// And start all the schedules again
-			var promise = $http.get($scope.url, $scope.config);
-			promise.success(function(data, status) {
-				$scope.status = status;
-			});
-			promise.error(function(data, status) {
-				$scope.status = status;
-			});
-		}
-	}
-	$scope.terminateAll = function() {
-		if (confirm('Terminate all schedules and actions in the cluster : ')) {
-			$scope.url = getServiceUrl('/ikube/service/monitor/terminate-all');
-			$scope.parameters = {};
-			// The configuration for the request to the server
-			$scope.config = { params : $scope.parameters };
-			// And terminate the schedules in the cluster
-			var promise = $http.get($scope.url, $scope.config);
-			promise.success(function(data, status) {
-				$scope.status = status;
-			});
-			promise.error(function(data, status) {
-				$scope.status = status;
-			});
-		}
-	}
 });
 
 /** This controller gathers the index context data from the server for presentation. */
@@ -278,6 +262,28 @@ module.controller('IndexContextsController', function($http, $scope) {
 				$scope.status = status;
 				alert('Error sending delete message : ' + status);
 			});
+		}
+	}
+	
+	// This function will send a terminate event to the cluster
+	$scope.terminateIndexing = function(indexName) {
+		if (confirm('Terminate indexing of index : ' + indexName)) {
+			$scope.url = getServiceUrl('/ikube/service/monitor/terminate');
+			// The parameters for the terminate
+			$scope.parameters = { 
+				indexName : indexName
+			};
+			// The configuration for the request to the server
+			$scope.config = { params : $scope.parameters };
+			// And terminate the indexing for the index
+			var promise = $http.get($scope.url, $scope.config);
+			promise.success(function(data, status) {
+				$scope.status = status;
+			});
+			promise.error(function(data, status) {
+				$scope.status = status;
+			});
+			// $scope.getActions();
 		}
 	}
 });
@@ -364,17 +370,6 @@ function writeDate() {
 	document.write(' ');
 	document.write(d.toLocaleDateString());
 }
-
-var json = [{ "1":"one" }, { "2":"two" }, { "3":"three" }];
-
-function jsonToArray() {
-	var objs=[];
-	for (var i = json.length; i--;) {
-		JSON.parse(json[i]);
-	};
-}
-
-// jsonToArray(json);
 
 function addAutoComplete(inputField) {
 	inputField.autocomplete({

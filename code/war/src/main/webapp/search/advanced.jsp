@@ -101,34 +101,37 @@
 	
 </script>
 
-<table ng-app="ikube" ng-controller="SearcherController" width="100%">
-	<form ng-submit="doSearch()">
+<table ng-app="ikube" ng-controller="SearcherController" style="border : 1px solid #aaaaaa;" width="100%">
 	<tr>
-		<td>Collection : </td>
+		<th colspan="2"><img src="<c:url value="/images/icons/launch_run.gif" />">&nbsp;Advanced search</th>
+	</tr>
+	<form ng-submit="doSearch()">
+	<tr class="odd" nowrap="nowrap" valign="bottom">
+		<td>&nbsp;&nbsp;&nbsp;<b>Collection:</b></td>
 		<td>
 			<select ng-controller="IndexesController" ng-model="searchParameters.indexName">
 				<option ng-repeat="index in indexes" value="{{index}}">{{index}}</option>
 			</select>
 		</td>
 	</tr>
-	<tr>
-		<td>All of these words:</td>
+	<tr class="even" nowrap="nowrap" valign="bottom">
+		<td>&nbsp;&nbsp;&nbsp;<b>All of these words:</b></td>
 		<td><input id="allWords" name="allWords" ng-model="allWords"></td>
 	</tr>
-	<tr>
-		<td>This exact word or phrase:</td>
+	<tr class="odd" nowrap="nowrap" valign="bottom">
+		<td>&nbsp;&nbsp;&nbsp;<b>This exact word or phrase:</b></td>
 		<td><input id="exactPhrase" name="exactPhrase" ng-model="exactPhrase"></td>
 	</tr>
-	<tr>
-		<td>One or more of these words:</td>
+	<tr class="even" nowrap="nowrap" valign="bottom">
+		<td>&nbsp;&nbsp;&nbsp;<b>One or more of these words:</b></td>
 		<td><input id="oneOrMore" name="oneOrMore" ng-model="oneOrMore"></td>
 	</tr>
-	<tr>
-		<td>None of these words:</td>
+	<tr class="odd" nowrap="nowrap" valign="bottom">
+		<td>&nbsp;&nbsp;&nbsp;<b>None of these words:</b></td>
 		<td><input id="noneOfTheseWords" name="noneOfTheseWords" ng-model="noneOfTheseWords"></td>
 	</tr>
 	
-	<tr>
+	<tr class="even" nowrap="nowrap" valign="bottom">
 		<td colspan="2">
 			<button>Go!</button>
 		</td>
@@ -137,7 +140,7 @@
 	
 	<tr><td colspan="2">&nbsp;</td></tr>
 	
-	<tr>
+	<tr nowrap="nowrap" valign="bottom">
 		<td colspan="2">
 			Showing results '{{searchParameters.firstResult}} 
 			to {{endResult}} 
@@ -147,7 +150,7 @@
 			duration : {{statistics.duration}}</td>
 	</tr>
 	
-	<tr>
+	<tr nowrap="nowrap" valign="bottom">
 		<td colspan="2" nowrap="nowrap">
 			<span ng-repeat="page in pagination">
 				<a style="font-color : {{page.active}}" href="#" ng-click="
@@ -159,7 +162,7 @@
 	
 	<tr><td colspan="2">&nbsp;</td></tr>
 	
-	<tr ng-repeat="datum in data">
+	<tr ng-repeat="datum in data" ng-class-odd="'odd'" ng-class-even="'even'">
 		<td colspan="2">
 			<span ng-hide="!datum.id"><b>Identifier</b> : {{datum.id}}<br></span> 
 			<b>Score</b> : {{datum.score}}<br>

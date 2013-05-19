@@ -49,12 +49,11 @@ public class RuleInterceptor implements IRuleInterceptor {
 		} else {
 			IAction action = (IAction) target;
 			try {
-				boolean proceedLocked = Boolean.TRUE;
+				boolean proceedWithLocked = Boolean.TRUE;
 				if (action.requiresClusterLock()) {
-					proceedLocked = clusterManager.lock(IConstants.IKUBE);
-					LOGGER.info("Got lock : " + action);
+					proceedWithLocked = clusterManager.lock(IConstants.IKUBE);
 				}
-				if (!proceedLocked) {
+				if (!proceedWithLocked) {
 					LOGGER.info("Couldn't get cluster lock : " + proceedingJoinPoint.getTarget());
 					proceed = Boolean.FALSE;
 				} else {

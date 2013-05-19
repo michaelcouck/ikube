@@ -10,6 +10,7 @@ import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 /**
  * This object is passed around in the cluster.
@@ -21,6 +22,11 @@ import javax.persistence.OneToMany;
 @Entity()
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Server extends Persistable implements Comparable<Server> {
+
+	@Transient
+	private String logTail;
+	@Transient
+	private boolean show;
 
 	/** The ip of the server. */
 	@Column
@@ -164,6 +170,22 @@ public class Server extends Persistable implements Comparable<Server> {
 
 	public void setAverageCpuLoad(final double averageCpuLoad) {
 		this.averageCpuLoad = averageCpuLoad;
+	}
+
+	public String getLogTail() {
+		return logTail;
+	}
+
+	public void setLogTail(String logTail) {
+		this.logTail = logTail;
+	}
+
+	public boolean isShow() {
+		return show;
+	}
+
+	public void setShow(boolean show) {
+		this.show = show;
 	}
 
 	public boolean equals(final Object object) {

@@ -252,7 +252,6 @@ public class Monitor extends Resource {
 	public Response start(@QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
 		long time = System.currentTimeMillis();
 		Event startEvent = IListener.EventGenerator.getEvent(Event.STARTUP, time, indexName, Boolean.FALSE);
-		logger.info("Sending start event : " + ToStringBuilder.reflectionToString(startEvent));
 		clusterManager.sendMessage(startEvent);
 		return buildResponse().build();
 	}

@@ -88,6 +88,7 @@ table th {
 	padding: 2px;
 	border : 1px solid #aaaaaa;
 	border-collapse: collapse;
+	text-align: left;
 }
 
 .active {
@@ -107,4 +108,8 @@ table th {
 .bordered {
 	border : 1px solid #aaaaaa;
 	border-collapse: collapse;
+}
+textarea {
+    width:98%;
+    font-size: 12px;
 }

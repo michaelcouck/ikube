@@ -10,8 +10,12 @@ import ikube.model.Search;
 import ikube.model.Server;
 import ikube.model.Snapshot;
 import ikube.scheduling.Schedule;
+import ikube.toolkit.FileUtilities;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.sql.Timestamp;
@@ -52,29 +56,15 @@ public class SnapshotSchedule extends Schedule {
 	@Override
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void run() {
-		OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
 		Server server = clusterManager.getServer();
-		server.setArchitecture(operatingSystemMXBean.getArch());
-		server.setProcessors(operatingSystemMXBean.getAvailableProcessors());
-		server.setAverageCpuLoad(operatingSystemMXBean.getSystemLoadAverage());
-		try {
-			long availableDiskSpace = FileSystemUtils.freeSpaceKb("/") / IConstants.MILLION;
-			server.setFreeDiskSpace(availableDiskSpace);
-		} catch (IOException e) {
-			LOGGER.error("Exception accessing the disk space : ", e);
-		}
-		server.setFreeMemory(Runtime.getRuntime().freeMemory() / IConstants.MILLION);
-		server.setMaxMemory(Runtime.getRuntime().maxMemory() / IConstants.MILLION);
-		server.setTotalMemory(Runtime.getRuntime().totalMemory() / IConstants.MILLION);
-		clusterManager.put(server.getAddress(), server);
-
+		setServerStatistics(server);
+		OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
 		Map<String, IndexContext> indexContexts = monitorService.getIndexContexts();
 		for (Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
 			try {
 				IndexContext indexContext = mapEntry.getValue();
 
 				Snapshot snapshot = new Snapshot();
-
 				snapshot.setIndexContext(indexContext.getName());
 				snapshot.setTimestamp(new Timestamp(System.currentTimeMillis()));
 				snapshot.setIndexSize(IndexManager.getIndexSize(indexContext));
@@ -102,6 +92,50 @@ public class SnapshotSchedule extends Schedule {
 				indexContext.setSnapshots(snapshots);
 			} catch (Exception e) {
 				LOGGER.error("Exception persisting snapshot : ", e);
+			}
+		}
+		clusterManager.put(server.getAddress(), server);
+	}
+
+	protected void setServerStatistics(final Server server) {
+		OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
+
+		server.setArchitecture(operatingSystemMXBean.getArch());
+		server.setProcessors(operatingSystemMXBean.getAvailableProcessors());
+		server.setAverageCpuLoad(operatingSystemMXBean.getSystemLoadAverage());
+		server.setFreeMemory(Runtime.getRuntime().freeMemory() / IConstants.MILLION);
+		server.setMaxMemory(Runtime.getRuntime().maxMemory() / IConstants.MILLION);
+		server.setTotalMemory(Runtime.getRuntime().totalMemory() / IConstants.MILLION);
+
+		try {
+			long availableDiskSpace = FileSystemUtils.freeSpaceKb("/") / IConstants.MILLION;
+			server.setFreeDiskSpace(availableDiskSpace);
+		} catch (IOException e) {
+			LOGGER.error("Exception accessing the disk space : ", e);
+		}
+
+		File logFile = FileUtilities.findFileRecursively(new File("./" + IConstants.IKUBE), IConstants.IKUBE_LOG);
+		if (logFile != null) {
+			RandomAccessFile inputStream = null;
+			try {
+				inputStream = new RandomAccessFile(logFile, "r");
+				int offset = (int) Math.max(0, logFile.length() - (IConstants.MILLION / 10));
+				int lengthToRead = (int) Math.max(0, logFile.length() - offset);
+				byte[] bytes = new byte[lengthToRead];
+				inputStream.readFully(bytes, offset, lengthToRead);
+				server.setLogTail(new String(bytes));
+			} catch (FileNotFoundException e) {
+				LOGGER.error("Log file not found : ", e);
+			} catch (IOException e) {
+				LOGGER.error("IO error reading log file : ", e);
+			} finally {
+				try {
+					if (inputStream != null) {
+						inputStream.close();
+					}
+				} catch (IOException e) {
+					LOGGER.error("Exception closing the file reader on the log file : ", e);
+				}
 			}
 		}
 	}

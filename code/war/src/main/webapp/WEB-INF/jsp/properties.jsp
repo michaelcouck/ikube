@@ -21,28 +21,20 @@ $(document).ready(function() {
 });
 </script>
 
-<table ng-controller="PropertiesController" width="100%">
+<table ng-controller="PropertiesController" style="border : 1px solid #aaaaaa;" width="100%">
 	<tr>
-		<th><img src="<c:url value="/images/icons/run_on_server.gif" />">&nbsp;File and properties</th>
+		<th><img src="<c:url value="/images/icons/run_on_server.gif" />">&nbsp;Update system property files</th>
 	</tr>
-	<tr ng-model="propertyFiles" ng-repeat="(key, value) in propertyFiles">
-		<td>
+	<tr ng-model="propertyFiles" ng-repeat="(key, value) in propertyFiles" ng-class-odd="'odd'" ng-class-even="'even'">
+		<td class="bordered" valign="bottom">
 			<form id="{{$index}}" name="{{$index}}" action="<c:url value="/service/monitor/set-properties" />" method="post">
-			<table>
-				<tr>
-					<td valign="top">
-						<input name="file" type="text" value="{{key}}">
-					</td>
-					<td>
-						<textarea name="contents" rows="15" cols="120">{{value}}</textarea>
-					</td>
-				</tr>
-				<tr>
-					<td colspan="2">
-						<input id="button-{{$index}}" name="button-{{$index}}" type="submit" value="Update">
-					</td>
-				</tr>
-			</table>
+			&nbsp;&nbsp;&nbsp;<img src="<c:url value="/images/icons/jar_l_obj.gif" />" />&nbsp;Property file: {{key}}
+			<br>
+			<div ng-show="!value.show">
+				&nbsp;&nbsp;&nbsp;<textarea name="contents" rows="15" cols="120">{{value}}</textarea>
+				&nbsp;&nbsp;&nbsp;<input id="button-{{$index}}" name="button-{{$index}}" type="submit" value="Update">
+			</div>
+			<br>
 			</form>
 		</td>
 	</tr>

@@ -63,7 +63,7 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 	public synchronized boolean lock(final String name) {
 		try {
 			ILock lock = Hazelcast.getLock(name);
-			boolean gotLock = false;
+			boolean gotLock = Boolean.FALSE;
 			try {
 				gotLock = lock.tryLock(250, TimeUnit.MILLISECONDS);
 			} catch (InterruptedException e) {
@@ -83,7 +83,7 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 		try {
 			ILock lock = Hazelcast.getLock(name);
 			lock.unlock();
-			return true;
+			return Boolean.TRUE;
 		} finally {
 			notifyAll();
 		}

@@ -21,6 +21,8 @@ import javax.jws.soap.SOAPBinding;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.search.Searcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -34,6 +36,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 @SOAPBinding(style = SOAPBinding.Style.DOCUMENT)
 @WebService(name = ISearcherService.NAME, targetNamespace = ISearcherService.NAMESPACE, serviceName = ISearcherService.SERVICE)
 public class SearcherService implements ISearcherService {
+
+	static final Logger LOGGER = LoggerFactory.getLogger(SearcherService.class);
+
+	private static final ArrayList<HashMap<String, String>> EMPTY_RESULTS = new ArrayList<HashMap<String, String>>();
 
 	/** The database that we persist the searches to. */
 	@Autowired
@@ -65,7 +71,8 @@ public class SearcherService implements ISearcherService {
 			persistSearch(indexName, new String[] { searchString }, searchStringsCorrected, results);
 			return results;
 		} catch (final Exception e) {
-			throw new RuntimeException(e);
+			LOGGER.error("Exception doing search on : " + indexName, e);
+			return EMPTY_RESULTS;
 		}
 	}
 
@@ -91,7 +98,8 @@ public class SearcherService implements ISearcherService {
 			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
 			return results;
 		} catch (final Exception e) {
-			throw new RuntimeException(e);
+			LOGGER.error("Exception doing search on : " + indexName, e);
+			return EMPTY_RESULTS;
 		}
 	}
 
@@ -117,8 +125,9 @@ public class SearcherService implements ISearcherService {
 			String[] searchStringsCorrected = searchMultiSorted.getCorrections();
 			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
 			return results;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		} catch (final Exception e) {
+			LOGGER.error("Exception doing search on : " + indexName, e);
+			return EMPTY_RESULTS;
 		}
 	}
 
@@ -141,8 +150,9 @@ public class SearcherService implements ISearcherService {
 			String[] searchStringsCorrected = searchMultiAll.getCorrections();
 			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
 			return results;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		} catch (final Exception e) {
+			LOGGER.error("Exception doing search on : " + indexName, e);
+			return EMPTY_RESULTS;
 		}
 	}
 
@@ -170,8 +180,9 @@ public class SearcherService implements ISearcherService {
 			String[] searchStringsCorrected = searchSpatial.getCorrections();
 			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
 			return results;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		} catch (final Exception e) {
+			LOGGER.error("Exception doing search on : " + indexName, e);
+			return EMPTY_RESULTS;
 		}
 	}
 
@@ -198,8 +209,9 @@ public class SearcherService implements ISearcherService {
 			String[] searchStringsCorrected = searchSpatialAll.getCorrections();
 			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
 			return results;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		} catch (final Exception e) {
+			LOGGER.error("Exception doing search on : " + indexName, e);
+			return EMPTY_RESULTS;
 		}
 	}
 
@@ -224,8 +236,9 @@ public class SearcherService implements ISearcherService {
 			String[] searchStringsCorrected = searchAdvanced.getCorrections();
 			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
 			return results;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		} catch (final Exception e) {
+			LOGGER.error("Exception doing search on : " + indexName, e);
+			return EMPTY_RESULTS;
 		}
 	}
 
@@ -233,6 +246,8 @@ public class SearcherService implements ISearcherService {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@WebMethod
+	@WebResult(name = "result")
 	public ArrayList<HashMap<String, String>> searchNumericAll(String indexName, String[] searchStrings, boolean fragment, int firstResult,
 			int maxResults) {
 		try {
@@ -245,8 +260,9 @@ public class SearcherService implements ISearcherService {
 			String[] searchStringsCorrected = searchNumericAll.getCorrections();
 			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
 			return results;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		} catch (final Exception e) {
+			LOGGER.error("Exception doing search on : " + indexName, e);
+			return EMPTY_RESULTS;
 		}
 	}
 
@@ -254,6 +270,8 @@ public class SearcherService implements ISearcherService {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@WebMethod
+	@WebResult(name = "result")
 	public ArrayList<HashMap<String, String>> searchNumericRange(String indexName, String[] searchStrings, boolean fragment,
 			int firstResult, int maxResults) {
 		try {
@@ -266,8 +284,9 @@ public class SearcherService implements ISearcherService {
 			String[] searchStringsCorrected = searchNumericRange.getCorrections();
 			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
 			return results;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		} catch (final Exception e) {
+			LOGGER.error("Exception doing search on : " + indexName, e);
+			return EMPTY_RESULTS;
 		}
 	}
 
@@ -293,8 +312,9 @@ public class SearcherService implements ISearcherService {
 			String[] searchStringsCorrected = searchComplex.getCorrections();
 			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
 			return results;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		} catch (final Exception e) {
+			LOGGER.error("Exception doing search on : " + indexName, e);
+			return EMPTY_RESULTS;
 		}
 	}
 

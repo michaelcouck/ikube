@@ -48,6 +48,7 @@ public class StartListener implements IListener<Message<Object>>, MessageListene
 		}
 		final Event event = (Event) object;
 		if (Event.STARTUP.equals(event.getType())) {
+			event.setConsumed(Boolean.TRUE);
 			LOGGER.info("Manually starting indexing : " + ToStringBuilder.reflectionToString(event, ToStringStyle.SHORT_PREFIX_STYLE));
 			final String indexName = event.getObject().toString();
 			final IndexContext<?> indexContext = monitorService.getIndexContexts().get(indexName);
@@ -71,6 +72,7 @@ public class StartListener implements IListener<Message<Object>>, MessageListene
 				}
 			});
 		} else if (Event.STARTUP_ALL.equals(event.getType())) {
+			event.setConsumed(Boolean.TRUE);
 			LOGGER.info("Re-starting the indexing threads");
 			ThreadUtilities.initialize();
 		}
