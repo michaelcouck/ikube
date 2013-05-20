@@ -126,7 +126,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				Document document = new Document();
 				// The result set is already moved to the first row, i.e. next()
 				handleRow(indexContext, indexableTable, dataSource, resultSet, document, contentProvider, currentId);
-				// Add the document to the index if this is the primary table
+				// Add the document to the index
 				resourceTableHandler.handleResource(indexContext, indexableTable, document, null);
 				if (!resultSet.next()) {
 					DatabaseUtilities.closeAll(resultSet);
@@ -152,7 +152,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		List<Indexable<?>> children = indexableTable.getChildren();
 		// Set the column types and the data from the table in the column objects
 		setColumnTypesAndData(children, resultSet);
-		// Set the id field if this is a primary table
+		// Set the id field
 		setIdField(indexableTable, currentDocument);
 		IndexableTable currentIndexableTable = indexableTable;
 		Set<Indexable<?>> doneTables = new HashSet<Indexable<?>>();
@@ -230,7 +230,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY,
 					ResultSet.CLOSE_CURSORS_AT_COMMIT);
 			// Set the parameters if this is a sub table, this typically means that the
-			// id from the primary table is set in the prepared statement for the sub table
+			// id from the primary table is set in the prepared statement
 			setParameters(indexableTable, preparedStatement);
 			return preparedStatement.executeQuery();
 		} catch (SQLException e) {

@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileSystemUtils;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * This action checks that the disk is not full, the one where the indexes are, if it is then this instance will close down.
@@ -19,10 +20,10 @@ import org.apache.commons.io.FileSystemUtils;
  */
 public class DiskFull extends Action<IndexContext<?>, Boolean> {
 
-	/** The minimum space that we will accept to carry on, 1 gig. */
-	private static final long MINIMUM_FREE_SPACE = 1000;
-	/** The amount of space until we start sending notifications, 10 gig. */
-	private static final long MINIMUM_FREE_SPACE_FOR_NOTIFICATIONS = MINIMUM_FREE_SPACE * 10;
+	@Value("${minimum.free.space}")
+	private long minimumFreeSpace = 1000; // In megs
+	@Value("${minimum.free.space.for.notifications}")
+	private long minimumFreeSpaceForNotifications = 10000; // In megs
 
 	/**
 	 * {@inheritDoc}
@@ -54,7 +55,7 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 			}
 			Long freeSpaceMegabytes = freeSpaceKilobytes / 1000;
 			String subject = "No more disk space on server!";
-			if (freeSpaceMegabytes < MINIMUM_FREE_SPACE) {
+			if (freeSpaceMegabytes < minimumFreeSpace) {
 				// We need to exit this server as the disk will crash
 				String body = buildMessage("We have run out of disk space on this drive : ", indexesDirectory.toString(),
 						"All indexing will be terminated immediately : ", freeSpaceMegabytes.toString());
@@ -62,10 +63,9 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 				sendNotification(subject, body);
 				// Terminate all indexing
 				ThreadUtilities.destroy();
-				// System.exit(0);
 				return Boolean.TRUE;
 			}
-			if (freeSpaceMegabytes < MINIMUM_FREE_SPACE_FOR_NOTIFICATIONS) {
+			if (freeSpaceMegabytes < minimumFreeSpaceForNotifications) {
 				String body = buildMessage("We have run out of disk space on this drive : ", indexesDirectory.toString(),
 						"Please clean this disk, free space available : ", freeSpaceMegabytes.toString());
 				logger.error(subject + " " + body);
@@ -73,7 +73,7 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 				return Boolean.TRUE;
 			}
 		}
-		return Boolean.TRUE;
+		return Boolean.FALSE;
 	}
 
 	private String buildMessage(final String... strings) {

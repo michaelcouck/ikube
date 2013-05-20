@@ -22,17 +22,17 @@ import org.junit.Test;
 
 public class IndexableFilesystemHandlerIntegration extends Integration {
 
-	private IndexContext<?> dropbox;
-	private IndexableFileSystem dropboxIndexable;
+	private IndexContext<?> desktop;
+	private IndexableFileSystem desktopFolder;
 	private IndexableFilesystemHandler indexableFilesystemHandler;
 
 	@Before
 	public void before() {
-		dropbox = ApplicationContextManager.getBean("dropboxIndex");
-		dropboxIndexable = ApplicationContextManager.getBean("dropboxIndexable");
+		desktop = ApplicationContextManager.getBean("desktop");
+		desktopFolder = ApplicationContextManager.getBean("desktopFolder");
 		indexableFilesystemHandler = ApplicationContextManager.getBean(IndexableFilesystemHandler.class.getName());
 		delete(ApplicationContextManager.getBean(IDataBase.class), ikube.model.File.class);
-		FileUtilities.deleteFile(new File(dropbox.getIndexDirectoryPath()), 1);
+		FileUtilities.deleteFile(new File(desktop.getIndexDirectoryPath()), 1);
 	}
 
 	@Test
@@ -41,20 +41,20 @@ public class IndexableFilesystemHandlerIntegration extends Integration {
 		try {
 			File dataIndexFolder = FileUtilities.findFileRecursively(new File("."), "data");
 			String dataIndexFolderPath = FileUtilities.cleanFilePath(dataIndexFolder.getAbsolutePath());
-			dropboxIndexable.setPath(dataIndexFolderPath);
+			desktopFolder.setPath(dataIndexFolderPath);
 			String ip = InetAddress.getLocalHost().getHostAddress();
-			IndexWriter indexWriter = IndexManager.openIndexWriter(dropbox, System.currentTimeMillis(), ip);
-			dropbox.setIndexWriters(indexWriter);
-			dropbox.setThrottle(60000);
+			IndexWriter indexWriter = IndexManager.openIndexWriter(desktop, System.currentTimeMillis(), ip);
+			desktop.setIndexWriters(indexWriter);
+			desktop.setThrottle(60000);
 
 			ThreadUtilities.submit("interrupt-test", new Runnable() {
 				public void run() {
 					ThreadUtilities.sleep(15000);
-					ThreadUtilities.destroy(dropbox.getIndexName());
+					ThreadUtilities.destroy(desktop.getIndexName());
 				}
 			});
 
-			List<Future<?>> futures = indexableFilesystemHandler.handleIndexable(dropbox, dropboxIndexable);
+			List<Future<?>> futures = indexableFilesystemHandler.handleIndexable(desktop, desktopFolder);
 			ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
 
 			boolean atLeastOneCancelled = Boolean.FALSE;
@@ -62,13 +62,13 @@ public class IndexableFilesystemHandlerIntegration extends Integration {
 				logger.info("Future : " + future);
 				atLeastOneCancelled |= future.isCancelled();
 			}
-			dropbox.setThrottle(0);
+			desktop.setThrottle(0);
 			assertTrue(atLeastOneCancelled);
 
 			// Verify that there are some documents in the index
-			assertTrue("There should be at least one document in the index : ", dropbox.getIndexWriters()[0].numDocs() > 0);
+			assertTrue("There should be at least one document in the index : ", desktop.getIndexWriters()[0].numDocs() > 0);
 		} finally {
-			IndexManager.closeIndexWriters(dropbox);
+			IndexManager.closeIndexWriters(desktop);
 			if (directory != null) {
 				directory.close();
 			}

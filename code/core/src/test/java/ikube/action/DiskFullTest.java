@@ -61,12 +61,12 @@ public class DiskFullTest extends AbstractTest {
 	public void execute() throws Exception {
 		Deencapsulation.setField(diskFull, mailer);
 		Deencapsulation.setField(diskFull, clusterManager);
-		boolean diskFull = this.diskFull.execute(indexContext);
-		assertFalse("The disk should never be too full : ", diskFull);
+		boolean theDiskIsFull = diskFull.execute(indexContext);
+		assertFalse("The disk should never be too full : ", theDiskIsFull);
 		try {
 			Mockit.setUpMocks(FileSystemUtilsMock.class);
-			diskFull = this.diskFull.execute(indexContext);
-			assertTrue("The should be full now : ", diskFull);
+			theDiskIsFull = diskFull.execute(indexContext);
+			assertTrue("The should be full now : ", theDiskIsFull);
 		} finally {
 			Mockit.tearDownMocks(FileSystemUtilsMock.class);
 		}

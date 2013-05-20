@@ -55,6 +55,7 @@ public class Monitor extends Resource {
 	public static final String MONITOR = "/monitor";
 
 	public static final String FIELDS = "/fields";
+	public static final String SERVER = "/server";
 	public static final String SERVERS = "/servers";
 	public static final String INDEXES = "/indexes";
 	public static final String INDEXING = "/indexing";
@@ -71,6 +72,7 @@ public class Monitor extends Resource {
 	public static final String INDEX_CONTEXTS = "/index-contexts";
 
 	public static final String DELETE_INDEX = "/delete-index";
+	public static final String CPU_THROTTLING = "/cpu-throttling";
 
 	@GET
 	@Path(Monitor.FIELDS)
@@ -118,17 +120,31 @@ public class Monitor extends Resource {
 			IndexContext cloneIndexContext = cloneIndexContext(indexContext);
 			indexContexts.add(cloneIndexContext);
 		}
-		if (!StringUtils.isEmpty(sortField)) {
-			Collections.sort(indexContexts, new Comparator<Object>() {
-				@Override
-				public int compare(Object o1, Object o2) {
-					Object v1 = ObjectToolkit.getFieldValue(o1, sortField);
-					Object v2 = ObjectToolkit.getFieldValue(o2, sortField);
-					return descending ? CompareToBuilder.reflectionCompare(v1, v2) : -(CompareToBuilder.reflectionCompare(v1, v2));
-				}
-			});
-		}
+		// We sort on the parameter if not null, otherwise on the name field
+		final String _sortField = StringUtils.isEmpty(sortField) ? "name" : sortField;
+		Collections.sort(indexContexts, new Comparator<Object>() {
+			@Override
+			public int compare(final Object o1, final Object o2) {
+				Object v1 = ObjectToolkit.getFieldValue(o1, _sortField);
+				Object v2 = ObjectToolkit.getFieldValue(o2, _sortField);
+				return descending ? CompareToBuilder.reflectionCompare(v1, v2) : -(CompareToBuilder.reflectionCompare(v1, v2));
+			}
+		});
 		return buildResponse(indexContexts);
+	}
+
+	@GET
+	@Path(Monitor.SERVER)
+	@Consumes(MediaType.APPLICATION_XML)
+	public Response server() {
+		Server server = clusterManager.getServer();
+		Server cloneServer = (Server) SerializationUtilities.clone(server);
+		cloneServer.setIndexContexts(null);
+		List<Action> actions = cloneServer.getActions();
+		for (Action cloneAction : actions) {
+			cloneAction.setServer(null);
+		}
+		return buildResponse(cloneServer);
 	}
 
 	@GET
@@ -250,9 +266,7 @@ public class Monitor extends Resource {
 	@Path(Monitor.START)
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response start(@QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
-		long time = System.currentTimeMillis();
-		Event startEvent = IListener.EventGenerator.getEvent(Event.STARTUP, time, indexName, Boolean.FALSE);
-		clusterManager.sendMessage(startEvent);
+		monitorService.start(indexName);
 		return buildResponse().build();
 	}
 
@@ -260,9 +274,7 @@ public class Monitor extends Resource {
 	@Path(Monitor.TERMINATE)
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response terminate(@QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
-		long time = System.currentTimeMillis();
-		Event terminateEvent = IListener.EventGenerator.getEvent(Event.TERMINATE, time, indexName, Boolean.FALSE);
-		clusterManager.sendMessage(terminateEvent);
+		monitorService.terminate(indexName);
 		return buildResponse().build();
 	}
 
@@ -310,6 +322,14 @@ public class Monitor extends Resource {
 		Event startEvent = IListener.EventGenerator.getEvent(Event.DELETE_INDEX, time, indexName, Boolean.FALSE);
 		logger.info("Sending delete event : " + ToStringBuilder.reflectionToString(startEvent));
 		clusterManager.sendMessage(startEvent);
+		return buildResponse().build();
+	}
+
+	@GET
+	@Path(Monitor.CPU_THROTTLING)
+	@Consumes(MediaType.APPLICATION_XML)
+	public Response cpuThrottling() {
+		monitorService.cpuThrottling();
 		return buildResponse().build();
 	}
 

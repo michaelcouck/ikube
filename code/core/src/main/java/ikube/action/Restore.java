@@ -26,7 +26,7 @@ public class Restore extends Action<IndexContext<?>, Boolean> {
 	boolean internalExecute(final IndexContext<?> indexContext) {
 		// Check that the index directory and the backup directory are not the same
 		if (indexContext.getIndexDirectoryPath().equals(indexContext.getIndexDirectoryPathBackup())) {
-			logger.info("Index and backup paths are the same : ");
+			logger.debug("Index and backup paths are the same : ");
 			return Boolean.FALSE;
 		}
 		File latestIndexDirectoryBackup = null;

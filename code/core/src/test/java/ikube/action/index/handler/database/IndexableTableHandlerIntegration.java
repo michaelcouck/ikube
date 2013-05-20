@@ -260,9 +260,6 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
 			if (!IndexableTable.class.isAssignableFrom(indexable.getClass())) {
 				continue;
 			}
-			if (!((IndexableTable) indexable).isPrimaryTable()) {
-				continue;
-			}
 			try {
 				List<Future<?>> futures = indexableTableHandler.handleIndexable(indexContext, (IndexableTable) indexable);
 				ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);

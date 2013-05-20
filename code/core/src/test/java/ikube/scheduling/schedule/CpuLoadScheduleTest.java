@@ -27,7 +27,7 @@ import org.mockito.Mockito;
  */
 public class CpuLoadScheduleTest extends AbstractTest {
 
-	private CpuLoadSchedule snapshotListener;
+	private CpuLoadSchedule cpuLoadSchedule;
 
 	public CpuLoadScheduleTest() {
 		super(CpuLoadScheduleTest.class);
@@ -35,11 +35,10 @@ public class CpuLoadScheduleTest extends AbstractTest {
 
 	@Before
 	public void before() throws Exception {
-		snapshotListener = new CpuLoadSchedule();
-
+		cpuLoadSchedule = new CpuLoadSchedule();
 		Mockit.setUpMock(ApplicationContextManagerMock.class);
-
-		Deencapsulation.setField(snapshotListener, monitorService);
+		Deencapsulation.setField(cpuLoadSchedule, monitorService);
+		Deencapsulation.setField(cpuLoadSchedule, clusterManager);
 	}
 
 	@After
@@ -57,19 +56,20 @@ public class CpuLoadScheduleTest extends AbstractTest {
 
 		List<Snapshot> snapshots = addSnapshots(12, 4, 8.0, new ArrayList<Snapshot>());
 		when(indexContext.getSnapshots()).thenReturn(snapshots);
+		when(server.isCpuThrottling()).thenReturn(Boolean.TRUE);
 
-		snapshotListener.run();
+		cpuLoadSchedule.run();
 
 		// The throttle must be more than 0
 		Mockito.verify(indexContext).setThrottle(1);
 
 		when(indexContext.getThrottle()).thenReturn(1l);
-		snapshotListener.run();
+		cpuLoadSchedule.run();
 		Mockito.verify(indexContext).setThrottle(2);
 
 		snapshots = addSnapshots(12, 4, 0.5, new ArrayList<Snapshot>());
 		when(indexContext.getSnapshots()).thenReturn(snapshots);
-		snapshotListener.run();
+		cpuLoadSchedule.run();
 		when(indexContext.getThrottle()).thenReturn(2l);
 		Mockito.verify(indexContext).setThrottle(1);
 	}
@@ -81,7 +81,7 @@ public class CpuLoadScheduleTest extends AbstractTest {
 		snapshots = addSnapshots(6, 4, 1.5, snapshots);
 		when(indexContext.getSnapshots()).thenReturn(snapshots);
 
-		snapshotListener.run();
+		cpuLoadSchedule.run();
 
 		// Verify that the set throttle was never called
 		Mockito.verify(indexContext, Mockito.never()).setThrottle(Mockito.anyLong());

@@ -16,6 +16,247 @@
             http://www.springframework.org/schema/util/spring-util.xsd">
 
 	<bean
+		id="wikiContext"
+		class="ikube.model.IndexContext"
+		property:name="wikiContext"
+		property:maxAge="${wiki.index.age}"
+		property:compoundFile="${compound.file}"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:throttle="${throttle}"
+		property:indexDirectoryPath="${index.root}/nas-one/data/index"
+		property:indexDirectoryPathBackup="${index.root}/nas-one/data/index"
+		property:delta="false"
+		property:children-ref="wikiIndexables" />
+	<util:list id="wikiIndexables">
+		<ref local="wikidata" />
+	</util:list>
+	
+	<bean
+		id="wikidata"
+		class="ikube.model.IndexableFileSystem"
+		property:name="wikidata"
+		property:path="${index.root}/nas-one/data"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:unpackZips="false"
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:lastModifiedFieldName="lastmodified"
+		property:batchSize="${file.batch.size}"
+		property:maxReadLength="${file.max.read.length}" 
+		property:maxExceptions="${max.exceptions}" />
+		
+	<bean
+		id="wikiHistoryOne"
+		class="ikube.model.IndexContext"
+		property:name="wikiHistoryOne"
+		property:maxAge="${wiki.index.age}"
+		property:compoundFile="${wiki.history.compound.file}"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:throttle="${wiki.history.throttle}"
+		property:indexDirectoryPath="${index.root}/nas-one/history/index"
+		property:indexDirectoryPathBackup="${index.root}/nas-one/history/index"
+		property:children-ref="wikiHistoryIndexablesOne" />
+	<util:list id="wikiHistoryIndexablesOne">
+		<ref local="wikiHistoryDataOne" />
+	</util:list>
+	<bean
+		id="wikiHistoryDataOne"
+		class="ikube.model.IndexableFileSystemWiki"
+		property:name="wikiHistoryDataOne"
+		property:path="${index.root}/nas-one/history"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:lastModifiedFieldName="lastmodified"
+		property:stored="${wiki.history.stored}"
+		property:analyzed="${wiki.history.analyzed}"
+		property:vectored="${wiki.history.vectored}"
+		property:unpackZips="${wiki.history.unpack.zips}"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:batchSize="${file.batch.size}"
+		property:maxReadLength="${file.max.read.length}" 
+		property:maxRevisions="${max.revisions}"
+		property:maxExceptions="${max.exceptions}" />
+	
+	<bean
+		id="wikiHistoryTwo"
+		class="ikube.model.IndexContext"
+		property:name="wikiHistoryTwo"
+		property:maxAge="${wiki.index.age}"
+		property:compoundFile="${wiki.history.compound.file}"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:throttle="${wiki.history.throttle}"
+		property:indexDirectoryPath="${index.root}/nas-two/history/index"
+		property:indexDirectoryPathBackup="${index.root}/nas-two/history/index"
+		property:children-ref="wikiHistoryIndexablesTwo" />
+	<util:list id="wikiHistoryIndexablesTwo">
+		<ref local="wikiHistoryDataTwo" />
+	</util:list>
+	<bean
+		id="wikiHistoryDataTwo"
+		class="ikube.model.IndexableFileSystemWiki"
+		property:name="wikiHistoryDataTwo"
+		property:path="${index.root}/nas-two/history"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:lastModifiedFieldName="lastmodified"
+		property:stored="${wiki.history.stored}"
+		property:analyzed="${wiki.history.analyzed}"
+		property:vectored="${wiki.history.vectored}"
+		property:unpackZips="${wiki.history.unpack.zips}"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:batchSize="${file.batch.size}"
+		property:maxReadLength="${file.max.read.length}" 
+		property:maxRevisions="${max.revisions}" 
+		property:maxExceptions="${max.exceptions}" />
+
+	<bean
+		id="wikiHistoryThree"
+		class="ikube.model.IndexContext"
+		property:name="wikiHistoryThree"
+		property:maxAge="${wiki.index.age}"
+		property:compoundFile="${wiki.history.compound.file}"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:throttle="${wiki.history.throttle}"
+		property:indexDirectoryPath="${index.root}/nas-three/history/index"
+		property:indexDirectoryPathBackup="${index.root}/nas-three/history/index"
+		property:children-ref="wikiHistoryIndexablesThree" />
+	<util:list id="wikiHistoryIndexablesThree">
+		<ref local="wikiHistoryDataThree" />
+	</util:list>
+	<bean
+		id="wikiHistoryDataThree"
+		class="ikube.model.IndexableFileSystemWiki"
+		property:name="wikiHistoryDataThree"
+		property:path="${index.root}/nas-three/history"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:lastModifiedFieldName="lastmodified"
+		property:stored="${wiki.history.stored}"
+		property:analyzed="${wiki.history.analyzed}"
+		property:vectored="${wiki.history.vectored}"
+		property:unpackZips="${wiki.history.unpack.zips}"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:batchSize="${file.batch.size}"
+		property:maxReadLength="${file.max.read.length}" 
+		property:maxRevisions="${max.revisions}" 
+		property:maxExceptions="${max.exceptions}" />
+
+	<bean
+		id="wikiHistoryFour"
+		class="ikube.model.IndexContext"
+		property:name="wikiHistoryFour"
+		property:maxAge="${wiki.index.age}"
+		property:compoundFile="${wiki.history.compound.file}"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:throttle="${wiki.history.throttle}"
+		property:indexDirectoryPath="${index.root}/nas-four/history/index"
+		property:indexDirectoryPathBackup="${index.root}/nas-four/history/index"
+		property:children-ref="wikiHistoryIndexablesFour" />
+	<util:list id="wikiHistoryIndexablesFour">
+		<ref local="wikiHistoryDataFour" />
+	</util:list>
+	<bean
+		id="wikiHistoryDataFour"
+		class="ikube.model.IndexableFileSystemWiki"
+		property:name="wikiHistoryDataFour"
+		property:path="${index.root}/nas-four/history"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:lastModifiedFieldName="lastmodified"
+		property:stored="${wiki.history.stored}"
+		property:analyzed="${wiki.history.analyzed}"
+		property:vectored="${wiki.history.vectored}"
+		property:unpackZips="${wiki.history.unpack.zips}"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:batchSize="${file.batch.size}"
+		property:maxReadLength="${file.max.read.length}" 
+		property:maxRevisions="${max.revisions}" 
+		property:maxExceptions="${max.exceptions}" />
+
+	<bean
+		id="wikiHistoryFive"
+		class="ikube.model.IndexContext"
+		property:name="wikiHistoryFive"
+		property:maxAge="${wiki.index.age}"
+		property:compoundFile="${wiki.history.compound.file}"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:throttle="${wiki.history.throttle}"
+		property:indexDirectoryPath="${index.root}/nas-five/history/index"
+		property:indexDirectoryPathBackup="${index.root}/nas-five/history/index"
+		property:children-ref="wikiHistoryIndexablesFive" />
+	<util:list id="wikiHistoryIndexablesFive">
+		<ref local="wikiHistoryDataFive" />
+	</util:list>
+	<bean
+		id="wikiHistoryDataFive"
+		class="ikube.model.IndexableFileSystemWiki"
+		property:name="wikiHistoryDataFive"
+		property:path="${index.root}/nas-five/history"
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:lastModifiedFieldName="lastmodified"
+		property:stored="${wiki.history.stored}"
+		property:analyzed="${wiki.history.analyzed}"
+		property:vectored="${wiki.history.vectored}"
+		property:unpackZips="${wiki.history.unpack.zips}"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:batchSize="${file.batch.size}"
+		property:maxReadLength="${file.max.read.length}" 
+		property:maxRevisions="${max.revisions}" 
+		property:maxExceptions="${max.exceptions}" />
+		
+	<bean
 		id="wikiHistoryArabic"
 		class="ikube.model.IndexContext"
 		property:name="wikiHistoryArabic"
@@ -28,7 +269,7 @@
 		property:mergeFactor="${history.merge.factor}"
 		property:maxFieldLength="${history.max.field.length}"
 		property:maxReadLength="${history.max.read.length}"
-		property:throttle="0"
+		property:throttle="${wiki.history.throttle}"
 		property:indexDirectoryPath="${index.root}/nas-one/languages/index"
 		property:indexDirectoryPathBackup="${index.root}/nas-one/languages/index"
 		property:children-ref="wikiHistoryIndexablesArabic" />
@@ -68,7 +309,7 @@
 		property:mergeFactor="${history.merge.factor}"
 		property:maxFieldLength="${history.max.field.length}"
 		property:maxReadLength="${history.max.read.length}"
-		property:throttle="0"
+		property:throttle="${wiki.history.throttle}"
 		property:indexDirectoryPath="${index.root}/nas-one/languages/index"
 		property:indexDirectoryPathBackup="${index.root}/nas-one/languages/index"
 		property:children-ref="wikiHistoryIndexablesDutch" />
@@ -107,7 +348,7 @@
 		property:mergeFactor="${history.merge.factor}"
 		property:maxFieldLength="${history.max.field.length}"
 		property:maxReadLength="${history.max.read.length}"
-		property:throttle="0"
+		property:throttle="${wiki.history.throttle}"
 		property:indexDirectoryPath="${index.root}/nas-two/languages/index"
 		property:indexDirectoryPathBackup="${index.root}/nas-two/languages/index"
 		property:children-ref="wikiHistoryIndexablesFrench" />
@@ -147,7 +388,7 @@
 		property:mergeFactor="${history.merge.factor}"
 		property:maxFieldLength="${history.max.field.length}"
 		property:maxReadLength="${history.max.read.length}"
-		property:throttle="0"
+		property:throttle="${wiki.history.throttle}"
 		property:indexDirectoryPath="${index.root}/nas-two/languages/index"
 		property:indexDirectoryPathBackup="${index.root}/nas-two/languages/index"
 		property:children-ref="wikiHistoryIndexablesGerman" />
@@ -187,7 +428,7 @@
 		property:mergeFactor="${history.merge.factor}"
 		property:maxFieldLength="${history.max.field.length}"
 		property:maxReadLength="${history.max.read.length}"
-		property:throttle="0"
+		property:throttle="${wiki.history.throttle}"
 		property:indexDirectoryPath="${index.root}/nas-three/languages/index"
 		property:indexDirectoryPathBackup="${index.root}/nas-three/languages/index"
 		property:children-ref="wikiHistoryIndexablesPolish" />
@@ -227,7 +468,7 @@
 		property:mergeFactor="${history.merge.factor}"
 		property:maxFieldLength="${history.max.field.length}"
 		property:maxReadLength="${history.max.read.length}"
-		property:throttle="0"
+		property:throttle="${wiki.history.throttle}"
 		property:indexDirectoryPath="${index.root}/nas-three/languages/index"
 		property:indexDirectoryPathBackup="${index.root}/nas-three/languages/index"
 		property:children-ref="wikiHistoryIndexablesPortuguese" />
@@ -267,7 +508,7 @@
 		property:mergeFactor="${history.merge.factor}"
 		property:maxFieldLength="${history.max.field.length}"
 		property:maxReadLength="${history.max.read.length}"
-		property:throttle="0"
+		property:throttle="${wiki.history.throttle}"
 		property:indexDirectoryPath="${index.root}/nas-four/languages/index"
 		property:indexDirectoryPathBackup="${index.root}/nas-four/languages/index"
 		property:children-ref="wikiHistoryIndexablesRussian" />
@@ -307,7 +548,7 @@
 		property:mergeFactor="${history.merge.factor}"
 		property:maxFieldLength="${history.max.field.length}"
 		property:maxReadLength="${history.max.read.length}"
-		property:throttle="0"
+		property:throttle="${wiki.history.throttle}"
 		property:indexDirectoryPath="${index.root}/nas-four/languages/index"
 		property:indexDirectoryPathBackup="${index.root}/nas-four/languages/index"
 		property:children-ref="wikiHistoryIndexablesItalian" />
@@ -347,7 +588,7 @@
 		property:mergeFactor="${history.merge.factor}"
 		property:maxFieldLength="${history.max.field.length}"
 		property:maxReadLength="${history.max.read.length}"
-		property:throttle="0"
+		property:throttle="${wiki.history.throttle}"
 		property:indexDirectoryPath="${index.root}/nas-five/languages/index"
 		property:indexDirectoryPathBackup="${index.root}/nas-five/languages/index"
 		property:children-ref="wikiHistoryIndexablesSpanish" />
@@ -373,5 +614,7 @@
 		property:maxReadLength="${file.max.read.length}"
 		property:maxRevisions="${max.revisions}" 
 		property:maxExceptions="${max.exceptions}" />
-
+		
+	
+	
 </beans>

@@ -196,6 +196,9 @@ public class MonitorService implements IMonitorService {
 		Event terminateEvent = IListener.EventGenerator.getEvent(Event.TERMINATE_ALL, time, null, Boolean.FALSE);
 		LOGGER.info("Sending terminate event for all actions : " + terminateEvent);
 		clusterManager.sendMessage(terminateEvent);
+
+		Event takeSnapshotEvent = IListener.EventGenerator.getEvent(Event.TAKE_SNAPSHOT, time, null, Boolean.FALSE);
+		clusterManager.sendMessage(takeSnapshotEvent);
 	}
 
 	/**
@@ -207,6 +210,43 @@ public class MonitorService implements IMonitorService {
 		Event terminateEvent = IListener.EventGenerator.getEvent(Event.STARTUP_ALL, time, null, Boolean.FALSE);
 		LOGGER.info("Sending startup event for all actions : " + terminateEvent);
 		clusterManager.sendMessage(terminateEvent);
+
+		Event takeSnapshotEvent = IListener.EventGenerator.getEvent(Event.TAKE_SNAPSHOT, time, null, Boolean.FALSE);
+		clusterManager.sendMessage(takeSnapshotEvent);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void start(final String indexName) {
+		long time = System.currentTimeMillis();
+		Event startEvent = IListener.EventGenerator.getEvent(Event.STARTUP, time, indexName, Boolean.FALSE);
+		clusterManager.sendMessage(startEvent);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void terminate(final String indexName) {
+		long time = System.currentTimeMillis();
+		Event terminateEvent = IListener.EventGenerator.getEvent(Event.TERMINATE, time, indexName, Boolean.FALSE);
+		clusterManager.sendMessage(terminateEvent);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void cpuThrottling() {
+		long time = System.currentTimeMillis();
+		Event cpuThrottleEvent = IListener.EventGenerator.getEvent(Event.CPU_LOAD_THROTTLING_GOGGLE, time, null, Boolean.FALSE);
+		LOGGER.info("Toggling cpu throttling : " + cpuThrottleEvent);
+		clusterManager.sendMessage(cpuThrottleEvent);
+
+		Event takeSnapshotEvent = IListener.EventGenerator.getEvent(Event.TAKE_SNAPSHOT, time, null, Boolean.FALSE);
+		clusterManager.sendMessage(takeSnapshotEvent);
 	}
 
 	/**

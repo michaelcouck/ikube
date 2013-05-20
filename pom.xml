@@ -57,8 +57,8 @@
 		<module>code/core</module>
 		<module>code/war</module>
 		<module>code/site</module>
-		<!-- <module>code/libs</module> -->
-		<!-- <module>code/tool</module> -->
+		<module>code/libs</module>
+		<module>code/tool</module>
 	</modules>
 
 	<build>
@@ -958,6 +958,13 @@
 			<groupId>edu.cmu.sphinx</groupId>
 			<artifactId>sphinx4</artifactId>
 			<version>1.0-beta6</version>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.17</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 

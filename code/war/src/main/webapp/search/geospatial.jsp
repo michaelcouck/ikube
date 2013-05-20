@@ -187,7 +187,7 @@
 	</tr>
 	
 	<tr class="odd" nowrap="nowrap" valign="bottom">
-		<td>&nbsp;&nbsp;&nbsp;<b>Collection:</b></td>
+		<td><b>Collection:</b></td>
 		<td>
 			<select ng-controller="IndexesController" ng-model="searchParameters.indexName">
 				<option ng-repeat="index in indexes" value="{{index}}">{{index}}</option>
@@ -200,19 +200,19 @@
 					
 	</tr>
 	<tr class="even" nowrap="nowrap" valign="bottom">
-		<td>&nbsp;&nbsp;&nbsp;<b>All of these words:</b></td>
+		<td><b>All of these words:</b></td>
 		<td><input id="allWords" name="allWords" ng-model="allWords"></td>
 	</tr>
 	<tr class="odd" nowrap="nowrap" valign="bottom">
-		<td>&nbsp;&nbsp;&nbsp;<b>Latitude:</b></td>
+		<td><b>Latitude:</b></td>
 		<td><input id="latitude" ng-model="latitude" placeholder="latitude"></td>
 	</tr>
 	<tr class="even" nowrap="nowrap" valign="bottom">
-		<td>&nbsp;&nbsp;&nbsp;<b>Longitude:</b></td>
+		<td><b>Longitude:</b></td>
 		<td><input id="longitude" ng-model="longitude" placeholder="longitude"></td>
 	</tr>
 	<tr class="odd" nowrap="nowrap" valign="bottom">
-		<td>&nbsp;&nbsp;&nbsp;<b>Distance:</b></td>
+		<td><b>Distance:</b></td>
 		<td><input id="distance" ng-model="distance" placeholder="distance"></td>
 	</tr>
 	<tr class="even" nowrap="nowrap" valign="top">

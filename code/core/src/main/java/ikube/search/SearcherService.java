@@ -71,8 +71,7 @@ public class SearcherService implements ISearcherService {
 			persistSearch(indexName, new String[] { searchString }, searchStringsCorrected, results);
 			return results;
 		} catch (final Exception e) {
-			LOGGER.error("Exception doing search on : " + indexName, e);
-			return EMPTY_RESULTS;
+			return handleException(indexName, e);
 		}
 	}
 
@@ -98,8 +97,7 @@ public class SearcherService implements ISearcherService {
 			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
 			return results;
 		} catch (final Exception e) {
-			LOGGER.error("Exception doing search on : " + indexName, e);
-			return EMPTY_RESULTS;
+			return handleException(indexName, e);
 		}
 	}
 
@@ -126,8 +124,7 @@ public class SearcherService implements ISearcherService {
 			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
 			return results;
 		} catch (final Exception e) {
-			LOGGER.error("Exception doing search on : " + indexName, e);
-			return EMPTY_RESULTS;
+			return handleException(indexName, e);
 		}
 	}
 
@@ -151,8 +148,7 @@ public class SearcherService implements ISearcherService {
 			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
 			return results;
 		} catch (final Exception e) {
-			LOGGER.error("Exception doing search on : " + indexName, e);
-			return EMPTY_RESULTS;
+			return handleException(indexName, e);
 		}
 	}
 
@@ -181,8 +177,7 @@ public class SearcherService implements ISearcherService {
 			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
 			return results;
 		} catch (final Exception e) {
-			LOGGER.error("Exception doing search on : " + indexName, e);
-			return EMPTY_RESULTS;
+			return handleException(indexName, e);
 		}
 	}
 
@@ -210,8 +205,7 @@ public class SearcherService implements ISearcherService {
 			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
 			return results;
 		} catch (final Exception e) {
-			LOGGER.error("Exception doing search on : " + indexName, e);
-			return EMPTY_RESULTS;
+			return handleException(indexName, e);
 		}
 	}
 
@@ -237,8 +231,7 @@ public class SearcherService implements ISearcherService {
 			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
 			return results;
 		} catch (final Exception e) {
-			LOGGER.error("Exception doing search on : " + indexName, e);
-			return EMPTY_RESULTS;
+			return handleException(indexName, e);
 		}
 	}
 
@@ -261,8 +254,7 @@ public class SearcherService implements ISearcherService {
 			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
 			return results;
 		} catch (final Exception e) {
-			LOGGER.error("Exception doing search on : " + indexName, e);
-			return EMPTY_RESULTS;
+			return handleException(indexName, e);
 		}
 	}
 
@@ -285,8 +277,7 @@ public class SearcherService implements ISearcherService {
 			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
 			return results;
 		} catch (final Exception e) {
-			LOGGER.error("Exception doing search on : " + indexName, e);
-			return EMPTY_RESULTS;
+			return handleException(indexName, e);
 		}
 	}
 
@@ -313,9 +304,14 @@ public class SearcherService implements ISearcherService {
 			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
 			return results;
 		} catch (final Exception e) {
-			LOGGER.error("Exception doing search on : " + indexName, e);
-			return EMPTY_RESULTS;
+			return handleException(indexName, e);
 		}
+	}
+
+	private ArrayList<HashMap<String, String>> handleException(final String indexName, final Exception e) {
+		LOGGER.error("Exception doing search on : " + indexName);
+		LOGGER.debug(null, e);
+		return EMPTY_RESULTS;
 	}
 
 	/**

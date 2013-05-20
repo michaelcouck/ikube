@@ -46,7 +46,6 @@
 		id="geonamePostgres"
 		class="ikube.model.IndexableTable"
 		property:name="geoname"
-		property:primaryTable="true"
 		property:address="true"
 		property:dataSource-ref="nonXaDataSourcePostgresql"
 		property:children-ref="geonameColumnsPostgres" 

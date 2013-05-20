@@ -5,8 +5,8 @@
 	<tr>
 		<th colspan="9"><img src="<c:url value="/images/icons/launch_run.gif" />">&nbsp;Local server indexes</th>
 	</tr>
-	<tr style="margin-left: 50px; padding-left: 50px;">
-		<th>&nbsp;&nbsp;&nbsp;<img src="<c:url value="/images/icons/index.gif" />">&nbsp;<a href="#" ng-click="sortIndexContexts('name')">Name</a></th>
+	<tr>
+		<th><img src="<c:url value="/images/icons/index.gif" />">&nbsp;<a href="#" ng-click="sortIndexContexts('name')">Name</a></th>
 		<th><img src="<c:url value="/images/icons/open.gif" />">&nbsp;<a href="#" ng-click="sortIndexContexts('open')">Open</a></th>
 		<th><img src="<c:url value="/images/icons/link_obj.gif" />">&nbsp;<a href="#" ng-click="sortIndexContexts('numDocs')">Documents</a></th>
 		<th><img src="<c:url value="/images/icons/repository.gif" />">&nbsp;<a href="#" ng-click="sortIndexContexts('indexSize')">Size</a></th>
@@ -17,7 +17,7 @@
 		<th><img src="<c:url value="/images/icons/launch_run.gif" />">&nbsp;Function</th>
 	</tr>
 	<tr ng-repeat="indexContext in indexContexts" ng-class-odd="'odd'" ng-class-even="'even'">
-		<td ng-class="{ active : indexContext.indexing == true }">&nbsp;&nbsp;&nbsp;{{indexContext.name}}</td>
+		<td ng-class="{ active : indexContext.indexing == true }">{{indexContext.name}}</td>
 		<td ng-class="{ active : indexContext.indexing == true }">{{indexContext.open}}</td>
 		<td ng-class="{ active : indexContext.indexing == true }">{{indexContext.numDocs / 1000000}}</td>
 		<td ng-class="{ active : indexContext.indexing == true }">{{indexContext.indexSize / 1000000}}</td>

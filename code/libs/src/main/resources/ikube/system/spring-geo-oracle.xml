@@ -39,18 +39,18 @@
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
 		property:children-ref="geospatialIndexablesOracle" />
 	<util:list id="geospatialIndexablesOracle">
-		<!-- <ref local="geonameOracle" /> -->
+		<ref local="geonameOracle" />
 	</util:list>
 	
-<!-- 	<bean
+	<bean
 		id="geonameOracle"
 		class="ikube.model.IndexableTable"
 		property:name="geoname"
-		property:primaryTable="true"
 		property:address="true"
 		property:dataSource-ref="nonXaDataSourceOracle"
 		property:children-ref="geonameColumnsOracle" 
-		property:maxExceptions="10" />
+		property:maxExceptions="10"
+		property:strategies-ref="geoname-strategies" />
 	<util:list id="geonameColumnsOracle">
 		<ref bean="geospatialId" />
 		<ref bean="geospatialName" />
@@ -74,6 +74,7 @@
 		<ref bean="geospatialPopulation" />
 		<ref bean="geospatialElevation" />
 		<ref bean="geospatialGtopo30" />
-	</util:list> -->
+		<ref bean="alternatename" />
+	</util:list>
 	
 </beans>

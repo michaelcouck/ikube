@@ -83,7 +83,7 @@
 		<entry key="openjpa.DataCache" value="true(CacheSize=0,SoftReferenceSize=0)" />
 		<entry key="openjpa.QueryCache" value="true(CacheSize=0,SoftReferenceSize=0)" />
 
-		<entry key="openjpa.Optimistic" value="true" />
+		<entry key="openjpa.Optimistic" value="false" />
 		<entry key="openjpa.ReadLockLevel" value="read" />
 		<entry key="openjpa.WriteLockLevel" value="write" />
 		<entry key="openjpa.NontransactionalRead" value="true" />
@@ -271,23 +271,29 @@
 		class="ikube.search.spelling.SpellingChecker"
 		init-method="initialize"
 		destroy-method="destroy" />
-		
+
 	<bean 
-		id="ikube.cluster.IClusterManager"
-		class="ikube.cluster.hzc.ClusterManagerHazelcast"
+		id="ikube.cluster.IClusterManager" 
+		class="ikube.cluster.hzc.ClusterManagerHazelcast" 
 		destroy-method="destroy"
-		property:listeners-ref="messageListeners"
+		property:listeners-ref="messageListeners" 
 		lazy-init="false" />
 	<util:list id="messageListeners">
 		<bean 
-		   	id="ikube.cluster.listener.hzc.StartListener" 
-		   	class="ikube.cluster.listener.hzc.StartListener" />
+			id="ikube.cluster.listener.hzc.StartListener" 
+			class="ikube.cluster.listener.hzc.StartListener" />
 		<bean 
-		   	id="ikube.cluster.listener.hzc.StopListener" 
-		   	class="ikube.cluster.listener.hzc.StopListener" />
+			id="ikube.cluster.listener.hzc.StopListener" 
+			class="ikube.cluster.listener.hzc.StopListener" />
 		<bean 
-		   	id="ikube.cluster.listener.hzc.DeleteListener" 
-		   	class="ikube.cluster.listener.hzc.DeleteListener" />
+			id="ikube.cluster.listener.hzc.DeleteListener" 
+			class="ikube.cluster.listener.hzc.DeleteListener" />
+		<bean 
+			id="ikube.cluster.listener.hzc.CpuLoadListener" 
+			class="ikube.cluster.listener.hzc.CpuLoadListener" />
+		<bean 
+			id="ikube.cluster.listener.hzc.SnapshotListener" 
+			class="ikube.cluster.listener.hzc.SnapshotListener" />	
 	</util:list>
 	
 	<!-- The handlers that do the indexing logic. -->

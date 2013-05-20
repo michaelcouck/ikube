@@ -1,5 +1,7 @@
 package ikube.scheduling;
 
+import ikube.IConstants;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -11,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class just schedules events to be fired a a particular rate. Listeners can then respond to the events.
+ * This class just schedules threads to execute the run methods.
  * 
  * @author Michael Couck
  * @since 21.11.10
@@ -24,17 +26,16 @@ public class Scheduler {
 	/** The list of schedules. */
 	private List<Schedule> schedules;
 	/** The scheduler. */
-	private ScheduledExecutorService scheduledExecuterService;
+	private ScheduledExecutorService service;
 
 	/**
 	 * Iterates over the schedules scheduling them for execution.
 	 */
 	public void initialize() {
-		LOGGER.info("Scheduler : ");
-		if (scheduledExecuterService != null) {
+		if (service != null) {
 			shutdown();
 		}
-		scheduledExecuterService = Executors.newScheduledThreadPool(100);
+		service = Executors.newScheduledThreadPool(IConstants.THREAD_POOL_SIZE);
 		for (final Schedule schedule : schedules) {
 			try {
 				schedule(schedule);
@@ -45,19 +46,18 @@ public class Scheduler {
 	}
 
 	public ScheduledFuture<?> schedule(final Schedule schedule) {
-		LOGGER.info("Scheduling : " + schedule);
 		if (schedule.isSingle()) {
-			return scheduledExecuterService.schedule(schedule, schedule.getDelay(), TimeUnit.MILLISECONDS);
+			return service.schedule(schedule, schedule.getDelay(), TimeUnit.MILLISECONDS);
 		} else {
-			return scheduledExecuterService.scheduleAtFixedRate(schedule, schedule.getDelay(), schedule.getPeriod(), TimeUnit.MILLISECONDS);
+			return service.scheduleAtFixedRate(schedule, schedule.getDelay(), schedule.getPeriod(), TimeUnit.MILLISECONDS);
 		}
 	}
 
 	public void shutdown() {
 		this.schedules.clear();
-		this.scheduledExecuterService.shutdown();
-		List<Runnable> runnables = this.scheduledExecuterService.shutdownNow();
-		LOGGER.info("Shutdown schedules : " + runnables);
+		this.service.shutdown();
+		List<Runnable> runnables = this.service.shutdownNow();
+		LOGGER.debug("Shutdown schedules : " + runnables);
 	}
 
 	public void setSchedule(final Schedule schedule) {

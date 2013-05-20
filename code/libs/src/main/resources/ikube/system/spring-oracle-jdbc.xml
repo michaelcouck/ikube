@@ -12,7 +12,7 @@
             http://www.springframework.org/schema/context
             http://www.springframework.org/schema/context/spring-context-3.0.xsd">
             
-	<!-- <bean id="nonXaDataSourceOracle"
+	<bean id="nonXaDataSourceOracle"
 		class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close"
 		property:user="${oracle.jdbc.userid}"
@@ -38,6 +38,6 @@
 				<ref local="nonXaDataSourceOracle" />
 			</array>
 		</property>
-	</bean> -->
+	</bean>
 	
 </beans>

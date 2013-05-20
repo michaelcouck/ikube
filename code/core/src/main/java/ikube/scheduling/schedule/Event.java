@@ -27,6 +27,8 @@ public class Event implements Serializable {
 
 	public static final String DELETE_INDEX = "delete-index";
 	public static final String MEMORY_SIZE = "memory-size";
+	public static final String CPU_LOAD_THROTTLING_GOGGLE = "cpu-throttling";
+	public static final String TAKE_SNAPSHOT = "take-snapshot";
 
 	private String type;
 	private long timestamp;

@@ -1,5 +1,6 @@
 package ikube.scheduling.schedule;
 
+import ikube.cluster.IClusterManager;
 import ikube.cluster.IMonitorService;
 import ikube.model.IndexContext;
 import ikube.model.Snapshot;
@@ -28,12 +29,14 @@ public class CpuLoadSchedule extends Schedule {
 	@Value("${cpu.load.period}")
 	private int period = 10;
 	@Value("${cpu.load.active}")
-	private boolean active = Boolean.TRUE;
+	private Boolean active;
 	@Value("${cpu.load.threshold}")
 	private double threshold = 1.0;
 
 	@Autowired
 	private IMonitorService monitorService;
+	@Autowired
+	private IClusterManager clusterManager;
 
 	/**
 	 * {@inheritDoc}
@@ -41,7 +44,12 @@ public class CpuLoadSchedule extends Schedule {
 	@Override
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void run() {
-		if (!active) {
+		// For the server startup we need to set this in the server object
+		if (active != null) {
+			clusterManager.getServer().setCpuThrottling(active);
+			active = null;
+		}
+		if (!clusterManager.getServer().isCpuThrottling()) {
 			return;
 		}
 		boolean increaseThrottle = Boolean.FALSE;
@@ -81,6 +89,14 @@ public class CpuLoadSchedule extends Schedule {
 				}
 			}
 		}
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 }

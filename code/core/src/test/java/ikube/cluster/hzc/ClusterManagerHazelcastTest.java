@@ -79,9 +79,7 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 	@Cascading
 	private IMonitorService monitorService;
 
-	@Cascading
 	private StartListener startListener;
-	@Cascading
 	private StopListener stopListener;
 
 	private ClusterManagerHazelcast clusterManagerHazelcast;
@@ -106,6 +104,9 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 
 		Deencapsulation.setField(clusterManagerHazelcast, dataBase);
 		Deencapsulation.setField(clusterManagerHazelcast, monitorService);
+		
+		startListener = new StartListener();
+		stopListener = new StopListener();
 		List<MessageListener<Object>> listeners = new ArrayList<MessageListener<Object>>(Arrays.asList(startListener, stopListener));
 		clusterManagerHazelcast.setListeners(listeners);
 	}
@@ -229,26 +230,26 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 
 	@Test
 	public void submitDestroy() {
+		ThreadUtilities.initialize();
 		try {
 			Mockit.tearDownMocks();
-			ThreadUtilities.initialize();
 			Runnable runnable = new Runnable() {
 				@Override
 				public void run() {
 					while (true) {
-						ThreadUtilities.sleep(1000);
+						ThreadUtilities.sleep(10000);
 					}
 				}
 			};
 			String name = "name";
 			Future<?> future = ThreadUtilities.submit(name, runnable);
-			logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
+			logger.info("Future : " + future.isCancelled() + ", " + future.isDone() + ", " + future);
 			Event event = IListener.EventGenerator.getEvent(Event.TERMINATE, System.currentTimeMillis(), name, Boolean.FALSE);
 			clusterManagerHazelcast.sendMessage(event);
-			ThreadUtilities.sleep(1000);
+			ThreadUtilities.sleep(5000);
 			assertTrue(future.isCancelled());
-			ThreadUtilities.destroy();
 		} finally {
+			ThreadUtilities.destroy();
 			Mockit.setUpMock(SpellingCheckerMock.class);
 		}
 	}

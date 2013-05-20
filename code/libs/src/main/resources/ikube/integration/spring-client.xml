@@ -35,7 +35,6 @@
 	<util:list id="indexables">
 		<ref local="mail" />
 		<ref local="hazelcast" />
-		<ref local="ikubeGoogleCode" />
 		<ref local="indexContextTable" />
 		<ref local="snapshotTable" />
 	</util:list>
@@ -45,7 +44,6 @@
 		class="ikube.model.IndexableTable" 
 		property:name="indexContext" 
 		property:allColumns="true" 
-		property:primaryTable="true"
 		property:dataSource-ref="nonXaDataSourceH2" 
 		property:maxExceptions="100" 
 		property:stored="true" 
@@ -65,12 +63,10 @@
 		property:stored="true"
 		property:vectored="true" />
 	
-	<!-- property:primaryTable="true" -->
 	<bean 
 		id="snapshotTable" 
 		class="ikube.model.IndexableTable" 
 		property:name="snapshot" 
-		property:primaryTable="true"
 		property:allColumns="true" 
 		property:dataSource-ref="nonXaDataSourceH2" 
 		property:maxExceptions="100" 
@@ -125,20 +121,6 @@
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" 
-		property:internetBatchSize="${internet.batch.size}"
-		property:excludedPattern="${internet.excluded.pattern}" />
-	
-	<bean
-		id="ikubeGoogleCode"
-		class="ikube.model.IndexableInternet"
-		property:name="ikubeGoogleCode"
-		property:url="http://code.google.com/p/ikube/" 
-		property:idFieldName="id"
-		property:titleFieldName="title"
-		property:contentFieldName="content"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}"
 		property:internetBatchSize="${internet.batch.size}"
 		property:excludedPattern="${internet.excluded.pattern}" />
 	

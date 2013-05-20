@@ -29,8 +29,6 @@ public class StopListener implements IListener<Message<Object>>, MessageListener
 	@Override
 	public void onMessage(final Message<Object> message) {
 		// If this is a stop working message then find the future in the thread utilities and kill it
-		@SuppressWarnings("unused")
-		Object source = message.getSource();
 		Object object = message.getMessageObject();
 		if (object != null && Event.class.isAssignableFrom(object.getClass())) {
 			Event event = (Event) object;
@@ -42,8 +40,10 @@ public class StopListener implements IListener<Message<Object>>, MessageListener
 				event.setConsumed(Boolean.TRUE);
 				Object indexName = event.getObject();
 				if (indexName != null && String.class.isAssignableFrom(indexName.getClass())) {
-					logger.info("Terminating indexing : " + indexName);
-					ThreadUtilities.destroy((String) indexName);
+					if (logger != null) {
+						logger.info("Terminating indexing : " + indexName);
+						ThreadUtilities.destroy((String) indexName);
+					}
 				}
 			} else if (Event.TERMINATE_ALL.equals(event.getType())) {
 				event.setConsumed(Boolean.TRUE);

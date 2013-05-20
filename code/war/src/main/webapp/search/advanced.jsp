@@ -107,7 +107,7 @@
 	</tr>
 	<form ng-submit="doSearch()">
 	<tr class="odd" nowrap="nowrap" valign="bottom">
-		<td>&nbsp;&nbsp;&nbsp;<b>Collection:</b></td>
+		<td><b>Collection:</b></td>
 		<td>
 			<select ng-controller="IndexesController" ng-model="searchParameters.indexName">
 				<option ng-repeat="index in indexes" value="{{index}}">{{index}}</option>
@@ -115,19 +115,19 @@
 		</td>
 	</tr>
 	<tr class="even" nowrap="nowrap" valign="bottom">
-		<td>&nbsp;&nbsp;&nbsp;<b>All of these words:</b></td>
+		<td><b>All of these words:</b></td>
 		<td><input id="allWords" name="allWords" ng-model="allWords"></td>
 	</tr>
 	<tr class="odd" nowrap="nowrap" valign="bottom">
-		<td>&nbsp;&nbsp;&nbsp;<b>This exact word or phrase:</b></td>
+		<td><b>This exact word or phrase:</b></td>
 		<td><input id="exactPhrase" name="exactPhrase" ng-model="exactPhrase"></td>
 	</tr>
 	<tr class="even" nowrap="nowrap" valign="bottom">
-		<td>&nbsp;&nbsp;&nbsp;<b>One or more of these words:</b></td>
+		<td><b>One or more of these words:</b></td>
 		<td><input id="oneOrMore" name="oneOrMore" ng-model="oneOrMore"></td>
 	</tr>
 	<tr class="odd" nowrap="nowrap" valign="bottom">
-		<td>&nbsp;&nbsp;&nbsp;<b>None of these words:</b></td>
+		<td><b>None of these words:</b></td>
 		<td><input id="noneOfTheseWords" name="noneOfTheseWords" ng-model="noneOfTheseWords"></td>
 	</tr>
 	

@@ -358,6 +358,8 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			url.setContentType(contentType);
 			return outputStream.toString();
 		} catch (Exception e) {
+			url.setRawContent(null);
+			url.setParsedContent(null);
 			logger.error("Exception accessing url : " + url, e);
 		}
 		return null;

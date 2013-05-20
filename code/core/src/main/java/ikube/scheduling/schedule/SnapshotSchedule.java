@@ -11,6 +11,7 @@ import ikube.model.Server;
 import ikube.model.Snapshot;
 import ikube.scheduling.Schedule;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -106,6 +107,7 @@ public class SnapshotSchedule extends Schedule {
 		server.setFreeMemory(Runtime.getRuntime().freeMemory() / IConstants.MILLION);
 		server.setMaxMemory(Runtime.getRuntime().maxMemory() / IConstants.MILLION);
 		server.setTotalMemory(Runtime.getRuntime().totalMemory() / IConstants.MILLION);
+		server.setThreadsRunning(ThreadUtilities.isInitialized());
 
 		try {
 			long availableDiskSpace = FileSystemUtils.freeSpaceKb("/") / IConstants.MILLION;

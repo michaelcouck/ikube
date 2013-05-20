@@ -31,7 +31,7 @@ module.directive('searching', function($http) {
 		link : function($scope, $elm, $attr) {
 			$scope.options = { 
 				title : 'Searching performance',
-				legend : { position : 'top', textStyle : { color : 'black', fontSize : 12 } } };
+				legend : { position : 'top', textStyle : { color : 'black', fontSize : 10 } } };
 			$scope.drawSearchingChart = function() {
 				$scope.url = getServiceUrl('/ikube/service/monitor/searching');
 				var promise = $http.get($scope.url);
@@ -63,7 +63,7 @@ module.directive('indexing', function($http) {
 		link : function($scope, $elm, $attr) {
 			$scope.options = { 
 				title : 'Indexing performance',
-				legend : { position : 'top', textStyle : { color : 'black', fontSize : 12 } } };
+				legend : { position : 'top', textStyle : { color : 'black', fontSize : 10 } } };
 			$scope.drawIndexingChart = function() {
 				$scope.url = getServiceUrl('/ikube/service/monitor/indexing');
 				var promise = $http.get($scope.url);
@@ -96,7 +96,24 @@ try {
 
 /** This controller will get the server data from the grid. */
 module.controller('ServersController', function($http, $scope) {
+	$scope.server;
 	$scope.servers = [];
+	
+	$scope.refreshServer = function() {
+		$scope.url = getServiceUrl('/ikube/service/monitor/server');
+		var promise = $http.get($scope.url);
+		promise.success(function(data, status) {
+			$scope.server = data;
+			$scope.status = status;
+		});
+		promise.error(function(data, status) {
+			$scope.status = status;
+		});
+	}
+	$scope.refreshServer();
+	setInterval(function() {
+		$scope.refreshServer();
+	}, refreshInterval);
 	
 	$scope.refreshServers = function() {
 		$scope.url = getServiceUrl('/ikube/service/monitor/servers');
@@ -109,7 +126,6 @@ module.controller('ServersController', function($http, $scope) {
 			$scope.status = status;
 		});
 	}
-
 	$scope.refreshServers();
 	setInterval(function() {
 		$scope.refreshServers();
@@ -153,6 +169,22 @@ module.controller('ServersController', function($http, $scope) {
 		return new Date(millis).toLocaleTimeString();
 	};
 	
+	$scope.toggleCpuThrottling = function() {
+		if (confirm('Turn the CPU throttling on/off : ')) {
+			$scope.url = getServiceUrl('/ikube/service/monitor/cpu-throttling');
+			$scope.parameters = {};
+			// The configuration for the request to the server
+			$scope.config = { params : $scope.parameters };
+			// And terminate the schedules in the cluster
+			var promise = $http.get($scope.url, $scope.config);
+			promise.success(function(data, status) {
+				$scope.status = status;
+			});
+			promise.error(function(data, status) {
+				$scope.status = status;
+			});
+		}
+	}
 });
 
 /**
@@ -188,7 +220,7 @@ module.controller('IndexContextsController', function($http, $scope) {
 	$scope.indexContexts = [];
 	
 	$scope.sortField = 'name';
-	$scope.descending = false;
+	$scope.descending = true;
 	$scope.refreshIndexContexts = function() {
 		$scope.url = getServiceUrl('/ikube/service/monitor/index-contexts');
 		$scope.parameters = { 

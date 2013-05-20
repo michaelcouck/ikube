@@ -95,8 +95,27 @@ public interface IMonitorService {
 	void terminateAll();
 
 	/**
+	 * This method will terminate a single action on a specific index.
+	 * 
+	 * @param indexName the name of the index to terminate the actions on
+	 */
+	void terminate(final String indexName);
+
+	/**
 	 * This method will send a re-start event into the cluster, re-starting all the schedules and consequently the actions and indexing.
 	 */
 	void startupAll();
+
+	/**
+	 * This method will start an index action on the specified index.
+	 * 
+	 * @param indexName the name of the index to start an action on
+	 */
+	void start(final String indexName);
+
+	/**
+	 * This will toggle the throttling for the server, enabling the automatic throttling and disabling it.
+	 */
+	void cpuThrottling();
 
 }

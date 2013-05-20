@@ -67,7 +67,6 @@ public class IndexableDataSourceHandler extends IndexableHandler<IndexableDataSo
 		indexableTable.setDataSource(indexable.getDataSource());
 		indexableTable.setMaxExceptions(indexable.getMaxExceptions());
 		indexableTable.setParent(indexable.getParent());
-		indexableTable.setPrimaryTable(Boolean.TRUE);
 		indexableTable.setStored(indexable.isStored());
 		indexableTable.setStrategies(indexable.getStrategies());
 		indexableTable.setVectored(indexable.isVectored());

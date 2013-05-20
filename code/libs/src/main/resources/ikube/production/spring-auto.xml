@@ -52,7 +52,6 @@
 		id="search"
 		class="ikube.model.IndexableTable"
 		property:name="search"
-		property:primaryTable="true"
 		property:address="false"
 		property:dataSource-ref="nonXaDataSourceH2"
 		property:children-ref="autocompleteColumnsH2" 

@@ -27,6 +27,10 @@ public class Server extends Persistable implements Comparable<Server> {
 	private String logTail;
 	@Transient
 	private boolean show;
+	@Transient
+	private boolean cpuThrottling = Boolean.TRUE;
+	@Transient
+	private boolean threadsRunning = Boolean.TRUE;
 
 	/** The ip of the server. */
 	@Column
@@ -186,6 +190,22 @@ public class Server extends Persistable implements Comparable<Server> {
 
 	public void setShow(boolean show) {
 		this.show = show;
+	}
+
+	public boolean isCpuThrottling() {
+		return cpuThrottling;
+	}
+
+	public void setCpuThrottling(boolean cpuThrottling) {
+		this.cpuThrottling = cpuThrottling;
+	}
+
+	public boolean isThreadsRunning() {
+		return threadsRunning;
+	}
+
+	public void setThreadsRunning(boolean threadsRunning) {
+		this.threadsRunning = threadsRunning;
 	}
 
 	public boolean equals(final Object object) {

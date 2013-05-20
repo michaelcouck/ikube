@@ -29,13 +29,15 @@ public class Prune extends Action<IndexContext<?>, Boolean> {
 	protected void delete(final IDataBase dataBase, final Class<?> klass, final String[] fieldsToSortOn, final Boolean[] directionOfSort,
 			final int batchSize) {
 		List<?> entities = dataBase.find(klass, fieldsToSortOn, directionOfSort, 0, batchSize);
-		do {
-			Iterator<?> iterator = entities.iterator();
-			while (iterator.hasNext()) {
-				dataBase.remove(iterator.next());
-			}
-			entities = dataBase.find(klass, fieldsToSortOn, directionOfSort, 0, batchSize);
-		} while (entities.size() >= batchSize);
+		if (entities.size() >= batchSize) {
+			do {
+				Iterator<?> iterator = entities.iterator();
+				while (iterator.hasNext()) {
+					dataBase.remove(iterator.next());
+				}
+				entities = dataBase.find(klass, fieldsToSortOn, directionOfSort, 0, batchSize);
+			} while (entities.size() >= batchSize);
+		}
 	}
 
 }

@@ -77,7 +77,7 @@ public final class ThreadUtilities {
 					int maxRetryCount = MAX_RETRY_COUNT;
 					while (maxRetryCount-- > 0) {
 						if (future.cancel(true) || future.isCancelled()) {
-							// LOGGER.info("Cancelled future : " + name + ", " + future + ", " + maxRetryCount);
+							LOGGER.info("Cancelled future : " + name + ", " + future + ", " + maxRetryCount);
 							break;
 						}
 						ThreadUtilities.sleep(10);
@@ -191,7 +191,6 @@ public final class ThreadUtilities {
 	 * and exit the run method.
 	 */
 	public static synchronized void destroy() {
-		Thread.dumpStack();
 		try {
 			if (EXECUTER_SERVICE == null || EXECUTER_SERVICE.isShutdown()) {
 				LOGGER.info("Executer service already shutdown : ");
@@ -223,6 +222,10 @@ public final class ThreadUtilities {
 		} finally {
 			ThreadUtilities.class.notifyAll();
 		}
+	}
+
+	public static final boolean isInitialized() {
+		return EXECUTER_SERVICE != null;
 	}
 
 	protected static synchronized List<Future<?>> getFutures(final String name) {
