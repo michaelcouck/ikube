@@ -4,7 +4,7 @@
 	<groupId>ikube</groupId>
 	<artifactId>ikube-site</artifactId>
 	<packaging>war</packaging>
-	<version>4.2.2</version>
+	<version>4.2.3-SNAPSHOT</version>
 
 	<properties>
 		<webapps>webapps</webapps>
@@ -16,9 +16,9 @@
 	</properties>
 	
 	<scm>
-		<url>https://ikube.googlecode.com/svn/tags/ikube-4.2.2/svn/trunk</url>
-		<connection>scm:svn:https://ikube.googlecode.com/svn/tags/ikube-4.2.2/svn/trunk</connection>
-		<developerConnection>scm:svn:https://ikube.googlecode.com/svn/tags/ikube-4.2.2/svn/trunk</developerConnection>
+		<url>https://ikube.googlecode.com/svn/trunk</url>
+		<connection>scm:svn:https://ikube.googlecode.com/svn/trunk</connection>
+		<developerConnection>scm:svn:https://ikube.googlecode.com/svn/trunk</developerConnection>
 	</scm>
 
 	<distributionManagement>
