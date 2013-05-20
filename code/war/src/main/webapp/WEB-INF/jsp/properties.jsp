@@ -1,6 +1,9 @@
 <%@ page errorPage="/WEB-INF/jsp/error.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
+
 <script type="text/javascript">
 $(document).ready(function() {
 	var forms = document.getElementsByTagName('form');
@@ -31,8 +34,10 @@ $(document).ready(function() {
 			<img src="<c:url value="/images/icons/jar_l_obj.gif" />" />&nbsp;Property file: {{key}}
 			<br>
 			<div ng-show="!value.show">
-				<textarea name="contents" rows="15" cols="120">{{value}}</textarea>
-				<input id="button-{{$index}}" name="button-{{$index}}" type="submit" value="Update">
+				<security:authorize access="hasRole('ROLE_ADMIN')">
+					<textarea name="contents" rows="15" cols="120">{{value}}</textarea>
+					<input id="button-{{$index}}" name="button-{{$index}}" type="submit" value="Update">
+				</security:authorize>
 			</div>
 			<br>
 			</form>
