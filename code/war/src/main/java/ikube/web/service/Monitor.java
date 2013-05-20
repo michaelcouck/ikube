@@ -240,26 +240,17 @@ public class Monitor extends Resource {
 
 	@GET
 	@Path(Monitor.ACTIONS)
-	@SuppressWarnings("rawtypes")
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response actions() {
-		List<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
+		List<Action> actions = new ArrayList<Action>();
 		Map<String, Server> servers = clusterManager.getServers();
 		for (final Server server : servers.values()) {
 			for (final Action action : server.getActions()) {
-				IndexContext indexContext = getIndexContextFromServer(action.getIndexName(), server);
-				Map<String, Object> actionData = new HashMap<String, Object>();
-				action.setServer(null);
-				addFieldValues(action, actionData);
-				actionData.put("server", server.getAddress());
-				if (indexContext != null && indexContext.getLastSnapshot() != null) {
-					actionData.put("totalDocsIndexed", indexContext.getLastSnapshot().getNumDocs());
-					actionData.put("docsPerMinute", indexContext.getLastSnapshot().getDocsPerMinute());
-				}
-				data.add(actionData);
+				Action clonedAction = (Action) SerializationUtilities.clone(action);
+				actions.add(clonedAction);
 			}
 		}
-		return buildResponse(data);
+		return buildResponse(actions);
 	}
 
 	@GET
@@ -333,7 +324,7 @@ public class Monitor extends Resource {
 		return buildResponse().build();
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unused" })
 	private IndexContext getIndexContextFromServer(final String indexName, final Server server) {
 		List<IndexContext> indexContexts = server.getIndexContexts();
 		if (indexContexts != null) {
@@ -346,6 +337,7 @@ public class Monitor extends Resource {
 		return null;
 	}
 
+	@SuppressWarnings("unused")
 	private void addFieldValues(final Action action, final Map<String, Object> actionData) {
 		ReflectionUtils.doWithFields(action.getClass(), new ReflectionUtils.FieldCallback() {
 			@Override

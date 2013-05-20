@@ -10,17 +10,9 @@
 
 	<target name="go">
 		<antcall target="prepare" />
-		<antcall target="stop-server" />
 		<!-- Deploy the configuration and ikube and start the servers -->
 		<antcall target="go-server" inheritall="true">
 			<param name="tomcat-home" value="${tomcat-directory}" />
-		</antcall>
-	</target>
-
-	<target name="stop-server">
-		<!-- Stop all the processes, the only way to stop Tomcat -->
-		<antcall target="execute-remote-command">
-			<param name="command" value=". /etc/profile; sudo -n ${tomcat-bin-directory}/catalina.sh -force stop;" />
 		</antcall>
 	</target>
 
@@ -50,14 +42,10 @@
 		<antcall target="execute-remote-command">
 			<param name="command" value="sudo -n chmod 777 -R ${tomcat-home};" />
 		</antcall>
-		<!-- Start the server -->
-		<antcall target="execute-remote-command">
-			<param name="command" value=". /etc/profile; sudo -n ${tomcat-bin-directory}/catalina.sh start;" />
-		</antcall>
 	</target>
 
 	<target name="deploy-ikube-site">
-		<scp file="code/site/target/site.war" todir="${userid}:${password}@${server-ip}:${tomcat-home}/webapps" trust="true" failonerror="true" verbose="${verbose}" />
+		<scp file="code/site/target/site.war" todir="${userid}:${password}@${server-ip}:${tomcat-webapps-directory}" trust="true" failonerror="true" verbose="${verbose}" />
 	</target>
 
 	<target name="prepare">

@@ -11,6 +11,8 @@ import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -49,7 +51,9 @@ public class Action extends Persistable {
 	/** The result from the rules and the predicate. */
 	@Column
 	private boolean result;
-
+	@OneToOne
+	@PrimaryKeyJoinColumn
+	private Snapshot snapshot;
 	@ManyToOne(cascade = { CascadeType.DETACH }, fetch = FetchType.EAGER)
 	private Server server;
 
@@ -115,6 +119,14 @@ public class Action extends Persistable {
 
 	public void setServer(Server server) {
 		this.server = server;
+	}
+
+	public Snapshot getSnapshot() {
+		return snapshot;
+	}
+
+	public void setSnapshot(Snapshot snapshot) {
+		this.snapshot = snapshot;
 	}
 
 	@Override

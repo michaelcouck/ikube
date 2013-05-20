@@ -18,10 +18,11 @@ import org.nfunk.jep.SymbolTable;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * This class is implemented as an intercepter, and typically configured in Spring. The intercepter will intercept the execution of the actions, like
- * {@link Index} and {@link Open}. Each action has associated with it rules, like whether any other servers are currently working on this index or if the index
- * is current and already open. The rules for the action will then be executed, and based on the result of the boolean predicate parameterized with the results
- * of each rule, the action will either be executed or not. {@link JEP} is the expression parser for the rules.
+ * This class is implemented as an intercepter, and typically configured in Spring. The intercepter will intercept the execution of the
+ * actions, like {@link Index} and {@link Open}. Each action has associated with it rules, like whether any other servers are currently
+ * working on this index or if the index is current and already open. The rules for the action will then be executed, and based on the
+ * result of the boolean predicate parameterized with the results of each rule, the action will either be executed or not. {@link JEP} is
+ * the expression parser for the rules.
  * 
  * @see IRuleInterceptor
  * @author Michael Couck
@@ -41,48 +42,54 @@ public class RuleInterceptor implements IRuleInterceptor {
 	@Override
 	@SuppressWarnings("rawtypes")
 	public Object decide(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-		Object target = proceedingJoinPoint.getTarget();
-		boolean proceed = Boolean.TRUE;
-		IndexContext<?> indexContext = null;
-		if (!IAction.class.isAssignableFrom(target.getClass())) {
-			LOGGER.warn("Can't intercept non action class, proceeding : " + target);
-		} else {
-			IAction action = (IAction) target;
+		synchronized (this) {
 			try {
-				boolean proceedWithLocked = Boolean.TRUE;
-				if (action.requiresClusterLock()) {
-					proceedWithLocked = clusterManager.lock(IConstants.IKUBE);
-				}
-				if (!proceedWithLocked) {
-					LOGGER.info("Couldn't get cluster lock : " + proceedingJoinPoint.getTarget());
-					proceed = Boolean.FALSE;
+				Object target = proceedingJoinPoint.getTarget();
+				boolean proceed = Boolean.TRUE;
+				IndexContext<?> indexContext = null;
+				if (!IAction.class.isAssignableFrom(target.getClass())) {
+					LOGGER.warn("Can't intercept non action class, proceeding : " + target);
 				} else {
-					// Find the index context
-					indexContext = getIndexContext(proceedingJoinPoint);
-					proceed = evaluateRules(indexContext, action);
+					IAction action = (IAction) target;
+					try {
+						boolean proceedWithLocked = Boolean.TRUE;
+						if (action.requiresClusterLock()) {
+							proceedWithLocked = clusterManager.lock(IConstants.IKUBE);
+						}
+						if (!proceedWithLocked) {
+							LOGGER.info("Couldn't get cluster lock : " + proceedingJoinPoint.getTarget());
+							proceed = Boolean.FALSE;
+						} else {
+							// Find the index context
+							indexContext = getIndexContext(proceedingJoinPoint);
+							proceed = evaluateRules(indexContext, action);
+						}
+					} catch (NullPointerException e) {
+						LOGGER.warn("Context closing down : ");
+					} catch (Exception t) {
+						LOGGER.error("Exception proceeding on target : " + target, t);
+					} finally {
+						clusterManager.unlock(IConstants.IKUBE);
+					}
 				}
-			} catch (NullPointerException e) {
-				LOGGER.warn("Context closing down : ");
-			} catch (Exception t) {
-				LOGGER.error("Exception proceeding on target : " + target, t);
+				if (proceed) {
+					proceed(indexContext, proceedingJoinPoint);
+				}
 			} finally {
-				clusterManager.unlock(IConstants.IKUBE);
+				this.notifyAll();
 			}
-		}
-		if (proceed) {
-			proceed(indexContext, proceedingJoinPoint);
 		}
 		return Boolean.TRUE;
 	}
 
 	/**
-	 * Proceeds on the join point. A scheduled task will be started by the scheduler. The task is the action that has been given the green light to start. The
-	 * current thread will wait for the action to complete, but will only wait for a few seconds then continue. The action is started in a separate thread
-	 * because we don't want a queue of actions building up.
+	 * Proceeds on the join point. A scheduled task will be started by the scheduler. The task is the action that has been given the green
+	 * light to start. The current thread will wait for the action to complete, but will only wait for a few seconds then continue. The
+	 * action is started in a separate thread because we don't want a queue of actions building up.
 	 * 
 	 * @param proceedingJoinPoint the intercepted action join point
 	 */
-	protected synchronized void proceed(final IndexContext<?> indexContext, final ProceedingJoinPoint proceedingJoinPoint) {
+	protected/* synchronized */void proceed(final IndexContext<?> indexContext, final ProceedingJoinPoint proceedingJoinPoint) {
 		try {
 			// We set the working flag in the action within the cluster lock when setting to true
 			Runnable runnable = new Runnable() {
@@ -104,7 +111,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 			};
 			ThreadUtilities.submit(null, runnable);
 		} finally {
-			notifyAll();
+			// notifyAll();
 		}
 	}
 

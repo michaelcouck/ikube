@@ -41,6 +41,14 @@ import org.mockito.Mockito;
 import com.google.gson.Gson;
 
 public class MonitorTest extends Base {
+	
+	@MockClass(realClass = Server.class)
+	public static class ServerMock {
+		@Mock
+		public boolean isWorking() {
+			return Boolean.TRUE;
+		}
+	}
 
 	private Monitor monitor;
 	private IMonitorService monitorService;
@@ -137,14 +145,6 @@ public class MonitorTest extends Base {
 		assertTrue("The max age should be in the Json string : ", entity.toString().contains("averageCpuLoad"));
 	}
 
-	@MockClass(realClass = Server.class)
-	public static class ServerMock {
-		@Mock
-		public boolean isWorking() {
-			return Boolean.TRUE;
-		}
-	}
-
 	@Test
 	public void indexingStatistics() {
 		Mockit.tearDownMocks();
@@ -199,8 +199,16 @@ public class MonitorTest extends Base {
 		Mockito.when(clusterManager.getServers()).thenReturn(servers);
 		Response response = monitor.actions();
 		Object entity = response.getEntity();
-
 		assertTrue(entity.toString().contains(Integer.toString(Integer.MAX_VALUE)));
+		
+		Server server = ObjectToolkit.populateFields(Server.class, new Server(), Boolean.TRUE, 20);
+		servers = new HashMap<String, Server>();
+		servers.put(server.getAddress(), server);
+		Mockito.when(clusterManager.getServers()).thenReturn(servers);
+		monitor.actions();
+		response = monitor.actions();
+		entity = response.getEntity();
+		logger.info("Entity : " + entity);
 	}
 
 	private Map<String, Server> getServers() {
