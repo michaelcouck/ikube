@@ -34,7 +34,6 @@ public abstract class AClusterManager implements IClusterManager {
 		action.setActionName(actionName);
 		action.setIndexName(indexName);
 		action.setIndexableName(indexableName);
-		action.setDuration(0);
 		action.setStartTime(new Timestamp(System.currentTimeMillis()));
 		// Must persist the action to get an id
 		dataBase.persist(action);

@@ -9,8 +9,8 @@ import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
+// import java.nio.file.Files;
+// import java.nio.file.Path;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -93,18 +93,18 @@ public class IndexableFileSystemHandlerTest extends AbstractTest {
 
 		File folder = null;
 		File symlinkFile = null;
-		Path symlink = null;
-		try {
-			folder = FileUtilities.getFile("/tmp/folder", Boolean.TRUE);
-			symlinkFile = new File("/tmp/symlink");
-			symlink = Files.createSymbolicLink(symlinkFile.toPath(), folder.toPath());
-
-			isExcluded = indexableFileSystemHandler.isExcluded(symlinkFile, pattern);
-			assertTrue(isExcluded);
-		} finally {
-			FileUtilities.deleteFile(folder, 1);
-			Files.deleteIfExists(symlink);
-		}
+//		Path symlink = null;
+//		try {
+//			folder = FileUtilities.getFile("/tmp/folder", Boolean.TRUE);
+//			symlinkFile = new File("/tmp/symlink");
+//			symlink = Files.createSymbolicLink(symlinkFile.toPath(), folder.toPath());
+//
+//			isExcluded = indexableFileSystemHandler.isExcluded(symlinkFile, pattern);
+//			assertTrue(isExcluded);
+//		} finally {
+//			FileUtilities.deleteFile(folder, 1);
+//			Files.deleteIfExists(symlink);
+//		}
 	}
 
 	private IndexableFileSystem getIndexableFileSystem(final String folderPath) {

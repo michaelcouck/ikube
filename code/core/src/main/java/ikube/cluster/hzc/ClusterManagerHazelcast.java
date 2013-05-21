@@ -7,7 +7,6 @@ import ikube.cluster.IMonitorService;
 import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Server;
-import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.UriUtilities;
 
@@ -16,20 +15,20 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.ConcurrentModificationException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import javax.persistence.EntityNotFoundException;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.ILock;
 import com.hazelcast.core.MessageListener;
-import com.hazelcast.nio.HazelcastSerializationException;
 
 /**
  * @see IClusterManager
@@ -39,10 +38,10 @@ import com.hazelcast.nio.HazelcastSerializationException;
  */
 public final class ClusterManagerHazelcast extends AClusterManager {
 
+	@Value("${max.retry}")
+	private int maxRetry;
 	@Autowired
 	private IMonitorService monitorService;
-
-	private transient Server server;
 
 	public void setListeners(final List<MessageListener<Object>> listeners) {
 		ip = UriUtilities.getIp();
@@ -63,7 +62,7 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 	public synchronized boolean lock(final String name) {
 		try {
 			ILock lock = Hazelcast.getLock(name);
-			boolean gotLock = Boolean.FALSE;
+			boolean gotLock = false;
 			try {
 				gotLock = lock.tryLock(250, TimeUnit.MILLISECONDS);
 			} catch (InterruptedException e) {
@@ -83,7 +82,7 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 		try {
 			ILock lock = Hazelcast.getLock(name);
 			lock.unlock();
-			return Boolean.TRUE;
+			return true;
 		} finally {
 			notifyAll();
 		}
@@ -129,24 +128,21 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 	 */
 	@Override
 	public synchronized Action startWorking(final String actionName, final String indexName, final String indexableName) {
-		Hazelcast.getTransaction().begin();
 		Action action = null;
-		Server server = getServer();
 		try {
+			Server server = getServer();
 			action = getAction(actionName, indexName, indexableName);
 			server.getActions().add(action);
-			server = (Server) SerializationUtilities.clone(server);
 			put(server.getAddress(), server);
-			Hazelcast.getTransaction().commit();
 		} catch (Exception e) {
 			logger.error("Exception starting action : " + actionName + ", " + indexName + ", " + indexableName, e);
-			Hazelcast.getTransaction().rollback();
-			stopWorking(action);
-			action = null;
 		} finally {
 			notifyAll();
 		}
 		return action;
+	}
+
+	public interface IRetryCaller extends Runnable {
 	}
 
 	/**
@@ -155,75 +151,56 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 	@Override
 	public synchronized void stopWorking(final Action action) {
 		try {
-			stopWorking(action, 0);
+			class RetryCaller implements IRetryCaller {
+				@Override
+				public void run() {
+					logger.info("Retry caller : ");
+					int maxRetry = ClusterManagerHazelcast.this.maxRetry;
+					// Persist the action with the end date
+					action.setEndTime(new Timestamp(System.currentTimeMillis()));
+					action.setDuration(action.getEndTime().getTime() - action.getStartTime().getTime());
+					dataBase.merge(action);
+					do {
+						Server server = getServer();
+						List<Action> actions = server.getActions();
+						Iterator<Action> actionIterator = actions.iterator();
+						logger.info("Server : " + server);
+						try {
+							// Remove the action from the grid
+							while (actionIterator.hasNext()) {
+								Action gridAction = actionIterator.next();
+								if (gridAction.getId() == action.getId()) {
+									actionIterator.remove();
+								}
+							}
+							put(server.getAddress(), server);
+						} catch (Exception e) {
+							logger.warn("Exception removing action from cluster : " + e.getMessage());
+						}
+						server = getServer();
+						// Test the grid to see that the action is removed
+						Comparator<Action> comparator = new Comparator<Action>() {
+							@Override
+							public int compare(Action o1, Action o2) {
+								return Long.valueOf(o1.getId()).compareTo(Long.valueOf(o2.getId()));
+							}
+						};
+						Collections.sort(actions, comparator);
+						int insertionPoint = Collections.binarySearch(actions, action, comparator);
+						if (insertionPoint >= 0 && maxRetry-- > 0) {
+							logger.warn("Grid server : " + server);
+							logger.warn("Didn't remove action : " + action + ", retrying : ");
+							ThreadUtilities.sleep(1000);
+						}
+						logger.info("Removed action : " + action + ", " + server);
+						break;
+					} while (true);
+				}
+			}
+			Future<?> future = ThreadUtilities.submit(action.getActionName(), new RetryCaller());
+			ThreadUtilities.waitForFuture(future, 10);
 		} finally {
 			notifyAll();
-		}
-	}
-
-	private synchronized void stopWorking(final Action action, final int retry) {
-		if (action == null) {
-			logger.warn("Action null : " + action);
-			return;
-		}
-		boolean removedAndComitted = false;
-		Hazelcast.getTransaction().begin();
-		Server server = getServer();
-		Action toRemoveAction = null;
-		try {
-			action.setEndTime(new Timestamp(System.currentTimeMillis()));
-			action.setDuration(action.getEndTime().getTime() - action.getStartTime().getTime());
-			Iterator<Action> iterator = server.getActions().iterator();
-			// We must iterate over the actions and remove the one by id because the
-			// equals is modified by Hazelcast it seems
-			boolean removedFromServerActions = false;
-			while (iterator.hasNext()) {
-				toRemoveAction = iterator.next();
-				if (toRemoveAction.getId() == action.getId()) {
-					iterator.remove();
-					removedFromServerActions = true;
-					break;
-				}
-			}
-			if (removedFromServerActions) {
-				server = (Server) SerializationUtilities.clone(server);
-				put(server.getAddress(), server);
-			}
-			// Commit the grid because the database is not as important as the cluster
-			Hazelcast.getTransaction().commit();
-			removedAndComitted = true;
-			if (dataBase.find(Action.class, action.getId()) != null) {
-				dataBase.merge(action);
-			}
-		} catch (ConcurrentModificationException e) {
-			logger.warn("Concurrent error, will retry : " + e.getMessage());
-			Hazelcast.getTransaction().rollback();
-		} catch (HazelcastSerializationException e) {
-			logger.warn("Concurrent error, will retry : " + e.getMessage());
-			Hazelcast.getTransaction().rollback();
-		} catch (EntityNotFoundException e) {
-			// Means that the action was removed in another thread, and we sill commit
-			logger.warn("Entity not found : " + e.getMessage());
-			logger.debug(null, e);
-		} catch (Exception e) {
-			logger.error("Exception stopping action : " + action, e);
-			logger.error("Removed action not comitted : " + toRemoveAction);
-			Hazelcast.getTransaction().rollback();
-		} finally {
-			if (!removedAndComitted) {
-				ThreadUtilities.sleep(1000);
-				if (server != null && server.getActions() != null && server.getActions().size() > 0) {
-					if (retry >= IConstants.MAX_RETRY_CLUSTER_REMOVE) {
-						logger.info("Retried to remove the action, failed : " + retry + ", action : " + action + ", actions : "
-								+ server.getActions());
-						return;
-					} else {
-						logger.debug("Retrying to remove the action : " + retry + ", " + server.getIp() + ", " + action + ", "
-								+ server.getActions());
-						stopWorking(action, retry + 1);
-					}
-				}
-			}
 		}
 	}
 
@@ -241,45 +218,21 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 	@Override
 	@SuppressWarnings("rawtypes")
 	public Server getServer() {
-		try {
-			Server server = (Server) get(address);
-			if (server != null) {
-				// We set the instance server to the one in Hazelcast so if
-				// Hazelcast drops the server we have a copy to replace it
-				this.server = server;
-			} else {
-				// First check if the instance server is still active
-				if (this.server != null) {
-					server = this.server;
-					logger.warn("Server dropped from Hazelcast! Re-inserting into the grid... " + server);
-					try {
-						Hazelcast.getTransaction().begin();
-						server = (Server) SerializationUtilities.clone(server);
-						put(server.getAddress(), server);
-						Hazelcast.getTransaction().commit();
-					} catch (Exception e) {
-						logger.error("Exception re-injecting the server in the grid : " + server.getAddress(), e);
-						Hazelcast.getTransaction().rollback();
-					}
-				} else {
-					server = new Server();
-					server.setIp(ip);
-					server.setAddress(address);
-					server.setId(System.currentTimeMillis());
-					logger.info("Server null, creating new one : " + server);
-				}
-			}
-			server.setAge(System.currentTimeMillis());
-
-			Collection<IndexContext> collection = monitorService.getIndexContexts().values();
-			List<IndexContext> indexContexts = new ArrayList<IndexContext>(collection);
-			server.setIndexContexts(indexContexts);
-
-			return server;
-		} catch (Exception e) {
-			logger.error("Exception getting the server : ", e);
+		Server server = (Server) get(address);
+		if (server == null) {
+			server = new Server();
+			dataBase.persist(server);
+			logger.info("Server null, creating new one : " + server);
 		}
-		return null;
+		server.setIp(ip);
+		server.setAddress(address);
+		server.setAge(System.currentTimeMillis());
+
+		Collection<IndexContext> collection = monitorService.getIndexContexts().values();
+		List<IndexContext> indexContexts = new ArrayList<IndexContext>(collection);
+		server.setIndexContexts(indexContexts);
+
+		return server;
 	}
 
 	/**

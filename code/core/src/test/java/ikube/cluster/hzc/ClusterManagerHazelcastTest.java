@@ -18,9 +18,11 @@ import ikube.database.IDataBase;
 import ikube.mock.SpellingCheckerMock;
 import ikube.model.Action;
 import ikube.model.Server;
+import ikube.model.Snapshot;
 import ikube.scheduling.schedule.Event;
 import ikube.toolkit.ThreadUtilities;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -78,6 +80,8 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 	private IDataBase dataBase;
 	@Cascading
 	private IMonitorService monitorService;
+	@Cascading
+	private Snapshot snapshot;
 
 	private StartListener startListener;
 	private StopListener stopListener;
@@ -104,7 +108,7 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 
 		Deencapsulation.setField(clusterManagerHazelcast, dataBase);
 		Deencapsulation.setField(clusterManagerHazelcast, monitorService);
-		
+
 		startListener = new StartListener();
 		stopListener = new StopListener();
 		List<MessageListener<Object>> listeners = new ArrayList<MessageListener<Object>>(Arrays.asList(startListener, stopListener));
@@ -195,16 +199,27 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 
 	@Test
 	public void stopWorking() {
-		Action action = new Action();
-		action.setStartTime(new Date());
-		action.setEndTime(new Date());
-		action.setIndexName(indexName);
-		server.setActions(new ArrayList<Action>(Arrays.asList(action)));
+		try {
+			ThreadUtilities.initialize();
+			Deencapsulation.setField(clusterManagerHazelcast, "maxRetry", 100);
+			Action action = new Action();
+			action.setId(0);
+			action.setServer(server);
+			action.setSnapshot(snapshot);
+			action.setStartTime(new Date());
+			action.setIndexName("indexName");
+			action.setActionName("actinName");
+			action.setIndexableName("indexableName");
+			action.setTimestamp(new Timestamp(System.currentTimeMillis()));
+			server.setActions(new ArrayList<Action>(Arrays.asList(action)));
 
-		clusterManagerHazelcast.stopWorking(action);
-		assertNotNull(action.getEndTime());
+			clusterManagerHazelcast.stopWorking(action);
 
-		assertEquals(0, server.getActions().size());
+			assertNotNull(action.getEndTime());
+			assertEquals(0, server.getActions().size());
+		} finally {
+			ThreadUtilities.destroy();
+		}
 	}
 
 	@Test
