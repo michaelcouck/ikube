@@ -1,9 +1,6 @@
 package ikube.model;
 
-import ikube.action.index.IndexManager;
-
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -48,12 +45,6 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 
 	@Transient
 	private boolean open;
-	@Transient
-	private long numDocs;
-	@Transient
-	private long indexSize;
-	@Transient
-	private Date latestIndexTimestamp;
 
 	/** Can be null if there are no indexes running. */
 	@Transient
@@ -272,33 +263,6 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 
 	public void setOpen(final boolean open) {
 		this.open = open;
-	}
-
-	public long getNumDocs() {
-		numDocs = IndexManager.getNumDocs(this);
-		return numDocs;
-	}
-
-	public void setNumDocs(long numDocs) {
-		this.numDocs = numDocs;
-	}
-
-	public long getIndexSize() {
-		indexSize = IndexManager.getIndexSize(this);
-		return indexSize;
-	}
-
-	public void setIndexSize(long indexSize) {
-		this.indexSize = indexSize;
-	}
-
-	public Date getLatestIndexTimestamp() {
-		latestIndexTimestamp = IndexManager.getLatestIndexDirectoryDate(this);
-		return latestIndexTimestamp;
-	}
-
-	public void setLatestIndexTimestamp(Date latestIndexTimestamp) {
-		this.latestIndexTimestamp = latestIndexTimestamp;
 	}
 
 	public void setMultiSearcher(final MultiSearcher multiSearcher) {

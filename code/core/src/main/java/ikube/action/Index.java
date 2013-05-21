@@ -88,14 +88,18 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 	protected boolean internalExecute(final IndexContext<?> indexContext) throws Exception {
 		List<Indexable<?>> indexables = indexContext.getChildren();
 		Iterator<Indexable<?>> iterator = new ArrayList(indexables).iterator();
+		// This is the current indexable name
+		String indexableName = null;
 		while (iterator.hasNext()) {
-			// Update the action with the new indexable
 			Indexable<?> indexable = iterator.next();
+			// Update the action with the new indexable
 			Server server = clusterManager.getServer();
-			ikube.model.Action action = getAction(server, indexContext);
-			action.setIndexableName(indexable.getName());
+			ikube.model.Action action = getAction(server, indexContext, indexableName);
+			// Now we set the current indexable name in the action
+			indexableName = indexable.getName();
+			action.setIndexableName(indexableName);
+			// Pop the actions back in the grid
 			clusterManager.put(server.getAddress(), server);
-
 			// Get the right handler for this indexable
 			IIndexableHandler<Indexable<?>> handler = getHandler(indexable);
 			logger.info("Indexable : " + indexable.getName());
@@ -106,15 +110,18 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 		return Boolean.TRUE;
 	}
 
-	ikube.model.Action getAction(final Server server, final IndexContext<?> indexContext) {
+	ikube.model.Action getAction(final Server server, final IndexContext<?> indexContext, final String indexableName) {
 		for (final ikube.model.Action action : server.getActions()) {
 			if (action.getActionName().equals(this.getClass().getSimpleName())) {
 				if (!action.getIndexName().equals(indexContext.getName())) {
 					continue;
 				}
-				// Look for the action that has an indexable name in the context children
-				for (final Indexable<?> indexable : indexContext.getChildren()) {
-					if (StringUtils.isEmpty(action.getIndexableName()) || action.getIndexableName().equals(indexable.getName())) {
+				if (StringUtils.isEmpty(indexableName)) {
+					// We return the first action in the case the indexable name has not been set
+					return action;
+				} else {
+					// Else we look for the action that has the current indexable name
+					if (indexableName.equals(action.getIndexableName())) {
 						return action;
 					}
 				}

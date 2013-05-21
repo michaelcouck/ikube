@@ -84,12 +84,13 @@ public class SnapshotSchedule extends Schedule {
 						0, 90);
 				snapshots = new ArrayList<Snapshot>(snapshots);
 				// We have the last snapshots, now reverse the order for the gui
-				Collections.sort(snapshots, new Comparator<Snapshot>() {
+				Comparator<Snapshot> comparator = new Comparator<Snapshot>() {
 					@Override
 					public int compare(Snapshot o1, Snapshot o2) {
 						return o1.getTimestamp().compareTo(o2.getTimestamp());
 					}
-				});
+				}; 
+				Collections.reverseOrder(comparator);
 				indexContext.setSnapshots(snapshots);
 			} catch (Exception e) {
 				LOGGER.error("Exception persisting snapshot : ", e);

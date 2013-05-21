@@ -91,7 +91,7 @@ public class IndexTest extends AbstractTest {
 
 	@Test
 	public void getAction() {
-		Action action = index.getAction(server, indexContext);
+		Action action = index.getAction(server, indexContext, indexableTable.getName());
 		assertNotNull(action);
 	}
 

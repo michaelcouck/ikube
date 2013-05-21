@@ -154,7 +154,7 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 			class RetryCaller implements IRetryCaller {
 				@Override
 				public void run() {
-					logger.info("Retry caller : ");
+					logger.debug("Retry caller : ");
 					int maxRetry = ClusterManagerHazelcast.this.maxRetry;
 					// Persist the action with the end date
 					action.setEndTime(new Timestamp(System.currentTimeMillis()));
@@ -164,7 +164,7 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 						Server server = getServer();
 						List<Action> actions = server.getActions();
 						Iterator<Action> actionIterator = actions.iterator();
-						logger.info("Server : " + server);
+						logger.debug("Server : " + server);
 						try {
 							// Remove the action from the grid
 							while (actionIterator.hasNext()) {
@@ -192,7 +192,7 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 							logger.warn("Didn't remove action : " + action + ", retrying : ");
 							ThreadUtilities.sleep(1000);
 						}
-						logger.info("Removed action : " + action + ", " + server);
+						logger.debug("Removed action : " + action + ", " + server);
 						break;
 					} while (true);
 				}

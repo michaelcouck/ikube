@@ -59,7 +59,7 @@
 		<th><img src="<c:url value="/images/icons/launch_run.gif" />">&nbsp;Start time</th>
 	</tr>
 	<tr ng-repeat="action in actions" ng-class-odd="'odd'" ng-class-even="'even'">
-		<td ng-class="'bordered'">{{action.server}}</td>
+		<td ng-class="'bordered'">{{action.server.address}}</td>
 		<td ng-class="'bordered'">{{action.actionName}}</td>
 		<td ng-class="'bordered'">{{action.indexName}}</td>
 		<td ng-class="'bordered'">{{action.indexableName}}</td>
