@@ -190,7 +190,7 @@ public class IndexManagerTest extends AbstractTest {
 			when(indexContext.getIndexWriters()).thenReturn(new IndexWriter[] { indexWriter });
 			logger.info("Index writer test : " + indexWriter);
 
-			long numDocs = IndexManager.getNumDocsIndexWriter(indexContext);
+			long numDocs = IndexManager.getNumDocs(indexContext);
 			logger.info("Num docs : " + numDocs);
 			assertEquals(Integer.MAX_VALUE, numDocs);
 

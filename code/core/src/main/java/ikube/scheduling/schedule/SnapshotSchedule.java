@@ -69,7 +69,7 @@ public class SnapshotSchedule extends Schedule {
 				snapshot.setIndexContext(indexContext.getName());
 				snapshot.setTimestamp(new Timestamp(System.currentTimeMillis()));
 				snapshot.setIndexSize(IndexManager.getIndexSize(indexContext));
-				snapshot.setNumDocs(IndexManager.getNumDocsIndexWriter(indexContext));
+				snapshot.setNumDocs(IndexManager.getNumDocs(indexContext));
 				snapshot.setLatestIndexTimestamp(IndexManager.getLatestIndexDirectoryDate(indexContext));
 				snapshot.setDocsPerMinute(getDocsPerMinute(indexContext, snapshot));
 				snapshot.setTotalSearches(getTotalSearchesForIndex(indexContext));
