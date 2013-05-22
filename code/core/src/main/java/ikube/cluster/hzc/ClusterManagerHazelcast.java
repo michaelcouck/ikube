@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -187,13 +188,19 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 						};
 						Collections.sort(actions, comparator);
 						int insertionPoint = Collections.binarySearch(actions, action, comparator);
-						if (insertionPoint >= 0 && maxRetry-- > 0) {
-							logger.warn("Grid server : " + server);
-							logger.warn("Didn't remove action : " + action + ", retrying : ");
-							ThreadUtilities.sleep(1000);
+						if (insertionPoint >= 0) {
+							if (maxRetry-- > 0) {
+								logger.warn("Didn't remove action : " + action + ", retrying : ");
+								ThreadUtilities.sleep(1000);
+							} else {
+								logger.warn("Ran out of attempts to remove action : " + action);
+								logger.warn("Grid server : " + ToStringBuilder.reflectionToString(server));
+								break;
+							}
+						} else {
+							logger.debug("Removed action : " + action + ", " + server);
+							break;
 						}
-						logger.debug("Removed action : " + action + ", " + server);
-						break;
 					} while (true);
 				}
 			}

@@ -49,6 +49,7 @@ public class PruneTest extends AbstractTest {
 
 		when(dataBase.find(any(Class.class), any(String[].class), any(Boolean[].class), anyInt(), anyInt())).thenReturn(entities,
 				new ArrayList<Object>());
+		when(dataBase.count(any(Class.class))).thenReturn(IConstants.MAX_ACTIONS, 0l);
 		addEntities(IConstants.MAX_ACTIONS + 100, entities);
 		prune.internalExecute(indexContext);
 		verify(dataBase, atLeastOnce()).remove(any());

@@ -10,6 +10,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
 /**
+ * A snapshot is the metrics of a single index context in time, including some operating system details.
+ * 
  * @author Michael Couck
  * @since 22.07.12
  * @version 01.00
@@ -21,6 +23,7 @@ public class Snapshot extends Persistable {
 
 	public static final String SELECT_SNAPSHOTS_ORDER_BY_TIMESTAMP_DESC = "select s from Snapshot as s where s.indexContext = :indexContext order by s.timestamp desc";
 
+	/** Index context details. */
 	@Column
 	private long numDocs;
 	@Column
@@ -34,11 +37,13 @@ public class Snapshot extends Persistable {
 	@Column
 	private long totalSearches;
 	@Column
+	private String indexContext;
+	
+	/** Server details for posterity. */
+	@Column
 	private double systemLoad;
 	@Column
 	private double availableProcessors;
-	@Column
-	private String indexContext;
 
 	public long getNumDocs() {
 		return numDocs;

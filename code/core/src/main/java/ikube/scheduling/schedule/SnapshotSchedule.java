@@ -5,6 +5,7 @@ import ikube.action.index.IndexManager;
 import ikube.cluster.IClusterManager;
 import ikube.cluster.IMonitorService;
 import ikube.database.IDataBase;
+import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Search;
 import ikube.model.Server;
@@ -66,16 +67,16 @@ public class SnapshotSchedule extends Schedule {
 				IndexContext indexContext = mapEntry.getValue();
 
 				Snapshot snapshot = new Snapshot();
-				snapshot.setIndexContext(indexContext.getName());
 				snapshot.setTimestamp(new Timestamp(System.currentTimeMillis()));
-				snapshot.setIndexSize(IndexManager.getIndexSize(indexContext));
-				snapshot.setNumDocs(IndexManager.getNumDocs(indexContext));
-				snapshot.setLatestIndexTimestamp(IndexManager.getLatestIndexDirectoryDate(indexContext));
+				snapshot.setAvailableProcessors(operatingSystemMXBean.getAvailableProcessors());
 				snapshot.setDocsPerMinute(getDocsPerMinute(indexContext, snapshot));
-				snapshot.setTotalSearches(getTotalSearchesForIndex(indexContext));
+				snapshot.setIndexContext(indexContext.getName());
+				snapshot.setIndexSize(IndexManager.getIndexSize(indexContext));
+				snapshot.setLatestIndexTimestamp(IndexManager.getLatestIndexDirectoryDate(indexContext));
+				snapshot.setNumDocs(IndexManager.getNumDocs(indexContext));
 				snapshot.setSearchesPerMinute(getSearchesPerMinute(indexContext, snapshot));
 				snapshot.setSystemLoad(operatingSystemMXBean.getSystemLoadAverage());
-				snapshot.setAvailableProcessors(operatingSystemMXBean.getAvailableProcessors());
+				snapshot.setTotalSearches(getTotalSearchesForIndex(indexContext));
 
 				dataBase.persist(snapshot);
 				String[] names = new String[] { "indexContext" };
@@ -92,6 +93,15 @@ public class SnapshotSchedule extends Schedule {
 				}; 
 				Collections.reverseOrder(comparator);
 				indexContext.setSnapshots(snapshots);
+				
+				// Find the last snapshot and put it in the action if there is one
+				// executing on the index context
+				for (final Action action : server.getActions()) {
+					if (action.getIndexName().equals(indexContext.getName())) {
+						action.setSnapshot(snapshot);
+						break;
+					}
+				}
 			} catch (Exception e) {
 				LOGGER.error("Exception persisting snapshot : ", e);
 			}
@@ -148,7 +158,7 @@ public class SnapshotSchedule extends Schedule {
 		int totalSearchesForIndex = 0;
 		// TODO Re-do this, there could potentially be millions of searches
 		List<Search> searches = dataBase.find(Search.class, Search.SELECT_FROM_SEARCH_BY_INDEX_NAME, new String[] { "indexName" },
-				new Object[] { indexContext.getIndexName() }, 0, Integer.MAX_VALUE);
+				new Object[] { indexContext.getIndexName() }, 0, 1000000);
 		for (Search search : searches) {
 			totalSearchesForIndex += search.getCount();
 		}

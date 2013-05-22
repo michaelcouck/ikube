@@ -32,6 +32,9 @@ public class Server extends Persistable implements Comparable<Server> {
 	@Transient
 	private boolean threadsRunning = Boolean.TRUE;
 
+	/** The age of this server. */
+	@Column
+	private long age;
 	/** The ip of the server. */
 	@Column
 	private String ip;
@@ -44,9 +47,6 @@ public class Server extends Persistable implements Comparable<Server> {
 	@SuppressWarnings("rawtypes")
 	@OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
 	private List<IndexContext> indexContexts;
-	/** The age of this server. */
-	@Column
-	private long age;
 
 	@Column
 	private long freeMemory;
@@ -63,10 +63,6 @@ public class Server extends Persistable implements Comparable<Server> {
 	@Column
 	private double averageCpuLoad;
 
-	public Server() {
-		this.actions = new ArrayList<Action>();
-	}
-
 	public String getIp() {
 		return ip;
 	}
@@ -80,6 +76,9 @@ public class Server extends Persistable implements Comparable<Server> {
 	}
 
 	public List<Action> getActions() {
+		if (actions == null) {
+			actions = new ArrayList<Action>();
+		}
 		return actions;
 	}
 

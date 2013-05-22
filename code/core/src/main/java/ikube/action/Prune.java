@@ -21,23 +21,27 @@ public class Prune extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	boolean internalExecute(final IndexContext<?> indexContext) {
-		delete(dataBase, ikube.model.Action.class, new String[] { "startTime" }, new Boolean[] { true }, (int) IConstants.MAX_ACTIONS / 4);
-		delete(dataBase, ikube.model.Snapshot.class, new String[] {}, new Boolean[] {}, (int) IConstants.MAX_SNAPSHOTS / 4);
+		delete(dataBase, ikube.model.Action.class, new String[] { "startTime" }, new Boolean[] { true },
+				IConstants.RESET_DELETE_BATCH_SIZE, (int) IConstants.MAX_ACTIONS / 4);
+		delete(dataBase, ikube.model.Snapshot.class, new String[] {}, new Boolean[] {}, IConstants.RESET_DELETE_BATCH_SIZE,
+				(int) IConstants.MAX_SNAPSHOTS / 4);
 		return Boolean.TRUE;
 	}
 
 	protected void delete(final IDataBase dataBase, final Class<?> klass, final String[] fieldsToSortOn, final Boolean[] directionOfSort,
-			final int batchSize) {
-		List<?> entities = dataBase.find(klass, fieldsToSortOn, directionOfSort, 0, batchSize);
-		if (entities.size() >= batchSize) {
-			do {
-				Iterator<?> iterator = entities.iterator();
-				while (iterator.hasNext()) {
-					dataBase.remove(iterator.next());
-				}
-				entities = dataBase.find(klass, fieldsToSortOn, directionOfSort, 0, batchSize);
-			} while (entities.size() >= batchSize);
-		}
+			final int batchSize, final int toRemain) {
+		do {
+			int count = dataBase.count(klass).intValue();
+			int calculatedBatchSize = Math.max(Math.min(count - toRemain, batchSize), 0);
+			if (calculatedBatchSize <= 0) {
+				break;
+			}
+			List<?> entities = dataBase.find(klass, fieldsToSortOn, directionOfSort, 0, calculatedBatchSize);
+			Iterator<?> iterator = entities.iterator();
+			while (iterator.hasNext()) {
+				dataBase.remove(iterator.next());
+			}
+		} while (true);
 	}
 
 }

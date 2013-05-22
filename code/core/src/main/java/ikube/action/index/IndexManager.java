@@ -189,10 +189,10 @@ public final class IndexManager {
 		try {
 			if (indexContext != null && indexContext.getIndexWriters() != null) {
 				for (final IndexWriter indexWriter : indexContext.getIndexWriters()) {
-					LOGGER.info("Optimizing and closing the index : " + indexContext.getIndexName() + ", snapshot : " + indexContext.getLastSnapshot());
+					LOGGER.info("Optimizing and closing the index : " + indexContext.getIndexName() + ", snapshot : " + indexContext.getSnapshot());
 					closeIndexWriter(indexWriter);
 					LOGGER.info("Index optimized and closed : " + indexWriter + ", " + indexContext.getIndexName() + ", snapshot : "
-							+ indexContext.getLastSnapshot());
+							+ indexContext.getSnapshot());
 				}
 			}
 		} finally {

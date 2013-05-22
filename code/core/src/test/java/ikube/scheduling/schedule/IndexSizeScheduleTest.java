@@ -47,7 +47,7 @@ public class IndexSizeScheduleTest extends AbstractTest {
 
 		Snapshot snapshot = mock(Snapshot.class);
 		when(snapshot.getIndexSize()).thenReturn(Long.MAX_VALUE);
-		when(indexContext.getLastSnapshot()).thenReturn(snapshot);
+		when(indexContext.getSnapshot()).thenReturn(snapshot);
 		when(indexContext.getIndexWriters()).thenReturn(new IndexWriter[] { indexWriter });
 		File indexDirectory = FileUtilities.getFile(indexDirectoryPath + IConstants.SEP + "127.0.0.1.8000", Boolean.TRUE);
 		when(fsDirectory.getDirectory()).thenReturn(indexDirectory);

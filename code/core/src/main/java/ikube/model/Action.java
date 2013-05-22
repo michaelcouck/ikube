@@ -28,15 +28,15 @@ public class Action extends Persistable {
 
 	public static final String SELECT_FROM_ACTIONS_COUNT = "select count(a) from Action as a";
 
-	/** The name of the action that is executing. */
+	/** The name of the 'real' action that is executing. */
 	@Column
 	private String actionName;
+	/** The name of the currently executing index. */
+	@Column
+	private String indexName;
 	/** The currently executing indexable. */
 	@Column
 	private String indexableName;
-	/** The actionName of the currently executing index. */
-	@Column
-	private String indexName;
 	/** The time the action was started. */
 	@Column
 	@Temporal(value = TemporalType.TIMESTAMP)
@@ -51,9 +51,11 @@ public class Action extends Persistable {
 	/** The result from the rules and the predicate. */
 	@Column
 	private boolean result;
+	/** The latest snapshot for the index context. */
 	@OneToOne
 	@PrimaryKeyJoinColumn
 	private Snapshot snapshot;
+	/** The server object where the actions is executing. */
 	@ManyToOne(cascade = { CascadeType.DETACH }, fetch = FetchType.EAGER)
 	private Server server;
 

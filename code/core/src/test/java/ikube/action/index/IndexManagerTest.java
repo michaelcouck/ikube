@@ -209,6 +209,7 @@ public class IndexManagerTest extends AbstractTest {
 	public void getNumDocs() throws Exception {
 		logger.info("Index writer test : " + indexWriter);
 		when(indexContext.getMultiSearcher()).thenReturn(multiSearcher);
+		when(indexContext.getIndexWriters()).thenReturn(null);
 		when(multiSearcher.getSearchables()).thenReturn(searchables);
 		when(indexSearcher.getIndexReader()).thenReturn(indexReader);
 		when(indexReader.numDocs()).thenReturn(Integer.MAX_VALUE);

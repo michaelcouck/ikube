@@ -233,6 +233,7 @@ public class MonitorTest extends Base {
 
 	private Action getAction(final Server server) {
 		Action action = new Action();
+		action.setServer(server);
 		action.setActionName("action");
 		action.setDuration(Integer.MAX_VALUE);
 		action.setEndTime(null);

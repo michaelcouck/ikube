@@ -137,13 +137,17 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		 * @param handlerWorkers the threads to check for the runnable state
 		 * @return true if there is at least one other thread that is in the runnable state
 		 */
-		protected boolean areRunning(final List<IndexableInternetHandlerWorker> handlerWorkers) {
-			for (IndexableInternetHandlerWorker handlerWorker : handlerWorkers) {
-				if (!handlerWorker.waiting) {
-					return Boolean.TRUE;
+		protected synchronized boolean areRunning(final List<IndexableInternetHandlerWorker> handlerWorkers) {
+			try {
+				for (final IndexableInternetHandlerWorker handlerWorker : handlerWorkers) {
+					if (!handlerWorker.waiting) {
+						return Boolean.TRUE;
+					}
 				}
+				return Boolean.FALSE;
+			} finally {
+				notifyAll();
 			}
-			return Boolean.FALSE;
 		}
 	}
 
@@ -404,7 +408,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			IndexManager.addStringField(indexable.getContentFieldName(), url.getParsedContent(), document, store, analyzed, termVector);
 			resourceUrlHandler.handleResource(indexContext, indexable, document, null);
 		} catch (Exception e) {
-			logger.error("Exception accessing url : " + url, e);
+			logger.error("Exception accessing url : " + url.getUrl(), e);
 		}
 		return document;
 	}
@@ -503,7 +507,8 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			loginUrl = new URL(indexableInternet.getLoginUrl());
 			String userid = indexableInternet.getUserid();
 			String password = indexableInternet.getPassword();
-			new WebServiceAuthentication().authenticate(httpClient, loginUrl.getHost(), Integer.toString(loginUrl.getPort()), userid, password);
+			new WebServiceAuthentication().authenticate(httpClient, loginUrl.getHost(), Integer.toString(loginUrl.getPort()), userid,
+					password);
 		} catch (Exception e) {
 			logger.error("Exception logging in to site : " + indexableInternet, e);
 		}

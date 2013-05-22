@@ -77,8 +77,7 @@ public class Monitor extends Resource {
 	@GET
 	@Path(Monitor.FIELDS)
 	@Consumes(MediaType.APPLICATION_XML)
-	public Response fields(@QueryParam(value = IConstants.INDEX_NAME)
-	final String indexName) {
+	public Response fields(@QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
 		return buildResponse(monitorService.getIndexFieldNames(indexName));
 	}
 
@@ -93,21 +92,15 @@ public class Monitor extends Resource {
 	@SuppressWarnings("rawtypes")
 	@Path(Monitor.INDEX_CONTEXT)
 	@Consumes(MediaType.APPLICATION_XML)
-	public Response indexContext(@QueryParam(value = IConstants.INDEX_NAME)
-	final String indexName) {
+	public Response indexContext(@QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
 		IndexContext indexContext = cloneIndexContext(monitorService.getIndexContext(indexName));
 		return buildResponse(indexContext);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private IndexContext cloneIndexContext(final IndexContext indexContext) {
-		// indexContext.isOpen();
-		// indexContext.getNumDocs();
-		// indexContext.getIndexSize();
-		// indexContext.getLatestIndexTimestamp();
 		IndexContext cloneIndexContext = (IndexContext) SerializationUtilities.clone(indexContext);
 		cloneIndexContext.setChildren(null);
-		cloneIndexContext.setSnapshots(null);
 		return cloneIndexContext;
 	}
 
@@ -115,9 +108,8 @@ public class Monitor extends Resource {
 	@SuppressWarnings({ "rawtypes" })
 	@Path(Monitor.INDEX_CONTEXTS)
 	@Consumes(MediaType.APPLICATION_XML)
-	public Response indexContexts(@QueryParam(value = IConstants.SORT_FIELD)
-	final String sortField, @QueryParam(value = IConstants.DESCENDING)
-	final boolean descending) {
+	public Response indexContexts(@QueryParam(value = IConstants.SORT_FIELD) final String sortField,
+			@QueryParam(value = IConstants.DESCENDING) final boolean descending) {
 		List<IndexContext> indexContexts = new ArrayList<IndexContext>();
 		for (final IndexContext indexContext : monitorService.getIndexContexts().values()) {
 			IndexContext cloneIndexContext = cloneIndexContext(indexContext);
@@ -141,12 +133,7 @@ public class Monitor extends Resource {
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response server() {
 		Server server = clusterManager.getServer();
-		Server cloneServer = (Server) SerializationUtilities.clone(server);
-		cloneServer.setIndexContexts(null);
-		List<Action> actions = cloneServer.getActions();
-		for (Action cloneAction : actions) {
-			cloneAction.setServer(null);
-		}
+		Server cloneServer = cloneServer(server);
 		return buildResponse(cloneServer);
 	}
 
@@ -158,15 +145,20 @@ public class Monitor extends Resource {
 		Map<String, Server> servers = clusterManager.getServers();
 		for (Map.Entry<String, Server> mapEntry : servers.entrySet()) {
 			Server server = mapEntry.getValue();
-			Server cloneServer = (Server) SerializationUtilities.clone(server);
-			cloneServer.setIndexContexts(null);
-			List<Action> actions = cloneServer.getActions();
-			for (Action cloneAction : actions) {
-				cloneAction.setServer(null);
-			}
+			Server cloneServer = cloneServer(server);
 			result.add(cloneServer);
 		}
 		return buildResponse(result);
+	}
+
+	private Server cloneServer(final Server server) {
+		Server cloneServer = (Server) SerializationUtilities.clone(server);
+		cloneServer.setIndexContexts(null);
+		List<Action> actions = cloneServer.getActions();
+		for (Action cloneAction : actions) {
+			cloneAction.setServer(null);
+		}
+		return cloneServer;
 	}
 
 	@GET
@@ -245,22 +237,25 @@ public class Monitor extends Resource {
 	@Path(Monitor.ACTIONS)
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response actions() {
-		List<Action> actions = new ArrayList<Action>();
+		List<Action> clonedActions = new ArrayList<Action>();
 		Map<String, Server> servers = clusterManager.getServers();
 		for (final Server server : servers.values()) {
-			for (final Action action : server.getActions()) {
+			List<Action> actions = server.getActions();
+			server.setActions(null);
+			for (final Action action : actions) {
 				Action clonedAction = (Action) SerializationUtilities.clone(action);
-				actions.add(clonedAction);
+				server.setIndexContexts(null);
+				clonedAction.setServer(server);
+				clonedActions.add(clonedAction);
 			}
 		}
-		return buildResponse(actions);
+		return buildResponse(clonedActions);
 	}
 
 	@GET
 	@Path(Monitor.START)
 	@Consumes(MediaType.APPLICATION_XML)
-	public Response start(@QueryParam(value = IConstants.INDEX_NAME)
-	final String indexName) {
+	public Response start(@QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
 		monitorService.start(indexName);
 		return buildResponse().build();
 	}
@@ -268,8 +263,7 @@ public class Monitor extends Resource {
 	@GET
 	@Path(Monitor.TERMINATE)
 	@Consumes(MediaType.APPLICATION_XML)
-	public Response terminate(@QueryParam(value = IConstants.INDEX_NAME)
-	final String indexName) {
+	public Response terminate(@QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
 		monitorService.terminate(indexName);
 		return buildResponse().build();
 	}
@@ -284,9 +278,8 @@ public class Monitor extends Resource {
 	@POST
 	@Path(Monitor.SET_PROPERTIES)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public Response setProperties(@FormParam(value = IConstants.FILE)
-	final String file, @FormParam(value = IConstants.CONTENTS)
-	final String contents) {
+	public Response setProperties(@FormParam(value = IConstants.FILE) final String file,
+			@FormParam(value = IConstants.CONTENTS) final String contents) {
 		if (!StringUtils.isEmpty(file) && !StringUtils.isEmpty(contents)) {
 			Map<String, String> filesAndProperties = new HashMap<String, String>();
 			filesAndProperties.put(file, contents);
@@ -314,8 +307,7 @@ public class Monitor extends Resource {
 	@GET
 	@Path(Monitor.DELETE_INDEX)
 	@Consumes(MediaType.APPLICATION_XML)
-	public Response delete(@QueryParam(value = IConstants.INDEX_NAME)
-	final String indexName) {
+	public Response delete(@QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
 		long time = System.currentTimeMillis();
 		Event startEvent = IListener.EventGenerator.getEvent(Event.DELETE_INDEX, time, indexName, Boolean.FALSE);
 		logger.info("Sending delete event : " + ToStringBuilder.reflectionToString(startEvent));
