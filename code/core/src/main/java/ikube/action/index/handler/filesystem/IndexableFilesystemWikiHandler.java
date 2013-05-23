@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.Future;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
@@ -62,7 +61,7 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 		for (int i = 0; i < getThreads(); i++) {
 			Runnable runnable = new Runnable() {
 				public void run() {
-					while (iterator.hasNext()) {
+					while (iterator.hasNext() && ThreadUtilities.isInitialized()) {
 						File bZip2File = iterator.next();
 						logger.info("Indexing compressed file : " + bZip2File);
 						handleFile(indexContext, indexable, bZip2File, counter);
@@ -83,7 +82,6 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 	 * @param indexableFileSystem the file system object, i.e. the path to the bzip file
 	 * @param file the Bzip2 file with the Wiki data in it
 	 */
-	@SuppressWarnings("resource")
 	protected void handleFile(final IndexContext<?> indexContext, final IndexableFileSystemWiki indexableFileSystem, final File file,
 			final Counter counter) {
 		// Get the wiki history file
@@ -101,18 +99,10 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 				String string = new String(bytes, 0, read, Charset.forName(IConstants.ENCODING));
 				stringBuilder.append(string);
 				handleChunk(indexContext, indexableFileSystem, file, start, stringBuilder, counter);
-				if (Thread.currentThread().isInterrupted()) {
-					throw new InterruptedException("Wiki indexing teminated : ");
-				}
 				Thread.sleep(indexContext.getThrottle());
 			}
-		} catch (InterruptedException e) {
-			logger.error("Coitus interruptus... : " + file, e);
-			throw new RuntimeException(e);
-		} catch (CancellationException e) {
-			throw e;
 		} catch (Exception e) {
-			handleMaxExceptions(indexableFileSystem, e);
+			handleException(indexableFileSystem, e);
 		} finally {
 			FileUtilities.close(fileInputStream);
 			FileUtilities.close(bZip2CompressorInputStream);
@@ -123,7 +113,7 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 	private void handleChunk(final IndexContext indexContext, final IndexableFileSystemWiki indexableFileSystem, final File file,
 			final long start, final StringBuilder stringBuilder, Counter counter) throws Exception {
 		// Parse the <revision> tags
-		while (true) {
+		while (true && ThreadUtilities.isInitialized()) {
 			ThreadUtilities.sleep(indexContext.getThrottle());
 			int startOffset = stringBuilder.indexOf(PAGE_START);
 			int endOffset = stringBuilder.indexOf(PAGE_FINISH);

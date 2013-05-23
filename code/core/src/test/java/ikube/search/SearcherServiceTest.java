@@ -60,60 +60,64 @@ public class SearcherServiceTest extends AbstractTest {
 
 	@Test
 	public void searchSingle() {
-		ArrayList<HashMap<String, String>> results = searcherService.searchSingle(indexName, searchStrings[0], searchFields[0], true, 0, 10);
+		ArrayList<HashMap<String, String>> results = searcherService
+				.searchSingle(indexName, searchStrings[0], searchFields[0], true, 0, 10);
 		assertTrue(results.size() > 0);
 	}
 
 	@Test
 	public void searchMulti() {
-		ArrayList<HashMap<String, String>> results = searcherService.searchMulti(indexName, searchStrings, searchFields, fragment, firstResult, maxResults);
-		assertTrue(results.size() > 0);
-	}
-
-	@Test
-	public void searchMultiSorted() {
-		ArrayList<HashMap<String, String>> results = searcherService.searchMultiSorted(indexName, searchStrings, searchFields, sortFields, fragment,
+		ArrayList<HashMap<String, String>> results = searcherService.searchMulti(indexName, searchStrings, searchFields, fragment,
 				firstResult, maxResults);
 		assertTrue(results.size() > 0);
 	}
 
 	@Test
+	public void searchMultiSorted() {
+		ArrayList<HashMap<String, String>> results = searcherService.searchMultiSorted(indexName, searchStrings, searchFields, sortFields,
+				fragment, firstResult, maxResults);
+		assertTrue(results.size() > 0);
+	}
+
+	@Test
 	public void searchMultiAll() {
-		ArrayList<HashMap<String, String>> results = searcherService.searchMultiAll(indexName, searchStrings, fragment, firstResult, maxResults);
+		ArrayList<HashMap<String, String>> results = searcherService.searchMultiAll(indexName, searchStrings, fragment, firstResult,
+				maxResults);
 		assertTrue(results.size() > 0);
 	}
 
 	@Test
 	public void searchMultiSpacial() {
-		ArrayList<HashMap<String, String>> results = searcherService.searchMultiSpacial(indexName, searchStrings, searchFields, fragment, firstResult,
-				maxResults, distance, latitude, longitude);
+		ArrayList<HashMap<String, String>> results = searcherService.searchMultiSpacial(indexName, searchStrings, searchFields, fragment,
+				firstResult, maxResults, distance, latitude, longitude);
 		assertTrue(results.size() > 0);
 	}
 
 	@Test
 	public void searchMultiSpacialAll() {
-		ArrayList<HashMap<String, String>> results = searcherService.searchMultiSpacialAll(indexName, searchStrings, fragment, firstResult, maxResults,
-				distance, latitude, longitude);
+		ArrayList<HashMap<String, String>> results = searcherService.searchMultiSpacialAll(indexName, searchStrings, fragment, firstResult,
+				maxResults, distance, latitude, longitude);
 		assertTrue(results.size() > 0);
 	}
 
 	@Test
 	public void searchNumericAll() {
-		ArrayList<HashMap<String, String>> results = searcherService.searchNumericAll(indexName, searchStrings, fragment, firstResult, maxResults);
+		ArrayList<HashMap<String, String>> results = searcherService.searchNumericAll(indexName, searchStrings, fragment, firstResult,
+				maxResults);
 		assertTrue(results.size() > 0);
 	}
 
 	@Test
 	public void searchNumericRange() {
-		ArrayList<HashMap<String, String>> results = searcherService.searchNumericRange(indexName, new String[] { "0.0", "0.0" }, fragment, firstResult,
-				maxResults);
+		ArrayList<HashMap<String, String>> results = searcherService.searchNumericRange(indexName, new String[] { "0.0", "0.0" }, fragment,
+				firstResult, maxResults);
 		assertTrue(results.size() > 0);
 	}
 
 	@Test
 	public void searchComplex() {
-		ArrayList<HashMap<String, String>> results = searcherService.searchComplex(indexName, searchStrings, searchFields, typeFields, fragment, firstResult,
-				maxResults);
+		ArrayList<HashMap<String, String>> results = searcherService.searchComplex(indexName, searchStrings, searchFields, typeFields,
+				fragment, firstResult, maxResults);
 		assertTrue(results.size() > 0);
 	}
 

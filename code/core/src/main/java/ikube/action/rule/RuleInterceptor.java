@@ -89,7 +89,7 @@ public class RuleInterceptor implements IRuleInterceptor {
 	 * 
 	 * @param proceedingJoinPoint the intercepted action join point
 	 */
-	protected/* synchronized */void proceed(final IndexContext<?> indexContext, final ProceedingJoinPoint proceedingJoinPoint) {
+	protected synchronized void proceed(final IndexContext<?> indexContext, final ProceedingJoinPoint proceedingJoinPoint) {
 		try {
 			// We set the working flag in the action within the cluster lock when setting to true
 			Runnable runnable = new Runnable() {
@@ -99,19 +99,21 @@ public class RuleInterceptor implements IRuleInterceptor {
 						// Start the action in the cluster
 						String actionName = proceedingJoinPoint.getTarget().getClass().getSimpleName();
 						action = clusterManager.startWorking(actionName, indexContext.getIndexName(), null);
+						LOGGER.info("Started action : " + action);
 						// Execute the action logic
 						proceedingJoinPoint.proceed();
 					} catch (Throwable e) {
 						LOGGER.error("Exception proceeding on join point : " + proceedingJoinPoint, e);
 					} finally {
 						// Remove the action in the cluster
+						LOGGER.info("Stopping action : " + action);
 						clusterManager.stopWorking(action);
 					}
 				}
 			};
 			ThreadUtilities.submit(null, runnable);
 		} finally {
-			// notifyAll();
+			notifyAll();
 		}
 	}
 

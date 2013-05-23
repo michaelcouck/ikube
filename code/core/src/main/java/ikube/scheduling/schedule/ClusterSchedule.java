@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 05.12.12
  * @version 01.00
  */
+@Deprecated
 public class ClusterSchedule extends Schedule {
 
 	@Autowired

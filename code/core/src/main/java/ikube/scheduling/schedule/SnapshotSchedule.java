@@ -60,22 +60,23 @@ public class SnapshotSchedule extends Schedule {
 	public void run() {
 		Server server = clusterManager.getServer();
 		setServerStatistics(server);
-		OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
 		Map<String, IndexContext> indexContexts = monitorService.getIndexContexts();
 		for (Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
 			try {
 				IndexContext indexContext = mapEntry.getValue();
 
 				Snapshot snapshot = new Snapshot();
+
+				snapshot.setAvailableProcessors(server.getProcessors());
+				snapshot.setSystemLoad(server.getAverageCpuLoad());
+
 				snapshot.setTimestamp(new Timestamp(System.currentTimeMillis()));
-				snapshot.setAvailableProcessors(operatingSystemMXBean.getAvailableProcessors());
 				snapshot.setDocsPerMinute(getDocsPerMinute(indexContext, snapshot));
 				snapshot.setIndexContext(indexContext.getName());
 				snapshot.setIndexSize(IndexManager.getIndexSize(indexContext));
 				snapshot.setLatestIndexTimestamp(IndexManager.getLatestIndexDirectoryDate(indexContext));
 				snapshot.setNumDocs(IndexManager.getNumDocs(indexContext));
 				snapshot.setSearchesPerMinute(getSearchesPerMinute(indexContext, snapshot));
-				snapshot.setSystemLoad(operatingSystemMXBean.getSystemLoadAverage());
 				snapshot.setTotalSearches(getTotalSearchesForIndex(indexContext));
 
 				dataBase.persist(snapshot);
@@ -90,10 +91,10 @@ public class SnapshotSchedule extends Schedule {
 					public int compare(Snapshot o1, Snapshot o2) {
 						return o1.getTimestamp().compareTo(o2.getTimestamp());
 					}
-				}; 
+				};
 				Collections.reverseOrder(comparator);
 				indexContext.setSnapshots(snapshots);
-				
+
 				// Find the last snapshot and put it in the action if there is one
 				// executing on the index context
 				for (final Action action : server.getActions()) {
@@ -111,7 +112,6 @@ public class SnapshotSchedule extends Schedule {
 
 	protected void setServerStatistics(final Server server) {
 		OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
-
 		server.setArchitecture(operatingSystemMXBean.getArch());
 		server.setProcessors(operatingSystemMXBean.getAvailableProcessors());
 		server.setAverageCpuLoad(operatingSystemMXBean.getSystemLoadAverage());
@@ -119,34 +119,43 @@ public class SnapshotSchedule extends Schedule {
 		server.setMaxMemory(Runtime.getRuntime().maxMemory() / IConstants.MILLION);
 		server.setTotalMemory(Runtime.getRuntime().totalMemory() / IConstants.MILLION);
 		server.setThreadsRunning(ThreadUtilities.isInitialized());
-
 		try {
 			long availableDiskSpace = FileSystemUtils.freeSpaceKb("/") / IConstants.MILLION;
 			server.setFreeDiskSpace(availableDiskSpace);
 		} catch (IOException e) {
 			LOGGER.error("Exception accessing the disk space : ", e);
 		}
+		setLogTail(server);
+	}
 
+	void setLogTail(final Server server) {
 		File logFile = FileUtilities.findFileRecursively(new File("./" + IConstants.IKUBE), IConstants.IKUBE_LOG);
 		if (logFile != null) {
 			RandomAccessFile inputStream = null;
 			try {
 				inputStream = new RandomAccessFile(logFile, "r");
-				int offset = (int) Math.max(0, logFile.length() - (IConstants.MILLION / 10));
-				int lengthToRead = (int) Math.max(0, logFile.length() - offset);
+				// 1000000
+				int fileLength = (int) logFile.length();
+				// 900000
+				int offset = Math.max(fileLength - (IConstants.MILLION / 10), 0);
+				// 100000
+				int lengthToRead = Math.max(0, fileLength - offset);
+				// 100000
 				byte[] bytes = new byte[lengthToRead];
-				inputStream.readFully(bytes, offset, lengthToRead);
+				LOGGER.info("Offset : " + offset + ", file length : " + logFile.length() + ", to read : " + lengthToRead);
+				inputStream.seek(offset);
+				inputStream.read(bytes, 0, lengthToRead);
 				server.setLogTail(new String(bytes));
 			} catch (FileNotFoundException e) {
 				LOGGER.error("Log file not found : ", e);
-			} catch (IOException e) {
-				LOGGER.error("IO error reading log file : ", e);
+			} catch (Exception e) {
+				LOGGER.error("Error reading log file : ", e);
 			} finally {
 				try {
 					if (inputStream != null) {
 						inputStream.close();
 					}
-				} catch (IOException e) {
+				} catch (Exception e) {
 					LOGGER.error("Exception closing the file reader on the log file : ", e);
 				}
 			}

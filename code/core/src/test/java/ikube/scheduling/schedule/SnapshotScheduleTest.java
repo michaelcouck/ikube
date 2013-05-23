@@ -8,8 +8,8 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.IndexContext;
+import ikube.model.Server;
 import ikube.model.Snapshot;
-import ikube.scheduling.schedule.SnapshotSchedule;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -132,6 +132,22 @@ public class SnapshotScheduleTest extends AbstractTest {
 		searchesPerMinute = snapshotSchedule.getSearchesPerMinute(indexContext, snapshot);
 		logger.info("Searches per minute : " + searchesPerMinute);
 		assertTrue(searchesPerMinute > 50 && searchesPerMinute < 100);
+	}
+
+	@Test
+	public void setLogTail() {
+		String string = "Log tail";
+		File outputFile = FileUtilities.getOrCreateFile("./" + IConstants.IKUBE + IConstants.SEP + IConstants.IKUBE_LOG);
+		FileUtilities.setContents(outputFile, string.getBytes());
+		Server server = new Server();
+		snapshotSchedule.setLogTail(server);
+		assertEquals(string, server.getLogTail());
+
+		byte[] bytes = new byte[IConstants.MILLION + 10];
+		Arrays.fill(bytes, (byte) 'a');
+		FileUtilities.setContents(outputFile, bytes);
+		snapshotSchedule.setLogTail(server);
+		assertTrue(server.getLogTail().length() == (IConstants.MILLION / 10));
 	}
 
 }

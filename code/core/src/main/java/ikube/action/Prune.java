@@ -25,6 +25,8 @@ public class Prune extends Action<IndexContext<?>, Boolean> {
 				IConstants.RESET_DELETE_BATCH_SIZE, (int) IConstants.MAX_ACTIONS / 4);
 		delete(dataBase, ikube.model.Snapshot.class, new String[] {}, new Boolean[] {}, IConstants.RESET_DELETE_BATCH_SIZE,
 				(int) IConstants.MAX_SNAPSHOTS / 4);
+		delete(dataBase, ikube.model.Server.class, new String[] {}, new Boolean[] {}, IConstants.RESET_DELETE_BATCH_SIZE,
+				(int) IConstants.MAX_SNAPSHOTS / 4);
 		return Boolean.TRUE;
 	}
 

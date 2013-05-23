@@ -74,7 +74,7 @@ public class IndexableFilesystemLogHandler extends IndexableHandler<IndexableFil
 			};
 			futures.add(ThreadUtilities.submit(indexContext.getIndexName(), runnable));
 		} catch (Exception e) {
-			logger.error("Exception starting the file system indexer threads : ", e);
+			handleException(indexable, e);
 		}
 		return futures;
 	}
@@ -114,7 +114,7 @@ public class IndexableFilesystemLogHandler extends IndexableHandler<IndexableFil
 				Thread.sleep(indexContext.getThrottle());
 			}
 		} catch (Exception e) {
-			handleMaxExceptions(indexableFileSystem, e);
+			handleException(indexableFileSystem, e);
 		} finally {
 			FileUtilities.close(bufferedReader);
 			FileUtilities.close(reader);

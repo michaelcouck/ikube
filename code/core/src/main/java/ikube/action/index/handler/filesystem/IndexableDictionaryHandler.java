@@ -58,7 +58,7 @@ public class IndexableDictionaryHandler extends IndexableHandler<IndexableDictio
 								IndexWriterConfig indexWriterConfig = new IndexWriterConfig(IConstants.VERSION, IConstants.ANALYZER);
 								spellChecker.indexDictionary(new PlainTextDictionary(inputStream), indexWriterConfig, Boolean.TRUE);
 							} catch (Exception e) {
-								logger.error("Exception indexing the dictionary file : " + file, e);
+								handleException(indexable, e);
 							} finally {
 								FileUtilities.close(inputStream);
 							}
@@ -69,7 +69,7 @@ public class IndexableDictionaryHandler extends IndexableHandler<IndexableDictio
 				futures.add(future);
 			}
 		} catch (Exception e) {
-			logger.error("Exception starting the file system indexer threads : ", e);
+			handleException(indexable, e);
 		}
 		return futures;
 	}

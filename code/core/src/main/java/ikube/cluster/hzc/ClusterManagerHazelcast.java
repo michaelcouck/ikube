@@ -165,24 +165,32 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 						Server server = getServer();
 						List<Action> actions = server.getActions();
 						Iterator<Action> actionIterator = actions.iterator();
-						logger.debug("Server : " + server);
+						logger.debug("Server : " + server.getActions().size());
 						try {
 							// Remove the action from the grid
-							while (actionIterator.hasNext()) {
-								Action gridAction = actionIterator.next();
-								if (gridAction.getId() == action.getId()) {
-									actionIterator.remove();
+							int retry = 10;
+							do {
+								while (actionIterator.hasNext()) {
+									Action gridAction = actionIterator.next();
+									// logger.info("Grid action : " + gridAction);
+									if (gridAction.getId() == action.getId()) {
+										actionIterator.remove();
+										logger.debug("Removed grid action : " + gridAction);
+									}
 								}
-							}
-							put(server.getAddress(), server);
+								ThreadUtilities.sleep(1000);
+								put(server.getAddress(), server);
+							} while (retry-- >= 0);
 						} catch (Exception e) {
-							logger.warn("Exception removing action from cluster : " + e.getMessage());
+							logger.error("Exception removing action from cluster : " + e.getMessage(), e);
 						}
 						server = getServer();
+						logger.debug("Action sizes : " + server.getActions().size());
+						logger.debug("Server actions : " + server.getActions());
 						// Test the grid to see that the action is removed
 						Comparator<Action> comparator = new Comparator<Action>() {
 							@Override
-							public int compare(Action o1, Action o2) {
+							public int compare(final Action o1, final Action o2) {
 								return Long.valueOf(o1.getId()).compareTo(Long.valueOf(o2.getId()));
 							}
 						};
@@ -204,7 +212,7 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 					} while (true);
 				}
 			}
-			Future<?> future = ThreadUtilities.submit(action.getActionName(), new RetryCaller());
+			Future<?> future = ThreadUtilities.submitSystem(new RetryCaller());
 			ThreadUtilities.waitForFuture(future, 10);
 		} finally {
 			notifyAll();

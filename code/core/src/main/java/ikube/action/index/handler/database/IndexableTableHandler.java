@@ -112,7 +112,6 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * @param document the document that came from the top level table. As we recurse the table hierarchy, we have to pass this document to
 	 *        the child tables so they can add their data to the document. When this method is called with the top level table the document
 	 *        is null of course
-	 * @throws InterruptedException
 	 */
 	protected void handleTable(final IContentProvider<IndexableColumn> contentProvider, final IndexContext<?> indexContext,
 			final IndexableTable indexableTable, final DataSource dataSource, final AtomicLong currentId) {
@@ -132,22 +131,17 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					DatabaseUtilities.closeAll(resultSet);
 					resultSet = getResultSet(indexContext, indexableTable, dataSource, currentId);
 				}
-			} catch (InterruptedException e) {
-				throw new RuntimeException(e);
-			} catch (SQLException e) {
-				logger.error("Exception indexing table : " + indexableTable.getName(), e);
-				handleMaxExceptions(indexableTable, e);
 			} catch (Exception e) {
-				throw new RuntimeException(e);
+				handleException(indexableTable, e);
 			}
-		} while (resultSet != null);
+		} while (resultSet != null && ThreadUtilities.isInitialized());
 		DatabaseUtilities.closeAll(resultSet);
 	}
 
 	@SuppressWarnings("rawtypes")
 	public void handleRow(final IndexContext indexContext, final IndexableTable indexableTable, final DataSource dataSource,
 			final ResultSet resultSet, final Document currentDocument, final IContentProvider<IndexableColumn> contentProvider,
-			final AtomicLong currentId) throws InterruptedException {
+			final AtomicLong currentId) {
 		// We have results from the table and we are already on the first result
 		List<Indexable<?>> children = indexableTable.getChildren();
 		// Set the column types and the data from the table in the column objects
@@ -180,10 +174,10 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		try {
 			Thread.sleep(indexContext.getThrottle());
 		} catch (InterruptedException e) {
-			throw new InterruptedException("Table indexing teminated : ");
+			handleException(indexableTable, e);
 		}
 		if (Thread.currentThread().isInterrupted()) {
-			throw new InterruptedException("Table indexing teminated : ");
+			throw new RuntimeException("Table indexing teminated : ");
 		}
 	}
 
@@ -226,6 +220,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		try {
 			// Build the sql based on the columns defined in the configuration
 			String sql = new QueryBuilder().buildQuery(indexableTable, currentId.get(), indexContext.getBatchSize());
+			logger.info("Query : " + sql);
 			currentId.set(currentId.get() + indexContext.getBatchSize());
 			PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY,
 					ResultSet.CLOSE_CURSORS_AT_COMMIT);
@@ -291,7 +286,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 					preparedStatement.setObject(parameterIndex, parameter);
 				} catch (SQLException e) {
 					logger.error("Exception getting results : ", e);
-					handleMaxExceptions(indexableTable, e);
+					handleException(indexableTable, e);
 				}
 				parameterIndex++;
 			}
@@ -394,7 +389,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			}
 		} catch (Exception e) {
 			logger.error("Exception accessing the column content : " + byteOutputStream, e);
-			handleMaxExceptions(indexable, e);
+			handleException(indexable, e);
 		} finally {
 			FileUtilities.close(inputStream);
 			FileUtilities.close(parsedOutputStream);

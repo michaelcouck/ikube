@@ -72,21 +72,13 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	void handleFiles(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final Stack<File> directories,
 			final Pattern pattern) {
 		List<File> files = getBatch(indexableFileSystem, directories, pattern);
-		outer : do {
+		do {
 			for (final File file : files) {
 				try {
 					handleFile(indexContext, indexableFileSystem, file);
 					Thread.sleep(indexContext.getThrottle());
-					if (Thread.currentThread().isInterrupted()) {
-						throw new RuntimeException("Table indexing teminated : ");
-					}
-				} catch (InterruptedException e) {
-					logger.error("Thread terminated, and indexing stopped : ", e);
-					// throw new RuntimeException(e);
-					break outer;
 				} catch (Exception e) {
-					logger.error("Exception handling file : " + file + ", " + e.getMessage(), e);
-					handleMaxExceptions(indexableFileSystem, e);
+					handleException(indexableFileSystem, e, "Exception handling file : " + file + ", " + e.getMessage());
 				}
 			}
 			files = getBatch(indexableFileSystem, directories, pattern);
@@ -99,7 +91,6 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	 * @param indexContext the context for this index
 	 * @param indexableFileSystem the file system object for storing data during the indexing
 	 * @param file the file to parse and index
-	 * @throws InterruptedException
 	 */
 	void handleFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file) throws Exception {
 		// logger.error("Doing file : " + file);
@@ -204,7 +195,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		try {
 			isSymLink = FileUtils.isSymlink(file);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			handleException(null, e);
 		}
 		return isNameExcluded || isPathExcluded || isSymLink;
 	}

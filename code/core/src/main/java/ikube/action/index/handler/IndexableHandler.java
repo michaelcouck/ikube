@@ -2,6 +2,9 @@ package ikube.action.index.handler;
 
 import ikube.model.Indexable;
 
+import java.util.Arrays;
+import java.util.concurrent.CancellationException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +26,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 	private Class<T> indexableClass;
 	/** A local storage for the maximum exceptions per thread. */
 	private ThreadLocal<Integer> threadLocal = new ThreadLocal<Integer>();
-
+	
 	public int getThreads() {
 		return threads;
 	}
@@ -48,13 +51,21 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 		this.indexableClass = indexableClass;
 	}
 
-	protected void handleMaxExceptions(final Indexable<?> indexable, final Exception exception) {
+	protected void handleException(final Indexable<?> indexable, final Exception exception, final String... messages) {
+		if (InterruptedException.class.isAssignableFrom(exception.getClass())
+				|| CancellationException.class.isAssignableFrom(exception.getClass())) {
+			throw new RuntimeException("Worker thread interrupted : " + Arrays.deepToString(messages), exception);
+		}
 		if (threadLocal.get() == null) {
 			threadLocal.set(new Integer(0));
 		}
 		threadLocal.set(threadLocal.get() + 1);
-		if (threadLocal.get() > indexable.getMaxExceptions()) {
-			throw new RuntimeException("Maximum exceptions exceeded for resource : ", exception);
+		if (indexable != null) {
+			if (threadLocal.get() > indexable.getMaxExceptions()) {
+				throw new RuntimeException("Maximum exceptions exceeded for resource : " + Arrays.deepToString(messages), exception);
+			}
+		} else {
+			logger.error("Exception handling resource : " + Arrays.deepToString(messages), exception);
 		}
 	}
 

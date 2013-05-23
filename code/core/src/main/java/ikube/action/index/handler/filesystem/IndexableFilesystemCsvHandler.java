@@ -55,7 +55,7 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
 					try {
 						handleFile(indexContext, indexableFileSystem, file);
 					} catch (Exception e) {
-						logger.error("Exception indexing csv file : " + file, e);
+						handleException(indexableFileSystem, e);
 					}
 				}
 			}
@@ -89,7 +89,7 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
 
 			int lineNumber = 0;
 			indexableFileSystemCsv.setFile(file);
-			while (lineIterator.hasNext()) {
+			while (lineIterator.hasNext() && ThreadUtilities.isInitialized()) {
 				indexableFileSystemCsv.setLineNumber(lineNumber);
 				try {
 					String line = lineIterator.nextLine();
@@ -106,7 +106,7 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
 					ThreadUtilities.sleep(indexContext.getThrottle());
 				} catch (Exception e) {
 					logger.error("Exception processing file : " + file, e);
-					handleMaxExceptions(indexableFileSystemCsv, e);
+					handleException(indexableFileSystemCsv, e);
 				}
 				++lineNumber;
 				if (lineNumber % 10000 == 0) {

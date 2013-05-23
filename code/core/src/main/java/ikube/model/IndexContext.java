@@ -294,7 +294,7 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 		return analyzer;
 	}
 
-	public void setAnalyzer(Analyzer analyzer) {
+	public void setAnalyzer(final Analyzer analyzer) {
 		this.analyzer = analyzer;
 	}
 
@@ -302,7 +302,7 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 		return hashes;
 	}
 
-	public void setHashes(List<Long> hashes) {
+	public void setHashes(final List<Long> hashes) {
 		this.hashes = hashes;
 	}
 
@@ -313,8 +313,9 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 		return snapshots;
 	}
 
-	public void setSnapshots(List<Snapshot> snapshots) {
+	public void setSnapshots(final List<Snapshot> snapshots) {
 		this.snapshots = snapshots;
+		getSnapshot();
 	}
 
 	public Snapshot getSnapshot() {
@@ -337,7 +338,7 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 		return indexing;
 	}
 
-	public void setIndexing(boolean indexing) {
+	public void setIndexing(final boolean indexing) {
 		this.indexing = indexing;
 	}
 
@@ -345,7 +346,7 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 		return delta;
 	}
 
-	public void setDelta(boolean delta) {
+	public void setDelta(final boolean delta) {
 		this.delta = delta;
 	}
 

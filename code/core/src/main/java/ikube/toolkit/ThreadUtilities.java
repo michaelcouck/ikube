@@ -28,6 +28,7 @@ public final class ThreadUtilities {
 
 	/** Executes the 'threads' and returns a future. */
 	private static ExecutorService EXECUTER_SERVICE;
+	private static ExecutorService EXECUTER_SERVICE_SYSTEM;
 	/** The number of times to try to cancel the future(s). */
 	private static int MAX_RETRY_COUNT = 3;
 	/** A list of futures by name so we can kill them. */
@@ -43,7 +44,7 @@ public final class ThreadUtilities {
 	public synchronized static Future<?> submit(final String name, final Runnable runnable) {
 		try {
 			if (EXECUTER_SERVICE == null || EXECUTER_SERVICE.isShutdown()) {
-				LOGGER.debug("Executer service is shutdown : " + runnable);
+				LOGGER.warn("Executer service is shutdown : " + runnable);
 				return null;
 			}
 			Future<?> future = EXECUTER_SERVICE.submit(runnable);
@@ -52,6 +53,21 @@ public final class ThreadUtilities {
 			} else {
 				getFutures(ThreadUtilities.class.getSimpleName()).add(future);
 			}
+			return future;
+		} finally {
+			ThreadUtilities.class.notifyAll();
+		}
+	}
+
+	/**
+	 * This method will submit a runnable, the executer never gets shut down.
+	 * 
+	 * @param runnable the runnable to submit for execution, must self terminate
+	 * @return the future bound to the runnable
+	 */
+	public synchronized static Future<?> submitSystem(final Runnable runnable) {
+		try {
+			Future<?> future = EXECUTER_SERVICE_SYSTEM.submit(runnable);
 			return future;
 		} finally {
 			ThreadUtilities.class.notifyAll();
@@ -115,7 +131,7 @@ public final class ThreadUtilities {
 	 */
 	public static void waitForFuture(final Future<?> future, final long maxWait) {
 		if (future == null) {
-			LOGGER.debug("Future null returning : ");
+			LOGGER.info("Future null returning : ");
 			return;
 		}
 		try {
@@ -168,7 +184,6 @@ public final class ThreadUtilities {
 		try {
 			Thread.sleep(sleep);
 		} catch (InterruptedException e) {
-			// LOGGER.error("Sleep interrupted : " + Thread.currentThread());
 			Thread.currentThread().interrupt();
 			throw new RuntimeException(e);
 		}
@@ -184,6 +199,7 @@ public final class ThreadUtilities {
 		}
 		FUTURES = new HashMap<String, List<Future<?>>>();
 		EXECUTER_SERVICE = Executors.newCachedThreadPool();
+		EXECUTER_SERVICE_SYSTEM = Executors.newCachedThreadPool();
 	}
 
 	/**

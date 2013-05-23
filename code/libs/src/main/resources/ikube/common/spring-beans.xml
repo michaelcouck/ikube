@@ -163,7 +163,7 @@
 	<util:list id="ikube.scheduling.Scheduler.schedules">
 		<ref local="ikube.scheduling.schedule.IndexSchedule" />
 		<ref local="ikube.scheduling.schedule.ServerRemovalSchedule" />
-		<ref local="ikube.scheduling.schedule.ClusterSchedule" />
+		<!-- <ref local="ikube.scheduling.schedule.ClusterSchedule" /> -->
 		<ref local="ikube.scheduling.schedule.IndexSizeSchedule" />
 		<ref local="ikube.scheduling.schedule.ActionSchedule" />
 		<ref local="ikube.scheduling.schedule.SnapshotSchedule" />
@@ -183,12 +183,12 @@
 		class="ikube.scheduling.schedule.ServerRemovalSchedule" 
 		property:delay="${delay}"
 		property:period="${period}" />
-	<bean 
+	<!-- <bean 
 		id="ikube.scheduling.schedule.ClusterSchedule"
 		name="ikube.scheduling.schedule.ClusterSchedule"
 		class="ikube.scheduling.schedule.ClusterSchedule" 
 		property:delay="${delay}"
-		property:period="${period}" />
+		property:period="${period}" /> -->
 	<bean 
 		id="ikube.scheduling.schedule.IndexSizeSchedule"
 		name="ikube.scheduling.schedule.IndexSizeSchedule"

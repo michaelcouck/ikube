@@ -10,8 +10,11 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
-import ikube.action.index.IndexManager;
+import ikube.IConstants;
+import ikube.action.Close;
+import ikube.action.Open;
 import ikube.mock.IndexWriterMock;
+import ikube.model.IndexContext;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -29,7 +32,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 /**
  * @author Michael Couck
@@ -220,15 +222,35 @@ public class IndexManagerTest extends AbstractTest {
 
 	@Test
 	public void getIndexSize() throws Exception {
+		IndexContext<?> indexContext = new IndexContext<Object>();
+		indexContext.setName("index");
+		indexContext.setChildren(indexables);
+		indexContext.setIndexDirectoryPath(indexDirectoryPath);
+		indexContext.setBufferedDocs(100);
+		indexContext.setBufferSize(128);
+		indexContext.setMergeFactor(100);
+
 		createIndexFileSystem(indexContext, "the ", "string ", "to add");
 		IndexManager.getIndexSize(indexContext);
-		Mockito.when(indexContext.getIndexName()).thenReturn("anotherIndexName");
 		createIndexFileSystem(indexContext, "the ", "string ", "to add", "bigger");
-		Mockito.when(indexContext.getIndexName()).thenReturn("index");
 
 		long indexSize = IndexManager.getIndexSize(indexContext);
 		logger.info("Index size : " + indexSize);
 		assertTrue("There must be some size in the index : ", indexSize > 0);
+
+		new Open().execute(indexContext);
+		long numDocs = IndexManager.getNumDocs(indexContext);
+		logger.info("Num docs : " + numDocs);
+		assertEquals(4, numDocs);
+		new Close().execute(indexContext);
+
+		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
+		indexContext.setIndexWriters(indexWriter);
+		addDocuments(indexWriter, IConstants.CONTENTS, "some", "index", "documents");
+
+		numDocs = IndexManager.getNumDocs(indexContext);
+		logger.info("Num docs : " + numDocs);
+		assertEquals(3, numDocs);
 	}
 
 	@Test

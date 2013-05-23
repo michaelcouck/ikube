@@ -27,7 +27,7 @@
 		<td ng-class="{ active : indexContext.indexing == true }">{{indexContext.throttle}}</td>
 		<td ng-class="{ active : indexContext.indexing == true }" nowrap="nowrap">
 			<a href="#" ng-click="startIndexing(indexContext.name);">Index</a>&nbsp;|&nbsp;
-			<a href="#" ng-click="terminateIndexing(indexContext.name);">Terrminate</a>&nbsp;|&nbsp;
+			<a href="#" ng-click="terminateIndexing(indexContext.name);">Terminate</a>&nbsp;|&nbsp;
 			<a href="#" ng-click="deleteIndex(indexContext.name);">Delete</a>
 		</td>
 	</tr>

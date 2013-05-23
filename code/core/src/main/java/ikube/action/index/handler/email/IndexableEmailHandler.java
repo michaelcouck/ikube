@@ -7,7 +7,6 @@ import ikube.action.index.parse.IParser;
 import ikube.action.index.parse.ParserProvider;
 import ikube.model.IndexContext;
 import ikube.model.IndexableEmail;
-import ikube.toolkit.Logging;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.ByteArrayInputStream;
@@ -84,21 +83,15 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 			store = getStore(indexableMail);
 			store.connect();
 		} catch (MessagingException e) {
-			String message = Logging.getString("Could not connect to the mail server : ", indexableMail.getMailHost(), "port : ",
-					indexableMail.getPort());
-			logger.error(message, e);
+			handleException(indexableMail, e);
 			return;
 		}
 
 		try {
 			Folder inbox = store.getFolder("inbox");
 			handleFolder(indexContext, indexableMail, inbox);
-		} catch (MessagingException e) {
-			logger.error("The inbox folder does not exist or is not available : ", e);
-		} catch (IOException e) {
-			logger.error("Could not retrieve the message content : ", e);
 		} catch (Exception e) {
-			logger.error("General exception parsing the message : ", e);
+			handleException(indexableMail, e);
 		}
 
 		// TODO - We would like to access all the folders, but how?
@@ -106,16 +99,15 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 		try {
 			folders = store.getPersonalNamespaces();
 		} catch (MessagingException e) {
-			logger.error("Exception accessing the mail folders : " + indexableMail, e);
+			handleException(indexableMail, e);
 			return;
 		}
 
-		for (@SuppressWarnings("unused")
-		Folder folder : folders) {
+		for (final Folder folder : folders) {
 			try {
-				// handleFolder(indexContext, indexableMail, folder);
+				handleFolder(indexContext, indexableMail, folder);
 			} catch (Exception e) {
-				logger.error("General exception parsing the message", e);
+				handleException(indexableMail, e);
 			}
 		}
 
@@ -201,7 +193,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 		try {
 			store.close();
 		} catch (MessagingException e) {
-			logger.error("Could not close the connetion to the mail server in a graceful mode : ", e);
+			handleException(null, e);
 		}
 	}
 
