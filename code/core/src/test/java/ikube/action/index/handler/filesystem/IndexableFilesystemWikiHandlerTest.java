@@ -5,7 +5,6 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import ikube.AbstractTest;
 import ikube.action.index.handler.ResourceHandlerBase;
-import ikube.action.index.handler.filesystem.IndexableFilesystemWikiHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystemLog;
 import ikube.model.IndexableFileSystemWiki;
@@ -32,10 +31,6 @@ import org.mockito.Mockito;
 public class IndexableFilesystemWikiHandlerTest extends AbstractTest {
 
 	private IndexableFilesystemWikiHandler indexableFilesystemWikiHandler;
-
-	public IndexableFilesystemWikiHandlerTest() {
-		super(IndexableFilesystemWikiHandlerTest.class);
-	}
 
 	@Before
 	public void before() {

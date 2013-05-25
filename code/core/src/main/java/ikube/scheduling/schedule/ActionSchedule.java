@@ -7,6 +7,7 @@ import ikube.model.Server;
 import ikube.scheduling.Schedule;
 
 import java.util.Iterator;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,14 +37,14 @@ public class ActionSchedule extends Schedule {
 	@Override
 	public void run() {
 		Server server = clusterManager.getServer();
-		Action action = null;
-		for (final Iterator<Action> iterator = server.getActions().iterator(); iterator.hasNext(); action = iterator.next()) {
-			Action dbAction = dataBase.find(Action.class, action.getId());
+		List<Action> actions = server.getActions();
+		Iterator<Action> iterator = actions.iterator();
+		while (iterator.hasNext()) {
+			Action gridAction = iterator.next();
+			Action dbAction = dataBase.find(Action.class, gridAction.getId());
 			if (dbAction == null || dbAction.getEndTime() != null) {
-				LOGGER.info("Removing expired action : " + action);
+				LOGGER.info("Removing expired action : " + gridAction);
 				iterator.remove();
-				clusterManager.stopWorking(dbAction);
-				clusterManager.put(server.getAddress(), server);
 			}
 		}
 	}

@@ -33,10 +33,6 @@ public class RestoreTest extends AbstractTest {
 
 	private Restore restore;
 
-	public RestoreTest() {
-		super(RestoreTest.class);
-	}
-
 	@Before
 	public void before() throws Exception {
 		restore = new Restore();

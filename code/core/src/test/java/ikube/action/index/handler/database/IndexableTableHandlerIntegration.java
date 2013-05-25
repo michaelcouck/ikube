@@ -21,6 +21,7 @@ import ikube.model.IndexableTable;
 import ikube.model.Snapshot;
 import ikube.scheduling.Scheduler;
 import ikube.toolkit.DatabaseUtilities;
+import ikube.toolkit.PropertyConfigurer;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.FileNotFoundException;
@@ -70,26 +71,22 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
 		insertData(Snapshot.class, 11000);
 	}
 
-	public IndexableTableHandlerIntegration() throws FileNotFoundException, SQLException {
-		super(IndexableTableHandlerIntegration.class);
-	}
-
 	public static <T> void insertData(final Class<T> klass, final int entities) throws SQLException, FileNotFoundException {
 		IDataBase dataBase = getBean(IDataBase.class);
 		List<T> tees = new ArrayList<T>();
-		for (int i = 0; i < entities; i++) {
-			try {
-				T tee = populateFields(klass, klass.newInstance(), true, 0, 1, "id", "indexContext");
+		try {
+			for (int i = 0; i < entities; i++) {
+				T tee = populateFields(klass, klass.newInstance(), Boolean.TRUE, 1, "id", "indexContext");
 				tees.add(tee);
-				if (i % 10000 == 0) {
+				if (tees.size() >= 1000) {
 					dataBase.persistBatch(tees);
 					tees.clear();
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
+			dataBase.persistBatch(tees);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		dataBase.persistBatch(tees);
 	}
 
 	@Before
@@ -102,7 +99,8 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
 		snapshotTableChildren = snapshotTable.getChildren();
 		snapshotColumn = QueryBuilder.getIdColumn(snapshotTableChildren);
 
-		dataSource = (DataSource) getBean("nonXaDataSourceH2");
+		PropertyConfigurer propertyConfigurer = getBean(PropertyConfigurer.class);
+		dataSource = (DataSource) getBean(propertyConfigurer.getProperty("ikube.dataSource"));
 		connection = dataSource.getConnection();
 
 		IClusterManager clusterManager = getBean(IClusterManager.class);
@@ -228,7 +226,7 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
 		close(resultSet);
 		close(statement);
 
-		assertEquals("Snapshot id column type : " + snapshotColumn.getColumnType(), Types.BIGINT, snapshotColumn.getColumnType());
+		assertEquals("Snapshot id column type : " + snapshotColumn.getColumnType(), Types.NUMERIC, snapshotColumn.getColumnType());
 	}
 
 	@Test

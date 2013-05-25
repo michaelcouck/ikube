@@ -23,10 +23,6 @@ import org.junit.Test;
  */
 public class ParserProviderTest extends AbstractTest {
 
-	public ParserProviderTest() {
-		super(ParserProviderTest.class);
-	}
-
 	@Test
 	public void getParser() {
 		String mimeTypeString = ".txt";

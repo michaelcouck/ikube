@@ -21,10 +21,6 @@ import org.junit.Test;
  */
 public class RtfParserTest extends AbstractTest {
 
-	public RtfParserTest() {
-		super(RtfParserTest.class);
-	}
-
 	@Test
 	public void parse() throws Exception {
 		File file = FileUtilities.findFileRecursively(new File("."), new String[] { "rtf.rtf" });

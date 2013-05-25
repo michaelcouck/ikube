@@ -20,10 +20,6 @@ public class AreDirectoriesEqualTest extends AbstractTest {
 
 	private AreDirectoriesEqual directoriesEqual;
 
-	public AreDirectoriesEqualTest() {
-		super(AreDirectoriesEqualTest.class);
-	}
-
 	@Before
 	public void before() {
 		directoriesEqual = new AreDirectoriesEqual();

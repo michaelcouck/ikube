@@ -14,8 +14,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * TODO Implement me!
- * 
  * @author Michael Couck
  * @since 29.03.2011
  * @version 01.00
@@ -24,10 +22,6 @@ public class IsIndexCurrentTest extends AbstractTest {
 
 	/** Class under test. */
 	private IsIndexCurrent isIndexCurrentRule = new IsIndexCurrent();
-
-	public IsIndexCurrentTest() {
-		super(IsIndexCurrentTest.class);
-	}
 
 	@Before
 	public void beforeClass() {

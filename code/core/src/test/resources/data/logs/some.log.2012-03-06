@@ -36,7 +36,6 @@
 07:31:39,273 INFO  IndexableFilesystemHandlerWorker.getBatch(217) - Directories : 3
 07:31:39,274 INFO  IndexableFilesystemHandlerWorker.getBatch(218) - Doing files : 2
 07:31:39,306 INFO  ParserProvider.getParser(71) - Locating the text parser for : application/zip, jboss-4.2.2.GA.zip, ikube.index.parse.text.TextParser
-07:31:39,608 INFO  ParserProvider.getParser(71) - Locating the text parser for : text/html, .dropbox, ikube.index.parse.html.HtmlParser
 07:31:39,668 INFO  IndexableFilesystemHandlerWorker.getBatch(217) - Directories : 2
 07:31:39,668 INFO  IndexableFilesystemHandlerWorker.getBatch(218) - Doing files : 3
 07:31:39,681 INFO  ParserProvider.getParser(71) - Locating the text parser for : application/msword, local-dev.doc, ikube.index.parse.word.WordParser

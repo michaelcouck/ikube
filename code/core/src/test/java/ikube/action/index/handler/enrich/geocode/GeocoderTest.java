@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.action.index.handler.enrich.geocode.Coordinate;
-import ikube.action.index.handler.enrich.geocode.Geocoder;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
 import ikube.toolkit.SerializationUtilities;
@@ -71,10 +69,6 @@ public class GeocoderTest extends AbstractTest {
 			// Do nothing
 		}
 
-	}
-
-	public GeocoderTest() {
-		super(GeocoderTest.class);
 	}
 
 	@Before

@@ -21,10 +21,6 @@ import org.junit.Test;
  */
 public class WordParserTest extends AbstractTest {
 
-	public WordParserTest() {
-		super(WordParserTest.class);
-	}
-
 	@Test
 	public void parse() throws Exception {
 		File file = FileUtilities.findFileRecursively(new File("."), new String[] { "doc.doc" });

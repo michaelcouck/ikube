@@ -26,10 +26,6 @@ public class PruneTest extends AbstractTest {
 
 	private Prune prune;
 
-	public PruneTest() {
-		super(PruneTest.class);
-	}
-
 	@Before
 	public void before() {
 		prune = new Prune();
@@ -49,10 +45,10 @@ public class PruneTest extends AbstractTest {
 
 		when(dataBase.find(any(Class.class), any(String[].class), any(Boolean[].class), anyInt(), anyInt())).thenReturn(entities,
 				new ArrayList<Object>());
-		when(dataBase.count(any(Class.class))).thenReturn(IConstants.MAX_ACTIONS, 0l);
-		addEntities(IConstants.MAX_ACTIONS + 100, entities);
+		when(dataBase.count(any(Class.class))).thenReturn(IConstants.MAX_ACTIONS * 10, 0l);
+		addEntities(IConstants.MAX_ACTIONS + 10000, entities);
 		prune.internalExecute(indexContext);
-		verify(dataBase, atLeastOnce()).remove(any());
+		verify(dataBase, atLeastOnce()).removeBatch(any(List.class));
 	}
 
 	private void addEntities(final long iterations, final List<Object> entities) {

@@ -2,7 +2,6 @@ package ikube.action.index.parse;
 
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
-import ikube.action.index.parse.AsposeExcelParser;
 import ikube.toolkit.FileUtilities;
 
 import java.io.ByteArrayInputStream;
@@ -17,10 +16,6 @@ import org.junit.Test;
  * @version 01.00
  */
 public class AsposeExcelParserTest extends AbstractTest {
-
-	public AsposeExcelParserTest() {
-		super(AsposeExcelParserTest.class);
-	}
 
 	@Test
 	public void parse() throws Exception {

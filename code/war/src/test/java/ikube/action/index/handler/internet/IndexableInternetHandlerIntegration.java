@@ -40,7 +40,6 @@ import org.mockito.Mockito;
  */
 public class IndexableInternetHandlerIntegration extends Integration {
 
-	private IDataBase dataBase;
 	private IndexContext<?> indexContext;
 	private IndexableInternet indexableInternet;
 	private IndexableInternetHandler indexableInternetHandler;
@@ -50,11 +49,10 @@ public class IndexableInternetHandlerIntegration extends Integration {
 		indexContext = monitorService.getIndexContext("indexContext");
 		indexableInternet = ApplicationContextManager.getBean("ikubeGoogleCode");
 		indexableInternetHandler = ApplicationContextManager.getBean(IndexableInternetHandler.class);
-		dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 
 		clusterManager.startWorking(Index.class.getSimpleName(), indexContext.getName(), indexableInternet.getName());
-		delete(dataBase, Url.class);
+		delete(ApplicationContextManager.getBean(IDataBase.class), Url.class);
 	}
 
 	@Test

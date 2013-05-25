@@ -41,43 +41,41 @@ public class RuleInterceptor implements IRuleInterceptor {
 	 */
 	@Override
 	@SuppressWarnings("rawtypes")
-	public Object decide(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-		synchronized (this) {
-			try {
-				Object target = proceedingJoinPoint.getTarget();
-				boolean proceed = Boolean.TRUE;
-				IndexContext<?> indexContext = null;
-				if (!IAction.class.isAssignableFrom(target.getClass())) {
-					LOGGER.warn("Can't intercept non action class, proceeding : " + target);
-				} else {
-					IAction action = (IAction) target;
-					try {
-						boolean proceedWithLocked = Boolean.TRUE;
-						if (action.requiresClusterLock()) {
-							proceedWithLocked = clusterManager.lock(IConstants.IKUBE);
-						}
-						if (!proceedWithLocked) {
-							LOGGER.info("Couldn't get cluster lock : " + proceedingJoinPoint.getTarget());
-							proceed = Boolean.FALSE;
-						} else {
-							// Find the index context
-							indexContext = getIndexContext(proceedingJoinPoint);
-							proceed = evaluateRules(indexContext, action);
-						}
-					} catch (NullPointerException e) {
-						LOGGER.warn("Context closing down : ");
-					} catch (Exception t) {
-						LOGGER.error("Exception proceeding on target : " + target, t);
-					} finally {
-						clusterManager.unlock(IConstants.IKUBE);
+	public synchronized Object decide(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+		try {
+			Object target = proceedingJoinPoint.getTarget();
+			boolean proceed = Boolean.TRUE;
+			IndexContext<?> indexContext = null;
+			if (!IAction.class.isAssignableFrom(target.getClass())) {
+				LOGGER.warn("Can't intercept non action class, proceeding : " + target);
+			} else {
+				IAction action = (IAction) target;
+				try {
+					boolean proceedWithLocked = Boolean.TRUE;
+					if (action.requiresClusterLock()) {
+						proceedWithLocked = clusterManager.lock(IConstants.IKUBE);
 					}
+					if (!proceedWithLocked) {
+						LOGGER.info("Couldn't get cluster lock : " + proceedingJoinPoint.getTarget());
+						proceed = Boolean.FALSE;
+					} else {
+						// Find the index context
+						indexContext = getIndexContext(proceedingJoinPoint);
+						proceed = evaluateRules(indexContext, action);
+					}
+				} catch (NullPointerException e) {
+					LOGGER.warn("Context closing down : ");
+				} catch (Exception t) {
+					LOGGER.error("Exception proceeding on target : " + target, t);
+				} finally {
+					clusterManager.unlock(IConstants.IKUBE);
 				}
-				if (proceed) {
-					proceed(indexContext, proceedingJoinPoint);
-				}
-			} finally {
-				this.notifyAll();
 			}
+			if (proceed) {
+				proceed(indexContext, proceedingJoinPoint);
+			}
+		} finally {
+			this.notifyAll();
 		}
 		return Boolean.TRUE;
 	}
@@ -99,19 +97,18 @@ public class RuleInterceptor implements IRuleInterceptor {
 						// Start the action in the cluster
 						String actionName = proceedingJoinPoint.getTarget().getClass().getSimpleName();
 						action = clusterManager.startWorking(actionName, indexContext.getIndexName(), null);
-						LOGGER.info("Started action : " + action);
 						// Execute the action logic
 						proceedingJoinPoint.proceed();
 					} catch (Throwable e) {
 						LOGGER.error("Exception proceeding on join point : " + proceedingJoinPoint, e);
 					} finally {
 						// Remove the action in the cluster
-						LOGGER.info("Stopping action : " + action);
 						clusterManager.stopWorking(action);
+						ThreadUtilities.destroy(this.toString());
 					}
 				}
 			};
-			ThreadUtilities.submit(null, runnable);
+			ThreadUtilities.submit(runnable.toString(), runnable);
 		} finally {
 			notifyAll();
 		}

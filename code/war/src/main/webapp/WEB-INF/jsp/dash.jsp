@@ -35,6 +35,7 @@
 					<img src="<c:url value="/images/icons/server.gif" />">&nbsp;<b>Age:</b> {{date(server.age)}}<br>
 					<img src="<c:url value="/images/icons/memory_view.gif" />">&nbsp;<b>Architecture:</b> {{server.architecture}}<br>
 				</div>
+				<br>
 			</div>
 		</td>
 		<td valign="top" style="width: 80%;">
@@ -47,7 +48,7 @@
 
 <table ng-controller="ActionsController" width="100%">
 	<tr>
-		<th colspan="7"><img src="<c:url value="/images/icons/launch_run.gif" />">&nbsp;Executing actions</th>
+		<th colspan="8"><img src="<c:url value="/images/icons/launch_run.gif" />">&nbsp;Executing actions</th>
 	</tr>
 	<tr>
 		<th><img src="<c:url value="/images/icons/server.gif" />">&nbsp;Server</th>
@@ -57,14 +58,16 @@
 		<th><img src="<c:url value="/images/icons/link_obj.gif" />">&nbsp;Per minute</th>
 		<th><img src="<c:url value="/images/icons/link_obj.gif" />">&nbsp;Total docs</th>
 		<th><img src="<c:url value="/images/icons/launch_run.gif" />">&nbsp;Start time</th>
+		<th><img src="<c:url value="/images/icons/launch_run.gif" />">&nbsp;End time</th>
 	</tr>
 	<tr ng-repeat="action in actions" ng-class-odd="'odd'" ng-class-even="'even'">
 		<td ng-class="'bordered'">{{action.server.address}}</td>
-		<td ng-class="'bordered'">{{action.actionName}}</td>
+		<td ng-class="'bordered'">{{action.id}}:{{action.actionName}}</td>
 		<td ng-class="'bordered'">{{action.indexName}}</td>
 		<td ng-class="'bordered'">{{action.indexableName}}</td>
 		<td ng-class="'bordered'">{{action.snapshot.docsPerMinute}}</td>
 		<td ng-class="'bordered'">{{action.snapshot.numDocs}}</td>
 		<td ng-class="'bordered'">{{action.startTime}}</td>
+		<td ng-class="'bordered'">{{action.endTime}}</td>
 	</tr>
 </table>

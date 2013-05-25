@@ -33,10 +33,6 @@ public class IndexableInternetHandlerTest extends AbstractTest {
 	private IndexableInternetHandler indexableInternetHandler;
 	private ResourceHandlerBase<?> resourceBaseHandler;
 
-	public IndexableInternetHandlerTest() {
-		super(IndexableInternetHandlerTest.class);
-	}
-
 	@Before
 	public void before() {
 		ThreadUtilities.initialize();

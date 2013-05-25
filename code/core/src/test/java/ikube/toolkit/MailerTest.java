@@ -12,10 +12,6 @@ import org.junit.Test;
  */
 public class MailerTest extends AbstractTest {
 
-	public MailerTest() {
-		super(MailerTest.class);
-	}
-
 	@Test
 	public void sendMail() throws Exception {
 		// This must just pass

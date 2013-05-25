@@ -5,7 +5,6 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import ikube.AbstractTest;
 import ikube.action.index.handler.ResourceHandlerBase;
-import ikube.action.index.handler.filesystem.IndexableFilesystemLogHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystemLog;
 import ikube.toolkit.FileUtilities;
@@ -31,10 +30,6 @@ import org.mockito.Mockito;
 public class IndexableFilesystemLogHandlerTest extends AbstractTest {
 
 	private IndexableFilesystemLogHandler indexableFilesystemLogHandler;
-
-	public IndexableFilesystemLogHandlerTest() {
-		super(IndexableFilesystemLogHandlerTest.class);
-	}
 
 	@Before
 	public void before() {

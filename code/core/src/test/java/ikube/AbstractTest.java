@@ -60,6 +60,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.Lock;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +72,7 @@ import org.slf4j.LoggerFactory;
  * @since 21.11.10
  * @version 01.00
  */
+@Ignore
 @SuppressWarnings("deprecation")
 public abstract class AbstractTest {
 
@@ -81,7 +83,7 @@ public abstract class AbstractTest {
 		Mockit.setUpMock(SpellingCheckerMock.class);
 	}
 
-	protected Logger logger;
+	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	/** These are all mocked objects that are used in sub classes. */
 	protected String ip;
@@ -112,9 +114,12 @@ public abstract class AbstractTest {
 	protected String indexDirectoryPath = "./indexes";
 	protected String indexDirectoryPathBackup = "./indexes/backup";
 
+	{
+		initialize();
+	}
+
 	@SuppressWarnings("rawtypes")
-	public AbstractTest(Class<?> subClass) {
-		logger = LoggerFactory.getLogger(subClass);
+	private void initialize() {
 		searchables = new Searchable[] { indexSearcher };
 		scoreDocs = new ScoreDoc[0];
 		indexables = new ArrayList<Indexable<?>>();
@@ -162,6 +167,8 @@ public abstract class AbstractTest {
 		indexContexts = new HashMap<String, IndexContext>();
 		indexContexts.put(indexContext.getName(), indexContext);
 		when(monitorService.getIndexContexts()).thenReturn(indexContexts);
+
+		when(action.getIndexName()).thenReturn("index");
 
 		when(server.isWorking()).thenReturn(Boolean.FALSE);
 		when(server.getAddress()).thenReturn(ip);
@@ -221,7 +228,11 @@ public abstract class AbstractTest {
 		} catch (Exception e) {
 			logger.error("Exception creating the index : ", e);
 		} finally {
-			IndexManager.closeIndexWriter(indexWriter);
+			try {
+				indexWriter.close();
+			} catch (Exception e) {
+				logger.error(null, e);
+			}
 		}
 		return null;
 	}
@@ -259,7 +270,7 @@ public abstract class AbstractTest {
 		try {
 			addDocuments(indexWriter, field, strings);
 		} finally {
-			IndexManager.closeIndexWriter(indexWriter);
+			indexWriter.close();
 		}
 		IndexReader indexReader = IndexReader.open(directory);
 		Searcher searcher = new IndexSearcher(indexReader);

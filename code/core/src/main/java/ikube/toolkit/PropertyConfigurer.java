@@ -39,7 +39,7 @@ public class PropertyConfigurer extends Properties {
 	 * the application will also be checked for the properties file name pattern to load into the property map.
 	 */
 	public void initialize() {
-		LOGGER.info("User directory : " + new File(".").getAbsolutePath());
+		LOGGER.info("User_ directory : " + new File(".").getAbsolutePath());
 		// Load the properties from our own jar
 		checkOwnJar();
 		// Check all the jars on the class path

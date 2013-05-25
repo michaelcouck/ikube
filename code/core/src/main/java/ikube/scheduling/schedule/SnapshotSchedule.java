@@ -45,6 +45,9 @@ public class SnapshotSchedule extends Schedule {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SnapshotSchedule.class);
 
+	static final int MAX_SNAPSHOTS_CONTEXT = 90;
+	static final double ONE_MINUTE_MILLIS = 60000;
+
 	@Autowired
 	private IDataBase dataBase;
 	@Autowired
@@ -70,35 +73,29 @@ public class SnapshotSchedule extends Schedule {
 				snapshot.setAvailableProcessors(server.getProcessors());
 				snapshot.setSystemLoad(server.getAverageCpuLoad());
 
-				snapshot.setTimestamp(new Timestamp(System.currentTimeMillis()));
-				snapshot.setDocsPerMinute(getDocsPerMinute(indexContext, snapshot));
 				snapshot.setIndexContext(indexContext.getName());
+				snapshot.setTimestamp(new Timestamp(System.currentTimeMillis()));
+
+				snapshot.setNumDocs(IndexManager.getNumDocs(indexContext));
 				snapshot.setIndexSize(IndexManager.getIndexSize(indexContext));
 				snapshot.setLatestIndexTimestamp(IndexManager.getLatestIndexDirectoryDate(indexContext));
-				snapshot.setNumDocs(IndexManager.getNumDocs(indexContext));
+
+				snapshot.setDocsPerMinute(getDocsPerMinute(indexContext, snapshot));
 				snapshot.setSearchesPerMinute(getSearchesPerMinute(indexContext, snapshot));
-				snapshot.setTotalSearches(getTotalSearchesForIndex(indexContext));
+				snapshot.setTotalSearches(getTotalSearchesForIndex(indexContext).longValue());
 
 				dataBase.persist(snapshot);
 				String[] names = new String[] { "indexContext" };
 				Object[] values = new Object[] { indexContext.getName() };
 				List<Snapshot> snapshots = dataBase.find(Snapshot.class, Snapshot.SELECT_SNAPSHOTS_ORDER_BY_TIMESTAMP_DESC, names, values,
-						0, 90);
-				snapshots = new ArrayList<Snapshot>(snapshots);
-				// We have the last snapshots, now reverse the order for the gui
-				Comparator<Snapshot> comparator = new Comparator<Snapshot>() {
-					@Override
-					public int compare(Snapshot o1, Snapshot o2) {
-						return o1.getTimestamp().compareTo(o2.getTimestamp());
-					}
-				};
-				Collections.reverseOrder(comparator);
-				indexContext.setSnapshots(snapshots);
+						0, MAX_SNAPSHOTS_CONTEXT);
+				List<Snapshot> sortedSnapshots = sortSnapshots(snapshots);
+				indexContext.setSnapshots(sortedSnapshots);
 
 				// Find the last snapshot and put it in the action if there is one
 				// executing on the index context
 				for (final Action action : server.getActions()) {
-					if (action.getIndexName().equals(indexContext.getName())) {
+					if (action.getIndexName().equals(indexContext.getIndexName())) {
 						action.setSnapshot(snapshot);
 						break;
 					}
@@ -107,7 +104,19 @@ public class SnapshotSchedule extends Schedule {
 				LOGGER.error("Exception persisting snapshot : ", e);
 			}
 		}
-		clusterManager.put(server.getAddress(), server);
+	}
+
+	protected List<Snapshot> sortSnapshots(final List<Snapshot> snapshots) {
+		List<Snapshot> sortedSnapshots = new ArrayList<Snapshot>(snapshots);
+		// We have the last snapshots, now reverse the order for the gui
+		Comparator<Snapshot> comparator = new Comparator<Snapshot>() {
+			@Override
+			public int compare(Snapshot o1, Snapshot o2) {
+				return o1.getTimestamp().compareTo(o2.getTimestamp());
+			}
+		};
+		Collections.sort(sortedSnapshots, comparator);
+		return sortedSnapshots;
 	}
 
 	protected void setServerStatistics(final Server server) {
@@ -142,7 +151,9 @@ public class SnapshotSchedule extends Schedule {
 				int lengthToRead = Math.max(0, fileLength - offset);
 				// 100000
 				byte[] bytes = new byte[lengthToRead];
-				LOGGER.info("Offset : " + offset + ", file length : " + logFile.length() + ", to read : " + lengthToRead);
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Offset : " + offset + ", file length : " + logFile.length() + ", to read : " + lengthToRead);
+				}
 				inputStream.seek(offset);
 				inputStream.read(bytes, 0, lengthToRead);
 				server.setLogTail(new String(bytes));
@@ -163,15 +174,9 @@ public class SnapshotSchedule extends Schedule {
 	}
 
 	@SuppressWarnings("rawtypes")
-	protected long getTotalSearchesForIndex(final IndexContext indexContext) {
-		int totalSearchesForIndex = 0;
-		// TODO Re-do this, there could potentially be millions of searches
-		List<Search> searches = dataBase.find(Search.class, Search.SELECT_FROM_SEARCH_BY_INDEX_NAME, new String[] { "indexName" },
-				new Object[] { indexContext.getIndexName() }, 0, 1000000);
-		for (Search search : searches) {
-			totalSearchesForIndex += search.getCount();
-		}
-		return totalSearchesForIndex;
+	protected Number getTotalSearchesForIndex(final IndexContext indexContext) {
+		return dataBase.execute(Search.SELECT_FROM_SEARCH_COUNT_SEARCHES, new String[] { "indexName" },
+				new Object[] { indexContext.getIndexName() });
 	}
 
 	protected long getSearchesPerMinute(final IndexContext<?> indexContext, final Snapshot snapshot) {
@@ -180,9 +185,9 @@ public class SnapshotSchedule extends Schedule {
 			return 0;
 		}
 		Snapshot previous = snapshots.get(snapshots.size() - 1);
-		double interval = snapshot.getTimestamp().getTime() - previous.getTimestamp().getTime();
-		double ratio = interval / 60000;
-		return (long) ((snapshot.getTotalSearches() - previous.getTotalSearches()) / ratio);
+		double ratio = getRatio(previous, snapshot);
+		long searchesPerMinute = (long) ((snapshot.getTotalSearches() - previous.getTotalSearches()) / ratio);
+		return Math.max(0, searchesPerMinute);
 	}
 
 	protected long getDocsPerMinute(final IndexContext<?> indexContext, final Snapshot snapshot) {
@@ -191,10 +196,16 @@ public class SnapshotSchedule extends Schedule {
 			return 0;
 		}
 		Snapshot previous = snapshots.get(snapshots.size() - 1);
-		double interval = snapshot.getTimestamp().getTime() - previous.getTimestamp().getTime();
-		double ratio = interval / 60000;
+		double ratio = getRatio(previous, snapshot);
 		long docsPerMinute = (long) ((snapshot.getNumDocs() - previous.getNumDocs()) / ratio);
+		// We can never do a million documents per minute with the hardware
+		// that we have at the current time, perhaps with nano cpus and 3d memory
 		return docsPerMinute < 0 ? 0 : Math.min(docsPerMinute, 1000000);
+	}
+
+	protected double getRatio(final Snapshot previous, final Snapshot snapshot) {
+		double interval = snapshot.getTimestamp().getTime() - previous.getTimestamp().getTime();
+		return interval / ONE_MINUTE_MILLIS;
 	}
 
 }

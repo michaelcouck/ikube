@@ -88,10 +88,6 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 
 	private ClusterManagerHazelcast clusterManagerHazelcast;
 
-	public ClusterManagerHazelcastTest() {
-		super(ClusterManagerHazelcastTest.class);
-	}
-
 	@Before
 	@SuppressWarnings("unchecked")
 	public void before() {
@@ -105,7 +101,8 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 		when(entry.getValue()).thenReturn(server);
 		when(HazelcastMock.servers.entrySet()).thenReturn(entrySet);
 		when(HazelcastMock.servers.get(anyString())).thenReturn(server);
-
+		
+		Deencapsulation.setField(clusterManagerHazelcast, server);
 		Deencapsulation.setField(clusterManagerHazelcast, dataBase);
 		Deencapsulation.setField(clusterManagerHazelcast, monitorService);
 
@@ -171,7 +168,8 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 
 		Action action = new Action();
 		server.setActions(Arrays.asList(action));
-		clusterManagerHazelcast.put(server.getIp(), server);
+		// clusterManagerHazelcast.put(server.getIp(), server);
+		Hazelcast.getMap(IConstants.IKUBE).put(server.getAddress(), server);
 
 		anyworking = clusterManagerHazelcast.anyWorking();
 		assertTrue(anyworking);
@@ -199,27 +197,21 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 
 	@Test
 	public void stopWorking() {
-		try {
-			ThreadUtilities.initialize();
-			Deencapsulation.setField(clusterManagerHazelcast, "maxRetry", 100);
-			Action action = new Action();
-			action.setId(0);
-			action.setServer(server);
-			action.setSnapshot(snapshot);
-			action.setStartTime(new Date());
-			action.setIndexName("indexName");
-			action.setActionName("actinName");
-			action.setIndexableName("indexableName");
-			action.setTimestamp(new Timestamp(System.currentTimeMillis()));
-			server.setActions(new ArrayList<Action>(Arrays.asList(action)));
+		Action action = new Action();
+		action.setId(0);
+		action.setServer(server);
+		action.setSnapshot(snapshot);
+		action.setStartTime(new Date());
+		action.setIndexName("indexName");
+		action.setActionName("actinName");
+		action.setIndexableName("indexableName");
+		action.setTimestamp(new Timestamp(System.currentTimeMillis()));
+		server.setActions(new ArrayList<Action>(Arrays.asList(action)));
 
-			clusterManagerHazelcast.stopWorking(action);
+		clusterManagerHazelcast.stopWorking(action);
 
-			assertNotNull(action.getEndTime());
-			assertEquals(0, server.getActions().size());
-		} finally {
-			ThreadUtilities.destroy();
-		}
+		assertNotNull(action.getEndTime());
+		assertEquals(0, server.getActions().size());
 	}
 
 	@Test

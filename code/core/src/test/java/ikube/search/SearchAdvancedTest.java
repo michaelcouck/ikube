@@ -43,10 +43,6 @@ public class SearchAdvancedTest extends AbstractTest {
 			"cape town", //
 			"cape town university one" };
 
-	public SearchAdvancedTest() {
-		super(SearchAdvancedTest.class);
-	}
-
 	@Before
 	public void before() throws Exception {
 		Directory directory = new RAMDirectory();

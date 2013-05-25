@@ -53,7 +53,7 @@
 		class="ikube.model.IndexableTable"
 		property:name="search"
 		property:address="false"
-		property:dataSource-ref="nonXaDataSourceH2"
+		property:dataSource-ref="${ikube.dataSource}"
 		property:children-ref="autocompleteColumnsH2" 
 		property:maxExceptions="10" />
 	<util:list id="autocompleteColumnsH2">

@@ -24,10 +24,6 @@ public class CloseTest extends AbstractTest {
 
 	private Close close;
 
-	public CloseTest() {
-		super(CloseTest.class);
-	}
-
 	@Before
 	public void before() {
 		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);

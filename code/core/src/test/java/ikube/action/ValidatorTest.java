@@ -39,10 +39,6 @@ public class ValidatorTest extends AbstractTest {
 
 	private Validator validator;
 
-	public ValidatorTest() {
-		super(ValidatorTest.class);
-	}
-
 	@Before
 	public void before() {
 		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);

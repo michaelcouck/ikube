@@ -22,10 +22,6 @@ public class ApplicationContextManagerTest extends AbstractTest {
 
 	private ApplicationContextManager applicationContextManager;
 
-	public ApplicationContextManagerTest() {
-		super(ApplicationContextManagerTest.class);
-	}
-
 	@Before
 	public void before() {
 		applicationContextManager = new ApplicationContextManager();

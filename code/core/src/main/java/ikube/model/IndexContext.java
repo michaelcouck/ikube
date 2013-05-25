@@ -251,8 +251,8 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	}
 
 	public void setIndexWriters(final IndexWriter... indexWriters) {
-		setIndexing(indexWriters != null && indexWriters.length > 0);
 		this.indexWriters = indexWriters;
+		setIndexing(indexWriters != null && indexWriters.length > 0);
 	}
 
 	public MultiSearcher getMultiSearcher() {

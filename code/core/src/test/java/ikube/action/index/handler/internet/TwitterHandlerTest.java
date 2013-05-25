@@ -15,13 +15,9 @@ import org.junit.Test;
  */
 @Ignore
 public class TwitterHandlerTest extends AbstractTest {
-	
+
 	private TwitterHandler twitterHandler;
 
-	public TwitterHandlerTest() {
-		super(TwitterHandlerTest.class);
-	}
-	
 	@Before
 	public void before() {
 		twitterHandler = new TwitterHandler();

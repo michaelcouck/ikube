@@ -29,10 +29,6 @@ public class DeleteTest extends AbstractTest {
 
 	private Delete delete;
 
-	public DeleteTest() {
-		super(DeleteTest.class);
-	}
-
 	@Before
 	public void before() {
 		delete = new Delete();

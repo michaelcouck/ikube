@@ -26,10 +26,6 @@ public class SpellingCheckerTest extends AbstractTest {
 
 	private SpellingChecker spellingChecker;
 
-	public SpellingCheckerTest() {
-		super(SpellingCheckerTest.class);
-	}
-
 	@AfterClass
 	public static void afterClass() {
 		FileUtilities.deleteFile(new File("./spellingIndex"), 1);

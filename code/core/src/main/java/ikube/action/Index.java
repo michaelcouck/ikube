@@ -98,8 +98,9 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 			// Now we set the current indexable name in the action
 			indexableName = indexable.getName();
 			action.setIndexableName(indexableName);
+			dataBase.merge(action);
 			// Pop the actions back in the grid
-			clusterManager.put(server.getAddress(), server);
+			// clusterManager.put(server.getAddress(), server);
 			// Get the right handler for this indexable
 			IIndexableHandler<Indexable<?>> handler = getHandler(indexable);
 			logger.info("Indexable : " + indexable.getName());
@@ -171,7 +172,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 			hashes.clear();
 		}
 		IndexManager.closeIndexWriters(indexContext);
-		indexContext.setIndexWriters();
+		indexContext.setIndexWriters(new IndexWriter[0]);
 		return Boolean.TRUE;
 	}
 

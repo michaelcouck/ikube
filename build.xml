@@ -17,16 +17,32 @@
 	</target>
 
 	<target name="go-server">
+		<!-- Stop the server -->
+		<antcall target="execute-remote-command">
+			<param name="command" value="
+				cd ${tomcat-bin-directory}; ./catalina.sh stop;" />
+		</antcall>
+		<sleep seconds="20" />
+		<!-- Hard kill the server just in case -->
+		<antcall target="execute-remote-command">
+			<param name="command" value="
+				ps -ef | grep apache-tomcat-7.0.33-8080 | grep -v grep | awk '{print $2}' | xargs kill -9;" 
+			/>
+		</antcall>
 		<!-- Clean all the output folders and the configuration -->
 		<antcall target="execute-remote-command">
 			<param name="command" value="
-					sudo -n chmod 777 -R ${tomcat-home};
-					sudo -n rm -rf ${tomcat-home}/bin/ikube;
-					sudo -n rm -rf ${tomcat-home}/webapps/ikube*;
-					sudo -n rm -rf ${tomcat-home}/logs;
-					sudo -n mkdir -p ${tomcat-home}/bin/ikube;
-					sudo -n mkdir -p ${tomcat-home}/logs;
-					sudo -n chmod 777 -R ${tomcat-home};" />
+					chmod 777 -R ${tomcat-home};
+					rm -rf ${tomcat-home}/bin/ikube;
+					rm -rf ${tomcat-home}/webapps/ikube*;
+					rm -rf ${tomcat-home}/logs;
+					rm -rf ${tomcat-home}/temp;
+					rm -rf ${tomcat-home}/work/Catalina/localhost;
+					mkdir -p ${tomcat-home}/bin/ikube;
+					mkdir -p ${tomcat-home}/logs;
+					mkdir -p ${tomcat-home}/temp;
+					mkdir -p ${tomcat-home}/work/Catalina/localhost;
+					chmod 777 -R ${tomcat-home};" />
 		</antcall>
 		<!-- Deploy the configuration to the server -->
 		<antcall target="copy-directory-to-server">
@@ -40,7 +56,12 @@
 		</antcall>
 		<!-- Change the directory permissions just in case -->
 		<antcall target="execute-remote-command">
-			<param name="command" value="sudo -n chmod 777 -R ${tomcat-home};" />
+			<param name="command" value="chmod 777 -R ${tomcat-home};" />
+		</antcall>
+		<!-- Start the server again -->
+		<antcall target="execute-remote-command">
+			<param name="command" value="
+				cd ${tomcat-bin-directory}; ./catalina.sh start;" />
 		</antcall>
 	</target>
 

@@ -26,10 +26,6 @@ public class IsThisIndexCreatedTest extends AbstractTest {
 
 	private IsThisIndexCreated isThisIndexCreated;
 
-	public IsThisIndexCreatedTest() {
-		super(IsThisIndexCreatedTest.class);
-	}
-
 	@Before
 	public void before() {
 		isThisIndexCreated = new IsThisIndexCreated();

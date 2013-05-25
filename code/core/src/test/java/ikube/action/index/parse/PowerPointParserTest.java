@@ -21,10 +21,6 @@ import org.junit.Test;
  */
 public class PowerPointParserTest extends AbstractTest {
 
-	public PowerPointParserTest() {
-		super(PowerPointParserTest.class);
-	}
-
 	@Test
 	public void parse() throws Exception {
 		File file = FileUtilities.findFileRecursively(new File("."), new String[] { "99.ppt" });

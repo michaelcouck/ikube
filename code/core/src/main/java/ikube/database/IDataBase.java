@@ -151,7 +151,8 @@ public interface IDataBase {
 	 * @param maxResults and the size of the result set
 	 * @return the list of sorted entities from the database
 	 */
-	<T> List<T> find(final Class<T> klass, final String[] fieldsToSortOn, final Boolean[] directionOfSort, final int firstResult, final int maxResults);
+	<T> List<T> find(final Class<T> klass, final String[] fieldsToSortOn, final Boolean[] directionOfSort, final int firstResult,
+			final int maxResults);
 
 	/**
 	 * Selects a single object based on the sql and the parameters. The combination of parameters should result in a single unique entity
@@ -179,7 +180,8 @@ public interface IDataBase {
 	 * @param maxResults the maximum results to return
 	 * @return the list of results determined by the sql, parameters and the limiting parameters
 	 */
-	<T> List<T> find(final Class<T> klass, final String sql, final Map<String, Object> parameters, final int startPosition, final int maxResults);
+	<T> List<T> find(final Class<T> klass, final String sql, final Map<String, Object> parameters, final int startPosition,
+			final int maxResults);
 
 	/**
 	 * Executed the passed sql on the database, returning a single entity. Note that the query should result in exactly one entity otherwise
@@ -203,6 +205,19 @@ public interface IDataBase {
 	 * @return the single entity resulting from the combination of the query and the parameters
 	 */
 	<T> T execute(final Class<T> klass, final String sql, final Map<String, Object> parameters);
+
+	/**
+	 * This method will execute ad-hoc scl on the database, based on JpaQl like sql. The result from the query depends on the query, for
+	 * example if there are multiple sums and averages in the query then it will be an array of numbers, but if the query is something like
+	 * 'select sum(s.count) from Search as s where s.indexName = :indexName', then the result will be a single number. There can only be a
+	 * single result from this query.
+	 * 
+	 * @param sql the JpaQl to execute on the database
+	 * @param names the names of the parameters
+	 * @param values the values of the parameters to narrow the results
+	 * @return a single result from the query, either an array of object or a single object
+	 */
+	<T> T execute(final String sql, final String[] names, final Object[] values);
 
 	/**
 	 * This method does a query on the entities using the class type and the parameters are n array format, for the names of the fields to
@@ -231,7 +246,8 @@ public interface IDataBase {
 	 * @param maxResults the maximum results to return from the database
 	 * @return the list of entities in the database that match the names and values for the fields
 	 */
-	<T> List<T> find(final Class<T> klass, final String sql, final String[] names, final Object[] values, final int startPosition, final int maxResults);
+	<T> List<T> find(final Class<T> klass, final String sql, final String[] names, final Object[] values, final int startPosition,
+			final int maxResults);
 
 	/**
 	 * This method will return the first entity that satisfies the query.
@@ -255,7 +271,8 @@ public interface IDataBase {
 	 * @param maxResults the maximum results to return in the collection
 	 * @return the resultant collection, can be empty, based on the fields and values specified for the selection
 	 */
-	<T> List<T> findCriteria(final Class<T> klass, final String[] fieldsToFilterOn, final Object[] valuesToFilterOn, final int firstResult, final int maxResults);
+	<T> List<T> findCriteria(final Class<T> klass, final String[] fieldsToFilterOn, final Object[] valuesToFilterOn, final int firstResult,
+			final int maxResults);
 
 	/**
 	 * This method will refresh the entity from the dtabase, essentially getting the changes in the case where it was updated out side of

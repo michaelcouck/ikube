@@ -21,7 +21,6 @@ public class IndexableTable extends Indexable<IndexableTable> {
 	private transient long minimumId = -1;
 	@Transient
 	private transient long maximumId = -1;
-	/** TODO - the datasource needs to be configured else where. */
 	@Transient
 	private transient DataSource dataSource;
 

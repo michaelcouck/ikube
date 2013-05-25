@@ -60,7 +60,7 @@
 		<ref local="geospatialGeonameid" />
 		<ref local="geospatialCity" />
 		<ref local="alternatename" />
-		<ref local="condition" />
+		<ref local="action" />
 	</util:list>
 	
 	<bean
@@ -137,24 +137,24 @@
 		property:numeric="false" />
 		
 		<bean
-		id="condition"
+		id="action"
 		class="ikube.model.IndexableTable"
-		property:name="condition"
+		property:name="action"
 		property:address="false"
-		property:children-ref="conditionColumnsDb2" 
+		property:children-ref="actionColumnsDb2" 
 		property:maxExceptions="10"
 		property:allColumns="true" 
 		property:stored="true"
 		property:analyzed="true"
 		property:vectored="true"
-		property:predicate="condition.id > 0 and condition.description is not null" />
-	<util:list id="conditionColumnsDb2">
-		<ref local="conditionId" />
-		<ref local="conditionGeonameid" />
+		property:predicate="action.id > 0 and action.indexname is not null" />
+	<util:list id="actionColumnsDb2">
+		<ref local="actionId" />
+		<ref local="actionGeonameid" />
 	</util:list>
 	
 	<bean
-		id="conditionId"
+		id="actionId"
 		class="ikube.model.IndexableColumn"
 		property:name="id"
 		property:idColumn="true"
@@ -163,10 +163,10 @@
 		property:vectored="true"
 		property:numeric="false" />
 	<bean
-		id="conditionGeonameid"
+		id="actionGeonameid"
 		class="ikube.model.IndexableColumn"
-		property:name="name"
-		property:fieldName="conditiongeonameid"
+		property:name="id"
+		property:fieldName="actiongeonameid"
 		property:analyzed="true"
 		property:stored="true"
 		property:vectored="true"

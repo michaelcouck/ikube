@@ -25,10 +25,6 @@ public class IsIndexBackedUpTest extends AbstractTest {
 
 	private IsIndexBackedUp isIndexBackedUp;
 
-	public IsIndexBackedUpTest() {
-		super(IsIndexBackedUpTest.class);
-	}
-
 	@Before
 	public void before() {
 		isIndexBackedUp = new IsIndexBackedUp();

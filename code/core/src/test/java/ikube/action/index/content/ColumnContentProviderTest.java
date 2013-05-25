@@ -6,8 +6,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.action.index.content.ColumnContentProvider;
-import ikube.action.index.content.IContentProvider;
 import ikube.model.IndexableColumn;
 
 import java.io.ByteArrayInputStream;
@@ -33,10 +31,6 @@ public class ColumnContentProviderTest extends AbstractTest {
 
 	private IndexableColumn indexable = mock(IndexableColumn.class);
 	private IContentProvider<IndexableColumn> contentProvider = new ColumnContentProvider();
-
-	public ColumnContentProviderTest() {
-		super(ColumnContentProviderTest.class);
-	}
 
 	@Test
 	public void getContent() throws Exception {

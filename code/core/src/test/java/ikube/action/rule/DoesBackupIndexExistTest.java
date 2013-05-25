@@ -14,10 +14,6 @@ import org.junit.Test;
 
 public class DoesBackupIndexExistTest extends AbstractTest {
 
-	public DoesBackupIndexExistTest() {
-		super(DoesBackupIndexExistTest.class);
-	}
-
 	@Before
 	public void before() {
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);

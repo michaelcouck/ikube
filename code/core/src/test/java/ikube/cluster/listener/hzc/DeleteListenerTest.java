@@ -27,10 +27,6 @@ public class DeleteListenerTest extends AbstractTest {
 
 	private DeleteListener deleteListener;
 
-	public DeleteListenerTest() {
-		super(DeleteListenerTest.class);
-	}
-
 	@Before
 	public void before() {
 		deleteListener = new DeleteListener();

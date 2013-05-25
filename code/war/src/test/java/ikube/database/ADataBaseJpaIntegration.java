@@ -1,7 +1,6 @@
 package ikube.database;
 
 import static org.junit.Assert.assertEquals;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -11,9 +10,11 @@ import ikube.Integration;
 import ikube.model.Action;
 import ikube.model.File;
 import ikube.model.IndexContext;
+import ikube.model.Search;
 import ikube.model.Snapshot;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.ObjectToolkit;
 import ikube.web.toolkit.PerformanceTester;
 
 import java.util.ArrayList;
@@ -267,10 +268,26 @@ public class ADataBaseJpaIntegration extends Integration {
 		Date updateTimestamp = dbIndexContext.getTimestamp();
 		assertNotNull(updateTimestamp);
 		assertFalse(creationTimestamp.equals(updateTimestamp));
-		
+
 		Snapshot snapshot = new Snapshot();
 		snapshot = dataBase.persist(snapshot);
 		assertNotNull(snapshot.getTimestamp());
+	}
+
+	@Test
+	public void execute() {
+		String indexName = "indexName";
+		for (int i = 0; i < 10; i++) {
+			Search search = ObjectToolkit.populateFields(Search.class, new Search(), Boolean.TRUE, 5, "id");
+			search.setCount(i);
+			search.setIndexName(indexName);
+			dataBase.persist(search);
+		}
+		Number number = dataBase.execute(Search.SELECT_FROM_SEARCH_COUNT_SEARCHES, new String[] { "indexName" },
+				new Object[] { indexName });
+		logger.info("Count : " + number);
+		assertNotNull(number);
+		assertTrue(number.longValue() > 0);
 	}
 
 	protected List<Url> getUrls(int batchSize) throws Exception {

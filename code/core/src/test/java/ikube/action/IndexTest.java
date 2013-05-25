@@ -39,10 +39,6 @@ public class IndexTest extends AbstractTest {
 
 	private Index index;
 
-	public IndexTest() {
-		super(IndexTest.class);
-	}
-
 	@Before
 	public void before() throws Exception {
 		index = new Index();
@@ -63,6 +59,7 @@ public class IndexTest extends AbstractTest {
 
 		Logger logger = Mockito.mock(Logger.class);
 		Deencapsulation.setField(index, logger);
+		Deencapsulation.setField(index, dataBase);
 		Deencapsulation.setField(index, clusterManager);
 	}
 

@@ -15,14 +15,14 @@ import javax.persistence.ManyToMany;
 @Entity
 @SuppressWarnings("serial")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class User extends Persistable {
+public class User_ extends Persistable {
 
 	@Column(length = 64)
 	private String name;
 	@Column(length = 64)
 	private String password;
-	@ManyToMany(mappedBy = "users", cascade = { CascadeType.ALL }, fetch = FetchType.EAGER, targetEntity = Role.class)
-	private List<Role> roles;
+	@ManyToMany(mappedBy = "users", cascade = { CascadeType.ALL }, fetch = FetchType.EAGER, targetEntity = Role_.class)
+	private List<Role_> roles;
 	@ManyToMany(mappedBy = "users", cascade = { CascadeType.ALL }, fetch = FetchType.EAGER, targetEntity = Group_.class)
 	private List<Group_> groups;
 
@@ -42,12 +42,12 @@ public class User extends Persistable {
 		this.password = password;
 	}
 
-	public List<Role> getRoles() {
+	public List<Role_> getRoles() {
 		return roles;
 	}
 
-	public void setRoles(List<Role> roles) {
-		this.roles = roles;
+	public void setRoles(List<Role_> role_s) {
+		this.roles = role_s;
 	}
 
 	public List<Group_> getGroups() {

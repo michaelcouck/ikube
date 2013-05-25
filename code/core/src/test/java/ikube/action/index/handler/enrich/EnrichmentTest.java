@@ -5,8 +5,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.action.index.handler.enrich.Enrichment;
-import ikube.action.index.handler.enrich.IEnrichment;
 import ikube.action.index.handler.enrich.geocode.Coordinate;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
@@ -31,16 +29,12 @@ import org.springframework.util.ReflectionUtils;
 public class EnrichmentTest extends AbstractTest {
 
 	@Cascading
-	private Document	document;
+	private Document document;
 	// @Cascading
-	private Coordinate	coordinate;
-	private IEnrichment	enrichment;
-	private double		minKm	= 0;
-	private double		maxKm	= 10;
-
-	public EnrichmentTest() {
-		super(EnrichmentTest.class);
-	}
+	private Coordinate coordinate;
+	private IEnrichment enrichment;
+	private double minKm = 0;
+	private double maxKm = 10;
 
 	@Before
 	public void before() {

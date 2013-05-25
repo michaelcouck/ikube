@@ -4,7 +4,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
-import ikube.action.index.handler.filesystem.IndexableDictionaryHandler;
 import ikube.model.IndexableDictionary;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
@@ -25,10 +24,6 @@ import org.junit.Test;
  * @version 01.00
  */
 public class IndexableDictionaryHandlerTest extends AbstractTest {
-
-	public IndexableDictionaryHandlerTest() {
-		super(IndexableDictionaryHandlerTest.class);
-	}
 
 	@Before
 	public void before() {

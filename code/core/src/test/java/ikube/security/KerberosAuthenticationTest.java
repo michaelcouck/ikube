@@ -11,10 +11,6 @@ public class KerberosAuthenticationTest extends AbstractTest {
 	@SuppressWarnings("unused")
 	private HttpClient httpClient;
 
-	public KerberosAuthenticationTest() {
-		super(KerberosAuthenticationTest.class);
-	}
-
 	@Before
 	public void before() {
 		httpClient = new HttpClient();

@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.action.index.analyzer.StemmingAnalyzer;
 import ikube.mock.SpellingCheckerMock;
 import ikube.search.SearchSingle;
 
@@ -27,10 +26,6 @@ import org.junit.Test;
 public class StemmingAnalyzerTest extends AbstractTest {
 
 	private StemmingAnalyzer stemmingAnalyzer;
-
-	public StemmingAnalyzerTest() {
-		super(StemmingAnalyzerTest.class);
-	}
 
 	@Before
 	public void before() {

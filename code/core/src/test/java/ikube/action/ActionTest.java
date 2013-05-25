@@ -24,10 +24,6 @@ public class ActionTest extends AbstractTest {
 
 	private Action<?, ?> action;
 
-	public ActionTest() {
-		super(ActionTest.class);
-	}
-
 	@Before
 	public void before() {
 		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);

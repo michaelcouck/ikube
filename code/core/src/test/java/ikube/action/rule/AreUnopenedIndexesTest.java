@@ -21,10 +21,6 @@ public class AreUnopenedIndexesTest extends AbstractTest {
 
 	private AreUnopenedIndexes areUnopenedIndexes;
 
-	public AreUnopenedIndexesTest() {
-		super(AreUnopenedIndexesTest.class);
-	}
-
 	@Before
 	public void before() {
 		areUnopenedIndexes = new AreUnopenedIndexes();

@@ -7,7 +7,6 @@ import ikube.cluster.IMonitorService;
 import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Server;
-import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.UriUtilities;
 
 import java.io.Serializable;
@@ -15,17 +14,12 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.ILock;
@@ -39,8 +33,8 @@ import com.hazelcast.core.MessageListener;
  */
 public final class ClusterManagerHazelcast extends AClusterManager {
 
-	@Value("${max.retry}")
-	private int maxRetry;
+	/** The instance of this server. */
+	private Server server;
 	@Autowired
 	private IMonitorService monitorService;
 
@@ -134,7 +128,7 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 			Server server = getServer();
 			action = getAction(actionName, indexName, indexableName);
 			server.getActions().add(action);
-			put(server.getAddress(), server);
+			Hazelcast.getMap(IConstants.IKUBE).put(server.getAddress(), server);
 		} catch (Exception e) {
 			logger.error("Exception starting action : " + actionName + ", " + indexName + ", " + indexableName, e);
 		} finally {
@@ -143,77 +137,28 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 		return action;
 	}
 
-	public interface IRetryCaller extends Runnable {
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public synchronized void stopWorking(final Action action) {
 		try {
-			class RetryCaller implements IRetryCaller {
-				@Override
-				public void run() {
-					logger.debug("Retry caller : ");
-					int maxRetry = ClusterManagerHazelcast.this.maxRetry;
-					// Persist the action with the end date
-					action.setEndTime(new Timestamp(System.currentTimeMillis()));
-					action.setDuration(action.getEndTime().getTime() - action.getStartTime().getTime());
-					dataBase.merge(action);
-					do {
-						Server server = getServer();
-						List<Action> actions = server.getActions();
-						Iterator<Action> actionIterator = actions.iterator();
-						logger.debug("Server : " + server.getActions().size());
-						try {
-							// Remove the action from the grid
-							int retry = 10;
-							do {
-								while (actionIterator.hasNext()) {
-									Action gridAction = actionIterator.next();
-									// logger.info("Grid action : " + gridAction);
-									if (gridAction.getId() == action.getId()) {
-										actionIterator.remove();
-										logger.debug("Removed grid action : " + gridAction);
-									}
-								}
-								ThreadUtilities.sleep(1000);
-								put(server.getAddress(), server);
-							} while (retry-- >= 0);
-						} catch (Exception e) {
-							logger.error("Exception removing action from cluster : " + e.getMessage(), e);
-						}
-						server = getServer();
-						logger.debug("Action sizes : " + server.getActions().size());
-						logger.debug("Server actions : " + server.getActions());
-						// Test the grid to see that the action is removed
-						Comparator<Action> comparator = new Comparator<Action>() {
-							@Override
-							public int compare(final Action o1, final Action o2) {
-								return Long.valueOf(o1.getId()).compareTo(Long.valueOf(o2.getId()));
-							}
-						};
-						Collections.sort(actions, comparator);
-						int insertionPoint = Collections.binarySearch(actions, action, comparator);
-						if (insertionPoint >= 0) {
-							if (maxRetry-- > 0) {
-								logger.warn("Didn't remove action : " + action + ", retrying : ");
-								ThreadUtilities.sleep(1000);
-							} else {
-								logger.warn("Ran out of attempts to remove action : " + action);
-								logger.warn("Grid server : " + ToStringBuilder.reflectionToString(server));
-								break;
-							}
-						} else {
-							logger.debug("Removed action : " + action + ", " + server);
-							break;
-						}
-					} while (true);
+			// Persist the action with the end date
+			action.setEndTime(new Timestamp(System.currentTimeMillis()));
+			action.setDuration(action.getEndTime().getTime() - action.getStartTime().getTime());
+			dataBase.merge(action);
+			Server server = getServer();
+			List<Action> actions = server.getActions();
+			// Remove the action from the grid
+			Iterator<Action> actionIterator = actions.iterator();
+			while (actionIterator.hasNext()) {
+				Action gridAction = actionIterator.next();
+				if (gridAction.getId() == action.getId()) {
+					actionIterator.remove();
+					logger.debug("Removed grid action : " + gridAction.getId() + ", " + actions.size());
 				}
 			}
-			Future<?> future = ThreadUtilities.submitSystem(new RetryCaller());
-			ThreadUtilities.waitForFuture(future, 10);
+			Hazelcast.getMap(IConstants.IKUBE).put(server.getAddress(), server);
 		} finally {
 			notifyAll();
 		}
@@ -233,20 +178,19 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 	@Override
 	@SuppressWarnings("rawtypes")
 	public Server getServer() {
-		Server server = (Server) get(address);
 		if (server == null) {
 			server = new Server();
+			server.setIp(ip);
+			server.setAddress(address);
+			server.setAge(System.currentTimeMillis());
+			logger.debug("Server null, creating new one : " + server);
+
+			Collection<IndexContext> collection = monitorService.getIndexContexts().values();
+			List<IndexContext> indexContexts = new ArrayList<IndexContext>(collection);
+			server.setIndexContexts(indexContexts);
+
 			dataBase.persist(server);
-			logger.info("Server null, creating new one : " + server);
 		}
-		server.setIp(ip);
-		server.setAddress(address);
-		server.setAge(System.currentTimeMillis());
-
-		Collection<IndexContext> collection = monitorService.getIndexContexts().values();
-		List<IndexContext> indexContexts = new ArrayList<IndexContext>(collection);
-		server.setIndexContexts(indexContexts);
-
 		return server;
 	}
 
@@ -256,23 +200,6 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 	@Override
 	public void sendMessage(final Serializable serializable) {
 		Hazelcast.getTopic(IConstants.TOPIC).publish(serializable);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T get(final Object key) {
-		return (T) Hazelcast.getMap(IConstants.IKUBE).get(key);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void put(final Object key, final Object value) {
-		Hazelcast.getMap(IConstants.IKUBE).put(key, value);
 	}
 
 	/**

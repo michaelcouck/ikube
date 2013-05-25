@@ -215,9 +215,10 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 * @param in the input stack of urls that have not been indexed
 	 * @param out the output stack of hashes of urls that have been indexed
 	 * @return the list of urls that have not been visited, this list could be empty if there are no urls that have not been visited
-	 * @throws InterruptedException 
+	 * @throws InterruptedException
 	 */
-	protected synchronized List<Url> getUrlBatch(final IndexableInternet indexableInternet, Stack<Url> in, Set<Long> out) throws InterruptedException {
+	protected synchronized List<Url> getUrlBatch(final IndexableInternet indexableInternet, Stack<Url> in, Set<Long> out)
+			throws InterruptedException {
 		try {
 			List<Url> urls = new ArrayList<Url>();
 			while (!in.isEmpty() && urls.size() <= indexableInternet.getInternetBatchSize()) {
@@ -225,10 +226,9 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 				urls.add(url);
 				out.add(HashUtilities.hash(url.getUrl()));
 			}
-			logger.info("Done urls : " + out.size() + ", " + Thread.currentThread().hashCode());
-			logger.info("Doing urls : " + urls.size());
-			logger.info("Still to do urls : " + in.size());
-			Thread.sleep(1);
+			// logger.info("Done urls : " + out.size() + ", " + Thread.currentThread().hashCode());
+			// logger.info("Doing urls : " + urls.size());
+			// logger.info("Still to do urls : " + in.size());
 			return urls;
 		} finally {
 			notifyAll();

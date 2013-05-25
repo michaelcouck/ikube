@@ -2,7 +2,6 @@ package ikube.action.index.parse;
 
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
-import ikube.action.index.parse.AsposeWordParser;
 import ikube.toolkit.FileUtilities;
 
 import java.io.ByteArrayInputStream;
@@ -17,10 +16,6 @@ import org.junit.Test;
  * @version 01.00
  */
 public class AsposeWordParserTest extends AbstractTest {
-
-	public AsposeWordParserTest() {
-		super(AsposeWordParserTest.class);
-	}
 
 	@Test
 	public void parse() throws Exception {

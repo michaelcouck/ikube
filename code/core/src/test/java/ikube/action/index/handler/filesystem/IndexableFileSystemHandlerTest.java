@@ -2,15 +2,13 @@ package ikube.action.index.handler.filesystem;
 
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
-import ikube.action.index.handler.filesystem.IndexableFilesystemHandler;
-import ikube.action.index.handler.filesystem.ResourceFileHandler;
 import ikube.model.IndexableFileSystem;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
-// import java.nio.file.Files;
-// import java.nio.file.Path;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -25,6 +23,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
+// import java.nio.file.Files;
+// import java.nio.file.Path;
 
 /**
  * Tests the general functionality of the file system handler. There are no specific checks on the data that is indexed as the sub
@@ -51,10 +51,6 @@ public class IndexableFileSystemHandlerTest extends AbstractTest {
 	public static void afterClass() {
 		ThreadUtilities.destroy();
 		Mockit.tearDownMocks();
-	}
-
-	public IndexableFileSystemHandlerTest() {
-		super(IndexableFileSystemHandlerTest.class);
 	}
 
 	@Before
@@ -93,18 +89,18 @@ public class IndexableFileSystemHandlerTest extends AbstractTest {
 
 		File folder = null;
 		File symlinkFile = null;
-//		Path symlink = null;
-//		try {
-//			folder = FileUtilities.getFile("/tmp/folder", Boolean.TRUE);
-//			symlinkFile = new File("/tmp/symlink");
-//			symlink = Files.createSymbolicLink(symlinkFile.toPath(), folder.toPath());
-//
-//			isExcluded = indexableFileSystemHandler.isExcluded(symlinkFile, pattern);
-//			assertTrue(isExcluded);
-//		} finally {
-//			FileUtilities.deleteFile(folder, 1);
-//			Files.deleteIfExists(symlink);
-//		}
+		Path symlink = null;
+		try {
+			folder = FileUtilities.getFile("/tmp/folder", Boolean.TRUE);
+			symlinkFile = new File("/tmp/symlink");
+			symlink = Files.createSymbolicLink(symlinkFile.toPath(), folder.toPath());
+
+			isExcluded = indexableFileSystemHandler.isExcluded(symlinkFile, pattern);
+			assertTrue(isExcluded);
+		} finally {
+			FileUtilities.deleteFile(folder, 1);
+			Files.deleteIfExists(symlink);
+		}
 	}
 
 	private IndexableFileSystem getIndexableFileSystem(final String folderPath) {

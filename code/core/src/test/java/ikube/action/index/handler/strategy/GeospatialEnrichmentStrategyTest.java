@@ -39,10 +39,6 @@ public class GeospatialEnrichmentStrategyTest extends AbstractTest {
 	/** Class under test. */
 	private GeospatialEnrichmentStrategy geospatialEnrichmentStrategy;
 
-	public GeospatialEnrichmentStrategyTest() {
-		super(GeospatialEnrichmentStrategyTest.class);
-	}
-
 	@Before
 	public void before() {
 		geospatialEnrichmentStrategy = new GeospatialEnrichmentStrategy();

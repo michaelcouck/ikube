@@ -48,10 +48,6 @@ public class ThreadUtilitiesTest extends AbstractTest {
 		}
 	}
 
-	public ThreadUtilitiesTest() {
-		super(ThreadUtilitiesTest.class);
-	}
-
 	@Before
 	public void before() {
 		ThreadUtilities.initialize();

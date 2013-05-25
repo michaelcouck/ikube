@@ -3,7 +3,6 @@ package ikube.database.jpa;
 import ikube.database.IDataBase;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -299,19 +298,25 @@ public abstract class ADataBaseJpa implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public <T> T find(final Class<T> klass, final String sql, final String[] names, final Object[] values) {
-		Map<String, Object> parameters = getParameterMap(names, values);
-		return find(klass, sql, parameters);
+		Query query = getEntityManager().createNamedQuery(sql, klass);
+		setParameters(query, names, values);
+		return (T) query.getSingleResult();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public <T> List<T> find(final Class<T> klass, final String sql, final String[] names, final Object[] values, final int startPosition,
 			final int maxResults) {
-		Map<String, Object> parameters = getParameterMap(names, values);
-		return find(klass, sql, parameters, startPosition, maxResults);
+		Query query = getEntityManager().createNamedQuery(sql, klass);
+		query.setFirstResult(startPosition);
+		query.setMaxResults(maxResults);
+		setParameters(query, names, values);
+		return query.getResultList();
 	}
 
 	/**
@@ -338,17 +343,20 @@ public abstract class ADataBaseJpa implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T execute(final String sql, final String[] names, final Object[] values) {
+		Query query = getEntityManager().createQuery(sql);
+		setParameters(query, names, values);
+		return (T) query.getSingleResult();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public <T> T refresh(final T t) {
 		getEntityManager().refresh(t);
 		return t;
-	}
-
-	private Map<String, Object> getParameterMap(final String[] names, final Object[] values) {
-		Map<String, Object> parameters = new HashMap<String, Object>();
-		for (int i = 0; i < names.length; i++) {
-			parameters.put(names[i], values[i]);
-		}
-		return parameters;
 	}
 
 	/**
@@ -361,10 +369,12 @@ public abstract class ADataBaseJpa implements IDataBase {
 		if (parameters == null) {
 			return;
 		}
-		for (Map.Entry<String, Object> entry : parameters.entrySet()) {
-			String key = entry.getKey();
-			Object value = entry.getValue();
-			query.setParameter(key, value);
+		setParameters(query, parameters.keySet().toArray(new String[parameters.keySet().size()]), parameters.values().toArray());
+	}
+
+	private void setParameters(final Query query, final String[] names, final Object[] values) {
+		for (int i = 0; i < names.length; i++) {
+			query.setParameter(names[i], values[i]);
 		}
 	}
 

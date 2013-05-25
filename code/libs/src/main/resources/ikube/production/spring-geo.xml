@@ -42,6 +42,7 @@
 		property:strategies-ref="geoname-strategies" />
 	<util:list id="geospatialIndexables">
 		<ref local="geoname" />
+		<ref local="alternatename" />
 	</util:list>
 	
 	<bean
@@ -51,9 +52,9 @@
 		property:address="true"
 		property:maxExceptions="10"
 		property:allColumns="true"
-		property:stored="true"
-		property:analyzed="true"
-		property:vectored="true"
+		property:stored="${stored}"
+		property:analyzed="${analyzed}"
+		property:vectored="${vectored}"
 		property:children-ref="geonameColumnsDb2"
 		property:dataSource-ref="nonXaDataSourceDb2"
 		property:strategies-ref="geoname-strategies" />
@@ -80,7 +81,6 @@
 		<ref local="geospatialPopulation" />
 		<ref local="geospatialElevation" />
 		<ref local="geospatialGtopo30" />
-		<ref local="alternatename" />
 	</util:list>
 	<util:list id="geoname-strategies">
 	    <ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
@@ -285,9 +285,9 @@
 		property:children-ref="alternatenameColumnsDb2" 
 		property:maxExceptions="10"
 		property:allColumns="true" 
-		property:stored="true"
-		property:analyzed="true"
-		property:vectored="true" />
+		property:stored="${stored}"
+		property:analyzed="${analyzed}"
+		property:vectored="${vectored}" />
 	<util:list id="alternatenameColumnsDb2">
 		<ref local="alternatenameId" />
 		<ref local="alternatenameGeonameid" />
@@ -301,7 +301,7 @@
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}"
-		property:numeric="false" />
+		property:numeric="true" />
 	<bean
 		id="alternatenameGeonameid"
 		class="ikube.model.IndexableColumn"
@@ -310,7 +310,6 @@
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}"
-		property:foreignKey-ref="geospatialGeonameid"
 		property:numeric="false" />
 	
 </beans>

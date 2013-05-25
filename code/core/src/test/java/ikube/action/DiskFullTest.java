@@ -42,10 +42,6 @@ public class DiskFullTest extends AbstractTest {
 	@Cascading
 	private ThreadUtilities threadUtilities;
 
-	public DiskFullTest() {
-		super(DiskFullTest.class);
-	}
-
 	@Before
 	public void before() throws Exception {
 		diskFull = new DiskFull();

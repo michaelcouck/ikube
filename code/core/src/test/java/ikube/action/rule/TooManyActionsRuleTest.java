@@ -23,10 +23,6 @@ public class TooManyActionsRuleTest extends AbstractTest {
 
 	private TooManyActionsRule tooManyActionsRule;
 
-	public TooManyActionsRuleTest() {
-		super(TooManyActionsRuleTest.class);
-	}
-
 	@Before
 	public void before() {
 		tooManyActionsRule = new TooManyActionsRule();

@@ -35,10 +35,6 @@ public class DatabaseUtilitiesTest extends AbstractTest {
 	private Connection connection;
 	private DataSource dataSource;
 
-	public DatabaseUtilitiesTest() {
-		super(DatabaseUtilitiesTest.class);
-	}
-
 	@Before
 	public void before() throws Exception {
 		resultSet = mock(ResultSet.class);

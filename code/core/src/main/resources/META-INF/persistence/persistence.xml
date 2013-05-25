@@ -17,9 +17,9 @@
 		<class>ikube.model.Server</class>
 		<class>ikube.model.Action</class>
 		
-		<class>ikube.model.security.User</class>
+		<class>ikube.model.security.User_</class>
 		<class>ikube.model.security.Group_</class>
-		<class>ikube.model.security.Role</class>
+		<class>ikube.model.security.Role_</class>
 		
 		<class>ikube.model.Indexable</class>
 		<class>ikube.model.IndexContext</class>
@@ -71,9 +71,9 @@
 		<class>ikube.model.Server</class>
 		<class>ikube.model.Action</class>
 		
-		<class>ikube.model.security.User</class>
+		<class>ikube.model.security.User_</class>
 		<class>ikube.model.security.Group_</class>
-		<class>ikube.model.security.Role</class>
+		<class>ikube.model.security.Role_</class>
 		
 		<class>ikube.model.Indexable</class>
 		<class>ikube.model.IndexContext</class>
@@ -96,13 +96,13 @@
 		
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		
-		<properties>
+		<!-- <properties>
 			<property name="openjpa.Connection2UserName" value="db2" />
 			<property name="openjpa.Connection2Password" value="xxx" />
 			<property name="openjpa.Connection2URL" value="jdbc:db2://ikube.be:50000/icube" />
 			<property name="openjpa.Connection2DriverName" value="com.ibm.db2.jcc.DB2Driver" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
-		</properties>
+		</properties> -->
 	</persistence-unit>
 	
 	<persistence-unit name="IkubePersistenceUnitOracle" transaction-type="RESOURCE_LOCAL">
@@ -114,9 +114,9 @@
 		<class>ikube.model.Server</class>
 		<class>ikube.model.Action</class>
 		
-		<class>ikube.model.security.User</class>
+		<class>ikube.model.security.User_</class>
 		<class>ikube.model.security.Group_</class>
-		<class>ikube.model.security.Role</class>
+		<class>ikube.model.security.Role_</class>
 
 		<class>ikube.model.Indexable</class>
 		<class>ikube.model.IndexContext</class>
@@ -139,13 +139,13 @@
 		
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		
-		<properties>
+		<!-- <properties>
 			<property name="openjpa.Connection2UserName" value="oracle" />
 			<property name="openjpa.Connection2Password" value="xxx" />
-			<property name="openjpa.Connection2URL" value="jdbc:oracle:thin:@//ikube.be:1521/ikube" />
+			<property name="openjpa.Connection2URL" value="jdbc:oracle:thin:@//ikube.be:1521/xe" />
 			<property name="openjpa.Connection2DriverName" value="oracle.jdbc.driver.OracleDriver" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
-		</properties>
+		</properties> -->
 	</persistence-unit>
 	
 	<persistence-unit name="IkubePersistenceUnitPostgres" transaction-type="RESOURCE_LOCAL">
@@ -157,9 +157,9 @@
 		<class>ikube.model.Server</class>
 		<class>ikube.model.Action</class>
 		
-		<class>ikube.model.security.User</class>
+		<class>ikube.model.security.User_</class>
 		<class>ikube.model.security.Group_</class>
-		<class>ikube.model.security.Role</class>
+		<class>ikube.model.security.Role_</class>
 
 		<class>ikube.model.Indexable</class>
 		<class>ikube.model.IndexContext</class>
@@ -182,13 +182,13 @@
 		
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		
-		<properties>
+		<!-- <properties>
 			<property name="openjpa.Connection2UserName" value="postgres" />
 			<property name="openjpa.Connection2Password" value="xxx" />
 			<property name="openjpa.Connection2URL" value="jdbc:postgresql://ikube.be:5432/ikube" />
 			<property name="openjpa.Connection2DriverName" value="org.postgresql.Driver" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
-		</properties>
+		</properties> -->
 	</persistence-unit>
 	
 </persistence>

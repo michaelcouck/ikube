@@ -39,10 +39,6 @@ public class SearchComplexTest extends AbstractTest {
 	private IndexSearcher indexSearcher;
 	private IndexWriter indexWriter;
 
-	public SearchComplexTest() {
-		super(SearchComplexTest.class);
-	}
-
 	@Before
 	public void before() throws Exception {
 		File file = FileUtilities.findFileRecursively(new File("."), "index-data.csv");

@@ -39,6 +39,7 @@ public class IndexableFilesystemHandlerIntegration extends Integration {
 	public void handleAndInterrupt() throws Exception {
 		Directory directory = null;
 		try {
+			ThreadUtilities.initialize();
 			File dataIndexFolder = FileUtilities.findFileRecursively(new File("."), "data");
 			String dataIndexFolderPath = FileUtilities.cleanFilePath(dataIndexFolder.getAbsolutePath());
 			desktopFolder.setPath(dataIndexFolderPath);

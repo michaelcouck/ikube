@@ -133,10 +133,6 @@ public class SearchTest extends AbstractTest {
 
 	private int maxResults = 10;
 
-	public SearchTest() {
-		super(SearchTest.class);
-	}
-
 	@Test
 	public void searchSingle() {
 		SearchSingle searchSingle = new SearchSingle(SEARCHER);

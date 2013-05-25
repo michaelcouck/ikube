@@ -51,10 +51,6 @@ public class IndexManagerTest extends AbstractTest {
 	private File indexFolderTwo;
 	private File indexFolderThree;
 
-	public IndexManagerTest() {
-		super(IndexManagerTest.class);
-	}
-
 	@Before
 	public void before() {
 		indexFolderOne = FileUtilities.getFile("./" + IndexManagerTest.class.getSimpleName() + "/1234567889/127.0.0.1", Boolean.TRUE);

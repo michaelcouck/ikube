@@ -96,6 +96,15 @@
 		<entry key="openjpa.RuntimeUnenhancedClasses" value="supported" />
 		<entry key="openjpa.jdbc.DBDictionary" value="${ikube.jdbc.dictionary}" />
 		<entry key="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
+		
+		<entry key="openjpa.Connection2UserName" value="${ikube.jdbc.userid}" />
+		<entry key="openjpa.Connection2Password" value="${ikube.jdbc.password}" />
+		<entry key="openjpa.Connection2URL" value="${ikube.jdbc.url}" />
+		<entry key="openjpa.Connection2DriverName" value="${ikube.jdbc.driver}" />
+		<entry key="openjpa.ConnectionUserName" value="${ikube.jdbc.userid}" />
+		<entry key="openjpa.ConnectionPassword" value="${ikube.jdbc.password}" />
+		<entry key="openjpa.ConnectionURL" value="${ikube.jdbc.url}" />
+		<entry key="openjpa.ConnectionDriverName" value="${ikube.jdbc.driver}" />
 	</util:map>
 
 	<transaction:advice id="transactionAdvice" transaction-manager="transactionManager">
@@ -109,19 +118,18 @@
 	</transaction:advice>
 
 	<aop:config>
-		<aop:pointcut id="dataBaseJpa" expression="execution(* ikube.database.jpa.DataBaseJpa.*(..))" />
+		<aop:pointcut id="dataBaseJpaH2" expression="execution(* ikube.database.jpa.DataBaseJpaH2.*(..))" />
 		<aop:pointcut id="dataBaseJpaDb2" expression="execution(* ikube.database.jpa.DataBaseJpaDb2.*(..))" />
 		<aop:pointcut id="dataBaseJpaOracle" expression="execution(* ikube.database.jpa.DataBaseJpaOracle.*(..))" />
 		<aop:pointcut id="dataBaseJpaPostgres" expression="execution(* ikube.database.jpa.DataBaseJpaPostgres.*(..))" />
 		<aop:pointcut id="dataBaseAbstract" expression="execution(* ikube.database.jpa.ADataBaseJpa.*(..))" />
-		<aop:advisor advice-ref="transactionAdvice" pointcut-ref="dataBaseJpa" />
+		<aop:advisor advice-ref="transactionAdvice" pointcut-ref="dataBaseJpaH2" />
 		<aop:advisor advice-ref="transactionAdvice" pointcut-ref="dataBaseJpaDb2" />
 		<aop:advisor advice-ref="transactionAdvice" pointcut-ref="dataBaseJpaOracle" />
 		<aop:advisor advice-ref="transactionAdvice" pointcut-ref="dataBaseJpaPostgres" />
 		<aop:advisor advice-ref="transactionAdvice" pointcut-ref="dataBaseAbstract"/>
 	</aop:config>
 	
-	<!-- The Jpa database for large sets of data. -->
 	<bean
 		id="ikube.database.IDataBase"
 		name="ikube.database.IDataBase"
@@ -139,7 +147,7 @@
 		<constructor-arg value="mime-types.xml" />
 	</bean>
 	
-	<!-- The search and monitoring services. -->
+	<!-- Service layer entities. -->
 	<bean
 		id="ikube.search.SearcherService"
 		class="ikube.search.SearcherService" />

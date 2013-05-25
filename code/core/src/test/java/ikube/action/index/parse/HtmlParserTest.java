@@ -20,10 +20,6 @@ import org.junit.Test;
  */
 public class HtmlParserTest extends AbstractTest {
 
-	public HtmlParserTest() {
-		super(HtmlParserTest.class);
-	}
-
 	@Test
 	public void parse() throws Exception {
 		File file = FileUtilities.findFileRecursively(new File("."), "html.html");

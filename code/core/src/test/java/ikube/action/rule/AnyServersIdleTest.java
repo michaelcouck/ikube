@@ -23,10 +23,6 @@ public class AnyServersIdleTest extends AbstractTest {
 
 	private AnyServersIdle anyServersIdle;
 
-	public AnyServersIdleTest() {
-		super(AnyServersIdleTest.class);
-	}
-
 	@Before
 	public void before() {
 		anyServersIdle = new AnyServersIdle();

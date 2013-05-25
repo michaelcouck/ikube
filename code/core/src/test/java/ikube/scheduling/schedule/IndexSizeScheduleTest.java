@@ -34,10 +34,6 @@ public class IndexSizeScheduleTest extends AbstractTest {
 	/** Class under test. */
 	private IndexSizeSchedule indexSizeSchedule;
 
-	public IndexSizeScheduleTest() {
-		super(IndexSizeScheduleTest.class);
-	}
-
 	@Before
 	public void before() {
 		indexSizeSchedule = new IndexSizeSchedule();

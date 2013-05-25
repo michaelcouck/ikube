@@ -58,10 +58,6 @@ public class SearchSpatialTest extends AbstractTest {
 	private Searcher searcher;
 	private IndexReader indexReader;
 
-	public SearchSpatialTest() {
-		super(SearchSpatialTest.class);
-	}
-
 	@Before
 	public void before() throws Exception {
 		Mockit.setUpMocks(SpellingCheckerMock.class);

@@ -3,7 +3,6 @@ package ikube.action.index.handler.database;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
-import ikube.action.index.handler.database.IndexableTableHandler;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
 import ikube.toolkit.DatabaseUtilities;
@@ -30,27 +29,20 @@ import org.mockito.Mockito;
  */
 public class IndexableTableHandlerTest extends AbstractTest {
 
-	private static List<String> PRIMARY_KEYS = Arrays.asList("id");
-	private static List<String> ALL_COLUMNS = Arrays.asList("id", "name", "address");
-
 	@MockClass(realClass = DatabaseUtilities.class)
 	public static class DatabaseUtilitiesMock {
 		@Mock()
 		public static List<String> getAllColumns(final Connection connection, final String table) {
-			return ALL_COLUMNS;
+			return Arrays.asList("id", "name", "address");
 		}
 
 		@Mock()
 		public static List<String> getPrimaryKeys(final Connection connection, final String table) {
-			return PRIMARY_KEYS;
+			return Arrays.asList("id");
 		}
 	}
 
 	private IndexableTableHandler indexableTableHandler;
-
-	public IndexableTableHandlerTest() {
-		super(IndexableTableHandlerTest.class);
-	}
 
 	@Before
 	public void before() {
@@ -70,7 +62,8 @@ public class IndexableTableHandlerTest extends AbstractTest {
 		DataSource dataSource = Mockito.mock(DataSource.class);
 		Mockito.when(dataSource.getConnection()).thenReturn(connection);
 		indexableTableHandler.addAllColumns(indexableTable, dataSource);
-		assertEquals("There should be three columns added : ", ALL_COLUMNS.size(), indexableTable.getChildren().size());
+		assertEquals("There should be three columns added : ", DatabaseUtilitiesMock.getAllColumns(connection, null).size(), indexableTable
+				.getChildren().size());
 		IndexableColumn indexableColumn = (IndexableColumn) indexableTable.getChildren().get(0);
 		assertTrue("The first column should be the id column : ", indexableColumn.isIdColumn());
 	}

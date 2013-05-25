@@ -24,10 +24,6 @@ import org.junit.Test;
  */
 public class IsIndexCorruptTest extends AbstractTest {
 
-	public IsIndexCorruptTest() {
-		super(IsIndexCorruptTest.class);
-	}
-
 	/** Class under test. */
 	private IsIndexCorrupt isIndexCorrupt;
 

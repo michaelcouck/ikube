@@ -19,10 +19,6 @@ public class PropertyConfigurerTest extends AbstractTest {
 	private String fileBatchSize = "file.batch.size";
 	private PropertyConfigurer propertyConfigurer;
 
-	public PropertyConfigurerTest() {
-		super(PropertyConfigurer.class);
-	}
-
 	@Before
 	public void before() {
 		propertyConfigurer = new PropertyConfigurer();

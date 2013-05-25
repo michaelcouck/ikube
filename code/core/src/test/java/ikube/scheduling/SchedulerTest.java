@@ -15,10 +15,6 @@ import org.mockito.Mockito;
  */
 public class SchedulerTest extends AbstractTest {
 
-	public SchedulerTest() {
-		super(SchedulerTest.class);
-	}
-
 	@Test
 	public void initialize() throws Exception {
 		Scheduler scheduler = new Scheduler();

@@ -24,10 +24,6 @@ public class IsNewIndexCreatedTest extends AbstractTest {
 
 	private String	originalDirectoryPath;
 
-	public IsNewIndexCreatedTest() {
-		super(IsNewIndexCreatedTest.class);
-	}
-
 	@Before
 	public void before() {
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);

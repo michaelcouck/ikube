@@ -9,7 +9,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
-import ikube.action.index.handler.database.IndexableDataSourceHandler;
 import ikube.model.Indexable;
 import ikube.model.IndexableDataSource;
 
@@ -37,10 +36,6 @@ import org.mockito.stubbing.Answer;
 public class IndexableDataSourceHandlerTest extends AbstractTest {
 
 	private IndexableDataSourceHandler indexableTableHandler;
-
-	public IndexableDataSourceHandlerTest() {
-		super(IndexableDataSourceHandlerTest.class);
-	}
 
 	@Before
 	public void before() {

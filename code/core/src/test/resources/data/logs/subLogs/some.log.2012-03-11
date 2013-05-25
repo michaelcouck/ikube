@@ -25,7 +25,6 @@
 19:36:34,925 INFO  IndexManager.openIndexWriter(73) - Index directory time : , 1331490994909, date : , Sun Mar 11 19:36:34 CET 2012, writing index to directory , /usr/local/indexes/danielContext/1331490994909/127.0.1.1.61618
 19:36:35,036 INFO  Index.executeInternal(57) - Indexable : danielSite
 19:36:35,037 INFO  Index.executeInternal(58) - Handler : class ikube.index.handler.internet.IndexableInternetHandler, class ikube.model.IndexableInternet
-19:36:35,357 INFO  ParserProvider.getParser(71) - Locating the text parser for : text/html, , ikube.index.parse.html.HtmlParser
 19:36:35,818 INFO  ParserProvider.getParser(71) - Locating the text parser for : application/x-troff, /fr/notre-cabinet, ikube.index.parse.text.TextParser
 19:36:47,083 INFO  ParserProvider.getParser(71) - Locating the text parser for : text/xml, /nl/aggregator/rss/1, ikube.index.parse.xml.XMLParser
 19:36:50,786 INFO  IndexableInternetHandler.handle(275) - Skipping duplicate content : 

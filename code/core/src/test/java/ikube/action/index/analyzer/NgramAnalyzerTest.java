@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.action.index.analyzer.NgramAnalyzer;
 import ikube.mock.SpellingCheckerMock;
 import ikube.search.SearchSingle;
 
@@ -28,16 +27,12 @@ public class NgramAnalyzerTest extends AbstractTest {
 
 	private NgramAnalyzer ngramAnalyzer;
 
-	public NgramAnalyzerTest() {
-		super(NgramAnalyzerTest.class);
-	}
-
 	@Before
 	public void before() {
 		ngramAnalyzer = new NgramAnalyzer();
 		Mockit.setUpMock(SpellingCheckerMock.class);
 	}
-	
+
 	@Test
 	public void tokenStream() throws Exception {
 		Reader reader = new StringReader("The string to break into tokens");
@@ -59,7 +54,7 @@ public class NgramAnalyzerTest extends AbstractTest {
 		logger.info("Results : " + results);
 
 		assertEquals("This is the highlighted hit : ", "Mic<B>hae</B>l C<B>ouc</B>k ", results.get(0).get(IConstants.FRAGMENT));
-		
+
 		searchSingle.setSearchString("poo");
 		results = searchSingle.execute();
 		logger.info("Results : " + results);

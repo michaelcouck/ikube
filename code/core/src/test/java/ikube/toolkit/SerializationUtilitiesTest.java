@@ -27,10 +27,6 @@ public class SerializationUtilitiesTest extends AbstractTest {
 	private String russian = "Что определяет производительность";
 	private String arabic = "تيات تبحث عن ابن الحلالللصداقة و الزوا";
 
-	public SerializationUtilitiesTest() {
-		super(SerializationUtilitiesTest.class);
-	}
-
 	@Test
 	public void serialize() {
 		ArrayList<HashMap<String, String>> results = getResults();

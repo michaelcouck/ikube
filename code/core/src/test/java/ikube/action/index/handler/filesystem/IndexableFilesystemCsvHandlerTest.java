@@ -7,8 +7,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.action.index.handler.filesystem.IndexableFilesystemCsvHandler;
-import ikube.action.index.handler.filesystem.ResourceRowHandler;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
@@ -50,10 +48,6 @@ public class IndexableFilesystemCsvHandlerTest extends AbstractTest {
 	@AfterClass
 	public static void afterClass() {
 		ThreadUtilities.destroy();
-	}
-
-	public IndexableFilesystemCsvHandlerTest() {
-		super(IndexableFilesystemCsvHandlerTest.class);
 	}
 
 	@Before

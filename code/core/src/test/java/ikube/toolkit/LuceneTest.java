@@ -57,10 +57,6 @@ public class LuceneTest extends AbstractTest {
 			somethingElseAlToGether + " ";
 	private String somethingNumeric = " 123456789 ";
 
-	public LuceneTest() {
-		super(LuceneTest.class);
-	}
-
 	@Before
 	public void before() {
 		ThreadUtilities.initialize();

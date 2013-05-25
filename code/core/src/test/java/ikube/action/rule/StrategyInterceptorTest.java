@@ -42,10 +42,6 @@ public class StrategyInterceptorTest extends AbstractTest {
 	/** Class under test. */
 	private StrategyInterceptor strategyInterceptor;
 
-	public StrategyInterceptorTest() {
-		super(StrategyInterceptorTest.class);
-	}
-
 	@Before
 	public void before() {
 		strategyInterceptor = new StrategyInterceptor();

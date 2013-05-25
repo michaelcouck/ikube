@@ -4,7 +4,6 @@ import ikube.IConstants;
 import ikube.database.IDataBase;
 import ikube.model.IndexContext;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -21,29 +20,24 @@ public class Prune extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	boolean internalExecute(final IndexContext<?> indexContext) {
-		delete(dataBase, ikube.model.Action.class, new String[] { "startTime" }, new Boolean[] { true },
-				IConstants.RESET_DELETE_BATCH_SIZE, (int) IConstants.MAX_ACTIONS / 4);
-		delete(dataBase, ikube.model.Snapshot.class, new String[] {}, new Boolean[] {}, IConstants.RESET_DELETE_BATCH_SIZE,
-				(int) IConstants.MAX_SNAPSHOTS / 4);
-		delete(dataBase, ikube.model.Server.class, new String[] {}, new Boolean[] {}, IConstants.RESET_DELETE_BATCH_SIZE,
-				(int) IConstants.MAX_SNAPSHOTS / 4);
+		String[] fieldsToSortOn = new String[] { "id" };
+		Boolean[] directionOfSort = new Boolean[] { true };
+		delete(dataBase, ikube.model.Action.class, fieldsToSortOn, directionOfSort, IConstants.MAX_ACTIONS);
+		delete(dataBase, ikube.model.Snapshot.class, fieldsToSortOn, directionOfSort, IConstants.MAX_SNAPSHOTS);
+		delete(dataBase, ikube.model.Server.class, fieldsToSortOn, directionOfSort, IConstants.MAX_SERVERS);
 		return Boolean.TRUE;
 	}
 
 	protected void delete(final IDataBase dataBase, final Class<?> klass, final String[] fieldsToSortOn, final Boolean[] directionOfSort,
-			final int batchSize, final int toRemain) {
-		do {
-			int count = dataBase.count(klass).intValue();
-			int calculatedBatchSize = Math.max(Math.min(count - toRemain, batchSize), 0);
-			if (calculatedBatchSize <= 0) {
-				break;
-			}
-			List<?> entities = dataBase.find(klass, fieldsToSortOn, directionOfSort, 0, calculatedBatchSize);
-			Iterator<?> iterator = entities.iterator();
-			while (iterator.hasNext()) {
-				dataBase.remove(iterator.next());
-			}
-		} while (true);
+			final long toRemain) {
+		int batchSize = (int) toRemain / 4;
+		int count = dataBase.count(klass).intValue();
+		while (count > toRemain) {
+			logger.info("Count : " + count + ", " + toRemain + ", " + batchSize);
+			List<?> entities = dataBase.find(klass, fieldsToSortOn, directionOfSort, 0, batchSize);
+			dataBase.removeBatch(entities);
+			count = dataBase.count(klass).intValue();
+		}
 	}
 
 }

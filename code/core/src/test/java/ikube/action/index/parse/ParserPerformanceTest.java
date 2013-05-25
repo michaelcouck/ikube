@@ -28,10 +28,6 @@ public class ParserPerformanceTest extends AbstractTest {
 	private String[]	files		= { "pdf.pdf", "xml.xml", "html.html", "xls.xls", "doc.doc", "txt.txt", "pot.pot", "docx.docx", "xlsx.xlsx",
 			"rtf.rtf" /* "pptx.pptx" */};
 
-	public ParserPerformanceTest() {
-		super(ParserPerformanceTest.class);
-	}
-
 	@Test
 	public void parserPerformance() throws Exception {
 		for (String fileName : files) {

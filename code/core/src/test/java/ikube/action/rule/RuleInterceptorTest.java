@@ -64,10 +64,6 @@ public class RuleInterceptorTest extends AbstractTest {
 	private AreIndexesCreated areIndexesCreated;
 	private AreUnopenedIndexes areUnopenedIndexes;
 
-	public RuleInterceptorTest() {
-		super(RuleInterceptorTest.class);
-	}
-
 	@Before
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void before() throws Throwable {

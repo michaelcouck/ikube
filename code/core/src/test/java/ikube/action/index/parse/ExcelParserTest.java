@@ -3,8 +3,6 @@ package ikube.action.index.parse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
-import ikube.action.index.parse.IParser;
-import ikube.action.index.parse.ParserProvider;
 import ikube.toolkit.FileUtilities;
 
 import java.io.ByteArrayInputStream;
@@ -21,10 +19,6 @@ import org.junit.Test;
  * @version 01.00
  */
 public class ExcelParserTest extends AbstractTest {
-
-	public ExcelParserTest() {
-		super(ExcelParserTest.class);
-	}
 
 	@Test
 	public void parse() throws Exception {

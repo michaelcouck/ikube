@@ -35,10 +35,6 @@ public class DirectoryExistsAndNotLockedTest extends AbstractTest {
 
 	private DirectoryExistsAndNotLocked	existsAndNotLocked;
 
-	public DirectoryExistsAndNotLockedTest() {
-		super(DirectoryExistsAndNotLockedTest.class);
-	}
-
 	@Before
 	public void before() {
 		existsAndNotLocked = new DirectoryExistsAndNotLocked();

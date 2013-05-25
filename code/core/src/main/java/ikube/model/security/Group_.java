@@ -19,10 +19,10 @@ public class Group_ extends Persistable {
 
 	@Column(length = 64)
 	private String name;
-	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER, targetEntity = User.class)
-	private List<User> users;
-	@ManyToMany(mappedBy = "groups", cascade = { CascadeType.ALL }, fetch = FetchType.EAGER, targetEntity = Role.class)
-	private List<Role> roles;
+	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER, targetEntity = User_.class)
+	private List<User_> users;
+	@ManyToMany(mappedBy = "groups", cascade = { CascadeType.ALL }, fetch = FetchType.EAGER, targetEntity = Role_.class)
+	private List<Role_> roles;
 
 	public String getName() {
 		return name;
@@ -32,20 +32,20 @@ public class Group_ extends Persistable {
 		this.name = name;
 	}
 
-	public List<User> getUsers() {
+	public List<User_> getUsers() {
 		return users;
 	}
 
-	public void setUsers(List<User> users) {
-		this.users = users;
+	public void setUsers(List<User_> user_s) {
+		this.users = user_s;
 	}
 
-	public List<Role> getRoles() {
+	public List<Role_> getRoles() {
 		return roles;
 	}
 
-	public void setRoles(List<Role> roles) {
-		this.roles = roles;
+	public void setRoles(List<Role_> role_s) {
+		this.roles = role_s;
 	}
 
 }

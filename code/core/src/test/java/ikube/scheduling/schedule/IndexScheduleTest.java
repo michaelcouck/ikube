@@ -40,10 +40,6 @@ public class IndexScheduleTest extends AbstractTest {
 	private IMonitorService monitorService;
 	private List<IAction<IndexContext<?>, Boolean>> actions;
 
-	public IndexScheduleTest() {
-		super(IndexScheduleTest.class);
-	}
-
 	@Before
 	@SuppressWarnings("rawtypes")
 	public void before() {

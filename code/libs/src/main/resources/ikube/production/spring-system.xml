@@ -52,8 +52,8 @@
 	<bean
 		id="ikube-data-source"
 		class="ikube.model.IndexableDataSource"
-		property:name="ikube"
-		property:dataSource-ref="nonXaDataSourceH2"
+		property:name="ikube-data-source"
+		property:dataSource-ref="${ikube.dataSource}"
 		property:excludedTablePatterns="SYS:$" />
 	
 </beans>

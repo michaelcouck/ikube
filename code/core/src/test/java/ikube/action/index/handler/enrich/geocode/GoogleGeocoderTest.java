@@ -3,8 +3,6 @@ package ikube.action.index.handler.enrich.geocode;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import ikube.AbstractTest;
-import ikube.action.index.handler.enrich.geocode.Coordinate;
-import ikube.action.index.handler.enrich.geocode.GoogleGeocoder;
 import ikube.mock.FileUtilitiesMock;
 import ikube.mock.URLMock;
 import ikube.toolkit.FileUtilities;
@@ -14,7 +12,6 @@ import java.io.File;
 
 import mockit.Mockit;
 
-import org.junit.After;
 import org.junit.Test;
 
 /**
@@ -23,14 +20,6 @@ import org.junit.Test;
  * @version 01.00
  */
 public class GoogleGeocoderTest extends AbstractTest {
-
-	public GoogleGeocoderTest() {
-		super(GoogleGeocoderTest.class);
-	}
-
-	@After
-	public void after() {
-	}
 
 	@Test
 	public void getCoordinate() throws Exception {

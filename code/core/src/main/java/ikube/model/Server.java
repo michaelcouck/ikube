@@ -3,13 +3,10 @@ package ikube.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 /**
@@ -32,6 +29,13 @@ public class Server extends Persistable implements Comparable<Server> {
 	@Transient
 	private boolean threadsRunning = Boolean.TRUE;
 
+	/** The actions of this server. */
+	@Transient
+	private List<Action> actions;
+	@SuppressWarnings("rawtypes")
+	@Transient
+	private List<IndexContext> indexContexts;
+
 	/** The age of this server. */
 	@Column
 	private long age;
@@ -41,12 +45,6 @@ public class Server extends Persistable implements Comparable<Server> {
 	/** The address of this machine. */
 	@Column
 	private String address;
-	/** The actions of this server. */
-	@OneToMany(cascade = { CascadeType.ALL }, mappedBy = "server", fetch = FetchType.LAZY)
-	private List<Action> actions;
-	@SuppressWarnings("rawtypes")
-	@OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
-	private List<IndexContext> indexContexts;
 
 	@Column
 	private long freeMemory;

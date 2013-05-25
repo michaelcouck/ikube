@@ -1,8 +1,9 @@
 package ikube.scheduling.schedule;
 
 import static org.junit.Assert.assertEquals;
+
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
 import ikube.IConstants;
@@ -11,6 +12,7 @@ import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.model.Snapshot;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.ObjectToolkit;
 
 import java.io.File;
 import java.sql.Timestamp;
@@ -39,10 +41,6 @@ public class SnapshotScheduleTest extends AbstractTest {
 
 	private SnapshotSchedule snapshotSchedule;
 
-	public SnapshotScheduleTest() {
-		super(SnapshotScheduleTest.class);
-	}
-
 	@Before
 	public void before() throws Exception {
 		snapshotSchedule = new SnapshotSchedule();
@@ -51,6 +49,7 @@ public class SnapshotScheduleTest extends AbstractTest {
 		when(fsDirectory.listAll()).thenReturn(new String[] { "file" });
 
 		Mockit.setUpMock(ApplicationContextManagerMock.class);
+		when(dataBase.execute(anyString(), any(String[].class), any(Object[].class))).thenReturn(new Long(0));
 
 		Deencapsulation.setField(snapshotSchedule, dataBase);
 		Deencapsulation.setField(snapshotSchedule, monitorService);
@@ -67,6 +66,7 @@ public class SnapshotScheduleTest extends AbstractTest {
 	@SuppressWarnings("rawtypes")
 	public void handleNotification() {
 		IndexContext indexContext = new IndexContext<Object>();
+		indexContext.setName(action.getIndexName());
 		indexContext.setIndexDirectoryPath("./indexes");
 		Map<String, IndexContext> indexContexts = new HashMap<String, IndexContext>();
 		indexContexts.put(indexContext.getName(), indexContext);
@@ -81,12 +81,12 @@ public class SnapshotScheduleTest extends AbstractTest {
 			}
 		}).when(dataBase).persist(Mockito.any(Snapshot.class));
 
-		double maxSnapshots = IConstants.MAX_SNAPSHOTS + 10d;
+		double maxSnapshots = (IConstants.MAX_SNAPSHOTS / 10) + 10d;
 		for (int i = 0; i < maxSnapshots; i++) {
 			snapshotSchedule.run();
 		}
 		logger.info("Snapshots : " + indexContext.getSnapshots().size());
-		assertTrue("There must be less snapshots than the maximum allowed : ", indexContext.getSnapshots().size() < maxSnapshots);
+		Mockito.verify(action, Mockito.atLeastOnce()).setSnapshot(Mockito.any(Snapshot.class));
 	}
 
 	@Test
@@ -148,6 +148,25 @@ public class SnapshotScheduleTest extends AbstractTest {
 		FileUtilities.setContents(outputFile, bytes);
 		snapshotSchedule.setLogTail(server);
 		assertTrue(server.getLogTail().length() == (IConstants.MILLION / 10));
+	}
+
+	@Test
+	public void sortSnapshots() throws Exception {
+		List<Snapshot> snapshots = new ArrayList<Snapshot>();
+		for (int i = 0; i < 10; i++) {
+			Snapshot snapshot = ObjectToolkit.populateFields(Snapshot.class, new Snapshot(), Boolean.TRUE, 5);
+			snapshot.setTimestamp(new Timestamp(System.currentTimeMillis() - i * 1000));
+			snapshots.add(snapshot);
+		}
+		snapshots = snapshotSchedule.sortSnapshots(snapshots);
+		Timestamp previousTimestamp = null;
+		for (final Snapshot snapshot : snapshots) {
+			if (previousTimestamp == null) {
+				previousTimestamp = snapshot.getTimestamp();
+				continue;
+			}
+			assertTrue(previousTimestamp.before(snapshot.getTimestamp()));
+		}
 	}
 
 }

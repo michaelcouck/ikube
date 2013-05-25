@@ -23,10 +23,6 @@ public class IsBackupIndexCurrentTest extends AbstractTest {
 
 	private IsBackupIndexCurrent isBackupIndexCurrent;
 
-	public IsBackupIndexCurrentTest() {
-		super(IsBackupIndexCurrentTest.class);
-	}
-
 	@Before
 	public void before() {
 		isBackupIndexCurrent = new IsBackupIndexCurrent();

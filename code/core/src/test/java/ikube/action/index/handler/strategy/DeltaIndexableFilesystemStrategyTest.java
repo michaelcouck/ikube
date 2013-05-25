@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
-import ikube.action.index.handler.strategy.DeltaIndexableFilesystemStrategy;
 import ikube.mock.IndexReaderMock;
 import ikube.model.Indexable;
 import ikube.model.IndexableFileSystem;
@@ -47,10 +46,6 @@ public class DeltaIndexableFilesystemStrategyTest extends AbstractTest {
 
 	private IndexableFileSystem indexableFileSystem;
 	private DeltaIndexableFilesystemStrategy deltaStrategy;
-
-	public DeltaIndexableFilesystemStrategyTest() {
-		super(DeltaIndexableFilesystemStrategyTest.class);
-	}
 
 	@Before
 	@SuppressWarnings({ "rawtypes", "unchecked" })

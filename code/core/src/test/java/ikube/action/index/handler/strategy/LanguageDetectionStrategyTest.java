@@ -26,10 +26,6 @@ public class LanguageDetectionStrategyTest extends AbstractTest {
 
 	private static LanguageDetectionStrategy LANGUAGE_DETECTION_STRATEGY;
 
-	public LanguageDetectionStrategyTest() {
-		super(LanguageDetectionStrategyTest.class);
-	}
-
 	@BeforeClass
 	public static void beforeClass() {
 		LANGUAGE_DETECTION_STRATEGY = new LanguageDetectionStrategy(null);

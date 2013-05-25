@@ -38,7 +38,7 @@ public class Snapshot extends Persistable {
 	private long totalSearches;
 	@Column
 	private String indexContext;
-	
+
 	/** Server details for posterity. */
 	@Column
 	private double systemLoad;

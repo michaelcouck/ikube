@@ -12,8 +12,6 @@ import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ObjectToolkit;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,7 +52,7 @@ public abstract class Integration extends Base {
 		new WebServiceAuthentication().authenticate(HTTP_CLIENT, LOCALHOST, Integer.toString(SERVER_PORT), REST_USER_NAME, REST_PASSWORD);
 	}
 
-	public static <T> void insertData(final Class<T> klass, final int entities) throws SQLException, FileNotFoundException {
+	public static <T> void insertData(final Class<T> klass, final int entities) {
 		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		List<T> tees = new ArrayList<T>();
 		for (int i = 0; i < entities; i++) {

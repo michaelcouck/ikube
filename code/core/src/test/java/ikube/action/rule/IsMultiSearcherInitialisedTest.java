@@ -17,10 +17,6 @@ public class IsMultiSearcherInitialisedTest extends AbstractTest {
 
 	private IsMultiSearcherInitialised rule;
 
-	public IsMultiSearcherInitialisedTest() {
-		super(IsMultiSearcherInitialisedTest.class);
-	}
-
 	@Before
 	public void before() {
 		rule = new IsMultiSearcherInitialised();

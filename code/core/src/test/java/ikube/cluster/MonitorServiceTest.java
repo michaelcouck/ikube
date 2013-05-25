@@ -34,10 +34,6 @@ public class MonitorServiceTest extends AbstractTest {
 
 	private IMonitorService monitorService;
 
-	public MonitorServiceTest() {
-		super(MonitorServiceTest.class);
-	}
-
 	@Before
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void before() {

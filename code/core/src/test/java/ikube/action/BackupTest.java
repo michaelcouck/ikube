@@ -25,10 +25,6 @@ public class BackupTest extends AbstractTest {
 
 	private Backup backup;
 
-	public BackupTest() {
-		super(BackupTest.class);
-	}
-
 	@Before
 	public void before() throws Exception {
 		backup = new Backup();

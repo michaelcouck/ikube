@@ -16,10 +16,6 @@ import org.junit.Test;
  */
 public class StringUtilitiesTest extends AbstractTest {
 
-	public StringUtilitiesTest() {
-		super(StringUtilitiesTest.class);
-	}
-
 	@Test
 	public void isNumeric() {
 		assertTrue(StringUtilities.isNumeric("123"));

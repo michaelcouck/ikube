@@ -17,10 +17,6 @@ public class AreSearchablesInitialisedTest extends AbstractTest {
 
 	private AreSearchablesInitialised searchablesInitialised;
 
-	public AreSearchablesInitialisedTest() {
-		super(AreSearchablesInitialisedTest.class);
-	}
-
 	@Before
 	public void before() {
 		searchablesInitialised = new AreSearchablesInitialised();

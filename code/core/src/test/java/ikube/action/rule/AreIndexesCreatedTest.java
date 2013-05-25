@@ -23,10 +23,6 @@ public class AreIndexesCreatedTest extends AbstractTest {
 
 	private AreIndexesCreated indexesCreated;
 
-	public AreIndexesCreatedTest() {
-		super(AreIndexesCreatedTest.class);
-	}
-
 	@Before
 	public void before() {
 		indexesCreated = new AreIndexesCreated();

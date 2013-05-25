@@ -11,10 +11,6 @@ import org.junit.Test;
 
 public class PatternTest extends AbstractTest {
 
-	public PatternTest() {
-		super(PatternTest.class);
-	}
-
 	@Test
 	public void match() {
 		String regex = "(http://|https://).*";

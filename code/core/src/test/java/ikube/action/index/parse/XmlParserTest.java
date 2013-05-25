@@ -21,10 +21,6 @@ import org.junit.Test;
  */
 public class XmlParserTest extends AbstractTest {
 
-	public XmlParserTest() {
-		super(XmlParserTest.class);
-	}
-
 	@Test
 	public void parse() throws Exception {
 		File file = FileUtilities.findFileRecursively(new File("."), new String[] { "xml.xml" });

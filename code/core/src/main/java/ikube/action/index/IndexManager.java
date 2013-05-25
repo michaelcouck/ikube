@@ -30,7 +30,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.index.LogByteSizeMergePolicy;
-import org.apache.lucene.index.MergePolicy;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Searchable;
 import org.apache.lucene.store.AlreadyClosedException;
@@ -165,7 +164,7 @@ public final class IndexManager {
 		indexWriterConfig.setOpenMode(create ? OpenMode.CREATE : OpenMode.APPEND);
 		indexWriterConfig.setRAMBufferSizeMB(indexContext.getBufferSize());
 		indexWriterConfig.setMaxBufferedDocs(indexContext.getBufferedDocs());
-		MergePolicy mergePolicy = new LogByteSizeMergePolicy() {
+		LogByteSizeMergePolicy mergePolicy = new LogByteSizeMergePolicy() {
 			{
 				this.maxMergeDocs = indexContext.getMergeFactor();
 				this.maxMergeSize = (long) indexContext.getBufferSize();
@@ -191,7 +190,7 @@ public final class IndexManager {
 					closeIndexWriter(indexWriter);
 					LOGGER.info("Index optimized and closed : " + indexContext.getIndexName() + ", " + indexWriter);
 				}
-				indexContext.setIndexWriters();
+				indexContext.setIndexWriters(new IndexWriter[0]);
 			}
 		} finally {
 			IndexManager.class.notifyAll();
@@ -387,12 +386,10 @@ public final class IndexManager {
 	public static long getNumDocs(final IndexContext<?> indexContext) {
 		long numDocs = 0;
 		IndexWriter[] indexWriters = indexContext.getIndexWriters();
-		LOGGER.info("Index writers : " + indexWriters + ", index : " + indexContext.getName());
 		if (indexWriters != null && indexWriters.length > 0) {
 			for (final IndexWriter indexWriter : indexWriters) {
 				try {
 					numDocs += indexWriter.numDocs();
-					// LOGGER.info("Writer num docs : " + numDocs);
 				} catch (AlreadyClosedException e) {
 					LOGGER.warn("Index writer is closed : " + e.getMessage());
 				} catch (Exception e) {
@@ -400,11 +397,9 @@ public final class IndexManager {
 				}
 			}
 		} else {
-			LOGGER.info("Multi searcher : " + indexContext.getMultiSearcher() + ", index : " + indexContext.getName());
 			if (indexContext.getMultiSearcher() != null) {
 				for (final Searchable searchable : indexContext.getMultiSearcher().getSearchables()) {
 					numDocs += ((IndexSearcher) searchable).getIndexReader().numDocs();
-					// LOGGER.info("Searcher num docs : " + numDocs);
 				}
 			}
 		}

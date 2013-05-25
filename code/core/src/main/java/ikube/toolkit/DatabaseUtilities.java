@@ -3,6 +3,7 @@ package ikube.toolkit;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -25,11 +26,32 @@ public final class DatabaseUtilities {
 
 	private static final Logger LOGGER = Logger.getLogger(DatabaseUtilities.class);
 
-	/**
-	 * Singularity.
-	 */
-	private DatabaseUtilities() {
-		// Documented
+	public static void main(String[] args) {
+		Logging.configure();
+		String url = "jdbc:db2://ikube.be:50000/icube";
+		String user = "xxx";
+		String password = "xxx";
+		ResultSet resultSet = null;
+		Connection connection = null;
+		try {
+			int inserts = 0;
+			connection = DriverManager.getConnection(url, user, password);
+			String sql = "select geonameid from geoname where geonameid not in (select geonameid from alternatename)";
+			resultSet = connection.createStatement().executeQuery(sql);
+			while (resultSet.next()) {
+				Integer geonameid = resultSet.getInt("geonameid");
+				connection.createStatement().execute("insert into alternatename (id, geonameid) values (next value for persistable, " + geonameid + ")");
+				inserts++;
+				if (inserts % 10000 == 0) {
+					LOGGER.info("Inserts : " + inserts);
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.error(null, e);
+		} finally {
+			close(resultSet);
+			close(connection);
+		}
 	}
 
 	/**
@@ -261,6 +283,13 @@ public final class DatabaseUtilities {
 			LOGGER.error("Exception accing field : " + field, e);
 		}
 		return null;
+	}
+
+	/**
+	 * Singularity.
+	 */
+	private DatabaseUtilities() {
+		// Documented
 	}
 
 }

@@ -2,19 +2,17 @@ package ikube.model;
 
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -56,7 +54,7 @@ public class Action extends Persistable {
 	@PrimaryKeyJoinColumn
 	private Snapshot snapshot;
 	/** The server object where the actions is executing. */
-	@ManyToOne(cascade = { CascadeType.DETACH }, fetch = FetchType.EAGER)
+	@Transient
 	private Server server;
 
 	public String getActionName() {

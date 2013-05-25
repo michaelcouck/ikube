@@ -41,7 +41,7 @@ public final class ThreadUtilities {
 	 * @param runnable the runnable to schedule for running
 	 * @return the future that is being submitted to execute
 	 */
-	public synchronized static Future<?> submit(final String name, final Runnable runnable) {
+	public/* synchronized */static Future<?> submit(final String name, final Runnable runnable) {
 		try {
 			if (EXECUTER_SERVICE == null || EXECUTER_SERVICE.isShutdown()) {
 				LOGGER.warn("Executer service is shutdown : " + runnable);
@@ -55,7 +55,7 @@ public final class ThreadUtilities {
 			}
 			return future;
 		} finally {
-			ThreadUtilities.class.notifyAll();
+			// ThreadUtilities.class.notifyAll();
 		}
 	}
 
@@ -65,12 +65,11 @@ public final class ThreadUtilities {
 	 * @param runnable the runnable to submit for execution, must self terminate
 	 * @return the future bound to the runnable
 	 */
-	public synchronized static Future<?> submitSystem(final Runnable runnable) {
+	public /* synchronized */ static Future<?> submitSystem(final Runnable runnable) {
 		try {
-			Future<?> future = EXECUTER_SERVICE_SYSTEM.submit(runnable);
-			return future;
+			return EXECUTER_SERVICE_SYSTEM.submit(runnable);
 		} finally {
-			ThreadUtilities.class.notifyAll();
+			// ThreadUtilities.class.notifyAll();
 		}
 	}
 
@@ -81,31 +80,32 @@ public final class ThreadUtilities {
 	 * 
 	 * @param name the name that was assigned to the future when it was submitted for execution
 	 */
-	public static synchronized void destroy(final String name) {
+	public static/* synchronized */void destroy(final String name) {
 		try {
 			List<Future<?>> futures = getFutures(name);
-			if (futures != null) {
-				for (final Future<?> future : futures) {
-					if (future == null || future.isDone()) {
-						LOGGER.warn("No such future or completed already : " + future + ", " + name);
-						return;
+			for (final Future<?> future : futures) {
+				if (future == null) {
+					continue;
+				}
+				if (future.isDone() || future.isCancelled()) {
+					LOGGER.debug("Future done : " + future + ", " + name);
+					continue;
+				}
+				int maxRetryCount = MAX_RETRY_COUNT;
+				while (maxRetryCount-- > 0) {
+					if (future.cancel(true) || future.isCancelled() || future.isDone()) {
+						// LOGGER.info("Cancelled future : " + name + ", " + future + ", " + maxRetryCount);
+						break;
 					}
-					int maxRetryCount = MAX_RETRY_COUNT;
-					while (maxRetryCount-- > 0) {
-						if (future.cancel(true) || future.isCancelled()) {
-							LOGGER.info("Cancelled future : " + name + ", " + future + ", " + maxRetryCount);
-							break;
-						}
-						ThreadUtilities.sleep(10);
-					}
-					if (!future.isCancelled() && !future.isDone()) {
-						LOGGER.warn("Couldn't cancel future : " + name + ", " + future + ", " + FUTURES.size() + ", " + maxRetryCount);
-					}
+					ThreadUtilities.sleep(1);
+				}
+				if (!future.isCancelled() && !future.isDone()) {
+					LOGGER.warn("Couldn't cancel future : " + name + ", " + future + ", " + FUTURES.size() + ", " + maxRetryCount);
 				}
 			}
 			futures.clear();
 		} finally {
-			ThreadUtilities.class.notifyAll();
+			// ThreadUtilities.class.notifyAll();
 		}
 	}
 
@@ -142,7 +142,7 @@ public final class ThreadUtilities {
 		} catch (TimeoutException e) {
 			LOGGER.info("Timed out waiting for future : " + e.getMessage());
 		} catch (CancellationException e) {
-			LOGGER.info("Future cancelled : " + e.getMessage());
+			LOGGER.debug("Future cancelled : " + e.getMessage());
 			LOGGER.debug(null, e);
 		} catch (Exception e) {
 			LOGGER.error("Exception waiting for future : ", e);
@@ -206,7 +206,7 @@ public final class ThreadUtilities {
 	 * This method will destroy the thread pool. All threads that are currently running will be interrupted,and should catch this exception
 	 * and exit the run method.
 	 */
-	public static synchronized void destroy() {
+	public static/* synchronized */void destroy() {
 		try {
 			if (EXECUTER_SERVICE == null || EXECUTER_SERVICE.isShutdown()) {
 				LOGGER.info("Executer service already shutdown : ");
@@ -236,7 +236,7 @@ public final class ThreadUtilities {
 			FUTURES = null;
 			EXECUTER_SERVICE = null;
 		} finally {
-			ThreadUtilities.class.notifyAll();
+			// ThreadUtilities.class.notifyAll();
 		}
 	}
 
@@ -244,7 +244,7 @@ public final class ThreadUtilities {
 		return EXECUTER_SERVICE != null;
 	}
 
-	protected static synchronized List<Future<?>> getFutures(final String name) {
+	protected static/* synchronized */List<Future<?>> getFutures(final String name) {
 		try {
 			List<Future<?>> futures = FUTURES.get(name);
 			if (futures == null) {
@@ -253,17 +253,17 @@ public final class ThreadUtilities {
 			}
 			return futures;
 		} finally {
-			ThreadUtilities.class.notifyAll();
+			// ThreadUtilities.class.notifyAll();
 		}
 	}
 
-	protected static synchronized Map<String, List<Future<?>>> getFutures() {
+	protected static/* synchronized */Map<String, List<Future<?>>> getFutures() {
 		try {
 			Map<String, List<Future<?>>> futures = new HashMap<String, List<Future<?>>>();
 			futures.putAll(FUTURES);
 			return futures;
 		} finally {
-			ThreadUtilities.class.notifyAll();
+			// ThreadUtilities.class.notifyAll();
 		}
 	}
 

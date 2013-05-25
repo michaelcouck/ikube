@@ -17,10 +17,6 @@ import org.junit.Test;
  */
 public class UriUtilitiesTest extends AbstractTest {
 
-	public UriUtilitiesTest() {
-		super(UriUtilitiesTest.class);
-	}
-
 	@Test
 	public void url() throws Exception {
 		URI baseUri = new URI("http://www.ikokoon.eu/ikokoon/index.html?language=russian");
@@ -43,7 +39,7 @@ public class UriUtilitiesTest extends AbstractTest {
 		string = baseUri.getSchemeSpecificPart();
 		logger.info("Spec        : " + string);
 		string = baseUri.getUserInfo();
-		logger.info("User        : " + string);
+		logger.info("User_        : " + string);
 		string = Integer.toString(baseUri.getPort());
 		logger.info("Port        : " + string);
 

@@ -3,7 +3,6 @@ package ikube.action;
 import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.search.SearcherService;
-import ikube.toolkit.Logging;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -64,7 +63,9 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 				directory = FSDirectory.open(serverIndexDirectory);
 				boolean exists = IndexReader.indexExists(directory);
 				boolean locked = IndexWriter.isLocked(directory);
-				logger.info("Exists : " + exists + ", locked : " + locked + ", server index direcory : " + serverIndexDirectory);
+				if (logger.isDebugEnabled()) {
+					logger.info("Exists : " + exists + ", locked : " + locked + ", server index direcory : " + serverIndexDirectory);
+				}
 				if (!exists || locked) {
 					// We don't open locked directories. Could be that one configuration is still indexing on this file system, but we still
 					// want to open the index on the other new indexes. Of course if the index doesn't exist in the directory for some odd
@@ -75,7 +76,9 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 				reader = IndexReader.open(directory, Boolean.TRUE);
 				searcher = new IndexSearcher(reader);
 				searchers.add(searcher);
-				logger.info(Logging.getString("Opened searcher on : ", serverIndexDirectory, "exists : ", exists, "locked : ", locked));
+				if (logger.isDebugEnabled()) {
+					logger.info("Opened searcher on : " + serverIndexDirectory + ", exists : " + exists + ", locked : " + locked);
+				}
 			} catch (Exception e) {
 				logger.error("Exception opening directory : " + serverIndexDirectory, e);
 				exceptionOpening = Boolean.TRUE;
@@ -83,7 +86,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 				if (exceptionOpening) {
 					close(directory, reader, searcher);
 					boolean removed = searchers.remove(searcher);
-					logger.info("Removed searcher : " + removed + ", " + searcher);
+					logger.warn("Removed searcher : " + removed + ", " + searcher);
 				}
 			}
 		}

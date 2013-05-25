@@ -67,10 +67,13 @@ public class IndexSchedule extends Schedule {
 							action.execute(indexContext);
 						} catch (Throwable e) {
 							LOGGER.error("Exception executing action : " + action, e);
+						} finally {
+							// We remove ourselves from the schedules in the thread utilities
+							ThreadUtilities.destroy(this.toString());
 						}
 					}
 				};
-				Future<?> future = ThreadUtilities.submit(this.getClass().getSimpleName(), runnable);
+				Future<?> future = ThreadUtilities.submit(runnable.toString(), runnable);
 				// We'll wait a few seconds for this action, perhaps it is a fast one
 				ThreadUtilities.waitForFuture(future, Math.max(15, random.nextInt(15)));
 			} catch (Exception e) {

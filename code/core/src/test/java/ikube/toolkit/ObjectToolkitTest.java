@@ -6,16 +6,8 @@ import ikube.IConstants;
 import ikube.model.IndexContext;
 
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ObjectToolkitTest extends AbstractTest {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(ObjectToolkitTest.class);
-
-	public ObjectToolkitTest() {
-		super(ObjectToolkitTest.class);
-	}
 
 	@Test
 	@SuppressWarnings("rawtypes")

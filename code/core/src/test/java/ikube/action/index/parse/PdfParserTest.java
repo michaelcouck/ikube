@@ -19,10 +19,6 @@ import org.junit.Test;
  */
 public class PdfParserTest extends AbstractTest {
 
-	public PdfParserTest() {
-		super(PdfParserTest.class);
-	}
-
 	@Test
 	public void parse() throws Exception {
 		PdfParser pdfParser = new PdfParser();

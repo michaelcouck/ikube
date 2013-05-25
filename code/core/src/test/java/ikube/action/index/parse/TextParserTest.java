@@ -29,10 +29,6 @@ public class TextParserTest extends AbstractTest {
 	private String arabic = "لِلتَّضْحِيَةِ";
 	private String carriageReturn = "Michael and\nEva are getting a new life\rpossibly in another country";
 
-	public TextParserTest() {
-		super(TextParserTest.class);
-	}
-
 	@Before
 	public void before() {
 		textParser = new TextParser();

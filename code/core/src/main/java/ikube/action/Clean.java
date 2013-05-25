@@ -22,6 +22,7 @@ import org.apache.lucene.store.FSDirectory;
  * @since 31.10.10
  * @version 01.00
  */
+@Deprecated
 public class Clean<E, F> extends Action<IndexContext<?>, Boolean> {
 
 	/**
@@ -62,7 +63,6 @@ public class Clean<E, F> extends Action<IndexContext<?>, Boolean> {
 					continue;
 				}
 				if (IndexReader.indexExists(directory)) {
-					// Try to delete the directory
 					corrupt = Boolean.FALSE;
 				}
 			} catch (CorruptIndexException e) {
@@ -72,7 +72,7 @@ public class Clean<E, F> extends Action<IndexContext<?>, Boolean> {
 			} catch (Exception e) {
 				logger.error("General exception : " + serverIndexDirectory + " not ok, will try to delete : ", e);
 			} finally {
-				close(directory, null, null);
+				close(directory);
 				if (corrupt) {
 					logger.warn("Deleting directory : " + serverIndexDirectory + ", as it either corrupt, or partially deleted : ");
 					FileUtilities.deleteFile(serverIndexDirectory, 1);

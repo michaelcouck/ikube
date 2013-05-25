@@ -28,7 +28,7 @@
 		property:mergeFactor="${merge.factor}"
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
-		property:throttle="${throttle}"
+		property:throttle="10"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path}"
 		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer"

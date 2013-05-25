@@ -40,10 +40,6 @@ public class SearcherServiceTest extends AbstractTest {
 	private double latitude = 0.0;
 	private double longitude = 0.0;
 
-	public SearcherServiceTest() {
-		super(SearcherServiceTest.class);
-	}
-
 	@Before
 	public void before() {
 		searcherService = new SearcherService();

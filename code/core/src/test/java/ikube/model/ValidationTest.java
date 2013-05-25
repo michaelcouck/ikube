@@ -14,10 +14,6 @@ import org.junit.Test;
 
 public class ValidationTest extends AbstractTest {
 
-	public ValidationTest() {
-		super(ValidationTest.class);
-	}
-
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void validate() {

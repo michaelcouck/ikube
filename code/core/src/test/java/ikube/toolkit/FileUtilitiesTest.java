@@ -26,10 +26,6 @@ public class FileUtilitiesTest extends AbstractTest {
 	private File indexFolderOne;
 	private String[] stringPatterns;
 
-	public FileUtilitiesTest() {
-		super(FileUtilitiesTest.class);
-	}
-
 	@Before
 	public void before() {
 		String fileName = "file.file";

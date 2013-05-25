@@ -72,7 +72,7 @@ public final class QueryBuilder {
 		}
 		if (indexable.getChildren() != null) {
 			for (final Indexable<?> child : indexable.getChildren()) {
-				addPredicates(stringBuilder, first, child);
+				first = addPredicates(stringBuilder, first, child);
 			}
 		}
 		return first;
@@ -103,7 +103,7 @@ public final class QueryBuilder {
 					stringBuilder.append(indexableColumn.getName());
 					first = Boolean.FALSE;
 				}
-				addPredicate(stringBuilder, first, child);
+				return addPredicate(stringBuilder, first, child);
 			}
 		}
 		return first;

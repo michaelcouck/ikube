@@ -29,10 +29,6 @@ public class CpuLoadScheduleTest extends AbstractTest {
 
 	private CpuLoadSchedule cpuLoadSchedule;
 
-	public CpuLoadScheduleTest() {
-		super(CpuLoadScheduleTest.class);
-	}
-
 	@Before
 	public void before() throws Exception {
 		cpuLoadSchedule = new CpuLoadSchedule();

@@ -2,8 +2,6 @@ package ikube.action.index.parse.mime;
 
 import static org.junit.Assert.assertNotNull;
 import ikube.AbstractTest;
-import ikube.action.index.parse.mime.MimeType;
-import ikube.action.index.parse.mime.MimeTypes;
 
 import org.junit.Test;
 
@@ -13,10 +11,6 @@ import org.junit.Test;
  * @version 01.00
  */
 public class MimeTypesTest extends AbstractTest {
-
-	public MimeTypesTest() {
-		super(MimeTypesTest.class);
-	}
 
 	@Test
 	public void getMimeTypesFromName() {

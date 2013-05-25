@@ -1,11 +1,8 @@
 package ikube.action;
 
 import static org.junit.Assert.assertFalse;
-
 import static org.junit.Assert.assertTrue;
-
-import static org.mockito.Mockito.*;
-
+import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
@@ -35,10 +32,6 @@ import org.junit.Test;
  */
 public class CleanTest extends AbstractTest {
 
-	public CleanTest() {
-		super(CleanTest.class);
-	}
-
 	@Before
 	public void before() {
 		when(indexContext.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
@@ -60,6 +53,7 @@ public class CleanTest extends AbstractTest {
 	 * @throws Exception
 	 */
 	@Test
+	@SuppressWarnings("deprecation")
 	public void execute() throws Exception {
 		File latestIndexDirectory = createIndexFileSystem(indexContext, "some words to index");
 

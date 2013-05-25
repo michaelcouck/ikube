@@ -17,10 +17,6 @@ import org.junit.Test;
 
 public class XmlUtilitiesTest extends AbstractTest {
 
-	public XmlUtilitiesTest() {
-		super(XmlUtilitiesTest.class);
-	}
-
 	@Test
 	public void getDocumentElementsAndElement() throws FileNotFoundException {
 		File file = FileUtilities.findFileRecursively(new File("."), "spring.xml");

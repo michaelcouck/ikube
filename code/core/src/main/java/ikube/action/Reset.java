@@ -4,7 +4,6 @@ import ikube.IConstants;
 import ikube.database.IDataBase;
 import ikube.model.File;
 import ikube.model.IndexContext;
-import ikube.model.Indexable;
 import ikube.model.Url;
 
 import java.util.HashMap;
@@ -28,27 +27,25 @@ public class Reset extends Action<IndexContext<?>, Boolean> {
 	@Override
 	synchronized boolean internalExecute(final IndexContext<?> indexContext) {
 		try {
-			delete(dataBase, indexContext);
+			Map<String, Object> parameters = new HashMap<String, Object>();
+			parameters.put(IConstants.NAME, indexContext.getName());
+			delete(dataBase, Url.class, Url.SELECT_FROM_URL_BY_NAME, parameters);
+			delete(dataBase, File.class, File.SELECT_FROM_FILE_BY_NAME, parameters);
 			return Boolean.TRUE;
 		} finally {
 			notifyAll();
 		}
 	}
 
-	protected synchronized void delete(final IDataBase dataBase, final Indexable<?> indexable) {
-		Map<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put(IConstants.NAME, indexable.getName());
-		delete(dataBase, Url.class, Url.SELECT_FROM_URL_BY_NAME, parameters);
-		delete(dataBase, File.class, File.SELECT_FROM_FILE_BY_NAME, parameters);
-	}
-
 	protected synchronized void delete(final IDataBase dataBase, final Class<?> klass, final String sql,
 			final Map<String, Object> parameters) {
-		List<?> list = dataBase.find(klass, sql, parameters, 0, IConstants.RESET_DELETE_BATCH_SIZE);
 		do {
+			List<?> list = dataBase.find(klass, sql, parameters, 0, IConstants.RESET_DELETE_BATCH_SIZE);
+			if (list.size() <= 0) {
+				break;
+			}
 			dataBase.removeBatch(list);
-			list = dataBase.find(klass, sql, parameters, 0, IConstants.RESET_DELETE_BATCH_SIZE);
-		} while (list.size() > 0);
+		} while (true);
 	}
 
 }
