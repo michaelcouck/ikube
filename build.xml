@@ -8,6 +8,14 @@
 	<property name="user-dir" value="${user.dir}" />
 	<property name="user-home" value="${user.home}" />
 
+	<target name="deploy-to-servers">
+		<antcall target="go">
+			<param name="userid" value="${server-one-userid}" />
+			<param name="password" value="${server-one-password}" />
+			<param name="server-ip" value="${server-one-ip}" />
+		</antcall>
+	</target>
+	
 	<target name="go">
 		<antcall target="prepare" />
 		<!-- Deploy the configuration and ikube and start the servers -->
