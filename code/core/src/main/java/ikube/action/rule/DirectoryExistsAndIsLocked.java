@@ -1,7 +1,5 @@
 package ikube.action.rule;
 
-import ikube.toolkit.Logging;
-
 import java.io.File;
 
 import org.apache.lucene.index.IndexReader;
@@ -28,7 +26,7 @@ public class DirectoryExistsAndIsLocked extends ARule<File> {
 			directory = FSDirectory.open(indexDirectory);
 			boolean exists = IndexReader.indexExists(directory);
 			boolean locked = IndexWriter.isLocked(directory);
-			logger.debug(Logging.getString("Server index directory : ", indexDirectory, "exists : ", exists, "locked : ", locked));
+			logger.debug("Server index directory : " + indexDirectory + "exists : " + exists + "locked : " + locked);
 			if (exists && locked) {
 				return Boolean.TRUE;
 			}

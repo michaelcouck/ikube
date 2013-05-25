@@ -2,7 +2,6 @@ package ikube.action.rule;
 
 import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
-import ikube.toolkit.Logging;
 
 import java.io.File;
 
@@ -62,7 +61,7 @@ public class AreUnopenedIndexes implements IRule<IndexContext<?>> {
 					}
 				}
 				if (!indexAlreadyOpen) {
-					LOGGER.debug(Logging.getString("Found new index directory : ", serverIndexDirectory, " will try to re-open : "));
+					LOGGER.debug("Found new index directory : " + serverIndexDirectory + " will try to re-open : ");
 					return Boolean.TRUE;
 				}
 			}

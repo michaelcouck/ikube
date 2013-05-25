@@ -27,13 +27,13 @@ public final class Logging implements IConstants {
 	 * Singularity.
 	 */
 	private Logging() {
-		//Documented
+		// Documented
 	}
 
 	/**
 	 * Configures the logging.
 	 */
-	public static synchronized void configure() {
+	public static void configure() {
 		InputStream inputStream = null;
 		try {
 			if (INITIALISED) {
@@ -52,12 +52,14 @@ public final class Logging implements IConstants {
 						inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream(LOG_4_J_PROPERTIES);
 					}
 					if (inputStream == null) {
-						File logFile = FileUtilities.findFileRecursively(new File("."), LOG_4_J_PROPERTIES);
-						if (logFile != null && logFile.exists() && logFile.canRead()) {
-							inputStream = logFile.toURI().toURL().openStream();
+						File log4JPropertiesFile = FileUtilities.findFileRecursively(new File("." + IConstants.SEP + IConstants.IKUBE),
+								"log4j.properties");
+						if (log4JPropertiesFile != null && log4JPropertiesFile.exists() && log4JPropertiesFile.canRead()) {
+							inputStream = log4JPropertiesFile.toURI().toURL().openStream();
 						}
 					}
 				}
+				System.out.println("Log for J : " + inputStream);
 				if (inputStream != null) {
 					Properties properties = new Properties();
 					properties.load(inputStream);
@@ -72,7 +74,7 @@ public final class Logging implements IConstants {
 			try {
 				if (LOG_FILE == null) {
 					LOGGER.info("Searching for log file : " + IConstants.IKUBE_LOG);
-					LOG_FILE = FileUtilities.findFileRecursively(new File("."), IConstants.IKUBE_LOG);
+					LOG_FILE = FileUtilities.findFileRecursively(new File("."), "ikube\\.log");
 					if (LOG_FILE != null) {
 						LOGGER.info("Found log file : " + LOG_FILE.getAbsolutePath());
 					}
@@ -82,32 +84,7 @@ public final class Logging implements IConstants {
 			}
 		} finally {
 			FileUtilities.close(inputStream);
-			Logging.class.notifyAll();
 		}
-	}
-
-	/**
-	 * Takes a bunch of objects and concatenates them as a string.
-	 * 
-	 * @param objects
-	 *            the objects to concatenate
-	 * @return the string concatenation of the objects
-	 */
-	public static String getString(final Object... objects) {
-		if (objects == null || objects.length == 0) {
-			return "";
-		}
-		StringBuilder builder = new StringBuilder();
-		boolean first = Boolean.TRUE;
-		for (Object object : objects) {
-			if (first) {
-				first = Boolean.FALSE;
-			} else {
-				builder.append(", ");
-			}
-			builder.append(object);
-		}
-		return builder.toString();
 	}
 
 	public static synchronized File getLogFile() {

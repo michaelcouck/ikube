@@ -356,7 +356,7 @@ public final class ObjectToolkit {
 				LOGGER.error("Field not accessible : " + idField, e);
 			}
 		} else {
-			LOGGER.info(Logging.getString("Id field not found for object : ", object.getClass().getName()));
+			LOGGER.info("Id field not found for object : " + object.getClass().getName());
 		}
 		return null;
 	}

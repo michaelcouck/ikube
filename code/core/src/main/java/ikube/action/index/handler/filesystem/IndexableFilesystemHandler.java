@@ -75,6 +75,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		do {
 			for (final File file : files) {
 				try {
+					logger.debug("Handling file : " + file);
 					handleFile(indexContext, indexableFileSystem, file);
 					Thread.sleep(indexContext.getThrottle());
 				} catch (Exception e) {
@@ -93,7 +94,6 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	 * @param file the file to parse and index
 	 */
 	void handleFile(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final File file) throws Exception {
-		// logger.error("Doing file : " + file);
 		// First we handle the zips if necessary
 		if (indexableFileSystem.isUnpackZips()) {
 			boolean isFile = file.isFile();
@@ -109,6 +109,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 						if (isExcluded(innerTFile, pattern)) {
 							continue;
 						}
+						logger.debug("Handling inner file : " + innerTFile);
 						handleFile(indexContext, indexableFileSystem, innerTFile);
 					}
 				}

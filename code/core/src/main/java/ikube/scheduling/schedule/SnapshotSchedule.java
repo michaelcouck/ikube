@@ -11,7 +11,7 @@ import ikube.model.Search;
 import ikube.model.Server;
 import ikube.model.Snapshot;
 import ikube.scheduling.Schedule;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.Logging;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
@@ -138,37 +138,41 @@ public class SnapshotSchedule extends Schedule {
 	}
 
 	void setLogTail(final Server server) {
-		File logFile = FileUtilities.findFileRecursively(new File("./" + IConstants.IKUBE), IConstants.IKUBE_LOG);
-		if (logFile != null) {
-			RandomAccessFile inputStream = null;
+		File logFile = Logging.getLogFile();
+		if (logFile == null || !logFile.exists() || !logFile.isFile() || !logFile.canRead()) {
+			String message = "Can't find log file : " + logFile;
+			LOGGER.warn(message);
+			System.err.println(message);
+			return;
+		}
+		RandomAccessFile inputStream = null;
+		try {
+			inputStream = new RandomAccessFile(logFile, "r");
+			// 1000000
+			int fileLength = (int) logFile.length();
+			// 900000
+			int offset = Math.max(fileLength - (IConstants.MILLION / 10), 0);
+			// 100000
+			int lengthToRead = Math.max(0, fileLength - offset);
+			// 100000
+			byte[] bytes = new byte[lengthToRead];
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Offset : " + offset + ", file length : " + logFile.length() + ", to read : " + lengthToRead);
+			}
+			inputStream.seek(offset);
+			inputStream.read(bytes, 0, lengthToRead);
+			server.setLogTail(new String(bytes));
+		} catch (FileNotFoundException e) {
+			LOGGER.error("Log file not found : ", e);
+		} catch (Exception e) {
+			LOGGER.error("Error reading log file : ", e);
+		} finally {
 			try {
-				inputStream = new RandomAccessFile(logFile, "r");
-				// 1000000
-				int fileLength = (int) logFile.length();
-				// 900000
-				int offset = Math.max(fileLength - (IConstants.MILLION / 10), 0);
-				// 100000
-				int lengthToRead = Math.max(0, fileLength - offset);
-				// 100000
-				byte[] bytes = new byte[lengthToRead];
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("Offset : " + offset + ", file length : " + logFile.length() + ", to read : " + lengthToRead);
+				if (inputStream != null) {
+					inputStream.close();
 				}
-				inputStream.seek(offset);
-				inputStream.read(bytes, 0, lengthToRead);
-				server.setLogTail(new String(bytes));
-			} catch (FileNotFoundException e) {
-				LOGGER.error("Log file not found : ", e);
 			} catch (Exception e) {
-				LOGGER.error("Error reading log file : ", e);
-			} finally {
-				try {
-					if (inputStream != null) {
-						inputStream.close();
-					}
-				} catch (Exception e) {
-					LOGGER.error("Exception closing the file reader on the log file : ", e);
-				}
+				LOGGER.error("Exception closing the file reader on the log file : ", e);
 			}
 		}
 	}

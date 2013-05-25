@@ -21,6 +21,11 @@
 		location="classpath:*/**/spring.properties" 
 		properties-ref="ikube.toolkit.PropertyConfigurer" />
 	
+	<bean 
+		id="ikube.toolkit.Logging" 
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+		property:staticMethod="ikube.toolkit.Logging.configure" />
+
 	<!-- This bean will look through the classpath and load every Spring properties file it finds. -->
 	<bean
 		id="ikube.toolkit.PropertyConfigurer"

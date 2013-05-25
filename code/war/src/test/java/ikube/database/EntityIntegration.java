@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.IConstants;
+import ikube.Integration;
 import ikube.model.Action;
 import ikube.model.File;
 import ikube.model.IndexContext;
@@ -35,7 +36,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
-import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -53,13 +53,11 @@ import org.springframework.util.ReflectionUtils;
  * @lastChangedBy Michael Couck
  * @lastChangedDate 16-may-12 14:22:16
  */
-public class EntityIntegration {
+public class EntityIntegration extends Integration {
 
 	private interface EntityTester {
-		void doWithEntity(Object entity, Class<?> entityClass);
+		void doWithEntity(final Object entity, final Class<?> entityClass);
 	}
-
-	static final Logger LOGGER = Logger.getLogger(EntityIntegration.class);
 
 	private IDataBase dataBase;
 	/** The names of the classes that we will test in the package. */
@@ -87,10 +85,7 @@ public class EntityIntegration {
 
 	@After
 	public void after() {
-		for (Class<?> klass : entityClasses) {
-			List<?> entities = dataBase.find(klass, 0, Integer.MAX_VALUE);
-			dataBase.removeBatch(entities);
-		}
+		delete(dataBase, entityClasses);
 	}
 
 	/**
