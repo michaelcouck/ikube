@@ -52,7 +52,7 @@
 		property:user="${mysql-userid}"
 		property:password="${mysql-password}" 
 		property:driverClass="com.mysql.jdbc.Driver" 
-		property:jdbcUrl="jdbc:mysql://localhost:3306/otrsdatabase"
+		property:jdbcUrl="jdbc:mysql://ikube.be:3306/otrsdatabase"
 		property:initialPoolSize="${jdbc.minPoolSize}" 
 		property:maxPoolSize="${jdbc.maxPoolSize}" 
 		property:maxStatements="${jdbc.maxStatements}"

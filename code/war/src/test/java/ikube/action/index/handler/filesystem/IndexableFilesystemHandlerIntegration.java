@@ -48,22 +48,9 @@ public class IndexableFilesystemHandlerIntegration extends Integration {
 			desktop.setIndexWriters(indexWriter);
 			desktop.setThrottle(10);
 
-			ThreadUtilities.submit("interrupt-test", new Runnable() {
-				public void run() {
-					ThreadUtilities.sleep(1000);
-					ThreadUtilities.destroy(desktop.getIndexName());
-				}
-			});
-
 			List<Future<?>> futures = indexableFilesystemHandler.handleIndexable(desktop, desktopFolder);
 			ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
 
-			boolean cancelled = false;
-			for (final Future<?> future : futures) {
-				logger.info("Future : " + future);
-				cancelled |= future.isCancelled();
-			}
-			assertTrue("The future must be cancelled : ", cancelled);
 			// Verify that there are some documents in the index
 			assertTrue("There should be at least one document in the index : ", desktop.getIndexWriters()[0].numDocs() > 0);
 		} finally {
