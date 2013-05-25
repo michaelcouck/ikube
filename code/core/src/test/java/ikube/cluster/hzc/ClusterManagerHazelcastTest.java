@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import mockit.Cascading;
 import mockit.Deencapsulation;
@@ -47,6 +48,7 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.IMap;
 import com.hazelcast.core.Message;
 import com.hazelcast.core.MessageListener;
+import com.hazelcast.impl.LockProxyImpl;
 
 /**
  * @author Michael Couck
@@ -65,6 +67,19 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 		@SuppressWarnings("unchecked")
 		public static <K, V> IMap<K, V> getMap(String name) {
 			return (IMap<K, V>) servers;
+		}
+	}
+
+	@MockClass(realClass = LockProxyImpl.class)
+	public static class LockProxyImplMock {
+
+		static boolean locked = false;
+
+		@Mock
+		public synchronized boolean tryLock(final long time, final TimeUnit unit) throws InterruptedException {
+			locked = !locked;
+			System.err.println("LockProxyImplMock : " + locked);
+			return locked;
 		}
 	}
 
@@ -101,7 +116,7 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 		when(entry.getValue()).thenReturn(server);
 		when(HazelcastMock.servers.entrySet()).thenReturn(entrySet);
 		when(HazelcastMock.servers.get(anyString())).thenReturn(server);
-		
+
 		Deencapsulation.setField(clusterManagerHazelcast, server);
 		Deencapsulation.setField(clusterManagerHazelcast, dataBase);
 		Deencapsulation.setField(clusterManagerHazelcast, monitorService);
@@ -120,41 +135,50 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 
 	@Test
 	public void lock() throws Exception {
-		boolean gotLock = clusterManagerHazelcast.lock(IConstants.IKUBE);
-		assertTrue(gotLock);
-		Thread thread = new Thread(new Runnable() {
-			public void run() {
-				boolean gotLock = clusterManagerHazelcast.lock(IConstants.IKUBE);
-				assertFalse(gotLock);
-			}
-		});
-		thread.start();
-		thread.join();
+		try {
+			Mockit.setUpMock(LockProxyImplMock.class);
+			boolean gotLock = clusterManagerHazelcast.lock(IConstants.IKUBE);
+			assertTrue(gotLock);
+			Thread thread = new Thread(new Runnable() {
+				public void run() {
+					boolean gotLock = clusterManagerHazelcast.lock(IConstants.IKUBE);
+					assertFalse(gotLock);
+				}
+			});
+			thread.start();
+			thread.join();
+		} finally {
+			Mockit.tearDownMocks(LockProxyImplMock.class);
+		}
 	}
 
 	@Test
 	public void unlock() throws Exception {
-		boolean gotLock = clusterManagerHazelcast.lock(IConstants.IKUBE);
-		assertTrue(gotLock);
-		Thread thread = new Thread(new Runnable() {
-			public void run() {
-				boolean gotLock = clusterManagerHazelcast.lock(IConstants.IKUBE);
-				assertFalse(gotLock);
-			}
-		});
-		thread.start();
-		Thread.sleep(1000);
+		try {
+			boolean gotLock = clusterManagerHazelcast.lock(IConstants.IKUBE);
+			assertTrue(gotLock);
+			Thread thread = new Thread(new Runnable() {
+				public void run() {
+					boolean gotLock = clusterManagerHazelcast.lock(IConstants.IKUBE);
+					assertFalse(gotLock);
+				}
+			});
+			thread.start();
+			Thread.sleep(100);
 
-		clusterManagerHazelcast.unlock(IConstants.IKUBE);
-		thread = new Thread(new Runnable() {
-			public void run() {
-				boolean gotLock = clusterManagerHazelcast.lock(IConstants.IKUBE);
-				assertTrue(gotLock);
-			}
-		});
-		thread.start();
-		thread.join();
-		Thread.sleep(1000);
+			clusterManagerHazelcast.unlock(IConstants.IKUBE);
+			thread = new Thread(new Runnable() {
+				public void run() {
+					boolean gotLock = clusterManagerHazelcast.lock(IConstants.IKUBE);
+					assertTrue(gotLock);
+				}
+			});
+			thread.start();
+			thread.join();
+			Thread.sleep(100);
+		} finally {
+			Mockit.tearDownMocks(LockProxyImplMock.class);
+		}
 	}
 
 	@Test

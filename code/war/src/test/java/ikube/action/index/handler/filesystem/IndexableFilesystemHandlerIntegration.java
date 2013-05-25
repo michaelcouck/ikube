@@ -46,11 +46,11 @@ public class IndexableFilesystemHandlerIntegration extends Integration {
 			String ip = InetAddress.getLocalHost().getHostAddress();
 			IndexWriter indexWriter = IndexManager.openIndexWriter(desktop, System.currentTimeMillis(), ip);
 			desktop.setIndexWriters(indexWriter);
-			desktop.setThrottle(60000);
+			desktop.setThrottle(10);
 
 			ThreadUtilities.submit("interrupt-test", new Runnable() {
 				public void run() {
-					ThreadUtilities.sleep(15000);
+					ThreadUtilities.sleep(1000);
 					ThreadUtilities.destroy(desktop.getIndexName());
 				}
 			});
@@ -58,17 +58,16 @@ public class IndexableFilesystemHandlerIntegration extends Integration {
 			List<Future<?>> futures = indexableFilesystemHandler.handleIndexable(desktop, desktopFolder);
 			ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
 
-			boolean atLeastOneCancelled = Boolean.FALSE;
+			boolean cancelled = false;
 			for (final Future<?> future : futures) {
 				logger.info("Future : " + future);
-				atLeastOneCancelled |= future.isCancelled();
+				cancelled |= future.isCancelled();
 			}
-			desktop.setThrottle(0);
-			assertTrue(atLeastOneCancelled);
-
+			assertTrue("The future must be cancelled : ", cancelled);
 			// Verify that there are some documents in the index
 			assertTrue("There should be at least one document in the index : ", desktop.getIndexWriters()[0].numDocs() > 0);
 		} finally {
+			desktop.setThrottle(0);
 			IndexManager.closeIndexWriters(desktop);
 			if (directory != null) {
 				directory.close();
