@@ -50,7 +50,7 @@
 	<util:list id="persistenceXmlLocations">
 		<value>classpath*:META-INF/persistence/persistence.xml</value>
 	</util:list>
-
+	
 	<!-- This bean does the injection of the entity manager into the dao. -->
 	<bean 
 		class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
@@ -77,13 +77,13 @@
 		property:database="${ikube.dataSourceType}" 
 		property:showSql="false" />
 	<util:map id="jpaPropertyMap">
-		<entry key="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" />
-		<entry key="ikube/openjpa.Log" value="DefaultLevel=ERROR,JDBC=ERROR,SQL=ERROR,File=ikube/openjpa.log,Runtime=ERROR,Tool=ERROR" />
+		<!-- <entry key="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" /> -->
+		<entry key="openjpa.Log" value="DefaultLevel=TRACE,JDBC=TRACE,SQL=TRACE,File=ikube/openjpa.log,Runtime=TRACE,Tool=TRACE" />
 
 		<entry key="openjpa.DataCache" value="true(CacheSize=0,SoftReferenceSize=0)" />
 		<entry key="openjpa.QueryCache" value="true(CacheSize=0,SoftReferenceSize=0)" />
 
-		<entry key="openjpa.Optimistic" value="false" />
+		<entry key="openjpa.Optimistic" value="true" />
 		<entry key="openjpa.ReadLockLevel" value="read" />
 		<entry key="openjpa.WriteLockLevel" value="write" />
 		<entry key="openjpa.NontransactionalRead" value="true" />
@@ -92,19 +92,23 @@
 		<entry key="openjpa.Multithreaded" value="true" />
 		<entry key="openjpa.AutoDetach" value="commit" />
 		<entry key="openjpa.FlushBeforeQueries" value="true" />
-		<!-- <entry key="openjpa.DynamicEnhancementAgent" value="true" /> -->
+		<entry key="openjpa.DynamicEnhancementAgent" value="true" />
 		<entry key="openjpa.RuntimeUnenhancedClasses" value="supported" />
 		<entry key="openjpa.jdbc.DBDictionary" value="${ikube.jdbc.dictionary}" />
-		<entry key="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
 		
 		<entry key="openjpa.Connection2UserName" value="${ikube.jdbc.userid}" />
 		<entry key="openjpa.Connection2Password" value="${ikube.jdbc.password}" />
 		<entry key="openjpa.Connection2URL" value="${ikube.jdbc.url}" />
 		<entry key="openjpa.Connection2DriverName" value="${ikube.jdbc.driver}" />
+		<entry key="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
+			
 		<entry key="openjpa.ConnectionUserName" value="${ikube.jdbc.userid}" />
 		<entry key="openjpa.ConnectionPassword" value="${ikube.jdbc.password}" />
 		<entry key="openjpa.ConnectionURL" value="${ikube.jdbc.url}" />
 		<entry key="openjpa.ConnectionDriverName" value="${ikube.jdbc.driver}" />
+		<entry key="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
+		<entry key="openjpa.jdbc.SchemaFactory" value="native(ForeignKeys=true)"/>
+		<entry key="openjpa.InverseManager" value="true(Action=warn)"/>
 	</util:map>
 
 	<transaction:advice id="transactionAdvice" transaction-manager="transactionManager">

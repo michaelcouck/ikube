@@ -2,17 +2,13 @@ package ikube.model;
 
 import static org.junit.Assert.assertTrue;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
 
 public class GenerateModelDocumentationTest {
 
-	private Logger logger = Logger.getLogger(this.getClass());
-
 	@Test
 	public void main() {
 		String html = new GenerateModelDocumentation().createEntityFieldTable();
-		logger.info("Html : " + html);
 		assertTrue(html
 				.contains("<tr><td>Indexable</td><td>name<br>address<br>stored<br>analyzed<br>vectored<br>maxExceptions<br></td>"
 						+ "<td>false<br>false<br>false<br>false<br>false<br>false<br></td><td nowrap=\"nowrap\">The name of this indexable<br>Whether "

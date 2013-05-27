@@ -24,7 +24,7 @@ import javax.validation.constraints.Min;
  */
 @Entity
 @SuppressWarnings("serial")
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Indexable<E> extends Persistable {
 
 	/** These strategies will be processed before processing the indexable. */

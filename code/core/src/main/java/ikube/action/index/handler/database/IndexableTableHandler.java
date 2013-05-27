@@ -220,7 +220,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		try {
 			// Build the sql based on the columns defined in the configuration
 			String sql = new QueryBuilder().buildQuery(indexableTable, currentId.get(), indexContext.getBatchSize());
-			logger.info("Query : " + sql);
+			logger.debug("Query : " + sql);
 			currentId.set(currentId.get() + indexContext.getBatchSize());
 			PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY,
 					ResultSet.CLOSE_CURSORS_AT_COMMIT);

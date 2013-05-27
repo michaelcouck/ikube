@@ -104,7 +104,7 @@ public final class IndexManager {
 			indexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
 			indexDirectory.setReadable(true);
 			indexDirectory.setWritable(true, false);
-			LOGGER.info("Index directory time : " + time + "date : " + new Date(time) + "writing index to directory " + indexDirectoryPath);
+			LOGGER.info("Index directory time : " + time + ", date : " + new Date(time) + ", writing index to directory " + indexDirectoryPath);
 			indexWriter = openIndexWriter(indexContext, indexDirectory, Boolean.TRUE);
 			success = Boolean.TRUE;
 		} catch (CorruptIndexException e) {

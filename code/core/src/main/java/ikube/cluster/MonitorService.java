@@ -2,7 +2,6 @@ package ikube.cluster;
 
 import ikube.IConstants;
 import ikube.cluster.listener.IListener;
-import ikube.database.IDataBase;
 import ikube.model.Attribute;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
@@ -13,7 +12,6 @@ import ikube.toolkit.FileUtilities;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,8 +34,6 @@ public class MonitorService implements IMonitorService {
 
 	private static final Logger LOGGER = Logger.getLogger(MonitorService.class);
 
-	@Autowired
-	private IDataBase dataBase;
 	@Autowired
 	private IClusterManager clusterManager;
 
@@ -75,10 +71,6 @@ public class MonitorService implements IMonitorService {
 	public Map<String, IndexContext> getIndexContexts() {
 		Map<String, IndexContext> indexContexts = new HashMap<String, IndexContext>();
 		indexContexts.putAll(ApplicationContextManager.getBeans(IndexContext.class));
-		Collection<IndexContext> dbIndexContexts = dataBase.find(IndexContext.class, 0, Integer.MAX_VALUE);
-		for (final IndexContext<?> dbIndexContext : dbIndexContexts) {
-			indexContexts.put(dbIndexContext.getName(), dbIndexContext);
-		}
 		return indexContexts;
 	}
 

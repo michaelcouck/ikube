@@ -61,17 +61,14 @@ public final class DatabaseUtilities {
 	 * @param sql the sql to execute
 	 */
 	public static void executeStatement(final DataSource dataSource, final String sql) {
-		LOGGER.info("Executing statement : " + sql + ", on data source : " + dataSource);
+		LOGGER.debug("Executing statement : " + sql + ", on data source : " + dataSource);
 		Connection connection = null;
 		Statement statement = null;
 		try {
 			connection = dataSource.getConnection();
 			statement = connection.createStatement();
 			boolean result = statement.execute(sql);
-			LOGGER.info("Result from statement : " + result);
-			if (result) {
-				LOGGER.info("Result is a result set : " + statement.getResultSet());
-			}
+			LOGGER.debug("Result from statement : " + result);
 		} catch (Exception e) {
 			LOGGER.error("Exception executing statement : " + sql + ", on data source : " + dataSource);
 			LOGGER.debug(null, e);

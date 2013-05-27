@@ -21,9 +21,6 @@ import ikube.model.Search;
 import ikube.model.Server;
 import ikube.model.Snapshot;
 import ikube.model.Url;
-import ikube.model.security.Group_;
-import ikube.model.security.Role_;
-import ikube.model.security.User_;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.ObjectToolkit;
 
@@ -64,7 +61,7 @@ public class EntityIntegration extends Integration {
 	private Class<?>[] entityClasses = new Class<?>[] { Action.class, IndexableDataSource.class, File.class, IndexableColumn.class,
 			IndexableDictionary.class, IndexableEmail.class, IndexableFileSystem.class, IndexableFileSystemLog.class,
 			IndexableFileSystemWiki.class, IndexableInternet.class, IndexableTable.class, IndexContext.class, Search.class, Server.class,
-			Snapshot.class, Url.class, User_.class, Role_.class, Group_.class };
+			Snapshot.class, Url.class };
 
 	@BeforeClass
 	public static void beforeClass() {

@@ -10,17 +10,13 @@
 
 	<persistence-unit name="IkubePersistenceUnitH2" transaction-type="RESOURCE_LOCAL">
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-		<class>ikube.model.Persistable</class>
 		
+		<class>ikube.model.Persistable</class>
 		<class>ikube.model.Url</class>
 		<class>ikube.model.File</class>
 		<class>ikube.model.Server</class>
 		<class>ikube.model.Action</class>
-		
-		<class>ikube.model.security.User_</class>
-		<class>ikube.model.security.Group_</class>
-		<class>ikube.model.security.Role_</class>
-		
+
 		<class>ikube.model.Indexable</class>
 		<class>ikube.model.IndexContext</class>
 		<class>ikube.model.IndexableDataSource</class>
@@ -32,10 +28,9 @@
 		<class>ikube.model.IndexableFileSystemCsv</class>
 		<class>ikube.model.IndexableEmail</class>
 		<class>ikube.model.IndexableColumn</class>
-		<class>ikube.model.Index</class>
 		<class>ikube.model.Search</class>
 		<class>ikube.model.Snapshot</class>
-		<class>ikube.model.DataSource</class>
+		<class>ikube.model.IndexableDataSource</class>
 		<class>ikube.model.IndexableDictionary</class>
 		
 		<class>ikube.model.geospatial.GeoName</class>
@@ -49,32 +44,34 @@
 			then OpenJpa will use these to get a connection to the db and can then commit on
 			that connection as it will not be xa. -->
 		
-		<!-- <properties>
-			<property name="openjpa.Connection2UserName" value="sa" />
+		<properties>
+			<!-- <property name="openjpa.Connection2UserName" value="sa" />
 			<property name="openjpa.Connection2Password" value="" />
 			<property name="openjpa.Connection2URL" value="jdbc:h2:file:ikube/ikube" />
 			<property name="openjpa.Connection2DriverName" value="org.h2.Driver" />
+			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
+			
 			<property name="openjpa.ConnectionUserName" value="sa" />
 			<property name="openjpa.ConnectionPassword" value="" />
 			<property name="openjpa.ConnectionURL" value="jdbc:h2:file:ikube/ikube" />
 			<property name="openjpa.ConnectionDriverName" value="org.h2.Driver" />
-			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
-		</properties> -->
+			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(SchemaAction='drop,add')" />
+			<property name="openjpa.jdbc.SchemaFactory" value="native(ForeignKeys=true)"/>
+			<property name="openjpa.InverseManager" value="true(Action=warn)"/> -->
+			<!-- <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" /> -->
+			<!-- ForeignKeys=true,Indexes=true,SchemaAction='drop,add',SchemaAction='add,deleteTableContents' -->
+		</properties>
 	</persistence-unit>
 	
  	<persistence-unit name="IkubePersistenceUnitDb2" transaction-type="RESOURCE_LOCAL">
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-		<class>ikube.model.Persistable</class>
 		
+		<class>ikube.model.Persistable</class>
 		<class>ikube.model.Url</class>
 		<class>ikube.model.File</class>
 		<class>ikube.model.Server</class>
 		<class>ikube.model.Action</class>
-		
-		<class>ikube.model.security.User_</class>
-		<class>ikube.model.security.Group_</class>
-		<class>ikube.model.security.Role_</class>
-		
+
 		<class>ikube.model.Indexable</class>
 		<class>ikube.model.IndexContext</class>
 		<class>ikube.model.IndexableDataSource</class>
@@ -88,7 +85,7 @@
 		<class>ikube.model.IndexableColumn</class>
 		<class>ikube.model.Search</class>
 		<class>ikube.model.Snapshot</class>
-		<class>ikube.model.DataSource</class>
+		<class>ikube.model.IndexableDataSource</class>
 		<class>ikube.model.IndexableDictionary</class>
 		
 		<class>ikube.model.geospatial.GeoName</class>
@@ -107,16 +104,12 @@
 	
 	<persistence-unit name="IkubePersistenceUnitOracle" transaction-type="RESOURCE_LOCAL">
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-		<class>ikube.model.Persistable</class>
 		
+		<class>ikube.model.Persistable</class>
 		<class>ikube.model.Url</class>
 		<class>ikube.model.File</class>
 		<class>ikube.model.Server</class>
 		<class>ikube.model.Action</class>
-		
-		<class>ikube.model.security.User_</class>
-		<class>ikube.model.security.Group_</class>
-		<class>ikube.model.security.Role_</class>
 
 		<class>ikube.model.Indexable</class>
 		<class>ikube.model.IndexContext</class>
@@ -131,7 +124,7 @@
 		<class>ikube.model.IndexableColumn</class>
 		<class>ikube.model.Search</class>
 		<class>ikube.model.Snapshot</class>
-		<class>ikube.model.DataSource</class>
+		<class>ikube.model.IndexableDataSource</class>
 		<class>ikube.model.IndexableDictionary</class>
 		
 		<class>ikube.model.geospatial.GeoName</class>
@@ -150,16 +143,12 @@
 	
 	<persistence-unit name="IkubePersistenceUnitPostgres" transaction-type="RESOURCE_LOCAL">
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+
 		<class>ikube.model.Persistable</class>
-		
 		<class>ikube.model.Url</class>
 		<class>ikube.model.File</class>
 		<class>ikube.model.Server</class>
 		<class>ikube.model.Action</class>
-		
-		<class>ikube.model.security.User_</class>
-		<class>ikube.model.security.Group_</class>
-		<class>ikube.model.security.Role_</class>
 
 		<class>ikube.model.Indexable</class>
 		<class>ikube.model.IndexContext</class>
@@ -174,7 +163,7 @@
 		<class>ikube.model.IndexableColumn</class>
 		<class>ikube.model.Search</class>
 		<class>ikube.model.Snapshot</class>
-		<class>ikube.model.DataSource</class>
+		<class>ikube.model.IndexableDataSource</class>
 		<class>ikube.model.IndexableDictionary</class>
 		
 		<class>ikube.model.geospatial.GeoName</class>

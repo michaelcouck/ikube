@@ -30,6 +30,30 @@
 			</resource>
 		</resources>
 		<plugins>
+			<!-- <plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<configuration>
+					<executable>java</executable>
+					<mainClass>ikube.ant.SshXcuteTask</mainClass>
+					<classpathScope>compile</classpathScope>
+					<goal>java</goal>
+					<arguments>
+						<argument>192.168.1.8</argument>
+						<argument>michael</argument>
+						<argument>password</argument>
+						<argument>cd /opt/apache-tomcat-7.0.33-8080/bin;./startup.sh;</argument>
+					</arguments>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>install</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin> -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -64,15 +88,15 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- <plugin>
+				<groupId>de.saumya.mojo</groupId>
+				<artifactId>bundler-maven-plugin</artifactId>
+			</plugin>
 			<plugin>
-					<groupId>de.saumya.mojo</groupId>
-					<artifactId>bundler-maven-plugin</artifactId>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.felix</groupId>
-					<artifactId>maven-bundle-plugin</artifactId>
-					<extensions>true</extensions>
-				</plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
+			</plugin> -->
 		</plugins>
 	</build>
 

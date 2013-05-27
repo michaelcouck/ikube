@@ -36,6 +36,8 @@ public class IndexableFilesystemHandlerIntegration extends Integration {
 		indexableFilesystemHandler = ApplicationContextManager.getBean(IndexableFilesystemHandler.class.getName());
 
 		desktopFolder.setPath(dataIndexFolderPath);
+		// This should be true for performance testing
+		desktopFolder.setUnpackZips(Boolean.FALSE);
 
 		String ip = UriUtilities.getIp();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(desktop, System.currentTimeMillis(), ip);

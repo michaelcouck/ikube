@@ -3,9 +3,6 @@ package ikube.cluster;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
-import ikube.cluster.IMonitorService;
-import ikube.cluster.MonitorService;
-import ikube.database.IDataBase;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
@@ -19,12 +16,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import mockit.Deencapsulation;
 import mockit.Mockit;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +30,6 @@ public class MonitorServiceTest extends AbstractTest {
 	private IMonitorService monitorService;
 
 	@Before
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void before() {
 		monitorService = new MonitorService();
 
@@ -47,11 +41,8 @@ public class MonitorServiceTest extends AbstractTest {
 
 		Mockit.setUpMocks(ApplicationContextManagerMock.class);
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
-		IDataBase dataBase = Mockito.mock(IDataBase.class);
-		Deencapsulation.setField(monitorService, dataBase);
 
-		List<IndexContext> indexContexts = new ArrayList<IndexContext>(Arrays.asList(indexContext));
-		Mockito.when(dataBase.find(IndexContext.class, 0, Integer.MAX_VALUE)).thenReturn(indexContexts);
+		ApplicationContextManagerMock.INDEX_CONTEXT = indexContext;
 	}
 
 	@Test
