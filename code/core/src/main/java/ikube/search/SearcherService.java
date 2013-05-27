@@ -309,8 +309,7 @@ public class SearcherService implements ISearcherService {
 	}
 
 	private ArrayList<HashMap<String, String>> handleException(final String indexName, final Exception e) {
-		LOGGER.error("Exception doing search on : " + indexName);
-		LOGGER.debug(null, e);
+		LOGGER.error("Exception doing search on : " + indexName, e);
 		return EMPTY_RESULTS;
 	}
 
