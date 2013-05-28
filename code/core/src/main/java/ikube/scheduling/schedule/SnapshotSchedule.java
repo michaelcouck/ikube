@@ -24,6 +24,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -33,9 +34,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * This schedule will take a snapshot of various system states periodically, including the cpu, how many searches there have been on all the
- * indexes etc. Snapshots are then persisted to the database, and cleaned from time to time in the {@link Purge} action so the database
- * doesn't fill up. Typically we only need a few snapshots and not two weeks worth. This schedule should run every minute.
+ * This schedule will take a snapshot of various system states periodically, including the cpu, how many searches there have been on all the indexes etc.
+ * Snapshots are then persisted to the database, and cleaned from time to time in the {@link Purge} action so the database doesn't fill up. Typically we only
+ * need a few snapshots and not two weeks worth. This schedule should run every minute.
  * 
  * @author Michael Couck
  * @since 22.07.12
@@ -87,8 +88,8 @@ public class SnapshotSchedule extends Schedule {
 				dataBase.persist(snapshot);
 				String[] names = new String[] { "indexContext" };
 				Object[] values = new Object[] { indexContext.getName() };
-				List<Snapshot> snapshots = dataBase.find(Snapshot.class, Snapshot.SELECT_SNAPSHOTS_ORDER_BY_TIMESTAMP_DESC, names, values,
-						0, MAX_SNAPSHOTS_CONTEXT);
+				List<Snapshot> snapshots = dataBase.find(Snapshot.class, Snapshot.SELECT_SNAPSHOTS_ORDER_BY_TIMESTAMP_DESC, names, values, 0,
+						MAX_SNAPSHOTS_CONTEXT);
 				List<Snapshot> sortedSnapshots = sortSnapshots(snapshots);
 				indexContext.setSnapshots(sortedSnapshots);
 
@@ -104,6 +105,9 @@ public class SnapshotSchedule extends Schedule {
 				LOGGER.error("Exception persisting snapshot : ", e);
 			}
 		}
+		// Pop the server back in the grid, updated for the others to see
+		LOGGER.info("Putting server back : " + new Date(server.getAge()));
+		clusterManager.put(server.getAddress(), server);
 	}
 
 	protected List<Snapshot> sortSnapshots(final List<Snapshot> snapshots) {
@@ -128,6 +132,8 @@ public class SnapshotSchedule extends Schedule {
 		server.setMaxMemory(Runtime.getRuntime().maxMemory() / IConstants.MILLION);
 		server.setTotalMemory(Runtime.getRuntime().totalMemory() / IConstants.MILLION);
 		server.setThreadsRunning(ThreadUtilities.isInitialized());
+		server.setAge(System.currentTimeMillis());
+		server.setTimestamp(new Timestamp(System.currentTimeMillis()));
 		try {
 			long availableDiskSpace = FileSystemUtils.freeSpaceKb("/") / IConstants.MILLION;
 			server.setFreeDiskSpace(availableDiskSpace);
@@ -179,8 +185,7 @@ public class SnapshotSchedule extends Schedule {
 
 	@SuppressWarnings("rawtypes")
 	protected Number getTotalSearchesForIndex(final IndexContext indexContext) {
-		return dataBase.execute(Search.SELECT_FROM_SEARCH_COUNT_SEARCHES, new String[] { "indexName" },
-				new Object[] { indexContext.getIndexName() });
+		return dataBase.execute(Search.SELECT_FROM_SEARCH_COUNT_SEARCHES, new String[] { "indexName" }, new Object[] { indexContext.getIndexName() });
 	}
 
 	protected long getSearchesPerMinute(final IndexContext<?> indexContext, final Snapshot snapshot) {

@@ -7,8 +7,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
- * This is the interface that will synchronize and coordinate the servers in the cluster. The implementors are critical to the functioning
- * of Ikube.
+ * This is the interface that will synchronize and coordinate the servers in the cluster. The implementors are critical to the functioning of Ikube.
  * 
  * @author Michael Couck
  * @since 21.11.10
@@ -35,8 +34,8 @@ public interface IClusterManager {
 	/**
 	 * This method checks whether there are any servers that are working on any index, anywhere in the cluster.
 	 * 
-	 * @return whether there are any servers in the cluster that are working excluding this one. If this server is working then the server
-	 *         must be retrieved with the {@link IClusterManager#getServer()} and check the {@link Server#getWorking()} method
+	 * @return whether there are any servers in the cluster that are working excluding this one. If this server is working then the server must be retrieved
+	 *         with the {@link IClusterManager#getServer()} and check the {@link Server#getWorking()} method
 	 */
 	boolean anyWorking();
 
@@ -59,8 +58,7 @@ public interface IClusterManager {
 	Action startWorking(final String actionName, final String indexName, final String indexableName);
 
 	/**
-	 * Stops the server working. This will broadcast to the cluster that the action/job is finished. This indicates that another server can
-	 * start working.
+	 * Stops the server working. This will broadcast to the cluster that the action/job is finished. This indicates that another server can start working.
 	 * 
 	 * @param action the action that was started
 	 */
@@ -81,12 +79,16 @@ public interface IClusterManager {
 	Map<String, Server> getServers();
 
 	/**
-	 * Sends a message to the cluster. Messages may include actions that this server is working on, or a lock attempt, or the server object
-	 * to stay in the cluster club.
+	 * Sends a message to the cluster. Messages may include actions that this server is working on, or a lock attempt, or the server object to stay in the
+	 * cluster club.
 	 * 
 	 * @param serializable the object to send to the cluster
 	 */
 	void sendMessage(final Serializable serializable);
+
+	Object get(final Object key);
+
+	void put(final Object key, final Serializable object);
 
 	/**
 	 * This method will remove an object from the grid.

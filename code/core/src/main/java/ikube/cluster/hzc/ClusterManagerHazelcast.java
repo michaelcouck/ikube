@@ -218,4 +218,20 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 		Hazelcast.shutdownAll();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Object get(final Object key) {
+		return Hazelcast.getMap(IConstants.IKUBE).get(key);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void put(final Object key, final Serializable value) {
+		Hazelcast.getMap(IConstants.IKUBE).put(key, value);
+	}
+
 }
