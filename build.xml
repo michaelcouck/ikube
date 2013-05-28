@@ -10,75 +10,68 @@
 	
 	<taskdef name="sshexcute" classname="ikube.ant.SshXcuteTask" classpath="classes" />
 	
-	<target name="start-tomcat">
-		<antcall target="execute-remote-command">
-			<param name="userid" value="michael|michael" />
-			<param name="password" value="password|password" />
-			<param name="server-ip" value="192.168.1.8|192.168.1.8" />
-			<param name="command" value="cd ${tomcat-bin-directory};./catalina.sh start;|cd ${tomcat-bin-directory};./catalina.sh stop;" />
-		</antcall>
-	</target>
-		
-	<target name="deploy-to-servers">
-		<antcall target="go">
-			<param name="userid" value="${userids}" />
-			<param name="password" value="${passwords}" />
-			<param name="server-ip" value="${server-ips}" />
-		</antcall>
-	</target>
-
 	<target name="go">
 		<antcall target="prepare" />
 		<!-- Deploy the configuration and ikube and start the servers -->
-		<antcall target="go-server" inheritall="true">
-			<param name="tomcat-home" value="${tomcat-directory}" />
-		</antcall>
+		<antcall target="go-server" inheritall="true" />
 	</target>
 
 	<target name="go-server">
 		<!-- Stop the server -->
 		<antcall target="execute-remote-command">
-			<param name="command" value=". /etc/profile;cd ${tomcat-bin-directory};./catalina.sh stop;" />
+			<param name="command" value="
+				. /etc/profile;
+				cd ${tomcat-bin-directory};
+				./catalina.sh stop;" />
 		</antcall>
 		<sleep seconds="10" />
 		<!-- Hard kill the server just in case -->
 		<antcall target="execute-remote-command">
-			<param name="command" value="ps -ef | grep apache-tomcat-7.0.33-8080 | grep -v grep | awk '{print $2}' | xargs kill -9;" />
+			<param name="command" value="
+				ps -ef | grep apache-tomcat-7.0.33-8080 | grep -v grep | awk '{print $2}' | xargs kill -9;" />
 		</antcall>
 		<!-- Clean all the output folders and the configuration -->
 		<antcall target="execute-remote-command">
 			<param name="command" value="
 					. /etc/profile;
-					chmod 777 -R ${tomcat-home};
-					rm -rf ${tomcat-home}/bin/ikube;
-					rm -rf ${tomcat-home}/webapps/ikube*;
-					rm -rf ${tomcat-home}/logs;
-					rm -rf ${tomcat-home}/temp;
-					rm -rf ${tomcat-home}/work/Catalina/localhost;
-					mkdir -p ${tomcat-home}/bin/ikube;
-					mkdir -p ${tomcat-home}/logs;
-					mkdir -p ${tomcat-home}/temp;
-					mkdir -p ${tomcat-home}/work/Catalina/localhost;
-					chmod 777 -R ${tomcat-home};" />
+					chmod 777 -R ${tomcat-directory};
+					rm -rf ${tomcat-directory}/bin/ikube;
+					rm -rf ${tomcat-directory}/webapps/ikube*;
+					rm -rf ${tomcat-directory}/logs;
+					rm -rf ${tomcat-directory}/temp;
+					rm -rf ${tomcat-directory}/work/Catalina/localhost;
+					mkdir -p ${tomcat-directory}/bin/ikube;
+					mkdir -p ${tomcat-directory}/logs;
+					mkdir -p ${tomcat-directory}/temp;
+					mkdir -p ${tomcat-directory}/work/Catalina/localhost;
+					chmod 777 -R ${tomcat-directory};" />
 		</antcall>
 		<!-- Deploy the configuration to the server -->
 		<antcall target="copy-directory-to-server">
 			<param name="directory-to-copy" value="${configuration-directory}" />
-			<param name="server-directory" value="${tomcat-home}/bin/ikube" />
+			<param name="server-directory" value="${tomcat-directory}/bin/ikube" />
 		</antcall>
 		<!-- Deploy Ikube to the server -->
 		<antcall target="copy-file-to-server">
 			<param name="file-to-copy" value="${target-directory}/${ikube-war}" />
-			<param name="server-directory" value="${tomcat-home}/webapps" />
-		</antcall>
-		<!-- Change the directory permissions just in case -->
-		<antcall target="execute-remote-command">
-			<param name="command" value="chmod 777 -R ${tomcat-home};" />
+			<param name="server-directory" value="${tomcat-directory}/webapps" />
 		</antcall>
 		<!-- Start the server again -->
 		<antcall target="execute-remote-command">
-			<param name="command" value=". /etc/profile;cd ${tomcat-bin-directory};./catalina.sh start;" />
+			<param name="command" value="
+				. /etc/profile;
+				chmod 777 -R ${tomcat-directory};
+				cd ${tomcat-bin-directory};
+				./catalina.sh start;" />
 		</antcall>
+	</target>
+	
+	<target name="execute-remote-command">
+		<sshexcute 
+			ips="${server-ip}" 
+			usernames="${userid}" 
+			passwords="${password}" 
+			commands="${command}" />
 	</target>
 	
 	<target name="copy-directory-to-server">
@@ -99,14 +92,6 @@
 			trust="true">
 			<fileset file="${file-to-copy}" />
 		</scp>
-	</target>
-
-	<target name="execute-remote-command">
-		<sshexcute 
-			ips="${server-ip}" 
-			usernames="${userid}" 
-			passwords="${password}" 
-			commands="${command}" />
 	</target>
 
 	<target name="prepare">

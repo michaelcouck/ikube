@@ -32,7 +32,7 @@ public class SshXcuteTaskTest {
 
 	@Test
 	public void setCommands() {
-		sshXcuteTask.setCommands("hello:world|:commands,,|,|to be done");
+		sshXcuteTask.setCommands("hello\tworld	commands\r\nto be done");
 		String[] commands = sshXcuteTask.getCommands();
 		assertEquals("hello", commands[0]);
 		assertEquals("world", commands[1]);
@@ -42,7 +42,7 @@ public class SshXcuteTaskTest {
 
 	@Test
 	public void splitString() {
-		String[] splitString = sshXcuteTask.splitString("192.168.1.8|192.168.1.8", SshXcuteTask.DELIMITERS);
+		String[] splitString = sshXcuteTask.splitString("192.168.1.8	192.168.1.8", SshXcuteTask.DELIMITERS);
 		assertEquals("192.168.1.8", splitString[0]);
 		assertEquals("192.168.1.8", splitString[1]);
 	}

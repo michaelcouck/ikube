@@ -32,12 +32,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
+import java.util.concurrent.RecursiveAction;
 
 import javax.swing.text.html.HTML;
 
@@ -54,101 +55,22 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * This is the crawler for internet and intranets sites. There are several levels of caches to improve performance in this class. Firstly
- * the JPA cache provided by the implementation. Then the query cache also from the JPA implementation. There is a new cache that is used to
- * cache new urls to batch them for insert, and then there is the url cache that is added to manually.
+ * This is the crawler for internet and intranets sites. There are several levels of caches to improve performance in this class. Firstly the JPA cache provided
+ * by the implementation. Then the query cache also from the JPA implementation. There is a new cache that is used to cache new urls to batch them for insert,
+ * and then there is the url cache that is added to manually.
  * 
- * This class is optimized for performance, as such the elegance has taken a back seat. To facilitate several hundred million pages
- * performance was by far the most important aspect of this logic. Memory concerns and trips to the database are critical, and we would like
- * to keep both to an absolute minimum, ergo the caches.
+ * This class is optimized for performance, as such the elegance has taken a back seat. To facilitate several hundred million pages performance was by far the
+ * most important aspect of this logic. Memory concerns and trips to the database are critical, and we would like to keep both to an absolute minimum, ergo the
+ * caches.
  * 
  * @author Michael Couck
  * @since 29.11.10
  * @version 01.00
  */
 public class IndexableInternetHandler extends IndexableHandler<IndexableInternet> {
-
-	class IndexableInternetHandlerWorker implements Runnable {
-
-		final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-		Stack<Url> in;
-		Set<Long> out;
-		boolean waiting;
-		IndexContext<?> indexContext;
-		IndexableInternet indexableInternet;
-		List<IndexableInternetHandlerWorker> handlerWorkers;
-
-		IndexableInternetHandlerWorker(final IndexContext<?> indexContext, final IndexableInternet indexable,
-				final List<IndexableInternetHandlerWorker> handlerWorkers, final Stack<Url> in, final Set<Long> out) {
-			this.indexContext = indexContext;
-			this.indexableInternet = (IndexableInternet) SerializationUtilities.clone(indexable);
-			this.indexableInternet.setParent(indexContext);
-			this.handlerWorkers = handlerWorkers;
-			this.in = in;
-			this.out = out;
-		}
-
-		public void run() {
-			HttpClient httpClient = new HttpClient();
-			IContentProvider<IndexableInternet> contentProvider = new InternetContentProvider();
-			if (indexableInternet.getLoginUrl() != null) {
-				login(indexableInternet, httpClient);
-			}
-			while (ThreadUtilities.isInitialized()) {
-				List<Url> urls = null;
-				try {
-					urls = getUrlBatch(indexableInternet, in, out);
-				} catch (InterruptedException e) {
-					handleException(indexableInternet, e);
-				}
-				if (urls != null && urls.isEmpty()) {
-					// Check if there are any other threads still working
-					// other than this thread of course
-					waiting = Boolean.TRUE;
-					if (areRunning(handlerWorkers)) {
-						synchronized (this) {
-							try {
-								wait(1000);
-							} catch (Exception e) {
-								handleException(indexableInternet, e);
-							}
-						}
-					} else {
-						// Return and die
-						break;
-					}
-				}
-				doUrls(indexContext, indexableInternet, urls, contentProvider, httpClient, in, out);
-			}
-		}
-
-		/**
-		 * This method checks to see that there is at least one other thread that is still in the runnable state. If there are no other
-		 * threads in the runnable state then all the urls have been visited on this base url. There will also be no more urls added so we
-		 * can exit this thread.
-		 * 
-		 * @param handlerWorkers the threads to check for the runnable state
-		 * @return true if there is at least one other thread that is in the runnable state
-		 */
-		protected synchronized boolean areRunning(final List<IndexableInternetHandlerWorker> handlerWorkers) {
-			try {
-				for (final IndexableInternetHandlerWorker handlerWorker : handlerWorkers) {
-					if (!handlerWorker.waiting) {
-						return Boolean.TRUE;
-					}
-				}
-				return Boolean.FALSE;
-			} finally {
-				notifyAll();
-			}
-		}
-	}
 
 	@Autowired
 	@SuppressWarnings("rawtypes")
@@ -160,23 +82,54 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	@Override
 	public List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final IndexableInternet indexable) throws Exception {
 		// The start url
-		List<Future<?>> futures = new ArrayList<Future<?>>();
 		try {
-			List<IndexableInternetHandlerWorker> handlerWorkers = new ArrayList<IndexableInternetHandler.IndexableInternetHandlerWorker>();
-			Stack<Url> in = new Stack<Url>();
-			Set<Long> out = new TreeSet<Long>();
+			final ForkJoinPool forkJoinPool = new ForkJoinPool(getThreads());
+			final Stack<Url> in = new Stack<Url>();
+			final Set<Long> out = new TreeSet<Long>();
 			seedUrl(indexable, in, out);
-			for (int i = 0; i < getThreads(); i++) {
-				IndexableInternetHandlerWorker handlerWorker = new IndexableInternetHandlerWorker(indexContext, indexable, handlerWorkers,
-						in, out);
-				handlerWorkers.add(handlerWorker);
-				Future<?> future = ThreadUtilities.submit(indexContext.getIndexName(), handlerWorker);
-				futures.add(future);
-			}
+			RecursiveAction recursiveAction = getRecursiveAction(indexContext, indexable, in, out, forkJoinPool);
+			forkJoinPool.invoke(recursiveAction);
+			recursiveAction.join();
 		} catch (Exception e) {
 			handleException(indexable, e);
 		}
-		return futures;
+		return new ArrayList<Future<?>>();
+	}
+
+	private RecursiveAction getRecursiveAction(final IndexContext<?> indexContext, final IndexableInternet indexable, final Stack<Url> in, final Set<Long> out,
+			final ForkJoinPool forkJoinPool) {
+		RecursiveAction recursiveAction = new RecursiveAction() {
+			@Override
+			protected void compute() {
+				logger.debug("Started executing : " + in.size() + ", " + this.hashCode());
+				IndexableInternet indexableInternet = (IndexableInternet) SerializationUtilities.clone(indexable);
+				do {
+					try {
+						HttpClient httpClient = new HttpClient();
+						IContentProvider<IndexableInternet> contentProvider = new InternetContentProvider();
+						doUrl(indexContext, indexable, in.pop(), contentProvider, httpClient, in, out);
+						if (in.size() > indexableInternet.getInternetBatchSize() * 2 && forkJoinPool.getRunningThreadCount() < getThreads()) {
+							// If there are many urls in the pool then fork off a few threads to handle the excess load,
+							// we execute the first, and join the second, with a little luck they will finish at the same time roughly
+							RecursiveAction leftRecursiveAction = getRecursiveAction(indexContext, indexableInternet, in, out, forkJoinPool);
+							RecursiveAction rightRecursiveAction = getRecursiveAction(indexContext, indexableInternet, in, out, forkJoinPool);
+							logger.debug("Joining : " + forkJoinPool.getRunningThreadCount() + ", " + rightRecursiveAction.hashCode() + ", " + this.hashCode());
+							invokeAll(leftRecursiveAction, rightRecursiveAction);
+							logger.debug("Finished joining : " + rightRecursiveAction.hashCode() + ", " + this.hashCode());
+						}
+						logger.debug("Done urls : " + out.size());
+						logger.debug("Still to do urls : " + in.size());
+						if (!ThreadUtilities.isInitialized()) {
+							throw new InterruptedException("Indexing terminated : ");
+						}
+					} catch (InterruptedException e) {
+						handleException(indexable, e, e.getMessage());
+					}
+				} while (in.size() > 0 && ThreadUtilities.isInitialized());
+				logger.debug("Finished executing : " + in.size() + ", " + this.hashCode());
+			}
+		};
+		return recursiveAction;
 	}
 
 	/**
@@ -188,50 +141,18 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 * @param contentProvider the content provider for http pages
 	 * @param httpClient the client to use for accessing the pages over http
 	 */
-	protected void doUrls(final IndexContext<?> indexContext, final IndexableInternet indexable, final List<Url> urlBatch,
+	protected void doUrl(final IndexContext<?> indexContext, final IndexableInternet indexable, Url url,
 			final IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient, Stack<Url> in, Set<Long> out) {
-		Iterator<Url> urlIterator = urlBatch.iterator();
-		while (urlIterator.hasNext() && ThreadUtilities.isInitialized()) {
-			Url url = urlIterator.next();
-			try {
-				Thread.sleep(indexContext.getThrottle());
-				handle(indexContext, indexable, url, contentProvider, httpClient, in, out);
-			} catch (Exception e) {
-				handleException(indexable, e);
-			} finally {
-				url.setParsedContent(null);
-				url.setRawContent(null);
-				url.setTitle(null);
-				url.setContentType(null);
-			}
-		}
-	}
-
-	/**
-	 * This method gets the next batch of urls from the stack that have not been visited yet in this iteration. The urls that are returned
-	 * will have had the indexed flag set to true and merged back into the stack.
-	 * 
-	 * @param indexableInternet the base indexable for the url
-	 * @param in the input stack of urls that have not been indexed
-	 * @param out the output stack of hashes of urls that have been indexed
-	 * @return the list of urls that have not been visited, this list could be empty if there are no urls that have not been visited
-	 * @throws InterruptedException
-	 */
-	protected synchronized List<Url> getUrlBatch(final IndexableInternet indexableInternet, Stack<Url> in, Set<Long> out)
-			throws InterruptedException {
 		try {
-			List<Url> urls = new ArrayList<Url>();
-			while (!in.isEmpty() && urls.size() <= indexableInternet.getInternetBatchSize()) {
-				Url url = in.pop();
-				urls.add(url);
-				out.add(HashUtilities.hash(url.getUrl()));
-			}
-			// logger.info("Done urls : " + out.size() + ", " + Thread.currentThread().hashCode());
-			// logger.info("Doing urls : " + urls.size());
-			// logger.info("Still to do urls : " + in.size());
-			return urls;
+			Thread.sleep(indexContext.getThrottle());
+			handle(indexContext, indexable, url, contentProvider, httpClient, in, out);
+		} catch (Exception e) {
+			handleException(indexable, e);
 		} finally {
-			notifyAll();
+			url.setParsedContent(null);
+			url.setRawContent(null);
+			url.setTitle(null);
+			url.setContentType(null);
 		}
 	}
 
@@ -247,6 +168,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	protected void handle(final IndexContext<?> indexContext, final IndexableInternet indexable, final Url url,
 			final IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient, Stack<Url> in, Set<Long> out) {
 		try {
+			logger.debug("Doing url : " + url.getUrl());
 			// Get the content from the url
 			ByteOutputStream byteOutputStream = getContentFromUrl(contentProvider, httpClient, indexable, url);
 			if (byteOutputStream == null || byteOutputStream.size() == 0) {
@@ -355,16 +277,15 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	}
 
 	/**
-	 * Adds the document to the index with all the defined fields. Typically the fields are the title, the field names that are defined in
-	 * the configuration and the content field name.
+	 * Adds the document to the index with all the defined fields. Typically the fields are the title, the field names that are defined in the configuration and
+	 * the content field name.
 	 * 
 	 * @param indexable the indexable or base host for this crawl
 	 * @param url the url being added to the index, i.e. just been visited and the data has been extracted
 	 * @param parsedContent the content that was extracted from the url
 	 */
 	@SuppressWarnings("unchecked")
-	public Document handleResource(final IndexContext<?> indexContext, final IndexableInternet indexable, final Document document,
-			final Object resource) {
+	public Document handleResource(final IndexContext<?> indexContext, final IndexableInternet indexable, final Document document, final Object resource) {
 		Url url = (Url) resource;
 		try {
 			Store store = indexable.isStored() ? Store.YES : Store.NO;
@@ -399,14 +320,13 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	}
 
 	/**
-	 * Extracts all the links from the content and sets them in the cluster wide cache. The cache is persistence backed so any overflow then
-	 * goes to a local object oriented database on each server.
+	 * Extracts all the links from the content and sets them in the cluster wide cache. The cache is persistence backed so any overflow then goes to a local
+	 * object oriented database on each server.
 	 * 
 	 * @param indexableInternet the indexable that is being crawled
 	 * @param inputStream the input stream of the data from the base url, i.e. the html
 	 */
-	protected void extractLinksFromContent(final IndexableInternet indexableInternet, final InputStream inputStream, final Stack<Url> in,
-			final Set<Long> out) {
+	protected void extractLinksFromContent(final IndexableInternet indexableInternet, final InputStream inputStream, final Stack<Url> in, final Set<Long> out) {
 		try {
 			Reader reader = new InputStreamReader(inputStream, IConstants.ENCODING);
 			Source source = new Source(reader);
@@ -449,7 +369,8 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 							url.setName(indexableInternet.getName());
 							url.setIndexed(Boolean.FALSE);
 							url.setUrl(strippedAnchorLink);
-							// Add the new url to the cache, we'll batch them in an insert later
+							// logger.info("Adding url : " + url.getUrl());
+							// Add the new url to the cache
 							in.push(url);
 						} catch (Exception e) {
 							handleException(indexableInternet, e);
@@ -490,8 +411,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			loginUrl = new URL(indexableInternet.getLoginUrl());
 			String userid = indexableInternet.getUserid();
 			String password = indexableInternet.getPassword();
-			new WebServiceAuthentication().authenticate(httpClient, loginUrl.getHost(), Integer.toString(loginUrl.getPort()), userid,
-					password);
+			new WebServiceAuthentication().authenticate(httpClient, loginUrl.getHost(), Integer.toString(loginUrl.getPort()), userid, password);
 		} catch (Exception e) {
 			handleException(indexableInternet, e);
 		}

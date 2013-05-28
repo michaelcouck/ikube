@@ -31,6 +31,7 @@ module.directive('searching', function($http) {
 		link : function($scope, $elm, $attr) {
 			$scope.options = { 
 				title : 'Searching performance',
+				height : 200,
 				legend : { position : 'top', textStyle : { color : 'black', fontSize : 10 } } };
 			$scope.drawSearchingChart = function() {
 				$scope.url = getServiceUrl('/ikube/service/monitor/searching');
@@ -63,6 +64,7 @@ module.directive('indexing', function($http) {
 		link : function($scope, $elm, $attr) {
 			$scope.options = { 
 				title : 'Indexing performance',
+				height : 200,
 				legend : { position : 'top', textStyle : { color : 'black', fontSize : 10 } } };
 			$scope.drawIndexingChart = function() {
 				$scope.url = getServiceUrl('/ikube/service/monitor/indexing');

@@ -42,14 +42,11 @@ public class IndexableInternetHandlerTest extends AbstractTest {
 		indexableInternet.setIdFieldName(IConstants.ID);
 		indexableInternet.setTitleFieldName(IConstants.TITLE);
 		indexableInternet.setContentFieldName(IConstants.CONTENT);
-		indexableInternet.setUrl("https://code.google.com/p/ikube/");
 
 		indexableInternetHandler = new IndexableInternetHandler();
-		indexableInternetHandler.setThreads(1);
 
 		resourceBaseHandler = new ResourceHandlerBase<IndexableInternet>() {
-			public Document handleResource(IndexContext<?> indexContext, IndexableInternet indexable, Document document, Object resource)
-					throws Exception {
+			public Document handleResource(IndexContext<?> indexContext, IndexableInternet indexable, Document document, Object resource) throws Exception {
 				documents.add(document);
 				return document;
 			}
@@ -60,6 +57,15 @@ public class IndexableInternetHandlerTest extends AbstractTest {
 	@After
 	public void after() {
 		ThreadUtilities.destroy();
+	}
+
+	@Test
+	public void handleIndexable() throws Exception {
+		indexableInternetHandler.setThreads(3);
+		indexableInternet.setUrl("http://www.ikube.be/site/");
+		indexableInternetHandler.handleIndexable(indexContext, indexableInternet);
+		logger.info("Documents size : " + documents.size());
+		assertTrue(documents.size() > 0);
 	}
 
 	@Test

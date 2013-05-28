@@ -24,7 +24,7 @@ public class SshXcuteTask extends Task {
 
 	static final Logger LOGGER = Logger.getLogger(SshXcuteTask.class.getName());
 
-	static final String DELIMITERS = "|:,";
+	static final String DELIMITERS = "\n\r\t		";
 
 	private String[] ips;
 	private String[] usernames;
