@@ -40,7 +40,7 @@ public class ServerRemovalSchedule extends Schedule {
 			}
 			long age = System.currentTimeMillis() - server.getAge();
 			if (age > IConstants.MAX_AGE) {
-				LOGGER.info("Removing server : " + server.getAddress() + ", age : " + (age > IConstants.MAX_AGE));
+				LOGGER.info("Removing server : " + server.getAddress() + ", age : " + age + ", " + (age > IConstants.MAX_AGE));
 				clusterManager.remove(server.getAddress());
 			}
 		}

@@ -1,30 +1,18 @@
 package ikube.toolkit;
 
 import ikube.IConstants;
-import ikube.database.IDataBase;
-import ikube.model.IndexContext;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.AbstractRefreshableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
@@ -39,8 +27,7 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 
 	private static final Logger LOGGER;
 	/** The default location of the configuration files is in the ikube folder at the base of the server. */
-	private static final String EXTERNAL_SPRING_CONFIGURATION_FILE = "." + IConstants.SEP + IConstants.IKUBE + IConstants.SEP
-			+ IConstants.SPRING_XML;
+	private static final String EXTERNAL_SPRING_CONFIGURATION_FILE = "." + IConstants.SEP + IConstants.IKUBE + IConstants.SEP + IConstants.SPRING_XML;
 
 	private static ApplicationContext APPLICATION_CONTEXT;
 
@@ -62,17 +49,7 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 				LOGGER.info("Configuration property file : " + ikubeConfigurationPathProperty);
 				// First try the configuration property
 				if (ikubeConfigurationPathProperty != null) {
-					if (ikubeConfigurationPathProperty.toString().startsWith("file")) {
-						URL url;
-						try {
-							url = new URL(ikubeConfigurationPathProperty.toString());
-							configFile = new File(url.getFile());
-						} catch (MalformedURLException e) {
-							throw new RuntimeException("Couldn't load configuration : " + ikubeConfigurationPathProperty);
-						}
-					} else {
-						configFile = new File(ikubeConfigurationPathProperty.toString());
-					}
+					configFile = new File(ikubeConfigurationPathProperty.toString());
 				}
 				// See if there is a configuration file at the base of where the Jvm was started
 				if (configFile == null || !configFile.isFile()) {
@@ -125,8 +102,8 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 	}
 
 	/**
-	 * Convenience method to get the bean type from the bean name. Note that this method is not type checked and there is a distinct
-	 * possibility for a class cast exception.
+	 * Convenience method to get the bean type from the bean name. Note that this method is not type checked and there is a distinct possibility for a class
+	 * cast exception.
 	 * 
 	 * @param name the name of the bean
 	 * @return the bean with the specified name
@@ -217,38 +194,6 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 			((AbstractApplicationContext) ApplicationContextManager.APPLICATION_CONTEXT).registerShutdownHook();
 		} else {
 			LOGGER.info("Application context already loaded : " + APPLICATION_CONTEXT);
-		}
-		// registerIndexContexts(APPLICATION_CONTEXT);
-	}
-
-	@SuppressWarnings({ "rawtypes", "unused" })
-	private void registerIndexContexts(final ApplicationContext applicationContext) {
-		DefaultListableBeanFactory defaultListableBeanFactory = null;
-		if (AbstractRefreshableApplicationContext.class.isAssignableFrom(APPLICATION_CONTEXT.getClass())) {
-			AbstractRefreshableApplicationContext xmlWebApplicationContext = (AbstractRefreshableApplicationContext) applicationContext;
-			defaultListableBeanFactory = (DefaultListableBeanFactory) xmlWebApplicationContext.getBeanFactory();
-		} else {
-			defaultListableBeanFactory = new DefaultListableBeanFactory();
-			defaultListableBeanFactory.setParentBeanFactory(applicationContext);
-		}
-		IDataBase dataBase = applicationContext.getBean(IDataBase.class);
-		List<IndexContext> indexContexts = dataBase.find(IndexContext.class, 0, Integer.MAX_VALUE);
-		for (IndexContext indexContext : indexContexts) {
-			LOGGER.info("Post processing index context : " + indexContext);
-			if (applicationContext.getBean(indexContext.getName()) != null) {
-				LOGGER.info("Context already contains index : "
-						+ ToStringBuilder.reflectionToString(indexContext, ToStringStyle.SHORT_PREFIX_STYLE));
-				continue;
-			}
-			BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(IndexContext.class).getBeanDefinition();
-			defaultListableBeanFactory.registerBeanDefinition(indexContext.getIndexName(), beanDefinition);
-			IndexContext registeredIndexContext = (IndexContext) APPLICATION_CONTEXT.getBean(indexContext.getIndexName());
-			try {
-				BeanUtils.copyProperties(registeredIndexContext, indexContext);
-			} catch (Exception e) {
-				LOGGER.error("Exception setting up the index context : ", e);
-			}
-			LOGGER.info("Populated index context : " + registeredIndexContext);
 		}
 	}
 

@@ -1,15 +1,12 @@
 package ikube.toolkit;
 
+import static junit.framework.Assert.assertNotNull;
 import ikube.AbstractTest;
-import ikube.database.IDataBase;
-import ikube.model.IndexContext;
+import ikube.IConstants;
 
-import java.util.ArrayList;
+import java.io.File;
 
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -17,25 +14,16 @@ import org.springframework.context.ApplicationContext;
  * @since 01.12.12
  * @version 01.00
  */
-@Ignore
 public class ApplicationContextManagerTest extends AbstractTest {
 
-	private ApplicationContextManager applicationContextManager;
-
-	@Before
-	public void before() {
-		applicationContextManager = new ApplicationContextManager();
-	}
-
 	@Test
-	@SuppressWarnings("rawtypes")
-	public void setApplicationContext() {
-		ApplicationContext applicationContext = Mockito.mock(ApplicationContext.class);
-		IDataBase dataBase = Mockito.mock(IDataBase.class);
-		Mockito.when(dataBase.find(IndexContext.class, 0, Integer.MAX_VALUE)).thenReturn(
-				new ArrayList<IndexContext>(indexContexts.values()));
-		Mockito.when(applicationContext.getBean(IDataBase.class)).thenReturn(dataBase);
-		applicationContextManager.setApplicationContext(applicationContext);
+	public void getApplicationContext() {
+		File externalConfig = FileUtilities.findDirectoryRecursively(new File("."), "external");
+		File springConfig = FileUtilities.findFileRecursively(externalConfig, "spring\\.xml");
+		String springConfigPath = FileUtilities.cleanFilePath(springConfig.getAbsolutePath());
+		System.setProperty(IConstants.IKUBE_CONFIGURATION, springConfigPath);
+		ApplicationContext applicationContext = ApplicationContextManager.getApplicationContext();
+		assertNotNull(applicationContext);
 	}
 
 }
