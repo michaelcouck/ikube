@@ -19,7 +19,7 @@
 	<tr ng-repeat="indexContext in indexContexts" ng-class-odd="'odd'" ng-class-even="'even'">
 		<td ng-class="{ active : indexContext.indexing == true }">{{indexContext.name}}</td>
 		<td ng-class="{ active : indexContext.indexing == true }">{{indexContext.open}}</td>
-		<td ng-class="{ active : indexContext.indexing == true }">{{indexContext.snapshot.numDocs / 1000000}}</td>
+		<td ng-class="{ active : indexContext.indexing == true }">{{indexContext.numDocsForSearchers / 1000000}}</td>
 		<td ng-class="{ active : indexContext.indexing == true }">{{indexContext.snapshot.indexSize / 1000000}}</td>
 		<td ng-class="{ active : indexContext.indexing == true }">{{indexContext.maxAge}}</td>
 		<td ng-class="{ active : indexContext.indexing == true }">{{indexContext.snapshot.latestIndexTimestamp}}</td>

@@ -174,7 +174,7 @@
 	<!-- The schedules that fire events to start actions. -->
 	<util:list id="ikube.scheduling.Scheduler.schedules">
 		<ref local="ikube.scheduling.schedule.IndexSchedule" />
-		<ref local="ikube.scheduling.schedule.ServerRemovalSchedule" />
+		<ref local="ikube.scheduling.schedule.ServerSchedule" />
 		<!-- <ref local="ikube.scheduling.schedule.ClusterSchedule" /> -->
 		<ref local="ikube.scheduling.schedule.IndexSizeSchedule" />
 		<ref local="ikube.scheduling.schedule.ActionSchedule" />
@@ -190,17 +190,11 @@
 		property:delay="${delay}"
 		property:period="${period}" />
 	<bean 
-		id="ikube.scheduling.schedule.ServerRemovalSchedule"
-		name="ikube.scheduling.schedule.ServerRemovalSchedule"
-		class="ikube.scheduling.schedule.ServerRemovalSchedule" 
-		property:delay="${delay}"
-		property:period="${period}" />
-	<!-- <bean 
-		id="ikube.scheduling.schedule.ClusterSchedule"
-		name="ikube.scheduling.schedule.ClusterSchedule"
-		class="ikube.scheduling.schedule.ClusterSchedule" 
-		property:delay="${delay}"
-		property:period="${period}" /> -->
+		id="ikube.scheduling.schedule.ServerSchedule"
+		name="ikube.scheduling.schedule.ServerSchedule"
+		class="ikube.scheduling.schedule.ServerSchedule" 
+		property:delay="10000"
+		property:period="${delay}" />
 	<bean 
 		id="ikube.scheduling.schedule.IndexSizeSchedule"
 		name="ikube.scheduling.schedule.IndexSizeSchedule"

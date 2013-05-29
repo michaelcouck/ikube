@@ -11,21 +11,19 @@
 				<a ng-click="server.show=!server.show" href="#">
 					<img src="<c:url value="/images/icons/web.gif" />">&nbsp; <font color="black"><b>Address:</b></font> {{server.address}}<br>
 				</a>
-				<img src="<c:url value="/images/icons/index_performance.gif" />">&nbsp;<b>Processors:</b> {{server.processors}}<br>
-				
-				<div ng-show="server.threadsRunning">
-					<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Threads running:</b> {{server.threadsRunning}}<br>
-				</div>
-				<div ng-show="!server.threadsRunning">
-					<img src="<c:url value="/images/icons/red_square.gif" />">&nbsp;<b>Threads running:</b> {{server.threadsRunning}}<br>
-				</div>
-				
 				<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Average cpu load:</b> {{server.averageCpuLoad}}<br>
+				
 				<div ng-show="server.show">
 					<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Free memory:</b> {{server.freeMemory}}<br>
 					<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Max memory:</b> {{server.maxMemory}}<br>
 					<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Total memory:</b> {{server.totalMemory}}<br>
 					<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Free disk space:</b> {{server.freeDiskSpace}}<br>
+					<div ng-show="server.threadsRunning">
+						<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Threads running:</b> {{server.threadsRunning}}<br>
+					</div>
+					<div ng-show="!server.threadsRunning">
+						<img src="<c:url value="/images/icons/red_square.gif" />">&nbsp;<b>Threads running:</b> {{server.threadsRunning}}<br>
+					</div>
 					<div ng-show="server.cpuThrottling">
 						<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Cpu Throttling:</b> {{server.cpuThrottling}}<br>
 					</div>
@@ -33,6 +31,7 @@
 						<img src="<c:url value="/images/icons/red_square.gif" />">&nbsp;<b>Cpu Throttling:</b> {{server.cpuThrottling}}<br>
 					</div>
 					<img src="<c:url value="/images/icons/server.gif" />">&nbsp;<b>Age:</b> {{date(server.age)}}<br>
+					<img src="<c:url value="/images/icons/index_performance.gif" />">&nbsp;<b>Processors:</b> {{server.processors}}<br>
 					<img src="<c:url value="/images/icons/memory_view.gif" />">&nbsp;<b>Architecture:</b> {{server.architecture}}<br>
 				</div>
 				<br>

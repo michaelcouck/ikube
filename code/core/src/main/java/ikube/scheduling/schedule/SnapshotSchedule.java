@@ -68,6 +68,7 @@ public class SnapshotSchedule extends Schedule {
 		for (Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
 			try {
 				IndexContext indexContext = mapEntry.getValue();
+				indexContext.setNumDocsForSearchers(IndexManager.getNumDocsForIndexSearchers(indexContext));
 
 				Snapshot snapshot = new Snapshot();
 
@@ -77,7 +78,7 @@ public class SnapshotSchedule extends Schedule {
 				snapshot.setIndexContext(indexContext.getName());
 				snapshot.setTimestamp(new Timestamp(System.currentTimeMillis()));
 
-				snapshot.setNumDocs(IndexManager.getNumDocs(indexContext));
+				snapshot.setNumDocsForIndexWriters(IndexManager.getNumDocsForIndexWriters(indexContext));
 				snapshot.setIndexSize(IndexManager.getIndexSize(indexContext));
 				snapshot.setLatestIndexTimestamp(IndexManager.getLatestIndexDirectoryDate(indexContext));
 
@@ -206,10 +207,16 @@ public class SnapshotSchedule extends Schedule {
 		}
 		Snapshot previous = snapshots.get(snapshots.size() - 1);
 		double ratio = getRatio(previous, snapshot);
-		long docsPerMinute = (long) ((snapshot.getNumDocs() - previous.getNumDocs()) / ratio);
+		long docsPerMinute = (long) ((snapshot.getNumDocsForIndexWriters() - previous.getNumDocsForIndexWriters()) / ratio);
 		// We can never do a million documents per minute with the hardware
 		// that we have at the current time, perhaps with nano cpus and 3d memory
-		return docsPerMinute < 0 ? 0 : Math.min(docsPerMinute, 1000000);
+		docsPerMinute = docsPerMinute < 0 ? 0 : Math.min(docsPerMinute, IConstants.MILLION);
+		// If the previous docs per minute was 1000000 and this one is 0 then the index was just
+		// opened and it looks like there are a million documents per minute, but we'll correct that
+		if (docsPerMinute == 0 && previous.getDocsPerMinute() == IConstants.MILLION) {
+			
+		}
+		return docsPerMinute;
 	}
 
 	protected double getRatio(final Snapshot previous, final Snapshot snapshot) {

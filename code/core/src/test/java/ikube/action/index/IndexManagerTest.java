@@ -188,16 +188,16 @@ public class IndexManagerTest extends AbstractTest {
 			when(indexContext.getIndexWriters()).thenReturn(new IndexWriter[] { indexWriter });
 			logger.info("Index writer test : " + indexWriter);
 
-			long numDocs = IndexManager.getNumDocs(indexContext);
+			long numDocs = IndexManager.getNumDocsForIndexWriters(indexContext);
 			logger.info("Num docs : " + numDocs);
 			assertEquals(Integer.MAX_VALUE, numDocs);
 
 			IndexWriterMock.setIsLocked(Boolean.FALSE);
 			when(indexContext.getIndexWriters()).thenReturn(null);
 			when(indexReader.numDocs()).thenReturn(Integer.MIN_VALUE);
-			numDocs = IndexManager.getNumDocs(indexContext);
+			numDocs = IndexManager.getNumDocsForIndexWriters(indexContext);
 			logger.info("Num docs : " + numDocs);
-			assertEquals(-2147483648l, numDocs);
+			assertEquals(0, numDocs);
 		} finally {
 			Mockit.tearDownMocks(IndexWriter.class);
 		}
@@ -211,7 +211,7 @@ public class IndexManagerTest extends AbstractTest {
 		when(multiSearcher.getSearchables()).thenReturn(searchables);
 		when(indexSearcher.getIndexReader()).thenReturn(indexReader);
 		when(indexReader.numDocs()).thenReturn(Integer.MAX_VALUE);
-		long numDocs = IndexManager.getNumDocs(indexContext);
+		long numDocs = IndexManager.getNumDocsForIndexSearchers(indexContext);
 		logger.info("Num docs : " + numDocs);
 		assertEquals(Integer.MAX_VALUE, numDocs);
 	}
@@ -235,7 +235,7 @@ public class IndexManagerTest extends AbstractTest {
 		assertTrue("There must be some size in the index : ", indexSize > 0);
 
 		new Open().execute(indexContext);
-		long numDocs = IndexManager.getNumDocs(indexContext);
+		long numDocs = IndexManager.getNumDocsForIndexSearchers(indexContext);
 		logger.info("Num docs : " + numDocs);
 		assertEquals(4, numDocs);
 		new Close().execute(indexContext);
@@ -244,7 +244,7 @@ public class IndexManagerTest extends AbstractTest {
 		indexContext.setIndexWriters(indexWriter);
 		addDocuments(indexWriter, IConstants.CONTENTS, "some", "index", "documents");
 
-		numDocs = IndexManager.getNumDocs(indexContext);
+		numDocs = IndexManager.getNumDocsForIndexWriters(indexContext);
 		logger.info("Num docs : " + numDocs);
 		assertEquals(3, numDocs);
 	}

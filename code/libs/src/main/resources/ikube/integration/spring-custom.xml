@@ -27,7 +27,7 @@
 			property:maxReadLength="10000000"
 			property:throttle="0"
 			property:indexDirectoryPath="${index.directory.path}"
-			property:indexDirectoryPathBackup="${index.directory.path}/backup"
+			property:indexDirectoryPathBackup="${index.directory.path}"
 			property:children-ref="myIndexFolders" />
 			
 			<util:list id="myIndexFolders">
@@ -38,7 +38,7 @@
 			id="myIndexFolder"
 			class="ikube.model.IndexableFileSystem"
 			property:name="myIndexFolder"
-			property:path="/tmp"
+			property:path="/opt"
 			property:pathFieldName="path"
 			property:nameFieldName="name"
 			property:lengthFieldName="length"

@@ -98,9 +98,9 @@ public class SnapshotScheduleTest extends AbstractTest {
 
 		Snapshot previous = new Snapshot();
 		previous.setTimestamp(new Timestamp(System.currentTimeMillis() - 65000));
-		previous.setNumDocs(125);
+		previous.setNumDocsForIndexWriters(125);
 
-		snapshot.setNumDocs(250);
+		snapshot.setNumDocsForIndexWriters(250);
 		snapshot.setTimestamp(new Timestamp(System.currentTimeMillis()));
 
 		when(indexContext.getSnapshots()).thenReturn(Arrays.asList(previous));

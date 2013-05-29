@@ -27,7 +27,7 @@
 		property:address="true" 
 		property:throttle="0"
 		property:indexDirectoryPath="${index.directory.path}" 
-		property:indexDirectoryPathBackup="${index.directory.path.backup}"
+		property:indexDirectoryPathBackup="${index.directory.path}"
 		property:strategies-ref="mysql-system-strategies" 
 		property:children-ref="mysqlIndexables" />
 	<util:list id="mysqlIndexables">

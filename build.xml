@@ -7,9 +7,9 @@
 	<property name="profile" value="production" />
 	<property name="user-dir" value="${user.dir}" />
 	<property name="user-home" value="${user.home}" />
-	
+
 	<taskdef name="sshexcute" classname="ikube.ant.SshXcuteTask" classpath="classes" />
-	
+
 	<target name="go">
 		<antcall target="prepare" />
 		<!-- Deploy the configuration and ikube and start the servers -->
@@ -22,29 +22,20 @@
 			<param name="command" value="
 				. /etc/profile;
 				cd ${tomcat-bin-directory};
-				./catalina.sh stop;" />
-		</antcall>
-		<sleep seconds="10" />
-		<!-- Hard kill the server just in case -->
-		<antcall target="execute-remote-command">
-			<param name="command" value="
-				ps -ef | grep apache-tomcat-7.0.33-8080 | grep -v grep | awk '{print $2}' | xargs kill -9;" />
-		</antcall>
-		<!-- Clean all the output folders and the configuration -->
-		<antcall target="execute-remote-command">
-			<param name="command" value="
-					. /etc/profile;
-					chmod 777 -R ${tomcat-directory};
-					rm -rf ${tomcat-directory}/bin/ikube;
-					rm -rf ${tomcat-directory}/webapps/ikube*;
-					rm -rf ${tomcat-directory}/logs;
-					rm -rf ${tomcat-directory}/temp;
-					rm -rf ${tomcat-directory}/work/Catalina/localhost;
-					mkdir -p ${tomcat-directory}/bin/ikube;
-					mkdir -p ${tomcat-directory}/logs;
-					mkdir -p ${tomcat-directory}/temp;
-					mkdir -p ${tomcat-directory}/work/Catalina/localhost;
-					chmod 777 -R ${tomcat-directory};" />
+				./catalina.sh stop;
+				sleep 10;
+				ps -ef | grep apache-tomcat-7.0.33-8080 | grep -v grep | awk '{print $2}' | xargs kill -9;
+				chmod 777 -R ${tomcat-directory};
+				rm -rf ${tomcat-directory}/bin/ikube;
+				rm -rf ${tomcat-directory}/webapps/ikube*;
+				rm -rf ${tomcat-directory}/logs;
+				rm -rf ${tomcat-directory}/temp;
+				rm -rf ${tomcat-directory}/work/Catalina/localhost;
+				mkdir -p ${tomcat-directory}/bin/ikube;
+				mkdir -p ${tomcat-directory}/logs;
+				mkdir -p ${tomcat-directory}/temp;
+				mkdir -p ${tomcat-directory}/work/Catalina/localhost;
+				chmod 777 -R ${tomcat-directory};" />
 		</antcall>
 		<!-- Deploy the configuration to the server -->
 		<antcall target="copy-directory-to-server">
@@ -73,7 +64,7 @@
 			passwords="${password}" 
 			commands="${command}" />
 	</target>
-	
+
 	<target name="copy-directory-to-server">
 		<scp 
 			todir="${userid}:${password}@${server-ip}:${server-directory}" 
@@ -97,7 +88,7 @@
 	<target name="prepare">
 		<antcall target="deploy-configuration-for-jetty" />
 	</target>
-	
+
 	<target name="deploy-configuration-for-jetty" description="Copies the configuration folder to the base of the project modules so Jetty can start">
 		<copy todir="code/core/ikube">
 			<fileset dir="${configuration-directory}" />

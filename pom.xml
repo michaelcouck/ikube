@@ -56,9 +56,9 @@
 	<modules>
 		<module>code/core</module>
 		<module>code/war</module>
-		<!-- <module>code/site</module>
+		<module>code/site</module>
 		<module>code/libs</module>
-		<module>code/tool</module> -->
+		<module>code/tool</module>
 	</modules>
 
 	<build>
@@ -247,7 +247,6 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>2.5.2</version>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>

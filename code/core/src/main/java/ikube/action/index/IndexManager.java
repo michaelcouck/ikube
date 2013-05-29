@@ -13,7 +13,13 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -37,8 +43,8 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
 
 /**
- * This class opens and closes the Lucene index writer. There are also methods that get the path to the index directory based on the path in
- * the index context. This class also has methods that add fields to a document, either directly of via a file reader and writer.
+ * This class opens and closes the Lucene index writer. There are also methods that get the path to the index directory based on the path in the index context.
+ * This class also has methods that add fields to a document, either directly of via a file reader and writer.
  * 
  * @author Michael Couck
  * @since 21.11.10
@@ -83,15 +89,14 @@ public final class IndexManager {
 	}
 
 	/**
-	 * This method opens a Lucene index writer, and if successful sets it in the index context where the handlers can access it and add
-	 * documents to it during the index. The index writer is opened on a directory that will be the index path on the file system, the name
-	 * of the index, then the
+	 * This method opens a Lucene index writer, and if successful sets it in the index context where the handlers can access it and add documents to it during
+	 * the index. The index writer is opened on a directory that will be the index path on the file system, the name of the index, then the
 	 * 
 	 * @param ip the ip address of this machine
 	 * @param indexContext the index context to open the writer for
-	 * @param time the time stamp for the index directory. This can come from the system time but it can also come from another server. When
-	 *        an index is started the server will publish the time it started the index. In this way we can check the timestamp for the
-	 *        index, and if it is set then we use the cluster timestamp. As a result we write the index in the same 'timestamp' directory
+	 * @param time the time stamp for the index directory. This can come from the system time but it can also come from another server. When an index is started
+	 *        the server will publish the time it started the index. In this way we can check the timestamp for the index, and if it is set then we use the
+	 *        cluster timestamp. As a result we write the index in the same 'timestamp' directory
 	 * @return the index writer opened for this index context or null if there was any exception opening the index
 	 */
 	public static synchronized IndexWriter openIndexWriter(final IndexContext<?> indexContext, final long time, final String ip) {
@@ -140,8 +145,8 @@ public final class IndexManager {
 	 * @return the index writer open on the specified directory
 	 * @throws Exception
 	 */
-	public static synchronized IndexWriter openIndexWriter(final IndexContext<?> indexContext, final File indexDirectory,
-			final boolean create) throws Exception {
+	public static synchronized IndexWriter openIndexWriter(final IndexContext<?> indexContext, final File indexDirectory, final boolean create)
+			throws Exception {
 		Directory directory = FSDirectory.open(indexDirectory);
 		return openIndexWriter(indexContext, directory, create);
 	}
@@ -155,8 +160,8 @@ public final class IndexManager {
 	 * @return the index writer on the directory
 	 * @throws Exception
 	 */
-	public static synchronized IndexWriter openIndexWriter(final IndexContext<?> indexContext, final Directory directory,
-			final boolean create) throws Exception {
+	public static synchronized IndexWriter openIndexWriter(final IndexContext<?> indexContext, final Directory directory, final boolean create)
+			throws Exception {
 		Analyzer analyzer = indexContext.getAnalyzer() != null ? indexContext.getAnalyzer() : IConstants.ANALYZER;
 		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(IConstants.VERSION, analyzer);
 		indexWriterConfig.setOpenMode(create ? OpenMode.CREATE : OpenMode.APPEND);
@@ -213,8 +218,9 @@ public final class IndexManager {
 			directory = indexWriter.getDirectory();
 			indexWriter.commit();
 			// indexWriter.maybeMerge();
-			indexWriter.forceMerge(8, Boolean.TRUE);
+			indexWriter.forceMerge(10, Boolean.TRUE);
 			indexWriter.deleteUnusedFiles();
+			indexWriter.optimize(10);
 		} catch (NullPointerException e) {
 			LOGGER.error("Null pointer, in the index writer : " + indexWriter);
 			LOGGER.debug(null, e);
@@ -250,8 +256,7 @@ public final class IndexManager {
 	}
 
 	/**
-	 * This method will get the path to the index directory that will be created, based on the path in the context, the time and the ip of
-	 * the machine.
+	 * This method will get the path to the index directory that will be created, based on the path in the context, the time and the ip of the machine.
 	 * 
 	 * @param indexContext the context to use for the path to the indexes for the context
 	 * @param time the time for the upper directory name
@@ -275,13 +280,12 @@ public final class IndexManager {
 	 * 2) The name of the index<br>
 	 * 3) The time(as a long) that the index was created 4) The ip address of the server that created the index<br>
 	 * 
-	 * The result of this is something like ./indexes/ikube/123456789/127.0.0.1. This method will return the directory
-	 * ./indexes/ikube/123456789. In other words the timestamp directory, not the individual server index directories.
+	 * The result of this is something like ./indexes/ikube/123456789/127.0.0.1. This method will return the directory ./indexes/ikube/123456789. In other words
+	 * the timestamp directory, not the individual server index directories.
 	 * 
 	 * @param baseIndexDirectoryPath the base path to the indexes, i.e. the ./indexes part
-	 * @return the latest time stamped directory at this path, in other words the ./indexes/ikube/123456789 directory. Note that there is no
-	 *         Lucene index at this path, the Lucene index is still in the server ip address directory in this time stamp directory, i.e. at
-	 *         ./indexes/ikube/123456789/127.0.0.1
+	 * @return the latest time stamped directory at this path, in other words the ./indexes/ikube/123456789 directory. Note that there is no Lucene index at
+	 *         this path, the Lucene index is still in the server ip address directory in this time stamp directory, i.e. at ./indexes/ikube/123456789/127.0.0.1
 	 */
 	public static synchronized File getLatestIndexDirectory(final String baseIndexDirectoryPath) {
 		try {
@@ -336,7 +340,7 @@ public final class IndexManager {
 	}
 
 	public static long getIndexSize(final IndexContext<?> indexContext) {
-		long indexSize = 0;
+		final AtomicLong indexSize = new AtomicLong();
 		try {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append(indexContext.getIndexDirectoryPath());
@@ -344,22 +348,20 @@ public final class IndexManager {
 			stringBuilder.append(indexContext.getIndexName());
 			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(stringBuilder.toString());
 			if (latestIndexDirectory == null || !latestIndexDirectory.exists() || !latestIndexDirectory.isDirectory()) {
-				return indexSize;
+				return indexSize.get();
 			}
-			File[] serverIndexDirectories = latestIndexDirectory.listFiles();
-			if (serverIndexDirectories == null) {
-				LOGGER.info("No server directories : " + indexContext.getIndexName());
-				return indexSize;
-			}
-			for (File serverIndexDirectory : serverIndexDirectories) {
-				if (serverIndexDirectory != null && serverIndexDirectory.exists() && serverIndexDirectory.isDirectory()) {
-					indexSize += getDirectorySize(serverIndexDirectory);
+			Files.walkFileTree(latestIndexDirectory.toPath(), new SimpleFileVisitor<Path>() {
+				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+					long fileLength = file.toFile().length();
+					long newIndexSize = indexSize.get() + fileLength;
+					indexSize.set(newIndexSize);
+					return super.visitFile(file, attrs);
 				}
-			}
+			});
 		} catch (Exception e) {
 			LOGGER.error("Exception getting the size of the index : ", e);
 		}
-		return indexSize;
+		return indexSize.get();
 	}
 
 	public static long getDirectorySize(final File directory) {
@@ -375,13 +377,13 @@ public final class IndexManager {
 	}
 
 	/**
-	 * This method will first look at the index writers to get the number of documents currently indexed in the current action, otherwise
-	 * the total number of documents in the index searcher for the index context.
+	 * This method will first look at the index writers to get the number of documents currently indexed in the current action, otherwise the total number of
+	 * documents in the index searcher for the index context.
 	 * 
 	 * @param indexContext the index context to the get the total number of documents for, either in the index writers or in the searcher
 	 * @return the total current number of documents in the index context
 	 */
-	public static long getNumDocs(final IndexContext<?> indexContext) {
+	public static long getNumDocsForIndexWriters(final IndexContext<?> indexContext) {
 		long numDocs = 0;
 		IndexWriter[] indexWriters = indexContext.getIndexWriters();
 		if (indexWriters != null && indexWriters.length > 0) {
@@ -394,11 +396,15 @@ public final class IndexManager {
 					LOGGER.error("Exception reading the number of documents from the writer", e);
 				}
 			}
-		} else {
-			if (indexContext.getMultiSearcher() != null) {
-				for (final Searchable searchable : indexContext.getMultiSearcher().getSearchables()) {
-					numDocs += ((IndexSearcher) searchable).getIndexReader().numDocs();
-				}
+		}
+		return numDocs;
+	}
+
+	public static long getNumDocsForIndexSearchers(final IndexContext<?> indexContext) {
+		long numDocs = 0;
+		if (indexContext.getMultiSearcher() != null) {
+			for (final Searchable searchable : indexContext.getMultiSearcher().getSearchables()) {
+				numDocs += ((IndexSearcher) searchable).getIndexReader().numDocs();
 			}
 		}
 		return numDocs;
@@ -427,8 +433,7 @@ public final class IndexManager {
 	}
 
 	/**
-	 * This method will get the exact path to the backup directory for the indexes indexes for this index context, i.e.
-	 * '/path/to/index/and/backup/indexName'.
+	 * This method will get the exact path to the backup directory for the indexes indexes for this index context, i.e. '/path/to/index/and/backup/indexName'.
 	 * 
 	 * @param indexContext the index context to the the path to the backup directory for the indexes
 	 * @return the absolute, cleaned path to the backup directory for the indexes for this index context
@@ -445,8 +450,8 @@ public final class IndexManager {
 		return FileUtilities.cleanFilePath(builder.toString());
 	}
 
-	public static void addStringField(final String fieldName, final String fieldContent, final Document document, final Store store,
-			final Index analyzed, final TermVector termVector) {
+	public static void addStringField(final String fieldName, final String fieldContent, final Document document, final Store store, final Index analyzed,
+			final TermVector termVector) {
 		if (fieldName == null || fieldContent == null) {
 			return;
 		}
@@ -465,8 +470,8 @@ public final class IndexManager {
 		document.add(new NumericField(fieldName, store, true).setDoubleValue(Double.parseDouble(fieldContent)));
 	}
 
-	public static void addReaderField(final String fieldName, final Document document, final Store store, final TermVector termVector,
-			final Reader reader) throws Exception {
+	public static void addReaderField(final String fieldName, final Document document, final Store store, final TermVector termVector, final Reader reader)
+			throws Exception {
 		if (fieldName == null || reader == null) {
 			LOGGER.warn("Field and reader can't be null : " + fieldName + ", " + reader);
 			return;

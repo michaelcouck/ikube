@@ -40,7 +40,7 @@ var searcherController = module.controller('SearcherController', function($http,
 	// 10 th page the first result would then be 100 probably
 	$scope.doSearch = function(firstResult) {
 		var searchString = document.getElementById('search-form').searchString.value;
-		$scope.url = 'http://www.ikube.be/ikube/service/search/json/complex';
+		$scope.url = 'http://www.ikube.be:8080/ikube/service/search/json/complex';
 		$scope.searchParameters.firstResult = firstResult;
 		$scope.searchParameters['searchStrings'] = searchString;
 		delete $http.defaults.headers.common['X-Requested-With'];

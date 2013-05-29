@@ -41,21 +41,25 @@ public final class Logging implements IConstants {
 			}
 			INITIALISED = Boolean.TRUE;
 			try {
-				URL url = Logging.class.getResource(LOG_4_J_PROPERTIES);
-				System.out.println(Logging.class.getName() + " Log4j url : " + url);
-				if (url != null) {
-					inputStream = url.openStream();
-				} else {
-					inputStream = Logging.class.getResourceAsStream(LOG_4_J_PROPERTIES);
-					System.err.println("Input stream to logging configuration : " + inputStream);
-					if (inputStream == null) {
-						inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream(LOG_4_J_PROPERTIES);
-					}
-					if (inputStream == null) {
-						File log4JPropertiesFile = FileUtilities.findFileRecursively(new File("." + IConstants.SEP + IConstants.IKUBE),
-								"log4j.properties");
-						if (log4JPropertiesFile != null && log4JPropertiesFile.exists() && log4JPropertiesFile.canRead()) {
-							inputStream = log4JPropertiesFile.toURI().toURL().openStream();
+				// First check the external logging properties file
+				File log4JPropertiesFile = FileUtilities.findFileRecursively(new File("." + IConstants.SEP + IConstants.IKUBE), "log4j.properties");
+				System.out.println(Logging.class.getName() + " Log4j file : " + log4JPropertiesFile);
+				if (log4JPropertiesFile != null && log4JPropertiesFile.exists() && log4JPropertiesFile.canRead()) {
+					inputStream = log4JPropertiesFile.toURI().toURL().openStream();
+				}
+				if (inputStream == null) {
+					// Try the class loader
+					URL url = Logging.class.getResource(LOG_4_J_PROPERTIES);
+					System.out.println(Logging.class.getName() + " Log4j url : " + url);
+					if (url != null) {
+						inputStream = url.openStream();
+					} else {
+						// Nope, try the class loader on a stream
+						inputStream = Logging.class.getResourceAsStream(LOG_4_J_PROPERTIES);
+						System.err.println("Input stream to logging configuration : " + inputStream);
+						if (inputStream == null) {
+							// Finally try the system class loader
+							inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream(LOG_4_J_PROPERTIES);
 						}
 					}
 				}
@@ -80,7 +84,7 @@ public final class Logging implements IConstants {
 					}
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				LOGGER.error("Exception looking for the log file : ", e);
 			}
 		} finally {
 			FileUtilities.close(inputStream);

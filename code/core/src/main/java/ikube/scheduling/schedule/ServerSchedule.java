@@ -21,9 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 31.12.11
  * @version 01.00
  */
-public class ServerRemovalSchedule extends Schedule {
+public class ServerSchedule extends Schedule {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ServerRemovalSchedule.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ServerSchedule.class);
 
 	@Autowired
 	private IClusterManager clusterManager;
@@ -46,5 +46,10 @@ public class ServerRemovalSchedule extends Schedule {
 				clusterManager.remove(server.getAddress());
 			}
 		}
+		// Finally put ourselves back in the grid
+		Server server = clusterManager.getServer();
+		server.setAge(System.currentTimeMillis());
+		LOGGER.info("Putting server back : " + new Date(server.getAge()));
+		clusterManager.put(server.getAddress(), server);
 	}
 }

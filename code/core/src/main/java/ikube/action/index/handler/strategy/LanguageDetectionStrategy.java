@@ -40,8 +40,8 @@ public final class LanguageDetectionStrategy extends AStrategy {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean aroundProcess(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document,
-			final Object resource) throws Exception {
+	public boolean aroundProcess(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document, final Object resource)
+			throws Exception {
 		// Concatenate the data in the indexable
 		String content = getContent(indexable, new StringBuilder()).toString();
 		if (!StringUtils.isEmpty(content)) {
@@ -74,10 +74,12 @@ public final class LanguageDetectionStrategy extends AStrategy {
 	 */
 	@Override
 	public void initialize() {
-		File profileDirectory = FileUtilities.findFileRecursively(new File("." + IConstants.SEP + IConstants.IKUBE + IConstants.SEP), IConstants.LANGUAGE_DETECT_PROFILES_DIRECTORY);
+		File profileDirectory = FileUtilities.findFileRecursively(new File("." + IConstants.SEP + IConstants.IKUBE + IConstants.SEP),
+				IConstants.LANGUAGE_DETECT_PROFILES_DIRECTORY);
 		try {
-			logger.info("Loading language profiles from : " + profileDirectory.getAbsolutePath());
-			DetectorFactory.loadProfile(profileDirectory);
+			String profileDirectoryPath = FileUtilities.cleanFilePath(profileDirectory.getAbsolutePath());
+			logger.info("Loading language profiles from : " + profileDirectoryPath);
+			DetectorFactory.loadProfile(profileDirectoryPath);
 		} catch (Exception e) {
 			logger.error("Exception starting the language detector, configuration issues : profile directory : " + profileDirectory, e);
 		}

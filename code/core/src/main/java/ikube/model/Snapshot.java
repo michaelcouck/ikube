@@ -25,7 +25,7 @@ public class Snapshot extends Persistable {
 
 	/** Index context details. */
 	@Column
-	private long numDocs;
+	private long numDocsForIndexWriters;
 	@Column
 	private long indexSize;
 	@Column
@@ -45,12 +45,12 @@ public class Snapshot extends Persistable {
 	@Column
 	private double availableProcessors;
 
-	public long getNumDocs() {
-		return numDocs;
+	public long getNumDocsForIndexWriters() {
+		return numDocsForIndexWriters;
 	}
 
-	public void setNumDocs(long numDocs) {
-		this.numDocs = numDocs;
+	public void setNumDocsForIndexWriters(long numDocs) {
+		this.numDocsForIndexWriters = numDocs;
 	}
 
 	public long getIndexSize() {

@@ -146,11 +146,11 @@
 			<artifactId>jsch</artifactId>
 			<version>0.1.48</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>sshxcute</groupId>
 			<artifactId>sshxcute</artifactId>
 			<version>1.0.0</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>ant</groupId>
 			<artifactId>ant</artifactId>
