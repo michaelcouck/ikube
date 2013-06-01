@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 import java.util.concurrent.RecursiveAction;
@@ -101,7 +102,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		RecursiveAction recursiveAction = new RecursiveAction() {
 			@Override
 			protected void compute() {
-				logger.debug("Started executing : " + in.size() + ", " + this.hashCode());
+				logger.info("Started executing : " + in.size() + ", " + this.hashCode());
 				IndexableInternet indexableInternet = (IndexableInternet) SerializationUtilities.clone(indexable);
 				do {
 					try {
@@ -113,20 +114,24 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 							// we execute the first, and join the second, with a little luck they will finish at the same time roughly
 							RecursiveAction leftRecursiveAction = getRecursiveAction(indexContext, indexableInternet, in, out, forkJoinPool);
 							RecursiveAction rightRecursiveAction = getRecursiveAction(indexContext, indexableInternet, in, out, forkJoinPool);
-							logger.debug("Joining : " + forkJoinPool.getRunningThreadCount() + ", " + rightRecursiveAction.hashCode() + ", " + this.hashCode());
+							logger.info("Joining : " + forkJoinPool.getRunningThreadCount() + ", " + rightRecursiveAction.hashCode() + ", " + this.hashCode());
 							invokeAll(leftRecursiveAction, rightRecursiveAction);
-							logger.debug("Finished joining : " + rightRecursiveAction.hashCode() + ", " + this.hashCode());
+							logger.info("Finished joining : " + rightRecursiveAction.hashCode() + ", " + this.hashCode());
 						}
-						logger.debug("Done urls : " + out.size());
-						logger.debug("Still to do urls : " + in.size());
+						logger.info("Done urls : " + out.size());
+						logger.info("Still to do urls : " + in.size() + ", initialized : " + ThreadUtilities.isInitialized());
 						if (!ThreadUtilities.isInitialized()) {
 							throw new InterruptedException("Indexing terminated : ");
 						}
 					} catch (InterruptedException e) {
+						throw new RuntimeException(e);
+					} catch (CancellationException e) {
+						throw new RuntimeException(e);
+					} catch (Exception e) {
 						handleException(indexable, e, e.getMessage());
 					}
 				} while (in.size() > 0 && ThreadUtilities.isInitialized());
-				logger.debug("Finished executing : " + in.size() + ", " + this.hashCode());
+				logger.info("Finished executing : " + in.size() + ", " + this.hashCode());
 			}
 		};
 		return recursiveAction;

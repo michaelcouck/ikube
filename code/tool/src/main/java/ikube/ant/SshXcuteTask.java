@@ -182,6 +182,9 @@ public class SshXcuteTask extends Task {
 	}
 
 	String[][] splitStringTwice(final String string, final String delimiterOne, final String delimiterTwo) {
+		if (string == null || "".equals(string.trim())) {
+			return new String[0][];
+		}
 		int index = 0;
 		// First split the files into pairs of files and target directories
 		String[] sourceTargetPairs = splitString(string, delimiterOne);

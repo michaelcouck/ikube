@@ -76,7 +76,7 @@
 		property:children-ref="snapshotColumns" />
 	<util:list id="snapshotColumns">
 		<ref local="snapshotId" />
-		<ref local="snapshotNumDocs" />
+		<ref local="snapshotNumDocsForIndexWriters" />
 	</util:list>
 	<bean
 		id="snapshotId"
@@ -87,10 +87,10 @@
 		property:stored="true"
 		property:vectored="true" />
 	<bean
-		id="snapshotNumDocs"
+		id="snapshotNumDocsForIndexWriters"
 		class="ikube.model.IndexableColumn"
-		property:name="numDocs"
-		property:fieldName="numDocs"
+		property:name="numDocsForIndexWriters"
+		property:fieldName="numDocsForIndexWriters"
 		property:address="true"
 		property:analyzed="true"
 		property:stored="true"
