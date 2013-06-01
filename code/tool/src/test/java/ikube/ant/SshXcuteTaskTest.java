@@ -1,12 +1,12 @@
 package ikube.ant;
 
 import static org.junit.Assert.assertEquals;
-
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -27,10 +27,10 @@ public class SshXcuteTaskTest {
 	public void executeEndToEnd() {
 		File bzip2 = FileUtilities.findFileRecursively(new File("."), "bzip2\\.bzip2");
 		String bzip2Path = FileUtilities.cleanFilePath(bzip2.getAbsolutePath());
-		
+
 		File wiki = FileUtilities.findDirectoryRecursively(new File("."), "7zip");
 		String wikiPath = FileUtilities.cleanFilePath(wiki.getAbsolutePath());
-		
+
 		sshXcuteTask.setIps("localhost");
 		sshXcuteTask.setUsernames("user");
 		sshXcuteTask.setPasswords("password");
@@ -67,5 +67,15 @@ public class SshXcuteTaskTest {
 		assertEquals("/usr/share", splitString[0][0]);
 		assertEquals("/usr/share", splitString[0][1]);
 	}
-
+	
+	@Test
+	@Ignore
+	public void startRemoteTomcat() {
+		sshXcuteTask.setIps("192.168.1.8;81.95.118.139");
+		sshXcuteTask.setUsernames("michael;michael");
+		sshXcuteTask.setPasswords("password;password");
+		sshXcuteTask.setCommands("ls -l;pwd;ls -l; pwd;");
+		sshXcuteTask.execute();
+	}
+	
 }

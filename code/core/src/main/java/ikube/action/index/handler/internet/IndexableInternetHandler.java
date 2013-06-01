@@ -104,11 +104,13 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			protected void compute() {
 				logger.info("Started executing : " + in.size() + ", " + this.hashCode());
 				IndexableInternet indexableInternet = (IndexableInternet) SerializationUtilities.clone(indexable);
+				HttpClient httpClient = new HttpClient();
 				do {
 					try {
-						HttpClient httpClient = new HttpClient();
+						Url url = in.pop();
 						IContentProvider<IndexableInternet> contentProvider = new InternetContentProvider();
-						doUrl(indexContext, indexable, in.pop(), contentProvider, httpClient, in, out);
+						handle(indexContext, indexable, url, contentProvider, httpClient, in, out);
+						Thread.sleep(indexContext.getThrottle());
 						if (in.size() > indexableInternet.getInternetBatchSize() * 2 && forkJoinPool.getRunningThreadCount() < getThreads()) {
 							// If there are many urls in the pool then fork off a few threads to handle the excess load,
 							// we execute the first, and join the second, with a little luck they will finish at the same time roughly
@@ -130,35 +132,11 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 					} catch (Exception e) {
 						handleException(indexable, e, e.getMessage());
 					}
-				} while (in.size() > 0 && ThreadUtilities.isInitialized());
+				} while (in.size() > 0 && !isCancelled() && ThreadUtilities.isInitialized());
 				logger.info("Finished executing : " + in.size() + ", " + this.hashCode());
 			}
 		};
 		return recursiveAction;
-	}
-
-	/**
-	 * This method iterates over the batch of urls and indexes the content, also extracting other links from the pages.
-	 * 
-	 * @param indexContext the index context for this internet url
-	 * @param indexable the indexable, which is the url configuration
-	 * @param urlBatch the batch of urls to index
-	 * @param contentProvider the content provider for http pages
-	 * @param httpClient the client to use for accessing the pages over http
-	 */
-	protected void doUrl(final IndexContext<?> indexContext, final IndexableInternet indexable, Url url,
-			final IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient, Stack<Url> in, Set<Long> out) {
-		try {
-			Thread.sleep(indexContext.getThrottle());
-			handle(indexContext, indexable, url, contentProvider, httpClient, in, out);
-		} catch (Exception e) {
-			handleException(indexable, e);
-		} finally {
-			url.setParsedContent(null);
-			url.setRawContent(null);
-			url.setTitle(null);
-			url.setContentType(null);
-		}
 	}
 
 	/**
@@ -196,6 +174,11 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			handleResource(indexContext, indexable, new Document(), url);
 		} catch (Exception e) {
 			handleException(indexable, e);
+		} finally {
+			url.setParsedContent(null);
+			url.setRawContent(null);
+			url.setTitle(null);
+			url.setContentType(null);
 		}
 	}
 
@@ -337,49 +320,50 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			Source source = new Source(reader);
 			List<Tag> tags = source.getAllTags();
 			String baseUrlStripped = indexableInternet.getBaseUrl();
-			for (Tag tag : tags) {
+			for (final Tag tag : tags) {
 				if (tag.getName().equals(HTMLElementName.A) && StartTag.class.isAssignableFrom(tag.getClass())) {
 					Attribute attribute = ((StartTag) tag).getAttributes().get(HTML.Attribute.HREF.toString());
-					if (attribute != null) {
-						try {
-							String link = attribute.getValue();
-							if (link == null) {
-								continue;
-							}
-							if (UriUtilities.isExcluded(link.trim().toLowerCase())) {
-								continue;
-							}
-							String resolvedLink = UriUtilities.resolve(indexableInternet.getUri(), link);
-							String replacement = resolvedLink.contains("?") ? "?" : "";
-							String strippedSessionLink = UriUtilities.stripJSessionId(resolvedLink, replacement);
-							String strippedAnchorLink = UriUtilities.stripAnchor(strippedSessionLink, "");
-							if (!UriUtilities.isInternetProtocol(strippedAnchorLink)) {
-								continue;
-							}
-							if (!strippedAnchorLink.startsWith(baseUrlStripped)) {
-								continue;
-							}
-							if (indexableInternet.isExcluded(strippedAnchorLink)) {
-								continue;
-							}
-							Long urlId = HashUtilities.hash(strippedAnchorLink);
-
-							// Check the out stack for this url
-							Long hash = HashUtilities.hash(strippedAnchorLink);
-							if (!out.add(hash)) {
-								continue;
-							}
-							Url url = new Url();
-							url.setUrlId(urlId.longValue());
-							url.setName(indexableInternet.getName());
-							url.setIndexed(Boolean.FALSE);
-							url.setUrl(strippedAnchorLink);
-							// logger.info("Adding url : " + url.getUrl());
-							// Add the new url to the cache
-							in.push(url);
-						} catch (Exception e) {
-							handleException(indexableInternet, e);
+					if (attribute == null) {
+						continue;
+					}
+					try {
+						String link = attribute.getValue();
+						if (link == null) {
+							continue;
 						}
+						if (UriUtilities.isExcluded(link.trim().toLowerCase())) {
+							continue;
+						}
+						String resolvedLink = UriUtilities.resolve(indexableInternet.getUri(), link);
+						String replacement = resolvedLink.contains("?") ? "?" : "";
+						String strippedSessionLink = UriUtilities.stripJSessionId(resolvedLink, replacement);
+						String strippedAnchorLink = UriUtilities.stripAnchor(strippedSessionLink, "");
+						if (!UriUtilities.isInternetProtocol(strippedAnchorLink)) {
+							continue;
+						}
+						if (!strippedAnchorLink.startsWith(baseUrlStripped)) {
+							continue;
+						}
+						if (indexableInternet.isExcluded(strippedAnchorLink)) {
+							continue;
+						}
+						Long urlId = HashUtilities.hash(strippedAnchorLink);
+						
+						// Check the out stack for this url
+						Long hash = HashUtilities.hash(strippedAnchorLink);
+						if (!out.add(hash)) {
+							continue;
+						}
+						Url url = new Url();
+						url.setUrlId(urlId.longValue());
+						url.setName(indexableInternet.getName());
+						url.setIndexed(Boolean.FALSE);
+						url.setUrl(strippedAnchorLink);
+						// logger.info("Adding url : " + url.getUrl());
+						// Add the new url to the cache
+						in.push(url);
+					} catch (Exception e) {
+						handleException(indexableInternet, e);
 					}
 				}
 			}
