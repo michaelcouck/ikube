@@ -6,6 +6,7 @@ import ikube.action.index.handler.ResourceHandlerBase;
 import ikube.action.index.parse.IParser;
 import ikube.action.index.parse.ParserProvider;
 import ikube.model.IndexContext;
+import ikube.model.Indexable;
 import ikube.model.IndexableEmail;
 import ikube.toolkit.ThreadUtilities;
 
@@ -39,8 +40,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.sun.mail.pop3.POP3SSLStore;
 
 /**
- * This class reads and indexes a mail account. At the time of writing it was not multi-threaded but could be made multi, however this would
- * only be needed with very large accounts indeed.
+ * This class reads and indexes a mail account. At the time of writing it was not multi-threaded but could be made multi, however this would only be needed with
+ * very large accounts indeed.
  * 
  * @author Bruno Barin
  * @since 29.11.10
@@ -69,6 +70,11 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		futures.add(future);
 		return futures;
+	}
+
+	@Override
+	protected void handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource) {
+		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
 	}
 
 	/**
@@ -122,8 +128,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	 * @param folder
 	 * @throws Exception
 	 */
-	protected void handleFolder(final IndexContext<?> indexContext, final IndexableEmail indexableMail, final Folder folder)
-			throws Exception {
+	protected void handleFolder(final IndexContext<?> indexContext, final IndexableEmail indexableMail, final Folder folder) throws Exception {
 		folder.open(Folder.READ_ONLY);
 
 		// For each message found in the server, index it.
@@ -135,8 +140,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 		folder.close(true);
 	}
 
-	Document handleResource(IndexContext<?> indexContext, IndexableEmail indexableMail, Document document, Object resource)
-			throws Exception {
+	Document handleResource(IndexContext<?> indexContext, IndexableEmail indexableMail, Document document, Object resource) throws Exception {
 		Message message = (Message) resource;
 		Date recievedDate = message.getReceivedDate();
 		Date sentDate = message.getSentDate();
