@@ -1,9 +1,13 @@
 package ikube.action.index.handler;
 
+import ikube.model.IndexContext;
 import ikube.model.Indexable;
+import ikube.toolkit.SerializationUtilities;
+import ikube.toolkit.ThreadUtilities;
 
 import java.util.Arrays;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.RecursiveAction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,20 +24,8 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	/** The number of threads that this handler will spawn. */
-	private int threads;
 	/** The class that this handler can handle. */
 	private Class<T> indexableClass;
-	/** A local storage for the maximum exceptions per thread. */
-	private ThreadLocal<Integer> threadLocal = new ThreadLocal<Integer>();
-	
-	public int getThreads() {
-		return threads;
-	}
-
-	public void setThreads(final int threads) {
-		this.threads = threads;
-	}
 
 	/**
 	 * {@inheritDoc}
@@ -51,22 +43,44 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 		this.indexableClass = indexableClass;
 	}
 
+	protected RecursiveAction getRecursiveAction(final IndexContext<?> indexContext, final Indexable<?> indexable, final IResourceProvider<?> resourceManager) {
+		RecursiveAction recursiveAction = new RecursiveAction() {
+			@Override
+			protected void compute() {
+				int threadsLeft = indexable.getThreads();
+				indexable.setThreads(--threadsLeft);
+				if (threadsLeft >= 0) {
+					// Split off some more threads to help do the work
+					Indexable<?> leftIndexable = (Indexable<?>) SerializationUtilities.clone(indexable);
+					Indexable<?> rightIndexable = (Indexable<?>) SerializationUtilities.clone(indexable);
+					RecursiveAction leftRecursiveAction = getRecursiveAction(indexContext, leftIndexable, resourceManager);
+					RecursiveAction rightRecursiveAction = getRecursiveAction(indexContext, rightIndexable, resourceManager);
+					invokeAll(leftRecursiveAction, rightRecursiveAction);
+				}
+				Object resource = resourceManager.getResource();
+				while (resource != null && !isCancelled()) {
+					// Call the handle resource on the parent, which is the implementation specific handler method
+					handleResource(indexContext, indexable, resource);
+					// Get the next resource from the resource manager, returning null indicates that all the resources are consumed
+					resource = resourceManager.getResource();
+					ThreadUtilities.sleep(indexContext.getThrottle());
+				}
+			}
+		};
+		return recursiveAction;
+	}
+
+	protected abstract void handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource);
+
 	protected void handleException(final Indexable<?> indexable, final Exception exception, final String... messages) {
-		if (InterruptedException.class.isAssignableFrom(exception.getClass())
-				|| CancellationException.class.isAssignableFrom(exception.getClass())) {
+		if (InterruptedException.class.isAssignableFrom(exception.getClass()) || CancellationException.class.isAssignableFrom(exception.getClass())) {
 			throw new RuntimeException("Worker thread interrupted : " + Arrays.deepToString(messages), exception);
 		}
-		if (threadLocal.get() == null) {
-			threadLocal.set(new Integer(0));
+		indexable.setExceptions(indexable.getExceptions() + 1);
+		if (indexable.getExceptions() > indexable.getMaxExceptions()) {
+			throw new RuntimeException("Maximum exceptions exceeded for resource : " + indexable.getName() + ", " + Arrays.deepToString(messages), exception);
 		}
-		threadLocal.set(threadLocal.get() + 1);
-		if (indexable != null) {
-			if (threadLocal.get() > indexable.getMaxExceptions()) {
-				throw new RuntimeException("Maximum exceptions exceeded for resource : " + Arrays.deepToString(messages), exception);
-			}
-		} else {
-			logger.error("Exception handling resource : " + Arrays.deepToString(messages), exception);
-		}
+		logger.error("Exception handling resource : " + Arrays.deepToString(messages), exception);
 	}
 
 }
