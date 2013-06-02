@@ -65,7 +65,7 @@
 		<td ng-class="'bordered'">{{action.indexName}}</td>
 		<td ng-class="'bordered'">{{action.indexableName}}</td>
 		<td ng-class="'bordered'">{{action.snapshot.docsPerMinute}}</td>
-		<td ng-class="'bordered'">{{action.snapshot.numDocs}}</td>
+		<td ng-class="'bordered'">{{action.snapshot.numDocsForIndexWriters}}</td>
 		<td ng-class="'bordered'">{{action.startTime}}</td>
 		<td ng-class="'bordered'">{{action.endTime}}</td>
 	</tr>

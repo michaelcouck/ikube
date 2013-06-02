@@ -93,4 +93,9 @@ public class IndexableDataSourceHandler extends IndexableHandler<IndexableDataSo
 		return Boolean.FALSE;
 	}
 
+	@Override
+	protected void handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource) {
+		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
+	}
+
 }

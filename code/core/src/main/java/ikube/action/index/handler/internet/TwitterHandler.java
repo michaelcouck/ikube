@@ -2,6 +2,7 @@ package ikube.action.index.handler.internet;
 
 import ikube.action.index.handler.IndexableHandler;
 import ikube.model.IndexContext;
+import ikube.model.Indexable;
 import ikube.model.IndexableInternet;
 import ikube.security.WebServiceAuthentication;
 
@@ -38,6 +39,11 @@ public class TwitterHandler extends IndexableHandler<IndexableInternet> {
 		List<String> lines = IOUtils.readLines(inputStream);
 		logger.info("Response : " + response + ", " + lines);
 		return futures;
+	}
+	
+	@Override
+	protected void handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource) {
+		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
 	}
 
 	void login(final IndexableInternet indexableInternet, final HttpClient httpClient) {

@@ -30,11 +30,11 @@ public class Indexable<E> extends Persistable {
 	/** These strategies will be processed before processing the indexable. */
 	@Transient
 	private transient List<IStrategy> strategies;
-	/**
-	 * This is the content of the indexable, it is therefore only valid while indexing and for the current resource.
-	 */
+	/** This is the content of the indexable, it is therefore only valid while indexing and for the current resource. */
 	@Transient
 	private transient Object content;
+	@Transient
+	private transient int exceptions;
 
 	@Column
 	@Attribute(field = false, description = "The name of this indexable")
@@ -63,6 +63,12 @@ public class Indexable<E> extends Persistable {
 	@Max(value = 1000000)
 	@Attribute(field = false, description = "This is the maximum exceptions during indexing before the indexing is stopped")
 	private long maxExceptions = 1000;
+
+	@Column
+	@Min(value = 1)
+	@Max(value = 1000)
+	@Attribute(field = false, description = "This is the number of threads that should be spawned for this indexable")
+	private int threads = 1;
 
 	public void setName(final String name) {
 		this.name = name;
@@ -129,15 +135,23 @@ public class Indexable<E> extends Persistable {
 		return maxExceptions;
 	}
 
-	public void setMaxExceptions(long maxExceptions) {
+	public void setMaxExceptions(final long maxExceptions) {
 		this.maxExceptions = maxExceptions;
+	}
+
+	public int getThreads() {
+		return threads;
+	}
+
+	public void setThreads(final int threads) {
+		this.threads = threads;
 	}
 
 	public List<IStrategy> getStrategies() {
 		return strategies;
 	}
 
-	public void setStrategies(List<IStrategy> strategies) {
+	public void setStrategies(final List<IStrategy> strategies) {
 		this.strategies = strategies;
 	}
 
@@ -147,6 +161,14 @@ public class Indexable<E> extends Persistable {
 
 	public void setContent(final Object content) {
 		this.content = content;
+	}
+
+	public int getExceptions() {
+		return exceptions;
+	}
+
+	public void setExceptions(int exceptions) {
+		this.exceptions = exceptions;
 	}
 
 }

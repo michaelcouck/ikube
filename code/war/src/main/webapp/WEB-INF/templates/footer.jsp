@@ -6,9 +6,12 @@
 <table width="100%">
 	<tr>
 		<td align="center" nowrap="nowrap">
-			<p>
-				Version - ${ikube:version()} - ${ikube:timestamp()}
-			</p>
+			<p>Made in Belgium</p>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" nowrap="nowrap">
+			<p>Version - ${ikube:version()} - ${ikube:timestamp()}</p>
 		</td>
 	</tr>
 </table>
