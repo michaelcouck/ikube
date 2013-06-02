@@ -4,6 +4,7 @@ import ikube.action.index.IndexManager;
 import ikube.action.index.handler.IndexableHandler;
 import ikube.action.index.handler.ResourceHandlerBase;
 import ikube.model.IndexContext;
+import ikube.model.Indexable;
 import ikube.model.IndexableFileSystemLog;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.SerializationUtilities;
@@ -77,6 +78,11 @@ public class IndexableFilesystemLogHandler extends IndexableHandler<IndexableFil
 			handleException(indexable, e);
 		}
 		return futures;
+	}
+	
+	@Override
+	protected void handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource) {
+		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
 	}
 
 	/**

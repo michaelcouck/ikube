@@ -3,6 +3,7 @@ package ikube.action.index.handler.filesystem;
 import ikube.IConstants;
 import ikube.action.index.handler.IndexableHandler;
 import ikube.model.IndexContext;
+import ikube.model.Indexable;
 import ikube.model.IndexableFileSystem;
 import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.ThreadUtilities;
@@ -53,7 +54,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		final Stack<File> directories = new Stack<File>();
 		directories.push(new File(indexable.getPath()));
 		final Pattern pattern = getPattern(indexable.getExcludedPattern());
-		for (int i = 0; i < getThreads(); i++) {
+		for (int i = 0; i < indexable.getThreads(); i++) {
 			final IndexableFileSystem indexableFileSystem = (IndexableFileSystem) SerializationUtilities.clone(indexable);
 			// Must set the strategies because they are transient and will not be included in the clone
 			indexableFileSystem.setParent(indexable.getParent());
@@ -67,6 +68,11 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 			futures.add(future);
 		}
 		return futures;
+	}
+	
+	@Override
+	protected void handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource) {
+		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
 	}
 
 	void handleFiles(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final Stack<File> directories,

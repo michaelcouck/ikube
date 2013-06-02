@@ -64,6 +64,11 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
 		futures.add(future);
 		return futures;
 	}
+	
+	@Override
+	protected void handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource) {
+		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
+	}
 
 	/**
 	 * {@inheritDoc}

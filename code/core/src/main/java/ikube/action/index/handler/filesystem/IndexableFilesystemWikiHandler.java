@@ -5,6 +5,7 @@ import ikube.action.index.IndexManager;
 import ikube.action.index.handler.IndexableHandler;
 import ikube.action.index.handler.ResourceHandlerBase;
 import ikube.model.IndexContext;
+import ikube.model.Indexable;
 import ikube.model.IndexableFileSystemWiki;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
@@ -58,7 +59,7 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 		final File[] bZip2Files = FileUtilities.findFiles(directory, new String[] { FILE_TYPE });
 		final Iterator<File> iterator = new ArrayList<File>(Arrays.asList(bZip2Files)).iterator();
 		final Counter counter = new Counter();
-		for (int i = 0; i < getThreads(); i++) {
+		for (int i = 0; i < indexable.getThreads(); i++) {
 			Runnable runnable = new Runnable() {
 				public void run() {
 					while (iterator.hasNext() && ThreadUtilities.isInitialized()) {
@@ -72,6 +73,11 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 			futures.add(future);
 		}
 		return futures;
+	}
+	
+	@Override
+	protected void handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource) {
+		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
 	}
 
 	/**

@@ -3,6 +3,7 @@ package ikube.action.index.handler.filesystem;
 import ikube.IConstants;
 import ikube.action.index.handler.IndexableHandler;
 import ikube.model.IndexContext;
+import ikube.model.Indexable;
 import ikube.model.IndexableDictionary;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
@@ -39,7 +40,7 @@ public class IndexableDictionaryHandler extends IndexableHandler<IndexableDictio
 			Directory directory = FSDirectory.open(spellingIndexDirectory);
 			@SuppressWarnings("resource")
 			final SpellChecker spellChecker = new SpellChecker(directory);
-			for (int i = 0; i < getThreads(); i++) {
+			for (int i = 0; i < indexable.getThreads(); i++) {
 				Runnable runnable = new Runnable() {
 					public void run() {
 						File[] files = new File(indexable.getPath()).listFiles();
@@ -72,6 +73,11 @@ public class IndexableDictionaryHandler extends IndexableHandler<IndexableDictio
 			handleException(indexable, e);
 		}
 		return futures;
+	}
+
+	@Override
+	protected void handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource) {
+		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
 	}
 
 }
