@@ -36,7 +36,6 @@ public class IndexableFilesystemWikiHandlerTest extends AbstractTest {
 	public void before() {
 		ThreadUtilities.initialize();
 		indexableFilesystemWikiHandler = new IndexableFilesystemWikiHandler();
-		indexableFilesystemWikiHandler.setThreads(3);
 	}
 
 	@After
@@ -55,6 +54,7 @@ public class IndexableFilesystemWikiHandlerTest extends AbstractTest {
 		indexableFileSystem.setPathFieldName("pathFieldName");
 		indexableFileSystem.setContentFieldName("contentFieldName");
 		indexableFileSystem.setMaxRevisions(Integer.MAX_VALUE);
+		indexableFileSystem.setThreads(3);
 		File file = FileUtilities.findFileRecursively(new File("."), "enwiki-revisions.bz2");
 		indexableFileSystem.setPath(file.getParentFile().getAbsolutePath());
 

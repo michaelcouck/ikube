@@ -1,7 +1,7 @@
 package ikube.action.index.handler.filesystem;
 
-import static org.mockito.Mockito.*;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
 import ikube.model.IndexableFileSystem;
 import ikube.toolkit.FileUtilities;
@@ -26,8 +26,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 /**
- * Tests the general functionality of the file system handler. There are no specific checks on the data that is indexed as the sub
- * components are tested separately and the integration tests verify that the data is collected.
+ * Tests the general functionality of the file system handler. There are no specific checks on the data that is indexed as the sub components are tested
+ * separately and the integration tests verify that the data is collected.
  * 
  * @author Michael Couck
  * @since 21.11.10
@@ -55,7 +55,6 @@ public class IndexableFileSystemHandlerTest extends AbstractTest {
 	@Before
 	public void before() {
 		indexableFileSystemHandler = new IndexableFilesystemHandler();
-		indexableFileSystemHandler.setThreads(1);
 	}
 
 	@Test
@@ -79,6 +78,7 @@ public class IndexableFileSystemHandlerTest extends AbstractTest {
 
 	@Test
 	public void isExcluded() throws Exception {
+		Deencapsulation.setField(indexableFileSystemHandler, "resourceHandler", resourceHandler);
 		File file = Mockito.mock(File.class);
 		Mockito.when(file.getName()).thenReturn("image.png");
 		Mockito.when(file.getAbsolutePath()).thenReturn("/tmp/image.png");
@@ -104,6 +104,7 @@ public class IndexableFileSystemHandlerTest extends AbstractTest {
 
 	@Test
 	public void interrupt() throws Exception {
+		Deencapsulation.setField(indexableFileSystemHandler, "resourceHandler", resourceHandler);
 		try {
 			ThreadUtilities.initialize();
 			when(indexContext.getThrottle()).thenReturn(60000l);
