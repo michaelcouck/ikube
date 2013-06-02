@@ -28,6 +28,7 @@ public class QueryBuilderTest extends AbstractTest {
 
 	@BeforeClass
 	public static void beforeClass() {
+		ApplicationContextManager.closeApplicationContext();
 		ApplicationContextManager.getApplicationContextFilesystem("src/test/resources/spring/spring-geo.xml");
 	}
 
