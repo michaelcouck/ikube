@@ -61,7 +61,7 @@ public class IndexableInternetHandlerTest extends AbstractTest {
 
 	@Test
 	public void handleIndexable() throws Exception {
-		indexableInternetHandler.setThreads(3);
+		indexableInternet.setThreads(3);
 		indexableInternet.setUrl("http://www.ikube.be/site/");
 		indexableInternetHandler.handleIndexable(indexContext, indexableInternet);
 		logger.info("Documents size : " + documents.size());
