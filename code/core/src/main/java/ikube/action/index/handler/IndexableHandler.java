@@ -6,6 +6,7 @@ import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.ThreadUtilities;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.RecursiveAction;
 
@@ -44,12 +45,15 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 	}
 
 	protected RecursiveAction getRecursiveAction(final IndexContext<?> indexContext, final Indexable<?> indexable, final IResourceProvider<?> resourceManager) {
-		RecursiveAction recursiveAction = new RecursiveAction() {
+		class RecursiveActionImpl extends RecursiveAction {
+
 			@Override
+			@SuppressWarnings({ "rawtypes", "unchecked" })
 			protected void compute() {
 				int threadsLeft = indexable.getThreads();
 				indexable.setThreads(--threadsLeft);
-				if (threadsLeft >= 0) {
+				if (threadsLeft > 0) {
+					logger.info("This : " + this + ", " + indexable.getThreads());
 					// Split off some more threads to help do the work
 					Indexable<?> leftIndexable = (Indexable<?>) SerializationUtilities.clone(indexable);
 					Indexable<?> rightIndexable = (Indexable<?>) SerializationUtilities.clone(indexable);
@@ -60,17 +64,21 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 				Object resource = resourceManager.getResource();
 				while (resource != null && !isCancelled()) {
 					// Call the handle resource on the parent, which is the implementation specific handler method
-					handleResource(indexContext, indexable, resource);
+					List resources = handleResource(indexContext, indexable, resource);
+					// Set any returned resources back in the resource provider
+					resourceManager.setResources(resources);
 					// Get the next resource from the resource manager, returning null indicates that all the resources are consumed
 					resource = resourceManager.getResource();
 					ThreadUtilities.sleep(indexContext.getThrottle());
 				}
+				logger.info("Finished : " + this + ", " + RecursiveAction.getPool().getRunningThreadCount());
 			}
-		};
-		return recursiveAction;
+
+		}
+		return new RecursiveActionImpl();
 	}
 
-	protected abstract void handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource);
+	protected abstract List<?> handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource);
 
 	protected void handleException(final Indexable<?> indexable, final Exception exception, final String... messages) {
 		if (InterruptedException.class.isAssignableFrom(exception.getClass()) || CancellationException.class.isAssignableFrom(exception.getClass())) {

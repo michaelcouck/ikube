@@ -24,7 +24,6 @@ import java.util.TreeSet;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 import java.util.concurrent.RecursiveAction;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.text.html.HTML;
 
@@ -36,66 +35,78 @@ import net.htmlparser.jericho.Tag;
 
 public class IndexableInternetHandler extends IndexableHandler<IndexableInternet> {
 
-	static class ResourceManager implements IResourceProvider<Url> {
+	class ResourceProvider implements IResourceProvider<Url> {
 
-		static Stack<Url> URLS = new Stack<Url>();
-		static Set<Long> DONE = new TreeSet<Long>();
+		Stack<Url> urls = new Stack<Url>();
+		Set<Long> done = new TreeSet<Long>();
 
-		ResourceManager(final IndexableInternet indexableInternet) {
+		ResourceProvider(final IndexableInternet indexableInternet) {
 			Url url = new Url();
-			url.setIndexed(Boolean.FALSE);
 			url.setUrl(indexableInternet.getUrl());
 			url.setName(indexableInternet.getName());
-			url.setUrlId(HashUtilities.hash(indexableInternet.getUrl()).longValue());
-			URLS.add(url);
+			setResources(Arrays.asList(url));
 		}
 
-		public Url getResource() {
-			if (URLS.size() == 0) {
-				return null;
+		public synchronized Url getResource() {
+			try {
+				if (urls.size() == 0) {
+					return null;
+				}
+				return urls.pop();
+			} finally {
+				notifyAll();
 			}
-			Url url = URLS.pop();
-			DONE.add(url.getUrlId());
-			return url;
 		}
-		
-		public void setResource(final Url resource) {
-			Long hash = HashUtilities.hash(resource.getUrl());
-			if (!DONE.contains(hash)) {
-				Url url = new Url();
-				url.setUrlId(hash);
-				url.setUrl(resource.getUrl());
-				url.setIndexed(Boolean.FALSE);
-				URLS.add(url);
+
+		@Override
+		public synchronized void setResources(final List<Url> resources) {
+			try {
+				if (resources == null) {
+					return;
+				}
+				for (final Object resource : resources) {
+					Url url = (Url) resource;
+					Long hash = HashUtilities.hash(url.getUrl());
+					if (!done.contains(hash)) {
+						logger.info("Adding url : " + url.getUrl() + ", " + hash + ", " + done);
+						url.setUrlId(hash);
+						url.setIndexed(Boolean.FALSE);
+						urls.push(url);
+						done.add(hash);
+					}
+				}
+			} finally {
+				notifyAll();
 			}
 		}
 
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final IndexableInternet indexableInternet) throws Exception {
-		final AtomicInteger threads = new AtomicInteger(indexableInternet.getThreads());
-		ForkJoinPool forkJoinPool = new ForkJoinPool(threads.get());
-		ResourceManager resourceManager = new ResourceManager(indexableInternet);
-		Future<?> recursiveAction = getRecursiveAction(indexContext, indexableInternet, resourceManager);
-		forkJoinPool.invoke((RecursiveAction) recursiveAction);
+		ResourceProvider resourceProvider = new ResourceProvider(indexableInternet);
+		ForkJoinPool forkJoinPool = new ForkJoinPool(indexableInternet.getThreads());
+		RecursiveAction recursiveAction = getRecursiveAction(indexContext, indexableInternet, resourceProvider);
+		forkJoinPool.invoke(recursiveAction);
 		return new ArrayList<Future<?>>(Arrays.asList(recursiveAction));
 	}
 
 	@Override
-	protected void handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource) {
-		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
+	protected List<?> handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource) {
 		try {
-			extractLinksFromContent((IndexableInternet) indexable, new URL(((Url) resource).getUrl()).openStream());
+			Url url = (Url) resource;
+			logger.info("Handling resource : " + url.getUrl() + ", " + this);
+			return extractLinksFromContent((IndexableInternet) indexable, new URL(url.getUrl()).openStream());
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
 
-	protected void extractLinksFromContent(final IndexableInternet indexableInternet, final InputStream inputStream) {
+	protected List<Url> extractLinksFromContent(final IndexableInternet indexableInternet, final InputStream inputStream) {
+		List<Url> urls = new ArrayList<Url>();
 		try {
 			Reader reader = new InputStreamReader(inputStream, IConstants.ENCODING);
 			Source source = new Source(reader);
@@ -128,7 +139,9 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 						if (indexableInternet.isExcluded(strippedAnchorLink)) {
 							continue;
 						}
-						// ResourceManager.setUrl(strippedAnchorLink);
+						Url url = new Url();
+						url.setUrl(strippedAnchorLink);
+						urls.add(url);
 					} catch (Exception e) {
 						handleException(indexableInternet, e);
 					}
@@ -139,6 +152,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		} catch (IOException e) {
 			handleException(indexableInternet, e);
 		}
+		return urls;
 	}
 
 }

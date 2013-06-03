@@ -42,8 +42,9 @@ public class TwitterHandler extends IndexableHandler<IndexableInternet> {
 	}
 	
 	@Override
-	protected void handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource) {
+	protected List<?> handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource) {
 		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
+		return null;
 	}
 
 	void login(final IndexableInternet indexableInternet, final HttpClient httpClient) {

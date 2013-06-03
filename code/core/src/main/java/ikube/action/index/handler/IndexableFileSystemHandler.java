@@ -24,11 +24,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class IndexableFileSystemHandler extends IndexableHandler<IndexableFileSystem> {
 
-	class ResourceManager implements IResourceProvider<File> {
+	class ResourceProvider implements IResourceProvider<File> {
 
-		private Stack<File> files = new Stack<File>();
+		Stack<File> files = new Stack<File>();
 
-		ResourceManager(final IndexableFileSystem indexableFileSystem) throws IOException {
+		ResourceProvider(final IndexableFileSystem indexableFileSystem) throws IOException {
 			Files.walkFileTree(new File(indexableFileSystem.getPath()).toPath(), new SimpleFileVisitor<Path>() {
 				public FileVisitResult visitFile(final Path path, final BasicFileAttributes attrs) throws IOException {
 					File file = path.toFile();
@@ -51,22 +51,26 @@ public class IndexableFileSystemHandler extends IndexableHandler<IndexableFileSy
 			return file;
 		}
 
+		@Override
+		public void setResources(List<File> resources) {
+		}
+
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem) throws Exception {
 		final AtomicInteger threads = new AtomicInteger(indexableFileSystem.getThreads());
 		ForkJoinPool forkJoinPool = new ForkJoinPool(threads.get());
-		ResourceManager fileResourceManager = new ResourceManager(indexableFileSystem);
-		Future<?> recursiveAction = getRecursiveAction(indexContext, indexableFileSystem, fileResourceManager);
-		forkJoinPool.invoke((RecursiveAction) recursiveAction);
+		ResourceProvider fileResourceProvider = new ResourceProvider(indexableFileSystem);
+		RecursiveAction recursiveAction = getRecursiveAction(indexContext, indexableFileSystem, fileResourceProvider);
+		forkJoinPool.invoke(recursiveAction);
 		return new ArrayList<Future<?>>(Arrays.asList(recursiveAction));
 	}
 
 	@Override
-	protected void handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource) {
+	protected List<?> handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource) {
 		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
+		return null;
 	}
 
 }

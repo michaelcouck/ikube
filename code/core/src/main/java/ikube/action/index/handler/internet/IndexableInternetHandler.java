@@ -61,7 +61,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This is the crawler for internet and intranets sites. There are several levels of caches to improve performance in this class. Firstly the JPA cache provided
- * by the implementation. Then the query cache also from the JPA implementation. There is a new cache that is used to cache new URLS to batch them for insert,
+ * by the implementation. Then the query cache also from the JPA implementation. There is a new cache that is used to cache new urls to batch them for insert,
  * and then there is the url cache that is added to manually.
  * 
  * This class is optimized for performance, as such the elegance has taken a back seat. To facilitate several hundred million pages performance was by far the
@@ -100,8 +100,9 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	}
 
 	@Override
-	protected void handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource) {
+	protected List<?> handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource) {
 		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
+		return null;
 	}
 
 	private RecursiveAction getRecursiveAction(final IndexContext<?> indexContext, final IndexableInternet indexable, final Stack<Url> in, final Set<Long> out,
@@ -119,7 +120,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 						handle(indexContext, indexable, url, contentProvider, httpClient, in, out);
 						Thread.sleep(indexContext.getThrottle());
 						if (in.size() > indexableInternet.getInternetBatchSize() * 2 && forkJoinPool.getRunningThreadCount() < indexable.getThreads()) {
-							// If there are many URLS in the pool then fork off a few threads to handle the excess load,
+							// If there are many urls in the pool then fork off a few threads to handle the excess load,
 							// we execute the first, and join the second, with a little luck they will finish at the same time roughly
 							RecursiveAction leftRecursiveAction = getRecursiveAction(indexContext, indexableInternet, in, out, forkJoinPool);
 							RecursiveAction rightRecursiveAction = getRecursiveAction(indexContext, indexableInternet, in, out, forkJoinPool);
@@ -127,8 +128,8 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 							invokeAll(leftRecursiveAction, rightRecursiveAction);
 							logger.info("Finished joining : " + rightRecursiveAction.hashCode() + ", " + this.hashCode());
 						}
-						logger.info("Done URLS : " + out.size());
-						logger.info("Still to do URLS : " + in.size() + ", initialized : " + ThreadUtilities.isInitialized());
+						logger.info("Done urls : " + out.size());
+						logger.info("Still to do urls : " + in.size() + ", initialized : " + ThreadUtilities.isInitialized());
 						if (!ThreadUtilities.isInitialized()) {
 							throw new InterruptedException("Indexing terminated : ");
 						}
