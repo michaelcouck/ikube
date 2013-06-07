@@ -13,7 +13,6 @@ import ikube.action.index.parse.XMLParser;
 import ikube.action.index.parse.mime.MimeType;
 import ikube.action.index.parse.mime.MimeTypes;
 import ikube.model.IndexContext;
-import ikube.model.Indexable;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
 import ikube.security.WebServiceAuthentication;
@@ -85,24 +84,17 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	public List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final IndexableInternet indexable) throws Exception {
 		// The start url
 		try {
-			final ForkJoinPool forkJoinPool = new ForkJoinPool(indexable.getThreads());
+			final ForkJoinPool forkJoinPool = new ForkJoinPool(getThreads());
 			final Stack<Url> in = new Stack<Url>();
 			final Set<Long> out = new TreeSet<Long>();
 			seedUrl(indexable, in, out);
 			RecursiveAction recursiveAction = getRecursiveAction(indexContext, indexable, in, out, forkJoinPool);
-			getRecursiveAction(indexContext, indexable, null);
 			forkJoinPool.invoke(recursiveAction);
 			recursiveAction.join();
 		} catch (Exception e) {
 			handleException(indexable, e);
 		}
 		return new ArrayList<Future<?>>();
-	}
-
-	@Override
-	protected List<?> handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource) {
-		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
-		return null;
 	}
 
 	private RecursiveAction getRecursiveAction(final IndexContext<?> indexContext, final IndexableInternet indexable, final Stack<Url> in, final Set<Long> out,
@@ -112,14 +104,12 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			protected void compute() {
 				logger.info("Started executing : " + in.size() + ", " + this.hashCode());
 				IndexableInternet indexableInternet = (IndexableInternet) SerializationUtilities.clone(indexable);
-				HttpClient httpClient = new HttpClient();
 				do {
 					try {
-						Url url = in.pop();
+						HttpClient httpClient = new HttpClient();
 						IContentProvider<IndexableInternet> contentProvider = new InternetContentProvider();
-						handle(indexContext, indexable, url, contentProvider, httpClient, in, out);
-						Thread.sleep(indexContext.getThrottle());
-						if (in.size() > indexableInternet.getInternetBatchSize() * 2 && forkJoinPool.getRunningThreadCount() < indexable.getThreads()) {
+						doUrl(indexContext, indexable, in.pop(), contentProvider, httpClient, in, out);
+						if (in.size() > indexableInternet.getInternetBatchSize() * 2 && forkJoinPool.getRunningThreadCount() < getThreads()) {
 							// If there are many urls in the pool then fork off a few threads to handle the excess load,
 							// we execute the first, and join the second, with a little luck they will finish at the same time roughly
 							RecursiveAction leftRecursiveAction = getRecursiveAction(indexContext, indexableInternet, in, out, forkJoinPool);
@@ -140,11 +130,35 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 					} catch (Exception e) {
 						handleException(indexable, e, e.getMessage());
 					}
-				} while (in.size() > 0 && !isCancelled() && ThreadUtilities.isInitialized());
+				} while (in.size() > 0 && ThreadUtilities.isInitialized());
 				logger.info("Finished executing : " + in.size() + ", " + this.hashCode());
 			}
 		};
 		return recursiveAction;
+	}
+
+	/**
+	 * This method iterates over the batch of urls and indexes the content, also extracting other links from the pages.
+	 * 
+	 * @param indexContext the index context for this internet url
+	 * @param indexable the indexable, which is the url configuration
+	 * @param urlBatch the batch of urls to index
+	 * @param contentProvider the content provider for http pages
+	 * @param httpClient the client to use for accessing the pages over http
+	 */
+	protected void doUrl(final IndexContext<?> indexContext, final IndexableInternet indexable, Url url,
+			final IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient, Stack<Url> in, Set<Long> out) {
+		try {
+			Thread.sleep(indexContext.getThrottle());
+			handle(indexContext, indexable, url, contentProvider, httpClient, in, out);
+		} catch (Exception e) {
+			handleException(indexable, e);
+		} finally {
+			url.setParsedContent(null);
+			url.setRawContent(null);
+			url.setTitle(null);
+			url.setContentType(null);
+		}
 	}
 
 	/**
@@ -182,11 +196,6 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			handleResource(indexContext, indexable, new Document(), url);
 		} catch (Exception e) {
 			handleException(indexable, e);
-		} finally {
-			url.setParsedContent(null);
-			url.setRawContent(null);
-			url.setTitle(null);
-			url.setContentType(null);
 		}
 	}
 
@@ -272,6 +281,14 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		return null;
 	}
 
+	/**
+	 * Adds the document to the index with all the defined fields. Typically the fields are the title, the field names that are defined in the configuration and
+	 * the content field name.
+	 * 
+	 * @param indexable the indexable or base host for this crawl
+	 * @param url the url being added to the index, i.e. just been visited and the data has been extracted
+	 * @param parsedContent the content that was extracted from the url
+	 */
 	@SuppressWarnings("unchecked")
 	public Document handleResource(final IndexContext<?> indexContext, final IndexableInternet indexable, final Document document, final Object resource) {
 		Url url = (Url) resource;
@@ -307,54 +324,62 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		return document;
 	}
 
+	/**
+	 * Extracts all the links from the content and sets them in the cluster wide cache. The cache is persistence backed so any overflow then goes to a local
+	 * object oriented database on each server.
+	 * 
+	 * @param indexableInternet the indexable that is being crawled
+	 * @param inputStream the input stream of the data from the base url, i.e. the html
+	 */
 	protected void extractLinksFromContent(final IndexableInternet indexableInternet, final InputStream inputStream, final Stack<Url> in, final Set<Long> out) {
 		try {
 			Reader reader = new InputStreamReader(inputStream, IConstants.ENCODING);
 			Source source = new Source(reader);
 			List<Tag> tags = source.getAllTags();
 			String baseUrlStripped = indexableInternet.getBaseUrl();
-			for (final Tag tag : tags) {
+			for (Tag tag : tags) {
 				if (tag.getName().equals(HTMLElementName.A) && StartTag.class.isAssignableFrom(tag.getClass())) {
 					Attribute attribute = ((StartTag) tag).getAttributes().get(HTML.Attribute.HREF.toString());
-					if (attribute == null) {
-						continue;
-					}
-					try {
-						String link = attribute.getValue();
-						if (link == null) {
-							continue;
+					if (attribute != null) {
+						try {
+							String link = attribute.getValue();
+							if (link == null) {
+								continue;
+							}
+							if (UriUtilities.isExcluded(link.trim().toLowerCase())) {
+								continue;
+							}
+							String resolvedLink = UriUtilities.resolve(indexableInternet.getUri(), link);
+							String replacement = resolvedLink.contains("?") ? "?" : "";
+							String strippedSessionLink = UriUtilities.stripJSessionId(resolvedLink, replacement);
+							String strippedAnchorLink = UriUtilities.stripAnchor(strippedSessionLink, "");
+							if (!UriUtilities.isInternetProtocol(strippedAnchorLink)) {
+								continue;
+							}
+							if (!strippedAnchorLink.startsWith(baseUrlStripped)) {
+								continue;
+							}
+							if (indexableInternet.isExcluded(strippedAnchorLink)) {
+								continue;
+							}
+							Long urlId = HashUtilities.hash(strippedAnchorLink);
+
+							// Check the out stack for this url
+							Long hash = HashUtilities.hash(strippedAnchorLink);
+							if (!out.add(hash)) {
+								continue;
+							}
+							Url url = new Url();
+							url.setUrlId(urlId.longValue());
+							url.setName(indexableInternet.getName());
+							url.setIndexed(Boolean.FALSE);
+							url.setUrl(strippedAnchorLink);
+							// logger.info("Adding url : " + url.getUrl());
+							// Add the new url to the cache
+							in.push(url);
+						} catch (Exception e) {
+							handleException(indexableInternet, e);
 						}
-						if (UriUtilities.isExcluded(link.trim().toLowerCase())) {
-							continue;
-						}
-						String resolvedLink = UriUtilities.resolve(indexableInternet.getUri(), link);
-						String replacement = resolvedLink.contains("?") ? "?" : "";
-						String strippedSessionLink = UriUtilities.stripJSessionId(resolvedLink, replacement);
-						String strippedAnchorLink = UriUtilities.stripAnchor(strippedSessionLink, "");
-						if (!UriUtilities.isInternetProtocol(strippedAnchorLink)) {
-							continue;
-						}
-						if (!strippedAnchorLink.startsWith(baseUrlStripped)) {
-							continue;
-						}
-						if (indexableInternet.isExcluded(strippedAnchorLink)) {
-							continue;
-						}
-						// Check the out stack for this url
-						Long hash = HashUtilities.hash(strippedAnchorLink);
-						if (!out.add(hash)) {
-							continue;
-						}
-						Url url = new Url();
-						url.setUrlId(hash.longValue());
-						url.setName(indexableInternet.getName());
-						url.setIndexed(Boolean.FALSE);
-						url.setUrl(strippedAnchorLink);
-						// logger.info("Adding url : " + url.getUrl());
-						// Add the new url to the cache
-						in.push(url);
-					} catch (Exception e) {
-						handleException(indexableInternet, e);
 					}
 				}
 			}
@@ -365,6 +390,12 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		}
 	}
 
+	/**
+	 * This method will add the first or base url to the database. Typically this method gets called before starting the crawl.
+	 * 
+	 * @param dataBase the database for the persistence
+	 * @param indexableInternet the base url object from the configuration for the site/intranet
+	 */
 	protected void seedUrl(final IndexableInternet indexableInternet, Stack<Url> in, Set<Long> out) {
 		String urlString = indexableInternet.getUrl();
 		indexableInternet.setCurrentUrl(urlString);
