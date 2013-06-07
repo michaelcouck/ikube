@@ -24,23 +24,6 @@ public class SshXcuteTaskTest {
 	}
 
 	@Test
-	public void executeEndToEnd() {
-		File bzip2 = FileUtilities.findFileRecursively(new File("."), "bzip2\\.bzip2");
-		String bzip2Path = FileUtilities.cleanFilePath(bzip2.getAbsolutePath());
-
-		File wiki = FileUtilities.findDirectoryRecursively(new File("."), "7zip");
-		String wikiPath = FileUtilities.cleanFilePath(wiki.getAbsolutePath());
-
-		sshXcuteTask.setIps("localhost");
-		sshXcuteTask.setUsernames("user");
-		sshXcuteTask.setPasswords("password");
-		sshXcuteTask.setCommands("pwd;ls -l");
-		sshXcuteTask.setDirectoriesToCopy(wikiPath + "|/tmp;");
-		sshXcuteTask.setFilesToCopy(bzip2Path + "|/tmp/" + bzip2.getName());
-		sshXcuteTask.execute();
-	}
-
-	@Test
 	public void setCommands() {
 		sshXcuteTask.setCommands("hello;world;commands;to be done;");
 		String[] commands = sshXcuteTask.getCommands();
@@ -67,7 +50,7 @@ public class SshXcuteTaskTest {
 		assertEquals("/usr/share", splitString[0][0]);
 		assertEquals("/usr/share", splitString[0][1]);
 	}
-	
+
 	@Test
 	@Ignore
 	public void startRemoteTomcat() {
@@ -77,5 +60,23 @@ public class SshXcuteTaskTest {
 		sshXcuteTask.setCommands("ls -l;pwd;ls -l; pwd;");
 		sshXcuteTask.execute();
 	}
-	
+
+	@Test
+	@Ignore
+	public void executeEndToEnd() {
+		File bzip2 = FileUtilities.findFileRecursively(new File("."), "bzip2\\.bzip2");
+		String bzip2Path = FileUtilities.cleanFilePath(bzip2.getAbsolutePath());
+
+		File wiki = FileUtilities.findDirectoryRecursively(new File("."), "7zip");
+		String wikiPath = FileUtilities.cleanFilePath(wiki.getAbsolutePath());
+
+		sshXcuteTask.setIps("localhost");
+		sshXcuteTask.setUsernames("user");
+		sshXcuteTask.setPasswords("password");
+		sshXcuteTask.setCommands("pwd;ls -l");
+		sshXcuteTask.setDirectoriesToCopy(wikiPath + "|/tmp;");
+		sshXcuteTask.setFilesToCopy(bzip2Path + "|/tmp/" + bzip2.getName());
+		sshXcuteTask.execute();
+	}
+
 }

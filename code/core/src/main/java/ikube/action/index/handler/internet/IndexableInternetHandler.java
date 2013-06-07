@@ -13,6 +13,7 @@ import ikube.action.index.parse.XMLParser;
 import ikube.action.index.parse.mime.MimeType;
 import ikube.action.index.parse.mime.MimeTypes;
 import ikube.model.IndexContext;
+import ikube.model.Indexable;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
 import ikube.security.WebServiceAuthentication;
@@ -84,7 +85,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	public List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final IndexableInternet indexable) throws Exception {
 		// The start url
 		try {
-			final ForkJoinPool forkJoinPool = new ForkJoinPool(getThreads());
+			final ForkJoinPool forkJoinPool = new ForkJoinPool(indexable.getThreads());
 			final Stack<Url> in = new Stack<Url>();
 			final Set<Long> out = new TreeSet<Long>();
 			seedUrl(indexable, in, out);
@@ -109,7 +110,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 						HttpClient httpClient = new HttpClient();
 						IContentProvider<IndexableInternet> contentProvider = new InternetContentProvider();
 						doUrl(indexContext, indexable, in.pop(), contentProvider, httpClient, in, out);
-						if (in.size() > indexableInternet.getInternetBatchSize() * 2 && forkJoinPool.getRunningThreadCount() < getThreads()) {
+						if (in.size() > indexableInternet.getInternetBatchSize() * 2 && forkJoinPool.getRunningThreadCount() < indexable.getThreads()) {
 							// If there are many urls in the pool then fork off a few threads to handle the excess load,
 							// we execute the first, and join the second, with a little luck they will finish at the same time roughly
 							RecursiveAction leftRecursiveAction = getRecursiveAction(indexContext, indexableInternet, in, out, forkJoinPool);
@@ -421,4 +422,10 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			handleException(indexableInternet, e);
 		}
 	}
+	
+	@Override
+	protected List<?> handleResource(IndexContext<?> indexContext, Indexable<?> indexable, Object resource) {
+		return null;
+	}
+
 }

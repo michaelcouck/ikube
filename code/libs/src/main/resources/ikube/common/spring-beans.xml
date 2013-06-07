@@ -307,52 +307,52 @@
 		id="ikube.action.index.handler.IndexableHandler"
 		class="ikube.action.index.handler.IndexableHandler" 
 		abstract="true" />
+	<!-- property:threads="${internet.handler.threads}" --> 
 	<bean
 		parent="ikube.action.index.handler.IndexableHandler"
 		class="ikube.action.index.handler.internet.IndexableInternetHandler"
-		property:threads="${internet.handler.threads}" 
 		property:indexableClass="ikube.model.IndexableInternet" />
+	<!-- property:threads="${email.handler.threads}" -->
 	<bean
 		parent="ikube.action.index.handler.IndexableHandler"
 		class="ikube.action.index.handler.email.IndexableEmailHandler"
-		property:threads="${email.handler.threads}"
 		property:indexableClass="ikube.model.IndexableEmail" />
+	<!-- property:threads="${filesystem.handler.threads}" -->
 	<bean
 		parent="ikube.action.index.handler.IndexableHandler"
 		id="ikube.action.index.handler.filesystem.IndexableFilesystemHandler"
 		class="ikube.action.index.handler.filesystem.IndexableFilesystemHandler"
-		property:threads="${filesystem.handler.threads}"
 		property:indexableClass="ikube.model.IndexableFileSystem" />
+	<!-- property:threads="${table.handler.threads}" -->
 	<bean
 		parent="ikube.action.index.handler.IndexableHandler"
 		class="ikube.action.index.handler.database.IndexableTableHandler"
-		property:threads="${table.handler.threads}"
 		property:indexableClass="ikube.model.IndexableTable" />
+	<!-- property:threads="${filesystem.handler.threads}" -->
 	<bean
 		parent="ikube.action.index.handler.IndexableHandler"
 		class="ikube.action.index.handler.filesystem.IndexableDictionaryHandler"
-		property:threads="${filesystem.handler.threads}"
 		property:indexableClass="ikube.model.IndexableDictionary" />
+	<!-- property:threads="${filesystem.handler.threads}" -->
 	<bean
 		parent="ikube.action.index.handler.IndexableHandler"
 		class="ikube.action.index.handler.filesystem.IndexableFilesystemLogHandler"
-		property:threads="${filesystem.handler.threads}"
 		property:indexableClass="ikube.model.IndexableFileSystemLog" />
+	<!-- property:threads="${filesystem.handler.threads}" -->
 	<bean
 		parent="ikube.action.index.handler.IndexableHandler"
 		class="ikube.action.index.handler.filesystem.IndexableFilesystemWikiHandler"
-		property:threads="${filesystem.handler.threads}"
 		property:indexableClass="ikube.model.IndexableFileSystemWiki" />
+	<!-- property:threads="${filesystem.handler.threads}" -->
 	<bean
 		parent="ikube.action.index.handler.IndexableHandler"
 		class="ikube.action.index.handler.database.IndexableDataSourceHandler"
-		property:threads="${filesystem.handler.threads}"
 		property:indexableClass="ikube.model.IndexableDataSource" />
+	<!-- property:threads="${filesystem.handler.threads}" -->
 	<bean
 		parent="ikube.action.index.handler.IndexableHandler"
 		id="ikube.action.index.handler.filesystem.IndexableFilesystemCsvHandler" 
 		class="ikube.action.index.handler.filesystem.IndexableFilesystemCsvHandler"
-		property:threads="${filesystem.handler.threads}"
 		property:indexableClass="ikube.model.IndexableFileSystemCsv" />
 	
 	<bean 
