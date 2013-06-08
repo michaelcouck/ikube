@@ -12,6 +12,7 @@ import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.model.Snapshot;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.Logging;
 import ikube.toolkit.ObjectToolkit;
 
 import java.io.File;
@@ -139,6 +140,7 @@ public class SnapshotScheduleTest extends AbstractTest {
 		String string = "Log tail";
 		File outputFile = FileUtilities.getOrCreateFile("./" + IConstants.IKUBE + IConstants.SEP + IConstants.IKUBE_LOG);
 		FileUtilities.setContents(outputFile, string.getBytes());
+		Deencapsulation.setField(Logging.class, "LOG_FILE", outputFile);
 		Server server = new Server();
 		snapshotSchedule.setLogTail(server);
 		assertEquals(string, server.getLogTail());
@@ -152,6 +154,11 @@ public class SnapshotScheduleTest extends AbstractTest {
 
 	@Test
 	public void sortSnapshots() throws Exception {
+		String string = "Log tail";
+		File outputFile = FileUtilities.getOrCreateFile("./" + IConstants.IKUBE + IConstants.SEP + IConstants.IKUBE_LOG);
+		FileUtilities.setContents(outputFile, string.getBytes());
+		Deencapsulation.setField(Logging.class, "LOG_FILE", outputFile);
+		
 		List<Snapshot> snapshots = new ArrayList<Snapshot>();
 		for (int i = 0; i < 10; i++) {
 			Snapshot snapshot = ObjectToolkit.populateFields(Snapshot.class, new Snapshot(), Boolean.TRUE, 5);
