@@ -43,7 +43,7 @@
 		<excluded.packages>-Dexcluded.packages=workspace:model:Mock:Test:Integration:jpa:jaxws</excluded.packages>
 		<included.adapters>-Dincluded.adapters=coverage:complexity:dependency</included.adapters>
 		<serenity.parameters>${included.adapters} ${included.packages} ${excluded.packages} ${write.classes} ${clean.classes}</serenity.parameters>
-		<memory.parameters>-XX:PermSize=128m -XX:MaxPermSize=256m -Xms256m -Xmx512m</memory.parameters>
+		<memory.parameters>-XX:PermSize=256m -XX:MaxPermSize=1024m -Xms1024m -Xmx4096m</memory.parameters>
 
 		<war.base.root>code/war/target/ikube</war.base.root>
 		<postgresql.driver.version>9.1-901-1.jdbc4</postgresql.driver.version>
