@@ -16,9 +16,9 @@
             http://www.springframework.org/schema/util/spring-util.xsd">
 
 	<bean
-		id="okiContext"
+		id="sites-context"
 		class="ikube.model.IndexContext"
-		property:name="okiContext"
+		property:name="sites-context"
 		property:maxAge="6000"
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}"
@@ -28,15 +28,31 @@
 		property:mergeFactor="${merge.factor}"
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
-		property:throttle="10"
+		property:throttle="0"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path}"
 		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer"
-		property:children-ref="okiIndexables" />
-	<util:list id="okiIndexables">
+		property:children-ref="sites-indexables" />
+	<util:list id="sites-indexables">
+		<ref local="ibm" />
 		<ref local="oki" />
 	</util:list>
 	
+	<bean
+		id="ibm"
+		class="ikube.model.IndexableInternet"
+		property:name="ibm"
+		property:url="http://www.ibm.com" 
+		property:idFieldName="id"
+		property:titleFieldName="title"
+		property:contentFieldName="contents"
+		property:analyzed="true"
+		property:stored="false"
+		property:vectored="true"
+		property:internetBatchSize="1000"
+		property:excludedPattern="${internet.excluded.pattern}"
+		property:strategies-ref="sites-strategies" />
+		
 	<bean
 		id="oki"
 		class="ikube.model.IndexableInternet"
@@ -50,9 +66,9 @@
 		property:vectored="true"
 		property:internetBatchSize="1000"
 		property:excludedPattern="${internet.excluded.pattern}"
-		property:strategies-ref="oki-strategies" />
-		
-	<util:list id="oki-strategies">
+		property:strategies-ref="sites-strategies" />
+	
+	<util:list id="sites-strategies">
 	    <ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
 	</util:list>
 	
