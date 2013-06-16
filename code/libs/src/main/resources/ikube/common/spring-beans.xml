@@ -175,7 +175,6 @@
 	<util:list id="ikube.scheduling.Scheduler.schedules">
 		<ref local="ikube.scheduling.schedule.IndexSchedule" />
 		<ref local="ikube.scheduling.schedule.ServerSchedule" />
-		<!-- <ref local="ikube.scheduling.schedule.ClusterSchedule" /> -->
 		<ref local="ikube.scheduling.schedule.IndexSizeSchedule" />
 		<ref local="ikube.scheduling.schedule.ActionSchedule" />
 		<ref local="ikube.scheduling.schedule.SnapshotSchedule" />
@@ -194,31 +193,31 @@
 		name="ikube.scheduling.schedule.ServerSchedule"
 		class="ikube.scheduling.schedule.ServerSchedule" 
 		property:delay="10000"
-		property:period="${delay}" />
+		property:period="60000" />
 	<bean 
 		id="ikube.scheduling.schedule.IndexSizeSchedule"
 		name="ikube.scheduling.schedule.IndexSizeSchedule"
 		class="ikube.scheduling.schedule.IndexSizeSchedule" 
-		property:delay="${delay}"
-		property:period="${period}" />
+		property:delay="600000"
+		property:period="600000" />
 	<bean 
 		id="ikube.scheduling.schedule.ActionSchedule"
 		name="ikube.scheduling.schedule.ActionSchedule"
 		class="ikube.scheduling.schedule.ActionSchedule" 
-		property:delay="${delay}"
-		property:period="${period}" />
+		property:delay="60000"
+		property:period="300000" />
 	<bean
 		id="ikube.scheduling.schedule.SnapshotSchedule"
 		name="ikube.scheduling.schedule.SnapshotSchedule" 
 		class="ikube.scheduling.schedule.SnapshotSchedule" 
-		property:delay="${delay}"
-		property:period="${period}" />
+		property:delay="60000"
+		property:period="60000" />
 	<bean
 		id="ikube.scheduling.schedule.CpuLoadSchedule"
 		name="ikube.scheduling.schedule.CpuLoadSchedule" 
 		class="ikube.scheduling.schedule.CpuLoadSchedule" 
-		property:delay="${delay}"
-		property:period="${period}" />
+		property:delay="60000"
+		property:period="60000" />
 	
 	<!-- 
 		This is the mailer that will send mail to targets when things go right, and wrong in fact. This 
@@ -266,11 +265,6 @@
 		<value>asciiname</value>
 		<value>alternatenames</value>
 	</util:list>
-	<bean 
-		id="ikube.action.index.handler.enrich.IEnrichment"
-		class="ikube.action.index.handler.enrich.Enrichment"
-		property:minKm="10"
-		property:maxKm="20"  />
 	
 	<bean
 		id="ikube.search.spelling.SpellingChecker"
@@ -307,48 +301,39 @@
 		id="ikube.action.index.handler.IndexableHandler"
 		class="ikube.action.index.handler.IndexableHandler" 
 		abstract="true" />
-	<!-- property:threads="${internet.handler.threads}" --> 
 	<bean
 		parent="ikube.action.index.handler.IndexableHandler"
 		class="ikube.action.index.handler.internet.IndexableInternetHandler"
 		property:indexableClass="ikube.model.IndexableInternet" />
-	<!-- property:threads="${email.handler.threads}" -->
 	<bean
 		parent="ikube.action.index.handler.IndexableHandler"
 		class="ikube.action.index.handler.email.IndexableEmailHandler"
 		property:indexableClass="ikube.model.IndexableEmail" />
-	<!-- property:threads="${filesystem.handler.threads}" -->
 	<bean
 		parent="ikube.action.index.handler.IndexableHandler"
 		id="ikube.action.index.handler.filesystem.IndexableFilesystemHandler"
 		class="ikube.action.index.handler.filesystem.IndexableFilesystemHandler"
 		property:indexableClass="ikube.model.IndexableFileSystem" />
-	<!-- property:threads="${table.handler.threads}" -->
 	<bean
 		parent="ikube.action.index.handler.IndexableHandler"
 		class="ikube.action.index.handler.database.IndexableTableHandler"
 		property:indexableClass="ikube.model.IndexableTable" />
-	<!-- property:threads="${filesystem.handler.threads}" -->
 	<bean
 		parent="ikube.action.index.handler.IndexableHandler"
 		class="ikube.action.index.handler.filesystem.IndexableDictionaryHandler"
 		property:indexableClass="ikube.model.IndexableDictionary" />
-	<!-- property:threads="${filesystem.handler.threads}" -->
 	<bean
 		parent="ikube.action.index.handler.IndexableHandler"
 		class="ikube.action.index.handler.filesystem.IndexableFilesystemLogHandler"
 		property:indexableClass="ikube.model.IndexableFileSystemLog" />
-	<!-- property:threads="${filesystem.handler.threads}" -->
 	<bean
 		parent="ikube.action.index.handler.IndexableHandler"
 		class="ikube.action.index.handler.filesystem.IndexableFilesystemWikiHandler"
 		property:indexableClass="ikube.model.IndexableFileSystemWiki" />
-	<!-- property:threads="${filesystem.handler.threads}" -->
 	<bean
 		parent="ikube.action.index.handler.IndexableHandler"
 		class="ikube.action.index.handler.database.IndexableDataSourceHandler"
 		property:indexableClass="ikube.model.IndexableDataSource" />
-	<!-- property:threads="${filesystem.handler.threads}" -->
 	<bean
 		parent="ikube.action.index.handler.IndexableHandler"
 		id="ikube.action.index.handler.filesystem.IndexableFilesystemCsvHandler" 
@@ -379,5 +364,11 @@
 		name="ikube.action.index.handler.strategy.LanguageDetectionStrategy" 
 		class="ikube.action.index.handler.strategy.LanguageDetectionStrategy" 
 		init-method="initialize" />
+	
+	<bean
+		id="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy"
+		name="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy" 
+    	class="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy"
+    	init-method="initialize" />
 	
 </beans>
