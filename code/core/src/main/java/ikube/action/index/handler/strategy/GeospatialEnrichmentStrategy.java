@@ -8,6 +8,8 @@ import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 
+import java.util.regex.Pattern;
+
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.spatial.tier.projections.CartesianTierPlotter;
@@ -36,6 +38,9 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 
 	private transient int startTier;
 	private transient int endTier;
+
+	private Pattern latPattern;
+	private Pattern lngPattern;
 
 	/** No idea what this does :) */
 	private transient IProjector sinusodialProjector;
@@ -84,12 +89,13 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 			if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
 				IndexableColumn indexableColumn = (IndexableColumn) child;
 				Object content = indexableColumn.getContent();
-				if (indexableColumn.getFieldName() == null) {
+				if (content == null || indexableColumn.getFieldName() == null) {
 					continue;
 				}
-				if (indexableColumn.getFieldName().toLowerCase().contains(IConstants.LATITUDE.toLowerCase())) {
+				String fieldName = indexableColumn.getFieldName().toLowerCase();
+				if (latPattern.matcher(fieldName).matches()) {
 					latitude = Double.parseDouble(content.toString());
-				} else if (indexableColumn.getFieldName().toLowerCase().contains(IConstants.LONGITUDE.toLowerCase())) {
+				} else if (lngPattern.matcher(fieldName).matches()) {
 					longitude = Double.parseDouble(content.toString());
 				}
 			}
@@ -107,7 +113,7 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 		return new Coordinate(latitude, longitude);
 	}
 
-	final void addSpatialLocationFields(final Coordinate coordinate, final Document document) {
+	public final void addSpatialLocationFields(final Coordinate coordinate, final Document document) {
 		document.add(new Field(IConstants.LAT, NumericUtils.doubleToPrefixCoded(coordinate.getLat()), Field.Store.YES, Field.Index.NOT_ANALYZED));
 		document.add(new Field(IConstants.LNG, NumericUtils.doubleToPrefixCoded(coordinate.getLon()), Field.Store.YES, Field.Index.NOT_ANALYZED));
 		addCartesianTiers(coordinate, document);
@@ -141,6 +147,19 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 	}
 
 	public void initialize() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(".*(");
+		builder.append(IConstants.LATITUDE);
+		builder.append(").*");
+		latPattern = Pattern.compile(builder.toString());
+
+		builder = new StringBuilder();
+
+		builder.append(".*(");
+		builder.append(IConstants.LONGITUDE);
+		builder.append(").*");
+		lngPattern = Pattern.compile(builder.toString());
+		
 		sinusodialProjector = new SinusoidalProjector();
 		CartesianTierPlotter cartesianTierPlotter = new CartesianTierPlotter(0, sinusodialProjector, CartesianTierPlotter.DEFALT_FIELD_PREFIX);
 		startTier = cartesianTierPlotter.bestFit(startTierParam);

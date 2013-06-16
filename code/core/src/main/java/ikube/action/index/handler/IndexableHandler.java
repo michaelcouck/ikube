@@ -45,13 +45,17 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 	}
 
 	protected RecursiveAction getRecursiveAction(final IndexContext<?> indexContext, final Indexable<?> indexable, final IResourceProvider<?> resourceManager) {
+		/**
+		 * This class will execute the handle resource on the handler until there are no more resources left or until it is cancelled.
+		 */
 		class RecursiveActionImpl extends RecursiveAction {
 
 			@Override
 			@SuppressWarnings({ "rawtypes", "unchecked" })
 			protected void compute() {
 				int threadsLeft = indexable.getThreads();
-				indexable.setThreads(--threadsLeft);
+				threadsLeft--;
+				indexable.setThreads(threadsLeft);
 				if (threadsLeft > 0) {
 					logger.info("This : " + this + ", " + indexable.getThreads());
 					// Split off some more threads to help do the work
@@ -75,6 +79,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 			}
 
 		}
+		// And hup
 		return new RecursiveActionImpl();
 	}
 

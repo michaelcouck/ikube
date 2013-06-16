@@ -6,9 +6,8 @@ import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
-import ikube.action.index.handler.enrich.Enrichment;
-import ikube.action.index.handler.enrich.IEnrichment;
 import ikube.action.index.handler.enrich.geocode.Coordinate;
+import ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy;
 import ikube.mock.SpellingCheckerMock;
 import ikube.toolkit.FileUtilities;
 
@@ -49,9 +48,9 @@ public class SearchSpatialTest extends AbstractTest {
 	private Coordinate seebackCoordinate = new Coordinate(47.4232860, 8.5422655, "Seebach" + searchString);
 	private Coordinate adliswilCoordinate = new Coordinate(47.3119892, 8.5256064, "Adliswil" + searchString);
 
-	private Coordinate[] coordinates = new Coordinate[] { zurichCoordinate, new Coordinate(47.0819237, 8.3415740, "Ebikon" + searchString),
-			seebackCoordinate, schwammeningenCoordinate, adliswilCoordinate,
-			new Coordinate(47.2237640, 8.4611790, "Knonau" + searchString), new Coordinate(47.1934110, 8.5230670, "Baar" + searchString) };
+	private Coordinate[] coordinates = new Coordinate[] { zurichCoordinate, new Coordinate(47.0819237, 8.3415740, "Ebikon" + searchString), seebackCoordinate,
+			schwammeningenCoordinate, adliswilCoordinate, new Coordinate(47.2237640, 8.4611790, "Knonau" + searchString),
+			new Coordinate(47.1934110, 8.5230670, "Baar" + searchString) };
 
 	private File indexDirectory;
 	private Directory directory;
@@ -66,13 +65,14 @@ public class SearchSpatialTest extends AbstractTest {
 		boolean deleted = FileUtilities.deleteFile(indexDirectory, 1);
 		logger.info("Deleted : " + deleted + ", index directory : " + indexDirectory);
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, indexDirectory, Boolean.TRUE);
-		IEnrichment enrichment = new Enrichment();
-		enrichment.setMinKm(10);
-		enrichment.setMaxKm(20);
+
+		GeospatialEnrichmentStrategy enrichmentStrategy = new GeospatialEnrichmentStrategy();
+		enrichmentStrategy.initialize();
+
 		for (Coordinate coordinate : coordinates) {
 			Document document = new Document();
 			IndexManager.addStringField(IConstants.CONTENTS, coordinate.toString(), document, Store.YES, Index.ANALYZED, TermVector.YES);
-			enrichment.addSpatialLocationFields(coordinate, document);
+			enrichmentStrategy.addSpatialLocationFields(coordinate, document);
 			indexWriter.addDocument(document);
 		}
 		IndexManager.closeIndexWriter(indexWriter);
@@ -143,9 +143,17 @@ public class SearchSpatialTest extends AbstractTest {
 	}
 
 	private MultiSearcher getIndexSearcher() throws Exception {
-		File file = new File("/usr/share/eclipse/workspace/ikube/code/war/indexes/geospatial/1364831155776/192.168.1.8-8000");
+		File file = new File("/tmp/192.168.1.200-8010");
 		Directory directory = FSDirectory.open(file);
 		IndexReader indexReader = IndexReader.open(directory);
+
+		// Document document = indexReader.document(242301);
+		// printDocument(document);
+		// String lat = document.get(IConstants.LAT);
+		// String lng = document.get(IConstants.LNG);
+		// logger.info("Lat : " + NumericUtils.prefixCodedToDouble(lat));
+		// logger.info("Lng : " + NumericUtils.prefixCodedToDouble(lng));
+
 		printIndex(indexReader, 10);
 		IndexSearcher indexSearcher = new IndexSearcher(indexReader);
 		return new MultiSearcher(indexSearcher);
