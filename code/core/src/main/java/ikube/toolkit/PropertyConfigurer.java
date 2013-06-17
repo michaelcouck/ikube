@@ -4,6 +4,7 @@ import ikube.IConstants;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -56,6 +57,27 @@ public class PropertyConfigurer extends Properties {
 		// If the system property for the configuration has not been set then set it to the dot directory
 		if (System.getProperty(IConstants.IKUBE_CONFIGURATION) == null) {
 			System.setProperty(IConstants.IKUBE_CONFIGURATION, ".");
+		}
+		// Load the properties for the system
+		File systemProperties = FileUtilities.findFileRecursively(new File("."), "system\\.properties");
+		if (systemProperties != null) {
+			Properties properties = new Properties();
+			InputStream inputStream = null;
+			try {
+				inputStream = new FileInputStream(systemProperties);
+				properties.load(inputStream);
+				System.setProperties(properties);
+			} catch (Exception e) {
+				LOGGER.error("Exception loading the system properties : ", e);
+			} finally {
+				try {
+					if (inputStream != null) {
+						inputStream.close();
+					}
+				} catch (IOException e) {
+					LOGGER.error("Exception closing the stream to the system properties : ", e);
+				}
+			}
 		}
 	}
 
