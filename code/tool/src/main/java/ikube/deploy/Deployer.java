@@ -49,7 +49,7 @@ public final class Deployer {
 		// Find the configuration file
 		File deployerConfiguration = FileUtilities.findFileRecursively(new File(configurationDirectoryPath), configurationFile);
 		LOGGER.info("Configuration file : " + deployerConfiguration);
-		String deployerConfigurationPath = FileUtilities.cleanFilePath(deployerConfiguration.getAbsolutePath());
+		String deployerConfigurationPath = "file:" + FileUtilities.cleanFilePath(deployerConfiguration.getAbsolutePath());
 		LOGGER.info("Configuration file path : " + deployerConfigurationPath);
 		APPLICATION_CONTEXT = new FileSystemXmlApplicationContext(deployerConfigurationPath);
 		if (execute) {
