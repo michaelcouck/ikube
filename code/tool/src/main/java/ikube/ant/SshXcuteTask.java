@@ -19,6 +19,7 @@ import org.apache.tools.ant.Task;
  * @since 26.05.2013
  * @version 01.00
  */
+@Deprecated
 public class SshXcuteTask extends Task {
 
 	static final Logger LOGGER = Logger.getLogger(SshXcuteTask.class.getName());

@@ -137,8 +137,10 @@ public class SSHExec {
 	 */
 	public Boolean disconnect() {
 		try {
-			session.disconnect();
-			session = null;
+			if (session != null) {
+				session.disconnect();
+				session = null;
+			}
 			logger.debug("SSH connection shutdown");
 		} catch (Exception e) {
 			logger.error("Disconnect fails with the following exception: ", e);

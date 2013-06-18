@@ -3,6 +3,7 @@ package ikube.deploy;
 import ikube.deploy.action.IAction;
 import ikube.deploy.model.Server;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.Logging;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
@@ -11,10 +12,19 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 public final class Deployer {
+	
+	private static final Logger LOGGER;
+	
+	static {
+		Logging.configure();
+		LOGGER = LoggerFactory.getLogger(Deployer.class);
+	}
 
 	private static final String DOT_DIRECTORY = ".";
 	private static final String CONFIGURATION_FILE = "deployer\\.xml";
@@ -32,10 +42,12 @@ public final class Deployer {
 		if (args != null && args.length >= 3) {
 			execute = Boolean.valueOf(args[2]);
 		}
+		LOGGER.info("Directory : " + configurationDirectory + ", file : " + configurationFile);
 		ThreadUtilities.initialize();
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		// Find the configuration file
 		File deployerConfiguration = FileUtilities.findFileRecursively(new File(configurationDirectory), configurationFile);
+		LOGGER.info("Configuration file : " + deployerConfiguration);
 		String configLocation = FileUtilities.cleanFilePath(deployerConfiguration.getAbsolutePath());
 		APPLICATION_CONTEXT = new FileSystemXmlApplicationContext(configLocation);
 		if (execute) {
