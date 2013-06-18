@@ -1,6 +1,6 @@
 package ikube.toolkit;
 
-import ikube.IConstants;
+import ikube.Constants;
 
 import java.io.File;
 import java.io.InputStream;
@@ -17,7 +17,7 @@ import org.apache.log4j.PropertyConfigurator;
  * @since 15.09.10
  * @version 01.00
  */
-public final class Logging implements IConstants {
+public final class Logging implements Constants {
 
 	private static Logger LOGGER;
 	private static boolean INITIALISED = false;
@@ -42,7 +42,7 @@ public final class Logging implements IConstants {
 			INITIALISED = Boolean.TRUE;
 			try {
 				// First check the external logging properties file
-				File log4JPropertiesFile = FileUtilities.findFileRecursively(new File("." + IConstants.SEP + IConstants.IKUBE), "log4j.properties");
+				File log4JPropertiesFile = FileUtilities.findFileRecursively(new File("." + SEP + IKUBE), "log4j.properties");
 				System.out.println(Logging.class.getName() + " Log4j file : " + log4JPropertiesFile);
 				if (log4JPropertiesFile != null && log4JPropertiesFile.exists() && log4JPropertiesFile.canRead()) {
 					inputStream = log4JPropertiesFile.toURI().toURL().openStream();
@@ -77,7 +77,7 @@ public final class Logging implements IConstants {
 			LOGGER = Logger.getLogger(Logging.class);
 			try {
 				if (LOG_FILE == null) {
-					LOGGER.info("Searching for log file : " + IConstants.IKUBE_LOG);
+					LOGGER.info("Searching for log file : " + IKUBE_LOG);
 					LOG_FILE = FileUtilities.findFileRecursively(new File("."), "ikube\\.log");
 					if (LOG_FILE != null) {
 						LOGGER.info("Found log file : " + LOG_FILE.getAbsolutePath());

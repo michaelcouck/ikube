@@ -1,6 +1,6 @@
 package ikube.data.wiki;
 
-import ikube.IConstants;
+import ikube.Constants;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.HashUtilities;
 
@@ -70,7 +70,7 @@ public class WikiDataUnpackerWorker implements Runnable {
 				byte[] bytes = new byte[1024 * 1024 * 8];
 				StringBuilder stringBuilder = new StringBuilder();
 				while ((read = bZip2CompressorInputStream.read(bytes)) > -1) {
-					String string = new String(bytes, 0, read, Charset.forName(IConstants.ENCODING));
+					String string = new String(bytes, 0, read, Charset.forName(Constants.ENCODING));
 					stringBuilder.append(string);
 					count += unpack(outputDirectory, stringBuilder);
 					if (count > 10000) {
@@ -134,7 +134,7 @@ public class WikiDataUnpackerWorker implements Runnable {
 			stringBuilder.delete(startOffset, endOffset);
 			String hash = Long.toString(HashUtilities.hash(segment));
 			String filePath = outputDirectory.getAbsolutePath() + File.separator + hash + ".html";
-			FileUtilities.setContents(filePath, segment.getBytes(Charset.forName(IConstants.ENCODING)));
+			FileUtilities.setContents(filePath, segment.getBytes(Charset.forName(Constants.ENCODING)));
 			count++;
 		}
 		return count;

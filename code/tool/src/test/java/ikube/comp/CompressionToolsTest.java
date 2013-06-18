@@ -1,6 +1,6 @@
 package ikube.comp;
 
-import ikube.IConstants;
+import ikube.Constants;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -17,7 +17,7 @@ public class CompressionToolsTest {
 	@Test
 	public void compress() {
 		File file = FileUtilities.findFileRecursively(new File("."), "txt.txt");
-		String content = FileUtilities.getContents(file, IConstants.ENCODING);
+		String content = FileUtilities.getContents(file, Constants.ENCODING);
 		LOGGER.info("Before : " + content.getBytes().length);
 		byte[] compressed = CompressionTools.compress(content.getBytes());
 		LOGGER.info("After : " + compressed.length);

@@ -1,6 +1,6 @@
 package ikube.toolkit;
 
-import ikube.IConstants;
+import ikube.Constants;
 
 import java.beans.BeanInfo;
 import java.beans.ExceptionListener;
@@ -52,7 +52,7 @@ public final class SerializationUtilities {
 			xmlEncoder.flush();
 			xmlEncoder.close();
 			xmlEncoder = null;
-			return byteArrayOutputStream.toString(IConstants.ENCODING);
+			return byteArrayOutputStream.toString(Constants.ENCODING);
 		} catch (UnsupportedEncodingException e) {
 			LOGGER.error("Unsupported encoding : ", e);
 		} catch (Exception e) {
@@ -69,7 +69,7 @@ public final class SerializationUtilities {
 		byte[] bytes = null;
 		XMLDecoder xmlDecoder = null;
 		try {
-			bytes = xml.getBytes(IConstants.ENCODING);
+			bytes = xml.getBytes(Constants.ENCODING);
 			ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
 			xmlDecoder = new XMLDecoder(byteArrayInputStream);
 			xmlDecoder.setExceptionListener(EXCEPTION_LISTENER);

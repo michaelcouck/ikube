@@ -1,6 +1,6 @@
 package ikube.toolkit;
 
-import ikube.IConstants;
+import ikube.Constants;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -56,8 +56,8 @@ public class PropertyConfigurer extends Properties {
 		// will override the other properties that we might have found in the other locations
 		checkPropertiesFilesOnFileSystemFromDotFolder();
 		// If the system property for the configuration has not been set then set it to the dot directory
-		if (System.getProperty(IConstants.IKUBE_CONFIGURATION) == null) {
-			System.setProperty(IConstants.IKUBE_CONFIGURATION, ".");
+		if (System.getProperty(Constants.IKUBE_CONFIGURATION) == null) {
+			System.setProperty(Constants.IKUBE_CONFIGURATION, ".");
 		}
 		// Load the properties for the system
 		File systemProperties = FileUtilities.findFileRecursively(new File("."), "system\\.properties");

@@ -3,7 +3,7 @@ package ikube.toolkit;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
-import ikube.IConstants;
+import ikube.Constants;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,7 +21,7 @@ public class XmlUtilitiesTest extends AbstractTest {
 	public void getDocumentElementsAndElement() throws FileNotFoundException {
 		File file = FileUtilities.findFileRecursively(new File("."), "spring.xml");
 		InputStream inputStream = new FileInputStream(file);
-		Document document = XmlUtilities.getDocument(inputStream, IConstants.ENCODING);
+		Document document = XmlUtilities.getDocument(inputStream, Constants.ENCODING);
 		assertNotNull("This should be the Spring configuration file : ", document);
 		List<Element> elements = XmlUtilities.getElements(document.getRootElement(), "import");
 		assertTrue("There are at least one imports in this file : ", elements.size() > 0);

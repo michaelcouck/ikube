@@ -7,7 +7,7 @@ package ikube;
  * @since 21.11.10
  * @version 01.00
  */
-public interface IConstants {
+public interface Constants {
 
 	/** Application name. */
 	String IKUBE = "ikube";

@@ -3,7 +3,7 @@ package ikube.misc;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import ikube.IConstants;
+import ikube.Constants;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -37,7 +37,7 @@ public class NasTest {
 			// FileUtils.writeStringToFile(file, string);
 			FileUtilities.setContents(file.getAbsolutePath(), string.getBytes());
 
-			String content = FileUtilities.getContents(file, IConstants.ENCODING);
+			String content = FileUtilities.getContents(file, Constants.ENCODING);
 			assertEquals(string, content);
 		}
 	}
