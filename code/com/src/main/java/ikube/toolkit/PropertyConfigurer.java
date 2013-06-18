@@ -84,6 +84,8 @@ public class PropertyConfigurer extends Properties {
 				}
 			}
 		}
+		// Finally overwrite the properties with the system properties
+		this.putAll(System.getProperties());
 	}
 
 	private void checkOwnJar() {

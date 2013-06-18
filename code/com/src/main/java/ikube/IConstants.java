@@ -20,4 +20,7 @@ public interface IConstants {
 	String LOG_4_J_PROPERTIES = META_INF + SEP + "log4j.properties";
 	/** System encoding. */
 	String ENCODING = "UTF-8";
+	
+	/** The property for the configuration location. */
+	String IKUBE_CONFIGURATION = IKUBE + ".configuration";
 }

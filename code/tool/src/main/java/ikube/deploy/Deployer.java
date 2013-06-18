@@ -3,7 +3,6 @@ package ikube.deploy;
 import ikube.deploy.action.IAction;
 import ikube.deploy.model.Server;
 import ikube.toolkit.FileUtilities;
-import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
@@ -12,15 +11,19 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+
 public final class Deployer {
 
-	public static final void deploy() {
+	public static void main(String[] args) {
 		ThreadUtilities.initialize();
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		// Find the configuration file
 		File deployerConfiguration = FileUtilities.findFileRecursively(new File("."), "deployer\\.xml");
-		String xml = FileUtilities.getContent(deployerConfiguration);
-		Deployer deployer = (Deployer) SerializationUtilities.deserialize(xml);
+		String configLocation = FileUtilities.cleanFilePath(deployerConfiguration.getAbsolutePath());
+		ApplicationContext applicationContext = new FileSystemXmlApplicationContext(configLocation);
+		Deployer deployer = applicationContext.getBean(Deployer.class);
 		for (final Server server : deployer.getServers()) {
 			Future<?> future = ThreadUtilities.submitSystem(new Runnable() {
 				public void run() {
