@@ -16,31 +16,55 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 public final class Deployer {
 
+	private static final String DOT_DIRECTORY = ".";
+	private static final String CONFIGURATION_FILE = "deployer\\.xml";
+
+	private static ApplicationContext APPLICATION_CONTEXT;
+
 	public static void main(String[] args) {
+		String configurationDirectory = DOT_DIRECTORY;
+		String configurationFile = CONFIGURATION_FILE;
+		if (args != null && args.length > 1) {
+			configurationDirectory = args[0];
+			configurationFile = args[1];
+		}
+		boolean execute = Boolean.TRUE;
+		if (args != null && args.length >= 3) {
+			execute = Boolean.valueOf(args[2]);
+		}
 		ThreadUtilities.initialize();
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		// Find the configuration file
-		File deployerConfiguration = FileUtilities.findFileRecursively(new File("."), "deployer\\.xml");
+		File deployerConfiguration = FileUtilities.findFileRecursively(new File(configurationDirectory), configurationFile);
 		String configLocation = FileUtilities.cleanFilePath(deployerConfiguration.getAbsolutePath());
-		ApplicationContext applicationContext = new FileSystemXmlApplicationContext(configLocation);
-		Deployer deployer = applicationContext.getBean(Deployer.class);
-		for (final Server server : deployer.getServers()) {
-			Future<?> future = ThreadUtilities.submitSystem(new Runnable() {
-				public void run() {
-					for (final IAction action : server.getActions()) {
-						action.execute(server);
+		APPLICATION_CONTEXT = new FileSystemXmlApplicationContext(configLocation);
+		if (execute) {
+			Deployer deployer = APPLICATION_CONTEXT.getBean(Deployer.class);
+			for (final Server server : deployer.getServers()) {
+				Future<?> future = ThreadUtilities.submitSystem(new Runnable() {
+					public void run() {
+						for (final IAction action : server.getActions()) {
+							action.execute(server);
+						}
 					}
+				});
+				if (deployer.isParallel()) {
+					futures.add(future);
+				} else {
+					ThreadUtilities.waitForFuture(future, deployer.getMaxWaitTime());
 				}
-			});
+			}
 			if (deployer.isParallel()) {
-				futures.add(future);
-			} else {
-				ThreadUtilities.waitForFuture(future, deployer.getMaxWaitTime());
+				ThreadUtilities.waitForFutures(futures, deployer.getMaxWaitTime());
 			}
 		}
-		if (deployer.isParallel()) {
-			ThreadUtilities.waitForFutures(futures, deployer.getMaxWaitTime());
+	}
+
+	public static ApplicationContext getApplicationContext() {
+		if (APPLICATION_CONTEXT == null) {
+			main(new String[] { DOT_DIRECTORY, CONFIGURATION_FILE, "false" });
 		}
+		return APPLICATION_CONTEXT;
 	}
 
 	private boolean parallel;

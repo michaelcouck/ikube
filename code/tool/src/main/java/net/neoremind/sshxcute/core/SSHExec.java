@@ -16,6 +16,9 @@ import net.neoremind.sshxcute.exception.TaskExecFailException;
 import net.neoremind.sshxcute.exception.UploadFileNotSuccessException;
 import net.neoremind.sshxcute.task.CustomTask;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
@@ -25,32 +28,26 @@ import com.jcraft.jsch.UserInfo;
 
 /**
  * 
- * This is the core class to connect to remote machine and execute commands on
- * it. <br>
+ * This is the core class to connect to remote machine and execute commands on it. <br>
  * <p>
- * This class is implemented with singleton pattern, you can only retrieve one
- * instance of SSH connection.
+ * This class is implemented with singleton pattern, you can only retrieve one instance of SSH connection.
  * <p>
- * To get the object, you should first init a ConnBean and then pass it as args
- * like below
+ * To get the object, you should first init a ConnBean and then pass it as args like below
  * <p>
  * ConnBean cb = new ConnBean("rfidic-1.svl.ibm.com", "tsadmin", "u7i8o9p0");
  * <p>
  * SSHExec ssh = SSHExec.getInstance(cb);
  * <p>
  * <p>
- * 1. Before you begin to execute command or upload files to server, you should
- * connect to server:
+ * 1. Before you begin to execute command or upload files to server, you should connect to server:
  * <p>
  * ssh.connect();
  * <p>
  * <p>
- * 2. SSHExec provides a way to execute command and upload files to remote
- * machine. <br>
+ * 2. SSHExec provides a way to execute command and upload files to remote machine. <br>
  * 1) How to execute a task
  * <p>
- * You should first create the TASK class which extends from
- * com.ibm.rfidic.test.task.CustomCode class, please refer to below example:
+ * You should first create the TASK class which extends from com.ibm.rfidic.test.task.CustomCode class, please refer to below example:
  * <p>
  * CustomCode startRFIDIC = new StartRFIDIC("WAS,CAPTURE");
  * <p>
@@ -58,8 +55,7 @@ import com.jcraft.jsch.UserInfo;
  * <p>
  * 2) How to upload all the files that under a specified folder
  * <p>
- * If you want to upload data/FVT_SETUP_001/*.* to ~/UIFVT directory on remote
- * machine, please refer to below code:
+ * If you want to upload data/FVT_SETUP_001/*.* to ~/UIFVT directory on remote machine, please refer to below code:
  * <p>
  * ssh.uploadAllDataToServer("data/FVT_SETUP_001", "~/UIFVT");
  * <p>
@@ -77,7 +73,7 @@ import com.jcraft.jsch.UserInfo;
  */
 public class SSHExec {
 
-	static Logger logger = Logger.getLogger();
+	static Logger logger = LoggerFactory.getLogger(SSHExec.class);
 
 	private Session session;
 
@@ -91,11 +87,11 @@ public class SSHExec {
 
 	private SSHExec(ConnBean conn) {
 		try {
-			logger.putMsg(Logger.INFO, "SSHExec initializing ...");
+			logger.debug("SSHExec initializing ...");
 			this.conn = conn;
 			jsch = new JSch();
 		} catch (Exception e) {
-			logger.putMsg(Logger.ERROR,"Init SSHExec fails with the following exception: " + e);
+			logger.error("Init SSHExec fails with the following exception: ", e);
 		}
 	}
 
@@ -119,16 +115,16 @@ public class SSHExec {
 	 */
 	public Boolean connect() {
 		try {
-			session = jsch.getSession(conn.getUser(), conn.getHost(),SysConfigOption.SSH_PORT_NUMBER);
+			session = jsch.getSession(conn.getUser(), conn.getHost(), SysConfigOption.SSH_PORT_NUMBER);
 			UserInfo ui = new ConnCredential(conn.getPassword());
-			logger.putMsg(Logger.INFO,"Session initialized and associated with user credential ");
+			logger.debug("Session initialized and associated with user credential ");
 			session.setUserInfo(ui);
-			logger.putMsg(Logger.INFO,"SSHExec initialized successfully");
-			logger.putMsg(Logger.INFO,"SSHExec trying to connect user-name" + "@" + conn.getHost());
+			logger.debug("SSHExec initialized successfully");
+			logger.debug("SSHExec trying to connect user-name" + "@" + conn.getHost());
 			session.connect(3600000);
-			logger.putMsg(Logger.INFO,"SSH connection established");
+			logger.debug("SSH connection established");
 		} catch (Exception e) {
-			logger.putMsg(Logger.ERROR, "Connect fails with the following exception: " + e);
+			logger.error("Connect fails with the following exception: ", e);
 			return false;
 		}
 		return true;
@@ -143,9 +139,9 @@ public class SSHExec {
 		try {
 			session.disconnect();
 			session = null;
-			logger.putMsg(Logger.INFO,"SSH connection shutdown");
+			logger.debug("SSH connection shutdown");
 		} catch (Exception e) {
-			logger.putMsg(Logger.ERROR, "Disconnect fails with the following exception: " + e);
+			logger.error("Disconnect fails with the following exception: ", e);
 			return false;
 		}
 		return true;
@@ -154,8 +150,7 @@ public class SSHExec {
 	/**
 	 * Execute task on remote machine
 	 * 
-	 * @param cmd
-	 *            - Task object that extends from CustomCode
+	 * @param cmd - Task object that extends from CustomCode
 	 * @throws Exception
 	 */
 	public synchronized Result exec(CustomTask task) throws TaskExecFailException {
@@ -163,7 +158,7 @@ public class SSHExec {
 		try {
 			channel = session.openChannel("exec");
 			String command = task.getCommand();
-			logger.putMsg(Logger.INFO,"Command is " + command);
+			logger.debug("Command is " + command);
 			((ChannelExec) channel).setCommand(command);
 			// X Forwarding
 			// channel.setXForwarding(true);
@@ -180,8 +175,8 @@ public class SSHExec {
 			InputStream in = channel.getInputStream();
 
 			channel.connect();
-			logger.putMsg(Logger.INFO,"Connection channel established succesfully");
-			logger.putMsg(Logger.INFO,"Start to run command");
+			logger.debug("Connection channel established succesfully");
+			logger.debug("Start to run command");
 			StringBuilder sb = new StringBuilder();
 			byte[] tmp = new byte[1024];
 			while (true) {
@@ -191,26 +186,25 @@ public class SSHExec {
 						break;
 					String str = new String(tmp, 0, i);
 					sb.append(str);
-					logger.putMsg(Logger.INFO,str);
+					logger.debug(str);
 				}
 				if (channel.isClosed()) {
-					logger.putMsg(Logger.INFO,"Connection channel closed");
-					//logger.putMsg(Logger.INFO,"Exit-status: " + channel.getExitStatus());
-					logger.putMsg(Logger.INFO,"Check if exec success or not ... ");
+					logger.debug("Connection channel closed");
+					// logger.putMsg(Logger.INFO,"Exit-status: " + channel.getExitStatus());
+					logger.debug("Check if exec success or not ... ");
 					r.rc = channel.getExitStatus();
 					r.sysout = sb.toString();
 					if (task.isSuccess(sb.toString(), channel.getExitStatus())) {
-						logger.putMsg(Logger.INFO,"Execute successfully for command: " + task.getCommand());
+						logger.debug("Execute successfully for command: " + task.getCommand());
 						r.error_msg = "";
 						r.isSuccess = true;
 					} else {
 						r.error_msg = SSHExecUtil.getErrorMsg(SysConfigOption.ERROR_MSG_BUFFER_TEMP_FILE_PATH);
 						r.isSuccess = false;
-						logger.putMsg(Logger.INFO,"Execution failed while executing command: " + task.getCommand());
-						logger.putMsg(Logger.INFO,"Error message: " + r.error_msg);
-						if (SysConfigOption.HALT_ON_FAILURE)
-						{
-							logger.putMsg(Logger.ERROR,"The task has failed to execute :" + task.getInfo() + ". So program exit.");
+						logger.debug("Execution failed while executing command: " + task.getCommand());
+						logger.debug("Error message: " + r.error_msg);
+						if (SysConfigOption.HALT_ON_FAILURE) {
+							logger.debug("The task has failed to execute :" + task.getInfo() + ". So program exit.");
 							throw new TaskExecFailException(task.getInfo());
 						}
 					}
@@ -219,18 +213,16 @@ public class SSHExec {
 
 			}
 			try {
-				logger.putMsg(Logger.INFO,"Now wait " + SysConfigOption.INTEVAL_TIME_BETWEEN_TASKS/1000 + " seconds to begin next task ...");
+				logger.debug("Now wait " + SysConfigOption.INTEVAL_TIME_BETWEEN_TASKS / 1000 + " seconds to begin next task ...");
 				Thread.sleep(SysConfigOption.INTEVAL_TIME_BETWEEN_TASKS);
 			} catch (Exception ee) {
 			}
 			channel.disconnect();
-			logger.putMsg(Logger.INFO,"Connection channel disconnect");
+			logger.debug("Connection channel disconnect");
 		} catch (JSchException e) {
-			logger.putMsg(Logger.ERROR,e.getMessage());
-			e.printStackTrace();
+			logger.error(null, e);
 		} catch (IOException e) {
-			logger.putMsg(Logger.ERROR,e.getMessage());
-			e.printStackTrace();
+			logger.error(null, e);
 		}
 		return r;
 	}
@@ -243,32 +235,27 @@ public class SSHExec {
 	 * @throws Exception
 	 */
 	@SuppressWarnings("rawtypes")
-	public void uploadAllDataToServer(String fromLocalDir, String toServerDir)
-			throws Exception {
-		if (!new File(fromLocalDir).isDirectory())
-		{
+	public void uploadAllDataToServer(String fromLocalDir, String toServerDir) throws Exception {
+		if (!new File(fromLocalDir).isDirectory()) {
 			throw new UploadFileNotSuccessException(fromLocalDir);
-		}
-		else
-		{
+		} else {
 			dataList = new LinkedHashMap<String, String>();
 			String staticRootDir = "";
 			if (fromLocalDir.lastIndexOf('/') > 0) {
-				staticRootDir = fromLocalDir.substring(0,fromLocalDir.lastIndexOf('/'));
+				staticRootDir = fromLocalDir.substring(0, fromLocalDir.lastIndexOf('/'));
 			} else if (fromLocalDir.lastIndexOf('\\') > 0) {
-				staticRootDir = fromLocalDir.substring(0,fromLocalDir.lastIndexOf('\\') );
-			}  
-			else {
+				staticRootDir = fromLocalDir.substring(0, fromLocalDir.lastIndexOf('\\'));
+			} else {
 				staticRootDir = fromLocalDir;
 			}
 			staticRootDir = staticRootDir.replace('\\', '/');
-			//System.out.println(staticRootDir);
+			// System.out.println(staticRootDir);
 			traverseDataDir(new File(fromLocalDir), staticRootDir);
 			Iterator it = dataList.entrySet().iterator();
 			while (it.hasNext()) {
 				Entry entry = (Entry) it.next();
-				//System.out.println(entry.getKey().toString() + "==>" + entry.getValue().toString());
-				uploadSingleDataUnderDirToServer(entry.getKey().toString(),toServerDir + "/" + entry.getValue().toString());
+				// System.out.println(entry.getKey().toString() + "==>" + entry.getValue().toString());
+				uploadSingleDataUnderDirToServer(entry.getKey().toString(), toServerDir + "/" + entry.getValue().toString());
 			}
 		}
 	}
@@ -276,7 +263,7 @@ public class SSHExec {
 	private void uploadSingleDataUnderDirToServer(String fromLocalFile, String toServerFile) throws Exception {
 		FileInputStream fis = null;
 		// exec 'scp -t toServerFile' remotely
-		logger.putMsg(Logger.INFO,"Ready to transfer local file '" + fromLocalFile + "' to server directory '" + toServerFile + "'");
+		logger.debug("Ready to transfer local file '" + fromLocalFile + "' to server directory '" + toServerFile + "'");
 		String command = "mkdir -p " + toServerFile + "; scp -p -t " + toServerFile;
 		Channel channel = session.openChannel("exec");
 		((ChannelExec) channel).setCommand(command);
@@ -286,8 +273,8 @@ public class SSHExec {
 		InputStream in = channel.getInputStream();
 
 		channel.connect();
-		logger.putMsg(Logger.INFO,"Connection channel established succesfully");
-		logger.putMsg(Logger.INFO,"Start to upload");
+		logger.debug("Connection channel established succesfully");
+		logger.debug("Start to upload");
 		if (SSHExecUtil.checkAck(in) != 0) {
 			System.exit(0);
 		}
@@ -304,7 +291,7 @@ public class SSHExec {
 		out.write(command.getBytes());
 		out.flush();
 		if (SSHExecUtil.checkAck(in) != 0) {
-			logger.putMsg(Logger.ERROR,fromLocalFile + "check fails");
+			logger.error(fromLocalFile + "check fails");
 			return;
 		}
 
@@ -324,13 +311,13 @@ public class SSHExec {
 		out.write(buf, 0, 1);
 		out.flush();
 		if (SSHExecUtil.checkAck(in) != 0) {
-			logger.putMsg(Logger.ERROR,toServerFile + "check fails");
+			logger.error(toServerFile + "check fails");
 			return;
 		}
 		out.close();
-		logger.putMsg(Logger.INFO,"Upload success");
+		logger.debug("Upload success");
 		channel.disconnect();
-		logger.putMsg(Logger.INFO,"channel disconnect");
+		logger.debug("channel disconnect");
 	}
 
 	/**
@@ -340,16 +327,13 @@ public class SSHExec {
 	 * @param toServerFile
 	 * @throws Exception
 	 */
-	public void uploadSingleDataToServer(String fromLocalFile,
-			String toServerFile) throws Exception {
-		if (new File(fromLocalFile).isDirectory())
-		{
+	public void uploadSingleDataToServer(String fromLocalFile, String toServerFile) throws Exception {
+		if (new File(fromLocalFile).isDirectory()) {
 			throw new UploadFileNotSuccessException(fromLocalFile);
 		}
 		FileInputStream fis = null;
 		// exec 'scp -t toServerFile' remotely
-		logger.putMsg(Logger.INFO,"Ready to transfer local file '" + fromLocalFile
-				+ "' to server directory '" + toServerFile + "'");
+		logger.debug("Ready to transfer local file '" + fromLocalFile + "' to server directory '" + toServerFile + "'");
 		String command = "scp -p -t " + toServerFile;
 		Channel channel = session.openChannel("exec");
 		((ChannelExec) channel).setCommand(command);
@@ -359,8 +343,8 @@ public class SSHExec {
 		InputStream in = channel.getInputStream();
 
 		channel.connect();
-		logger.putMsg(Logger.INFO,"Connection channel established succesfully");
-		logger.putMsg(Logger.INFO,"Start to upload");
+		logger.debug("Connection channel established succesfully");
+		logger.debug("Start to upload");
 		if (SSHExecUtil.checkAck(in) != 0) {
 			System.exit(0);
 		}
@@ -369,20 +353,17 @@ public class SSHExec {
 		long filesize = (new File(fromLocalFile)).length();
 		command = "C0644 " + filesize + " ";
 		if (fromLocalFile.lastIndexOf('/') > 0) {
-			command += fromLocalFile
-					.substring(fromLocalFile.lastIndexOf('/') + 1);
+			command += fromLocalFile.substring(fromLocalFile.lastIndexOf('/') + 1);
 		} else if (fromLocalFile.lastIndexOf('\\') > 0) {
-			command += fromLocalFile
-			.substring(fromLocalFile.lastIndexOf('\\') + 1);
-		}  
-		else {
+			command += fromLocalFile.substring(fromLocalFile.lastIndexOf('\\') + 1);
+		} else {
 			command += fromLocalFile;
 		}
 		command += "\n";
 		out.write(command.getBytes());
 		out.flush();
 		if (SSHExecUtil.checkAck(in) != 0) {
-			logger.putMsg(Logger.INFO,fromLocalFile + "check fails");
+			logger.debug(fromLocalFile + "check fails");
 			return;
 		}
 
@@ -402,121 +383,108 @@ public class SSHExec {
 		out.write(buf, 0, 1);
 		out.flush();
 		if (SSHExecUtil.checkAck(in) != 0) {
-			logger.putMsg(Logger.ERROR,toServerFile + "check fails");
+			logger.error(toServerFile + "check fails");
 			return;
 		}
 		out.close();
-		logger.putMsg(Logger.INFO,"Upload success");
+		logger.debug("Upload success");
 		channel.disconnect();
-		logger.putMsg(Logger.INFO,"channel disconnect");
+		logger.debug("channel disconnect");
 	}
 
-	
 	@SuppressWarnings("rawtypes")
-	public static void setOption(String option, String value){
+	public static void setOption(String option, String value) {
 		Class optionClass = SysConfigOption.class;
 		Field[] field = optionClass.getDeclaredFields();
 		for (int i = 0; i < field.length; i++) {
-			if (field[i].getName().equals(option) && field[i].getType().getName().equals("java.lang.String"))
-			{
-				try
-				{
-					logger.putMsg(Logger.INFO,"Set system configuration parameter '" + option + "' to new value '" + value + "'");
+			if (field[i].getName().equals(option) && field[i].getType().getName().equals("java.lang.String")) {
+				try {
+					logger.debug("Set system configuration parameter '" + option + "' to new value '" + value + "'");
 					field[i].set(option, value);
 					break;
-				} catch (IllegalAccessException e){
-					logger.putMsg(Logger.ERROR,"Unable to set global configuration param " + option + " to value " + value);
+				} catch (IllegalAccessException e) {
+					logger.debug("Unable to set global configuration param " + option + " to value " + value);
 				}
 			}
 		}
 	}
-	
+
 	@SuppressWarnings("rawtypes")
-	public static void setOption(String option, int value){
+	public static void setOption(String option, int value) {
 		Class optionClass = SysConfigOption.class;
 		Field[] field = optionClass.getDeclaredFields();
 		for (int i = 0; i < field.length; i++) {
-			if (field[i].getName().equals(option) && field[i].getType().getName().equals("int"))
-			{
-				try
-				{
-					logger.putMsg(Logger.INFO,"Set system configuration parameter '" + option + "' to new value '" + value + "'");
+			if (field[i].getName().equals(option) && field[i].getType().getName().equals("int")) {
+				try {
+					logger.debug("Set system configuration parameter '" + option + "' to new value '" + value + "'");
 					field[i].set(option, value);
 					break;
-				} catch (IllegalAccessException e){
-					logger.putMsg(Logger.ERROR,"Unable to set global configuration param " + option + " to value " + value);
+				} catch (IllegalAccessException e) {
+					logger.error("Unable to set global configuration param " + option + " to value " + value, e);
 				}
 			}
 		}
 	}
-	
+
 	@SuppressWarnings("rawtypes")
-	public static void setOption(String option, long value){
+	public static void setOption(String option, long value) {
 		Class optionClass = SysConfigOption.class;
 		Field[] field = optionClass.getDeclaredFields();
 		for (int i = 0; i < field.length; i++) {
-			if (field[i].getName().equals(option) && field[i].getType().getName().equals("long"))
-			{
-				try
-				{
-					logger.putMsg(Logger.INFO,"Set system configuration parameter '" + option + "' to new value '" + value + "'");
+			if (field[i].getName().equals(option) && field[i].getType().getName().equals("long")) {
+				try {
+					logger.debug("Set system configuration parameter '" + option + "' to new value '" + value + "'");
 					field[i].set(option, value);
 					break;
-				} catch (IllegalAccessException e){
-					logger.putMsg(Logger.ERROR,"Unable to set global configuration param " + option + " to value " + value);
+				} catch (IllegalAccessException e) {
+					logger.error("Unable to set global configuration param " + option + " to value " + value, e);
 				}
 			}
 		}
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	public static void setOption(String option, boolean value) {
 		Class optionClass = SysConfigOption.class;
 		Field[] field = optionClass.getDeclaredFields();
 		for (int i = 0; i < field.length; i++) {
-			if (field[i].getName().equals(option) && field[i].getType().getName().equals("boolean"))
-			{
-				try
-				{
-					logger.putMsg(Logger.INFO,"Set system configuration parameter '" + option + "' to new value '" + value + "'");
+			if (field[i].getName().equals(option) && field[i].getType().getName().equals("boolean")) {
+				try {
+					logger.debug("Set system configuration parameter '" + option + "' to new value '" + value + "'");
 					field[i].set(option, value);
 					break;
-				} catch (IllegalAccessException e){
-					logger.putMsg(Logger.ERROR,"Unable to set global configuration param " + option + " to value " + value);
+				} catch (IllegalAccessException e) {
+					logger.error("Unable to set global configuration param " + option + " to value " + value, e);
 				}
 			}
 		}
 	}
-	
+
 	@SuppressWarnings("rawtypes")
-	public static void showEnvConfig() throws Exception{
+	public static void showEnvConfig() throws Exception {
 		Class optionClass = SysConfigOption.class;
 		Field[] field = optionClass.getDeclaredFields();
-		logger.putMsg(Logger.INFO,"******************************************************");
-		logger.putMsg(Logger.INFO,"The list below shows sshxcute configuration parameter");
-		logger.putMsg(Logger.INFO,"******************************************************");
+		logger.debug("******************************************************");
+		logger.debug("The list below shows sshxcute configuration parameter");
+		logger.debug("******************************************************");
 		for (int i = 0; i < field.length; i++) {
-			logger.putMsg(Logger.INFO,field[i].getName() + " => " + field[i].get(optionClass));
+			logger.debug(field[i].getName() + " => " + field[i].get(optionClass));
 		}
 	}
-	
+
 	/**
-	 * Map that contains local file path(key) and remote server directory
-	 * path(value)
+	 * Map that contains local file path(key) and remote server directory path(value)
 	 */
 	protected Map<String, String> dataList = null;
 	protected static String PARENT_DIR = "";
-	
+
 	/**
 	 * Traverse a directory to get all files name/path
 	 * 
-	 * @param File
-	 *            - Path dir under the project directory
-	 * @return Map - Map that contains local file path(key) and remote server
-	 *         directory path(value)
+	 * @param File - Path dir under the project directory
+	 * @return Map - Map that contains local file path(key) and remote server directory path(value)
 	 */
-	protected Map<String, String> traverseDataDir(File parentDir, String parentRootPath)
-			throws Exception {
+	protected Map<String, String> traverseDataDir(File parentDir, String parentRootPath) throws Exception {
 		if (parentDir.isDirectory()) {
 			String[] subComponents = SSHExecUtil.getFiles(parentDir);
 			for (int j = 0; j < subComponents.length; j++) {
@@ -524,9 +492,8 @@ public class SSHExec {
 				traverseDataDir(new File(parentDir + "/" + subComponents[j]), parentRootPath);
 			}
 		} else if (parentDir.isFile()) {
-			logger.putMsg(Logger.INFO,"Find " + parentDir.getPath());
-			dataList.put(parentDir.getPath().toString().replace('\\', '/'),
-					parentDir.getParent().toString().replace('\\', '/').split(parentRootPath)[1]);
+			logger.debug("Find " + parentDir.getPath());
+			dataList.put(parentDir.getPath().toString().replace('\\', '/'), parentDir.getParent().toString().replace('\\', '/').split(parentRootPath)[1]);
 		}
 		return dataList;
 	}

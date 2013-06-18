@@ -1,6 +1,5 @@
 package ikube.deploy.action;
 
-import ikube.deploy.model.Command;
 import ikube.deploy.model.Server;
 
 import java.util.Collection;
@@ -12,33 +11,33 @@ import net.neoremind.sshxcute.task.impl.ExecCommand;
 
 public class CommandAction extends Action {
 
-	private Collection<Command> commands;
+	private Collection<String> commands;
 
 	@Override
 	public boolean execute(final Server server) {
 		SSHExec sshExec = getSshExec(server.getIp(), server.getUsername(), server.getPassword());
-		if (commands != null) {
-			for (final Command command : commands) {
-				try {
-					CustomTask sampleTask = new ExecCommand(command.getCommand());
-					Result result = sshExec.exec(sampleTask);
-					logger.debug("Result of command : " + result);
-				} catch (Exception e) {
-					logger.error("Exception executing command on server : " + command.getCommand() + ", server : " + server.getIp(), e);
-					if (isBreakOnError()) {
-						throw new RuntimeException(e);
+		try {
+			if (commands != null) {
+				for (final String command : commands) {
+					try {
+						CustomTask sampleTask = new ExecCommand(command);
+						Result result = sshExec.exec(sampleTask);
+						logger.debug("Result of command : " + result);
+					} catch (Exception e) {
+						logger.error("Exception executing command on server : " + command + ", server : " + server.getIp(), e);
+						if (isBreakOnError()) {
+							throw new RuntimeException(e);
+						}
 					}
 				}
 			}
+		} finally {
+			disconnect(sshExec);
 		}
 		return Boolean.TRUE;
 	}
 
-	public Collection<Command> getCommands() {
-		return commands;
-	}
-
-	public void setCommands(Collection<Command> commands) {
+	public void setCommands(Collection<String> commands) {
 		this.commands = commands;
 	}
 

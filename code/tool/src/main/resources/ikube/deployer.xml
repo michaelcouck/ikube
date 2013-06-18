@@ -51,7 +51,10 @@
 		property:servers-ref="servers" />
 	
 	<util:list id="servers">
-		<ref bean="ikube.action.Close"  />
+		<ref local="server-one" />
+		<ref local="server-two" />
+		<ref local="server-three" />
+		<ref local="server-four" />
 	</util:list>
 	
 	<bean 
@@ -59,57 +62,93 @@
 		name="server-one"
 		class="ikube.deploy.model.Server"
 		property:ip="192.168.1.200"
-		property:username="michael"
-		property:password="Bp0st2013"
+		property:username="${username}"
+		property:password="${password}"
+		property:actions-ref="actions" />
+	<bean 
+		id="server-two"
+		name="server-two"
+		class="ikube.deploy.model.Server"
+		property:ip="192.168.1.10"
+		property:username="${username}"
+		property:password="${password}"
+		property:actions-ref="actions" />
+	<bean 
+		id="server-three"
+		name="server-three"
+		class="ikube.deploy.model.Server"
+		property:ip="192.168.1.20"
+		property:username="${username}"
+		property:password="${password}"
+		property:actions-ref="actions" />
+	<bean 
+		id="server-four"
+		name="server-four"
+		class="ikube.deploy.model.Server"
+		property:ip="192.168.1.31"
+		property:username="${username}"
+		property:password="${password}"
 		property:actions-ref="actions" />
 	
 	<util:list id="actions">
-		<ref local="stopAction" />
-		<ref local="copyAction" />
-		<ref local="startAction" />
+		<ref local="stop-action" />
+		<ref local="copy-action" />
+		<ref local="start-action" />
 	</util:list>
 	
 	<bean 
-		id="stopAction"
-		name="stopAction"
+		id="stop-action"
+		name="stop-action"
 		class="ikube.deploy.action.CommandAction"
-		property:commands-ref="stopCommands" />
-	<util:list id="stopCommands">
-		<bean 
-			class="ikube.deploy.model.Command"
-			property:command=". /etc/profile;" />
+		property:commands-ref="stop-commands" />
+	<util:list id="stop-commands">
+		<value>
+			. /etc/profile;
+			cd ${tomcat-bin-directory};
+			./catalina.sh stop;
+			sleep 10;
+			ps -ef | grep apache-tomcat-7.0.33-8080 | grep -v grep | awk '{print $2}' | xargs kill -9;
+			chmod 777 -R ${tomcat-directory};
+			rm -rf ${tomcat-directory}/bin/ikube;
+			rm -rf ${tomcat-directory}/webapps/ikube*;
+			rm -rf ${tomcat-directory}/logs;
+			rm -rf ${tomcat-directory}/temp;
+			rm -rf ${tomcat-directory}/work/Catalina/localhost;
+			mkdir -p ${tomcat-directory}/bin/ikube;
+			mkdir -p ${tomcat-directory}/logs;
+			mkdir -p ${tomcat-directory}/temp;
+			mkdir -p ${tomcat-directory}/work/Catalina/localhost;
+			chmod 777 -R ${tomcat-directory};
+		</value>
 	</util:list>
 	
 	<bean 
-		id="copyAction"
-		name="copyAction"
+		id="copy-action"
+		name="copy-action"
 		class="ikube.deploy.action.CopyAction"
 		property:files-ref="files"
 		property:directories-ref="directories" />
 	
 	<util:map id="files">
-		<entry>
-			<key></key>
-			<value></value>
-		</entry>
+		<entry key="${target-directory}/${ikube-war}"  value="${tomcat-directory}/webapps" />
 	</util:map>
 	
 	<util:map id="directories">
-		<entry>
-			<key></key>
-			<value></value>
-		</entry>
+		<entry key="${configuration-directory}" value="${tomcat-directory}/bin/ikube" />
 	</util:map>
 	
 	<bean 
-		id="startAction"
-		name="startAction"
+		id="start-action"
+		name="start-action"
 		class="ikube.deploy.action.CommandAction"
-		property:commands-ref="startCommands" />
-	<util:list id="startCommands">
-		<bean 
-			class="ikube.deploy.model.Command"
-			property:command=". /etc/profile;" />
+		property:commands-ref="start-commands" />
+	<util:list id="start-commands">
+		<value>
+			. /etc/profile;
+			chmod 777 -R ${tomcat-directory};
+			cd ${tomcat-bin-directory};
+			./catalina.sh start;
+		</value>
 	</util:list>
 	
 </beans>
