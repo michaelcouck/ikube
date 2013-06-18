@@ -20,10 +20,10 @@ public class CommandAction extends Action {
 			if (commands != null) {
 				for (final String command : commands) {
 					try {
-						logger.info("Executing command on server : " + server.getIp());
+						logger.info("Executing command : " + command + ", on server : " + server.getIp());
 						CustomTask sampleTask = new ExecCommand(command);
 						Result result = sshExec.exec(sampleTask);
-						logger.debug("Result of command : " + result);
+						logger.info("Result of command : " + result);
 					} catch (Exception e) {
 						logger.error("Exception executing command on server : " + command + ", server : " + server.getIp(), e);
 						if (isBreakOnError()) {
