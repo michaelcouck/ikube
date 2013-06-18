@@ -54,6 +54,7 @@
 	</properties>
 
 	<modules>
+		<module>code/com</module>
 		<module>code/core</module>
 		<module>code/war</module>
 		<module>code/site</module>
@@ -313,6 +314,7 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-core</artifactId>
 			<version>${spring.version}</version>
+			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.springframework</groupId>
@@ -336,6 +338,7 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-acl</artifactId>
 			<version>${spring.version}</version>
+			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.springframework</groupId>
@@ -352,26 +355,31 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-config</artifactId>
 			<version>${spring.version}</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-taglibs</artifactId>
 			<version>${spring.version}</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-web</artifactId>
 			<version>${spring.version}</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.spring-security-oauth</groupId>
 			<artifactId>spring-security-oauth</artifactId>
 			<version>${spring.security.oauth.version}</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-ldap</artifactId>
 			<version>${spring.version}</version>
+			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
@@ -406,6 +414,7 @@
 			<groupId>org.apache.xbean</groupId>
 			<artifactId>xbean-spring</artifactId>
 			<version>3.6</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springbyexample</groupId>
@@ -590,27 +599,27 @@
 			<artifactId>db2jcc4</artifactId>
 			<version>9.7.2</version>
 			<type>jar</type>
-			<scope>runtime</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.ibm.db2.jcc_license_cu</groupId>
 			<artifactId>db2jcc_license_cu</artifactId>
 			<version>9.7.2</version>
 			<type>jar</type>
-			<scope>runtime</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>${postgresql.driver.version}</version>
-			<scope>runtime</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>oracle.ojdbc6</groupId>
 			<artifactId>ojdbc6</artifactId>
 			<version>11</version>
 			<type>jar</type>
-			<scope>runtime</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
@@ -896,72 +905,85 @@
 			<groupId>org.apache.openjpa</groupId>
 			<artifactId>openjpa-all</artifactId>
 			<version>2.2.1</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.schlichtherle.truezip</groupId>
 			<artifactId>truezip-kernel</artifactId>
 			<version>7.7.1</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.schlichtherle.truezip</groupId>
 			<artifactId>truezip-file</artifactId>
 			<version>7.7.1</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.schlichtherle.truezip</groupId>
 			<artifactId>truezip-path</artifactId>
 			<version>7.7.1</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.schlichtherle.truezip</groupId>
 			<artifactId>truezip-extension-pace</artifactId>
 			<version>7.7.1</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.schlichtherle.truezip</groupId>
 			<artifactId>truezip-driver-zip</artifactId>
 			<version>7.7.1</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.schlichtherle.truezip</groupId>
 			<artifactId>truezip-driver-tzp</artifactId>
 			<version>7.7.1</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.schlichtherle.truezip</groupId>
 			<artifactId>truezip-driver-http</artifactId>
 			<version>7.7.1</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.schlichtherle.truezip</groupId>
 			<artifactId>truezip-driver-file</artifactId>
 			<version>7.7.1</version>
+			<scope>compile</scope>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-agent</artifactId>
 			<version>2.5.6</version>
 			<scope>provided</scope>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit</artifactId>
 			<version>0.9.3</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>cybozu</groupId>
 			<artifactId>langdetect</artifactId>
 			<version>1.0.0</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>jsonic</groupId>
 			<artifactId>jsonic</artifactId>
 			<version>1.2.4</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>edu.cmu.sphinx</groupId>
 			<artifactId>sphinx4</artifactId>
 			<version>1.0-beta6</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>

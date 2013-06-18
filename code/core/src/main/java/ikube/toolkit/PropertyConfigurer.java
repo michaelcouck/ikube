@@ -10,6 +10,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.jar.JarEntry;
@@ -66,7 +67,11 @@ public class PropertyConfigurer extends Properties {
 			try {
 				inputStream = new FileInputStream(systemProperties);
 				properties.load(inputStream);
-				System.setProperties(properties);
+				for (final Map.Entry<Object, Object> mapEntry : properties.entrySet()) {
+					if (mapEntry.getValue() != null) {
+						System.setProperty((String) mapEntry.getKey(), (String) mapEntry.getValue());
+					}
+				}
 			} catch (Exception e) {
 				LOGGER.error("Exception loading the system properties : ", e);
 			} finally {
