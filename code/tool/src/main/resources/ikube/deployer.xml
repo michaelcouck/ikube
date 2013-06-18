@@ -8,16 +8,16 @@
 	xmlns:property="http://www.springframework.org/schema/p"
 	xmlns:transaction="http://www.springframework.org/schema/tx"
 	xmlns:context="http://www.springframework.org/schema/context"
-
+	
 	xsi:schemaLocation="
-			http://www.springframework.org/schema/beans
-            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-			http://www.springframework.org/schema/aop
-            http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
-            http://www.springframework.org/schema/util
-            http://www.springframework.org/schema/util/spring-util.xsd
-            http://www.springframework.org/schema/context
-            http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+		http://www.springframework.org/schema/util
+		http://www.springframework.org/schema/util/spring-util.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 	
 	<description>TODO</description>
 	
@@ -70,24 +70,24 @@
 		name="server-two"
 		class="ikube.deploy.model.Server"
 		property:ip="192.168.1.10"
-		property:username="${username}"
-		property:password="${password}"
+		property:username="${username-slave}"
+		property:password="${password-slave}"
 		property:actions-ref="actions" />
 	<bean 
 		id="server-three"
 		name="server-three"
 		class="ikube.deploy.model.Server"
 		property:ip="192.168.1.20"
-		property:username="${username}"
-		property:password="${password}"
+		property:username="${username-slave}"
+		property:password="${password-slave}"
 		property:actions-ref="actions" />
 	<bean 
 		id="server-four"
 		name="server-four"
 		class="ikube.deploy.model.Server"
 		property:ip="192.168.1.31"
-		property:username="${username}"
-		property:password="${password}"
+		property:username="${username-slave}"
+		property:password="${password-slave}"
 		property:actions-ref="actions" />
 	
 	<util:list id="actions">
@@ -128,11 +128,9 @@
 		class="ikube.deploy.action.CopyAction"
 		property:files-ref="files"
 		property:directories-ref="directories" />
-	
 	<util:map id="files">
 		<entry key="${target-directory}/${ikube-war}"  value="${tomcat-directory}/webapps" />
 	</util:map>
-	
 	<util:map id="directories">
 		<entry key="${configuration-directory}" value="${tomcat-directory}/bin/ikube" />
 	</util:map>
