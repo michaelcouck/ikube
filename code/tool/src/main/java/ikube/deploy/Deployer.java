@@ -18,9 +18,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 public final class Deployer {
-	
+
 	private static final Logger LOGGER;
-	
+
 	static {
 		Logging.configure();
 		LOGGER = LoggerFactory.getLogger(Deployer.class);
@@ -32,24 +32,26 @@ public final class Deployer {
 	private static ApplicationContext APPLICATION_CONTEXT;
 
 	public static void main(String[] args) {
-		String configurationDirectory = DOT_DIRECTORY;
+		File configurationDirectory = new File(DOT_DIRECTORY);
 		String configurationFile = CONFIGURATION_FILE;
 		if (args != null && args.length > 1) {
-			configurationDirectory = args[0];
+			configurationDirectory = new File(args[0]);
 			configurationFile = args[1];
 		}
 		boolean execute = Boolean.TRUE;
 		if (args != null && args.length >= 3) {
 			execute = Boolean.valueOf(args[2]);
 		}
-		LOGGER.info("Directory : " + configurationDirectory + ", file : " + configurationFile);
+		String configurationDirectoryPath = FileUtilities.cleanFilePath(configurationDirectory.getAbsolutePath());
+		LOGGER.info("Directory : " + configurationDirectoryPath + ", file : " + configurationFile);
 		ThreadUtilities.initialize();
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		// Find the configuration file
-		File deployerConfiguration = FileUtilities.findFileRecursively(new File(configurationDirectory), configurationFile);
+		File deployerConfiguration = FileUtilities.findFileRecursively(new File(configurationDirectoryPath), configurationFile);
 		LOGGER.info("Configuration file : " + deployerConfiguration);
-		String configLocation = FileUtilities.cleanFilePath(deployerConfiguration.getAbsolutePath());
-		APPLICATION_CONTEXT = new FileSystemXmlApplicationContext(configLocation);
+		String deployerConfigurationPath = FileUtilities.cleanFilePath(deployerConfiguration.getAbsolutePath());
+		LOGGER.info("Configuration file path : " + deployerConfigurationPath);
+		APPLICATION_CONTEXT = new FileSystemXmlApplicationContext(deployerConfigurationPath);
 		if (execute) {
 			Deployer deployer = APPLICATION_CONTEXT.getBean(Deployer.class);
 			for (final Server server : deployer.getServers()) {
