@@ -36,8 +36,8 @@
 		</asymmetric-encryption>
 	</network>
 	<executor-service>
-		<core-pool-size>1000000</core-pool-size>
-		<max-pool-size>1000000</max-pool-size>
+		<core-pool-size>1000</core-pool-size>
+		<max-pool-size>1000</max-pool-size>
 		<keep-alive-seconds>60000</keep-alive-seconds>
 	</executor-service>
 	<map name="ikube">

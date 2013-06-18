@@ -117,12 +117,8 @@ public class SSHExec {
 		try {
 			session = jsch.getSession(conn.getUser(), conn.getHost(), SysConfigOption.SSH_PORT_NUMBER);
 			UserInfo ui = new ConnCredential(conn.getPassword());
-			logger.debug("Session initialized and associated with user credential ");
 			session.setUserInfo(ui);
-			logger.debug("SSHExec initialized successfully");
-			logger.debug("SSHExec trying to connect user-name" + "@" + conn.getHost());
-			session.connect(3600000);
-			logger.debug("SSH connection established");
+			session.connect(60000);
 		} catch (Exception e) {
 			logger.error("Connect fails with the following exception: ", e);
 			return false;

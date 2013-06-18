@@ -18,6 +18,7 @@ public class CopyAction extends Action {
 			if (files != null) {
 				for (final Map.Entry<String, String> filePair : files.entrySet()) {
 					try {
+						logger.info("Copying file : " + filePair.getKey() + ", to : " + filePair.getValue() + ", on server : " + server.getIp());
 						sshExec.uploadSingleDataToServer(filePair.getKey(), filePair.getValue());
 					} catch (Exception e) {
 						logger.error(
@@ -32,6 +33,7 @@ public class CopyAction extends Action {
 			if (directories != null) {
 				for (final Map.Entry<String, String> filePair : directories.entrySet()) {
 					try {
+						logger.info("Copying directory : " + filePair.getKey() + ", to : " + filePair.getValue() + ", on server : " + server.getIp());
 						sshExec.uploadAllDataToServer(filePair.getKey(), filePair.getValue());
 					} catch (Exception e) {
 						logger.error("Exception copying directory to server, from : " + filePair.getKey() + ", to : " + filePair.getValue() + ", server : "

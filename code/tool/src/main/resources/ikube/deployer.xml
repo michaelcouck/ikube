@@ -46,7 +46,7 @@
 	
 	<bean 
 		class="ikube.deploy.Deployer"
-		property:parallel="true"
+		property:parallel="false"
 		property:maxWaitTime="600"
 		property:servers-ref="servers" />
 	

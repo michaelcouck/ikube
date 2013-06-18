@@ -24,6 +24,7 @@ public abstract class Action implements IAction {
 		SSHExec sshExec = null;
 		ConnBean connBean = null;
 		try {
+			logger.info("Connecting to : " + ip + " as " + username);
 			// Initialize a ConnBean object, parameter list is ip, username, password
 			connBean = new ConnBean(ip, username, password);
 			// Put the ConnBean instance as parameter for SSHExec static method
