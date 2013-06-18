@@ -1,7 +1,5 @@
 package ikube.search;
 
-import ikube.IConstants;
-
 import java.io.IOException;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -22,7 +20,7 @@ import org.apache.lucene.search.TopDocs;
 public class SearchSingle extends Search {
 
 	public SearchSingle(final Searcher searcher) {
-		this(searcher, IConstants.ANALYZER);
+		this(searcher, ANALYZER);
 	}
 
 	public SearchSingle(final Searcher searcher, final Analyzer analyzer) {

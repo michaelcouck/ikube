@@ -46,7 +46,7 @@ public class SearchAdvancedTest extends AbstractTest {
 	@Before
 	public void before() throws Exception {
 		Directory directory = new RAMDirectory();
-		IndexWriter indexWriter = new IndexWriter(directory, IConstants.ANALYZER, true, MaxFieldLength.UNLIMITED);
+		IndexWriter indexWriter = new IndexWriter(directory, Search.ANALYZER, true, MaxFieldLength.UNLIMITED);
 
 		for (final String contents : contentStrings) {
 			Document document = new Document();
@@ -72,7 +72,7 @@ public class SearchAdvancedTest extends AbstractTest {
 
 	@Test
 	public void searchAdvanced() throws Exception {
-		SearchAdvanced searchAdvanced = new SearchAdvanced(searcher, IConstants.ANALYZER);
+		SearchAdvanced searchAdvanced = new SearchAdvanced(searcher, Search.ANALYZER);
 		searchAdvanced.setFirstResult(0);
 		searchAdvanced.setFragment(Boolean.TRUE);
 		searchAdvanced.setMaxResults(Integer.MAX_VALUE);

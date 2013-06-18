@@ -1,6 +1,7 @@
 package ikube.action.index;
 
 import ikube.IConstants;
+import ikube.action.index.analyzer.StemmingAnalyzer;
 import ikube.model.IndexContext;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
@@ -162,7 +163,8 @@ public final class IndexManager {
 	 */
 	public static synchronized IndexWriter openIndexWriter(final IndexContext<?> indexContext, final Directory directory, final boolean create)
 			throws Exception {
-		Analyzer analyzer = indexContext.getAnalyzer() != null ? indexContext.getAnalyzer() : IConstants.ANALYZER;
+		@SuppressWarnings("resource")
+		Analyzer analyzer = indexContext.getAnalyzer() != null ? indexContext.getAnalyzer() : new StemmingAnalyzer();
 		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(IConstants.VERSION, analyzer);
 		indexWriterConfig.setOpenMode(create ? OpenMode.CREATE : OpenMode.APPEND);
 		indexWriterConfig.setRAMBufferSizeMB(indexContext.getBufferSize());

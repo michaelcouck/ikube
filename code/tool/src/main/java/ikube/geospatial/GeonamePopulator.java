@@ -1,10 +1,6 @@
 package ikube.geospatial;
 
 import ikube.database.IDataBase;
-import ikube.model.Persistable;
-import ikube.model.geospatial.AlternateName;
-import ikube.model.geospatial.GeoName;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 import ikube.toolkit.ThreadUtilities;
 
@@ -36,21 +32,21 @@ public class GeonamePopulator {
 
 	public static void main(String[] args) throws Exception {
 		// persist(GeoName.class);
-		persist(AlternateName.class);
+		// persist(AlternateName.class);
 	}
 
-	protected static void persist(final Class<? extends Persistable> clazz) {
+	protected static void persist(final Class<?> clazz) {
 		String sessionName = "alternatename";
 		Session session = SessionFactory.getSession(sessionName);
-		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
+		IDataBase dataBase = null; // ApplicationContextManager.getBean(IDataBase.class);
 		ThreadUtilities.destroy();
 		int batchSize = 1000;
-		List<Persistable> geoNames = new ArrayList<Persistable>();
+		List<Object> geoNames = new ArrayList<Object>();
 		int count = 0;
 		while (session.hasNext(clazz)) {
 			count++;
 			try {
-				Persistable geoName = session.next(clazz);
+				Object geoName = session.next(clazz);
 				if (count % 10000 == 0) {
 					LOGGER.info("Count : " + count);
 				}
@@ -65,7 +61,7 @@ public class GeonamePopulator {
 		}
 	}
 
-	private static void persistBatch(IDataBase dataBase, List<Persistable> geoNames) {
+	private static void persistBatch(IDataBase dataBase, List<Object> geoNames) {
 		try {
 			// LOGGER.info("Persisting batch : " + geoNames.size());
 			dataBase.persistBatch(geoNames);
@@ -73,11 +69,8 @@ public class GeonamePopulator {
 		} catch (Exception e) {
 			LOGGER.error("Exception inserting geoname : ", e);
 		} finally {
-			for (Persistable geoName : geoNames) {
+			for (Object geoName : geoNames) {
 				try {
-					if (geoName.getId() != 0) {
-						continue;
-					}
 					dataBase.persist(geoName);
 				} catch (Exception ex) {
 					LOGGER.error(ex.getMessage());

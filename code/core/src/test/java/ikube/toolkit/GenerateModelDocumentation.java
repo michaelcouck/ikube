@@ -1,6 +1,17 @@
-package ikube.model;
+package ikube.toolkit;
 
-import ikube.toolkit.XmlUtilities;
+import ikube.model.Attribute;
+import ikube.model.Indexable;
+import ikube.model.IndexableColumn;
+import ikube.model.IndexableDataSource;
+import ikube.model.IndexableDictionary;
+import ikube.model.IndexableEmail;
+import ikube.model.IndexableFileSystem;
+import ikube.model.IndexableFileSystemCsv;
+import ikube.model.IndexableFileSystemLog;
+import ikube.model.IndexableFileSystemWiki;
+import ikube.model.IndexableInternet;
+import ikube.model.IndexableTable;
 
 import java.lang.reflect.Field;
 

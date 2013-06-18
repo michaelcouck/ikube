@@ -1,6 +1,7 @@
 package ikube.search;
 
 import ikube.IConstants;
+import ikube.action.index.analyzer.StemmingAnalyzer;
 import ikube.search.spelling.SpellingChecker;
 
 import java.io.ByteArrayOutputStream;
@@ -72,6 +73,9 @@ public abstract class Search {
 			return this.fieldType;
 		}
 	}
+	
+	/** The default analyzer. */
+	protected static final Analyzer ANALYZER = new StemmingAnalyzer();
 
 	protected Logger logger;
 	/** The searcher that will be used for the search. */
@@ -96,7 +100,7 @@ public abstract class Search {
 	protected transient Analyzer analyzer;
 
 	Search(final Searcher searcher) {
-		this(searcher, IConstants.ANALYZER);
+		this(searcher, ANALYZER);
 	}
 
 	Search(final Searcher searcher, final Analyzer analyzer) {

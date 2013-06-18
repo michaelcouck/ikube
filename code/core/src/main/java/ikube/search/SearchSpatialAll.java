@@ -20,7 +20,7 @@ import org.apache.lucene.search.Searcher;
 public class SearchSpatialAll extends SearchSpatial {
 
 	public SearchSpatialAll(final Searcher searcher) {
-		this(searcher, IConstants.ANALYZER);
+		this(searcher, ANALYZER);
 	}
 
 	public SearchSpatialAll(final Searcher searcher, final Analyzer analyzer) {
@@ -39,7 +39,7 @@ public class SearchSpatialAll extends SearchSpatial {
 		String searchString = searchStrings != null && searchStrings.length > 0 ? searchStrings[0] : "";
 		Arrays.fill(newSearchStrings, minLength, newSearchStrings.length, searchString);
 		searchStrings = newSearchStrings;
-		return MultiFieldQueryParser.parse(IConstants.VERSION, searchStrings, searchFields, IConstants.ANALYZER);
+		return MultiFieldQueryParser.parse(IConstants.VERSION, searchStrings, searchFields, analyzer);
 	}
 
 }

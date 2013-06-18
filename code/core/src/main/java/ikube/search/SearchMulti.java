@@ -20,7 +20,7 @@ import org.apache.lucene.search.Searcher;
 public class SearchMulti extends SearchSingle {
 
 	public SearchMulti(final Searcher searcher) {
-		this(searcher, IConstants.ANALYZER);
+		this(searcher, ANALYZER);
 	}
 
 	public SearchMulti(final Searcher searcher, final Analyzer analyzer) {

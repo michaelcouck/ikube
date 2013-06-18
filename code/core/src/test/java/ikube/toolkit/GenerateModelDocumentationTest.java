@@ -1,4 +1,4 @@
-package ikube.model;
+package ikube.toolkit;
 
 import static org.junit.Assert.assertTrue;
 

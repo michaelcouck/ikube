@@ -59,6 +59,19 @@ public final class ObjectToolkit {
 			PREDICATES.add(predicate);
 		}
 	}
+	
+	/**
+	 * This method will populate and object and the related graph of the object, i.e. building an object graph from a prototype.
+	 * 
+	 * @param target the original target object, could be the sub class
+	 * @param collections whether collections should also be populated
+	 * @param maxDepth maximum depth to populate the fields
+	 * @param excludedFields the fields that will not be populated
+	 * @return the target with populated fields
+	 */
+	public static final <T> T populateFields(final T target, final boolean collections, final int maxDepth, final String... excludedFields) {
+		return populateFields(target.getClass(), target, collections, 0, maxDepth, excludedFields);
+	}
 
 	/**
 	 * This method will populate and object and the related graph of the object, i.e. building an object graph from a prototype.
@@ -135,17 +148,23 @@ public final class ObjectToolkit {
 						Type type = stringListType.getActualTypeArguments()[0];
 						if (Class.class.isAssignableFrom(type.getClass())) {
 							Class<?> collectionKlass = (Class<?>) type;
-							Object collectionEntity = collectionKlass.newInstance();
-							populateFields(collectionKlass, collectionEntity, collections, depth + 1, maxDepth, excludedFields);
-							if (List.class.isAssignableFrom(field.getType())) {
-								fieldValue = new ArrayList();
-							} else if (Set.class.isAssignableFrom(field.getType())) {
-								fieldValue = new TreeSet();
-							} else {
-								field.getType().newInstance();
+							if (!collectionKlass.isInterface()) {
+								Object collectionEntity = collectionKlass.newInstance();
+								populateFields(collectionKlass, collectionEntity, collections, depth + 1, maxDepth, excludedFields);
+								if (List.class.isAssignableFrom(field.getType())) {
+									fieldValue = new ArrayList();
+								} else if (Set.class.isAssignableFrom(field.getType())) {
+									fieldValue = new TreeSet();
+								} else {
+									if (!field.getType().isInterface()) {
+										field.getType().newInstance();
+									}
+								}
+								// fieldValue = Arrays.asList(collectionEntity);
+								if (fieldValue != null) {
+									((Collection) fieldValue).add(collectionEntity);
+								}
 							}
-							// fieldValue = Arrays.asList(collectionEntity);
-							((Collection) fieldValue).add(collectionEntity);
 						}
 					} else if (field.getType().isEnum()) {
 						// Enum type, just get any one

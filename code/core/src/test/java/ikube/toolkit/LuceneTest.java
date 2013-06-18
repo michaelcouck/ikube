@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
+import ikube.action.index.analyzer.StemmingAnalyzer;
 import ikube.mock.SpellingCheckerMock;
 import ikube.search.SearchSingle;
 
@@ -70,8 +71,8 @@ public class LuceneTest extends AbstractTest {
 
 	@Test
 	public void search() throws Exception {
-		SearchSingle searchSingle = createIndexAndSearch(SearchSingle.class, IConstants.ANALYZER, IConstants.CONTENTS, russian, german,
-				french, somethingElseAlToGether, string, somethingNumeric);
+		SearchSingle searchSingle = createIndexAndSearch(SearchSingle.class, new StemmingAnalyzer(), IConstants.CONTENTS, russian, german, french,
+				somethingElseAlToGether, string, somethingNumeric);
 		searchSingle.setFirstResult(0);
 		searchSingle.setFragment(true);
 		searchSingle.setMaxResults(10);

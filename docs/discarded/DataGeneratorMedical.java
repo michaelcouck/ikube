@@ -2,7 +2,6 @@ package ikube.data;
 
 import ikube.database.IDataBase;
 import ikube.model.medical.Doctor;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.XmlUtilities;
 
 import java.io.InputStream;
@@ -61,14 +60,6 @@ public class DataGeneratorMedical extends ADataGenerator {
 
 	public void setInputStream(InputStream inputStream) {
 		this.inputStream = inputStream;
-	}
-
-	public static void main(String[] args) throws Exception {
-		final IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
-		final DataGeneratorMedical dataGeneratorMedical = new DataGeneratorMedical(dataBase);
-		dataGeneratorMedical.before();
-		dataGeneratorMedical.generate();
-		dataGeneratorMedical.after();
 	}
 
 }

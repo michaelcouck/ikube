@@ -1,7 +1,5 @@
 package ikube.search;
 
-import ikube.IConstants;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.BooleanClause;
@@ -23,7 +21,7 @@ import org.apache.lucene.search.Searcher;
 public class SearchNumericRange extends SearchSingle {
 
 	public SearchNumericRange(final Searcher searcher) {
-		this(searcher, IConstants.ANALYZER);
+		this(searcher, ANALYZER);
 	}
 
 	public SearchNumericRange(final Searcher searcher, final Analyzer analyzer) {

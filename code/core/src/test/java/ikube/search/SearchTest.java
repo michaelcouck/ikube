@@ -84,7 +84,7 @@ public class SearchTest extends AbstractTest {
 
 		Directory directory = FSDirectory.open(indexDirectory);
 
-		IndexWriter indexWriter = new IndexWriter(directory, IConstants.ANALYZER, true, MaxFieldLength.UNLIMITED);
+		IndexWriter indexWriter = new IndexWriter(directory, Search.ANALYZER, true, MaxFieldLength.UNLIMITED);
 		int numDocs = 50;
 		for (int i = 0; i < numDocs; i++) {
 			for (final String string : strings) {
@@ -112,7 +112,7 @@ public class SearchTest extends AbstractTest {
 		Searchable[] searchables = new Searchable[] { new IndexSearcher(directory) };
 		SEARCHER = new MultiSearcher(searchables);
 
-		QueryParser queryParser = new QueryParser(IConstants.VERSION, IConstants.CONTENTS, IConstants.ANALYZER);
+		QueryParser queryParser = new QueryParser(IConstants.VERSION, IConstants.CONTENTS, Search.ANALYZER);
 		Query query = queryParser.parse(russian);
 		TopDocs topDocs = SEARCHER.search(query, 10);
 		System.out.println("Total hits : " + topDocs.totalHits);

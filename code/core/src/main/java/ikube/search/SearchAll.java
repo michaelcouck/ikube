@@ -1,7 +1,5 @@
 package ikube.search;
 
-import ikube.IConstants;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.search.Searcher;
 
@@ -17,7 +15,7 @@ import org.apache.lucene.search.Searcher;
 public class SearchAll extends SearchMultiAll {
 
 	public SearchAll(final Searcher searcher) {
-		this(searcher, IConstants.ANALYZER);
+		this(searcher, ANALYZER);
 	}
 	
 	public SearchAll(final Searcher searcher, final Analyzer analyzer) {

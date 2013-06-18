@@ -1,7 +1,5 @@
 package ikube.search;
 
-import ikube.IConstants;
-
 import java.io.IOException;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -25,7 +23,7 @@ import org.apache.lucene.search.TopDocs;
 public class SearchMultiSorted extends SearchMulti {
 
 	public SearchMultiSorted(final Searcher searcher) {
-		this(searcher, IConstants.ANALYZER);
+		this(searcher, ANALYZER);
 	}
 
 	public SearchMultiSorted(final Searcher searcher, final Analyzer analyzer) {

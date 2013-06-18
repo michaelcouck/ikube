@@ -1,8 +1,16 @@
 package ikube.toolkit;
 
 import ikube.IConstants;
+import ikube.model.IndexContext;
+import ikube.model.IndexableColumn;
+import ikube.model.IndexableEmail;
+import ikube.model.IndexableFileSystem;
+import ikube.model.IndexableInternet;
+import ikube.model.IndexableTable;
+import ikube.model.Url;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +42,20 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 	static {
 		Logging.configure();
 		LOGGER = LoggerFactory.getLogger(ApplicationContextManager.class);
+		try {
+			SerializationUtilities.setTransientFields(//
+					ikube.model.File.class, //
+					Url.class, //
+					IndexableInternet.class, //
+					IndexableEmail.class, //
+					IndexableFileSystem.class, //
+					IndexableColumn.class, //
+					IndexableTable.class, //
+					IndexContext.class, //
+					ArrayList.class);
+		} catch (Exception e) {
+			LOGGER.error("Exception setting the transient fields : ", e);
+		}
 	}
 
 	/**

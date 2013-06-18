@@ -1,14 +1,6 @@
 package ikube.toolkit;
 
 import ikube.IConstants;
-import ikube.model.File;
-import ikube.model.IndexContext;
-import ikube.model.IndexableColumn;
-import ikube.model.IndexableEmail;
-import ikube.model.IndexableFileSystem;
-import ikube.model.IndexableInternet;
-import ikube.model.IndexableTable;
-import ikube.model.Url;
 
 import java.beans.BeanInfo;
 import java.beans.ExceptionListener;
@@ -48,23 +40,6 @@ public final class SerializationUtilities {
 			LOGGER.error("General exception : ", exception);
 		}
 	};
-
-	static {
-		try {
-			SerializationUtilities.setTransientFields(//
-					File.class, //
-					Url.class, //
-					IndexableInternet.class, //
-					IndexableEmail.class, //
-					IndexableFileSystem.class, //
-					IndexableColumn.class, //
-					IndexableTable.class, //
-					IndexContext.class, //
-					ArrayList.class);
-		} catch (Exception e) {
-			LOGGER.error("Exception setting the transient fields : ", e);
-		}
-	}
 
 	public static String serialize(final Object object) {
 		XMLEncoder xmlEncoder = null;

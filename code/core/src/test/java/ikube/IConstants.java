@@ -1,10 +1,7 @@
 package ikube;
 
-import ikube.action.index.analyzer.StemmingAnalyzer;
-
 import java.util.regex.Pattern;
 
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.util.Version;
 
 /**
@@ -46,7 +43,6 @@ public interface IConstants {
 	String MIME_MAPPING = "mime-mapping.xml";
 
 	Version VERSION = Version.LUCENE_36;
-	Analyzer ANALYZER = new StemmingAnalyzer();
 	
 	long MAX_READ_LENGTH = 1000000;
 	int MAX_RESULT_FIELD_LENGTH = 100;

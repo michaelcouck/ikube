@@ -43,7 +43,7 @@ public class SearchSpatial extends SearchMulti {
 	 * @param searcher the searcher, with geolocation data in it, that we will perform the distance search on
 	 */
 	public SearchSpatial(final Searcher searcher) {
-		this(searcher, IConstants.ANALYZER);
+		this(searcher, ANALYZER);
 	}
 
 	public SearchSpatial(final Searcher searcher, final Analyzer analyzer) {

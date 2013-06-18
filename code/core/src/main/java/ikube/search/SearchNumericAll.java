@@ -1,7 +1,5 @@
 package ikube.search;
 
-import ikube.IConstants;
-
 import java.util.Arrays;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -27,7 +25,7 @@ import org.apache.lucene.util.NumericUtils;
 public class SearchNumericAll extends SearchSingle {
 
 	public SearchNumericAll(final Searcher searcher) {
-		this(searcher, IConstants.ANALYZER);
+		this(searcher, ANALYZER);
 	}
 
 	public SearchNumericAll(final Searcher searcher, final Analyzer analyzer) {

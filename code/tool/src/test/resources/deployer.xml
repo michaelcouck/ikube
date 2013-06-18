@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.7.0_11" class="java.beans.XMLDecoder">
+	<object class="ikube.deploy.model.Server">
+		<void property="actions">
+			<object class="java.util.ArrayList">
+				<void method="add">
+					<object class="ikube.deploy.action.CommandAction">
+						<void property="breakOnError">
+							<boolean>false</boolean>
+						</void>
+						<void property="commands">
+							<object class="java.util.ArrayList">
+								<void method="add">
+									<object class="ikube.deploy.model.Command">
+										<void property="command">
+											<string>
+												. /etc/profile;
+												cd ${tomcat-bin-directory};
+												./catalina.sh stop;
+												sleep 10;
+												ps -ef | grep apache-tomcat-7.0.33-8080 | grep -v grep | awk '{print $2}' | xargs kill -9;
+												chmod 777 -R ${tomcat-directory};
+												rm -rf ${tomcat-directory}/bin/ikube;
+												rm -rf ${tomcat-directory}/webapps/ikube*;
+												rm -rf ${tomcat-directory}/logs;
+												rm -rf ${tomcat-directory}/temp;
+												rm -rf ${tomcat-directory}/work/Catalina/localhost;
+												mkdir -p ${tomcat-directory}/bin/ikube;
+												mkdir -p ${tomcat-directory}/logs;
+												mkdir -p ${tomcat-directory}/temp;
+												mkdir -p ${tomcat-directory}/work/Catalina/localhost;
+												chmod 777 -R ${tomcat-directory};"
+											</string>
+										</void>
+									</object>
+								</void>
+							</object>
+						</void>
+					</object>
+				</void>
+				<void method="add">
+					<object class="ikube.deploy.action.CopyAction">
+						<void property="breakOnError">
+							<boolean>false</boolean>
+						</void>
+						<void property="directories">
+							<object class="java.util.HashMap">
+								<void method="put">
+									<object class="ikube.deploy.model.Directory">
+										<void property="directory">
+											<string>/tmp/ikube</string>
+										</void>
+									</object>
+									<object class="ikube.deploy.model.Directory">
+										<void property="directory">
+											<string>35074</string>
+										</void>
+									</object>
+								</void>
+							</object>
+						</void>
+						<void property="files">
+							<object class="java.util.HashMap">
+								<void method="put">
+									<object class="ikube.deploy.model.File">
+										<void property="file">
+											<string>34047</string>
+										</void>
+									</object>
+									<object class="ikube.deploy.model.File">
+										<void property="file">
+											<string>64699</string>
+										</void>
+									</object>
+								</void>
+							</object>
+						</void>
+					</object>
+				</void>
+				<void method="add">
+					<object class="ikube.deploy.action.CommandAction">
+						<void property="commands">
+							<object class="java.util.ArrayList">
+								<void method="add">
+									<object class="ikube.deploy.model.Command">
+										<void property="command">
+											<string>31558</string>
+										</void>
+									</object>
+								</void>
+							</object>
+						</void>
+					</object>
+				</void>
+			</object>
+		</void>
+		<void property="ip">
+			<string>192.168.1.200</string>
+		</void>
+		<void property="username">
+			<string>michael</string>
+		</void>
+		<void property="password">
+			<string>Bp0st2013</string>
+		</void>
+	</object>
+</java>

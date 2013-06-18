@@ -1,6 +1,7 @@
 package ikube.search.spelling;
 
 import ikube.IConstants;
+import ikube.action.index.analyzer.StemmingAnalyzer;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -89,7 +90,7 @@ public class SpellingChecker {
 				LOGGER.info("Language file : " + languageDictionaryFile);
 				inputStream = new FileInputStream(languageDictionaryFile);
 				LOGGER.info("Input stream : " + inputStream);
-				IndexWriterConfig indexWriterConfig = new IndexWriterConfig(IConstants.VERSION, IConstants.ANALYZER);
+				IndexWriterConfig indexWriterConfig = new IndexWriterConfig(IConstants.VERSION, new StemmingAnalyzer());
 				spellChecker.indexDictionary(new PlainTextDictionary(inputStream), indexWriterConfig, Boolean.TRUE);
 			} catch (Exception e) {
 				LOGGER.error("Exception indexing language file : " + languageDictionaryFile, e);

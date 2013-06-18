@@ -103,7 +103,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>ikube</groupId>
-			<artifactId>ikube-core</artifactId>
+			<artifactId>ikube-com</artifactId>
 			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>

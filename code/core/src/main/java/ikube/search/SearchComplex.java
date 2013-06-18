@@ -1,7 +1,5 @@
 package ikube.search;
 
-import ikube.IConstants;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.Term;
@@ -24,7 +22,7 @@ import org.apache.lucene.util.NumericUtils;
 public class SearchComplex extends SearchSingle {
 
 	public SearchComplex(final Searcher searcher) {
-		this(searcher, IConstants.ANALYZER);
+		this(searcher, ANALYZER);
 	}
 
 	public SearchComplex(final Searcher searcher, final Analyzer analyzer) {

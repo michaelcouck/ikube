@@ -1,6 +1,7 @@
 package ikube.action.index.handler.filesystem;
 
 import ikube.IConstants;
+import ikube.action.index.analyzer.StemmingAnalyzer;
 import ikube.action.index.handler.IndexableHandler;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
@@ -56,7 +57,7 @@ public class IndexableDictionaryHandler extends IndexableHandler<IndexableDictio
 							try {
 								logger.info("Indexing dictionary file : " + file);
 								inputStream = new FileInputStream(file);
-								IndexWriterConfig indexWriterConfig = new IndexWriterConfig(IConstants.VERSION, IConstants.ANALYZER);
+								IndexWriterConfig indexWriterConfig = new IndexWriterConfig(IConstants.VERSION, new StemmingAnalyzer());
 								spellChecker.indexDictionary(new PlainTextDictionary(inputStream), indexWriterConfig, Boolean.TRUE);
 							} catch (Exception e) {
 								handleException(indexable, e);
