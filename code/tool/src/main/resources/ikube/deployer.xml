@@ -132,7 +132,7 @@
 		<entry key="${target-directory}/${ikube-war}"  value="${tomcat-directory}/webapps" />
 	</util:map>
 	<util:map id="directories">
-		<entry key="${configuration-directory}" value="${tomcat-directory}/bin/ikube" />
+		<entry key="${configuration-directory}" value="${tomcat-directory}/bin" />
 	</util:map>
 	
 	<bean 
