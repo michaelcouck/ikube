@@ -4,6 +4,8 @@ import ikube.deploy.model.Server;
 
 import java.util.Collection;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 import net.neoremind.sshxcute.core.Result;
 import net.neoremind.sshxcute.core.SSHExec;
 import net.neoremind.sshxcute.task.CustomTask;
@@ -23,7 +25,7 @@ public class CommandAction extends Action {
 						logger.info("Executing command : " + command + ", on server : " + server.getIp());
 						CustomTask sampleTask = new ExecCommand(command);
 						Result result = sshExec.exec(sampleTask);
-						logger.info("Result of command : " + result);
+						logger.info("Result of command : " + ToStringBuilder.reflectionToString(result));
 					} catch (Exception e) {
 						handleException("Exception executing command on server : " + command + ", server : " + server.getIp(), e);
 					}

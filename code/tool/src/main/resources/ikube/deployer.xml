@@ -51,17 +51,17 @@
 		property:servers-ref="servers" />
 	
 	<util:list id="servers">
-		<!-- <ref local="server-one" />
-		<ref local="server-two" />
-		<ref local="server-three" /> -->
-		<ref local="server-four" />
+		<ref local="server-one" />
+		<!-- <ref local="server-two" />
+		<ref local="server-three" />
+		<ref local="server-four" /> -->
 	</util:list>
 	
 	<bean 
 		id="server-one"
 		name="server-one"
 		class="ikube.deploy.model.Server"
-		property:ip="192.168.1.200"
+		property:ip="ikube.be"
 		property:username="${username}"
 		property:password="${password}"
 		property:actions-ref="actions" />
@@ -70,24 +70,24 @@
 		name="server-two"
 		class="ikube.deploy.model.Server"
 		property:ip="192.168.1.10"
-		property:username="${username-slave}"
-		property:password="${password-slave}"
+		property:username="${username}"
+		property:password="${password}"
 		property:actions-ref="actions" />
 	<bean 
 		id="server-three"
 		name="server-three"
 		class="ikube.deploy.model.Server"
 		property:ip="192.168.1.20"
-		property:username="${username-slave}"
-		property:password="${password-slave}"
+		property:username="${username}"
+		property:password="${password}"
 		property:actions-ref="actions" />
 	<bean 
 		id="server-four"
 		name="server-four"
 		class="ikube.deploy.model.Server"
 		property:ip="192.168.1.31"
-		property:username="${username-slave}"
-		property:password="${password-slave}"
+		property:username="${username}"
+		property:password="${password}"
 		property:actions-ref="actions" />
 	
 	<util:list id="actions">
@@ -100,6 +100,7 @@
 		id="stop-action"
 		name="stop-action"
 		class="ikube.deploy.action.CommandAction"
+		property:breakOnError="true"
 		property:commands-ref="stop-commands" />
 	<util:list id="stop-commands">
 		<value>. /etc/profile;</value>
@@ -124,6 +125,7 @@
 		id="copy-action"
 		name="copy-action"
 		class="ikube.deploy.action.CopyAction"
+		property:breakOnError="true"
 		property:files-ref="files"
 		property:directories-ref="directories" />
 	<util:map id="files">
@@ -137,6 +139,7 @@
 		id="start-action"
 		name="start-action"
 		class="ikube.deploy.action.CommandAction"
+		property:breakOnError="true"
 		property:commands-ref="start-commands" />
 	<util:list id="start-commands">
 		<value>. /etc/profile;</value>

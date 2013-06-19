@@ -118,10 +118,10 @@ public class SSHExec {
 			session = jsch.getSession(conn.getUser(), conn.getHost(), SysConfigOption.SSH_PORT_NUMBER);
 			UserInfo ui = new ConnCredential(conn.getPassword());
 			session.setUserInfo(ui);
-			session.connect(60000);
+			session.connect(30000);
 		} catch (Exception e) {
 			logger.error("Connect fails with the following exception: ", e);
-			return false;
+			throw new RuntimeException(e);
 		}
 		return true;
 	}

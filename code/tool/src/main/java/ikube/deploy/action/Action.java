@@ -34,11 +34,11 @@ public abstract class Action implements IAction {
 			if (!connected) {
 				logger.error("Couldn't connect to server : " + ip);
 			}
-			return sshExec;
 		} catch (Exception e) {
 			disconnect(sshExec);
-			throw new RuntimeException(e);
+			handleException("Exception connecting to : " + ip, e);
 		}
+		return sshExec;
 	}
 
 	protected void disconnect(final SSHExec sshExec) {
