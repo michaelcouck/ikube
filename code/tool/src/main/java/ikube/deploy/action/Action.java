@@ -44,10 +44,20 @@ public abstract class Action implements IAction {
 	protected void disconnect(final SSHExec sshExec) {
 		try {
 			if (sshExec != null) {
-				sshExec.disconnect();
+				boolean disconnected = sshExec.disconnect();
+				if (!disconnected) {
+					logger.warn("Couldn't disconnect from : " + sshExec);
+				}
 			}
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			handleException("Exception closing connection : " + sshExec, e);
+		}
+	}
+
+	protected void handleException(final String message, final Exception exception) {
+		logger.error(message, exception);
+		if (isBreakOnError()) {
+			throw new RuntimeException(exception);
 		}
 	}
 

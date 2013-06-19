@@ -51,9 +51,9 @@
 		property:servers-ref="servers" />
 	
 	<util:list id="servers">
-		<ref local="server-one" />
+		<!-- <ref local="server-one" />
 		<ref local="server-two" />
-		<ref local="server-three" />
+		<ref local="server-three" /> -->
 		<ref local="server-four" />
 	</util:list>
 	
@@ -102,24 +102,22 @@
 		class="ikube.deploy.action.CommandAction"
 		property:commands-ref="stop-commands" />
 	<util:list id="stop-commands">
-		<value>
-			. /etc/profile;
-			cd ${tomcat-bin-directory};
-			./catalina.sh stop;
-			sleep 10;
-			ps -ef | grep apache-tomcat-7.0.33-8080 | grep -v grep | awk '{print $2}' | xargs kill -9;
-			chmod 777 -R ${tomcat-directory};
-			rm -rf ${tomcat-directory}/bin/ikube;
-			rm -rf ${tomcat-directory}/webapps/ikube*;
-			rm -rf ${tomcat-directory}/logs;
-			rm -rf ${tomcat-directory}/temp;
-			rm -rf ${tomcat-directory}/work/Catalina/localhost;
-			mkdir -p ${tomcat-directory}/bin/ikube;
-			mkdir -p ${tomcat-directory}/logs;
-			mkdir -p ${tomcat-directory}/temp;
-			mkdir -p ${tomcat-directory}/work/Catalina/localhost;
-			chmod 777 -R ${tomcat-directory};
-		</value>
+		<value>. /etc/profile;</value>
+		<value>cd ${tomcat-bin-directory};</value>
+		<value>./catalina.sh stop;</value>
+		<value>sleep 10;</value>
+		<value>ps -ef | grep apache-tomcat-7.0.33-8080 | grep -v grep | awk '{print $2}' | xargs kill -9;</value>
+		<value>chmod 777 -R ${tomcat-directory};</value>
+		<value>rm -rf ${tomcat-directory}/bin/ikube;</value>
+		<value>rm -rf ${tomcat-directory}/webapps/ikube*;</value>
+		<value>rm -rf ${tomcat-directory}/logs;</value>
+		<value>rm -rf ${tomcat-directory}/temp;</value>
+		<value>rm -rf ${tomcat-directory}/work/Catalina/localhost;</value>
+		<value>mkdir -p ${tomcat-directory}/bin/ikube;</value>
+		<value>mkdir -p ${tomcat-directory}/logs;</value>
+		<value>mkdir -p ${tomcat-directory}/temp;</value>
+		<value>mkdir -p ${tomcat-directory}/work/Catalina/localhost;</value>
+		<value>chmod 777 -R ${tomcat-directory};</value>
 	</util:list>
 	
 	<bean 
@@ -141,12 +139,10 @@
 		class="ikube.deploy.action.CommandAction"
 		property:commands-ref="start-commands" />
 	<util:list id="start-commands">
-		<value>
-			. /etc/profile;
-			chmod 777 -R ${tomcat-directory};
-			cd ${tomcat-bin-directory};
-			./catalina.sh start;
-		</value>
+		<value>. /etc/profile;</value>
+		<value>chmod 777 -R ${tomcat-directory};</value>
+		<value>cd ${tomcat-bin-directory};</value>
+		<value>./catalina.sh start;</value>
 	</util:list>
 	
 </beans>

@@ -25,10 +25,7 @@ public class CommandAction extends Action {
 						Result result = sshExec.exec(sampleTask);
 						logger.info("Result of command : " + result);
 					} catch (Exception e) {
-						logger.error("Exception executing command on server : " + command + ", server : " + server.getIp(), e);
-						if (isBreakOnError()) {
-							throw new RuntimeException(e);
-						}
+						handleException("Exception executing command on server : " + command + ", server : " + server.getIp(), e);
 					}
 				}
 			}
