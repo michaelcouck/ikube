@@ -116,7 +116,7 @@ public final class ThreadUtilities {
 	 * @param maxWait and the maximum amount of time to wait
 	 */
 	public static void waitForFutures(final List<Future<?>> futures, final long maxWait) {
-		for (Future<?> future : futures) {
+		for (final Future<?> future : futures) {
 			ThreadUtilities.waitForFuture(future, maxWait);
 		}
 	}
@@ -161,7 +161,7 @@ public final class ThreadUtilities {
 			return;
 		}
 		outer: while (true) {
-			for (Thread thread : threads) {
+			for (final Thread thread : threads) {
 				if (thread.isAlive()) {
 					try {
 						thread.join(1000);

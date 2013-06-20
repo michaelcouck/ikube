@@ -28,22 +28,6 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 	/** The class that this handler can handle. */
 	private Class<T> indexableClass;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Class<T> getIndexableClass() {
-		return indexableClass;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setIndexableClass(final Class<T> indexableClass) {
-		this.indexableClass = indexableClass;
-	}
-
 	protected RecursiveAction getRecursiveAction(final IndexContext<?> indexContext, final Indexable<?> indexable, final IResourceProvider<?> resourceManager) {
 		/**
 		 * This class will execute the handle resource on the handler until there are no more resources left or until it is cancelled.
@@ -66,7 +50,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 					invokeAll(leftRecursiveAction, rightRecursiveAction);
 				}
 				Object resource = resourceManager.getResource();
-				while (resource != null && !isCancelled()) {
+				while (resource != null && !isCancelled() && !isDone() && !isCompletedNormally() && !isCompletedAbnormally()) {
 					// Call the handle resource on the parent, which is the implementation specific handler method
 					List resources = handleResource(indexContext, indexable, resource);
 					// Set any returned resources back in the resource provider
@@ -94,6 +78,22 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 			throw new RuntimeException("Maximum exceptions exceeded for resource : " + indexable.getName() + ", " + Arrays.deepToString(messages), exception);
 		}
 		logger.error("Exception handling resource : " + Arrays.deepToString(messages), exception);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Class<T> getIndexableClass() {
+		return indexableClass;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void setIndexableClass(final Class<T> indexableClass) {
+		this.indexableClass = indexableClass;
 	}
 
 }

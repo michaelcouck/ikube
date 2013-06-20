@@ -4,7 +4,7 @@ import ikube.action.index.handler.IResourceProvider;
 import ikube.action.index.handler.IndexableHandler;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
-import ikube.model.IndexableInternet;
+import ikube.model.IndexableTweets;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.IOException;
@@ -15,15 +15,13 @@ import java.util.Stack;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 import java.util.concurrent.RecursiveAction;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import org.springframework.social.twitter.api.Stream;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.social.twitter.api.StreamDeleteEvent;
 import org.springframework.social.twitter.api.StreamListener;
 import org.springframework.social.twitter.api.StreamWarningEvent;
+import org.springframework.social.twitter.api.StreamingOperations;
 import org.springframework.social.twitter.api.Tweet;
-import org.springframework.social.twitter.api.UserStreamParameters;
-import org.springframework.social.twitter.api.UserStreamParameters.WithOptions;
 import org.springframework.social.twitter.api.impl.TwitterTemplate;
 
 /**
@@ -31,53 +29,57 @@ import org.springframework.social.twitter.api.impl.TwitterTemplate;
  * @since 24.04.13
  * @version 01.00
  */
-public class TwitterHandler extends IndexableHandler<IndexableInternet> {
+public class TwitterHandler extends IndexableHandler<IndexableTweets> {
 
 	class ResourceProvider implements IResourceProvider<Tweet> {
 
 		private Stack<Tweet> tweets = new Stack<>();
 
-		ResourceProvider(final IndexableInternet indexableInternet) throws IOException {
-			TwitterTemplate twitter = new TwitterTemplate("YR571S2JiVBOFyJS5MEg", "Kb8hS0luftwCJX3qVoyiLUMfZDtK1EozFoUkjNLUMx4",
-					"7078572-srXzIDwmIc0lg69TBR0rLr9TqHYJiRqPIv14gunpk", "xfnQDjYEcdTCcYWeLcJyGuszQG9R5UnG5TrvtfG33BU");
-			List<StreamListener> listeners = new ArrayList<StreamListener>();
+		ResourceProvider(final IndexableTweets indexableTweets) throws IOException {
+			TwitterTemplate twitter = new TwitterTemplate(//
+					indexableTweets.getConsumerKey(), //
+					indexableTweets.getConsumerSecret(), //
+					indexableTweets.getToken(), //
+					indexableTweets.getTokenSecret());
 			StreamListener listener = new StreamListener() {
+
+				@Override
 				public void onTweet(Tweet tweet) {
-					logger.info("TWEET:  " + tweet.getFromUser() + "   -   " + tweet.getText());
 					tweets.push(tweet);
 				}
 
+				@Override
 				public void onLimit(int numberOfLimitedTweets) {
-					logger.info("LIMIT:  " + numberOfLimitedTweets);
+					logger.info("Tweets limited : " + numberOfLimitedTweets);
 				}
 
+				@Override
 				public void onDelete(StreamDeleteEvent deleteEvent) {
-					logger.info("DELETE:  " + deleteEvent.getTweetId());
 				}
 
+				@Override
 				public void onWarning(StreamWarningEvent warnEvent) {
-					logger.info("WARNING:  " + warnEvent.getCode());
+					logger.info("Tweet warning : " + warnEvent.getCode());
 				}
+
 			};
-			listeners.add(listener);
-			UserStreamParameters params = new UserStreamParameters().with(WithOptions.FOLLOWINGS).includeReplies(true);
-			// Stream userStream = twitter.streamingOperations().sample(listeners);
-			Stream userStream = twitter.streamingOperations().filter("Disney", listeners);
-			// twitter.streamingOperations().sample(listeners);
-			ThreadUtilities.sleep(100000);
-			userStream.stop();
+			StreamingOperations streamingOperations = twitter.streamingOperations();
+			streamingOperations.sample(Arrays.asList(listener));
 		}
 
 		public Tweet getResource() {
 			if (tweets.isEmpty()) {
-				return null;
+				ThreadUtilities.sleep(100);
+				return getResource();
 			}
 			return tweets.pop();
 		}
 
 		@Override
-		public void setResources(List<Tweet> resources) {
-			tweets.addAll(resources);
+		public void setResources(final List<Tweet> resources) {
+			if (resources != null) {
+				tweets.addAll(resources);
+			}
 		}
 
 	}
@@ -86,18 +88,17 @@ public class TwitterHandler extends IndexableHandler<IndexableInternet> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final IndexableInternet indexableInternet) throws Exception {
-		final AtomicInteger threads = new AtomicInteger(indexableInternet.getThreads());
-		ForkJoinPool forkJoinPool = new ForkJoinPool(threads.get());
-		ResourceProvider fileResourceProvider = new ResourceProvider(indexableInternet);
-		RecursiveAction recursiveAction = getRecursiveAction(indexContext, indexableInternet, fileResourceProvider);
-		forkJoinPool.invoke(recursiveAction);
+	public List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final IndexableTweets indexableTweets) throws Exception {
+		ForkJoinPool forkJoinPool = new ForkJoinPool(indexableTweets.getThreads());
+		ResourceProvider twitterResourceProvider = new ResourceProvider(indexableTweets);
+		RecursiveAction recursiveAction = getRecursiveAction(indexContext, indexableTweets, twitterResourceProvider);
+		forkJoinPool.submit(recursiveAction);
 		return new ArrayList<Future<?>>(Arrays.asList(recursiveAction));
 	}
 
 	@Override
 	protected List<?> handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource) {
-		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
+		logger.info("Handling resource : " + ToStringBuilder.reflectionToString(resource) + ", thread : " + Thread.currentThread().hashCode());
 		return null;
 	}
 
