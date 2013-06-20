@@ -5,9 +5,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -15,8 +17,8 @@ import java.util.concurrent.TimeoutException;
 import org.apache.log4j.Logger;
 
 /**
- * This class just has a method that will wait for a list of threads to finish and an executer service that will execute 'threads' and
- * return futures that can be waited for by the callers.
+ * This class just has a method that will wait for a list of threads to finish and an executer service that will execute 'threads' and return futures that can
+ * be waited for by the callers.
  * 
  * @author Michael Couck
  * @since 12.02.2011
@@ -33,6 +35,7 @@ public final class ThreadUtilities {
 	private static int MAX_RETRY_COUNT = 3;
 	/** A list of futures by name so we can kill them. */
 	private static Map<String, List<Future<?>>> FUTURES;
+	private static Map<String, List<ForkJoinPool>> FORK_JOIN_POOLS;
 
 	/**
 	 * This method will submit the runnable and add it to a map so the caller can cancel the future if necessary.
@@ -65,7 +68,7 @@ public final class ThreadUtilities {
 	 * @param runnable the runnable to submit for execution, must self terminate
 	 * @return the future bound to the runnable
 	 */
-	public /* synchronized */ static Future<?> submitSystem(final Runnable runnable) {
+	public/* synchronized */static Future<?> submitSystem(final Runnable runnable) {
 		try {
 			return EXECUTER_SERVICE_SYSTEM.submit(runnable);
 		} finally {
@@ -74,9 +77,9 @@ public final class ThreadUtilities {
 	}
 
 	/**
-	 * This method will terminate the future(s) with the specified name, essentially interrupting it and remove it from the list. In the
-	 * case where this future is running an action the action will terminate abruptly. Note that futures typically run in groups of three or
-	 * four, and are keyed by the name, so all the futures in the group need to be cancelled.
+	 * This method will terminate the future(s) with the specified name, essentially interrupting it and remove it from the list. In the case where this future
+	 * is running an action the action will terminate abruptly. Note that futures typically run in groups of three or four, and are keyed by the name, so all
+	 * the futures in the group need to be cancelled.
 	 * 
 	 * @param name the name that was assigned to the future when it was submitted for execution
 	 */
@@ -122,9 +125,9 @@ public final class ThreadUtilities {
 	}
 
 	/**
-	 * This method will wait for the future to finish doing it's work. In the event the future is interrupted, for example by the executer
-	 * service closing down and interrupting all it's threads, it will return immediately. If the future takes too long and passes the
-	 * maximum wait time, then the method will return immediately.
+	 * This method will wait for the future to finish doing it's work. In the event the future is interrupted, for example by the executer service closing down
+	 * and interrupting all it's threads, it will return immediately. If the future takes too long and passes the maximum wait time, then the method will return
+	 * immediately.
 	 * 
 	 * @param future the future to wait for in seconds
 	 * @param maxWait the maximum amount of time to wait
@@ -150,8 +153,8 @@ public final class ThreadUtilities {
 	}
 
 	/**
-	 * This method iterates through the list of threads looking for one that is still alive and joins it. Once all the threads have finished
-	 * then this method will return to the caller indicating that all the threads have finished.
+	 * This method iterates through the list of threads looking for one that is still alive and joins it. Once all the threads have finished then this method
+	 * will return to the caller indicating that all the threads have finished.
 	 * 
 	 * @param threads the threads to wait for
 	 */
@@ -200,11 +203,39 @@ public final class ThreadUtilities {
 		FUTURES = new HashMap<String, List<Future<?>>>();
 		EXECUTER_SERVICE = Executors.newCachedThreadPool();
 		EXECUTER_SERVICE_SYSTEM = Executors.newCachedThreadPool();
+		FORK_JOIN_POOLS = new HashMap<String, List<ForkJoinPool>>();
+	}
+
+	public static final void cancellForkJoinPool(final String name) {
+		List<ForkJoinPool> forkJoinPools = FORK_JOIN_POOLS.remove(name);
+		if (forkJoinPools != null) {
+			for (final ForkJoinPool forkJoinPool : forkJoinPools) {
+				forkJoinPool.shutdownNow();
+			}
+		}
+	}
+
+	public static final void cancellAllForkJoinPools() {
+		Set<String> names = FORK_JOIN_POOLS.keySet();
+		if (names != null) {
+			for (final String name : names) {
+				cancellForkJoinPool(name);
+			}
+		}
+	}
+
+	public static final void addForkJoinPool(final String name, final ForkJoinPool forkJoinPool) {
+		List<ForkJoinPool> forkJoinPools = FORK_JOIN_POOLS.get(name);
+		if (forkJoinPools == null) {
+			forkJoinPools = new ArrayList<ForkJoinPool>();
+			FORK_JOIN_POOLS.put(name, forkJoinPools);
+		}
+		forkJoinPools.add(forkJoinPool);
 	}
 
 	/**
-	 * This method will destroy the thread pool. All threads that are currently running will be interrupted,and should catch this exception
-	 * and exit the run method.
+	 * This method will destroy the thread pool. All threads that are currently running will be interrupted,and should catch this exception and exit the run
+	 * method.
 	 */
 	public static/* synchronized */void destroy() {
 		try {

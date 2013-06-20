@@ -142,13 +142,13 @@ public class ADataBaseJpaIntegration extends Integration {
 
 	@Test
 	public void executeQuery() {
-		Long count = dataBase.execute(Long.class, Action.SELECT_FROM_ACTIONS_COUNT);
+		Long count = dataBase.count(Action.class);
 		assertNotNull("The count should never be null : ", count);
 
 		List<Action> actions = Arrays.asList(new Action(), new Action(), new Action());
 		dataBase.persistBatch(actions);
 
-		count = dataBase.execute(Long.class, Action.SELECT_FROM_ACTIONS_COUNT);
+		count = dataBase.count(Action.class);
 		assertNotNull("The count should never be null : ", count);
 		assertEquals("The count should be the size of the url list : ", Long.valueOf(actions.size()), count);
 	}

@@ -22,9 +22,9 @@ import org.apache.lucene.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * This handler is a custom handler for the CSV files. Rather than inserting the data into the database, meaning creating tables and the
- * like, and the painful process of importing the data using some tool, and then the file is updated and automation is required, this
- * handler will just read the 'structured' files line by line and index the data as if it were
+ * This handler is a custom handler for the CSV files. Rather than inserting the data into the database, meaning creating tables and the like, and the painful
+ * process of importing the data using some tool, and then the file is updated and automation is required, this handler will just read the 'structured' files
+ * line by line and index the data as if it were
  * 
  * @author Michael Couck
  * @since 08.02.2011
@@ -36,8 +36,7 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
 	private ResourceRowHandler resourceRowHandler;
 
 	@Override
-	public List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final IndexableFileSystemCsv indexableFileSystem)
-			throws Exception {
+	public List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final IndexableFileSystemCsv indexableFileSystem) throws Exception {
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		Runnable runnable = new Runnable() {
 			public void run() {
@@ -64,9 +63,9 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
 		futures.add(future);
 		return futures;
 	}
-	
+
 	@Override
-	protected List<?> handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource) {
+	protected List<?> handleResource(final IndexContext<?> indexContext, final IndexableFileSystemCsv indexableFileSystemCsv, final Object resource) {
 		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
 		return null;
 	}
@@ -101,8 +100,8 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
 					String line = lineIterator.nextLine();
 					String[] values = StringUtils.split(line, separator);
 					if (indexableColumns.size() != values.length) {
-						logger.warn("Columns and values different on line : " + lineNumber + ", columns : " + columns.length
-								+ ", values : " + values.length + ", data : " + Arrays.deepToString(values));
+						logger.warn("Columns and values different on line : " + lineNumber + ", columns : " + columns.length + ", values : " + values.length
+								+ ", data : " + Arrays.deepToString(values));
 					}
 					for (int i = 0; i < values.length && i < indexableColumns.size(); i++) {
 						IndexableColumn indexableColumn = (IndexableColumn) indexableColumns.get(i);

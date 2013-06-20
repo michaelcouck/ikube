@@ -1,4 +1,4 @@
-package ikube.action.index.handler.enrich.geocode;
+package ikube.action.index.handler.strategy.geocode;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;

@@ -43,7 +43,7 @@ public class StrategyInterceptor implements IStrategyInterceptor {
 			}
 		}
 
-		return mustProcess ? proceedingJoinPoint.proceed(args) : null;
+		return mustProcess ? proceedingJoinPoint.proceed(args) : mustProcess;
 	}
 
 }

@@ -6,8 +6,8 @@ import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
-import ikube.action.index.handler.enrich.geocode.Coordinate;
 import ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy;
+import ikube.action.index.handler.strategy.geocode.Coordinate;
 import ikube.mock.SpellingCheckerMock;
 import ikube.toolkit.FileUtilities;
 

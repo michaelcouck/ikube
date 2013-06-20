@@ -8,6 +8,8 @@ import ikube.toolkit.ThreadUtilities;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.Future;
 import java.util.concurrent.RecursiveAction;
 
 import org.slf4j.Logger;
@@ -28,7 +30,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 	/** The class that this handler can handle. */
 	private Class<T> indexableClass;
 
-	protected RecursiveAction getRecursiveAction(final IndexContext<?> indexContext, final Indexable<?> indexable, final IResourceProvider<?> resourceManager) {
+	protected RecursiveAction getRecursiveAction(final IndexContext<?> indexContext, final T indexable, final IResourceProvider<?> resourceManager) {
 		/**
 		 * This class will execute the handle resource on the handler until there are no more resources left or until it is cancelled.
 		 */
@@ -37,29 +39,34 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 			@Override
 			@SuppressWarnings({ "rawtypes", "unchecked" })
 			protected void compute() {
-				int threadsLeft = indexable.getThreads();
-				threadsLeft--;
-				indexable.setThreads(threadsLeft);
-				if (threadsLeft > 0) {
-					logger.info("This : " + this + ", " + indexable.getThreads());
-					// Split off some more threads to help do the work
-					Indexable<?> leftIndexable = (Indexable<?>) SerializationUtilities.clone(indexable);
-					Indexable<?> rightIndexable = (Indexable<?>) SerializationUtilities.clone(indexable);
-					RecursiveAction leftRecursiveAction = getRecursiveAction(indexContext, leftIndexable, resourceManager);
-					RecursiveAction rightRecursiveAction = getRecursiveAction(indexContext, rightIndexable, resourceManager);
-					invokeAll(leftRecursiveAction, rightRecursiveAction);
-				}
-				Object resource = resourceManager.getResource();
-				while (resource != null && !isCancelled() && !isDone() && !isCompletedNormally() && !isCompletedAbnormally()) {
+				// Lets see if we should split off some threads
+				computeRecursive();
+				do {
+					Object resource = resourceManager.getResource();
+					if (resource == null || isCancelled() || isDone() || isCompletedNormally() || isCompletedAbnormally()) {
+						break;
+					}
 					// Call the handle resource on the parent, which is the implementation specific handler method
 					List resources = handleResource(indexContext, indexable, resource);
 					// Set any returned resources back in the resource provider
 					resourceManager.setResources(resources);
-					// Get the next resource from the resource manager, returning null indicates that all the resources are consumed
-					resource = resourceManager.getResource();
+					// Sleep for the required time, zzzzzz.....
 					ThreadUtilities.sleep(indexContext.getThrottle());
-				}
+				} while (true);
 				logger.info("Finished : " + this + ", " + RecursiveAction.getPool().getRunningThreadCount());
+			}
+
+			@SuppressWarnings("unchecked")
+			private void computeRecursive() {
+				if (indexable.incrementThreads(-1) >= 0) {
+					logger.info("This : " + this + ", " + indexable.getThreads());
+					// Split off some more threads to help do the work
+					T leftIndexable = (T) SerializationUtilities.clone(indexable);
+					T rightIndexable = (T) SerializationUtilities.clone(indexable);
+					RecursiveAction leftRecursiveAction = getRecursiveAction(indexContext, leftIndexable, resourceManager);
+					RecursiveAction rightRecursiveAction = getRecursiveAction(indexContext, rightIndexable, resourceManager);
+					invokeAll(leftRecursiveAction, rightRecursiveAction);
+				}
 			}
 
 		}
@@ -67,7 +74,31 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 		return new RecursiveActionImpl();
 	}
 
-	protected abstract List<?> handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource);
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final T indexable) throws Exception {
+		return null;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public ForkJoinTask<?> handleIndexableForked(final IndexContext<?> indexContext, final T indexable) throws Exception {
+		return null;
+	}
+
+	/**
+	 * This method is called from the fork join actions, individually processing a resource, thread by thread.
+	 * 
+	 * @param indexContext the index context being processed
+	 * @param indexable the currently processed indexable
+	 * @param resource the resource that is to be processed
+	 * @return the list of additional resources collected by the processing of the resource, can be empty or null
+	 */
+	protected abstract List<?> handleResource(final IndexContext<?> indexContext, final T indexable, final Object resource);
 
 	protected void handleException(final Indexable<?> indexable, final Exception exception, final String... messages) {
 		if (InterruptedException.class.isAssignableFrom(exception.getClass()) || CancellationException.class.isAssignableFrom(exception.getClass())) {

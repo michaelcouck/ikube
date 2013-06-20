@@ -1,6 +1,6 @@
 package ikube.experimental;
 
-import ikube.action.index.handler.enrich.geocode.Coordinate;
+import ikube.action.index.handler.strategy.geocode.Coordinate;
 
 import org.apache.lucene.index.IndexWriter;
 

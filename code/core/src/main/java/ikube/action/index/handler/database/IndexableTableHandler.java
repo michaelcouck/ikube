@@ -106,7 +106,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	}
 
 	@Override
-	protected List<?> handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource) {
+	protected List<?> handleResource(final IndexContext<?> indexContext, final IndexableTable indexableTable, final Object resource) {
 		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
 		return null;
 	}
@@ -116,10 +116,10 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * 
 	 * @param indexContext the index context that we are indexing
 	 * @param indexableTable the table that we are indexing, this is generally a clone of the original because there is state in the table that is used by
-	 *        different threads
+	 *            different threads
 	 * @param connection the connection to the database that must be closed when there are no more records left in the top level table
 	 * @param document the document that came from the top level table. As we recurse the table hierarchy, we have to pass this document to the child tables so
-	 *        they can add their data to the document. When this method is called with the top level table the document is null of course
+	 *            they can add their data to the document. When this method is called with the top level table the document is null of course
 	 * @throws SQLException
 	 */
 	protected void handleTable(final IContentProvider<IndexableColumn> contentProvider, final IndexContext<?> indexContext,
@@ -261,7 +261,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * "...where foreignKey = parentId", so we have to get the parent id column and set the parameter.
 	 * 
 	 * @param indexableTable the table that is being iterated over at the moment, this could be a top level table n which case there will be no foreign key
-	 *        references, but in the case of a sub table the parent id will be accessed
+	 *            references, but in the case of a sub table the parent id will be accessed
 	 * @param preparedStatement the statement to set the parameters in
 	 * @throws SQLException
 	 */

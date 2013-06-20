@@ -146,6 +146,11 @@ public class Indexable<E> extends Persistable {
 	public void setThreads(final int threads) {
 		this.threads = threads;
 	}
+	
+	public int incrementThreads(final int increment) {
+		threads += increment;
+		return threads;
+	}
 
 	public List<IStrategy> getStrategies() {
 		return strategies;

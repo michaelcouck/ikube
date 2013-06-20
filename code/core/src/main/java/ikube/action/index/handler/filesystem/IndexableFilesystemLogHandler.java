@@ -4,7 +4,6 @@ import ikube.action.index.IndexManager;
 import ikube.action.index.handler.IndexableHandler;
 import ikube.action.index.handler.ResourceHandlerBase;
 import ikube.model.IndexContext;
-import ikube.model.Indexable;
 import ikube.model.IndexableFileSystemLog;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.SerializationUtilities;
@@ -26,8 +25,8 @@ import org.apache.lucene.document.Field.TermVector;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * This handler is a custom handler for the BPost. It will index log files in a particular directory, and unlike the
- * {@link IndexableFilesystemHandler} which indexes files file by file, this handler will index log files line by line.
+ * This handler is a custom handler for the BPost. It will index log files in a particular directory, and unlike the {@link IndexableFilesystemHandler} which
+ * indexes files file by file, this handler will index log files line by line.
  * 
  * @author Michael Couck
  * @since 08.02.2011
@@ -79,9 +78,9 @@ public class IndexableFilesystemLogHandler extends IndexableHandler<IndexableFil
 		}
 		return futures;
 	}
-	
+
 	@Override
-	protected List<?> handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource) {
+	protected List<?> handleResource(final IndexContext<?> indexContext, final IndexableFileSystemLog indexableFileSystemLog, final Object resource) {
 		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
 		return null;
 	}

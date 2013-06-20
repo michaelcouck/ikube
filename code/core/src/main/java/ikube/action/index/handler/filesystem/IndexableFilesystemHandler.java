@@ -3,7 +3,6 @@ package ikube.action.index.handler.filesystem;
 import ikube.IConstants;
 import ikube.action.index.handler.IndexableHandler;
 import ikube.model.IndexContext;
-import ikube.model.Indexable;
 import ikube.model.IndexableFileSystem;
 import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.ThreadUtilities;
@@ -69,15 +68,14 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 		}
 		return futures;
 	}
-	
+
 	@Override
-	protected List<?> handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource) {
+	protected List<?> handleResource(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final Object resource) {
 		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
 		return null;
 	}
 
-	void handleFiles(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final Stack<File> directories,
-			final Pattern pattern) {
+	void handleFiles(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final Stack<File> directories, final Pattern pattern) {
 		List<File> files = getBatch(indexableFileSystem, directories, pattern);
 		do {
 			for (final File file : files) {
@@ -177,8 +175,7 @@ public class IndexableFilesystemHandler extends IndexableHandler<IndexableFileSy
 	}
 
 	/**
-	 * This method checks to see if the file can be read, that it exists and that it is not in the excluded pattern defined in the
-	 * configuration.
+	 * This method checks to see if the file can be read, that it exists and that it is not in the excluded pattern defined in the configuration.
 	 * 
 	 * @param file the file to check for inclusion in the processing
 	 * @param pattern the pattern that excludes explicitly files and folders

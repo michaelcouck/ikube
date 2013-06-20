@@ -3,6 +3,8 @@ package ikube.action.index.handler.enrich.geocode;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import ikube.AbstractTest;
+import ikube.action.index.handler.strategy.geocode.Coordinate;
+import ikube.action.index.handler.strategy.geocode.GoogleGeocoder;
 import ikube.mock.FileUtilitiesMock;
 import ikube.mock.URLMock;
 import ikube.toolkit.FileUtilities;

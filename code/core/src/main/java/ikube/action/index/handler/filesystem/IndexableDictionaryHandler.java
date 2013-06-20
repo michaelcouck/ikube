@@ -4,7 +4,6 @@ import ikube.IConstants;
 import ikube.action.index.analyzer.StemmingAnalyzer;
 import ikube.action.index.handler.IndexableHandler;
 import ikube.model.IndexContext;
-import ikube.model.Indexable;
 import ikube.model.IndexableDictionary;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
@@ -77,7 +76,7 @@ public class IndexableDictionaryHandler extends IndexableHandler<IndexableDictio
 	}
 
 	@Override
-	protected List<?> handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource) {
+	protected List<?> handleResource(final IndexContext<?> indexContext, final IndexableDictionary indexableDictionary, final Object resource) {
 		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
 		return null;
 	}

@@ -18,7 +18,7 @@ public class TwitterHandlerTest extends AbstractTest {
 	private TwitterHandler twitterHandler;
 
 	@Before
-	public void before() {
+	public void before() throws Exception {
 		twitterHandler = new TwitterHandler();
 	}
 
@@ -34,6 +34,7 @@ public class TwitterHandlerTest extends AbstractTest {
 
 		twitterHandler.handleIndexable(indexContext, indexableTweets);
 		ThreadUtilities.sleep(5000);
+		ThreadUtilities.destroy();
 	}
 
 }

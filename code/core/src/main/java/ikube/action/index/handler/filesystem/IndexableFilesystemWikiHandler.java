@@ -5,7 +5,6 @@ import ikube.action.index.IndexManager;
 import ikube.action.index.handler.IndexableHandler;
 import ikube.action.index.handler.ResourceHandlerBase;
 import ikube.model.IndexContext;
-import ikube.model.Indexable;
 import ikube.model.IndexableFileSystemWiki;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
@@ -74,23 +73,22 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 		}
 		return futures;
 	}
-	
+
 	@Override
-	protected List<?> handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource) {
+	protected List<?> handleResource(final IndexContext<?> indexContext, final IndexableFileSystemWiki indexableFileSystemWiki, final Object resource) {
 		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
 		return null;
 	}
 
 	/**
-	 * This method will take a Bzip2 file, read it, decompress it gradually. Parse the contents, extracting the revision data for the Wiki
-	 * which is in <revision> tags. Each revision will then be added to the index as a unique document.
+	 * This method will take a Bzip2 file, read it, decompress it gradually. Parse the contents, extracting the revision data for the Wiki which is in
+	 * <revision> tags. Each revision will then be added to the index as a unique document.
 	 * 
 	 * @param indexContext the index context for the index
 	 * @param indexableFileSystem the file system object, i.e. the path to the bzip file
 	 * @param file the Bzip2 file with the Wiki data in it
 	 */
-	protected void handleFile(final IndexContext<?> indexContext, final IndexableFileSystemWiki indexableFileSystem, final File file,
-			final Counter counter) {
+	protected void handleFile(final IndexContext<?> indexContext, final IndexableFileSystemWiki indexableFileSystem, final File file, final Counter counter) {
 		// Get the wiki history file
 		long start = System.currentTimeMillis();
 		FileInputStream fileInputStream = null;
@@ -117,8 +115,8 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 	}
 
 	@SuppressWarnings("rawtypes")
-	private void handleChunk(final IndexContext indexContext, final IndexableFileSystemWiki indexableFileSystem, final File file,
-			final long start, final StringBuilder stringBuilder, Counter counter) throws Exception {
+	private void handleChunk(final IndexContext indexContext, final IndexableFileSystemWiki indexableFileSystem, final File file, final long start,
+			final StringBuilder stringBuilder, Counter counter) throws Exception {
 		// Parse the <revision> tags
 		while (true && ThreadUtilities.isInitialized()) {
 			ThreadUtilities.sleep(indexContext.getThrottle());
@@ -147,8 +145,8 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 	 * @param logFile and the individual log file that we will index
 	 * @throws Exception
 	 */
-	Document handleResource(final IndexContext<?> indexContext, final IndexableFileSystemWiki indexableFileSystem, final Document document,
-			final Object content) throws Exception {
+	Document handleResource(final IndexContext<?> indexContext, final IndexableFileSystemWiki indexableFileSystem, final Document document, final Object content)
+			throws Exception {
 		Store store = indexableFileSystem.isStored() ? Store.YES : Store.NO;
 		Index analyzed = indexableFileSystem.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED_NO_NORMS;
 		TermVector termVector = indexableFileSystem.isVectored() ? TermVector.YES : TermVector.NO;

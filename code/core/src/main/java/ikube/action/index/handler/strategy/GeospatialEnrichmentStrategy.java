@@ -2,8 +2,8 @@ package ikube.action.index.handler.strategy;
 
 import ikube.IConstants;
 import ikube.action.index.handler.IStrategy;
-import ikube.action.index.handler.enrich.geocode.Coordinate;
-import ikube.action.index.handler.enrich.geocode.IGeocoder;
+import ikube.action.index.handler.strategy.geocode.Coordinate;
+import ikube.action.index.handler.strategy.geocode.IGeocoder;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
@@ -100,17 +100,15 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 				}
 			}
 		}
-		if (latitude == null || longitude == null) {
+		Coordinate coordinate = null;
+		if (latitude != null && longitude != null) {
+			coordinate = new Coordinate(latitude, longitude);
+		} else {
 			String address = buildAddress(indexable, new StringBuilder()).toString();
-			// The GeoCoder is a last resort in fact
-			Coordinate coordinate = geocoder.getCoordinate(address);
-			if (coordinate != null) {
-				return coordinate;
-			}
-			logger.warn("Lat and/or long are null, have you configured the columns and address properties correctly : ");
-			return null;
+			// The GeoCoder is a last resort in fact, this will hurt!
+			coordinate = geocoder.getCoordinate(address);
 		}
-		return new Coordinate(latitude, longitude);
+		return coordinate;
 	}
 
 	public final void addSpatialLocationFields(final Coordinate coordinate, final Document document) {
@@ -130,12 +128,12 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 
 	final StringBuilder buildAddress(final Indexable<?> indexable, final StringBuilder builder) {
 		if (indexable.isAddress()) {
-			if (indexable instanceof IndexableColumn) {
-				IndexableColumn indexableColumn = (IndexableColumn) indexable;
-				if (builder.length() > 0) {
-					builder.append(" ");
-				}
-				builder.append(indexableColumn.getContent());
+			if (builder.length() > 0) {
+				builder.append(", ");
+			}
+			Object content = indexable.getContent();
+			if (content != null) {
+				builder.append(content);
 			}
 		}
 		if (indexable.getChildren() != null) {
@@ -159,7 +157,7 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 		builder.append(IConstants.LONGITUDE);
 		builder.append(").*");
 		lngPattern = Pattern.compile(builder.toString());
-		
+
 		sinusodialProjector = new SinusoidalProjector();
 		CartesianTierPlotter cartesianTierPlotter = new CartesianTierPlotter(0, sinusodialProjector, CartesianTierPlotter.DEFALT_FIELD_PREFIX);
 		startTier = cartesianTierPlotter.bestFit(startTierParam);

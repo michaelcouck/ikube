@@ -7,16 +7,17 @@ import ikube.model.IndexableEmail;
 
 import java.net.URL;
 import java.util.List;
+import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.Future;
 
 import org.apache.lucene.index.IndexWriter;
 
 /**
- * This is the interface for handlers. Handlers handle indexables. Indexables are essentially sources of data, like an {@link URL} object
- * for example. Any type of data source can then be defined simply by creating another indexable type and mapping the handler to it. For
- * example in the case of email, there is an {@link IndexableEmail} indexable and an {@link IndexableEmailHandler} that handles it. All
- * handlers get the index context passed to them. Using the data in the context that is common to the handlers like the {@link IndexWriter}
- * they can perform their logic to extract the data from their indexable and add it to the index.
+ * This is the interface for handlers. Handlers handle indexables. Indexables are essentially sources of data, like an {@link URL} object for example. Any type
+ * of data source can then be defined simply by creating another indexable type and mapping the handler to it. For example in the case of email, there is an
+ * {@link IndexableEmail} indexable and an {@link IndexableEmailHandler} that handles it. All handlers get the index context passed to them. Using the data in
+ * the context that is common to the handlers like the {@link IndexWriter} they can perform their logic to extract the data from their indexable and add it to
+ * the index.
  * 
  * @author Michael Couck
  * @since 29.11.10
@@ -39,8 +40,8 @@ public interface IIndexableHandler<T extends Indexable<?>> {
 	void setIndexableClass(final Class<T> indexableClass);
 
 	/**
-	 * This method executes the handler logic. The method returns a list of threads(if it is multi-threaded) that the caller must wait for.
-	 * Once all the threads are dead then the handler's logic is complete.
+	 * This method executes the handler logic. The method returns a list of threads(if it is multi-threaded) that the caller must wait for. Once all the threads
+	 * are dead then the handler's logic is complete.
 	 * 
 	 * @param indexContext the index context for the index
 	 * @param indexable the indexable that the handler must handle
@@ -48,5 +49,7 @@ public interface IIndexableHandler<T extends Indexable<?>> {
 	 * @throws Exception
 	 */
 	List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final T indexable) throws Exception;
+
+	ForkJoinTask<?> handleIndexableForked(final IndexContext<?> indexContext, final T indexable) throws Exception;
 
 }

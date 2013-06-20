@@ -54,19 +54,15 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 		closeSearchables(indexContext);
 
 		File[] serverIndexDirectories = latestIndexDirectory.listFiles();
-		Directory directory = null;
-		IndexReader reader = null;
-		Searchable searcher = null;
-		boolean exceptionOpening = Boolean.FALSE;
 		for (final File serverIndexDirectory : serverIndexDirectories) {
+			Directory directory = null;
+			IndexReader reader = null;
+			Searchable searcher = null;
 			try {
 				directory = FSDirectory.open(serverIndexDirectory);
 				boolean exists = IndexReader.indexExists(directory);
 				boolean locked = IndexWriter.isLocked(directory);
-				if (logger.isDebugEnabled()) {
-					logger.info("Exists : " + exists + ", locked : " + locked + ", server index direcory : " + serverIndexDirectory);
-				}
-				if (!exists || locked) {
+				if (!exists || (locked && !indexContext.isDelta())) {
 					// We don't open locked directories. Could be that one configuration is still indexing on this file system, but we still
 					// want to open the index on the other new indexes. Of course if the index doesn't exist in the directory for some odd
 					// reason then we just ignore it, and the problem will eventually get deleted(at the next full index of course).
@@ -76,21 +72,18 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 				reader = IndexReader.open(directory, Boolean.TRUE);
 				searcher = new IndexSearcher(reader);
 				searchers.add(searcher);
-				if (logger.isDebugEnabled()) {
-					logger.info("Opened searcher on : " + serverIndexDirectory + ", exists : " + exists + ", locked : " + locked);
-				}
+				logger.info("Opened searcher on : " + serverIndexDirectory + ", exists : " + exists + ", locked : " + locked);
 			} catch (Exception e) {
 				logger.error("Exception opening directory : " + serverIndexDirectory, e);
-				exceptionOpening = Boolean.TRUE;
 			} finally {
-				if (exceptionOpening) {
+				if (directory == null || searcher == null) {
 					close(directory, reader, searcher);
 					boolean removed = searchers.remove(searcher);
 					logger.warn("Removed searcher : " + removed + ", " + searcher);
 				}
 			}
 		}
-		return !exceptionOpening & open(indexContext, searchers);
+		return open(indexContext, searchers);
 	}
 
 	private boolean open(final IndexContext<?> indexContext, final List<Searchable> searchers) {

@@ -2,7 +2,6 @@ package ikube.action.index.handler.speech;
 
 import ikube.action.index.handler.IndexableHandler;
 import ikube.model.IndexContext;
-import ikube.model.Indexable;
 import ikube.model.IndexableInternet;
 
 import java.util.ArrayList;
@@ -36,7 +35,7 @@ public class AudioHandler extends IndexableHandler<IndexableInternet> {
 	}
 
 	@Override
-	protected List<?> handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource) {
+	protected List<?> handleResource(final IndexContext<?> indexContext, final IndexableInternet indexable, final Object resource) {
 		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
 		return null;
 	}

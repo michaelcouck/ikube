@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:property="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.0.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<description>
+		This file is not to be modified by users generally. This is the configuration for the geospatial index which is an index 
+		of the geonames table on the Ikube server. 
+	</description>
+	
+	<bean
+		id="twitter"
+		class="ikube.model.IndexContext"
+		property:name="twitter"
+		property:maxAge="14400"
+		property:compoundFile="true"
+		property:bufferedDocs="1000"
+		property:bufferSize="128"
+		property:mergeFactor="1000"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
+		property:address="true"
+		property:throttle="0"
+		property:indexDirectoryPath="${index.directory.path}"
+		property:indexDirectoryPathBackup="${index.directory.path.backup}"
+		property:children-ref="geospatialIndexables"
+		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer" />
+	<util:list id="twitter-indexables">
+		<ref local="twitter-index" />
+	</util:list>
+	
+	<bean
+		id="twitter-index"
+		class="ikube.model.IndexableTweets"
+		property:name="twitter-index"
+		property:address="true"
+		property:maxExceptions="1000000"
+		property:stored="true"
+		property:analyzed="true"
+		property:vectored="true"
+		
+		property:consumerKey="Sohh43DylUwaXr7smSojBA"
+		property:consumerSecret="90xubtexbSwhHBbKXM62pF4QfJnz1NWVkpevwde3Qxo"
+		property:token="380355068-JIMLrQyZglGs4WLXo2UShCmXMAMjWeaiZ15ZJkrp"
+		property:tokenSecret="OyhI9UyioglNWrhJnQQWY2ULmNtt9Azfl70z0l8jOPM"
+		
+		property:textField="contents" 
+		property:createdAtField="created-at"
+		property:fromUserField="from-user"
+		property:locationField="location"
+		
+		property:strategies-ref="twitter-strategies" />
+	<util:list id="twitter-strategies">
+	    <ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
+	    <ref bean="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy" />
+	    <ref bean="ikube.action.index.handler.strategy.SentimentAnalysisStrategy" />
+	</util:list>
+	
+</beans>

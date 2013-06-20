@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import ikube.AbstractTest;
 import ikube.IConstants;
+import ikube.action.index.handler.strategy.geocode.Coordinate;
+import ikube.action.index.handler.strategy.geocode.Geocoder;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
 import ikube.toolkit.SerializationUtilities;

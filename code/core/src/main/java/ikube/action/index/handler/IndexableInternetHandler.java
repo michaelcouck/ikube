@@ -2,7 +2,6 @@ package ikube.action.index.handler;
 
 import ikube.IConstants;
 import ikube.model.IndexContext;
-import ikube.model.Indexable;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
 import ikube.toolkit.HashUtilities;
@@ -92,11 +91,11 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	}
 
 	@Override
-	protected List<?> handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource) {
+	protected List<?> handleResource(final IndexContext<?> indexContext, final IndexableInternet indexableInternet, final Object resource) {
 		try {
 			Url url = (Url) resource;
 			logger.info("Handling resource : " + url.getUrl() + ", " + this);
-			return extractLinksFromContent((IndexableInternet) indexable, new URL(url.getUrl()).openStream());
+			return extractLinksFromContent((IndexableInternet) indexableInternet, new URL(url.getUrl()).openStream());
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

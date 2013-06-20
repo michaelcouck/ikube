@@ -6,7 +6,6 @@ import ikube.action.index.handler.ResourceHandlerBase;
 import ikube.action.index.parse.IParser;
 import ikube.action.index.parse.ParserProvider;
 import ikube.model.IndexContext;
-import ikube.model.Indexable;
 import ikube.model.IndexableEmail;
 import ikube.toolkit.ThreadUtilities;
 
@@ -73,7 +72,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	}
 
 	@Override
-	protected List<?> handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource) {
+	protected List<?> handleResource(final IndexContext<?> indexContext, final IndexableEmail indexableEmail, final Object resource) {
 		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
 		return null;
 	}

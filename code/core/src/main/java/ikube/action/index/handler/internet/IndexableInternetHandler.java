@@ -13,7 +13,6 @@ import ikube.action.index.parse.XMLParser;
 import ikube.action.index.parse.mime.MimeType;
 import ikube.action.index.parse.mime.MimeTypes;
 import ikube.model.IndexContext;
-import ikube.model.Indexable;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
 import ikube.security.WebServiceAuthentication;
@@ -422,9 +421,9 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			handleException(indexableInternet, e);
 		}
 	}
-	
+
 	@Override
-	protected List<?> handleResource(IndexContext<?> indexContext, Indexable<?> indexable, Object resource) {
+	protected List<?> handleResource(IndexContext<?> indexContext, IndexableInternet indexableInternet, Object resource) {
 		return null;
 	}
 
