@@ -98,7 +98,10 @@ public class TwitterHandler extends IndexableHandler<IndexableTweets> {
 
 	@Override
 	protected List<?> handleResource(final IndexContext<?> indexContext, final Indexable<?> indexable, final Object resource) {
-		logger.info("Handling resource : " + ToStringBuilder.reflectionToString(resource) + ", thread : " + Thread.currentThread().hashCode());
+		Tweet tweet = (Tweet) resource;
+		String location = tweet.getUser().getLocation();
+		logger.info("Handling resource : " + location);
+		// logger.info("Handling resource : " + ToStringBuilder.reflectionToString(resource) + ", thread : " + Thread.currentThread().hashCode());
 		return null;
 	}
 
