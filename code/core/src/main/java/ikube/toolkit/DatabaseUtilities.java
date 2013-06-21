@@ -13,6 +13,8 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import oracle.jdbc.driver.OracleDriver;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -24,32 +26,54 @@ import org.apache.log4j.Logger;
  */
 public final class DatabaseUtilities {
 
+	static {
+		Logging.configure();
+	}
+
 	private static final Logger LOGGER = Logger.getLogger(DatabaseUtilities.class);
 
 	public static void main(String[] args) {
-		Logging.configure();
-		String url = "jdbc:db2://ikube.be:50000/icube";
-		String user = "xxx";
-		String password = "xxx";
-		ResultSet resultSet = null;
+		String url = "jdbc:oracle:thin:@ldap://OID.NETPOST:389/HR1D2,cn=OracleContext,dc=pr,dc=netpost,dc=be";
+		String user = "EHR_PLA_OWNER";
+		String password = "EHR_PLA_OWNER";
 		Connection connection = null;
 		try {
-			int inserts = 0;
+			DriverManager.registerDriver(new OracleDriver());
 			connection = DriverManager.getConnection(url, user, password);
-			String sql = "select geonameid from geoname where geonameid not in (select geonameid from alternatename)";
-			resultSet = connection.createStatement().executeQuery(sql);
-			while (resultSet.next()) {
-				Integer geonameid = resultSet.getInt("geonameid");
-				connection.createStatement().execute("insert into alternatename (id, geonameid) values (next value for persistable, " + geonameid + ")");
-				inserts++;
-				if (inserts % 10000 == 0) {
-					LOGGER.info("Inserts : " + inserts);
+			searchDatabase(connection, "DML020");
+		} catch (Exception e) {
+			LOGGER.error(null, e);
+		} finally {
+			close(connection);
+		}
+	}
+
+	public static void searchDatabase(final Connection connection, final String string) {
+		try {
+			DatabaseMetaData databaseMetaData = connection.getMetaData();
+			ResultSet tablesResultSet = databaseMetaData.getTables(null, null, "%", new String[] { "TABLE" });
+			while (tablesResultSet.next()) {
+				try {
+					Object tableName = tablesResultSet.getObject("TABLE_NAME");
+					LOGGER.info("Table : " + tableName);
+					String sql = "select * from " + tableName;
+					ResultSet resultSet = connection.createStatement().executeQuery(sql);
+					while (resultSet.next()) {
+						ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+						for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
+							Object columnValue = resultSet.getObject(i);
+							if (columnValue != null && columnValue.toString().contains(string)) {
+								LOGGER.info("Table : " + tableName + " : " + resultSet.getObject(1));
+							}
+						}
+					}
+				} catch (Exception e) {
+					LOGGER.error(null, e);
 				}
 			}
 		} catch (Exception e) {
 			LOGGER.error(null, e);
 		} finally {
-			close(resultSet);
 			close(connection);
 		}
 	}
@@ -79,8 +103,8 @@ public final class DatabaseUtilities {
 	}
 
 	/**
-	 * This method will close all related resources to the result set object in the parameter list. First getting the statement from the
-	 * result set, then the connection from the statement and closing them, result set, statement then connection.
+	 * This method will close all related resources to the result set object in the parameter list. First getting the statement from the result set, then the
+	 * connection from the statement and closing them, result set, statement then connection.
 	 * 
 	 * @param resultSet the result set and related database resources to close
 	 */
