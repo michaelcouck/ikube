@@ -7,7 +7,6 @@ import ikube.model.IndexableTweets;
 
 import java.util.List;
 import java.util.concurrent.ForkJoinTask;
-import java.util.concurrent.RecursiveAction;
 
 import org.apache.lucene.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +29,7 @@ public class TwitterHandler extends IndexableHandler<IndexableTweets> {
 	@Override
 	public ForkJoinTask<?> handleIndexableForked(final IndexContext<?> indexContext, final IndexableTweets indexableTweets) throws Exception {
 		IResourceProvider<Tweet> twitterResourceProvider = new TwitterResourceProvider(indexableTweets);
-		RecursiveAction recursiveAction = getRecursiveAction(indexContext, indexableTweets, twitterResourceProvider);
-		return recursiveAction;
+		return getRecursiveAction(indexContext, indexableTweets, twitterResourceProvider);
 	}
 
 	/**

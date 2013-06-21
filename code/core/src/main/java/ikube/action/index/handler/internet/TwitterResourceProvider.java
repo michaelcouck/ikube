@@ -18,52 +18,52 @@ import org.springframework.social.twitter.api.StreamingOperations;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.impl.TwitterTemplate;
 
-public class TwitterResourceProvider implements IResourceProvider<Tweet> {
+class TwitterResourceProvider implements IResourceProvider<Tweet> {
+
+	private class TwitterStreamListener implements StreamListener {
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void onTweet(Tweet tweet) {
+			tweets.push(tweet);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void onLimit(int numberOfLimitedTweets) {
+			logger.info("Tweets limited : " + numberOfLimitedTweets);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void onDelete(StreamDeleteEvent deleteEvent) {
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void onWarning(StreamWarningEvent warnEvent) {
+			logger.info("Tweet warning : " + warnEvent.getCode());
+		}
+	}
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private Stack<Tweet> tweets = new Stack<>();
 
 	TwitterResourceProvider(final IndexableTweets indexableTweets) throws IOException {
-		TwitterTemplate twitter = new TwitterTemplate(//
+		TwitterTemplate twitter = new TwitterTemplate( //
 				indexableTweets.getConsumerKey(), //
 				indexableTweets.getConsumerSecret(), //
 				indexableTweets.getToken(), //
 				indexableTweets.getTokenSecret());
-		StreamListener listener = new StreamListener() {
-
-			/**
-			 * {@inheritDoc}
-			 */
-			@Override
-			public void onTweet(Tweet tweet) {
-				tweets.push(tweet);
-			}
-
-			/**
-			 * {@inheritDoc}
-			 */
-			@Override
-			public void onLimit(int numberOfLimitedTweets) {
-				logger.info("Tweets limited : " + numberOfLimitedTweets);
-			}
-
-			/**
-			 * {@inheritDoc}
-			 */
-			@Override
-			public void onDelete(StreamDeleteEvent deleteEvent) {
-			}
-
-			/**
-			 * {@inheritDoc}
-			 */
-			@Override
-			public void onWarning(StreamWarningEvent warnEvent) {
-				logger.info("Tweet warning : " + warnEvent.getCode());
-			}
-
-		};
+		StreamListener listener = new TwitterStreamListener();
 		StreamingOperations streamingOperations = twitter.streamingOperations();
 		streamingOperations.sample(Arrays.asList(listener));
 	}

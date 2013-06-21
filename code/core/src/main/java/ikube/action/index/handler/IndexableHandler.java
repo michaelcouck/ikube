@@ -36,6 +36,9 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 		 */
 		class RecursiveActionImpl extends RecursiveAction {
 
+			/**
+			 * This method is the implementation from {@link RecursiveAction} that calls the handle {@link IndexableHandler#handleResource(...) } on the sub classes.
+			 */
 			@Override
 			@SuppressWarnings({ "rawtypes", "unchecked" })
 			protected void compute() {
