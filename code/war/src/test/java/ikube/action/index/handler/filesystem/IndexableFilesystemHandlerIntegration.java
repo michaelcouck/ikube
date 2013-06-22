@@ -25,7 +25,7 @@ public class IndexableFilesystemHandlerIntegration extends Integration {
 
 	private IndexContext<?> desktop;
 	private IndexableFileSystem desktopFolder;
-	private IndexableFilesystemHandler indexableFilesystemHandler;
+	private IndexableFileSystemHandler indexableFilesystemHandler;
 
 	@Before
 	public void before() {
@@ -33,7 +33,7 @@ public class IndexableFilesystemHandlerIntegration extends Integration {
 		logger.info("Data folder : " + dataIndexFolderPath);
 		desktop = ApplicationContextManager.getBean("desktop");
 		desktopFolder = ApplicationContextManager.getBean("desktopFolder");
-		indexableFilesystemHandler = ApplicationContextManager.getBean(IndexableFilesystemHandler.class.getName());
+		indexableFilesystemHandler = ApplicationContextManager.getBean(IndexableFileSystemHandler.class.getName());
 
 		desktopFolder.setPath(dataIndexFolderPath);
 		// This should be true for performance testing

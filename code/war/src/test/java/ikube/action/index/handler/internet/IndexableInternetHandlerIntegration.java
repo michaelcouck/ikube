@@ -26,7 +26,6 @@ import java.util.concurrent.Future;
 
 import mockit.Deencapsulation;
 
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -93,7 +92,7 @@ public class IndexableInternetHandlerIntegration extends Integration {
 		IndexContext<?> indexContext = mock(IndexContext.class);
 		IndexWriter indexWriter = Mockito.mock(IndexWriter.class);
 		Mockito.when(indexContext.getIndexWriters()).thenReturn(new IndexWriter[] { indexWriter });
-		indexableInternetHandler.handleResource(indexContext, indexableInternet, new Document(), url);
+		indexableInternetHandler.handleResource(indexContext, indexableInternet, url);
 		assertNotNull(url.getTitle());
 		assertEquals(title, url.getTitle());
 	}

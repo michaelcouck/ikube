@@ -33,7 +33,7 @@ import de.schlichtherle.truezip.file.TFileInputStream;
  * @since 25.03.13
  * @version 01.00
  */
-public class ResourceFileHandler extends ResourceHandler<IndexableFileSystem> {
+public class FileResourceHandler extends ResourceHandler<IndexableFileSystem> {
 
 	/**
 	 * {@inheritDoc}

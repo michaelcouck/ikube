@@ -1,6 +1,7 @@
 package ikube.action.index.handler;
 
 import ikube.AbstractTest;
+import ikube.action.index.handler.internet.IndexableInternetHandler;
 import ikube.model.IndexableInternet;
 import ikube.toolkit.ThreadUtilities;
 

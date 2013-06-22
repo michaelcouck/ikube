@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.Future;
 
 import ikube.AbstractTest;
+import ikube.action.index.handler.filesystem.IndexableFileSystemHandler;
 import ikube.model.IndexableFileSystem;
 
 import org.junit.Test;

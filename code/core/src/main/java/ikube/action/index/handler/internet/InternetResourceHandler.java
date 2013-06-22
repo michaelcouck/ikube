@@ -28,7 +28,7 @@ import org.apache.lucene.document.Field.TermVector;
  * @since 21.06.13
  * @version 01.00
  */
-public class ResourceInternetHandler extends ResourceHandler<IndexableInternet> {
+public class InternetResourceHandler extends ResourceHandler<IndexableInternet> {
 
 	/**
 	 * {@inheritDoc}

@@ -1,5 +1,6 @@
-package ikube.action.index.handler;
+package ikube.action.index.handler.internet;
 
+import ikube.action.index.handler.IResourceProvider;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
 import ikube.toolkit.HashUtilities;

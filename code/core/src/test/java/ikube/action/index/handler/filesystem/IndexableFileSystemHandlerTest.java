@@ -36,9 +36,9 @@ import org.mockito.Mockito;
 public class IndexableFileSystemHandlerTest extends AbstractTest {
 
 	/** Class under test. */
-	private IndexableFilesystemHandler indexableFileSystemHandler;
+	private IndexableFileSystemHandler indexableFileSystemHandler;
 	@Cascading
-	private ResourceFileHandler resourceHandler;
+	private FileResourceHandler resourceHandler;
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -54,7 +54,7 @@ public class IndexableFileSystemHandlerTest extends AbstractTest {
 
 	@Before
 	public void before() {
-		indexableFileSystemHandler = new IndexableFilesystemHandler();
+		indexableFileSystemHandler = new IndexableFileSystemHandler();
 	}
 
 	@Test

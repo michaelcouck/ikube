@@ -4,7 +4,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import ikube.AbstractTest;
-import ikube.action.index.handler.ResourceHandlerBase;
+import ikube.action.index.handler.ResourceHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystemLog;
 import ikube.toolkit.FileUtilities;
@@ -53,7 +53,7 @@ public class IndexableFilesystemLogHandlerTest extends AbstractTest {
 		indexableFileSystemLog.setLineFieldName("lineNumber");
 		indexableFileSystemLog.setContentFieldName("lineContents");
 
-		ResourceHandlerBase<IndexableFileSystemLog> resourceBaseHandler = Mockito.mock(ResourceHandlerBase.class);
+		ResourceHandler<IndexableFileSystemLog> resourceBaseHandler = Mockito.mock(ResourceHandler.class);
 		Deencapsulation.setField(indexableFilesystemLogHandler, "resourceHandler", resourceBaseHandler);
 
 		List<Future<?>> futures = indexableFilesystemLogHandler.handleIndexable(indexContext, indexableFileSystemLog);

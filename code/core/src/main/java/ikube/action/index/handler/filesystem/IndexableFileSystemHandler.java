@@ -1,7 +1,8 @@
-package ikube.action.index.handler;
+package ikube.action.index.handler.filesystem;
 
 import ikube.IConstants;
-import ikube.action.index.handler.filesystem.ResourceFileHandler;
+import ikube.action.index.handler.IResourceProvider;
+import ikube.action.index.handler.IndexableHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
 
@@ -28,7 +29,7 @@ import de.schlichtherle.truezip.file.TFile;
 public class IndexableFileSystemHandler extends IndexableHandler<IndexableFileSystem> {
 
 	@Autowired
-	private ResourceFileHandler resourceHandler;
+	private FileResourceHandler resourceHandler;
 
 	/**
 	 * {@inheritDoc}

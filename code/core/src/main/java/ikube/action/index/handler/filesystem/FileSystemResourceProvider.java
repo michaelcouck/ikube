@@ -1,6 +1,7 @@
-package ikube.action.index.handler;
+package ikube.action.index.handler.filesystem;
 
 import ikube.IConstants;
+import ikube.action.index.handler.IResourceProvider;
 import ikube.model.IndexableFileSystem;
 import ikube.toolkit.ThreadUtilities;
 
