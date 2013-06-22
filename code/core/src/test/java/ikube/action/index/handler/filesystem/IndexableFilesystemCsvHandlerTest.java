@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import mockit.Deencapsulation;
+import mockit.Mockit;
 
 import org.apache.lucene.document.Document;
 import org.junit.Before;
@@ -39,6 +40,7 @@ public class IndexableFilesystemCsvHandlerTest extends AbstractTest {
 
 	@Before
 	public void before() throws Exception {
+		Mockit.tearDownMocks();
 		indexableFileSystem = new IndexableFileSystemCsv();
 		filesystemCsvHandler = new IndexableFilesystemCsvHandler();
 	}

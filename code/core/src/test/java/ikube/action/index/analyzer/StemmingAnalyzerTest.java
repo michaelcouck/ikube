@@ -4,15 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.mock.SpellingCheckerMock;
 import ikube.search.SearchSingle;
 
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import mockit.Mockit;
 
 import org.apache.lucene.analysis.TokenStream;
 import org.junit.Before;
@@ -30,7 +27,6 @@ public class StemmingAnalyzerTest extends AbstractTest {
 	@Before
 	public void before() {
 		stemmingAnalyzer = new StemmingAnalyzer();
-		Mockit.setUpMock(SpellingCheckerMock.class);
 	}
 
 	@Test
@@ -43,8 +39,8 @@ public class StemmingAnalyzerTest extends AbstractTest {
 
 	@Test
 	public void endToEnd() throws Exception {
-		SearchSingle searchSingle = createIndexAndSearch(SearchSingle.class, stemmingAnalyzer, IConstants.CONTENT, "duck", "ducks",
-				"peoples", "peopled", "oranges", "orange");
+		SearchSingle searchSingle = createIndexAndSearch(SearchSingle.class, stemmingAnalyzer, IConstants.CONTENT, "duck", "ducks", "peoples", "peopled",
+				"oranges", "orange");
 		searchSingle.setFirstResult(0);
 		searchSingle.setFragment(true);
 		searchSingle.setMaxResults(10);

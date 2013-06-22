@@ -87,6 +87,7 @@ public class SearchSpatialTest extends AbstractTest {
 	@After
 	public void after() throws Exception {
 		searcher.close();
+		Mockit.tearDownMocks();
 		FileUtilities.deleteFile(indexDirectory, 1);
 	}
 

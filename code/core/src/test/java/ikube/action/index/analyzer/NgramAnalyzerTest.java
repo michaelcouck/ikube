@@ -4,15 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.mock.SpellingCheckerMock;
 import ikube.search.SearchSingle;
 
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import mockit.Mockit;
 
 import org.apache.lucene.analysis.TokenStream;
 import org.junit.Before;
@@ -30,7 +27,6 @@ public class NgramAnalyzerTest extends AbstractTest {
 	@Before
 	public void before() {
 		ngramAnalyzer = new NgramAnalyzer();
-		Mockit.setUpMock(SpellingCheckerMock.class);
 	}
 
 	@Test

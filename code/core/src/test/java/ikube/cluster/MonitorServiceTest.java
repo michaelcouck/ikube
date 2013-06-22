@@ -18,6 +18,7 @@ import java.util.Map;
 
 import mockit.Mockit;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -43,6 +44,11 @@ public class MonitorServiceTest extends AbstractTest {
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 
 		ApplicationContextManagerMock.INDEX_CONTEXT = indexContext;
+	}
+	
+	@After
+	public void after() {
+		Mockit.tearDownMocks();
 	}
 
 	@Test

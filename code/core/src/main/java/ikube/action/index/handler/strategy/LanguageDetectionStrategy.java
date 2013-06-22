@@ -78,8 +78,7 @@ public final class LanguageDetectionStrategy extends AStrategy {
 		if (DetectorFactory.getLangList() != null && DetectorFactory.getLangList().size() > 0) {
 			return;
 		}
-		File profileDirectory = FileUtilities.findFileRecursively(new File("." + IConstants.SEP + IConstants.IKUBE + IConstants.SEP),
-				IConstants.LANGUAGE_DETECT_PROFILES_DIRECTORY);
+		File profileDirectory = FileUtilities.findDirectoryRecursively(new File("."), IConstants.LANGUAGE_DETECT_PROFILES_DIRECTORY);
 		try {
 			if (profileDirectory != null) {
 				String profileDirectoryPath = FileUtilities.cleanFilePath(profileDirectory.getAbsolutePath());

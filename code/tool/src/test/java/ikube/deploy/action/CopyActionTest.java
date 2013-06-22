@@ -41,7 +41,7 @@ public class CopyActionTest extends AbstractTest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks(SSHExecMock.class);
+		Mockit.tearDownMocks();
 	}
 
 	@Test

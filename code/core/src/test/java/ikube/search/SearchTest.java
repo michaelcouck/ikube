@@ -128,7 +128,7 @@ public class SearchTest extends AbstractTest {
 			SEARCHER.close();
 		}
 		FileUtilities.deleteFile(new File(INDEX_DIRECTORY_PATH), 1);
-		Mockit.tearDownMocks(ReaderUtil.class);
+		Mockit.tearDownMocks();
 	}
 
 	private int maxResults = 10;

@@ -199,7 +199,7 @@ public class IndexManagerTest extends AbstractTest {
 			logger.info("Num docs : " + numDocs);
 			assertEquals(0, numDocs);
 		} finally {
-			Mockit.tearDownMocks(IndexWriter.class);
+			Mockit.tearDownMocks();
 		}
 	}
 

@@ -6,7 +6,6 @@ import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
 import ikube.action.index.IndexManager;
 import ikube.mock.ApplicationContextManagerMock;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -64,7 +63,7 @@ public class RestoreTest extends AbstractTest {
 		// Run the restore
 		Mockit.setUpMocks(ApplicationContextManagerMock.class);
 		restore.execute(indexContext);
-		Mockit.tearDownMocks(ApplicationContextManager.class);
+		Mockit.tearDownMocks();
 
 		indexExists();
 

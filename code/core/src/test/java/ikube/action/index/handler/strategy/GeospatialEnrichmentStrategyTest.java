@@ -18,10 +18,12 @@ import java.util.List;
 
 import mockit.Cascading;
 import mockit.Deencapsulation;
+import mockit.Mockit;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,6 +49,11 @@ public class GeospatialEnrichmentStrategyTest extends AbstractTest {
 		geospatialEnrichmentStrategy.initialize();
 		when(indexableTable.isAddress()).thenReturn(Boolean.TRUE);
 		when(indexableColumn.isAddress()).thenReturn(Boolean.TRUE);
+	}
+	
+	@After
+	public void after() {
+		Mockit.tearDownMocks();
 	}
 
 	@Test

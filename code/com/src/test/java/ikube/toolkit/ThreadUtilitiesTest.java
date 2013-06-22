@@ -6,7 +6,6 @@ import ikube.AbstractTest;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Future;
 
 import org.junit.After;
@@ -52,7 +51,7 @@ public class ThreadUtilitiesTest extends AbstractTest {
 	public void before() {
 		ThreadUtilities.initialize();
 	}
-	
+
 	@After
 	public void after() {
 		ThreadUtilities.initialize();
@@ -111,6 +110,7 @@ public class ThreadUtilitiesTest extends AbstractTest {
 	/** This method just checks the concurrency of the threading, that there are no blocking synchronized blocks. */
 	@Test
 	public void multiThreaded() {
+		ThreadUtilities.initialize();
 		final int iterations = 100;
 		List<Thread> threads = new ArrayList<Thread>();
 		for (int i = 0; i < 10; i++) {
@@ -121,7 +121,6 @@ public class ThreadUtilitiesTest extends AbstractTest {
 						ThreadUtilities.sleep(10);
 						ThreadUtilities.submit(this.toString(), new Sleepy());
 						ThreadUtilities.getFutures(this.toString());
-						ThreadUtilities.getFutures();
 						ThreadUtilities.submit(null, new Sleepy());
 						ThreadUtilities.destroy(this.toString());
 					}
@@ -131,10 +130,7 @@ public class ThreadUtilitiesTest extends AbstractTest {
 			threads.add(thread);
 		}
 		ThreadUtilities.waitForThreads(threads);
-		Map<String, List<Future<?>>> allFutures = ThreadUtilities.getFutures();
-		for (Map.Entry<String, List<Future<?>>> mapEntry : allFutures.entrySet()) {
-			logger.info("Future list : " + mapEntry.getKey() + ", " + mapEntry.getValue().size());
-		}
+		// If it dead locks we will never get here
 	}
 
 }

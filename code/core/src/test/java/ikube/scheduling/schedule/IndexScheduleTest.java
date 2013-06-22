@@ -62,7 +62,7 @@ public class IndexScheduleTest extends AbstractTest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks(ApplicationContextManager.class);
+		Mockit.tearDownMocks();
 	}
 
 	@Test

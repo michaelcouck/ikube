@@ -72,12 +72,16 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Tweet getResource() {
-		if (tweets.isEmpty()) {
-			ThreadUtilities.sleep(100);
-			return getResource();
+	public synchronized Tweet getResource() {
+		try {
+			if (tweets.isEmpty()) {
+				ThreadUtilities.sleep(100);
+				return getResource();
+			}
+			return tweets.pop();
+		} finally {
+			notifyAll();
 		}
-		return tweets.pop();
 	}
 
 	/**

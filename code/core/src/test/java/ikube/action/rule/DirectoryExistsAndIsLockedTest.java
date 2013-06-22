@@ -26,7 +26,6 @@ public class DirectoryExistsAndIsLockedTest extends AbstractTest {
 	@Before
 	public void before() {
 		existsAndIsLocked = new DirectoryExistsAndIsLocked();
-		Mockit.tearDownMocks();
 	}
 
 	@After

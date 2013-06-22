@@ -9,11 +9,9 @@ import java.util.Arrays;
 import net.neoremind.sshxcute.core.SSHExec;
 import net.neoremind.sshxcute.task.impl.ExecCommand;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-@Ignore
 public class CommandActionTest extends AbstractTest {
 
 	@Test

@@ -12,7 +12,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import mockit.Mockit;
+
 import org.apache.lucene.document.Document;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,10 +32,14 @@ public class LanguageDetectionStrategyTest extends AbstractTest {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void before() {
 		languageDetectionStrategy = new LanguageDetectionStrategy(null);
-		languageDetectionStrategy.initialize();
 		when(indexableColumn.getContent()).thenReturn("some english text");
 		List<Indexable<?>> children = new ArrayList(Arrays.asList(indexableColumn));
 		when(indexableTable.getChildren()).thenReturn(children);
+	}
+	
+	@After
+	public void after() {
+		Mockit.tearDownMocks();
 	}
 
 	@Test

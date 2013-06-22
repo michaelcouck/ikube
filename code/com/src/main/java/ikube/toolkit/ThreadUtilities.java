@@ -273,12 +273,6 @@ public final class ThreadUtilities {
 		return futures;
 	}
 
-	protected static Map<String, List<Future<?>>> getFutures() {
-		Map<String, List<Future<?>>> futures = Collections.synchronizedMap(new HashMap<String, List<Future<?>>>());
-		futures.putAll(FUTURES);
-		return futures;
-	}
-
 	public ThreadUtilities() {
 		// Documented
 	}

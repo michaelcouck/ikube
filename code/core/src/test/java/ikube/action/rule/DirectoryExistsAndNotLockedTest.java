@@ -11,9 +11,8 @@ import java.io.IOException;
 
 import mockit.Mockit;
 
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -23,21 +22,17 @@ import org.junit.Test;
  */
 public class DirectoryExistsAndNotLockedTest extends AbstractTest {
 
-	@BeforeClass
-	public static void beforeClass() {
-		Mockit.setUpMocks(IndexWriterMock.class, IndexReaderMock.class, FSDirectoryMock.class);
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		Mockit.tearDownMocks();
-	}
-
-	private DirectoryExistsAndNotLocked	existsAndNotLocked;
+	private DirectoryExistsAndNotLocked existsAndNotLocked;
 
 	@Before
 	public void before() {
+		Mockit.setUpMocks(IndexWriterMock.class, IndexReaderMock.class, FSDirectoryMock.class);
 		existsAndNotLocked = new DirectoryExistsAndNotLocked();
+	}
+
+	@After
+	public void afterClass() {
+		Mockit.tearDownMocks();
 	}
 
 	@Test

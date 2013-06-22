@@ -13,6 +13,7 @@ import java.util.Iterator;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -20,6 +21,7 @@ import org.junit.Test;
  * @since 06.04.2013
  * @version 01.00
  */
+@Ignore
 public class QueryBuilderTest extends AbstractTest {
 
 	private QueryBuilder queryBuilder;

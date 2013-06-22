@@ -5,14 +5,12 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
-import ikube.action.index.IndexManager;
 import ikube.action.index.handler.database.IndexableTableHandler;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.IndexManagerMock;
 import ikube.model.Action;
 import ikube.model.Indexable;
 import ikube.model.IndexableTable;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -66,7 +64,7 @@ public class IndexTest extends AbstractTest {
 	@After
 	public void after() {
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
-		Mockit.tearDownMocks(IndexManager.class, ApplicationContextManager.class);
+		Mockit.tearDownMocks();
 	}
 
 	@Test

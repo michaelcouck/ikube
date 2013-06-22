@@ -129,7 +129,7 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks(HazelcastMock.class);
+		Mockit.tearDownMocks();
 		clusterManagerHazelcast.unlock(IConstants.IKUBE);
 	}
 

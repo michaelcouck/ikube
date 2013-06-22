@@ -14,7 +14,6 @@ import ikube.cluster.IMonitorService;
 import ikube.database.IDataBase;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.IndexManagerMock;
-import ikube.mock.SpellingCheckerMock;
 import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
@@ -34,8 +33,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import mockit.Mockit;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
@@ -82,7 +79,6 @@ public abstract class AbstractTest {
 			Logging.configure();
 			new MimeTypes(IConstants.MIME_TYPES);
 			new MimeMapper(IConstants.MIME_MAPPING);
-			Mockit.setUpMock(SpellingCheckerMock.class);
 			ThreadUtilities.initialize();
 		} catch (Exception e) {
 			e.printStackTrace();

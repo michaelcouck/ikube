@@ -64,7 +64,7 @@ public class DiskFullTest extends AbstractTest {
 			theDiskIsFull = diskFull.execute(indexContext);
 			assertTrue("The should be full now : ", theDiskIsFull);
 		} finally {
-			Mockit.tearDownMocks(FileSystemUtilsMock.class);
+			Mockit.tearDownMocks();
 		}
 
 	}
