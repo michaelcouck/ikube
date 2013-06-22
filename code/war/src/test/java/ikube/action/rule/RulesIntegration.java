@@ -1,6 +1,6 @@
 package ikube.action.rule;
 
-import ikube.Integration;
+import ikube.IntegrationTest;
 import ikube.action.IAction;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
@@ -20,7 +20,7 @@ import org.junit.Test;
  * @version 01.00
  */
 @Ignore
-public class RulesIntegration extends Integration {
+public class RulesIntegration extends IntegrationTest {
 
 	private Logger logger = Logger.getLogger(this.getClass());
 

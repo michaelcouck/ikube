@@ -1,7 +1,7 @@
 package ikube.action.index.handler.internet;
 
 import static org.junit.Assert.assertTrue;
-import ikube.Integration;
+import ikube.IntegrationTest;
 import ikube.action.Index;
 import ikube.action.index.IndexManager;
 import ikube.cluster.IClusterManager;
@@ -31,7 +31,7 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-public class IndexableInternetHandlerIntegration extends Integration {
+public class IndexableInternetHandlerIntegration extends IntegrationTest {
 
 	private IndexContext<?> indexContext;
 	private IndexableInternet indexableInternet;

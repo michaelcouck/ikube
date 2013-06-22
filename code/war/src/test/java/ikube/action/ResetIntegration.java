@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import ikube.Integration;
+import ikube.IntegrationTest;
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.model.Action;
@@ -24,7 +24,7 @@ import org.junit.Test;
  * @since 21.11.10
  * @version 01.00
  */
-public class ResetIntegration extends Integration {
+public class ResetIntegration extends IntegrationTest {
 
 	private Reset reset;
 	private IDataBase dataBase;

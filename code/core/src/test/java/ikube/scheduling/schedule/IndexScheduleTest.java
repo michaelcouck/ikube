@@ -13,7 +13,6 @@ import ikube.cluster.IMonitorService;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.ThreadUtilities;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +42,6 @@ public class IndexScheduleTest extends AbstractTest {
 	@Before
 	@SuppressWarnings("rawtypes")
 	public void before() {
-		ThreadUtilities.initialize();
 		indexSchedule = new IndexSchedule();
 		actions = new ArrayList<IAction<IndexContext<?>, Boolean>>();
 
@@ -64,7 +62,6 @@ public class IndexScheduleTest extends AbstractTest {
 
 	@After
 	public void after() {
-		ThreadUtilities.destroy();
 		Mockit.tearDownMocks(ApplicationContextManager.class);
 	}
 

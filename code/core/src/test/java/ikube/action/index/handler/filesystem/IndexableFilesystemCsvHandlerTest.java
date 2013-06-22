@@ -13,7 +13,6 @@ import ikube.model.IndexableColumn;
 import ikube.model.IndexableFileSystemCsv;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
-import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -23,9 +22,7 @@ import java.util.List;
 import mockit.Deencapsulation;
 
 import org.apache.lucene.document.Document;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -39,16 +36,6 @@ public class IndexableFilesystemCsvHandlerTest extends AbstractTest {
 	private IndexableFileSystemCsv indexableFileSystem;
 	/** Class under test. */
 	private IndexableFilesystemCsvHandler filesystemCsvHandler;
-
-	@BeforeClass
-	public static void beforeClass() {
-		ThreadUtilities.initialize();
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		ThreadUtilities.destroy();
-	}
 
 	@Before
 	public void before() throws Exception {
@@ -71,8 +58,8 @@ public class IndexableFilesystemCsvHandlerTest extends AbstractTest {
 		List<Indexable<?>> children = new ArrayList<Indexable<?>>(Arrays.asList(indexableColumn));
 		indexableFileSystem.setChildren(children);
 		filesystemCsvHandler.handleFile(indexContext, indexableFileSystem, file);
-		verify(rowResourceHandler, Mockito.atLeastOnce()).handleResource(any(IndexContext.class), any(IndexableFileSystemCsv.class),
-				any(Document.class), any(Object.class));
+		verify(rowResourceHandler, Mockito.atLeastOnce()).handleResource(any(IndexContext.class), any(IndexableFileSystemCsv.class), any(Document.class),
+				any(Object.class));
 
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			public void execute() throws Throwable {

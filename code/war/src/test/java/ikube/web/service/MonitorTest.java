@@ -2,7 +2,7 @@ package ikube.web.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import ikube.Base;
+import ikube.BaseTest;
 import ikube.IConstants;
 import ikube.cluster.IClusterManager;
 import ikube.cluster.IMonitorService;
@@ -40,7 +40,7 @@ import org.mockito.Mockito;
 
 import com.google.gson.Gson;
 
-public class MonitorTest extends Base {
+public class MonitorTest extends BaseTest {
 	
 	@MockClass(realClass = Server.class)
 	public static class ServerMock {

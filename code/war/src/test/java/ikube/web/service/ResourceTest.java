@@ -1,7 +1,7 @@
 package ikube.web.service;
 
 import static org.junit.Assert.assertTrue;
-import ikube.Base;
+import ikube.BaseTest;
 
 import java.util.Arrays;
 
@@ -15,7 +15,7 @@ import org.junit.Test;
  * @since 18.11.2012
  * @version 01.00
  */
-public class ResourceTest extends Base {
+public class ResourceTest extends BaseTest {
 
 	private static String russian = "Россия   русский язык  ";
 	private static String german = "Produktivität";

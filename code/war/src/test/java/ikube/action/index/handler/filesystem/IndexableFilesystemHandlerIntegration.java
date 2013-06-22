@@ -2,7 +2,7 @@ package ikube.action.index.handler.filesystem;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import ikube.Integration;
+import ikube.IntegrationTest;
 import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
@@ -21,7 +21,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class IndexableFilesystemHandlerIntegration extends Integration {
+public class IndexableFilesystemHandlerIntegration extends IntegrationTest {
 
 	private IndexContext<?> desktop;
 	private IndexableFileSystem desktopFolder;

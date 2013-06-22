@@ -18,7 +18,6 @@ import java.util.concurrent.Future;
 import mockit.Deencapsulation;
 
 import org.apache.lucene.document.Document;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -34,13 +33,7 @@ public class IndexableFilesystemWikiHandlerTest extends AbstractTest {
 
 	@Before
 	public void before() {
-		ThreadUtilities.initialize();
 		indexableFilesystemWikiHandler = new IndexableFilesystemWikiHandler();
-	}
-
-	@After
-	public void after() {
-		ThreadUtilities.destroy();
 	}
 
 	@Test
@@ -64,8 +57,8 @@ public class IndexableFilesystemWikiHandlerTest extends AbstractTest {
 		List<Future<?>> futures = indexableFilesystemWikiHandler.handleIndexable(indexContext, indexableFileSystem);
 		ThreadUtilities.waitForFutures(futures, Long.MAX_VALUE);
 
-		verify(resourceBaseHandler, atLeastOnce()).handleResource(any(IndexContext.class), any(IndexableFileSystemLog.class),
-				any(Document.class), any(Object.class));
+		verify(resourceBaseHandler, atLeastOnce()).handleResource(any(IndexContext.class), any(IndexableFileSystemLog.class), any(Document.class),
+				any(Object.class));
 	}
 
 }

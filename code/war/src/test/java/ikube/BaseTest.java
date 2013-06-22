@@ -34,7 +34,7 @@ import org.apache.lucene.search.Searchable;
  * @version 01.00
  */
 @SuppressWarnings("deprecation")
-public abstract class Base {
+public abstract class BaseTest {
 
 	protected Logger logger = Logger.getLogger(this.getClass());
 

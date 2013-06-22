@@ -17,7 +17,6 @@ import java.util.concurrent.Future;
 import mockit.Deencapsulation;
 
 import org.apache.lucene.document.Document;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -33,13 +32,7 @@ public class IndexableFilesystemLogHandlerTest extends AbstractTest {
 
 	@Before
 	public void before() {
-		ThreadUtilities.initialize();
 		indexableFilesystemLogHandler = new IndexableFilesystemLogHandler();
-	}
-
-	@After
-	public void after() {
-		ThreadUtilities.destroy();
 	}
 
 	@Test
@@ -58,8 +51,8 @@ public class IndexableFilesystemLogHandlerTest extends AbstractTest {
 
 		List<Future<?>> futures = indexableFilesystemLogHandler.handleIndexable(indexContext, indexableFileSystemLog);
 		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
-		verify(resourceBaseHandler, atLeastOnce()).handleResource(any(IndexContext.class), any(IndexableFileSystemLog.class),
-				any(Document.class), any(Object.class));
+		verify(resourceBaseHandler, atLeastOnce()).handleResource(any(IndexContext.class), any(IndexableFileSystemLog.class), any(Document.class),
+				any(Object.class));
 	}
 
 }

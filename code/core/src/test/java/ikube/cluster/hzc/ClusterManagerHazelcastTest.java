@@ -261,7 +261,6 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 
 	@Test
 	public void submitDestroy() {
-		ThreadUtilities.initialize();
 		try {
 			Mockit.tearDownMocks();
 			Runnable runnable = new Runnable() {
@@ -280,7 +279,6 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 			ThreadUtilities.sleep(5000);
 			assertTrue(future.isCancelled());
 		} finally {
-			ThreadUtilities.destroy();
 			Mockit.setUpMock(SpellingCheckerMock.class);
 		}
 	}
@@ -288,7 +286,6 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 	@Test
 	public void threaded() {
 		Hazelcast.getLock(IConstants.IKUBE).forceUnlock();
-		ThreadUtilities.initialize();
 		int threads = 3;
 		final int iterations = 100;
 		final double sleep = 10;

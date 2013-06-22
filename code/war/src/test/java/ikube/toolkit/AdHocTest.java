@@ -1,6 +1,6 @@
 package ikube.toolkit;
 
-import ikube.Base;
+import ikube.BaseTest;
 
 import java.io.InputStream;
 import java.util.List;
@@ -10,7 +10,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
-public class AdHocTest extends Base {
+public class AdHocTest extends BaseTest {
 
 	@Test
 	@Ignore

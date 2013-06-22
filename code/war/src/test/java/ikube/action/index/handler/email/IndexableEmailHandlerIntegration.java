@@ -1,6 +1,6 @@
 package ikube.action.index.handler.email;
 
-import ikube.Integration;
+import ikube.IntegrationTest;
 import ikube.action.index.IndexManager;
 import ikube.action.index.handler.email.IndexableEmailHandler;
 import ikube.model.IndexContext;
@@ -22,7 +22,7 @@ import org.junit.Test;
  * @since this century
  * @version 102235366.2215.3688.744RC112556
  */
-public class IndexableEmailHandlerIntegration extends Integration {
+public class IndexableEmailHandlerIntegration extends IntegrationTest {
 	
 	@SuppressWarnings("rawtypes")
 	private IndexContext indexContext;

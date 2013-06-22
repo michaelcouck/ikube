@@ -44,7 +44,6 @@ public class SearcherService implements ISearcherService {
 	/** The database that we persist the searches to. */
 	@Autowired
 	private IDataBase dataBase;
-
 	/** The service to get system contexts and other bric-a-brac. */
 	@Autowired
 	private IMonitorService monitorService;
@@ -61,6 +60,10 @@ public class SearcherService implements ISearcherService {
 			@WebParam(name = "maxResults") final int maxResults) {
 		try {
 			SearchSingle searchSingle = getSearch(SearchSingle.class, indexName);
+			if (searchSingle == null) {
+				LOGGER.warn("Searcher null for index : " + indexName);
+				return EMPTY_RESULTS;
+			}
 			searchSingle.setFirstResult(firstResult);
 			searchSingle.setFragment(fragment);
 			searchSingle.setMaxResults(maxResults);
@@ -87,6 +90,10 @@ public class SearcherService implements ISearcherService {
 			@WebParam(name = "maxResults") final int maxResults) {
 		try {
 			SearchMulti searchMulti = getSearch(SearchMulti.class, indexName);
+			if (searchMulti == null) {
+				LOGGER.warn("Searcher null for index : " + indexName);
+				return EMPTY_RESULTS;
+			}
 			searchMulti.setFirstResult(firstResult);
 			searchMulti.setFragment(fragment);
 			searchMulti.setMaxResults(maxResults);
@@ -113,6 +120,10 @@ public class SearcherService implements ISearcherService {
 			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults) {
 		try {
 			SearchMultiSorted searchMultiSorted = getSearch(SearchMultiSorted.class, indexName);
+			if (searchMultiSorted == null) {
+				LOGGER.warn("Searcher null for index : " + indexName);
+				return EMPTY_RESULTS;
+			}
 			searchMultiSorted.setFirstResult(firstResult);
 			searchMultiSorted.setFragment(fragment);
 			searchMultiSorted.setMaxResults(maxResults);
@@ -139,6 +150,10 @@ public class SearcherService implements ISearcherService {
 			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults) {
 		try {
 			SearchMultiAll searchMultiAll = getSearch(SearchMultiAll.class, indexName);
+			if (searchMultiAll == null) {
+				LOGGER.warn("Searcher null for index : " + indexName);
+				return EMPTY_RESULTS;
+			}
 			searchMultiAll.setFirstResult(firstResult);
 			searchMultiAll.setFragment(fragment);
 			searchMultiAll.setMaxResults(maxResults);
@@ -165,6 +180,10 @@ public class SearcherService implements ISearcherService {
 			@WebParam(name = "latitude") final double latitude, @WebParam(name = "longitude") final double longitude) {
 		try {
 			SearchSpatial searchSpatial = getSearch(SearchSpatial.class, indexName);
+			if (searchSpatial == null) {
+				LOGGER.warn("Searcher null for index : " + indexName);
+				return EMPTY_RESULTS;
+			}
 			searchSpatial.setFirstResult(firstResult);
 			searchSpatial.setFragment(fragment);
 			searchSpatial.setMaxResults(maxResults);
@@ -194,6 +213,10 @@ public class SearcherService implements ISearcherService {
 			@WebParam(name = "longitude") final double longitude) {
 		try {
 			SearchSpatialAll searchSpatialAll = getSearch(SearchSpatialAll.class, indexName);
+			if (searchSpatialAll == null) {
+				LOGGER.warn("Searcher null for index : " + indexName);
+				return EMPTY_RESULTS;
+			}
 			searchSpatialAll.setFirstResult(firstResult);
 			searchSpatialAll.setFragment(fragment);
 			searchSpatialAll.setMaxResults(maxResults);
@@ -221,6 +244,10 @@ public class SearcherService implements ISearcherService {
 			@WebParam(name = "maxResults") final int maxResults) {
 		try {
 			SearchAdvanced searchAdvanced = getSearch(SearchAdvanced.class, indexName);
+			if (searchAdvanced == null) {
+				LOGGER.warn("Searcher null for index : " + indexName);
+				return EMPTY_RESULTS;
+			}
 			searchAdvanced.setFirstResult(firstResult);
 			searchAdvanced.setFragment(fragment);
 			searchAdvanced.setMaxResults(maxResults);
@@ -245,6 +272,10 @@ public class SearcherService implements ISearcherService {
 			int maxResults) {
 		try {
 			SearchNumericAll searchNumericAll = getSearch(SearchNumericAll.class, indexName);
+			if (searchNumericAll == null) {
+				LOGGER.warn("Searcher null for index : " + indexName);
+				return EMPTY_RESULTS;
+			}
 			searchNumericAll.setFirstResult(firstResult);
 			searchNumericAll.setFragment(fragment);
 			searchNumericAll.setMaxResults(maxResults);
@@ -268,6 +299,10 @@ public class SearcherService implements ISearcherService {
 			int firstResult, int maxResults) {
 		try {
 			SearchNumericRange searchNumericRange = getSearch(SearchNumericRange.class, indexName);
+			if (searchNumericRange == null) {
+				LOGGER.warn("Searcher null for index : " + indexName);
+				return EMPTY_RESULTS;
+			}
 			searchNumericRange.setFirstResult(firstResult);
 			searchNumericRange.setFragment(fragment);
 			searchNumericRange.setMaxResults(maxResults);
@@ -293,6 +328,10 @@ public class SearcherService implements ISearcherService {
 			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults) {
 		try {
 			SearchComplex searchComplex = getSearch(SearchComplex.class, indexName);
+			if (searchComplex == null) {
+				LOGGER.warn("Searcher null for index : " + indexName);
+				return EMPTY_RESULTS;
+			}
 			searchComplex.setFirstResult(firstResult);
 			searchComplex.setFragment(fragment);
 			searchComplex.setMaxResults(maxResults);

@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.IConstants;
-import ikube.Integration;
+import ikube.IntegrationTest;
 import ikube.model.Action;
 import ikube.model.File;
 import ikube.model.IndexContext;
@@ -50,7 +50,7 @@ import org.springframework.util.ReflectionUtils;
  * @lastChangedBy Michael Couck
  * @lastChangedDate 16-may-12 14:22:16
  */
-public class EntityIntegration extends Integration {
+public class EntityIntegration extends IntegrationTest {
 
 	private interface EntityTester {
 		void doWithEntity(final Object entity, final Class<?> entityClass);

@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import ikube.IConstants;
-import ikube.Integration;
+import ikube.IntegrationTest;
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.model.Action;
@@ -24,7 +24,7 @@ import org.junit.Test;
  * @since 29.09.11
  * @version 01.00
  */
-public class PruneIntegration extends Integration {
+public class PruneIntegration extends IntegrationTest {
 
 	private Prune prune;
 	private IDataBase dataBase;

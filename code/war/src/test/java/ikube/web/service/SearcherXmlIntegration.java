@@ -1,7 +1,7 @@
 package ikube.web.service;
 
 import static org.junit.Assert.assertTrue;
-import ikube.Base;
+import ikube.BaseTest;
 import ikube.IConstants;
 
 import java.net.URL;
@@ -10,7 +10,7 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.junit.Test;
 
-public class SearcherXmlIntegration extends Base {
+public class SearcherXmlIntegration extends BaseTest {
 
 	public static final String SERVICE = "/service";
 

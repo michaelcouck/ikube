@@ -2,7 +2,7 @@ package ikube.action;
 
 import static org.junit.Assert.assertEquals;
 import ikube.IConstants;
-import ikube.Integration;
+import ikube.IntegrationTest;
 import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
@@ -33,7 +33,7 @@ import org.junit.Test;
  * @version 01.00
  */
 @Ignore
-public class IndexDeltaIntegration extends Integration {
+public class IndexDeltaIntegration extends IntegrationTest {
 
 	/** Class under test. */
 	private Index index;

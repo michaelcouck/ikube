@@ -1,6 +1,6 @@
 package ikube.web.js;
 
-import ikube.Base;
+import ikube.BaseTest;
 import ikube.toolkit.FileUtilities;
 import ikube.web.toolkit.WebClientFactory;
 
@@ -23,7 +23,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlButtonInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 @Ignore
-public class JavaScriptTest extends Base {
+public class JavaScriptTest extends BaseTest {
 
 	private Context context;
 	private ScriptableObject scriptableObject;

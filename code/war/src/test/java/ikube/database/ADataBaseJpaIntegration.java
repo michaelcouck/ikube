@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import ikube.IConstants;
-import ikube.Integration;
+import ikube.IntegrationTest;
 import ikube.model.Action;
 import ikube.model.File;
 import ikube.model.IndexContext;
@@ -35,7 +35,7 @@ import org.junit.Test;
  * @since long time
  * @version 01.00
  */
-public class ADataBaseJpaIntegration extends Integration {
+public class ADataBaseJpaIntegration extends IntegrationTest {
 
 	private IDataBase dataBase;
 

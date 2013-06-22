@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -49,6 +50,11 @@ public class ThreadUtilitiesTest extends AbstractTest {
 
 	@Before
 	public void before() {
+		ThreadUtilities.initialize();
+	}
+	
+	@After
+	public void after() {
 		ThreadUtilities.initialize();
 	}
 

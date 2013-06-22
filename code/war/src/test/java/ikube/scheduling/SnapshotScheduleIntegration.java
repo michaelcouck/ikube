@@ -2,7 +2,7 @@ package ikube.scheduling;
 
 import static org.junit.Assert.assertNotNull;
 import ikube.IConstants;
-import ikube.Integration;
+import ikube.IntegrationTest;
 import ikube.model.IndexContext;
 import ikube.scheduling.schedule.SnapshotSchedule;
 import ikube.toolkit.ApplicationContextManager;
@@ -10,7 +10,7 @@ import ikube.toolkit.ApplicationContextManager;
 import org.junit.Before;
 import org.junit.Test;
 
-public class SnapshotScheduleIntegration extends Integration {
+public class SnapshotScheduleIntegration extends IntegrationTest {
 
 	private SnapshotSchedule snapshotSchedule;
 

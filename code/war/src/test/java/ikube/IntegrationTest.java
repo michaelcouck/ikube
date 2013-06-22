@@ -27,9 +27,9 @@ import org.junit.Ignore;
  * @version 01.00
  */
 @Ignore
-public abstract class Integration extends Base {
+public abstract class IntegrationTest extends BaseTest {
 
-	private static final Logger LOGGER = Logger.getLogger(Integration.class);
+	private static final Logger LOGGER = Logger.getLogger(IntegrationTest.class);
 
 	private static boolean INITIALIZED = Boolean.FALSE;
 	private static final File DOT_DIRECTORY = new File(".");

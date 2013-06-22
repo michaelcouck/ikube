@@ -2,7 +2,7 @@ package ikube.action.index.handler.strategy;
 
 import static org.junit.Assert.assertNotNull;
 import ikube.IConstants;
-import ikube.Integration;
+import ikube.IntegrationTest;
 import ikube.action.index.IndexManager;
 import ikube.action.index.handler.filesystem.IndexableFilesystemCsvHandler;
 import ikube.model.IndexContext;
@@ -30,7 +30,7 @@ import org.junit.Test;
  * @since 20.01.2012
  * @version 01.00
  */
-public class GeospatialEnrichmentStrategyIntegration extends Integration {
+public class GeospatialEnrichmentStrategyIntegration extends IntegrationTest {
 
 	private IndexContext<?> indexContext;
 	private IndexableFileSystemCsv indexableFileSystemCsv;

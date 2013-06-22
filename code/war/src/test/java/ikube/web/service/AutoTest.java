@@ -4,7 +4,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
-import ikube.Base;
+import ikube.BaseTest;
 import ikube.IConstants;
 import ikube.search.ISearcherService;
 import ikube.toolkit.FileUtilities;
@@ -21,7 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class AutoTest extends Base {
+public class AutoTest extends BaseTest {
 
 	private Auto auto;
 
