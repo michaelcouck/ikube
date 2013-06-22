@@ -81,9 +81,6 @@
 					<configuration>
 						<forkMode>once</forkMode>
 						<argLine>-javaagent:../../serenity/serenity.jar ${memory.parameters} ${serenity.parameters} -XX:-UseSplitVerifier</argLine>
-						<excludes>
-							<exclude>**/TextParserTest.java</exclude>
-						</excludes>
 					</configuration>
 				</plugin>
 				<plugin>
