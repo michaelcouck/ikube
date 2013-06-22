@@ -75,12 +75,19 @@ public final class LanguageDetectionStrategy extends AStrategy {
 	 */
 	@Override
 	public void initialize() {
+		if (DetectorFactory.getLangList() != null && DetectorFactory.getLangList().size() > 0) {
+			return;
+		}
 		File profileDirectory = FileUtilities.findFileRecursively(new File("." + IConstants.SEP + IConstants.IKUBE + IConstants.SEP),
 				IConstants.LANGUAGE_DETECT_PROFILES_DIRECTORY);
 		try {
-			String profileDirectoryPath = FileUtilities.cleanFilePath(profileDirectory.getAbsolutePath());
-			logger.info("Loading language profiles from : " + profileDirectoryPath);
-			DetectorFactory.loadProfile(profileDirectoryPath);
+			if (profileDirectory != null) {
+				String profileDirectoryPath = FileUtilities.cleanFilePath(profileDirectory.getAbsolutePath());
+				DetectorFactory.loadProfile(profileDirectoryPath);
+				logger.info("Loading language profiles from : " + profileDirectoryPath + ", " + DetectorFactory.getLangList());
+			} else {
+				logger.warn("Couldn't find the language detection profile's directory : ");
+			}
 		} catch (Exception e) {
 			logger.error("Exception starting the language detector, configuration issues : profile directory : " + profileDirectory, e);
 		}

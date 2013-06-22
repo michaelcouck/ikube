@@ -73,6 +73,19 @@
 		</resources>
 		<pluginManagement>
 			<plugins>
+				<!-- This plugin runs the unit tests. -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.7.1</version>
+					<configuration>
+						<forkMode>once</forkMode>
+						<argLine>-javaagent:../../serenity/serenity.jar ${memory.parameters} ${serenity.parameters} -XX:-UseSplitVerifier</argLine>
+						<excludes>
+							<exclude>**/TextParserTest.java</exclude>
+						</excludes>
+					</configuration>
+				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>findbugs-maven-plugin</artifactId>

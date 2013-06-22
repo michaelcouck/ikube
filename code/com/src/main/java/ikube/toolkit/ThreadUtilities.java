@@ -211,7 +211,11 @@ public final class ThreadUtilities {
 		List<ForkJoinPool> forkJoinPools = FORK_JOIN_POOLS.remove(name);
 		if (forkJoinPools != null) {
 			for (final ForkJoinPool forkJoinPool : forkJoinPools) {
-				forkJoinPool.shutdownNow();
+				try {
+					forkJoinPool.shutdownNow();
+				} catch (CancellationException e) {
+					LOGGER.info("Cancelled fork join pool : " + forkJoinPool);
+				}
 			}
 		}
 	}

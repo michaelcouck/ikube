@@ -14,7 +14,6 @@ import java.util.List;
 
 import org.apache.lucene.document.Document;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -24,17 +23,13 @@ import org.junit.Test;
  */
 public class LanguageDetectionStrategyTest extends AbstractTest {
 
-	private static LanguageDetectionStrategy LANGUAGE_DETECTION_STRATEGY;
-
-	@BeforeClass
-	public static void beforeClass() {
-		LANGUAGE_DETECTION_STRATEGY = new LanguageDetectionStrategy(null);
-		LANGUAGE_DETECTION_STRATEGY.initialize();
-	}
+	private static LanguageDetectionStrategy languageDetectionStrategy;
 
 	@Before
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void before() {
+		languageDetectionStrategy = new LanguageDetectionStrategy(null);
+		languageDetectionStrategy.initialize();
 		when(indexableColumn.getContent()).thenReturn("some english text");
 		List<Indexable<?>> children = new ArrayList(Arrays.asList(indexableColumn));
 		when(indexableTable.getChildren()).thenReturn(children);
@@ -44,13 +39,13 @@ public class LanguageDetectionStrategyTest extends AbstractTest {
 	public void aroundProcess() throws Exception {
 		try {
 			Document document = new Document();
-			LANGUAGE_DETECTION_STRATEGY.aroundProcess(indexContext, indexableTable, document, null);
+			languageDetectionStrategy.aroundProcess(indexContext, indexableTable, document, null);
 			String language = document.get(IConstants.LANGUAGE);
 			assertEquals("We expect English for this one : ", "en", language);
 
 			when(indexableColumn.getContent()).thenReturn("soms een andere taal");
 			document = new Document();
-			LANGUAGE_DETECTION_STRATEGY.aroundProcess(indexContext, indexableTable, document, null);
+			languageDetectionStrategy.aroundProcess(indexContext, indexableTable, document, null);
 			language = document.get(IConstants.LANGUAGE);
 			assertTrue("We expect Afrikaans for this one : ", "af".equals(language) || "nl".equals(language));
 		} catch (Throwable t) {
@@ -64,7 +59,7 @@ public class LanguageDetectionStrategyTest extends AbstractTest {
 		final Document document = new Document();
 		double perSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			public void execute() throws Throwable {
-				LANGUAGE_DETECTION_STRATEGY.aroundProcess(indexContext, indexableTable, document, null);
+				languageDetectionStrategy.aroundProcess(indexContext, indexableTable, document, null);
 			}
 		}, "Language detection strategy : ", iterations, Boolean.TRUE);
 		assertTrue(perSecond > 100);

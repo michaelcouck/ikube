@@ -42,28 +42,28 @@ public class TwitterHandlerTest extends AbstractTest {
 	public void handleIndexable() throws Exception {
 		Deencapsulation.setField(twitterHandler, "twitterResourceHandler", twitterResourceHandler);
 
-		final IndexableTweets indexableTweets = populateFields(new IndexableTweets(), Boolean.TRUE, 5);
+		IndexableTweets indexableTweets = populateFields(new IndexableTweets(), Boolean.TRUE, 5);
 		indexableTweets.setThreads(3);
 		indexableTweets.setConsumerKey("Sohh43DylUwaXr7smSojBA");
 		indexableTweets.setConsumerSecret("90xubtexbSwhHBbKXM62pF4QfJnz1NWVkpevwde3Qxo");
 		indexableTweets.setToken("380355068-JIMLrQyZglGs4WLXo2UShCmXMAMjWeaiZ15ZJkrp");
 		indexableTweets.setTokenSecret("OyhI9UyioglNWrhJnQQWY2ULmNtt9Azfl70z0l8jOPM");
 
+		final ForkJoinTask<?> forkJoinTask = twitterHandler.handleIndexableForked(indexContext, indexableTweets);
+		final ForkJoinPool forkJoinPool = new ForkJoinPool(indexableTweets.getThreads());
+		ThreadUtilities.addForkJoinPool(indexContext.getName(), forkJoinPool);
+
 		ThreadUtilities.submit(null, new Runnable() {
 			public void run() {
-				ForkJoinTask<?> forkJoinTask;
 				try {
-					forkJoinTask = twitterHandler.handleIndexableForked(indexContext, indexableTweets);
-					ForkJoinPool forkJoinPool = new ForkJoinPool(indexableTweets.getThreads());
-					ThreadUtilities.addForkJoinPool(indexContext.getName(), forkJoinPool);
 					forkJoinPool.invoke(forkJoinTask);
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(null, e);
 				}
 			}
 		});
 
-		ThreadUtilities.sleep(5000);
+		ThreadUtilities.sleep(3000);
 		ThreadUtilities.cancellForkJoinPool(indexContext.getName());
 	}
 
