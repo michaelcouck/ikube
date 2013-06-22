@@ -29,37 +29,17 @@ public final class QueryBuilder {
 		stringBuilder.append(" from ");
 		addTables(stringBuilder, true, indexableTable);
 		stringBuilder.append(" where ");
-		boolean first = addPredicates(stringBuilder, true, indexableTable);
-		first = addPredicate(stringBuilder, first, indexableTable);
-		addBatchPredicate(stringBuilder, first, indexableTable, nextIdNumber, batchSize);
+
+		boolean first = addPredicates(stringBuilder, indexableTable, true);
+
+		first = addPredicate(stringBuilder, indexableTable, first);
+
+		addBatchPredicate(stringBuilder, indexableTable, nextIdNumber, batchSize, first);
+
 		return stringBuilder.toString();
 	}
 
-	private void addBatchPredicate(final StringBuilder stringBuilder, boolean first, final IndexableTable indexableTable, final long nextIdNumber,
-			final long batchSize) {
-		String idColumnName = getIdColumn(indexableTable.getChildren()).getName();
-		
-		if (!first) {
-			stringBuilder.append(" and ");
-		}
-		
-		stringBuilder.append(indexableTable.getName());
-		stringBuilder.append('.');
-		stringBuilder.append(idColumnName);
-
-		stringBuilder.append(" >= ");
-		stringBuilder.append(nextIdNumber);
-		stringBuilder.append(" and ");
-
-		stringBuilder.append(indexableTable.getName());
-		stringBuilder.append('.');
-		stringBuilder.append(idColumnName);
-
-		stringBuilder.append(" < ");
-		stringBuilder.append(nextIdNumber + batchSize);
-	}
-
-	private boolean addPredicates(final StringBuilder stringBuilder, boolean first, final Indexable<?> indexable) {
+	private boolean addPredicates(final StringBuilder stringBuilder, final Indexable<?> indexable, boolean first) {
 		if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {
 			IndexableTable indexableTable = (IndexableTable) indexable;
 			if (!StringUtils.isEmpty(indexableTable.getPredicate())) {
@@ -67,18 +47,18 @@ public final class QueryBuilder {
 					stringBuilder.append(" and ");
 				}
 				stringBuilder.append(indexableTable.getPredicate());
-				first = Boolean.FALSE;
+				first = false;
 			}
 		}
 		if (indexable.getChildren() != null) {
 			for (final Indexable<?> child : indexable.getChildren()) {
-				first = addPredicates(stringBuilder, first, child);
+				first = addPredicates(stringBuilder, child, first);
 			}
 		}
 		return first;
 	}
 
-	private boolean addPredicate(final StringBuilder stringBuilder, boolean first, final Indexable<?> indexable) {
+	private boolean addPredicate(final StringBuilder stringBuilder, final Indexable<?> indexable, boolean first) {
 		if (indexable.getChildren() != null) {
 			for (final Indexable<?> child : indexable.getChildren()) {
 				if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
@@ -101,9 +81,9 @@ public final class QueryBuilder {
 					stringBuilder.append(indexableTableIdentifier);
 					stringBuilder.append(".");
 					stringBuilder.append(indexableColumn.getName());
-					first = Boolean.FALSE;
+					first = false;
 				}
-				return addPredicate(stringBuilder, first, child);
+				first = addPredicate(stringBuilder, child, first);
 			}
 		}
 		return first;
@@ -149,12 +129,65 @@ public final class QueryBuilder {
 		}
 	}
 
+	private void addBatchPredicate(final StringBuilder stringBuilder, final IndexableTable indexableTable, final long nextIdNumber, final long batchSize,
+			boolean first) {
+		String idColumnName = getIdColumn(indexableTable.getChildren()).getName();
+
+		if (!first) {
+			stringBuilder.append(" and ");
+		}
+
+		stringBuilder.append(indexableTable.getName());
+		stringBuilder.append('.');
+		stringBuilder.append(idColumnName);
+
+		stringBuilder.append(" >= ");
+		stringBuilder.append(nextIdNumber);
+		stringBuilder.append(" and ");
+
+		stringBuilder.append(indexableTable.getName());
+		stringBuilder.append('.');
+		stringBuilder.append(idColumnName);
+
+		stringBuilder.append(" < ");
+		stringBuilder.append(nextIdNumber + batchSize);
+	}
+
+	protected static String buildNextIdQuery(final IndexableTable indexableTable, final Long currentId) {
+		StringBuilder stringBuilder = new StringBuilder();
+		IndexableColumn idColumn = QueryBuilder.getIdColumn(indexableTable.getChildren());
+		stringBuilder.append("select ");
+		stringBuilder.append(idColumn.getName());
+		stringBuilder.append(" from ");
+		stringBuilder.append(indexableTable.getName());
+		stringBuilder.append(" where ");
+		stringBuilder.append(idColumn.getName());
+		stringBuilder.append(" >= ");
+		stringBuilder.append(currentId);
+		return stringBuilder.toString();
+	}
+
+	protected static String buildCountQuery(final IndexableTable indexableTable, final Long currentId, final Long nextId) {
+		StringBuilder stringBuilder = new StringBuilder();
+		IndexableColumn idColumn = QueryBuilder.getIdColumn(indexableTable.getChildren());
+		stringBuilder.append("select count(*) from ");
+		stringBuilder.append(indexableTable.getName());
+		stringBuilder.append(" where ");
+		stringBuilder.append(idColumn.getName());
+		stringBuilder.append(" > ");
+		stringBuilder.append(currentId);
+		stringBuilder.append(" and ");
+		stringBuilder.append(idColumn.getName());
+		stringBuilder.append(" < ");
+		stringBuilder.append(nextId);
+		return stringBuilder.toString();
+	}
+
 	/**
 	 * Looks through the columns and returns the id column.
 	 * 
 	 * @param indexableColumns the columns to look through
-	 * @return the id column or null if no such column is defined. Generally this will mean a configuration problem, every table must have a
-	 *         unique id column
+	 * @return the id column or null if no such column is defined. Generally this will mean a configuration problem, every table must have a unique id column
 	 */
 	protected static IndexableColumn getIdColumn(final List<Indexable<?>> indexableColumns) {
 		for (Indexable<?> indexable : indexableColumns) {

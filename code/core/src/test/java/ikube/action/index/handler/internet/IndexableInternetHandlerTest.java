@@ -1,11 +1,9 @@
 package ikube.action.index.handler.internet;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.action.index.handler.ResourceHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
@@ -13,11 +11,11 @@ import ikube.toolkit.ThreadUtilities;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ForkJoinTask;
 
 import mockit.Deencapsulation;
 
 import org.apache.lucene.document.Document;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,7 +29,7 @@ public class IndexableInternetHandlerTest extends AbstractTest {
 	private List<Document> documents;
 	private IndexableInternet indexableInternet;
 	private IndexableInternetHandler indexableInternetHandler;
-	private ResourceHandler<?> resourceBaseHandler;
+	private InternetResourceHandler resourceHandler;
 
 	@Before
 	public void before() {
@@ -43,48 +41,47 @@ public class IndexableInternetHandlerTest extends AbstractTest {
 		indexableInternet.setTitleFieldName(IConstants.TITLE);
 		indexableInternet.setContentFieldName(IConstants.CONTENT);
 
+		indexableInternet.setThreads(3);
+		indexableInternet.setUrl("http://www.ikube.be/site/");
+		indexableInternet.setBaseUrl("http://www.ikube.be/site/");
+
 		indexableInternetHandler = new IndexableInternetHandler();
 
-		resourceBaseHandler = new ResourceHandler<IndexableInternet>() {
+		resourceHandler = new InternetResourceHandler() {
 			public Document handleResource(IndexContext<?> indexContext, IndexableInternet indexable, Document document, Object resource) throws Exception {
 				documents.add(document);
 				return document;
 			}
 		};
-		Deencapsulation.setField(indexableInternetHandler, resourceBaseHandler);
+		Deencapsulation.setField(indexableInternetHandler, resourceHandler);
 	}
 
-	@After
-	public void after() {
-		ThreadUtilities.destroy();
-	}
+	// @After
+	// public void after() {
+	// ThreadUtilities.destroy();
+	// }
 
 	@Test
 	public void handleIndexable() throws Exception {
-		indexableInternet.setThreads(3);
-		indexableInternet.setUrl("http://www.ikube.be/site/");
-		indexableInternetHandler.handleIndexable(indexContext, indexableInternet);
-		logger.info("Documents size : " + documents.size());
-		assertTrue(documents.size() > 0);
+		ForkJoinTask<?> forkJoinTask = indexableInternetHandler.handleIndexableForked(indexContext, indexableInternet);
+		assertNotNull(forkJoinTask);
 	}
 
 	@Test
 	public void handleResource() {
 		Url url = new Url();
+		url.setUrl("http://www.ikube.be/site/");
 		String title = "The title";
 		String content = "<html><head><title>" + title + "</title></head><body>Hello world</body></html>";
 		url.setContentType("text/html");
 		url.setRawContent(content.getBytes());
 		url.setParsedContent("Hello world");
 
-		indexableInternetHandler.handleResource(indexContext, indexableInternet, url);
-		assertNotNull(url.getTitle());
-		assertEquals(title, url.getTitle());
-		assertTrue(documents.size() > 0);
-		for (final Document document : documents) {
-			String fieldContent = document.get(IConstants.CONTENT);
-			assertNotNull(fieldContent);
-		}
+		List<Url> urls = indexableInternetHandler.handleResource(indexContext, indexableInternet, url);
+		logger.info("Urls : " + urls);
+
+		assertNotNull(urls);
+		assertTrue(urls.size() > 0);
 	}
 
 }

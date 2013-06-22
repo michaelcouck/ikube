@@ -19,10 +19,12 @@ class InternetResourceProvider implements IResourceProvider<Url> {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	Stack<Url> urls = new Stack<Url>();
-	Set<Long> done = new TreeSet<Long>();
+	private Stack<Url> urls;
+	private Set<Long> done;
 
 	InternetResourceProvider(final IndexableInternet indexableInternet) {
+		urls = new Stack<Url>();
+		done = new TreeSet<Long>();
 		Url url = new Url();
 		url.setUrl(indexableInternet.getUrl());
 		url.setName(indexableInternet.getName());
@@ -36,7 +38,8 @@ class InternetResourceProvider implements IResourceProvider<Url> {
 	public synchronized Url getResource() {
 		try {
 			if (urls.isEmpty()) {
-				ThreadUtilities.sleep(60000);
+				// We'll wait a few seconds to see if any other thread will add some urls to the stack
+				ThreadUtilities.sleep(15000);
 				if (urls.isEmpty()) {
 					return null;
 				} else {
@@ -59,7 +62,7 @@ class InternetResourceProvider implements IResourceProvider<Url> {
 				return;
 			}
 			for (final Url url : resources) {
-				Long hash = HashUtilities.hash(url.toString());
+				Long hash = HashUtilities.hash(url.getUrl());
 				if (!done.contains(hash)) {
 					logger.info("Adding url : " + url + ", " + hash);
 					urls.push(url);

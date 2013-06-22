@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
 import ikube.AbstractTest;
 
 import java.io.File;
@@ -124,13 +123,11 @@ public class FileUtilitiesTest extends AbstractTest {
 		assertTrue(file.exists());
 		assertTrue(file.isDirectory());
 	}
-	
+
 	@Test
 	public void findFileRecursivelyUp() {
 		File folder = new File(".").getAbsoluteFile();
-		folder = FileUtilities.findFileRecursively(folder, "wiki");
-		logger.info("Folder : " + folder.getAbsolutePath());
-		File pomFile = FileUtilities.findFileRecursively(folder, 5, "pom.xml");
+		File pomFile = FileUtilities.findFileRecursively(folder, 5, "mime-mapping.xml");
 		assertNotNull(pomFile);
 	}
 

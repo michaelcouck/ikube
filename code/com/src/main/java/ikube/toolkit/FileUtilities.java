@@ -91,7 +91,7 @@ public final class FileUtilities {
 	 * @return the list of files that match the patterns
 	 */
 	public static final List<File> findFilesRecursively(final File folder, final List<File> files, final String... stringPatterns) {
-		if (folder.isDirectory()) {
+		if (folder != null && folder.isDirectory()) {
 			File[] folderFiles = findFiles(folder, stringPatterns);
 			if (folderFiles != null) {
 				files.addAll(Arrays.asList(folderFiles));

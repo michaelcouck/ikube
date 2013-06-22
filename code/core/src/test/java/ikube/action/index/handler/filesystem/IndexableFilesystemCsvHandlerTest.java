@@ -62,8 +62,8 @@ public class IndexableFilesystemCsvHandlerTest extends AbstractTest {
 		indexableFileSystem.setEncoding(IConstants.ENCODING);
 		indexableFileSystem.setSeparator(",");
 
-		ResourceRowHandler resourceRowHandler = Mockito.mock(ResourceRowHandler.class);
-		Deencapsulation.setField(filesystemCsvHandler, "resourceRowHandler", resourceRowHandler);
+		RowResourceHandler rowResourceHandler = Mockito.mock(RowResourceHandler.class);
+		Deencapsulation.setField(filesystemCsvHandler, "rowResourceHandler", rowResourceHandler);
 
 		when(indexableColumn.getFieldName()).thenReturn("field-name");
 		when(indexableColumn.getContent()).thenReturn("field-content");
@@ -71,7 +71,7 @@ public class IndexableFilesystemCsvHandlerTest extends AbstractTest {
 		List<Indexable<?>> children = new ArrayList<Indexable<?>>(Arrays.asList(indexableColumn));
 		indexableFileSystem.setChildren(children);
 		filesystemCsvHandler.handleFile(indexContext, indexableFileSystem, file);
-		verify(resourceRowHandler, Mockito.atLeastOnce()).handleResource(any(IndexContext.class), any(IndexableFileSystemCsv.class),
+		verify(rowResourceHandler, Mockito.atLeastOnce()).handleResource(any(IndexContext.class), any(IndexableFileSystemCsv.class),
 				any(Document.class), any(Object.class));
 
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {

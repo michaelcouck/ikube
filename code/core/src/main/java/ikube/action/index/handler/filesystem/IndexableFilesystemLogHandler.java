@@ -2,7 +2,6 @@ package ikube.action.index.handler.filesystem;
 
 import ikube.action.index.IndexManager;
 import ikube.action.index.handler.IndexableHandler;
-import ikube.action.index.handler.ResourceHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystemLog;
 import ikube.toolkit.FileUtilities;
@@ -22,7 +21,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This handler is a custom handler for the BPost. It will index log files in a particular directory, and unlike the {@link IndexableFilesystemHandler} which
@@ -33,9 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @version 01.00
  */
 public class IndexableFilesystemLogHandler extends IndexableHandler<IndexableFileSystemLog> {
-
-	@Autowired
-	private ResourceHandler<IndexableFileSystemLog> resourceHandler;
 
 	/**
 	 * {@inheritDoc}

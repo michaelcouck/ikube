@@ -40,8 +40,6 @@ public class TwitterHandlerTest extends AbstractTest {
 
 	@Test
 	public void handleIndexable() throws Exception {
-		ThreadUtilities.initialize();
-
 		Deencapsulation.setField(twitterHandler, "twitterResourceHandler", twitterResourceHandler);
 
 		final IndexableTweets indexableTweets = populateFields(new IndexableTweets(), Boolean.TRUE, 5);
@@ -67,7 +65,6 @@ public class TwitterHandlerTest extends AbstractTest {
 
 		ThreadUtilities.sleep(5000);
 		ThreadUtilities.cancellForkJoinPool(indexContext.getName());
-		ThreadUtilities.destroy();
 	}
 
 }

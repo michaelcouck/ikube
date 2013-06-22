@@ -24,7 +24,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -65,10 +64,11 @@ public class SnapshotSchedule extends Schedule {
 		Server server = clusterManager.getServer();
 		setServerStatistics(server);
 		Map<String, IndexContext> indexContexts = monitorService.getIndexContexts();
-		for (Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
+		for (final Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
 			try {
 				IndexContext indexContext = mapEntry.getValue();
 				indexContext.setNumDocsForSearchers(IndexManager.getNumDocsForIndexSearchers(indexContext));
+				indexContext.setIndexing(indexContext.getIndexWriters() != null && indexContext.getIndexWriters().length > 0);
 
 				Snapshot snapshot = new Snapshot();
 
@@ -106,9 +106,6 @@ public class SnapshotSchedule extends Schedule {
 				LOGGER.error("Exception persisting snapshot : ", e);
 			}
 		}
-		// Pop the server back in the grid, updated for the others to see
-		LOGGER.info("Putting server back : " + new Date(server.getAge()));
-		clusterManager.put(server.getAddress(), server);
 	}
 
 	protected List<Snapshot> sortSnapshots(final List<Snapshot> snapshots) {
@@ -158,7 +155,7 @@ public class SnapshotSchedule extends Schedule {
 			// 1000000
 			int fileLength = (int) logFile.length();
 			// 900000
-			int offset = Math.max(fileLength - (IConstants.MILLION / 10), 0);
+			int offset = Math.max(fileLength - (IConstants.MILLION / 100), 0);
 			// 100000
 			int lengthToRead = Math.max(0, fileLength - offset);
 			// 100000
@@ -213,9 +210,6 @@ public class SnapshotSchedule extends Schedule {
 		docsPerMinute = docsPerMinute < 0 ? 0 : Math.min(docsPerMinute, IConstants.MILLION);
 		// If the previous docs per minute was 1000000 and this one is 0 then the index was just
 		// opened and it looks like there are a million documents per minute, but we'll correct that
-		if (docsPerMinute == 0 && previous.getDocsPerMinute() == IConstants.MILLION) {
-			
-		}
 		return docsPerMinute;
 	}
 

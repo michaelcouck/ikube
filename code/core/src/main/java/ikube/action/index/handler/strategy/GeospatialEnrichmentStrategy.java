@@ -54,6 +54,7 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 
 	public GeospatialEnrichmentStrategy(final IStrategy nextStrategy) {
 		super(nextStrategy);
+		initialize();
 	}
 
 	/**
@@ -93,6 +94,9 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 					continue;
 				}
 				String fieldName = indexableColumn.getFieldName().toLowerCase();
+				if (fieldName == null) {
+					continue;
+				}
 				if (latPattern.matcher(fieldName).matches()) {
 					latitude = Double.parseDouble(content.toString());
 				} else if (lngPattern.matcher(fieldName).matches()) {

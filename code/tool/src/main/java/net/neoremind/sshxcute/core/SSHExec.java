@@ -274,7 +274,7 @@ public class SSHExec {
 		logger.debug("Connection channel established succesfully");
 		logger.debug("Start to upload");
 		if (SSHExecUtil.checkAck(in) != 0) {
-			System.exit(0);
+			return;
 		}
 
 		// send "C0644 filesize filename", where filename should not include '/'
@@ -344,7 +344,7 @@ public class SSHExec {
 		logger.debug("Connection channel established succesfully");
 		logger.debug("Start to upload");
 		if (SSHExecUtil.checkAck(in) != 0) {
-			System.exit(0);
+			return;
 		}
 
 		// send "C0644 filesize filename", where filename should not include '/'

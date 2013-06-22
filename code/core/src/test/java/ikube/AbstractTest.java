@@ -24,6 +24,7 @@ import ikube.model.Server;
 import ikube.search.Search;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
+import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,8 +66,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is the base test for all mocked tests. There are several useful mocks in this class that can be re-used like the index context and
- * the index reader etc. There are also helpful methods for creating Lucene indexes.
+ * This is the base test for all mocked tests. There are several useful mocks in this class that can be re-used like the index context and the index reader etc.
+ * There are also helpful methods for creating Lucene indexes.
  * 
  * @author Michael Couck
  * @since 21.11.10
@@ -77,10 +78,15 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractTest {
 
 	static {
-		Logging.configure();
-		new MimeTypes(IConstants.MIME_TYPES);
-		new MimeMapper(IConstants.MIME_MAPPING);
-		Mockit.setUpMock(SpellingCheckerMock.class);
+		try {
+			Logging.configure();
+			new MimeTypes(IConstants.MIME_TYPES);
+			new MimeMapper(IConstants.MIME_MAPPING);
+			Mockit.setUpMock(SpellingCheckerMock.class);
+			ThreadUtilities.initialize();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -92,22 +98,22 @@ public abstract class AbstractTest {
 	protected List<Indexable<?>> indexables;
 	protected Map<String, Server> servers;
 
-	protected Lock lock = mock(Lock.class);
-	protected Server server = mock(Server.class);
-	protected Action action = mock(Action.class);
-	protected TopDocs topDocs = mock(TopDocs.class);
-	protected IDataBase dataBase = mock(IDataBase.class);
-	protected FSDirectory fsDirectory = mock(FSDirectory.class);
-	protected IndexWriter indexWriter = mock(IndexWriter.class);
-	protected IndexReader indexReader = mock(IndexReader.class);
-	protected TopFieldDocs topFieldDocs = mock(TopFieldDocs.class);
-	protected MultiSearcher multiSearcher = mock(MultiSearcher.class);
-	protected IndexSearcher indexSearcher = mock(IndexSearcher.class);
-	protected IndexContext<?> indexContext = mock(IndexContext.class);
-	protected IClusterManager clusterManager = mock(IClusterManager.class);
-	protected IMonitorService monitorService = mock(IMonitorService.class);
-	protected IndexableTable indexableTable = mock(IndexableTable.class);
-	protected IndexableColumn indexableColumn = mock(IndexableColumn.class);
+	protected Lock lock;
+	protected Server server;
+	protected Action action;
+	protected TopDocs topDocs;
+	protected IDataBase dataBase;
+	protected FSDirectory fsDirectory;
+	protected IndexWriter indexWriter;
+	protected IndexReader indexReader;
+	protected TopFieldDocs topFieldDocs;
+	protected MultiSearcher multiSearcher;
+	protected IndexSearcher indexSearcher;
+	protected IndexContext<?> indexContext;
+	protected IClusterManager clusterManager;
+	protected IMonitorService monitorService;
+	protected IndexableTable indexableTable;
+	protected IndexableColumn indexableColumn;
 	@SuppressWarnings("rawtypes")
 	protected Map<String, IndexContext> indexContexts;
 
@@ -115,27 +121,46 @@ public abstract class AbstractTest {
 	protected String indexDirectoryPathBackup = "./indexes/backup";
 
 	{
-		initialize();
+		try {
+			initialize();
+		} catch (Exception e) {
+			logger.error(null, e);
+		}
 	}
 
 	@SuppressWarnings("rawtypes")
-	private void initialize() {
+	private void initialize() throws Exception {
+		lock = mock(Lock.class);
+		server = mock(Server.class);
+		action = mock(Action.class);
+		topDocs = mock(TopDocs.class);
+		dataBase = mock(IDataBase.class);
+		fsDirectory = mock(FSDirectory.class);
+		indexWriter = mock(IndexWriter.class);
+		indexReader = mock(IndexReader.class);
+		topFieldDocs = mock(TopFieldDocs.class);
+		multiSearcher = mock(MultiSearcher.class);
+		indexSearcher = mock(IndexSearcher.class);
+		indexContext = mock(IndexContext.class);
+		clusterManager = mock(IClusterManager.class);
+		monitorService = mock(IMonitorService.class);
+		indexableTable = mock(IndexableTable.class);
+		indexableColumn = mock(IndexableColumn.class);
+
 		searchables = new Searchable[] { indexSearcher };
 		scoreDocs = new ScoreDoc[0];
 		indexables = new ArrayList<Indexable<?>>();
 		servers = new HashMap<String, Server>();
+		indexContexts = new HashMap<String, IndexContext>();
 
-		try {
-			ip = InetAddress.getLocalHost().getHostAddress();
-			when(indexSearcher.getIndexReader()).thenReturn(indexReader);
-			when(indexSearcher.search(any(Query.class), anyInt())).thenReturn(topDocs);
+		ip = InetAddress.getLocalHost().getHostAddress();
 
-			when(multiSearcher.getSearchables()).thenReturn(searchables);
-			when(multiSearcher.search(any(Query.class), anyInt())).thenReturn(topDocs);
-			when(multiSearcher.search(any(Query.class), any(Filter.class), anyInt(), any(Sort.class))).thenReturn(topFieldDocs);
-		} catch (Exception e) {
-			logger.error("", e);
-		}
+		when(indexSearcher.getIndexReader()).thenReturn(indexReader);
+		when(indexSearcher.search(any(Query.class), anyInt())).thenReturn(topDocs);
+
+		when(multiSearcher.getSearchables()).thenReturn(searchables);
+		when(multiSearcher.search(any(Query.class), anyInt())).thenReturn(topDocs);
+		when(multiSearcher.search(any(Query.class), any(Filter.class), anyInt(), any(Sort.class))).thenReturn(topFieldDocs);
 
 		topDocs.totalHits = 0;
 		topDocs.scoreDocs = scoreDocs;
@@ -164,7 +189,6 @@ public abstract class AbstractTest {
 		when(clusterManager.getServers()).thenReturn(servers);
 		when(clusterManager.lock(anyString())).thenReturn(Boolean.TRUE);
 
-		indexContexts = new HashMap<String, IndexContext>();
 		indexContexts.put(indexContext.getName(), indexContext);
 		when(monitorService.getIndexContexts()).thenReturn(indexContexts);
 
@@ -190,7 +214,7 @@ public abstract class AbstractTest {
 	}
 
 	protected static void delete(final IDataBase dataBase, final Class<?>... klasses) {
-		for (Class<?> klass : klasses) {
+		for (final Class<?> klass : klasses) {
 			try {
 				List<?> list = dataBase.find(klass, 0, 1000);
 				do {
@@ -204,8 +228,7 @@ public abstract class AbstractTest {
 	}
 
 	/**
-	 * Returns the path to the latest index directory for this server and this context. The result will be something like
-	 * './index/faq/1234567890/127.0.0.1'.
+	 * Returns the path to the latest index directory for this server and this context. The result will be something like './index/faq/1234567890/127.0.0.1'.
 	 * 
 	 * @param indexContext the index context to get the directory path for
 	 * @return the directory path to the latest index directory for this servers and context
@@ -252,8 +275,7 @@ public abstract class AbstractTest {
 		return null;
 	}
 
-	protected List<File> createIndexesFileSystem(final IndexContext<?> indexContext, final long time, final String[] ips,
-			final String... strings) {
+	protected List<File> createIndexesFileSystem(final IndexContext<?> indexContext, final long time, final String[] ips, final String... strings) {
 		List<File> serverIndexDirectories = new ArrayList<File>();
 		for (String ip : ips) {
 			File serverIndexDirectory = createIndexFileSystem(indexContext, time, ip, strings);
@@ -262,8 +284,8 @@ public abstract class AbstractTest {
 		return serverIndexDirectories;
 	}
 
-	public <T extends Search> T createIndexAndSearch(final Class<T> searchClass, final Analyzer analyzer, final String field,
-			final String... strings) throws Exception {
+	public <T extends Search> T createIndexAndSearch(final Class<T> searchClass, final Analyzer analyzer, final String field, final String... strings)
+			throws Exception {
 		IndexWriterConfig conf = new IndexWriterConfig(IConstants.VERSION, analyzer);
 		Directory directory = new RAMDirectory();
 		IndexWriter indexWriter = new IndexWriter(directory, conf);

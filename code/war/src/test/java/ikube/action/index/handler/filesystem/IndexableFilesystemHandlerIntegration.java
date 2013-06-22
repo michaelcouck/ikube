@@ -12,8 +12,8 @@ import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.UriUtilities;
 
 import java.io.File;
-import java.util.List;
-import java.util.concurrent.Future;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
 
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
@@ -44,7 +44,6 @@ public class IndexableFilesystemHandlerIntegration extends Integration {
 		desktop.setIndexWriters(indexWriter);
 
 		FileUtilities.deleteFile(new File(desktop.getIndexDirectoryPath()), 1);
-		ThreadUtilities.initialize();
 	}
 
 	@After
@@ -56,8 +55,24 @@ public class IndexableFilesystemHandlerIntegration extends Integration {
 	public void handleIndexable() throws Exception {
 		Directory directory = null;
 		try {
-			List<Future<?>> futures = indexableFilesystemHandler.handleIndexable(desktop, desktopFolder);
-			ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
+
+			ThreadUtilities.submit(null, new Runnable() {
+				public void run() {
+					ForkJoinTask<?> forkJoinTask;
+					try {
+						forkJoinTask = indexableFilesystemHandler.handleIndexableForked(desktop, desktopFolder);
+						ForkJoinPool forkJoinPool = new ForkJoinPool(desktopFolder.getThreads());
+						ThreadUtilities.addForkJoinPool(desktop.getName(), forkJoinPool);
+						forkJoinPool.invoke(forkJoinTask);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+
+			ThreadUtilities.sleep(5000);
+			ThreadUtilities.cancellForkJoinPool(desktop.getName());
+
 			// Verify that there are some documents in the index
 			assertNotNull("The index writer should still be available : ", desktop.getIndexWriters());
 			assertEquals("There should only be one index writer : ", 1, desktop.getIndexWriters().length);

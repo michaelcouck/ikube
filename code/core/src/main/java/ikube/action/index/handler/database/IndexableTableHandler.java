@@ -6,7 +6,6 @@ import ikube.action.index.content.ByteOutputStream;
 import ikube.action.index.content.ColumnContentProvider;
 import ikube.action.index.content.IContentProvider;
 import ikube.action.index.handler.IndexableHandler;
-import ikube.action.index.handler.ResourceHandler;
 import ikube.action.index.parse.IParser;
 import ikube.action.index.parse.ParserProvider;
 import ikube.cluster.IClusterManager;
@@ -29,9 +28,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -41,22 +38,20 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This class performs the indexing of tables. It is the primary focus of Ikube. This class is essentially a database crawler, and is multi threaded. Because
  * Ikube is clusterable it means that there are two levels of threading, within this Jvm and within the cluster. The cluster synchronization is done using the
  * {@link IClusterManager}.
  * 
- * This is just a simple explanation of the table structure and the way the hierarchy is accessed, more information can be found on the Wiki.
- * 
  * Tables are hierarchical, as such the configuration is also and the table handler will recursively call it's self to navigate the hierarchy. The operation is
  * as follows:
  * 
- * 1) Sql will be generated to select the top level table<br>
+ * 1) Sql will be generated to select the top level table and sub tables with an inner join(to be changed to left outer perhaps)<br>
  * 2) Move to the first row<br>
- * 3) Call it's self, using the id from the first row to select the data from the second table<br>
- * 4) Goto 1(recursively of course)<br>
+ * 3) Set all the data from the sql query in the columns in the table objects<br>
+ * 4) Add all the column data to the Lucene document for the current row in the result set<br>
+ * 5) Repeat until all records are exhausted<br>
  * 
  * This allows arbitrarily complex data structures in databases to be indexed.
  * 
@@ -66,49 +61,41 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 
-	@Autowired
-	private ResourceHandler<IndexableTable> resourceTableHandler;
-
 	/**
 	 * This method starts threads and passes the indexable to them. The threads are added to the list of threads that are returned to the caller that will have
 	 * to wait for them to finish indexing all the data.
 	 */
 	@Override
 	public List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final IndexableTable indexable) {
+		List<Future<?>> futures = new ArrayList<Future<?>>();
 		// We start as many threads to access this table as defined. We return
 		// the threads to the caller that they can then wait for the threads to finish
 		final DataSource dataSource = indexable.getDataSource();
-		List<Future<?>> futures = new ArrayList<Future<?>>();
 		final AtomicLong currentId = new AtomicLong(0);
 		for (int i = 0; i < indexable.getThreads(); i++) {
 			// Because the transient state data is stored in the indexable during indexing we have
 			// to clone the indexable for each thread
 			final IndexableTable cloneIndexableTable = (IndexableTable) SerializationUtilities.clone(indexable);
 			cloneIndexableTable.setStrategies(indexable.getStrategies());
-			if (cloneIndexableTable.isAllColumns()) {
-				addAllColumns(cloneIndexableTable, dataSource);
-			}
-			final Runnable runnable = new Runnable() {
+			addAllColumns(cloneIndexableTable, dataSource);
+			Runnable runnable = new Runnable() {
 				public void run() {
-					final IContentProvider<IndexableColumn> contentProvider = new ColumnContentProvider();
+					IContentProvider<IndexableColumn> contentProvider = new ColumnContentProvider();
 					setMinAndMaxId(cloneIndexableTable, dataSource);
 					try {
 						handleTable(contentProvider, indexContext, cloneIndexableTable, dataSource, currentId);
 					} catch (SQLException e) {
 						handleException(cloneIndexableTable, e);
+					} finally {
+						// logger.info("Ending indexing : " + indexContext.getIndexName() + ", " + this.toString());
+						// ThreadUtilities.destroy(indexContext.getIndexName());
 					}
 				}
 			};
-			final Future<?> future = ThreadUtilities.submit(indexContext.getIndexName(), runnable);
+			Future<?> future = ThreadUtilities.submit(indexContext.getIndexName(), runnable);
 			futures.add(future);
 		}
 		return futures;
-	}
-
-	@Override
-	protected List<?> handleResource(final IndexContext<?> indexContext, final IndexableTable indexableTable, final Object resource) {
-		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
-		return null;
 	}
 
 	/**
@@ -116,10 +103,10 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * 
 	 * @param indexContext the index context that we are indexing
 	 * @param indexableTable the table that we are indexing, this is generally a clone of the original because there is state in the table that is used by
-	 *            different threads
+	 *        different threads
 	 * @param connection the connection to the database that must be closed when there are no more records left in the top level table
 	 * @param document the document that came from the top level table. As we recurse the table hierarchy, we have to pass this document to the child tables so
-	 *            they can add their data to the document. When this method is called with the top level table the document is null of course
+	 *        they can add their data to the document. When this method is called with the top level table the document is null of course
 	 * @throws SQLException
 	 */
 	protected void handleTable(final IContentProvider<IndexableColumn> contentProvider, final IndexContext<?> indexContext,
@@ -135,7 +122,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				// The result set is already moved to the first row, i.e. next()
 				handleRow(indexContext, indexableTable, dataSource, resultSet, document, contentProvider, currentId);
 				// Add the document to the index
-				resourceTableHandler.handleResource(indexContext, indexableTable, document, null);
+				resourceHandler.handleResource(indexContext, indexableTable, document, null);
 				if (!resultSet.next()) {
 					DatabaseUtilities.closeAll(resultSet);
 					resultSet = getResultSet(indexContext, indexableTable, dataSource, currentId);
@@ -148,6 +135,11 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		DatabaseUtilities.closeAll(resultSet);
 	}
 
+	@Override
+	protected List<?> handleResource(IndexContext<?> indexContext, IndexableTable indexable, Object resource) {
+		return null;
+	}
+
 	@SuppressWarnings("rawtypes")
 	public void handleRow(final IndexContext indexContext, final IndexableTable indexableTable, final DataSource dataSource, final ResultSet resultSet,
 			final Document currentDocument, final IContentProvider<IndexableColumn> contentProvider, final AtomicLong currentId) throws Exception {
@@ -157,43 +149,38 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		setColumnTypesAndData(children, resultSet);
 		// Set the id field
 		setIdField(indexableTable, currentDocument);
-		IndexableTable currentIndexableTable = indexableTable;
-		Set<Indexable<?>> doneTables = new HashSet<Indexable<?>>();
-		doneTables.add(currentIndexableTable);
-		do {
-			for (final Indexable<?> indexable : currentIndexableTable.getChildren()) {
-				// Handle all the columns, if any column refers to another column then they
-				// must be configured in the correct order so that the name column is before the
-				// binary data for the document for example
-				if (IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
-					IndexableColumn indexableColumn = (IndexableColumn) indexable;
-					handleColumn(contentProvider, indexableColumn, currentDocument);
-				}
+		for (final Indexable<?> indexable : children) {
+			// Handle all the columns, if any column refers to another column then they
+			// must be configured in the correct order so that the name column is before the
+			// binary data for the document for example
+			if (IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
+				IndexableColumn indexableColumn = (IndexableColumn) indexable;
+				handleColumn(contentProvider, indexableColumn, currentDocument);
 			}
-			for (final Indexable<?> indexable : currentIndexableTable.getChildren()) {
-				currentIndexableTable = null;
-				if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {
-					if (doneTables.add(indexable)) {
-						currentIndexableTable = (IndexableTable) indexable;
-						break;
-					}
-				}
+		}
+		for (final Indexable<?> indexable : children) {
+			if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {
+				IndexableTable childTable = (IndexableTable) indexable;
+				handleRow(indexContext, childTable, dataSource, resultSet, currentDocument, contentProvider, currentId);
 			}
-		} while (currentIndexableTable != null);
+		}
 	}
 
 	private ResultSet getResultSet(final IndexContext<?> indexContext, final IndexableTable indexableTable, final DataSource dataSource,
 			final AtomicLong currentId) throws SQLException {
 		Connection connection = getConnection(dataSource);
 		ResultSet resultSet = getResultSet(indexContext, indexableTable, connection, currentId);
-		boolean next = resultSet.next();
-		if (!next) {
-			DatabaseUtilities.closeAll(resultSet);
+		while (!resultSet.next()) {
+			Statement statement = resultSet.getStatement();
+			DatabaseUtilities.close(resultSet);
+			DatabaseUtilities.close(statement);
+			logger.info("Current id : " + currentId.get() + ", max id : " + indexableTable.getMaximumId());
 			if (currentId.get() > indexableTable.getMaximumId()) {
 				// Finished indexing the table hierarchy
 				return null;
 			}
-			resultSet = getResultSet(indexContext, indexableTable, dataSource, currentId);
+			// resultSet = getResultSet(indexContext, indexableTable, dataSource, currentId);
+			resultSet = getResultSet(indexContext, indexableTable, connection, currentId);
 		}
 		return resultSet;
 	}
@@ -215,10 +202,30 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 */
 	protected synchronized ResultSet getResultSet(final IndexContext<?> indexContext, final IndexableTable indexableTable, final Connection connection,
 			final AtomicLong currentId) throws SQLException {
+		ResultSet resultSet = null;
+		PreparedStatement statement = null;
 		try {
+			// Get the next id, could be 1 000 000 000 away
+			IndexableColumn idColumn = QueryBuilder.getIdColumn(indexableTable.getChildren());
+			String nextIdQuery = QueryBuilder.buildNextIdQuery(indexableTable, currentId.get());
+			statement = connection.prepareStatement(nextIdQuery);
+			resultSet = statement.executeQuery();
+			if (resultSet.next()) {
+				Object nextIdObject = resultSet.getObject(idColumn.getName());
+				Long nextId = null;
+				if (Long.class.isAssignableFrom(nextIdObject.getClass())) {
+					nextId = (Long) nextIdObject;
+				} else {
+					nextId = Long.parseLong(nextIdObject.toString());
+				}
+				logger.info("Setting next id to : " + nextId);
+				currentId.set(nextId.longValue());
+				DatabaseUtilities.close(resultSet);
+			}
+
 			// Build the sql based on the columns defined in the configuration
 			String sql = new QueryBuilder().buildQuery(indexableTable, currentId.get(), indexContext.getBatchSize());
-			logger.debug("Query : " + sql);
+			logger.info("Query : " + sql);
 			currentId.set(currentId.get() + indexContext.getBatchSize());
 			PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY,
 					ResultSet.CLOSE_CURSORS_AT_COMMIT);
@@ -261,11 +268,11 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	 * "...where foreignKey = parentId", so we have to get the parent id column and set the parameter.
 	 * 
 	 * @param indexableTable the table that is being iterated over at the moment, this could be a top level table n which case there will be no foreign key
-	 *            references, but in the case of a sub table the parent id will be accessed
+	 *        references, but in the case of a sub table the parent id will be accessed
 	 * @param preparedStatement the statement to set the parameters in
 	 * @throws SQLException
 	 */
-	protected synchronized void setParameters(final IndexableTable indexableTable, final PreparedStatement preparedStatement) throws SQLException {
+	protected void setParameters(final IndexableTable indexableTable, final PreparedStatement preparedStatement) throws SQLException {
 		try {
 			List<Indexable<?>> children = indexableTable.getChildren();
 			int parameterIndex = 1;
@@ -283,7 +290,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				parameterIndex++;
 			}
 		} finally {
-			notifyAll();
+			// notifyAll();
 		}
 	}
 
@@ -303,6 +310,12 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		try {
 			long result = 0;
 			IndexableColumn idColumn = QueryBuilder.getIdColumn(indexableTable.getChildren());
+
+			if (idColumn == null) {
+				logger.warn("Table has no id column : " + indexableTable.getName());
+				logger.warn("The results of the indexing are undefined : ");
+				return -1;
+			}
 
 			StringBuilder builder = new StringBuilder("select ");
 			builder.append(function);
@@ -387,47 +400,44 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	}
 
 	protected void addAllColumns(final IndexableTable indexableTable, final DataSource dataSource) {
-		Connection connection = getConnection(dataSource);
-		List<String> columnNames = DatabaseUtilities.getAllColumns(connection, indexableTable.getName());
-		List<String> primaryKeyColumns = DatabaseUtilities.getPrimaryKeys(connection, indexableTable.getName());
-		if (columnNames.size() == 0) {
-			logger.warn("No columns found for table : " + indexableTable.getName());
-			return;
-		}
-		String primaryKeyColumn = primaryKeyColumns.size() > 0 ? primaryKeyColumns.get(0) : columnNames.get(0);
-		List<Indexable<?>> children = indexableTable.getChildren();
-		if (children == null) {
-			children = new ArrayList<Indexable<?>>();
-		}
-		for (final String columnName : columnNames) {
-			// We skip the columns that have been explicitly defined in the configuration
-			if (containsColumn(indexableTable, columnName)) {
-				continue;
+		if (indexableTable.isAllColumns()) {
+			Connection connection = getConnection(dataSource);
+			List<String> columnNames = DatabaseUtilities.getAllColumns(connection, indexableTable.getName());
+			List<String> primaryKeyColumns = DatabaseUtilities.getPrimaryKeys(connection, indexableTable.getName());
+			if (columnNames.size() == 0) {
+				logger.warn("No columns found for table : " + indexableTable.getName());
+				return;
 			}
-			IndexableColumn indexableColumn = new IndexableColumn();
-			indexableColumn.setAddress(Boolean.FALSE);
-			indexableColumn.setFieldName(columnName);
-			indexableColumn.setIdColumn(columnName.equalsIgnoreCase(primaryKeyColumn));
-			indexableColumn.setName(columnName);
-			indexableColumn.setParent(indexableTable);
-			indexableColumn.setAnalyzed(indexableTable.isAnalyzed());
-			indexableColumn.setStored(indexableTable.isStored());
-			indexableColumn.setVectored(indexableTable.isVectored());
-			children.add(indexableColumn);
-		}
-		indexableTable.setChildren(children);
-		DatabaseUtilities.close(connection);
-	}
-
-	protected boolean containsPrimaryKeyColumn(final IndexableTable indexableTable) {
-		for (Indexable<?> child : indexableTable.getChildren()) {
-			if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
-				if (((IndexableColumn) child).isIdColumn()) {
-					return Boolean.TRUE;
+			String primaryKeyColumn = primaryKeyColumns.size() > 0 ? primaryKeyColumns.get(0) : columnNames.get(0);
+			List<Indexable<?>> children = indexableTable.getChildren();
+			if (children == null) {
+				children = new ArrayList<Indexable<?>>();
+			}
+			for (final String columnName : columnNames) {
+				// We skip the columns that have been explicitly defined in the configuration
+				if (containsColumn(indexableTable, columnName)) {
+					continue;
 				}
+				IndexableColumn indexableColumn = new IndexableColumn();
+				indexableColumn.setAddress(Boolean.FALSE);
+				indexableColumn.setFieldName(columnName);
+				indexableColumn.setIdColumn(columnName.equalsIgnoreCase(primaryKeyColumn));
+				indexableColumn.setName(columnName);
+				indexableColumn.setParent(indexableTable);
+				indexableColumn.setAnalyzed(indexableTable.isAnalyzed());
+				indexableColumn.setStored(indexableTable.isStored());
+				indexableColumn.setVectored(indexableTable.isVectored());
+				children.add(indexableColumn);
+			}
+			indexableTable.setChildren(children);
+			DatabaseUtilities.close(connection);
+		}
+		// Now do all the child tables
+		for (final Indexable<?> indexable : indexableTable.getChildren()) {
+			if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {
+				addAllColumns((IndexableTable) indexable, dataSource);
 			}
 		}
-		return Boolean.FALSE;
 	}
 
 	protected boolean containsColumn(final IndexableTable indexableTable, final String columnName) {
@@ -455,6 +465,9 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	protected void setIdField(final IndexableTable indexableTable, final Document document) {
 		List<Indexable<?>> children = indexableTable.getChildren();
 		IndexableColumn idColumn = QueryBuilder.getIdColumn(children);
+		if (idColumn == null) {
+			return;
+		}
 
 		StringBuilder builder = new StringBuilder();
 		builder.append(indexableTable.getName());
@@ -477,16 +490,20 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	protected void setColumnTypesAndData(final List<Indexable<?>> children, final ResultSet resultSet) {
 		try {
 			ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-			for (int i = 0; i < children.size(); i++) {
-				Indexable<?> indexable = children.get(i);
-				if (!IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
-					continue;
+			for (int i = 1, j = 0; i < resultSetMetaData.getColumnCount() && j < children.size(); i++) {
+				String columnName = resultSetMetaData.getColumnName(i);
+				Indexable<?> indexable = children.get(j);
+				if (columnName.equalsIgnoreCase(indexable.getName())) {
+					if (IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
+						IndexableColumn indexableColumn = (IndexableColumn) indexable;
+						Object object = resultSet.getObject(i);
+						int columnType = resultSetMetaData.getColumnType(i);
+						indexableColumn.setColumnType(columnType);
+						indexableColumn.setContent(object);
+						// logger.info("Column : " + columnName + ", " + columnType + ", " + object);
+					}
+					j++;
 				}
-				IndexableColumn indexableColumn = (IndexableColumn) indexable;
-				int columnType = resultSetMetaData.getColumnType(i + 1);
-				Object object = resultSet.getObject(indexableColumn.getName());
-				indexableColumn.setColumnType(columnType);
-				indexableColumn.setContent(object);
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);

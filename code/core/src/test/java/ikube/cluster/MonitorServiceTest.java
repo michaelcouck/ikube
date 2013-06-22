@@ -50,7 +50,7 @@ public class MonitorServiceTest extends AbstractTest {
 		String[] fieldNames = monitorService.getFieldNames(IndexableEmail.class);
 		logger.info("Field names : " + Arrays.deepToString(fieldNames));
 		assertEquals(
-				"[idField, titleField, contentField, mailHost, username, password, port, protocol, secureSocketLayer, name, address, stored, analyzed, vectored, maxExceptions, id]",
+				"[idField, titleField, contentField, mailHost, username, password, port, protocol, secureSocketLayer, name, address, stored, analyzed, vectored, maxExceptions, threads, id]",
 				Arrays.deepToString(fieldNames));
 		fieldNames = monitorService.getFieldNames(IndexContext.class);
 		logger.info("Field names : " + Arrays.deepToString(fieldNames));

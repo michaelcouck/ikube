@@ -1,7 +1,7 @@
 <hazelcast>
 	<group>
-		<name>ikube</name>
-		<password>ikube</password>
+		<name>ikube-4.4.0</name>
+		<password>ikube-4.4.0</password>
 	</group>
 	<network>
 		<port auto-increment="true">8010</port>
@@ -36,12 +36,12 @@
 		</asymmetric-encryption>
 	</network>
 	<executor-service>
-		<core-pool-size>1000</core-pool-size>
+		<core-pool-size>100</core-pool-size>
 		<max-pool-size>1000</max-pool-size>
-		<keep-alive-seconds>60000</keep-alive-seconds>
+		<keep-alive-seconds>600</keep-alive-seconds>
 	</executor-service>
 	<map name="ikube">
-		<backup-count>5</backup-count>
+		<backup-count>3</backup-count>
 		<eviction-policy>LFU</eviction-policy>
 		<max-size>10000</max-size>
 		<eviction-percentage>25</eviction-percentage>
@@ -52,7 +52,7 @@
 		</map-store>
 	</map>
 	<map name="search">
-		<backup-count>5</backup-count>
+		<backup-count>3</backup-count>
 		<eviction-policy>LFU</eviction-policy>
 		<max-size>10000</max-size>
 		<time-to-live-seconds>600</time-to-live-seconds>

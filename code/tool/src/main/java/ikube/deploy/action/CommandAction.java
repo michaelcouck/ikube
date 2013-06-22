@@ -18,6 +18,9 @@ public class CommandAction extends Action {
 	@Override
 	public boolean execute(final Server server) {
 		SSHExec sshExec = getSshExec(server.getIp(), server.getUsername(), server.getPassword());
+		logger.error("Ssh exec : " + sshExec + ", " + commands);
+		System.out.println("Ssh exec : " + sshExec + ", " + commands);
+		System.err.println("Ssh exec : " + sshExec + ", " + commands);
 		try {
 			if (commands != null) {
 				for (final String command : commands) {

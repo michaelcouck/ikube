@@ -2,7 +2,6 @@ package ikube.action.index.handler.email;
 
 import ikube.action.index.IndexManager;
 import ikube.action.index.handler.IndexableHandler;
-import ikube.action.index.handler.ResourceHandler;
 import ikube.action.index.parse.IParser;
 import ikube.action.index.parse.ParserProvider;
 import ikube.model.IndexContext;
@@ -34,7 +33,6 @@ import javax.mail.URLName;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sun.mail.pop3.POP3SSLStore;
 
@@ -50,9 +48,6 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 
 	private static final String SSL_FACTORY = "javax.net.ssl.SSLSocketFactory";
 	private static final String MAIL_PROTOCOL = "pop3";
-
-	@Autowired
-	private ResourceHandler<IndexableEmail> resourceHandler;
 
 	/**
 	 * {@inheritDoc}

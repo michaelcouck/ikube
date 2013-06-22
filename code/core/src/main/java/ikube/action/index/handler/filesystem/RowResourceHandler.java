@@ -17,7 +17,7 @@ import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 
-public class ResourceRowHandler extends ResourceHandler<IndexableFileSystemCsv> {
+public class RowResourceHandler extends ResourceHandler<IndexableFileSystemCsv> {
 
 	/**
 	 * 

@@ -2,6 +2,7 @@ package ikube.toolkit;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -200,10 +201,10 @@ public final class ThreadUtilities {
 			LOGGER.info("Executer service already initialized : ");
 			return;
 		}
-		FUTURES = new HashMap<String, List<Future<?>>>();
+		FUTURES = Collections.synchronizedMap(new HashMap<String, List<Future<?>>>());
+		FORK_JOIN_POOLS = Collections.synchronizedMap(new HashMap<String, List<ForkJoinPool>>());
 		EXECUTER_SERVICE = Executors.newCachedThreadPool();
 		EXECUTER_SERVICE_SYSTEM = Executors.newCachedThreadPool();
-		FORK_JOIN_POOLS = new HashMap<String, List<ForkJoinPool>>();
 	}
 
 	public static final void cancellForkJoinPool(final String name) {
@@ -227,7 +228,7 @@ public final class ThreadUtilities {
 	public static final void addForkJoinPool(final String name, final ForkJoinPool forkJoinPool) {
 		List<ForkJoinPool> forkJoinPools = FORK_JOIN_POOLS.get(name);
 		if (forkJoinPools == null) {
-			forkJoinPools = new ArrayList<ForkJoinPool>();
+			forkJoinPools = Collections.synchronizedList(new ArrayList<ForkJoinPool>());
 			FORK_JOIN_POOLS.put(name, forkJoinPools);
 		}
 		forkJoinPools.add(forkJoinPool);
@@ -279,7 +280,7 @@ public final class ThreadUtilities {
 		try {
 			List<Future<?>> futures = FUTURES.get(name);
 			if (futures == null) {
-				futures = new ArrayList<Future<?>>();
+				futures = Collections.synchronizedList(new ArrayList<Future<?>>());
 				FUTURES.put(name, futures);
 			}
 			return futures;
@@ -290,7 +291,7 @@ public final class ThreadUtilities {
 
 	protected static/* synchronized */Map<String, List<Future<?>>> getFutures() {
 		try {
-			Map<String, List<Future<?>>> futures = new HashMap<String, List<Future<?>>>();
+			Map<String, List<Future<?>>> futures = Collections.synchronizedMap(new HashMap<String, List<Future<?>>>());
 			futures.putAll(FUTURES);
 			return futures;
 		} finally {

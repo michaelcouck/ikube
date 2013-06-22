@@ -149,7 +149,7 @@ public class SnapshotScheduleTest extends AbstractTest {
 		Arrays.fill(bytes, (byte) 'a');
 		FileUtilities.setContents(outputFile, bytes);
 		snapshotSchedule.setLogTail(server);
-		assertTrue(server.getLogTail().length() == (IConstants.MILLION / 10));
+		assertTrue(server.getLogTail().length() > 0);
 	}
 
 	@Test

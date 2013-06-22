@@ -14,6 +14,8 @@ import java.util.concurrent.RecursiveAction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * Base class for the handlers that contains access to common functionality like the threads etc.
@@ -25,10 +27,15 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class IndexableHandler<T extends Indexable<?>> implements IIndexableHandler<T> {
 
+	public static final String RESOURCE_HANDLER_QUALIFIER = ResourceHandler.class.getName();
+
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	/** The class that this handler can handle. */
 	private Class<T> indexableClass;
+	@Autowired
+	@Qualifier("ikube.action.index.handler.ResourceHandler")
+	protected ResourceHandler<T> resourceHandler;
 
 	protected RecursiveAction getRecursiveAction(final IndexContext<?> indexContext, final T indexable, final IResourceProvider<?> resourceManager) {
 		/**
@@ -37,7 +44,8 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 		class RecursiveActionImpl extends RecursiveAction {
 
 			/**
-			 * This method is the implementation from {@link RecursiveAction} that calls the handle {@link IndexableHandler#handleResource(...) } on the sub classes.
+			 * This method is the implementation from {@link RecursiveAction} that calls the handle {@link IndexableHandler#handleResource(...) } on the sub
+			 * classes.
 			 */
 			@Override
 			@SuppressWarnings({ "rawtypes", "unchecked" })

@@ -19,7 +19,7 @@ public class XmlUtilitiesTest extends AbstractTest {
 
 	@Test
 	public void getDocumentElementsAndElement() throws FileNotFoundException {
-		File file = FileUtilities.findFileRecursively(new File("."), "spring.xml");
+		File file = FileUtilities.findFileRecursively(new File(".").getAbsoluteFile(), 3, "spring.xml");
 		InputStream inputStream = new FileInputStream(file);
 		Document document = XmlUtilities.getDocument(inputStream, Constants.ENCODING);
 		assertNotNull("This should be the Spring configuration file : ", document);

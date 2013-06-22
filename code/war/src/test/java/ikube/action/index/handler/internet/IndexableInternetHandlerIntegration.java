@@ -1,9 +1,6 @@
 package ikube.action.index.handler.internet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import ikube.Integration;
 import ikube.action.Index;
 import ikube.action.index.IndexManager;
@@ -19,10 +16,8 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.List;
-import java.util.Set;
-import java.util.Stack;
-import java.util.TreeSet;
-import java.util.concurrent.Future;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
 
 import mockit.Deencapsulation;
 
@@ -30,7 +25,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 /**
  * @author Michael Couck
@@ -56,18 +50,29 @@ public class IndexableInternetHandlerIntegration extends Integration {
 
 	@Test
 	public void handle() throws Exception {
-		try {
-			String ip = InetAddress.getLocalHost().getHostAddress();
-			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
-			indexContext.setIndexWriters(indexWriter);
-			List<Future<?>> threads = indexableInternetHandler.handleIndexable(indexContext, indexableInternet);
-			ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
+		String ip = InetAddress.getLocalHost().getHostAddress();
+		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
+		indexContext.setIndexWriters(indexWriter);
 
-			int expectedAtLeast = 1;
-			assertTrue("There must be some documents in the index : ", indexContext.getIndexWriters()[0].numDocs() >= expectedAtLeast);
-		} finally {
-			ThreadUtilities.destroy(indexContext.getIndexName());
-		}
+		ThreadUtilities.submit(null, new Runnable() {
+			public void run() {
+				ForkJoinTask<?> forkJoinTask;
+				try {
+					forkJoinTask = indexableInternetHandler.handleIndexableForked(indexContext, indexableInternet);
+					ForkJoinPool forkJoinPool = new ForkJoinPool(indexableInternet.getThreads());
+					ThreadUtilities.addForkJoinPool(indexContext.getName(), forkJoinPool);
+					forkJoinPool.invoke(forkJoinTask);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
+		ThreadUtilities.sleep(3000);
+		ThreadUtilities.cancellForkJoinPool(indexContext.getName());
+
+		int expectedAtLeast = 1;
+		assertTrue("There must be some documents in the index : ", indexContext.getIndexWriters()[0].numDocs() >= expectedAtLeast);
 	}
 
 	@Test
@@ -75,26 +80,9 @@ public class IndexableInternetHandlerIntegration extends Integration {
 		int expectedAtLeast = 3;
 
 		InputStream inputStream = new URL(indexableInternet.getUrl()).openStream();
-		Stack<Url> in = new Stack<Url>();
-		Set<Long> out = new TreeSet<Long>();
 
-		Deencapsulation.invoke(indexableInternetHandler, "extractLinksFromContent", indexableInternet, inputStream, in, out);
-		assertTrue("Expected more than " + expectedAtLeast + " and got : " + in.size(), in.size() > expectedAtLeast);
-	}
-
-	@Test
-	public void addDocument() {
-		Url url = new Url();
-		String title = "The title";
-		String content = "<html><head><title>" + title + "</title></head></html>";
-		url.setContentType("text/html");
-		url.setRawContent(content.getBytes());
-		IndexContext<?> indexContext = mock(IndexContext.class);
-		IndexWriter indexWriter = Mockito.mock(IndexWriter.class);
-		Mockito.when(indexContext.getIndexWriters()).thenReturn(new IndexWriter[] { indexWriter });
-		indexableInternetHandler.handleResource(indexContext, indexableInternet, url);
-		assertNotNull(url.getTitle());
-		assertEquals(title, url.getTitle());
+		List<Url> urls = Deencapsulation.invoke(indexableInternetHandler, "extractLinksFromContent", indexableInternet, inputStream);
+		assertTrue("Expected more than " + expectedAtLeast + " and got : " + urls.size(), urls.size() > expectedAtLeast);
 	}
 
 	@Test

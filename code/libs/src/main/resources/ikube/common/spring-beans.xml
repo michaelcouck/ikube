@@ -245,27 +245,6 @@
 		<value>/WEB-INF/i18n/i18n</value>
 	</util:list>
 	
-	<!-- 
-		This bean is the geocoder, it will enrich the data with spatial co-ordinates if
-		the indexables contain address fields. The Url for this service  
-	-->
-	<bean
-		id="ikube.action.index.handler.enrich.geocode.Geocoder"
-		class="ikube.action.index.handler.enrich.geocode.Geocoder"
-		property:searchFields-ref="geospatialFields" 
-		property:userid="user"
-		property:password="user" 
-		property:searchUrl="${searcher.web.service.url}" />
-	<util:list id="geospatialFields">
-		<value>name</value>
-		<value>city</value>
-		<value>country</value>
-		<value>latitude</value>
-		<value>longitude</value>
-		<value>asciiname</value>
-		<value>alternatenames</value>
-	</util:list>
-	
 	<bean
 		id="ikube.search.spelling.SpellingChecker"
 		class="ikube.search.spelling.SpellingChecker"
@@ -311,8 +290,8 @@
 		property:indexableClass="ikube.model.IndexableEmail" />
 	<bean
 		parent="ikube.action.index.handler.IndexableHandler"
-		id="ikube.action.index.handler.filesystem.IndexableFilesystemHandler"
-		class="ikube.action.index.handler.filesystem.IndexableFilesystemHandler"
+		id="ikube.action.index.handler.filesystem.IndexableFileSystemHandler"
+		class="ikube.action.index.handler.filesystem.IndexableFileSystemHandler"
 		property:indexableClass="ikube.model.IndexableFileSystem" />
 	<bean
 		parent="ikube.action.index.handler.IndexableHandler"
@@ -345,14 +324,14 @@
 		name="ikube.action.index.handler.ResourceHandler" 
 		class="ikube.action.index.handler.ResourceHandler" />
 	<bean 
-		id="ikube.action.index.handler.ResourceHandlerBase" 
-		class="ikube.action.index.handler.ResourceHandlerBase" />
+		id="ikube.action.index.handler.filesystem.FileResourceHandler" 
+		class="ikube.action.index.handler.filesystem.FileResourceHandler" />
 	<bean 
-		id="ikube.action.index.handler.filesystem.ResourceFileHandler" 
-		class="ikube.action.index.handler.filesystem.ResourceFileHandler" />
+		id="ikube.action.index.handler.filesystem.RowResourceHandler" 
+		class="ikube.action.index.handler.filesystem.RowResourceHandler" />
 	<bean 
-		id="ikube.action.index.handler.filesystem.ResourceRowHandler" 
-		class="ikube.action.index.handler.filesystem.ResourceRowHandler" />
+		id="ikube.action.index.handler.internet.InternetResourceHandler" 
+		class="ikube.action.index.handler.internet.InternetResourceHandler" />
 		
 	<bean 
 		id="ikube.action.index.analyzer.NgramAnalyzer"
@@ -362,13 +341,33 @@
 	<bean 
 		id="ikube.action.index.handler.strategy.LanguageDetectionStrategy"
 		name="ikube.action.index.handler.strategy.LanguageDetectionStrategy" 
-		class="ikube.action.index.handler.strategy.LanguageDetectionStrategy" 
-		init-method="initialize" />
+		class="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
 	
 	<bean
 		id="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy"
 		name="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy" 
-    	class="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy"
-    	init-method="initialize" />
+    	class="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy" />
+    
+    <!-- 
+		This bean is the geocoder, it will enrich the data with spatial co-ordinates if
+		the indexables contain address fields. The Url for this service  
+	-->
+	<bean
+		id="ikube.action.index.handler.strategy.geocode.Geocoder"
+		name="ikube.action.index.handler.strategy.geocode.Geocoder"
+		class="ikube.action.index.handler.strategy.geocode.Geocoder"
+		property:searchFields-ref="geospatialFields" 
+		property:userid="user"
+		property:password="user" 
+		property:searchUrl="${searcher.web.service.url}" />
+	<util:list id="geospatialFields">
+		<value>name</value>
+		<value>city</value>
+		<value>country</value>
+		<value>latitude</value>
+		<value>longitude</value>
+		<value>asciiname</value>
+		<value>alternatenames</value>
+	</util:list>
 	
 </beans>

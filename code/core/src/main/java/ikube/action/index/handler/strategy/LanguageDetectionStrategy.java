@@ -34,6 +34,7 @@ public final class LanguageDetectionStrategy extends AStrategy {
 
 	public LanguageDetectionStrategy(final IStrategy nextStrategy) {
 		super(nextStrategy);
+		initialize();
 	}
 
 	/**

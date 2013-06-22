@@ -43,7 +43,6 @@ public class IndexableFileSystemHandler extends IndexableHandler<IndexableFileSy
 
 	@Override
 	protected List<?> handleResource(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final Object resource) {
-		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
 		handleFile(indexContext, indexableFileSystem, (File) resource);
 		return null;
 	}
@@ -71,7 +70,6 @@ public class IndexableFileSystemHandler extends IndexableHandler<IndexableFileSy
 						if (isExcluded(innerTFile, pattern)) {
 							continue;
 						}
-						logger.debug("Handling inner file : " + innerTFile);
 						handleFile(indexContext, indexableFileSystem, innerTFile);
 					}
 				}
@@ -95,9 +93,10 @@ public class IndexableFileSystemHandler extends IndexableHandler<IndexableFileSy
 	private boolean handleGZip(final String filePath) throws ArchiveException, IOException {
 		InputStream is = new FileInputStream(filePath);
 		ArchiveInputStream input = new ArchiveStreamFactory().createArchiveInputStream("tar", new GZIPInputStream(is));
-		ArchiveEntry entry;
+		ArchiveEntry entry = null;
 		while ((entry = input.getNextEntry()) != null) {
 			// TODO implement this logic for tar on Linux
+			logger.info("G-zip entry : " + entry);
 		}
 		return Boolean.TRUE;
 	}

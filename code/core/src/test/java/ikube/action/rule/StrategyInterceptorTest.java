@@ -1,6 +1,6 @@
 package ikube.action.rule;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.action.index.handler.IStrategy;
@@ -25,7 +25,6 @@ import org.mockito.Mockito;
  * @since 27.12.12
  * @version 01.00
  */
-@Deprecated
 public class StrategyInterceptorTest extends AbstractTest {
 
 	@Cascading
@@ -75,7 +74,7 @@ public class StrategyInterceptorTest extends AbstractTest {
 		Mockito.when(indexable.getStrategies()).thenReturn(Arrays.asList(strategy, strategyFail));
 
 		result = strategyInterceptor.aroundProcess(proceedingJoinPoint);
-		assertNull(result);
+		assertEquals(Boolean.FALSE, result);
 	}
 
 }

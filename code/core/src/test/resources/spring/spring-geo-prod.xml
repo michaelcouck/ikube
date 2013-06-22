@@ -311,5 +311,237 @@
 		property:stored="true"
 		property:vectored="true"
 		property:numeric="false" />
+		
+	<bean 
+		id="mysql" 
+		class="ikube.model.IndexContext" 
+		property:name="mysql" 
+		property:maxAge="600" 
+		property:compoundFile="true"
+		property:bufferedDocs="1000" 
+		property:bufferSize="256" 
+		property:batchSize="100" 
+		property:internetBatchSize="1000" 
+		property:mergeFactor="1000"
+		property:maxFieldLength="10000" 
+		property:maxReadLength="10000" 
+		property:address="false" 
+		property:throttle="0"
+		property:indexDirectoryPath="/tmp" 
+		property:indexDirectoryPathBackup="/tmp"
+		property:children-ref="mysql-indexables" />
+	<util:list id="mysql-indexables">
+		<ref local="json_cache" />
+	</util:list>
+
+	<bean
+		id="json_cache"
+		class="ikube.model.IndexableTable"
+		property:name="json_cache"
+		property:address="false"
+		property:maxExceptions="1000"
+		property:allColumns="true"
+		property:stored="false"
+		property:analyzed="false"
+		property:vectored="false"
+		property:children-ref="json_cache_columns"
+		property:dataSource-ref="non-xa-datasource-mysql"/>
+	<util:list id="json_cache_columns">
+		<!-- Columns for cache table -->
+		<ref local="cache_id" />
+		<ref local="cache_tweet_id" />
+		<!-- Referencing tables to cache -->
+		<ref local="tweet_tags" />
+		<ref local="tweet_urls" />
+		<ref local="tweets" />
+		<ref local="users" />
+	</util:list>
+	<bean
+		id="cache_id"
+		class="ikube.model.IndexableColumn"
+		property:name="cache_id"
+		property:idColumn="true"
+		property:analyzed="false"
+		property:stored="false"
+		property:vectored="false" />
+	<bean
+		id="cache_tweet_id"
+		class="ikube.model.IndexableColumn"
+		property:name="tweet_id"
+		property:idColumn="false"
+		property:analyzed="false"
+		property:stored="false"
+		property:vectored="false" />
+	
+	<bean
+		id="tweet_tags"
+		class="ikube.model.IndexableTable"
+		property:name="tweet_tags"
+		property:address="false"
+		property:children-ref="tweet_tags_columns" 
+		property:maxExceptions="10"
+		property:allColumns="true" 
+		property:stored="false"
+		property:analyzed="false"
+		property:vectored="false" />
+	<util:list id="tweet_tags_columns">
+		<ref local="tweet_tags_id" />
+	</util:list>
+	<bean
+		id="tweet_tags_id"
+		class="ikube.model.IndexableColumn"
+		property:name="tweet_id"
+		property:fieldName="tweet_id"
+		property:analyzed="false"
+		property:stored="false"
+		property:vectored="false"
+		property:numeric="false"
+		property:foreignKey-ref="cache_tweet_id" />
+		
+	<bean
+		id="tweet_urls"
+		class="ikube.model.IndexableTable"
+		property:name="tweet_urls"
+		property:address="false"
+		property:children-ref="tweet_urls_columns" 
+		property:maxExceptions="10"
+		property:allColumns="true" 
+		property:stored="false"
+		property:analyzed="false"
+		property:vectored="false" />
+	<util:list id="tweet_urls_columns">
+		<ref local="tweet_urls_id" />
+	</util:list>
+	<bean
+		id="tweet_urls_id"
+		class="ikube.model.IndexableColumn"
+		property:name="tweet_id"
+		property:fieldName="tweet_id"
+		property:analyzed="false"
+		property:stored="false"
+		property:vectored="false"
+		property:numeric="false"
+		property:foreignKey-ref="cache_tweet_id" />
+	
+	<bean
+		id="tweets"
+		class="ikube.model.IndexableTable"
+		property:name="tweets"
+		property:address="false"
+		property:children-ref="tweets_columns" 
+		property:maxExceptions="10"
+		property:allColumns="true" 
+		property:stored="false"
+		property:analyzed="false"
+		property:vectored="false" />
+	<util:list id="tweets_columns">
+		<ref local="tweets_id" />
+		<ref local="tweets_user_id" />
+	</util:list>
+	<bean
+		id="tweets_id"
+		class="ikube.model.IndexableColumn"
+		property:name="tweet_id"
+		property:fieldName="tweet_id"
+		property:analyzed="false"
+		property:stored="false"
+		property:vectored="false"
+		property:numeric="false"
+		property:foreignKey-ref="cache_tweet_id" />
+	<bean
+		id="tweets_user_id"
+		class="ikube.model.IndexableColumn"
+		property:name="user_id"
+		property:fieldName="user_id"
+		property:analyzed="false"
+		property:stored="false"
+		property:vectored="false"
+		property:numeric="false" />
+	
+	<bean
+		id="users"
+		class="ikube.model.IndexableTable"
+		property:name="users"
+		property:address="false"
+		property:children-ref="users_columns" 
+		property:maxExceptions="10"
+		property:allColumns="true" 
+		property:stored="false"
+		property:analyzed="false"
+		property:vectored="false" />
+	<util:list id="users_columns">
+		<ref local="user_id" />
+	</util:list>
+	<bean
+		id="user_id"
+		class="ikube.model.IndexableColumn"
+		property:name="user_id"
+		property:fieldName="user_id"
+		property:analyzed="false"
+		property:stored="false"
+		property:vectored="false"
+		property:numeric="false"
+		property:foreignKey-ref="tweets_user_id" />
+			
+	<bean 
+		id="non-xa-datasource-mysql" 
+		class="com.mchange.v2.c3p0.ComboPooledDataSource" 
+		destroy-method="close" />
+		
+	<bean 
+		id="indexContextTable" 
+		class="ikube.model.IndexableTable" 
+		property:name="indexContext" 
+		property:allColumns="true" 
+		property:maxExceptions="100" 
+		property:stored="true" 
+		property:analyzed="true"
+		property:vectored="true"
+		property:children-ref="indexContextColumns" />
+	<util:list id="indexContextColumns">
+		<ref local="indexContextId" />
+		<ref local="snapshotTable" />
+	</util:list>
+	<bean
+		id="indexContextId"
+		class="ikube.model.IndexableColumn"
+		property:name="id"
+		property:idColumn="true"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
+	
+	<bean 
+		id="snapshotTable" 
+		class="ikube.model.IndexableTable" 
+		property:name="snapshot" 
+		property:allColumns="true" 
+		property:maxExceptions="100" 
+		property:stored="true" 
+		property:analyzed="true"
+		property:vectored="true"
+		property:children-ref="snapshotColumns" />
+	<util:list id="snapshotColumns">
+		<ref local="snapshotId" />
+		<ref local="snapshotNumDocsForIndexWriters" />
+	</util:list>
+	<bean
+		id="snapshotId"
+		class="ikube.model.IndexableColumn"
+		property:name="id"
+		property:idColumn="true"
+		property:analyzed="false"
+		property:stored="false"
+		property:vectored="false"
+		property:foreignKey-ref="indexContextId" />
+	<bean
+		id="snapshotNumDocsForIndexWriters"
+		class="ikube.model.IndexableColumn"
+		property:name="numDocsForIndexWriters"
+		property:fieldName="numDocsForIndexWriters"
+		property:address="true"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
 	
 </beans>

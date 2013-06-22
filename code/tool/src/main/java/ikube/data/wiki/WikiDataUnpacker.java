@@ -128,7 +128,6 @@ public class WikiDataUnpacker {
 	 * @param outputDisksPaths the disks to write the data to
 	 * @throws Exception
 	 */
-	@SuppressWarnings("unchecked")
 	protected static void read7ZAndUnpackFiles(final String inputFilePath, final String... outputDisksPaths) throws Exception {
 		File inputFile = FileUtilities.getFile(inputFilePath, Boolean.FALSE);
 		File[] outputDisks = new File[outputDisksPaths.length];

@@ -33,7 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFileSystemCsv> {
 
 	@Autowired
-	private ResourceRowHandler resourceRowHandler;
+	private RowResourceHandler rowResourceHandler;
 
 	@Override
 	public List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final IndexableFileSystemCsv indexableFileSystem) throws Exception {
@@ -107,7 +107,7 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
 						IndexableColumn indexableColumn = (IndexableColumn) indexableColumns.get(i);
 						indexableColumn.setContent(values[i]);
 					}
-					resourceRowHandler.handleResource(indexContext, indexableFileSystemCsv, new Document(), file);
+					rowResourceHandler.handleResource(indexContext, indexableFileSystemCsv, new Document(), file);
 					ThreadUtilities.sleep(indexContext.getThrottle());
 				} catch (Exception e) {
 					logger.error("Exception processing file : " + file, e);

@@ -39,7 +39,6 @@ public final class Optimizer {
 			indexContext.setIndexDirectoryPath(basePath);
 			optimize(indexContext);
 		}
-		System.exit(0);
 	}
 
 	public static void optimize(final IndexContext<?> indexContext) {

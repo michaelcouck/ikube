@@ -21,7 +21,7 @@ import org.mockito.Mockito;
  * @version 01.00
  */
 public class ActionTest extends AbstractTest {
-
+	
 	private Action<?, ?> action;
 
 	@Before

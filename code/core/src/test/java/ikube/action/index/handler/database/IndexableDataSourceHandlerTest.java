@@ -84,7 +84,6 @@ public class IndexableDataSourceHandlerTest extends AbstractTest {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void isInContextAlready() {
 		Indexable<?> child = mock(Indexable.class);
 		when(child.getName()).thenReturn("tableName");

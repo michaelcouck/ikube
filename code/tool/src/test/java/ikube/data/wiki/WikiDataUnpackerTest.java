@@ -1,38 +1,21 @@
 package ikube.data.wiki;
 
-import mockit.Mock;
-import mockit.MockClass;
-import mockit.Mockit;
+import ikube.toolkit.FileUtilities;
 
-import org.junit.After;
-import org.junit.Before;
+import java.io.File;
+
 import org.junit.Test;
 
 public class WikiDataUnpackerTest {
-
-	@MockClass(realClass = WikiDataUnpacker.class)
-	static class WikiDataUnpackerMock {
-		@Mock
-		protected static void read7ZAndUnpackFiles(final String inputFilePath, final String... outputDisksPaths) throws Exception {
-			// Do nothing
-		}
-	}
-
-	@Before
-	public void before() {
-		Mockit.setUpMocks(WikiDataUnpackerMock.class);
-	}
-
-	@After
-	public void after() {
-		Mockit.tearDownMocks(WikiDataUnpackerMock.class);
-	}
 
 	@Test
 	public void main() throws Exception {
 		String[] args = {};
 		WikiDataUnpacker.main(args);
-		args = new String[] { WikiDataUnpacker.UNPACK_SINGLES, "/NoFile", "/NoDisks" };
+		File inputFile = FileUtilities.findFileRecursively(new File("."), "7zip.7z");
+		String inputFilePath = FileUtilities.cleanFilePath(inputFile.getAbsolutePath());
+		String outputDirectoryPath = FileUtilities.cleanFilePath(inputFile.getParentFile().getAbsolutePath());
+		args = new String[] { WikiDataUnpacker.UNPACK_SINGLES, inputFilePath, outputDirectoryPath };
 		WikiDataUnpacker.main(args);
 		// Nothing to do here, just no exception expected
 	}

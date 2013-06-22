@@ -3,7 +3,6 @@ package ikube.action.index.handler.filesystem;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
 import ikube.action.index.handler.IndexableHandler;
-import ikube.action.index.handler.ResourceHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystemWiki;
 import ikube.toolkit.FileUtilities;
@@ -23,7 +22,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
@@ -44,8 +42,6 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 
 	@Value("${wiki.read.length}")
 	private long readLength = 1024 * 1024 * 100;
-	@Autowired
-	private ResourceHandler<IndexableFileSystemWiki> resourceHandler;
 
 	/**
 	 * {@inheritDoc}

@@ -1,7 +1,5 @@
 package ikube.model;
 
-import java.util.Arrays;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
@@ -21,8 +19,7 @@ import org.apache.openjpa.persistence.jdbc.Index;
  */
 @Entity()
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@NamedQueries(value = {
-		@NamedQuery(name = Url.DELETE_ALL_URLS, query = Url.DELETE_ALL_URLS),
+@NamedQueries(value = { @NamedQuery(name = Url.DELETE_ALL_URLS, query = Url.DELETE_ALL_URLS),
 		@NamedQuery(name = Url.SELECT_FROM_URL_BY_HASH, query = Url.SELECT_FROM_URL_BY_HASH),
 		@NamedQuery(name = Url.SELECT_FROM_URL_BY_NAME, query = Url.SELECT_FROM_URL_BY_NAME) })
 public class Url extends Persistable {
@@ -95,18 +92,11 @@ public class Url extends Persistable {
 	}
 
 	public byte[] getRawContent() {
-		if (rawContent == null) {
-			return null;
-		}
-		return Arrays.copyOf(rawContent, rawContent.length);
+		return rawContent;
 	}
 
 	public void setRawContent(final byte[] rawContent) {
-		if (rawContent == null) {
-			this.rawContent = null;
-			return;
-		}
-		this.rawContent = Arrays.copyOf(rawContent, rawContent.length);
+		this.rawContent = rawContent;
 	}
 
 	public String getParsedContent() {
@@ -132,7 +122,7 @@ public class Url extends Persistable {
 	public void setHash(final long hash) {
 		this.hash = hash;
 	}
-	
+
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.DEFAULT_STYLE, false);
 	}

@@ -197,7 +197,6 @@ public class CacheInfinispanTest extends ATest {
 			List<Server> servers = cacheInfinispan.get(Server.class.getName(), null, null, Integer.MAX_VALUE);
 			System.out.println(i + ":" + servers.size() + ":" + (i == servers.size()));
 		}
-		System.exit(0);
 	}
 
 	private static void sleep() throws InterruptedException {
