@@ -236,9 +236,6 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 					IndexSearcher indexSearcher = (IndexSearcher) searchable;
 					IndexReader reader = indexSearcher.getIndexReader();
 					Directory directory = reader.directory();
-					if (IndexWriter.isLocked(directory)) {
-						IndexWriter.unlock(directory);
-					}
 					close(directory, reader, searchable);
 				} catch (final NullPointerException e) {
 					logger.error("Reader closed perhaps?");

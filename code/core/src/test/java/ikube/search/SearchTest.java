@@ -36,7 +36,6 @@ import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.util.ReaderUtil;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -66,8 +65,8 @@ public class SearchTest extends AbstractTest {
 			somthingElseAlToGether + " ";
 	private static String somethingNumeric = " 123.456789 ";
 
-	private static String[] strings = { russian, german, french, somthingElseAlToGether, string, somethingNumeric, "123.456789",
-			"123.456790", "123.456791", "123.456792", "123.456793", "123.456794", "123456789", "123456790" };
+	private static String[] strings = { russian, german, french, somthingElseAlToGether, string, somethingNumeric, "123.456789", "123.456790", "123.456791",
+			"123.456792", "123.456793", "123.456794", "123456789", "123456790" };
 
 	@BeforeClass
 	public static void beforeClass() throws Exception {
@@ -99,8 +98,7 @@ public class SearchTest extends AbstractTest {
 				} else {
 					IndexManager.addStringField(IConstants.CONTENTS, contents, document, Store.YES, Index.ANALYZED, TermVector.YES);
 				}
-				IndexManager.addStringField(IConstants.NAME, "michael couck. " + stringTrimmed, document, Store.YES, Index.ANALYZED,
-						TermVector.YES);
+				IndexManager.addStringField(IConstants.NAME, "michael couck. " + stringTrimmed, document, Store.YES, Index.ANALYZED, TermVector.YES);
 				indexWriter.addDocument(document);
 			}
 		}
@@ -257,16 +255,14 @@ public class SearchTest extends AbstractTest {
 			Deencapsulation.setField(spellingChecker, "spellingIndexDirectoryPath", "./spellingIndex");
 			spellingChecker.initialize();
 
-			String[] searchStrings = { "some correct words", "unt soome are niet corekt",
-					"AND there are AND some gobblie words WITH AND another" };
+			String[] searchStrings = { "some correct words", "unt soome are niet corekt", "AND there are AND some gobblie words WITH AND another" };
 			Search search = new SearchSingle(SEARCHER);
 			search.setSearchString(searchStrings);
 			String[] correctedSearchStrings = search.getCorrections();
 			String correctedSearchString = Arrays.deepToString(correctedSearchStrings);
 			logger.info("Corrected : " + correctedSearchString);
 			assertEquals("Only the completely incorrect words should be replaced : ",
-					"[some correct words, unct sooke are net coreen, AND there are AND some gobble words WITH AND another]",
-					correctedSearchString);
+					"[some correct words, unct sooke are net coreen, AND there are AND some gobble words WITH AND another]", correctedSearchString);
 		} finally {
 			Mockit.setUpMock(SpellingCheckerMock.class);
 		}

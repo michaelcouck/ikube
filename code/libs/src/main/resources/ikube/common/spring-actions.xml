@@ -33,6 +33,7 @@
 		<ref bean="ikube.action.Restore" />
 		<ref bean="ikube.action.Index"  />
 		<ref bean="ikube.action.Open"  />
+		<ref bean="ikube.action.Reopen"  />
 		<ref bean="ikube.action.Delete" />
 		<ref bean="ikube.action.Clean" />
 		<ref bean="ikube.action.Backup" />
@@ -118,6 +119,19 @@
 				<ref local="ikube.action.rule.IsMultiSearcherInitialised" />
 				<ref local="ikube.action.rule.AreSearchablesInitialised" />
 				<ref local="ikube.action.rule.AnyServersWorkingThisIndex" />
+				<ref local="ikube.action.rule.IsIndexDelta" />
+				<ref local="ikube.action.rule.IsThisIndexCreated" />
+			</util:list>
+		</property>
+	</bean>
+	<bean 
+		id="ikube.action.Reopen" 
+		class="ikube.action.Reopen" 
+		property:ruleExpression="
+			IsIndexDelta &#38;&#38; IsThisIndexCreated"
+		property:requiresClusterLock="false">
+		<property name="rules">
+			<util:list>
 				<ref local="ikube.action.rule.IsIndexDelta" />
 				<ref local="ikube.action.rule.IsThisIndexCreated" />
 			</util:list>

@@ -7,11 +7,7 @@ import ikube.scheduling.Schedule;
 import java.io.IOException;
 import java.util.Map;
 
-import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.MultiSearcher;
-import org.apache.lucene.search.Searchable;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -19,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 21.06.13
  * @version 01.00
  */
-@SuppressWarnings("deprecation")
 public class IndexCommitSchedule extends Schedule {
 
 	@Autowired
@@ -49,21 +44,6 @@ public class IndexCommitSchedule extends Schedule {
 					indexWriter.deleteUnusedFiles();
 				} catch (IOException e) {
 					logger.error("Exception comitting the index writer : ", e);
-				}
-			}
-			MultiSearcher multiSearcher = indexContext.getMultiSearcher();
-			if (multiSearcher != null) {
-				Searchable[] searchables = multiSearcher.getSearchables();
-				if (searchables != null) {
-					for (final Searchable searchable : searchables) {
-						try {
-							((IndexSearcher) searchable).getIndexReader().reopen(Boolean.TRUE);
-						} catch (CorruptIndexException e) {
-							logger.error("Exception re-opening the reader : ", e);
-						} catch (IOException e) {
-							logger.error("Exception re-opening the reader : ", e);
-						}
-					}
 				}
 			}
 		}
