@@ -83,7 +83,7 @@ public final class LanguageDetectionStrategy extends AStrategy {
 			if (profileDirectory != null) {
 				String profileDirectoryPath = FileUtilities.cleanFilePath(profileDirectory.getAbsolutePath());
 				DetectorFactory.loadProfile(profileDirectoryPath);
-				logger.info("Loading language profiles from : " + profileDirectoryPath + ", " + DetectorFactory.getLangList());
+				logger.debug("Loading language profiles from : " + profileDirectoryPath + ", " + DetectorFactory.getLangList());
 			} else {
 				logger.warn("Couldn't find the language detection profile's directory : ");
 			}

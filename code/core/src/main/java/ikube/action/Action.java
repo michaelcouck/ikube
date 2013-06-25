@@ -254,9 +254,7 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	/**
 	 * This method sill close the directory, the reader and or the searchable depending on whether they are still open.
 	 * 
-	 * @param directory the Lucene directory to close
-	 * @param reader the Lucene reader to close
-	 * @param searcher the Lucene searchable to close
+	 * @param closeables the items to close
 	 */
 	protected void close(final Closeable... closeables) {
 		if (closeables == null) {

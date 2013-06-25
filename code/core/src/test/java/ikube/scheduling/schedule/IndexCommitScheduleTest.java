@@ -1,0 +1,82 @@
+package ikube.scheduling.schedule;
+
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+import static org.mockito.Mockito.when;
+import ikube.AbstractTest;
+import ikube.IConstants;
+import ikube.action.index.IndexManager;
+import ikube.toolkit.FileUtilities;
+import ikube.toolkit.UriUtilities;
+
+import java.io.File;
+
+import mockit.Deencapsulation;
+import mockit.Mockit;
+
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+/**
+ * @author Michael Couck
+ * @since 21.06.13
+ * @version 01.00
+ */
+public class IndexCommitScheduleTest extends AbstractTest {
+
+	/** Class under test. */
+	private IndexCommitSchedule indexCommitSchedule;
+
+	@Before
+	public void before() {
+		indexCommitSchedule = new IndexCommitSchedule();
+		Deencapsulation.setField(indexCommitSchedule, "monitorService", monitorService);
+	}
+
+	@After
+	public void after() {
+		Mockit.tearDownMocks();
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+	}
+
+	@Test
+	public void run() throws Exception {
+		IndexWriter[] indexWriters = null;
+		IndexReader indexReader = null;
+
+		try {
+			indexWriters = IndexManager.openIndexWriterDelta(indexContext);
+
+			when(indexContext.isDelta()).thenReturn(Boolean.TRUE);
+			when(indexContext.getIndexWriters()).thenReturn(indexWriters);
+			addDocuments(indexWriter, IConstants.CONTENTS, "Hello world");
+
+			// There should be no segments file and the index doesn't exist yet
+			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+			File indexDirectory = new File(latestIndexDirectory, UriUtilities.getIp());
+			Directory directory = FSDirectory.open(indexDirectory);
+			assertFalse(IndexReader.indexExists(directory));
+
+			indexCommitSchedule.run();
+			// There should be a segments file and we should be able to open the reader
+			assertTrue(IndexReader.indexExists(directory));
+			indexReader = IndexReader.open(directory);
+		} finally {
+			if (indexWriters != null) {
+				for (final IndexWriter indexWriter : indexWriters) {
+					IndexManager.closeIndexWriter(indexWriter);
+				}
+			}
+			if (indexReader != null) {
+				indexReader.close();
+			}
+		}
+
+	}
+
+}

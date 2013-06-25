@@ -179,6 +179,7 @@
 		<ref local="ikube.scheduling.schedule.ActionSchedule" />
 		<ref local="ikube.scheduling.schedule.SnapshotSchedule" />
 		<ref local="ikube.scheduling.schedule.CpuLoadSchedule" />
+		<ref local="ikube.scheduling.schedule.IndexCommitSchedule" />
 	</util:list>
 	
 	<!-- Scheduled objects. -->
@@ -216,6 +217,12 @@
 		id="ikube.scheduling.schedule.CpuLoadSchedule"
 		name="ikube.scheduling.schedule.CpuLoadSchedule" 
 		class="ikube.scheduling.schedule.CpuLoadSchedule" 
+		property:delay="60000"
+		property:period="60000" />
+	<bean
+		id="ikube.scheduling.schedule.IndexCommitSchedule"
+		name="ikube.scheduling.schedule.IndexCommitSchedule" 
+		class="ikube.scheduling.schedule.IndexCommitSchedule" 
 		property:delay="60000"
 		property:period="60000" />
 	
@@ -318,6 +325,11 @@
 		id="ikube.action.index.handler.filesystem.IndexableFilesystemCsvHandler" 
 		class="ikube.action.index.handler.filesystem.IndexableFilesystemCsvHandler"
 		property:indexableClass="ikube.model.IndexableFileSystemCsv" />
+	<bean
+		parent="ikube.action.index.handler.IndexableHandler"
+		id="ikube.action.index.handler.internet.TwitterHandler" 
+		class="ikube.action.index.handler.internet.TwitterHandler"
+		property:indexableClass="ikube.model.IndexableTweets" />
 	
 	<bean 
 		id="ikube.action.index.handler.ResourceHandler"
@@ -332,6 +344,9 @@
 	<bean 
 		id="ikube.action.index.handler.internet.InternetResourceHandler" 
 		class="ikube.action.index.handler.internet.InternetResourceHandler" />
+	<bean 
+		id="ikube.action.index.handler.internet.TwitterResourceHandler" 
+		class="ikube.action.index.handler.internet.TwitterResourceHandler" />
 		
 	<bean 
 		id="ikube.action.index.analyzer.NgramAnalyzer"
@@ -347,6 +362,11 @@
 		id="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy"
 		name="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy" 
     	class="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy" />
+    
+    <bean
+		id="ikube.action.index.handler.strategy.SentimentAnalysisStrategy"
+		name="ikube.action.index.handler.strategy.SentimentAnalysisStrategy" 
+    	class="ikube.action.index.handler.strategy.SentimentAnalysisStrategy" />
     
     <!-- 
 		This bean is the geocoder, it will enrich the data with spatial co-ordinates if

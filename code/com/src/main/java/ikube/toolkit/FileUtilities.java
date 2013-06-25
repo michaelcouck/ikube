@@ -268,6 +268,10 @@ public final class FileUtilities {
 		}
 		return Pattern.compile(builder.toString());
 	}
+	
+	public static boolean deleteFile(final File file) {
+		return deleteFile(file, 1);
+	}
 
 	/**
 	 * Deletes the file/folder recursively. If the file cannot be deleted then the file is set to delete on exit of the JVM, which doesn't generally work of

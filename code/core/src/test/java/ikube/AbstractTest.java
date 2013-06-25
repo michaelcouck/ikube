@@ -24,10 +24,10 @@ import ikube.search.Search;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
 import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.UriUtilities;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -149,7 +149,7 @@ public abstract class AbstractTest {
 		servers = new HashMap<String, Server>();
 		indexContexts = new HashMap<String, IndexContext>();
 
-		ip = InetAddress.getLocalHost().getHostAddress();
+		ip = UriUtilities.getIp();
 
 		when(indexSearcher.getIndexReader()).thenReturn(indexReader);
 		when(indexSearcher.search(any(Query.class), anyInt())).thenReturn(topDocs);

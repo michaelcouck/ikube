@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * @version 01.00
  */
 @Controller
-public class LoginController extends BaseController {
+public class LoginController {
 
 	/**
 	 * This method will be called by Spring security, as defined in the security configuration, and forward to the login page which is
@@ -24,7 +24,6 @@ public class LoginController extends BaseController {
 	 */
 	@RequestMapping(value = "/login.html", method = { RequestMethod.GET, RequestMethod.POST })
 	public String get(final Model model) {
-		logger.debug("Login page : {}", model);
 		return "/login";
 	}
 

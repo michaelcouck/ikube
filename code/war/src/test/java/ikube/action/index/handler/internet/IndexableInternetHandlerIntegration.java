@@ -23,7 +23,6 @@ import mockit.Deencapsulation;
 
 import org.apache.lucene.index.IndexWriter;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -83,16 +82,6 @@ public class IndexableInternetHandlerIntegration extends IntegrationTest {
 
 		List<Url> urls = Deencapsulation.invoke(indexableInternetHandler, "extractLinksFromContent", indexableInternet, inputStream);
 		assertTrue("Expected more than " + expectedAtLeast + " and got : " + urls.size(), urls.size() > expectedAtLeast);
-	}
-
-	@Test
-	@Ignore
-	public void login() throws Exception {
-		// HttpClient httpClient = new HttpClient();
-		// indexableInternetHandler.login(indexableInternet, httpClient);
-		// TODO First make sure that the security supports basic and digest so
-		// the login method can in fact login. Second, login then try to access some other pages
-		// and they should be returned of course
 	}
 
 }

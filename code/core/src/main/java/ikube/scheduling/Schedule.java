@@ -1,11 +1,16 @@
 package ikube.scheduling;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Michael Couck
  * @since 21.11.10
  * @version 01.00
  */
 public abstract class Schedule implements Runnable {
+
+	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private long delay = 10;
 	private long period = 10;

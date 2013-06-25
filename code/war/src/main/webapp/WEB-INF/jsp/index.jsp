@@ -22,6 +22,7 @@
 	<li rel="properties">Properties</li>
 	<li rel="search-advanced">Advanced</li>
 	<li rel="search-geospatial">Geospatial</li>
+	<li rel="happy">Happy</li>
 	<li rel="place-holder" style="width : 150px;">&nbsp;</li>
 </ul>
 
@@ -43,6 +44,9 @@
 	</div>
 	<div id="search-geospatial" class="tab_content">
 		<jsp:include page="/search/geospatial.jsp" />
+	</div>
+	<div id="happy" class="tab_content">
+		<jsp:include page="/WEB-INF/jsp/happy.jsp" />
 	</div>
 	<div id="place-holder" class="tab_content">
 		&nbsp;

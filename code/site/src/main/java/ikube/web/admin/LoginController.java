@@ -13,18 +13,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * @version 01.00
  */
 @Controller
-public class LoginController extends BaseController {
+public class LoginController {
 
 	/**
-	 * This method will be called by Spring security, as defined in the security configuration, and forward to the login page which is
-	 * typically under the WEB-INF folder.
+	 * This method will be called by Spring security, as defined in the security configuration, and forward to the login page which is typically under the
+	 * WEB-INF folder.
 	 * 
 	 * @param model the model for the application if there is one
 	 * @return the login page view
 	 */
 	@RequestMapping(value = "/login.html", method = { RequestMethod.GET, RequestMethod.POST })
 	public String get(final Model model) {
-		logger.info("Login page : {}", model);
 		return "/login";
 	}
 

@@ -21,16 +21,15 @@ public class DirectoryExistsAndIsLocked extends ARule<File> {
 	 */
 	@Override
 	public boolean evaluate(final File indexDirectory) {
+		boolean existsAndIsLocked = Boolean.FALSE;
 		Directory directory = null;
 		try {
 			directory = FSDirectory.open(indexDirectory);
 			boolean exists = IndexReader.indexExists(directory);
 			boolean locked = IndexWriter.isLocked(directory);
-			logger.debug("Server index directory : " + indexDirectory + "exists : " + exists + "locked : " + locked);
 			if (exists && locked) {
-				return Boolean.TRUE;
+				existsAndIsLocked = Boolean.TRUE;
 			}
-			logger.debug("Directory not locked and exists : " + directory + ", exists : " + exists + ", locked : " + locked);
 		} catch (Exception e) {
 			logger.error("Exception checking the directories : ", e);
 		} finally {
@@ -42,7 +41,7 @@ public class DirectoryExistsAndIsLocked extends ARule<File> {
 				logger.error("Exception closing the directory : " + directory, e);
 			}
 		}
-		return Boolean.FALSE;
+		return existsAndIsLocked;
 	}
 
 }

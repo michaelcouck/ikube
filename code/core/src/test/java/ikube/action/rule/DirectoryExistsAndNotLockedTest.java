@@ -3,14 +3,15 @@ package ikube.action.rule;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
-import ikube.mock.FSDirectoryMock;
-import ikube.mock.IndexReaderMock;
-import ikube.mock.IndexWriterMock;
+import ikube.action.index.IndexManager;
+import ikube.toolkit.UriUtilities;
 
-import java.io.IOException;
+import java.io.File;
 
 import mockit.Mockit;
 
+import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.Lock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +27,6 @@ public class DirectoryExistsAndNotLockedTest extends AbstractTest {
 
 	@Before
 	public void before() {
-		Mockit.setUpMocks(IndexWriterMock.class, IndexReaderMock.class, FSDirectoryMock.class);
 		existsAndNotLocked = new DirectoryExistsAndNotLocked();
 	}
 
@@ -36,16 +36,25 @@ public class DirectoryExistsAndNotLockedTest extends AbstractTest {
 	}
 
 	@Test
-	public void evaluate() throws IOException {
-		IndexWriterMock.setIsLocked(Boolean.FALSE);
-		IndexReaderMock.setIndexExists(Boolean.TRUE);
-		boolean existsAndIsNotLocked = existsAndNotLocked.evaluate(null);
-		assertTrue(existsAndIsNotLocked);
+	public void evaluate() throws Exception {
+		boolean existsAndNotLockedResult = existsAndNotLocked.evaluate(new File(indexContext.getIndexDirectoryPath()));
+		assertFalse(existsAndNotLockedResult);
 
-		IndexWriterMock.setIsLocked(Boolean.TRUE);
-		IndexReaderMock.setIndexExists(Boolean.FALSE);
-		existsAndIsNotLocked = existsAndNotLocked.evaluate(null);
-		assertFalse(existsAndIsNotLocked);
+		createIndexFileSystem(indexContext, "Hello world");
+
+		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+		File indexDirectory = new File(latestIndexDirectory, UriUtilities.getIp());
+		existsAndNotLockedResult = existsAndNotLocked.evaluate(indexDirectory);
+		assertTrue(existsAndNotLockedResult);
+
+		Lock lock = null;
+		try {
+			lock = getLock(FSDirectory.open(indexDirectory), indexDirectory);
+			existsAndNotLockedResult = existsAndNotLocked.evaluate(indexDirectory);
+			assertFalse(existsAndNotLockedResult);
+		} finally {
+			lock.release();
+		}
 	}
 
 }

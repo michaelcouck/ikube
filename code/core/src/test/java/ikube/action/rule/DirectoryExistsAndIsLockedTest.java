@@ -1,15 +1,18 @@
 package ikube.action.rule;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
-import ikube.mock.FSDirectoryMock;
-import ikube.mock.IndexReaderMock;
-import ikube.mock.IndexWriterMock;
+import ikube.action.index.IndexManager;
+import ikube.toolkit.FileUtilities;
+import ikube.toolkit.UriUtilities;
 
-import java.io.IOException;
+import java.io.File;
 
 import mockit.Mockit;
 
+import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.Lock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +24,7 @@ import org.junit.Test;
  */
 public class DirectoryExistsAndIsLockedTest extends AbstractTest {
 
-	private DirectoryExistsAndIsLocked	existsAndIsLocked;
+	private DirectoryExistsAndIsLocked existsAndIsLocked;
 
 	@Before
 	public void before() {
@@ -31,26 +34,30 @@ public class DirectoryExistsAndIsLockedTest extends AbstractTest {
 	@After
 	public void after() {
 		Mockit.tearDownMocks();
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
 	}
 
 	@Test
-	public void evaluate() throws IOException {
-		IndexReaderMock.setIndexExists(Boolean.FALSE);
-		IndexWriterMock.setIsLocked(Boolean.FALSE);
-		Mockit.setUpMocks(IndexWriterMock.class, IndexReaderMock.class, FSDirectoryMock.class);
-		boolean result = existsAndIsLocked.evaluate(null);
-		Mockit.tearDownMocks();
-		assertFalse(result);
+	public void evaluate() throws Exception {
+		boolean existsAndIsLockedResult = existsAndIsLocked.evaluate(new File(indexContext.getIndexDirectoryPath()));
+		assertFalse(existsAndIsLockedResult);
 
-		IndexReaderMock.setIndexExists(Boolean.TRUE);
-		IndexWriterMock.setIsLocked(Boolean.TRUE);
-		Mockit.setUpMocks(IndexWriterMock.class, IndexReaderMock.class, FSDirectoryMock.class);
-		// result = existsAndIsLocked.evaluate(null);
-		Mockit.tearDownMocks();
-		// TODO The IndexWriterMock never gets called for some reason! The IndexReaderMock
-		// is over written by JMockit, and the FSDirectoryMock but not the IndexWriterMock! Why? This
-		// result should be true as the index exists and the index is locked
-		// assertFalse(result);
+		createIndexFileSystem(indexContext, "Hello world");
+
+		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+		File indexDirectory = new File(latestIndexDirectory, UriUtilities.getIp());
+		existsAndIsLockedResult = existsAndIsLocked.evaluate(indexDirectory);
+		assertFalse(existsAndIsLockedResult);
+
+		Lock lock = null;
+		try {
+			lock = getLock(FSDirectory.open(indexDirectory), indexDirectory);
+			existsAndIsLockedResult = existsAndIsLocked.evaluate(indexDirectory);
+			assertTrue(existsAndIsLockedResult);
+		} finally {
+			lock.release();
+		}
+
 	}
 
 }

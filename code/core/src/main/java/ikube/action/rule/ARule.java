@@ -5,13 +5,8 @@ import ikube.cluster.IClusterManager;
 import ikube.model.IndexContext;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,65 +27,46 @@ public abstract class ARule<T> implements IRule<T> {
 	protected IClusterManager clusterManager;
 
 	/**
-	 * This method goes through all the server index directories in the latest index directory and checks that each index is created and not
-	 * corrupt. All indexes that are still locked are ignored.
+	 * This method goes through all the server index directories in the latest index directory and checks that each index is created and not corrupt. All
+	 * indexes that are still locked are ignored.
 	 * 
 	 * @param baseIndexDirectoryPath the path to the base index directory
 	 * @return whether all the server indexes are created and not corrupt
 	 */
-	protected boolean indexesExist(String baseIndexDirectoryPath) {
+	protected boolean indexesExist(final String baseIndexDirectoryPath) {
+		boolean exists = Boolean.FALSE;
 		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(baseIndexDirectoryPath);
-		if (latestIndexDirectory == null) {
-			return Boolean.FALSE;
-		}
-		File[] serverIndexDirectories = latestIndexDirectory.listFiles();
-		if (serverIndexDirectories == null || serverIndexDirectories.length == 0) {
-			return Boolean.FALSE;
-		}
-		for (File serverIndexDirectory : serverIndexDirectories) {
-			Directory directory = null;
-			try {
-				directory = FSDirectory.open(serverIndexDirectory);
-				if (IndexWriter.isLocked(directory)) {
-					continue;
-				}
-				if (!IndexReader.indexExists(directory)) {
-					return Boolean.FALSE;
-				}
-			} catch (IOException e) {
-				logger.error("Exception checking the index directories : ", e);
-			} finally {
-				if (directory != null) {
-					try {
-						directory.close();
-					} catch (Exception e) {
-						logger.error("Exception closing the directory : ", e);
+		if (latestIndexDirectory != null) {
+			File[] serverIndexDirectories = latestIndexDirectory.listFiles();
+			if (serverIndexDirectories != null && serverIndexDirectories.length > 0) {
+				for (File serverIndexDirectory : serverIndexDirectories) {
+					exists = new DirectoryExistsAndNotLocked().evaluate(serverIndexDirectory);
+					if (!exists) {
+						break;
 					}
 				}
 			}
 		}
-		return Boolean.TRUE;
+		return exists;
 	}
 
 	/**
-	 * This method checks to see that the index has not passed it's validity period, i.e. that the age of the index, determined by it's
-	 * folder name, is not older than the max age that is defined in the index context for the index.
+	 * This method checks to see that the index has not passed it's validity period, i.e. that the age of the index, determined by it's folder name, is not
+	 * older than the max age that is defined in the index context for the index.
 	 * 
 	 * @param indexContext the index context to check for up to date index(es)
 	 * @param indexDirectoryPath the index directory path to the indexes for this context, could be the back indexes too of course
 	 * @return whether the index defined by the index path is current
 	 */
-	protected boolean isIndexCurrent(IndexContext<?> indexContext, String indexDirectoryPath) {
+	protected boolean isIndexCurrent(final IndexContext<?> indexContext, final String indexDirectoryPath) {
 		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
 		if (latestIndexDirectory == null) {
 			return Boolean.FALSE;
 		}
 		String indexDirectoryName = latestIndexDirectory.getName();
-
 		long currentTime = TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis());
 		long indexDirectoryTime = TimeUnit.MILLISECONDS.toMinutes(Long.parseLong(indexDirectoryName));
 		long indexAge = currentTime - indexDirectoryTime;
-
 		if (indexAge > indexContext.getMaxAge()) {
 			return Boolean.FALSE;
 		}

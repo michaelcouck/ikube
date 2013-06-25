@@ -84,6 +84,8 @@
 	<mvc:view-controller path="/use-cases/file-system-delta.html" />
 	<mvc:view-controller path="/use-cases/database-ngram.html" />
 	
+	<mvc:view-controller path="/happy.html" />
+	
 	<mvc:interceptors>
 		<bean 
 			class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor"

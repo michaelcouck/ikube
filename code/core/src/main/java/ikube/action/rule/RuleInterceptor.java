@@ -18,11 +18,10 @@ import org.nfunk.jep.SymbolTable;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * This class is implemented as an intercepter, and typically configured in Spring. The intercepter will intercept the execution of the
- * actions, like {@link Index} and {@link Open}. Each action has associated with it rules, like whether any other servers are currently
- * working on this index or if the index is current and already open. The rules for the action will then be executed, and based on the
- * result of the boolean predicate parameterized with the results of each rule, the action will either be executed or not. {@link JEP} is
- * the expression parser for the rules.
+ * This class is implemented as an intercepter, and typically configured in Spring. The intercepter will intercept the execution of the actions, like
+ * {@link Index} and {@link Open}. Each action has associated with it rules, like whether any other servers are currently working on this index or if the index
+ * is current and already open. The rules for the action will then be executed, and based on the result of the boolean predicate parameterized with the results
+ * of each rule, the action will either be executed or not. {@link JEP} is the expression parser for the rules.
  * 
  * @see IRuleInterceptor
  * @author Michael Couck
@@ -81,9 +80,9 @@ public class RuleInterceptor implements IRuleInterceptor {
 	}
 
 	/**
-	 * Proceeds on the join point. A scheduled task will be started by the scheduler. The task is the action that has been given the green
-	 * light to start. The current thread will wait for the action to complete, but will only wait for a few seconds then continue. The
-	 * action is started in a separate thread because we don't want a queue of actions building up.
+	 * Proceeds on the join point. A scheduled task will be started by the scheduler. The task is the action that has been given the green light to start. The
+	 * current thread will wait for the action to complete, but will only wait for a few seconds then continue. The action is started in a separate thread
+	 * because we don't want a queue of actions building up.
 	 * 
 	 * @param proceedingJoinPoint the intercepted action join point
 	 */
@@ -141,12 +140,14 @@ public class RuleInterceptor implements IRuleInterceptor {
 			if (jep.hasError()) {
 				LOGGER.warn("Exception in Jep expression : " + jep.getErrorInfo());
 				LOGGER.warn("Symbol table : " + jep.getSymbolTable());
+				printSymbolTable(jep, finalResult, indexContext.getName(), action.getClass().getSimpleName());
 			}
 			result = jep.getValueAsObject();
 			if (result == null) {
 				result = jep.getValue();
 			}
 			finalResult = result != null && (result.equals(1.0d) || result.equals(Boolean.TRUE));
+			// printSymbolTable(jep, finalResult, indexContext.getName(), action.getClass().getSimpleName());
 		}
 		return finalResult;
 	}
@@ -169,10 +170,11 @@ public class RuleInterceptor implements IRuleInterceptor {
 		return null;
 	}
 
-	protected void printSymbolTable(final JEP jep, final String indexName, final String target) {
+	protected void printSymbolTable(final JEP jep, final boolean finalResult, final String indexName, final String target) {
 		try {
 			SymbolTable symbolTable = jep.getSymbolTable();
-			LOGGER.info("Symbol table : " + indexName + ", " + target + " : " + symbolTable);
+			LOGGER.info("Symbol table : " + indexName + ", " + target);
+			LOGGER.info(symbolTable);
 		} catch (Exception e) {
 			LOGGER.error("Exception printing the nodes : ", e);
 		}

@@ -35,13 +35,21 @@
 		property:maxReadLength="${max.read.length}"
 		property:address="true"
 		property:throttle="0"
+		property:delta="true"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
-		property:children-ref="geospatialIndexables"
-		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer" />
+		property:children-ref="twitter-indexables"
+		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer.Twitter" />
 	<util:list id="twitter-indexables">
 		<ref local="twitter-index" />
 	</util:list>
+	
+	<bean 
+		id="ikube.action.index.analyzer.NgramAnalyzer.Twitter"
+		name="ikube.action.index.analyzer.NgramAnalyzer.Twitter"
+		class="ikube.action.index.analyzer.NgramAnalyzer" 
+		property:minGram="3"
+		property:maxGram="15" />
 	
 	<bean
 		id="twitter-index"
@@ -52,6 +60,7 @@
 		property:stored="true"
 		property:analyzed="true"
 		property:vectored="true"
+		property:threads="3"
 		
 		property:consumerKey="Sohh43DylUwaXr7smSojBA"
 		property:consumerSecret="90xubtexbSwhHBbKXM62pF4QfJnz1NWVkpevwde3Qxo"

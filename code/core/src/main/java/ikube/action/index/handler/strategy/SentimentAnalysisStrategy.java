@@ -12,6 +12,10 @@ import org.apache.lucene.document.Document;
  * @version 01.00
  */
 public class SentimentAnalysisStrategy extends AStrategy {
+	
+	public SentimentAnalysisStrategy() {
+		this(null);
+	}
 
 	public SentimentAnalysisStrategy(final IStrategy nextStrategy) {
 		super(nextStrategy);

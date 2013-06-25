@@ -7,7 +7,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import ikube.IConstants;
 import ikube.action.Index;
-import ikube.action.index.IndexManager;
 import ikube.action.index.parse.mime.MimeMapper;
 import ikube.action.index.parse.mime.MimeTypes;
 import ikube.action.rule.IRuleInterceptor;
@@ -28,9 +27,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * This test is to see if the intercepter is in fact intercepting the classes that it should. Difficult to automate this test of course so
- * it is a manual test. We could of course write an intercepter for the intercepter and verify that the intercepter is called by Spring,
- * personally I think that is a little over kill.
+ * This test is to see if the intercepter is in fact intercepting the classes that it should. Difficult to automate this test of course so it is a manual test.
+ * We could of course write an intercepter for the intercepter and verify that the intercepter is called by Spring, personally I think that is a little over
+ * kill.
  * 
  * @author Michael Couck
  * @since 30.04.2011
@@ -61,7 +60,7 @@ public class AopTest {
 	@SuppressWarnings("unchecked")
 	public void actionInterceptor() throws Exception {
 		IRuleInterceptor ruleInterceptor = ApplicationContextManager.getBean(IRuleInterceptor.class);
-		IClusterManager clusterManager =  ApplicationContextManager.getBean(IClusterManager.class);// mock(IClusterManager.class);
+		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);// mock(IClusterManager.class);
 		Deencapsulation.setField(ruleInterceptor, clusterManager);
 
 		Index indexDelta = ApplicationContextManager.getBean(Index.class);

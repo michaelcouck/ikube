@@ -102,8 +102,8 @@
 		id="ikube.action.Open" 
 		class="ikube.action.Open" 
 		property:ruleExpression="
-			(!AnyServersWorkingThisIndex &#38;&#38; 
-			  IsNewIndexCreated) || 
+			(!AnyServersWorkingThisIndex &#38;&#38; IsNewIndexCreated) || 
+			(IsIndexDelta &#38;&#38; IsThisIndexCreated &#38;&#38; !AreSearchablesInitialised) || 
 			(!AnyServersWorkingThisIndex &#38;&#38; 
 			  (!IsMultiSearcherInitialised ||  
 			    !AreSearchablesInitialised) &#38;&#38;
@@ -118,6 +118,8 @@
 				<ref local="ikube.action.rule.IsMultiSearcherInitialised" />
 				<ref local="ikube.action.rule.AreSearchablesInitialised" />
 				<ref local="ikube.action.rule.AnyServersWorkingThisIndex" />
+				<ref local="ikube.action.rule.IsIndexDelta" />
+				<ref local="ikube.action.rule.IsThisIndexCreated" />
 			</util:list>
 		</property>
 	</bean>
@@ -221,7 +223,6 @@
 	<bean id="ikube.action.rule.DirectoryExistsAndNotLocked" class="ikube.action.rule.DirectoryExistsAndNotLocked" />
 	<bean id="ikube.action.rule.IsIndexCurrent" class="ikube.action.rule.IsIndexCurrent" />
 	<bean id="ikube.action.rule.IsMultiSearcherInitialised" class="ikube.action.rule.IsMultiSearcherInitialised" />
-	<bean id="ikube.action.rule.IsThisIndexCreated" class="ikube.action.rule.IsThisIndexCreated" />
 	<bean id="ikube.action.rule.IsIndexCorrupt" class="ikube.action.rule.IsIndexCorrupt" />
 	<bean id="ikube.action.rule.IsIndexBackedUp" class="ikube.action.rule.IsIndexBackedUp" />
 	<bean id="ikube.action.rule.IsBackupIndexCurrent" class="ikube.action.rule.IsBackupIndexCurrent" />
@@ -230,8 +231,9 @@
 	<bean id="ikube.action.rule.IsNewIndexCreated" class="ikube.action.rule.IsNewIndexCreated" />
 	<bean id="ikube.action.rule.DoesBackupIndexExist" class="ikube.action.rule.DoesBackupIndexExist" />
 	<bean id="ikube.action.rule.AreOtherServers" class="ikube.action.rule.AreOtherServers" />
-	<bean id="ikube.action.rule.ChainedRule" class="ikube.action.rule.ChainedRule" />
 	<bean id="ikube.action.rule.TooManyActionsRule" class="ikube.action.rule.TooManyActionsRule" />
 	<bean id="ikube.action.rule.AnyServersIdle" class="ikube.action.rule.AnyServersIdle" />
+	<bean id="ikube.action.rule.IsIndexDelta" class="ikube.action.rule.IsIndexDelta" />
+	<bean id="ikube.action.rule.IsThisIndexCreated" class="ikube.action.rule.IsThisIndexCreated" />
 	
 </beans>

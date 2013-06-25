@@ -33,7 +33,6 @@ import org.mockito.Mockito;
  * @since 21.11.12
  * @version 01.00
  */
-// @Ignore
 public class DeltaIndexableFilesystemStrategyTest extends AbstractTest {
 
 	@MockClass(realClass = Collections.class)

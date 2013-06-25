@@ -31,7 +31,6 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -127,53 +126,6 @@ public class SearchSpatialTest extends AbstractTest {
 		assertTrue(results.get(1).get(IConstants.CONTENTS).equals(schwammeningenCoordinate.toString()));
 		assertTrue(results.get(2).get(IConstants.CONTENTS).equals(seebackCoordinate.toString()));
 		assertTrue(results.get(3).get(IConstants.CONTENTS).equals(adliswilCoordinate.toString()));
-	}
-
-	@Test
-	@Ignore
-	public void searchGeospatialIndex() throws Exception {
-		MultiSearcher indexSearcher = getIndexSearcher();
-		try {
-			SearchSpatialAll searchSpatial = new SearchSpatialAll(indexSearcher);
-			searchGeospatialIndex(searchSpatial, 10); // Minimum results within 10 km
-		} finally {
-			if (indexSearcher != null) {
-				indexSearcher.close();
-			}
-		}
-	}
-
-	private MultiSearcher getIndexSearcher() throws Exception {
-		File file = new File("/tmp/192.168.1.200-8010");
-		Directory directory = FSDirectory.open(file);
-		IndexReader indexReader = IndexReader.open(directory);
-
-		// Document document = indexReader.document(242301);
-		// printDocument(document);
-		// String lat = document.get(IConstants.LAT);
-		// String lng = document.get(IConstants.LNG);
-		// logger.info("Lat : " + NumericUtils.prefixCodedToDouble(lat));
-		// logger.info("Lng : " + NumericUtils.prefixCodedToDouble(lng));
-
-		printIndex(indexReader, 10);
-		IndexSearcher indexSearcher = new IndexSearcher(indexReader);
-		return new MultiSearcher(indexSearcher);
-	}
-
-	private void searchGeospatialIndex(SearchSpatial searchSpatial, int distance) throws Exception {
-		Coordinate coordinate = new Coordinate(52.52274, 13.4166);
-		searchSpatial.setCoordinate(coordinate);
-		searchSpatial.setDistance(distance);
-		searchSpatial.setFirstResult(0);
-		searchSpatial.setFragment(true);
-		searchSpatial.setMaxResults(1);
-		String searchString = "berlin";
-		searchSpatial.setSearchString(searchString); // searchString, searchString, searchString
-		ArrayList<HashMap<String, String>> results = searchSpatial.execute();
-		logger.info("Results : " + distance + ", " + results.get(results.size() - 1));
-		for (HashMap<String, String> result : results) {
-			logger.info(result.toString());
-		}
 	}
 
 }

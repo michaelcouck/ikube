@@ -40,7 +40,6 @@ public class TwitterHandler extends IndexableHandler<IndexableTweets> {
 		Tweet tweet = (Tweet) resource;
 		TwitterProfile twitterProfile = tweet.getUser();
 		String location = twitterProfile.getLocation();
-		logger.info("Location : " + location + ", " + tweet.getText());
 		// Based on the universal time offset, the time zone and the language we should be able to
 		// guess the exact location of the tweet, but for now we'll just hope that the location is not null
 		// and indeed filled in correctly

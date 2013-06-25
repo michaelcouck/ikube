@@ -292,7 +292,6 @@ public final class IndexManager {
 	public static synchronized File getLatestIndexDirectory(final String baseIndexDirectoryPath) {
 		try {
 			File baseIndexDirectory = FileUtilities.getFile(baseIndexDirectoryPath, Boolean.TRUE);
-			LOGGER.debug("Base index directory : " + baseIndexDirectory);
 			return getLatestIndexDirectory(baseIndexDirectory, null);
 		} finally {
 			IndexManager.class.notifyAll();
@@ -353,11 +352,15 @@ public final class IndexManager {
 				return indexSize.get();
 			}
 			Files.walkFileTree(latestIndexDirectory.toPath(), new SimpleFileVisitor<Path>() {
-				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-					long fileLength = file.toFile().length();
-					long newIndexSize = indexSize.get() + fileLength;
-					indexSize.set(newIndexSize);
-					return super.visitFile(file, attrs);
+				public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
+					File file = path.toFile();
+					if (file.exists() && file.canRead()) {
+						long fileLength = file.length();
+						long newIndexSize = indexSize.get() + fileLength;
+						indexSize.set(newIndexSize);
+						return super.visitFile(path, attrs);
+					}
+					return FileVisitResult.SKIP_SUBTREE;
 				}
 			});
 		} catch (Exception e) {

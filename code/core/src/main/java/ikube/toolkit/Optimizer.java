@@ -47,7 +47,7 @@ public final class Optimizer {
 			List<File> segmentsFiles = FileUtilities.findFilesRecursively(baseDirectory, new ArrayList<File>(), "segments.gen");
 			for (final File segmentsFile : segmentsFiles) {
 				final File indexDirectory = segmentsFile.getParentFile();
-				LOGGER.info("Optimizing index : " + indexDirectory + ", " + indexDirectory.listFiles().length);
+				LOGGER.info("Optimizing index : " + indexDirectory);
 				Timer.Timed timed = new Timer.Timed() {
 					@Override
 					public void execute() {

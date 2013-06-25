@@ -21,7 +21,6 @@ import mockit.Mockit;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -33,7 +32,6 @@ import org.mockito.Mockito;
  * @since 21.11.10
  * @version 01.00
  */
-@Ignore
 public class IndexableFileSystemHandlerTest extends AbstractTest {
 
 	/** Class under test. */
