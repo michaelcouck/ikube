@@ -72,7 +72,7 @@
 		property:ruleExpression="
 			!IsNewIndexCreated &#38;&#38; 
 			!IsThisServerWorking &#38;&#38; 
-			!AnyServersWorking &#38;&#38;
+			!AnyServersWorkingThisIndex &#38;&#38;
 			DoesBackupIndexExist &#38;&#38;
 			(!AreIndexesCreated || IsIndexCorrupt)"
 		property:requiresClusterLock="true">
@@ -80,7 +80,7 @@
 			<util:list>
 				<ref local="ikube.action.rule.IsNewIndexCreated" />
 				<ref local="ikube.action.rule.IsThisServerWorking" />
-				<ref local="ikube.action.rule.AnyServersWorking" />
+				<ref local="ikube.action.rule.AnyServersWorkingThisIndex" />
 				<ref local="ikube.action.rule.DoesBackupIndexExist" />
 				<ref local="ikube.action.rule.AreIndexesCreated" />
 				<ref local="ikube.action.rule.IsIndexCorrupt" />
@@ -99,17 +99,15 @@
 			</util:list>
 		</property>
 	</bean>
+	<!-- (IsIndexDelta &#38;&#38; IsThisIndexCreated &#38;&#38; !AreSearchablesInitialised) || -->
 	<bean 
 		id="ikube.action.Open" 
 		class="ikube.action.Open" 
 		property:ruleExpression="
 			(!AnyServersWorkingThisIndex &#38;&#38; IsNewIndexCreated) || 
-			(IsIndexDelta &#38;&#38; IsThisIndexCreated &#38;&#38; !AreSearchablesInitialised) || 
 			(!AnyServersWorkingThisIndex &#38;&#38; 
-			  (!IsMultiSearcherInitialised ||  
-			    !AreSearchablesInitialised) &#38;&#38;
-			  (AreIndexesCreated || 
-			    AreUnopenedIndexes))"
+			  (!IsMultiSearcherInitialised || !AreSearchablesInitialised) &#38;&#38;
+			  (AreIndexesCreated || AreUnopenedIndexes))"
 		property:requiresClusterLock="false">
 		<property name="rules">
 			<util:list>
@@ -119,8 +117,8 @@
 				<ref local="ikube.action.rule.IsMultiSearcherInitialised" />
 				<ref local="ikube.action.rule.AreSearchablesInitialised" />
 				<ref local="ikube.action.rule.AnyServersWorkingThisIndex" />
-				<ref local="ikube.action.rule.IsIndexDelta" />
-				<ref local="ikube.action.rule.IsThisIndexCreated" />
+				<!-- <ref local="ikube.action.rule.IsIndexDelta" /> -->
+				<!-- <ref local="ikube.action.rule.IsThisIndexCreated" /> -->
 			</util:list>
 		</property>
 	</bean>
@@ -161,8 +159,7 @@
 		id="ikube.action.Delete" 
 		class="ikube.action.Delete" 
 		property:ruleExpression="
-			!IsThisServerWorking &#38;&#38; 
-			!AnyServersWorking"
+			!IsThisServerWorking &#38;&#38; !AnyServersWorking"
 		property:requiresClusterLock="false">
 		<property name="rules">
 			<util:list>

@@ -49,7 +49,7 @@ public class ServerSchedule extends Schedule {
 		// Finally put ourselves back in the grid
 		Server server = clusterManager.getServer();
 		server.setAge(System.currentTimeMillis());
-		LOGGER.info("Putting server back : " + new Date(server.getAge()));
+		// LOGGER.info("Putting server back : " + new Date(server.getAge()));
 		clusterManager.put(server.getAddress(), server);
 	}
 }

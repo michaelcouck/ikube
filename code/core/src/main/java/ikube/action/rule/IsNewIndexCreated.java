@@ -9,6 +9,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Searchable;
+import org.apache.lucene.store.AlreadyClosedException;
 import org.apache.lucene.store.FSDirectory;
 
 /**
@@ -39,24 +40,27 @@ public class IsNewIndexCreated extends ARule<IndexContext<?>> {
 				IndexSearcher indexSearcher = (IndexSearcher) searchable;
 				IndexReader indexReader = indexSearcher.getIndexReader();
 				FSDirectory fsDirectory = (FSDirectory) indexReader.directory();
-				File serverIndexDirectoryFromSearcher = fsDirectory.getFile();
-				if (serverIndexDirectoryFromSearcher != null) {
-					File latestIndexDirectoryFromSearcher = serverIndexDirectoryFromSearcher.getParentFile();
-					if (areDirectoriesEqual.evaluate(new File[] { latestIndexDirectory, latestIndexDirectoryFromSearcher })) {
-						File[] serverIndexDirectories = latestIndexDirectory.listFiles();
-						for (File serverIndexDirectory : serverIndexDirectories) {
-							if (directoryExistsAndNotLocked.evaluate(serverIndexDirectory)) {
-								// Here we have found that the latest index is indeed the same as
-								// the index in the searchable, so we return false, i.e. no new index
-								// found
-								return Boolean.FALSE;
+				try {
+					File serverIndexDirectoryFromSearcher = fsDirectory.getFile();
+					if (serverIndexDirectoryFromSearcher != null) {
+						File latestIndexDirectoryFromSearcher = serverIndexDirectoryFromSearcher.getParentFile();
+						if (areDirectoriesEqual.evaluate(new File[] { latestIndexDirectory, latestIndexDirectoryFromSearcher })) {
+							File[] serverIndexDirectories = latestIndexDirectory.listFiles();
+							for (File serverIndexDirectory : serverIndexDirectories) {
+								if (directoryExistsAndNotLocked.evaluate(serverIndexDirectory)) {
+									// Here we have found that the latest index is indeed the same as
+									// the index in the searchable, so we return false, i.e. no new index
+									// found
+									return Boolean.FALSE;
+								}
 							}
 						}
 					}
+				} catch (AlreadyClosedException e) {
+					logger.info("Directory already closed : " + e.getMessage());
 				}
 			}
 		}
-
 		return new AreIndexesCreated().evaluate(indexContext);
 	}
 
