@@ -41,42 +41,46 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 	}
 
 	private boolean openOnFile(final IndexContext<?> indexContext) {
-		ArrayList<Searchable> searchers = new ArrayList<Searchable>();
-		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
-		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
-		if (latestIndexDirectory == null) {
-			logger.info("No indexes : " + indexDirectoryPath);
-			return Boolean.FALSE;
-		}
-		// Make sure that the old one is closed first
-		closeSearchables(indexContext);
-
-		File[] serverIndexDirectories = latestIndexDirectory.listFiles();
-		for (final File serverIndexDirectory : serverIndexDirectories) {
-			Directory directory = null;
-			IndexReader reader = null;
-			Searchable searcher = null;
-			try {
-				directory = FSDirectory.open(serverIndexDirectory);
-				if (!IndexReader.indexExists(directory)) {
-					directory.close();
-					continue;
-				}
-				reader = IndexReader.open(directory, Boolean.TRUE);
-				searcher = new IndexSearcher(reader);
-				searchers.add(searcher);
-				logger.info("Opened searcher on : " + serverIndexDirectory);
-			} catch (Exception e) {
-				logger.error("Exception opening directory : " + serverIndexDirectory, e);
-			} finally {
-				if (directory == null || searcher == null) {
-					close(directory, reader, searcher);
-					boolean removed = searchers.remove(searcher);
-					logger.warn("Removed searcher : " + removed + ", " + searcher);
+		MultiSearcher multiSearcher = indexContext.getMultiSearcher();
+		try {
+			// First open the new searchables
+			ArrayList<Searchable> searchers = new ArrayList<Searchable>();
+			String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
+			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
+			if (latestIndexDirectory == null) {
+				logger.info("No indexes : " + indexDirectoryPath);
+				return Boolean.FALSE;
+			}
+			File[] serverIndexDirectories = latestIndexDirectory.listFiles();
+			for (final File serverIndexDirectory : serverIndexDirectories) {
+				Directory directory = null;
+				IndexReader reader = null;
+				Searchable searcher = null;
+				try {
+					directory = FSDirectory.open(serverIndexDirectory);
+					if (!IndexReader.indexExists(directory)) {
+						directory.close();
+						continue;
+					}
+					reader = IndexReader.open(directory, Boolean.TRUE);
+					searcher = new IndexSearcher(reader);
+					searchers.add(searcher);
+					logger.info("Opened searcher on : " + serverIndexDirectory);
+				} catch (Exception e) {
+					logger.error("Exception opening directory : " + serverIndexDirectory, e);
+				} finally {
+					if (directory == null || searcher == null) {
+						close(directory, reader, searcher);
+						boolean removed = searchers.remove(searcher);
+						logger.warn("Removed searcher : " + removed + ", " + searcher);
+					}
 				}
 			}
+			return open(indexContext, searchers);
+		} finally {
+			// Make sure that the old searchables are closed
+			closeSearchables(multiSearcher);
 		}
-		return open(indexContext, searchers);
 	}
 
 	private boolean open(final IndexContext<?> indexContext, final List<Searchable> searchers) {

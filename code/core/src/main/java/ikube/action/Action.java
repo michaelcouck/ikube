@@ -18,7 +18,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Searchable;
@@ -27,9 +26,9 @@ import org.nfunk.jep.JEP;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * This is the base class for actions. Actions execute logic on index contexts. Actions may include opening the searcher on a new index,
- * indexing or deleting the old indexes. This class is intended to be sub-classed. Common methods in this base class is checking that the
- * index is current, i.e. has not expired and whether the searcher should be re-opened on the new index.
+ * This is the base class for actions. Actions execute logic on index contexts. Actions may include opening the searcher on a new index, indexing or deleting
+ * the old indexes. This class is intended to be sub-classed. Common methods in this base class is checking that the index is current, i.e. has not expired and
+ * whether the searcher should be re-opened on the new index.
  * 
  * @author Michael Couck
  * @since 21.11.10
@@ -50,21 +49,21 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	@Autowired
 	protected IClusterManager clusterManager;
 	/**
-	 * This is an optional action that the action depends on. For example the index action requires that the reset action is run completely
-	 * first for this index context
+	 * This is an optional action that the action depends on. For example the index action requires that the reset action is run completely first for this index
+	 * context
 	 */
 	private IAction<IndexContext<?>, Boolean> dependent;
 
 	/**
-	 * These are the rules defined for this action. They will be evaluated collectively by the {@link RuleInterceptor} and the action will
-	 * be executed depending on the result of the rules.
+	 * These are the rules defined for this action. They will be evaluated collectively by the {@link RuleInterceptor} and the action will be executed depending
+	 * on the result of the rules.
 	 */
 	private List<IRule<IndexContext<?>>> rules;
 
 	/**
-	 * This is the predicate that will be evaluated. The predicate consists of a boolean expression that contains the individual results of
-	 * the rules. For example '!IsThisServerWorking && !AnyServersWorking'. The rules' results will be inserted into the parameter place
-	 * holders and the expression evaluated by {@link JEP}.
+	 * This is the predicate that will be evaluated. The predicate consists of a boolean expression that contains the individual results of the rules. For
+	 * example '!IsThisServerWorking && !AnyServersWorking'. The rules' results will be inserted into the parameter place holders and the expression evaluated
+	 * by {@link JEP}.
 	 */
 	private String predicate;
 
@@ -113,8 +112,8 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	}
 
 	/**
-	 * This method is called by the super class, i.e. this class on the implementations, which allows the super class to execute any actions
-	 * that need to be executed, that the implementing classes rely on, like the reset action which may not have executed between indexes.
+	 * This method is called by the super class, i.e. this class on the implementations, which allows the super class to execute any actions that need to be
+	 * executed, that the implementing classes rely on, like the reset action which may not have executed between indexes.
 	 * 
 	 * @param indexContext the index context to execute the action on
 	 * @return whether the execution was successful
@@ -203,8 +202,8 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	 * 
 	 * @param indexableHandlers a map of all the handlers in the configuration
 	 * @param indexable the indexable to find the handler for
-	 * @return the handler for the indexable or null if there is no handler for the indexable. This will fail with a warning if there is no
-	 *         handler for the indexable
+	 * @return the handler for the indexable or null if there is no handler for the indexable. This will fail with a warning if there is no handler for the
+	 *         indexable
 	 */
 	protected IIndexableHandler<Indexable<?>> getHandler(final Indexable<?> indexable) {
 		@SuppressWarnings("rawtypes")
@@ -218,13 +217,12 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	}
 
 	/**
-	 * This method will close the searchables. All the sub searchables are closed one by one first then the composite searchable to ensure
-	 * that they are all closed completely.
+	 * This method will close the searchables. All the sub searchables are closed one by one first then the composite searchable to ensure that they are all
+	 * closed completely.
 	 * 
-	 * @param indexContext the index context to close the searchables for
+	 * @param multiSearcher the searcher to close the searchables for
 	 */
-	protected void closeSearchables(final IndexContext<?> indexContext) {
-		MultiSearcher multiSearcher = indexContext.getMultiSearcher();
+	protected void closeSearchables(final MultiSearcher multiSearcher) {
 		if (multiSearcher == null) {
 			return;
 		}
@@ -245,7 +243,6 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 				}
 			}
 		}
-		indexContext.setMultiSearcher(null);
 	}
 
 	/**
@@ -288,9 +285,8 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	}
 
 	/**
-	 * Sets the action that this action is dependent on. For example the the index action requires that the reset action is executed first.
-	 * In this way the actions can be chained and the results from the previous action used to determine whether the action is then
-	 * executed.
+	 * Sets the action that this action is dependent on. For example the the index action requires that the reset action is executed first. In this way the
+	 * actions can be chained and the results from the previous action used to determine whether the action is then executed.
 	 * 
 	 * @param dependent the action that this action is dependent on
 	 */

@@ -16,7 +16,8 @@ public class Close extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	public boolean internalExecute(final IndexContext<?> indexContext) {
-		closeSearchables(indexContext);
+		closeSearchables(indexContext.getMultiSearcher());
+		indexContext.setMultiSearcher(null);
 		return Boolean.TRUE;
 	}
 

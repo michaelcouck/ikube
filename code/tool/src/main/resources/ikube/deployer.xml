@@ -52,8 +52,8 @@
 	
 	<util:list id="servers">
 		<ref local="server-one" />
-		<!-- <ref local="server-two" />
-		<ref local="server-three" />
+		<ref local="server-two" />
+		<!-- <ref local="server-three" />
 		<ref local="server-four" /> -->
 	</util:list>
 	
@@ -107,7 +107,7 @@
 		<value>cd ${tomcat-bin-directory};</value>
 		<value>./catalina.sh stop;</value>
 		<value>sleep 10;</value>
-		<value>ps -ef | grep apache-tomcat-7.0.33-8080 | grep -v grep | awk '{print $2}' | xargs kill -9;</value>
+		<value>ps -ef | grep apache-tomcat-7.0.33-8090 | grep -v grep | awk '{print $2}' | xargs kill -9;</value>
 		<value>chmod 777 -R ${tomcat-directory};</value>
 		<value>rm -rf ${tomcat-directory}/bin/ikube;</value>
 		<value>rm -rf ${tomcat-directory}/webapps/ikube*;</value>
