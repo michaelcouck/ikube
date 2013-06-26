@@ -9,11 +9,16 @@
 		<td ng-controller="ServersController" class="bordered" nowrap="nowrap" valign="top">
 			<div ng-repeat="server in servers" ng-class-odd="'odd'" ng-class-even="'even'">
 				<a ng-click="server.show=!server.show" href="#">
-					<img src="<c:url value="/images/icons/web.gif" />">&nbsp; <font color="black"><b>Address:</b></font> {{server.address}}<br>
+					<div ng-show="!cpuLoadTooHigh(server)">
+						<img src="<c:url value="/images/icons/web.gif" />">&nbsp; <font color="black"><b>Address:</b></font> {{server.address}}<br>
+					</div>
+					<div ng-show="cpuLoadTooHigh(server)">
+						<img src="<c:url value="/images/icons/web.gif" />">&nbsp; <font color="red"><b>Address:</b></font> {{server.address}}<br>
+					</div>
 				</a>
-				<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Average cpu load:</b> {{server.averageCpuLoad}}<br>
 				
 				<div ng-show="server.show">
+					<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Average cpu load:</b> {{server.averageCpuLoad}}<br>
 					<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Free memory:</b> {{server.freeMemory}}<br>
 					<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Max memory:</b> {{server.maxMemory}}<br>
 					<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Total memory:</b> {{server.totalMemory}}<br>

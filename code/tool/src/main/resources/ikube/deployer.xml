@@ -104,9 +104,7 @@
 		property:commands-ref="stop-commands" />
 	<util:list id="stop-commands">
 		<value>. /etc/profile;</value>
-		<value>cd ${tomcat-bin-directory};</value>
-		<value>./catalina.sh stop;</value>
-		<value>sleep 10;</value>
+		<value>cd ${tomcat-bin-directory};./catalina.sh stop;</value>
 		<value>ps -ef | grep apache-tomcat-7.0.33-8090 | grep -v grep | awk '{print $2}' | xargs kill -9;</value>
 		<value>chmod 777 -R ${tomcat-directory};</value>
 		<value>rm -rf ${tomcat-directory}/bin/ikube;</value>
@@ -130,9 +128,15 @@
 		property:directories-ref="directories" />
 	<util:map id="files">
 		<entry key="${target-directory}/${ikube-war}"  value="${tomcat-directory}/webapps" />
+		<entry key="${configuration-directory}/log4j.properties" value="${tomcat-directory}/bin/ikube" />
+		<entry key="${configuration-directory}/spring.xml" value="${tomcat-directory}/bin/ikube" />
+		<entry key="${resources-directory}/indexes/system.properties" value="${tomcat-directory}/bin/ikube" />
 	</util:map>
 	<util:map id="directories">
-		<entry key="${configuration-directory}" value="${tomcat-directory}/bin" />
+		<entry key="${configuration-directory}/common" value="${tomcat-directory}/bin/ikube" />
+		<entry key="${configuration-directory}/production" value="${tomcat-directory}/bin/ikube" />
+		<entry key="${resources-directory}/indexes/twitter" value="${tomcat-directory}/bin/ikube" />
+		<entry key="${resources-directory}/indexes/vlapar" value="${tomcat-directory}/bin/ikube" />
 	</util:map>
 	
 	<bean 
@@ -144,8 +148,7 @@
 	<util:list id="start-commands">
 		<value>. /etc/profile;</value>
 		<value>chmod 777 -R ${tomcat-directory};</value>
-		<value>cd ${tomcat-bin-directory};</value>
-		<value>./catalina.sh start;</value>
+		<value>cd ${tomcat-bin-directory};./catalina.sh start;</value>
 	</util:list>
 	
 </beans>

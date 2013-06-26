@@ -187,6 +187,11 @@ module.controller('ServersController', function($http, $scope) {
 			});
 		}
 	}
+	
+	$scope.cpuLoadTooHigh = function(server) {
+		return server.averageCpuLoad / server.processors > 0.9;
+	}
+	
 });
 
 /**
