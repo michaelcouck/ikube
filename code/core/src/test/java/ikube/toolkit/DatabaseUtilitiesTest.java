@@ -89,7 +89,7 @@ public class DatabaseUtilitiesTest extends AbstractTest {
 			assertEquals("All the columns from the doctor table : ", allColumnsString, allColumns.toString());
 			DatabaseUtilities.close(connection);
 
-			connection = DriverManager.getConnection("jdbc:oracle:thin:@ikube.be:1521:ikube", "ubuntu", "Caherl1ne");
+			connection = DriverManager.getConnection("jdbc:oracle:thin:@81.95.118.139:1521:ikube", "ubuntu", "Caherl1ne");
 			allColumns = DatabaseUtilities.getAllColumns(connection, "doctor");
 			logger.info("All columns : " + allColumns);
 			assertEquals("All the columns from the doctor table : ", allColumnsString, allColumns.toString());
@@ -133,7 +133,7 @@ public class DatabaseUtilitiesTest extends AbstractTest {
 	}
 
 	private Connection getDb2Connection() throws SQLException {
-		return DriverManager.getConnection("jdbc:db2://ikube.be:50000/ikube", "ubuntu", "Caherl1ne");
+		return DriverManager.getConnection("jdbc:db2://81.95.118.139:50000/ikube", "ubuntu", "Caherl1ne");
 	}
 
 }

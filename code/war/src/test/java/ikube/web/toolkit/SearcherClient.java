@@ -22,7 +22,7 @@ public class SearcherClient {
 
 	public static void main(String[] args) throws Exception {
 		String path = "/ikube/service/search/multi/spatial";
-		String url = new URL("http", "ikube.be", 80, path).toString();
+		String url = new URL("http", "81.95.118.139", 80, path).toString();
 
 		String[] names = { "indexName", "searchStrings", "searchFields", "fragment", "firstResult", "maxResults", "distance", "latitude",
 				"longitude" };
@@ -32,7 +32,7 @@ public class SearcherClient {
 		GetMethod getMethod = new GetMethod(url);
 		getMethod.setQueryString(params);
 		HttpClient httpClient = new HttpClient();
-		authenticate(httpClient, "ikube.be", 80, "guest", "guest");
+		authenticate(httpClient, "81.95.118.139", 80, "guest", "guest");
 
 		int result = httpClient.executeMethod(getMethod);
 		String results = getMethod.getResponseBodyAsString();

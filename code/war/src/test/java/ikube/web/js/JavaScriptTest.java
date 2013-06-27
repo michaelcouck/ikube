@@ -49,7 +49,7 @@ public class JavaScriptTest extends BaseTest {
 				"http://maps.google.com/maps/api/js?sensor=false");
 
 		// This will load the home page DOM.
-		// run("window.location='http://ikube.be/ikube/search.jsp'");
+		// run("window.location='http://81.95.118.139/ikube/search.jsp'");
 	}
 
 	@Test
@@ -82,7 +82,7 @@ public class JavaScriptTest extends BaseTest {
 	@Test
 	public void htmlUnit() throws Exception {
 		WebClient webClient = WebClientFactory.getWebClient(BrowserVersion.FIREFOX_3_6, true, false, false);
-		HtmlPage page = webClient.getPage("http://ikube.be/ikube/search.jsp");
+		HtmlPage page = webClient.getPage("http://81.95.118.139/ikube/search.jsp");
 		HtmlButtonInput button = (HtmlButtonInput) page.getElementById("button");
 		button.click();
 	}

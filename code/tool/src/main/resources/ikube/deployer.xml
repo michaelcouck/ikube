@@ -61,7 +61,7 @@
 		id="server-one"
 		name="server-one"
 		class="ikube.deploy.model.Server"
-		property:ip="ikube.be"
+		property:ip="81.95.118.139"
 		property:username="${username}"
 		property:password="${password}"
 		property:actions-ref="actions" />

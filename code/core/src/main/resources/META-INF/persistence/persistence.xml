@@ -96,7 +96,7 @@
 		<!-- <properties>
 			<property name="openjpa.Connection2UserName" value="db2" />
 			<property name="openjpa.Connection2Password" value="xxx" />
-			<property name="openjpa.Connection2URL" value="jdbc:db2://ikube.be:50000/icube" />
+			<property name="openjpa.Connection2URL" value="jdbc:db2://81.95.118.139:50000/icube" />
 			<property name="openjpa.Connection2DriverName" value="com.ibm.db2.jcc.DB2Driver" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
 		</properties> -->
@@ -135,7 +135,7 @@
 		<!-- <properties>
 			<property name="openjpa.Connection2UserName" value="oracle" />
 			<property name="openjpa.Connection2Password" value="xxx" />
-			<property name="openjpa.Connection2URL" value="jdbc:oracle:thin:@//ikube.be:1521/xe" />
+			<property name="openjpa.Connection2URL" value="jdbc:oracle:thin:@//81.95.118.139:1521/xe" />
 			<property name="openjpa.Connection2DriverName" value="oracle.jdbc.driver.OracleDriver" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
 		</properties> -->
@@ -174,7 +174,7 @@
 		<!-- <properties>
 			<property name="openjpa.Connection2UserName" value="postgres" />
 			<property name="openjpa.Connection2Password" value="xxx" />
-			<property name="openjpa.Connection2URL" value="jdbc:postgresql://ikube.be:5432/ikube" />
+			<property name="openjpa.Connection2URL" value="jdbc:postgresql://81.95.118.139:5432/ikube" />
 			<property name="openjpa.Connection2DriverName" value="org.postgresql.Driver" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
 		</properties> -->

@@ -42,8 +42,8 @@ public class IndexableInternetHandlerTest extends AbstractTest {
 		indexableInternet.setContentFieldName(IConstants.CONTENT);
 
 		indexableInternet.setThreads(3);
-		indexableInternet.setUrl("http://www.ikube.be/site/");
-		indexableInternet.setBaseUrl("http://www.ikube.be/site/");
+		indexableInternet.setUrl("http://81.95.118.139/site/");
+		indexableInternet.setBaseUrl("http://81.95.118.139/site/");
 
 		indexableInternetHandler = new IndexableInternetHandler();
 
@@ -70,7 +70,7 @@ public class IndexableInternetHandlerTest extends AbstractTest {
 	@Test
 	public void handleResource() {
 		Url url = new Url();
-		url.setUrl("http://www.ikube.be/site/");
+		url.setUrl("http://81.95.118.139/site/");
 		String title = "The title";
 		String content = "<html><head><title>" + title + "</title></head><body>Hello world</body></html>";
 		url.setContentType("text/html");
