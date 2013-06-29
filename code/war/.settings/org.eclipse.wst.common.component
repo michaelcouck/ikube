@@ -4,10 +4,10 @@
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
-        <dependent-module archiveName="ikube-core-4.3.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/ikube-core/ikube-core">
+        <dependent-module archiveName="ikube-core-4.4.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/ikube-core/ikube-core">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="ikube-com-4.3.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/ikube-com/ikube-com">
+        <dependent-module archiveName="ikube-com-4.4.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/ikube-com/ikube-com">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="java-output-path" value="/ikube-war/target/classes"/>
