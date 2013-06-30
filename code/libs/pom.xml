@@ -322,6 +322,23 @@
 							<url>${artifactory}</url>
 						</configuration>
 					</execution>
+					<execution>
+						<id>install-lingpipe</id>
+						<goals>
+							<goal>deploy-file</goal>
+						</goals>
+						<phase>${phase}</phase>
+						<configuration>
+							<groupId>lingpipe</groupId>
+							<artifactId>lingpipe</artifactId>
+							<version>4.1.0</version>
+							<file>tools/lingpipe-4.1.0.jar</file>
+							<packaging>${packaging}</packaging>
+							<generatePom>${generate-pom}</generatePom>
+							<repositoryId>${repository-id}</repositoryId>
+							<url>${artifactory}</url>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>

@@ -94,7 +94,6 @@
 					<configuration>
 						<lifecycleMappingMetadata>
 							<pluginExecutions>
-								<!-- copy-dependency plugin -->
 								<pluginExecution>
 									<pluginExecutionFilter>
 										<groupId>org.apache.maven.plugins</groupId>
@@ -972,12 +971,6 @@
 			<version>7.7.1</version>
 			<scope>compile</scope>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-agent</artifactId>
-			<version>2.5.6</version>
-			<scope>provided</scope>
-		</dependency> -->
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit</artifactId>
@@ -1021,12 +1014,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.springframework.social</groupId>
-			<artifactId>spring-social-twitter</artifactId>
-			<version>1.0.3.RELEASE</version>
-			<scope>compile</scope>
-		</dependency> -->
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
@@ -1044,6 +1031,11 @@
 			<artifactId>spring-web</artifactId>
 			<version>${spring.version}</version>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>lingpipe</groupId>
+			<artifactId>lingpipe</artifactId>
+			<version>4.1.0</version>
 		</dependency>
 	</dependencies>
 
