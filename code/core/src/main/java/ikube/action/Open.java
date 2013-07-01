@@ -65,7 +65,6 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 					reader = IndexReader.open(directory, Boolean.TRUE);
 					searcher = new IndexSearcher(reader);
 					searchers.add(searcher);
-					logger.info("Opened searcher on : " + serverIndexDirectory);
 				} catch (Exception e) {
 					logger.error("Exception opening directory : " + serverIndexDirectory, e);
 				} finally {

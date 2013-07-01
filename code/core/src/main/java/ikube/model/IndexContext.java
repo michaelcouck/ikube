@@ -18,11 +18,9 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.MultiSearcher;
-import org.apache.lucene.search.Searchable;
 
 /**
  * This is the context for a single index. It has the properties that define the index like what it is going to index, i.e. the databases, intranets etc., and
@@ -40,8 +38,6 @@ import org.apache.lucene.search.Searchable;
 public class IndexContext<T> extends Indexable<T> implements Comparable<IndexContext<?>> {
 
 	public static final String FIND_BY_NAME = "select i from IndexContext as i where i.name = :name";
-
-	private static final transient Logger LOGGER = Logger.getLogger(IndexContext.class);
 
 	@Transient
 	private boolean open;
@@ -271,24 +267,6 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 
 	public void setMultiSearcher(final MultiSearcher multiSearcher) {
 		setOpen(multiSearcher != null);
-		// We'll close the current searcher if it is not already closed
-		if (this.multiSearcher != null && !this.multiSearcher.equals(multiSearcher)) {
-			try {
-				LOGGER.info("Searcher not closed, will close now : " + this.multiSearcher);
-				Searchable[] searchables = this.multiSearcher.getSearchables();
-				if (searchables != null) {
-					for (Searchable searchable : searchables) {
-						try {
-							searchable.close();
-						} catch (Exception e) {
-							LOGGER.error("Exception closing the searchable : ", e);
-						}
-					}
-				}
-			} catch (Exception e) {
-				LOGGER.error("Exception closing the searcher : " + this.multiSearcher, e);
-			}
-		}
 		this.multiSearcher = multiSearcher;
 	}
 

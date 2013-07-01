@@ -41,7 +41,7 @@ public final class LanguageCleaningStrategy extends AStrategy {
 			}
 			// Correct any obvious spelling mistakes
 			String cleanedContent = stringBuilder.toString().toLowerCase();
-			// logger.info("Cleaned : " + cleanedContent);
+			logger.info("Cleaned : " + cleanedContent);
 			// TODO Do we really want to do spelling?
 			// StringTokenizer stringTokenizer = new StringTokenizer(cleanedContent);
 			// while (stringTokenizer.hasMoreTokens()) {

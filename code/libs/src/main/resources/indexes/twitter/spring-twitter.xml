@@ -24,7 +24,7 @@
 		id="twitter"
 		class="ikube.model.IndexContext"
 		property:name="twitter"
-		property:maxAge="14400"
+		property:maxAge="0"
 		property:compoundFile="true"
 		property:bufferedDocs="1000"
 		property:bufferSize="128"
@@ -74,9 +74,11 @@
 		
 		property:strategies-ref="twitter-strategies" />
 	<util:list id="twitter-strategies">
-	    <ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
-	    <ref bean="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy" />
-	    <ref bean="ikube.action.index.handler.strategy.SentimentAnalysisStrategy" />
+		<ref bean="ikube.action.index.handler.strategy.LanguageCleaningStrategy" />
+		<ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
+		<ref bean="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy" />
+		<ref bean="ikube.action.index.handler.strategy.EmoticonSentimentAnalysisStrategy" />
+		<ref bean="ikube.action.index.handler.strategy.MultiLanguageClassifierSentimentAnalysisStrategy" />
 	</util:list>
 	
 </beans>

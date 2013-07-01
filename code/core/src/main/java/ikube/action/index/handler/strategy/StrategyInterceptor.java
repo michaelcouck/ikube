@@ -31,10 +31,10 @@ public class StrategyInterceptor implements IStrategyInterceptor {
 		boolean mustProcess = Boolean.TRUE;
 		Object[] args = proceedingJoinPoint.getArgs();
 
-		final IndexContext<?> indexContext = (IndexContext<?>) args[0];
-		final Indexable<?> indexable = (Indexable<?>) args[1];
-		final Document document = (Document) args[2];
-		final Object resource = args[3];
+		IndexContext<?> indexContext = (IndexContext<?>) args[0];
+		Indexable<?> indexable = (Indexable<?>) args[1];
+		Document document = (Document) args[2];
+		Object resource = args[3];
 
 		List<IStrategy> strategies = indexable.getStrategies();
 		if (strategies != null && !strategies.isEmpty()) {

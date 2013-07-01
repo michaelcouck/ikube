@@ -17,7 +17,6 @@ public class Reopen extends Action<IndexContext<?>, Boolean> {
 	@Override
 	public boolean internalExecute(final IndexContext<?> indexContext) throws Exception {
 		if (indexContext.isDelta()) {
-			logger.info("Reopening index : " + indexContext);
 			return new Open().execute(indexContext);
 		}
 		return Boolean.TRUE;

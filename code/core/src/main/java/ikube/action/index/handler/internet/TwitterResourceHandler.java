@@ -24,11 +24,7 @@ public class TwitterResourceHandler extends ResourceHandler<IndexableTweets> {
 	 */
 	@Override
 	public Document handleResource(final IndexContext<?> indexContext, final IndexableTweets indexableTweets, final Document document, final Object resource) {
-		handleResource(indexContext, indexableTweets, document, (Tweet) resource);
-		return document;
-	}
-
-	private void handleResource(final IndexContext<?> indexContext, final IndexableTweets indexableTweets, final Document document, final Tweet tweet) {
+		Tweet tweet = (Tweet) resource;
 		Store store = indexableTweets.isStored() ? Store.YES : Store.NO;
 		Index analyzed = indexableTweets.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
 		TermVector termVector = indexableTweets.isVectored() ? TermVector.YES : TermVector.NO;
@@ -53,6 +49,7 @@ public class TwitterResourceHandler extends ResourceHandler<IndexableTweets> {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		return document;
 	}
 
 }

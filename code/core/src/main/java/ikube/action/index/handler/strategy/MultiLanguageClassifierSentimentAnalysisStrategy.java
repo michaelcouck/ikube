@@ -8,6 +8,7 @@ import ikube.model.Indexable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
@@ -29,6 +30,7 @@ public final class MultiLanguageClassifierSentimentAnalysisStrategy extends AStr
 
 	@Value("${multi.language.ngram}")
 	private int nGram = 8;
+	private AtomicInteger atomicInteger;
 	private Map<String, DynamicLMClassifier<NGramProcessLM>> languageClassifiers;
 
 	public MultiLanguageClassifierSentimentAnalysisStrategy() {
@@ -66,6 +68,9 @@ public final class MultiLanguageClassifierSentimentAnalysisStrategy extends AStr
 				IndexManager.addStringField(IConstants.SENTIMENT_CONFLICT, languageSentiment, document, Store.YES, Index.ANALYZED, TermVector.NO);
 			}
 		}
+		logger.info("Document : " + document);
+		if (atomicInteger.incrementAndGet() % 10000 == 0) {
+		}
 		return super.aroundProcess(indexContext, indexable, document, resource);
 	}
 
@@ -79,6 +84,7 @@ public final class MultiLanguageClassifierSentimentAnalysisStrategy extends AStr
 		DynamicLMClassifier<NGramProcessLM> dynamicLMClassifier = languageClassifiers.get(language);
 		if (dynamicLMClassifier == null) {
 			dynamicLMClassifier = DynamicLMClassifier.createNGramProcess(IConstants.SENTIMENT_CATEGORIES, nGram);
+			languageClassifiers.put(language, dynamicLMClassifier);
 		}
 		return dynamicLMClassifier;
 	}
@@ -88,6 +94,7 @@ public final class MultiLanguageClassifierSentimentAnalysisStrategy extends AStr
 	 */
 	@Override
 	public void initialize() {
+		atomicInteger = new AtomicInteger(0);
 		languageClassifiers = new HashMap<String, DynamicLMClassifier<NGramProcessLM>>();
 	}
 

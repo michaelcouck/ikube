@@ -354,6 +354,11 @@
 		class="ikube.action.index.analyzer.NgramAnalyzer" />
 	
 	<bean 
+		id="ikube.action.index.handler.strategy.LanguageCleaningStrategy"
+		name="ikube.action.index.handler.strategy.LanguageCleaningStrategy" 
+		class="ikube.action.index.handler.strategy.LanguageCleaningStrategy" />
+		
+	<bean 
 		id="ikube.action.index.handler.strategy.LanguageDetectionStrategy"
 		name="ikube.action.index.handler.strategy.LanguageDetectionStrategy" 
 		class="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
@@ -363,10 +368,15 @@
 		name="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy" 
     	class="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy" />
     
+	<bean
+		id="ikube.action.index.handler.strategy.EmoticonSentimentAnalysisStrategy"
+		name="ikube.action.index.handler.strategy.EmoticonSentimentAnalysisStrategy" 
+    	class="ikube.action.index.handler.strategy.EmoticonSentimentAnalysisStrategy" />
+    	
     <bean
-		id="ikube.action.index.handler.strategy.SentimentAnalysisStrategy"
-		name="ikube.action.index.handler.strategy.SentimentAnalysisStrategy" 
-    	class="ikube.action.index.handler.strategy.SentimentAnalysisStrategy" />
+		id="ikube.action.index.handler.strategy.MultiLanguageClassifierSentimentAnalysisStrategy"
+		name="ikube.action.index.handler.strategy.MultiLanguageClassifierSentimentAnalysisStrategy" 
+    	class="ikube.action.index.handler.strategy.MultiLanguageClassifierSentimentAnalysisStrategy" />
     
     <!-- 
 		This bean is the geocoder, it will enrich the data with spatial co-ordinates if

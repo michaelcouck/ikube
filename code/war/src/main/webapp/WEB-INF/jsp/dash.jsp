@@ -39,7 +39,6 @@
 					<img src="<c:url value="/images/icons/index_performance.gif" />">&nbsp;<b>Processors:</b> {{server.processors}}<br>
 					<img src="<c:url value="/images/icons/memory_view.gif" />">&nbsp;<b>Architecture:</b> {{server.architecture}}<br>
 				</div>
-				<br>
 			</div>
 		</td>
 		<td valign="top" style="width: 80%;">
