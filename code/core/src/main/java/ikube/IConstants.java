@@ -184,5 +184,8 @@ public interface IConstants {
 	
 	String LANGUAGE = "language";
 	String LANGUAGE_DETECT_PROFILES_DIRECTORY = "profiles";
+	String SENTIMENT = "sentiment";
+	String SENTIMENT_CONFLICT = "sentiment-conflict";
+	String[] SENTIMENT_CATEGORIES = { "positive", "negative" };
 
 }

@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.spell.PlainTextDictionary;
 import org.apache.lucene.search.spell.SpellChecker;
@@ -21,9 +22,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
- * This class will index the text files with the words form various languages in them, and check tokens or words against the index of words.
- * To add languages the logic of this class has to change a little, the word file needs to become words files, and iterate over the array of
- * files rather than the first one.
+ * This class will index the text files with the words form various languages in them, and check tokens or words against the index of words. To add languages
+ * the logic of this class has to change a little, the word file needs to become words files, and iterate over the array of files rather than the first one.
  * 
  * @author Michael Couck
  * @since 05.03.10
@@ -72,7 +72,9 @@ public class SpellingChecker {
 		LOGGER.info("Spelling directory : " + spellingIndexDirectory + ", " + spellingIndexDirectoryPath);
 		Directory directory = FSDirectory.open(spellingIndexDirectory);
 		spellChecker = new SpellChecker(directory);
-		indexLanguageFiles();
+		if (!IndexReader.indexExists(directory)) {
+			indexLanguageFiles();
+		}
 		LOGGER.info("Opened spelling index on : " + spellingIndexDirectory);
 	}
 
