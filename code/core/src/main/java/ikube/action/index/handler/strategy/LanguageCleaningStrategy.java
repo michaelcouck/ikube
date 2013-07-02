@@ -29,7 +29,7 @@ public final class LanguageCleaningStrategy extends AStrategy {
 	public boolean aroundProcess(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document, final Object resource)
 			throws Exception {
 		String content = indexable.getContent() != null ? indexable.getContent().toString() : resource != null ? resource.toString() : null;
-		if (StringUtils.isEmpty(content)) {
+		if (!StringUtils.isEmpty(content)) {
 			logger.info("Un-clean : " + content);
 			StringBuilder stringBuilder = new StringBuilder();
 			// Remove multiple characters, like aaaaahhhhhyyyeeeah, to aahhyyeeah

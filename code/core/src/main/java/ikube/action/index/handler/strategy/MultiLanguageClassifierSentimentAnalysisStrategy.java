@@ -73,9 +73,7 @@ public final class MultiLanguageClassifierSentimentAnalysisStrategy extends AStr
 				}
 			}
 		}
-		logger.info("Document : " + document);
-		if (atomicInteger.incrementAndGet() % 10000 == 0) {
-		}
+		logger.info("Document : " + document + ", " + document.hashCode());
 		return super.aroundProcess(indexContext, indexable, document, resource);
 	}
 

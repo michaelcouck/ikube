@@ -41,8 +41,8 @@ public class TwitterResourceHandler extends ResourceHandler<IndexableTweets> {
 		IndexManager.addNumericField(createdAtField, Long.toString(tweet.getCreatedAt().getTime()), document, Store.YES);
 
 		IndexManager.addStringField(fromUserField, tweet.getFromUser(), document, store, analyzed, termVector);
-		IndexManager.addStringField(locationField, tweet.getUser().getLocation(), document, store, analyzed, termVector);
-		IndexManager.addStringField(textField, tweet.getText(), document, store, analyzed, termVector);
+		IndexManager.addStringField(locationField, indexableTweets.getAddressContent(), document, store, analyzed, termVector);
+		IndexManager.addStringField(textField, indexableTweets.getContent().toString(), document, store, analyzed, termVector);
 
 		try {
 			addDocument(indexContext, indexableTweets, document);

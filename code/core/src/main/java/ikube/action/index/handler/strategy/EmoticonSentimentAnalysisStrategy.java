@@ -68,7 +68,7 @@ public final class EmoticonSentimentAnalysisStrategy extends AStrategy {
 					}
 					if (emoticonHashesNeg.contains(hash)) {
 						neg = Boolean.TRUE;
-						// Replace emoticons with the equivalent words, either positive or negative?
+						// Replace emoticons with the equivalent words, either positive or negative? Must be in every language...
 					}
 				}
 				if (pos && neg) {
@@ -80,7 +80,6 @@ public final class EmoticonSentimentAnalysisStrategy extends AStrategy {
 					// Negative sentiment
 					IndexManager.addStringField(IConstants.SENTIMENT, IConstants.SENTIMENT_CATEGORIES[1], document, Store.YES, Index.ANALYZED, TermVector.NO);
 				}
-				logger.info("Emoticon sentiment : " + pos + ", " + neg);
 			}
 		}
 		return super.aroundProcess(indexContext, indexable, document, resource);
