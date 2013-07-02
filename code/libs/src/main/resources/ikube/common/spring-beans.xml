@@ -356,27 +356,32 @@
 	<bean 
 		id="ikube.action.index.handler.strategy.LanguageCleaningStrategy"
 		name="ikube.action.index.handler.strategy.LanguageCleaningStrategy" 
-		class="ikube.action.index.handler.strategy.LanguageCleaningStrategy" />
+		class="ikube.action.index.handler.strategy.LanguageCleaningStrategy" 
+		init-method="initialize" />
 		
 	<bean 
 		id="ikube.action.index.handler.strategy.LanguageDetectionStrategy"
 		name="ikube.action.index.handler.strategy.LanguageDetectionStrategy" 
-		class="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
+		class="ikube.action.index.handler.strategy.LanguageDetectionStrategy" 
+		init-method="initialize" />
 	
 	<bean
 		id="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy"
 		name="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy" 
-    	class="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy" />
+    	class="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy" 
+    	init-method="initialize" />
     
 	<bean
 		id="ikube.action.index.handler.strategy.EmoticonSentimentAnalysisStrategy"
 		name="ikube.action.index.handler.strategy.EmoticonSentimentAnalysisStrategy" 
-    	class="ikube.action.index.handler.strategy.EmoticonSentimentAnalysisStrategy" />
+    	class="ikube.action.index.handler.strategy.EmoticonSentimentAnalysisStrategy" 
+    	init-method="initialize" />
     	
     <bean
 		id="ikube.action.index.handler.strategy.MultiLanguageClassifierSentimentAnalysisStrategy"
 		name="ikube.action.index.handler.strategy.MultiLanguageClassifierSentimentAnalysisStrategy" 
-    	class="ikube.action.index.handler.strategy.MultiLanguageClassifierSentimentAnalysisStrategy" />
+    	class="ikube.action.index.handler.strategy.MultiLanguageClassifierSentimentAnalysisStrategy"
+    	init-method="initialize" />
     
     <!-- 
 		This bean is the geocoder, it will enrich the data with spatial co-ordinates if

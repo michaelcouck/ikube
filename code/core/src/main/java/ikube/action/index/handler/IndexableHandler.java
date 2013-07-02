@@ -67,13 +67,16 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 				logger.info("Finished : " + this + ", " + RecursiveAction.getPool().getRunningThreadCount());
 			}
 
-			@SuppressWarnings("unchecked")
+			@SuppressWarnings({ "unchecked", "rawtypes" })
 			private void computeRecursive() {
 				if (indexable.incrementThreads(-1) >= 0) {
 					logger.info("This : " + this + ", " + indexable.getThreads());
 					// Split off some more threads to help do the work
 					T leftIndexable = (T) SerializationUtilities.clone(indexable);
 					T rightIndexable = (T) SerializationUtilities.clone(indexable);
+					((Indexable) leftIndexable).setStrategies(indexable.getStrategies());
+					((Indexable) rightIndexable).setStrategies(indexable.getStrategies());
+					
 					RecursiveAction leftRecursiveAction = getRecursiveAction(indexContext, leftIndexable, resourceManager);
 					RecursiveAction rightRecursiveAction = getRecursiveAction(indexContext, rightIndexable, resourceManager);
 					invokeAll(leftRecursiveAction, rightRecursiveAction);

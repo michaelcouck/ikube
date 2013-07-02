@@ -87,21 +87,23 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 	final Coordinate getCoordinate(final Indexable<?> indexable) {
 		Double latitude = null;
 		Double longitude = null;
-		for (final Indexable<?> child : indexable.getChildren()) {
-			if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
-				IndexableColumn indexableColumn = (IndexableColumn) child;
-				Object content = indexableColumn.getContent();
-				if (content == null || indexableColumn.getFieldName() == null) {
-					continue;
-				}
-				String fieldName = indexableColumn.getFieldName().toLowerCase();
-				if (fieldName == null) {
-					continue;
-				}
-				if (latPattern.matcher(fieldName).matches()) {
-					latitude = Double.parseDouble(content.toString());
-				} else if (lngPattern.matcher(fieldName).matches()) {
-					longitude = Double.parseDouble(content.toString());
+		if (indexable.getChildren() != null) {
+			for (final Indexable<?> child : indexable.getChildren()) {
+				if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
+					IndexableColumn indexableColumn = (IndexableColumn) child;
+					Object content = indexableColumn.getContent();
+					if (content == null || indexableColumn.getFieldName() == null) {
+						continue;
+					}
+					String fieldName = indexableColumn.getFieldName().toLowerCase();
+					if (fieldName == null) {
+						continue;
+					}
+					if (latPattern.matcher(fieldName).matches()) {
+						latitude = Double.parseDouble(content.toString());
+					} else if (lngPattern.matcher(fieldName).matches()) {
+						longitude = Double.parseDouble(content.toString());
+					}
 				}
 			}
 		}

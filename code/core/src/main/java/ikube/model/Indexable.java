@@ -27,14 +27,14 @@ import javax.validation.constraints.Min;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Indexable<E> extends Persistable {
 
-	/** These strategies will be processed before processing the indexable. */
-	@Transient
-	private transient List<IStrategy> strategies;
 	/** This is the content of the indexable, it is therefore only valid while indexing and for the current resource. */
 	@Transient
 	private transient Object content;
 	@Transient
 	private transient int exceptions;
+	/** These strategies will be processed before processing the indexable. */
+	@Transient
+	private transient List<IStrategy> strategies;
 
 	@Column
 	@Attribute(field = false, description = "The name of this indexable")
