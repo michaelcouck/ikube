@@ -33,6 +33,8 @@ import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searchable;
 import org.apache.lucene.search.Searcher;
+import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.highlight.Highlighter;
 import org.apache.lucene.search.highlight.QueryScorer;
@@ -73,7 +75,7 @@ public abstract class Search {
 			return this.fieldType;
 		}
 	}
-	
+
 	/** The default analyzer. */
 	protected static final Analyzer ANALYZER = new StemmingAnalyzer();
 
@@ -433,6 +435,25 @@ public abstract class Search {
 			}
 		}
 		return searchFieldNames.toArray(new String[searchFieldNames.size()]);
+	}
+
+	/**
+	 * Returns a sort object that together with a filter will sort the results according to the specified fields.
+	 * 
+	 * @param query the query to wrap in the filter for the sort
+	 * @return the sort that can be used together with the filter to sort the results based on the specified fields
+	 */
+	protected Sort getSort(final Query query) {
+		Sort sort = new Sort();
+		SortField[] fields = new SortField[sortFields.length];
+		int sortFieldIndex = 0;
+		for (String sortFieldName : sortFields) {
+			SortField sortField = new SortField(sortFieldName, SortField.STRING);
+			fields[sortFieldIndex] = sortField;
+			sortFieldIndex++;
+		}
+		sort.setSort(fields);
+		return sort;
 	}
 
 }

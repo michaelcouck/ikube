@@ -29,6 +29,12 @@ public final class LanguageCleaningStrategy extends AStrategy {
 	public boolean aroundProcess(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document, final Object resource)
 			throws Exception {
 		String content = indexable.getContent() != null ? indexable.getContent().toString() : resource != null ? resource.toString() : null;
+		String cleanedContent = cleanContent(content);
+		indexable.setContent(cleanedContent);
+		return super.aroundProcess(indexContext, indexable, document, resource);
+	}
+
+	public String cleanContent(final String content) {
 		if (!StringUtils.isEmpty(content)) {
 			StringBuilder stringBuilder = new StringBuilder();
 			// Remove multiple characters, like aaaaahhhhhyyyeeeah, to aahhyyeeah
@@ -41,9 +47,9 @@ public final class LanguageCleaningStrategy extends AStrategy {
 				stringBuilder.append(c);
 			}
 			String cleanedContent = stringBuilder.toString().toLowerCase();
-			indexable.setContent(cleanedContent);
+			return cleanedContent;
 		}
-		return super.aroundProcess(indexContext, indexable, document, resource);
+		return content;
 	}
 
 }

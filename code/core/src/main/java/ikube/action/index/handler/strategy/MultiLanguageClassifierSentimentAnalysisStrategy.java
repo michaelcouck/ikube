@@ -5,11 +5,21 @@ import ikube.action.index.IndexManager;
 import ikube.action.index.handler.IStrategy;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
+import ikube.toolkit.FileUtilities;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
@@ -55,31 +65,61 @@ public final class MultiLanguageClassifierSentimentAnalysisStrategy extends AStr
 			// If this data is already classified by another strategy then train the language
 			// classifiers on the data. We can then also classify the data and correlate the results
 			String sentiment = document.get(IConstants.SENTIMENT);
-			DynamicLMClassifier<NGramProcessLM> dynamicLMClassifier = getDynamicLMClassifier(language);
-			if (sentiment != null) {
-				train(content, sentiment, dynamicLMClassifier);
-			}
-			Classification classification = dynamicLMClassifier.classify(content);
-			String languageSentiment = classification.bestCategory();
+			String languageSentiment = detectSentiment(language, content);
 			if (StringUtils.isEmpty(sentiment)) {
 				// Not analyzed so add the sentiment that we get
 				IndexManager.addStringField(IConstants.SENTIMENT, languageSentiment, document, Store.YES, Index.ANALYZED, TermVector.NO);
 			} else {
 				// Retrain on the previous strategy sentiment
-				train(content, sentiment, dynamicLMClassifier);
+				train(content, sentiment, language);
 				if (!sentiment.contains(languageSentiment)) {
 					// We don't change the original analysis do we?
 					IndexManager.addStringField(IConstants.SENTIMENT_CONFLICT, languageSentiment, document, Store.YES, Index.ANALYZED, TermVector.NO);
 				}
 			}
 		}
-		if (atomicInteger.getAndIncrement() % 1000 == 0) {
+		if (atomicInteger.getAndIncrement() % 10000 == 0) {
 			logger.info("Document : " + document + ", " + document.hashCode());
+			persistClassifiers();
 		}
 		return super.aroundProcess(indexContext, indexable, document, resource);
 	}
 
-	private void train(final String content, final String sentiment, DynamicLMClassifier<NGramProcessLM> dynamicLMClassifier) throws Exception {
+	public String detectSentiment(final String language, final String content) {
+		DynamicLMClassifier<NGramProcessLM> dynamicLMClassifier = getDynamicLMClassifier(language);
+		Classification classification = dynamicLMClassifier.classify(content);
+		return classification.bestCategory();
+	}
+
+	private void persistClassifiers() {
+		// Persist the classifiers from time to time
+		File classifiersDirectory = getClassifiersDirectory();
+		for (final Map.Entry<String, DynamicLMClassifier<NGramProcessLM>> mapEntry : languageClassifiers.entrySet()) {
+			OutputStream outputStream = null;
+			try {
+				DynamicLMClassifier<NGramProcessLM> dynamicLMClassifier = mapEntry.getValue();
+				File classifierFile = FileUtilities.getOrCreateFile(new File(classifiersDirectory, mapEntry.getKey() + "." + IConstants.CLASSIFIER));
+				outputStream = new FileOutputStream(classifierFile);
+				ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+				dynamicLMClassifier.compileTo(objectOutputStream);
+			} catch (Exception e) {
+				logger.error("Exception persisting the classifier : " + mapEntry.getKey() + ", " + mapEntry.getValue(), e);
+			} finally {
+				IOUtils.closeQuietly(outputStream);
+			}
+		}
+	}
+
+	private File getClassifiersDirectory() {
+		File classifiersDirectory = FileUtilities.findDirectoryRecursively(new File("."), IConstants.CLASSIFIERS);
+		if (classifiersDirectory == null) {
+			classifiersDirectory = new File("./ikube/common/sentiment", IConstants.CLASSIFIERS);
+		}
+		return FileUtilities.getOrCreateDirectory(classifiersDirectory);
+	}
+
+	private void train(final String content, final String sentiment, final String language) throws Exception {
+		DynamicLMClassifier<NGramProcessLM> dynamicLMClassifier = getDynamicLMClassifier(language);
 		Classification classification = new Classification(sentiment);
 		Classified<CharSequence> classified = new Classified<CharSequence>(content, classification);
 		dynamicLMClassifier.handle(classified);
@@ -98,9 +138,30 @@ public final class MultiLanguageClassifierSentimentAnalysisStrategy extends AStr
 	 * {@inheritDoc}
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public void initialize() {
 		atomicInteger = new AtomicInteger(0);
 		languageClassifiers = new HashMap<String, DynamicLMClassifier<NGramProcessLM>>();
+		File classifiersDirectory = getClassifiersDirectory();
+		File[] classifierFiles = classifiersDirectory.listFiles();
+		if (classifierFiles != null) {
+			for (final File classifierFile : classifierFiles) {
+				String language = FilenameUtils.getBaseName(classifierFile.getName());
+				InputStream inputStream = null;
+				ObjectInputStream objectInputStream = null;
+				try {
+					inputStream = new FileInputStream(classifierFile);
+					objectInputStream = new ObjectInputStream(inputStream);
+					DynamicLMClassifier<NGramProcessLM> dynamicLMClassifier = (DynamicLMClassifier<NGramProcessLM>) objectInputStream.readObject();
+					languageClassifiers.put(language, dynamicLMClassifier);
+				} catch (Exception e) {
+					logger.error("Exception deserializing classifier : " + classifierFile, e);
+				} finally {
+					IOUtils.closeQuietly(objectInputStream);
+					IOUtils.closeQuietly(inputStream);
+				}
+			}
+		}
 	}
 
 }

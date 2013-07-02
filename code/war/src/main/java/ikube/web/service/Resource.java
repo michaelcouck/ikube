@@ -35,6 +35,7 @@ public abstract class Resource {
 	public static final String NUMERIC_ALL = "/numeric/all";
 	public static final String NUMERIC_RANGE = "/numeric/range";
 	public static final String COMPLEX = "/complex";
+	public static final String COMPLEX_SORTED = "/complex/sorted";
 
 	public static final String SEPARATOR = ",;:|";
 

@@ -119,6 +119,12 @@ public class SearcherServiceTest extends AbstractTest {
 	}
 
 	@Test
+	public void searchComplexSorted() {
+		searcherService.searchComplexSorted(indexName, searchStrings, searchFields, typeFields, sortFields, fragment, firstResult, maxResults);
+		verify();
+	}
+
+	@Test
 	public void persistSearch() {
 		searcherService = new SearcherService();
 		Deencapsulation.setField(searcherService, dataBase);

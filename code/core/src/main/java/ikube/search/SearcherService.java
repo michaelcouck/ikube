@@ -13,11 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.ejb.Remote;
-import javax.jws.WebMethod;
-import javax.jws.WebParam;
-import javax.jws.WebResult;
-import javax.jws.WebService;
-import javax.jws.soap.SOAPBinding;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.search.Searcher;
@@ -31,10 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 21.11.10
  * @version 01.00
  */
-@Remote(ISearcherService.class)
 @SuppressWarnings("deprecation")
-@SOAPBinding(style = SOAPBinding.Style.DOCUMENT)
-@WebService(name = ISearcherService.NAME, targetNamespace = ISearcherService.NAMESPACE, serviceName = ISearcherService.SERVICE)
+@Remote(ISearcherService.class)
 public class SearcherService implements ISearcherService {
 
 	static final Logger LOGGER = LoggerFactory.getLogger(SearcherService.class);
@@ -52,12 +45,8 @@ public class SearcherService implements ISearcherService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@WebMethod
-	@WebResult(name = "result")
-	public ArrayList<HashMap<String, String>> searchSingle(@WebParam(name = "indexName") final String indexName,
-			@WebParam(name = "searchString") final String searchString, @WebParam(name = "searchField") final String searchField,
-			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
-			@WebParam(name = "maxResults") final int maxResults) {
+	public ArrayList<HashMap<String, String>> searchSingle(final String indexName, final String searchString, final String searchField, final boolean fragment,
+			final int firstResult, final int maxResults) {
 		try {
 			SearchSingle searchSingle = getSearch(SearchSingle.class, indexName);
 			if (searchSingle == null) {
@@ -82,12 +71,8 @@ public class SearcherService implements ISearcherService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@WebMethod
-	@WebResult(name = "result")
-	public ArrayList<HashMap<String, String>> searchMulti(@WebParam(name = "indexName") final String indexName,
-			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
-			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
-			@WebParam(name = "maxResults") final int maxResults) {
+	public ArrayList<HashMap<String, String>> searchMulti(final String indexName, final String[] searchStrings, final String[] searchFields,
+			final boolean fragment, final int firstResult, final int maxResults) {
 		try {
 			SearchMulti searchMulti = getSearch(SearchMulti.class, indexName);
 			if (searchMulti == null) {
@@ -112,12 +97,8 @@ public class SearcherService implements ISearcherService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@WebMethod
-	@WebResult(name = "result")
-	public ArrayList<HashMap<String, String>> searchMultiSorted(@WebParam(name = "indexName") final String indexName,
-			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
-			@WebParam(name = "sortFields") final String[] sortFields, @WebParam(name = "fragment") final boolean fragment,
-			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults) {
+	public ArrayList<HashMap<String, String>> searchMultiSorted(final String indexName, final String[] searchStrings, final String[] searchFields,
+			final String[] sortFields, final boolean fragment, final int firstResult, final int maxResults) {
 		try {
 			SearchMultiSorted searchMultiSorted = getSearch(SearchMultiSorted.class, indexName);
 			if (searchMultiSorted == null) {
@@ -143,11 +124,8 @@ public class SearcherService implements ISearcherService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@WebMethod
-	@WebResult(name = "result")
-	public ArrayList<HashMap<String, String>> searchMultiAll(@WebParam(name = "indexName") final String indexName,
-			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "fragment") final boolean fragment,
-			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults) {
+	public ArrayList<HashMap<String, String>> searchMultiAll(final String indexName, final String[] searchStrings, final boolean fragment,
+			final int firstResult, final int maxResults) {
 		try {
 			SearchMultiAll searchMultiAll = getSearch(SearchMultiAll.class, indexName);
 			if (searchMultiAll == null) {
@@ -171,13 +149,8 @@ public class SearcherService implements ISearcherService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@WebMethod
-	@WebResult(name = "result")
-	public ArrayList<HashMap<String, String>> searchMultiSpacial(@WebParam(name = "indexName") final String indexName,
-			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
-			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
-			@WebParam(name = "maxResults") final int maxResults, @WebParam(name = "distance") final int distance,
-			@WebParam(name = "latitude") final double latitude, @WebParam(name = "longitude") final double longitude) {
+	public ArrayList<HashMap<String, String>> searchMultiSpacial(final String indexName, final String[] searchStrings, final String[] searchFields,
+			final boolean fragment, final int firstResult, final int maxResults, final int distance, final double latitude, final double longitude) {
 		try {
 			SearchSpatial searchSpatial = getSearch(SearchSpatial.class, indexName);
 			if (searchSpatial == null) {
@@ -204,13 +177,8 @@ public class SearcherService implements ISearcherService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@WebMethod
-	@WebResult(name = "result")
-	public ArrayList<HashMap<String, String>> searchMultiSpacialAll(@WebParam(name = "indexName") final String indexName,
-			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "fragment") final boolean fragment,
-			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults,
-			@WebParam(name = "distance") final int distance, @WebParam(name = "latitude") final double latitude,
-			@WebParam(name = "longitude") final double longitude) {
+	public ArrayList<HashMap<String, String>> searchMultiSpacialAll(final String indexName, final String[] searchStrings, final boolean fragment,
+			final int firstResult, final int maxResults, final int distance, final double latitude, final double longitude) {
 		try {
 			SearchSpatialAll searchSpatialAll = getSearch(SearchSpatialAll.class, indexName);
 			if (searchSpatialAll == null) {
@@ -236,12 +204,8 @@ public class SearcherService implements ISearcherService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@WebMethod
-	@WebResult(name = "result")
-	public ArrayList<HashMap<String, String>> searchMultiAdvanced(@WebParam(name = "indexName") final String indexName,
-			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
-			@WebParam(name = "fragment") final boolean fragment, @WebParam(name = "firstResult") final int firstResult,
-			@WebParam(name = "maxResults") final int maxResults) {
+	public ArrayList<HashMap<String, String>> searchMultiAdvanced(final String indexName, final String[] searchStrings, final String[] searchFields,
+			final boolean fragment, final int firstResult, final int maxResults) {
 		try {
 			SearchAdvanced searchAdvanced = getSearch(SearchAdvanced.class, indexName);
 			if (searchAdvanced == null) {
@@ -266,10 +230,8 @@ public class SearcherService implements ISearcherService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@WebMethod
-	@WebResult(name = "result")
-	public ArrayList<HashMap<String, String>> searchNumericAll(String indexName, String[] searchStrings, boolean fragment, int firstResult,
-			int maxResults) {
+	public ArrayList<HashMap<String, String>> searchNumericAll(final String indexName, final String[] searchStrings, final boolean fragment,
+			final int firstResult, final int maxResults) {
 		try {
 			SearchNumericAll searchNumericAll = getSearch(SearchNumericAll.class, indexName);
 			if (searchNumericAll == null) {
@@ -293,10 +255,8 @@ public class SearcherService implements ISearcherService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@WebMethod
-	@WebResult(name = "result")
-	public ArrayList<HashMap<String, String>> searchNumericRange(String indexName, String[] searchStrings, boolean fragment,
-			int firstResult, int maxResults) {
+	public ArrayList<HashMap<String, String>> searchNumericRange(final String indexName, final String[] searchStrings, final boolean fragment,
+			final int firstResult, final int maxResults) {
 		try {
 			SearchNumericRange searchNumericRange = getSearch(SearchNumericRange.class, indexName);
 			if (searchNumericRange == null) {
@@ -320,12 +280,8 @@ public class SearcherService implements ISearcherService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@WebMethod
-	@WebResult(name = "result")
-	public ArrayList<HashMap<String, String>> searchComplex(@WebParam(name = "indexName") final String indexName,
-			@WebParam(name = "searchStrings") final String[] searchStrings, @WebParam(name = "searchFields") final String[] searchFields,
-			@WebParam(name = "typeFields") final String[] typeFields, @WebParam(name = "fragment") final boolean fragment,
-			@WebParam(name = "firstResult") final int firstResult, @WebParam(name = "maxResults") final int maxResults) {
+	public ArrayList<HashMap<String, String>> searchComplex(final String indexName, final String[] searchStrings, final String[] searchFields,
+			final String[] typeFields, final boolean fragment, final int firstResult, final int maxResults) {
 		try {
 			SearchComplex searchComplex = getSearch(SearchComplex.class, indexName);
 			if (searchComplex == null) {
@@ -347,15 +303,42 @@ public class SearcherService implements ISearcherService {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public ArrayList<HashMap<String, String>> searchComplexSorted(final String indexName, final String[] searchStrings, final String[] searchFields,
+			final String[] typeFields, final String[] sortFields, final boolean fragment, final int firstResult, final int maxResults) {
+		try {
+			SearchComplexSorted searchComplexSorted = getSearch(SearchComplexSorted.class, indexName);
+			if (searchComplexSorted == null) {
+				LOGGER.warn("Searcher null for index : " + indexName);
+				return EMPTY_RESULTS;
+			}
+			searchComplexSorted.setFirstResult(firstResult);
+			searchComplexSorted.setFragment(fragment);
+			searchComplexSorted.setMaxResults(maxResults);
+			searchComplexSorted.setSearchField(searchFields);
+			searchComplexSorted.setSearchString(searchStrings);
+			searchComplexSorted.setTypeFields(typeFields);
+			searchComplexSorted.setSortField(sortFields);
+			ArrayList<HashMap<String, String>> results = searchComplexSorted.execute();
+			String[] searchStringsCorrected = searchComplexSorted.getCorrections();
+			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
+			return results;
+		} catch (final Exception e) {
+			return handleException(indexName, e);
+		}
+	}
+
 	private ArrayList<HashMap<String, String>> handleException(final String indexName, final Exception e) {
 		LOGGER.error("Exception doing search on : " + indexName, e);
 		return EMPTY_RESULTS;
 	}
 
 	/**
-	 * This method will return an instance of the search class, based on the class in the parameter list and the index context name. For
-	 * each search there is an instance created for the searcher classes to avoid thread overlap. The instance is created using reflection
-	 * :( but is there a more elegant way?
+	 * This method will return an instance of the search class, based on the class in the parameter list and the index context name. For each search there is an
+	 * instance created for the searcher classes to avoid thread overlap. The instance is created using reflection :( but is there a more elegant way?
 	 * 
 	 * @param <T> the type of class that is expected as a result
 	 * @param klass the class of the searcher
@@ -400,8 +383,7 @@ public class SearcherService implements ISearcherService {
 			if (searchStringsCorrected != null && searchStringsCorrected.length > i) {
 				correctSearchString = searchStringsCorrected[i];
 			}
-			Search dbSearch = dataBase.findCriteria(Search.class, new String[] { "indexName", "searchStrings" }, new Object[] { indexName,
-					searchString });
+			Search dbSearch = dataBase.findCriteria(Search.class, new String[] { "indexName", "searchStrings" }, new Object[] { indexName, searchString });
 			if (dbSearch == null) {
 				Search search = new Search();
 				search.setSearchStrings(searchString);

@@ -11,21 +11,19 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
 
 /**
- * Searches for multiple fields in an index, and sorts the results.
- * 
  * @see Search
  * @author Michael Couck
- * @since 02.09.08
+ * @since 02.07.2013
  * @version 01.00
  */
 @SuppressWarnings("deprecation")
-public class SearchMultiSorted extends SearchMulti {
+public class SearchComplexSorted extends SearchComplex {
 
-	public SearchMultiSorted(final Searcher searcher) {
+	public SearchComplexSorted(final Searcher searcher) {
 		this(searcher, ANALYZER);
 	}
 
-	public SearchMultiSorted(final Searcher searcher, final Analyzer analyzer) {
+	public SearchComplexSorted(final Searcher searcher, final Analyzer analyzer) {
 		super(searcher, analyzer);
 	}
 

@@ -44,18 +44,28 @@ public final class LanguageDetectionStrategy extends AStrategy {
 	public boolean aroundProcess(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document, final Object resource)
 			throws Exception {
 		// Concatenate the data in the indexable
-		String content = getContent(indexable, new StringBuilder()).toString();
-		if (!StringUtils.isEmpty(content) && StringUtils.isEmpty(document.get(IConstants.LANGUAGE))) {
-			Detector detector = DetectorFactory.create();
-			detector.append(content.toString());
-			try {
-				String language = detector.detect();
+		if (StringUtils.isEmpty(document.get(IConstants.LANGUAGE))) {
+			String content = getContent(indexable, new StringBuilder()).toString();
+			String language = detectLanguage(content);
+			if (language != null) {
 				IndexManager.addStringField(IConstants.LANGUAGE, language, document, Store.YES, Index.ANALYZED, TermVector.NO);
+			}
+		}
+		return super.aroundProcess(indexContext, indexable, document, resource);
+	}
+
+	public String detectLanguage(final String content) {
+		if (!StringUtils.isEmpty(content)) {
+			try {
+				Detector detector = DetectorFactory.create();
+				detector.append(content.toString());
+				String language = detector.detect();
+				return language;
 			} catch (LangDetectException e) {
 				logger.debug("Language processing error : {} ", e.getMessage());
 			}
 		}
-		return super.aroundProcess(indexContext, indexable, document, resource);
+		return null;
 	}
 
 	final StringBuilder getContent(final Indexable<?> indexable, final StringBuilder builder) {
