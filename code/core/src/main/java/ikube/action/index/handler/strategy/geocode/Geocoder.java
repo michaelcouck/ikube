@@ -3,6 +3,7 @@ package ikube.action.index.handler.strategy.geocode;
 import ikube.IConstants;
 import ikube.security.WebServiceAuthentication;
 import ikube.toolkit.SerializationUtilities;
+import ikube.toolkit.ThreadUtilities;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -32,6 +33,7 @@ public class Geocoder implements IGeocoder, InitializingBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Geocoder.class);
 
+	private boolean disabled;
 	private String userid;
 	private String password;
 	private String searchUrl;
@@ -50,18 +52,19 @@ public class Geocoder implements IGeocoder, InitializingBean {
 	@Override
 	@SuppressWarnings("unchecked")
 	public Coordinate getCoordinate(String address) {
+		if (disabled) {
+			return null;
+		}
 		try {
 			// Trim the address for strange characters to get a better result
 			String trimmedAddress = StringUtils.trim(address);
 			Arrays.fill(this.searchStrings, trimmedAddress);
 
 			// Get the GeoSpatial search service
-			NameValuePair searchStringsPair = new NameValuePair(IConstants.SEARCH_STRINGS, StringUtils.join(this.searchStrings,
-					IConstants.SEMI_COLON));
+			NameValuePair searchStringsPair = new NameValuePair(IConstants.SEARCH_STRINGS, StringUtils.join(this.searchStrings, IConstants.SEMI_COLON));
 
 			GetMethod getMethod = new GetMethod(searchUrl);
-			NameValuePair[] params = new NameValuePair[] { indexNamePair, searchStringsPair, searchFieldsPair, fragmentPair,
-					firstResultPair, maxResultsPair };
+			NameValuePair[] params = new NameValuePair[] { indexNamePair, searchStringsPair, searchFieldsPair, fragmentPair, firstResultPair, maxResultsPair };
 			getMethod.setQueryString(params);
 			int result = httpClient.executeMethod(getMethod);
 			String xml = getMethod.getResponseBodyAsString();
@@ -82,6 +85,18 @@ public class Geocoder implements IGeocoder, InitializingBean {
 				LOGGER.info("Result from geoname search : " + firstResult);
 			}
 		} catch (Exception e) {
+			// We'll disable this geocoder for a while
+			ThreadUtilities.submit(this.getClass().getSimpleName(), new Runnable() {
+				public void run() {
+					try {
+						disabled = true;
+						ThreadUtilities.sleep(600000);
+						disabled = false;
+					} finally {
+						ThreadUtilities.destroy(this.getClass().getSimpleName());
+					}
+				}
+			});
 			LOGGER.error("Address and geocoder : ", address, toString());
 			LOGGER.error("Exception accessing the spatial search service : ", e);
 		}
@@ -114,12 +129,12 @@ public class Geocoder implements IGeocoder, InitializingBean {
 	}
 
 	/**
-	 * This sets the search fields. At the time of writing the fields that were indexed in the GeoNames data was 'name', 'city' and
-	 * 'country'. The city and country fields are in fact the enriched data. Essentially all three of these fields will be searched, in
-	 * order and the best match for them aggregated will be used for the results.
+	 * This sets the search fields. At the time of writing the fields that were indexed in the GeoNames data was 'name', 'city' and 'country'. The city and
+	 * country fields are in fact the enriched data. Essentially all three of these fields will be searched, in order and the best match for them aggregated
+	 * will be used for the results.
 	 * 
-	 * @param searchFields the search fields to search in the GeoSpatial index, typically this will be the name field because this is an
-	 *            aggregation of the name of the feature in the GeoNames data and the enriched fields for the city and the country
+	 * @param searchFields the search fields to search in the GeoSpatial index, typically this will be the name field because this is an aggregation of the name
+	 *            of the feature in the GeoNames data and the enriched fields for the city and the country
 	 */
 	public void setSearchFields(List<String> searchFields) {
 		this.searchFields = searchFields.toArray(new String[searchFields.size()]);
