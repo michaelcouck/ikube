@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
@@ -60,12 +61,16 @@ public final class MultiLanguageClassifierSentimentAnalysisStrategy extends AStr
 			}
 			Classification classification = dynamicLMClassifier.classify(content);
 			String languageSentiment = classification.bestCategory();
-			if (sentiment == null) {
+			if (StringUtils.isEmpty(sentiment)) {
 				// Not analyzed so add the sentiment that we get
 				IndexManager.addStringField(IConstants.SENTIMENT, languageSentiment, document, Store.YES, Index.ANALYZED, TermVector.NO);
-			} else if (!languageSentiment.equals(sentiment)) {
-				// We don't change the original analysis do we?
-				IndexManager.addStringField(IConstants.SENTIMENT_CONFLICT, languageSentiment, document, Store.YES, Index.ANALYZED, TermVector.NO);
+			} else {
+				// Retrain on the previous strategy sentiment
+				train(content, sentiment, dynamicLMClassifier);
+				if (!sentiment.contains(languageSentiment)) {
+					// We don't change the original analysis do we?
+					IndexManager.addStringField(IConstants.SENTIMENT_CONFLICT, languageSentiment, document, Store.YES, Index.ANALYZED, TermVector.NO);
+				}
 			}
 		}
 		logger.info("Document : " + document);

@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
@@ -49,34 +50,38 @@ public final class EmoticonSentimentAnalysisStrategy extends AStrategy {
 		// Remove duplicate or re-tweets?
 		// Remove the @username strings?
 		// Remove data with bi-polar sentiment, i.e. + and - emoticons
-		String content = indexable.getContent() != null ? indexable.getContent().toString() : resource != null ? resource.toString() : null;
-		if (content != null) {
-			// Break the text up into tokens and match them against the emoticons
-			boolean pos = Boolean.FALSE;
-			boolean neg = Boolean.FALSE;
-			StringTokenizer stringTokenizer = new StringTokenizer(content, " ");
-			while (stringTokenizer.hasMoreTokens()) {
-				String token = stringTokenizer.nextToken();
-				long hash = HashUtilities.hash(token);
-				if (emoticonHashesPos.contains(hash)) {
-					pos = Boolean.TRUE;
-					// Replace emoticons with the equivalent words, either positive or negative?
+		String sentiment = document.get(IConstants.SENTIMENT);
+		if (StringUtils.isEmpty(sentiment)) {
+			// We only add the sentiment if it is not filled in for this strategy
+			String content = indexable.getContent() != null ? indexable.getContent().toString() : resource != null ? resource.toString() : null;
+			if (content != null) {
+				// Break the text up into tokens and match them against the emoticons
+				boolean pos = Boolean.FALSE;
+				boolean neg = Boolean.FALSE;
+				StringTokenizer stringTokenizer = new StringTokenizer(content, " ");
+				while (stringTokenizer.hasMoreTokens()) {
+					String token = stringTokenizer.nextToken();
+					long hash = HashUtilities.hash(token);
+					if (emoticonHashesPos.contains(hash)) {
+						pos = Boolean.TRUE;
+						// Replace emoticons with the equivalent words, either positive or negative?
+					}
+					if (emoticonHashesNeg.contains(hash)) {
+						neg = Boolean.TRUE;
+						// Replace emoticons with the equivalent words, either positive or negative?
+					}
 				}
-				if (emoticonHashesNeg.contains(hash)) {
-					neg = Boolean.TRUE;
-					// Replace emoticons with the equivalent words, either positive or negative?
+				if (pos && neg) {
+					// Do nothing because there are positive and negative
+				} else if (pos) {
+					// Positive sentiment
+					IndexManager.addStringField(IConstants.SENTIMENT, IConstants.SENTIMENT_CATEGORIES[0], document, Store.YES, Index.ANALYZED, TermVector.NO);
+				} else {
+					// Negative sentiment
+					IndexManager.addStringField(IConstants.SENTIMENT, IConstants.SENTIMENT_CATEGORIES[1], document, Store.YES, Index.ANALYZED, TermVector.NO);
 				}
+				logger.info("Emoticon sentiment : " + pos + ", " + neg);
 			}
-			if (pos && neg) {
-				// Do nothing because there are positive and negative
-			} else if (pos) {
-				// Positive sentiment
-				IndexManager.addStringField(IConstants.SENTIMENT, IConstants.SENTIMENT_CATEGORIES[0], document, Store.YES, Index.ANALYZED, TermVector.NO);
-			} else {
-				// Negative sentiment
-				IndexManager.addStringField(IConstants.SENTIMENT, IConstants.SENTIMENT_CATEGORIES[1], document, Store.YES, Index.ANALYZED, TermVector.NO);
-			}
-			logger.info("Emoticon sentiment : " + pos + ", " + neg);
 		}
 		return super.aroundProcess(indexContext, indexable, document, resource);
 	}

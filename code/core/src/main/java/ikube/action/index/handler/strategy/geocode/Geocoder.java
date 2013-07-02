@@ -35,7 +35,7 @@ public class Geocoder implements IGeocoder, InitializingBean {
 	private String userid;
 	private String password;
 	private String searchUrl;
-	private ThreadLocal<HttpClient> httpClient;
+	private HttpClient httpClient;
 	private String[] searchStrings;
 	private String[] searchFields;
 	private NameValuePair searchFieldsPair;
@@ -49,15 +49,12 @@ public class Geocoder implements IGeocoder, InitializingBean {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public Coordinate getCoordinate(String address) {
+	public synchronized Coordinate getCoordinate(String address) {
 		if (disabled) {
 			return null;
 		}
 		GetMethod getMethod = null;
 		try {
-			if (httpClient == null || httpClient.get() == null) {
-				afterPropertiesSet();
-			}
 			// Trim the address for strange characters to get a better result
 			String trimmedAddress = StringUtils.trim(address);
 			Arrays.fill(this.searchStrings, trimmedAddress);
@@ -68,7 +65,7 @@ public class Geocoder implements IGeocoder, InitializingBean {
 			getMethod = new GetMethod(searchUrl);
 			NameValuePair[] params = new NameValuePair[] { indexNamePair, searchStringsPair, searchFieldsPair, fragmentPair, firstResultPair, maxResultsPair };
 			getMethod.setQueryString(params);
-			int result = httpClient.get().executeMethod(getMethod);
+			int result = httpClient.executeMethod(getMethod);
 			String xml = getMethod.getResponseBodyAsString();
 			LOGGER.info("Result from web service : " + result + ", " + xml);
 
@@ -116,12 +113,11 @@ public class Geocoder implements IGeocoder, InitializingBean {
 		fragmentPair = new NameValuePair(IConstants.FRAGMENT, Boolean.TRUE.toString());
 		indexNamePair = new NameValuePair(IConstants.INDEX_NAME, IConstants.GEOSPATIAL);
 		searchFieldsPair = new NameValuePair(IConstants.SEARCH_FIELDS, StringUtils.join(this.searchFields, IConstants.SEMI_COLON));
-		httpClient = new ThreadLocal<HttpClient>();
-		httpClient.set(new HttpClient());
+		httpClient = new HttpClient();
 		URL url;
 		try {
 			url = new URL(searchUrl);
-			new WebServiceAuthentication().authenticate(httpClient.get(), url.getHost(), Integer.toString(url.getPort()), userid, password);
+			new WebServiceAuthentication().authenticate(httpClient, url.getHost(), Integer.toString(url.getPort()), userid, password);
 		} catch (MalformedURLException e) {
 			LOGGER.error(null, e);
 		}
