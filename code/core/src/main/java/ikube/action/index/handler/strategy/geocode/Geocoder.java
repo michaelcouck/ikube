@@ -17,8 +17,6 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -37,7 +35,7 @@ public class Geocoder implements IGeocoder, InitializingBean {
 	private String userid;
 	private String password;
 	private String searchUrl;
-	private HttpClient httpClient;
+	private ThreadLocal<HttpClient> httpClient;
 	private String[] searchStrings;
 	private String[] searchFields;
 	private NameValuePair searchFieldsPair;
@@ -55,7 +53,11 @@ public class Geocoder implements IGeocoder, InitializingBean {
 		if (disabled) {
 			return null;
 		}
+		GetMethod getMethod = null;
 		try {
+			if (httpClient == null || httpClient.get() == null) {
+				afterPropertiesSet();
+			}
 			// Trim the address for strange characters to get a better result
 			String trimmedAddress = StringUtils.trim(address);
 			Arrays.fill(this.searchStrings, trimmedAddress);
@@ -63,10 +65,10 @@ public class Geocoder implements IGeocoder, InitializingBean {
 			// Get the GeoSpatial search service
 			NameValuePair searchStringsPair = new NameValuePair(IConstants.SEARCH_STRINGS, StringUtils.join(this.searchStrings, IConstants.SEMI_COLON));
 
-			GetMethod getMethod = new GetMethod(searchUrl);
+			getMethod = new GetMethod(searchUrl);
 			NameValuePair[] params = new NameValuePair[] { indexNamePair, searchStringsPair, searchFieldsPair, fragmentPair, firstResultPair, maxResultsPair };
 			getMethod.setQueryString(params);
-			int result = httpClient.executeMethod(getMethod);
+			int result = httpClient.get().executeMethod(getMethod);
 			String xml = getMethod.getResponseBodyAsString();
 			LOGGER.info("Result from web service : " + result + ", " + xml);
 
@@ -99,6 +101,10 @@ public class Geocoder implements IGeocoder, InitializingBean {
 			});
 			LOGGER.error("Address and geocoder : ", address, toString());
 			LOGGER.error("Exception accessing the spatial search service : ", e);
+		} finally {
+			if (getMethod != null) {
+				getMethod.releaseConnection();
+			}
 		}
 		return null;
 	}
@@ -110,11 +116,12 @@ public class Geocoder implements IGeocoder, InitializingBean {
 		fragmentPair = new NameValuePair(IConstants.FRAGMENT, Boolean.TRUE.toString());
 		indexNamePair = new NameValuePair(IConstants.INDEX_NAME, IConstants.GEOSPATIAL);
 		searchFieldsPair = new NameValuePair(IConstants.SEARCH_FIELDS, StringUtils.join(this.searchFields, IConstants.SEMI_COLON));
-		httpClient = new HttpClient();
+		httpClient = new ThreadLocal<HttpClient>();
+		httpClient.set(new HttpClient());
 		URL url;
 		try {
 			url = new URL(searchUrl);
-			new WebServiceAuthentication().authenticate(httpClient, url.getHost(), Integer.toString(url.getPort()), userid, password);
+			new WebServiceAuthentication().authenticate(httpClient.get(), url.getHost(), Integer.toString(url.getPort()), userid, password);
 		} catch (MalformedURLException e) {
 			LOGGER.error(null, e);
 		}
@@ -147,10 +154,6 @@ public class Geocoder implements IGeocoder, InitializingBean {
 
 	public void setPassword(String password) {
 		this.password = password;
-	}
-
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
 
 }
