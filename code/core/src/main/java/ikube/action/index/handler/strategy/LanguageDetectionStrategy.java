@@ -45,7 +45,7 @@ public final class LanguageDetectionStrategy extends AStrategy {
 			throws Exception {
 		// Concatenate the data in the indexable
 		String content = getContent(indexable, new StringBuilder()).toString();
-		if (!StringUtils.isEmpty(content)) {
+		if (!StringUtils.isEmpty(content) && StringUtils.isEmpty(document.get(IConstants.LANGUAGE))) {
 			Detector detector = DetectorFactory.create();
 			detector.append(content.toString());
 			try {

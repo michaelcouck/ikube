@@ -23,10 +23,12 @@ public class LanguageCleaningStrategyTest extends AbstractTest {
 	@Test
 	public void aroundProcess() throws Exception {
 		Indexable<?> indexable = Mockito.mock(Indexable.class);
-		Mockito.when(indexable.getContent()).thenReturn("What a looovely dai where theere are moneyy mistaces");
+		Mockito.when(indexable.getContent()).thenReturn(
+				"What a looovely dai where theere are moneyy mistaces aaaahhhhhhh thereererereee yooooouuuuu aaarrrrreeee");
 		Document document = new Document();
 		Object resource = new Object();
 		languageCleaningStrategy.aroundProcess(indexContext, indexable, document, resource);
+		Mockito.verify(indexable, Mockito.atLeastOnce()).setContent("what a loovely dai where theere are moneyy mistaces aahh thereerereree yoouu aarree");
 	}
 
 }

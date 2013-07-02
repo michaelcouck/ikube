@@ -15,6 +15,7 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.lucene.index.IndexWriter;
 
 /**
@@ -70,6 +71,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 					ForkJoinPool forkJoinPool = new ForkJoinPool(indexable.getThreads());
 					ThreadUtilities.addForkJoinPool(indexContext.getName(), forkJoinPool);
 					forkJoinPool.invoke(forkJoinTask);
+					logger.info("Retuning from fork join : " + this + ", " + indexContext.getName() + ", " + ToStringBuilder.reflectionToString(forkJoinTask));
 				} finally {
 					ThreadUtilities.cancellForkJoinPool(indexContext.getName());
 				}
