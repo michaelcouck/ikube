@@ -56,33 +56,37 @@ public final class MultiLanguageClassifierSentimentAnalysisStrategy extends AStr
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean aroundProcess(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document, final Object resource)
+	public synchronized boolean aroundProcess(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document, final Object resource)
 			throws Exception {
-		// TODO Perhaps detect the subject and the object. Separate the constructs of the sentence for further processing
-		String language = document.get(IConstants.LANGUAGE);
-		String content = indexable.getContent() != null ? indexable.getContent().toString() : resource != null ? resource.toString() : null;
-		if (language != null && content != null) {
-			// If this data is already classified by another strategy then train the language
-			// classifiers on the data. We can then also classify the data and correlate the results
-			String sentiment = document.get(IConstants.SENTIMENT);
-			String languageSentiment = detectSentiment(language, content);
-			if (StringUtils.isEmpty(sentiment)) {
-				// Not analyzed so add the sentiment that we get
-				IndexManager.addStringField(IConstants.SENTIMENT, languageSentiment, document, Store.YES, Index.ANALYZED, TermVector.NO);
-			} else {
-				// Retrain on the previous strategy sentiment
-				train(content, sentiment, language);
-				if (!sentiment.contains(languageSentiment)) {
-					// We don't change the original analysis do we?
-					IndexManager.addStringField(IConstants.SENTIMENT_CONFLICT, languageSentiment, document, Store.YES, Index.ANALYZED, TermVector.NO);
+		try {
+			// TODO Perhaps detect the subject and the object. Separate the constructs of the sentence for further processing
+			String language = document.get(IConstants.LANGUAGE);
+			String content = indexable.getContent() != null ? indexable.getContent().toString() : resource != null ? resource.toString() : null;
+			if (language != null && content != null) {
+				// If this data is already classified by another strategy then train the language
+				// classifiers on the data. We can then also classify the data and correlate the results
+				String sentiment = document.get(IConstants.SENTIMENT);
+				String languageSentiment = detectSentiment(language, content);
+				if (StringUtils.isEmpty(sentiment)) {
+					// Not analyzed so add the sentiment that we get
+					IndexManager.addStringField(IConstants.SENTIMENT, languageSentiment, document, Store.YES, Index.ANALYZED, TermVector.NO);
+				} else {
+					// Retrain on the previous strategy sentiment
+					train(content, sentiment, language);
+					if (!sentiment.contains(languageSentiment)) {
+						// We don't change the original analysis do we?
+						IndexManager.addStringField(IConstants.SENTIMENT_CONFLICT, languageSentiment, document, Store.YES, Index.ANALYZED, TermVector.NO);
+					}
 				}
 			}
+			if (atomicInteger.getAndIncrement() % 10000 == 0) {
+				logger.info("Document : " + document + ", " + document.hashCode());
+				persistClassifiers();
+			}
+			return super.aroundProcess(indexContext, indexable, document, resource);
+		} finally {
+			notifyAll();
 		}
-		if (atomicInteger.getAndIncrement() % 10000 == 0) {
-			logger.info("Document : " + document + ", " + document.hashCode());
-			persistClassifiers();
-		}
-		return super.aroundProcess(indexContext, indexable, document, resource);
 	}
 
 	public String detectSentiment(final String language, final String content) {
