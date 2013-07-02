@@ -50,10 +50,9 @@ public final class LanguageDetectionStrategy extends AStrategy {
 			detector.append(content.toString());
 			try {
 				String language = detector.detect();
-				logger.info("Language : " + language);
 				IndexManager.addStringField(IConstants.LANGUAGE, language, document, Store.YES, Index.ANALYZED, TermVector.NO);
 			} catch (LangDetectException e) {
-				logger.debug("Language processing error : " + e.getMessage());
+				logger.debug("Language processing error : {} ", e.getMessage());
 			}
 		}
 		return super.aroundProcess(indexContext, indexable, document, resource);

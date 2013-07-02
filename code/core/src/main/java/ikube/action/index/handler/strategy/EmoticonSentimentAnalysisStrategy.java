@@ -80,6 +80,10 @@ public final class EmoticonSentimentAnalysisStrategy extends AStrategy {
 					// Negative sentiment
 					IndexManager.addStringField(IConstants.SENTIMENT, IConstants.SENTIMENT_CATEGORIES[1], document, Store.YES, Index.ANALYZED, TermVector.NO);
 				}
+				if (pos || neg) {
+					// Found at least one emoticon!
+					logger.info("Emoticon : " + pos + ", " + neg);
+				}
 			}
 		}
 		return super.aroundProcess(indexContext, indexable, document, resource);
