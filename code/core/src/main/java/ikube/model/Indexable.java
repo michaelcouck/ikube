@@ -31,6 +31,8 @@ public class Indexable<E> extends Persistable {
 	@Transient
 	private transient Object content;
 	@Transient
+	private transient String addressContent;
+	@Transient
 	private transient int exceptions;
 	/** These strategies will be processed before processing the indexable. */
 	@Transient
@@ -146,7 +148,7 @@ public class Indexable<E> extends Persistable {
 	public void setThreads(final int threads) {
 		this.threads = threads;
 	}
-	
+
 	public int incrementThreads(final int increment) {
 		threads += increment;
 		return threads;
@@ -166,6 +168,14 @@ public class Indexable<E> extends Persistable {
 
 	public void setContent(final Object content) {
 		this.content = content;
+	}
+
+	public String getAddressContent() {
+		return addressContent;
+	}
+
+	public void setAddressContent(String addressContent) {
+		this.addressContent = addressContent;
 	}
 
 	public int getExceptions() {

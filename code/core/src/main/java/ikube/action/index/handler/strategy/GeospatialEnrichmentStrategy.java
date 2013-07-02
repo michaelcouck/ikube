@@ -10,6 +10,7 @@ import ikube.model.IndexableColumn;
 
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.spatial.tier.projections.CartesianTierPlotter;
@@ -138,8 +139,8 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 			if (builder.length() > 0) {
 				builder.append(", ");
 			}
-			Object content = indexable.getContent();
-			if (content != null) {
+			String content = indexable.getAddressContent();
+			if (StringUtils.isEmpty(content)) {
 				builder.append(content);
 			}
 		}
