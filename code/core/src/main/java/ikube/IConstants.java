@@ -43,7 +43,7 @@ public interface IConstants {
 	String MIME_MAPPING = "mime-mapping.xml";
 
 	Version VERSION = Version.LUCENE_36;
-	
+
 	long MAX_READ_LENGTH = 1000000;
 	int MAX_RESULT_FIELD_LENGTH = 100;
 
@@ -142,7 +142,7 @@ public interface IConstants {
 	long MAX_ACTIONS = 10000;
 	long MAX_SNAPSHOTS = 10000;
 	long MAX_SERVERS = 100;
-	
+
 	String TIER = "tier";
 
 	String SEARCH = "search";
@@ -176,17 +176,20 @@ public interface IConstants {
 
 	String ROLE_USER = "ROLE_USER";
 	String ROLE_ADMIN = "ROLE_ADMIN";
-	
+
 	int MILLION = 1000000;
-	
+
 	String DELIMITER_CHARACTERS = ";,|:";
 	String LINE_NUMBER = "lineNumber";
-	
+
 	String LANGUAGE = "language";
 	String LANGUAGE_DETECT_PROFILES_DIRECTORY = "profiles";
 	String SENTIMENT = "sentiment";
 	String SENTIMENT_CONFLICT = "sentiment-conflict";
-	String[] SENTIMENT_CATEGORIES = { "positive", "negative", "neutral" };
+	String POSITIVE = "positive";
+	String NEGATIVE = "negative";
+	String NEUTRAL = "neutral";
+	String[] SENTIMENT_CATEGORIES = { POSITIVE, NEGATIVE, NEUTRAL };
 	String CLASSIFIER = "classifier";
 	String CLASSIFIERS = "classifiers";
 
