@@ -12,13 +12,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
@@ -81,7 +79,7 @@ public final class MultiLanguageClassifierSentimentAnalysisStrategy extends AStr
 			}
 			if (atomicInteger.getAndIncrement() % 10000 == 0) {
 				logger.info("Document : " + document + ", " + document.hashCode());
-				persistClassifiers();
+				persistLanguageModels();
 			}
 			return super.aroundProcess(indexContext, indexable, document, resource);
 		} finally {
@@ -95,21 +93,25 @@ public final class MultiLanguageClassifierSentimentAnalysisStrategy extends AStr
 		return classification.bestCategory();
 	}
 
-	private void persistClassifiers() {
+	private void persistLanguageModels() {
 		// Persist the classifiers from time to time
 		File classifiersDirectory = getClassifiersDirectory();
 		for (final Map.Entry<String, DynamicLMClassifier<NGramProcessLM>> mapEntry : languageClassifiers.entrySet()) {
 			OutputStream outputStream = null;
-			try {
-				DynamicLMClassifier<NGramProcessLM> dynamicLMClassifier = mapEntry.getValue();
-				File classifierFile = FileUtilities.getOrCreateFile(new File(classifiersDirectory, mapEntry.getKey() + "." + IConstants.CLASSIFIER));
-				outputStream = new FileOutputStream(classifierFile);
-				ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-				dynamicLMClassifier.compileTo(objectOutputStream);
-			} catch (Exception e) {
-				logger.error("Exception persisting the classifier : " + mapEntry.getKey() + ", " + mapEntry.getValue(), e);
-			} finally {
-				IOUtils.closeQuietly(outputStream);
+			File classifierLanguageDirectory = FileUtilities.getOrCreateDirectory(new File(classifiersDirectory, mapEntry.getKey()));
+			DynamicLMClassifier<NGramProcessLM> dynamicLMClassifier = mapEntry.getValue();
+			String[] categories = dynamicLMClassifier.categories();
+			for (final String category : categories) {
+				try {
+					File languageModelFile = FileUtilities.getOrCreateFile(new File(classifierLanguageDirectory, category));
+					outputStream = new FileOutputStream(languageModelFile);
+					NGramProcessLM languageModel = dynamicLMClassifier.languageModel(category);
+					languageModel.writeTo(outputStream);
+				} catch (Exception e) {
+					logger.error("Exception persisting the language model : " + mapEntry.getKey() + ", " + category, e);
+				} finally {
+					IOUtils.closeQuietly(outputStream);
+				}
 			}
 		}
 	}
@@ -142,27 +144,32 @@ public final class MultiLanguageClassifierSentimentAnalysisStrategy extends AStr
 	 * {@inheritDoc}
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public void initialize() {
 		atomicInteger = new AtomicInteger(0);
 		languageClassifiers = new HashMap<String, DynamicLMClassifier<NGramProcessLM>>();
 		File classifiersDirectory = getClassifiersDirectory();
-		File[] classifierFiles = classifiersDirectory.listFiles();
-		if (classifierFiles != null) {
-			for (final File classifierFile : classifierFiles) {
-				String language = FilenameUtils.getBaseName(classifierFile.getName());
-				InputStream inputStream = null;
-				ObjectInputStream objectInputStream = null;
-				try {
-					inputStream = new FileInputStream(classifierFile);
-					objectInputStream = new ObjectInputStream(inputStream);
-					DynamicLMClassifier<NGramProcessLM> dynamicLMClassifier = (DynamicLMClassifier<NGramProcessLM>) objectInputStream.readObject();
-					languageClassifiers.put(language, dynamicLMClassifier);
-				} catch (Exception e) {
-					logger.error("Exception deserializing classifier : " + classifierFile, e);
-				} finally {
-					IOUtils.closeQuietly(objectInputStream);
-					IOUtils.closeQuietly(inputStream);
+		File[] languagesModelDirectories = classifiersDirectory.listFiles();
+		if (languagesModelDirectories != null) {
+			for (final File languageModelDirectory : languagesModelDirectories) {
+				int index = 0;
+				File[] categoryModelFiles = languageModelDirectory.listFiles();
+				DynamicLMClassifier<NGramProcessLM> dynamicLMClassifier = DynamicLMClassifier.createNGramProcess(IConstants.SENTIMENT_CATEGORIES, nGram);
+				languageClassifiers.put(languageModelDirectory.getName(), dynamicLMClassifier);
+				for (final File categoryModelFile : categoryModelFiles) {
+					InputStream inputStream = null;
+					ObjectInputStream objectInputStream = null;
+					try {
+						inputStream = new FileInputStream(categoryModelFile);
+						objectInputStream = new ObjectInputStream(inputStream);
+						NGramProcessLM languageModel = (NGramProcessLM) objectInputStream.readObject();
+						dynamicLMClassifier.resetCategory(categoryModelFile.getName(), languageModel, index);
+						index++;
+					} catch (Exception e) {
+						logger.error("Exception deserializing classifier : " + languageModelDirectory, e);
+					} finally {
+						IOUtils.closeQuietly(objectInputStream);
+						IOUtils.closeQuietly(inputStream);
+					}
 				}
 			}
 		}
