@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
@@ -32,7 +31,6 @@ import org.springframework.beans.factory.annotation.Value;
 import com.aliasi.classify.Classification;
 import com.aliasi.classify.Classified;
 import com.aliasi.classify.DynamicLMClassifier;
-import com.aliasi.lm.CompiledNGramProcessLM;
 import com.aliasi.lm.NGramProcessLM;
 
 /**
@@ -114,10 +112,9 @@ public final class MultiLanguageClassifierSentimentAnalysisStrategy extends AStr
 					outputStream = new FileOutputStream(languageModelFile);
 					objectOutputStream = new ObjectOutputStream(outputStream);
 					// objectOutputStream.writeObject(languageModel);
-					SerializationUtils.serialize(languageModel);
-					// languageModel.compileTo(objectOutputStream);
+					// SerializationUtils.serialize(languageModel);
+					languageModel.compileTo(objectOutputStream);
 					// languageModel.writeTo(objectOutputStream);
-					// TrieCharSeqCounter trieCharSeqCounter = languageModel.substringCounter();
 				} catch (Exception e) {
 					logger.error("Exception persisting the language model : " + mapEntry.getKey() + ", " + category, e);
 				} finally {
@@ -156,6 +153,7 @@ public final class MultiLanguageClassifierSentimentAnalysisStrategy extends AStr
 	 * {@inheritDoc}
 	 */
 	@Override
+	@SuppressWarnings("unused")
 	public void initialize() {
 		atomicInteger = new AtomicInteger(0);
 		languageClassifiers = new HashMap<String, DynamicLMClassifier<NGramProcessLM>>();
@@ -171,10 +169,10 @@ public final class MultiLanguageClassifierSentimentAnalysisStrategy extends AStr
 					try {
 						inputStream = new FileInputStream(categoryModelFile);
 						objectInputStream = new ObjectInputStream(inputStream);
-						CompiledNGramProcessLM compiledNGramProcessLM = (CompiledNGramProcessLM) objectInputStream.readObject();
-						int numChars = compiledNGramProcessLM.observedCharacters().length;
-						int maxNGram = compiledNGramProcessLM.maxNGram();
-						NGramProcessLM nGramProcessLM = new NGramProcessLM(maxNGram, numChars);
+						// CompiledNGramProcessLM compiledNGramProcessLM = (CompiledNGramProcessLM) objectInputStream.readObject();
+						// int numChars = compiledNGramProcessLM.observedCharacters().length;
+						// int maxNGram = compiledNGramProcessLM.maxNGram();
+						// NGramProcessLM nGramProcessLM = new NGramProcessLM(maxNGram, numChars);
 						// languageModels.add(nGramProcessLM);
 					} catch (Exception e) {
 						logger.error("Exception deserializing classifier : " + languageModelDirectory, e);
@@ -183,12 +181,12 @@ public final class MultiLanguageClassifierSentimentAnalysisStrategy extends AStr
 						IOUtils.closeQuietly(inputStream);
 					}
 				}
-				String[] categories = languageModelDirectory.list();
-				if (categories != null && categories.length >= 2) {
-					DynamicLMClassifier<NGramProcessLM> dynamicLMClassifier = new DynamicLMClassifier<NGramProcessLM>(categories,
-							languageModels.toArray(new NGramProcessLM[languageModels.size()]));
-					languageClassifiers.put(languageModelDirectory.getName(), dynamicLMClassifier);
-				}
+				// String[] categories = languageModelDirectory.list();
+				// if (categories != null && categories.length >= 2) {
+				// DynamicLMClassifier<NGramProcessLM> dynamicLMClassifier = new DynamicLMClassifier<NGramProcessLM>(categories,
+				// languageModels.toArray(new NGramProcessLM[languageModels.size()]));
+				// languageClassifiers.put(languageModelDirectory.getName(), dynamicLMClassifier);
+				// }
 			}
 		}
 	}

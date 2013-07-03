@@ -7,6 +7,7 @@ import ikube.model.IndexableTweets;
 
 import java.util.List;
 import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
@@ -21,6 +22,7 @@ import org.springframework.social.twitter.api.TwitterProfile;
  */
 public class TwitterHandler extends IndexableHandler<IndexableTweets> {
 
+	private AtomicInteger atomicInteger = new AtomicInteger(0);
 	@Autowired
 	private TwitterResourceHandler twitterResourceHandler;
 
@@ -74,8 +76,12 @@ public class TwitterHandler extends IndexableHandler<IndexableTweets> {
 		// strategy needs this to guess the geo-coordinates of the tweet
 		indexableTweets.setContent(builder.toString());
 		// And put the data in the index
-		twitterResourceHandler.handleResource(indexContext, indexableTweets, new Document(), resource);
+		Document document = new Document();
+		twitterResourceHandler.handleResource(indexContext, indexableTweets, document, resource);
 		// We could get more tweets here I guess
+		if (atomicInteger.getAndIncrement() % 10000 == 0) {
+			logger.info("Document : " + document);
+		}
 		return null;
 	}
 

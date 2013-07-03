@@ -72,12 +72,6 @@
 						<configuration>
 							<target>
 								<echo message="Base directory : ${basedir}, ">Base directory : ${basedir}</echo>
-								<copy todir="ikube" failonerror="true">
-									<fileset dir="../libs/src/main/resources/ikube" />
-								</copy>
-								<copy todir="../../ikube" failonerror="true">
-									<fileset dir="../libs/src/main/resources/ikube" />
-								</copy>
 							</target>
 						</configuration>
 						<goals>
@@ -106,7 +100,7 @@
 					</scanTargets>
 					<connectors>
 						<connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-							<port>9090</port>
+							<port>8080</port>
 							<maxIdleTime>60000</maxIdleTime>
 						</connector>
 					</connectors>
