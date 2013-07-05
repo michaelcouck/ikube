@@ -35,8 +35,13 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 	public boolean preExecute(final IndexContext<?> indexContext) throws Exception {
 		logger.info("Pre process action : " + this.getClass() + ", " + indexContext.getName());
 		Server server = clusterManager.getServer();
-		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), server.getAddress());
-		IndexWriter[] indexWriters = new IndexWriter[] { indexWriter };
+		IndexWriter[] indexWriters = null;
+		if (indexContext.isDelta()) {
+			indexWriters = IndexManager.openIndexWriterDelta(indexContext);
+		} else {
+			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), server.getAddress());
+			indexWriters = new IndexWriter[] { indexWriter };
+		}
 		indexContext.setIndexWriters(indexWriters);
 		return Boolean.TRUE;
 	}
