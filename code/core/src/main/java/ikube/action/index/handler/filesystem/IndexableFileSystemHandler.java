@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.ForkJoinTask;
-import java.util.concurrent.RecursiveAction;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
@@ -35,9 +34,9 @@ public class IndexableFileSystemHandler extends IndexableHandler<IndexableFileSy
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ForkJoinTask<?> handleIndexableForked(final IndexContext<?> indexContext, final IndexableFileSystem indexableTweets) throws Exception {
-		IResourceProvider<File> twitterResourceProvider = new FileSystemResourceProvider(indexableTweets);
-		RecursiveAction recursiveAction = getRecursiveAction(indexContext, indexableTweets, twitterResourceProvider);
+	public ForkJoinTask<?> handleIndexableForked(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem) throws Exception {
+		IResourceProvider<File> fileSystemResourceProvider = new FileSystemResourceProvider(indexableFileSystem);
+		ForkJoinTask<?> recursiveAction = getRecursiveAction(indexContext, indexableFileSystem, fileSystemResourceProvider);
 		return recursiveAction;
 	}
 

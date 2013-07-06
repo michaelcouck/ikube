@@ -59,7 +59,7 @@ public class GeospatialEnrichmentStrategyTest extends AbstractTest {
 	@Test
 	public void aroundProcess() throws Exception {
 		Document document = getDocument(RandomStringUtils.random(16), "Some string to index", IConstants.CONTENTS, Index.ANALYZED);
-		Deencapsulation.setField(geospatialEnrichmentStrategy, geocoder);
+		Deencapsulation.setField(geospatialEnrichmentStrategy, "geocoder", geocoder);
 
 		IndexableTable indexableTable = new IndexableTable();
 		IndexableColumn latitudeColumn = new IndexableColumn();
@@ -94,7 +94,7 @@ public class GeospatialEnrichmentStrategyTest extends AbstractTest {
 		IndexableColumn indexableColumn = new IndexableColumn();
 		indexableTable.setAddress(Boolean.TRUE);
 		indexableColumn.setAddress(Boolean.TRUE);
-		indexableColumn.setContent("9a Avanue Road, Cape Town, South Africa");
+		indexableColumn.setAddressContent("9a Avanue Road, Cape Town, South Africa");
 		indexableTable.setChildren(new ArrayList<Indexable<?>>(Arrays.asList(indexableColumn)));
 		StringBuilder actual = geospatialEnrichmentStrategy.buildAddress(indexableTable, new StringBuilder());
 

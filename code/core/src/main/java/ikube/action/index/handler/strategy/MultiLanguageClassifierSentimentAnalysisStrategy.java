@@ -8,10 +8,7 @@ import ikube.model.Indexable;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -39,8 +36,8 @@ import com.aliasi.lm.NGramProcessLM;
  * @version 01.00
  */
 public final class MultiLanguageClassifierSentimentAnalysisStrategy extends AStrategy {
-
 	@Value("${multi.language.ngram}")
+	
 	private int nGram = 8;
 	private AtomicInteger atomicInteger;
 	private Map<String, DynamicLMClassifier<NGramProcessLM>> languageClassifiers;
@@ -113,7 +110,7 @@ public final class MultiLanguageClassifierSentimentAnalysisStrategy extends AStr
 					objectOutputStream = new ObjectOutputStream(outputStream);
 					// objectOutputStream.writeObject(languageModel);
 					// SerializationUtils.serialize(languageModel);
-					languageModel.compileTo(objectOutputStream);
+					// languageModel.compileTo(objectOutputStream);
 					// languageModel.writeTo(objectOutputStream);
 				} catch (Exception e) {
 					logger.error("Exception persisting the language model : " + mapEntry.getKey() + ", " + category, e);
@@ -164,11 +161,11 @@ public final class MultiLanguageClassifierSentimentAnalysisStrategy extends AStr
 				File[] categoryModelFiles = languageModelDirectory.listFiles();
 				List<NGramProcessLM> languageModels = new ArrayList<NGramProcessLM>();
 				for (final File categoryModelFile : categoryModelFiles) {
-					InputStream inputStream = null;
-					ObjectInputStream objectInputStream = null;
+					// InputStream inputStream = null;
+					// ObjectInputStream objectInputStream = null;
 					try {
-						inputStream = new FileInputStream(categoryModelFile);
-						objectInputStream = new ObjectInputStream(inputStream);
+						// inputStream = new FileInputStream(categoryModelFile);
+						// objectInputStream = new ObjectInputStream(inputStream);
 						// CompiledNGramProcessLM compiledNGramProcessLM = (CompiledNGramProcessLM) objectInputStream.readObject();
 						// int numChars = compiledNGramProcessLM.observedCharacters().length;
 						// int maxNGram = compiledNGramProcessLM.maxNGram();
@@ -177,8 +174,8 @@ public final class MultiLanguageClassifierSentimentAnalysisStrategy extends AStr
 					} catch (Exception e) {
 						logger.error("Exception deserializing classifier : " + languageModelDirectory, e);
 					} finally {
-						IOUtils.closeQuietly(objectInputStream);
-						IOUtils.closeQuietly(inputStream);
+						// IOUtils.closeQuietly(objectInputStream);
+						// IOUtils.closeQuietly(inputStream);
 					}
 				}
 				// String[] categories = languageModelDirectory.list();

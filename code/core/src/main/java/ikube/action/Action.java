@@ -42,12 +42,15 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	/** This class sends mails to the configured recipient from the configured sender. */
 	@Autowired
 	private IMailer mailer;
+
 	/** Access to the database, like a generic dao. */
 	@Autowired
 	protected IDataBase dataBase;
+
 	/** The cluster manager for locking the cluster during rule evaluation. */
 	@Autowired
 	protected IClusterManager clusterManager;
+
 	/**
 	 * This is an optional action that the action depends on. For example the index action requires that the reset action is run completely first for this index
 	 * context
@@ -107,6 +110,13 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 		return requiresClusterLock;
 	}
 
+	/**
+	 * This method will return whether the action requires a cluster lock. In many cases, like the {@link Reset} action, that only works on this server, it is
+	 * not necessary to have the cluster lock, and because getting the lock in a cluster of 100 machines is very network expensive, we try to avoid this if we
+	 * can.
+	 * 
+	 * @param requiresClusterLock whether the action rewuires cluster atomicity and a lock before the logic is executed
+	 */
 	public void setRequiresClusterLock(final boolean requiresClusterLock) {
 		this.requiresClusterLock = requiresClusterLock;
 	}

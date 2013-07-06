@@ -2,13 +2,16 @@ package ikube.action;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
 import ikube.action.index.handler.database.IndexableTableHandler;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.IndexManagerMock;
 import ikube.model.Action;
+import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableTable;
 import ikube.toolkit.FileUtilities;
@@ -18,6 +21,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ForkJoinTask;
 
 import mockit.Deencapsulation;
 import mockit.Mockit;
@@ -38,6 +42,7 @@ public class IndexTest extends AbstractTest {
 	private Index index;
 
 	@Before
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void before() throws Exception {
 		index = new Index();
 		indexableTable = new IndexableTable();
@@ -45,6 +50,7 @@ public class IndexTest extends AbstractTest {
 		List<Indexable<?>> indexables = new ArrayList<Indexable<?>>(Arrays.asList(indexableTable));
 
 		Mockit.setUpMocks(IndexManagerMock.class, ApplicationContextManagerMock.class);
+		ForkJoinTask forkJoinTask = mock(ForkJoinTask.class);
 
 		when(clusterManager.startWorking(anyString(), anyString(), anyString())).thenReturn(action);
 		when(clusterManager.getServer()).thenReturn(server);
@@ -54,6 +60,7 @@ public class IndexTest extends AbstractTest {
 		when(action.getIndexableName()).thenReturn(indexableTable.getName());
 		when(indexContext.getName()).thenReturn("indexName");
 		when(indexContext.getChildren()).thenReturn(indexables);
+		when(ApplicationContextManagerMock.HANDLER.handleIndexableForked(any(IndexContext.class), any(IndexableTable.class))).thenReturn(forkJoinTask);
 
 		Logger logger = Mockito.mock(Logger.class);
 		Deencapsulation.setField(index, logger);

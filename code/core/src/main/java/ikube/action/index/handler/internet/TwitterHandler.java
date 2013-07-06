@@ -60,15 +60,15 @@ public class TwitterHandler extends IndexableHandler<IndexableTweets> {
 		}
 		indexableTweets.setAddressContent(addressBuilder.toString());
 
-		builder.append(twitterProfile.getLocation());
-		builder.append(" ");
-		builder.append(twitterProfile.getTimeZone());
-		builder.append(" ");
 		builder.append(tweet.getFromUser());
 		builder.append(" ");
 		builder.append(tweet.getFromUserId());
 		builder.append(" ");
 		builder.append(tweet.getToUserId());
+		builder.append(" ");
+		builder.append(twitterProfile.getLocation());
+		builder.append(" ");
+		builder.append(twitterProfile.getTimeZone());
 		builder.append(" ");
 		builder.append(tweet.getText());
 

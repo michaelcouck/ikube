@@ -106,7 +106,7 @@
 					</connectors>
 				</configuration>
 				<executions>
-					<!-- <execution>
+					<execution>
 						<id>start-jetty</id>
 						<phase>pre-integration-test</phase>
 						<goals>
@@ -122,7 +122,7 @@
 						<goals>
 							<goal>stop</goal>
 						</goals>
-					</execution> -->
+					</execution>
 				</executions>
 				<dependencies>
 					<dependency>

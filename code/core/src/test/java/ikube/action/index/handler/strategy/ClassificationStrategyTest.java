@@ -2,43 +2,113 @@ package ikube.action.index.handler.strategy;
 
 import ikube.AbstractTest;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
-import com.aliasi.lm.NGramProcessLM;
-import com.aliasi.stats.OnlineNormalEstimator;
+import com.aliasi.classify.LogisticRegressionClassifier;
+import com.aliasi.matrix.DenseVector;
+import com.aliasi.matrix.Vector;
+import com.aliasi.stats.AnnealingSchedule;
+import com.aliasi.stats.LogisticRegression;
+import com.aliasi.stats.RegressionPrior;
 
 public class ClassificationStrategyTest extends AbstractTest {
 
+	// parallel to inputs
+	public static final int[] OUTPUTS = new int[] { 1, 1, 2, 2, 0, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 0, 1, 1, 2, 2, 2, 2, 1, 1, 0, 2, 2, 2, 2, 0, 2, 2, 2,
+			2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 0, 2, 2, 0, 2, 1, 0, 0, 2, 2, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 1,
+			2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 0, 0, 1, 0, 1, 0, 1, 0, 2, 2, 1, 2, 0, 2, 1, 2, 2, 1, 2, 2, 0, 1, 1, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 2,
+			1, 2, 2, 0, 2, 2, 2, 2, 1, 2, 1, 2, 1, 2, 2, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 1, 2, 0, 2, 1, 0, 1, 2, 1, 2, 1, 1, 0, 1, 1, 0, 1, 1, 2, 2, 1, 0, 1, 2,
+			1, 2, 0, 1, 2, 1, 2, 2, 2, 2, 2, 1, };
+
+	// parallel to outputs
+	public static final Vector[] INPUTS = new Vector[] { new DenseVector(new double[] { 1, 0, 0, 2, 0 }), new DenseVector(new double[] { 1, 0, 0, 2, 1 }),
+			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 2, 0 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }),
+			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }),
+			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 2, 1 }), new DenseVector(new double[] { 1, 0, 1, 1, 1 }),
+			new DenseVector(new double[] { 1, 1, 1, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }),
+			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 0 }), new DenseVector(new double[] { 1, 0, 0, 2, 1 }),
+			new DenseVector(new double[] { 1, 0, 0, 3, 0 }), new DenseVector(new double[] { 1, 1, 1, 3, 0 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
+			new DenseVector(new double[] { 1, 1, 0, 2, 0 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }),
+			new DenseVector(new double[] { 1, 1, 1, 1, 0 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 0 }),
+			new DenseVector(new double[] { 1, 1, 0, 3, 0 }), new DenseVector(new double[] { 1, 1, 0, 2, 0 }), new DenseVector(new double[] { 1, 1, 0, 2, 0 }),
+			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 2, 1 }),
+			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 2, 0 }), new DenseVector(new double[] { 1, 1, 0, 1, 0 }),
+			new DenseVector(new double[] { 1, 1, 1, 2, 1 }), new DenseVector(new double[] { 1, 0, 0, 2, 0 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
+			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
+			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 2, 0 }), new DenseVector(new double[] { 1, 1, 1, 1, 1 }),
+			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
+			new DenseVector(new double[] { 1, 0, 0, 1, 0 }), new DenseVector(new double[] { 1, 0, 1, 3, 0 }), new DenseVector(new double[] { 1, 1, 0, 2, 0 }),
+			new DenseVector(new double[] { 1, 0, 0, 2, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }),
+			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 0 }), new DenseVector(new double[] { 1, 1, 1, 1, 0 }),
+			new DenseVector(new double[] { 1, 1, 0, 1, 0 }), new DenseVector(new double[] { 1, 1, 1, 3, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
+			new DenseVector(new double[] { 1, 0, 0, 3, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 0 }),
+			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 1, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 0 }),
+			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 0 }), new DenseVector(new double[] { 1, 1, 0, 3, 1 }),
+			new DenseVector(new double[] { 1, 1, 0, 3, 1 }), new DenseVector(new double[] { 1, 1, 1, 2, 1 }), new DenseVector(new double[] { 1, 1, 0, 2, 1 }),
+			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 3, 0 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }),
+			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 0 }),
+			new DenseVector(new double[] { 1, 1, 1, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
+			new DenseVector(new double[] { 1, 0, 1, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
+			new DenseVector(new double[] { 1, 0, 0, 2, 1 }), new DenseVector(new double[] { 1, 1, 1, 1, 0 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }),
+			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 1, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
+			new DenseVector(new double[] { 1, 1, 1, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
+			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 1, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 2, 1 }),
+			new DenseVector(new double[] { 1, 1, 1, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 2, 0 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }),
+			new DenseVector(new double[] { 1, 1, 1, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 1, 3, 0 }),
+			new DenseVector(new double[] { 1, 1, 1, 1, 1 }), new DenseVector(new double[] { 1, 1, 1, 3, 1 }), new DenseVector(new double[] { 1, 0, 0, 3, 1 }),
+			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
+			new DenseVector(new double[] { 1, 0, 1, 3, 0 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 0 }),
+			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }),
+			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 3, 0 }),
+			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 1, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 3, 0 }),
+			new DenseVector(new double[] { 1, 0, 1, 2, 0 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
+			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 1, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 0 }),
+			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 1, 1, 1 }),
+			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 1, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 0 }),
+			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 1, 2, 0 }), new DenseVector(new double[] { 1, 1, 0, 1, 0 }),
+			new DenseVector(new double[] { 1, 1, 0, 1, 0 }), new DenseVector(new double[] { 1, 0, 0, 2, 1 }), new DenseVector(new double[] { 1, 1, 1, 1, 1 }),
+			new DenseVector(new double[] { 1, 0, 0, 3, 0 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 1, 1, 1 }),
+			new DenseVector(new double[] { 1, 0, 0, 1, 0 }), new DenseVector(new double[] { 1, 0, 1, 1, 0 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
+			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 0 }), new DenseVector(new double[] { 1, 0, 0, 1, 0 }),
+			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 2, 0 }),
+			new DenseVector(new double[] { 1, 1, 1, 2, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 0 }),
+			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 1, 1, 0 }),
+			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 0 }),
+			new DenseVector(new double[] { 1, 0, 1, 2, 1 }), new DenseVector(new double[] { 1, 1, 1, 2, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
+			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 1, 3, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }),
+			new DenseVector(new double[] { 1, 0, 0, 1, 0 }), new DenseVector(new double[] { 1, 1, 0, 3, 0 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
+			new DenseVector(new double[] { 1, 1, 1, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 2, 0 }),
+			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 1, 2, 0 }), new DenseVector(new double[] { 1, 1, 0, 2, 0 }),
+			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 1, 3, 0 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }),
+			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
+			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 2, 0 }), new DenseVector(new double[] { 1, 0, 1, 2, 1 }),
+			new DenseVector(new double[] { 1, 0, 0, 2, 0 }), new DenseVector(new double[] { 1, 1, 1, 1, 1 }), new DenseVector(new double[] { 1, 0, 1, 2, 1 }),
+			new DenseVector(new double[] { 1, 0, 0, 3, 0 }), new DenseVector(new double[] { 1, 1, 1, 1, 0 }), new DenseVector(new double[] { 1, 0, 0, 3, 1 }),
+			new DenseVector(new double[] { 1, 1, 0, 2, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 3, 1 }),
+			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 1, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }),
+			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), };
+
+	public static final Vector[] TEST_INPUTS = new Vector[] { new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 1, 0, 0 }),
+			new DenseVector(new double[] { 1, 0, 1, 3, 1 }), };
+
 	@Test
+	@Ignore
 	public void classify() throws IOException {
 		String context = "abcdefghij";
-		int ngram = 3;
-		NGramProcessLM nGramProcessLM = new NGramProcessLM(ngram);
-		OnlineNormalEstimator onlineNormalEstimator = new OnlineNormalEstimator();
-		char[] chars = context.toCharArray();
-		for (int n = 0; n < chars.length; n++) {
-			double log2Prob = nGramProcessLM.log2ConditionalEstimate(chars, 0, n + 1);
-			nGramProcessLM.trainConditional(chars, Math.max(0, n - ngram), n, Math.max(0, n - 1));
-			onlineNormalEstimator.handle(log2Prob);
-			double mean = onlineNormalEstimator.mean();
-			double standardDeviation = onlineNormalEstimator.standardDeviationUnbiased();
-			logger.debug("Log 2 probability : " + log2Prob + ", mean : " + mean + ", deviation : " + standardDeviation);
-		}
-		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-		nGramProcessLM.writeTo(new ObjectOutputStream(byteArrayOutputStream));
-		
-		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-		NGramProcessLM nGramProcessLMClone = NGramProcessLM.readFrom(byteArrayInputStream);
-		
-		double probability = nGramProcessLM.prob("a");
-		logger.info("Probability : " + probability + ", " + onlineNormalEstimator.toString());
-		probability = nGramProcessLM.prob("e");
-		logger.info("Probability : " + probability + ", " + onlineNormalEstimator.toString());
+		LogisticRegression regression = //
+		LogisticRegression.estimate(//
+				INPUTS, //
+				OUTPUTS, //
+				RegressionPrior.noninformative(), //
+				AnnealingSchedule.inverse(.05, 100), //
+				null, // null reporter
+				0.000000001, // min improve
+				1, // min epochs
+				10000); // max epochs
+		LogisticRegressionClassifier logisticRegressionClassifier = null;
 	}
 
 }

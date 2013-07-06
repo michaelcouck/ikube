@@ -11,10 +11,11 @@ import ikube.toolkit.DatabaseUtilities;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.util.Arrays;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.concurrent.Future;
+import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.RecursiveTask;
 import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
@@ -26,13 +27,31 @@ import javax.sql.DataSource;
  */
 public class IndexableDataSourceHandler extends IndexableHandler<IndexableDataSource> {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final IndexableDataSource indexable) throws Exception {
+	public ForkJoinTask<?> handleIndexableForked(final IndexContext<?> indexContext, final IndexableDataSource indexableDataSource) throws Exception {
+		ForkJoinTask<Object> forkJoinTask = new RecursiveTask<Object>() {
+			@Override
+			protected Object compute() {
+				try {
+					addAllTables(indexContext, indexableDataSource);
+				} catch (SQLException e) {
+					throw new RuntimeException(e);
+				}
+				return null;
+			}
+		};
+		return forkJoinTask;
+	}
+
+	private void addAllTables(final IndexContext<?> indexContext, final IndexableDataSource indexableDataSource) throws SQLException {
 		// We just add all the tables individually to the index context, only if they are not there of course
 		ResultSet resultSet = null;
-		String excludedTablePatterns = indexable.getExcludedTablePatterns();
+		String excludedTablePatterns = indexableDataSource.getExcludedTablePatterns();
 		try {
-			DataSource dataSource = indexable.getDataSource();
+			DataSource dataSource = indexableDataSource.getDataSource();
 			Connection connection = dataSource.getConnection();
 			DatabaseMetaData databaseMetaData = connection.getMetaData();
 			resultSet = databaseMetaData.getTables(null, null, "%", new String[] { "TABLE" });
@@ -45,7 +64,7 @@ public class IndexableDataSourceHandler extends IndexableHandler<IndexableDataSo
 				if (isInContextAlready(tableName, indexContext)) {
 					continue;
 				}
-				IndexableTable indexableTable = getIndexableTable(tableName, indexable);
+				IndexableTable indexableTable = getIndexableTable(tableName, indexableDataSource);
 				logger.info("Dynamically adding table to context : " + indexableTable.getName());
 				indexContext.getChildren().add(indexableTable);
 			}
@@ -54,8 +73,6 @@ public class IndexableDataSourceHandler extends IndexableHandler<IndexableDataSo
 				DatabaseUtilities.closeAll(resultSet);
 			}
 		}
-		// We return no futures because this operation just adds the tables to the context
-		return Arrays.asList();
 	}
 
 	private IndexableTable getIndexableTable(final String tableName, final IndexableDataSource indexable) {

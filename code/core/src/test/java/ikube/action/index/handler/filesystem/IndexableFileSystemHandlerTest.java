@@ -58,8 +58,7 @@ public class IndexableFileSystemHandlerTest extends AbstractTest {
 		IndexableFileSystem indexableFileSystem = getIndexableFileSystem(".");
 		indexableFileSystem.setUnpackZips(Boolean.FALSE);
 		final ForkJoinTask<?> forkJoinTask = indexableFileSystemHandler.handleIndexableForked(indexContext, indexableFileSystem);
-		final ForkJoinPool forkJoinPool = new ForkJoinPool(indexableFileSystem.getThreads());
-		ThreadUtilities.addForkJoinPool(indexContext.getName(), forkJoinPool);
+		final ForkJoinPool forkJoinPool = ThreadUtilities.getForkJoinPool(indexContext.getName(), indexableFileSystem.getThreads());
 
 		ThreadUtilities.submit(null, new Runnable() {
 			public void run() {
@@ -78,8 +77,7 @@ public class IndexableFileSystemHandlerTest extends AbstractTest {
 		String compressedFilePath = FileUtilities.cleanFilePath(compressedFileDirectory.getAbsolutePath());
 		IndexableFileSystem indexableFileSystem = getIndexableFileSystem(compressedFilePath);
 		final ForkJoinTask<?> forkJoinTask = indexableFileSystemHandler.handleIndexableForked(indexContext, indexableFileSystem);
-		final ForkJoinPool forkJoinPool = new ForkJoinPool(indexableFileSystem.getThreads());
-		ThreadUtilities.addForkJoinPool(indexContext.getName(), forkJoinPool);
+		final ForkJoinPool forkJoinPool = ThreadUtilities.getForkJoinPool(indexContext.getName(), indexableFileSystem.getThreads());
 
 		ThreadUtilities.submit(null, new Runnable() {
 			public void run() {
@@ -127,9 +125,7 @@ public class IndexableFileSystemHandlerTest extends AbstractTest {
 
 		indexableFileSystem.setUnpackZips(Boolean.FALSE);
 		final ForkJoinTask<?> forkJoinTask = indexableFileSystemHandler.handleIndexableForked(indexContext, indexableFileSystem);
-		final ForkJoinPool forkJoinPool = new ForkJoinPool(indexableFileSystem.getThreads());
-
-		ThreadUtilities.addForkJoinPool(indexContext.getName(), forkJoinPool);
+		final ForkJoinPool forkJoinPool = ThreadUtilities.getForkJoinPool(indexContext.getName(), indexableFileSystem.getThreads());
 
 		ThreadUtilities.submit(null, new Runnable() {
 			public void run() {

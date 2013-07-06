@@ -16,7 +16,6 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.List;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 
 import mockit.Deencapsulation;
@@ -53,23 +52,10 @@ public class IndexableInternetHandlerIntegration extends IntegrationTest {
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
 		indexContext.setIndexWriters(indexWriter);
 
-		ThreadUtilities.submit(null, new Runnable() {
-			public void run() {
-				ForkJoinTask<?> forkJoinTask;
-				try {
-					forkJoinTask = indexableInternetHandler.handleIndexableForked(indexContext, indexableInternet);
-					ForkJoinPool forkJoinPool = new ForkJoinPool(indexableInternet.getThreads());
-					ThreadUtilities.addForkJoinPool(indexContext.getName(), forkJoinPool);
-					forkJoinPool.invoke(forkJoinTask);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-
+		ForkJoinTask<?> forkJoinTask = indexableInternetHandler.handleIndexableForked(indexContext, indexableInternet);
+		ThreadUtilities.executeForkJoinTasks(indexContext.getName(), indexableInternet.getThreads(), forkJoinTask);
 		ThreadUtilities.sleep(3000);
 		ThreadUtilities.cancellForkJoinPool(indexContext.getName());
-
 		int expectedAtLeast = 1;
 		assertTrue("There must be some documents in the index : ", indexContext.getIndexWriters()[0].numDocs() >= expectedAtLeast);
 	}

@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
 import ikube.model.Indexable;
 import ikube.model.IndexableDataSource;
+import ikube.toolkit.ThreadUtilities;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -18,6 +19,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ForkJoinTask;
 
 import javax.sql.DataSource;
 
@@ -35,11 +37,11 @@ import org.mockito.stubbing.Answer;
  */
 public class IndexableDataSourceHandlerTest extends AbstractTest {
 
-	private IndexableDataSourceHandler indexableTableHandler;
+	private IndexableDataSourceHandler indexableDataSourceHandler;
 
 	@Before
 	public void before() {
-		indexableTableHandler = new IndexableDataSourceHandler();
+		indexableDataSourceHandler = new IndexableDataSourceHandler();
 	}
 
 	@Test
@@ -70,16 +72,19 @@ public class IndexableDataSourceHandlerTest extends AbstractTest {
 		when(indexableDataSource.getExcludedTablePatterns()).thenReturn("someOtherTableName");
 		when(indexableDataSource.getDataSource()).thenReturn(dataSource);
 
-		indexableTableHandler.handleIndexable(indexContext, indexableDataSource);
+		ForkJoinTask<?> forkJoinTask = indexableDataSourceHandler.handleIndexableForked(indexContext, indexableDataSource);
+		ThreadUtilities.executeForkJoinTasks(indexContext.getName(), 1, forkJoinTask);
+		
+		ThreadUtilities.sleep(1000);
 
 		verify(indexContext, atLeastOnce()).getChildren();
 	}
 
 	@Test
 	public void isExcluded() {
-		Boolean isExcluded = Deencapsulation.invoke(indexableTableHandler, "isExcluded", "tableName", "excluded:table:patterns");
+		Boolean isExcluded = Deencapsulation.invoke(indexableDataSourceHandler, "isExcluded", "tableName", "excluded:table:patterns");
 		assertFalse(isExcluded);
-		isExcluded = Deencapsulation.invoke(indexableTableHandler, "isExcluded", "tableName", "excluded:tableName:patterns");
+		isExcluded = Deencapsulation.invoke(indexableDataSourceHandler, "isExcluded", "tableName", "excluded:tableName:patterns");
 		assertTrue(isExcluded);
 	}
 
@@ -89,10 +94,10 @@ public class IndexableDataSourceHandlerTest extends AbstractTest {
 		when(child.getName()).thenReturn("tableName");
 		List<Indexable<?>> children = new ArrayList<Indexable<?>>(Arrays.asList(child));
 		when(indexContext.getChildren()).thenReturn(children);
-		Boolean isInContextAlready = Deencapsulation.invoke(indexableTableHandler, "isInContextAlready", "tableOtherName", indexContext);
+		Boolean isInContextAlready = Deencapsulation.invoke(indexableDataSourceHandler, "isInContextAlready", "tableOtherName", indexContext);
 		assertFalse(isInContextAlready);
 
-		isInContextAlready = Deencapsulation.invoke(indexableTableHandler, "isInContextAlready", "tableName", indexContext);
+		isInContextAlready = Deencapsulation.invoke(indexableDataSourceHandler, "isInContextAlready", "tableName", indexContext);
 		assertTrue(isInContextAlready);
 	}
 

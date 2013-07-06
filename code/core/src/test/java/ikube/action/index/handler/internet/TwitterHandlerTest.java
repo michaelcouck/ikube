@@ -5,7 +5,6 @@ import ikube.model.IndexableTweets;
 import ikube.toolkit.ThreadUtilities;
 
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 
 import mockit.Cascading;
@@ -58,20 +57,9 @@ public class TwitterHandlerTest extends AbstractTest {
 		Deencapsulation.setField(twitterHandler, "twitterResourceHandler", twitterResourceHandler);
 
 		final ForkJoinTask<?> forkJoinTask = twitterHandler.handleIndexableForked(indexContext, indexableTweets);
-		final ForkJoinPool forkJoinPool = new ForkJoinPool(indexableTweets.getThreads());
-		ThreadUtilities.addForkJoinPool(indexContext.getName(), forkJoinPool);
+		ThreadUtilities.executeForkJoinTasks(indexContext.getName(), indexableTweets.getThreads(), forkJoinTask);
 
-		ThreadUtilities.submit(null, new Runnable() {
-			public void run() {
-				try {
-					forkJoinPool.invoke(forkJoinTask);
-				} catch (Exception e) {
-					logger.error(null, e);
-				}
-			}
-		});
-
-		ThreadUtilities.sleep(3000);
+		ThreadUtilities.sleep(5000);
 		ThreadUtilities.cancellForkJoinPool(indexContext.getName());
 	}
 

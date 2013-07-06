@@ -13,6 +13,7 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mockit;
@@ -42,11 +43,8 @@ public class IndexableTableHandlerTest extends AbstractTest {
 		}
 	}
 
-	private IndexableTableHandler indexableTableHandler;
-
 	@Before
 	public void before() {
-		indexableTableHandler = new IndexableTableHandler();
 		Mockit.setUpMocks(DatabaseUtilitiesMock.class);
 	}
 
@@ -61,9 +59,12 @@ public class IndexableTableHandlerTest extends AbstractTest {
 		Connection connection = Mockito.mock(Connection.class);
 		DataSource dataSource = Mockito.mock(DataSource.class);
 		Mockito.when(dataSource.getConnection()).thenReturn(connection);
-		indexableTableHandler.addAllColumns(indexableTable, dataSource);
-		assertEquals("There should be three columns added : ", DatabaseUtilitiesMock.getAllColumns(connection, null).size(), indexableTable
-				.getChildren().size());
+		indexableTable.setDataSource(dataSource);
+		TableResourceProvider tableResourceProvider = new TableResourceProvider(indexContext, indexableTable);
+		Deencapsulation.invoke(tableResourceProvider, "addAllColumns", indexableTable, dataSource);
+		// indexableTableHandler.addAllColumns(indexableTable, dataSource);
+		assertEquals("There should be three columns added : ", DatabaseUtilitiesMock.getAllColumns(connection, null).size(), indexableTable.getChildren()
+				.size());
 		IndexableColumn indexableColumn = (IndexableColumn) indexableTable.getChildren().get(0);
 		assertTrue("The first column should be the id column : ", indexableColumn.isIdColumn());
 	}

@@ -1,12 +1,16 @@
 package ikube.toolkit;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.Future;
+import java.util.concurrent.RecursiveTask;
 
 import org.junit.After;
 import org.junit.Before;
@@ -131,6 +135,42 @@ public class ThreadUtilitiesTest extends AbstractTest {
 		}
 		ThreadUtilities.waitForThreads(threads);
 		// If it dead locks we will never get here
+	}
+
+	@Test
+	public void cancellForkJoinPool() {
+		ForkJoinPool forkJoinPool = ThreadUtilities.getForkJoinPool(this.getClass().getSimpleName(), 3);
+		ForkJoinPool cancelledForkJoinPool = ThreadUtilities.cancellForkJoinPool(this.getClass().getSimpleName());
+		assertEquals(forkJoinPool, cancelledForkJoinPool);
+		assertTrue(cancelledForkJoinPool.isShutdown());
+		assertTrue(cancelledForkJoinPool.isTerminated());
+	}
+
+	@Test
+	public void cancellAllForkJoinPools() {
+		ForkJoinPool forkJoinPool = ThreadUtilities.getForkJoinPool(this.getClass().getSimpleName(), 3);
+		ThreadUtilities.cancellAllForkJoinPools();
+		assertTrue(forkJoinPool.isShutdown());
+		assertTrue(forkJoinPool.isTerminated());
+	}
+
+	@Test
+	public void executeForkJoinTasks() {
+		ForkJoinTask<Object> forkJoinTask = new RecursiveTask<Object>() {
+			@Override
+			protected Object compute() {
+				ThreadUtilities.sleep(60000);
+				return null;
+			}
+		};
+		ForkJoinPool forkJoinPool = ThreadUtilities.executeForkJoinTasks(this.getClass().getSimpleName(), 3, forkJoinTask);
+		assertFalse(forkJoinTask.isDone());
+		ThreadUtilities.cancellForkJoinPool(this.getClass().getSimpleName());
+		ThreadUtilities.sleep(3000);
+
+		assertTrue(forkJoinTask.isCancelled());
+		assertTrue(forkJoinPool.isShutdown());
+		assertTrue(forkJoinPool.isTerminated());
 	}
 
 }

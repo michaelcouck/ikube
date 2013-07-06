@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,25 +16,17 @@ import org.springframework.social.twitter.api.StreamListener;
 import org.springframework.social.twitter.api.StreamWarningEvent;
 import org.springframework.social.twitter.api.StreamingOperations;
 import org.springframework.social.twitter.api.Tweet;
-import org.springframework.social.twitter.api.TwitterProfile;
 import org.springframework.social.twitter.api.impl.TwitterTemplate;
 
 class TwitterResourceProvider implements IResourceProvider<Tweet> {
 
 	private class TwitterStreamListener implements StreamListener {
 
-		private AtomicLong atomicLong = new AtomicLong();
-
 		/**
 		 * {@inheritDoc}
 		 */
 		@Override
 		public void onTweet(Tweet tweet) {
-			if (atomicLong.incrementAndGet() % 10000 == 0) {
-				TwitterProfile user = tweet.getUser();
-				logger.info("Tweets : " + atomicLong.get() + ", user : " + user.getScreenName() + ", location : " + user.getLocation() + ", tweet : "
-						+ tweet.getText());
-			}
 			tweets.push(tweet);
 		}
 

@@ -63,6 +63,7 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 				sendNotification(subject, body);
 				// Terminate all indexing
 				ThreadUtilities.destroy();
+				ThreadUtilities.cancellAllForkJoinPools();
 				return Boolean.TRUE;
 			}
 			if (freeSpaceMegabytes < minimumFreeSpaceForNotifications) {

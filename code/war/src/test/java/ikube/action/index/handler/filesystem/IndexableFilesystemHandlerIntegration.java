@@ -12,7 +12,6 @@ import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.UriUtilities;
 
 import java.io.File;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 
 import org.apache.lucene.index.IndexWriter;
@@ -56,23 +55,10 @@ public class IndexableFilesystemHandlerIntegration extends IntegrationTest {
 		Directory directory = null;
 		try {
 
-			ThreadUtilities.submit(null, new Runnable() {
-				public void run() {
-					ForkJoinTask<?> forkJoinTask;
-					try {
-						forkJoinTask = indexableFilesystemHandler.handleIndexableForked(desktop, desktopFolder);
-						ForkJoinPool forkJoinPool = new ForkJoinPool(desktopFolder.getThreads());
-						ThreadUtilities.addForkJoinPool(desktop.getName(), forkJoinPool);
-						forkJoinPool.invoke(forkJoinTask);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			});
-
+			ForkJoinTask<?> forkJoinTask = indexableFilesystemHandler.handleIndexableForked(desktop, desktopFolder);
+			ThreadUtilities.executeForkJoinTasks(desktop.getName(), desktopFolder.getThreads(), forkJoinTask);
 			ThreadUtilities.sleep(5000);
 			ThreadUtilities.cancellForkJoinPool(desktop.getName());
-
 			// Verify that there are some documents in the index
 			assertNotNull("The index writer should still be available : ", desktop.getIndexWriters());
 			assertEquals("There should only be one index writer : ", 1, desktop.getIndexWriters().length);

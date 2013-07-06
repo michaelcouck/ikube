@@ -11,6 +11,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -36,7 +37,7 @@ public final class ThreadUtilities {
 	private static int MAX_RETRY_COUNT = 3;
 	/** A list of futures by name so we can kill them. */
 	private static Map<String, List<Future<?>>> FUTURES;
-	private static Map<String, List<ForkJoinPool>> FORK_JOIN_POOLS;
+	private static Map<String, ForkJoinPool> FORK_JOIN_POOLS;
 
 	/**
 	 * This method will submit the runnable and add it to a map so the caller can cancel the future if necessary.
@@ -190,22 +191,21 @@ public final class ThreadUtilities {
 			return;
 		}
 		FUTURES = Collections.synchronizedMap(new HashMap<String, List<Future<?>>>());
-		FORK_JOIN_POOLS = Collections.synchronizedMap(new HashMap<String, List<ForkJoinPool>>());
+		FORK_JOIN_POOLS = Collections.synchronizedMap(new HashMap<String, ForkJoinPool>());
 		EXECUTER_SERVICE = Executors.newCachedThreadPool();
 		EXECUTER_SERVICE_SYSTEM = Executors.newCachedThreadPool();
 	}
 
-	public static final void cancellForkJoinPool(final String name) {
-		List<ForkJoinPool> forkJoinPools = FORK_JOIN_POOLS.remove(name);
-		if (forkJoinPools != null) {
-			for (final ForkJoinPool forkJoinPool : forkJoinPools) {
-				try {
-					forkJoinPool.shutdownNow();
-				} catch (CancellationException e) {
-					LOGGER.info("Cancelled fork join pool : " + forkJoinPool);
-				}
+	public static final synchronized ForkJoinPool cancellForkJoinPool(final String name) {
+		ForkJoinPool forkJoinPool = FORK_JOIN_POOLS.remove(name);
+		if (forkJoinPool != null) {
+			try {
+				forkJoinPool.shutdownNow();
+			} catch (CancellationException e) {
+				LOGGER.info("Cancelled fork join pool : " + forkJoinPool);
 			}
 		}
+		return forkJoinPool;
 	}
 
 	public static final void cancellAllForkJoinPools() {
@@ -217,13 +217,21 @@ public final class ThreadUtilities {
 		}
 	}
 
-	public static final void addForkJoinPool(final String name, final ForkJoinPool forkJoinPool) {
-		List<ForkJoinPool> forkJoinPools = FORK_JOIN_POOLS.get(name);
-		if (forkJoinPools == null) {
-			forkJoinPools = Collections.synchronizedList(new ArrayList<ForkJoinPool>());
-			FORK_JOIN_POOLS.put(name, forkJoinPools);
+	public static final synchronized ForkJoinPool getForkJoinPool(final String name, final int threads) {
+		ForkJoinPool forkJoinPool = FORK_JOIN_POOLS.get(name);
+		if (forkJoinPool == null) {
+			forkJoinPool = new ForkJoinPool(threads);
+			FORK_JOIN_POOLS.put(name, forkJoinPool);
 		}
-		forkJoinPools.add(forkJoinPool);
+		return forkJoinPool;
+	}
+
+	public static final ForkJoinPool executeForkJoinTasks(final String name, final int threads, final ForkJoinTask<?>... forkJoinTasks) {
+		ForkJoinPool forkJoinPool = ThreadUtilities.getForkJoinPool(name, threads);
+		for (final ForkJoinTask<?> forkJoinTask : forkJoinTasks) {
+			forkJoinPool.execute(forkJoinTask);
+		}
+		return forkJoinPool;
 	}
 
 	/**

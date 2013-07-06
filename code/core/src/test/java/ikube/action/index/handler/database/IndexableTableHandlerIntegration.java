@@ -23,6 +23,7 @@ import ikube.scheduling.Scheduler;
 import ikube.toolkit.DatabaseUtilities;
 import ikube.toolkit.PropertyConfigurer;
 import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.UriUtilities;
 
 import java.io.FileNotFoundException;
 import java.net.InetAddress;
@@ -34,6 +35,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -44,6 +46,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -96,6 +99,7 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
 		indexContext = getBean("indexContext");
 		indexContext.setBatchSize(10000);
 		snapshotTable = getBean("snapshotTable");
+		snapshotTable.setThreads(4);
 		snapshotTableChildren = snapshotTable.getChildren();
 		snapshotColumn = QueryBuilder.getIdColumn(snapshotTableChildren);
 
@@ -105,7 +109,6 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
 
 		IClusterManager clusterManager = getBean(IClusterManager.class);
 		clusterManager.getServer().getActions().clear();
-		invoke(indexableTableHandler, "setMinAndMaxId", snapshotTable, dataSource);
 	}
 
 	@After
@@ -113,6 +116,7 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
 		IClusterManager clusterManager = getBean(IClusterManager.class);
 		clusterManager.getServer().getActions().clear();
 		close(connection);
+		ThreadUtilities.cancellAllForkJoinPools();
 	}
 
 	@Test
@@ -123,15 +127,18 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
 			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
 			indexContext.setIndexWriters(indexWriter);
 			snapshotTable.setPredicate("snapshot.id = " + snapshotTable.getMinimumId());
-			List<Future<?>> threads = indexableTableHandler.handleIndexable(indexContext, snapshotTable);
-			ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
+			ForkJoinTask<?> forkJoinTask = indexableTableHandler.handleIndexableForked(indexContext, snapshotTable);
+			ThreadUtilities.executeForkJoinTasks(indexContext.getName(), snapshotTable.getThreads(), forkJoinTask);
+			ThreadUtilities.sleep(5000);
 			assertTrue("There must be more than one document in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);
 		} finally {
 			snapshotTable.setPredicate(predicate);
+			ThreadUtilities.cancellForkJoinPool(indexContext.getName());
 		}
 	}
 
 	@Test
+	@Ignore("Move to table resource provider test")
 	public void getIdFunction() throws Exception {
 		Long minId = invoke(indexableTableHandler, "getIdFunction", snapshotTable, connection, "min");
 		assertTrue("The min id should be : " + snapshotTable.getMinimumId(), minId.equals(snapshotTable.getMinimumId()));
@@ -140,6 +147,7 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
 	}
 
 	@Test
+	@Ignore("Move to table resource provider test")
 	public void setParameters() throws Exception {
 		try {
 			IndexableTable indexContextTable = getBean("indexContextTable");
@@ -161,6 +169,7 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
 	}
 
 	@Test
+	@Ignore("Move to table resource provider test")
 	public void getResultSetDatasource() throws Exception {
 		snapshotColumn.setContent(snapshotTable.getMinimumId());
 		snapshotTable.setMaximumId(snapshotTable.getMaximumId());
@@ -174,6 +183,7 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
 	}
 
 	@Test
+	@Ignore("Move to table resource provider test")
 	public void getResultSetConnection() throws Exception {
 		snapshotColumn.setContent(snapshotTable.getMinimumId());
 		snapshotTable.setMaximumId(snapshotTable.getMaximumId());
@@ -232,22 +242,19 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
 
 	@Test
 	public void handleTable() throws Exception {
-		String ip = InetAddress.getLocalHost().getHostAddress();
-		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
-		indexContext.setIndexWriters(indexWriter);
-		List<Future<?>> threads = indexableTableHandler.handleIndexable(indexContext, snapshotTable);
-		ThreadUtilities.waitForFutures(threads, Integer.MAX_VALUE);
-		assertTrue("There must be some data in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);
-	}
+		try {
+			String ip = InetAddress.getLocalHost().getHostAddress();
+			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
+			indexContext.setIndexWriters(indexWriter);
 
-	@Test
-	public void handleAllColumnsTable() throws Exception {
-		String ip = InetAddress.getLocalHost().getHostAddress();
-		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
-		indexContext.setIndexWriters(indexWriter);
-		List<Future<?>> futures = indexableTableHandler.handleIndexable(indexContext, snapshotTable);
-		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
-		assertTrue("There must be some data in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);
+			ForkJoinTask<?> forkJoinTask = indexableTableHandler.handleIndexableForked(indexContext, snapshotTable);
+			ThreadUtilities.executeForkJoinTasks(indexContext.getName(), snapshotTable.getThreads(), forkJoinTask);
+			ThreadUtilities.sleep(5000);
+
+			assertTrue("There must be some data in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);
+		} finally {
+			ThreadUtilities.cancellForkJoinPool(indexContext.getName());
+		}
 	}
 
 	@Test
@@ -275,18 +282,20 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
 			long start = System.currentTimeMillis();
 			indexContext.setBatchSize(10);
 			indexContext.setThrottle(60000);
-			indexContext.setIndexWriters(IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), InetAddress.getLocalHost()
-					.getHostAddress()));
+			indexContext.setIndexWriters(IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), UriUtilities.getIp()));
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
 					ThreadUtilities.sleep(10000);
-					ThreadUtilities.destroy(indexContext.getIndexName());
+					ThreadUtilities.cancellForkJoinPool(indexContext.getName());
 				}
 			});
 			thread.setDaemon(Boolean.TRUE);
 			thread.start();
-			List<Future<?>> futures = indexableTableHandler.handleIndexable(indexContext, snapshotTable);
-			ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
+
+			ForkJoinTask<?> forkJoinTask = indexableTableHandler.handleIndexableForked(indexContext, snapshotTable);
+			ThreadUtilities.executeForkJoinTasks(indexContext.getName(), snapshotTable.getThreads(), forkJoinTask);
+			forkJoinTask.quietlyJoin();
+
 			// We should get here when the futures are interrupted
 			assertTrue(Boolean.TRUE);
 			assertTrue(System.currentTimeMillis() - start < 60000);

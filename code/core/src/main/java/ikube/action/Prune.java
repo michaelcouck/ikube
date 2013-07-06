@@ -33,7 +33,7 @@ public class Prune extends Action<IndexContext<?>, Boolean> {
 		int batchSize = (int) toRemain / 4;
 		int count = dataBase.count(klass).intValue();
 		while (count > toRemain) {
-			logger.info("Count : " + count + ", " + toRemain + ", " + batchSize);
+			logger.debug("Count : " + count + ", " + toRemain + ", " + batchSize);
 			List<?> entities = dataBase.find(klass, fieldsToSortOn, directionOfSort, 0, batchSize);
 			dataBase.removeBatch(entities);
 			count = dataBase.count(klass).intValue();

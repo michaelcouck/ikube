@@ -11,11 +11,9 @@ import ikube.toolkit.ThreadUtilities;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.lucene.index.IndexWriter;
 
 /**
@@ -33,7 +31,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	public boolean preExecute(final IndexContext<?> indexContext) throws Exception {
-		logger.info("Pre process action : " + this.getClass() + ", " + indexContext.getName());
+		logger.debug("Pre process action : " + this.getClass() + ", " + indexContext.getName());
 		Server server = clusterManager.getServer();
 		IndexWriter[] indexWriters = null;
 		if (indexContext.isDelta()) {
@@ -54,9 +52,9 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 	protected boolean internalExecute(final IndexContext<?> indexContext) throws Exception {
 		List<Indexable<?>> indexables = indexContext.getChildren();
 		Iterator<Indexable<?>> iterator = new ArrayList(indexables).iterator();
-		// This is the current indexable name
-		String indexableName = null;
 		while (iterator.hasNext()) {
+			// This is the current indexable name
+			String indexableName = null;
 			Indexable<?> indexable = iterator.next();
 			// Update the action with the new indexable
 			Server server = clusterManager.getServer();
@@ -65,22 +63,11 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 			indexableName = indexable.getName();
 			action.setIndexableName(indexableName);
 			dataBase.merge(action);
-			// Pop the actions back in the grid
 			// Get the right handler for this indexable
 			IIndexableHandler<Indexable<?>> handler = getHandler(indexable);
-			logger.info("Indexable : " + indexable.getName());
 			// Execute the handler and wait for the threads to finish
 			ForkJoinTask<?> forkJoinTask = handler.handleIndexableForked(indexContext, indexable);
-			if (forkJoinTask != null) {
-				try {
-					ForkJoinPool forkJoinPool = new ForkJoinPool(indexable.getThreads());
-					ThreadUtilities.addForkJoinPool(indexContext.getName(), forkJoinPool);
-					forkJoinPool.invoke(forkJoinTask);
-					logger.info("Retuning from fork join : " + this + ", " + indexContext.getName() + ", " + ToStringBuilder.reflectionToString(forkJoinTask));
-				} finally {
-					ThreadUtilities.cancellForkJoinPool(indexContext.getName());
-				}
-			}
+			ThreadUtilities.executeForkJoinTasks(indexContext.getName(), indexable.getThreads(), forkJoinTask);
 		}
 		return Boolean.TRUE;
 	}
@@ -110,7 +97,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	public boolean postExecute(final IndexContext<?> indexContext) throws Exception {
-		logger.info("Post process action : " + this.getClass() + ", " + indexContext.getName());
+		logger.debug("Post process action : " + this.getClass() + ", " + indexContext.getName());
 		IndexManager.closeIndexWriters(indexContext);
 		indexContext.setIndexWriters(new IndexWriter[0]);
 		Optimizer.optimize(indexContext);

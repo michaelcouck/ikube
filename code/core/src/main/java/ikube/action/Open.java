@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Searchable;
@@ -60,6 +61,9 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 					directory = FSDirectory.open(serverIndexDirectory);
 					if (!IndexReader.indexExists(directory)) {
 						directory.close();
+						continue;
+					}
+					if (IndexWriter.isLocked(directory) && !indexContext.isDelta()) {
 						continue;
 					}
 					reader = IndexReader.open(directory, Boolean.TRUE);

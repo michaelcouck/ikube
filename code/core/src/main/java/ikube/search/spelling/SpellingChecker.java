@@ -11,7 +11,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.spell.PlainTextDictionary;
 import org.apache.lucene.search.spell.SpellChecker;
@@ -72,9 +71,7 @@ public class SpellingChecker {
 		LOGGER.info("Spelling directory : " + spellingIndexDirectory + ", " + spellingIndexDirectoryPath);
 		Directory directory = FSDirectory.open(spellingIndexDirectory);
 		spellChecker = new SpellChecker(directory);
-		if (!IndexReader.indexExists(directory)) {
-			indexLanguageFiles();
-		}
+		indexLanguageFiles();
 		LOGGER.info("Opened spelling index on : " + spellingIndexDirectory);
 	}
 

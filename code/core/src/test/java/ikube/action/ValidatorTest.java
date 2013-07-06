@@ -95,6 +95,7 @@ public class ValidatorTest extends AbstractTest {
 		lock.release();
 		directory.clearLock(IndexWriter.WRITE_LOCK_NAME);
 		invocations++;
+		invocations++;
 		verify(validator, Mockito.times(invocations)).sendNotification(anyString(), anyString());
 
 		// Delete one file in the index and there should be an exception

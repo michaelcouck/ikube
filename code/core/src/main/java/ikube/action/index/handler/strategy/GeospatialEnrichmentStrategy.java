@@ -140,7 +140,7 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 				builder.append(", ");
 			}
 			String content = indexable.getAddressContent();
-			if (StringUtils.isEmpty(content)) {
+			if (!StringUtils.isEmpty(content)) {
 				builder.append(content);
 			}
 		}
