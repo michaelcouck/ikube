@@ -340,7 +340,7 @@ public class SearcherService implements ISearcherService {
 	 * This method will return an instance of the search class, based on the class in the parameter list and the index context name. For each search there is an
 	 * instance created for the searcher classes to avoid thread overlap. The instance is created using reflection :( but is there a more elegant way?
 	 * 
-	 * @param <T> the type of class that is expected as a result
+	 * @param <T> the type of class that is expected as a category
 	 * @param klass the class of the searcher
 	 * @param indexName the name of the index
 	 * @return the searcher with the searchable injected

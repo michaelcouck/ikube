@@ -378,9 +378,9 @@
     	init-method="initialize" />
     	
     <bean
-		id="ikube.action.index.handler.strategy.MultiLanguageClassifierSentimentAnalysisStrategy"
-		name="ikube.action.index.handler.strategy.MultiLanguageClassifierSentimentAnalysisStrategy" 
-    	class="ikube.action.index.handler.strategy.MultiLanguageClassifierSentimentAnalysisStrategy"
+		id="ikube.action.index.handler.strategy.ClassificationStrategy"
+		name="ikube.action.index.handler.strategy.ClassificationStrategy" 
+    	class="ikube.action.index.handler.strategy.ClassificationStrategy"
     	init-method="initialize" />
     
     <!-- 

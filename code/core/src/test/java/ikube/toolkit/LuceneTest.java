@@ -228,7 +228,7 @@ public class LuceneTest extends AbstractTest {
 		IndexSearcher indexSearcher = new IndexSearcher(indexReader);
 		TermQuery numberQuery = new TermQuery(new Term(IConstants.CONTENTS, NumericUtils.doubleToPrefixCoded(123456789L)));
 		TopDocs topDocs = indexSearcher.search(numberQuery, 100);
-		assertEquals("There must be exactly one result from the search : ", 1, topDocs.scoreDocs.length);
+		assertEquals("There must be exactly one category from the search : ", 1, topDocs.scoreDocs.length);
 	}
 
 }

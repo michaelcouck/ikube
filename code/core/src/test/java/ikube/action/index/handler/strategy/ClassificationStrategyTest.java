@@ -1,114 +1,72 @@
 package ikube.action.index.handler.strategy;
 
+import static ikube.action.index.IndexManager.addStringField;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 import ikube.AbstractTest;
+import ikube.IConstants;
+import ikube.model.Indexable;
+import ikube.model.IndexableColumn;
+import ikube.toolkit.PerformanceTester;
 
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.junit.Ignore;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field.Index;
+import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.Field.TermVector;
+import org.junit.Before;
 import org.junit.Test;
-
-import com.aliasi.classify.LogisticRegressionClassifier;
-import com.aliasi.matrix.DenseVector;
-import com.aliasi.matrix.Vector;
-import com.aliasi.stats.AnnealingSchedule;
-import com.aliasi.stats.LogisticRegression;
-import com.aliasi.stats.RegressionPrior;
 
 public class ClassificationStrategyTest extends AbstractTest {
 
-	// parallel to inputs
-	public static final int[] OUTPUTS = new int[] { 1, 1, 2, 2, 0, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 0, 1, 1, 2, 2, 2, 2, 1, 1, 0, 2, 2, 2, 2, 0, 2, 2, 2,
-			2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 0, 2, 2, 0, 2, 1, 0, 0, 2, 2, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 1,
-			2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 0, 0, 1, 0, 1, 0, 1, 0, 2, 2, 1, 2, 0, 2, 1, 2, 2, 1, 2, 2, 0, 1, 1, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 2,
-			1, 2, 2, 0, 2, 2, 2, 2, 1, 2, 1, 2, 1, 2, 2, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 1, 2, 0, 2, 1, 0, 1, 2, 1, 2, 1, 1, 0, 1, 1, 0, 1, 1, 2, 2, 1, 0, 1, 2,
-			1, 2, 0, 1, 2, 1, 2, 2, 2, 2, 2, 1, };
+	private Map<String, String[]> inputs;
+	private ClassificationStrategy classificationStrategy;
 
-	// parallel to outputs
-	public static final Vector[] INPUTS = new Vector[] { new DenseVector(new double[] { 1, 0, 0, 2, 0 }), new DenseVector(new double[] { 1, 0, 0, 2, 1 }),
-			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 2, 0 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }),
-			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }),
-			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 2, 1 }), new DenseVector(new double[] { 1, 0, 1, 1, 1 }),
-			new DenseVector(new double[] { 1, 1, 1, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }),
-			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 0 }), new DenseVector(new double[] { 1, 0, 0, 2, 1 }),
-			new DenseVector(new double[] { 1, 0, 0, 3, 0 }), new DenseVector(new double[] { 1, 1, 1, 3, 0 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
-			new DenseVector(new double[] { 1, 1, 0, 2, 0 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }),
-			new DenseVector(new double[] { 1, 1, 1, 1, 0 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 0 }),
-			new DenseVector(new double[] { 1, 1, 0, 3, 0 }), new DenseVector(new double[] { 1, 1, 0, 2, 0 }), new DenseVector(new double[] { 1, 1, 0, 2, 0 }),
-			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 2, 1 }),
-			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 2, 0 }), new DenseVector(new double[] { 1, 1, 0, 1, 0 }),
-			new DenseVector(new double[] { 1, 1, 1, 2, 1 }), new DenseVector(new double[] { 1, 0, 0, 2, 0 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
-			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
-			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 2, 0 }), new DenseVector(new double[] { 1, 1, 1, 1, 1 }),
-			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
-			new DenseVector(new double[] { 1, 0, 0, 1, 0 }), new DenseVector(new double[] { 1, 0, 1, 3, 0 }), new DenseVector(new double[] { 1, 1, 0, 2, 0 }),
-			new DenseVector(new double[] { 1, 0, 0, 2, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }),
-			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 0 }), new DenseVector(new double[] { 1, 1, 1, 1, 0 }),
-			new DenseVector(new double[] { 1, 1, 0, 1, 0 }), new DenseVector(new double[] { 1, 1, 1, 3, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
-			new DenseVector(new double[] { 1, 0, 0, 3, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 0 }),
-			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 1, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 0 }),
-			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 0 }), new DenseVector(new double[] { 1, 1, 0, 3, 1 }),
-			new DenseVector(new double[] { 1, 1, 0, 3, 1 }), new DenseVector(new double[] { 1, 1, 1, 2, 1 }), new DenseVector(new double[] { 1, 1, 0, 2, 1 }),
-			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 3, 0 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }),
-			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 0 }),
-			new DenseVector(new double[] { 1, 1, 1, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
-			new DenseVector(new double[] { 1, 0, 1, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
-			new DenseVector(new double[] { 1, 0, 0, 2, 1 }), new DenseVector(new double[] { 1, 1, 1, 1, 0 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }),
-			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 1, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
-			new DenseVector(new double[] { 1, 1, 1, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
-			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 1, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 2, 1 }),
-			new DenseVector(new double[] { 1, 1, 1, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 2, 0 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }),
-			new DenseVector(new double[] { 1, 1, 1, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 1, 3, 0 }),
-			new DenseVector(new double[] { 1, 1, 1, 1, 1 }), new DenseVector(new double[] { 1, 1, 1, 3, 1 }), new DenseVector(new double[] { 1, 0, 0, 3, 1 }),
-			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
-			new DenseVector(new double[] { 1, 0, 1, 3, 0 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 0 }),
-			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }),
-			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 3, 0 }),
-			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 1, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 3, 0 }),
-			new DenseVector(new double[] { 1, 0, 1, 2, 0 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
-			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 1, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 0 }),
-			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 1, 1, 1 }),
-			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 1, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 0 }),
-			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 1, 2, 0 }), new DenseVector(new double[] { 1, 1, 0, 1, 0 }),
-			new DenseVector(new double[] { 1, 1, 0, 1, 0 }), new DenseVector(new double[] { 1, 0, 0, 2, 1 }), new DenseVector(new double[] { 1, 1, 1, 1, 1 }),
-			new DenseVector(new double[] { 1, 0, 0, 3, 0 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 1, 1, 1 }),
-			new DenseVector(new double[] { 1, 0, 0, 1, 0 }), new DenseVector(new double[] { 1, 0, 1, 1, 0 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
-			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 0 }), new DenseVector(new double[] { 1, 0, 0, 1, 0 }),
-			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 2, 0 }),
-			new DenseVector(new double[] { 1, 1, 1, 2, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 0 }),
-			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 1, 1, 0 }),
-			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 0 }),
-			new DenseVector(new double[] { 1, 0, 1, 2, 1 }), new DenseVector(new double[] { 1, 1, 1, 2, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
-			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 1, 3, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }),
-			new DenseVector(new double[] { 1, 0, 0, 1, 0 }), new DenseVector(new double[] { 1, 1, 0, 3, 0 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
-			new DenseVector(new double[] { 1, 1, 1, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 2, 0 }),
-			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 1, 2, 0 }), new DenseVector(new double[] { 1, 1, 0, 2, 0 }),
-			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 1, 3, 0 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }),
-			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }),
-			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 2, 0 }), new DenseVector(new double[] { 1, 0, 1, 2, 1 }),
-			new DenseVector(new double[] { 1, 0, 0, 2, 0 }), new DenseVector(new double[] { 1, 1, 1, 1, 1 }), new DenseVector(new double[] { 1, 0, 1, 2, 1 }),
-			new DenseVector(new double[] { 1, 0, 0, 3, 0 }), new DenseVector(new double[] { 1, 1, 1, 1, 0 }), new DenseVector(new double[] { 1, 0, 0, 3, 1 }),
-			new DenseVector(new double[] { 1, 1, 0, 2, 1 }), new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 3, 1 }),
-			new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 1, 1, 1, 1 }), new DenseVector(new double[] { 1, 1, 0, 1, 1 }),
-			new DenseVector(new double[] { 1, 1, 0, 1, 1 }), };
+	@Before
+	public void before() {
+		classificationStrategy = new ClassificationStrategy();
+		classificationStrategy.initialize();
 
-	public static final Vector[] TEST_INPUTS = new Vector[] { new DenseVector(new double[] { 1, 0, 0, 1, 1 }), new DenseVector(new double[] { 1, 0, 1, 0, 0 }),
-			new DenseVector(new double[] { 1, 0, 1, 3, 1 }), };
+		inputs = new HashMap<String, String[]>();
+		inputs.put(IConstants.CATEGORIES[0], new String[] { "Lovely day", "Perfect and healthy", "Funny and amusing", "Great!" });
+		inputs.put(IConstants.CATEGORIES[1], new String[] { "Not well", "Feeling sick", "Unhappy and miserable", "Loose your mind" });
+		inputs.put(IConstants.CATEGORIES[2], new String[] { "Before breakfast", "After lunch", "During dinner", "Sleep time" });
+	}
 
 	@Test
-	@Ignore
-	public void classify() throws IOException {
-		String context = "abcdefghij";
-		LogisticRegression regression = //
-		LogisticRegression.estimate(//
-				INPUTS, //
-				OUTPUTS, //
-				RegressionPrior.noninformative(), //
-				AnnealingSchedule.inverse(.05, 100), //
-				null, // null reporter
-				0.000000001, // min improve
-				1, // min epochs
-				10000); // max epochs
-		LogisticRegressionClassifier logisticRegressionClassifier = null;
+	public void aroundProcess() throws Exception {
+		final Indexable<?> indexableColumn = new IndexableColumn();
+		indexableColumn.setContent("Perfect day");
+		Document document = addStringField(IConstants.CLASSIFICATION, IConstants.CATEGORIES[0], new Document(), Store.YES, Index.ANALYZED, TermVector.YES);
+		classificationStrategy.aroundProcess(indexContext, indexableColumn, document, null);
+		logger.info("Document : " + document);
+		assertEquals(IConstants.POSITIVE, document.get(IConstants.CLASSIFICATION));
+		assertEquals(IConstants.NEUTRAL, document.get(IConstants.CLASSIFICATION_CONFLICT));
+
+		// Now we train the classifier and re-test the category
+		for (int i = 0; i < 15; i++) {
+			for (final String category : IConstants.CATEGORIES) {
+				for (final String content : inputs.get(category)) {
+					classificationStrategy.train(category, content);
+				}
+			}
+		}
+
+		document = addStringField(IConstants.CLASSIFICATION, IConstants.CATEGORIES[0], new Document(), Store.YES, Index.ANALYZED, TermVector.YES);
+		classificationStrategy.aroundProcess(indexContext, indexableColumn, document, null);
+		logger.info("Document : " + document);
+		assertEquals(IConstants.POSITIVE, document.get(IConstants.CLASSIFICATION));
+		assertNull(document.get(IConstants.CLASSIFICATION_CONFLICT));
+		
+		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+			public void execute() throws Throwable {
+				classificationStrategy.aroundProcess(indexContext, indexableColumn, new Document(), null);
+			}
+		}, "Emoticon strategy : ", 1000, Boolean.TRUE);
+		assertTrue(executionsPerSecond > 1000);
 	}
 
 }

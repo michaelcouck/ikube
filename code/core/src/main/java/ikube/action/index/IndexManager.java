@@ -97,7 +97,7 @@ public final class IndexManager {
 	 * @param indexContext the index context to open the writer for
 	 * @param time the time stamp for the index directory. This can come from the system time but it can also come from another server. When an index is started
 	 *        the server will publish the time it started the index. In this way we can check the timestamp for the index, and if it is set then we use the
-	 *        cluster timestamp. As a result we write the index in the same 'timestamp' directory
+	 *        cluster timestamp. As a category we write the index in the same 'timestamp' directory
 	 * @return the index writer opened for this index context or null if there was any exception opening the index
 	 */
 	public static synchronized IndexWriter openIndexWriter(final IndexContext<?> indexContext, final long time, final String ip) {
@@ -282,7 +282,7 @@ public final class IndexManager {
 	 * 2) The name of the index<br>
 	 * 3) The time(as a long) that the index was created 4) The ip address of the server that created the index<br>
 	 * 
-	 * The result of this is something like ./indexes/ikube/123456789/127.0.0.1. This method will return the directory ./indexes/ikube/123456789. In other words
+	 * The category of this is something like ./indexes/ikube/123456789/127.0.0.1. This method will return the directory ./indexes/ikube/123456789. In other words
 	 * the timestamp directory, not the individual server index directories.
 	 * 
 	 * @param baseIndexDirectoryPath the base path to the indexes, i.e. the ./indexes part
@@ -455,77 +455,75 @@ public final class IndexManager {
 		return FileUtilities.cleanFilePath(builder.toString());
 	}
 
-	public static void addStringField(final String fieldName, final String fieldContent, final Document document, final Store store, final Index analyzed,
+	public static Document addStringField(final String fieldName, final String fieldContent, final Document document, final Store store, final Index analyzed,
 			final TermVector termVector) {
-		if (fieldName == null || fieldContent == null) {
-			return;
+		if (fieldName != null && fieldContent != null) {
+			Field field = document.getField(fieldName);
+			if (field == null) {
+				field = new Field(fieldName, fieldContent, store, analyzed, termVector);
+				document.add(field);
+			} else {
+				String fieldValue = field.stringValue() != null ? field.stringValue() : "";
+				StringBuilder builder = new StringBuilder(fieldValue).append(' ').append(fieldContent);
+				field.setValue(builder.toString());
+			}
 		}
-		Field field = document.getField(fieldName);
-		if (field == null) {
-			field = new Field(fieldName, fieldContent, store, analyzed, termVector);
-			document.add(field);
-		} else {
-			String fieldValue = field.stringValue() != null ? field.stringValue() : "";
-			StringBuilder builder = new StringBuilder(fieldValue).append(' ').append(fieldContent);
-			field.setValue(builder.toString());
-		}
+		return document;
 	}
 
-	public static void addNumericField(final String fieldName, final String fieldContent, final Document document, final Store store) {
+	public static Document addNumericField(final String fieldName, final String fieldContent, final Document document, final Store store) {
 		document.add(new NumericField(fieldName, store, true).setDoubleValue(Double.parseDouble(fieldContent)));
+		return document;
 	}
 
-	public static void addReaderField(final String fieldName, final Document document, final Store store, final TermVector termVector, final Reader reader)
+	public static Document addReaderField(final String fieldName, final Document document, final Store store, final TermVector termVector, final Reader reader)
 			throws Exception {
-		if (fieldName == null || reader == null) {
-			LOGGER.warn("Field and reader can't be null : " + fieldName + ", " + reader);
-			return;
-		}
-		Field field = document.getField(fieldName);
-		if (field == null) {
-			field = new Field(fieldName, reader, termVector);
-			document.add(field);
-		} else {
-			Reader fieldReader = field.readerValue();
-
-			if (fieldReader == null) {
-				fieldReader = new StringReader(field.stringValue());
-			}
-
-			Reader finalReader = null;
-			Writer writer = null;
-			try {
-				File tempFile = File.createTempFile(Long.toString(System.nanoTime()), IConstants.READER_FILE_SUFFIX);
-				writer = new FileWriter(tempFile, false);
-				char[] chars = new char[1024];
-				int read = fieldReader.read(chars);
-				while (read > -1) {
-					writer.write(chars, 0, read);
-					read = fieldReader.read(chars);
+		if (fieldName != null && reader != null) {
+			Field field = document.getField(fieldName);
+			if (field == null) {
+				field = new Field(fieldName, reader, termVector);
+				document.add(field);
+			} else {
+				Reader fieldReader = field.readerValue();
+				if (fieldReader == null) {
+					fieldReader = new StringReader(field.stringValue());
 				}
-				read = reader.read(chars);
-				while (read > -1) {
-					writer.write(chars, 0, read);
+				Reader finalReader = null;
+				Writer writer = null;
+				try {
+					File tempFile = File.createTempFile(Long.toString(System.nanoTime()), IConstants.READER_FILE_SUFFIX);
+					writer = new FileWriter(tempFile, false);
+					char[] chars = new char[1024];
+					int read = fieldReader.read(chars);
+					while (read > -1) {
+						writer.write(chars, 0, read);
+						read = fieldReader.read(chars);
+					}
 					read = reader.read(chars);
+					while (read > -1) {
+						writer.write(chars, 0, read);
+						read = reader.read(chars);
+					}
+					finalReader = new FileReader(tempFile);
+					// This is a string field, and could be stored so we check that
+					if (store.isStored()) {
+						// Remove the field and add it again
+						document.removeField(fieldName);
+						field = new Field(fieldName, finalReader, termVector);
+						document.add(field);
+					} else {
+						field.setValue(finalReader);
+					}
+				} catch (Exception e) {
+					LOGGER.error("Exception writing the field value with the file writer : ", e);
+				} finally {
+					FileUtilities.close(writer);
+					FileUtilities.close(finalReader);
+					FileUtilities.close(fieldReader);
 				}
-				finalReader = new FileReader(tempFile);
-				// This is a string field, and could be stored so we check that
-				if (store.isStored()) {
-					// Remove the field and add it again
-					document.removeField(fieldName);
-					field = new Field(fieldName, finalReader, termVector);
-					document.add(field);
-				} else {
-					field.setValue(finalReader);
-				}
-			} catch (Exception e) {
-				LOGGER.error("Exception writing the field value with the file writer : ", e);
-			} finally {
-				FileUtilities.close(writer);
-				FileUtilities.close(finalReader);
-				FileUtilities.close(fieldReader);
 			}
 		}
+		return document;
 	}
 
 	/**

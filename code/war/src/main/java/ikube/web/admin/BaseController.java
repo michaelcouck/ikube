@@ -18,7 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
  * MVC will forward to the correct page. The request url will be something like /ikube/results.html. The mapping to the results page in Spring is /results.html.
  * The search controller will then be called first, the parameters in the request will be used to do the search against the index. The parameters will have the
  * index name, the fields to search in the index and the search string(s). The search controller will put the results in the response for the page. Then the
- * context (/ikube) will be stripped from the url, and the file extension(.html), the result of this stripping will be '/results'. As defined in the
+ * context (/ikube) will be stripped from the url, and the file extension(.html), the category of this stripping will be '/results'. As defined in the
  * web-application-context.xml, the prefix '/WEB-INF/jsp/' will be added to the view url, and the extension '.jsp'. This will then be handed off to the
  * view-controller as defined in the context configuration. The response will then be forwarded to this url.
  * 

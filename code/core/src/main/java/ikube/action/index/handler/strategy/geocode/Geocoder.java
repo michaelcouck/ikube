@@ -55,7 +55,7 @@ public class Geocoder implements IGeocoder, InitializingBean {
 		}
 		GetMethod getMethod = null;
 		try {
-			// Trim the address for strange characters to get a better result
+			// Trim the address for strange characters to get a better category
 			String trimmedAddress = StringUtils.trim(address);
 			Arrays.fill(this.searchStrings, trimmedAddress);
 
@@ -72,7 +72,7 @@ public class Geocoder implements IGeocoder, InitializingBean {
 			ArrayList<HashMap<String, String>> results = (ArrayList<HashMap<String, String>>) SerializationUtilities.deserialize(xml);
 			if (results.size() >= 2) {
 				Map<String, String> firstResult = results.get(0);
-				// We got a result, so we'll rely on Lucene to provide the best match for
+				// We got a category, so we'll rely on Lucene to provide the best match for
 				// the address according to the data from GeoNames
 				String latitude = firstResult.get(IConstants.LATITUDE);
 				String longitude = firstResult.get(IConstants.LONGITUDE);

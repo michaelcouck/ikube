@@ -21,6 +21,7 @@ public interface IConstants {
 	String IKUBE_LOG = IKUBE + ".log";
 	/** The file separator for the system. */
 	String SEP = "/";
+	String IKUBE_DIRECTORY = "." + SEP + IKUBE;
 	String SPACE = " ";
 	String BCK_SEP = "\\";
 	String META_INF = SEP + "META-INF";
@@ -184,12 +185,14 @@ public interface IConstants {
 
 	String LANGUAGE = "language";
 	String LANGUAGE_DETECT_PROFILES_DIRECTORY = "profiles";
-	String SENTIMENT = "sentiment";
-	String SENTIMENT_CONFLICT = "sentiment-conflict";
+	String CLASSIFICATION = "classification";
+	String CLASSIFICATION_CONFLICT = "classification-conflict";
+
 	String POSITIVE = "positive";
 	String NEGATIVE = "negative";
 	String NEUTRAL = "neutral";
-	String[] SENTIMENT_CATEGORIES = { POSITIVE, NEGATIVE, NEUTRAL };
+	String[] CATEGORIES = { POSITIVE, NEGATIVE, NEUTRAL };
+
 	String CLASSIFIER = "classifier";
 	String CLASSIFIERS = "classifiers";
 

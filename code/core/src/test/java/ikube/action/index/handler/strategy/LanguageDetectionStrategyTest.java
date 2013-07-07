@@ -26,17 +26,17 @@ import org.junit.Test;
  */
 public class LanguageDetectionStrategyTest extends AbstractTest {
 
-	private static LanguageDetectionStrategy languageDetectionStrategy;
+	private LanguageDetectionStrategy languageDetectionStrategy;
 
 	@Before
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void before() {
-		languageDetectionStrategy = new LanguageDetectionStrategy(null);
+		languageDetectionStrategy = new LanguageDetectionStrategy();
 		when(indexableColumn.getContent()).thenReturn("some english text");
 		List<Indexable<?>> children = new ArrayList(Arrays.asList(indexableColumn));
 		when(indexableTable.getChildren()).thenReturn(children);
 	}
-	
+
 	@After
 	public void after() {
 		Mockit.tearDownMocks();
@@ -69,8 +69,7 @@ public class LanguageDetectionStrategyTest extends AbstractTest {
 				languageDetectionStrategy.aroundProcess(indexContext, indexableTable, document, null);
 			}
 		}, "Language detection strategy : ", iterations, Boolean.TRUE);
-		assertTrue(perSecond > 100);
-		logger.info("Detection per second : " + perSecond);
+		assertTrue(perSecond > 1000);
 	}
 
 }

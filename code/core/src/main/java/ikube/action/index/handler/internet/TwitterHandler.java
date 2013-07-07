@@ -53,9 +53,9 @@ public class TwitterHandler extends IndexableHandler<IndexableTweets> {
 		StringBuilder addressBuilder = new StringBuilder();
 		if (!StringUtils.isEmpty(twitterProfile.getLocation())) {
 			addressBuilder.append(twitterProfile.getLocation());
-			addressBuilder.append(" ");
 		}
 		if (!StringUtils.isEmpty(twitterProfile.getTimeZone())) {
+			addressBuilder.append(", ");
 			addressBuilder.append(twitterProfile.getTimeZone());
 		}
 		indexableTweets.setAddressContent(addressBuilder.toString());
@@ -76,10 +76,9 @@ public class TwitterHandler extends IndexableHandler<IndexableTweets> {
 		// strategy needs this to guess the geo-coordinates of the tweet
 		indexableTweets.setContent(builder.toString());
 		// And put the data in the index
-		Document document = new Document();
-		twitterResourceHandler.handleResource(indexContext, indexableTweets, document, resource);
+		Document document = twitterResourceHandler.handleResource(indexContext, indexableTweets, new Document(), resource);
 		// We could get more tweets here I guess
-		if (atomicInteger.getAndIncrement() % 10000 == 0) {
+		if (atomicInteger.getAndIncrement() % 100 == 0) {
 			logger.info("Document : " + document);
 		}
 		return null;

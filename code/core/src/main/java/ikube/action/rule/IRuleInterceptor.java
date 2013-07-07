@@ -4,7 +4,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 
 /**
  * This is the interface for intercepting actions and deciding whether to execute the actions. Typically sub-classes will check whether
- * there are indexes being built or have been built and execute the actions based on the result of the evaluation of the rules. Rules are
+ * there are indexes being built or have been built and execute the actions based on the category of the evaluation of the rules. Rules are
  * defined in the Spring configuration.
  * 
  * @author Michael Couck

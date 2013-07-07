@@ -61,7 +61,7 @@ public abstract class Searcher extends Resource {
 	 * @param indexName the name of the index to search
 	 * @param searchStrings the search strings to search for
 	 * @param fragment whether to generate a fragment from the stored data for the matches
-	 * @param firstResult the first result for paging
+	 * @param firstResult the first category for paging
 	 * @param maxResults the maximum results for paging
 	 * @return a serialized string of the results from the search
 	 */
@@ -75,7 +75,7 @@ public abstract class Searcher extends Resource {
 	 * @param searchStrings the search strings to search for
 	 * @param searchFields the fields to search through
 	 * @param fragment whether to generate a fragment from the stored data for the matches
-	 * @param firstResult the first result for paging
+	 * @param firstResult the first category for paging
 	 * @param maxResults the maximum results for paging
 	 * @param distance the maximum distance that should be allowed for the results
 	 * @param latitude the longitude of the co-ordinate to sort on
@@ -91,7 +91,7 @@ public abstract class Searcher extends Resource {
 	 * @param indexName the name of the index to search
 	 * @param searchStrings the search strings, note that all the search strings will be used to search all the fields
 	 * @param fragment whether the results should contain the fragment
-	 * @param firstResult the first result to page
+	 * @param firstResult the first category to page
 	 * @param maxResults the max results to return, for paging
 	 * @param distance the distance around the point specified to return results for
 	 * @param latitude the latitude for the starting point for sorting the results from, and for the distance calculation

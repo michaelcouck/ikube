@@ -1,34 +1,36 @@
 package ikube.action.rule;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
+import ikube.action.Action;
 import ikube.action.Close;
 import ikube.action.IAction;
-import ikube.action.rule.AreIndexesCreated;
-import ikube.action.rule.AreSearchablesInitialised;
-import ikube.action.rule.AreUnopenedIndexes;
-import ikube.action.rule.IRule;
-import ikube.action.rule.IsIndexCurrent;
-import ikube.action.rule.IsMultiSearcherInitialised;
-import ikube.action.rule.RuleInterceptor;
+import ikube.action.Index;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
 import ikube.model.IndexContext;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import mockit.Cascading;
 import mockit.Deencapsulation;
+import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mockit;
 
+import org.apache.commons.jexl2.Expression;
+import org.apache.commons.jexl2.JexlContext;
+import org.apache.commons.jexl2.JexlEngine;
+import org.apache.commons.jexl2.MapContext;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.junit.After;
 import org.junit.Before;
@@ -63,6 +65,19 @@ public class RuleInterceptorTest extends AbstractTest {
 	private IsIndexCurrent isIndexCurrent;
 	private AreIndexesCreated areIndexesCreated;
 	private AreUnopenedIndexes areUnopenedIndexes;
+
+	@Cascading
+	IsIndexCurrent isIndexCurrentBug;
+	@Cascading
+	AnyServersWorkingThisIndex anyServersWorkingThisIndexBug;
+	@Cascading
+	TooManyActionsRule tooManyActionsRuleBug;
+	@Cascading
+	IsThisServerWorking isThisServerWorkingBug;
+	@Cascading
+	AreOtherServers areOtherServersBug;
+	@Cascading
+	AnyServersIdle anyServersIdleBug;
 
 	@Before
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -132,7 +147,7 @@ public class RuleInterceptorTest extends AbstractTest {
 
 		Object result = ruleInterceptor.decide(joinPoint);
 		Object expected = true;
-		String message = "Expected : " + expected + " result : " + result;
+		String message = "Expected : " + expected + " category : " + result;
 		logger.info("Result : " + message);
 		assertEquals(message, expected, result);
 	}
@@ -148,17 +163,47 @@ public class RuleInterceptorTest extends AbstractTest {
 	}
 
 	@Test
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void decidePredicate() {
+		new Expectations() {
+			{
+				anyServersWorkingThisIndexBug.evaluate(indexContext);
+				result = true;
+				isThisServerWorkingBug.evaluate(indexContext);
+				result = true;
+			}
+		};
+
+		Action action = new Index();
+		action.setRuleExpression("!IsIndexCurrent && !AnyServersWorkingThisIndex && !TooManyActionsRule && !(IsThisServerWorking && AreOtherServers && AnyServersIdle)");
+		action.setRequiresClusterLock(false);
+		action.setRules(Arrays.asList(isIndexCurrentBug, anyServersWorkingThisIndexBug, tooManyActionsRuleBug, isThisServerWorkingBug, areOtherServersBug,
+				anyServersIdleBug));
+		boolean result = ruleInterceptor.evaluateRules(indexContext, action);
+		logger.info("Result : " + result);
+		assertFalse(result);
+	}
+
+	@Test
 	public void jep() {
-		JEP jep = new JEP();
-		jep.addVariable("a", Boolean.FALSE);
-		jep.addVariable("b", Boolean.FALSE);
-		jep.addVariable("c", Boolean.TRUE);
-		jep.addVariable("d", Boolean.TRUE);
-		jep.addVariable("e", Boolean.TRUE);
-		jep.parseExpression("((a || b) || !c) && !(d && e)");
-		Object result = jep.getValueAsObject();
-		logger.info("Jep result : " + result);
-		assertNotNull(result);
+		JexlEngine jexl = new JexlEngine();
+		Expression e = jexl.createExpression("((a || b) || !c) && !(d && e)");
+
+		// populate the context
+		JexlContext context = new MapContext();
+		context.set("a", true);
+		context.set("b", true);
+		context.set("c", true);
+		context.set("d", true);
+		context.set("e", true);
+
+		// work it out
+		Object result = e.evaluate(context);
+		logger.info("Result : " + result);
+
+		e = jexl.createExpression("a");
+		result = e.evaluate(context);
+		logger.info("Result : " + result);
 	}
 
 }

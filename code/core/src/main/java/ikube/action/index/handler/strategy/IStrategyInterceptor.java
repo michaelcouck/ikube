@@ -4,7 +4,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 
 /**
  * This is the interceptor for the file system and data base handlers. Essentially this interceptor will execute strategies on the handlers before processing
- * and based on the result allow the handler to proceed to index the resource or not. This facilitates delta indexing and adding data to the document before
+ * and based on the category allow the handler to proceed to index the resource or not. This facilitates delta indexing and adding data to the document before
  * committing the data to the index, like adding a file while processing the database.
  * 
  * @author Michael Couck
@@ -18,7 +18,7 @@ public interface IStrategyInterceptor {
 	 * proceeding join point.
 	 * 
 	 * @param proceedingJoinPoint the join point for the handler
-	 * @return the result from executing the join point, or null if the implementing logic decides not to execute the intercepted target
+	 * @return the category from executing the join point, or null if the implementing logic decides not to execute the intercepted target
 	 * @throws Throwable
 	 */
 	Object aroundProcess(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable;

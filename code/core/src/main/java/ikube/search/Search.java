@@ -44,8 +44,8 @@ import org.apache.lucene.util.ReaderUtil;
 /**
  * This action does the actual search on the index. The searcher that is current in the Instance is passed to this action. The search is done on the index. The
  * results are then processed for use in the front end. A list of maps is generated from the results. There are three standard fields in each map. Each map then
- * represents one record or result from the search. The three standard items in the map are the index in the lucene result set, id of the record and the score
- * that the result got. Optionally the fragment generated from the result if this is specified.
+ * represents one record or category from the search. The three standard items in the map are the index in the lucene category set, id of the record and the score
+ * that the category got. Optionally the fragment generated from the category if this is specified.
  * 
  * The id of the record generated using the name of the object indexed and the primary field in the database.
  * 
@@ -112,9 +112,9 @@ public abstract class Search {
 	}
 
 	/**
-	 * Takes a result from the Lucene search query and selects the fragments that have the search word(s) in it, taking only the first few instances of the data
+	 * Takes a category from the Lucene search query and selects the fragments that have the search word(s) in it, taking only the first few instances of the data
 	 * where the term appears and returns the fragments. For example in the document the data is the following "The quick brown fox jumps over the lazy dog" and
-	 * we search for 'quick', 'fox' and 'lazy'. The result will be '...The quick brown fox jumps...the lazy dog...'.<br>
+	 * we search for 'quick', 'fox' and 'lazy'. The category will be '...The quick brown fox jumps...the lazy dog...'.<br>
 	 * <br>
 	 * The fragments are from the current document, so calling get next document will move the document to the next on in the Hits object.
 	 * 
@@ -213,7 +213,7 @@ public abstract class Search {
 				logger.error("Exception searching for string " + searchString + " in searcher " + searcher, exception);
 			}
 			long duration = System.currentTimeMillis() - start;
-			// Add the search results size as a last result
+			// Add the search results size as a last category
 			addStatistics(results, totalHits, highScore, duration, exception);
 		}
 		return results;
@@ -246,9 +246,9 @@ public abstract class Search {
 	}
 
 	/**
-	 * Sets the first result in the index.
+	 * Sets the first category in the index.
 	 * 
-	 * @param start the first result to return from the results
+	 * @param start the first category to return from the results
 	 */
 	public void setFirstResult(final int start) {
 		this.firstResult = start;
@@ -322,8 +322,8 @@ public abstract class Search {
 	/**
 	 * Adds the fields to the results.
 	 * 
-	 * @param document the document to get the fields from to add to the result
-	 * @param result the result map to add the field values to
+	 * @param document the document to get the fields from to add to the category
+	 * @param category the category map to add the field values to
 	 * @throws Exception
 	 */
 	protected void addFieldsToResults(final Document document, final HashMap<String, String> result) {
@@ -352,7 +352,7 @@ public abstract class Search {
 	 */
 	protected void addStatistics(final ArrayList<HashMap<String, String>> results, final long totalHits, final float highScore, final long duration,
 			final Exception exception) {
-		// Add the search results size as a last result
+		// Add the search results size as a last category
 		HashMap<String, String> statistics = new HashMap<String, String>();
 		String[] correctedSearchStrings = getCorrections();
 		String searchString = StringUtils.strip(Arrays.deepToString(searchStrings), IConstants.STRIP_CHARACTERS);

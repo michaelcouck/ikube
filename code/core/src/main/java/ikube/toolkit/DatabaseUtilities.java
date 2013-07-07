@@ -18,7 +18,7 @@ import oracle.jdbc.driver.OracleDriver;
 import org.apache.log4j.Logger;
 
 /**
- * General database operations like closing result sets etc.
+ * General database operations like closing category sets etc.
  * 
  * @author Michael Couck
  * @since 23.12.10
@@ -103,10 +103,10 @@ public final class DatabaseUtilities {
 	}
 
 	/**
-	 * This method will close all related resources to the result set object in the parameter list. First getting the statement from the result set, then the
-	 * connection from the statement and closing them, result set, statement then connection.
+	 * This method will close all related resources to the category set object in the parameter list. First getting the statement from the category set, then the
+	 * connection from the statement and closing them, category set, statement then connection.
 	 * 
-	 * @param resultSet the result set and related database resources to close
+	 * @param resultSet the category set and related database resources to close
 	 */
 	public static void closeAll(final ResultSet resultSet) {
 		Statement statement = null;
@@ -119,7 +119,7 @@ public final class DatabaseUtilities {
 				connection = statement.getConnection();
 			}
 		} catch (Exception e) {
-			LOGGER.error("Exception getting the statement and connection from the result set : ", e);
+			LOGGER.error("Exception getting the statement and connection from the category set : ", e);
 		}
 		close(resultSet);
 		close(statement);
@@ -159,9 +159,9 @@ public final class DatabaseUtilities {
 	}
 
 	/**
-	 * This method closes the result set.
+	 * This method closes the category set.
 	 * 
-	 * @param resultSet the result set to close
+	 * @param resultSet the category set to close
 	 */
 	public static void close(final ResultSet resultSet) {
 		if (resultSet == null) {
@@ -170,7 +170,7 @@ public final class DatabaseUtilities {
 		try {
 			resultSet.close();
 		} catch (Exception e) {
-			LOGGER.error("Exception closing the result set : ", e);
+			LOGGER.error("Exception closing the category set : ", e);
 		}
 	}
 
@@ -268,7 +268,7 @@ public final class DatabaseUtilities {
 				LOGGER.warn(stringBuilder.toString());
 			}
 		} catch (SQLException e) {
-			LOGGER.error("Exception printing the result set : ", e);
+			LOGGER.error("Exception printing the category set : ", e);
 		} finally {
 			DatabaseUtilities.close(resultSet);
 		}

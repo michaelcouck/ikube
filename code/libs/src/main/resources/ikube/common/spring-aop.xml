@@ -55,11 +55,15 @@
 	<bean 
 		id="ikube.action.index.handler.strategy.IStrategyInterceptor" 
 		class="ikube.action.index.handler.strategy.StrategyInterceptor" />
+	
 	<!--
-		This interceptor will execute logic before and after processing the action. In the case of the delta indexing 
-		the preProcess will create an index of the resources in the index that will be used to ignore resources that have
-		not become outdated and to re-index resources that are out of date. 
+		This interceptor can be used to time certain methods(only public), that are suspected of 
+		either degenerating with time or that take a long time and should be monitored for environmental 
+		factors like network slow down etc. 
 	 -->
+	<bean
+		id="ikube.statistics.TimerInterceptor"
+		class="ikube.statistics.TimerInterceptor" />	 
 	 
 	<!-- The aop point cuts for the interceptors. -->
 	<aop:config proxy-target-class="true">
@@ -72,6 +76,9 @@
 		<aop:aspect ref="ikube.action.index.handler.strategy.IStrategyInterceptor">
 			<aop:around method="aroundProcess" pointcut="execution(* ikube.action.index.handler.*.*.handleResource*(..))"  />
 		</aop:aspect>
+		<!-- <aop:aspect ref="ikube.statistics.TimerInterceptor">
+			<aop:around method="aroundProcess" pointcut="execution(* ikube.action.index.handler.strategy.ClassificationStrategy.detectSentiment*(..))"  />
+		</aop:aspect> -->
 	</aop:config>
 	
 </beans>

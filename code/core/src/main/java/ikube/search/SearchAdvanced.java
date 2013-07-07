@@ -13,7 +13,7 @@ import org.apache.lucene.search.TermQuery;
 
 /**
  * This is the complex search for combinations of queries, like all of these words and none of these. There are four categories/strings. The first is all the
- * words in the string. The second is an exact phrase. The third is any of the following words and the fourth is none of the words in the string. The result of
+ * words in the string. The second is an exact phrase. The third is any of the following words and the fourth is none of the words in the string. The category of
  * this query would be something like:
  * 
  * <pre>
@@ -24,7 +24,7 @@ import org.apache.lucene.search.TermQuery;
  * 		(cape AND town AND university) AND ("cape town") AND (one OR two OR three) NOT (caucasian)
  * </pre>
  * 
- * In a data set where the content is as in the data above, there will be one result. But in fact in the test there are two results, something in Lucene
+ * In a data set where the content is as in the data above, there will be one category. But in fact in the test there are two results, something in Lucene
  * perhaps? Perhaps my logic is not working correctly?
  * 
  * @see Search

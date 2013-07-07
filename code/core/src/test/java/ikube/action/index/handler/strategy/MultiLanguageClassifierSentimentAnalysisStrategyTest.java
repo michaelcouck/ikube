@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+@Deprecated
 public class MultiLanguageClassifierSentimentAnalysisStrategyTest extends AbstractTest {
 
 	private MultiLanguageClassifierSentimentAnalysisStrategy sentimentAnalysisStrategy;
@@ -29,7 +30,7 @@ public class MultiLanguageClassifierSentimentAnalysisStrategyTest extends Abstra
 		Mockito.when(indexable.getContent()).thenReturn("What a lovely day");
 		Document document = new Document();
 		IndexManager.addStringField(IConstants.LANGUAGE, "en", document, Store.YES, Index.ANALYZED, TermVector.NO);
-		IndexManager.addStringField(IConstants.SENTIMENT, IConstants.SENTIMENT_CATEGORIES[0], document, Store.YES, Index.ANALYZED, TermVector.NO);
+		IndexManager.addStringField(IConstants.CLASSIFICATION, IConstants.CATEGORIES[0], document, Store.YES, Index.ANALYZED, TermVector.NO);
 		Object resource = new Object();
 		sentimentAnalysisStrategy.aroundProcess(indexContext, indexable, document, resource);
 	}

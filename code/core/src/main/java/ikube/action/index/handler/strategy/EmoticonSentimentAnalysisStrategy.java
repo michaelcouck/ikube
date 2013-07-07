@@ -52,7 +52,7 @@ public final class EmoticonSentimentAnalysisStrategy extends AStrategy {
 		// Remove duplicate or re-tweets?
 		// Remove the @username strings?
 		// Remove data with bi-polar sentiment, i.e. + and - emoticons
-		String sentiment = document.get(IConstants.SENTIMENT);
+		String sentiment = document.get(IConstants.CLASSIFICATION);
 		if (StringUtils.isEmpty(sentiment)) {
 			// We only add the sentiment if it is not filled in for this strategy
 			String content = indexable.getContent() != null ? indexable.getContent().toString() : resource != null ? resource.toString() : null;
@@ -70,17 +70,17 @@ public final class EmoticonSentimentAnalysisStrategy extends AStrategy {
 					}
 					if (emoticonHashesNeg.contains(hash)) {
 						neg = Boolean.TRUE;
-						// Replace emoticons with the equivalent words, either positive or negative? Must be in every language...
+						// Replace emoticons with the equivalent words, either positive or negative?
 					}
 				}
 				if (pos && neg) {
 					// Do nothing because there are positive and negative
 				} else if (pos) {
 					// Positive sentiment
-					IndexManager.addStringField(IConstants.SENTIMENT, IConstants.SENTIMENT_CATEGORIES[0], document, Store.YES, Index.ANALYZED, TermVector.NO);
+					IndexManager.addStringField(IConstants.CLASSIFICATION, IConstants.POSITIVE, document, Store.YES, Index.ANALYZED, TermVector.NO);
 				} else {
 					// Negative sentiment
-					IndexManager.addStringField(IConstants.SENTIMENT, IConstants.SENTIMENT_CATEGORIES[1], document, Store.YES, Index.ANALYZED, TermVector.NO);
+					IndexManager.addStringField(IConstants.CLASSIFICATION, IConstants.NEGATIVE, document, Store.YES, Index.ANALYZED, TermVector.NO);
 				}
 				if ((pos || neg) && (atomicInteger.getAndIncrement() % 1000 == 0)) {
 					// Found at least one emoticon!

@@ -227,7 +227,7 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
 		dataBase.persist(url);
 
 		List<Url> urls = dataBase.findCriteria(Url.class, new String[] { "hash" }, new Object[] { hash }, 0, 10);
-		assertEquals("There should be one url in the database, and one result based ont he hash : ", 1, urls.size());
+		assertEquals("There should be one url in the database, and one category based ont he hash : ", 1, urls.size());
 	}
 
 	@Test

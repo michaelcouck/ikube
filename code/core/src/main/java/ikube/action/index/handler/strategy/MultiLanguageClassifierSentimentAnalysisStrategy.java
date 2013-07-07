@@ -35,9 +35,10 @@ import com.aliasi.lm.NGramProcessLM;
  * @since 19.06.13
  * @version 01.00
  */
+@Deprecated
 public final class MultiLanguageClassifierSentimentAnalysisStrategy extends AStrategy {
-	@Value("${multi.language.ngram}")
 	
+	@Value("${multi.language.ngram}")
 	private int nGram = 8;
 	private AtomicInteger atomicInteger;
 	private Map<String, DynamicLMClassifier<NGramProcessLM>> languageClassifiers;
@@ -63,17 +64,17 @@ public final class MultiLanguageClassifierSentimentAnalysisStrategy extends AStr
 			if (language != null && content != null) {
 				// If this data is already classified by another strategy then train the language
 				// classifiers on the data. We can then also classify the data and correlate the results
-				String sentiment = document.get(IConstants.SENTIMENT);
+				String sentiment = document.get(IConstants.CLASSIFICATION);
 				String languageSentiment = detectSentiment(language, content);
 				if (StringUtils.isEmpty(sentiment)) {
 					// Not analyzed so add the sentiment that we get
-					IndexManager.addStringField(IConstants.SENTIMENT, languageSentiment, document, Store.YES, Index.ANALYZED, TermVector.NO);
+					IndexManager.addStringField(IConstants.CLASSIFICATION, languageSentiment, document, Store.YES, Index.ANALYZED, TermVector.NO);
 				} else {
 					// Retrain on the previous strategy sentiment
 					train(content, sentiment, language);
 					if (!sentiment.contains(languageSentiment)) {
 						// We don't change the original analysis do we?
-						IndexManager.addStringField(IConstants.SENTIMENT_CONFLICT, languageSentiment, document, Store.YES, Index.ANALYZED, TermVector.NO);
+						IndexManager.addStringField(IConstants.CLASSIFICATION_CONFLICT, languageSentiment, document, Store.YES, Index.ANALYZED, TermVector.NO);
 					}
 				}
 			}

@@ -76,7 +76,7 @@ public class GEOLocationTest {
 			}
 		}, "Spacial search : ", 100);
 
-		// find normal, gets unordered result
+		// find normal, gets unordered category
 		// final TopDocs hits = searcher.search(dq.getQuery(query), maxDocs);
 
 		for (int i = 0; i < maxDocs && i < hits.totalHits && i < hits.scoreDocs.length; i++) {

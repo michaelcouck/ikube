@@ -36,14 +36,14 @@ import org.junit.Test;
 public class GeocoderTest extends AbstractTest {
 
 	static ArrayList<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
-	// Add the target result
+	// Add the target category
 	static HashMap<String, String> result = new HashMap<String, String>();
 
 	static {
 		result.put(IConstants.LATITUDE, "-33.9693580");
 		result.put(IConstants.LONGITUDE, "18.4622110");
 		results.add(result);
-		// Add the statistics result
+		// Add the statistics category
 		result = new HashMap<String, String>();
 		results.add(result);
 	}

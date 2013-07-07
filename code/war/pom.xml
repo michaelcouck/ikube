@@ -67,11 +67,14 @@
 				<version>1.6</version>
 				<executions>
 					<execution>
-						<id>prepare-ikube-configuration-directory</id>
-						<phase>pre-integration-test</phase>
+						<id>copy-configuration</id>
+						<phase>test</phase>
 						<configuration>
 							<target>
 								<echo message="Base directory : ${basedir}, ">Base directory : ${basedir}</echo>
+								<copy todir="ikube" failonerror="true">
+									<fileset dir="../libs/src/main/resources/ikube" />
+								</copy>
 							</target>
 						</configuration>
 						<goals>
@@ -106,7 +109,7 @@
 					</connectors>
 				</configuration>
 				<executions>
-					<execution>
+					<!-- <execution>
 						<id>start-jetty</id>
 						<phase>pre-integration-test</phase>
 						<goals>
@@ -122,7 +125,7 @@
 						<goals>
 							<goal>stop</goal>
 						</goals>
-					</execution>
+					</execution> -->
 				</executions>
 				<dependencies>
 					<dependency>

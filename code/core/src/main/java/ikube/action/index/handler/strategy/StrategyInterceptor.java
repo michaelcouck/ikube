@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @see IStrategyInterceptor
+ * @see ITimerInterceptor
  * @author Michael Couck
  * @since 27.12.12
  * @version 01.00
@@ -26,7 +26,7 @@ public class StrategyInterceptor implements IStrategyInterceptor {
 	 */
 	public Object aroundProcess(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 		// This method intercepts the handle... methods in the handlers. Each indexable will then define
-		// strategies. These strategies will be executed and the accumulated result will be used to verify if the
+		// strategies. These strategies will be executed and the accumulated category will be used to verify if the
 		// method is to be executed or not
 		boolean mustProcess = Boolean.TRUE;
 		Object[] args = proceedingJoinPoint.getArgs();
@@ -40,6 +40,9 @@ public class StrategyInterceptor implements IStrategyInterceptor {
 		if (strategies != null && !strategies.isEmpty()) {
 			for (final IStrategy strategy : strategies) {
 				mustProcess &= strategy.aroundProcess(indexContext, indexable, document, resource);
+				if (!mustProcess) {
+					LOGGER.info("Not proceeding : " + mustProcess + ", " + strategy + ", " + proceedingJoinPoint.getTarget());
+				}
 			}
 		}
 

@@ -1,7 +1,11 @@
 package ikube.action.index.handler.strategy;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 import ikube.AbstractTest;
+import ikube.IConstants;
 import ikube.model.Indexable;
+import ikube.toolkit.PerformanceTester;
 
 import org.apache.lucene.document.Document;
 import org.junit.Before;
@@ -20,17 +24,25 @@ public class EmoticonSentimentAnalysisStrategyTest extends AbstractTest {
 
 	@Test
 	public void aroundProcess() throws Exception {
-		Indexable<?> indexable = Mockito.mock(Indexable.class);
-		Document document = new Document();
-		Object resource = new Object();
+		final Indexable<?> indexable = Mockito.mock(Indexable.class);
+		final Object resource = new Object();
 
+		Document document = new Document();
 		Mockito.when(indexable.getContent()).thenReturn("What a lovely day :) giggle");
 		emoticonSentimentAnalysisStrategy.aroundProcess(indexContext, indexable, document, resource);
-		logger.info("Document : " + document);
+		assertEquals(IConstants.POSITIVE, document.get(IConstants.CLASSIFICATION));
 
+		document = new Document();
 		Mockito.when(indexable.getContent()).thenReturn("I am having a terrible time :( cry");
 		emoticonSentimentAnalysisStrategy.aroundProcess(indexContext, indexable, document, resource);
-		logger.info("Document : " + document);
+		assertEquals(IConstants.NEGATIVE, document.get(IConstants.CLASSIFICATION));
+
+		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+			public void execute() throws Throwable {
+				emoticonSentimentAnalysisStrategy.aroundProcess(indexContext, indexable, new Document(), resource);
+			}
+		}, "Emoticon strategy : ", 1000, Boolean.TRUE);
+		assertTrue(executionsPerSecond > 1000);
 	}
 
 }

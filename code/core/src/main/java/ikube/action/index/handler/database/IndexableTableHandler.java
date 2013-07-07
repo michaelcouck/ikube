@@ -43,7 +43,7 @@ import org.apache.lucene.document.Field.TermVector;
  * 1) Sql will be generated to select the top level table and sub tables with an inner join(to be changed to left outer perhaps)<br>
  * 2) Move to the first row<br>
  * 3) Set all the data from the sql query in the columns in the table objects<br>
- * 4) Add all the column data to the Lucene document for the current row in the result set<br>
+ * 4) Add all the column data to the Lucene document for the current row in the category set<br>
  * 5) Repeat until all records are exhausted<br>
  * 
  * This allows arbitrarily complex data structures in databases to be indexed.
@@ -73,7 +73,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		try {
 			do {
 				Document document = new Document();
-				// The result set is already moved to the first row, i.e. next()
+				// The category set is already moved to the first row, i.e. next()
 				try {
 					handleRow(indexContext, indexableTable, resultSet, document, contentProvider);
 					// Add the document to the index
@@ -93,7 +93,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	@SuppressWarnings("rawtypes")
 	protected void handleRow(final IndexContext indexContext, final IndexableTable indexableTable, final ResultSet resultSet, final Document currentDocument,
 			final IContentProvider<IndexableColumn> contentProvider) throws Exception {
-		// We have results from the table and we are already on the first result
+		// We have results from the table and we are already on the first category
 		List<Indexable<?>> children = indexableTable.getChildren();
 		// Set the column types and the data from the table in the column objects
 		setColumnTypesAndData(children, resultSet);
@@ -196,10 +196,10 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 	}
 
 	/**
-	 * This method sets the data from the table columns in the column objects as well as the type which is gotten from the result set emta data.
+	 * This method sets the data from the table columns in the column objects as well as the type which is gotten from the category set emta data.
 	 * 
 	 * @param children the children indexables of the table object
-	 * @param resultSet the result set for the table
+	 * @param resultSet the category set for the table
 	 * @throws Exception
 	 */
 	protected void setColumnTypesAndData(final List<Indexable<?>> children, final ResultSet resultSet) {

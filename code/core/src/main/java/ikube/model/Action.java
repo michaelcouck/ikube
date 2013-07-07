@@ -41,7 +41,7 @@ public class Action extends Persistable {
 	/** The time it took for this action to finish. */
 	@Column
 	private long duration;
-	/** The result from the rules and the predicate. */
+	/** The category from the rules and the predicate. */
 	@Column
 	private boolean result;
 	/** The latest snapshot for the index context. */

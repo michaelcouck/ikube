@@ -99,7 +99,6 @@
 			</util:list>
 		</property>
 	</bean>
-	<!-- (IsIndexDelta &#38;&#38; IsThisIndexCreated &#38;&#38; !AreSearchablesInitialised) || -->
 	<bean 
 		id="ikube.action.Open" 
 		class="ikube.action.Open" 
@@ -117,8 +116,6 @@
 				<ref local="ikube.action.rule.IsMultiSearcherInitialised" />
 				<ref local="ikube.action.rule.AreSearchablesInitialised" />
 				<ref local="ikube.action.rule.AnyServersWorkingThisIndex" />
-				<!-- <ref local="ikube.action.rule.IsIndexDelta" /> -->
-				<!-- <ref local="ikube.action.rule.IsThisIndexCreated" /> -->
 			</util:list>
 		</property>
 	</bean>
@@ -139,16 +136,16 @@
 		id="ikube.action.Index" 
 		class="ikube.action.Index" 
 		property:ruleExpression="
-			!IsIndexCurrent &#38;&#38; !AnyServersWorkingThisIndex &#38;&#38; !TooManyActionsRule &#38;&#38; 
+			!IsIndexCurrent &#38;&#38; 
+			!AnyServersWorkingThisIndex &#38;&#38; 
+			!TooManyActionsRule &#38;&#38; 
 			!(IsThisServerWorking &#38;&#38; AreOtherServers &#38;&#38; AnyServersIdle)"
 		property:requiresClusterLock="true">
 		<property name="rules">
 			<util:list>
+				<ref local="ikube.action.rule.IsIndexCurrent" />
 				<ref local="ikube.action.rule.IsThisServerWorking" />
 				<ref local="ikube.action.rule.AnyServersWorkingThisIndex" />
-				<ref local="ikube.action.rule.IsIndexCurrent" />
-				<ref local="ikube.action.rule.IsIndexCorrupt" />
-				<ref local="ikube.action.rule.AnyServersWorking" />
 				<ref local="ikube.action.rule.AreOtherServers" />
 				<ref local="ikube.action.rule.TooManyActionsRule" />
 				<ref local="ikube.action.rule.AnyServersIdle" />

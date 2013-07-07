@@ -229,7 +229,7 @@ public final class ThreadUtilities {
 	public static final ForkJoinPool executeForkJoinTasks(final String name, final int threads, final ForkJoinTask<?>... forkJoinTasks) {
 		ForkJoinPool forkJoinPool = ThreadUtilities.getForkJoinPool(name, threads);
 		for (final ForkJoinTask<?> forkJoinTask : forkJoinTasks) {
-			forkJoinPool.execute(forkJoinTask);
+			forkJoinPool.invoke(forkJoinTask);
 		}
 		return forkJoinPool;
 	}

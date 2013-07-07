@@ -96,7 +96,7 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	@Column
 	@Min(value = 1)
 	@Max(value = 1000000)
-	@Attribute(field = false, description = "The batch size of the result set for database indexing")
+	@Attribute(field = false, description = "The batch size of the category set for database indexing")
 	private int batchSize;
 	/** Internet properties. */
 	@Column

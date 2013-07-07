@@ -11,17 +11,20 @@ import ikube.toolkit.ThreadUtilities;
 
 import java.util.List;
 
+import org.apache.commons.jexl2.Expression;
+import org.apache.commons.jexl2.JexlContext;
+import org.apache.commons.jexl2.JexlEngine;
+import org.apache.commons.jexl2.MapContext;
 import org.apache.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.nfunk.jep.JEP;
-import org.nfunk.jep.SymbolTable;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This class is implemented as an intercepter, and typically configured in Spring. The intercepter will intercept the execution of the actions, like
  * {@link Index} and {@link Open}. Each action has associated with it rules, like whether any other servers are currently working on this index or if the index
- * is current and already open. The rules for the action will then be executed, and based on the result of the boolean predicate parameterized with the results
- * of each rule, the action will either be executed or not. {@link JEP} is the expression parser for the rules.
+ * is current and already open. The rules for the action will then be executed, and based on the category of the boolean predicate parameterized with the
+ * results of each rule, the action will either be executed or not. {@link JEP} is the expression parser for the rules.
  * 
  * @see IRuleInterceptor
  * @author Michael Couck
@@ -114,11 +117,11 @@ public class RuleInterceptor implements IRuleInterceptor {
 	}
 
 	/**
-	 * This method will take the rules for the action and execute them, returning the result from the boolean rule predicate.
+	 * This method will take the rules for the action and execute them, returning the category from the boolean rule predicate.
 	 * 
 	 * @param indexContext the index context for the index
 	 * @param action the action who's rules are to be executed
-	 * @return the result from the execution of the rules for the action
+	 * @return the category from the execution of the rules for the action
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected boolean evaluateRules(final IndexContext<?> indexContext, final IAction action) {
@@ -128,26 +131,18 @@ public class RuleInterceptor implements IRuleInterceptor {
 		if (rules == null || rules.size() == 0) {
 			LOGGER.info("No rules defined, proceeding : " + action);
 		} else {
-			JEP jep = new JEP();
+			JexlEngine jexlEngine = new JexlEngine();
+			JexlContext jexlContext = new MapContext();
 			Object result = null;
 			for (IRule<IndexContext<?>> rule : rules) {
 				boolean evaluation = rule.evaluate(indexContext);
 				String ruleName = rule.getClass().getSimpleName();
-				jep.addVariable(ruleName, evaluation);
+				jexlContext.set(ruleName, evaluation);
 			}
 			String predicate = action.getRuleExpression();
-			jep.parseExpression(predicate);
-			if (jep.hasError()) {
-				LOGGER.warn("Exception in Jep expression : " + jep.getErrorInfo());
-				LOGGER.warn("Symbol table : " + jep.getSymbolTable());
-				printSymbolTable(jep, finalResult, indexContext.getName(), action.getClass().getSimpleName());
-			}
-			result = jep.getValueAsObject();
-			if (result == null) {
-				result = jep.getValue();
-			}
+			Expression expression = jexlEngine.createExpression(predicate);
+			result = expression.evaluate(jexlContext);
 			finalResult = result != null && (result.equals(1.0d) || result.equals(Boolean.TRUE));
-			// printSymbolTable(jep, finalResult, indexContext.getName(), action.getClass().getSimpleName());
 		}
 		return finalResult;
 	}
@@ -168,16 +163,6 @@ public class RuleInterceptor implements IRuleInterceptor {
 			}
 		}
 		return null;
-	}
-
-	protected void printSymbolTable(final JEP jep, final boolean finalResult, final String indexName, final String target) {
-		try {
-			SymbolTable symbolTable = jep.getSymbolTable();
-			LOGGER.info("Symbol table : " + indexName + ", " + target);
-			LOGGER.info(symbolTable);
-		} catch (Exception e) {
-			LOGGER.error("Exception printing the nodes : ", e);
-		}
 	}
 
 }

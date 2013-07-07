@@ -107,7 +107,7 @@ public class SearchSpatial extends SearchMulti {
 			results = new ArrayList<HashMap<String, String>>();
 		}
 		long duration = System.currentTimeMillis() - start;
-		// Add the search results size as a last result
+		// Add the search results size as a last category
 		addStatistics(results, totalHits, highScore, duration, exception);
 		return results;
 	}

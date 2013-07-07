@@ -99,9 +99,9 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
 	}
 
 	/**
-	 * This method gets the result set. There are two cases:
+	 * This method gets the category set. There are two cases:
 	 * 
-	 * 1) When the indexable is a top level table the result set is based on the predicate that is defined for the table and the next row in the batch. We use
+	 * 1) When the indexable is a top level table the category set is based on the predicate that is defined for the table and the next row in the batch. We use
 	 * the column indexables defined in the configuration to build the sql to access the table.<br>
 	 * 2) When the indexable is not a top level table then we use the id of the parent table in the sql generation.<br>
 	 * 
@@ -110,7 +110,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
 	 * @param indexContext the index context for this index
 	 * @param indexableTable the table indexable that is being indexed
 	 * @param connection the connection to the database
-	 * @return the result set for the table
+	 * @return the category set for the table
 	 * @throws SQLException
 	 */
 	private synchronized ResultSet getResultSet(final IndexContext<?> indexContext, final IndexableTable indexableTable, final AtomicLong currentId)
@@ -216,7 +216,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
 			if (resultSet.next()) {
 				Object object = resultSet.getObject(1);
 				if (object == null) {
-					logger.warn("No result from min or max from table : " + indexableTable.getName());
+					logger.warn("No category from min or max from table : " + indexableTable.getName());
 				} else {
 					result = Long.class.isAssignableFrom(object.getClass()) ? (Long) object : Long.parseLong(object.toString().trim());
 				}

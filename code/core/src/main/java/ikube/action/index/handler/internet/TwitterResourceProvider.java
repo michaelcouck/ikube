@@ -8,7 +8,10 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
+import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.social.twitter.api.StreamDeleteEvent;
@@ -22,19 +25,26 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 
 	private class TwitterStreamListener implements StreamListener {
 
+		private AtomicLong atomicLong = new AtomicLong(0);
+
 		/**
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void onTweet(Tweet tweet) {
-			tweets.push(tweet);
+		public void onTweet(final Tweet tweet) {
+			if (atomicLong.getAndIncrement() % 10000 == 0) {
+				logger.info("Tweet : " + atomicLong.get() + ", " + ToStringBuilder.reflectionToString(tweet, ToStringStyle.SHORT_PREFIX_STYLE));
+			}
+			if (tweets.size() < 1000) {
+				tweets.push(tweet);
+			}
 		}
 
 		/**
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void onLimit(int numberOfLimitedTweets) {
+		public void onLimit(final int numberOfLimitedTweets) {
 			logger.info("Tweets limited : " + numberOfLimitedTweets);
 		}
 
@@ -42,14 +52,14 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void onDelete(StreamDeleteEvent deleteEvent) {
+		public void onDelete(final StreamDeleteEvent deleteEvent) {
 		}
 
 		/**
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void onWarning(StreamWarningEvent warnEvent) {
+		public void onWarning(final StreamWarningEvent warnEvent) {
 			logger.info("Tweet warning : " + warnEvent.getCode());
 		}
 	}
@@ -73,16 +83,12 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized Tweet getResource() {
-		try {
-			if (tweets.isEmpty()) {
-				ThreadUtilities.sleep(10000);
-				return getResource();
-			}
-			return tweets.pop();
-		} finally {
-			notifyAll();
+	public Tweet getResource() {
+		if (tweets.isEmpty()) {
+			ThreadUtilities.sleep(1000);
+			return getResource();
 		}
+		return tweets.pop();
 	}
 
 	/**

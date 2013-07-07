@@ -63,11 +63,14 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 			indexableName = indexable.getName();
 			action.setIndexableName(indexableName);
 			dataBase.merge(action);
+			clusterManager.put(server.getAddress(), server);
 			// Get the right handler for this indexable
 			IIndexableHandler<Indexable<?>> handler = getHandler(indexable);
 			// Execute the handler and wait for the threads to finish
+			logger.info("Indexable : " + indexable.getName());
 			ForkJoinTask<?> forkJoinTask = handler.handleIndexableForked(indexContext, indexable);
 			ThreadUtilities.executeForkJoinTasks(indexContext.getName(), indexable.getThreads(), forkJoinTask);
+			logger.info("Continuing : " + forkJoinTask);
 		}
 		return Boolean.TRUE;
 	}

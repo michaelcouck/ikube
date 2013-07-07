@@ -57,7 +57,7 @@ public abstract class Resource {
 	 * This method will create the response builder, then convert the results to Json and add them the the response payload, then build the
 	 * response object from the builder.
 	 * 
-	 * @param result the result to convert to the Json response
+	 * @param category the category to convert to the Json response
 	 * @return the Json response object to send to the caller/client
 	 */
 	protected Response buildResponse(final Object result) {
@@ -68,7 +68,7 @@ public abstract class Resource {
 	/**
 	 * This method will just create the response builder and add some headers for cross site scripting.
 	 * 
-	 * @return the response builder for the result
+	 * @return the response builder for the category
 	 */
 	protected ResponseBuilder buildResponse() {
 		return Response.status(200).header("Access-Control-Allow-Origin", "*")

@@ -1,9 +1,13 @@
 package ikube.action.index.handler.internet;
 
+import static junit.framework.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.model.IndexableTweets;
+import ikube.toolkit.ObjectToolkit;
+import ikube.toolkit.PerformanceTester;
 import ikube.toolkit.ThreadUtilities;
 
+import java.util.Date;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ForkJoinTask;
 
@@ -14,6 +18,9 @@ import mockit.Mockit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.springframework.social.twitter.api.Tweet;
+import org.springframework.social.twitter.api.TwitterProfile;
 
 /**
  * @author Michael Couck
@@ -61,6 +68,25 @@ public class TwitterHandlerTest extends AbstractTest {
 
 		ThreadUtilities.sleep(5000);
 		ThreadUtilities.cancellForkJoinPool(indexContext.getName());
+	}
+
+	@Test
+	public void handleResource() {
+		TwitterResourceHandler twitterResourceHandler = Mockito.mock(TwitterResourceHandler.class);
+		Deencapsulation.setField(twitterHandler, "twitterResourceHandler", twitterResourceHandler);
+
+		final Tweet tweet = ObjectToolkit.populateFields(new Tweet(0, "The tweet text", new Date(), "michael.couck", "", Long.valueOf(1), Long.valueOf(1),
+				"en", "Twitter"), Boolean.TRUE, 10);
+		TwitterProfile twitterProfile = ObjectToolkit.populateFields(new TwitterProfile(1, "michael.couck", "Michael", "ikube.be", "michael.couck", "The dude",
+				"Gent", new Date()), Boolean.TRUE, 10);
+		tweet.setUser(twitterProfile);
+
+		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+			public void execute() throws Throwable {
+				twitterHandler.handleResource(indexContext, indexableTweets, tweet);
+			}
+		}, "Emoticon strategy : ", 1000, Boolean.TRUE);
+		assertTrue(executionsPerSecond > 1000);
 	}
 
 }

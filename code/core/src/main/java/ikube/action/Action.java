@@ -59,7 +59,7 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 
 	/**
 	 * These are the rules defined for this action. They will be evaluated collectively by the {@link RuleInterceptor} and the action will be executed depending
-	 * on the result of the rules.
+	 * on the category of the rules.
 	 */
 	private List<IRule<IndexContext<?>>> rules;
 

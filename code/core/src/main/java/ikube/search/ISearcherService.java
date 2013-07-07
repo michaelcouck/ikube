@@ -71,7 +71,7 @@ public interface ISearcherService {
 	 * @param indexName the name of the index to search
 	 * @param searchStrings the search strings to search for
 	 * @param fragment whether to generate a fragment from the stored data for the matches
-	 * @param firstResult the first result for paging
+	 * @param firstResult the first category for paging
 	 * @param maxResults the maximum results for paging
 	 * @return the results from the search, an {@link ArrayList} of {@link HashMap}s, that have the id, score, fragment (optional), all the fields and their
 	 *         contents if they were stored in the index, and finally the statistics map, which contains the corrected search strings, the duration of the
@@ -88,7 +88,7 @@ public interface ISearcherService {
 	 * @param searchStrings the search strings to search for
 	 * @param searchFields the fields to search through
 	 * @param fragment whether to generate a fragment from the stored data for the matches
-	 * @param firstResult the first result for paging
+	 * @param firstResult the first category for paging
 	 * @param maxResults the maximum results for paging
 	 * @param distance the maximum distance that should be allowed for the results
 	 * @param latitude the longitude of the co-ordinate to sort on
@@ -101,13 +101,13 @@ public interface ISearcherService {
 			final boolean fragment, final int firstResult, final int maxResults, final int distance, final double latitude, final double longitude);
 
 	/**
-	 * This method will search the 'spatial' index and return a result set that is sorted by distance from the co-ordinate that was specified in the parameter
+	 * This method will search the 'spatial' index and return a category set that is sorted by distance from the co-ordinate that was specified in the parameter
 	 * list. Note that all the fields will be searched.
 	 * 
 	 * @param indexName the name of the index to search, must be a geo-spatial index
 	 * @param searchStrings the search strings to use to search the fields
 	 * @param fragment whether to produce a fragment of highlights from the content
-	 * @param firstResult the first result in the top results, for paging
+	 * @param firstResult the first category in the top results, for paging
 	 * @param maxResults the maximum results to return
 	 * @param distance the maximum distance to search through the results
 	 * @param latitude the latitude of the co-ordinate to use as the point of origin. This is the point that the results will be sorted from
@@ -120,7 +120,7 @@ public interface ISearcherService {
 			final int firstResult, final int maxResults, final int distance, final double latitude, final double longitude);
 
 	/**
-	 * This method will do an advanced search, refining the results with a predicate like Lucene expression. The result of this is something like:
+	 * This method will do an advanced search, refining the results with a predicate like Lucene expression. The category of this is something like:
 	 * 
 	 * <pre>
 	 * 		[any of these words] AND [this exact expression] AND [one or more of these] NOT [none of these]
@@ -132,7 +132,7 @@ public interface ISearcherService {
 	 * @param searchStrings the strings that are used to generate the Lucene query
 	 * @param searchFields the fields in the index to search
 	 * @param fragment whether to generate a fragment of highlight in the results
-	 * @param firstResult the first result in the set, used for paging the results
+	 * @param firstResult the first category in the set, used for paging the results
 	 * @param maxResults the maximum number of results to return
 	 * @return the results from the search, an {@link ArrayList} of {@link HashMap}s, that have the id, score, fragment (optional), all the fields and their
 	 *         contents if they were stored in the index, and finally the statistics map, which contains the corrected search strings, the duration of the
