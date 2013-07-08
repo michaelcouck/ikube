@@ -12,6 +12,7 @@ import static ikube.toolkit.FileUtilities.getOrCreateDirectory;
 import ikube.action.index.handler.IStrategy;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
+import ikube.toolkit.Timer;
 
 import java.io.File;
 
@@ -139,7 +140,7 @@ public class ClassificationStrategy extends AStrategy {
 		Classification classification = new Classification(sentiment);
 		Classified<CharSequence> classified = new Classified<CharSequence>(content, classification);
 		xValidatingObjectCorpus.handle(classified);
-		if (trained % 10 == 0) {
+		if (trained % 1000 == 0) {
 			openClassifierOnCorpus();
 		}
 	}
@@ -164,25 +165,31 @@ public class ClassificationStrategy extends AStrategy {
 	}
 
 	private void openClassifierOnCorpus() {
-		try {
-			classifier = LogisticRegressionClassifier.<CharSequence> train(//
-					xValidatingObjectCorpus, //
-					featureExtractor, //
-					minFeatureCount, //
-					addInterceptFeature, //
-					regressionPrior, //
-					blockSize, //
-					classifier, //
-					annealingSchedule, //
-					minImprovement, //
-					rollingAvgSize, //
-					minEpochs, //
-					maxEpochs, //
-					classifierHandler, //
-					Reporters.stdOut());
-		} catch (Exception e) {
-			logger.error("Exception initializing the classifier", e);
-		}
+		long duration = Timer.execute(new Timer.Timed() {
+			@Override
+			public void execute() {
+				try {
+					classifier = LogisticRegressionClassifier.<CharSequence> train(//
+							xValidatingObjectCorpus, //
+							featureExtractor, //
+							minFeatureCount, //
+							addInterceptFeature, //
+							regressionPrior, //
+							blockSize, //
+							classifier, //
+							annealingSchedule, //
+							minImprovement, //
+							rollingAvgSize, //
+							minEpochs, //
+							maxEpochs, //
+							classifierHandler, //
+							Reporters.stdOut());
+				} catch (Exception e) {
+					logger.error("Exception initializing the classifier", e);
+				}
+			}
+		});
+		logger.info("Open duration : " + duration);
 	}
 
 	private void initializeCorpusWithCategories(final XValidatingObjectCorpus<Classified<CharSequence>> corpus) {

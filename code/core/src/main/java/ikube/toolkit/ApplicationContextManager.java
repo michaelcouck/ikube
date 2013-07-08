@@ -232,7 +232,8 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 		g.setFont(new Font("Dialog", Font.PLAIN, 16));
 		Graphics2D graphics = (Graphics2D) g;
 		graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-		graphics.drawString("ikube", 10, 10);
+		String version = VersionUtilities.version();
+		graphics.drawString("ikube - " + version, 10, 10);
 		for (int y = 0; y < 32; y++) {
 			StringBuilder sb = new StringBuilder();
 			for (int x = 0; x < 144; x++) {

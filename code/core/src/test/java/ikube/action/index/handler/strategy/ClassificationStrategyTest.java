@@ -47,7 +47,7 @@ public class ClassificationStrategyTest extends AbstractTest {
 		assertEquals(IConstants.NEUTRAL, document.get(IConstants.CLASSIFICATION_CONFLICT));
 
 		// Now we train the classifier and re-test the category
-		for (int i = 0; i < 15; i++) {
+		for (int i = 0; i < 150; i++) {
 			for (final String category : IConstants.CATEGORIES) {
 				for (final String content : inputs.get(category)) {
 					classificationStrategy.train(category, content);
@@ -60,7 +60,7 @@ public class ClassificationStrategyTest extends AbstractTest {
 		logger.info("Document : " + document);
 		assertEquals(IConstants.POSITIVE, document.get(IConstants.CLASSIFICATION));
 		assertNull(document.get(IConstants.CLASSIFICATION_CONFLICT));
-		
+
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			public void execute() throws Throwable {
 				classificationStrategy.aroundProcess(indexContext, indexableColumn, new Document(), null);

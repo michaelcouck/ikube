@@ -1,24 +1,20 @@
 package ikube.web.tag;
 
 import ikube.toolkit.DatabaseUtilities;
+import ikube.toolkit.VersionUtilities;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.StringTokenizer;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -128,14 +124,13 @@ public class Toolkit {
 	}
 
 	/**
-	 * This method will build a query string using the parameters in the map in the signature. This avoids scripting in the Jsp or very long
-	 * urls built parameter by parameter.
+	 * This method will build a query string using the parameters in the map in the signature. This avoids scripting in the Jsp or very long urls built
+	 * parameter by parameter.
 	 * 
 	 * @param parameterMap the map of parameters to use in the query string
 	 * @param parameterNamesReplacements the names of the parameters to be replaced in the original map
 	 * @param parameterValuesReplacements the values of the parameters to be replaced in the original map
-	 * @return the string query for he parameters and replacements, would be something like
-	 *         '?paramOne=paramValueOne&paramTwo=paramValueTwo&...'
+	 * @return the string query for he parameters and replacements, would be something like '?paramOne=paramValueOne&paramTwo=paramValueTwo&...'
 	 */
 	public static String queryString(final Map<Object, Object> parameterMap, final List<Object> parameterNamesReplacements,
 			final List<Object> parameterValuesReplacements) {
@@ -192,43 +187,18 @@ public class Toolkit {
 
 	public static String version() {
 		if (VERSION == null) {
-			readPomProperties();
+			VersionUtilities.readPomProperties();
+			VERSION = VersionUtilities.version();
 		}
 		return VERSION;
 	}
 
 	public static String timestamp() {
 		if (TIMESTAMP == null) {
-			readPomProperties();
+			VersionUtilities.readPomProperties();
+			TIMESTAMP = VersionUtilities.timestamp();
 		}
 		return TIMESTAMP;
-	}
-
-	/**
-	 * This method will read the pom properties file where the version and the build timestamp are and make them available to the web pages
-	 * via the static class properties of the same name.
-	 */
-	private static void readPomProperties() {
-		InputStream inputStream = null;
-		String pomPropertiesFile = "META-INF/maven/ikube/ikube-core/pom.properties";
-		try {
-			ClassPathResource classPathResource = new ClassPathResource(pomPropertiesFile, Toolkit.class.getClassLoader());
-			inputStream = classPathResource.getInputStream();
-
-			Properties properties = new Properties();
-			properties.load(inputStream);
-			VERSION = properties.getProperty("version");
-			IOUtils.closeQuietly(inputStream);
-
-			classPathResource = new ClassPathResource(pomPropertiesFile, Toolkit.class.getClassLoader());
-			inputStream = classPathResource.getInputStream();
-			List<String> lines = IOUtils.readLines(inputStream);
-			TIMESTAMP = lines.get(1).replaceAll("#", "");
-		} catch (IOException e) {
-			LOGGER.error("Exception reading the Maven properties for the build : " + pomPropertiesFile, e);
-		} finally {
-			IOUtils.closeQuietly(inputStream);
-		}
 	}
 
 }

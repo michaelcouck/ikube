@@ -66,7 +66,7 @@ public class PerformanceTester {
 		double duration = (end - start) / 1000d;
 		double executionsPerSecond = (iterations / duration);
 		if (perform.log()) {
-			LOGGER.info("Duration : " + duration + type + " per second : " + executionsPerSecond);
+			LOGGER.info("Duration : " + duration + ", " + type + " per second : " + executionsPerSecond);
 			if (memory != null && memory.length > 0 && memory[0]) {
 				long meg = 1000000;
 				long after = Runtime.getRuntime().totalMemory();
