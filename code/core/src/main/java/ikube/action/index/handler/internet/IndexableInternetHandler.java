@@ -40,6 +40,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.lucene.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.util.UriUtils;
 
 public class IndexableInternetHandler extends IndexableHandler<IndexableInternet> {
 
@@ -115,7 +116,13 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		GetMethod get = null;
 		ByteOutputStream byteOutputStream = null;
 		try {
-			get = new GetMethod(url.getUrl());
+			// List<NameValuePair> parameters = URLEncodedUtils.parse(new URL(url.getUrl()).toURI(), IConstants.ENCODING);
+			// String query = URLEncodedUtils.format(parameters, IConstants.ENCODING);
+			// URL realUrl = new URL(protocol, host, port, file);
+			// String encodedUrl = URIUtil.encodeWithinQuery(url.getUrl(), IConstants.ENCODING);
+			
+			String encodedUrl = UriUtils.encodeUri(url.getUrl(), IConstants.ENCODING);
+			get = new GetMethod(encodedUrl);
 			httpClient.executeMethod(get);
 			InputStream responseInputStream = get.getResponseBodyAsStream();
 			indexable.setCurrentInputStream(responseInputStream);
