@@ -39,7 +39,7 @@ class InternetResourceProvider implements IResourceProvider<Url> {
 		try {
 			if (urls.isEmpty()) {
 				// We'll wait a few seconds to see if any other thread will add some urls to the stack
-				ThreadUtilities.sleep(15000);
+				ThreadUtilities.sleep(600000);
 				if (urls.isEmpty()) {
 					return null;
 				} else {

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.IConstants;
+import ikube.action.index.content.IContentProvider;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
@@ -15,9 +16,11 @@ import java.util.concurrent.ForkJoinTask;
 
 import mockit.Deencapsulation;
 
+import org.apache.commons.httpclient.HttpClient;
 import org.apache.lucene.document.Document;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
  * @author Michael Couck
@@ -82,6 +85,16 @@ public class IndexableInternetHandlerTest extends AbstractTest {
 
 		assertNotNull(urls);
 		assertTrue(urls.size() > 0);
+	}
+	
+	@Test
+	@SuppressWarnings("unchecked")
+	public void getContentFromUrl() {
+		IContentProvider<IndexableInternet> contentProvider = Mockito.mock(IContentProvider.class);
+		HttpClient httpClient = new HttpClient();
+		Url url = new Url();
+		url.setUrl("http://www.vlaamsparlement.be/Proteus5/resultaat.action?pContext=RESUME_BIOLEX&pIdPrs=2785&selectId=27&groupingIds=16|17&groupValues=2009-2014|239");
+		indexableInternetHandler.getContentFromUrl(contentProvider, httpClient, indexableInternet, url);
 	}
 
 }

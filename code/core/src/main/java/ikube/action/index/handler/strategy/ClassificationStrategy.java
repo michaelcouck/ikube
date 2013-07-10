@@ -12,6 +12,7 @@ import static ikube.toolkit.FileUtilities.getOrCreateDirectory;
 import ikube.action.index.handler.IStrategy;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
+import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.Timer;
 
 import java.io.File;
@@ -165,31 +166,42 @@ public class ClassificationStrategy extends AStrategy {
 	}
 
 	private void openClassifierOnCorpus() {
-		long duration = Timer.execute(new Timer.Timed() {
-			@Override
-			public void execute() {
+		final String name = ClassificationStrategy.class.getSimpleName();
+		ThreadUtilities.submit(name, new Runnable() {
+			public void run() {
 				try {
-					classifier = LogisticRegressionClassifier.<CharSequence> train(//
-							xValidatingObjectCorpus, //
-							featureExtractor, //
-							minFeatureCount, //
-							addInterceptFeature, //
-							regressionPrior, //
-							blockSize, //
-							classifier, //
-							annealingSchedule, //
-							minImprovement, //
-							rollingAvgSize, //
-							minEpochs, //
-							maxEpochs, //
-							classifierHandler, //
-							Reporters.stdOut());
-				} catch (Exception e) {
-					logger.error("Exception initializing the classifier", e);
+					long duration = Timer.execute(new Timer.Timed() {
+						@Override
+						public void execute() {
+							logger.info("Opening on corpus : ");
+							try {
+								LogisticRegressionClassifier<CharSequence> classifier = LogisticRegressionClassifier.<CharSequence> train(//
+										xValidatingObjectCorpus, //
+										featureExtractor, //
+										minFeatureCount, //
+										addInterceptFeature, //
+										regressionPrior, //
+										blockSize, //
+										ClassificationStrategy.this.classifier, //
+										annealingSchedule, //
+										minImprovement, //
+										rollingAvgSize, //
+										minEpochs, //
+										maxEpochs, //
+										classifierHandler, //
+										Reporters.stdOut());
+								ClassificationStrategy.this.classifier = classifier;
+							} catch (Exception e) {
+								logger.error("Exception initializing the classifier", e);
+							}
+						}
+					});
+					logger.info("Open duration : " + duration);
+				} finally {
+					ThreadUtilities.destroy(name);
 				}
 			}
 		});
-		logger.info("Open duration : " + duration);
 	}
 
 	private void initializeCorpusWithCategories(final XValidatingObjectCorpus<Classified<CharSequence>> corpus) {

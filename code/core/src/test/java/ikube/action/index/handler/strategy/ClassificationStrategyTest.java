@@ -9,6 +9,7 @@ import ikube.IConstants;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.toolkit.PerformanceTester;
+import ikube.toolkit.ThreadUtilities;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +39,7 @@ public class ClassificationStrategyTest extends AbstractTest {
 
 	@Test
 	public void aroundProcess() throws Exception {
+		ThreadUtilities.sleep(3000);
 		final Indexable<?> indexableColumn = new IndexableColumn();
 		indexableColumn.setContent("Perfect day");
 		Document document = addStringField(IConstants.CLASSIFICATION, IConstants.CATEGORIES[0], new Document(), Store.YES, Index.ANALYZED, TermVector.YES);
@@ -54,6 +56,7 @@ public class ClassificationStrategyTest extends AbstractTest {
 				}
 			}
 		}
+		ThreadUtilities.sleep(600000);
 
 		document = addStringField(IConstants.CLASSIFICATION, IConstants.CATEGORIES[0], new Document(), Store.YES, Index.ANALYZED, TermVector.YES);
 		classificationStrategy.aroundProcess(indexContext, indexableColumn, document, null);

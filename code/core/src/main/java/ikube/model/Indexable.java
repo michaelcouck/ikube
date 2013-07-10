@@ -29,11 +29,11 @@ public class Indexable<E> extends Persistable {
 
 	/** This is the content of the indexable, it is therefore only valid while indexing and for the current resource. */
 	@Transient
-	private transient Object content;
+	private transient volatile Object content;
 	@Transient
-	private transient String addressContent;
+	private transient volatile String addressContent;
 	@Transient
-	private transient int exceptions;
+	private transient volatile int exceptions;
 	/** These strategies will be processed before processing the indexable. */
 	@Transient
 	private transient List<IStrategy> strategies;
