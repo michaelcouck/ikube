@@ -78,6 +78,9 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 	@Size(min = 1, max = 256)
 	@Attribute(field = false, description = "This is the name of the content field int he Lucene index")
 	private String contentFieldName;
+	@Column
+	@Attribute(field = false, description = "This is the maximum length of bytes that will be read from the input stream")
+	private long maxReadLength;
 
 	public URI getUri() {
 		if (uri == null && getUrl() != null) {
@@ -165,6 +168,14 @@ public class IndexableInternet extends Indexable<IndexableInternet> {
 
 	public void setContentFieldName(final String contentFieldName) {
 		this.contentFieldName = contentFieldName;
+	}
+
+	public long getMaxReadLength() {
+		return maxReadLength;
+	}
+
+	public void setMaxReadLength(long maxReadLength) {
+		this.maxReadLength = maxReadLength;
 	}
 
 	public int getInternetBatchSize() {

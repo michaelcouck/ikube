@@ -261,6 +261,7 @@ public final class ThreadUtilities {
 			// Preserve interrupt status
 			Thread.currentThread().interrupt();
 		}
+		ThreadUtilities.cancellAllForkJoinPools();
 		List<Runnable> runnables = EXECUTER_SERVICE.shutdownNow();
 		LOGGER.info("Shutdown runnables : " + runnables);
 		FUTURES.clear();

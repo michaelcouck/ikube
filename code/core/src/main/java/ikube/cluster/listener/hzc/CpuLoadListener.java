@@ -36,7 +36,6 @@ public class CpuLoadListener implements IListener<Message<Object>>, MessageListe
 				event.setConsumed(Boolean.TRUE);
 				Server server = clusterManager.getServer();
 				server.setCpuThrottling(!server.isCpuThrottling());
-				// clusterManager.put(server.getAddress(), server);
 			}
 		}
 	}

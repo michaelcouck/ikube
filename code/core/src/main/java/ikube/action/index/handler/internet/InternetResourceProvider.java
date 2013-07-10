@@ -63,8 +63,7 @@ class InternetResourceProvider implements IResourceProvider<Url> {
 			}
 			for (final Url url : resources) {
 				Long hash = HashUtilities.hash(url.getUrl());
-				if (!done.contains(hash)) {
-					logger.info("Adding url : " + url + ", " + hash);
+				if (!done.contains(hash) && urls.size() < 10000000) {
 					urls.push(url);
 					done.add(hash);
 				}

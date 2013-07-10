@@ -37,13 +37,18 @@ import net.htmlparser.jericho.StartTag;
 import net.htmlparser.jericho.Tag;
 
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.params.HttpClientParams;
+import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
+import org.apache.commons.io.IOUtils;
 import org.apache.lucene.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.util.UriUtils;
 
 public class IndexableInternetHandler extends IndexableHandler<IndexableInternet> {
 
+	private HttpClient httpClient;
 	@Autowired
 	private InternetResourceHandler internetResourceHandler;
 
@@ -52,6 +57,16 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 */
 	@Override
 	public ForkJoinTask<?> handleIndexableForked(final IndexContext<?> indexContext, final IndexableInternet indexableInternet) throws Exception {
+		MultiThreadedHttpConnectionManager multiThreadedHttpConnectionManager = new MultiThreadedHttpConnectionManager();
+		HttpConnectionManagerParams connectionManagerParams = new HttpConnectionManagerParams();
+		connectionManagerParams.setDefaultMaxConnectionsPerHost(10000);
+		connectionManagerParams.setMaxTotalConnections(100000);
+		connectionManagerParams.setStaleCheckingEnabled(true);
+		connectionManagerParams.setTcpNoDelay(true);
+		multiThreadedHttpConnectionManager.setParams(connectionManagerParams);
+		HttpClientParams httpClientParams = new HttpClientParams();
+		httpClient = new HttpClient(httpClientParams, multiThreadedHttpConnectionManager);
+
 		IResourceProvider<Url> internetResourceProvider = new InternetResourceProvider(indexableInternet);
 		return getRecursiveAction(indexContext, indexableInternet, internetResourceProvider);
 	}
@@ -60,10 +75,8 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	protected List<Url> handleResource(final IndexContext<?> indexContext, final IndexableInternet indexableInternet, final Object resource) {
 		try {
 			Url url = (Url) resource;
-			HttpClient httpClient = new HttpClient();
 			IContentProvider<IndexableInternet> contentProvider = new InternetContentProvider();
-			logger.info("Handling resource : " + url.getUrl() + ", " + this);
-			return handle(indexContext, indexableInternet, url, contentProvider, httpClient);
+			return handle(indexContext, indexableInternet, url, contentProvider);
 		} catch (Exception e) {
 			handleException(indexableInternet, e, "Exception crawling url : " + resource);
 		}
@@ -80,11 +93,11 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 * @param httpClient the client for accessing the pages
 	 */
 	protected List<Url> handle(final IndexContext<?> indexContext, final IndexableInternet indexable, final Url url,
-			final IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient) {
+			final IContentProvider<IndexableInternet> contentProvider) {
 		List<Url> extractedUrls = null;
 		try {
 			// Get the content from the url
-			ByteOutputStream byteOutputStream = getContentFromUrl(contentProvider, httpClient, indexable, url);
+			ByteOutputStream byteOutputStream = getContentFromUrl(contentProvider, indexable, url);
 			if (byteOutputStream != null && byteOutputStream.size() > 0) {
 				InputStream inputStream = new ByteArrayInputStream(byteOutputStream.getBytes());
 				// Extract the links from the url if any
@@ -100,6 +113,9 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			}
 		} catch (Exception e) {
 			handleException(indexable, e);
+		} finally {
+			url.setRawContent(null);
+			url.setParsedContent(null);
 		}
 		return extractedUrls;
 	}
@@ -111,20 +127,20 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 * @param url the url to get the data from
 	 * @return the raw data from the url
 	 */
-	protected ByteOutputStream getContentFromUrl(final IContentProvider<IndexableInternet> contentProvider, final HttpClient httpClient,
-			final IndexableInternet indexable, final Url url) {
+	protected ByteOutputStream getContentFromUrl(final IContentProvider<IndexableInternet> contentProvider, final IndexableInternet indexable, final Url url) {
 		GetMethod get = null;
+		InputStream responseInputStream = null;
 		ByteOutputStream byteOutputStream = null;
 		try {
 			// List<NameValuePair> parameters = URLEncodedUtils.parse(new URL(url.getUrl()).toURI(), IConstants.ENCODING);
 			// String query = URLEncodedUtils.format(parameters, IConstants.ENCODING);
 			// URL realUrl = new URL(protocol, host, port, file);
 			// String encodedUrl = URIUtil.encodeWithinQuery(url.getUrl(), IConstants.ENCODING);
-			
+
 			String encodedUrl = UriUtils.encodeUri(url.getUrl(), IConstants.ENCODING);
 			get = new GetMethod(encodedUrl);
 			httpClient.executeMethod(get);
-			InputStream responseInputStream = get.getResponseBodyAsStream();
+			responseInputStream = get.getResponseBodyAsStream();
 			indexable.setCurrentInputStream(responseInputStream);
 			byteOutputStream = new ByteOutputStream();
 			contentProvider.getContent(indexable, byteOutputStream);
@@ -138,6 +154,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		} catch (Exception e) {
 			handleException(indexable, e);
 		} finally {
+			IOUtils.closeQuietly(responseInputStream);
 			try {
 				if (get != null) {
 					get.releaseConnection();
@@ -185,8 +202,6 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 				return outputStream.toString();
 			}
 		} catch (Exception e) {
-			url.setRawContent(null);
-			url.setParsedContent(null);
 			handleException(null, e);
 		}
 		return null;
