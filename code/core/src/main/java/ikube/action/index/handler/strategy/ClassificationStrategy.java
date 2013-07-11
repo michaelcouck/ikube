@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.concurrent.Future;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.SerializationUtils;
@@ -37,6 +38,7 @@ import com.aliasi.corpus.ObjectHandler;
 import com.aliasi.corpus.XValidatingObjectCorpus;
 import com.aliasi.io.Reporters;
 import com.aliasi.stats.AnnealingSchedule;
+import com.aliasi.stats.LogisticRegression;
 import com.aliasi.stats.RegressionPrior;
 import com.aliasi.tokenizer.NGramTokenizerFactory;
 import com.aliasi.tokenizer.TokenFeatureExtractor;
@@ -51,12 +53,16 @@ import com.aliasi.util.FeatureExtractor;
 public class ClassificationStrategy extends AStrategy {
 
 	private volatile boolean isOpening = false;
-	
-	private int trained;
-	private int maxTrained = 1000000;
 
+	private int trained;
+	/** This is the maximum training iterations/documents/tweets etc. before the classifier will not be trained any more. */
+	private int maxTrained = 100000;
+
+	/** This is the minimum token size for the n-gram tokenizer. */
 	private int minGram = 2;
+	/** This is the maximum token size for the n-gram tokenizer. */
 	private int maxGram = 18;
+	/** These are the categories for the classifier, the default are the sentiment categories. */
 	private String[] categories = CATEGORIES;
 
 	private int blockSize;
@@ -75,15 +81,9 @@ public class ClassificationStrategy extends AStrategy {
 	private double initialLearningRate = 0.00025;
 	private double minImprovement = 0.000000001;
 
-	private RegressionPrior regressionPrior;
-	private AnnealingSchedule annealingSchedule;
-
-	private TokenizerFactory tokenizerFactory;
-	private FeatureExtractor<CharSequence> featureExtractor;
-	private XValidatingObjectCorpus<Classified<CharSequence>> xValidatingObjectCorpus;
-
-	private ObjectHandler<LogisticRegressionClassifier<CharSequence>> classifierHandler;
 	private LogisticRegressionClassifier<CharSequence> logisticRegressionClassifier;
+	private ObjectHandler<LogisticRegressionClassifier<CharSequence>> classifierHandler;
+	private XValidatingObjectCorpus<Classified<CharSequence>> xValidatingObjectCorpus;
 
 	public ClassificationStrategy() {
 		this(null);
@@ -132,7 +132,9 @@ public class ClassificationStrategy extends AStrategy {
 		if (!logisticRegressionClassifierFile.exists()) {
 			logisticRegressionClassifierFile = FileUtilities.getOrCreateFile(logisticRegressionClassifierFile);
 		}
+		LogisticRegression logisticRegression = logisticRegressionClassifier.model();
 		byte[] bytes = SerializationUtils.serialize(logisticRegressionClassifier);
+		logger.info("Bytes : " + bytes.length + ", model : " + logisticRegression);
 		FileUtilities.setContents(logisticRegressionClassifierFile, bytes);
 	}
 
@@ -172,8 +174,6 @@ public class ClassificationStrategy extends AStrategy {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void initialize() {
-		tokenizerFactory = new NGramTokenizerFactory(minGram, maxGram);
-		featureExtractor = new TokenFeatureExtractor(tokenizerFactory);
 		xValidatingObjectCorpus = new XValidatingObjectCorpus<Classified<CharSequence>>(numFolds);
 
 		// See it there is a classifier serialized to disk to get a hot start from
@@ -193,23 +193,19 @@ public class ClassificationStrategy extends AStrategy {
 			}
 		}
 
-		trainCorpusWithCategories(xValidatingObjectCorpus);
-
-		regressionPrior = RegressionPrior.gaussian(priorVariance, noninformativeIntercept);
-		annealingSchedule = AnnealingSchedule.exponential(initialLearningRate, base);
-
+		trainCorpus(xValidatingObjectCorpus);
 		blockSize = xValidatingObjectCorpus.size();
-
 		openClassifierOnCorpus();
 	}
 
-	private void openClassifierOnCorpus() {
+	protected void openClassifierOnCorpus() {
 		if (isOpening) {
 			return;
 		}
 		isOpening = true;
 		final String name = ClassificationStrategy.class.getSimpleName();
-		ThreadUtilities.submit(name, new Runnable() {
+
+		class ClassifierOpener implements Runnable {
 			public void run() {
 				try {
 					long duration = Timer.execute(new Timer.Timed() {
@@ -217,7 +213,11 @@ public class ClassificationStrategy extends AStrategy {
 						public void execute() {
 							logger.info("Opening on corpus : ");
 							try {
-								LogisticRegressionClassifier<CharSequence> classifier = LogisticRegressionClassifier.<CharSequence> train(//
+								TokenizerFactory tokenizerFactory = new NGramTokenizerFactory(minGram, maxGram);
+								FeatureExtractor<CharSequence> featureExtractor = new TokenFeatureExtractor(tokenizerFactory);
+								RegressionPrior regressionPrior = RegressionPrior.gaussian(priorVariance, noninformativeIntercept);
+								AnnealingSchedule annealingSchedule = AnnealingSchedule.exponential(initialLearningRate, base);
+								LogisticRegressionClassifier<CharSequence> logisticRegressionClassifier = LogisticRegressionClassifier.<CharSequence> train(//
 										xValidatingObjectCorpus, //
 										featureExtractor, //
 										minFeatureCount, //
@@ -232,7 +232,7 @@ public class ClassificationStrategy extends AStrategy {
 										maxEpochs, //
 										classifierHandler, //
 										Reporters.stdOut());
-								ClassificationStrategy.this.logisticRegressionClassifier = classifier;
+								ClassificationStrategy.this.logisticRegressionClassifier = logisticRegressionClassifier;
 							} catch (Exception e) {
 								logger.error("Exception initializing the classifier", e);
 							}
@@ -243,11 +243,13 @@ public class ClassificationStrategy extends AStrategy {
 					ThreadUtilities.destroy(name);
 				}
 			}
-		});
+		}
+		Future<?> future = ThreadUtilities.submit(name, new ClassifierOpener());
+		ThreadUtilities.waitForFuture(future, Integer.MAX_VALUE);
 		isOpening = false;
 	}
 
-	private void trainCorpusWithCategories(final XValidatingObjectCorpus<Classified<CharSequence>> corpus) {
+	private void trainCorpus(final XValidatingObjectCorpus<Classified<CharSequence>> corpus) {
 		File classifiersDirectory = getClassifiersDirectory();
 		for (final String category : categories) {
 			Classification classification = new Classification(category);

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:property="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.0.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<description>This is the index for the Java Specialist web site and data.</description>
+	
+	<bean
+		id="java-specialist"
+		class="ikube.model.IndexContext"
+		property:name="java-specialist"
+		property:maxAge="6000"
+		property:compoundFile="true"
+		property:bufferedDocs="100"
+		property:bufferSize="64"
+		property:internetBatchSize="100"
+		property:mergeFactor="100"
+		property:maxFieldLength="10000"
+		property:maxReadLength="10000000"
+		property:throttle="0"
+		property:indexDirectoryPath="${index.directory.path}"
+		property:indexDirectoryPathBackup="${index.directory.path.backup}"
+		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer" 
+		property:children-ref="java-specialist-indexables" />
+	<util:list id="java-specialist-indexables">
+		<ref local="java-specialist-internet" />
+	</util:list>
+	
+	<bean
+		id="java-specialist-internet"
+		class="ikube.model.IndexableInternet"
+		property:name="java-specialist-internet"
+		property:url="http://www.javaspecialists.eu/" 
+		property:idFieldName="id"
+		property:titleFieldName="title"
+		property:contentFieldName="contents"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true"
+		property:threads="10"
+		property:maxReadLength="1000000"
+		property:excludedPattern="${internet.excluded.pattern}"
+		property:internetBatchSize="${internet.batch.size}" 
+		property:strategies-ref="java-specialist-strategies" />
+
+	<util:list id="java-specialist-strategies">
+		<ref bean="ikube.action.index.handler.strategy.LanguageCleaningStrategy" />
+		<ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
+		<ref bean="ikube.action.index.handler.strategy.ClassificationStrategy" />
+	</util:list>
+		
+</beans>

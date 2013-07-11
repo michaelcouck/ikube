@@ -51,6 +51,8 @@ public class ClassificationStrategyTest extends AbstractTest {
 		ThreadUtilities.sleep(3000);
 		final Indexable<?> indexableColumn = new IndexableColumn();
 		indexableColumn.setContent("Perfect day");
+
+		// We add a positive field for classification, and the strategy should add the conflict firld for neutral
 		Document document = addStringField(IConstants.CLASSIFICATION, IConstants.CATEGORIES[0], new Document(), Store.YES, Index.ANALYZED, TermVector.YES);
 		classificationStrategy.aroundProcess(indexContext, indexableColumn, document, null);
 		logger.info("Document : " + document);
@@ -58,19 +60,26 @@ public class ClassificationStrategyTest extends AbstractTest {
 		assertEquals(IConstants.NEUTRAL, document.get(IConstants.CLASSIFICATION_CONFLICT));
 
 		// Now we train the classifier and re-test the category
-		for (int i = 0; i < 150; i++) {
+		int epochs = 0;
+		do {
 			for (final String category : IConstants.CATEGORIES) {
 				for (final String content : inputs.get(category)) {
 					classificationStrategy.train(category, content);
+					epochs++;
+					if (epochs % 1000 == 0) {
+						classificationStrategy.openClassifierOnCorpus();
+					}
 				}
 			}
-		}
-		ThreadUtilities.sleep(180000);
+		} while (epochs < 3000);
 
+		// We add the positive field for classification and the strategy should also classify the data as positive and there whould be not conflict field
 		document = addStringField(IConstants.CLASSIFICATION, IConstants.CATEGORIES[0], new Document(), Store.YES, Index.ANALYZED, TermVector.YES);
 		classificationStrategy.aroundProcess(indexContext, indexableColumn, document, null);
 		logger.info("Document : " + document);
+		// The classification should be positive
 		assertEquals(IConstants.POSITIVE, document.get(IConstants.CLASSIFICATION));
+		// The strategy asserts that the data is positive and there is no conflict field
 		assertNull(document.get(IConstants.CLASSIFICATION_CONFLICT));
 
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
