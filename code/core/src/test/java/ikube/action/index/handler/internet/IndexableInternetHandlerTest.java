@@ -16,7 +16,6 @@ import java.util.concurrent.ForkJoinTask;
 
 import mockit.Deencapsulation;
 
-import org.apache.commons.httpclient.HttpClient;
 import org.apache.lucene.document.Document;
 import org.junit.Before;
 import org.junit.Test;
@@ -91,10 +90,9 @@ public class IndexableInternetHandlerTest extends AbstractTest {
 	@SuppressWarnings("unchecked")
 	public void getContentFromUrl() {
 		IContentProvider<IndexableInternet> contentProvider = Mockito.mock(IContentProvider.class);
-		HttpClient httpClient = new HttpClient();
 		Url url = new Url();
 		url.setUrl("http://www.vlaamsparlement.be/Proteus5/resultaat.action?pContext=RESUME_BIOLEX&pIdPrs=2785&selectId=27&groupingIds=16|17&groupValues=2009-2014|239");
-		indexableInternetHandler.getContentFromUrl(contentProvider, httpClient, indexableInternet, url);
+		indexableInternetHandler.getContentFromUrl(contentProvider, indexableInternet, url);
 	}
 
 }

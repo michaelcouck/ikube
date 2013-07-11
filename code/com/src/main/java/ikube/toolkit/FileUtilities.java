@@ -281,7 +281,7 @@ public final class FileUtilities {
 	 * @param maxRetryCount the number of times to re-try the delete operation
 	 */
 	public static boolean deleteFile(final File file, final int maxRetryCount) {
-		return FileUtilities.deleteFile(file, maxRetryCount, 0);
+		return deleteFile(file, maxRetryCount, 0);
 	}
 
 	protected static void makeReadWrite(final File file) {

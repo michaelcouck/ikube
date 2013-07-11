@@ -89,6 +89,11 @@ public final class SerializationUtilities {
 	public static Object clone(final Object object) {
 		return SerializationUtils.clone((Serializable) object);
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T clone(final Class<T> klass, T t) {
+		return (T) clone(t);
+	}
 
 	public static void setTransientFields(Class<?>... classes) {
 		List<Class<?>> doneClasses = new ArrayList<Class<?>>();

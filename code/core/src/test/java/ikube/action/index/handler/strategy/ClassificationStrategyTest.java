@@ -8,9 +8,11 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
+import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
 import ikube.toolkit.ThreadUtilities;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,6 +20,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,6 +38,12 @@ public class ClassificationStrategyTest extends AbstractTest {
 		inputs.put(IConstants.CATEGORIES[0], new String[] { "Lovely day", "Perfect and healthy", "Funny and amusing", "Great!" });
 		inputs.put(IConstants.CATEGORIES[1], new String[] { "Not well", "Feeling sick", "Unhappy and miserable", "Loose your mind" });
 		inputs.put(IConstants.CATEGORIES[2], new String[] { "Before breakfast", "After lunch", "During dinner", "Sleep time" });
+	}
+
+	@After
+	public void after() {
+		File classifiersDirectory = classificationStrategy.getClassifiersDirectory();
+		FileUtilities.deleteFile(classifiersDirectory);
 	}
 
 	@Test
@@ -56,7 +65,7 @@ public class ClassificationStrategyTest extends AbstractTest {
 				}
 			}
 		}
-		ThreadUtilities.sleep(600000);
+		ThreadUtilities.sleep(180000);
 
 		document = addStringField(IConstants.CLASSIFICATION, IConstants.CATEGORIES[0], new Document(), Store.YES, Index.ANALYZED, TermVector.YES);
 		classificationStrategy.aroundProcess(indexContext, indexableColumn, document, null);
