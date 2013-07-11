@@ -50,6 +50,8 @@ import com.aliasi.util.FeatureExtractor;
  */
 public class ClassificationStrategy extends AStrategy {
 
+	private volatile boolean isOpening = false;
+	
 	private int trained;
 	private int maxTrained = 1000000;
 
@@ -158,7 +160,7 @@ public class ClassificationStrategy extends AStrategy {
 		Classification classification = new Classification(sentiment);
 		Classified<CharSequence> classified = new Classified<CharSequence>(content, classification);
 		xValidatingObjectCorpus.handle(classified);
-		if (trained++ % 1000 == 0) {
+		if (trained++ % 10000 == 0) {
 			openClassifierOnCorpus();
 			persistLanguageModels();
 		}
@@ -202,6 +204,10 @@ public class ClassificationStrategy extends AStrategy {
 	}
 
 	private void openClassifierOnCorpus() {
+		if (isOpening) {
+			return;
+		}
+		isOpening = true;
 		final String name = ClassificationStrategy.class.getSimpleName();
 		ThreadUtilities.submit(name, new Runnable() {
 			public void run() {
@@ -238,6 +244,7 @@ public class ClassificationStrategy extends AStrategy {
 				}
 			}
 		});
+		isOpening = false;
 	}
 
 	private void trainCorpusWithCategories(final XValidatingObjectCorpus<Classified<CharSequence>> corpus) {
