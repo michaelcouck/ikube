@@ -12,12 +12,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 class InternetResourceProvider implements IResourceProvider<Url> {
-
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private Stack<Url> urls;
 	private Set<Long> done;
@@ -35,41 +30,33 @@ class InternetResourceProvider implements IResourceProvider<Url> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized Url getResource() {
-		try {
+	public Url getResource() {
+		if (urls.isEmpty()) {
+			// We'll wait a few seconds to see if any other thread will add some urls to the stack
+			ThreadUtilities.sleep(600000);
 			if (urls.isEmpty()) {
-				// We'll wait a few seconds to see if any other thread will add some urls to the stack
-				ThreadUtilities.sleep(600000);
-				if (urls.isEmpty()) {
-					return null;
-				} else {
-					return getResource();
-				}
+				return null;
+			} else {
+				return getResource();
 			}
-			return urls.pop();
-		} finally {
-			notifyAll();
 		}
+		return urls.pop();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized void setResources(final List<Url> resources) {
-		try {
-			if (resources == null) {
-				return;
+	public void setResources(final List<Url> resources) {
+		if (resources == null) {
+			return;
+		}
+		for (final Url url : resources) {
+			Long hash = HashUtilities.hash(url.getUrl());
+			if (!done.contains(hash) && urls.size() < 10000000) {
+				urls.push(url);
+				done.add(hash);
 			}
-			for (final Url url : resources) {
-				Long hash = HashUtilities.hash(url.getUrl());
-				if (!done.contains(hash) && urls.size() < 10000000) {
-					urls.push(url);
-					done.add(hash);
-				}
-			}
-		} finally {
-			notifyAll();
 		}
 	}
 

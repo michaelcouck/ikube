@@ -141,8 +141,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 		if (InterruptedException.class.isAssignableFrom(exception.getClass()) || CancellationException.class.isAssignableFrom(exception.getClass())) {
 			throw new RuntimeException("Worker thread interrupted : " + Arrays.deepToString(messages), exception);
 		}
-		indexable.setExceptions(indexable.getExceptions() + 1);
-		if (indexable.getExceptions() > indexable.getMaxExceptions()) {
+		if (indexable.incrementAndGetExceptions() > indexable.getMaxExceptions()) {
 			throw new RuntimeException("Maximum exceptions exceeded for resource : " + indexable.getName() + ", " + Arrays.deepToString(messages), exception);
 		}
 		logger.error("Exception handling resource : " + Arrays.deepToString(messages), exception);

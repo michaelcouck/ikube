@@ -201,6 +201,9 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 				url.setParsedContent(outputStream.toString());
 				return outputStream.toString();
 			}
+		} catch (NullPointerException e) {
+			logger.error(null, e);
+			handleException(null, e);
 		} catch (Exception e) {
 			handleException(null, e);
 		}
