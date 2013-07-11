@@ -78,7 +78,7 @@ public class TwitterHandler extends IndexableHandler<IndexableTweets> {
 		// And put the data in the index
 		Document document = twitterResourceHandler.handleResource(indexContext, indexableTweets, new Document(), resource);
 		// We could get more tweets here I guess
-		if (atomicInteger.getAndIncrement() % 100 == 0) {
+		if (atomicInteger.getAndIncrement() % 10000 == 0) {
 			logger.info("Document : " + document);
 		}
 		return null;
