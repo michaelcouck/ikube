@@ -24,6 +24,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.aliasi.classify.ConditionalClassification;
+import com.aliasi.classify.LogisticRegressionClassifier;
+
 public class ClassificationStrategyTest extends AbstractTest {
 
 	private Map<String, String[]> inputs;
@@ -65,13 +68,18 @@ public class ClassificationStrategyTest extends AbstractTest {
 			for (final String category : IConstants.CATEGORIES) {
 				for (final String content : inputs.get(category)) {
 					classificationStrategy.train(category, content);
-					epochs++;
-					if (epochs % 1000 == 0) {
-						classificationStrategy.openClassifierOnCorpus();
+					if (epochs++ % 1000 == 0) {
+						classificationStrategy.reopenClassifier();
 					}
 				}
 			}
 		} while (epochs < 3000);
+
+		LogisticRegressionClassifier<CharSequence> logisticRegressionClassifier = classificationStrategy.getPersistedClassifier();
+		ConditionalClassification conditionalClassification = logisticRegressionClassifier.classify("perfect and amusing");
+		String classification = conditionalClassification.bestCategory();
+		logger.info("Classification : " + classification);
+		assertEquals(IConstants.POSITIVE, classification);
 
 		// We add the positive field for classification and the strategy should also classify the data as positive and there whould be not conflict field
 		document = addStringField(IConstants.CLASSIFICATION, IConstants.CATEGORIES[0], new Document(), Store.YES, Index.ANALYZED, TermVector.YES);

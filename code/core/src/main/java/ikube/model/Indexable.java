@@ -34,7 +34,7 @@ public class Indexable<E> extends Persistable {
 	@Transient
 	private transient volatile String addressContent;
 	@Transient
-	private transient volatile AtomicInteger exceptions = new AtomicInteger(0);
+	private AtomicInteger exceptions = new AtomicInteger(0);
 	/** These strategies will be processed before processing the indexable. */
 	@Transient
 	private transient List<IStrategy> strategies;
@@ -186,7 +186,7 @@ public class Indexable<E> extends Persistable {
 	public void setExceptions(int exceptions) {
 		this.exceptions.set(exceptions);
 	}
-	
+
 	public int incrementAndGetExceptions() {
 		return exceptions.incrementAndGet();
 	}

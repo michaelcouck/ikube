@@ -57,10 +57,10 @@
 		property:name="twitter-index"
 		property:address="true"
 		property:maxExceptions="1000"
-		property:stored="true"
+		property:stored="false"
 		property:analyzed="true"
 		property:vectored="true"
-		property:threads="8"
+		property:threads="1"
 		
 		property:consumerKey="Sohh43DylUwaXr7smSojBA"
 		property:consumerSecret="90xubtexbSwhHBbKXM62pF4QfJnz1NWVkpevwde3Qxo"
@@ -78,7 +78,14 @@
 		<ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
 		<!-- <ref bean="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy" /> -->
 		<ref bean="ikube.action.index.handler.strategy.EmoticonSentimentAnalysisStrategy" />
-		<ref bean="ikube.action.index.handler.strategy.ClassificationStrategy" />
+		<ref bean="ikube.action.index.handler.strategy.ClassificationStrategy.Twitter" />
 	</util:list>
+	
+	<bean
+		id="ikube.action.index.handler.strategy.ClassificationStrategy.Twitter"
+		name="ikube.action.index.handler.strategy.ClassificationStrategy.Twitter" 
+    	class="ikube.action.index.handler.strategy.ClassificationStrategy"
+    	init-method="initialize"
+    	property:maxTrained="10000" />
 	
 </beans>

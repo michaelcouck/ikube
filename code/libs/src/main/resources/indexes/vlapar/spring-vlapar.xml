@@ -49,7 +49,7 @@
 		property:analyzed="true"
 		property:stored="true"
 		property:vectored="true"
-		property:threads="10"
+		property:threads="25"
 		property:maxReadLength="1000000"
 		property:excludedPattern="${internet.excluded.pattern}"
 		property:internetBatchSize="${internet.batch.size}" />

@@ -33,7 +33,8 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 		@Override
 		public void onTweet(final Tweet tweet) {
 			if (atomicLong.getAndIncrement() % 10000 == 0) {
-				logger.info("Tweet : " + atomicLong.get() + ", " + ToStringBuilder.reflectionToString(tweet, ToStringStyle.SHORT_PREFIX_STYLE));
+				logger.info("Tweet : " + tweets.size() + ", " + atomicLong.get() + ", "
+						+ ToStringBuilder.reflectionToString(tweet, ToStringStyle.SHORT_PREFIX_STYLE));
 			}
 			if (tweets.size() < 1000) {
 				tweets.push(tweet);
@@ -83,12 +84,16 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Tweet getResource() {
-		if (tweets.isEmpty()) {
-			ThreadUtilities.sleep(1000);
-			return getResource();
+	public synchronized Tweet getResource() {
+		try {
+			if (tweets.isEmpty()) {
+				ThreadUtilities.sleep(100);
+				return getResource();
+			}
+			return tweets.pop();
+		} finally {
+			notifyAll();
 		}
-		return tweets.pop();
 	}
 
 	/**

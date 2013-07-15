@@ -9,6 +9,7 @@ import static ikube.action.index.IndexManager.addStringField;
 import static ikube.toolkit.FileUtilities.findDirectoryRecursively;
 import static ikube.toolkit.FileUtilities.getContent;
 import static ikube.toolkit.FileUtilities.getOrCreateDirectory;
+import ikube.IConstants;
 import ikube.action.index.handler.IStrategy;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
@@ -21,6 +22,9 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.SerializationUtils;
@@ -38,7 +42,6 @@ import com.aliasi.corpus.ObjectHandler;
 import com.aliasi.corpus.XValidatingObjectCorpus;
 import com.aliasi.io.Reporters;
 import com.aliasi.stats.AnnealingSchedule;
-import com.aliasi.stats.LogisticRegression;
 import com.aliasi.stats.RegressionPrior;
 import com.aliasi.tokenizer.NGramTokenizerFactory;
 import com.aliasi.tokenizer.TokenFeatureExtractor;
@@ -52,11 +55,45 @@ import com.aliasi.util.FeatureExtractor;
  */
 public class ClassificationStrategy extends AStrategy {
 
-	private volatile boolean isOpening = false;
+	class ClassifierOpener implements Runnable {
+		public void run() {
+			TokenizerFactory tokenizerFactory = new NGramTokenizerFactory(minGram, maxGram);
+			FeatureExtractor<CharSequence> featureExtractor = new TokenFeatureExtractor(tokenizerFactory);
+			RegressionPrior regressionPrior = RegressionPrior.gaussian(priorVariance, noninformativeIntercept);
+			AnnealingSchedule annealingSchedule = AnnealingSchedule.exponential(initialLearningRate, base);
+			try {
+				LogisticRegressionClassifier<CharSequence> newLogisticRegressionClassifier = LogisticRegressionClassifier.//
+						<CharSequence> train(//
+								xValidatingObjectCorpus, //
+								featureExtractor, //
+								minFeatureCount, //
+								addInterceptFeature, //
+								regressionPrior, //
+								blockSize, //
+								logisticRegressionClassifier, //
+								annealingSchedule, //
+								minImprovement, //
+								rollingAvgSize, //
+								minEpochs, //
+								maxEpochs, //
+								classifierHandler, //
+								Reporters.stdOut());
+				logisticRegressionClassifier = newLogisticRegressionClassifier;
+			} catch (Exception e) {
+				logger.error("Exception opening classifier : ", e);
+			}
+		}
+	}
+
+	private AtomicInteger positive;
+	private AtomicInteger neutral;
+	private AtomicInteger negative;
+
+	private Lock lock;
 
 	private int trained;
 	/** This is the maximum training iterations/documents/tweets etc. before the classifier will not be trained any more. */
-	private int maxTrained = 100000;
+	private int maxTrained = 10000;
 
 	/** This is the minimum token size for the n-gram tokenizer. */
 	private int minGram = 2;
@@ -97,6 +134,23 @@ public class ClassificationStrategy extends AStrategy {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void initialize() {
+		lock = new ReentrantLock();
+		positive = new AtomicInteger();
+		neutral = new AtomicInteger();
+		negative = new AtomicInteger();
+		// See it there is a classifier serialized to disk to get a hot start from
+		logisticRegressionClassifier = getPersistedClassifier();
+		xValidatingObjectCorpus = new XValidatingObjectCorpus<Classified<CharSequence>>(numFolds);
+		trainClassifier(xValidatingObjectCorpus);
+		blockSize = xValidatingObjectCorpus.size();
+		reopenClassifier();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public boolean aroundProcess(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document, final Object resource)
 			throws Exception {
 		// TODO Perhaps detect the subject and the object. Separate the constructs of the sentence for further processing
@@ -117,6 +171,13 @@ public class ClassificationStrategy extends AStrategy {
 					addStringField(CLASSIFICATION_CONFLICT, currentClassification, document, Store.YES, Index.ANALYZED, TermVector.NO);
 				}
 			}
+			if (IConstants.POSITIVE.equals(document.get(CLASSIFICATION))) {
+				positive.incrementAndGet();
+			} else if (IConstants.NEUTRAL.equals(document.get(CLASSIFICATION))) {
+				neutral.incrementAndGet();
+			} else {
+				negative.incrementAndGet();
+			}
 		}
 		return super.aroundProcess(indexContext, indexable, document, resource);
 	}
@@ -124,34 +185,6 @@ public class ClassificationStrategy extends AStrategy {
 	public String detectSentiment(final String content) {
 		ConditionalClassification conditionalClassification = logisticRegressionClassifier.classify(content);
 		return conditionalClassification.bestCategory();
-	}
-
-	private void persistLanguageModels() {
-		// Persist the classifiers from time to time
-		File logisticRegressionClassifierFile = getClassifierFile();
-		if (!logisticRegressionClassifierFile.exists()) {
-			logisticRegressionClassifierFile = FileUtilities.getOrCreateFile(logisticRegressionClassifierFile);
-		}
-		LogisticRegression logisticRegression = logisticRegressionClassifier.model();
-		byte[] bytes = SerializationUtils.serialize(logisticRegressionClassifier);
-		logger.info("Bytes : " + bytes.length + ", model : " + logisticRegression);
-		FileUtilities.setContents(logisticRegressionClassifierFile, bytes);
-	}
-
-	private File getClassifierFile() {
-		File classifiersDirectory = getClassifiersDirectory();
-		String categoriesString = Arrays.deepToString(categories);
-		String classifierName = LogisticRegressionClassifier.class.getSimpleName() + " - " + categoriesString;
-		File logisticRegressionClassifierFile = new File(classifiersDirectory, classifierName);
-		return logisticRegressionClassifierFile;
-	}
-
-	protected File getClassifiersDirectory() {
-		File classifiersDirectory = findDirectoryRecursively(new File("."), CLASSIFIERS);
-		if (classifiersDirectory == null) {
-			classifiersDirectory = new File(IKUBE_DIRECTORY, CLASSIFIERS);
-		}
-		return getOrCreateDirectory(classifiersDirectory);
 	}
 
 	protected void train(final String sentiment, final String content) throws Exception {
@@ -163,93 +196,33 @@ public class ClassificationStrategy extends AStrategy {
 		Classified<CharSequence> classified = new Classified<CharSequence>(content, classification);
 		xValidatingObjectCorpus.handle(classified);
 		if (trained++ % 10000 == 0) {
-			openClassifierOnCorpus();
-			persistLanguageModels();
+			double ratio = (((double) positive.get()) / ((double) negative.get())) * 100d;
+			logger.info("Positive : " + positive + ", neutral : " + neutral + ", negative : " + negative + ", ratio : " + ratio);
+			reopenClassifier();
+			setPersistedClassifier();
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public void initialize() {
-		xValidatingObjectCorpus = new XValidatingObjectCorpus<Classified<CharSequence>>(numFolds);
-
-		// See it there is a classifier serialized to disk to get a hot start from
-		File logisticRegressionClassifierFile = getClassifierFile();
-		if (logisticRegressionClassifierFile != null && logisticRegressionClassifierFile.exists()) {
-			InputStream inputStream = null;
-			try {
-				inputStream = new FileInputStream(logisticRegressionClassifierFile);
-				byte[] bytes = IOUtils.toByteArray(inputStream);
-				logisticRegressionClassifier = (LogisticRegressionClassifier<CharSequence>) SerializationUtils.deserialize(bytes);
-			} catch (Exception e) {
-				logger.error("Exception reading the serialized/trained classifier : ", e);
-			} finally {
-				if (inputStream != null) {
-					IOUtils.closeQuietly(inputStream);
-				}
-			}
-		}
-
-		trainCorpus(xValidatingObjectCorpus);
-		blockSize = xValidatingObjectCorpus.size();
-		openClassifierOnCorpus();
-	}
-
-	protected void openClassifierOnCorpus() {
-		if (isOpening) {
-			return;
-		}
-		isOpening = true;
+	protected void reopenClassifier() {
 		final String name = ClassificationStrategy.class.getSimpleName();
-
-		class ClassifierOpener implements Runnable {
-			public void run() {
-				try {
-					long duration = Timer.execute(new Timer.Timed() {
-						@Override
-						public void execute() {
-							logger.info("Opening on corpus : ");
-							try {
-								TokenizerFactory tokenizerFactory = new NGramTokenizerFactory(minGram, maxGram);
-								FeatureExtractor<CharSequence> featureExtractor = new TokenFeatureExtractor(tokenizerFactory);
-								RegressionPrior regressionPrior = RegressionPrior.gaussian(priorVariance, noninformativeIntercept);
-								AnnealingSchedule annealingSchedule = AnnealingSchedule.exponential(initialLearningRate, base);
-								LogisticRegressionClassifier<CharSequence> logisticRegressionClassifier = LogisticRegressionClassifier.<CharSequence> train(//
-										xValidatingObjectCorpus, //
-										featureExtractor, //
-										minFeatureCount, //
-										addInterceptFeature, //
-										regressionPrior, //
-										blockSize, //
-										ClassificationStrategy.this.logisticRegressionClassifier, //
-										annealingSchedule, //
-										minImprovement, //
-										rollingAvgSize, //
-										minEpochs, //
-										maxEpochs, //
-										classifierHandler, //
-										Reporters.stdOut());
-								ClassificationStrategy.this.logisticRegressionClassifier = logisticRegressionClassifier;
-							} catch (Exception e) {
-								logger.error("Exception initializing the classifier", e);
-							}
-						}
-					});
-					logger.info("Open duration : " + duration);
-				} finally {
-					ThreadUtilities.destroy(name);
+		try {
+			lock.lock();
+			logger.info("Opening classifier : ");
+			double duration = Timer.execute(new Timer.Timed() {
+				@Override
+				public void execute() {
+					Future<?> future = ThreadUtilities.submit(name, new ClassifierOpener());
+					ThreadUtilities.waitForFuture(future, Integer.MAX_VALUE);
 				}
-			}
+			});
+			logger.info("Open classifier duration : " + (duration / 1000));
+		} finally {
+			ThreadUtilities.destroy(name);
+			lock.unlock();
 		}
-		Future<?> future = ThreadUtilities.submit(name, new ClassifierOpener());
-		ThreadUtilities.waitForFuture(future, Integer.MAX_VALUE);
-		isOpening = false;
 	}
 
-	private void trainCorpus(final XValidatingObjectCorpus<Classified<CharSequence>> corpus) {
+	private void trainClassifier(final XValidatingObjectCorpus<Classified<CharSequence>> corpus) {
 		File classifiersDirectory = getClassifiersDirectory();
 		for (final String category : categories) {
 			Classification classification = new Classification(category);
@@ -268,6 +241,49 @@ public class ClassificationStrategy extends AStrategy {
 			Classified<CharSequence> classified = new Classified<CharSequence>(category, classification);
 			corpus.handle(classified);
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	protected LogisticRegressionClassifier<CharSequence> getPersistedClassifier() {
+		File logisticRegressionClassifierFile = getClassifierFile();
+		if (logisticRegressionClassifierFile.length() > 100) {
+			InputStream inputStream = null;
+			try {
+				inputStream = new FileInputStream(logisticRegressionClassifierFile);
+				byte[] bytes = IOUtils.toByteArray(inputStream);
+				return (LogisticRegressionClassifier<CharSequence>) SerializationUtils.deserialize(bytes);
+			} catch (Exception e) {
+				logger.error("Exception reading the serialized/trained classifier : ", e);
+			} finally {
+				if (inputStream != null) {
+					IOUtils.closeQuietly(inputStream);
+				}
+			}
+		}
+		return null;
+	}
+
+	private void setPersistedClassifier() {
+		// Persist the classifiers from time to time
+		File logisticRegressionClassifierFile = getClassifierFile();
+		byte[] bytes = SerializationUtils.serialize(logisticRegressionClassifier);
+		logger.info("Bytes : " + bytes.length);
+		FileUtilities.setContents(logisticRegressionClassifierFile, bytes);
+	}
+
+	protected File getClassifierFile() {
+		File classifiersDirectory = getClassifiersDirectory();
+		String categoriesString = Arrays.deepToString(categories);
+		String classifierName = LogisticRegressionClassifier.class.getSimpleName() + " - " + categoriesString;
+		return FileUtilities.getOrCreateFile(new File(classifiersDirectory, classifierName));
+	}
+
+	protected File getClassifiersDirectory() {
+		File classifiersDirectory = findDirectoryRecursively(new File("."), CLASSIFIERS);
+		if (classifiersDirectory == null) {
+			classifiersDirectory = new File(IKUBE_DIRECTORY, CLASSIFIERS);
+		}
+		return getOrCreateDirectory(classifiersDirectory);
 	}
 
 	public void setMinGram(int minGram) {

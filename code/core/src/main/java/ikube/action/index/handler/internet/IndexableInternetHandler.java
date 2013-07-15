@@ -132,11 +132,6 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		InputStream responseInputStream = null;
 		ByteOutputStream byteOutputStream = null;
 		try {
-			// List<NameValuePair> parameters = URLEncodedUtils.parse(new URL(url.getUrl()).toURI(), IConstants.ENCODING);
-			// String query = URLEncodedUtils.format(parameters, IConstants.ENCODING);
-			// URL realUrl = new URL(protocol, host, port, file);
-			// String encodedUrl = URIUtil.encodeWithinQuery(url.getUrl(), IConstants.ENCODING);
-
 			String encodedUrl = UriUtils.encodeUri(url.getUrl(), IConstants.ENCODING);
 			get = new GetMethod(encodedUrl);
 			httpClient.executeMethod(get);
@@ -193,7 +188,9 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 					parser = ParserProvider.getParser(contentType, bytes);
 					outputStream = parser.parse(byteArrayInputStream, new ByteArrayOutputStream());
 				} else {
-					handleException(null, e);
+					String message = "Exception parsing content from url : " + url;
+					logger.error(message, e);
+					handleException(null, e, message);
 				}
 			}
 			url.setContentType(contentType);

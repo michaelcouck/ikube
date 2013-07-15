@@ -1,9 +1,9 @@
 package ikube.web.service;
 
 import ikube.IConstants;
+import ikube.action.index.handler.strategy.ClassificationStrategy;
 import ikube.action.index.handler.strategy.LanguageCleaningStrategy;
 import ikube.action.index.handler.strategy.LanguageDetectionStrategy;
-import ikube.action.index.handler.strategy.MultiLanguageClassifierSentimentAnalysisStrategy;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -41,7 +41,7 @@ public class Classifier extends Resource {
 	@Autowired
 	private LanguageDetectionStrategy languageDetectionStrategy;
 	@Autowired
-	private MultiLanguageClassifierSentimentAnalysisStrategy multiLanguageClassifierSentimentAnalysisStrategy;
+	private ClassificationStrategy multiLanguageClassifierSentimentAnalysisStrategy;
 
 	/**
 	 * {@inheritDoc}
@@ -49,12 +49,11 @@ public class Classifier extends Resource {
 	@GET
 	@Path(Classifier.CLASSIFY)
 	@Consumes(MediaType.APPLICATION_XML)
-	public Response classify(@QueryParam(value = IConstants.CONTENT)
-	final String content) {
+	public Response classify(@QueryParam(value = IConstants.CONTENT) final String content) {
 		String cleanedContent = languageCleaningStrategy.cleanContent(content);
 		String language = languageDetectionStrategy.detectLanguage(cleanedContent);
 		if (language != null) {
-			String sentiment = multiLanguageClassifierSentimentAnalysisStrategy.detectSentiment(language, cleanedContent);
+			String sentiment = multiLanguageClassifierSentimentAnalysisStrategy.detectSentiment(cleanedContent);
 			return buildResponse(sentiment);
 		}
 		return buildResponse("nothing");
