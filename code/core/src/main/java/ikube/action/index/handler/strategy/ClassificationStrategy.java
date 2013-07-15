@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -206,16 +207,19 @@ public class ClassificationStrategy extends AStrategy {
 	protected void reopenClassifier() {
 		final String name = ClassificationStrategy.class.getSimpleName();
 		try {
-			lock.lock();
-			logger.info("Opening classifier : ");
-			double duration = Timer.execute(new Timer.Timed() {
-				@Override
-				public void execute() {
-					Future<?> future = ThreadUtilities.submit(name, new ClassifierOpener());
-					ThreadUtilities.waitForFuture(future, Integer.MAX_VALUE);
-				}
-			});
-			logger.info("Open classifier duration : " + (duration / 1000));
+			if (lock.tryLock(3, TimeUnit.SECONDS)) {
+				logger.info("Opening classifier : ");
+				double duration = Timer.execute(new Timer.Timed() {
+					@Override
+					public void execute() {
+						Future<?> future = ThreadUtilities.submit(name, new ClassifierOpener());
+						ThreadUtilities.waitForFuture(future, Integer.MAX_VALUE);
+					}
+				});
+				logger.info("Open classifier duration : " + (duration / 1000));
+			}
+		} catch (InterruptedException e) {
+			logger.error(null, e);
 		} finally {
 			ThreadUtilities.destroy(name);
 			lock.unlock();
