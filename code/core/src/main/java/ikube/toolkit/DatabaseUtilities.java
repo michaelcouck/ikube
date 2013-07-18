@@ -3,6 +3,7 @@ package ikube.toolkit;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -13,12 +14,10 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import oracle.jdbc.driver.OracleDriver;
-
 import org.apache.log4j.Logger;
 
 /**
- * General database operations like closing category sets etc.
+ * General database operations like closing result sets etc.
  * 
  * @author Michael Couck
  * @since 23.12.10
@@ -32,19 +31,20 @@ public final class DatabaseUtilities {
 
 	private static final Logger LOGGER = Logger.getLogger(DatabaseUtilities.class);
 
-	public static void main(String[] args) {
-		String url = "jdbc:oracle:thin:@ldap://OID.NETPOST:389/HR1D2,cn=OracleContext,dc=pr,dc=netpost,dc=be";
-		String user = "EHR_PLA_OWNER";
-		String password = "EHR_PLA_OWNER";
-		Connection connection = null;
+	public static final Connection getConnection(final String url, final String user, final String password, final Class<? extends Driver> driverClass) {
 		try {
-			DriverManager.registerDriver(new OracleDriver());
-			connection = DriverManager.getConnection(url, user, password);
-			searchDatabase(connection, "DML020");
+			DriverManager.registerDriver(driverClass.newInstance());
+			return DriverManager.getConnection(url, user, password);
 		} catch (Exception e) {
-			LOGGER.error(null, e);
-		} finally {
-			close(connection);
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static final ResultSet executeQuery(final Connection connection, final String query) {
+		try {
+			return connection.createStatement().executeQuery(query);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -103,8 +103,8 @@ public final class DatabaseUtilities {
 	}
 
 	/**
-	 * This method will close all related resources to the category set object in the parameter list. First getting the statement from the category set, then the
-	 * connection from the statement and closing them, category set, statement then connection.
+	 * This method will close all related resources to the category set object in the parameter list. First getting the statement from the category set, then
+	 * the connection from the statement and closing them, category set, statement then connection.
 	 * 
 	 * @param resultSet the category set and related database resources to close
 	 */

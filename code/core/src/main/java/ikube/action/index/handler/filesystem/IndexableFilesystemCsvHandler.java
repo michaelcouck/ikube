@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * This handler is a custom handler for the CSV files. Rather than inserting the data into the database, meaning creating tables and the like, and the painful
  * process of importing the data using some tool, and then the file is updated and automation is required, this handler will just read the 'structured' files
- * line by line and index the data as if it were
+ * line by line and index the data as if it were a database table.
  * 
  * @author Michael Couck
  * @since 08.02.2011
@@ -85,8 +85,7 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
 			String[] columns = StringUtils.split(headerLine, separator);
 			// Trim any space on the column headers
 			for (int i = 0; i < columns.length; i++) {
-				String column = columns[i];
-				columns[i] = column.trim();
+				columns[i] = columns[i].trim();
 			}
 
 			List<Indexable<?>> indexableColumns = getIndexableColumns(indexableFileSystemCsv, columns);
