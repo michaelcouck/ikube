@@ -4,12 +4,12 @@ import ikube.deploy.model.Server;
 
 import java.util.Collection;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 import net.neoremind.sshxcute.core.Result;
 import net.neoremind.sshxcute.core.SSHExec;
 import net.neoremind.sshxcute.task.CustomTask;
 import net.neoremind.sshxcute.task.impl.ExecCommand;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 public class CommandAction extends Action {
 
@@ -18,9 +18,7 @@ public class CommandAction extends Action {
 	@Override
 	public boolean execute(final Server server) {
 		SSHExec sshExec = getSshExec(server.getIp(), server.getUsername(), server.getPassword());
-		logger.error("Ssh exec : " + sshExec + ", " + commands);
-		System.out.println("Ssh exec : " + sshExec + ", " + commands);
-		System.err.println("Ssh exec : " + sshExec + ", " + commands);
+		logger.info("Ssh exec : " + sshExec + ", " + commands);
 		try {
 			if (commands != null) {
 				for (final String command : commands) {

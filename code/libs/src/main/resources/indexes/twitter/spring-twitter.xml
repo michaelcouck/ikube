@@ -86,6 +86,7 @@
 		name="ikube.action.index.handler.strategy.ClassificationStrategy.Twitter" 
     	class="ikube.action.index.handler.strategy.ClassificationStrategy"
     	init-method="initialize"
-    	property:maxTrained="10000" />
+    	property:maxTrained="100000" 
+    	depends-on="ikube.toolkit.ThreadUtilities" />
 	
 </beans>

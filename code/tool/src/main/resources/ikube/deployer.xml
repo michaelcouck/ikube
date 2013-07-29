@@ -52,40 +52,13 @@
 	
 	<util:list id="servers">
 		<ref local="server-one" />
-		<ref local="server-two" />
-		<!-- <ref local="server-three" />
-		<ref local="server-four" /> -->
 	</util:list>
 	
 	<bean 
 		id="server-one"
 		name="server-one"
 		class="ikube.deploy.model.Server"
-		property:ip="81.95.118.139"
-		property:username="${username}"
-		property:password="${password}"
-		property:actions-ref="actions" />
-	<bean 
-		id="server-two"
-		name="server-two"
-		class="ikube.deploy.model.Server"
-		property:ip="192.168.1.10"
-		property:username="${username}"
-		property:password="${password}"
-		property:actions-ref="actions" />
-	<bean 
-		id="server-three"
-		name="server-three"
-		class="ikube.deploy.model.Server"
-		property:ip="192.168.1.20"
-		property:username="${username}"
-		property:password="${password}"
-		property:actions-ref="actions" />
-	<bean 
-		id="server-four"
-		name="server-four"
-		class="ikube.deploy.model.Server"
-		property:ip="192.168.1.31"
+		property:ip="81.82.213.177"
 		property:username="${username}"
 		property:password="${password}"
 		property:actions-ref="actions" />
@@ -105,7 +78,7 @@
 	<util:list id="stop-commands">
 		<value>. /etc/profile;</value>
 		<value>cd ${tomcat-bin-directory};./catalina.sh stop;</value>
-		<value>ps -ef | grep apache-tomcat-7.0.33-8090 | grep -v grep | awk '{print $2}' | xargs kill -9;</value>
+		<value>ps -ef | grep apache-tomcat-7.0.33-8080 | grep -v grep | awk '{print $2}' | xargs kill -9;</value>
 		<value>chmod 777 -R ${tomcat-directory};</value>
 		<value>rm -rf ${tomcat-directory}/bin/ikube;</value>
 		<value>rm -rf ${tomcat-directory}/webapps/ikube*;</value>
@@ -136,7 +109,6 @@
 		<entry key="${configuration-directory}/common" value="${tomcat-directory}/bin/ikube" />
 		<entry key="${configuration-directory}/production" value="${tomcat-directory}/bin/ikube" />
 		<entry key="${resources-directory}/indexes/twitter" value="${tomcat-directory}/bin/ikube" />
-		<entry key="${resources-directory}/indexes/vlapar" value="${tomcat-directory}/bin/ikube" />
 	</util:map>
 	
 	<bean 

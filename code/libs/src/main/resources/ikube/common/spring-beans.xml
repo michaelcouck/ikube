@@ -162,6 +162,7 @@
 	<bean 
 	    id="ikube.toolkit.ThreadUtilities"
 	    class="ikube.toolkit.ThreadUtilities"
+	    lazy-init="false"
 	    init-method="initialize"
 	    destroy-method="destroy" />
 	
@@ -381,7 +382,8 @@
 		id="ikube.action.index.handler.strategy.ClassificationStrategy"
 		name="ikube.action.index.handler.strategy.ClassificationStrategy" 
     	class="ikube.action.index.handler.strategy.ClassificationStrategy"
-    	init-method="initialize" />
+    	init-method="initialize"
+    	depends-on="ikube.toolkit.ThreadUtilities" />
     
     <!-- 
 		This bean is the geocoder, it will enrich the data with spatial co-ordinates if

@@ -34,13 +34,15 @@ public final class Deployer {
 	public static void main(String[] args) {
 		File configurationDirectory = new File(DOT_DIRECTORY);
 		String configurationFile = CONFIGURATION_FILE;
-		if (args != null && args.length > 1) {
-			configurationDirectory = new File(args[0]);
-			configurationFile = args[1];
-		}
 		boolean execute = Boolean.TRUE;
-		if (args != null && args.length >= 3) {
-			execute = Boolean.valueOf(args[2]);
+		if (args != null) {
+			if (args.length > 1) {
+				configurationDirectory = new File(args[0]);
+				configurationFile = args[1];
+			}
+			if (args.length >= 3) {
+				execute = Boolean.valueOf(args[2]);
+			}
 		}
 		String configurationDirectoryPath = FileUtilities.cleanFilePath(configurationDirectory.getAbsolutePath());
 		LOGGER.info("Directory : " + configurationDirectoryPath + ", file : " + configurationFile);
@@ -62,15 +64,12 @@ public final class Deployer {
 						}
 					}
 				});
-				if (deployer.isParallel()) {
-					futures.add(future);
-				} else {
+				futures.add(future);
+				if (!deployer.isParallel()) {
 					ThreadUtilities.waitForFuture(future, deployer.getMaxWaitTime());
 				}
 			}
-			if (deployer.isParallel()) {
-				ThreadUtilities.waitForFutures(futures, deployer.getMaxWaitTime());
-			}
+			ThreadUtilities.waitForFutures(futures, deployer.getMaxWaitTime());
 		}
 	}
 
