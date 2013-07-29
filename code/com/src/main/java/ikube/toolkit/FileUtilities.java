@@ -342,17 +342,17 @@ public final class FileUtilities {
 			file = new File(filePath);
 			if (directory) {
 				file = getOrCreateDirectory(file);
-				if (file.exists()) {
+				if (file != null && file.exists()) {
 					makeReadWrite(file);
 				} else {
-					LOGGER.warn("Didn't create directory/file : " + file);
+					LOGGER.warn("Didn't create directory/file : " + filePath);
 				}
 			} else {
 				file = getOrCreateFile(file);
-				if (!file.exists()) {
+				if (file != null && !file.exists()) {
 					makeReadWrite(file);
 				} else {
-					LOGGER.warn("Didn't create directory/file : " + file);
+					LOGGER.warn("Didn't create directory/file : " + filePath);
 				}
 			}
 			return file;
