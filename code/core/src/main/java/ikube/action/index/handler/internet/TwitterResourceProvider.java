@@ -2,6 +2,7 @@ package ikube.action.index.handler.internet;
 
 import ikube.action.index.handler.IResourceProvider;
 import ikube.model.IndexableTweets;
+import ikube.toolkit.ThreadUtilities;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -31,7 +32,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 		 */
 		@Override
 		public void onTweet(final Tweet tweet) {
-			if (atomicLong.getAndIncrement() % 10000 == 0) {
+			if (atomicLong.getAndIncrement() % 1000 == 0) {
 				logger.info("Tweet : " + tweets.size() + ", " + atomicLong.get() + ", "
 						+ ToStringBuilder.reflectionToString(tweet, ToStringStyle.SHORT_PREFIX_STYLE));
 			}
@@ -66,9 +67,10 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	private Stack<Tweet> tweets = new Stack<>();
+	private Stack<Tweet> tweets;
 
 	TwitterResourceProvider(final IndexableTweets indexableTweets) throws IOException {
+		tweets = new Stack<>();
 		TwitterTemplate twitter = new TwitterTemplate( //
 				indexableTweets.getConsumerKey(), //
 				indexableTweets.getConsumerSecret(), //
@@ -83,19 +85,11 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized Tweet getResource() {
-		try {
-			while (tweets.isEmpty()) {
-				try {
-					Thread.currentThread().wait(1000);
-				} catch (InterruptedException e) {
-					// Ignore
-				}
-			}
-			return tweets.pop();
-		} finally {
-			notifyAll();
+	public Tweet getResource() {
+		while (tweets.isEmpty()) {
+			ThreadUtilities.sleep(1000);
 		}
+		return tweets.pop();
 	}
 
 	/**
