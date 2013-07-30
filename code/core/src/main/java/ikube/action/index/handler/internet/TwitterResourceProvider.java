@@ -2,7 +2,6 @@ package ikube.action.index.handler.internet;
 
 import ikube.action.index.handler.IResourceProvider;
 import ikube.model.IndexableTweets;
-import ikube.toolkit.ThreadUtilities;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -86,9 +85,12 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 	@Override
 	public synchronized Tweet getResource() {
 		try {
-			if (tweets.isEmpty()) {
-				ThreadUtilities.sleep(100);
-				return getResource();
+			while (tweets.isEmpty()) {
+				try {
+					Thread.currentThread().wait(1000);
+				} catch (InterruptedException e) {
+					// Ignore
+				}
 			}
 			return tweets.pop();
 		} finally {
