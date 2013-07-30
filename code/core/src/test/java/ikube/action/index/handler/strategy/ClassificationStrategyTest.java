@@ -11,8 +11,11 @@ import ikube.model.IndexableColumn;
 import ikube.toolkit.PerformanceTester;
 import ikube.toolkit.ThreadUtilities;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
@@ -49,7 +52,7 @@ public class ClassificationStrategyTest extends AbstractTest {
 		assertEquals(IConstants.NEGATIVE, document.get(IConstants.CLASSIFICATION));
 
 		// Now we train the classifier and re-test the category
-		int maxTraining = 100;
+		int maxTraining = 300;
 		do {
 			for (final String category : IConstants.CATEGORIES) {
 				for (final String content : inputs.get(category)) {
@@ -80,12 +83,34 @@ public class ClassificationStrategyTest extends AbstractTest {
 		assertTrue(executionsPerSecond > 100);
 
 		// Check the memory for a million trainings
-//		PerformanceTester.execute(new PerformanceTester.APerform() {
-//			public void execute() throws Throwable {
-//				classificationStrategy.train(IConstants.NEUTRAL, "This is a small one hunded and fourty character piece of neutral text");
-//			}
-//		}, "Classification training strategy : ", 10000, Boolean.TRUE);
+		// PerformanceTester.execute(new PerformanceTester.APerform() {
+		// public void execute() throws Throwable {
+		// classificationStrategy.train(IConstants.NEUTRAL, "This is a small one hunded and fourty character piece of neutral text");
+		// }
+		// }, "Classification training strategy : ", 10000, Boolean.TRUE);
+	}
 
+	@Test
+	public void threadTraining() {
+		ThreadUtilities.initialize();
+		List<Future<?>> futures = new ArrayList<Future<?>>();
+		for (int i = 0; i < 10; i++) {
+			class Trainer implements Runnable {
+				public void run() {
+					int training = 100;
+					do {
+						for (final String category : IConstants.CATEGORIES) {
+							for (final String content : inputs.get(category)) {
+								classificationStrategy.train(category, content);
+							}
+						}
+					} while (training-- > 0);
+				}
+			}
+			Future<?> future = ThreadUtilities.submitSystem(new Trainer());
+			futures.add(future);
+		}
+		ThreadUtilities.waitForFutures(futures, Long.MAX_VALUE);
 	}
 
 }

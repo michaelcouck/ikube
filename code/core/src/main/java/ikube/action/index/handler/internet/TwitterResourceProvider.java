@@ -27,7 +27,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 		 */
 		@Override
 		public void onTweet(final Tweet tweet) {
-			if (tweets.size() < 1000) {
+			if (tweets.size() < 10000) {
 				tweets.push(tweet);
 			}
 		}
@@ -78,6 +78,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 	@Override
 	public Tweet getResource() {
 		while (tweets.isEmpty()) {
+			logger.info("Waiting for tweets : ");
 			ThreadUtilities.sleep(1000);
 		}
 		return tweets.pop();

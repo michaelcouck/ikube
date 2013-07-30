@@ -5,16 +5,17 @@ import java.io.StringReader;
 import java.util.LinkedList;
 
 import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.ngram.NGramTokenizer;
+import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.util.Version;
 
 public final class FeatureExtractor {
 
-	private int minGram = 3;
-	private int maxGram = 21;
+	int minGram = 3;
+	int maxGram = 21;
 	private LinkedList<String> dictionary = new LinkedList<String>();
 
-	public double[] extractFeatures(final String text, final String... dictionaryTerms) throws IOException {
+	public synchronized double[] extractFeatures(final String text, final String... dictionaryTerms) throws IOException {
 		if (dictionaryTerms != null && dictionaryTerms.length > 0) {
 			for (final String dictionaryTerm : dictionaryTerms) {
 				addToDictionary(dictionaryTerm);
@@ -54,8 +55,8 @@ public final class FeatureExtractor {
 	}
 
 	private Tokenizer getTokenizer(final String text) {
-		return new NGramTokenizer(new StringReader(text), minGram, maxGram);
-		// return new StandardTokenizer(Version.LUCENE_36, new StringReader(text));
+		// return new NGramTokenizer(new StringReader(text), minGram, maxGram);
+		return new StandardTokenizer(Version.LUCENE_36, new StringReader(text));
 	}
 
 }

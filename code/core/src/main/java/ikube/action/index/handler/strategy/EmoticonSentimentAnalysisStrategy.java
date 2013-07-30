@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
@@ -33,7 +32,6 @@ public final class EmoticonSentimentAnalysisStrategy extends AStrategy {
 
 	private Set<Long> emoticonHashesPos;
 	private Set<Long> emoticonHashesNeg;
-	private AtomicInteger atomicInteger;
 
 	public EmoticonSentimentAnalysisStrategy() {
 		this(null);
@@ -66,11 +64,9 @@ public final class EmoticonSentimentAnalysisStrategy extends AStrategy {
 					long hash = HashUtilities.hash(token);
 					if (emoticonHashesPos.contains(hash)) {
 						pos = Boolean.TRUE;
-						// Replace emoticons with the equivalent words, either positive or negative?
 					}
 					if (emoticonHashesNeg.contains(hash)) {
 						neg = Boolean.TRUE;
-						// Replace emoticons with the equivalent words, either positive or negative?
 					}
 				}
 				if (pos && neg) {
@@ -82,10 +78,10 @@ public final class EmoticonSentimentAnalysisStrategy extends AStrategy {
 					// Negative sentiment
 					IndexManager.addStringField(IConstants.CLASSIFICATION, IConstants.NEGATIVE, document, Store.YES, Index.ANALYZED, TermVector.NO);
 				}
-				if ((pos || neg) && (atomicInteger.getAndIncrement() % 1000 == 0)) {
-					// Found at least one emoticon!
-					logger.info("Emoticon : " + pos + ", " + neg);
-				}
+				// Found at least one emoticon!
+//				if (pos ^ neg) {
+//					logger.info("Emoticon : " + pos + ", " + neg);
+//				}
 			}
 		}
 		return super.aroundProcess(indexContext, indexable, document, resource);
@@ -97,7 +93,6 @@ public final class EmoticonSentimentAnalysisStrategy extends AStrategy {
 	@Override
 	public void initialize() {
 		try {
-			atomicInteger = new AtomicInteger(0);
 			emoticonHashesPos = new HashSet<Long>();
 			emoticonHashesNeg = new HashSet<Long>();
 			loadEmoticonHashes("emoticons-pos\\.txt", emoticonHashesPos);

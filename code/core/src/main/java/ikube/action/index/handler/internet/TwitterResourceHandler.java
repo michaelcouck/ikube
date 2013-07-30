@@ -6,11 +6,12 @@ import ikube.action.index.handler.ResourceHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableTweets;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
-import org.apache.lucene.index.IndexWriter;
 import org.springframework.social.twitter.api.Tweet;
 
 /**
@@ -19,6 +20,8 @@ import org.springframework.social.twitter.api.Tweet;
  * @version 01.00
  */
 public class TwitterResourceHandler extends ResourceHandler<IndexableTweets> {
+
+	private AtomicLong counter = new AtomicLong(0);
 
 	/**
 	 * {@inheritDoc}
@@ -48,13 +51,11 @@ public class TwitterResourceHandler extends ResourceHandler<IndexableTweets> {
 		IndexManager.addStringField(locationField, indexableTweets.getAddressContent(), document, store, analyzed, termVector);
 		IndexManager.addStringField(textField, indexableTweets.getContent().toString(), document, store, analyzed, termVector);
 
-		super.handleResource(indexContext, indexableTweets, document, resource);
-		IndexWriter[] indexWriters = indexContext.getIndexWriters();
-		if (indexWriters[indexWriters.length - 1].numDocs() % 1000 == 0) {
-			logger.info("Tweet : " + tweet);
+		if (counter.getAndIncrement() % 100 == 0) {
 			logger.info("Document : " + document);
 		}
-		return document;
+
+		return super.handleResource(indexContext, indexableTweets, document, resource);
 	}
 
 }

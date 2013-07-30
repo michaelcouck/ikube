@@ -12,7 +12,6 @@ import ikube.toolkit.Timer;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Iterator;
 
 import libsvm.LibSVM;
 import net.sf.javaml.core.Dataset;
@@ -57,9 +56,9 @@ public class ClassificationStrategy extends AStrategy {
 		libSvm = new LibSVM();
 		featureExtractor = new FeatureExtractor();
 		try {
-			String content = "shit what a lousy day";
+			String content = "The news is broardcast every day";
 			double[] featureVector = featureExtractor.extractFeatures(content, content);
-			Instance instance = new SparseInstance(featureVector, IConstants.NEGATIVE);
+			Instance instance = new SparseInstance(featureVector, IConstants.NEUTRAL);
 			dataset = new DefaultDataset(Arrays.asList(instance));
 			libSvm.buildClassifier(dataset);
 		} catch (IOException e) {
@@ -74,44 +73,28 @@ public class ClassificationStrategy extends AStrategy {
 	public boolean aroundProcess(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document, final Object resource)
 			throws Exception {
 		// TODO Perhaps detect the subject and the object. Separate the constructs of the sentence for further processing
-		long duration = Timer.execute(new Timer.Timed() {
-			@Override
-			public void execute() {
-				String content = indexable.getContent() != null ? indexable.getContent().toString() : resource != null ? resource.toString() : null;
-				if (content != null) {
-					// If this data is already classified by another strategy then maxTraining the language
-					// classifiers on the data. We can then also classify the data and correlate the results
-					String previousClassification = document.get(CLASSIFICATION);
-					String currentClassification = detectSentiment(content);
-					if (StringUtils.isEmpty(previousClassification)) {
-						// Not analyzed so add the sentiment that we get
-						addStringField(CLASSIFICATION, currentClassification, document, Store.YES, Index.ANALYZED, TermVector.NO);
-					} else {
-						if (maxTraining > 0) {
-							maxTraining--;
-							// Retrain on the previous strategy sentiment
-							train(previousClassification, content);
-						} else {
-							if (maxTraining == 0) {
-								maxTraining--;
-								// TODO Persist the data sets in the classifier
-							}
-						}
-						if (!previousClassification.contains(currentClassification)) {
-							// We don't change the original analysis, do we?
-							addStringField(CLASSIFICATION_CONFLICT, currentClassification, document, Store.YES, Index.ANALYZED, TermVector.NO);
-						}
-					}
+		String content = indexable.getContent() != null ? indexable.getContent().toString() : resource != null ? resource.toString() : null;
+		if (content != null) {
+			// If this data is already classified by another strategy then maxTraining the language
+			// classifiers on the data. We can then also classify the data and correlate the results
+			String previousClassification = document.get(CLASSIFICATION);
+			String currentClassification = detectSentiment(content);
+			if (StringUtils.isEmpty(previousClassification)) {
+				// Not analyzed so add the sentiment that we get
+				addStringField(CLASSIFICATION, currentClassification, document, Store.YES, Index.ANALYZED, TermVector.NO);
+			} else {
+				// We only train if we have had this tweet classified already
+				train(previousClassification, content);
+				if (!previousClassification.contains(currentClassification)) {
+					// We don't change the original analysis, do we?
+					addStringField(CLASSIFICATION_CONFLICT, currentClassification, document, Store.YES, Index.ANALYZED, TermVector.NO);
 				}
 			}
-		});
-		if (maxTraining > 0 && maxTraining % 1000 == 0) {
-			logger.info("Sentiment detection and training : " + duration);
 		}
 		return super.aroundProcess(indexContext, indexable, document, resource);
 	}
 
-	String detectSentiment(final String content) {
+	public String detectSentiment(final String content) {
 		double[] features;
 		try {
 			features = featureExtractor.extractFeatures(content);
@@ -123,28 +106,40 @@ public class ClassificationStrategy extends AStrategy {
 	}
 
 	void train(final String category, final String content) {
-		Iterator<Instance> iterator = dataset.iterator();
-		double[] features;
-		try {
-			features = featureExtractor.extractFeatures(content, content);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		Instance instance = new SparseInstance(features, category);
-		dataset = new DefaultDataset(Arrays.asList(instance));
-		while (iterator.hasNext()) {
-			instance = iterator.next();
-			dataset.add(instance);
+		if (maxTraining == 0) {
+			maxTraining--;
+			// TODO Persist the data sets in the classifier
+		} else if (maxTraining > 0) {
+			double[] features;
+			try {
+				features = featureExtractor.extractFeatures(content, content);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+
+			synchronized (this) {
+				Instance instance = new SparseInstance(features, category);
+				dataset.add(instance);
+			}
+
 			if (dataset.size() % 1000 == 0) {
 				logger.info("Building classifier : " + dataset.size());
 				long duration = Timer.execute(new Timer.Timed() {
 					@Override
 					public void execute() {
-						libSvm.buildClassifier(dataset);
+						final Dataset newDataset;
+						synchronized (ClassificationStrategy.this) {
+							newDataset = dataset.copy();
+						}
+						LibSVM newLibSvm = new LibSVM();
+						newLibSvm.buildClassifier(newDataset);
+						libSvm = newLibSvm;
+						newLibSvm = null;
 					}
 				});
 				logger.info("Built classifier in : " + duration);
 			}
+
 		}
 	}
 
