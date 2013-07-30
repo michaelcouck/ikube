@@ -5,6 +5,8 @@ import ikube.action.index.handler.strategy.ClassificationStrategy;
 import ikube.action.index.handler.strategy.LanguageCleaningStrategy;
 import ikube.action.index.handler.strategy.LanguageDetectionStrategy;
 
+import java.io.IOException;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -41,19 +43,21 @@ public class Classifier extends Resource {
 	@Autowired
 	private LanguageDetectionStrategy languageDetectionStrategy;
 	@Autowired
-	private ClassificationStrategy multiLanguageClassifierSentimentAnalysisStrategy;
+	private ClassificationStrategy classificationStrategy;
 
 	/**
 	 * {@inheritDoc}
+	 * 
+	 * @throws IOException
 	 */
 	@GET
 	@Path(Classifier.CLASSIFY)
 	@Consumes(MediaType.APPLICATION_XML)
-	public Response classify(@QueryParam(value = IConstants.CONTENT) final String content) {
+	public Response classify(@QueryParam(value = IConstants.CONTENT) final String content) throws IOException {
 		String cleanedContent = languageCleaningStrategy.cleanContent(content);
 		String language = languageDetectionStrategy.detectLanguage(cleanedContent);
 		if (language != null) {
-			String sentiment = multiLanguageClassifierSentimentAnalysisStrategy.detectSentiment(cleanedContent);
+			String sentiment = classificationStrategy.detectSentiment(cleanedContent);
 			return buildResponse(sentiment);
 		}
 		return buildResponse("nothing");

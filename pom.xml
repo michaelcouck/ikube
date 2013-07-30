@@ -1057,6 +1057,18 @@
 			<artifactId>commons-math3</artifactId>
 			<version>3.2</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>javaml</groupId>
+			<artifactId>javaml</artifactId>
+			<version>0.1.7</version>
+		</dependency>
+		<dependency>
+			<groupId>libsvm</groupId>
+			<artifactId>libsvm</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		
 	</dependencies>
 
 	<repositories>

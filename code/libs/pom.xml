@@ -18,7 +18,7 @@
 	</parent>
 	
 	<properties>
-		<phase>release</phase>
+		<phase>deploy</phase>
 		<packaging>jar</packaging>
 		<generate-pom>true</generate-pom>
 		<repository-id>ikube</repository-id>
@@ -333,6 +333,41 @@
 							<artifactId>lingpipe</artifactId>
 							<version>4.1.0</version>
 							<file>tools/lingpipe-4.1.0.jar</file>
+							<packaging>${packaging}</packaging>
+							<generatePom>${generate-pom}</generatePom>
+							<repositoryId>${repository-id}</repositoryId>
+							<url>${artifactory}</url>
+						</configuration>
+					</execution>
+					
+					<execution>
+						<id>install-javaml</id>
+						<goals>
+							<goal>deploy-file</goal>
+						</goals>
+						<phase>${phase}</phase>
+						<configuration>
+							<groupId>javaml</groupId>
+							<artifactId>javaml</artifactId>
+							<version>0.1.7</version>
+							<file>tools/analytics/javaml-0.1.7.jar</file>
+							<packaging>${packaging}</packaging>
+							<generatePom>${generate-pom}</generatePom>
+							<repositoryId>${repository-id}</repositoryId>
+							<url>${artifactory}</url>
+						</configuration>
+					</execution>
+					<execution>
+						<id>install-libsvm</id>
+						<goals>
+							<goal>deploy-file</goal>
+						</goals>
+						<phase>${phase}</phase>
+						<configuration>
+							<groupId>libsvm</groupId>
+							<artifactId>libsvm</artifactId>
+							<version>1.0.0</version>
+							<file>tools/analytics/libsvm-1.0.0.jar</file>
 							<packaging>${packaging}</packaging>
 							<generatePom>${generate-pom}</generatePom>
 							<repositoryId>${repository-id}</repositoryId>

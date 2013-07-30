@@ -41,19 +41,18 @@ public class PerformanceTester {
 	}
 
 	/**
-	 * Executes the perform object a set number of times, prints the duration and iterations per second to the log and returns the number of
-	 * iterations per second.
+	 * Executes the perform object a set number of times, prints the duration and iterations per second to the log and returns the number of iterations per
+	 * second.
 	 * 
-	 * @param perform
-	 *            the interface that will call the object to be executed
-	 * @param type
-	 *            the type of object to be executed, typically a string that will be printed to the output
-	 * @param iterations
-	 *            the number of executions to perform
+	 * @param perform the interface that will call the object to be executed
+	 * @param type the type of object to be executed, typically a string that will be printed to the output
+	 * @param iterations the number of executions to perform
 	 * @return the number of executions per second
 	 */
-	public static double execute(final IPerform perform, final String type, final double iterations, final boolean... memory) {
-		long before = Runtime.getRuntime().totalMemory();
+	public static double execute(final IPerform perform, final String type, final double iterations, final boolean memory) {
+		long freeMemory = Runtime.getRuntime().freeMemory();
+		long maxMemory = Runtime.getRuntime().maxMemory();
+		long totalMemory = Runtime.getRuntime().totalMemory();
 		double start = System.currentTimeMillis();
 		try {
 			for (int i = 0; i < iterations; i++) {
@@ -67,13 +66,18 @@ public class PerformanceTester {
 		double executionsPerSecond = (iterations / duration);
 		if (perform.log()) {
 			LOGGER.info("Duration : " + duration + ", " + type + " per second : " + executionsPerSecond);
-			if (memory != null && memory.length > 0 && memory[0]) {
-				long meg = 1000000;
-				long after = Runtime.getRuntime().totalMemory();
-				LOGGER.info("Before : " + (before / meg) + ", after : " + (after / meg) + ", increase : " + ((after - before) / meg));
+			if (memory) {
+				printMemory("Free memory", freeMemory, Runtime.getRuntime().freeMemory());
+				printMemory("Max memory", maxMemory, Runtime.getRuntime().maxMemory());
+				printMemory("Total memory", totalMemory, Runtime.getRuntime().totalMemory());
 			}
 		}
 		return executionsPerSecond;
+	}
+
+	private static void printMemory(final String text, final long before, final long after) {
+		long meg = 1000000;
+		LOGGER.info(text + ", before : " + (before / meg) + ", after : " + (after / meg) + ", increase/decrease : " + ((after - before) / meg));
 	}
 
 }

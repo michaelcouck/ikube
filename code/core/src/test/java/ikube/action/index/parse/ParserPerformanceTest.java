@@ -39,7 +39,7 @@ public class ParserPerformanceTest extends AbstractTest {
 					InputStream inputStream = new FileInputStream(file);
 					parser.parse(inputStream, new ByteArrayOutputStream());
 				}
-			}, parser.getClass().getSimpleName() + ", file name : " + fileName, iterations);
+			}, parser.getClass().getSimpleName() + ", file name : " + fileName, iterations, true);
 		}
 	}
 
@@ -59,7 +59,7 @@ public class ParserPerformanceTest extends AbstractTest {
 					matcher.group();
 				}
 			}
-		}, "Pattern matcher : ", 100);
+		}, "Pattern matcher : ", 100, true);
 		assertTrue(executionsPerSecond > 10);
 	}
 
