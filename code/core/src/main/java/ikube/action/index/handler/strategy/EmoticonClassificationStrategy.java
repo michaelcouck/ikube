@@ -79,9 +79,9 @@ public final class EmoticonClassificationStrategy extends AStrategy {
 					IndexManager.addStringField(IConstants.CLASSIFICATION, IConstants.NEGATIVE, document, Store.YES, Index.ANALYZED, TermVector.NO);
 				}
 				// Found at least one emoticon!
-				if (pos ^ neg) {
-					logger.info("Emoticon : " + pos + ", " + neg);
-				}
+				// if (pos ^ neg) {
+				// logger.info("Emoticon : " + pos + ", " + neg);
+				// }
 			}
 		}
 		return super.aroundProcess(indexContext, indexable, document, resource);
