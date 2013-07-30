@@ -35,7 +35,7 @@ import org.apache.lucene.document.Field.TermVector;
  */
 public class ClassificationStrategy extends AStrategy {
 
-	private int maxTraining = 1000000;
+	private int maxTraining = 100000;
 
 	private LibSVM libSvm;
 	private Dataset dataset;
@@ -160,6 +160,10 @@ public class ClassificationStrategy extends AStrategy {
 			}
 
 		}
+	}
+
+	public void setMaxTraining(int maxTraining) {
+		this.maxTraining = maxTraining;
 	}
 
 }
