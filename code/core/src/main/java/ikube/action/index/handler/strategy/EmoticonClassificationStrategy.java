@@ -28,16 +28,16 @@ import org.apache.lucene.document.Field.TermVector;
  * @since 19.06.13
  * @version 01.00
  */
-public final class EmoticonSentimentAnalysisStrategy extends AStrategy {
+public final class EmoticonClassificationStrategy extends AStrategy {
 
 	private Set<Long> emoticonHashesPos;
 	private Set<Long> emoticonHashesNeg;
 
-	public EmoticonSentimentAnalysisStrategy() {
+	public EmoticonClassificationStrategy() {
 		this(null);
 	}
 
-	public EmoticonSentimentAnalysisStrategy(final IStrategy nextStrategy) {
+	public EmoticonClassificationStrategy(final IStrategy nextStrategy) {
 		super(nextStrategy);
 	}
 

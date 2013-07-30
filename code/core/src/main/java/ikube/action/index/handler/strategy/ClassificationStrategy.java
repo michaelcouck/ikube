@@ -12,6 +12,9 @@ import ikube.toolkit.Timer;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import libsvm.LibSVM;
 import net.sf.javaml.core.Dataset;
@@ -37,6 +40,7 @@ public class ClassificationStrategy extends AStrategy {
 	private LibSVM libSvm;
 	private Dataset dataset;
 	private FeatureExtractor featureExtractor;
+	private Lock lock;
 
 	public ClassificationStrategy() {
 		this(null);
@@ -55,6 +59,7 @@ public class ClassificationStrategy extends AStrategy {
 	public void initialize() {
 		libSvm = new LibSVM();
 		featureExtractor = new FeatureExtractor();
+		lock = new ReentrantLock();
 		try {
 			String content = "The news is broardcast every day";
 			double[] featureVector = featureExtractor.extractFeatures(content, content);
@@ -117,9 +122,15 @@ public class ClassificationStrategy extends AStrategy {
 				throw new RuntimeException(e);
 			}
 
-			synchronized (this) {
-				Instance instance = new SparseInstance(features, category);
-				dataset.add(instance);
+			try {
+				if (lock.tryLock(1000, TimeUnit.MILLISECONDS)) {
+					Instance instance = new SparseInstance(features, category);
+					dataset.add(instance);
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} finally {
+				lock.unlock();
 			}
 
 			if (dataset.size() % 1000 == 0) {
@@ -127,14 +138,22 @@ public class ClassificationStrategy extends AStrategy {
 				long duration = Timer.execute(new Timer.Timed() {
 					@Override
 					public void execute() {
-						final Dataset newDataset;
-						synchronized (ClassificationStrategy.this) {
-							newDataset = dataset.copy();
+						Dataset newDataset = null;
+						try {
+							if (lock.tryLock(1000, TimeUnit.MILLISECONDS)) {
+								newDataset = dataset.copy();
+							}
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						} finally {
+							lock.unlock();
 						}
-						LibSVM newLibSvm = new LibSVM();
-						newLibSvm.buildClassifier(newDataset);
-						libSvm = newLibSvm;
-						newLibSvm = null;
+						if (newDataset != null) {
+							LibSVM newLibSvm = new LibSVM();
+							newLibSvm.buildClassifier(newDataset);
+							libSvm = newLibSvm;
+							newLibSvm = null;
+						}
 					}
 				});
 				logger.info("Built classifier in : " + duration);

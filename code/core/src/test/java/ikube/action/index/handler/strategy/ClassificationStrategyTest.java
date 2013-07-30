@@ -49,7 +49,7 @@ public class ClassificationStrategyTest extends AbstractTest {
 		Document document = new Document();
 		classificationStrategy.aroundProcess(indexContext, indexableColumn, document, null);
 		logger.info("Document : " + document);
-		assertEquals(IConstants.NEGATIVE, document.get(IConstants.CLASSIFICATION));
+		assertEquals(IConstants.NEUTRAL, document.get(IConstants.CLASSIFICATION));
 
 		// Now we train the classifier and re-test the category
 		int maxTraining = 300;

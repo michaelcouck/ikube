@@ -14,12 +14,12 @@ import org.mockito.Mockito;
 
 public class EmoticonSentimentAnalysisStrategyTest extends AbstractTest {
 
-	private EmoticonSentimentAnalysisStrategy emoticonSentimentAnalysisStrategy;
+	private EmoticonClassificationStrategy emoticonClassificationStrategy;
 
 	@Before
 	public void before() {
-		emoticonSentimentAnalysisStrategy = new EmoticonSentimentAnalysisStrategy();
-		emoticonSentimentAnalysisStrategy.initialize();
+		emoticonClassificationStrategy = new EmoticonClassificationStrategy();
+		emoticonClassificationStrategy.initialize();
 	}
 
 	@Test
@@ -29,17 +29,17 @@ public class EmoticonSentimentAnalysisStrategyTest extends AbstractTest {
 
 		Document document = new Document();
 		Mockito.when(indexable.getContent()).thenReturn("What a lovely day :)");
-		emoticonSentimentAnalysisStrategy.aroundProcess(indexContext, indexable, document, resource);
+		emoticonClassificationStrategy.aroundProcess(indexContext, indexable, document, resource);
 		assertEquals(IConstants.POSITIVE, document.get(IConstants.CLASSIFICATION));
 
 		document = new Document();
 		Mockito.when(indexable.getContent()).thenReturn("I am having a terrible time :(");
-		emoticonSentimentAnalysisStrategy.aroundProcess(indexContext, indexable, document, resource);
+		emoticonClassificationStrategy.aroundProcess(indexContext, indexable, document, resource);
 		assertEquals(IConstants.NEGATIVE, document.get(IConstants.CLASSIFICATION));
 
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			public void execute() throws Throwable {
-				emoticonSentimentAnalysisStrategy.aroundProcess(indexContext, indexable, new Document(), resource);
+				emoticonClassificationStrategy.aroundProcess(indexContext, indexable, new Document(), resource);
 			}
 		}, "Emoticon strategy : ", 1000, Boolean.TRUE);
 		assertTrue(executionsPerSecond > 1000);
