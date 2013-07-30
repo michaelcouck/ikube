@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class EmoticonSentimentAnalysisStrategyTest extends AbstractTest {
+public class EmoticonClassificationStrategyTest extends AbstractTest {
 
 	private EmoticonClassificationStrategy emoticonClassificationStrategy;
 
