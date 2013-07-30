@@ -77,7 +77,7 @@
 		<ref bean="ikube.action.index.handler.strategy.LanguageCleaningStrategy" />
 		<ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
 		<!-- <ref bean="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy" /> -->
-		<ref bean="ikube.action.index.handler.strategy.EmoticonSentimentAnalysisStrategy" />
+		<ref bean="ikube.action.index.handler.strategy.EmoticonClassificationStrategy" />
 		<ref bean="ikube.action.index.handler.strategy.ClassificationStrategy.Twitter" />
 	</util:list>
 	

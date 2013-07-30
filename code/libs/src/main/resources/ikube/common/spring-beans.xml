@@ -373,9 +373,9 @@
     	init-method="initialize" />
     
 	<bean
-		id="ikube.action.index.handler.strategy.EmoticonSentimentAnalysisStrategy"
-		name="ikube.action.index.handler.strategy.EmoticonSentimentAnalysisStrategy" 
-    	class="ikube.action.index.handler.strategy.EmoticonSentimentAnalysisStrategy" 
+		id="ikube.action.index.handler.strategy.EmoticonClassificationStrategy"
+		name="ikube.action.index.handler.strategy.EmoticonClassificationStrategy" 
+    	class="ikube.action.index.handler.strategy.EmoticonClassificationStrategy" 
     	init-method="initialize" />
     	
     <bean
