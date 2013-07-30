@@ -24,7 +24,7 @@ public class ResourceHandler<T> implements IResourceHandler<T> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Document handleResource(IndexContext<?> indexContext, T indexable, Document document, Object resource) throws Exception {
+	public Document handleResource(final IndexContext<?> indexContext, final T indexable, final Document document, final Object resource) throws Exception {
 		addDocument(indexContext, (Indexable<?>) indexable, document);
 		return document;
 	}

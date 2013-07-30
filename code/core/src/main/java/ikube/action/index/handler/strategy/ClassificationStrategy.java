@@ -74,44 +74,62 @@ public class ClassificationStrategy extends AStrategy {
 	public boolean aroundProcess(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document, final Object resource)
 			throws Exception {
 		// TODO Perhaps detect the subject and the object. Separate the constructs of the sentence for further processing
-		String content = indexable.getContent() != null ? indexable.getContent().toString() : resource != null ? resource.toString() : null;
-		if (content != null) {
-			// If this data is already classified by another strategy then maxTraining the language
-			// classifiers on the data. We can then also classify the data and correlate the results
-			String previousClassification = document.get(CLASSIFICATION);
-			String currentClassification = detectSentiment(content);
-			if (StringUtils.isEmpty(previousClassification)) {
-				// Not analyzed so add the sentiment that we get
-				addStringField(CLASSIFICATION, currentClassification, document, Store.YES, Index.ANALYZED, TermVector.NO);
-			} else {
-				if (maxTraining > 0) {
-					maxTraining--;
-					// Retrain on the previous strategy sentiment
-					train(previousClassification, content);
-				} else {
-					if (maxTraining == 0) {
-						maxTraining--;
-						// TODO Persist the data sets in the classifier
+		long duration = Timer.execute(new Timer.Timed() {
+			@Override
+			public void execute() {
+				String content = indexable.getContent() != null ? indexable.getContent().toString() : resource != null ? resource.toString() : null;
+				if (content != null) {
+					// If this data is already classified by another strategy then maxTraining the language
+					// classifiers on the data. We can then also classify the data and correlate the results
+					String previousClassification = document.get(CLASSIFICATION);
+					String currentClassification = detectSentiment(content);
+					if (StringUtils.isEmpty(previousClassification)) {
+						// Not analyzed so add the sentiment that we get
+						addStringField(CLASSIFICATION, currentClassification, document, Store.YES, Index.ANALYZED, TermVector.NO);
+					} else {
+						if (maxTraining > 0) {
+							maxTraining--;
+							// Retrain on the previous strategy sentiment
+							train(previousClassification, content);
+						} else {
+							if (maxTraining == 0) {
+								maxTraining--;
+								// TODO Persist the data sets in the classifier
+							}
+						}
+						if (!previousClassification.contains(currentClassification)) {
+							// We don't change the original analysis, do we?
+							addStringField(CLASSIFICATION_CONFLICT, currentClassification, document, Store.YES, Index.ANALYZED, TermVector.NO);
+						}
 					}
 				}
-				if (!previousClassification.contains(currentClassification)) {
-					// We don't change the original analysis, do we?
-					addStringField(CLASSIFICATION_CONFLICT, currentClassification, document, Store.YES, Index.ANALYZED, TermVector.NO);
-				}
 			}
+		});
+		if (maxTraining > 0 && maxTraining % 1000 == 0) {
+			logger.info("Sentiment detection and training : " + duration);
 		}
 		return super.aroundProcess(indexContext, indexable, document, resource);
 	}
 
-	public String detectSentiment(final String content) throws IOException {
-		double[] features = featureExtractor.extractFeatures(content);
+	String detectSentiment(final String content) {
+		double[] features;
+		try {
+			features = featureExtractor.extractFeatures(content);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 		Instance instance = new SparseInstance(features);
 		return libSvm.classify(instance).toString();
 	}
 
-	void train(final String category, final String content) throws IOException {
+	void train(final String category, final String content) {
 		Iterator<Instance> iterator = dataset.iterator();
-		double[] features = featureExtractor.extractFeatures(content, content);
+		double[] features;
+		try {
+			features = featureExtractor.extractFeatures(content, content);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 		Instance instance = new SparseInstance(features, category);
 		dataset = new DefaultDataset(Arrays.asList(instance));
 		while (iterator.hasNext()) {
