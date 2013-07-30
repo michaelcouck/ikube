@@ -8,6 +8,7 @@ import ikube.action.index.handler.IStrategy;
 import ikube.analytics.FeatureExtractor;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
+import ikube.toolkit.Timer;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -117,7 +118,14 @@ public class ClassificationStrategy extends AStrategy {
 			instance = iterator.next();
 			dataset.add(instance);
 			if (dataset.size() % 1000 == 0) {
-				libSvm.buildClassifier(dataset);
+				logger.info("Building classifier : " + dataset.size());
+				long duration = Timer.execute(new Timer.Timed() {
+					@Override
+					public void execute() {
+						libSvm.buildClassifier(dataset);
+					}
+				});
+				logger.info("Built classifier in : " + duration);
 			}
 		}
 	}

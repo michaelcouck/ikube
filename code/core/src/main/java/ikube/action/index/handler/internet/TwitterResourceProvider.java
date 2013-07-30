@@ -8,10 +8,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
-import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.social.twitter.api.StreamDeleteEvent;
@@ -25,17 +22,11 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 
 	private class TwitterStreamListener implements StreamListener {
 
-		private AtomicLong atomicLong = new AtomicLong(0);
-
 		/**
 		 * {@inheritDoc}
 		 */
 		@Override
 		public void onTweet(final Tweet tweet) {
-			if (atomicLong.getAndIncrement() % 1000 == 0) {
-				logger.info("Tweet : " + tweets.size() + ", " + atomicLong.get() + ", "
-						+ ToStringBuilder.reflectionToString(tweet, ToStringStyle.SHORT_PREFIX_STYLE));
-			}
 			if (tweets.size() < 1000) {
 				tweets.push(tweet);
 			}

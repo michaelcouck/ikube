@@ -5,6 +5,8 @@ import ikube.model.Indexable;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is the base class for the resource providers, common logic in other words.
@@ -15,6 +17,8 @@ import org.apache.lucene.index.IndexWriter;
  * @version 01.00
  */
 public class ResourceHandler<T> implements IResourceHandler<T> {
+
+	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	/**
 	 * {@inheritDoc}

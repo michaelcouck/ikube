@@ -10,6 +10,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
+import org.apache.lucene.index.IndexWriter;
 import org.springframework.social.twitter.api.Tweet;
 
 /**
@@ -21,9 +22,12 @@ public class TwitterResourceHandler extends ResourceHandler<IndexableTweets> {
 
 	/**
 	 * {@inheritDoc}
+	 * 
+	 * @throws Exception
 	 */
 	@Override
-	public Document handleResource(final IndexContext<?> indexContext, final IndexableTweets indexableTweets, final Document document, final Object resource) {
+	public Document handleResource(final IndexContext<?> indexContext, final IndexableTweets indexableTweets, final Document document, final Object resource)
+			throws Exception {
 		Tweet tweet = (Tweet) resource;
 		Store store = indexableTweets.isStored() ? Store.YES : Store.NO;
 		Index analyzed = indexableTweets.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
@@ -44,10 +48,11 @@ public class TwitterResourceHandler extends ResourceHandler<IndexableTweets> {
 		IndexManager.addStringField(locationField, indexableTweets.getAddressContent(), document, store, analyzed, termVector);
 		IndexManager.addStringField(textField, indexableTweets.getContent().toString(), document, store, analyzed, termVector);
 
-		try {
-			addDocument(indexContext, indexableTweets, document);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		super.handleResource(indexContext, indexableTweets, document, resource);
+		IndexWriter[] indexWriters = indexContext.getIndexWriters();
+		if (indexWriters[indexWriters.length - 1].numDocs() % 1000 == 0) {
+			logger.info("Tweet : " + tweet);
+			logger.info("Document : " + document);
 		}
 		return document;
 	}

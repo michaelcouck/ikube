@@ -7,7 +7,6 @@ import ikube.model.IndexableTweets;
 
 import java.util.List;
 import java.util.concurrent.ForkJoinTask;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
@@ -22,7 +21,6 @@ import org.springframework.social.twitter.api.TwitterProfile;
  */
 public class TwitterHandler extends IndexableHandler<IndexableTweets> {
 
-	private AtomicInteger atomicInteger = new AtomicInteger(0);
 	@Autowired
 	private TwitterResourceHandler twitterResourceHandler;
 
@@ -47,8 +45,8 @@ public class TwitterHandler extends IndexableHandler<IndexableTweets> {
 		// Based on the universal time offset, the time zone and the language we should be able to
 		// guess the exact location of the tweet, but for now we'll just hope that the location is not null
 		// and indeed filled in correctly
-		twitterProfile.getUtcOffset();
-		twitterProfile.getTimeZone();
+		// twitterProfile.getUtcOffset();
+		// twitterProfile.getTimeZone();
 
 		StringBuilder addressBuilder = new StringBuilder();
 		if (!StringUtils.isEmpty(twitterProfile.getLocation())) {
@@ -76,10 +74,10 @@ public class TwitterHandler extends IndexableHandler<IndexableTweets> {
 		// strategy needs this to guess the geo-coordinates of the tweet
 		indexableTweets.setContent(builder.toString());
 		// And put the data in the index
-		Document document = twitterResourceHandler.handleResource(indexContext, indexableTweets, new Document(), resource);
-		// We could get more tweets here I guess
-		if (atomicInteger.getAndIncrement() % 10000 == 0) {
-			logger.info("Document : " + document);
+		try {
+			twitterResourceHandler.handleResource(indexContext, indexableTweets, new Document(), resource);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 		return null;
 	}
