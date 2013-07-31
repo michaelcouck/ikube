@@ -78,7 +78,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 	@Override
 	public Tweet getResource() {
 		while (tweets.isEmpty()) {
-			logger.info("Waiting for tweets : ");
+			// logger.info("Waiting for tweets : ");
 			ThreadUtilities.sleep(10000);
 		}
 		return tweets.pop();
