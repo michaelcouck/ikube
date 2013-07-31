@@ -54,15 +54,12 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 	 */
 	protected ForkJoinTask<?> getRecursiveAction(final IndexContext<?> indexContext, final T indexable, final IResourceProvider<?> resourceProvider) {
 		class RecursiveActionImpl extends RecursiveAction {
-			/**
-			 * @see IndexableHandler#getRecursiveAction(IndexContext, T, IResourceProvider)
-			 */
+			/** @see IndexableHandler#getRecursiveAction(IndexContext, T, IResourceProvider) */
 			@Override
 			@SuppressWarnings({ "rawtypes", "unchecked" })
 			protected void compute() {
-				int threads = indexable.getThreads();
 				// Lets see if we should split off some threads
-				computeRecursive();
+				computeRecursive(indexContext, indexable, resourceProvider);
 				do {
 					// When there are no more resources we exit this task
 					Object resource = resourceProvider.getResource();
@@ -73,32 +70,31 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 					List resources = handleResource(indexContext, indexable, resource);
 					// Set any returned resources back in the resource provider, like a feed back mechanism
 					resourceProvider.setResources(resources);
-					// Sleep for the required time, zzzzzz.....
+					// Sleep for the required time
 					ThreadUtilities.sleep(indexContext.getThrottle());
 				} while (true);
-				indexable.setThreads(threads);
 				logger.info("Finished : " + this + ", " + RecursiveAction.getPool().getRunningThreadCount());
-			}
-
-			@SuppressWarnings({ "unchecked", "rawtypes" })
-			private void computeRecursive() {
-				if (indexable.incrementThreads(-1) <= 0) {
-					return;
-				}
-				logger.info("This : " + this + ", " + indexable.getThreads());
-				// Split off some more threads to help do the work
-				T leftIndexable = (T) SerializationUtilities.clone(indexable);
-				T rightIndexable = (T) SerializationUtilities.clone(indexable);
-				((Indexable) leftIndexable).setStrategies(indexable.getStrategies());
-				((Indexable) rightIndexable).setStrategies(indexable.getStrategies());
-
-				ForkJoinTask<?> leftRecursiveAction = getRecursiveAction(indexContext, leftIndexable, resourceProvider);
-				ForkJoinTask<?> rightRecursiveAction = getRecursiveAction(indexContext, rightIndexable, resourceProvider);
-				invokeAll(leftRecursiveAction, rightRecursiveAction);
 			}
 		}
 		// And hup
 		return new RecursiveActionImpl();
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private synchronized void computeRecursive(final IndexContext<?> indexContext, final T indexable, final IResourceProvider<?> resourceProvider) {
+		if (indexable.incrementThreads(-1) <= 0) {
+			return;
+		}
+		logger.info("This : " + this + ", " + indexable.getThreads());
+		// Split off some more threads to help do the work
+		T leftIndexable = (T) SerializationUtilities.clone(indexable);
+		T rightIndexable = (T) SerializationUtilities.clone(indexable);
+		((Indexable) leftIndexable).setStrategies(indexable.getStrategies());
+		((Indexable) rightIndexable).setStrategies(indexable.getStrategies());
+
+		ForkJoinTask<?> leftRecursiveAction = getRecursiveAction(indexContext, leftIndexable, resourceProvider);
+		ForkJoinTask<?> rightRecursiveAction = getRecursiveAction(indexContext, rightIndexable, resourceProvider);
+		ForkJoinTask.invokeAll(leftRecursiveAction, rightRecursiveAction);
 	}
 
 	/**

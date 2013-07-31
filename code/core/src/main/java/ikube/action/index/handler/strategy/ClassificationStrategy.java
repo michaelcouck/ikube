@@ -15,10 +15,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeSet;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import libsvm.LibSVM;
 import net.sf.javaml.classification.Classifier;
@@ -45,7 +42,6 @@ public class ClassificationStrategy extends AStrategy {
 
 	private int maxTraining = 10000;
 
-	private Lock lock;
 	private Dataset dataset;
 	private Classifier[] classifiers;
 	private FeatureExtractor featureExtractor;
@@ -66,8 +62,6 @@ public class ClassificationStrategy extends AStrategy {
 	 */
 	@Override
 	public void initialize() {
-		lock = new ReentrantLock();
-
 		classifiers = new Classifier[2];
 		featureExtractor = new FeatureExtractor();
 		trainedCategories = new HashMap<String, AtomicInteger>();
@@ -163,7 +157,7 @@ public class ClassificationStrategy extends AStrategy {
 		return stringBuilder.toString();
 	}
 
-	void train(final String category, final String content) {
+	synchronized void train(final String category, final String content) {
 		if (maxTraining == 0) {
 			maxTraining--;
 			// TODO Persist the data sets in the classifier
@@ -179,34 +173,16 @@ public class ClassificationStrategy extends AStrategy {
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
-			try {
-				if (lock.tryLock(1000, TimeUnit.MILLISECONDS)) {
-					Instance instance = new SparseInstance(features, category);
-					dataset.add(instance);
-				}
-			} catch (InterruptedException e) {
-				logger.error(null, e);
-			} finally {
-				lock.unlock();
-			}
+			Instance instance = new SparseInstance(features, category);
+			dataset.add(instance);
 			if (dataset.size() % 100 == 0) {
 				logger.info("Building classifier : " + dataset.size());
 				long duration = Timer.execute(new Timer.Timed() {
 					@Override
 					public void execute() {
 						Dataset newDataset = null;
-						try {
-							if (lock.tryLock(1000, TimeUnit.MILLISECONDS)) {
-								newDataset = dataset.copy();
-							}
-						} catch (InterruptedException e) {
-							logger.error(null, e);
-						} finally {
-							lock.unlock();
-						}
-						if (newDataset != null) {
-							addClassifiers(newDataset);
-						}
+						newDataset = dataset.copy();
+						addClassifiers(newDataset);
 					}
 				});
 				logger.info("Built classifier in : " + duration);
@@ -232,7 +208,7 @@ public class ClassificationStrategy extends AStrategy {
 		return Boolean.TRUE;
 	}
 
-	public void setMaxTraining(int maxTraining) {
+	public void setMaxTraining(final int maxTraining) {
 		this.maxTraining = maxTraining;
 	}
 
