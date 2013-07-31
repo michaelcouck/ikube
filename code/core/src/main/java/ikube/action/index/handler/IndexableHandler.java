@@ -81,7 +81,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private synchronized void computeRecursive(final IndexContext<?> indexContext, final T indexable, final IResourceProvider<?> resourceProvider) {
+	private void computeRecursive(final IndexContext<?> indexContext, final T indexable, final IResourceProvider<?> resourceProvider) {
 		if (indexable.incrementThreads(-1) <= 0) {
 			return;
 		}
