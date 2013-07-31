@@ -46,15 +46,15 @@ public class PropertyConfigurer extends Properties {
 	 */
 	public void initialize() {
 		LOGGER.debug("User directory : " + new File(".").getAbsolutePath());
-		// Load the properties from our own jar
-		checkOwnJar();
-		// Check all the jars on the class path
-		checkClasspathJars();
-		// Check the file system for jars that have the properties files
-		checkJarsOnFileSystemFromDotFolder();
 		// Check the file system for properties files. We read these last as these
 		// will override the other properties that we might have found in the other locations
 		checkPropertiesFilesOnFileSystemFromDotFolder();
+		// Check the file system for jars that have the properties files
+		checkJarsOnFileSystemFromDotFolder();
+		// Check all the jars on the class path
+		checkClasspathJars();
+		// Load the properties from our own jar
+		checkOwnJar();
 		// If the system property for the configuration has not been set then set it to the dot directory
 		if (System.getProperty(Constants.IKUBE_CONFIGURATION) == null) {
 			System.setProperty(Constants.IKUBE_CONFIGURATION, ".");
