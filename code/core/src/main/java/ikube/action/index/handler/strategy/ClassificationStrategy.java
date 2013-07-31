@@ -101,8 +101,7 @@ public class ClassificationStrategy extends AStrategy {
 		libSvmClassifier.buildClassifier(dataset);
 		classifiers[0] = libSvmClassifier;
 
-		Logistic logistic = new Logistic();
-		Classifier wekaLogisticClassifier = new WekaClassifier(logistic);
+		Classifier wekaLogisticClassifier = new WekaClassifier(new Logistic());
 		wekaLogisticClassifier.buildClassifier(dataset);
 		classifiers[1] = wekaLogisticClassifier;
 	}
@@ -220,15 +219,15 @@ public class ClassificationStrategy extends AStrategy {
 			atomicInteger = new AtomicInteger(0);
 			trainedCategories.put(category, atomicInteger);
 		}
-		int trainedCategory = atomicInteger.get();
 		for (Map.Entry<String, AtomicInteger> mapEntry : trainedCategories.entrySet()) {
 			if (category.equals(mapEntry.getKey())) {
 				continue;
 			}
-			if (trainedCategory - mapEntry.getValue().get() > 100) {
+			if (atomicInteger.get() - mapEntry.getValue().get() > 100) {
 				return Boolean.FALSE;
 			}
 		}
+		atomicInteger.incrementAndGet();
 		return Boolean.TRUE;
 	}
 

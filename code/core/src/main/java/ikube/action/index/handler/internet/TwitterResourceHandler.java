@@ -51,7 +51,7 @@ public class TwitterResourceHandler extends ResourceHandler<IndexableTweets> {
 		IndexManager.addStringField(locationField, indexableTweets.getAddressContent(), document, store, analyzed, termVector);
 		IndexManager.addStringField(textField, indexableTweets.getContent().toString(), document, store, analyzed, termVector);
 
-		if (counter.getAndIncrement() % 100 == 0) {
+		if (counter.getAndIncrement() % 10000 == 0) {
 			logger.info("Document : " + document);
 		}
 
