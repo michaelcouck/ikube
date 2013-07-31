@@ -189,7 +189,7 @@ public class ClassificationStrategy extends AStrategy {
 			} finally {
 				lock.unlock();
 			}
-			if (dataset.size() % 1000 == 0) {
+			if (dataset.size() % 100 == 0) {
 				logger.info("Building classifier : " + dataset.size());
 				long duration = Timer.execute(new Timer.Timed() {
 					@Override
