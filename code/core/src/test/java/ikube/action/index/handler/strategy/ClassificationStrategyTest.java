@@ -77,7 +77,7 @@ public class ClassificationStrategyTest extends AbstractTest {
 		document = new Document();
 		classificationStrategy.aroundProcess(indexContext, indexableColumn, document, null);
 		logger.info("Document : " + document);
-		assertEquals(IConstants.NEGATIVE + " " + IConstants.NEUTRAL, document.get(IConstants.CLASSIFICATION));
+		assertEquals(IConstants.NEUTRAL + " " + IConstants.POSITIVE, document.get(IConstants.CLASSIFICATION));
 
 		// We add the positive field for classification and the strategy should also classify the data as positive and there should be no conflict field
 		document = addStringField(IConstants.CLASSIFICATION, IConstants.CATEGORIES[0], new Document(), Store.YES, Index.ANALYZED, TermVector.YES);
@@ -86,7 +86,7 @@ public class ClassificationStrategyTest extends AbstractTest {
 		// Static classification of positive
 		assertEquals(IConstants.POSITIVE, document.get(IConstants.CLASSIFICATION));
 		// And the data is still negative neutral
-		assertEquals(IConstants.NEGATIVE + " " + IConstants.NEUTRAL, document.get(IConstants.CLASSIFICATION_CONFLICT));
+		assertEquals(IConstants.NEUTRAL + " " + IConstants.POSITIVE, document.get(IConstants.CLASSIFICATION_CONFLICT));
 
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			public void execute() throws Throwable {

@@ -60,7 +60,7 @@ public class StrategyInterceptor implements IStrategyInterceptor {
 				}
 			}
 		});
-		if (counter.getAndIncrement() % 1000 == 0) {
+		if (counter.getAndIncrement() % 10000 == 0) {
 			LOGGER.info("Strategy chain duration : " + duration);
 		}
 		return mustProcess.get() ? proceedingJoinPoint.proceed(args) : mustProcess.get();

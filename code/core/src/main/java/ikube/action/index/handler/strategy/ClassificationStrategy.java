@@ -34,7 +34,7 @@ import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 
-import weka.classifiers.functions.Logistic;
+import weka.classifiers.bayes.NaiveBayes;
 
 /**
  * @author Michael Couck
@@ -99,7 +99,10 @@ public class ClassificationStrategy extends AStrategy {
 		libSvmClassifier.buildClassifier(dataset);
 		classifiers[0] = libSvmClassifier;
 
-		Classifier wekaLogisticClassifier = new WekaClassifier(new Logistic());
+		// Classifier wekaLogisticClassifier = new WekaClassifier(new Logistic());
+		// Classifier wekaLogisticClassifier = new WekaClassifier(new SMO());
+		// Classifier wekaLogisticClassifier = new WekaClassifier(new SimpleLogistic());
+		Classifier wekaLogisticClassifier = new WekaClassifier(new NaiveBayes());
 		wekaLogisticClassifier.buildClassifier(dataset);
 		classifiers[1] = wekaLogisticClassifier;
 	}
