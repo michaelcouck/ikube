@@ -14,13 +14,10 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -341,7 +338,7 @@ public final class IndexManager {
 	}
 
 	public static long getIndexSize(final IndexContext<?> indexContext) {
-		final AtomicLong indexSize = new AtomicLong();
+		long indexSize = 0;
 		try {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append(indexContext.getIndexDirectoryPath());
@@ -349,26 +346,25 @@ public final class IndexManager {
 			stringBuilder.append(indexContext.getIndexName());
 			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(stringBuilder.toString());
 			if (latestIndexDirectory == null || !latestIndexDirectory.exists() || !latestIndexDirectory.isDirectory()) {
-				return indexSize.get();
+				return indexSize;
 			}
-			Files.walkFileTree(latestIndexDirectory.toPath(), new SimpleFileVisitor<Path>() {
-				public FileVisitResult visitFile(final Path path, final BasicFileAttributes attrs) throws IOException {
-					if (!attrs.isSymbolicLink() && (attrs.isDirectory() || attrs.isRegularFile())) {
-						File file = path.toFile();
-						if (file.exists() && file.canRead() && file.isFile()) {
-							long fileLength = file.length();
-							long newIndexSize = indexSize.get() + fileLength;
-							indexSize.set(newIndexSize);
+			List<File> files = new ArrayList<File>(Arrays.asList(latestIndexDirectory.listFiles()));
+			do {
+				for (final File file : files.toArray(new File[files.size()])) {
+					if (file.exists() && file.canRead()) {
+						if (file.isDirectory()) {
+							files.addAll(Arrays.asList(file.listFiles()));
+						} else {
+							indexSize += file.length();
 						}
-						return FileVisitResult.CONTINUE;
 					}
-					return FileVisitResult.SKIP_SUBTREE;
+					files.remove(file);
 				}
-			});
+			} while (files.size() > 0);
 		} catch (Exception e) {
 			LOGGER.error("Exception getting the size of the index : ", e);
 		}
-		return indexSize.get();
+		return indexSize;
 	}
 
 	public static long getDirectorySize(final File directory) {
