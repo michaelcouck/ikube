@@ -46,13 +46,13 @@ public class PropertyConfigurer extends Properties {
 	 */
 	public void initialize() {
 		LOGGER.debug("User directory : " + new File(".").getAbsolutePath());
+		// Check all the jars on the class path
+		checkClasspathJars();
+		// Check the file system for jars that have the properties files
+		checkJarsOnFileSystemFromDotFolder();
 		// Check the file system for properties files. We read these last as these
 		// will override the other properties that we might have found in the other locations
 		checkPropertiesFilesOnFileSystemFromDotFolder();
-		// Check the file system for jars that have the properties files
-		checkJarsOnFileSystemFromDotFolder();
-		// Check all the jars on the class path
-		checkClasspathJars();
 		// Load the properties from our own jar
 		checkOwnJar();
 		// If the system property for the configuration has not been set then set it to the dot directory
@@ -92,7 +92,6 @@ public class PropertyConfigurer extends Properties {
 		try {
 			// We check our own jar
 			File thisJar = new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-			LOGGER.debug("Checking our own jar : " + thisJar);
 			checkJar(thisJar);
 		} catch (URISyntaxException e) {
 			LOGGER.error("Aaai karumbi! Where am I?", e);
@@ -106,7 +105,7 @@ public class PropertyConfigurer extends Properties {
 				if (propertyFile == null || !propertyFile.canRead() || propertyFile.isDirectory()) {
 					continue;
 				}
-				LOGGER.debug("        : Loading properties from : " + propertyFile);
+				LOGGER.info("         : Loading properties from : " + propertyFile);
 				this.load(new FileInputStream(propertyFile));
 			} catch (Exception e) {
 				LOGGER.error("Exception reading property file : " + propertyFile, e);
@@ -119,7 +118,6 @@ public class PropertyConfigurer extends Properties {
 		List<File> jarFiles = FileUtilities.findFilesRecursively(new File("."), new ArrayList<File>(), ".jar\\Z");
 		for (File jarFile : jarFiles) {
 			try {
-				LOGGER.debug("        : Loading properties from : " + jarFile);
 				checkJar(jarFile);
 			} catch (Exception e) {
 				LOGGER.error("Exception reading jar file : " + jarFile, e);
@@ -135,7 +133,6 @@ public class PropertyConfigurer extends Properties {
 			while (tokenizer.hasMoreTokens()) {
 				String jarLocation = tokenizer.nextToken();
 				try {
-					LOGGER.debug("        : Checking location : " + jarLocation);
 					checkJar(new File(jarLocation));
 				} catch (Exception e) {
 					LOGGER.error("Exception checking jar : " + jarLocation, e);
@@ -156,7 +153,6 @@ public class PropertyConfigurer extends Properties {
 			return;
 		}
 		try {
-			LOGGER.debug("Checking jar : " + file);
 			checkJar(new JarFile(file));
 		} catch (Exception e) {
 			LOGGER.error("Exception accessing the properties in jar file : " + file, e);
@@ -175,7 +171,7 @@ public class PropertyConfigurer extends Properties {
 				JarEntry jarEntry = jarEntries.nextElement();
 				String entryName = jarEntry.getName();
 				if (fileNamePattern != null && Pattern.compile(".*(" + fileNamePattern + ").*").matcher(entryName).matches()) {
-					LOGGER.debug("        : Loading properties from : " + jarEntry);
+					LOGGER.info("Jar file : " + jarFile.getName() + ", " + jarEntry);
 					InputStream inputStream = jarFile.getInputStream(jarEntry);
 					this.load(inputStream);
 				}
