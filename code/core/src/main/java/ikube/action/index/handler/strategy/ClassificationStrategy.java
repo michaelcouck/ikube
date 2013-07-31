@@ -82,8 +82,6 @@ public class ClassificationStrategy extends AStrategy {
 	private void addClassifiers() throws IOException {
 		String[] text = { "The news is broardcast every day", "What a beautiful child", "Life sucks, and then you die" };
 		String dictionary = Arrays.deepToString(text);
-		double[] neutralVector = featureExtractor.extractFeatures(text[0], dictionary);
-		Instance neutralInstance = new SparseInstance(neutralVector, IConstants.NEUTRAL);
 
 		double[] positiveVector = featureExtractor.extractFeatures(text[1], dictionary);
 		Instance positiveInstance = new SparseInstance(positiveVector, IConstants.POSITIVE);
@@ -91,7 +89,7 @@ public class ClassificationStrategy extends AStrategy {
 		double[] negativeVector = featureExtractor.extractFeatures(text[2], dictionary);
 		Instance negativeInstance = new SparseInstance(negativeVector, IConstants.NEGATIVE);
 
-		dataset = new DefaultDataset(Arrays.asList(neutralInstance, positiveInstance, negativeInstance));
+		dataset = new DefaultDataset(Arrays.asList(positiveInstance, negativeInstance));
 
 		addClassifiers(dataset);
 	}
