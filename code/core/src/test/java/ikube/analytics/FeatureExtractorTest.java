@@ -1,15 +1,9 @@
 package ikube.analytics;
 
+import static junit.framework.Assert.assertEquals;
 import ikube.AbstractTest;
 
 import java.io.IOException;
-import java.util.Arrays;
-
-import libsvm.LibSVM;
-import net.sf.javaml.core.Dataset;
-import net.sf.javaml.core.DefaultDataset;
-import net.sf.javaml.core.DenseInstance;
-import net.sf.javaml.core.Instance;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,27 +19,20 @@ public class FeatureExtractorTest extends AbstractTest {
 
 	@Test
 	public void extractFeatures() throws IOException {
-		String dictionaryTerms = "this wonderful world love all you need shit what a lousy day";
-		double[] positiveVector = featureExtractor.extractFeatures("this wonderful world love is all you need", dictionaryTerms);
-		Instance positiveInstance = new DenseInstance(positiveVector, "positive");
+		String text = "In this wonderful world, love is all you need";
+		double[] vector = featureExtractor.extractFeatures(text, text);
+		for (final double d : vector) {
+			assertEquals(1.0, d);
+		}
 
-		double[] negativeVector = featureExtractor.extractFeatures("shit what a lousy day"); // new double[] { 0, 0, 0, 0 };
-		Instance negativeInstance = new DenseInstance(negativeVector, "negative");
-
-		Dataset dataset = new DefaultDataset(Arrays.asList(positiveInstance, negativeInstance));
-
-		LibSVM libSvmClassifier = new LibSVM();
-		libSvmClassifier.buildClassifier(dataset);
-
-		double[] toClassifyVector = featureExtractor.extractFeatures("love");
-		Instance toClassifyInstance = new DenseInstance(toClassifyVector);
-		Object result = libSvmClassifier.classify(toClassifyInstance);
-		logger.info("Result : " + result);
-
-		toClassifyVector = featureExtractor.extractFeatures("shit");
-		toClassifyInstance = new DenseInstance(toClassifyVector);
-		result = libSvmClassifier.classify(toClassifyInstance);
-		logger.info("Result : " + result);
+		vector = featureExtractor.extractFeatures("Lets go to another world");
+		for (int i = 0; i < vector.length; i++) {
+			if (i == 5) {
+				assertEquals(1.0, vector[i]);
+			} else {
+				assertEquals(0.0, vector[i]);
+			}
+		}
 	}
 
 }

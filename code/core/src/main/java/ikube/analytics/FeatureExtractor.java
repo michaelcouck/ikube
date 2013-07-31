@@ -55,8 +55,8 @@ public final class FeatureExtractor {
 	}
 
 	private Tokenizer getTokenizer(final String text) {
-		// return new NGramTokenizer(new StringReader(text), minGram, maxGram);
-		return new StandardTokenizer(Version.LUCENE_36, new StringReader(text));
+		// return new NGramTokenizer(new StringReader(text.toLowerCase()), minGram, maxGram);
+		return new StandardTokenizer(Version.LUCENE_36, new StringReader(text.toLowerCase()));
 	}
 
 }

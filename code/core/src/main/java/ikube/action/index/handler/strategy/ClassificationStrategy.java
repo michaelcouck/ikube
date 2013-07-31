@@ -12,21 +12,29 @@ import ikube.toolkit.Timer;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import libsvm.LibSVM;
+import net.sf.javaml.classification.Classifier;
 import net.sf.javaml.core.Dataset;
 import net.sf.javaml.core.DefaultDataset;
 import net.sf.javaml.core.Instance;
 import net.sf.javaml.core.SparseInstance;
+import net.sf.javaml.tools.weka.WekaClassifier;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
+
+import weka.classifiers.functions.Logistic;
 
 /**
  * @author Michael Couck
@@ -35,12 +43,13 @@ import org.apache.lucene.document.Field.TermVector;
  */
 public class ClassificationStrategy extends AStrategy {
 
-	private int maxTraining = 100000;
+	private int maxTraining = 10000;
 
-	private LibSVM libSvm;
-	private Dataset dataset;
-	private FeatureExtractor featureExtractor;
 	private Lock lock;
+	private Dataset dataset;
+	private Classifier[] classifiers;
+	private FeatureExtractor featureExtractor;
+	private Map<String, AtomicInteger> trainedCategories;
 
 	public ClassificationStrategy() {
 		this(null);
@@ -57,18 +66,45 @@ public class ClassificationStrategy extends AStrategy {
 	 */
 	@Override
 	public void initialize() {
-		libSvm = new LibSVM();
-		featureExtractor = new FeatureExtractor();
 		lock = new ReentrantLock();
+
+		classifiers = new Classifier[2];
+		featureExtractor = new FeatureExtractor();
+		trainedCategories = new HashMap<String, AtomicInteger>();
+
 		try {
-			String content = "The news is broardcast every day";
-			double[] featureVector = featureExtractor.extractFeatures(content, content);
-			Instance instance = new SparseInstance(featureVector, IConstants.NEUTRAL);
-			dataset = new DefaultDataset(Arrays.asList(instance));
-			libSvm.buildClassifier(dataset);
+			addClassifiers();
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			logger.error(null, e);
 		}
+	}
+
+	private void addClassifiers() throws IOException {
+		String[] text = { "The news is broardcast every day", "What a beautiful child", "Life sucks, and then you die" };
+		String dictionary = Arrays.deepToString(text);
+		double[] neutralVector = featureExtractor.extractFeatures(text[0], dictionary);
+		Instance neutralInstance = new SparseInstance(neutralVector, IConstants.NEUTRAL);
+
+		double[] positiveVector = featureExtractor.extractFeatures(text[1], dictionary);
+		Instance positiveInstance = new SparseInstance(positiveVector, IConstants.POSITIVE);
+
+		double[] negativeVector = featureExtractor.extractFeatures(text[2], dictionary);
+		Instance negativeInstance = new SparseInstance(negativeVector, IConstants.NEGATIVE);
+
+		dataset = new DefaultDataset(Arrays.asList(neutralInstance, positiveInstance, negativeInstance));
+
+		addClassifiers(dataset);
+	}
+
+	private void addClassifiers(final Dataset dataset) {
+		LibSVM libSvmClassifier = new LibSVM();
+		libSvmClassifier.buildClassifier(dataset);
+		classifiers[0] = libSvmClassifier;
+
+		Logistic logistic = new Logistic();
+		Classifier wekaLogisticClassifier = new WekaClassifier(logistic);
+		wekaLogisticClassifier.buildClassifier(dataset);
+		classifiers[1] = wekaLogisticClassifier;
 	}
 
 	/**
@@ -83,7 +119,7 @@ public class ClassificationStrategy extends AStrategy {
 			// If this data is already classified by another strategy then maxTraining the language
 			// classifiers on the data. We can then also classify the data and correlate the results
 			String previousClassification = document.get(CLASSIFICATION);
-			String currentClassification = detectSentiment(content);
+			String currentClassification = classify(content);
 			if (StringUtils.isEmpty(previousClassification)) {
 				// Not analyzed so add the sentiment that we get
 				addStringField(CLASSIFICATION, currentClassification, document, Store.YES, Index.ANALYZED, TermVector.NO);
@@ -99,7 +135,7 @@ public class ClassificationStrategy extends AStrategy {
 		return super.aroundProcess(indexContext, indexable, document, resource);
 	}
 
-	public String detectSentiment(final String content) {
+	public String classify(final String content) {
 		double[] features;
 		try {
 			features = featureExtractor.extractFeatures(content);
@@ -107,7 +143,24 @@ public class ClassificationStrategy extends AStrategy {
 			throw new RuntimeException(e);
 		}
 		Instance instance = new SparseInstance(features);
-		return libSvm.classify(instance).toString();
+		// Check each of the classifiers, if they don't match the log it
+		TreeSet<String> classifications = new TreeSet<String>();
+		for (final Classifier classifier : classifiers) {
+			classifications.add(classifier.classify(instance).toString());
+		}
+		if (classifications.size() == 1) {
+			return classifications.first();
+		}
+		boolean first = true;
+		StringBuilder stringBuilder = new StringBuilder();
+		for (final String classification : classifications) {
+			if (!first) {
+				stringBuilder.append(" ");
+			}
+			first = false;
+			stringBuilder.append(classification);
+		}
+		return stringBuilder.toString();
 	}
 
 	void train(final String category, final String content) {
@@ -115,24 +168,27 @@ public class ClassificationStrategy extends AStrategy {
 			maxTraining--;
 			// TODO Persist the data sets in the classifier
 		} else if (maxTraining > 0) {
+			if (!canTrain(category)) {
+				return;
+			}
+			maxTraining--;
+			// Check that the training for the categories are equal
 			double[] features;
 			try {
 				features = featureExtractor.extractFeatures(content, content);
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
-
 			try {
 				if (lock.tryLock(1000, TimeUnit.MILLISECONDS)) {
 					Instance instance = new SparseInstance(features, category);
 					dataset.add(instance);
 				}
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				logger.error(null, e);
 			} finally {
 				lock.unlock();
 			}
-
 			if (dataset.size() % 1000 == 0) {
 				logger.info("Building classifier : " + dataset.size());
 				long duration = Timer.execute(new Timer.Timed() {
@@ -144,22 +200,36 @@ public class ClassificationStrategy extends AStrategy {
 								newDataset = dataset.copy();
 							}
 						} catch (InterruptedException e) {
-							e.printStackTrace();
+							logger.error(null, e);
 						} finally {
 							lock.unlock();
 						}
 						if (newDataset != null) {
-							LibSVM newLibSvm = new LibSVM();
-							newLibSvm.buildClassifier(newDataset);
-							libSvm = newLibSvm;
-							newLibSvm = null;
+							addClassifiers(newDataset);
 						}
 					}
 				});
 				logger.info("Built classifier in : " + duration);
 			}
-
 		}
+	}
+
+	private boolean canTrain(final String category) {
+		AtomicInteger atomicInteger = trainedCategories.get(category);
+		if (atomicInteger == null) {
+			atomicInteger = new AtomicInteger(0);
+			trainedCategories.put(category, atomicInteger);
+		}
+		int trainedCategory = atomicInteger.get();
+		for (Map.Entry<String, AtomicInteger> mapEntry : trainedCategories.entrySet()) {
+			if (category.equals(mapEntry.getKey())) {
+				continue;
+			}
+			if (trainedCategory - mapEntry.getValue().get() > 100) {
+				return Boolean.FALSE;
+			}
+		}
+		return Boolean.TRUE;
 	}
 
 	public void setMaxTraining(int maxTraining) {

@@ -46,8 +46,7 @@ public final class LanguageCleaningStrategy extends AStrategy {
 				}
 				stringBuilder.append(c);
 			}
-			String cleanedContent = stringBuilder.toString().toLowerCase();
-			return cleanedContent;
+			return stringBuilder.toString().toLowerCase();
 		}
 		return content;
 	}

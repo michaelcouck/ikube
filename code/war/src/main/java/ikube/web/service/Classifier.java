@@ -57,7 +57,7 @@ public class Classifier extends Resource {
 		String cleanedContent = languageCleaningStrategy.cleanContent(content);
 		String language = languageDetectionStrategy.detectLanguage(cleanedContent);
 		if (language != null) {
-			String sentiment = classificationStrategy.detectSentiment(cleanedContent);
+			String sentiment = classificationStrategy.classify(cleanedContent);
 			return buildResponse(sentiment);
 		}
 		return buildResponse("nothing");

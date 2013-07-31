@@ -56,32 +56,26 @@ public final class EmoticonClassificationStrategy extends AStrategy {
 			String content = indexable.getContent() != null ? indexable.getContent().toString() : resource != null ? resource.toString() : null;
 			if (content != null) {
 				// Break the text up into tokens and match them against the emoticons
-				boolean pos = Boolean.FALSE;
-				boolean neg = Boolean.FALSE;
-				StringTokenizer stringTokenizer = new StringTokenizer(content, " ");
+				int positive = 0;
+				int negative = 0;
+				StringTokenizer stringTokenizer = new StringTokenizer(content, " @");
 				while (stringTokenizer.hasMoreTokens()) {
 					String token = stringTokenizer.nextToken();
 					long hash = HashUtilities.hash(token);
 					if (emoticonHashesPos.contains(hash)) {
-						pos = Boolean.TRUE;
+						positive++;
 					}
 					if (emoticonHashesNeg.contains(hash)) {
-						neg = Boolean.TRUE;
+						negative++;
 					}
 				}
-				if (pos && neg) {
-					// Do nothing because there are positive and negative
-				} else if (pos) {
+				if (positive > 1 && negative == 0) {
 					// Positive sentiment
 					IndexManager.addStringField(IConstants.CLASSIFICATION, IConstants.POSITIVE, document, Store.YES, Index.ANALYZED, TermVector.NO);
-				} else if (neg) {
+				} else if (negative > 1 && positive == 0) {
 					// Negative sentiment
 					IndexManager.addStringField(IConstants.CLASSIFICATION, IConstants.NEGATIVE, document, Store.YES, Index.ANALYZED, TermVector.NO);
 				}
-				// Found at least one emoticon!
-				// if (pos ^ neg) {
-				// logger.info("Emoticon : " + pos + ", " + neg);
-				// }
 			}
 		}
 		return super.aroundProcess(indexContext, indexable, document, resource);
