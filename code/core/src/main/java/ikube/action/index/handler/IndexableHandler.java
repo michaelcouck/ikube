@@ -82,7 +82,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void computeRecursive(final IndexContext<?> indexContext, final T indexable, final IResourceProvider<?> resourceProvider) {
-		if (indexable.incrementThreads(-1) <= 0) {
+		if (indexable.incrementThreads(-2) <= 0) {
 			return;
 		}
 		logger.info("This : " + this + ", " + indexable.getThreads());
@@ -101,6 +101,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 	 * {@inheritDoc}
 	 */
 	@Override
+	@Deprecated
 	public List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final T indexable) throws Exception {
 		return null;
 	}

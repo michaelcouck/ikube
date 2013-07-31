@@ -23,15 +23,12 @@ import net.sf.javaml.core.Dataset;
 import net.sf.javaml.core.DefaultDataset;
 import net.sf.javaml.core.Instance;
 import net.sf.javaml.core.SparseInstance;
-import net.sf.javaml.tools.weka.WekaClassifier;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
-
-import weka.classifiers.bayes.NaiveBayes;
 
 /**
  * @author Michael Couck
@@ -62,7 +59,7 @@ public class ClassificationStrategy extends AStrategy {
 	 */
 	@Override
 	public void initialize() {
-		classifiers = new Classifier[2];
+		classifiers = new Classifier[1];
 		featureExtractor = new FeatureExtractor();
 		trainedCategories = new HashMap<String, AtomicInteger>();
 
@@ -96,9 +93,9 @@ public class ClassificationStrategy extends AStrategy {
 		// Classifier wekaLogisticClassifier = new WekaClassifier(new Logistic());
 		// Classifier wekaLogisticClassifier = new WekaClassifier(new SMO());
 		// Classifier wekaLogisticClassifier = new WekaClassifier(new SimpleLogistic());
-		Classifier wekaLogisticClassifier = new WekaClassifier(new NaiveBayes());
-		wekaLogisticClassifier.buildClassifier(dataset);
-		classifiers[1] = wekaLogisticClassifier;
+		// Classifier wekaLogisticClassifier = new WekaClassifier(new NaiveBayes());
+		// wekaLogisticClassifier.buildClassifier(dataset);
+		// classifiers[1] = wekaLogisticClassifier;
 	}
 
 	/**
