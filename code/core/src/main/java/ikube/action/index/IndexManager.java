@@ -282,8 +282,8 @@ public final class IndexManager {
 	 * 2) The name of the index<br>
 	 * 3) The time(as a long) that the index was created 4) The ip address of the server that created the index<br>
 	 * 
-	 * The category of this is something like ./indexes/ikube/123456789/127.0.0.1. This method will return the directory ./indexes/ikube/123456789. In other words
-	 * the timestamp directory, not the individual server index directories.
+	 * The category of this is something like ./indexes/ikube/123456789/127.0.0.1. This method will return the directory ./indexes/ikube/123456789. In other
+	 * words the timestamp directory, not the individual server index directories.
 	 * 
 	 * @param baseIndexDirectoryPath the base path to the indexes, i.e. the ./indexes part
 	 * @return the latest time stamped directory at this path, in other words the ./indexes/ikube/123456789 directory. Note that there is no Lucene index at
@@ -352,13 +352,15 @@ public final class IndexManager {
 				return indexSize.get();
 			}
 			Files.walkFileTree(latestIndexDirectory.toPath(), new SimpleFileVisitor<Path>() {
-				public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
-					File file = path.toFile();
-					if (file.exists() && file.canRead()) {
-						long fileLength = file.length();
-						long newIndexSize = indexSize.get() + fileLength;
-						indexSize.set(newIndexSize);
-						return super.visitFile(path, attrs);
+				public FileVisitResult visitFile(final Path path, final BasicFileAttributes attrs) throws IOException {
+					if (!attrs.isSymbolicLink() && (attrs.isDirectory() || attrs.isRegularFile())) {
+						File file = path.toFile();
+						if (file.exists() && file.canRead() && file.isFile()) {
+							long fileLength = file.length();
+							long newIndexSize = indexSize.get() + fileLength;
+							indexSize.set(newIndexSize);
+						}
+						return FileVisitResult.CONTINUE;
 					}
 					return FileVisitResult.SKIP_SUBTREE;
 				}
