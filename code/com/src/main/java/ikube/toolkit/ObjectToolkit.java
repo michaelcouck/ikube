@@ -311,7 +311,7 @@ public final class ObjectToolkit {
 		if (object == null) {
 			return;
 		}
-		Field idField = getIdField(object.getClass(), null);
+		Field idField = getIdField(object.getClass());
 		if (idField != null) {
 			try {
 				idField.set(object, id);
@@ -332,25 +332,24 @@ public final class ObjectToolkit {
 	 * @param superKlass the super class of the object
 	 * @return the id field for the object or null if there is no field designated as the id
 	 */
-	public static Field getIdField(final Class<?> klass, final Class<?> superKlass) {
+	public static Field getIdField(final Class<?> klass) {
 		Field idField = ID_FIELDS.get(klass);
 		if (idField != null) {
 			return idField;
 		}
-		Field[] fields = superKlass != null ? superKlass.getDeclaredFields() : klass.getDeclaredFields();
-		for (Field field : fields) {
-			Id idAnnotation = field.getAnnotation(Id.class);
-			if (idAnnotation != null) {
-				ID_FIELDS.put(klass, field);
-				field.setAccessible(Boolean.TRUE);
-				return field;
+		Class<?> targetClass = klass;
+		do {
+			Field[] fields = targetClass.getDeclaredFields();
+			for (Field field : fields) {
+				Id idAnnotation = field.getAnnotation(Id.class);
+				if (idAnnotation != null) {
+					ID_FIELDS.put(klass, field);
+					field.setAccessible(Boolean.TRUE);
+					return field;
+				}
 			}
-		}
-		// Try the super classes
-		Class<?> superClass = superKlass != null ? superKlass.getSuperclass() : klass.getSuperclass();
-		if (superClass != null && !Object.class.getName().equals(superClass.getName())) {
-			return getIdField(klass, superClass);
-		}
+			targetClass = targetClass.getSuperclass();
+		} while (targetClass != null);
 		return null;
 	}
 
@@ -365,7 +364,7 @@ public final class ObjectToolkit {
 		if (object == null) {
 			return null;
 		}
-		Field idField = getIdField(object.getClass(), null);
+		Field idField = getIdField(object.getClass());
 		if (idField != null) {
 			try {
 				return idField.get(object);
@@ -387,7 +386,7 @@ public final class ObjectToolkit {
 	 * @return the name of the id field or null if there is no id field defined
 	 */
 	public static String getIdFieldName(final Class<?> klass) {
-		Field field = getIdField(klass, null);
+		Field field = getIdField(klass);
 		return field != null ? field.getName() : null;
 	}
 
