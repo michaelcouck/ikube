@@ -159,11 +159,11 @@ public class ClassificationStrategy extends AStrategy {
 			maxTraining--;
 			// TODO Persist the data sets in the classifier
 		} else if (maxTraining > 0) {
+			// Check that the training for the categories are equal
 			if (!canTrain(category)) {
 				return;
 			}
 			maxTraining--;
-			// Check that the training for the categories are equal
 			double[] features;
 			try {
 				features = featureExtractor.extractFeatures(content, content);
@@ -193,11 +193,13 @@ public class ClassificationStrategy extends AStrategy {
 			atomicInteger = new AtomicInteger(0);
 			trainedCategories.put(category, atomicInteger);
 		}
+		int maxDifference = 0;
 		for (Map.Entry<String, AtomicInteger> mapEntry : trainedCategories.entrySet()) {
 			if (category.equals(mapEntry.getKey())) {
 				continue;
 			}
-			if (atomicInteger.get() - mapEntry.getValue().get() > 100) {
+			maxDifference = Math.max(maxDifference, atomicInteger.get() - mapEntry.getValue().get());
+			if (maxDifference > 100) {
 				return Boolean.FALSE;
 			}
 		}

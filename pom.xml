@@ -1074,6 +1074,11 @@
 			<artifactId>weka-stable</artifactId>
 			<version>3.6.9</version>
 		</dependency>
+		<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>jooq</artifactId>
+			<version>3.1.0</version>
+		</dependency>
 	</dependencies>
 
 	<repositories>

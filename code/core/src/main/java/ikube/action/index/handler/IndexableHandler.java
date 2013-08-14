@@ -82,7 +82,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void computeRecursive(final IndexContext<?> indexContext, final T indexable, final IResourceProvider<?> resourceProvider) {
-		if (indexable.incrementThreads(-2) <= 0) {
+		if (indexable.incrementThreads(-1) <= 0) {
 			return;
 		}
 		logger.info("This : " + this + ", " + indexable.getThreads());
@@ -91,6 +91,8 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 		T rightIndexable = (T) SerializationUtilities.clone(indexable);
 		((Indexable) leftIndexable).setStrategies(indexable.getStrategies());
 		((Indexable) rightIndexable).setStrategies(indexable.getStrategies());
+		leftIndexable.incrementThreads(-2);
+		rightIndexable.incrementThreads(-2);
 
 		ForkJoinTask<?> leftRecursiveAction = getRecursiveAction(indexContext, leftIndexable, resourceProvider);
 		ForkJoinTask<?> rightRecursiveAction = getRecursiveAction(indexContext, rightIndexable, resourceProvider);

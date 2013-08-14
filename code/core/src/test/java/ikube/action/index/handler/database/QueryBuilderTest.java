@@ -10,6 +10,7 @@ import ikube.toolkit.ApplicationContextManager;
 
 import java.util.Iterator;
 
+import org.jooq.impl.DSL;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -105,6 +106,10 @@ public class QueryBuilderTest extends AbstractTest {
 		String indexContextSql = queryBuilder.buildQuery(indexContextTable, 0l, 1000l);
 		logger.info(indexContextSql);
 
+	}
+	
+	@Test
+	public void jooql() {
 	}
 
 }
