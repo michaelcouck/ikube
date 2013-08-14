@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:property="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.0.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<description>
+		This is the street and houses index. Once the index is done this query uri can be used to get some results:
+		http://localhost:8080/ikube/service/search/single?indexName=street-context&searchStrings=couck AND straat&searchFields=street_name&fragment=true&firstResult=0&maxResults=10
+	</description>
+
+	<bean
+		id="street-context"
+		class="ikube.model.IndexContext"
+		property:name="street-context"
+		property:maxAge="6000"
+		property:compoundFile="true"
+		property:bufferedDocs="10000"
+		property:bufferSize="256"
+		property:batchSize="10000"
+		property:internetBatchSize="100"
+		property:mergeFactor="10000"
+		property:maxFieldLength="10000"
+		property:maxReadLength="10000"
+		property:throttle="0"
+		property:indexDirectoryPath="./ikube/indexes"
+		property:indexDirectoryPathBackup="./ikube/indexes"
+		property:children-ref="street-indexables" 
+		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer.street" />
+	<util:list id="street-indexables">
+		<ref local="street-table" />
+	</util:list>
+	<bean 
+		id="ikube.action.index.analyzer.NgramAnalyzer.street"
+		name="ikube.action.index.analyzer.NgramAnalyzer.street"
+		class="ikube.action.index.analyzer.NgramAnalyzer" 
+		property:minGram="3"
+		property:maxGram="15" />
+
+	<bean
+		id="street-table"
+		class="ikube.model.IndexableTable"
+		property:name="street"
+		property:address="false"
+		property:allColumns="false"
+		property:dataSource-ref="roma-database"
+		property:children-ref="street-table-columns" 
+		property:maxExceptions="100" />
+	<util:list id="street-table-columns">
+		<ref bean="street-id" />
+		<ref bean="aar-admin-area-id" />
+		<ref bean="active" />
+		<ref bean="street-name-table" />
+	</util:list>
+	
+	<bean
+		id="street-id"
+		class="ikube.model.IndexableColumn"
+		property:name="street_id"
+		property:idColumn="true"
+		property:analyzed="false"
+		property:stored="true"
+		property:vectored="false" />
+	<bean
+		id="aar-admin-area-id"
+		class="ikube.model.IndexableColumn"
+		property:name="aar_admin_area_id"
+		property:address="false"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
+	<bean
+		id="active"
+		class="ikube.model.IndexableColumn"
+		property:name="active"
+		property:address="false"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
+
+	<bean
+		id="street-name-table"
+		class="ikube.model.IndexableTable"
+		property:name="street_name"
+		property:address="false"
+		property:allColumns="false"
+		property:dataSource-ref="roma-database"
+		property:children-ref="street-name-table-columns"
+		property:strategies-ref="street-strategies" 
+		property:maxExceptions="100" />
+	<util:list id="street-name-table-columns">
+		<ref bean="street-name-id" />
+		<ref bean="str-street-id" />
+		<ref bean="street-name" />
+		<ref bean="street-language" />
+	</util:list>
+	<util:list id="street-strategies">
+	    <ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
+	    <bean 
+	    	class="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy"
+	    	init-method="initialize" />
+	</util:list>
+	
+	<bean
+		id="street-name-id"
+		class="ikube.model.IndexableColumn"
+		property:name="street_name_id"
+		property:idColumn="true"
+		property:analyzed="false"
+		property:stored="true"
+		property:vectored="false" />
+	<bean
+		id="str-street-id"
+		class="ikube.model.IndexableColumn"
+		property:name="str_street_id"
+		property:analyzed="false"
+		property:stored="true"
+		property:vectored="false"
+		property:foreignKey-ref="street-id" />
+	<bean
+		id="street-name"
+		class="ikube.model.IndexableColumn"
+		property:name="street_name"
+		property:address="true"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
+	<bean
+		id="street-language"
+		class="ikube.model.IndexableColumn"
+		property:name="street_language"
+		property:analyzed="false"
+		property:stored="false"
+		property:vectored="false" />
+	
+	<bean id="roma-database"
+		class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close"
+		property:user="ROMAOWNER"
+		property:password="ROMAOWNER"
+		property:jdbcUrl="jdbc:oracle:thin:@ldap://OID.NETPOST:389/ROMD3,cn=OracleContext,dc=pr,dc=netpost,dc=be"
+		property:driverClass="${oracle.jdbc.driver}"
+		property:initialPoolSize="${jdbc.minPoolSize}"
+		property:maxPoolSize="${jdbc.maxPoolSize}"
+		property:maxStatements="${jdbc.maxStatements}"
+		property:checkoutTimeout="${jdbc.checkOutTimeout}"
+		property:numHelperThreads="${jdbc.numHelperThreads}" 
+		property:breakAfterAcquireFailure="${jdbc.breakAfterAcquireFailure}"
+		property:debugUnreturnedConnectionStackTraces="${jdbc.debugUnreturnedConnectionStackTraces}"
+		property:testConnectionOnCheckin="${jdbc.testConnectionOnCheckin}"
+		property:testConnectionOnCheckout="${jdbc.testConnectionOnCheckout}"
+		property:unreturnedConnectionTimeout="${jdbc.unreturnedConnectionTimeout}" />
+
+</beans>
