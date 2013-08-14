@@ -191,7 +191,7 @@ public interface IConstants {
 	String POSITIVE = "positive";
 	String NEGATIVE = "negative";
 	String NEUTRAL = "neutral";
-	String[] CATEGORIES = { POSITIVE, NEGATIVE, NEUTRAL };
+	String[] CATEGORIES = { POSITIVE, NEGATIVE };
 
 	String CLASSIFIER = "classifier";
 	String CLASSIFIERS = "classifiers";

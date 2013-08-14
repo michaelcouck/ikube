@@ -10,6 +10,10 @@ public class Correlation {
 
 	public void correlate() {
 		double[][] data = { { 1, 1 }, { 2, 2 }, { 3, 3 }, { 4, 4 }, { 5, 5 } };
+		RealMatrix covarienceMatrix = correlate(data);
+	}
+
+	public RealMatrix correlate(double[][] data) {
 		RealMatrix realMatrix = new BlockRealMatrix(data);
 		PearsonsCorrelation pearsonsCorrelation = new PearsonsCorrelation(realMatrix);
 		double correlation = pearsonsCorrelation.getCorrelationPValues().getEntry(0, 1);
@@ -22,6 +26,8 @@ public class Correlation {
 		Covariance covariance = new Covariance(realMatrix);
 		RealMatrix covarienceMatrix = covariance.getCovarianceMatrix();
 		System.out.println("Correlation : " + covarienceMatrix);
+
+		return covarienceMatrix;
 	}
 
 }

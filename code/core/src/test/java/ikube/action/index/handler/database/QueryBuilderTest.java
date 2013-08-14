@@ -10,7 +10,6 @@ import ikube.toolkit.ApplicationContextManager;
 
 import java.util.Iterator;
 
-import org.jooq.impl.DSL;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
