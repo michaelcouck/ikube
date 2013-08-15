@@ -12,6 +12,7 @@ import ikube.toolkit.Timer;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.TreeSet;
 
 import libsvm.LibSVM;
@@ -46,6 +47,8 @@ public class ClassificationStrategy extends AStrategy {
 	private Dataset dataset;
 	private Classifier[] classifiers;
 	private FeatureExtractor featureExtractor;
+
+	private boolean trained = false;
 
 	public ClassificationStrategy() {
 		this(null);
@@ -162,9 +165,24 @@ public class ClassificationStrategy extends AStrategy {
 	}
 
 	synchronized void train(final String category, final String content) {
-		int classIndex = dataset.classIndex(category);
-		Instance instance = dataset.instance(classIndex);
-		if (instance.entrySet().size() >= maxTraining) {
+		if (trained) {
+			return;
+		}
+		Iterator<Instance> iterator = dataset.iterator();
+		int trainedCategory = 0;
+		int nextTrainedCategory = 0;
+		while (iterator.hasNext()) {
+			Instance instance = iterator.next();
+			if (instance.classValue().equals(category)) {
+				trainedCategory++;
+			} else {
+				nextTrainedCategory++;
+			}
+		}
+		if (trainedCategory >= maxTraining) {
+			if (nextTrainedCategory >= maxTraining) {
+				trained = true;
+			}
 			return;
 		}
 		double[] features;
@@ -173,11 +191,10 @@ public class ClassificationStrategy extends AStrategy {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		logger.info("Instance : " + category + ", " + language + ", " + instance.entrySet().size());
-		instance = new SparseInstance(features, category);
+		Instance instance = new SparseInstance(features, category);
 		dataset.add(instance);
 		if (dataset.size() % 100 == 0) {
-			logger.info("Building classifier : " + dataset.size());
+			logger.info("Building classifier : " + category + ", " + language + ", " + dataset.size());
 			long duration = Timer.execute(new Timer.Timed() {
 				@Override
 				public void execute() {
