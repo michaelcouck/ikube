@@ -78,14 +78,88 @@
 		<ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
 		<!-- <ref bean="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy" /> -->
 		<ref bean="ikube.action.index.handler.strategy.EmoticonClassificationStrategy" />
-		<ref bean="ikube.action.index.handler.strategy.ClassificationStrategy.Twitter" />
+		<ref bean="ikube.action.index.handler.strategy.ClassificationStrategy.en" />
+		<ref bean="ikube.action.index.handler.strategy.ClassificationStrategy.es" />
+		<ref bean="ikube.action.index.handler.strategy.ClassificationStrategy.jp" />
+		<ref bean="ikube.action.index.handler.strategy.ClassificationStrategy.cn" />
+		<ref bean="ikube.action.index.handler.strategy.ClassificationStrategy.nl" />
+		<ref bean="ikube.action.index.handler.strategy.ClassificationStrategy.fr" />
+		<ref bean="ikube.action.index.handler.strategy.ClassificationStrategy.de" />
+		<ref bean="ikube.action.index.handler.strategy.ClassificationStrategy.sv" />
+		<ref bean="ikube.action.index.handler.strategy.ClassificationStrategy.th" />
 	</util:list>
 	
 	<bean
-		id="ikube.action.index.handler.strategy.ClassificationStrategy.Twitter"
-		name="ikube.action.index.handler.strategy.ClassificationStrategy.Twitter" 
+		id="ikube.action.index.handler.strategy.ClassificationStrategy.en"
+		name="ikube.action.index.handler.strategy.ClassificationStrategy.en" 
     	class="ikube.action.index.handler.strategy.ClassificationStrategy"
     	init-method="initialize"
+    	property:language="en"
+    	property:maxTraining="1000"
+    	depends-on="ikube.toolkit.ThreadUtilities" />
+    <bean
+		id="ikube.action.index.handler.strategy.ClassificationStrategy.es"
+		name="ikube.action.index.handler.strategy.ClassificationStrategy.es" 
+    	class="ikube.action.index.handler.strategy.ClassificationStrategy"
+    	init-method="initialize"
+    	property:language="es"
+    	property:maxTraining="1000"
+    	depends-on="ikube.toolkit.ThreadUtilities" />
+    <bean
+		id="ikube.action.index.handler.strategy.ClassificationStrategy.jp"
+		name="ikube.action.index.handler.strategy.ClassificationStrategy.jp" 
+    	class="ikube.action.index.handler.strategy.ClassificationStrategy"
+    	init-method="initialize"
+    	property:language="jp"
+    	property:maxTraining="1000"
+    	depends-on="ikube.toolkit.ThreadUtilities" />
+    <bean
+		id="ikube.action.index.handler.strategy.ClassificationStrategy.cn"
+		name="ikube.action.index.handler.strategy.ClassificationStrategy.cn" 
+    	class="ikube.action.index.handler.strategy.ClassificationStrategy"
+    	init-method="initialize"
+    	property:language="cn"
+    	property:maxTraining="1000"
+    	depends-on="ikube.toolkit.ThreadUtilities" />
+    <bean
+		id="ikube.action.index.handler.strategy.ClassificationStrategy.nl"
+		name="ikube.action.index.handler.strategy.ClassificationStrategy.nl" 
+    	class="ikube.action.index.handler.strategy.ClassificationStrategy"
+    	init-method="initialize"
+    	property:language="nl"
+    	property:maxTraining="1000"
+    	depends-on="ikube.toolkit.ThreadUtilities" />
+    <bean
+		id="ikube.action.index.handler.strategy.ClassificationStrategy.fr"
+		name="ikube.action.index.handler.strategy.ClassificationStrategy.fr" 
+    	class="ikube.action.index.handler.strategy.ClassificationStrategy"
+    	init-method="initialize"
+    	property:language="fr"
+    	property:maxTraining="1000"
+    	depends-on="ikube.toolkit.ThreadUtilities" />
+    <bean
+		id="ikube.action.index.handler.strategy.ClassificationStrategy.de"
+		name="ikube.action.index.handler.strategy.ClassificationStrategy.de" 
+    	class="ikube.action.index.handler.strategy.ClassificationStrategy"
+    	init-method="initialize"
+    	property:language="de"
+    	property:maxTraining="1000"
+    	depends-on="ikube.toolkit.ThreadUtilities" />
+    <bean
+		id="ikube.action.index.handler.strategy.ClassificationStrategy.sv"
+		name="ikube.action.index.handler.strategy.ClassificationStrategy.sv" 
+    	class="ikube.action.index.handler.strategy.ClassificationStrategy"
+    	init-method="initialize"
+    	property:language="sv"
+    	property:maxTraining="1000"
+    	depends-on="ikube.toolkit.ThreadUtilities" />
+    <bean
+		id="ikube.action.index.handler.strategy.ClassificationStrategy.th"
+		name="ikube.action.index.handler.strategy.ClassificationStrategy.th" 
+    	class="ikube.action.index.handler.strategy.ClassificationStrategy"
+    	init-method="initialize"
+    	property:language="th"
+    	property:maxTraining="1000"
     	depends-on="ikube.toolkit.ThreadUtilities" />
 	
 </beans>
