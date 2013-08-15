@@ -12,7 +12,6 @@ import ikube.toolkit.Timer;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.TreeSet;
 
 import libsvm.LibSVM;
@@ -41,7 +40,7 @@ import weka.classifiers.functions.SimpleLogistic;
  */
 public class ClassificationStrategy extends AStrategy {
 
-	private int maxTraining = 10000;
+	private int maxTraining = 1000;
 	private String language = "en";
 
 	private Dataset dataset;
@@ -95,9 +94,9 @@ public class ClassificationStrategy extends AStrategy {
 		Classifier wekaClassifier = new WekaClassifier(new Logistic());
 		wekaClassifier.buildClassifier(dataset);
 		wekaClassifier = new WekaClassifier(new SMO());
-		// wekaLogisticClassifier.buildClassifier(dataset);
+		// wekaClassifier.buildClassifier(dataset);
 		wekaClassifier = new WekaClassifier(new SimpleLogistic());
-		// wekaLogisticClassifier.buildClassifier(dataset);
+		// wekaClassifier.buildClassifier(dataset);
 		wekaClassifier = new WekaClassifier(new NaiveBayes());
 		wekaClassifier.buildClassifier(dataset);
 		// classifiers[1] = wekaLogisticClassifier;
@@ -163,14 +162,10 @@ public class ClassificationStrategy extends AStrategy {
 	}
 
 	synchronized void train(final String category, final String content) {
-		Iterator<Instance> instances = dataset.iterator();
-		while (instances.hasNext()) {
-			Instance instance = instances.next();
-			if (instance.classValue().equals(category)) {
-				if (instance.entrySet().size() >= maxTraining) {
-					return;
-				}
-			}
+		int classIndex = dataset.classIndex(category);
+		Instance instance = dataset.instance(classIndex);
+		if (instance.entrySet().size() >= maxTraining) {
+			return;
 		}
 		double[] features;
 		try {
@@ -178,7 +173,8 @@ public class ClassificationStrategy extends AStrategy {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		Instance instance = new SparseInstance(features, category);
+		logger.info("Instance : " + category + ", " + language + ", " + instance.entrySet().size());
+		instance = new SparseInstance(features, category);
 		dataset.add(instance);
 		if (dataset.size() % 100 == 0) {
 			logger.info("Building classifier : " + dataset.size());
