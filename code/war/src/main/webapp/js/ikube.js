@@ -366,43 +366,6 @@ module.controller('IndexesController', function($http, $scope) {
 	$scope.doIndexes();
 });
 
-module.factory('autoCompleteDataService', function($rootScope, $http) {
-    return {
-        getSource: function() {
-        	var suggestions = [];
-        	var url = getServiceUrl("/ikube/service/auto/complete");
-        	$rootScope.getSuggestions = function() {
-        		var promise = $http.get(url);
-        		promise.success(function(data, status) {
-        			alert('Suggestions : ' + data);
-        			suggestions = data;
-        		});
-        		promise.error(function(data, status) {
-        			// TODO Something
-        		});
-        	};
-        	$rootScope.getSuggestions();
-        	return ['apples', 'oranges', 'bananas'];
-        	// return suggestions;
-        }
-    }
-});
-
-module.directive('autoComplete', function(autoCompleteDataService) {
-    return {
-        restrict: 'A',
-        link: function($scope, $elem, $attr, $ctrl) {
-        	// alert('Ctrl : ' + $elem);
-        	// elem is a jquery lite object if jquery is not present,
-        	// but with jquery and jquery ui, it will be a full jquery object.
-            $elem.autocomplete({
-            	minLength: 3,
-                source: autoCompleteDataService.getSource() //from your service
-            });
-        }
-    };
-});
-
 function writeDate() {
 	var d = new Date();
 	document.write(d.toLocaleTimeString());

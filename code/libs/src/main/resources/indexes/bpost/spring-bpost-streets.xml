@@ -17,7 +17,8 @@
 
 	<description>
 		This is the street and houses index. Once the index is done this query uri can be used to get some results:
-		http://localhost:8080/ikube/service/search/single?indexName=street-context&searchStrings=couck AND straat&searchFields=street_name&fragment=true&firstResult=0&maxResults=10
+		http://localhost:8080/ikube/service/search/single?indexName=street-context&searchStrings=couck&searchFields=street_name&fragment=true&firstResult=0&maxResults=10
+		http://localhost:8080/ikube/service/search/json/single?indexName=street-context&searchStrings=couck&searchFields=street_name&fragment=true&firstResult=0&maxResults=10
 	</description>
 
 	<bean

@@ -43,13 +43,14 @@ public class Auto extends Resource {
 	@Path(Auto.COMPLETE)
 	@Consumes(MediaType.APPLICATION_XML)
 	public String autocomplete(@QueryParam(value = IConstants.TERM) final String term) {
+		String[] suggestions = null;
 		if (StringUtils.isEmpty(term)) {
-			return gson.toJson(new String[0]);
-		}
-		String[] suggestions = suggestions(term);
-		for (int i = 0; i < suggestions.length; i++) {
-			suggestions[i] = StringUtils.remove(suggestions[i], "[");
-			suggestions[i] = StringUtils.remove(suggestions[i], "]");
+			suggestions = new String[0];
+		} else {
+			suggestions = suggestions(term);
+			for (int i = 0; i < suggestions.length; i++) {
+				suggestions[i] = StringUtils.remove(StringUtils.remove(suggestions[i], "["), "]");
+			}
 		}
 		String result = gson.toJson(suggestions);
 		LOGGER.info("Term : " + term + ", " + result);
@@ -59,7 +60,7 @@ public class Auto extends Resource {
 	/**
 	 * {@inheritDoc}
 	 */
-	String[] suggestions(String searchString) {
+	String[] suggestions(final String searchString) {
 		boolean first = Boolean.TRUE;
 		StringTokenizer stringTokenizer = new StringTokenizer(searchString, " ,;|.");
 		StringBuilder stringBuilder = new StringBuilder();
