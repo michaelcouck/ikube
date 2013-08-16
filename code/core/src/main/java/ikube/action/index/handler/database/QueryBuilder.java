@@ -3,11 +3,15 @@ package ikube.action.index.handler.database;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
+import ikube.toolkit.UriUtilities;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
+import com.truemesh.squiggle.MatchCriteria;
+import com.truemesh.squiggle.SelectQuery;
+import com.truemesh.squiggle.Table;
 
 public final class QueryBuilder {
 
@@ -23,134 +27,33 @@ public final class QueryBuilder {
 	 * @return
 	 */
 	public String buildQuery(final IndexableTable indexableTable, final long nextIdNumber, final long batchSize) {
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("select ");
-		addColumns(stringBuilder, true, indexableTable);
-		stringBuilder.append(" from ");
-		addTables(stringBuilder, true, indexableTable);
-		stringBuilder.append(" where ");
-
-		boolean first = addPredicates(stringBuilder, indexableTable, true);
-
-		first = addPredicate(stringBuilder, indexableTable, first);
-
-		addBatchPredicate(stringBuilder, indexableTable, nextIdNumber, batchSize, first);
-
-		return stringBuilder.toString();
+		Table table = new Table(indexableTable.getName());
+		SelectQuery selectQuery = new SelectQuery(table);
+		buildQuery(selectQuery, null, table, indexableTable);
+		IndexableColumn idIndexableColumn = getIdColumn(indexableTable.getChildren());
+		selectQuery.addCriteria(new MatchCriteria(table, idIndexableColumn.getName(), MatchCriteria.GREATEREQUAL, nextIdNumber));
+		selectQuery.addCriteria(new MatchCriteria(table, idIndexableColumn.getName(), MatchCriteria.LESS, nextIdNumber + batchSize));
+		return UriUtilities.stripCarriageReturn(selectQuery.toString()).toLowerCase();
 	}
 
-	private boolean addPredicates(final StringBuilder stringBuilder, final Indexable<?> indexable, boolean first) {
-		if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {
-			IndexableTable indexableTable = (IndexableTable) indexable;
-			if (!StringUtils.isEmpty(indexableTable.getPredicate())) {
-				if (!first) {
-					stringBuilder.append(" and ");
-				}
-				stringBuilder.append(indexableTable.getPredicate());
-				first = false;
-			}
-		}
-		if (indexable.getChildren() != null) {
-			for (final Indexable<?> child : indexable.getChildren()) {
-				first = addPredicates(stringBuilder, child, first);
-			}
-		}
-		return first;
-	}
-
-	private boolean addPredicate(final StringBuilder stringBuilder, final Indexable<?> indexable, boolean first) {
-		if (indexable.getChildren() != null) {
-			for (final Indexable<?> child : indexable.getChildren()) {
-				if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
-					IndexableColumn indexableColumn = (IndexableColumn) child;
+	void buildQuery(final SelectQuery selectQuery, final Table parentTable, final Table table, final IndexableTable indexableTable) {
+		IndexableTable currentIndexableTable = indexableTable;
+		for (final Indexable<?> childIndexable : currentIndexableTable.getChildren()) {
+			if (IndexableColumn.class.isAssignableFrom(childIndexable.getClass())) {
+				IndexableColumn indexableColumn = (IndexableColumn) childIndexable;
+				selectQuery.addColumn(table, indexableColumn.getName());
+				if (indexableColumn.getForeignKey() != null) {
+					// Get the parent table and make a join with this table
+					IndexableColumn primarkKeyColumn = getIdColumn(((IndexableTable) indexableTable.getParent()).getChildren());
 					IndexableColumn foreignKeyColumn = indexableColumn.getForeignKey();
-					if (foreignKeyColumn == null) {
-						continue;
-					}
-					if (!first) {
-						stringBuilder.append(" and ");
-					}
-					IndexableTable indexableTable = (IndexableTable) indexableColumn.getParent();
-					IndexableTable foreignKeyTable = (IndexableTable) foreignKeyColumn.getParent();
-					String indexableTableIdentifier = indexableTable.getName();
-					String foreignKeyTableIdentifier = foreignKeyTable.getName();
-					stringBuilder.append(foreignKeyTableIdentifier);
-					stringBuilder.append(".");
-					stringBuilder.append(foreignKeyColumn.getName());
-					stringBuilder.append(" = ");
-					stringBuilder.append(indexableTableIdentifier);
-					stringBuilder.append(".");
-					stringBuilder.append(indexableColumn.getName());
-					first = false;
+					selectQuery.addJoin(parentTable, primarkKeyColumn.getName(), table, foreignKeyColumn.getName());
 				}
-				first = addPredicate(stringBuilder, child, first);
+			} else if (IndexableTable.class.isAssignableFrom(childIndexable.getClass())) {
+				IndexableTable joinedIndexableTable = (IndexableTable) childIndexable;
+				Table joinedTable = new Table(joinedIndexableTable.getName());
+				buildQuery(selectQuery, table, joinedTable, joinedIndexableTable);
 			}
 		}
-		return first;
-	}
-
-	private boolean addColumns(final StringBuilder stringBuilder, boolean first, final Indexable<?> indexable) {
-		if (IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
-			IndexableColumn indexableColumn = (IndexableColumn) indexable;
-			IndexableTable indexableTable = (IndexableTable) indexable.getParent();
-			String identifier = indexableTable.getName();
-			if (!first) {
-				stringBuilder.append(", ");
-			}
-			stringBuilder.append(identifier);
-			stringBuilder.append(".");
-			stringBuilder.append(indexableColumn.getName());
-			first = Boolean.FALSE;
-		}
-		if (indexable.getChildren() != null) {
-			for (final Indexable<?> child : indexable.getChildren()) {
-				first = addColumns(stringBuilder, first, child);
-			}
-		}
-		return first;
-	}
-
-	private void addTables(final StringBuilder stringBuilder, boolean first, final Indexable<?> indexable) {
-		if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {
-			if (!first) {
-				stringBuilder.append(", ");
-			}
-			IndexableTable indexableTable = (IndexableTable) indexable;
-			String tableName = indexableTable.getName();
-			stringBuilder.append(tableName);
-			stringBuilder.append(" ");
-			stringBuilder.append(tableName);
-			first = Boolean.FALSE;
-		}
-		if (indexable.getChildren() != null) {
-			for (final Indexable<?> child : indexable.getChildren()) {
-				addTables(stringBuilder, first, child);
-			}
-		}
-	}
-
-	private void addBatchPredicate(final StringBuilder stringBuilder, final IndexableTable indexableTable, final long nextIdNumber, final long batchSize,
-			boolean first) {
-		String idColumnName = getIdColumn(indexableTable.getChildren()).getName();
-
-		if (!first) {
-			stringBuilder.append(" and ");
-		}
-
-		stringBuilder.append(indexableTable.getName());
-		stringBuilder.append('.');
-		stringBuilder.append(idColumnName);
-
-		stringBuilder.append(" >= ");
-		stringBuilder.append(nextIdNumber);
-		stringBuilder.append(" and ");
-
-		stringBuilder.append(indexableTable.getName());
-		stringBuilder.append('.');
-		stringBuilder.append(idColumnName);
-
-		stringBuilder.append(" < ");
-		stringBuilder.append(nextIdNumber + batchSize);
 	}
 
 	protected static String buildNextIdQuery(final IndexableTable indexableTable, final Long currentId) {

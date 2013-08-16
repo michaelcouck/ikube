@@ -101,7 +101,7 @@ public class ClassificationStrategy extends AStrategy {
 		wekaClassifier = new WekaClassifier(new SimpleLogistic());
 		// wekaClassifier.buildClassifier(dataset);
 		wekaClassifier = new WekaClassifier(new NaiveBayes());
-		wekaClassifier.buildClassifier(dataset);
+		// wekaClassifier.buildClassifier(dataset);
 		// classifiers[1] = wekaLogisticClassifier;
 	}
 

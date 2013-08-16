@@ -374,6 +374,23 @@
 							<url>${artifactory}</url>
 						</configuration>
 					</execution>
+					<execution>
+						<id>install-squiggle</id>
+						<goals>
+							<goal>deploy-file</goal>
+						</goals>
+						<phase>${phase}</phase>
+						<configuration>
+							<groupId>squiggle</groupId>
+							<artifactId>squiggle</artifactId>
+							<version>1.4.0</version>
+							<file>tools/squiggle-1.4.0.jar</file>
+							<packaging>${packaging}</packaging>
+							<generatePom>${generate-pom}</generatePom>
+							<repositoryId>${repository-id}</repositoryId>
+							<url>${artifactory}</url>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>

@@ -21,7 +21,7 @@
 		id="vlaams-parliament"
 		class="ikube.model.IndexContext"
 		property:name="vlaams-parliament"
-		property:maxAge="600"
+		property:maxAge="600000"
 		property:compoundFile="true"
 		property:bufferedDocs="10"
 		property:bufferSize="32"

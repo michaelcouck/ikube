@@ -1079,6 +1079,11 @@
 			<artifactId>encog-core</artifactId>
 			<version>3.0.1</version>
 		</dependency>
+		<dependency>
+			<groupId>squiggle</groupId>
+			<artifactId>squiggle</artifactId>
+			<version>1.4.0</version>
+		</dependency>
 	</dependencies>
 
 	<repositories>
