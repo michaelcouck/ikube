@@ -15,11 +15,13 @@
 				<interface>192.168.1.8</interface>
 			</tcp-ip>
 		</join>
-		<interfaces enabled="true">
+		<interfaces enabled="false">
+			<interface>192.168.0.*</interface>
 			<interface>192.168.1.*</interface>
 			<interface>10.99.170.*</interface>
 			<interface>10.100.114.*</interface>
 			<interface>192.168.10.*</interface>
+			<interface>10.100.126.*</interface>
 		</interfaces>
 		<symmetric-encryption enabled="false">
 			<algorithm>PBEWithMD5AndDES</algorithm>

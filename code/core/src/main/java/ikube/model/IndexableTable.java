@@ -28,8 +28,8 @@ public class IndexableTable extends Indexable<IndexableTable> {
 	@Attribute(field = false, description = "This is a sql predicate, like 'where id > 1000'")
 	private String predicate;
 	@Column
-	@Attribute(field = false, description = "This flag is whether to index all the columns in the database, default is true")
-	private boolean allColumns = Boolean.TRUE;
+	@Attribute(field = false, description = "This flag is whether to index all the columns in the database, default is false")
+	private boolean allColumns = Boolean.FALSE;
 
 	public boolean isAllColumns() {
 		return allColumns;

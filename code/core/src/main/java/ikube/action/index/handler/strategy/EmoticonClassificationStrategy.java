@@ -98,7 +98,7 @@ public final class EmoticonClassificationStrategy extends AStrategy {
 
 	private void loadEmoticonHashes(final String file, final Set<Long> emoticonHashes) throws IOException {
 		File emoticonPosFile = FileUtilities.findFileRecursively(new File("."), file);
-		List<String> linesPos = Files.readAllLines(emoticonPosFile.toPath(), Charset.defaultCharset());
+		List<String> linesPos = Files.readAllLines(emoticonPosFile.toPath(), Charset.forName(IConstants.ENCODING));
 		for (final String linePos : linesPos) {
 			StringTokenizer stringTokenizer = new StringTokenizer(linePos, "\n\r ", false);
 			while (stringTokenizer.hasMoreTokens()) {
