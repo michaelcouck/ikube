@@ -5,15 +5,15 @@
 <html>
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-	<title>autocomplete - jsFiddle demo by sebmade</title>
+	<title>Ikube Example Auto-complete</title>
 	<link rel="stylesheet" type="text/css" href="<c:url value="/js/bootstrap-combined.min.css" />">
 	<script type='text/javascript' src="<c:url value="/js/angular.js" />"></script>
 	<script type='text/javascript' src="<c:url value="/js/ui-bootstrap-tpls-0.4.0.js" />"></script>
 
 <script type='text/javascript'>
 	//<![CDATA[ 
-	angular.module('plunker', [ 'ui.bootstrap' ]);
-	function TypeaheadCtrl($scope, $http, $timeout) {
+	angular.module('ikube-autocomplete', [ 'ui.bootstrap' ]);
+	function TypeaheadController($scope, $http, $timeout) {
 		$scope.selected = undefined;
 		// Go to the web service for the results
 		$scope.data = null;
@@ -57,9 +57,11 @@
 				}
 				// Iterate through the results from the Json data
 				for (var key in data) {
-					$scope.results.push(data[key]['contents']);
+					$scope.results.push(data[key]['fragment']);
 				}
 			}
+			// Wait for a while for the server to return some data, note 
+			// that if the server is still too slow you can add more time to the timeout
 			return $timeout(function() {
 				return $scope.results;
 			}, 250);
@@ -69,8 +71,8 @@
 </script>
 </head>
 
-<body ng-app="plunker">
-	<div class='container-fluid' ng-controller="TypeaheadCtrl">
+<body ng-app="ikube-autocomplete">
+	<div class='container-fluid' ng-controller="TypeaheadController">
     <pre>Model: {{selected| json}}</pre>
     <!--  | filter:$viewValue -->
     <input 
