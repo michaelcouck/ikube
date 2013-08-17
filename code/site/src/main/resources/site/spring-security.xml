@@ -27,24 +27,24 @@
 	
 	<http auto-config="true">
 		<anonymous />
-		<intercept-url 
+		<!-- <intercept-url 
 			pattern="/use**" 
 			access="ROLE_USER,ROLE_ADMIN" />
 		<intercept-url 
 			pattern="/search**" 
 			access="ROLE_USER,ROLE_ADMIN" />
-		<!-- The login page, this goes to the login controller then to the login view/page(login.jsp). -->
+		The login page, this goes to the login controller then to the login view/page(login.jsp).
 		<form-login
 			always-use-default-target="false"
 			default-target-url="/"
 			login-page="/login.html" 
 			authentication-failure-url="/login.html" 
 			login-processing-url="/login" />
-		<!-- The logout page that will be displayed. -->
+		The logout page that will be displayed.
 		<logout 
 			invalidate-session="true"
 			logout-success-url="/login.html"
-			logout-url="/logout" />
+			logout-url="/logout" /> -->
 	</http>
 
 	<!--
