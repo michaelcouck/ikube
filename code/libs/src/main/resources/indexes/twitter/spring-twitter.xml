@@ -60,7 +60,7 @@
 		property:stored="true"
 		property:analyzed="true"
 		property:vectored="true"
-		property:threads="4"
+		property:threads="24"
 		
 		property:consumerKey="Sohh43DylUwaXr7smSojBA"
 		property:consumerSecret="90xubtexbSwhHBbKXM62pF4QfJnz1NWVkpevwde3Qxo"
