@@ -46,7 +46,6 @@
 			});
 			$scope.results = new Array();
 			// Convert all the data to an array for the auto complete
-			// Creates the Json pagination array for the next pages in the search
 			$scope.convertToArray = function(data) {
 				var total = $scope.statistics.total;
 				// Exception or no results
