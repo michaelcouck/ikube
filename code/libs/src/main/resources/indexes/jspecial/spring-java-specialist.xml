@@ -58,7 +58,7 @@
 	<util:list id="java-specialist-strategies">
 		<ref bean="ikube.action.index.handler.strategy.LanguageCleaningStrategy" />
 		<ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
-		<ref bean="ikube.action.index.handler.strategy.ClassificationStrategy" />
+		<ref bean="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy" />
 	</util:list>
 		
 </beans>

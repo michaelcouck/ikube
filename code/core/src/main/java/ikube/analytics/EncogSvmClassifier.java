@@ -11,14 +11,9 @@ import org.encog.ml.train.MLTrain;
 import org.encog.neural.data.NeuralDataSet;
 import org.encog.neural.som.SOM;
 
-class EncogSvmClassifierTrainingModel {
-}
+public class EncogSvmClassifier implements IClassifier<String, String, Object, Object> {
 
-class EncogSvmClassifierTrainingResult {
-}
-
-public class EncogSvmClassifier implements IClassifier<String, String, EncogSvmClassifierTrainingModel, EncogSvmClassifierTrainingResult> {
-
+	@SuppressWarnings("unused")
 	public void initialize() {
 		SVM svm = new SVM();
 		NeuralDataSet dataSet = null;
@@ -27,7 +22,6 @@ public class EncogSvmClassifier implements IClassifier<String, String, EncogSvmC
 		mlDataSet.add(mlData);
 		SVMTrain svmTrain = new SVMTrain(svm, mlDataSet);
 		MLTrain mlTrain = new SVMSearchTrain(svm, mlDataSet);
-
 		SOM som = new SOM();
 	}
 
@@ -37,7 +31,7 @@ public class EncogSvmClassifier implements IClassifier<String, String, EncogSvmC
 	}
 
 	@Override
-	public EncogSvmClassifierTrainingResult train(EncogSvmClassifierTrainingModel trainingInput) {
+	public Object train(Object trainingInput) {
 		return null;
 	}
 

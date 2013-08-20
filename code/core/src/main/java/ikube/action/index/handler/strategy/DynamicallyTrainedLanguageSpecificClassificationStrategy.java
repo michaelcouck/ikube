@@ -21,7 +21,6 @@ import net.sf.javaml.core.Dataset;
 import net.sf.javaml.core.DefaultDataset;
 import net.sf.javaml.core.Instance;
 import net.sf.javaml.core.SparseInstance;
-import net.sf.javaml.tools.weka.WekaClassifier;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
@@ -29,17 +28,12 @@ import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 
-import weka.classifiers.bayes.NaiveBayes;
-import weka.classifiers.functions.Logistic;
-import weka.classifiers.functions.SMO;
-import weka.classifiers.functions.SimpleLogistic;
-
 /**
  * @author Michael Couck
  * @since 07.07.13
  * @version 01.00
  */
-public class ClassificationStrategy extends AStrategy {
+public class DynamicallyTrainedLanguageSpecificClassificationStrategy extends AStrategy {
 
 	private int maxTraining = 1000;
 	private String language = "en";
@@ -50,11 +44,11 @@ public class ClassificationStrategy extends AStrategy {
 
 	private boolean trained = false;
 
-	public ClassificationStrategy() {
+	public DynamicallyTrainedLanguageSpecificClassificationStrategy() {
 		this(null);
 	}
 
-	public ClassificationStrategy(final IStrategy nextStrategy) {
+	public DynamicallyTrainedLanguageSpecificClassificationStrategy(final IStrategy nextStrategy) {
 		super(nextStrategy);
 	}
 
@@ -93,16 +87,6 @@ public class ClassificationStrategy extends AStrategy {
 		LibSVM libSvmClassifier = new LibSVM();
 		libSvmClassifier.buildClassifier(dataset);
 		classifiers[0] = libSvmClassifier;
-
-		Classifier wekaClassifier = new WekaClassifier(new Logistic());
-		wekaClassifier.buildClassifier(dataset);
-		wekaClassifier = new WekaClassifier(new SMO());
-		// wekaClassifier.buildClassifier(dataset);
-		wekaClassifier = new WekaClassifier(new SimpleLogistic());
-		// wekaClassifier.buildClassifier(dataset);
-		wekaClassifier = new WekaClassifier(new NaiveBayes());
-		// wekaClassifier.buildClassifier(dataset);
-		// classifiers[1] = wekaLogisticClassifier;
 	}
 
 	/**

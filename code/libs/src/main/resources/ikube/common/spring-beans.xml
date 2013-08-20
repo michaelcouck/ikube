@@ -379,9 +379,9 @@
     	init-method="initialize" />
     	
     <bean
-		id="ikube.action.index.handler.strategy.ClassificationStrategy"
-		name="ikube.action.index.handler.strategy.ClassificationStrategy" 
-    	class="ikube.action.index.handler.strategy.ClassificationStrategy"
+		id="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
+		name="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy" 
+    	class="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
     	init-method="initialize"
     	depends-on="ikube.toolkit.ThreadUtilities" />
     

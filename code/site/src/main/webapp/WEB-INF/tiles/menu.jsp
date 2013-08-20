@@ -24,6 +24,6 @@ doFocus('searchString');
 <li><a href="<c:url value="/testing.html" />">Testing</a></li>
 <li><a href="<c:url value="/release.html" />">Releases</a></li>
 
-<h2>Happy planet</h2>
+<%-- <h2>Happy planet</h2>
 <li><a href="<c:url value="/happy.html" />">Happy</a></li>
-<br>
+<br> --%>

@@ -59,7 +59,7 @@ import org.apache.lucene.util.ReaderUtil;
 @SuppressWarnings("deprecation")
 public abstract class Search {
 
-	enum TypeField {
+	public enum TypeField {
 
 		STRING("string"), //
 		NUMERIC("numeric"), //

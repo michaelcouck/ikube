@@ -1,8 +1,7 @@
 package ikube.analytics;
 
 /**
- * 
- * @author u365981
+ * @author Michael Couck
  * 
  * @param <I> the input type
  * @param <O> the output type

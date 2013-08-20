@@ -1,7 +1,7 @@
 package ikube.web.service;
 
 import ikube.IConstants;
-import ikube.action.index.handler.strategy.ClassificationStrategy;
+import ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy;
 import ikube.action.index.handler.strategy.LanguageCleaningStrategy;
 import ikube.action.index.handler.strategy.LanguageDetectionStrategy;
 
@@ -43,7 +43,7 @@ public class Classifier extends Resource {
 	@Autowired
 	private LanguageDetectionStrategy languageDetectionStrategy;
 	@Autowired
-	private ClassificationStrategy classificationStrategy;
+	private DynamicallyTrainedLanguageSpecificClassificationStrategy dynamicallyTrainedLanguageSpecificClassificationStrategy;
 
 	/**
 	 * {@inheritDoc}
@@ -57,7 +57,7 @@ public class Classifier extends Resource {
 		String cleanedContent = languageCleaningStrategy.cleanContent(content);
 		String language = languageDetectionStrategy.detectLanguage(cleanedContent);
 		if (language != null) {
-			String sentiment = classificationStrategy.classify(cleanedContent);
+			String sentiment = dynamicallyTrainedLanguageSpecificClassificationStrategy.classify(cleanedContent);
 			return buildResponse(sentiment);
 		}
 		return buildResponse("nothing");

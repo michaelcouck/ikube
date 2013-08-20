@@ -5,12 +5,17 @@ import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.stat.correlation.Covariance;
 import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
 import org.apache.commons.math3.stat.correlation.SpearmansCorrelation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Correlation {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(Correlation.class);
 
 	public void correlate() {
 		double[][] data = { { 1, 1 }, { 2, 2 }, { 3, 3 }, { 4, 4 }, { 5, 5 } };
 		RealMatrix covarienceMatrix = correlate(data);
+		LOGGER.info("Matrix : " + covarienceMatrix);
 	}
 
 	public RealMatrix correlate(double[][] data) {
