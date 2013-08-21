@@ -49,13 +49,14 @@
 		id="ikubeInternet"
 		class="ikube.model.IndexableInternet"
 		property:name="internet"
-		property:url="http://81.95.118.139/site/" 
+		property:url="http://www.ikube.be/site/" 
 		property:idFieldName="id"
 		property:titleFieldName="title"
-		property:contentFieldName="content"
+		property:contentFieldName="contents"
 		property:analyzed="true"
 		property:stored="true"
 		property:vectored="true"
+		property:threads="5"
 		property:internetBatchSize="${internet.batch.size}" />
 		
 	<bean
@@ -65,11 +66,11 @@
 		property:url="http://code.google.com/p/ikube/" 
 		property:idFieldName="id"
 		property:titleFieldName="title"
-		property:contentFieldName="content"
+		property:contentFieldName="contents"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}"
-		property:internetBatchSize="${internet.batch.size}"
-		property:excludedPattern="${internet.excluded.pattern}" />
+		property:threads="5"
+		property:internetBatchSize="${internet.batch.size}" />
 	
 </beans>

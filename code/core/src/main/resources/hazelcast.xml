@@ -15,7 +15,7 @@
 				<interface>192.168.1.8</interface>
 			</tcp-ip>
 		</join>
-		<interfaces enabled="false">
+		<interfaces enabled="true">
 			<interface>192.168.0.*</interface>
 			<interface>192.168.1.*</interface>
 			<interface>192.168.10.*</interface>

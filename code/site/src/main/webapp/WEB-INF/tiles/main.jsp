@@ -16,19 +16,25 @@
 	<title><tiles:insertAttribute name="title" /></title>
 	<link rel="shortcut icon" href="<c:url value="/images/icons/favicon.ico" />">
 	
-	<meta name="Keywords" content="Ikube, Enterprise Search, Web Site Search, Database Search, High Volume" />
-	<meta name="Description" content="Ikube Enterprise Search." />
+	<meta name="Description" content="Ikube Big Data Platform" />
+	<meta 
+		name="Keywords" 
+		content="Ikube, Enterprise Search, Web Site Search, Database Search, High Volume, Analytics, Business Intelligence, Machine Learning" />
 	
 	<link rel="stylesheet" href="<c:url value="/style/style.css" />" />
 	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
 	
-	<script src="https://www.google.com/jsapi" type="text/javascript" ></script>
+	<!-- <script src="https://www.google.com/jsapi" type="text/javascript" ></script> -->
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js" type="text/javascript"></script>
-	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min.js" type="text/javascript"></script>
-	<script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
-	<script src="http://www.google-analytics.com/ga.js" type="text/javascript"></script>
+	<!-- <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min.js" type="text/javascript"></script> -->
+	<!-- <script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script> -->
+	<!-- <script src="http://www.google-analytics.com/ga.js" type="text/javascript"></script> -->
 	<script src="http://malsup.github.com/jquery.form.js" type="text/javascript" ></script>
+	
+	<%-- <link rel="stylesheet" type="text/css" href="<c:url value="/js/bootstrap-combined.min.css" />"> --%>
+	<script type='text/javascript' src="<c:url value="/js/angular.js" />"></script>
+	<script type='text/javascript' src="<c:url value="/js/ui-bootstrap-tpls-0.4.0.js" />"></script>
 	
 	<!-- Must be after Angular -->
 	<script src="<c:url value="/js/ikube.js" />" type="text/javascript"></script>

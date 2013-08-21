@@ -72,15 +72,15 @@
 
 <body ng-app="ikube-autocomplete">
 	<div class='container-fluid' ng-controller="TypeaheadController">
-    <pre>Model: {{selected| json}}</pre>
-    <!--  | filter:$viewValue -->
-    <input 
-    	type="text" 
-    	ng-model="selected" 
-    	typeahead="result for result in doSearch($viewValue)" 
-    	typeahead-min-length="3"
-    	typeahead-wait-ms="250">
-</div>
+		<pre>Model: {{selected| json}}</pre>
+		<!--  | filter:$viewValue -->
+		<input 
+			type="text" 
+			ng-model="selected"
+			typeahead="result for result in doSearch($viewValue)"
+			typeahead-min-length="3" 
+			typeahead-wait-ms="250">
+	</div>
 </body>
 
 </html>

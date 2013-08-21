@@ -8,17 +8,30 @@
 	
 	<table>
 		<tr>
+			<th>Date</th>
 			<th>Release</th>
 			<th>Changes</th>
 		</tr>
 		<tr>
-			<td><a href="<c:out value="${downloads}" />">4.2.1</a></td>
+			<td>20.08.13</td>
+			<td><a href="<c:out value="${downloads}" />">4.3.0</a></td>
 			<td>
-				* Fixed the Lucene null pointer in the range query comparator<br>
-				* 
+				* Introduced analytics and machine learning
+				* Added the Twitter handler
+				* Included a Twitter sentiment analysis strategy
+				* Migrated to the fork/join for threading
+				* Re-implemented the query builder for the database handler
 			</td>
 		</tr>
 		<tr>
+			<td>18.16.13</td>
+			<td><a href="<c:out value="${downloads}" />">4.2.1</a></td>
+			<td>
+				* Fixed the Lucene null pointer in the range query comparator<br>
+			</td>
+		</tr>
+		<tr>
+			<td>15.03.13</td>
 			<td><a href="<c:out value="${downloads}" />">4.2.0</a></td>
 			<td>
 				* Fixed some fail over logic when the network file system fails<br>
