@@ -1034,6 +1034,10 @@
 					<groupId>org.springframework.social</groupId>
 					<artifactId>spring-social-config</artifactId>
 				</exclusion>
+				<exclusion>
+					<artifactId>spring-security-crypto</artifactId>
+					<groupId>org.springframework.security</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
