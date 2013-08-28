@@ -265,9 +265,11 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
 			DatabaseUtilities.close(connection);
 		}
 		// Now do all the child tables
-		for (final Indexable<?> indexable : indexableTable.getChildren()) {
-			if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {
-				addAllColumns((IndexableTable) indexable, dataSource);
+		if (indexableTable.getChildren() != null) {
+			for (final Indexable<?> indexable : indexableTable.getChildren()) {
+				if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {
+					addAllColumns((IndexableTable) indexable, dataSource);
+				}
 			}
 		}
 	}

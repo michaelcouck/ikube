@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -26,6 +27,7 @@ import org.junit.Test;
 public final class TableCompareTest {
 
 	@Test
+	@Ignore
 	public void compareTables() throws Exception {
 		String url = "jdbc:oracle:thin:@ldap://OID.NETPOST:389/HR1T1,cn=OracleContext,dc=pr,dc=netpost,dc=be";
 		String user = "EHR_PLA_USER";

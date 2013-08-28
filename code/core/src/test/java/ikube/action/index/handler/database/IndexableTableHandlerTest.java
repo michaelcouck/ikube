@@ -60,11 +60,13 @@ public class IndexableTableHandlerTest extends AbstractTest {
 		DataSource dataSource = Mockito.mock(DataSource.class);
 		Mockito.when(dataSource.getConnection()).thenReturn(connection);
 		indexableTable.setDataSource(dataSource);
+		indexableTable.setAllColumns(Boolean.TRUE);
 		TableResourceProvider tableResourceProvider = new TableResourceProvider(indexContext, indexableTable);
 		Deencapsulation.invoke(tableResourceProvider, "addAllColumns", indexableTable, dataSource);
 		// indexableTableHandler.addAllColumns(indexableTable, dataSource);
-		assertEquals("There should be three columns added : ", DatabaseUtilitiesMock.getAllColumns(connection, null).size(), indexableTable.getChildren()
-				.size());
+		int expected = DatabaseUtilitiesMock.getAllColumns(connection, null).size();
+		int actual = indexableTable.getChildren().size();
+		assertTrue(expected == actual);
 		IndexableColumn indexableColumn = (IndexableColumn) indexableTable.getChildren().get(0);
 		assertTrue("The first column should be the id column : ", indexableColumn.isIdColumn());
 	}
