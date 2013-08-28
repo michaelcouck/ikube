@@ -28,12 +28,12 @@ public class EmoticonClassificationStrategyTest extends AbstractTest {
 		final Object resource = new Object();
 
 		Document document = new Document();
-		Mockito.when(indexable.getContent()).thenReturn("What a lovely day :)");
+		Mockito.when(indexable.getContent()).thenReturn("What a lovely day :) :)");
 		emoticonClassificationStrategy.aroundProcess(indexContext, indexable, document, resource);
 		assertEquals(IConstants.POSITIVE, document.get(IConstants.CLASSIFICATION));
 
 		document = new Document();
-		Mockito.when(indexable.getContent()).thenReturn("I am having a terrible time :(");
+		Mockito.when(indexable.getContent()).thenReturn("I am having a terrible time :( D:<");
 		emoticonClassificationStrategy.aroundProcess(indexContext, indexable, document, resource);
 		assertEquals(IConstants.NEGATIVE, document.get(IConstants.CLASSIFICATION));
 

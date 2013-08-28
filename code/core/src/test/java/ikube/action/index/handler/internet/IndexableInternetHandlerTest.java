@@ -4,7 +4,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.action.index.content.IContentProvider;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
@@ -19,7 +18,6 @@ import mockit.Deencapsulation;
 import org.apache.lucene.document.Document;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 /**
  * @author Michael Couck
@@ -28,6 +26,8 @@ import org.mockito.Mockito;
  */
 public class IndexableInternetHandlerTest extends AbstractTest {
 
+	// "http://code.google.com/p/ikube/"
+	private String url = "http://www.hazelcast.com";
 	private List<Document> documents;
 	private IndexableInternet indexableInternet;
 	private IndexableInternetHandler indexableInternetHandler;
@@ -44,10 +44,11 @@ public class IndexableInternetHandlerTest extends AbstractTest {
 		indexableInternet.setContentFieldName(IConstants.CONTENT);
 
 		indexableInternet.setThreads(3);
-		indexableInternet.setUrl("http://81.95.118.139/site/");
-		indexableInternet.setBaseUrl("http://81.95.118.139/site/");
+		indexableInternet.setUrl(url);
+		indexableInternet.setBaseUrl(url);
 
 		indexableInternetHandler = new IndexableInternetHandler();
+		indexableInternetHandler.initialize();
 
 		resourceHandler = new InternetResourceHandler() {
 			public Document handleResource(IndexContext<?> indexContext, IndexableInternet indexable, Document document, Object resource) throws Exception {
@@ -58,11 +59,6 @@ public class IndexableInternetHandlerTest extends AbstractTest {
 		Deencapsulation.setField(indexableInternetHandler, resourceHandler);
 	}
 
-	// @After
-	// public void after() {
-	// ThreadUtilities.destroy();
-	// }
-
 	@Test
 	public void handleIndexable() throws Exception {
 		ForkJoinTask<?> forkJoinTask = indexableInternetHandler.handleIndexableForked(indexContext, indexableInternet);
@@ -72,7 +68,7 @@ public class IndexableInternetHandlerTest extends AbstractTest {
 	@Test
 	public void handleResource() {
 		Url url = new Url();
-		url.setUrl("http://81.95.118.139/site/");
+		url.setUrl(this.url);
 		String title = "The title";
 		String content = "<html><head><title>" + title + "</title></head><body>Hello world</body></html>";
 		url.setContentType("text/html");
@@ -84,15 +80,6 @@ public class IndexableInternetHandlerTest extends AbstractTest {
 
 		assertNotNull(urls);
 		assertTrue(urls.size() > 0);
-	}
-	
-	@Test
-	@SuppressWarnings("unchecked")
-	public void getContentFromUrl() {
-		IContentProvider<IndexableInternet> contentProvider = Mockito.mock(IContentProvider.class);
-		Url url = new Url();
-		url.setUrl("http://www.vlaamsparlement.be/Proteus5/resultaat.action?pContext=RESUME_BIOLEX&pIdPrs=2785&selectId=27&groupingIds=16|17&groupValues=2009-2014|239");
-		indexableInternetHandler.getContentFromUrl(contentProvider, indexableInternet, url);
 	}
 
 }

@@ -57,6 +57,12 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 */
 	@Override
 	public ForkJoinTask<?> handleIndexableForked(final IndexContext<?> indexContext, final IndexableInternet indexableInternet) throws Exception {
+		initialize();
+		IResourceProvider<Url> internetResourceProvider = new InternetResourceProvider(indexableInternet);
+		return getRecursiveAction(indexContext, indexableInternet, internetResourceProvider);
+	}
+	
+	void initialize() {
 		MultiThreadedHttpConnectionManager multiThreadedHttpConnectionManager = new MultiThreadedHttpConnectionManager();
 		HttpConnectionManagerParams connectionManagerParams = new HttpConnectionManagerParams();
 		connectionManagerParams.setDefaultMaxConnectionsPerHost(10000);
@@ -66,9 +72,6 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		multiThreadedHttpConnectionManager.setParams(connectionManagerParams);
 		HttpClientParams httpClientParams = new HttpClientParams();
 		httpClient = new HttpClient(httpClientParams, multiThreadedHttpConnectionManager);
-
-		IResourceProvider<Url> internetResourceProvider = new InternetResourceProvider(indexableInternet);
-		return getRecursiveAction(indexContext, indexableInternet, internetResourceProvider);
 	}
 
 	@Override
