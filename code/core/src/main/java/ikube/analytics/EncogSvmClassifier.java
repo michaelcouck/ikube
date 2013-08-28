@@ -7,7 +7,6 @@ import org.encog.ml.svm.KernelType;
 import org.encog.ml.svm.SVM;
 import org.encog.ml.svm.SVMType;
 import org.encog.ml.svm.training.SVMTrain;
-import org.junit.Test;
 
 public class EncogSvmClassifier implements IClassifier<String, String, Object, Object> {
 
@@ -54,10 +53,10 @@ public class EncogSvmClassifier implements IClassifier<String, String, Object, O
 		return null;
 	}
 
-	@Test
-	public void classify() {
-		EncogSvmClassifier encogSvmClassifier = new EncogSvmClassifier();
-		encogSvmClassifier.initialize();
-	}
+	// @Test
+	// public void classify() {
+	// EncogSvmClassifier encogSvmClassifier = new EncogSvmClassifier();
+	// encogSvmClassifier.initialize();
+	// }
 
 }

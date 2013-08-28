@@ -2,8 +2,6 @@ package ikube.analytics;
 
 import java.util.Arrays;
 
-import org.junit.Test;
-
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.functions.SMO;
@@ -98,9 +96,9 @@ public class WekaClassifier implements IClassifier<String, String, Object, Objec
 		return null;
 	}
 
-	@Test
-	public void classify() throws Exception {
-		WekaClassifier wekaClassifier = new WekaClassifier();
-	}
+	// @Test
+	// public void classify() throws Exception {
+	// WekaClassifier wekaClassifier = new WekaClassifier();
+	// }
 
 }

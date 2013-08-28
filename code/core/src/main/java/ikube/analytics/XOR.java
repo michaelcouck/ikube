@@ -23,7 +23,7 @@
  */
 package ikube.analytics;
 
-import junit.framework.TestCase;
+// import junit.framework.TestCase;
 
 import org.encog.mathutil.randomize.RangeRandomizer;
 import org.encog.ml.MLRegression;
@@ -64,11 +64,11 @@ public class XOR {
 		int row = 0;
 		for (MLDataPair item : set) {
 			for (int i = 0; i < XOR.XOR_INPUT[0].length; i++) {
-				TestCase.assertEquals(item.getInput().getData(i), XOR.XOR_INPUT[row][i]);
+				// TestCase.assertEquals(item.getInput().getData(i), XOR.XOR_INPUT[row][i]);
 			}
 
 			for (int i = 0; i < XOR.XOR_IDEAL[0].length; i++) {
-				TestCase.assertEquals(item.getIdeal().getData(i), XOR.XOR_IDEAL[row][i]);
+				// TestCase.assertEquals(item.getIdeal().getData(i), XOR.XOR_IDEAL[row][i]);
 			}
 
 			row++;
