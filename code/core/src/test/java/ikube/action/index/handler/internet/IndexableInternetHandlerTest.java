@@ -26,8 +26,7 @@ import org.junit.Test;
  */
 public class IndexableInternetHandlerTest extends AbstractTest {
 
-	// "http://code.google.com/p/ikube/"
-	private String url = "http://www.hazelcast.com";
+	private String url = "http://code.google.com/p/ikube/";
 	private List<Document> documents;
 	private IndexableInternet indexableInternet;
 	private IndexableInternetHandler indexableInternetHandler;
@@ -46,6 +45,7 @@ public class IndexableInternetHandlerTest extends AbstractTest {
 		indexableInternet.setThreads(3);
 		indexableInternet.setUrl(url);
 		indexableInternet.setBaseUrl(url);
+		indexableInternet.setMaxReadLength(Integer.MAX_VALUE);
 
 		indexableInternetHandler = new IndexableInternetHandler();
 		indexableInternetHandler.initialize();
@@ -69,11 +69,11 @@ public class IndexableInternetHandlerTest extends AbstractTest {
 	public void handleResource() {
 		Url url = new Url();
 		url.setUrl(this.url);
-		String title = "The title";
-		String content = "<html><head><title>" + title + "</title></head><body>Hello world</body></html>";
+		// String title = "The title";
+		// String content = "<html><head><title>" + title + "</title></head><body>Hello world</body></html>";
 		url.setContentType("text/html");
-		url.setRawContent(content.getBytes());
-		url.setParsedContent("Hello world");
+		// url.setRawContent(content.getBytes());
+		// url.setParsedContent("Hello world");
 
 		List<Url> urls = indexableInternetHandler.handleResource(indexContext, indexableInternet, url);
 		logger.info("Urls : " + urls);

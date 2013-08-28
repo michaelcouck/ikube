@@ -1,8 +1,12 @@
 package ikube.analytics;
 
+import java.util.Arrays;
+
+import org.junit.Test;
+
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
-import weka.classifiers.bayes.NaiveBayes;
+import weka.classifiers.functions.SMO;
 import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
@@ -12,58 +16,67 @@ public class WekaClassifier implements IClassifier<String, String, Object, Objec
 
 	public WekaClassifier() throws Exception {
 		// Declare two numeric attributes
-		Attribute Attribute1 = new Attribute("firstNumeric");
-		Attribute Attribute2 = new Attribute("secondNumeric");
+		Attribute firstNumeric = new Attribute("firstNumeric");
+		Attribute secondNumeric = new Attribute("secondNumeric");
 
 		// Declare a nominal attribute along with its values
-		FastVector fvNominalVal = new FastVector(3);
-		fvNominalVal.addElement("blue");
-		fvNominalVal.addElement("gray");
-		fvNominalVal.addElement("black");
-		Attribute Attribute3 = new Attribute("aNominal", fvNominalVal);
+		FastVector colourVector = new FastVector(3);
+		colourVector.addElement("blue");
+		colourVector.addElement("gray");
+		colourVector.addElement("black");
+		Attribute aNominal = new Attribute("aNominal", colourVector);
 
 		// Declare the class attribute along with its values
-		FastVector fvClassVal = new FastVector(2);
-		fvClassVal.addElement("positive");
-		fvClassVal.addElement("negative");
-		Attribute ClassAttribute = new Attribute("theClass", fvClassVal);
+		FastVector binomialVector = new FastVector(2);
+		binomialVector.addElement("positive");
+		binomialVector.addElement("negative");
+		Attribute klass = new Attribute("theClass", binomialVector);
 
 		// Declare the feature vector
-		FastVector fvWekaAttributes = new FastVector(4);
-		fvWekaAttributes.addElement(Attribute1);
-		fvWekaAttributes.addElement(Attribute2);
-		fvWekaAttributes.addElement(Attribute3);
-		fvWekaAttributes.addElement(ClassAttribute);
+		FastVector aggregateVector = new FastVector(4);
+		aggregateVector.addElement(firstNumeric);
+		aggregateVector.addElement(secondNumeric);
+		aggregateVector.addElement(aNominal);
+		aggregateVector.addElement(klass);
 
 		// Create an empty training set
-		Instances isTrainingSet = new Instances("Rel", fvWekaAttributes, 10);
+		Instances trainingInstance = new Instances("Rel", aggregateVector, 10);
 		// Set class index
-		isTrainingSet.setClassIndex(3);
+		trainingInstance.setClassIndex(3);
 
 		// Create the instance
-		Instance iExample = new Instance(4);
-		iExample.setValue((Attribute) fvWekaAttributes.elementAt(0), 1.0);
-		iExample.setValue((Attribute) fvWekaAttributes.elementAt(1), 0.5);
-		iExample.setValue((Attribute) fvWekaAttributes.elementAt(2), "gray");
-		iExample.setValue((Attribute) fvWekaAttributes.elementAt(3), "positive");
+		Instance instance = new Instance(4);
+		instance.setValue((Attribute) aggregateVector.elementAt(0), 1.0);
+		instance.setValue((Attribute) aggregateVector.elementAt(1), 0.5);
+		instance.setValue((Attribute) aggregateVector.elementAt(2), "gray");
+		instance.setValue((Attribute) aggregateVector.elementAt(3), "positive");
 
 		// add the instance
-		isTrainingSet.add(iExample);
+		trainingInstance.add(instance);
 
-		// Create a naïve bayes classifier
-		Classifier cModel = (Classifier) new NaiveBayes();
-		cModel.buildClassifier(isTrainingSet);
+		// Create a classifier
+		Classifier classifier = new SMO(); // new NaiveBayes();
+		classifier.buildClassifier(trainingInstance);
 
 		// Test the model
-		Evaluation eTest = new Evaluation(isTrainingSet);
-		eTest.evaluateModel(cModel, isTrainingSet);
+		Evaluation evaluation = new Evaluation(trainingInstance);
+		evaluation.evaluateModel(classifier, trainingInstance);
 
 		// Print the result à la Weka explorer:
-		String strSummary = eTest.toSummaryString();
+		String strSummary = evaluation.toSummaryString();
 		System.out.println(strSummary);
 
 		// Get the confusion matrix
-		double[][] cmMatrix = eTest.confusionMatrix();
+		double[][] cmMatrix = evaluation.confusionMatrix();
+		System.out.println(Arrays.deepToString(cmMatrix));
+
+		FastVector testVector = new FastVector(1);
+		testVector.addElement(aNominal);
+		Instances testInstances = new Instances("Rel", testVector, 1);
+		Instance testInstance = new Instance(1);
+		testInstance.setDataset(testInstances);
+		double classification = classifier.classifyInstance(testInstance);
+		System.out.println("Classification : " + classification);
 
 		// Specify that the instance belong to the training set
 		// in order to inherit from the set description
@@ -83,6 +96,11 @@ public class WekaClassifier implements IClassifier<String, String, Object, Objec
 	@Override
 	public Object train(Object trainingInput) {
 		return null;
+	}
+
+	@Test
+	public void classify() throws Exception {
+		WekaClassifier wekaClassifier = new WekaClassifier();
 	}
 
 }

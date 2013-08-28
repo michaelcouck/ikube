@@ -268,7 +268,7 @@ public final class FileUtilities {
 		}
 		return Pattern.compile(builder.toString());
 	}
-	
+
 	public static boolean deleteFile(final File file) {
 		return deleteFile(file, 1);
 	}
@@ -500,7 +500,7 @@ public final class FileUtilities {
 			}
 		}
 	}
-	
+
 	public static void close(Reader reader) {
 		if (reader != null) {
 			try {

@@ -22,9 +22,9 @@
 			$scope.url = '/ikube/service/search/json/single';
 			// The form parameters we send to the server
 			$scope.searchParameters = {
-				indexName : 'twitter',
+				indexName : 'street-context',
 				searchStrings : selected,
-				searchFields : 'contents',
+				searchFields : 'street_name',
 				fragment : true,
 				firstResult : 0,
 				maxResults : 10
