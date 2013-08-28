@@ -1,7 +1,5 @@
 package ikube.analytics;
 
-import java.util.Arrays;
-
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.functions.SMO;
@@ -11,6 +9,10 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 public class WekaClassifier implements IClassifier<String, String, Object, Object> {
+
+	private Classifier classifier;
+	private Instance instance;
+	private Instances trainingInstances;
 
 	public WekaClassifier() throws Exception {
 		// Declare two numeric attributes
@@ -38,43 +40,55 @@ public class WekaClassifier implements IClassifier<String, String, Object, Objec
 		aggregateVector.addElement(klass);
 
 		// Create an empty training set
-		Instances trainingInstance = new Instances("Rel", aggregateVector, 10);
+		trainingInstances = new Instances("Rel", aggregateVector, 10);
 		// Set class index
-		trainingInstance.setClassIndex(3);
+		trainingInstances.setClassIndex(3);
 
 		// Create the instance
-		Instance instance = new Instance(4);
+		instance = new Instance(4);
 		instance.setValue((Attribute) aggregateVector.elementAt(0), 1.0);
 		instance.setValue((Attribute) aggregateVector.elementAt(1), 0.5);
 		instance.setValue((Attribute) aggregateVector.elementAt(2), "gray");
 		instance.setValue((Attribute) aggregateVector.elementAt(3), "positive");
 
 		// add the instance
-		trainingInstance.add(instance);
+		trainingInstances.add(instance);
 
 		// Create a classifier
-		Classifier classifier = new SMO(); // new NaiveBayes();
-		classifier.buildClassifier(trainingInstance);
+		classifier = new SMO(); // new NaiveBayes();
+		classifier.buildClassifier(trainingInstances);
 
 		// Test the model
-		Evaluation evaluation = new Evaluation(trainingInstance);
-		evaluation.evaluateModel(classifier, trainingInstance);
+		Evaluation evaluation = new Evaluation(trainingInstances);
+		// evaluation.evaluateModel(classifier, trainingInstances);
 
 		// Print the result à la Weka explorer:
 		String strSummary = evaluation.toSummaryString();
-		System.out.println(strSummary);
+		// System.out.println(strSummary);
 
 		// Get the confusion matrix
 		double[][] cmMatrix = evaluation.confusionMatrix();
-		System.out.println(Arrays.deepToString(cmMatrix));
+		// System.out.println(Arrays.deepToString(cmMatrix));
 
-		FastVector testVector = new FastVector(1);
-		testVector.addElement(aNominal);
-		Instances testInstances = new Instances("Rel", testVector, 1);
-		Instance testInstance = new Instance(1);
-		testInstance.setDataset(testInstances);
-		double classification = classifier.classifyInstance(testInstance);
-		System.out.println("Classification : " + classification);
+		// FastVector testVector = new FastVector(1);
+		// testVector.addElement(aNominal);
+		// Instances testInstances = new Instances("Rel", testVector, 1);
+		// Instance testInstance = new Instance(1);
+		// testInstance.setDataset(testInstances);
+		// double classification = classifier.classifyInstance(testInstance);
+
+		// Attribute latitude = new Attribute("latitude");
+		// Attribute longitude = new Attribute("longitude");
+		// Attribute carbonmonoxide = new Attribute("co");
+		//
+		// Instance inst_co = new Instance(100);
+		// inst_co.setValue(latitude, 1.0);
+		// inst_co.setValue(longitude, 20);
+		// inst_co.setValue(carbonmonoxide, 200);
+		// inst_co.setMissing(4);
+
+		// double classification = classifier.classifyInstance(inst_co);
+		// System.out.println("Classification : " + classification);
 
 		// Specify that the instance belong to the training set
 		// in order to inherit from the set description
@@ -88,7 +102,62 @@ public class WekaClassifier implements IClassifier<String, String, Object, Objec
 
 	@Override
 	public String classify(String input) {
+
+		Instance inst_co;
+
+		// Create attributes to be used with classifiers
+		// Test the model
+		double result = -1;
+		try {
+
+			FastVector attributeList = new FastVector(2);
+
+			Attribute latitude = new Attribute("latitude");
+			Attribute longitude = new Attribute("longitude");
+			Attribute carbonmonoxide = new Attribute("co");
+
+			FastVector classVal = new FastVector();
+			classVal.addElement("ClassA");
+			classVal.addElement("ClassB");
+
+			attributeList.addElement(latitude);
+			attributeList.addElement(longitude);
+			attributeList.addElement(carbonmonoxide);
+
+			attributeList.addElement(new Attribute("@@class@@", classVal));
+
+			Instances data = new Instances("TestInstances", attributeList, 0);
+
+			// Create instances for each pollutant with attribute values latitude,
+			// longitude and pollutant itself
+			inst_co = new Instance(data.numAttributes());
+			data.add(inst_co);
+
+			// Set instance's values for the attributes "latitude", "longitude", and
+			// "pollutant concentration"
+			inst_co.setValue(latitude, 0.0);
+			inst_co.setValue(longitude, 0.0);
+			inst_co.setValue(carbonmonoxide, 0.0);
+			// inst_co.setMissing(0);
+			inst_co.setDataset(trainingInstances);
+
+			// load classifier from file
+			// Classifier cls_co = (Classifier) weka.core.SerializationHelper.read("/CO_J48Model.model");
+
+			result = classifier.classifyInstance(inst_co);
+			System.out.println("Result : " + result);
+
+			instance.setDataset(trainingInstances);
+			result = classifier.classifyInstance(instance);
+			System.out.println("Result : " + result);
+
+			return Double.toString(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		return null;
+
 	}
 
 	@Override
@@ -97,8 +166,9 @@ public class WekaClassifier implements IClassifier<String, String, Object, Objec
 	}
 
 	// @Test
-	// public void classify() throws Exception {
-	// WekaClassifier wekaClassifier = new WekaClassifier();
-	// }
+	public void classify() throws Exception {
+		WekaClassifier wekaClassifier = new WekaClassifier();
+		wekaClassifier.classify("Michael Couck");
+	}
 
 }
