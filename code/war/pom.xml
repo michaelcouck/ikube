@@ -75,6 +75,9 @@
 								<copy todir="ikube" failonerror="true">
 									<fileset dir="../libs/src/main/resources/ikube" />
 								</copy>
+								<copy todir="ikube" failonerror="true">
+									<fileset dir="../libs/src/main/resources/indexes/integration" />
+								</copy>
 							</target>
 						</configuration>
 						<goals>
