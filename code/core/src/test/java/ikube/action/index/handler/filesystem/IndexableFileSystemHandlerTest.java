@@ -89,6 +89,7 @@ public class IndexableFileSystemHandlerTest extends AbstractTest {
 		ThreadUtilities.cancellForkJoinPool(indexContext.getName());
 	}
 
+	/** Note that this test is ONLY for Linux! */
 	@Test
 	public void isExcluded() throws Exception {
 		Deencapsulation.setField(indexableFileSystemHandler, "resourceHandler", resourceHandler);
@@ -105,13 +106,16 @@ public class IndexableFileSystemHandlerTest extends AbstractTest {
 		try {
 			folder = FileUtilities.getFile("/tmp/folder", Boolean.TRUE);
 			symlinkFile = new File("/tmp/symlink");
-			symlink = Files.createSymbolicLink(symlinkFile.toPath(), folder.toPath());
-
-			isExcluded = indexableFileSystemHandler.isExcluded(symlinkFile, pattern);
-			assertTrue(isExcluded);
+			if (symlinkFile != null && folder != null) {
+				symlink = Files.createSymbolicLink(symlinkFile.toPath(), folder.toPath());
+				isExcluded = indexableFileSystemHandler.isExcluded(symlinkFile, pattern);
+				assertTrue(isExcluded);
+			}
 		} finally {
 			FileUtilities.deleteFile(folder, 1);
-			Files.deleteIfExists(symlink);
+			if (symlink != null) {
+				Files.deleteIfExists(symlink);
+			}
 		}
 	}
 
