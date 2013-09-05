@@ -1,11 +1,16 @@
 package ikube.analytics;
 
 // import org.junit.Test;
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
+import weka.classifiers.functions.SMO;
 import weka.classifiers.trees.J48;
 import weka.core.Attribute;
 import weka.core.FastVector;
@@ -37,8 +42,9 @@ public class WekaClassifier implements IClassifier<String, String, Object, Objec
 			}
 			attrInfo.addElement(target);
 
-			Instance wekaInstance = new Instance(3);
 			Instances wekaInstanceSet = new Instances("Dataset", attrInfo, 0);
+			Instance wekaInstance = new Instance(3);
+			wekaInstance.setDataset(wekaInstanceSet);
 			wekaInstanceSet.add(wekaInstance);
 			List<Long> featureValues = Arrays.asList(1l, 2l);
 			for (int i = 0; i < featureValues.size(); i++) {
@@ -48,22 +54,27 @@ public class WekaClassifier implements IClassifier<String, String, Object, Objec
 			}
 			wekaInstanceSet.setClassIndex(attrInfo.size() - 1);
 			classifier = new SMO();
-			classifier = new J48();
+			// classifier = new J48();
 			// classifier.setOptions(new String[] { "-R" });
 
 			// Now add some training instances
 			Instance i1 = new Instance(3);
 			i1.setDataset(wekaInstanceSet);
-			// i1.setValue((Attribute) attrInfo.elementAt(0), "hello");
-			// i1.setValue((Attribute) attrInfo.elementAt(1), "java");
-			// i1.setValue((Attribute)attrInfo.elementAt(2), "true");
 			wekaInstanceSet.add(i1);
+			i1.setValue((Attribute) attrInfo.elementAt(0), 1);
+			i1.setValue((Attribute) attrInfo.elementAt(1), 1);
+			i1.setValue((Attribute)attrInfo.elementAt(2), 0);
 
 			classifier.buildClassifier(wekaInstanceSet);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	@Test
+	public void classify() throws Exception {
+		new WekaClassifier().classify("Michael Couck");
 	}
 
 	@Override
@@ -92,12 +103,12 @@ public class WekaClassifier implements IClassifier<String, String, Object, Objec
 			attValues[1] = instances.attribute(1).indexOfValue("value_9");
 			attValues[2] = instances.attribute(2).addStringValue("Marinka");
 			attValues[3] = instances.attribute(3).addStringValue("23-4-1989");
-			
+
 			instance = new Instance(1.0, attValues);
 			instance.setDataset(instances);
-			
+
 			instances.add(instance);
-			
+
 			classifier.buildClassifier(instances);
 			Evaluation evaluation = new Evaluation(instances);
 			evaluation.evaluateModel(classifier, instances);
@@ -107,11 +118,6 @@ public class WekaClassifier implements IClassifier<String, String, Object, Objec
 			LOGGER.error(null, e);
 		}
 		return null;
-	}
-
-	// @Test
-	public void train() throws Exception {
-		new WekaClassifier().train("Michael Couck");
 	}
 
 }
