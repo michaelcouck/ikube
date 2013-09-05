@@ -1,6 +1,5 @@
 package ikube.analytics;
 
-// import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,6 +15,8 @@ import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.StringToWordVector;
 
 public class WekaClassifier implements IClassifier<String, String, Object, Object> {
 
@@ -30,40 +31,45 @@ public class WekaClassifier implements IClassifier<String, String, Object, Objec
 		Classifier classifier = null;
 		try {
 			FastVector attrInfo = new FastVector();
+			attrInfo.addElement(new Attribute("text"));
+			
 			FastVector targetValues = new FastVector();
 			targetValues.addElement("true");
 			targetValues.addElement("false");
 			Attribute target = new Attribute("target", targetValues);
-			String[] features = { "one", "two" };
 
-			for (String feature : features) {
-				Attribute attribute = new Attribute(feature);
-				attrInfo.addElement(attribute);
-			}
 			attrInfo.addElement(target);
 
 			Instances wekaInstanceSet = new Instances("Dataset", attrInfo, 0);
-			Instance wekaInstance = new Instance(3);
+			Instance wekaInstance = new Instance(2);
 			wekaInstance.setDataset(wekaInstanceSet);
 			wekaInstanceSet.add(wekaInstance);
-			List<Long> featureValues = Arrays.asList(1l, 2l);
-			for (int i = 0; i < featureValues.size(); i++) {
-				if (featureValues.get(i) != null) {
-					wekaInstance.setValue((Attribute) attrInfo.elementAt(i), featureValues.get(i));
-				}
-			}
-			wekaInstanceSet.setClassIndex(attrInfo.size() - 1);
+			wekaInstance.setValue((Attribute) attrInfo.elementAt(0), 1);
+			wekaInstance.setValue((Attribute) attrInfo.elementAt(1), 1);
+			
+			StringToWordVector stringToWordVector = new StringToWordVector();
+			stringToWordVector.setIDFTransform(Boolean.TRUE);
+			stringToWordVector.setInputFormat(wekaInstanceSet);
+			stringToWordVector.input(wekaInstance);
+			wekaInstanceSet = Filter.useFilter(wekaInstanceSet, stringToWordVector);
+			
+			wekaInstanceSet.setClassIndex(1);
 			classifier = new SMO();
 			// classifier = new J48();
 			// classifier.setOptions(new String[] { "-R" });
 
 			// Now add some training instances
-			Instance i1 = new Instance(3);
+			Instance i1 = new Instance(2);
 			i1.setDataset(wekaInstanceSet);
 			wekaInstanceSet.add(i1);
-			i1.setValue((Attribute) attrInfo.elementAt(0), 1);
+			i1.setValue((Attribute) attrInfo.elementAt(0), 2);
 			i1.setValue((Attribute) attrInfo.elementAt(1), 1);
-			i1.setValue((Attribute)attrInfo.elementAt(2), 0);
+			
+			Instance i2 = new Instance(2);
+			i2.setDataset(wekaInstanceSet);
+			wekaInstanceSet.add(i2);
+			i2.setValue((Attribute) attrInfo.elementAt(0), 2);
+			i2.setValue((Attribute) attrInfo.elementAt(1), 1);
 
 			classifier.buildClassifier(wekaInstanceSet);
 		} catch (Exception e) {
