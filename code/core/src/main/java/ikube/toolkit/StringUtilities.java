@@ -12,9 +12,8 @@ public final class StringUtilities {
 	private static final char SPACE = ' ';
 
 	/**
-	 * This method will check to see if a string can be parsed into a number of sorts, like a double for example. If there is a separator
-	 * like a '.' or a ',' then this will still qualify as a number, but more than one dot foe example then dis-qualifies the string as a
-	 * number.
+	 * This method will check to see if a string can be parsed into a number of sorts, like a double for example. If there is a separator like a '.' or a ','
+	 * then this will still qualify as a number, but more than one dot foe example then dis-qualifies the string as a number.
 	 * 
 	 * <pre>
 	 * 1) 123 - true
@@ -90,6 +89,25 @@ public final class StringUtilities {
 					}
 				}
 			}
+		}
+		return new String(strippedChars, 0, j);
+	}
+
+	public static final String stripToAlphaNumeric(final String string) {
+		char[] chars = string.toCharArray();
+		char[] strippedChars = new char[chars.length];
+		int j = 0;
+		for (int i = 0; i < chars.length; i++) {
+			final char c = chars[i];
+			if (!Character.isLetterOrDigit(c)) {
+				if (j != 0 && strippedChars[j - 1] != SPACE) {
+					strippedChars[j] = SPACE;
+					j++;
+				}
+				continue;
+			}
+			strippedChars[j] = c;
+			j++;
 		}
 		return new String(strippedChars, 0, j);
 	}

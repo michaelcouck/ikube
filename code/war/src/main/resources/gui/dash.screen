@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model:Screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:model="http://wireframesketcher.com/1.0/model.ecore">
+  <widgets xsi:type="model:SearchField" id="2" x="24" y="16" text="Search" measuredWidth="68" measuredHeight="24">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Table" id="4" x="16" y="352" width="945" height="241" text="Server,Cpu,Search,Index,Mem,Actions&#xA;192.168.1.10,progress,progress,[x],{computer},[Edit] [View]&#xA;192.168.1.12,progress,progress,[],{train},[Edit] [View]&#xA;192.168.1.14,progress,progress,[x],{note},[Edit] [View]" measuredWidth="945" measuredHeight="241" alternative="#eeeeee">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:ProgressBar" id="5" x="240" y="88" measuredWidth="100" measuredHeight="18"/>
+  <widgets xsi:type="model:ProgressBar" id="6" x="240" y="105" measuredWidth="100" measuredHeight="18"/>
+  <widgets xsi:type="model:ProgressBar" id="7" x="240" y="128" measuredWidth="100" measuredHeight="18"/>
+  <widgets xsi:type="model:ProgressBar" id="8" x="408" y="88" measuredWidth="100" measuredHeight="18"/>
+  <widgets xsi:type="model:ProgressBar" id="9" x="408" y="111" measuredWidth="100" measuredHeight="18"/>
+  <widgets xsi:type="model:ProgressBar" id="10" x="408" y="128" measuredWidth="100" measuredHeight="18"/>
+  <hRuler/>
+  <vRuler/>
+  <font size="12px"/>
+</model:Screen>

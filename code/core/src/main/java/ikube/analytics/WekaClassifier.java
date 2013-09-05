@@ -22,6 +22,47 @@ public class WekaClassifier implements IClassifier<String, String, Object, Objec
 
 	@Override
 	public String classify(String input) {
+		Classifier classifier = null;
+		try {
+			FastVector attrInfo = new FastVector();
+			FastVector targetValues = new FastVector();
+			targetValues.addElement("true");
+			targetValues.addElement("false");
+			Attribute target = new Attribute("target", targetValues);
+			String[] features = { "one", "two" };
+
+			for (String feature : features) {
+				Attribute attribute = new Attribute(feature);
+				attrInfo.addElement(attribute);
+			}
+			attrInfo.addElement(target);
+
+			Instance wekaInstance = new Instance(3);
+			Instances wekaInstanceSet = new Instances("Dataset", attrInfo, 0);
+			wekaInstanceSet.add(wekaInstance);
+			List<Long> featureValues = Arrays.asList(1l, 2l);
+			for (int i = 0; i < featureValues.size(); i++) {
+				if (featureValues.get(i) != null) {
+					wekaInstance.setValue((Attribute) attrInfo.elementAt(i), featureValues.get(i));
+				}
+			}
+			wekaInstanceSet.setClassIndex(attrInfo.size() - 1);
+			classifier = new SMO();
+			classifier = new J48();
+			// classifier.setOptions(new String[] { "-R" });
+
+			// Now add some training instances
+			Instance i1 = new Instance(3);
+			i1.setDataset(wekaInstanceSet);
+			// i1.setValue((Attribute) attrInfo.elementAt(0), "hello");
+			// i1.setValue((Attribute) attrInfo.elementAt(1), "java");
+			// i1.setValue((Attribute)attrInfo.elementAt(2), "true");
+			wekaInstanceSet.add(i1);
+
+			classifier.buildClassifier(wekaInstanceSet);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
 
