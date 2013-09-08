@@ -1,20 +1,17 @@
 package ikube.analytics;
 
 import java.util.Arrays;
-import java.util.List;
 
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import weka.classifiers.Classifier;
-import weka.classifiers.Evaluation;
 import weka.classifiers.functions.SMO;
-import weka.classifiers.trees.J48;
 import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.SparseInstance;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
@@ -22,108 +19,77 @@ public class WekaClassifier implements IClassifier<String, String, Object, Objec
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WekaClassifier.class);
 
+	private Filter filter;
 	private Classifier classifier;
-	private Instance instance;
-	private Instances instances;
+	private Instances trainingInstances;
+	private Instances classificationInstances;
 
 	@Override
-	public String classify(String input) {
-		Classifier classifier = null;
+	public String classify(final String input) {
 		try {
-			FastVector attrInfo = new FastVector();
-			attrInfo.addElement(new Attribute("text"));
-			
-			FastVector targetValues = new FastVector();
-			targetValues.addElement("true");
-			targetValues.addElement("false");
-			Attribute target = new Attribute("target", targetValues);
+			classificationInstances = trainingInstances.stringFreeStructure();
+			Instance instance = makeInstance(input, classificationInstances);
+			filter.input(instance);
+			Instance filteredInstance = filter.output();
 
-			attrInfo.addElement(target);
+			double[] result = classifier.distributionForInstance(filteredInstance);
+			double classification = classifier.classifyInstance(filteredInstance);
 
-			Instances wekaInstanceSet = new Instances("Dataset", attrInfo, 0);
-			Instance wekaInstance = new Instance(2);
-			wekaInstance.setDataset(wekaInstanceSet);
-			wekaInstanceSet.add(wekaInstance);
-			wekaInstance.setValue((Attribute) attrInfo.elementAt(0), 1);
-			wekaInstance.setValue((Attribute) attrInfo.elementAt(1), 1);
-			
-			StringToWordVector stringToWordVector = new StringToWordVector();
-			stringToWordVector.setIDFTransform(Boolean.TRUE);
-			stringToWordVector.setInputFormat(wekaInstanceSet);
-			stringToWordVector.input(wekaInstance);
-			wekaInstanceSet = Filter.useFilter(wekaInstanceSet, stringToWordVector);
-			
-			wekaInstanceSet.setClassIndex(1);
-			classifier = new SMO();
-			// classifier = new J48();
-			// classifier.setOptions(new String[] { "-R" });
-
-			// Now add some training instances
-			Instance i1 = new Instance(2);
-			i1.setDataset(wekaInstanceSet);
-			wekaInstanceSet.add(i1);
-			i1.setValue((Attribute) attrInfo.elementAt(0), 2);
-			i1.setValue((Attribute) attrInfo.elementAt(1), 1);
-			
-			Instance i2 = new Instance(2);
-			i2.setDataset(wekaInstanceSet);
-			wekaInstanceSet.add(i2);
-			i2.setValue((Attribute) attrInfo.elementAt(0), 2);
-			i2.setValue((Attribute) attrInfo.elementAt(1), 1);
-
-			classifier.buildClassifier(wekaInstanceSet);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	@Test
-	public void classify() throws Exception {
-		new WekaClassifier().classify("Michael Couck");
-	}
-
-	@Override
-	public Object train(Object trainingInput) {
-		classifier = new J48();
-
-		Attribute one = new Attribute("one");
-		Attribute two = new Attribute("two");
-		Attribute three = new Attribute("three");
-		Attribute four = new Attribute("four");
-
-		FastVector attInfo = new FastVector();
-		attInfo.addElement(one);
-		attInfo.addElement(two);
-		attInfo.addElement(three);
-		attInfo.addElement(four);
-
-		instances = new Instances("Instances", attInfo, 10);
-
-		instances.setClassIndex(3);
-		LOGGER.info(instances.attribute(instances.classIndex()).toString());
-
-		try {
-			double[] attValues = new double[instances.numAttributes()];
-			attValues[0] = Instance.missingValue();
-			attValues[1] = instances.attribute(1).indexOfValue("value_9");
-			attValues[2] = instances.attribute(2).addStringValue("Marinka");
-			attValues[3] = instances.attribute(3).addStringValue("23-4-1989");
-
-			instance = new Instance(1.0, attValues);
-			instance.setDataset(instances);
-
-			instances.add(instance);
-
-			classifier.buildClassifier(instances);
-			Evaluation evaluation = new Evaluation(instances);
-			evaluation.evaluateModel(classifier, instances);
-			String strSummary = evaluation.toSummaryString();
-			LOGGER.info("Summary : " + strSummary);
+			LOGGER.info("Result : " + classification + ", " + Arrays.toString(result));
 		} catch (Exception e) {
 			LOGGER.error(null, e);
 		}
 		return null;
+	}
+
+	@Override
+	public Object train(final Object trainingInput) {
+		try {
+			filter = new StringToWordVector();
+			classifier = new SMO();
+			FastVector attributes = new FastVector(2);
+			attributes.addElement(new Attribute("text", (FastVector) null));
+			FastVector classValues = new FastVector(2);
+			classValues.addElement("true");
+			classValues.addElement("false");
+			attributes.addElement(new Attribute("class", classValues));
+
+			trainingInstances = new Instances("Classification", attributes, 100);
+			trainingInstances.setClassIndex(trainingInstances.numAttributes() - 1);
+
+			// Make message into instance.
+			Instance instance = makeInstance("positive", trainingInstances);
+			// Set class value for instance.
+			instance.setClassValue("true");
+			// Add instance to training data.
+			trainingInstances.add(instance);
+
+			// And another training instance
+			instance = makeInstance("negative", trainingInstances);
+			// Set class value for instance.
+			instance.setClassValue("false");
+			// Add instance to training data.
+			trainingInstances.add(instance);
+
+			filter.setInputFormat(trainingInstances);
+			Instances filteredData = Filter.useFilter(trainingInstances, filter);
+			classifier.buildClassifier(filteredData);
+			IOUtils.writeInstancesToArffFile(filteredData, this.getClass().getSimpleName() + ".arff");
+		} catch (Exception e) {
+			LOGGER.error(null, e);
+		}
+		return null;
+	}
+
+	private Instance makeInstance(String text, Instances instances) {
+		// Create instance of length two.
+		SparseInstance instance = new SparseInstance(2);
+		// Set value for message attribute
+		Attribute messageAtt = instances.attribute("text");
+		instance.setValue(messageAtt, messageAtt.addStringValue(text));
+		// Give instance access to attribute information from the dataset.
+		instance.setDataset(instances);
+		return instance;
 	}
 
 }
