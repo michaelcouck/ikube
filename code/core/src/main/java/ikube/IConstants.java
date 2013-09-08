@@ -195,5 +195,7 @@ public interface IConstants {
 
 	String CLASSIFIER = "classifier";
 	String CLASSIFIERS = "classifiers";
+	String CLASS = "class";
+	String TEXT = "text";
 
 }

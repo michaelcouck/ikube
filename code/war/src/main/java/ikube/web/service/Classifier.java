@@ -1,9 +1,6 @@
 package ikube.web.service;
 
 import ikube.IConstants;
-import ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy;
-import ikube.action.index.handler.strategy.LanguageCleaningStrategy;
-import ikube.action.index.handler.strategy.LanguageDetectionStrategy;
 
 import java.io.IOException;
 
@@ -17,11 +14,12 @@ import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
+ * TODO Implement this and the architecture of course...
+ * 
  * @author Michael couck
  * @since 02.07.13
  * @version 01.00
@@ -38,13 +36,6 @@ public class Classifier extends Resource {
 	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(Classifier.class);
 
-	@Autowired
-	private LanguageCleaningStrategy languageCleaningStrategy;
-	@Autowired
-	private LanguageDetectionStrategy languageDetectionStrategy;
-	@Autowired
-	private DynamicallyTrainedLanguageSpecificClassificationStrategy dynamicallyTrainedLanguageSpecificClassificationStrategy;
-
 	/**
 	 * {@inheritDoc}
 	 * 
@@ -54,12 +45,6 @@ public class Classifier extends Resource {
 	@Path(Classifier.CLASSIFY)
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response classify(@QueryParam(value = IConstants.CONTENT) final String content) throws IOException {
-		String cleanedContent = languageCleaningStrategy.cleanContent(content);
-		String language = languageDetectionStrategy.detectLanguage(cleanedContent);
-		if (language != null) {
-			String sentiment = dynamicallyTrainedLanguageSpecificClassificationStrategy.classify(cleanedContent);
-			return buildResponse(sentiment);
-		}
 		return buildResponse("nothing");
 	}
 

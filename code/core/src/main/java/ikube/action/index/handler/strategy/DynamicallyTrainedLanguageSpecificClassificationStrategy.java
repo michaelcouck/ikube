@@ -5,22 +5,12 @@ import static ikube.IConstants.CLASSIFICATION_CONFLICT;
 import static ikube.action.index.IndexManager.addStringField;
 import ikube.IConstants;
 import ikube.action.index.handler.IStrategy;
-import ikube.analytics.FeatureExtractor;
+import ikube.analytics.IClassifier;
+import ikube.analytics.WekaClassifier;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
-import ikube.toolkit.Timer;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.TreeSet;
-
-import libsvm.LibSVM;
-import net.sf.javaml.classification.Classifier;
-import net.sf.javaml.core.Dataset;
-import net.sf.javaml.core.DefaultDataset;
-import net.sf.javaml.core.Instance;
-import net.sf.javaml.core.SparseInstance;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
@@ -29,20 +19,18 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 
 /**
+ * TODO Make this language specific again... the clean and test :)
+ * 
  * @author Michael Couck
  * @since 07.07.13
  * @version 01.00
  */
 public class DynamicallyTrainedLanguageSpecificClassificationStrategy extends AStrategy {
 
-	private int maxTraining = 1000;
+	private int maxTraining = 10000;
 	private String language = "en";
 
-	private Dataset dataset;
-	private Classifier[] classifiers;
-	private FeatureExtractor featureExtractor;
-
-	private boolean trained = false;
+	private IClassifier<String, String, String, Boolean> classifier;
 
 	public DynamicallyTrainedLanguageSpecificClassificationStrategy() {
 		this(null);
@@ -59,34 +47,15 @@ public class DynamicallyTrainedLanguageSpecificClassificationStrategy extends AS
 	 */
 	@Override
 	public void initialize() {
-		classifiers = new Classifier[1];
-		featureExtractor = new FeatureExtractor();
+		classifier = new WekaClassifier();
 		try {
-			addClassifiers();
-		} catch (IOException e) {
+			classifier.initialize();
+			classifier.train(IConstants.POSITIVE, IConstants.POSITIVE);
+			classifier.train(IConstants.NEGATIVE, IConstants.NEGATIVE);
+			((WekaClassifier) classifier).build();
+		} catch (final Exception e) {
 			logger.error(null, e);
 		}
-	}
-
-	private void addClassifiers() throws IOException {
-		String[] text = { "", "" };
-		String dictionary = Arrays.deepToString(text);
-
-		double[] positiveVector = featureExtractor.extractFeatures(text[0], dictionary);
-		Instance positiveInstance = new SparseInstance(positiveVector, IConstants.POSITIVE);
-
-		double[] negativeVector = featureExtractor.extractFeatures(text[1], dictionary);
-		Instance negativeInstance = new SparseInstance(negativeVector, IConstants.NEGATIVE);
-
-		dataset = new DefaultDataset(Arrays.asList(positiveInstance, negativeInstance));
-
-		addClassifiers(dataset);
-	}
-
-	private void addClassifiers(final Dataset dataset) {
-		LibSVM libSvmClassifier = new LibSVM();
-		libSvmClassifier.buildClassifier(dataset);
-		classifiers[0] = libSvmClassifier;
 	}
 
 	/**
@@ -103,7 +72,7 @@ public class DynamicallyTrainedLanguageSpecificClassificationStrategy extends AS
 				// If this data is already classified by another strategy then maxTraining the language
 				// classifiers on the data. We can then also classify the data and correlate the results
 				String previousClassification = document.get(CLASSIFICATION);
-				String currentClassification = classify(content);
+				String currentClassification = classifier.classify(content);
 				if (StringUtils.isEmpty(previousClassification)) {
 					// Not analyzed so add the sentiment that we get
 					addStringField(CLASSIFICATION, currentClassification, document, Store.YES, Index.ANALYZED, TermVector.NO);
@@ -120,74 +89,14 @@ public class DynamicallyTrainedLanguageSpecificClassificationStrategy extends AS
 		return super.aroundProcess(indexContext, indexable, document, resource);
 	}
 
-	public String classify(final String content) {
-		double[] features;
-		try {
-			features = featureExtractor.extractFeatures(content);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		Instance instance = new SparseInstance(features);
-		// Check each of the classifiers, if they don't match the log it
-		TreeSet<String> classifications = new TreeSet<String>();
-		for (final Classifier classifier : classifiers) {
-			classifications.add(classifier.classify(instance).toString());
-		}
-		if (classifications.size() == 1) {
-			return classifications.first();
-		}
-		boolean first = true;
-		StringBuilder stringBuilder = new StringBuilder();
-		for (final String classification : classifications) {
-			if (!first) {
-				stringBuilder.append(" ");
+	void train(final String clazz, final String content) {
+		if (maxTraining > 0) {
+			maxTraining--;
+			try {
+				classifier.train(clazz, content);
+			} catch (Exception e) {
+				logger.error(null, e);
 			}
-			first = false;
-			stringBuilder.append(classification);
-		}
-		return stringBuilder.toString();
-	}
-
-	synchronized void train(final String category, final String content) {
-		if (trained) {
-			return;
-		}
-		Iterator<Instance> iterator = dataset.iterator();
-		int trainedCategory = 0;
-		int nextTrainedCategory = 0;
-		while (iterator.hasNext()) {
-			Instance instance = iterator.next();
-			if (instance.classValue().equals(category)) {
-				trainedCategory++;
-			} else {
-				nextTrainedCategory++;
-			}
-		}
-		if (trainedCategory >= maxTraining) {
-			if (nextTrainedCategory >= maxTraining) {
-				trained = true;
-			}
-			return;
-		}
-		double[] features;
-		try {
-			features = featureExtractor.extractFeatures(content, content);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		Instance instance = new SparseInstance(features, category);
-		dataset.add(instance);
-		if (dataset.size() % 100 == 0) {
-			logger.info("Building classifier : " + category + ", " + language + ", " + dataset.size());
-			long duration = Timer.execute(new Timer.Timed() {
-				@Override
-				public void execute() {
-					Dataset newDataset = null;
-					newDataset = dataset.copy();
-					addClassifiers(newDataset);
-				}
-			});
-			logger.info("Built classifier in : " + duration);
 		}
 	}
 
