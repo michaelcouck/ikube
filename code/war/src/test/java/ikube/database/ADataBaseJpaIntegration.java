@@ -218,6 +218,17 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
 		assertTrue(dbUrls.size() > 0);
 		assertEquals(dbUrls.size(), inserted - started);
 	}
+	
+	@Test
+	public void findClassStartMax() throws Exception {
+		int inserted = 90;
+		List<Url> urls = getUrls(inserted);
+		dataBase.persistBatch(urls);
+		List<Url> dbUrls = dataBase.find(Url.class, 0, Integer.MAX_VALUE);
+		assertNotNull(dbUrls);
+		assertTrue(dbUrls.size() > 0);
+		assertEquals(dbUrls.size(), inserted);
+	}
 
 	@Test
 	public void findCriteria() throws Exception {

@@ -80,6 +80,9 @@ public class Indexable<E> extends Persistable {
 	@Attribute(field = false, description = "This is the class names of strategies that can be used during processing")
 	private Collection<String> strategyNames;
 
+	@Transient
+	private String type = this.getClass().getName();
+
 	public void setName(final String name) {
 		this.name = name;
 	}
@@ -204,6 +207,14 @@ public class Indexable<E> extends Persistable {
 
 	public void setStrategyNames(Collection<String> strategyNames) {
 		this.strategyNames = strategyNames;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 }

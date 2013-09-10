@@ -14,6 +14,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -47,7 +48,7 @@ public class DataBase extends Resource {
 	@Path(DataBase.ENTITY)
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
-	public String entity(@QueryParam(value = IConstants.CLASS)
+	public Response entity(@QueryParam(value = IConstants.CLASS)
 	final String clazz, @QueryParam(value = IConstants.ID)
 	final long id) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		Object entity = dataBase.find(Class.forName(clazz), id);
@@ -55,28 +56,29 @@ public class DataBase extends Resource {
 			entity = Class.forName(clazz).newInstance();
 			ObjectToolkit.populateFields(entity, Boolean.TRUE, 1, EXCLUDED_PROPERTIES);
 		}
-		return gson.toJson(entity);
+		return buildResponse(entity);
 	}
 
 	@GET
 	@Path(DataBase.ENTITIES)
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
-	public String entities(@QueryParam(value = IConstants.CLASS)
+	public Response entities(@QueryParam(value = IConstants.CLASS)
 	final String clazz, @QueryParam(value = IConstants.START_INDEX)
 	final int startIndex, @QueryParam(value = IConstants.END_INDEX)
 	final int endIndex) throws ClassNotFoundException {
-		List<?> list = dataBase.find(Class.forName(clazz), startIndex, endIndex);
-		return gson.toJson(list);
+		List<?> list = dataBase.find(IndexContext.class, startIndex, endIndex);
+		return buildResponse(list);
 	}
 
 	@POST
 	@Path(DataBase.ENTITY_CREATE)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public String createIndexContext(final String entity) throws ClassNotFoundException {
+	public Response createIndexContext(final String entity) throws ClassNotFoundException {
 		logger.info("Entity : " + entity);
-		return gson.toJson(createEntity(IndexContext.class, entity));
+		Object object = createEntity(IndexContext.class, entity);
+		return buildResponse(object);
 	}
 
 	private <T> T createEntity(final Class<T> type, final String entity) {

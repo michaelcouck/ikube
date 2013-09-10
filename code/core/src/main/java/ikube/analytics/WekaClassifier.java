@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import weka.classifiers.Classifier;
+import weka.classifiers.Evaluation;
 import weka.classifiers.functions.SMO;
 import weka.core.Attribute;
 import weka.core.FastVector;
@@ -127,6 +128,9 @@ public class WekaClassifier implements IClassifier<String, String, String, Boole
 		classifier.buildClassifier(filteredData);
 		this.classifier = classifier;
 		classificationInstances = trainingInstances.stringFreeStructure();
+		
+		Evaluation evaluation = new Evaluation(trainingInstances);
+		LOGGER.info("Classifier evaluation : " + evaluation.toClassDetailsString());
 		// IOUtils.writeInstancesToArffFile(filteredData, this.getClass().getSimpleName() + ".arff");
 	}
 

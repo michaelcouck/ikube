@@ -27,7 +27,7 @@
   <widgets xsi:type="model:TextField" id="13" x="872" y="8" text="Log out" measuredWidth="51" measuredHeight="23">
     <font/>
   </widgets>
-  <widgets xsi:type="model:Panel" id="15" x="120" y="48" width="753" height="185" measuredWidth="753" measuredHeight="185"/>
+  <widgets xsi:type="model:Panel" id="15" x="120" y="48" width="849" height="185" measuredWidth="849" measuredHeight="185"/>
   <widgets xsi:type="model:TextField" id="17" x="136" y="96" width="145" text="Name" measuredWidth="145" measuredHeight="23">
     <font/>
   </widgets>
@@ -61,7 +61,7 @@
   <widgets xsi:type="model:Note" id="28" x="472" y="208" width="248" height="41" text="This is the context details for the index." measuredWidth="248" measuredHeight="41" annotation="true">
     <font/>
   </widgets>
-  <widgets xsi:type="model:Panel" id="29" x="120" y="248" width="753" height="257" measuredWidth="753" measuredHeight="257"/>
+  <widgets xsi:type="model:Panel" id="29" x="120" y="248" width="849" height="257" measuredWidth="849" measuredHeight="257"/>
   <widgets xsi:type="model:TextField" id="30" x="136" y="64" width="145" text="Context" measuredWidth="145" measuredHeight="23">
     <font/>
   </widgets>
@@ -105,6 +105,9 @@
     <font/>
   </widgets>
   <widgets xsi:type="model:Note" id="44" x="472" y="466" width="248" height="79" text="These panels are the indexables that are contained in the context with all the properties defined." measuredWidth="248" measuredHeight="79" annotation="true">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Label" id="45" x="136" y="444" width="129" text="..." measuredWidth="129" measuredHeight="23">
     <font/>
   </widgets>
   <hRuler/>

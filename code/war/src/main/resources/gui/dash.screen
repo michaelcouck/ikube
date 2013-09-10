@@ -3,7 +3,7 @@
   <widgets xsi:type="model:SearchField" id="2" x="408" y="8" width="241" text="Search" measuredWidth="241" measuredHeight="24">
     <font/>
   </widgets>
-  <widgets xsi:type="model:Table" id="4" x="120" y="48" width="865" height="345" text="Server,Cpu,Search,Index,Analytics,Mem,Actions&#xA;192.168.1.10,4/spark,spark,spark,spark,1523/6480,[Edit] [View]&#xA;192.168.1.12,8/spark,spark,spark,spark,5598/12000,[Edit] [View]&#xA;192.168.1.14,32/spark,spark,spark,spark,552/1024,[Edit] [View]" measuredWidth="865" measuredHeight="345" alternative="#eeeeee">
+  <widgets xsi:type="model:Table" id="4" x="120" y="48" width="849" height="313" text="Server,Cpu,Search,Index,Analytics,Mem,Actions&#xA;192.168.1.10,4/spark,spark,spark,spark,1523/6480,[Edit] [View]&#xA;192.168.1.12,8/spark,spark,spark,spark,5598/12000,[Edit] [View]&#xA;192.168.1.14,32/spark,spark,spark,spark,552/1024,[Edit] [View]" measuredWidth="849" measuredHeight="313" alternative="#eeeeee">
     <font/>
   </widgets>
   <widgets xsi:type="model:Accordion" id="5" x="8" y="48" text="Navigation&#xA;- Dash&#xA;- Indexes&#xA;- Analytics&#xA;- Search&#xA;- Administration&#xA;" measuredWidth="100" measuredHeight="157" selection="0">
@@ -25,6 +25,12 @@
     <font/>
   </widgets>
   <widgets xsi:type="model:Button" id="10" x="656" y="7" text="Go!" measuredWidth="38" measuredHeight="25">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Label" id="11" x="136" y="133" width="129" text="..." measuredWidth="129" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="12" x="880" y="8" text="Log out" measuredWidth="51" measuredHeight="23">
     <font/>
   </widgets>
   <hRuler/>

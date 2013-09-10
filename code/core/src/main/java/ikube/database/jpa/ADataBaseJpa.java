@@ -169,19 +169,15 @@ public abstract class ADataBaseJpa implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public <T> List<T> find(final Class<T> klass, final int firstResult, final int maxResults) {
-		String name = klass.getSimpleName();
-		StringBuilder builder = new StringBuilder("select ");
-		builder.append(name);
-		builder.append(" from ");
-		builder.append(name);
-		builder.append(" as ");
-		builder.append(name);
-		Query query = getEntityManager().createQuery(builder.toString());
-		query.setFirstResult(firstResult);
-		query.setMaxResults(maxResults);
-		return query.getResultList();
+		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+		CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(klass);
+		Root<T> root = criteriaQuery.from(klass);
+		criteriaQuery = criteriaQuery.select(root);
+		TypedQuery<T> typedQuery = getEntityManager().createQuery(criteriaQuery);
+		typedQuery.setFirstResult(firstResult);
+		typedQuery.setMaxResults(maxResults);
+		return typedQuery.getResultList();
 	}
 
 	/**

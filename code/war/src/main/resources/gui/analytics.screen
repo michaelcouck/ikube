@@ -45,10 +45,25 @@
   <widgets xsi:type="model:TextField" id="18" x="136" y="128" width="153" text="Input data" measuredWidth="153" measuredHeight="23">
     <font/>
   </widgets>
-  <widgets xsi:type="model:TextArea" id="19" x="304" y="128" width="657" height="177" text="ham,'Go until jurong point, crazy.. Available only in bugis n great world la e buffet...'&#xA;ham,'Ok lar... Joking wif u oni...'&#xA;spam,'Free entry in 2 a wkly comp to win apply 08452810075over18\'s'" measuredWidth="657" measuredHeight="177">
+  <widgets xsi:type="model:TextArea" id="19" x="304" y="168" width="681" height="97" text="ham,'Go until jurong point, crazy.. Available only in bugis n great world la e buffet...'&#xA;ham,'Ok lar... Joking wif u oni...'&#xA;spam,'Free entry in 2 a wkly comp to win apply 08452810075over18\'s'&#xA;..." measuredWidth="681" measuredHeight="97">
     <font/>
   </widgets>
-  <widgets xsi:type="model:Note" id="20" x="351" y="240" width="402" height="89" text="The input data to be analyzed is a comma seperated list of strings, that can be one of double, string or date. This format is defined in the attributes/instances for the model, either in the uploaded training data or in the pre-defined algorithms from the system." measuredWidth="402" measuredHeight="89" annotation="true">
+  <widgets xsi:type="model:Note" id="20" x="488" y="194" width="402" height="89" text="The input data to be analyzed is a comma seperated list of strings, that can be one of double, string or date. This format is defined in the attributes/instances for the model, either in the uploaded training data or in the pre-defined algorithms from the system." measuredWidth="402" measuredHeight="89" annotation="true">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="21" x="144" y="288" width="153" text="Results" measuredWidth="153" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextArea" id="22" x="304" y="288" width="681" height="177" text="TP Rate   FP Rate   Precision   Recall  F-Measure   ROC Area  Class&#xD;&#xA;                 0         0          0         0         0          ?        positive&#xD;&#xA;                 0         0          0         0         0          ?        negative&#xD;&#xA;Weighted Avg.  NaN       NaN        NaN       NaN       NaN        NaN    &#xD;&#xA;&#xD;&#xA;Data consisted of:&#xD;&#xA;1) Positive : 100&#xD;&#xA;2) Negative: 200&#xD;&#xA;..." measuredWidth="681" measuredHeight="177">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Combo" id="23" x="304" y="128" width="241" text="Twitter" measuredWidth="241" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Note" id="24" x="488" y="384" width="402" height="97" text="The output of the classifier is the evaluation and the results. This could be some simple numbers for the classes or a graph depending on the type of output that can be generated for the analytics data." measuredWidth="402" measuredHeight="97" annotation="true">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="25" x="871" y="8" text="Log out" measuredWidth="51" measuredHeight="23">
     <font/>
   </widgets>
   <hRuler/>

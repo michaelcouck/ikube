@@ -367,8 +367,7 @@ module.controller('IndexesController', function($http, $scope) {
 });
 
 module.controller('DatabaseController', function($http, $scope) {
-	$scope.index = null;
-	$scope.indexes = null;
+	$scope.entities = null;
 	$scope.doIndexContexts = function() {
 		$scope.url = getServiceUrl('/ikube/service/database/entities');
 		$scope.parameters = { 
@@ -380,7 +379,7 @@ module.controller('DatabaseController', function($http, $scope) {
 		$scope.config = { params : $scope.parameters };
 		var promise = $http.get($scope.url, $scope.config);
 		promise.success(function(data, status) {
-			$scope.indexes = data;
+			$scope.entities = data;
 			$scope.status = status;
 		});
 		promise.error(function(data, status) {

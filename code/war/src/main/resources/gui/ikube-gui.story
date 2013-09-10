@@ -3,10 +3,13 @@
   <panels x="10" y="10">
     <screen href="dash.screen#/"/>
   </panels>
-  <panels x="375" y="75">
+  <panels x="190" y="30">
     <screen href="indexes.screen#/"/>
   </panels>
-  <panels x="675" y="75">
+  <panels x="10" y="280">
     <screen href="analytics.screen#/"/>
+  </panels>
+  <panels x="370" y="50">
+    <screen href="index.screen#/"/>
   </panels>
 </story:Storyboard>

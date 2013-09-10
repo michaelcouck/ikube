@@ -3,7 +3,7 @@
   <widgets xsi:type="model:SearchField" id="2" x="408" y="8" width="241" text="Search" measuredWidth="241" measuredHeight="24">
     <font/>
   </widgets>
-  <widgets xsi:type="model:Table" id="4" x="120" y="48" width="865" height="217" text="Name,Open,Docs,Size,Max age,Timestamp,Path,Throttle,Actions&#xA;twitter,true,2.1,5.1,600,9/09/13 7:09:37,/opt/indexes,1,delete index terminate&#xA;" measuredWidth="865" measuredHeight="217" alternative="#eeeeee">
+  <widgets xsi:type="model:Table" id="4" x="120" y="48" width="849" height="217" text="Name,Open,Docs,Size,Max age,Timestamp,Path,Throttle,Actions&#xA;twitter,true,2.1,5.1,600,9/09/13 7:09:37,/opt/indexes,1,delete index terminate&#xA;..." measuredWidth="849" measuredHeight="217" alternative="#eeeeee">
     <font/>
   </widgets>
   <widgets xsi:type="model:Accordion" id="5" x="8" y="48" text="Navigation&#xA;- Dash&#xA;- Indexes&#xA;- Analytics&#xA;- Search&#xA;- Administration&#xA;" measuredWidth="100" measuredHeight="157" selection="0">
@@ -27,10 +27,10 @@
   <widgets xsi:type="model:Button" id="10" x="656" y="7" text="Go!" measuredWidth="38" measuredHeight="25">
     <font/>
   </widgets>
-  <widgets xsi:type="model:Note" id="11" x="136" y="97" text="The indexes are selectable and forward&#xD;&#xA;to another page where the properties are &#xD;&#xA;editable." measuredWidth="233" measuredHeight="59" annotation="true">
-    <font/>
+  <widgets xsi:type="model:Note" id="11" x="144" y="116" text="The indexes are selectable and forward&#xD;&#xA;to the index page where the properties are &#xD;&#xA;editable for the index context and the indexables. Indexables &#xD;&#xA;can also be added on this page." measuredWidth="374" measuredHeight="82" annotation="true">
+    <font size="13px"/>
   </widgets>
-  <widgets xsi:type="model:Note" id="12" x="420" y="39" text="The search is instant search on everything in the &#xD;&#xA;system, i.e. all indexes including the system indexes and&#xD;&#xA;on all fields" measuredWidth="309" measuredHeight="59" annotation="true">
+  <widgets xsi:type="model:Note" id="12" x="440" y="25" text="The search is instant search on everything in the &#xD;&#xA;system, i.e. all indexes including the system indexes and&#xD;&#xA;on all fields" measuredWidth="309" measuredHeight="59" annotation="true">
     <font/>
   </widgets>
   <widgets xsi:type="model:TextField" id="13" x="872" y="8" text="Log out" measuredWidth="51" measuredHeight="23">
