@@ -36,7 +36,6 @@ public class ClassificationStrategyTest extends AbstractTest {
 		inputs = new HashMap<String, String[]>();
 		inputs.put(IConstants.POSITIVE, new String[] { "Lovely day", "Perfect and healthy", "Funny and amusing", "Great!" });
 		inputs.put(IConstants.NEGATIVE, new String[] { "Not well", "Feeling sick", "Unhappy and miserable", "Loose your mind" });
-		inputs.put(IConstants.NEUTRAL, new String[] { "Before breakfast", "After lunch", "During dinner", "Sleep time" });
 	}
 
 	@Test
@@ -78,7 +77,7 @@ public class ClassificationStrategyTest extends AbstractTest {
 
 		// We add the positive field for classification and the strategy should also classify the data as positive and there should be no conflict field
 		// document = addStringField(IConstants.LANGUAGE, "en", document, Store.YES, Index.ANALYZED, TermVector.YES);
-		document = addStringField(IConstants.CLASSIFICATION, IConstants.CATEGORIES[0], document, Store.YES, Index.ANALYZED, TermVector.YES);
+		document = addStringField(IConstants.CLASSIFICATION, IConstants.POSITIVE, document, Store.YES, Index.ANALYZED, TermVector.YES);
 		dynamicallyTrainedLanguageSpecificClassificationStrategy.aroundProcess(indexContext, indexableColumn, document, null);
 		logger.info("Document : " + document);
 		// Static classification of positive
@@ -94,8 +93,8 @@ public class ClassificationStrategyTest extends AbstractTest {
 		// Check the memory for a volume trainings
 		PerformanceTester.execute(new PerformanceTester.APerform() {
 			public void execute() throws Throwable {
-				dynamicallyTrainedLanguageSpecificClassificationStrategy.train(IConstants.NEUTRAL,
-						"This is a small one hunded and fourty character piece of neutral text");
+				dynamicallyTrainedLanguageSpecificClassificationStrategy.train(IConstants.POSITIVE,
+						"This is a small one hunded and fourty character piece of positive text");
 			}
 		}, "Classification training strategy : ", 1000, Boolean.TRUE);
 	}

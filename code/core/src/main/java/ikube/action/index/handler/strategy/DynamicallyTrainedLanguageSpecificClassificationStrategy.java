@@ -19,7 +19,7 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 
 /**
- * TODO Make this language specific again... the clean and test :)
+ * TODO This strategy ...
  * 
  * @author Michael Couck
  * @since 07.07.13
@@ -78,7 +78,9 @@ public class DynamicallyTrainedLanguageSpecificClassificationStrategy extends AS
 					addStringField(CLASSIFICATION, currentClassification, document, Store.YES, Index.ANALYZED, TermVector.NO);
 				} else {
 					// We only train if we have had this tweet classified already
-					train(previousClassification, content);
+					if (previousClassification.equals(IConstants.POSITIVE) || previousClassification.equals(IConstants.NEGATIVE)) {
+						train(previousClassification, content);
+					}
 					if (!previousClassification.contains(currentClassification)) {
 						// We don't change the original analysis, do we?
 						addStringField(CLASSIFICATION_CONFLICT, currentClassification, document, Store.YES, Index.ANALYZED, TermVector.NO);
@@ -99,7 +101,7 @@ public class DynamicallyTrainedLanguageSpecificClassificationStrategy extends AS
 			}
 		}
 	}
-
+	
 	public void setLanguage(String language) {
 		this.language = language;
 	}

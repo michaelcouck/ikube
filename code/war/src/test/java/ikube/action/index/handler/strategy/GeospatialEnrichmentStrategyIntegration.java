@@ -21,6 +21,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -30,6 +31,7 @@ import org.junit.Test;
  * @since 20.01.2012
  * @version 01.00
  */
+@Ignore
 public class GeospatialEnrichmentStrategyIntegration extends IntegrationTest {
 
 	private IndexContext<?> indexContext;

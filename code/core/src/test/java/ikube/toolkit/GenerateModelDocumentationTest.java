@@ -11,9 +11,8 @@ public class GenerateModelDocumentationTest extends AbstractTest {
 	public void main() {
 		String html = new GenerateModelDocumentation().createEntityFieldTable();
 		logger.info(html);
-		assertTrue(html.contains("<table><tr><th>Name</th><th>Property</th><th>Lucene field</th><th>Description</th></tr>"
-				+ "<tr><td>Indexable</td><td>name<br>address<br>stored<br>analyzed<br>vectored<br>maxExceptions<br>threads<br></td>"
-				+ "<td>false<br>false<br>false<br>false<br>false<br>false"));
+		assertTrue(html.contains("<table><tr><th>Name</th><th>Property</th><th>Lucene field</th><th>Description</th></tr><tr><td>Indexable</td><td>"
+				+ "name<br>address<br>stored<br>analyzed<br>vectored<br>maxExceptions<br>threads"));
 	}
 
 }

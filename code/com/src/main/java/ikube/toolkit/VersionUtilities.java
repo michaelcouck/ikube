@@ -52,7 +52,7 @@ public class VersionUtilities {
 			List<String> lines = IOUtils.readLines(inputStream);
 			TIMESTAMP = lines.get(1).replaceAll("#", "");
 		} catch (IOException e) {
-			LOGGER.error("Exception reading the Maven properties for the build : " + pomPropertiesFile, e);
+			LOGGER.error("Exception reading the Maven properties for the build : " + pomPropertiesFile + ", " + e.getMessage());
 		} finally {
 			IOUtils.closeQuietly(inputStream);
 		}
