@@ -2,11 +2,13 @@ package ikube.model;
 
 import ikube.action.index.handler.IStrategy;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
@@ -72,6 +74,11 @@ public class Indexable<E> extends Persistable {
 	@Max(value = 1000)
 	@Attribute(field = false, description = "This is the number of threads that should be spawned for this indexable")
 	private int threads = 1;
+
+	@Column
+	@ElementCollection(fetch = FetchType.EAGER, targetClass = String.class)
+	@Attribute(field = false, description = "This is the class names of strategies that can be used during processing")
+	private Collection<String> strategyNames;
 
 	public void setName(final String name) {
 		this.name = name;
@@ -189,6 +196,14 @@ public class Indexable<E> extends Persistable {
 
 	public int incrementAndGetExceptions() {
 		return exceptions.incrementAndGet();
+	}
+
+	public Collection<String> getStrategyNames() {
+		return strategyNames;
+	}
+
+	public void setStrategyNames(Collection<String> strategyNames) {
+		this.strategyNames = strategyNames;
 	}
 
 }

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model:Screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:model="http://wireframesketcher.com/1.0/model.ecore">
+  <widgets xsi:type="model:SearchField" id="2" x="408" y="8" width="241" text="Search" measuredWidth="241" measuredHeight="24">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Accordion" id="5" x="8" y="48" text="Navigation&#xA;- Dash&#xA;- Indexes&#xA;- Analytics&#xA;- Search&#xA;- Administration&#xA;" measuredWidth="100" measuredHeight="157" selection="0">
+    <items x="0" y="2" width="100" height="25" text="Navigation"/>
+    <items x="0" y="27" width="100" height="25" text="- Dash"/>
+    <items x="0" y="52" width="100" height="25" text="- Indexes"/>
+    <items x="0" y="77" width="100" height="25" text="- Analytics"/>
+    <items x="0" y="102" width="100" height="25" text="- Search"/>
+    <items x="0" y="127" width="100" height="25" text="- Administration"/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="6" x="728" y="8" text="logged in as" measuredWidth="74" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Icon" id="7" x="18" y="4" measuredWidth="32" measuredHeight="32" icon="stop-media (large)"/>
+  <widgets xsi:type="model:Link" id="8" x="816" y="8" text="michael" measuredWidth="45" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="9" x="59" y="8" text="ikube" measuredWidth="39" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Button" id="10" x="656" y="7" text="Go!" measuredWidth="38" measuredHeight="25">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Combo" id="11" x="304" y="48" width="241" text="SMO&#xD;&#xA;" measuredWidth="241" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="12" x="136" y="48" width="153" text="Select algorithm" measuredWidth="153" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="13" x="136" y="88" width="153" text="Upload training data" measuredWidth="153" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Menu" id="14" x="304" y="86" width="241" text="Select &amp;File" measuredWidth="241" measuredHeight="27">
+    <items x="5" y="0" width="62" height="27" text="Select &amp;File"/>
+  </widgets>
+  <widgets xsi:type="model:Note" id="15" x="392" y="104" text="Optional" measuredWidth="62" measuredHeight="29" annotation="true">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Note" id="16" x="576" y="48" text="The algorithms are defined in the configuration and are &#xD;&#xA;either already trained and can be used as is, or they need to be &#xD;&#xA;trained" measuredWidth="346" measuredHeight="59" annotation="true">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="18" x="136" y="128" width="153" text="Input data" measuredWidth="153" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextArea" id="19" x="304" y="128" width="657" height="177" text="ham,'Go until jurong point, crazy.. Available only in bugis n great world la e buffet...'&#xA;ham,'Ok lar... Joking wif u oni...'&#xA;spam,'Free entry in 2 a wkly comp to win apply 08452810075over18\'s'" measuredWidth="657" measuredHeight="177">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Note" id="20" x="351" y="240" width="402" height="89" text="The input data to be analyzed is a comma seperated list of strings, that can be one of double, string or date. This format is defined in the attributes/instances for the model, either in the uploaded training data or in the pre-defined algorithms from the system." measuredWidth="402" measuredHeight="89" annotation="true">
+    <font/>
+  </widgets>
+  <hRuler/>
+  <vRuler/>
+  <font size="12px"/>
+</model:Screen>

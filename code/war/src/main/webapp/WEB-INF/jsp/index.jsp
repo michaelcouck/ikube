@@ -23,6 +23,8 @@
 	<li rel="search-advanced">Advanced</li>
 	<li rel="search-geospatial">Geospatial</li>
 	<li rel="happy">Happy</li>
+	<li rel="database-indexes">Database indexes</li>
+	<li rel="create">Create</li>
 	<li rel="place-holder" style="width : 150px;">&nbsp;</li>
 </ul>
 
@@ -47,6 +49,12 @@
 	</div>
 	<div id="happy" class="tab_content">
 		<jsp:include page="/WEB-INF/jsp/happy.jsp" />
+	</div>
+	<div id="database-indexes" class="tab_content">
+		<jsp:include page="/WEB-INF/app/indexes.jsp" />
+	</div>
+	<div id="create" class="tab_content">
+		<jsp:include page="/WEB-INF/app/create.jsp" />
 	</div>
 	<div id="place-holder" class="tab_content">
 		&nbsp;

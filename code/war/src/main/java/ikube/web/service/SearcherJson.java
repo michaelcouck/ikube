@@ -43,7 +43,8 @@ public class SearcherJson extends Searcher {
 	@GET
 	@Override
 	@Path(SearcherJson.SINGLE)
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response searchSingle(@QueryParam(value = IConstants.INDEX_NAME)
 	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
 	final String searchStrings, @QueryParam(value = IConstants.SEARCH_FIELDS)
@@ -61,7 +62,8 @@ public class SearcherJson extends Searcher {
 	@GET
 	@Override
 	@Path(SearcherJson.MULTI)
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response searchMulti(@QueryParam(value = IConstants.INDEX_NAME)
 	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
 	final String searchStrings, @QueryParam(value = IConstants.SEARCH_FIELDS)
@@ -82,7 +84,8 @@ public class SearcherJson extends Searcher {
 	@GET
 	@Override
 	@Path(SearcherJson.MULTI_SORTED)
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response searchMultiSorted(@QueryParam(value = IConstants.INDEX_NAME)
 	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
 	final String searchStrings, @QueryParam(value = IConstants.SEARCH_FIELDS)
@@ -105,7 +108,8 @@ public class SearcherJson extends Searcher {
 	@GET
 	@Override
 	@Path(SearcherJson.MULTI_ALL)
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response searchMultiAll(@QueryParam(value = IConstants.INDEX_NAME)
 	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
 	final String searchStrings, @QueryParam(value = IConstants.FRAGMENT)
@@ -123,7 +127,8 @@ public class SearcherJson extends Searcher {
 	@GET
 	@Override
 	@Path(SearcherJson.MULTI_SPATIAL)
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response searchMultiSpacial(@QueryParam(value = IConstants.INDEX_NAME)
 	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
 	final String searchStrings, @QueryParam(value = IConstants.SEARCH_FIELDS)
@@ -147,7 +152,8 @@ public class SearcherJson extends Searcher {
 	@GET
 	@Override
 	@Path(SearcherJson.MULTI_SPATIAL_ALL)
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response searchMultiSpacialAll(@QueryParam(value = IConstants.INDEX_NAME)
 	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
 	final String searchStrings, @QueryParam(value = IConstants.FRAGMENT)
@@ -169,7 +175,8 @@ public class SearcherJson extends Searcher {
 	@GET
 	@Override
 	@Path(SearcherJson.MULTI_ADVANCED)
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response searchMultiAdvanced(@QueryParam(value = IConstants.INDEX_NAME)
 	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
 	final String searchStrings, @QueryParam(value = IConstants.SEARCH_FIELDS)
@@ -190,7 +197,8 @@ public class SearcherJson extends Searcher {
 	@GET
 	@Override
 	@Path(SearcherJson.NUMERIC_ALL)
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response searchNumericAll(@QueryParam(value = IConstants.INDEX_NAME)
 	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
 	final String searchStrings, @QueryParam(value = IConstants.FRAGMENT)
@@ -208,7 +216,8 @@ public class SearcherJson extends Searcher {
 	@GET
 	@Override
 	@Path(SearcherJson.NUMERIC_RANGE)
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response searchNumericRange(@QueryParam(value = IConstants.INDEX_NAME)
 	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
 	final String searchStrings, @QueryParam(value = IConstants.FRAGMENT)
@@ -226,7 +235,8 @@ public class SearcherJson extends Searcher {
 	@GET
 	@Override
 	@Path(SearcherJson.COMPLEX)
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response searchComplex(@QueryParam(value = IConstants.INDEX_NAME)
 	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
 	final String searchStrings, @QueryParam(value = IConstants.SEARCH_FIELDS)
@@ -249,7 +259,8 @@ public class SearcherJson extends Searcher {
 	@GET
 	@Override
 	@Path(SearcherJson.COMPLEX_SORTED)
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response searchComplexSorted(@QueryParam(value = IConstants.INDEX_NAME)
 	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
 	final String searchStrings, @QueryParam(value = IConstants.SEARCH_FIELDS)

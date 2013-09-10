@@ -57,7 +57,8 @@ public class SearcherXml extends Searcher {
 	@GET
 	@Override
 	@Path(SearcherXml.SINGLE)
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_XML)
 	public Response searchSingle(@QueryParam(value = IConstants.INDEX_NAME)
 	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
 	final String searchStrings, @QueryParam(value = IConstants.SEARCH_FIELDS)
@@ -75,7 +76,8 @@ public class SearcherXml extends Searcher {
 	@GET
 	@Override
 	@Path(SearcherXml.MULTI)
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_XML)
 	public Response searchMulti(@QueryParam(value = IConstants.INDEX_NAME)
 	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
 	final String searchStrings, @QueryParam(value = IConstants.SEARCH_FIELDS)
@@ -96,7 +98,8 @@ public class SearcherXml extends Searcher {
 	@GET
 	@Override
 	@Path(SearcherXml.MULTI_SORTED)
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_XML)
 	public Response searchMultiSorted(@QueryParam(value = IConstants.INDEX_NAME)
 	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
 	final String searchStrings, @QueryParam(value = IConstants.SEARCH_FIELDS)
@@ -119,7 +122,8 @@ public class SearcherXml extends Searcher {
 	@GET
 	@Override
 	@Path(SearcherXml.MULTI_ALL)
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_XML)
 	public Response searchMultiAll(@QueryParam(value = IConstants.INDEX_NAME)
 	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
 	final String searchStrings, @QueryParam(value = IConstants.FRAGMENT)
@@ -137,7 +141,8 @@ public class SearcherXml extends Searcher {
 	@GET
 	@Override
 	@Path(SearcherXml.MULTI_SPATIAL)
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_XML)
 	public Response searchMultiSpacial(@QueryParam(value = IConstants.INDEX_NAME)
 	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
 	final String searchStrings, @QueryParam(value = IConstants.SEARCH_FIELDS)
@@ -161,7 +166,8 @@ public class SearcherXml extends Searcher {
 	@GET
 	@Override
 	@Path(SearcherXml.MULTI_SPATIAL_ALL)
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_XML)
 	public Response searchMultiSpacialAll(@QueryParam(value = IConstants.INDEX_NAME)
 	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
 	final String searchStrings, @QueryParam(value = IConstants.FRAGMENT)
@@ -183,7 +189,8 @@ public class SearcherXml extends Searcher {
 	@GET
 	@Override
 	@Path(SearcherXml.MULTI_ADVANCED)
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_XML)
 	public Response searchMultiAdvanced(@QueryParam(value = IConstants.INDEX_NAME)
 	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
 	final String searchStrings, @QueryParam(value = IConstants.SEARCH_FIELDS)
@@ -204,7 +211,8 @@ public class SearcherXml extends Searcher {
 	@GET
 	@Override
 	@Path(SearcherXml.NUMERIC_ALL)
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_XML)
 	public Response searchNumericAll(@QueryParam(value = IConstants.INDEX_NAME)
 	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
 	final String searchStrings, @QueryParam(value = IConstants.FRAGMENT)
@@ -222,7 +230,8 @@ public class SearcherXml extends Searcher {
 	@GET
 	@Override
 	@Path(SearcherXml.NUMERIC_RANGE)
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_XML)
 	public Response searchNumericRange(@QueryParam(value = IConstants.INDEX_NAME)
 	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
 	final String searchStrings, @QueryParam(value = IConstants.FRAGMENT)
@@ -240,7 +249,8 @@ public class SearcherXml extends Searcher {
 	@GET
 	@Override
 	@Path(SearcherXml.COMPLEX)
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_XML)
 	public Response searchComplex(@QueryParam(value = IConstants.INDEX_NAME)
 	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
 	final String searchStrings, @QueryParam(value = IConstants.SEARCH_FIELDS)
@@ -263,7 +273,8 @@ public class SearcherXml extends Searcher {
 	@GET
 	@Override
 	@Path(SearcherXml.COMPLEX_SORTED)
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_XML)
 	public Response searchComplexSorted(@QueryParam(value = IConstants.INDEX_NAME)
 	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
 	final String searchStrings, @QueryParam(value = IConstants.SEARCH_FIELDS)

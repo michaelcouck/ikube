@@ -22,6 +22,7 @@
 			<interface>10.99.170.*</interface>
 			<interface>10.100.114.*</interface>
 			<interface>10.100.126.*</interface>
+			<interface>10.96.45.*</interface>
 		</interfaces>
 		<symmetric-encryption enabled="false">
 			<algorithm>PBEWithMD5AndDES</algorithm>

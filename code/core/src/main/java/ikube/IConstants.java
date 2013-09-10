@@ -197,5 +197,9 @@ public interface IConstants {
 	String CLASSIFIERS = "classifiers";
 	String CLASS = "class";
 	String TEXT = "text";
+	String TYPE = "type";
+	String START_INDEX = "start-index";
+	String END_INDEX = "end-index";
+	String ENTITY = "entity";
 
 }

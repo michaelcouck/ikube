@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model:Screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:model="http://wireframesketcher.com/1.0/model.ecore">
+  <widgets xsi:type="model:SearchField" id="2" x="408" y="8" width="241" text="Search" measuredWidth="241" measuredHeight="24">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Accordion" id="5" x="8" y="48" text="Navigation&#xA;- Dash&#xA;- Indexes&#xA;- Analytics&#xA;- Search&#xA;- Administration&#xA;" measuredWidth="100" measuredHeight="157" selection="0">
+    <items x="0" y="2" width="100" height="25" text="Navigation"/>
+    <items x="0" y="27" width="100" height="25" text="- Dash"/>
+    <items x="0" y="52" width="100" height="25" text="- Indexes"/>
+    <items x="0" y="77" width="100" height="25" text="- Analytics"/>
+    <items x="0" y="102" width="100" height="25" text="- Search"/>
+    <items x="0" y="127" width="100" height="25" text="- Administration"/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="6" x="728" y="8" text="logged in as" measuredWidth="74" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Icon" id="7" x="18" y="4" measuredWidth="32" measuredHeight="32" icon="stop-media (large)"/>
+  <widgets xsi:type="model:Link" id="8" x="816" y="8" text="michael" measuredWidth="45" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="9" x="59" y="8" text="ikube" measuredWidth="39" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Button" id="10" x="656" y="7" text="Go!" measuredWidth="38" measuredHeight="25">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="13" x="872" y="8" text="Log out" measuredWidth="51" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Panel" id="15" x="120" y="48" width="753" height="185" measuredWidth="753" measuredHeight="185"/>
+  <widgets xsi:type="model:TextField" id="17" x="136" y="96" width="145" text="Name" measuredWidth="145" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="18" x="296" y="96" width="273" text="desktop-index" measuredWidth="273" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="19" x="136" y="128" width="145" text="Max age" measuredWidth="145" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="20" x="296" y="128" width="273" text="60000" measuredWidth="273" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="21" x="136" y="160" width="145" text="Compound file" measuredWidth="145" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="22" x="296" y="160" width="273" text="true" measuredWidth="273" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="23" x="584" y="96" width="233" text="Unique name of the index" measuredWidth="233" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="24" x="584" y="128" width="233" text="Age befor re-generation in minutes" measuredWidth="233" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="25" x="584" y="160" width="233" text="Lucene file format" measuredWidth="233" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Label" id="27" x="136" y="194" width="129" text="..." measuredWidth="129" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Note" id="28" x="472" y="208" width="248" height="41" text="This is the context details for the index." measuredWidth="248" measuredHeight="41" annotation="true">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Panel" id="29" x="120" y="248" width="753" height="257" measuredWidth="753" measuredHeight="257"/>
+  <widgets xsi:type="model:TextField" id="30" x="136" y="64" width="145" text="Context" measuredWidth="145" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="31" x="136" y="258" width="145" text="Indexable" measuredWidth="145" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="32" x="136" y="288" width="145" text="Name" measuredWidth="145" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="33" x="136" y="352" width="145" text="Path field name" measuredWidth="145" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="34" x="136" y="320" width="145" text="Path" measuredWidth="145" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Label" id="35" x="136" y="384" width="129" text="..." measuredWidth="129" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="36" x="136" y="416" width="145" text="Strategies" measuredWidth="145" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="37" x="296" y="288" width="273" text="desktop" measuredWidth="273" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="38" x="584" y="288" width="233" text="The unique name of the indexable" measuredWidth="233" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="39" x="296" y="320" width="273" text="/" measuredWidth="273" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="40" x="296" y="352" width="273" text="path" measuredWidth="273" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="41" x="584" y="320" width="277" text="The path on the file system to start the indexing at" measuredWidth="277" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="42" x="584" y="352" width="233" text="The field name in the Lucene index for the path" measuredWidth="233" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" id="43" x="296" y="416" width="385" text="[ikube.action.index.handler.strategy.LanguageDetectionStrategy, ...]" measuredWidth="385" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Note" id="44" x="472" y="466" width="248" height="79" text="These panels are the indexables that are contained in the context with all the properties defined." measuredWidth="248" measuredHeight="79" annotation="true">
+    <font/>
+  </widgets>
+  <hRuler/>
+  <vRuler/>
+  <font size="12px"/>
+</model:Screen>
