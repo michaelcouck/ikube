@@ -16,7 +16,6 @@ import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
@@ -27,7 +26,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.FileSystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,7 +85,7 @@ public class SnapshotSchedule extends Schedule {
 				snapshot.setTotalSearches(getTotalSearchesForIndex(indexContext).longValue());
 
 				dataBase.persist(snapshot);
-				String[] names = new String[] { "indexContext" };
+				String[] names = new String[] { IConstants.INDEX_CONTEXT };
 				Object[] values = new Object[] { indexContext.getName() };
 				List<Snapshot> snapshots = dataBase.find(Snapshot.class, Snapshot.SELECT_SNAPSHOTS_ORDER_BY_TIMESTAMP_DESC, names, values, 0,
 						MAX_SNAPSHOTS_CONTEXT);
@@ -133,9 +131,9 @@ public class SnapshotSchedule extends Schedule {
 		server.setAge(System.currentTimeMillis());
 		server.setTimestamp(new Timestamp(System.currentTimeMillis()));
 		try {
-			long availableDiskSpace = FileSystemUtils.freeSpaceKb("/") / IConstants.MILLION;
-			server.setFreeDiskSpace(availableDiskSpace);
-		} catch (IOException e) {
+			// long availableDiskSpace = FileSystemUtils.freeSpaceKb("/") / IConstants.MILLION;
+			// server.setFreeDiskSpace(availableDiskSpace);
+		} catch (Exception e) {
 			LOGGER.error("Exception accessing the disk space : ", e);
 		}
 		setLogTail(server);
@@ -160,14 +158,11 @@ public class SnapshotSchedule extends Schedule {
 			int lengthToRead = Math.max(0, fileLength - offset);
 			// 100000
 			byte[] bytes = new byte[lengthToRead];
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Offset : " + offset + ", file length : " + logFile.length() + ", to read : " + lengthToRead);
-			}
 			inputStream.seek(offset);
 			inputStream.read(bytes, 0, lengthToRead);
 			server.setLogTail(new String(bytes));
 		} catch (FileNotFoundException e) {
-			LOGGER.error("Log file not found : ", e);
+			LOGGER.error("Log file not found : " + e.getMessage());
 		} catch (Exception e) {
 			LOGGER.error("Error reading log file : ", e);
 		} finally {
