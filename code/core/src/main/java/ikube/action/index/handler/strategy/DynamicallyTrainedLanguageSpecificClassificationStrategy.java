@@ -72,18 +72,24 @@ public class DynamicallyTrainedLanguageSpecificClassificationStrategy extends AS
 				// If this data is already classified by another strategy then maxTraining the language
 				// classifiers on the data. We can then also classify the data and correlate the results
 				String previousClassification = document.get(CLASSIFICATION);
-				String currentClassification = classifier.classify(content);
-				if (StringUtils.isEmpty(previousClassification)) {
-					// Not analyzed so add the sentiment that we get
-					addStringField(CLASSIFICATION, currentClassification, document, Store.YES, Index.ANALYZED, TermVector.NO);
-				} else {
-					// We only train if we have had this tweet classified already
-					if (previousClassification.equals(IConstants.POSITIVE) || previousClassification.equals(IConstants.NEGATIVE)) {
-						train(previousClassification, content);
-					}
-					if (!previousClassification.contains(currentClassification)) {
-						// We don't change the original analysis, do we?
-						addStringField(CLASSIFICATION_CONFLICT, currentClassification, document, Store.YES, Index.ANALYZED, TermVector.NO);
+				String currentClassification = null;
+				if (!StringUtils.isEmpty(StringUtils.stripToEmpty(content))) {
+					currentClassification = classifier.classify(content);
+					logger.info("Previous : " + previousClassification + ", current : " + currentClassification);
+					if (StringUtils.isEmpty(previousClassification)) {
+						if (!StringUtils.isEmpty(currentClassification)) {
+							// Not analyzed so add the sentiment that we get
+							addStringField(CLASSIFICATION, currentClassification, document, Store.YES, Index.ANALYZED, TermVector.NO);
+						}
+					} else {
+						// We only train if we have had this tweet classified already
+						if (previousClassification.equals(IConstants.POSITIVE) || previousClassification.equals(IConstants.NEGATIVE)) {
+							train(previousClassification, content);
+						}
+						if (!StringUtils.isEmpty(currentClassification) && !previousClassification.contains(currentClassification)) {
+							// We don't change the original analysis, do we?
+							addStringField(CLASSIFICATION_CONFLICT, currentClassification, document, Store.YES, Index.ANALYZED, TermVector.NO);
+						}
 					}
 				}
 			}
@@ -101,7 +107,7 @@ public class DynamicallyTrainedLanguageSpecificClassificationStrategy extends AS
 			}
 		}
 	}
-	
+
 	public void setLanguage(String language) {
 		this.language = language;
 	}

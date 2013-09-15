@@ -51,6 +51,14 @@ public class SpellingChecker {
 	 * @return the spelling checker
 	 */
 	public static SpellingChecker getSpellingChecker() {
+		if (SpellingChecker.INSTANCE == null) {
+			SpellingChecker.INSTANCE = new SpellingChecker();
+			try {
+				SpellingChecker.INSTANCE.initialize();
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
 		return SpellingChecker.INSTANCE;
 	}
 

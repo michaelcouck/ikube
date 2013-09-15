@@ -100,7 +100,7 @@ public class MonitorServiceTest extends AbstractTest {
 			monitorService.setProperties(filesAndProperties);
 
 			String propertiesFileContentsRead = FileUtilities.getContents(propertiesFile, Integer.MAX_VALUE).toString();
-			assertEquals("The properties file should contain the contents int he map : ", propertiesFileContents,
+			assertEquals("The properties file should contain the contents in the map : ", propertiesFileContents,
 					propertiesFileContentsRead);
 		} finally {
 			FileUtilities.deleteFile(new File("./properties"), 1);

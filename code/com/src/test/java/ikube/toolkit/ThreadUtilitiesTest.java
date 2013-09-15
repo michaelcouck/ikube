@@ -101,7 +101,9 @@ public class ThreadUtilitiesTest extends AbstractTest {
 	public void submitDestroy() {
 		String name = "name";
 		Future<?> future = ThreadUtilities.submit(name, new Sleepy(Integer.MAX_VALUE));
-		logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
+		if (future != null) {
+			logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
+		}
 
 		ThreadUtilities.sleep(3000);
 		ThreadUtilities.destroy(name);

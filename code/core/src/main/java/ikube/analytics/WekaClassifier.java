@@ -28,9 +28,9 @@ public class WekaClassifier implements IClassifier<String, String, String, Boole
 	private static final Logger LOGGER = LoggerFactory.getLogger(WekaClassifier.class);
 
 	private Filter filter;
-	private Classifier classifier;
+	private volatile Classifier classifier;
 	private Instances trainingInstances;
-	private Instances classificationInstances;
+	private volatile Instances classificationInstances;
 
 	private int buildThreshold = 1000;
 
@@ -82,7 +82,7 @@ public class WekaClassifier implements IClassifier<String, String, String, Boole
 			// LOGGER.info("Result : " + classificationClass + ", " + classification + ", " + Arrays.toString(result));
 			return classificationClass;
 		} catch (Exception e) {
-			LOGGER.error(null, e);
+			LOGGER.error("Exception classifying content : " + input, e);
 		}
 		return null;
 	}
