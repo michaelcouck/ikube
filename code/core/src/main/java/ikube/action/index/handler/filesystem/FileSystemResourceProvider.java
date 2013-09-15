@@ -3,65 +3,118 @@ package ikube.action.index.handler.filesystem;
 import ikube.IConstants;
 import ikube.action.index.handler.IResourceProvider;
 import ikube.model.IndexableFileSystem;
+import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import java.util.Stack;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This class will provide files to the {@link IndexableFileSystemHandler}. It simply walks the file system from the starting point that is specified, ignoring
+ * the files and paths that were specified as excluded, adds the files to the stack and makes them available to the handler. The walk of the file system will
+ * pause if the size of the stack is too large, i.e. if the consumers cannot keep pace with the file system walking.
+ * 
+ * @author Michael Couck
+ * @since 25.03.13
+ * @version 01.00
+ */
 class FileSystemResourceProvider implements IResourceProvider<File> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileSystemResourceProvider.class);
 
+	private int included = 0;
+	private int excluded = 0;
 	private boolean finished = Boolean.FALSE;
-	private Stack<File> files = new Stack<File>();
+	private final Stack<File> files = new Stack<File>();
 
-	FileSystemResourceProvider(final IndexableFileSystem indexableFileSystem) throws IOException {
-		File startDirectory = new File(indexableFileSystem.getPath());
-		Path startPath = startDirectory.toPath();
-		class SimpleFileVisitorWalker extends SimpleFileVisitor<Path> {
-			public FileVisitResult visitFile(final Path path, final BasicFileAttributes attrs) throws IOException {
-				File file = path.toFile();
-				if (file != null && file.exists()) {
+	/**
+	 * The constructor takes the configuration for the walk of the file system, and start a thread that will do the actual walk, so the caller does not have to
+	 * wait for the walk to finish before starting the consumption of the files.
+	 * 
+	 * @param indexableFileSystem the configuration of the file system walk
+	 * @param pattern the pattern to exclude from the files accumulated
+	 * @throws IOException
+	 */
+	FileSystemResourceProvider(final IndexableFileSystem indexableFileSystem, final Pattern pattern) throws IOException {
+		final File startDirectory = new File(indexableFileSystem.getPath());
+		LOGGER.info("Start directory :" + startDirectory);
+		ThreadUtilities.submit(this.toString(), new Runnable() {
+
+			/**
+			 * {@inheritDoc}
+			 */
+			public void run() {
+				walkFileSystem(startDirectory);
+				finished = Boolean.TRUE;
+				LOGGER.info("Finished : " + finished + ", included : " + included + ", excluded : " + excluded + ", size : " + files.size());
+			}
+
+			private void walkFileSystem(final File file) {
+				try {
 					while (files.size() > IConstants.MILLION) {
 						ThreadUtilities.sleep(1000);
 					}
-					files.push(file);
-					return super.visitFile(path, attrs);
+					if (FileUtilities.isExcluded(file, pattern)) {
+						excluded++;
+						return;
+					}
+					if (file.isDirectory()) {
+						for (final File child : file.listFiles()) {
+							walkFileSystem(child);
+						}
+					} else {
+						included++;
+						files.push(file);
+					}
+				} catch (Exception e) {
+					LOGGER.error("Exception walking the file tree : ", e);
 				}
-				return FileVisitResult.SKIP_SUBTREE;
 			}
-		}
-		Files.walkFileTree(startPath, new SimpleFileVisitorWalker());
-		finished = Boolean.TRUE;
-		LOGGER.info("Finished : " + finished);
+
+		});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public synchronized File getResource() {
-		if (files.size() == 0) {
-			if (!finished) {
-				LOGGER.info("No more files, waiting for walker : ");
-				ThreadUtilities.sleep(10000);
-				if (files.size() > 0) {
-					return files.pop();
-				}
-			}
-			return null;
-		}
-		return files.pop();
+		return getResource(5);
 	}
 
+	private synchronized File getResource(final int retry) {
+		File file = null;
+		if (retry > 0) {
+			if (files.size() == 0) {
+				if (!finished) {
+					LOGGER.info("Waiting for walker : ");
+					ThreadUtilities.sleep(10000);
+					if (files.size() > 0) {
+						return getResource(retry - 1);
+					}
+				}
+				LOGGER.info("No more files : ");
+			} else {
+				file = files.pop();
+				LOGGER.info("Popping : " + files.size() + ", " + file);
+			}
+		}
+		return file;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setResources(final List<File> resources) {
+		if (resources == null) {
+			return;
+		}
 		this.files.addAll(resources);
 	}
 

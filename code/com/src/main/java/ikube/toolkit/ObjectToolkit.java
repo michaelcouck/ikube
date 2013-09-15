@@ -101,6 +101,9 @@ public final class ObjectToolkit {
 	 */
 	public static final <T> T populateFields(final Class<?> klass, final T target, final boolean collections, final int depth,
 			final int maxDepth, final String... excludedFields) {
+		if (maxDepth > 100) {
+			LOGGER.warn("Warning, the graph depth is very large : ");
+		}
 		if (depth > maxDepth) {
 			return null;
 		}

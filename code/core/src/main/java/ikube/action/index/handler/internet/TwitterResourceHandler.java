@@ -15,6 +15,8 @@ import org.apache.lucene.document.Field.TermVector;
 import org.springframework.social.twitter.api.Tweet;
 
 /**
+ * This class simply takes the specific data from Twitter and adds it to the index.
+ * 
  * @author Michael Couck
  * @since 19.06.13
  * @version 01.00

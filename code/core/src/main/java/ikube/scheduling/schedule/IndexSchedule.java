@@ -63,7 +63,7 @@ public class IndexSchedule extends Schedule {
 					public void run() {
 						try {
 							// The action will be intercepted by the rule interceptor, and the rules will be evaluated
-							// against the cluster. If they category in a true then the action will be allowed to execute the logic
+							// against the cluster. If they result in a true then the action will be allowed to execute the logic
 							action.execute(indexContext);
 						} catch (Throwable e) {
 							LOGGER.error("Exception executing action : " + action, e);

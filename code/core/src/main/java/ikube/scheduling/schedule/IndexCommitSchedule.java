@@ -11,6 +11,9 @@ import org.apache.lucene.index.IndexWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
+ * This schedule will periodically commit the indexes that are currently being written. This is desirable in configurations where the indexes are large and are
+ * written over NFS. The indexes will be merged as well. Lucene threading will take care of the underlying details of concurrent access to the index files.
+ * 
  * @author Michael Couck
  * @since 21.06.13
  * @version 01.00

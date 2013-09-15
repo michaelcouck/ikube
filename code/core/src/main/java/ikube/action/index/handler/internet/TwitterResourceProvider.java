@@ -18,6 +18,13 @@ import org.springframework.social.twitter.api.StreamingOperations;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.impl.TwitterTemplate;
 
+/**
+ * This class will use the Spring social module to get tweets from Twitter, at a rate of around 1% of the tweets.
+ * 
+ * @author Michael Couck
+ * @since 19.06.13
+ * @version 01.00
+ */
 class TwitterResourceProvider implements IResourceProvider<Tweet> {
 
 	private class TwitterStreamListener implements StreamListener {
@@ -27,7 +34,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 		 */
 		@Override
 		public void onTweet(final Tweet tweet) {
-			if (tweets.size() < 10000) {
+			if (tweets.size() < 1000000) {
 				tweets.push(tweet);
 			}
 		}
@@ -58,8 +65,15 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+	/** This collection is used to stock pile the tweets, waiting for consumers. */
 	private Stack<Tweet> tweets;
 
+	/**
+	 * Constructor takes the configuration for the Twitter account, and initializes the streaming classes that will accept the Twitter data.
+	 * 
+	 * @param indexableTweets the configuration for the Twitter account, importantly the OAuth login details
+	 * @throws IOException
+	 */
 	TwitterResourceProvider(final IndexableTweets indexableTweets) throws IOException {
 		tweets = new Stack<>();
 		TwitterTemplate twitter = new TwitterTemplate( //
@@ -78,8 +92,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 	@Override
 	public Tweet getResource() {
 		while (tweets.isEmpty()) {
-			// logger.info("Waiting for tweets : ");
-			ThreadUtilities.sleep(10000);
+			ThreadUtilities.sleep(1000);
 		}
 		return tweets.pop();
 	}

@@ -4,7 +4,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
 import ikube.action.index.handler.database.IndexableTableHandler;
@@ -22,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.RecursiveAction;
 
 import mockit.Deencapsulation;
 import mockit.Mockit;
@@ -50,7 +50,12 @@ public class IndexTest extends AbstractTest {
 		List<Indexable<?>> indexables = new ArrayList<Indexable<?>>(Arrays.asList(indexableTable));
 
 		Mockit.setUpMocks(IndexManagerMock.class, ApplicationContextManagerMock.class);
-		ForkJoinTask forkJoinTask = mock(ForkJoinTask.class);
+		ForkJoinTask forkJoinTask = new RecursiveAction() {
+			@Override
+			protected void compute() {
+				return;
+			}
+		};
 
 		when(clusterManager.startWorking(anyString(), anyString(), anyString())).thenReturn(action);
 		when(clusterManager.getServer()).thenReturn(server);

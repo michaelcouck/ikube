@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -552,10 +553,44 @@ public final class FileUtilities {
 	}
 
 	public static String cleanFilePath(final String path) {
-		String indexDirectoryPath = StringUtils.replace(path, "/./", "/");
-		indexDirectoryPath = StringUtils.replace(indexDirectoryPath, "\\.\\", "/");
-		indexDirectoryPath = StringUtils.replace(indexDirectoryPath, "\\", "/");
-		return indexDirectoryPath;
+		String filePath = StringUtils.replace(path, "/./", "/");
+		filePath = StringUtils.replace(filePath, "\\.\\", "/");
+		filePath = StringUtils.replace(filePath, "\\", "/");
+		filePath = StringUtils.removeEnd(filePath, ".");
+		return filePath;
+	}
+	
+	/**
+	 * This method checks to see if the file can be read, that it exists and that it is not in the excluded pattern defined in the configuration.
+	 * 
+	 * @param file the file to check for inclusion in the processing
+	 * @param pattern the pattern that excludes explicitly files and folders
+	 * @return whether this file is included and can be processed
+	 */
+	public static synchronized boolean isExcluded(final File file, final Pattern pattern) {
+		// If it does not exist, we can't read it or directory excluded with the pattern
+		if (file == null) {
+			return Boolean.TRUE;
+		}
+		if (!file.canRead() || !file.exists()) {
+			return Boolean.TRUE;
+		}
+		if (file.getName() == null || file.getAbsolutePath() == null) {
+			return Boolean.TRUE;
+		}
+		String name = file.getName();
+		String path = file.getAbsolutePath();
+		boolean isNameExcluded = pattern.matcher(name).matches();
+		boolean isPathExcluded = pattern.matcher(path).matches();
+		boolean isSymLink = Boolean.FALSE;
+		boolean exceptionReading = Boolean.FALSE;
+		try {
+			isSymLink = FileUtils.isSymlink(file);
+		} catch (IOException e) {
+			exceptionReading = Boolean.TRUE;
+			LOGGER.error(null, e);
+		}
+		return isNameExcluded || isPathExcluded || isSymLink || exceptionReading;
 	}
 
 }

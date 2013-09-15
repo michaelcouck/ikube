@@ -53,6 +53,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 	 * @return the recursive action that has already spawned off the sub tasks, if necessary
 	 */
 	protected ForkJoinTask<?> getRecursiveAction(final IndexContext<?> indexContext, final T indexable, final IResourceProvider<?> resourceProvider) {
+		logger.error("Recursive : ");
 		class RecursiveActionImpl extends RecursiveAction {
 			/** @see IndexableHandler#getRecursiveAction(IndexContext, T, IResourceProvider) */
 			@Override
@@ -62,7 +63,9 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 				computeRecursive(indexContext, indexable, resourceProvider);
 				do {
 					// When there are no more resources we exit this task
+					// logger.info("Getting resource : ");
 					Object resource = resourceProvider.getResource();
+					// logger.info("Got resource : " + resource);
 					if (resource == null || isCancelled() || isDone() || isCompletedNormally() || isCompletedAbnormally()) {
 						break;
 					}
@@ -73,7 +76,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 					// Sleep for the required time
 					ThreadUtilities.sleep(indexContext.getThrottle());
 				} while (true);
-				logger.info("Finished : " + this + ", " + RecursiveAction.getPool().getRunningThreadCount());
+				logger.error("Finished : " + this + ", " + RecursiveAction.getPool().getRunningThreadCount());
 			}
 		}
 		// And hup
@@ -82,7 +85,9 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void computeRecursive(final IndexContext<?> indexContext, final T indexable, final IResourceProvider<?> resourceProvider) {
+		logger.info("Recursive : 1");
 		if (indexable.incrementThreads(-1) <= 0) {
+			logger.info("Recursive : 2");
 			return;
 		}
 		logger.info("This : " + this + ", " + indexable.getThreads());
@@ -97,6 +102,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 		ForkJoinTask<?> leftRecursiveAction = getRecursiveAction(indexContext, leftIndexable, resourceProvider);
 		ForkJoinTask<?> rightRecursiveAction = getRecursiveAction(indexContext, rightIndexable, resourceProvider);
 		ForkJoinTask.invokeAll(leftRecursiveAction, rightRecursiveAction);
+		logger.info("Recursive : 3");
 	}
 
 	/**

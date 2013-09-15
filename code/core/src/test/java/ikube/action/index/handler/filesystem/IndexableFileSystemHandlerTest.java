@@ -1,8 +1,13 @@
 package ikube.action.index.handler.filesystem;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
+import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
@@ -15,11 +20,9 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.regex.Pattern;
 
-import mockit.Cascading;
 import mockit.Deencapsulation;
-import mockit.Mockit;
 
-import org.junit.After;
+import org.apache.lucene.document.Document;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -34,70 +37,48 @@ import org.mockito.Mockito;
  */
 public class IndexableFileSystemHandlerTest extends AbstractTest {
 
+	private File analyticsFolder;
+	private String analyticsFolderPath;
+	private FileResourceHandler resourceHandler;
 	/** Class under test. */
 	private IndexableFileSystemHandler indexableFileSystemHandler;
-	@Cascading
-	private FileResourceHandler resourceHandler;
 
 	@Before
 	public void before() {
+		analyticsFolder = FileUtilities.findDirectoryRecursively(new File("."), "analytics");
+		analyticsFolderPath = FileUtilities.cleanFilePath(analyticsFolder.getAbsolutePath());
+		resourceHandler = mock(FileResourceHandler.class);
 		indexableFileSystemHandler = new IndexableFileSystemHandler();
-		Mockit.setUpMocks();
-	}
-
-	@After
-	public void after() {
-		Mockit.tearDownMocks();
+		Deencapsulation.setField(indexableFileSystemHandler, "resourceHandler", resourceHandler);
 	}
 
 	@Test
 	public void handleIndexableForked() throws Exception {
-		logger.info("Resource handler : " + resourceHandler);
-		Deencapsulation.setField(indexableFileSystemHandler, "resourceHandler", resourceHandler);
-
-		IndexableFileSystem indexableFileSystem = getIndexableFileSystem(".");
+		IndexableFileSystem indexableFileSystem = getIndexableFileSystem(analyticsFolderPath);
 		indexableFileSystem.setUnpackZips(Boolean.FALSE);
-		final ForkJoinTask<?> forkJoinTask = indexableFileSystemHandler.handleIndexableForked(indexContext, indexableFileSystem);
-		final ForkJoinPool forkJoinPool = ThreadUtilities.getForkJoinPool(indexContext.getName(), indexableFileSystem.getThreads());
-
-		ThreadUtilities.submit(null, new Runnable() {
-			public void run() {
-				forkJoinPool.invoke(forkJoinTask);
-			}
-		});
-
-		ThreadUtilities.sleep(5000);
-		ThreadUtilities.cancellForkJoinPool(indexContext.getName());
+		ForkJoinTask<?> forkJoinTask = indexableFileSystemHandler.handleIndexableForked(indexContext, indexableFileSystem);
+		ThreadUtilities.executeForkJoinTasks(this.getClass().getSimpleName(), 3, forkJoinTask);
+		verify(resourceHandler, atLeastOnce()).handleResource(any(IndexContext.class), any(IndexableFileSystem.class), any(Document.class), any(File.class));
 	}
 
 	@Test
 	public void handleLargeGzip() throws Exception {
-		Deencapsulation.setField(indexableFileSystemHandler, "resourceHandler", resourceHandler);
 		File compressedFileDirectory = FileUtilities.findFileRecursively(new File("."), "enwiki-revisions.bz2").getParentFile();
 		String compressedFilePath = FileUtilities.cleanFilePath(compressedFileDirectory.getAbsolutePath());
 		IndexableFileSystem indexableFileSystem = getIndexableFileSystem(compressedFilePath);
 		final ForkJoinTask<?> forkJoinTask = indexableFileSystemHandler.handleIndexableForked(indexContext, indexableFileSystem);
-		final ForkJoinPool forkJoinPool = ThreadUtilities.getForkJoinPool(indexContext.getName(), indexableFileSystem.getThreads());
-
-		ThreadUtilities.submit(null, new Runnable() {
-			public void run() {
-				forkJoinPool.invoke(forkJoinTask);
-			}
-		});
-
-		ThreadUtilities.sleep(5000);
-		ThreadUtilities.cancellForkJoinPool(indexContext.getName());
+		ThreadUtilities.executeForkJoinTasks(this.getClass().getSimpleName(), 3, forkJoinTask);
+		verify(resourceHandler, atLeastOnce()).handleResource(any(IndexContext.class), any(IndexableFileSystem.class), any(Document.class), any(File.class));
 	}
 
 	/** Note that this test is ONLY for Linux! */
 	@Test
 	public void isExcluded() throws Exception {
-		Deencapsulation.setField(indexableFileSystemHandler, "resourceHandler", resourceHandler);
 		File file = Mockito.mock(File.class);
 		Mockito.when(file.getName()).thenReturn("image.png");
 		Mockito.when(file.getAbsolutePath()).thenReturn("/tmp/image.png");
 		Pattern pattern = Pattern.compile(".*(png).*");
-		boolean isExcluded = indexableFileSystemHandler.isExcluded(file, pattern);
+		boolean isExcluded = FileUtilities.isExcluded(file, pattern);
 		assertTrue(isExcluded);
 
 		File folder = null;
@@ -108,7 +89,7 @@ public class IndexableFileSystemHandlerTest extends AbstractTest {
 			symlinkFile = new File("/tmp/symlink");
 			if (symlinkFile != null && folder != null) {
 				symlink = Files.createSymbolicLink(symlinkFile.toPath(), folder.toPath());
-				isExcluded = indexableFileSystemHandler.isExcluded(symlinkFile, pattern);
+				isExcluded = FileUtilities.isExcluded(symlinkFile, pattern);
 				assertTrue(isExcluded);
 			}
 		} finally {
@@ -121,12 +102,9 @@ public class IndexableFileSystemHandlerTest extends AbstractTest {
 
 	@Test
 	public void interrupt() throws Exception {
-		Deencapsulation.setField(indexableFileSystemHandler, "resourceHandler", resourceHandler);
-
 		when(indexContext.getThrottle()).thenReturn(60000l);
 
-		IndexableFileSystem indexableFileSystem = getIndexableFileSystem(".");
-
+		IndexableFileSystem indexableFileSystem = getIndexableFileSystem(analyticsFolderPath);
 		indexableFileSystem.setUnpackZips(Boolean.FALSE);
 		final ForkJoinTask<?> forkJoinTask = indexableFileSystemHandler.handleIndexableForked(indexContext, indexableFileSystem);
 		final ForkJoinPool forkJoinPool = ThreadUtilities.getForkJoinPool(indexContext.getName(), indexableFileSystem.getThreads());
@@ -137,14 +115,13 @@ public class IndexableFileSystemHandlerTest extends AbstractTest {
 			}
 		});
 
-		ThreadUtilities.sleep(3000);
+		ThreadUtilities.sleep(1000);
 		ThreadUtilities.submit("interrupt-test", new Runnable() {
 			public void run() {
 				ThreadUtilities.cancellForkJoinPool(indexContext.getName());
 			}
 		});
-		ThreadUtilities.sleep(3000);
-
+		ThreadUtilities.sleep(1000);
 		assertTrue("The future must be cancelled or done : ", forkJoinPool.isTerminated() || forkJoinPool.isTerminating());
 	}
 

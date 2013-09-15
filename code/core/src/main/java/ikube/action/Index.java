@@ -5,7 +5,6 @@ import ikube.action.index.handler.IIndexableHandler;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.Server;
-import ikube.toolkit.Optimizer;
 import ikube.toolkit.ThreadUtilities;
 
 import java.util.ArrayList;
@@ -70,6 +69,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 			logger.info("Indexable : " + indexable.getName());
 			ForkJoinTask<?> forkJoinTask = handler.handleIndexableForked(indexContext, indexable);
 			ThreadUtilities.executeForkJoinTasks(indexContext.getName(), indexable.getThreads(), forkJoinTask);
+			ThreadUtilities.waitForFuture(forkJoinTask, Integer.MAX_VALUE);
 			logger.info("Continuing : " + forkJoinTask);
 		}
 		return Boolean.TRUE;
@@ -103,7 +103,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 		logger.debug("Post process action : " + this.getClass() + ", " + indexContext.getName());
 		IndexManager.closeIndexWriters(indexContext);
 		indexContext.setIndexWriters(new IndexWriter[0]);
-		Optimizer.optimize(indexContext);
+		// Optimizer.optimize(indexContext);
 		return Boolean.TRUE;
 	}
 

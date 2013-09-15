@@ -7,6 +7,7 @@ import ikube.AbstractTest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.Future;
@@ -156,21 +157,27 @@ public class ThreadUtilitiesTest extends AbstractTest {
 
 	@Test
 	public void executeForkJoinTasks() {
+		final String forkJoinPoolName = this.getClass().getSimpleName();
 		ForkJoinTask<Object> forkJoinTask = new RecursiveTask<Object>() {
 			@Override
 			protected Object compute() {
-				ThreadUtilities.sleep(60000);
+				ThreadUtilities.sleep(5000);
 				return null;
 			}
 		};
-		ForkJoinPool forkJoinPool = ThreadUtilities.executeForkJoinTasks(this.getClass().getSimpleName(), 3, forkJoinTask);
-		assertFalse(forkJoinTask.isDone());
-		ThreadUtilities.cancellForkJoinPool(this.getClass().getSimpleName());
-		ThreadUtilities.sleep(3000);
+		new Thread(new Runnable() {
+			public void run() {
+				ThreadUtilities.sleep(3000);
+				ThreadUtilities.cancellForkJoinPool(forkJoinPoolName);
+			}
+		}).start();
+		try {
+			ThreadUtilities.executeForkJoinTasks(forkJoinPoolName, 3, forkJoinTask);
+		} catch (CancellationException e) {
+			// Ignore?
+		}
 
 		assertTrue(forkJoinTask.isCancelled());
-		assertTrue(forkJoinPool.isShutdown());
-		assertTrue(forkJoinPool.isTerminated());
 	}
 
 }

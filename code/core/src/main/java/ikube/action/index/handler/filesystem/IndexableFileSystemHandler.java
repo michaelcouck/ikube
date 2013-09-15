@@ -5,6 +5,7 @@ import ikube.action.index.handler.IResourceProvider;
 import ikube.action.index.handler.IndexableHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
+import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,7 +20,6 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
-import org.apache.commons.io.FileUtils;
 import org.apache.lucene.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -35,9 +35,9 @@ public class IndexableFileSystemHandler extends IndexableHandler<IndexableFileSy
 	 */
 	@Override
 	public ForkJoinTask<?> handleIndexableForked(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem) throws Exception {
-		IResourceProvider<File> fileSystemResourceProvider = new FileSystemResourceProvider(indexableFileSystem);
-		ForkJoinTask<?> recursiveAction = getRecursiveAction(indexContext, indexableFileSystem, fileSystemResourceProvider);
-		return recursiveAction;
+		Pattern pattern = getPattern(indexableFileSystem.getExcludedPattern());
+		IResourceProvider<File> fileSystemResourceProvider = new FileSystemResourceProvider(indexableFileSystem, pattern);
+		return getRecursiveAction(indexContext, indexableFileSystem, fileSystemResourceProvider);
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class IndexableFileSystemHandler extends IndexableHandler<IndexableFileSy
 				if (tFiles != null) {
 					Pattern pattern = getPattern(indexableFileSystem.getExcludedPattern());
 					for (final File innerTFile : tFiles) {
-						if (isExcluded(innerTFile, pattern)) {
+						if (FileUtilities.isExcluded(innerTFile, pattern)) {
 							continue;
 						}
 						handleFile(indexContext, indexableFileSystem, innerTFile);
@@ -98,37 +98,6 @@ public class IndexableFileSystemHandler extends IndexableHandler<IndexableFileSy
 			logger.info("G-zip entry : " + entry);
 		}
 		return Boolean.TRUE;
-	}
-
-	/**
-	 * This method checks to see if the file can be read, that it exists and that it is not in the excluded pattern defined in the configuration.
-	 * 
-	 * @param file the file to check for inclusion in the processing
-	 * @param pattern the pattern that excludes explicitly files and folders
-	 * @return whether this file is included and can be processed
-	 */
-	protected synchronized boolean isExcluded(final File file, final Pattern pattern) {
-		// If it does not exist, we can't read it or directory excluded with the pattern
-		if (file == null) {
-			return Boolean.TRUE;
-		}
-		if (!file.exists() || !file.canRead()) {
-			return Boolean.TRUE;
-		}
-		if (file.getName() == null || file.getAbsolutePath() == null) {
-			return Boolean.TRUE;
-		}
-		String name = file.getName();
-		String path = file.getAbsolutePath();
-		boolean isNameExcluded = pattern.matcher(name).matches();
-		boolean isPathExcluded = pattern.matcher(path).matches();
-		boolean isSymLink = Boolean.TRUE;
-		try {
-			isSymLink = FileUtils.isSymlink(file);
-		} catch (IOException e) {
-			handleException(null, e);
-		}
-		return isNameExcluded || isPathExcluded || isSymLink;
 	}
 
 	protected synchronized Pattern getPattern(final String pattern) {

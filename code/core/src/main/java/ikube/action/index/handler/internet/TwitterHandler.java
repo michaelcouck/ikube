@@ -14,6 +14,10 @@ import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.TwitterProfile;
 
 /**
+ * This class is the configurable part of the Twitter source of data. It combines the resource provider {@link TwitterResourceProvider} and the
+ * {@link TwitterResourceHandler} to get around 1% of the tweets from Twitter. Generally strategies are chained to the processing to calculate the sentiment of
+ * the tweets. This additional data is used to enrich the index, which can then be used to generate time line reports on the twitter data.
+ * 
  * @author Michael Couck
  * @since 24.04.13
  * @version 01.00
@@ -63,10 +67,12 @@ public class TwitterHandler extends IndexableHandler<IndexableTweets> {
 		builder.append(" ");
 		builder.append(tweet.getToUserId());
 		builder.append(" ");
-		builder.append(twitterProfile.getLocation());
-		builder.append(" ");
-		builder.append(twitterProfile.getTimeZone());
-		builder.append(" ");
+		if (twitterProfile != null) {
+			builder.append(twitterProfile.getLocation());
+			builder.append(" ");
+			builder.append(twitterProfile.getTimeZone());
+			builder.append(" ");
+		}
 		builder.append(tweet.getText());
 
 		// We add the location to the indexable because the geospatial
