@@ -25,6 +25,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlichtherle.truezip.file.TFile;
 
+/**
+ * This class will handle walking the file system and indexing the files as it goes. Each handler has a resource provider that provides the resources (
+ * {@link FileSystemResourceProvider}, obviously, and a resource handler ({@link FileResourceHandler}), that 'processes' the resource. Extracting the data from
+ * the file and adding it to the Lucene index. Together these classes handle the file system indexing.
+ * 
+ * @author Michael Couck
+ * @since 25.03.13
+ * @version 01.00
+ */
 public class IndexableFileSystemHandler extends IndexableHandler<IndexableFileSystem> {
 
 	@Autowired
@@ -40,6 +49,9 @@ public class IndexableFileSystemHandler extends IndexableHandler<IndexableFileSy
 		return getRecursiveAction(indexContext, indexableFileSystem, fileSystemResourceProvider);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected List<?> handleResource(final IndexContext<?> indexContext, final IndexableFileSystem indexableFileSystem, final Object resource) {
 		handleFile(indexContext, indexableFileSystem, (File) resource);

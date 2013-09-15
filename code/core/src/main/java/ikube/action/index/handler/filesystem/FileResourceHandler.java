@@ -26,8 +26,8 @@ import de.schlichtherle.truezip.file.TFile;
 import de.schlichtherle.truezip.file.TFileInputStream;
 
 /**
- * This ersource handler will do files, getting the correct parser for the type and extracting the data, eventually adding the data to the specified fields int
- * he Lucene index.
+ * This resource handler will handle files from the file system handler. Getting the correct parser for the type and extracting the data, eventually adding the
+ * data to the specified fields in the Lucene index.
  * 
  * @author Michael Couck
  * @since 25.03.13
@@ -99,7 +99,7 @@ public class FileResourceHandler extends ResourceHandler<IndexableFileSystem> {
 			IndexManager.addStringField(lengthFieldName, Long.toString(file.length()), document, Store.YES, analyzed, termVector);
 			IndexManager.addStringField(contentFieldName, parsedContent, document, store, analyzed, termVector);
 			addDocument(indexContext, indexableFileSystem, document);
-			
+
 			indexableFileSystem.setContent(parsedContent);
 		} finally {
 			FileUtilities.close(inputStream);

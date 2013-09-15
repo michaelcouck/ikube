@@ -90,18 +90,17 @@ class FileSystemResourceProvider implements IResourceProvider<File> {
 	private synchronized File getResource(final int retry) {
 		File file = null;
 		if (retry > 0) {
-			if (files.size() == 0) {
+			if (files.size() > 0) {
+				file = files.pop();
+				LOGGER.info("Popping : " + files.size() + ", " + file);
+			} else {
 				if (!finished) {
 					LOGGER.info("Waiting for walker : ");
 					ThreadUtilities.sleep(10000);
-					if (files.size() > 0) {
-						return getResource(retry - 1);
-					}
+					file = getResource(retry - 1);
+				} else {
+					LOGGER.info("No more files : ");
 				}
-				LOGGER.info("No more files : ");
-			} else {
-				file = files.pop();
-				LOGGER.info("Popping : " + files.size() + ", " + file);
 			}
 		}
 		return file;
