@@ -73,13 +73,30 @@ public final class FileUtilities {
 	 * @return the first file that was encountered that has the specified pattern(s) in it
 	 */
 	public static final File findFileRecursively(final File folder, final int upDirectories, final String... stringPatterns) {
+		File upFolder = moveUpDirectories(folder, upDirectories);
+		List<File> files = findFilesRecursively(upFolder, new ArrayList<File>(), stringPatterns);
+		return !files.isEmpty() ? files.get(0) : null;
+	}
+	
+	/**
+	 * This method will first walk backwards through the directories before doing a search for the directory pattern specified.
+	 * 
+	 * @param folder the folder to start looking through
+	 * @param stringPatterns the patterns to look for in the file paths
+	 * @return the directory that matches the pattern startup from a higher directory
+	 */
+	public static final File findDirectoryRecursively(final File folder, final int upDirectories, final String... stringPatterns) {
+		File upFolder = moveUpDirectories(folder, upDirectories);
+		return findDirectoryRecursively(upFolder, stringPatterns);
+	}
+	
+	private static File moveUpDirectories(final File folder, final int upDirectories) {
 		int directories = upDirectories;
 		File upFolder = folder;
 		do {
 			upFolder = upFolder.getParentFile();
 		} while (--directories > 0 && upFolder != null);
-		List<File> files = findFilesRecursively(upFolder, new ArrayList<File>(), stringPatterns);
-		return !files.isEmpty() ? files.get(0) : null;
+		return upFolder;
 	}
 
 	/**
