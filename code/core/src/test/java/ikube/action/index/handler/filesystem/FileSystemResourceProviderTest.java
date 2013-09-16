@@ -7,6 +7,7 @@ import ikube.model.IndexableFileSystem;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +25,8 @@ public class FileSystemResourceProviderTest extends AbstractTest {
 	public void before() throws IOException {
 		IndexableFileSystem indexableFileSystem = new IndexableFileSystem();
 		indexableFileSystem.setPath("./");
-		fileSystemResourceProvider = new FileSystemResourceProvider(indexableFileSystem);
+		Pattern pattern = Pattern.compile(".*(nothing).*");
+		fileSystemResourceProvider = new FileSystemResourceProvider(indexableFileSystem, pattern);
 	}
 
 	@Test
