@@ -63,7 +63,7 @@ public class WekaClassifier implements IClassifier<String, String, String, Boole
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String classify(final String input) {
+	public synchronized String classify(final String input) {
 		try {
 			// Create the instance with the text
 			Instance instance = makeInstance(input, classificationInstances);
@@ -116,7 +116,7 @@ public class WekaClassifier implements IClassifier<String, String, String, Boole
 	 * 
 	 * @throws Exception
 	 */
-	public void build() throws Exception {
+	public synchronized void build() throws Exception {
 		int numClasses = trainingInstances.numClasses();
 		int numAttributes = trainingInstances.numAttributes();
 		int numInstances = trainingInstances.numInstances();
@@ -143,7 +143,7 @@ public class WekaClassifier implements IClassifier<String, String, String, Boole
 	 * @param instances
 	 * @return
 	 */
-	private Instance makeInstance(final String text, final Instances instances) {
+	private synchronized Instance makeInstance(final String text, final Instances instances) {
 		// Create instance of length two.
 		SparseInstance instance = new SparseInstance(2);
 		// Set value for message attribute
