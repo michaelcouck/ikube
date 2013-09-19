@@ -9,7 +9,10 @@ import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.util.Version;
 
-public final class FeatureExtractor {
+import weka.filters.Filter;
+import weka.filters.UnsupervisedFilter;
+
+public final class FeatureExtractor extends Filter implements UnsupervisedFilter {
 
 	int minGram = 3;
 	int maxGram = 21;
