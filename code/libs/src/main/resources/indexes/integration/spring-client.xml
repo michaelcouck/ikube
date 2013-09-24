@@ -28,7 +28,7 @@
 		property:mergeFactor="${merge.factor}"
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
-		property:throttle="${throttle}"
+		property:throttle="0"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path}"
 		property:children-ref="indexables" />
@@ -123,5 +123,19 @@
 		property:vectored="${vectored}" 
 		property:internetBatchSize="${internet.batch.size}"
 		property:excludedPattern="${internet.excluded.pattern}" />
+	
+	<bean
+		id="eacbs"
+		class="ikube.model.IndexableInternet"
+		property:name="eacbs"
+		property:url="http://www.eacbs.com/" 
+		property:idFieldName="id"
+		property:titleFieldName="title"
+		property:contentFieldName="content"
+		property:analyzed="true"
+		property:stored="false"
+		property:vectored="false" 
+		property:internetBatchSize="1000"
+		property:threads="100" />
 	
 </beans>

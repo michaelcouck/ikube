@@ -27,11 +27,15 @@ public class WekaClassifier implements IClassifier<String, String, String, Boole
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WekaClassifier.class);
 
+	/** This is the filter that will convert the text to tf-idf vectors. */
 	private Filter filter;
+	/** The classifier that will be built from time to time. */
 	private volatile Classifier classifier;
+	/** The instances that are used to train the classifier, i.e. these are pre-analyzed and correct with respect to the class attribute. */
 	private Instances trainingInstances;
+	/** The instances that is used to add the instance to for classification. */
 	private volatile Instances classificationInstances;
-
+	/** The number of vectors to keep in the training data set before we re-build the classifier. */
 	private int buildThreshold = 1000;
 
 	/**
@@ -83,6 +87,8 @@ public class WekaClassifier implements IClassifier<String, String, String, Boole
 			return classificationClass;
 		} catch (Exception e) {
 			LOGGER.error("Exception classifying content : " + input, e);
+		} finally {
+			classificationInstances.delete();
 		}
 		return null;
 	}
@@ -112,30 +118,37 @@ public class WekaClassifier implements IClassifier<String, String, String, Boole
 	}
 
 	/**
-	 * TODO Document me...
-	 * 
-	 * @throws Exception
+	 * This method will build the classifier again using the training instances. When the training instances get to a certain number we can re-build the
+	 * classifier from the training data. We catch all exceptions and clean the training instance data set of all the instances that are a problem.
 	 */
-	public synchronized void build() throws Exception {
-		int numClasses = trainingInstances.numClasses();
-		int numAttributes = trainingInstances.numAttributes();
-		int numInstances = trainingInstances.numInstances();
-		LOGGER.info("Building classifier : " + numClasses + ", " + numAttributes + ", " + numInstances);
-		LOGGER.info("Training instances : " + trainingInstances.toString());
-		LOGGER.info("Filter : " + filter.toString());
+	public synchronized void build() {
+		try {
+			int numClasses = trainingInstances.numClasses();
+			int numAttributes = trainingInstances.numAttributes();
+			int numInstances = trainingInstances.numInstances();
+			LOGGER.info("Building classifier : " + numClasses + ", " + numAttributes + ", " + numInstances);
+			LOGGER.info("Training instances : " + trainingInstances.toString());
+			LOGGER.info("Filter : " + filter.toString());
 
-		filter.setInputFormat(trainingInstances);
-		Instances filteredData = Filter.useFilter(trainingInstances, filter);
-		Classifier classifier = Classifier.makeCopy(this.classifier);
-		classifier.buildClassifier(filteredData);
-		this.classifier = classifier;
-		classificationInstances = trainingInstances.stringFreeStructure();
+			filter.setInputFormat(trainingInstances);
+			Instances filteredData = Filter.useFilter(trainingInstances, filter);
+			Classifier classifier = Classifier.makeCopy(this.classifier);
+			classifier.buildClassifier(filteredData);
+			this.classifier = classifier;
+			// We take a copy of the training instances, although we don't really have to I guess
+			classificationInstances = trainingInstances.stringFreeStructure();
 
-		Evaluation evaluation = new Evaluation(filteredData);
-		evaluation.evaluateModel(classifier, filteredData);
-		String evaluationReport = evaluation.toSummaryString();
-		LOGGER.info("Classifier evaluation : " + evaluationReport);
-		// IOUtils.writeInstancesToArffFile(filteredData, this.getClass().getSimpleName() + ".arff");
+			Evaluation evaluation = new Evaluation(filteredData);
+			evaluation.evaluateModel(classifier, filteredData);
+			String evaluationReport = evaluation.toSummaryString();
+			LOGGER.info("Classifier evaluation : " + evaluationReport);
+			// IOUtils.writeInstancesToArffFile(filteredData, this.getClass().getSimpleName() + ".arff");
+			return;
+		} catch (Exception e) {
+			LOGGER.info("Exception building classifier : ", e);
+		}
+		// If we get here then there was and exception so we clean the 
+		// training instances of the last batch of vectors as this was obviously the problem
 	}
 
 	/**

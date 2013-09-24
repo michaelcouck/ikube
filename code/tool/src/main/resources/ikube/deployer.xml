@@ -58,7 +58,7 @@
 		id="server-one"
 		name="server-one"
 		class="ikube.deploy.model.Server"
-		property:ip="81.82.213.177"
+		property:ip="192.168.1.10"
 		property:username="${username}"
 		property:password="${password}"
 		property:actions-ref="actions" />
@@ -109,6 +109,7 @@
 		<entry key="${configuration-directory}/common" value="${tomcat-directory}/bin/ikube" />
 		<entry key="${configuration-directory}/production" value="${tomcat-directory}/bin/ikube" />
 		<entry key="${resources-directory}/indexes/twitter" value="${tomcat-directory}/bin/ikube" />
+		<entry key="${resources-directory}/indexes/integration" value="${tomcat-directory}/bin/ikube" />
 	</util:map>
 	
 	<bean 
