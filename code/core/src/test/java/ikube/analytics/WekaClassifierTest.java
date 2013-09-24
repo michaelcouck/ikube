@@ -1,13 +1,12 @@
 package ikube.analytics;
 
 import static junit.framework.Assert.assertEquals;
-
-import java.io.File;
-
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
+
+import java.io.File;
 
 import org.junit.Test;
 
@@ -39,17 +38,18 @@ public class WekaClassifierTest extends AbstractTest {
 			}
 		}, "SMO classification training : ", iterations, Boolean.TRUE);
 		logger.info("Duration for " + iterations + " iterations : " + duration);
-		
+
 		wekaClassifier.train(IConstants.POSITIVE, "Hello darling, what a wonderful dinner! :)");
 		wekaClassifier.train(IConstants.NEGATIVE, "What a terrible pain I have in the neck. :(");
 		wekaClassifier.build();
-		
+
 		positive = wekaClassifier.classify("Wonderful dinner on the beach");
 		assertEquals(IConstants.POSITIVE, positive);
 		negative = wekaClassifier.classify("Terrible pain all over");
 		assertEquals(IConstants.NEGATIVE, negative);
-		
+
 		File directory = FileUtilities.findDirectoryRecursively(new File("."), 2, "txt_sentoken");
+		logger.info("Directory : " + directory);
 	}
 
 }

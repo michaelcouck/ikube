@@ -129,7 +129,7 @@ public class WekaClassifier implements IClassifier<String, String, String, Boole
 			int numAttributes = trainingInstances.numAttributes();
 			int numInstances = trainingInstances.numInstances();
 			LOGGER.info("Building classifier : " + numClasses + ", " + numAttributes + ", " + numInstances);
-			LOGGER.info("Training instances : " + trainingInstances.toString());
+			// LOGGER.info("Training instances : " + trainingInstances.toString());
 			LOGGER.info("Filter : " + filter.toString());
 
 			filter.setInputFormat(trainingInstances);

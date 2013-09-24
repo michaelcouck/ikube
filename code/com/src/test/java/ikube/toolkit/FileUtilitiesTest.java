@@ -127,8 +127,16 @@ public class FileUtilitiesTest extends AbstractTest {
 	@Test
 	public void findFileRecursivelyUp() {
 		File folder = new File(".").getAbsoluteFile();
-		File pomFile = FileUtilities.findFileRecursively(folder, 5, "mime-mapping.xml");
+		File pomFile = FileUtilities.findFileRecursively(folder, 2, "mime-mapping.xml");
 		assertNotNull(pomFile);
+	}
+
+	@Test
+	public void findDirectoryRecursivelyUp() {
+		File folder = new File(".").getAbsoluteFile();
+		File textSentimentFolder = FileUtilities.findDirectoryRecursively(folder, 2, "txt_sentoken");
+		logger.info("Sentiment folder : " + textSentimentFolder);
+		assertNotNull(textSentimentFolder);
 	}
 
 }

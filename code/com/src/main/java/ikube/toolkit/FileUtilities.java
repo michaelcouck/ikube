@@ -92,7 +92,8 @@ public final class FileUtilities {
 	
 	private static File moveUpDirectories(final File folder, final int upDirectories) {
 		int directories = upDirectories;
-		File upFolder = folder;
+		String upFolderPath = FileUtilities.cleanFilePath(folder.getAbsolutePath());
+		File upFolder = new File(upFolderPath);
 		do {
 			upFolder = upFolder.getParentFile();
 		} while (--directories > 0 && upFolder != null);
