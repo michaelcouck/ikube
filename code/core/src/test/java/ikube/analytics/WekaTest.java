@@ -18,6 +18,9 @@ import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.SparseInstance;
+import weka.core.converters.ArffSaver;
+import weka.filters.Filter;
+import weka.filters.unsupervised.instance.NonSparseToSparse;
 
 public class WekaTest extends AbstractTest {
 
@@ -38,34 +41,43 @@ public class WekaTest extends AbstractTest {
 
 	@Test
 	public void build() throws Exception {
-		FastVector classAttInfo = new FastVector(2);
-		classAttInfo.addElement(IConstants.POSITIVE);
-		classAttInfo.addElement(IConstants.NEGATIVE);
+		FastVector attributes;
+		Instances dataSet;
+		double[] values;
+		attributes = new FastVector();
 
-		FastVector attInfo = new FastVector(2);
-		attInfo.addElement(new Attribute("@@class@@", classAttInfo));
-		attInfo.addElement(new Attribute("@@vectors@@"));
+		attributes.addElement(new Attribute("att1"));
+		attributes.addElement(new Attribute("att2"));
+		attributes.addElement(new Attribute("att3"));
+		attributes.addElement(new Attribute("att4"));
+		
+		FastVector nominalValues = new FastVector(2);
+		nominalValues.addElement(IConstants.POSITIVE);
+		nominalValues.addElement(IConstants.NEGATIVE);
+		attributes.addElement(new Attribute("class", nominalValues));
 
-		Instances instances = new Instances("instances", attInfo, 100000);
-		instances.setClassIndex(0);
+		dataSet = new Instances("ESDN", attributes, 0);
+		dataSet.setClass(dataSet.attribute(dataSet.numAttributes() - 1));
 
-		double[] attValues = new double[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-		int[] indices = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-		SparseInstance sparseInstance = new SparseInstance(1.0, attValues, indices, Integer.MAX_VALUE);
+		values = new double[dataSet.numAttributes()];
+		values[0] = 3;
+		values[1] = 7;
+		values[3] = 1;
+		dataSet.add(new SparseInstance(1.0, values));
 
-		instances.add(sparseInstance);
+		values = new double[dataSet.numAttributes()];
+		values[2] = 2;
+		values[3] = 8;
+		dataSet.add(new SparseInstance(1.0, values));
 
 		Classifier classifier = new SMO();
-		classifier.buildClassifier(instances);
+		classifier.buildClassifier(dataSet);
+
+		double classification = classifier.classifyInstance(dataSet.firstInstance());
+		String classificationClass = dataSet.classAttribute().value((int) classification);
+		logger.info("Classification class : " + classificationClass);
 	}
 
-	/**
-	 * TODO Document me...
-	 * 
-	 * @param text
-	 * @param instances
-	 * @return
-	 */
 	synchronized Instance makeInstance(final String text, final Instances instances) {
 		// Create instance of length two.
 		SparseInstance instance = new SparseInstance(2);

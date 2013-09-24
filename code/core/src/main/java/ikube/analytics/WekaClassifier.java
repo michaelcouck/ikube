@@ -50,13 +50,13 @@ public class WekaClassifier implements IClassifier<String, String, String, Boole
 		classValues.addElement(IConstants.POSITIVE);
 		classValues.addElement(IConstants.NEGATIVE);
 
-		// Add the input text attribute
-		attributes.addElement(new Attribute(IConstants.TEXT, (FastVector) null));
 		// Add the class attributes for the output classification
 		attributes.addElement(new Attribute(IConstants.CLASS, classValues));
+		// Add the input text attribute
+		attributes.addElement(new Attribute(IConstants.TEXT, (FastVector) null));
 
 		trainingInstances = new Instances("Training Instance", attributes, 100);
-		trainingInstances.setClassIndex(trainingInstances.numAttributes() - 1);
+		trainingInstances.setClassIndex(0);
 	}
 
 	/**
