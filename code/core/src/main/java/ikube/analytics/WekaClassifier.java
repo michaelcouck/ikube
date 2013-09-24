@@ -17,7 +17,7 @@ import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
 /**
- * TODO Document me...
+ * This class is a classifier for sentiment essentially, i.e. positive/negative.
  * 
  * @author Michael Couck
  * @since 14.08.13
@@ -55,9 +55,9 @@ public class WekaClassifier implements IClassifier<String, String, String, Boole
 		classValues.addElement(IConstants.NEGATIVE);
 
 		// Add the class attributes for the output classification
-		attributes.addElement(new Attribute(IConstants.CLASS, classValues));
+		attributes.addElement(new Attribute(IConstants.CLASS_ATTRIBUTE, classValues));
 		// Add the input text attribute
-		attributes.addElement(new Attribute(IConstants.TEXT, (FastVector) null));
+		attributes.addElement(new Attribute(IConstants.TEXT_ATTRIBUTE, (FastVector) null));
 
 		trainingInstances = new Instances("Training Instance", attributes, 100);
 		trainingInstances.setClassIndex(0);
@@ -99,20 +99,22 @@ public class WekaClassifier implements IClassifier<String, String, String, Boole
 	@Override
 	public synchronized Boolean train(final String clazz, final String trainingInput) {
 		try {
-			// Make message into instance.
-			Instance instance = makeInstance(trainingInput, trainingInstances);
-			// Set class value for instance.
-			instance.setClassValue(clazz);
-			// Add instance to training data.
-			trainingInstances.add(instance);
-			// If we reach the threshold for the vectors in the training corpus then
-			// we rebuild the classifier, which can be expensive of course, but not very
-			if (trainingInstances.numInstances() > 0 && trainingInstances.numInstances() % buildThreshold == 0) {
-				build();
+			if (IConstants.POSITIVE.equals(clazz) || IConstants.NEGATIVE.equals(clazz)) {
+				// Make message into instance.
+				Instance instance = makeInstance(trainingInput, trainingInstances);
+				// Set class value for instance.
+				instance.setClassValue(clazz);
+				// Add instance to training data.
+				trainingInstances.add(instance);
+				// If we reach the threshold for the vectors in the training corpus then
+				// we rebuild the classifier, which can be expensive of course, but not very
+				if (trainingInstances.numInstances() > 0 && trainingInstances.numInstances() % buildThreshold == 0) {
+					build();
+				}
+				return Boolean.TRUE;
 			}
-			return Boolean.TRUE;
 		} catch (Exception e) {
-			LOGGER.error(null, e);
+			LOGGER.error("Exception creating a training instance : ", e);
 		}
 		return Boolean.FALSE;
 	}
@@ -147,24 +149,26 @@ public class WekaClassifier implements IClassifier<String, String, String, Boole
 		} catch (Exception e) {
 			LOGGER.info("Exception building classifier : ", e);
 		}
-		// If we get here then there was and exception so we clean the 
+		// If we get here then there was and exception so we clean the
 		// training instances of the last batch of vectors as this was obviously the problem
+		trainingInstances.delete();
+		classificationInstances.delete();
 	}
 
 	/**
-	 * TODO Document me...
+	 * This method will create one instance of data, i.e. a single vector from the text provided and add it to the instances for classification.
 	 * 
-	 * @param text
-	 * @param instances
-	 * @return
+	 * @param text the text to create a vector from for classification
+	 * @param instances the instances data set that will hold the instance for classification
+	 * @return the instance with the text data as a vector
 	 */
 	private synchronized Instance makeInstance(final String text, final Instances instances) {
-		// Create instance of length two.
+		// Create instance of length two, the first attribute is the class and the second is the vector from the text
 		SparseInstance instance = new SparseInstance(2);
 		// Set value for message attribute
-		Attribute messageAtt = instances.attribute(IConstants.TEXT);
+		Attribute messageAtt = instances.attribute(IConstants.TEXT_ATTRIBUTE);
 		instance.setValue(messageAtt, messageAtt.addStringValue(text));
-		// Give instance access to attribute information from the dataset.
+		// Give instance access to attribute information from the dataset
 		instance.setDataset(instances);
 		return instance;
 	}

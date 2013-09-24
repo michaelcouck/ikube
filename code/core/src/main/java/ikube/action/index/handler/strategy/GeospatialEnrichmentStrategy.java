@@ -1,4 +1,6 @@
+
 package ikube.action.index.handler.strategy;
+
 
 import ikube.IConstants;
 import ikube.action.index.handler.IStrategy;
@@ -72,7 +74,6 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 		if (coordinate != null) {
 			addSpatialLocationFields(coordinate, document);
 		}
-		logger.info("Co-ordinate : " + coordinate);
 		return mustProceed && super.aroundProcess(indexContext, indexable, document, resource);
 	}
 

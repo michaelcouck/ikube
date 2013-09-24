@@ -196,7 +196,9 @@ public interface IConstants {
 	String CLASSIFIER = "classifier";
 	String CLASSIFIERS = "classifiers";
 	String CLASS = "class";
+	String CLASS_ATTRIBUTE = "@@class@@";
 	String TEXT = "text";
+	String TEXT_ATTRIBUTE = "@@text@@";
 	String TYPE = "type";
 	String START_INDEX = "start-index";
 	String END_INDEX = "end-index";
