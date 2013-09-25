@@ -99,9 +99,12 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 	public synchronized Tweet getResource() {
 		while (tweets.isEmpty()) {
 			try {
-				Thread.currentThread().wait(1000);
+				wait(1000);
 			} catch (InterruptedException e) {
 				logger.error(null, e);
+			} catch (Exception e) {
+				logger.error(null, e);
+				return null;
 			}
 		}
 		return tweets.pop();
