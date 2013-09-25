@@ -2,12 +2,12 @@ package ikube.action.index.handler.internet;
 
 import ikube.action.index.handler.IResourceProvider;
 import ikube.model.IndexableTweets;
-import ikube.toolkit.ThreadUtilities;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +36,9 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 		public void onTweet(final Tweet tweet) {
 			if (tweets.size() < 1000000) {
 				tweets.push(tweet);
+				if (counter.incrementAndGet() % 1000 == 0) {
+					logger.info("Tweet counter : " + counter.get() + ", stack : " + tweets.size());
+				}
 			}
 		}
 
@@ -65,6 +68,8 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+	/** A counter to see how many tweets we have done. */
+	private AtomicLong counter;
 	/** This collection is used to stock pile the tweets, waiting for consumers. */
 	private Stack<Tweet> tweets;
 
@@ -75,7 +80,8 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 	 * @throws IOException
 	 */
 	TwitterResourceProvider(final IndexableTweets indexableTweets) throws IOException {
-		tweets = new Stack<>();
+		tweets = new Stack<Tweet>();
+		counter = new AtomicLong();
 		TwitterTemplate twitter = new TwitterTemplate( //
 				indexableTweets.getConsumerKey(), //
 				indexableTweets.getConsumerSecret(), //
@@ -90,10 +96,15 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Tweet getResource() {
+	public synchronized Tweet getResource() {
 		while (tweets.isEmpty()) {
-			ThreadUtilities.sleep(1000);
+			try {
+				Thread.currentThread().wait(1000);
+			} catch (InterruptedException e) {
+				logger.error(null, e);
+			}
 		}
+		notifyAll();
 		return tweets.pop();
 	}
 
@@ -101,10 +112,11 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void setResources(final List<Tweet> resources) {
+	public synchronized void setResources(final List<Tweet> resources) {
 		if (resources != null) {
 			tweets.addAll(resources);
 		}
+		notifyAll();
 	}
 
 }
