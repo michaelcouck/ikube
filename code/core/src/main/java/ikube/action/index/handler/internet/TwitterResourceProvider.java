@@ -104,7 +104,6 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 				logger.error(null, e);
 			}
 		}
-		notifyAll();
 		return tweets.pop();
 	}
 
@@ -116,7 +115,6 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 		if (resources != null) {
 			tweets.addAll(resources);
 		}
-		notifyAll();
 	}
 
 }
