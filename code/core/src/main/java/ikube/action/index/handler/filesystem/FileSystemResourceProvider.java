@@ -30,8 +30,8 @@ class FileSystemResourceProvider implements IResourceProvider<File> {
 
 	private int included = 0;
 	private int excluded = 0;
+	private final Stack<File> files;
 	private boolean finished = Boolean.FALSE;
-	private final Stack<File> files = new Stack<File>();
 
 	/**
 	 * The constructor takes the configuration for the walk of the file system, and start a thread that will do the actual walk, so the caller does not have to
@@ -42,6 +42,7 @@ class FileSystemResourceProvider implements IResourceProvider<File> {
 	 * @throws IOException
 	 */
 	FileSystemResourceProvider(final IndexableFileSystem indexableFileSystem, final Pattern pattern) throws IOException {
+		files = new Stack<File>();
 		final File startDirectory = new File(indexableFileSystem.getPath());
 		LOGGER.info("Start directory :" + startDirectory);
 		ThreadUtilities.submit(this.toString(), new Runnable() {
