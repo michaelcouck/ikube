@@ -75,7 +75,6 @@ public class DynamicallyTrainedLanguageSpecificClassificationStrategy extends AS
 				String currentClassification = null;
 				if (!StringUtils.isEmpty(StringUtils.stripToEmpty(content))) {
 					currentClassification = classifier.classify(content);
-					logger.info("Previous : " + previousClassification + ", current : " + currentClassification);
 					if (StringUtils.isEmpty(previousClassification)) {
 						if (!StringUtils.isEmpty(currentClassification)) {
 							// Not analyzed so add the sentiment that we get
