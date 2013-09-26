@@ -82,7 +82,7 @@ public class TwitterHandler extends IndexableHandler<IndexableTweets> {
 		try {
 			twitterResourceHandler.handleResource(indexContext, indexableTweets, new Document(), resource);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			handleException(indexableTweets, e, "Exception handling Twitter resource : " + tweet);
 		}
 		return null;
 	}

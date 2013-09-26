@@ -17,14 +17,14 @@
 
 	<description>
 		This is the street and houses index. Once the index is done this query uri can be used to get some results:
-		http://localhost:8080/ikube/service/search/single?indexName=street-context&searchStrings=couck&searchFields=street_name&fragment=true&firstResult=0&maxResults=10
-		http://localhost:8080/ikube/service/search/json/single?indexName=street-context&searchStrings=couck&searchFields=street_name&fragment=true&firstResult=0&maxResults=10
+		http://localhost:8080/ikube/service/search/single?indexName=street-context&amp;searchStrings=couck&amp;searchFields=street_name&amp;fragment=true&amp;firstResult=0&amp;maxResults=10
+		http://localhost:8080/ikube/service/search/json/single?indexName=street-context&amp;searchStrings=couck&amp;searchFields=street_name&amp;fragment=true&amp;firstResult=0&amp;maxResults=10
 	</description>
 
 	<bean
-		id="street-context"
+		id="street_context"
 		class="ikube.model.IndexContext"
-		property:name="street-context"
+		property:name="street_context"
 		property:maxAge="6000"
 		property:compoundFile="true"
 		property:bufferedDocs="10000"
@@ -37,10 +37,10 @@
 		property:throttle="0"
 		property:indexDirectoryPath="./ikube/indexes"
 		property:indexDirectoryPathBackup="./ikube/indexes"
-		property:children-ref="street-indexables" 
+		property:children-ref="street_indexables" 
 		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer.street" />
-	<util:list id="street-indexables">
-		<ref local="street-table" />
+	<util:list id="street_indexables">
+		<ref local="physical_point_suffix" />
 	</util:list>
 	<bean 
 		id="ikube.action.index.analyzer.NgramAnalyzer.street"
@@ -48,6 +48,19 @@
 		class="ikube.action.index.analyzer.NgramAnalyzer" 
 		property:minGram="3"
 		property:maxGram="15" />
+		
+	<bean
+		id="physical_point_suffix"
+		class="ikube.model.IndexableTable"
+		property:name="physical_point_suffix"
+		property:address="false"
+		property:allColumns="false"
+		property:dataSource-ref="roma_database"
+		property:children-ref="physical_point_suffix_columns" 
+		property:maxExceptions="100" />
+	<util:list id="physical_point_suffix_columns">
+		<ref bean="physical_point_suffix_id" />
+	</util:list>
 
 	<bean
 		id="street-table"

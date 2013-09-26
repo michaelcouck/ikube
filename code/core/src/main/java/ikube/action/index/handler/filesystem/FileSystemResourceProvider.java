@@ -66,8 +66,11 @@ class FileSystemResourceProvider implements IResourceProvider<File> {
 						return;
 					}
 					if (file.isDirectory()) {
-						for (final File child : file.listFiles()) {
-							walkFileSystem(child);
+						File[] files = file.listFiles();
+						if (files !=null && files.length > 0) {
+							for (final File child : files) {
+								walkFileSystem(child);
+							}
 						}
 					} else {
 						included++;

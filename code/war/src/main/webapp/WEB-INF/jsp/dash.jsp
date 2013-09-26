@@ -1,58 +1,67 @@
 <%@ page errorPage="/WEB-INF/jsp/error.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<table width="100%" style="border : 1px solid #aaaaaa;">
+<table ng-controller="ServersController">
 	<tr>
-		<th colspan="2"><img src="<c:url value="/images/icons/launch_run.gif" />">&nbsp;Cluster dash board</th>
+		<th>Address</th>
+		<th>CPU Load</th>
+		<th>Free Mem</th>
+		<th>Max Mem</th>
+		<th>Tot Mem</th>
+		<th>Disk space</th>
+		<th>Running</th>
+		<th>Throttling</th>
+		<th>Age</th>
+		<th>Processors</th>
+		<th>Archi</th>
 	</tr>
-	<tr>
-		<td ng-controller="ServersController" class="bordered" nowrap="nowrap" valign="top">
-			<div ng-repeat="server in servers" ng-class-odd="'odd'" ng-class-even="'even'">
-				<a ng-click="server.show=!server.show" href="#">
-					<div ng-show="!cpuLoadTooHigh(server)">
-						<img src="<c:url value="/images/icons/web.gif" />">&nbsp; <font color="black"><b>Address:</b></font> {{server.address}}<br>
-					</div>
-					<div ng-show="cpuLoadTooHigh(server)">
-						<img src="<c:url value="/images/icons/web.gif" />">&nbsp; <font color="red"><b>Address:</b></font> {{server.address}}<br>
-					</div>
-				</a>
-				
-				<div ng-show="server.show">
-					<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Average cpu load:</b> {{server.averageCpuLoad}}<br>
-					<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Free memory:</b> {{server.freeMemory}}<br>
-					<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Max memory:</b> {{server.maxMemory}}<br>
-					<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Total memory:</b> {{server.totalMemory}}<br>
-					<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Free disk space:</b> {{server.freeDiskSpace}}<br>
-					<div ng-show="server.threadsRunning">
-						<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Threads running:</b> {{server.threadsRunning}}<br>
-					</div>
-					<div ng-show="!server.threadsRunning">
-						<img src="<c:url value="/images/icons/red_square.gif" />">&nbsp;<b>Threads running:</b> {{server.threadsRunning}}<br>
-					</div>
-					<div ng-show="server.cpuThrottling">
-						<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Cpu Throttling:</b> {{server.cpuThrottling}}<br>
-					</div>
-					<div ng-show="!server.cpuThrottling">
-						<img src="<c:url value="/images/icons/red_square.gif" />">&nbsp;<b>Cpu Throttling:</b> {{server.cpuThrottling}}<br>
-					</div>
-					<img src="<c:url value="/images/icons/server.gif" />">&nbsp;<b>Age:</b> {{date(server.age)}}<br>
-					<img src="<c:url value="/images/icons/index_performance.gif" />">&nbsp;<b>Processors:</b> {{server.processors}}<br>
-					<img src="<c:url value="/images/icons/memory_view.gif" />">&nbsp;<b>Architecture:</b> {{server.architecture}}<br>
-				</div>
+	<tr ng-repeat="server in servers" ng-class-odd="'odd'" ng-class-even="'even'">
+		
+		<td>
+			<div ng-show="!cpuLoadTooHigh(server)">
+				<i class="search">{{server.address}}</i><br>
+				<span class="icon-hand">{{server.address}}</span><br>
+				<span class="icon-pencil">{{server.address}}</span>
+				<p><i class="icon-camera-retro icon-large"></i> icon-camera-retro</p>
+			</div>
+			<div ng-show="cpuLoadTooHigh(server)">
+				<img src="<c:url value="/images/icons/web.gif" />"><font color="red">{{server.address}}</font><br>
 			</div>
 		</td>
-		<td valign="top" style="width: 80%;">
-			<div searching><!-- Searching performance graph --></div>
-			<div indexing><!-- The indexing performance graph --></div>
+		<td>{{server.averageCpuLoad}}</td>
+		<td>{{server.freeMemory}}</td>
+		<td>{{server.maxMemory}}</td>
+		<td>{{server.totalMemory}}</td>
+		<td>{{server.freeDiskSpace}}</td>
+		<td>
+			<div ng-show="server.threadsRunning">
+				<img src="<c:url value="/images/icons/open.gif" />">{{server.threadsRunning}}<br>
+			</div>
+			<div ng-show="!server.threadsRunning">
+				<img src="<c:url value="/images/icons/red_square.gif" />">{{server.threadsRunning}}<br>
+			</div>
 		</td>
+		<td>
+			<div ng-show="server.cpuThrottling">
+				<img src="<c:url value="/images/icons/open.gif" />">{{server.cpuThrottling}}<br>
+			</div>
+			<div ng-show="!server.cpuThrottling">
+				<img src="<c:url value="/images/icons/red_square.gif" />">{{server.cpuThrottling}}<br>
+			</div>
+		</td>
+		<td>{{date(server.age)}}</td>
+		<td>{{server.processors}}</td>
+		<td>{{server.architecture}}</td>
 	</tr>
 </table>
 <br><br>
 
+<!-- <td valign="top" style="width: 80%;">
+	<div searching>Searching performance graph</div>
+	<div indexing>The indexing performance graph</div>
+</td> -->
+
 <table ng-controller="ActionsController" width="100%">
-	<tr>
-		<th colspan="8"><img src="<c:url value="/images/icons/launch_run.gif" />">&nbsp;Executing actions</th>
-	</tr>
 	<tr>
 		<th><img src="<c:url value="/images/icons/server.gif" />">&nbsp;Server</th>
 		<th><img src="<c:url value="/images/icons/jar_l_obj.gif" />">&nbsp;Action</th>

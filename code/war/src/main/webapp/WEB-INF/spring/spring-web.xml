@@ -67,6 +67,7 @@
 
 	<!-- These are static resources basically. -->
 	<mvc:view-controller path="/index.html" />
+	<mvc:view-controller path="/dash.html" />
 	
 	<mvc:interceptors>
 		<bean 

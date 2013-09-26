@@ -33,6 +33,7 @@
   <widgets xsi:type="model:TextField" id="12" x="880" y="8" text="Log out" measuredWidth="51" measuredHeight="23">
     <font/>
   </widgets>
+  <widgets xsi:type="model:HLine" id="14" x="8" y="520" width="961" measuredWidth="961" measuredHeight="6"/>
   <hRuler/>
   <vRuler/>
   <font size="12px"/>
