@@ -68,6 +68,11 @@
 	<!-- These are static resources basically. -->
 	<mvc:view-controller path="/index.html" />
 	<mvc:view-controller path="/dash.html" />
+	<mvc:view-controller path="/login.html" />
+	<mvc:view-controller path="/indexes.html" />
+	<mvc:view-controller path="/analytics.html" />
+	<mvc:view-controller path="/search.html" />
+	<mvc:view-controller path="/properties.html" />
 	
 	<mvc:interceptors>
 		<bean 

@@ -1,7 +1,7 @@
 <%@ page errorPage="/WEB-INF/jsp/error.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<table ng-controller="ServersController">
+<table ng-controller="ServersController" class="table" style="margin-top: 55px;">
 	<tr>
 		<th>Address</th>
 		<th>CPU Load</th>
@@ -16,16 +16,12 @@
 		<th>Archi</th>
 	</tr>
 	<tr ng-repeat="server in servers" ng-class-odd="'odd'" ng-class-even="'even'">
-		
 		<td>
 			<div ng-show="!cpuLoadTooHigh(server)">
-				<i class="search">{{server.address}}</i><br>
-				<span class="icon-hand">{{server.address}}</span><br>
 				<span class="icon-pencil">{{server.address}}</span>
-				<p><i class="icon-camera-retro icon-large"></i> icon-camera-retro</p>
 			</div>
 			<div ng-show="cpuLoadTooHigh(server)">
-				<img src="<c:url value="/images/icons/web.gif" />"><font color="red">{{server.address}}</font><br>
+				<a href="#" ng-click="show = !show"><img src="<c:url value="/images/icons/web.gif" />"><font color="red">{{server.address}}</font></a><br>
 			</div>
 		</td>
 		<td>{{server.averageCpuLoad}}</td>
@@ -54,32 +50,45 @@
 		<td>{{server.architecture}}</td>
 	</tr>
 </table>
-<br><br>
 
-<!-- <td valign="top" style="width: 80%;">
-	<div searching>Searching performance graph</div>
-	<div indexing>The indexing performance graph</div>
-</td> -->
+<div ng-show="show">
+	<table class="table">
+		<tr>
+			<td>
+				<div searching style="width: 95%">Searching performance graph</div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div indexing style="width: 95%">The indexing performance graph</div>
+			</td>
+		</tr>
+	</table>
+</div>
 
-<table ng-controller="ActionsController" width="100%">
-	<tr>
-		<th><img src="<c:url value="/images/icons/server.gif" />">&nbsp;Server</th>
-		<th><img src="<c:url value="/images/icons/jar_l_obj.gif" />">&nbsp;Action</th>
-		<th><img src="<c:url value="/images/icons/index.gif" />">&nbsp;Index</th>
-		<th><img src="<c:url value="/images/icons/run_on_server.gif" />">&nbsp;Indexable</th>
-		<th><img src="<c:url value="/images/icons/link_obj.gif" />">&nbsp;Per minute</th>
-		<th><img src="<c:url value="/images/icons/link_obj.gif" />">&nbsp;Total docs</th>
-		<th><img src="<c:url value="/images/icons/launch_run.gif" />">&nbsp;Start time</th>
-		<th><img src="<c:url value="/images/icons/launch_run.gif" />">&nbsp;End time</th>
-	</tr>
-	<tr ng-repeat="action in actions" ng-class-odd="'odd'" ng-class-even="'even'">
-		<td ng-class="'bordered'">{{action.server.address}}</td>
-		<td ng-class="'bordered'">{{action.id}}:{{action.actionName}}</td>
-		<td ng-class="'bordered'">{{action.indexName}}</td>
-		<td ng-class="'bordered'">{{action.indexableName}}</td>
-		<td ng-class="'bordered'">{{action.snapshot.docsPerMinute}}</td>
-		<td ng-class="'bordered'">{{action.snapshot.numDocsForIndexWriters}}</td>
-		<td ng-class="'bordered'">{{action.startTime}}</td>
-		<td ng-class="'bordered'">{{action.endTime}}</td>
-	</tr>
-</table>
+<div ng-controller="ActionsController">
+	<div ng-hide="!actions.length">
+		<table ng-controller="ActionsController" class="table">
+			<tr>
+				<th>Server</th>
+				<th>Action</th>
+				<th>Index</th>
+				<th>Indexable</th>
+				<th>Per minute</th>
+				<th>Total docs</th>
+				<th>Start time</th>
+				<th>End time</th>
+			</tr>
+			<tr ng-repeat="action in actions" ng-class-odd="'odd'" ng-class-even="'even'">
+				<td>{{action.server.address}}</td>
+				<td>{{action.id}}:{{action.actionName}}</td>
+				<td>{{action.indexName}}</td>
+				<td>{{action.indexableName}}</td>
+				<td>{{action.snapshot.docsPerMinute}}</td>
+				<td>{{action.snapshot.numDocsForIndexWriters}}</td>
+				<td>{{action.startTime}}</td>
+				<td>{{action.endTime}}</td>
+			</tr>
+		</table>
+	</div>
+</div>

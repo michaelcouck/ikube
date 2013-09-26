@@ -30,9 +30,14 @@ module.directive('searching', function($http) {
 		scope : true,
 		link : function($scope, $elm, $attr) {
 			$scope.options = { 
-				title : 'Searching performance',
+				titleTextStyle : { color: '#bbbbbb' },
 				height : 200,
-				legend : { position : 'top', textStyle : { color : 'black', fontSize : 10 } } };
+				width : '100%',
+				backgroundColor: { fill : 'transparent' },
+				legend : { position : 'top', textStyle : { color : '#bbbbbb', fontSize : 12 } },
+				vAxis: { title : 'Searches',  titleTextStyle: { color: '#bbbbbb' } },
+				hAxis : { textStyle : { color: '#bbbbbb' } }
+			};
 			$scope.drawSearchingChart = function() {
 				$scope.url = getServiceUrl('/ikube/service/monitor/searching');
 				var promise = $http.get($scope.url);
@@ -63,9 +68,14 @@ module.directive('indexing', function($http) {
 		scope : true,
 		link : function($scope, $elm, $attr) {
 			$scope.options = { 
-				title : 'Indexing performance',
+				titleTextStyle : { color: '#bbbbbb' },
 				height : 200,
-				legend : { position : 'top', textStyle : { color : 'black', fontSize : 10 } } };
+				width : '100%',
+				backgroundColor: { fill : 'transparent' },
+				legend : { position : 'top', textStyle : { color : '#bbbbbb', fontSize : 12 } },
+				vAxis: { title : 'Indexing',  titleTextStyle: { color: '#bbbbbb' } },
+				hAxis : { textStyle : { color: '#bbbbbb' } }
+			};
 			$scope.drawIndexingChart = function() {
 				$scope.url = getServiceUrl('/ikube/service/monitor/indexing');
 				var promise = $http.get($scope.url);
