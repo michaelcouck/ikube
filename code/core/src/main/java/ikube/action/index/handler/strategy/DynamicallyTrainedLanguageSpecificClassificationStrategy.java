@@ -28,6 +28,8 @@ import org.apache.lucene.document.Field.TermVector;
 public class DynamicallyTrainedLanguageSpecificClassificationStrategy extends AStrategy {
 
 	private int maxTraining = 10000;
+	private int positive;
+	private int negative;
 	private String language = "en";
 
 	private IClassifier<String, String, String, Boolean> classifier;
@@ -53,6 +55,8 @@ public class DynamicallyTrainedLanguageSpecificClassificationStrategy extends AS
 			classifier.train(IConstants.POSITIVE, IConstants.POSITIVE);
 			classifier.train(IConstants.NEGATIVE, IConstants.NEGATIVE);
 			((WekaClassifier) classifier).build();
+			positive = maxTraining / 2;
+			negative = maxTraining / 2;
 		} catch (final Exception e) {
 			logger.error(null, e);
 		}
@@ -97,13 +101,24 @@ public class DynamicallyTrainedLanguageSpecificClassificationStrategy extends AS
 	}
 
 	void train(final String clazz, final String content) {
-		if (maxTraining > 0) {
-			maxTraining--;
-			try {
-				classifier.train(clazz, content);
-			} catch (Exception e) {
-				logger.error(null, e);
+		if (IConstants.POSITIVE.equals(clazz)) {
+			if (positive < 0) {
+				return;
 			}
+			positive--;
+		} else if (IConstants.NEGATIVE.equals(clazz)) {
+			if (negative < 0) {
+				return;
+			}
+			negative--;
+		} else {
+			logger.info("Can't train with class : " + clazz);
+			return;
+		}
+		try {
+			classifier.train(clazz, content);
+		} catch (Exception e) {
+			logger.error(null, e);
 		}
 	}
 
