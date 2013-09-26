@@ -101,10 +101,7 @@
 	
 </script>
 
-<table ng-app="ikube" ng-controller="SearcherController" style="border : 1px solid #aaaaaa;" width="100%">
-	<tr>
-		<th colspan="2"><img src="<c:url value="/images/icons/launch_run.gif" />">&nbsp;Advanced search</th>
-	</tr>
+<table ng-app="ikube" ng-controller="SearcherController" class="table" style="margin-top: 55px;">
 	<form ng-submit="doSearch()">
 	<tr class="odd" nowrap="nowrap" valign="bottom">
 		<td><b>Collection:</b></td>
@@ -133,7 +130,7 @@
 	
 	<tr class="even" nowrap="nowrap" valign="bottom">
 		<td colspan="2">
-			<button>Go!</button>
+			<button type="submit" class="btn" id="submit" name="submit">Go!</button>
 		</td>
 	</tr>
 	</form>

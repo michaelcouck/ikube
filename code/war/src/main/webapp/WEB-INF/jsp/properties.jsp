@@ -24,21 +24,16 @@ $(document).ready(function() {
 });
 </script>
 
-<table ng-controller="PropertiesController" style="border : 1px solid #aaaaaa;" width="100%">
-	<tr>
-		<th><img src="<c:url value="/images/icons/run_on_server.gif" />">&nbsp;System property files</th>
-	</tr>
-	<tr ng-model="propertyFiles" ng-repeat="(key, value) in propertyFiles" ng-class-odd="'odd'" ng-class-even="'even'">
-		<td class="bordered" valign="bottom">
+<table ng-controller="PropertiesController" class="table" style="margin-top: 55px;">
+	<tr ng-model="propertyFiles" ng-repeat="(key, value) in propertyFiles">
+		<td>
 			<form id="{{$index}}" name="{{$index}}" action="<c:url value="/service/monitor/set-properties" />" method="post">
 			<img src="<c:url value="/images/icons/jar_l_obj.gif" />" />&nbsp;Property file: {{key}}
 			<br>
-			<div ng-show="!value.show">
 				<security:authorize access="hasRole('ROLE_ADMIN')">
-					<textarea name="contents" rows="15" cols="120">{{value}}</textarea>
+					<textarea name="contents" rows="10" cols="450">{{value}}</textarea>
 					<input id="button-{{$index}}" name="button-{{$index}}" type="submit" value="Update">
 				</security:authorize>
-			</div>
 			<br>
 			</form>
 		</td>

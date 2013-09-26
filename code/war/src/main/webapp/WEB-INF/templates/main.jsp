@@ -37,32 +37,26 @@
 	<!-- Must be after Angular -->
 	<script src="<c:url value="/js/ikube.js" />" type="text/javascript"></script>
 	
-	<style type="text/css">
-		table {
-			width: 100%;
-		}
-	</style>
-	
 </head>
 
 <body data-spy="scroll" data-target=".navbar" onload="JavaScript:track();">
 	
 	<table>
 		<tr>
-			<td colspan="2" valign="top">
+			<td colspan="2" valign="top" align="left">
 				<tiles:insertAttribute name="header" />
 			</td>
 		</tr>
 		<tr>
-			<td valign="top">
+			<td valign="top" align="left">
 				<tiles:insertAttribute name="menu" />
 			</td>
-			<td valign="top">
+			<td valign="top" align="left">
 				<tiles:insertAttribute name="content" />
 			</td>
 		</tr>
 		<tr>
-			<td colspan="2" valign="bottom">
+			<td colspan="2" valign="bottom" align="left">
 				<tiles:insertAttribute name="footer" />
 			</td>
 		</tr>

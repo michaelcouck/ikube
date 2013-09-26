@@ -4,8 +4,8 @@
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
 
 <security:authorize access="isAuthenticated()">
-	<div class="well" style="max-width: 130px; padding: 8px; margin-top: 50px;">
-		<ul class="nav">
+	<div class="well" style="width: 200px; padding: 8px; margin-top: 50px;">
+		<ul class="nav nav-tabs nav-stacked">
 
 			<li class="nav-header">Functions</li>
 

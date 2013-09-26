@@ -15,7 +15,7 @@
 		<th>Processors</th>
 		<th>Archi</th>
 	</tr>
-	<tr ng-repeat="server in servers" ng-class-odd="'odd'" ng-class-even="'even'">
+	<tr ng-repeat="server in servers">
 		<td>
 			<div ng-show="!cpuLoadTooHigh(server)">
 				<span class="icon-pencil">{{server.address}}</span>
@@ -52,18 +52,8 @@
 </table>
 
 <div ng-show="show">
-	<table class="table">
-		<tr>
-			<td>
-				<div searching style="width: 95%">Searching performance graph</div>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<div indexing style="width: 95%">The indexing performance graph</div>
-			</td>
-		</tr>
-	</table>
+	<div searching style="width: 90%">Searching performance graph</div>
+	<div indexing style="width: 90%">The indexing performance graph</div>
 </div>
 
 <div ng-controller="ActionsController">
