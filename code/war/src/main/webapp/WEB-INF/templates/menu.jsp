@@ -22,8 +22,7 @@
 			<li class="nav-header">Default apps</li>
 			
 			<li><a href="<c:url value="/twitter.html" />">Twitter</a></li>
-			<li><a href="<c:url value="/twitter.html" />">Happy planet</a></li>
+			<li><a href="<c:url value="/happy.html" />">Happy planet</a></li>
 		</ul>
 	</div>
 </security:authorize>
-

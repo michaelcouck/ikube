@@ -15,28 +15,26 @@
 	<title><tiles:insertAttribute name="title" /></title>
 	<link rel="shortcut icon" href="<c:url value="/images/icons/favicon.ico" />">
 	
-	<meta name="Keywords" content="Ikube, Enterprise Search, Web Site Search, Database Search, High Volume" />
 	<meta name="Description" content="Ikube Enterprise Search." />
+	<meta name="Keywords" content="Ikube, Enterprise Search, Web Site Search, Database Search, High Volume" />
 	
-	<%-- <link rel="stylesheet" href="<c:url value="/style/bootstrap.css" />" /> --%>
 	<link rel="stylesheet" href="<c:url value="/style/bootstrap.min.css" />" />
-	<%-- <link rel="stylesheet" href="<c:url value="/style/darkstrap.css" />" /> --%>
-	<link rel="stylesheet" href="<c:url value="/style/darkstrap.min.css" />" />
-	<link rel="stylesheet" href="<c:url value="/style/bootstrap-responsive.css" />" />
 	<link rel="stylesheet" href="<c:url value="/style/bootstrap-responsive.min.css" />" />
+	<link rel="stylesheet" href="<c:url value="/js/bootstrap-combined.min.css" />">
 	<link rel="stylesheet" href="<c:url value="/style/font-awesome.min.css" />" />
+	<link rel="stylesheet" href="<c:url value="/style/darkstrap.min.css" />" />
 	
-	<%-- <script src="<c:url value="/js/bootstrap.js" />" type="text/javascript" ></script> --%>
-	<script src="<c:url value="/js/bootstrap.min.js" />" type="text/javascript" ></script>
 	<script src="https://www.google.com/jsapi" type="text/javascript" ></script>
-	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min.js" type="text/javascript"></script>
 	<script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
 	<script src="http://www.google-analytics.com/ga.js" type="text/javascript"></script>
-	<!-- <script src="http://malsup.github.com/jquery.form.js" type="text/javascript" ></script> -->
+	<script src="<c:url value="/js/jquery-ui.js" />" type='text/javascript'></script>
+	<script src="<c:url value="/js/jquery-1.9.1.js" />" type='text/javascript'></script>
+	<script src="<c:url value="/js/angular.js" />" type='text/javascript'></script>
+	<script src="<c:url value="/js/bootstrap.min.js" />" type="text/javascript" ></script>
+	<script src="<c:url value="/js/ui-bootstrap-tpls-0.4.0.js" />" type='text/javascript'></script>
 	
 	<!-- Must be after Angular -->
 	<script src="<c:url value="/js/ikube.js" />" type="text/javascript"></script>
-	
 </head>
 
 <body data-spy="scroll" data-target=".navbar" onload="JavaScript:track();">

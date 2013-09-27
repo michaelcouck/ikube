@@ -407,4 +407,6 @@
 		<value>alternatenames</value>
 	</util:list>
 	
+	<bean class="ikube.security.ProxyAuthenticator" init-method="initialize" />
+	
 </beans>

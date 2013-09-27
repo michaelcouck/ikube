@@ -50,7 +50,7 @@
 			<param-value></param-value>
 		</init-param>
 	</servlet>
-	<servlet-mapping>y
+	<servlet-mapping>
 		<servlet-name>springDispatcherServlet</servlet-name>
 		<url-pattern>*.html</url-pattern>
 	</servlet-mapping>

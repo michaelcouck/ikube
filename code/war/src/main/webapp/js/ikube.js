@@ -21,7 +21,7 @@ var chartRefreshInterval = 5000;
  * client. This module will spawn and create the controllers and other
  * artifacts as required.
  */
-var module = angular.module('ikube', []);
+var module = angular.module('ikube', [ 'ui.bootstrap' ]);
 
 /** This directive will draw and update the searching performance graph. */
 module.directive('searching', function($http) {
@@ -440,17 +440,66 @@ module.controller('CreateController', function($http, $scope) {
 	
 });
 
+//module.controller('TypeaheadController', function($scope, $http, $timeout) {
+function TypeaheadController($scope, $http, $timeout) {
+	$scope.selected = undefined;
+	// Go to the web service for the results
+	$scope.data = null;
+	$scope.results = new Array();
+	$scope.doSearch = function(url, indexName, searchStrings) {
+		/* '/ikube/service/search/json/multi/all' */
+		$scope.url = url;
+		// The form parameters we send to the server
+		$scope.searchParameters = {
+			indexName : indexName,
+			searchStrings : searchStrings,
+			fragment : true,
+			firstResult : 0,
+			maxResults : 10
+		};
+		// The configuration for the request to the server for the results
+		$scope.config = {
+			params : $scope.searchParameters
+		};
+		var promise = $http.get($scope.url, $scope.config);
+		promise.success(function(data, status) {
+			// Pop the statistics Json off the array
+			$scope.data = data;
+			$scope.status = status;
+			$scope.statistics = $scope.data.pop();
+			$scope.convertToArray($scope.data);
+		});
+		promise.error(function(data, status) {
+			$scope.status = status;
+		});
+		$scope.results = new Array();
+		// Convert all the data to an array for the auto complete
+		$scope.convertToArray = function(data) {
+			var total = $scope.statistics.total;
+			// Exception or no results
+			if (total == null || total == 0) {
+				$scope.searchParameters.firstResult = 0;
+				$scope.endResult = 0;
+				return;
+			}
+			// Iterate through the results from the Json data
+			for (var key in data) {
+				$scope.results.push(data[key]['fragment']);
+			}
+		}
+		// Wait for a while for the server to return some data, note 
+		// that if the server is still too slow you can add more time to the timeout
+		return $timeout(function() {
+			return $scope.results;
+		}, 250);
+	};
+}
+
 function writeDate() {
 	var d = new Date();
 	document.write(d.toLocaleTimeString());
 	document.write(' ');
 	document.write(d.toLocaleDateString());
-}
-
-function addAutoComplete(inputField) {
-	inputField.autocomplete({
-		source : getServiceUrl("/ikube/service/auto/complete")
-	});
 }
 
 function printMethods(object) {

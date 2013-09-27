@@ -11,7 +11,6 @@
 	<script type='text/javascript' src="<c:url value="/js/ui-bootstrap-tpls-0.4.0.js" />"></script>
 
 <script type='text/javascript'>
-	//<![CDATA[ 
 	angular.module('ikube-autocomplete', [ 'ui.bootstrap' ]);
 	function TypeaheadController($scope, $http, $timeout) {
 		$scope.selected = undefined;
@@ -66,7 +65,6 @@
 			}, 250);
 		};
 	}
-	//]]>
 </script>
 </head>
 

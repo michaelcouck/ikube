@@ -52,8 +52,8 @@
 </table>
 
 <div ng-show="show">
-	<div searching style="width: 90%">Searching performance graph</div>
-	<div indexing style="width: 90%">The indexing performance graph</div>
+	<div searching style="width: 95%;">Searching performance graph</div>
+	<div indexing style="width: 95%;">The indexing performance graph</div>
 </div>
 
 <div ng-controller="ActionsController">
