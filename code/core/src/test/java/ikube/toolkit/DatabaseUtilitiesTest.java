@@ -77,45 +77,45 @@ public class DatabaseUtilitiesTest extends AbstractTest {
 	}
 
 	@Test
-	@Ignore
 	public void getAllColumns() throws Exception {
 		Connection connection = null;
 		List<String> allColumns = null;
 		try {
+			String allColumnsString = "[id, timestamp, admin1code, admin2code, admin3code, admin4code, alternatenames, asciiname, cc2, city, country, countrycode, elevation, featureclass, featurecode, geonameid, gtopo30, latitude, longitude, modification, name, population, timezone]";
 			connection = getDb2Connection();
-			allColumns = DatabaseUtilities.getAllColumns(connection, "doctor");
-			logger.info("All columns : " + allColumns);
-			String allColumnsString = "[ID, BIRTHDATE, DEATHDATE, FIRSTNAME, LASTNAME, ADDRESS_ID]";
-			assertEquals("All the columns from the doctor table : ", allColumnsString, allColumns.toString());
+			allColumns = DatabaseUtilities.getAllColumns(connection, "geoname");
+			assertEquals("All the columns from the geoname table : ", allColumnsString, allColumns.toString().toLowerCase());
 			DatabaseUtilities.close(connection);
 
-			connection = DriverManager.getConnection("jdbc:oracle:thin:@81.95.118.139:1521:ikube", "ubuntu", "Caherl1ne");
-			allColumns = DatabaseUtilities.getAllColumns(connection, "doctor");
+			connection = DriverManager.getConnection("jdbc:oracle:thin:@81.95.118.139:1521:xe", "oracle", "Bp0st2013");
+			allColumns = DatabaseUtilities.getAllColumns(connection, "geoname");
 			logger.info("All columns : " + allColumns);
-			assertEquals("All the columns from the doctor table : ", allColumnsString, allColumns.toString());
+			assertEquals("All the columns from the geoname table : ", allColumnsString, allColumns.toString().toLowerCase());
 			DatabaseUtilities.close(connection);
 
-			// ?searchpath=cmp
-			connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/cmp", "cmp", "pwd");
-			// connection.createStatement().execute("ALTER USER cmp SET search_path to 'cmp'");
-			allColumns = DatabaseUtilities.getAllColumns(connection, "campaign");
-			logger.info("All columns : " + allColumns);
-			String campaignColumns = "[id, campaign_set_id, copied_from_campaign_id, truvo_orderline_pub_id, banner_creation_needed, "
-					+ "notes_cmp, more_info_url, more_info_email, status, date_created, date_updated, created_by, updated_by, version, language_id, "
-					+ "external_campaign_id, more_work_needed, banner_body_text, banner_set_id]";
-			assertEquals("All the columns from the doctor table : ", campaignColumns, allColumns.toString());
-			DatabaseUtilities.close(connection);
+			// connection = DriverManager.getConnection("jdbc:postgresql://81.95.118.139:5432/cmp", "cmp", "pwd");
+			// allColumns = DatabaseUtilities.getAllColumns(connection, "geoname");
+			// logger.info("All columns : " + allColumns);
+			// String campaignColumns = "[id, campaign_set_id, copied_from_campaign_id, truvo_orderline_pub_id, banner_creation_needed, "
+			// + "notes_cmp, more_info_url, more_info_email, status, date_created, date_updated, created_by, updated_by, version, language_id, "
+			// + "external_campaign_id, more_work_needed, banner_body_text, banner_set_id]";
+			// assertEquals("All the columns from the doctor table : ", campaignColumns, allColumns.toString());
+			// DatabaseUtilities.close(connection);
 		} finally {
 			DatabaseUtilities.close(connection);
 		}
 	}
 
 	@Test
-	@Ignore
 	public void getForeignKeys() throws Exception {
-		Connection connection = getDb2Connection();
-		List<String[]> foreignKeys = DatabaseUtilities.getForeignKeys(connection, "attachment");
-		logger.info("Foreign keys : " + foreignKeys);
+		Connection connection = null;
+		try {
+			connection = getDb2Connection();
+			List<String[]> foreignKeys = DatabaseUtilities.getForeignKeys(connection, "geoname");
+			logger.info("Foreign keys : " + foreignKeys);
+		} finally {
+			DatabaseUtilities.close(connection);
+		}
 	}
 
 	@Test
@@ -124,7 +124,7 @@ public class DatabaseUtilitiesTest extends AbstractTest {
 		Connection connection = null;
 		try {
 			connection = getDb2Connection();
-			List<String> primaryKeyColumns = DatabaseUtilities.getPrimaryKeys(connection, "attachment");
+			List<String> primaryKeyColumns = DatabaseUtilities.getPrimaryKeys(connection, "geoname");
 			logger.info(primaryKeyColumns.toString());
 			assertTrue("Must contain the attachment id column : ", primaryKeyColumns.contains("ATTACHMENTID"));
 		} finally {
@@ -133,7 +133,7 @@ public class DatabaseUtilitiesTest extends AbstractTest {
 	}
 
 	private Connection getDb2Connection() throws SQLException {
-		return DriverManager.getConnection("jdbc:db2://81.95.118.139:50000/ikube", "ubuntu", "Caherl1ne");
+		return DriverManager.getConnection("jdbc:db2://81.95.118.139:50000/icube", "db2", "Bp0st2013");
 	}
 
 }

@@ -1,9 +1,11 @@
 package ikube.action;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.toolkit.Mailer;
+import ikube.toolkit.PerformanceTester;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.IOException;
@@ -66,7 +68,21 @@ public class DiskFullTest extends AbstractTest {
 		} finally {
 			Mockit.tearDownMocks();
 		}
+	}
 
+	@Test
+	public void getLinuxRoot() {
+		String root = diskFull.getNixRoot("/mnt/sdb/backup");
+		assertEquals("/dev/sdb1", root);
+		root = diskFull.getNixRoot("/tmp");
+		assertEquals("/dev/sda1", root);
+		double iterationsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+			@Override
+			public void execute() {
+				diskFull.getNixRoot("/mnt/sdb/backup");
+			}
+		}, "Disk full check : ", 100, Boolean.TRUE);
+		assertTrue(iterationsPerSecond > 10);
 	}
 
 }

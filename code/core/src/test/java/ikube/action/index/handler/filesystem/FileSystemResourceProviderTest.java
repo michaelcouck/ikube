@@ -4,6 +4,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import ikube.AbstractTest;
 import ikube.model.IndexableFileSystem;
+import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,9 +25,10 @@ public class FileSystemResourceProviderTest extends AbstractTest {
 	@Before
 	public void before() throws IOException {
 		IndexableFileSystem indexableFileSystem = new IndexableFileSystem();
-		indexableFileSystem.setPath("./");
+		indexableFileSystem.setPath("/");
 		Pattern pattern = Pattern.compile(".*(nothing).*");
 		fileSystemResourceProvider = new FileSystemResourceProvider(indexableFileSystem, pattern);
+		ThreadUtilities.sleep(3000);
 	}
 
 	@Test
@@ -35,7 +37,6 @@ public class FileSystemResourceProviderTest extends AbstractTest {
 		assertNotNull(file);
 		while (file != null) {
 			file = fileSystemResourceProvider.getResource();
-			logger.info("Got new file : " + file);
 		}
 		// All files depleted
 		assertNull(file);

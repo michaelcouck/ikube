@@ -12,4 +12,3 @@
 		<td>Bla...</td>
 		<td>Bla...</td>
 	</tr>
-</table>

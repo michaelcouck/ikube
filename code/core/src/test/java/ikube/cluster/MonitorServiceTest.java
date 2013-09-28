@@ -11,6 +11,7 @@ import ikube.model.IndexableFileSystem;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -45,7 +46,7 @@ public class MonitorServiceTest extends AbstractTest {
 
 		ApplicationContextManagerMock.INDEX_CONTEXT = indexContext;
 	}
-	
+
 	@After
 	public void after() {
 		Mockit.tearDownMocks();
@@ -82,14 +83,14 @@ public class MonitorServiceTest extends AbstractTest {
 	}
 
 	@Test
-	public void getSetProperties() {
-		String propertiesFilePath = "./properties/spring.properties";
+	public void getSetProperties() throws IOException {
+		File propertiesFile = null;
 		try {
 			File file = FileUtilities.findFileRecursively(new File("."), "spring.properties");
 			String contents = FileUtilities.getContents(file, Integer.MAX_VALUE).toString();
-			FileUtilities.setContents(propertiesFilePath, contents.getBytes());
 
-			File propertiesFile = new File(propertiesFilePath);
+			propertiesFile = FileUtilities.getOrCreateFile("./properties/spring.properties");
+			FileUtilities.setContents(propertiesFile, contents.getBytes());
 
 			Map<String, String> filesAndProperties = monitorService.getProperties();
 			assertTrue(filesAndProperties.containsKey(propertiesFile.getAbsolutePath()));
@@ -100,10 +101,11 @@ public class MonitorServiceTest extends AbstractTest {
 			monitorService.setProperties(filesAndProperties);
 
 			String propertiesFileContentsRead = FileUtilities.getContents(propertiesFile, Integer.MAX_VALUE).toString();
-			assertEquals("The properties file should contain the contents in the map : ", propertiesFileContents,
-					propertiesFileContentsRead);
+			assertEquals("The properties file should contain the contents in the map : ", propertiesFileContents, propertiesFileContentsRead);
 		} finally {
-			FileUtilities.deleteFile(new File("./properties"), 1);
+			if (propertiesFile != null) {
+				FileUtilities.deleteFile(propertiesFile.getParentFile(), 1);
+			}
 		}
 	}
 

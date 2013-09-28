@@ -1,6 +1,5 @@
 package ikube.action.index.handler.database;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.model.IndexableColumn;

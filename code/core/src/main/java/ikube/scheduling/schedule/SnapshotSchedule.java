@@ -131,6 +131,7 @@ public class SnapshotSchedule extends Schedule {
 		server.setAge(System.currentTimeMillis());
 		server.setTimestamp(new Timestamp(System.currentTimeMillis()));
 		try {
+			// @Michael on 27.09.13: If this is executed too many times on a raid 10 disk the disk crashes!!!
 			// long availableDiskSpace = FileSystemUtils.freeSpaceKb("/") / IConstants.MILLION;
 			// server.setFreeDiskSpace(availableDiskSpace);
 		} catch (Exception e) {

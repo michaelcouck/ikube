@@ -8,10 +8,8 @@ import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
 import ikube.toolkit.ApplicationContextManager;
 
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -19,27 +17,22 @@ import org.junit.Test;
  * @since 06.04.2013
  * @version 01.00
  */
-@Ignore
 public class QueryBuilderTest extends AbstractTest {
 
 	private QueryBuilder queryBuilder;
 	private IndexableTable geonameTable;
 
-//	@BeforeClass
-//	public static void beforeClass() {
-//		ApplicationContextManager.closeApplicationContext();
-//	}
-//
-//	@AfterClass
-//	public static void afterClass() {
-//		ApplicationContextManager.closeApplicationContext();
-//	}
-
 	@Before
 	public void before() {
 		ApplicationContextManager.closeApplicationContext();
+		ApplicationContextManager.getApplicationContextFilesystem("src/test/resources/spring/spring-geo-prod.xml");
 		queryBuilder = new QueryBuilder();
 		geonameTable = ApplicationContextManager.getBean("geoname");
+	}
+
+	@After
+	public void after() {
+		ApplicationContextManager.closeApplicationContext();
 	}
 
 	@Test
@@ -54,10 +47,11 @@ public class QueryBuilderTest extends AbstractTest {
 		String sql = queryBuilder.buildQuery(geonameTable, 0l, 1000l);
 		logger.info(sql);
 		assertTrue(sql
-				.contains("select    geoname.id ,    geoname.name ,    geoname.city ,    geoname.country ,    geoname.asciiname ,    geoname.alternatenames ,    geoname.latitude ,    "
-						+ "geoname.longitude ,    geoname.featureclass ,    geoname.featurecode ,    geoname.countrycode ,    geoname.timezone ,    geoname.cc2 ,    geoname.geonameid ,    "
-						+ "geoname.admin1code ,    geoname.admin2code ,    geoname.admin3code ,    geoname.admin4code ,    geoname.modification ,    geoname.population ,    "
-						+ "geoname.elevation ,    geoname.gtopo30 from    geoname where    geoname.id >= 0.0 and    geoname.id < 1000.0"));
+				.contains("select    geoname.id ,    geoname.name ,    geoname.city ,    geoname.country ,    geoname.asciiname ,    geoname.alternatenames ,    "
+						+ "geoname.latitude ,    geoname.longitude ,    geoname.featureclass ,    geoname.featurecode ,    geoname.countrycode ,    geoname.timezone ,    "
+						+ "geoname.cc2 ,    geoname.geonameid ,    geoname.admin1code ,    geoname.admin2code ,    geoname.admin3code ,    geoname.admin4code ,    "
+						+ "geoname.modification ,    geoname.population ,    geoname.elevation ,    geoname.gtopo30 ,    alternatename.id ,    alternatename.geonameid ,    "
+						+ "alternatename.alternatename from    geoname ,    alternatename where    geoname.id >= 0.0 and    geoname.id < 1000.0"));
 	}
 
 	@Test
@@ -74,8 +68,6 @@ public class QueryBuilderTest extends AbstractTest {
 
 	@Test
 	public void buildQueryProd() {
-		ApplicationContextManager.closeApplicationContext();
-		ApplicationContextManager.getApplicationContextFilesystem("src/test/resources/spring/spring-geo-prod.xml");
 		geonameTable = ApplicationContextManager.getBean("geoname");
 		String sql = queryBuilder.buildQuery(geonameTable, 0l, 1000l);
 		logger.info(sql);

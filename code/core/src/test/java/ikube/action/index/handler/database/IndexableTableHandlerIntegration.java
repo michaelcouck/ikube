@@ -35,8 +35,8 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ForkJoinTask;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.sql.DataSource;
@@ -56,7 +56,6 @@ import org.junit.Test;
  * @since 12.10.2010
  * @version 01.00
  */
-@Ignore
 public class IndexableTableHandlerIntegration extends AbstractTest {
 
 	private Connection connection;
@@ -130,7 +129,6 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
 			snapshotTable.setPredicate("snapshot.id = " + snapshotTable.getMinimumId());
 			ForkJoinTask<?> forkJoinTask = indexableTableHandler.handleIndexableForked(indexContext, snapshotTable);
 			ThreadUtilities.executeForkJoinTasks(indexContext.getName(), snapshotTable.getThreads(), forkJoinTask);
-			ThreadUtilities.sleep(5000);
 			assertTrue("There must be more than one document in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);
 		} finally {
 			snapshotTable.setPredicate(predicate);
@@ -250,8 +248,6 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
 
 			ForkJoinTask<?> forkJoinTask = indexableTableHandler.handleIndexableForked(indexContext, snapshotTable);
 			ThreadUtilities.executeForkJoinTasks(indexContext.getName(), snapshotTable.getThreads(), forkJoinTask);
-			ThreadUtilities.sleep(5000);
-
 			assertTrue("There must be some data in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);
 		} finally {
 			ThreadUtilities.cancellForkJoinPool(indexContext.getName());
@@ -268,8 +264,8 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
 				continue;
 			}
 			try {
-				List<Future<?>> futures = indexableTableHandler.handleIndexable(indexContext, (IndexableTable) indexable);
-				ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
+				ForkJoinTask<?> forkJoinTask = indexableTableHandler.handleIndexableForked(indexContext, (IndexableTable) indexable);
+				ThreadUtilities.executeForkJoinTasks(indexContext.getName(), snapshotTable.getThreads(), forkJoinTask);
 			} catch (Exception e) {
 				logger.error(e.getMessage());
 			}
@@ -277,10 +273,9 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
 		assertTrue("There must be some data in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);
 	}
 
-	@Test
+	@Test(expected = CancellationException.class)
 	public void interrupt() throws Exception {
 		try {
-			long start = System.currentTimeMillis();
 			indexContext.setBatchSize(10);
 			indexContext.setThrottle(60000);
 			indexContext.setIndexWriters(IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), UriUtilities.getIp()));
@@ -294,12 +289,8 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
 			thread.start();
 
 			ForkJoinTask<?> forkJoinTask = indexableTableHandler.handleIndexableForked(indexContext, snapshotTable);
+			// This should throw a cancellation exception
 			ThreadUtilities.executeForkJoinTasks(indexContext.getName(), snapshotTable.getThreads(), forkJoinTask);
-			forkJoinTask.quietlyJoin();
-
-			// We should get here when the futures are interrupted
-			assertTrue(Boolean.TRUE);
-			assertTrue(System.currentTimeMillis() - start < 60000);
 		} finally {
 			indexContext.setThrottle(0);
 			indexContext.setBatchSize(1000);

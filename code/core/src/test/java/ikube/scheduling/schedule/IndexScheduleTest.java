@@ -12,7 +12,6 @@ import ikube.action.Index;
 import ikube.cluster.IMonitorService;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.IndexContext;
-import ikube.toolkit.ApplicationContextManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
