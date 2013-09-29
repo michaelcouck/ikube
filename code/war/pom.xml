@@ -81,9 +81,6 @@
 								<copy todir="ikube/production" failonerror="true">
 									<fileset dir="../libs/src/main/resources/indexes/production" />
 								</copy>
-								<copy todir="ikube/mineco" failonerror="true">
-									<fileset dir="../libs/src/main/resources/indexes/mineco" />
-								</copy>
 							</target>
 						</configuration>
 						<goals>

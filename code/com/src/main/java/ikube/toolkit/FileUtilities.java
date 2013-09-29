@@ -124,6 +124,21 @@ public final class FileUtilities {
 	}
 
 	/**
+	 * This method, similar to the {@link FileUtilities#findFilesRecursively(File, List, String...)} will just move up a few directories before searching for
+	 * the patterns.
+	 * 
+	 * @param folder the start folder
+	 * @param upDirectories how many directories to move up before searching
+	 * @param files the list of files that will collect the files found
+	 * @param stringPatterns the patterns to search for in the directories
+	 * @return the list of files found for the patterns in the directories
+	 */
+	public static final List<File> findFilesRecursively(final File folder, final int upDirectories, final List<File> files, final String... stringPatterns) {
+		File startFolder = moveUpDirectories(folder, upDirectories);
+		return findFilesRecursively(startFolder, files, stringPatterns);
+	}
+
+	/**
 	 * Finds files with the specified pattern only in the folder specified in the parameter list, i.e. not recursively.
 	 * 
 	 * @param folder the folder to look for files in

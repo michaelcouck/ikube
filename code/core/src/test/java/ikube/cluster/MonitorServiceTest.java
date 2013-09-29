@@ -93,7 +93,9 @@ public class MonitorServiceTest extends AbstractTest {
 			FileUtilities.setContents(propertiesFile, contents.getBytes());
 
 			Map<String, String> filesAndProperties = monitorService.getProperties();
-			assertTrue(filesAndProperties.containsKey(propertiesFile.getAbsolutePath()));
+			logger.info("Files found : " + filesAndProperties.keySet());
+			String cleanPath = FileUtilities.cleanFilePath(propertiesFile.getAbsolutePath());
+			assertTrue(filesAndProperties.containsKey(cleanPath));
 
 			filesAndProperties.clear();
 			String propertiesFileContents = "my-property=my-value\nanother-property=another-value";
