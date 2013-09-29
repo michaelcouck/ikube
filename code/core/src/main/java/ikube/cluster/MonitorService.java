@@ -144,7 +144,7 @@ public class MonitorService implements IMonitorService {
 		}
 		Map<String, String> filesAndProperties = new HashMap<String, String>();
 		File dotFolder = new File(ikubeConfiguration);
-		List<File> propertyFiles = FileUtilities.findFilesRecursively(dotFolder, 2, new ArrayList<File>(), "spring.properties");
+		List<File> propertyFiles = FileUtilities.findFilesRecursively(dotFolder, new ArrayList<File>(), "spring.properties");
 		for (final File propertyFile : propertyFiles) {
 			try {
 				if (propertyFile == null || !propertyFile.canRead() || propertyFile.isDirectory()) {
