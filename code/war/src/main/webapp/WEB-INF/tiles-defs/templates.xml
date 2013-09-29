@@ -7,7 +7,7 @@
 		<put-attribute name="title" value="Ikube" type="string" />
 		<put-attribute name="header" value="/WEB-INF/templates/header.jsp" />
 		<put-attribute name="menu" value="/WEB-INF/templates/menu.jsp" />
-		<put-attribute name="content" value="/WEB-INF/templates/login.jsp" />
+		<put-attribute name="content" value="/WEB-INF/templates/dash.jsp" />
 		<put-attribute name="footer" value="/WEB-INF/templates/footer.jsp" />
 	</definition>
 	<definition name=".documentation.mainTemplate" template="/WEB-INF/templates/documentation.jsp">

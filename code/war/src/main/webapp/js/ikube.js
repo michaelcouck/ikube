@@ -158,6 +158,17 @@ module.controller('ServersController', function($http, $scope) {
 				$scope.status = status;
 			});
 		}
+		
+		$scope.direction = true;
+		$scope.orderProp = "address";
+		$scope.sort = function(column) {
+			if ($scope.orderProp === column) {
+				$scope.direction = !$scope.direction;
+			} else {
+				$scope.orderProp = column;
+				$scope.direction = true;
+			}
+		};
 	}
 	
 	$scope.terminateAll = function() {
@@ -230,6 +241,17 @@ module.controller('ActionsController', function($http, $scope) {
 	setInterval(function() {
 		$scope.getActions();
 	}, refreshInterval);
+	
+	$scope.direction = true;
+	$scope.orderProp = "server.address";
+	$scope.sort = function(column) {
+		if ($scope.orderProp === column) {
+			$scope.direction = !$scope.direction;
+		} else {
+			$scope.orderProp = column;
+			$scope.direction = true;
+		}
+	};
 });
 
 /** This controller gathers the index context data from the server for presentation. */
@@ -271,6 +293,19 @@ module.controller('IndexContextsController', function($http, $scope) {
 	setInterval(function() {
 		$scope.refreshIndexContexts();
 	}, 60000);
+	
+
+	$scope.direction = true;
+	$scope.orderProp = "name";
+	$scope.sort = function(column) {
+		if ($scope.orderProp === column) {
+			$scope.direction = !$scope.direction;
+		} else {
+			$scope.orderProp = column;
+			$scope.direction = true;
+		}
+	};
+	
 	// This function will publish a start event in the cluster
 	$scope.startIndexing = function(indexName) {
 		if (confirm('Start indexing of index : ' + indexName)) {

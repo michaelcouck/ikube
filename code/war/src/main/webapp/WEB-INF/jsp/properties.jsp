@@ -27,13 +27,14 @@ $(document).ready(function() {
 <table ng-controller="PropertiesController" class="table" style="margin-top: 55px;">
 	<tr ng-model="propertyFiles" ng-repeat="(key, value) in propertyFiles">
 		<td>
-			<form id="{{$index}}" name="{{$index}}" action="<c:url value="/service/monitor/set-properties" />" method="post">
+			<form id="{{$index}}" name="{{$index}}" action="<c:url value="/service/monitor/set-properties" />" method="post" target="#">
+			<security:authorize access="hasRole('ROLE_ADMIN')">
+				<!-- <button id="button-{{$index}}" class="btn btn-small btn-success" type="submit" >Update</button> -->
+				<input id="button-{{$index}}" name="button-{{$index}}" type="submit" class="btn btn-small btn-success" value="Update">
+			</security:authorize>
 			<img src="<c:url value="/images/icons/jar_l_obj.gif" />" />&nbsp;Property file: {{key}}
-			<br>
-				<security:authorize access="hasRole('ROLE_ADMIN')">
-					<textarea name="contents" rows="10" cols="450">{{value}}</textarea>
-					<input id="button-{{$index}}" name="button-{{$index}}" type="submit" value="Update">
-				</security:authorize>
+			<br><br>
+			<textarea name="contents" rows="10" cols="450" class="well" style="width: 95%;">{{value}}</textarea>
 			<br>
 			</form>
 		</td>

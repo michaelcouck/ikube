@@ -12,18 +12,18 @@
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util.xsd" >
 
-    <description>This is the configuration for the Ministry of Economics.</description>
+    <description>This configuration is for the geoname csv file.</description>
 
     <bean
-        id="min-eco"
-        property:name="min-eco"
+        id="geoname-csv"
+        property:name="geoname-csv"
         class="ikube.model.IndexContext"
 		property:throttle="0"
         property:maxAge="6000"
         property:batchSize="${jdbc.batch.size}"
         property:bufferSize="${buffer.size}"
         property:bufferedDocs="${buffered.docs}"
-        property:children-ref="min-eco-indexables"
+        property:children-ref="geoname-csv-indexables"
         property:compoundFile="${compound.file}"
         property:indexDirectoryPath="${index.directory.path}"
         property:indexDirectoryPathBackup="${index.directory.path}"
@@ -31,22 +31,22 @@
         property:maxFieldLength="${max.field.length}"
         property:maxReadLength="${max.read.length}"
         property:mergeFactor="${merge.factor}"
-        property:analyzer-ref="min-eco-analyzer"
-        property:address="false" />
+        property:analyzer-ref="geoname-csv-analyzer"
+        property:address="true" />
     
 	<bean 
-		id="min-eco-analyzer" 
+		id="geoname-csv-analyzer" 
 		class="ikube.action.index.analyzer.NgramAnalyzer" />
 
-    <util:list id="min-eco-indexables" >
-        <ref local="min-eco-csv-files" />
+    <util:list id="geoname-csv-indexables" >
+        <ref local="geoname-csv-csv-files" />
     </util:list>
     
     <bean
-		id="min-eco-csv-files"
+		id="geoname-csv-csv-files"
 		class="ikube.model.IndexableFileSystemCsv"
-		property:name="min-eco-csv-files"
-		property:path="${index.root}/nas-five/geoname/geoname.csv"
+		property:name="geoname-csv-csv-files"
+		property:path="${index.root}/data/geoname"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
@@ -61,38 +61,38 @@
 		property:maxReadLength="1000000"  
 		property:separator=";" 
 		property:maxExceptions="10000"
-		property:encoding="Windows-1252"
-		property:address="false"
-		property:children-ref="min-eco-csv-files-columns"
-		property:strategies-ref="min-eco-csv-files-strategies" />
-	<util:list id="min-eco-csv-files-columns">
-		<ref local="min-eco-csv-latitude" />
-		<ref local="min-eco-csv-longitude" />
+		property:encoding="UTF-8"
+		property:address="true"
+		property:children-ref="geoname-csv-csv-files-columns"
+		property:strategies-ref="geoname-csv-csv-files-strategies" />
+	<util:list id="geoname-csv-csv-files-columns">
+		<ref local="geoname-csv-csv-latitude" />
+		<ref local="geoname-csv-csv-longitude" />
 	</util:list>
 	
-	<util:list id="min-eco-csv-files-strategies">
+	<util:list id="geoname-csv-csv-files-strategies">
 		<bean class="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy" />
 	</util:list>
 	
 	<bean
-		id="min-eco-csv-latitude"
+		id="geoname-csv-csv-latitude"
 		class="ikube.model.IndexableColumn"
 		property:name="latitude"
-		property:fieldName="LATITUDE"
+		property:fieldName="latitude"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}"
 		property:numeric="false"
-		property:address="false" />
+		property:address="true" />
 	<bean
-		id="min-eco-csv-longitude"
+		id="geoname-csv-csv-longitude"
 		class="ikube.model.IndexableColumn"
 		property:name="longitude"
-		property:fieldName="LONGITUDE"
+		property:fieldName="longitude"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}"
 		property:numeric="false"
-		property:address="false" />
+		property:address="true" />
 		
 </beans>
