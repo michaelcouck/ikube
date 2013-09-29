@@ -151,6 +151,7 @@ public class MonitorService implements IMonitorService {
 					continue;
 				}
 				String filePath = propertyFile.getAbsolutePath();
+				filePath = FileUtilities.cleanFilePath(filePath);
 				String fileContents = FileUtilities.getContents(propertyFile, Integer.MAX_VALUE).toString();
 				filesAndProperties.put(filePath, fileContents);
 			} catch (Exception e) {

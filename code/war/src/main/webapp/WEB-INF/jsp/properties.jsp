@@ -4,7 +4,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 
-<script type="text/javascript">
+<!-- <script type="text/javascript">
 $(document).ready(function() {
 	var forms = document.getElementsByTagName('form');
 	// We have to set the timeout because I think that there are
@@ -12,7 +12,9 @@ $(document).ready(function() {
 	// just gets pushed out of the way :()
 	setTimeout(function() {
 		for ( var i = 0; i < forms.length; i++) {
+			// alert('Adding to form : ' + forms[i]);
 			$('#' + forms[i].id).ajaxForm(function() {
+				alert('Blocking event : ' + forms[i]);
 				// Note that there is no logic in here, the jQuery form
 				// add on just takes care of all the dirty details, and cancels
 				// the browsers natural submit action, leaving the user high and 
@@ -22,15 +24,26 @@ $(document).ready(function() {
 		}
 	}, 1000);
 });
-</script>
+</script> -->
 
 <table ng-controller="PropertiesController" class="table" style="margin-top: 55px;">
 	<tr ng-model="propertyFiles" ng-repeat="(key, value) in propertyFiles">
 		<td>
-			<form id="{{$index}}" name="{{$index}}" action="<c:url value="/service/monitor/set-properties" />" method="post" target="#">
+			<%-- action="<c:url value="/service/monitor/set-properties" />" --%> 
+			<form 
+				id="{{$index}}" 
+				name="{{$index}}" 
+				method="post"
+				ng-submit="onSubmit('/ikube/service/monitor/set-properties', this, key, value, $event)">
 			<security:authorize access="hasRole('ROLE_ADMIN')">
 				<!-- <button id="button-{{$index}}" class="btn btn-small btn-success" type="submit" >Update</button> -->
-				<input id="button-{{$index}}" name="button-{{$index}}" type="submit" class="btn btn-small btn-success" value="Update">
+				<!-- ng-click="onSubmit(this, $event)" --> 
+				<input 
+					id="button-{{$index}}" 
+					name="button-{{$index}}" 
+					type="submit" 
+					class="btn btn-small btn-success" 
+					value="Update">
 			</security:authorize>
 			<img src="<c:url value="/images/icons/jar_l_obj.gif" />" />&nbsp;Property file: {{key}}
 			<br><br>

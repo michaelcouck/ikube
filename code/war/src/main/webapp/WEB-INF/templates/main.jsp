@@ -20,7 +20,7 @@
 	
 	<link rel="stylesheet" href="<c:url value="/style/bootstrap.min.css" />" />
 	<link rel="stylesheet" href="<c:url value="/style/bootstrap-responsive.min.css" />" />
-	<link rel="stylesheet" href="<c:url value="/js/bootstrap-combined.min.css" />">
+	<%-- <link rel="stylesheet" href="<c:url value="/js/bootstrap-combined.min.css" />"> --%>
 	<link rel="stylesheet" href="<c:url value="/style/font-awesome.min.css" />" />
 	<link rel="stylesheet" href="<c:url value="/style/darkstrap.min.css" />" />
 	

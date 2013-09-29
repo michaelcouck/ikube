@@ -15,17 +15,14 @@
 			<security:authorize access="isAuthenticated()">
 				<form>
 					<ul class="nav">
-						
 						<input 
 							type="text" 
-							class="input-small" 
 							placeholder="Search..." 
 							style="margin-top: 9px;"
 							ng-model="$searchStrings"
 							typeahead="result for result in doSearch('/ikube/service/search/json/multi/all', 'autocomplete', $viewValue)"
 							typeahead-min-length="3" 
 							typeahead-wait-ms="250">
-						
 						<button type="submit" class="btn" style="margin-top: 0px;">Go!</button>
 						<li><a href="http://www.ikube.be/site">Documentation</a></li>
 						<li>

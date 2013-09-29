@@ -278,8 +278,7 @@ public class Monitor extends Resource {
 	@POST
 	@Path(Monitor.SET_PROPERTIES)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public Response setProperties(@FormParam(value = IConstants.FILE) final String file,
-			@FormParam(value = IConstants.CONTENTS) final String contents) {
+	public Response setProperties(@FormParam(value = IConstants.FILE) final String file, @FormParam(value = IConstants.CONTENTS) final String contents) {
 		if (!StringUtils.isEmpty(file) && !StringUtils.isEmpty(contents)) {
 			Map<String, String> filesAndProperties = new HashMap<String, String>();
 			filesAndProperties.put(file, contents);

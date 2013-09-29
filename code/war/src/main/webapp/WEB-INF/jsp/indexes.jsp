@@ -24,12 +24,13 @@
 		<th>
 			<img src="<c:url value="/images/icons/repository.gif" />">
 			&nbsp;Size</a>
-			<button class="btn btn-mini btn-link" ng-click="sort('indexSize')"><i class="icon-sort"></i></button>
+			<button class="btn btn-mini btn-link" ng-click="sort('snapshot.indexSize')"><i class="icon-sort"></i></button>
 		</th>
 		<%-- <th><img src="<c:url value="/images/icons/register_view.gif" />">&nbsp;<a href="#" ng-click="sortIndexContexts('maxAge')">Max age</a></th> --%>
 		<th>
 			<img src="<c:url value="/images/icons/refresh.gif" />">
-			&nbsp;Index timestamp</a></button>
+			&nbsp;Index timestamp</a>
+			<button class="btn btn-mini btn-link" ng-click="sort('snapshot.latestIndexTimestamp')"><i class="icon-sort"></i></button>
 		</th>
 		<th>
 			<img src="<c:url value="/images/icons/jar_l_obj.gif" />">

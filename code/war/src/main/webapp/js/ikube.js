@@ -99,7 +99,23 @@ module.directive('indexing', function($http) {
 	}
 });
 
-/** Load the Google visual after the directives to avoid some kind of recursive lookup. */
+module.directive('ng-enter', function($http) {
+	return function(scope, element, attrs) {
+		element.bind("keydown keypress", function(event) {
+			if (event.which === 13) {
+				scope.$apply(function() {
+					scope.$eval(attrs.ngEnter);
+				});
+				event.preventDefault();
+			}
+		});
+	};
+});
+
+/**
+ * Load the Google visual after the directives to avoid some kind of recursive
+ * lookup.
+ */
 try {
 	google.load('visualization', '1', { packages : [ 'corechart' ] });
 } catch (err) {
@@ -276,17 +292,6 @@ module.controller('IndexContextsController', function($http, $scope) {
 			$scope.status = status;
 		});
 	}
-	$scope.sortIndexContexts = function(sortField) {
-		if ($scope.sortField == sortField) {
-			// Switch the order
-			$scope.descending = !$scope.descending;
-		} else {
-			// Order ascending and switch the field
-			$scope.descending = false;
-			$scope.sortField = sortField;
-		}
-		$scope.refreshIndexContexts();
-	};
 	// Immediately refresh the data
 	$scope.refreshIndexContexts();
 	// Refresh the index contexts every so often
@@ -394,6 +399,31 @@ module.controller('PropertiesController', function($http, $scope) {
 	};
 	
 	$scope.getProperties();
+	
+	$scope.onSubmit = function(url, form, file, contents, event) {
+		$scope.url = getServiceUrl(url);
+		alert('File : ' + file + ', contents : ' + contents);
+		var data = {
+			contents : contents,
+			file : file
+		};
+		$scope.config = {
+			data : $.param(data)
+		};
+		$scope.headers = {
+			headers: { 'Content-Type' : 'application/x-www-form-urlencoded' }
+		};
+		var promise = $http.post($scope.url, $scope.config, $scope.headers);
+		promise.success(function(data, status) {
+			$scope.entity = data;
+			$scope.status = status;
+			alert('Properties updated for file : ' + file);
+		});
+		promise.error(function(data, status) {
+			alert('Problem accessing the data : ' + status);
+			$scope.status = status;
+		});
+	};
 });
 
 // The controller that populates the indexes drop down
@@ -481,7 +511,7 @@ function TypeaheadController($scope, $http, $timeout) {
 	// Go to the web service for the results
 	$scope.data = null;
 	$scope.results = new Array();
-	$scope.doSearch = function(url, indexName, searchStrings) {
+	$scope.doSearch = function(url, indexName, searchStrings, field) {
 		/* '/ikube/service/search/json/multi/all' */
 		$scope.url = url;
 		// The form parameters we send to the server
@@ -519,7 +549,7 @@ function TypeaheadController($scope, $http, $timeout) {
 			}
 			// Iterate through the results from the Json data
 			for (var key in data) {
-				$scope.results.push(data[key]['fragment']);
+				$scope.results.push(data[key][field]);
 			}
 		}
 		// Wait for a while for the server to return some data, note 

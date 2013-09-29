@@ -57,8 +57,8 @@
 				<th>Action<button class="btn btn-mini btn-link" ng-click="sort('actionName')"><i class="icon-sort"></i></button></th>
 				<th>Index<button class="btn btn-mini btn-link" ng-click="sort('indexName')"><i class="icon-sort"></i></button></th>
 				<th>Indexable<button class="btn btn-mini btn-link" ng-click="sort('indexableName')"><i class="icon-sort"></i></button></th>
-				<th>Per minute<button class="btn btn-mini btn-link" ng-click="sort('docsPerMinute')"><i class="icon-sort"></i></button></th>
-				<th>Total docs<button class="btn btn-mini btn-link" ng-click="sort('numDocsForIndexWriters')"><i class="icon-sort"></i></button></th>
+				<th>Per minute<button class="btn btn-mini btn-link" ng-click="sort('snapshot.docsPerMinute')"><i class="icon-sort"></i></button></th>
+				<th>Total docs<button class="btn btn-mini btn-link" ng-click="sort('snapshot.numDocsForIndexWriters')"><i class="icon-sort"></i></button></th>
 				<th>Start time</th>
 			</tr>
 			<tr ng-repeat="action in actions">
