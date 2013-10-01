@@ -6,9 +6,11 @@ import ikube.cluster.IMonitorService;
 import ikube.database.IDataBase;
 import ikube.model.IndexContext;
 import ikube.model.Search;
+import ikube.toolkit.HashUtilities;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -331,6 +333,34 @@ public class SearcherService implements ISearcherService {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Search searchComplexSorted(final Search search) {
+		try {
+			SearchComplexSorted searchComplexSorted = getSearch(SearchComplexSorted.class, search.getIndexName());
+			if (searchComplexSorted == null) {
+				LOGGER.warn("Searcher null for index : " + search.getIndexName());
+				return search;
+			}
+			searchComplexSorted.setFirstResult(search.getFirstResult());
+			searchComplexSorted.setFragment(search.isFragment());
+			searchComplexSorted.setMaxResults(search.getMaxResults());
+			searchComplexSorted.setSearchField(search.getSearchFields());
+			searchComplexSorted.setSearchString(search.getSearchStrings());
+			searchComplexSorted.setTypeFields(search.getTypeFields());
+			searchComplexSorted.setSortField(search.getSortFields());
+			ArrayList<HashMap<String, String>> results = searchComplexSorted.execute();
+			String[] searchStringsCorrected = searchComplexSorted.getCorrections();
+			persistSearch(search.getIndexName(), search.getSearchStrings(), searchStringsCorrected, results);
+			return search;
+		} catch (final Exception e) {
+			handleException(search.getIndexName(), e);
+			return search;
+		}
+	}
+
 	private ArrayList<HashMap<String, String>> handleException(final String indexName, final Exception e) {
 		LOGGER.error("Exception doing search on : " + indexName, e);
 		return EMPTY_RESULTS;
@@ -377,26 +407,22 @@ public class SearcherService implements ISearcherService {
 		Map<String, String> statistics = results.get(results.size() - 1);
 		// Add the index name to the statistics here, not elegant, I know
 		statistics.put(IConstants.INDEX_NAME, indexName);
-		for (int i = 0; i < searchStrings.length; i++) {
-			String searchString = searchStrings[i];
-			String correctSearchString = null;
-			if (searchStringsCorrected != null && searchStringsCorrected.length > i) {
-				correctSearchString = searchStringsCorrected[i];
-			}
-			Search dbSearch = dataBase.findCriteria(Search.class, new String[] { "indexName", "searchStrings" }, new Object[] { indexName, searchString });
-			if (dbSearch == null) {
-				Search search = new Search();
-				search.setSearchStrings(searchString);
-				search.setIndexName(indexName);
-				search.setTotalResults(Integer.parseInt(statistics.get(IConstants.TOTAL)));
-				search.setHighScore(Double.parseDouble(statistics.get(IConstants.SCORE)));
-				search.setCorrections(searchString.equals(correctSearchString));
-				search.setCorrectedSearchStrings(correctSearchString);
-				search.setSearchResults(results);
-				dataBase.persist(search);
-			} else {
-				dataBase.merge(dbSearch);
-			}
+
+		long hash = HashUtilities.hash(Arrays.deepToString(searchStrings));
+		Search dbSearch = dataBase.findCriteria(Search.class, new String[] { "hash" }, new Object[] { hash });
+		if (dbSearch != null) {
+			dataBase.merge(dbSearch);
+		} else {
+			Search search = new Search();
+			search.setHash(hash);
+			search.setSearchStrings(searchStrings);
+			search.setIndexName(indexName);
+			search.setTotalResults(Integer.parseInt(statistics.get(IConstants.TOTAL)));
+			search.setHighScore(Double.parseDouble(statistics.get(IConstants.SCORE)));
+			search.setCorrections(Arrays.deepToString(searchStrings).equals(Arrays.deepToString(searchStringsCorrected)));
+			search.setCorrectedSearchStrings(searchStringsCorrected);
+			search.setSearchResults(results);
+			dataBase.persist(search);
 		}
 	}
 

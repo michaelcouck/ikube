@@ -7,7 +7,6 @@ import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.model.Snapshot;
 import ikube.scheduling.schedule.Event;
-import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ObjectToolkit;
 import ikube.toolkit.SerializationUtilities;
 
@@ -23,6 +22,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -282,9 +282,8 @@ public class Monitor extends Resource {
 	@SuppressWarnings("unchecked")
 	@Path(Monitor.SET_PROPERTIES)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response setProperties(@Context javax.servlet.http.HttpServletRequest request, @Context UriInfo uriInfo) throws IOException {
-		String json = FileUtilities.getContents(request.getInputStream(), Integer.MAX_VALUE).toString();
-		Map<String, String> filesAndProperties = this.gson.fromJson(json, Map.class);
+	public Response setProperties(@Context final HttpServletRequest request, @Context final UriInfo uriInfo) throws IOException {
+		Map<String, String> filesAndProperties = unmarshall(Map.class, request);
 		monitorService.setProperties(filesAndProperties);
 		return buildResponse().build();
 	}

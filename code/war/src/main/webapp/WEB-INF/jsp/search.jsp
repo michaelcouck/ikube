@@ -10,69 +10,34 @@
 	module.controller('SearcherController', function($http, $scope) {
 		
 		// The model data that we bind to in the form
-		$scope.allWords = 'find me';
-		$scope.exactPhrase = '';
-		$scope.oneOrMore = '';
-		$scope.noneOfTheseWords = '';
-		$scope.pageBlock = 10; // Only results per page
-		$scope.endResult = 0;
+		$scope.search = null;
 
+		$scope.pageBlock = 10;
 		$scope.statistics = {};
 		$scope.pagination = []
 
-		// This function concatenates the search strings for all the predicate
-		// data into a semi colon separated string that can be used in the advanced
-		// search
-		$scope.doSearchStrings = function() {
-			var searchStrings = [];
-			searchStrings.push($scope.allWords);
-			searchStrings.push(';');
-			searchStrings.push($scope.exactPhrase);
-			searchStrings.push(';');
-			searchStrings.push($scope.oneOrMore);
-			searchStrings.push(';');
-			searchStrings.push($scope.noneOfTheseWords);
-			return searchStrings.join('');
-		};
-		$scope.searchFields = 'contents;contents;contents;contents';
-		
-		// The form parameters we send to the server
-		$scope.searchParameters = { 
-			indexName : 'desktop', // The default is the desktop index
-			searchStrings : $scope.doSearchStrings(),
-			searchFields : $scope.searchFields,
-			fragment : true,
-			firstResult : 0,
-			maxResults : $scope.pageBlock
-		};
-		
-		// The configuration for the request to the server for the results
-		$scope.config = { params : $scope.searchParameters };
-		
 		// Go to the web service for the results
 		$scope.doSearch = function() {
 			// Advanced search
-			$scope.url = getServiceUrl('/ikube/service/search/json/multi/advanced');
-			$scope.searchParameters['searchStrings'] = $scope.doSearchStrings();
-			delete $scope.searchParameters['distance'];
-			delete $scope.searchParameters['latitude'];
-			delete $scope.searchParameters['longitude'];
-			var promise = $http.get($scope.url, $scope.config);
+			$scope.url = getServiceUrl('/ikube/service/search/json/complex/sorted/json');
+			var promise = $http.get($scope.url, $scope.search);
 			promise.success(function(data, status) {
 				// Pop the statistics Json off the array
-				$scope.data = data;
+				$scope.search = data;
 				$scope.status = status;
-				$scope.statistics = $scope.data.pop();
-				$scope.doPagination($scope.data);
+				$scope.statistics = $scope.search.searchResults.pop();
+				$scope.doPagination($scope.search.searchResults);
 			});
 			promise.error(function(data, status) {
 				$scope.status = status;
 			});
 		};
+		// We execute this once to get the search object from the server
+		$scope.doSearch();
 		
 		// Sets the first result based on the pagination page requested
 		$scope.doFirstResult = function(firstResult) {
-			$scope.searchParameters.firstResult = firstResult;
+			$scope.search.firstResult = firstResult;
 		}
 		
 		// Creates the Json pagination array for the next pages in the search
@@ -81,7 +46,7 @@
 			var total = $scope.statistics.total;
 			// Exception or no results
 			if (total == null || total == 0) {
-				$scope.searchParameters.firstResult = 0;
+				$scope.search.firstResult = 0;
 				$scope.endResult = 0;
 				return;
 			}
@@ -90,18 +55,18 @@
 			// Create one 'page' for each block of results
 			for (var i = 0; i < pages && i < $scope.pageBlock; i++) {
 				var firstResult = i * $scope.pageBlock;
-				var active = firstResult == $scope.searchParameters.firstResult ? 'black' : 'blue';
+				var active = firstResult == $scope.search.firstResult ? 'black' : 'blue';
 				$scope.pagination[i] = { page : i, firstResult : firstResult, active : active };
 			};
 			// Find the 'to' result being displayed
 			var modulo = total % $scope.pageBlock;
-			$scope.endResult = $scope.searchParameters.firstResult + modulo == total ? total : $scope.searchParameters.firstResult + $scope.pageBlock;
+			$scope.endResult = $scope.search.firstResult + modulo == total ? total : $scope.search.firstResult + $scope.pageBlock;
 		}
 	});
 	
 </script>
 
-<table ng-app="ikube" ng-controller="SearcherController" class="table" style="margin-top: 55px;">
+<table ng-controller="SearcherController" class="table" style="margin-top: 55px;">
 	<form ng-submit="doSearch()">
 	<tr class="odd" nowrap="nowrap" valign="bottom">
 		<td><b>Collection:</b></td>
@@ -113,19 +78,7 @@
 	</tr>
 	<tr class="even" nowrap="nowrap" valign="bottom">
 		<td><b>All of these words:</b></td>
-		<td><input id="allWords" name="allWords" ng-model="allWords"></td>
-	</tr>
-	<tr class="odd" nowrap="nowrap" valign="bottom">
-		<td><b>This exact word or phrase:</b></td>
-		<td><input id="exactPhrase" name="exactPhrase" ng-model="exactPhrase"></td>
-	</tr>
-	<tr class="even" nowrap="nowrap" valign="bottom">
-		<td><b>One or more of these words:</b></td>
-		<td><input id="oneOrMore" name="oneOrMore" ng-model="oneOrMore"></td>
-	</tr>
-	<tr class="odd" nowrap="nowrap" valign="bottom">
-		<td><b>None of these words:</b></td>
-		<td><input id="noneOfTheseWords" name="noneOfTheseWords" ng-model="noneOfTheseWords"></td>
+		<td><input id="bla" name="bla" ng-model="must push the new one to the search object"></td>
 	</tr>
 	
 	<tr class="even" nowrap="nowrap" valign="bottom">
@@ -139,10 +92,10 @@
 	
 	<tr nowrap="nowrap" valign="bottom">
 		<td colspan="2">
-			Showing results '{{searchParameters.firstResult}} 
+			Showing results '{{search.firstResult}} 
 			to {{endResult}} 
 			of {{statistics.total}}' 
-			for search '{{searchParameters.searchStrings}}', 
+			for search '{{search.searchStrings}}', 
 			corrections : {{statistics.corrections}}, 
 			duration : {{statistics.duration}}</td>
 	</tr>
@@ -164,10 +117,6 @@
 			<span ng-hide="!datum.id"><b>Identifier</b> : {{datum.id}}<br></span> 
 			<b>Score</b> : {{datum.score}}<br>
 			<b>Fragment</b> : <span ng-bind-html-unsafe="datum.fragment"></span><br>
-			<span ng-hide="!datum.latitude"><b>Latitude</b> : {{datum.latitude}}<br></span>
-			<span ng-hide="!datum.longitude"><b>Longitude</b> : {{datum.longitude}}<br></span>
-			<span ng-hide="!datum.distance"><b>Distance</b> : {{datum.distance}}<br></span>
-			<span ng-hide="!datum.path"><b>Path</b> : {{datum.path}}<br></span>
 			<br>
 		</td>
 	</tr>
@@ -177,8 +126,7 @@
 	<tr>
 		<td colspan="2" nowrap="nowrap">
 			<span ng-repeat="page in pagination">
-				<a style="font-color : {{page.active}}" href="#" 
-					ng-click="doFirstResult(page.firstResult);doSearch();">{{page.page}}</a>
+				<a style="font-color : {{page.active}}" href="#" ng-click="doFirstResult(page.firstResult);doSearch();">{{page.page}}</a>
 			</span>
 		</td>
 	</tr>

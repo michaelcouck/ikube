@@ -2,6 +2,7 @@ package ikube.search;
 
 import ikube.AbstractTest;
 import ikube.IConstants;
+import ikube.toolkit.ObjectToolkit;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -121,6 +122,13 @@ public class SearcherServiceTest extends AbstractTest {
 	@Test
 	public void searchComplexSorted() {
 		searcherService.searchComplexSorted(indexName, searchStrings, searchFields, typeFields, sortFields, fragment, firstResult, maxResults);
+		verify();
+	}
+
+	@Test
+	public void searchComplexSortedJson() {
+		ikube.model.Search search = ObjectToolkit.populateFields(new ikube.model.Search(), Boolean.TRUE, 10);
+		searcherService.searchComplexSorted(search);
 		verify();
 	}
 

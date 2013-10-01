@@ -1,5 +1,7 @@
 package ikube.search;
 
+import ikube.model.Search;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -164,5 +166,10 @@ public interface ISearcherService {
 	 */
 	ArrayList<HashMap<String, String>> searchComplexSorted(final String indexName, final String[] searchStrings, final String[] searchFields,
 			final String[] typeFields, final String[] sortFields, final boolean fragment, final int firstResult, final int maxResults);
+
+	/**
+	 * TODO Document me...
+	 */
+	Search searchComplexSorted(final Search search);
 
 }
