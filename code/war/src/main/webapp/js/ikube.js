@@ -400,20 +400,10 @@ module.controller('PropertiesController', function($http, $scope) {
 	
 	$scope.getProperties();
 	
-	$scope.onSubmit = function(url, form, file, contents, event) {
-		$scope.url = getServiceUrl(url);
-		alert('File : ' + file + ', contents : ' + contents);
-		var data = {
-			contents : contents,
-			file : file
-		};
-		$scope.config = {
-			data : $.param(data)
-		};
-		$scope.headers = {
-			headers: { 'Content-Type' : 'application/x-www-form-urlencoded' }
-		};
-		var promise = $http.post($scope.url, $scope.config, $scope.headers);
+	$scope.onSubmit = function() {
+		$scope.url = getServiceUrl('/ikube/service/monitor/set-properties');
+		$scope.headers = { headers: { 'Content-Type' : 'application/json' } };
+		var promise = $http.post($scope.url, $scope.propertyFiles, $scope.headers);
 		promise.success(function(data, status) {
 			$scope.entity = data;
 			$scope.status = status;

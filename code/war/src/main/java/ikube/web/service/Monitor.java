@@ -7,9 +7,11 @@ import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.model.Snapshot;
 import ikube.scheduling.schedule.Event;
+import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ObjectToolkit;
 import ikube.toolkit.SerializationUtilities;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -18,19 +20,19 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
@@ -271,19 +273,19 @@ public class Monitor extends Resource {
 	@GET
 	@Path(Monitor.GET_PROPERTIES)
 	@Consumes(MediaType.APPLICATION_XML)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response getProperties() {
 		return buildResponse(monitorService.getProperties());
 	}
 
 	@POST
+	@SuppressWarnings("unchecked")
 	@Path(Monitor.SET_PROPERTIES)
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public Response setProperties(@FormParam(value = IConstants.FILE) final String file, @FormParam(value = IConstants.CONTENTS) final String contents) {
-		if (!StringUtils.isEmpty(file) && !StringUtils.isEmpty(contents)) {
-			Map<String, String> filesAndProperties = new HashMap<String, String>();
-			filesAndProperties.put(file, contents);
-			monitorService.setProperties(filesAndProperties);
-		}
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response setProperties(@Context javax.servlet.http.HttpServletRequest request, @Context UriInfo uriInfo) throws IOException {
+		String json = FileUtilities.getContents(request.getInputStream(), Integer.MAX_VALUE).toString();
+		Map<String, String> filesAndProperties = this.gson.fromJson(json, Map.class);
+		monitorService.setProperties(filesAndProperties);
 		return buildResponse().build();
 	}
 
