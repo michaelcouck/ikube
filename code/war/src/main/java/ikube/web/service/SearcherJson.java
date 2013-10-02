@@ -253,7 +253,7 @@ public class SearcherJson extends Searcher {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response searchComplexSorted(@Context final HttpServletRequest request, @Context final UriInfo uriInfo) {
 		Search search = unmarshall(Search.class, request);
-		if (search.getSearchStrings() != null && search.getSearchStrings().length > 0) {
+		if (search.getSearchStrings() != null && search.getSearchStrings().size() > 0) {
 			searcherService.searchComplexSorted(search);
 		}
 		return buildResponse(search);

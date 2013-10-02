@@ -347,13 +347,14 @@ public class SearcherService implements ISearcherService {
 			searchComplexSorted.setFirstResult(search.getFirstResult());
 			searchComplexSorted.setFragment(search.isFragment());
 			searchComplexSorted.setMaxResults(search.getMaxResults());
-			searchComplexSorted.setSearchField(search.getSearchFields());
-			searchComplexSorted.setSearchString(search.getSearchStrings());
-			searchComplexSorted.setTypeFields(search.getTypeFields());
-			searchComplexSorted.setSortField(search.getSortFields());
+			searchComplexSorted.setSearchField(search.getSearchFields().toArray(new String[search.getSearchFields().size()]));
+			searchComplexSorted.setSearchString(search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]));
+			searchComplexSorted.setTypeFields(search.getTypeFields().toArray(new String[search.getTypeFields().size()]));
+			searchComplexSorted.setSortField(search.getSortFields().toArray(new String[search.getSortFields().size()]));
 			ArrayList<HashMap<String, String>> results = searchComplexSorted.execute();
 			String[] searchStringsCorrected = searchComplexSorted.getCorrections();
-			persistSearch(search.getIndexName(), search.getSearchStrings(), searchStringsCorrected, results);
+			persistSearch(search.getIndexName(), search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]), searchStringsCorrected,
+					results);
 			return search;
 		} catch (final Exception e) {
 			handleException(search.getIndexName(), e);
@@ -415,12 +416,12 @@ public class SearcherService implements ISearcherService {
 		} else {
 			Search search = new Search();
 			search.setHash(hash);
-			search.setSearchStrings(searchStrings);
+			search.setSearchStrings(Arrays.asList(searchStrings));
 			search.setIndexName(indexName);
 			search.setTotalResults(Integer.parseInt(statistics.get(IConstants.TOTAL)));
 			search.setHighScore(Double.parseDouble(statistics.get(IConstants.SCORE)));
 			search.setCorrections(Arrays.deepToString(searchStrings).equals(Arrays.deepToString(searchStringsCorrected)));
-			search.setCorrectedSearchStrings(searchStringsCorrected);
+			search.setCorrectedSearchStrings(Arrays.asList(searchStringsCorrected));
 			search.setSearchResults(results);
 			dataBase.persist(search);
 		}

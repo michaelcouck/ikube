@@ -2,6 +2,7 @@ package ikube.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -59,22 +60,17 @@ public class Search extends Persistable {
 	@Column
 	private long hash;
 
-	@Column
 	@ElementCollection
-	private String[] searchStrings;
-	@Column
+	private List<String> searchStrings;
 	@ElementCollection
-	private String[] searchFields;
-	@Column
+	private List<String> searchFields;
 	@ElementCollection
-	private String[] sortFields;
-	@Column
+	private List<String> sortFields;
 	@ElementCollection
-	private String[] typeFields;
+	private List<String> typeFields;
 
-	@Column
 	@ElementCollection
-	private String[] correctedSearchStrings;
+	private List<String> correctedSearchStrings;
 
 	@Transient
 	private ArrayList<HashMap<String, String>> searchResults;
@@ -151,43 +147,43 @@ public class Search extends Persistable {
 		this.hash = hash;
 	}
 
-	public String[] getSearchStrings() {
+	public List<String> getSearchStrings() {
 		return searchStrings;
 	}
 
-	public void setSearchStrings(String[] searchStrings) {
+	public void setSearchStrings(List<String> searchStrings) {
 		this.searchStrings = searchStrings;
 	}
 
-	public String[] getSearchFields() {
+	public List<String> getSearchFields() {
 		return searchFields;
 	}
 
-	public void setSearchFields(String[] searchFields) {
+	public void setSearchFields(List<String> searchFields) {
 		this.searchFields = searchFields;
 	}
 
-	public String[] getSortFields() {
+	public List<String> getSortFields() {
 		return sortFields;
 	}
 
-	public void setSortFields(String[] sortFields) {
+	public void setSortFields(List<String> sortFields) {
 		this.sortFields = sortFields;
 	}
 
-	public String[] getTypeFields() {
+	public List<String> getTypeFields() {
 		return typeFields;
 	}
 
-	public void setTypeFields(String[] typeFields) {
+	public void setTypeFields(List<String> typeFields) {
 		this.typeFields = typeFields;
 	}
 
-	public String[] getCorrectedSearchStrings() {
+	public List<String> getCorrectedSearchStrings() {
 		return correctedSearchStrings;
 	}
 
-	public void setCorrectedSearchStrings(String[] correctedSearchStrings) {
+	public void setCorrectedSearchStrings(List<String> correctedSearchStrings) {
 		this.correctedSearchStrings = correctedSearchStrings;
 	}
 
