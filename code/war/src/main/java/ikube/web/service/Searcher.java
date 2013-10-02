@@ -1,6 +1,9 @@
 package ikube.web.service;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 /**
  * This is the base class for all searcher web services, common logic and properties. Also all the methods that are exposed to clients for xml and Json
@@ -128,4 +131,9 @@ public abstract class Searcher extends Resource {
 	 */
 	abstract Response searchComplexSorted(final String indexName, final String searchStrings, final String searchFields, final String typeFields,
 			final String sortFields, final boolean fragment, final int firstResult, final int maxResults);
+	
+	/**
+	 * TODO Comment me.
+	 */
+	abstract Response searchComplexSorted(@Context final HttpServletRequest request, @Context final UriInfo uriInfo);
 }

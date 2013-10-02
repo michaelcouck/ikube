@@ -83,16 +83,24 @@ public abstract class Resource {
 		String json = null;
 		try {
 			json = FileUtilities.getContents(request.getInputStream(), Integer.MAX_VALUE).toString();
-			return gson.fromJson(json, clazz);
-		} catch (IOException e) {
-			try {
-				// If we don't have the class in the input stream then create one for the caller
-				return clazz.newInstance();
-			} catch (InstantiationException e1) {
-				throw new RuntimeException("Couldn't unmarshall : " + json + ", to : " + clazz, e);
-			} catch (IllegalAccessException e1) {
-				throw new RuntimeException("Couldn't unmarshall : " + json + ", to : " + clazz, e);
+			T t = gson.fromJson(json, clazz);
+			if (t == null) {
+				t = newInstance(clazz, json);
 			}
+			return t;
+		} catch (IOException e) {
+			return newInstance(clazz, json);
+		}
+	}
+	
+	private <T> T newInstance(final Class<T> clazz, final String json) {
+		try {
+			// If we don't have the class in the input stream then create one for the caller
+			return clazz.newInstance();
+		} catch (InstantiationException e) {
+			throw new RuntimeException("Couldn't unmarshall : " + json + ", to : " + clazz, e);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException("Couldn't unmarshall : " + json + ", to : " + clazz, e);
 		}
 	}
 
