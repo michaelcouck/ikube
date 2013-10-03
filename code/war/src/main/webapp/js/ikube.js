@@ -495,6 +495,83 @@ module.controller('CreateController', function($http, $scope) {
 	
 });
 
+//The controller that does the search
+module.controller('SearcherController', function($http, $scope) {
+	
+	// The model data that we bind to in the form
+	$scope.search = null;
+
+	$scope.pageBlock = 10;
+	$scope.statistics = {};
+	$scope.pagination = [];
+	$scope.fields = [];
+	$scope.indexName = null;
+
+	// Go to the web service for the results
+	$scope.doSearch = function() {
+		// Advanced search
+		$scope.url = getServiceUrl('/ikube/service/search/json/complex/sorted/json');
+		var promise = $http.get($scope.url, $scope.search);
+		promise.success(function(data, status) {
+			// Pop the statistics Json off the array
+			$scope.search = data;
+			$scope.status = status;
+			$scope.statistics = $scope.search.searchResults.pop();
+			$scope.doPagination($scope.search.searchResults);
+		});
+		promise.error(function(data, status) {
+			$scope.status = status;
+		});
+	};
+	// We execute this once to get the search object from the server
+	$scope.doSearch();
+	
+	// Sets the first result based on the pagination page requested
+	$scope.doFirstResult = function(firstResult) {
+		$scope.search.firstResult = firstResult;
+	}
+	
+	$scope.doFields = function() {
+		$scope.url = getServiceUrl('/ikube/service/monitor/fields');
+		$scope.parameters = {
+			indexName : $scope.indexName
+		};
+		$scope.config = { params : $scope.parameters };
+		var promise = $http.get($scope.url, $scope.config);
+		promise.success(function(data, status) {
+			// Pop the statistics Json off the array
+			$scope.fields = data;
+			$scope.status = status;
+		});
+		promise.error(function(data, status) {
+			$scope.status = status;
+		});
+	};
+	
+	// Creates the Json pagination array for the next pages in the search
+	$scope.doPagination = function(data) {
+		$scope.pagination = [];
+		var total = $scope.statistics.total;
+		// Exception or no results
+		if (total == null || total == 0) {
+			$scope.search.firstResult = 0;
+			$scope.endResult = 0;
+			return;
+		}
+		// We just started a search and got the first results
+		var pages = total / $scope.pageBlock;
+		// Create one 'page' for each block of results
+		for (var i = 0; i < pages && i < $scope.pageBlock; i++) {
+			var firstResult = i * $scope.pageBlock;
+			var active = firstResult == $scope.search.firstResult ? 'black' : 'blue';
+			$scope.pagination[i] = { page : i, firstResult : firstResult, active : active };
+		};
+		// Find the 'to' result being displayed
+		var modulo = total % $scope.pageBlock;
+		$scope.endResult = $scope.search.firstResult + modulo == total ? total : $scope.search.firstResult + $scope.pageBlock;
+	}
+});
+
 //module.controller('TypeaheadController', function($scope, $http, $timeout) {
 function TypeaheadController($scope, $http, $timeout) {
 	$scope.selected = undefined;

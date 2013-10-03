@@ -4,81 +4,19 @@
 
 <% response.setHeader("Access-Control-Allow-Origin", "*"); %>
 
-<script type="text/javascript">
-
-	// The controller that does the search
-	module.controller('SearcherController', function($http, $scope) {
-		
-		// The model data that we bind to in the form
-		$scope.search = null;
-
-		$scope.pageBlock = 10;
-		$scope.statistics = {};
-		$scope.pagination = []
-
-		// Go to the web service for the results
-		$scope.doSearch = function() {
-			// Advanced search
-			$scope.url = getServiceUrl('/ikube/service/search/json/complex/sorted/json');
-			var promise = $http.get($scope.url, $scope.search);
-			promise.success(function(data, status) {
-				// Pop the statistics Json off the array
-				$scope.search = data;
-				$scope.status = status;
-				$scope.statistics = $scope.search.searchResults.pop();
-				$scope.doPagination($scope.search.searchResults);
-			});
-			promise.error(function(data, status) {
-				$scope.status = status;
-			});
-		};
-		// We execute this once to get the search object from the server
-		$scope.doSearch();
-		
-		// Sets the first result based on the pagination page requested
-		$scope.doFirstResult = function(firstResult) {
-			$scope.search.firstResult = firstResult;
-		}
-		
-		// Creates the Json pagination array for the next pages in the search
-		$scope.doPagination = function(data) {
-			$scope.pagination = [];
-			var total = $scope.statistics.total;
-			// Exception or no results
-			if (total == null || total == 0) {
-				$scope.search.firstResult = 0;
-				$scope.endResult = 0;
-				return;
-			}
-			// We just started a search and got the first results
-			var pages = total / $scope.pageBlock;
-			// Create one 'page' for each block of results
-			for (var i = 0; i < pages && i < $scope.pageBlock; i++) {
-				var firstResult = i * $scope.pageBlock;
-				var active = firstResult == $scope.search.firstResult ? 'black' : 'blue';
-				$scope.pagination[i] = { page : i, firstResult : firstResult, active : active };
-			};
-			// Find the 'to' result being displayed
-			var modulo = total % $scope.pageBlock;
-			$scope.endResult = $scope.search.firstResult + modulo == total ? total : $scope.search.firstResult + $scope.pageBlock;
-		}
-	});
-	
-</script>
-
 <table ng-controller="SearcherController" class="table" style="margin-top: 55px;">
 	<form ng-submit="doSearch()">
 	<tr class="odd" nowrap="nowrap" valign="bottom">
 		<td><b>Collection:</b></td>
 		<td>
-			<select ng-controller="IndexesController" ng-model="searchParameters.indexName">
+			<select ng-controller="IndexesController" ng-model="indexName" ng-change="doFields()">
 				<option ng-repeat="index in indexes" value="{{index}}">{{index}}</option>
 			</select>
 		</td>
 	</tr>
 	<tr class="even" nowrap="nowrap" valign="bottom">
 		<td><b>All of these words:</b></td>
-		<td><input id="bla" name="bla" ng-model="must push the new one to the search object"></td>
+		<td><input id="bla" name="bla"></td>
 	</tr>
 	
 	<tr class="even" nowrap="nowrap" valign="bottom">
@@ -90,15 +28,17 @@
 	
 	<tr><td colspan="2">&nbsp;</td></tr>
 	
-	<tr nowrap="nowrap" valign="bottom">
-		<td colspan="2">
-			Showing results '{{search.firstResult}} 
-			to {{endResult}} 
-			of {{statistics.total}}' 
-			for search '{{search.searchStrings}}', 
-			corrections : {{statistics.corrections}}, 
-			duration : {{statistics.duration}}</td>
-	</tr>
+	<span ng-show="search.searchStrings != null && search.searchStrings != ''" >
+		<tr nowrap="nowrap" valign="bottom">
+			<td colspan="2">
+				Showing results '{{search.firstResult}} 
+				to {{endResult}} 
+				of {{statistics.total}}' 
+				for search '{{search.searchStrings}}', 
+				corrections : {{statistics.corrections}}, 
+				duration : {{statistics.duration}}</td>
+		</tr>
+	</span>
 	
 	<tr nowrap="nowrap" valign="bottom">
 		<td colspan="2" nowrap="nowrap">
