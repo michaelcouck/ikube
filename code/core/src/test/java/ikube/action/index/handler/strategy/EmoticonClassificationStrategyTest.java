@@ -42,7 +42,7 @@ public class EmoticonClassificationStrategyTest extends AbstractTest {
 				emoticonClassificationStrategy.aroundProcess(indexContext, indexable, new Document(), resource);
 			}
 		}, "Emoticon strategy : ", 1000, Boolean.TRUE);
-		assertTrue(executionsPerSecond > 1000);
+		assertTrue(executionsPerSecond > 100);
 	}
 
 }
