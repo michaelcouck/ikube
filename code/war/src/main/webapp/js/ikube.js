@@ -498,8 +498,10 @@ module.controller('CreateController', function($http, $scope) {
 //The controller that does the search
 module.controller('SearcherController', function($http, $scope) {
 	
+	$scope.headers = { headers: { 'Content-Type' : 'application/json' } };
+	
 	// The model data that we bind to in the form
-	$scope.search = null;
+	$scope.search = {};
 
 	$scope.pageBlock = 10;
 	$scope.statistics = {};
@@ -511,15 +513,19 @@ module.controller('SearcherController', function($http, $scope) {
 	$scope.doSearch = function() {
 		// Advanced search
 		$scope.url = getServiceUrl('/ikube/service/search/json/complex/sorted/json');
-		var promise = $http.get($scope.url, $scope.search);
+		var promise = $http.post($scope.url, $scope.search);
 		promise.success(function(data, status) {
 			// Pop the statistics Json off the array
 			$scope.search = data;
 			$scope.status = status;
-			$scope.statistics = $scope.search.searchResults.pop();
-			$scope.doPagination($scope.search.searchResults);
+			alert('Index name : ' + $scope.search.indexName);
+			if ($scope.search.searchResults != undefined && $scope.search.searchResults.size) {
+				$scope.statistics = $scope.search.searchResults.pop();
+				$scope.doPagination($scope.search.searchResults);
+			}
 		});
 		promise.error(function(data, status) {
+			alert('Data : ' + data + ', status : ' + status);
 			$scope.status = status;
 		});
 	};
