@@ -9,8 +9,10 @@
 
 			<li class="nav-header">Functions</li>
 
-			<li><a href="<c:url value="/dash.html" />">Dash</a></li>
-			<li><a href="#" ng-click="show = !show">Graphs</a></li>
+			<li>
+				<a href="<c:url value="/dash.html" />">Dash</a>
+			</li>
+			<li><a href="#" ng-click="show = !show">(graphs)</a></li>
 			<li><a href="<c:url value="/analytics.html" />">Analytics</a></li>
 			<li><a href="<c:url value="/search.html" />">Search</a></li>
 

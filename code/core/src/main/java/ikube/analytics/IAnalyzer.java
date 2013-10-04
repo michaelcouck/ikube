@@ -18,7 +18,7 @@ import weka.core.converters.ArffSaver;
  * @param <TI> the training input type
  * @param <TR> the output training type
  */
-public interface IClassifier<Input, Output, TrainingInput, TrainingOutput> {
+public interface IAnalyzer<I, O, TrainI, TrainO> {
 
 	/**
 	 * TODO Document me...
@@ -36,7 +36,7 @@ public interface IClassifier<Input, Output, TrainingInput, TrainingOutput> {
 	 * @param input
 	 * @return
 	 */
-	Output classify(final Input input) throws Exception;
+	O analyze(final I input) throws Exception;
 
 	/**
 	 * TODO Document me...
@@ -45,7 +45,7 @@ public interface IClassifier<Input, Output, TrainingInput, TrainingOutput> {
 	 * @param trainingInput
 	 * @return
 	 */
-	TrainingOutput train(final String clazz, final TrainingInput trainingInput) throws Exception;
+	TrainO train(final String clazz, final TrainI trainingInput) throws Exception;
 
 	/**
 	 * TODO Document me...

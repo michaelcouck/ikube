@@ -5,7 +5,7 @@ import static ikube.IConstants.CLASSIFICATION_CONFLICT;
 import static ikube.action.index.IndexManager.addStringField;
 import ikube.IConstants;
 import ikube.action.index.handler.IStrategy;
-import ikube.analytics.IClassifier;
+import ikube.analytics.IAnalyzer;
 import ikube.analytics.WekaClassifier;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
@@ -19,7 +19,9 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 
 /**
- * TODO This strategy ...
+ * This strategy will train a classifier, typically for sentiment, i.e. positive and negative. It will expect some data that already has been classified, like
+ * from the emoticon strategy, and use this data to train the classifier. It will also classify the data and add it's own classification result, based on the
+ * classifier that it has trained.
  * 
  * @author Michael Couck
  * @since 07.07.13
@@ -32,7 +34,7 @@ public class DynamicallyTrainedLanguageSpecificClassificationStrategy extends AS
 	private int negative;
 	private String language = "en";
 
-	private IClassifier<String, String, String, Boolean> classifier;
+	private IAnalyzer<String, String, String, Boolean> classifier;
 
 	public DynamicallyTrainedLanguageSpecificClassificationStrategy() {
 		this(null);
@@ -49,9 +51,7 @@ public class DynamicallyTrainedLanguageSpecificClassificationStrategy extends AS
 	 */
 	@Override
 	public void initialize() {
-		classifier = new WekaClassifier();
 		try {
-			classifier.initialize();
 			classifier.train(IConstants.POSITIVE, IConstants.POSITIVE);
 			classifier.train(IConstants.NEGATIVE, IConstants.NEGATIVE);
 			((WekaClassifier) classifier).build();
@@ -78,7 +78,7 @@ public class DynamicallyTrainedLanguageSpecificClassificationStrategy extends AS
 				String previousClassification = document.get(CLASSIFICATION);
 				String currentClassification = null;
 				if (!StringUtils.isEmpty(StringUtils.stripToEmpty(content))) {
-					currentClassification = classifier.classify(content);
+					currentClassification = classifier.analyze(content);
 					if (StringUtils.isEmpty(previousClassification)) {
 						if (!StringUtils.isEmpty(currentClassification)) {
 							// Not analyzed so add the sentiment that we get
@@ -128,6 +128,10 @@ public class DynamicallyTrainedLanguageSpecificClassificationStrategy extends AS
 
 	public void setMaxTraining(final int maxTraining) {
 		this.maxTraining = maxTraining;
+	}
+
+	public void setClassifier(final IAnalyzer<String, String, String, Boolean> classifier) {
+		this.classifier = classifier;
 	}
 
 }

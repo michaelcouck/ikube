@@ -378,12 +378,18 @@
     	class="ikube.action.index.handler.strategy.EmoticonClassificationStrategy" 
     	init-method="initialize" />
     	
+    <bean 
+    	id="ikube.analytics.WekaClassifier"
+    	name="ikube.analytics.WekaClassifier"
+    	class="ikube.analytics.WekaClassifier"
+    	init-method="initialize" />
+    	
     <bean
 		id="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
 		name="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy" 
     	class="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
     	init-method="initialize"
-    	depends-on="ikube.toolkit.ThreadUtilities" />
+    	property:classifier-ref="ikube.analytics.WekaClassifier" />
     
     <!-- 
 		This bean is the geocoder, it will enrich the data with spatial co-ordinates if

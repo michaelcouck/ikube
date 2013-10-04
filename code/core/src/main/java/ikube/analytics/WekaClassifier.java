@@ -17,13 +17,14 @@ import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
 /**
- * This class is a classifier for sentiment essentially, i.e. positive/negative.
+ * This class is a classifier for sentiment essentially, i.e. positive/negative. This classifier is based on the {@link SMO} classification algorithm from mWeka,
+ * which is a support vector classifier.
  * 
  * @author Michael Couck
  * @since 14.08.13
  * @version 01.00
  */
-public class WekaClassifier implements IClassifier<String, String, String, Boolean> {
+public class WekaClassifier implements IAnalyzer<String, String, String, Boolean> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WekaClassifier.class);
 
@@ -67,7 +68,7 @@ public class WekaClassifier implements IClassifier<String, String, String, Boole
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized String classify(final String input) {
+	public synchronized String analyze(final String input) {
 		try {
 			// Create the instance with the text
 			Instance instance = makeInstance(input, classificationInstances);

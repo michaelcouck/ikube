@@ -25,9 +25,9 @@ public class WekaClassifierTest extends AbstractTest {
 		wekaClassifier.train(IConstants.NEGATIVE, IConstants.NEGATIVE);
 		wekaClassifier.build();
 
-		String positive = wekaClassifier.classify(IConstants.POSITIVE);
+		String positive = wekaClassifier.analyze(IConstants.POSITIVE);
 		assertEquals(IConstants.POSITIVE, positive);
-		String negative = wekaClassifier.classify(IConstants.NEGATIVE);
+		String negative = wekaClassifier.analyze(IConstants.NEGATIVE);
 		assertEquals(IConstants.NEGATIVE, negative);
 
 		int iterations = 501;
@@ -43,9 +43,9 @@ public class WekaClassifierTest extends AbstractTest {
 		wekaClassifier.train(IConstants.NEGATIVE, "What a terrible pain I have in the neck. :(");
 		wekaClassifier.build();
 
-		positive = wekaClassifier.classify("Wonderful dinner on the beach");
+		positive = wekaClassifier.analyze("Wonderful dinner on the beach");
 		assertEquals(IConstants.POSITIVE, positive);
-		negative = wekaClassifier.classify("Terrible pain all over");
+		negative = wekaClassifier.analyze("Terrible pain all over");
 		assertEquals(IConstants.NEGATIVE, negative);
 
 		File directory = FileUtilities.findDirectoryRecursively(new File("."), 2, "txt_sentoken");

@@ -28,10 +28,10 @@
 	
 	<tr><td colspan="2">&nbsp;</td></tr>
 	
-	<span ng-hide="search.indexName == 'undefined'" >
+	<span ng-show="search.indexName != 'undefined'" >
 		<tr nowrap="nowrap" valign="bottom">
 			<td colspan="2">
-				{{search.indexName}}
+				{{search}}
 				Showing results '{{search.firstResult}} 
 				to {{endResult}} 
 				of {{statistics.total}}' 

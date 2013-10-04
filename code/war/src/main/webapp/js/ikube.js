@@ -501,13 +501,10 @@ module.controller('SearcherController', function($http, $scope) {
 	$scope.headers = { headers: { 'Content-Type' : 'application/json' } };
 	
 	// The model data that we bind to in the form
-	$scope.search = {};
+	$scope.search = { indexName : null };
+	$scope.statistics = {};
 
 	$scope.pageBlock = 10;
-	$scope.statistics = {};
-	$scope.pagination = [];
-	$scope.fields = [];
-	$scope.indexName = null;
 
 	// Go to the web service for the results
 	$scope.doSearch = function() {
@@ -518,11 +515,11 @@ module.controller('SearcherController', function($http, $scope) {
 			// Pop the statistics Json off the array
 			$scope.search = data;
 			$scope.status = status;
-			alert('Index name : ' + $scope.search.indexName);
 			if ($scope.search.searchResults != undefined && $scope.search.searchResults.size) {
 				$scope.statistics = $scope.search.searchResults.pop();
-				$scope.doPagination($scope.search.searchResults);
+				// $scope.doPagination($scope.search.searchResults);
 			}
+			alert('Index name : ' + $scope.search.indexName);
 		});
 		promise.error(function(data, status) {
 			alert('Data : ' + data + ', status : ' + status);
@@ -539,9 +536,7 @@ module.controller('SearcherController', function($http, $scope) {
 	
 	$scope.doFields = function() {
 		$scope.url = getServiceUrl('/ikube/service/monitor/fields');
-		$scope.parameters = {
-			indexName : $scope.indexName
-		};
+		$scope.parameters = { indexName : $scope.search.indexName };
 		$scope.config = { params : $scope.parameters };
 		var promise = $http.get($scope.url, $scope.config);
 		promise.success(function(data, status) {
@@ -557,6 +552,7 @@ module.controller('SearcherController', function($http, $scope) {
 	// Creates the Json pagination array for the next pages in the search
 	$scope.doPagination = function(data) {
 		$scope.pagination = [];
+		$scope.statistics = $scope.search.searchResults.pop();
 		var total = $scope.statistics.total;
 		// Exception or no results
 		if (total == null || total == 0) {
