@@ -95,7 +95,8 @@
     	id="ikube.analytics.WekaClassifier.en"
     	name="ikube.analytics.WekaClassifier.en"
     	class="ikube.analytics.WekaClassifier"
-    	init-method="initialize" />
+    	init-method="initialize"
+    	lazy-init="false" />
 	<bean 
 		id="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.en" 
 		name="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.en" 
@@ -108,7 +109,8 @@
     	id="ikube.analytics.WekaClassifier.es"
     	name="ikube.analytics.WekaClassifier.es"
     	class="ikube.analytics.WekaClassifier"
-    	init-method="initialize" />
+    	init-method="initialize" 
+    	lazy-init="false" />
     <bean
 		id="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.es"
 		name="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.es" 
@@ -121,7 +123,8 @@
     	id="ikube.analytics.WekaClassifier.jp"
     	name="ikube.analytics.WekaClassifier.jp"
     	class="ikube.analytics.WekaClassifier"
-    	init-method="initialize" />
+    	init-method="initialize" 
+    	lazy-init="false" />
     <bean
 		id="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.jp"
 		name="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.jp" 
@@ -134,7 +137,8 @@
     	id="ikube.analytics.WekaClassifier.cn"
     	name="ikube.analytics.WekaClassifier.cn"
     	class="ikube.analytics.WekaClassifier"
-    	init-method="initialize" />
+    	init-method="initialize" 
+    	lazy-init="false" />
     <bean
 		id="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.cn"
 		name="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.cn" 
@@ -147,7 +151,8 @@
     	id="ikube.analytics.WekaClassifier.nl"
     	name="ikube.analytics.WekaClassifier.nl"
     	class="ikube.analytics.WekaClassifier"
-    	init-method="initialize" />
+    	init-method="initialize" 
+    	lazy-init="false" />
     <bean
 		id="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.nl"
 		name="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.nl" 
@@ -160,7 +165,8 @@
     	id="ikube.analytics.WekaClassifier.fr"
     	name="ikube.analytics.WekaClassifier.fr"
     	class="ikube.analytics.WekaClassifier"
-    	init-method="initialize" />
+    	init-method="initialize" 
+    	lazy-init="false" />
     <bean
 		id="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.fr"
 		name="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.fr" 
@@ -173,7 +179,8 @@
     	id="ikube.analytics.WekaClassifier.de"
     	name="ikube.analytics.WekaClassifier.de"
     	class="ikube.analytics.WekaClassifier"
-    	init-method="initialize" />
+    	init-method="initialize" 
+    	lazy-init="false" />
     <bean
 		id="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.de"
 		name="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.de" 
@@ -186,7 +193,8 @@
     	id="ikube.analytics.WekaClassifier.sv"
     	name="ikube.analytics.WekaClassifier.sv"
     	class="ikube.analytics.WekaClassifier"
-    	init-method="initialize" />
+    	init-method="initialize" 
+    	lazy-init="false" />
     <bean
 		id="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.sv"
 		name="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.sv" 
@@ -199,7 +207,8 @@
     	id="ikube.analytics.WekaClassifier.th"
     	name="ikube.analytics.WekaClassifier.th"
     	class="ikube.analytics.WekaClassifier"
-    	init-method="initialize" />
+    	init-method="initialize" 
+    	lazy-init="false" />
     <bean
 		id="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.th"
 		name="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.th" 
@@ -212,7 +221,8 @@
     	id="ikube.analytics.WekaClassifier.ar"
     	name="ikube.analytics.WekaClassifier.ar"
     	class="ikube.analytics.WekaClassifier"
-    	init-method="initialize" />
+    	init-method="initialize" 
+    	lazy-init="false" />
 	<bean 
 		id="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.ar" 
 		name="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.ar" 
@@ -225,7 +235,8 @@
     	id="ikube.analytics.WekaClassifier.tr"
     	name="ikube.analytics.WekaClassifier.tr"
     	class="ikube.analytics.WekaClassifier"
-    	init-method="initialize" />
+    	init-method="initialize" 
+    	lazy-init="false" />
 	<bean 
 		id="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.tr" 
 		name="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.tr" 
@@ -238,7 +249,8 @@
     	id="ikube.analytics.WekaClassifier.ru"
     	name="ikube.analytics.WekaClassifier.ru"
     	class="ikube.analytics.WekaClassifier"
-    	init-method="initialize" />
+    	init-method="initialize" 
+    	lazy-init="false" />
 	<bean 
 		id="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.ru" 
 		name="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.ru" 
