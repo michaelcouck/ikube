@@ -501,10 +501,9 @@ module.controller('SearcherController', function($http, $scope) {
 	$scope.headers = { headers: { 'Content-Type' : 'application/json' } };
 	
 	// The model data that we bind to in the form
-	$scope.search = { indexName : null };
 	$scope.statistics = {};
-
 	$scope.pageBlock = 10;
+	$scope.search = { indexName : null };
 
 	// Go to the web service for the results
 	$scope.doSearch = function() {
@@ -519,7 +518,6 @@ module.controller('SearcherController', function($http, $scope) {
 				$scope.statistics = $scope.search.searchResults.pop();
 				// $scope.doPagination($scope.search.searchResults);
 			}
-			alert('Index name : ' + $scope.search.indexName);
 		});
 		promise.error(function(data, status) {
 			alert('Data : ' + data + ', status : ' + status);

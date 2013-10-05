@@ -11,21 +11,15 @@ angular.element(document).ready(function() {
 });
 </script>
 
-<table style="margin-top: 55px;">
-	<tr>
-		<td nowrap="nowrap">
-			<form id="form" name="form" action="<spring:url value="/login" htmlEscape="true" />" method="POST" class="form-inline">
-				<fieldset>
-					<legend></legend>
-					<c:if test="${not empty SPRING_SECURITY_LAST_EXCEPTION.message}"><spring:message code="login.failed" /><br>
-						The default userid and password is user/user, guest/guest or administrator/administrator.<br><br>
-					</c:if>
-					<input id="j_username"  tabindex="1" type="text" name="j_username" class="input-small" placeholder="administrator">
-					<input id="j_password"  tabindex="2" type="password" name="j_password" class="input-small" placeholder="administrator">
-					<label class="checkbox"><input type="checkbox">Remember me</label>
-					<button type="submit" class="btn" id="submit" name="submit">Sign in</button>
-				</fieldset>
-			</form>
-		</td>
-	</tr>
-</table>
+<form id="form" name="form" action="<spring:url value="/login" htmlEscape="true" />" method="POST" class="form-inline">
+	<fieldset>
+		<c:if test="${not empty SPRING_SECURITY_LAST_EXCEPTION.message}"><spring:message code="login.failed" /><br>
+			The default userid and password is user/user, guest/guest or administrator/administrator.<br><br>
+		</c:if>
+		<input id="j_username"  tabindex="1" type="text" name="j_username" class="input-small" placeholder="administrator">
+		<input id="j_password"  tabindex="2" type="password" name="j_password" class="input-small" placeholder="administrator">
+		<label class="checkbox"><input type="checkbox">Remember me</label>
+		<button type="submit" class="btn" id="submit" name="submit">Sign in</button>
+	</fieldset>
+</form>
+

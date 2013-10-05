@@ -306,7 +306,7 @@ public class SearcherXml extends Searcher {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response searchComplexSorted(@Context final HttpServletRequest request, @Context final UriInfo uriInfo) {
-		return buildResponse("hello world");
+		throw new UnsupportedOperationException("This is a Json sall to an xml resource");
 	}
 
 }

@@ -4,9 +4,11 @@
 
 <% response.setHeader("Access-Control-Allow-Origin", "*"); %>
 
-<table ng-controller="SearcherController" class="table" style="margin-top: 55px;">
+<table ng-controller="SearcherController" class="table table-condensed">
+
 	<form ng-submit="doSearch()">
-	<tr class="odd" nowrap="nowrap" valign="bottom">
+	
+	<tr>
 		<td><b>Collection:</b></td>
 		<td>
 			<select ng-controller="IndexesController" ng-model="indexName" ng-change="doFields()">
@@ -14,35 +16,30 @@
 			</select>
 		</td>
 	</tr>
-	<tr class="even" nowrap="nowrap" valign="bottom">
-		<td><b>All of these words:</b></td>
+	<tr>
+		<td><b>Field:</b></td>
 		<td><input id="bla" name="bla"></td>
 	</tr>
 	
-	<tr class="even" nowrap="nowrap" valign="bottom">
+	<tr>
 		<td colspan="2">
 			<button type="submit" class="btn" id="submit" name="submit">Go!</button>
 		</td>
 	</tr>
 	</form>
 	
-	<tr><td colspan="2">&nbsp;</td></tr>
+	<tr ng-show="search.indexName" >
+		<td colspan="2">
+			Showing results '{{search.firstResult}} 
+			to {{endResult}} 
+			of {{statistics.total}}' 
+			for search '{{search.searchStrings}}', 
+			corrections : {{statistics.corrections}}, 
+			duration : {{statistics.duration}}</td>
+	</tr>
 	
-	<span ng-show="search.indexName != 'undefined'" >
-		<tr nowrap="nowrap" valign="bottom">
-			<td colspan="2">
-				{{search}}
-				Showing results '{{search.firstResult}} 
-				to {{endResult}} 
-				of {{statistics.total}}' 
-				for search '{{search.searchStrings}}', 
-				corrections : {{statistics.corrections}}, 
-				duration : {{statistics.duration}}</td>
-		</tr>
-	</span>
-	
-	<tr nowrap="nowrap" valign="bottom">
-		<td colspan="2" nowrap="nowrap">
+	<tr>
+		<td colspan="2">
 			<span ng-repeat="page in pagination">
 				<a style="font-color : {{page.active}}" href="#" ng-click="
 					doFirstResult(page.firstResult);
@@ -53,7 +50,7 @@
 	
 	<tr><td colspan="2">&nbsp;</td></tr>
 	
-	<tr ng-repeat="datum in data" ng-class-odd="'odd'" ng-class-even="'even'">
+	<tr ng-repeat="datum in data">
 		<td colspan="2">
 			<span ng-hide="!datum.id"><b>Identifier</b> : {{datum.id}}<br></span> 
 			<b>Score</b> : {{datum.score}}<br>
@@ -65,7 +62,7 @@
 	<tr><td colspan="2">&nbsp;</td></tr>
 	
 	<tr>
-		<td colspan="2" nowrap="nowrap">
+		<td colspan="2">
 			<span ng-repeat="page in pagination">
 				<a style="font-color : {{page.active}}" href="#" ng-click="doFirstResult(page.firstResult);doSearch();">{{page.page}}</a>
 			</span>

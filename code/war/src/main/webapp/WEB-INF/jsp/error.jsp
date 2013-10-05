@@ -1,25 +1,25 @@
 <%@ page isErrorPage = "true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<table class="table-content">
+<table class="table table-condensed">
 	<tr>
-		<td class="td-content">
+		<td>
 			Request that failed: ${pageContext.errorData.requestURI}
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">
+		<td>
 			Status code: ${pageContext.errorData.statusCode}
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">
+		<td>
 			Exception: ${pageContext.errorData.throwable}<br>
 			Error data: ${pageContext.errorData}
 		</td>
 	</tr>
 	<tr>
-		<td class="td-content">
+		<td>
 			Servlet name: ${pageContext.errorData.servletName}
 		</td>
 	</tr>

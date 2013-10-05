@@ -1,7 +1,7 @@
 <%@ page errorPage="/WEB-INF/jsp/error.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<table class="table" style="margin-top: 55px;">
+<table class="table table-condensed">
 	<tr>
 		<th>Bla...</th>
 		<th>Bla...</th>

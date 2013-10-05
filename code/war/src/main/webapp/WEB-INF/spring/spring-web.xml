@@ -73,6 +73,9 @@
 	<mvc:view-controller path="/analytics.html" />
 	<mvc:view-controller path="/search.html" />
 	<mvc:view-controller path="/properties.html" />
+	<mvc:view-controller path="/admin.html" />
+	<mvc:view-controller path="/twitter.html" />
+	<mvc:view-controller path="/happy.html" />
 	
 	<mvc:interceptors>
 		<bean 

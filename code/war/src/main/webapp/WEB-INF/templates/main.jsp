@@ -16,7 +16,7 @@
 	<link rel="shortcut icon" href="<c:url value="/images/icons/favicon.ico" />">
 	
 	<meta name="Description" content="Ikube Enterprise Search." />
-	<meta name="Keywords" content="Ikube, Enterprise Search, Web Site Search, Database Search, High Volume" />
+	<meta name="Keywords" content="Ikube, Enterprise Search, Web Site Search, Database Search, Network Search, High Volume, Data Mining, Analytics, Machine Learning" />
 	
 	<link rel="stylesheet" href="<c:url value="/style/bootstrap.min.css" />" />
 	<link rel="stylesheet" href="<c:url value="/style/bootstrap-responsive.min.css" />" />
@@ -37,28 +37,26 @@
 	<script src="<c:url value="/js/ikube.js" />" type="text/javascript"></script>
 </head>
 
-<body data-spy="scroll" data-target=".navbar" onload="JavaScript:track();">
-	
-	<table>
+<body onload="JavaScript:track();">
+	<table style="margin-top: 55px; padding: 8px; margin-left: 5px;">
 		<tr>
 			<td colspan="2" valign="top" align="left">
 				<tiles:insertAttribute name="header" />
 			</td>
 		</tr>
 		<tr>
-			<td valign="top" align="left">
+			<td valign="top">
 				<tiles:insertAttribute name="menu" />
 			</td>
-			<td valign="top" align="left">
+			<td valign="top">
 				<tiles:insertAttribute name="content" />
 			</td>
 		</tr>
 		<tr>
-			<td colspan="2" valign="bottom" align="left">
+			<td colspan="2" valign="top">
 				<tiles:insertAttribute name="footer" />
 			</td>
 		</tr>
 	</table>
-
 </body>
 </html>

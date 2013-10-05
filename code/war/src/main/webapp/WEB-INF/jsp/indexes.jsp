@@ -1,43 +1,38 @@
 <%@ page errorPage="/WEB-INF/jsp/error.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<table ng-controller="IndexContextsController" class="table table-condensed" style="margin-top: 55px;">
+<table ng-controller="IndexContextsController" class="table table-condensed">
 	<tr>
-		<th colspan="9"><img src="<c:url value="/images/icons/launch_run.gif" />">&nbsp;Local server indexes</th>
-	</tr>
-	<tr>
-		<th>
+		<th nowrap="nowrap">
 			<img src="<c:url value="/images/icons/index.gif" />">
 			&nbsp;Name
 			<button class="btn btn-mini btn-link" ng-click="sort('name')"><i class="icon-sort"></i></button>
 		</th>
-		<th>
+		<th nowrap="nowrap">
 			<img src="<c:url value="/images/icons/open.gif" />">
 			&nbsp;Open</a>
 			<button class="btn btn-mini btn-link" ng-click="sort('open')"><i class="icon-sort"></i></button>
 		</th>
-		<th>
+		<th nowrap="nowrap">
 			<img src="<c:url value="/images/icons/link_obj.gif" />">
 			&nbsp;Documents</a>
 			<button class="btn btn-mini btn-link" ng-click="sort('numDocsForSearchers')"><i class="icon-sort"></i></button>
 		</th>
-		<th>
+		<th nowrap="nowrap">
 			<img src="<c:url value="/images/icons/repository.gif" />">
 			&nbsp;Size</a>
 			<button class="btn btn-mini btn-link" ng-click="sort('snapshot.indexSize')"><i class="icon-sort"></i></button>
 		</th>
-		<%-- <th><img src="<c:url value="/images/icons/register_view.gif" />">&nbsp;<a href="#" ng-click="sortIndexContexts('maxAge')">Max age</a></th> --%>
-		<th>
+		<th nowrap="nowrap">
 			<img src="<c:url value="/images/icons/refresh.gif" />">
 			&nbsp;Index timestamp</a>
 			<button class="btn btn-mini btn-link" ng-click="sort('snapshot.latestIndexTimestamp')"><i class="icon-sort"></i></button>
 		</th>
-		<th>
+		<th nowrap="nowrap">
 			<img src="<c:url value="/images/icons/jar_l_obj.gif" />">
 			&nbsp;Path</a>
 			<button class="btn btn-mini btn-link" ng-click="sort('indexDirectoryPath')"><i class="icon-sort"></i></button>
 		</th>
-		<%-- <th><img src="<c:url value="/images/icons/progress_task.gif" />">&nbsp;<a href="#" ng-click="sortIndexContexts('throttle')">Throttle</a></th> --%>
 		<th><img src="<c:url value="/images/icons/launch_run.gif" />">&nbsp;Function</th>
 	</tr>
 	<tr ng-repeat="indexContext in indexContexts | orderBy:orderProp:direction" ng-class="{ 'well' : indexContext.indexing == true }">

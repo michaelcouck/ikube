@@ -141,7 +141,7 @@
 </script>
 
 <br><br>
-<table width="100%" style="border : 1px solid #aaaaaa;">
+<table class="table table-condensed">
 	<td valign="top" style="width: 80%;"><div happy><!-- The planet sentiment graph --></div></td>
 	<td>And the latest tweets scrolling here</td>
 </table>

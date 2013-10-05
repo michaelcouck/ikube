@@ -106,9 +106,9 @@ public interface IDataBase {
 	<T> void mergeBatch(final List<T> batch);
 
 	/**
-	 * Finds an object by the if field only. This method will be very expensive as each object in the database is iterated through and the
+	 * Finds an object by the id field only. This method will be very expensive as each object in the database is iterated through and the
 	 * id field found by reflection and compared to the parameter. Also only the first object will be returned. This method assumes that
-	 * every object in the database has a database scope unique id.
+	 * every object in the database has a database scope unique id which will almost never be the case.
 	 * 
 	 * @param <T> the type of object to find
 	 * @param objectId the id of the object

@@ -4,7 +4,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 
-<table ng-controller="PropertiesController" class="table" style="margin-top: 55px;">
+<table ng-controller="PropertiesController" class="table table-condensed">
 	<tr ng-model="propertyFiles" ng-repeat="(key, value) in propertyFiles track by $index">
 		<td>
 			<form 
@@ -22,7 +22,6 @@
 			</security:authorize>
 			<img src="<c:url value="/images/icons/jar_l_obj.gif" />" />&nbsp;Property file: {{key}}<br><br>
 			<textarea name="contents" rows="10" cols="450" class="well" style="width: 95%;" ng-model="propertyFiles[key]">{{value}}</textarea>
-			<br>
 			</form>
 		</td>
 	</tr>

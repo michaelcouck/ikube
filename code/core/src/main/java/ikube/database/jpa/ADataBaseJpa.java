@@ -58,6 +58,7 @@ public abstract class ADataBaseJpa implements IDataBase {
 			boolean first = true;
 			for (Map.Entry<String, Object> parameter : parameters.entrySet()) {
 				if (!first) {
+					first = false;
 					stringBuilder.append(" and ");
 				}
 				stringBuilder.append("c.");

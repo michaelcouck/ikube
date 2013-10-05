@@ -1,11 +1,8 @@
 <%@ page errorPage="/WEB-INF/jsp/error.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<table ng-controller="ServersController" style="border : 1px solid #aaaaaa;" width="100%">
+<table ng-controller="ServersController" class="table table-condensed">
 	<tr>
-		<th colspan="3"><img src="<c:url value="/images/icons/launch_run.gif" />">&nbsp;Administration actions</th>
-	</tr>
-	<tr class="even">
 		<td>
 			<div ng-show="server.cpuThrottling">
 				<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Cpu Throttling:</b> {{server.cpuThrottling}}<br>
@@ -19,7 +16,7 @@
 		</td>
 		<td>Turns the cpu throttling on or off, potentially slowing down the indexing, for the whole cluster</td>
 	</tr>
-	<tr class="odd">
+	<tr>
 		<td>
 			<div ng-show="server.threadsRunning">
 				<img src="<c:url value="/images/icons/open.gif" />">&nbsp;<b>Threads running:</b> {{server.threadsRunning}}<br>
@@ -41,7 +38,7 @@
 </table>
 <br><br>
 
-<table ng-controller="ServersController" style="border : 1px solid #aaaaaa;" width="100%">
+<table ng-controller="ServersController">
 	<tr>
 		<th><img src="<c:url value="/images/icons/server.gif" />">&nbsp;Server log tails</th>
 	</tr>
