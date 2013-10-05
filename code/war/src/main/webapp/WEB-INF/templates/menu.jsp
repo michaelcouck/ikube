@@ -6,8 +6,15 @@
 	<div class="well" style="width: 200px; padding: 8px;">
 		<ul class="nav nav-tabs nav-stacked">
 			<li class="nav-header">Functions</li>
-			<li><a href="<c:url value="/dash.html" />">Dash</a></li>
-			<li><a href="#" ng-click="show = !show">(graphs)</a></li>
+
+			<li class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#">Dash <b class="caret"></b></a>
+				<ul class="dropdown-menu">
+					<li><a href="<c:url value="/dash.html" />">Servers and actions</a></li>
+					<li><a href="#" ng-click="show = !show">Indexing and searching graphs</a></li>
+				</ul>
+			</li>
+
 			<li><a href="<c:url value="/analytics.html" />">Analytics</a></li>
 			<li><a href="<c:url value="/search.html" />">Search</a></li>
 

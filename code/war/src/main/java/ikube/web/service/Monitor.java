@@ -118,15 +118,16 @@ public class Monitor extends Resource {
 			indexContexts.add(cloneIndexContext);
 		}
 		// We sort on the parameter if not null, otherwise on the name field
-		final String _sortField = StringUtils.isEmpty(sortField) ? "name" : sortField;
-		Collections.sort(indexContexts, new Comparator<Object>() {
-			@Override
-			public int compare(final Object o1, final Object o2) {
-				Object v1 = ObjectToolkit.getFieldValue(o1, _sortField);
-				Object v2 = ObjectToolkit.getFieldValue(o2, _sortField);
-				return descending ? CompareToBuilder.reflectionCompare(v1, v2) : -(CompareToBuilder.reflectionCompare(v1, v2));
-			}
-		});
+		if (!StringUtils.isEmpty(sortField)) {
+			Collections.sort(indexContexts, new Comparator<Object>() {
+				@Override
+				public int compare(final Object o1, final Object o2) {
+					Object v1 = ObjectToolkit.getFieldValue(o1, sortField);
+					Object v2 = ObjectToolkit.getFieldValue(o2, sortField);
+					return descending ? CompareToBuilder.reflectionCompare(v1, v2) : -(CompareToBuilder.reflectionCompare(v1, v2));
+				}
+			});
+		}
 		return buildResponse(indexContexts);
 	}
 

@@ -32,13 +32,13 @@
 			pattern="/docs/**" 
 			access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url 
-			pattern="/images/**" 
+			pattern="/img/**" 
 			access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url 
 			pattern="/js/**" 
 			access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url 
-			pattern="/style/**" 
+			pattern="/css/**" 
 			access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url 
 			pattern="/documentation/**" 

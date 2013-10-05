@@ -258,6 +258,15 @@ public class SearcherJson extends Searcher {
 		if (search != null && search.getSearchStrings() != null && search.getSearchStrings().size() > 0) {
 			searcherService.searchComplexSorted(search);
 		}
+		if (search.getSearchFields() == null) {
+			search.setSearchFields(new ArrayList<String>());
+		}
+		if (search.getSearchStrings() == null) {
+			search.setSearchStrings(new ArrayList<String>());
+		}
+		if (search.getIndexName() == null) {
+			search.setIndexName("");
+		}
 		return buildResponse(search);
 	}
 

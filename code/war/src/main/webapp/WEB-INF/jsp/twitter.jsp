@@ -3,6 +3,6 @@
 
 <table class="table table-condensed">	
 	<tr>
-		<td>Administration console for Ikube application.</td>
+		<td>The Twitter application for viewing the Twitter sentiment analysis.</td>
 	</tr>
 </table>

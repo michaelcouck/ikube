@@ -36,7 +36,7 @@
 	<tr>
 		<c:set var="text" value="Indexable ${action.indexableName}" />
 		<td width="1" nowrap="nowrap">
-			<img alt="${text}" src="<c:url value="/images/icons/register_view.gif" />" title="${text}">
+			<img alt="${text}" src="<c:url value="/img/icons/register_view.gif" />" title="${text}">
 		</td>
 		<td class="td-content">${action.id}</td>
 		<td class="td-content">${action.actionName}</td>

@@ -20,7 +20,7 @@
 			The table and database definition is the primary focus of Ikube. Ikube is designed to index databases in arbitrary complex structures. 
 			First a table must be defined in the Spring configuration, including the data source as in the following:<br><br>
 			
-			<img src="<c:url value="/images/geoname.xml.jpg" />" alt="The geospatial table" /><br><br>
+			<img src="<c:url value="/img/geoname.xml.jpg" />" alt="The geospatial table" /><br><br>
 			
 			The id and the class are for Spring, the rest of the properties of the bean are user defined, described below.
 		</td>
@@ -70,7 +70,7 @@
 			perhaps C3p0 as the pooled datasource provider. Please see below the shot of the data source definition in the Spring 
 			configuration:<br><br>
 			
-			<img src="<c:url value="/images/geoname.datasource.xml.jpg" />" alt="The geospatial data source" /><br><br>
+			<img src="<c:url value="/img/geoname.datasource.xml.jpg" />" alt="The geospatial data source" /><br><br>
 			
 			As you can see the properties for the database are quite self explanatory and common for databases per se.
 		</td>
@@ -82,7 +82,7 @@
 			for the table. Please note the screen shot below which is of some column definitions for the GeoName table, the 
 			id column and the name column:<br><br>
 			
-			<img src="<c:url value="/images/geoname.columns.xml.jpg" />" alt="The geospatial columns" /><br><br>
+			<img src="<c:url value="/img/geoname.columns.xml.jpg" />" alt="The geospatial columns" /><br><br>
 		</td>
 	</tr>
 	<tr>

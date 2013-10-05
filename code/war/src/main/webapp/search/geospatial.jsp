@@ -1,4 +1,4 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%-- <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
@@ -103,7 +103,7 @@
 				map : map,
 				position: origin,
 				title : 'You are here :) => [' + latitude + ', ' + longitude + ']',
-				icon: '/ikube/images/icons/center_pin.png'
+				icon: '/ikube/img/icons/center_pin.png'
 			});
 			for (var key in $scope.data) {
 				var datum = $scope.data[key];
@@ -183,7 +183,7 @@
 
 <table ng-app="ikube" ng-controller="GeospatialSearcherController" style="border : 1px solid #aaaaaa;" width="100%">
 	<tr>
-		<th colspan="3"><img src="<c:url value="/images/icons/launch_run.gif" />">&nbsp;Geospatial search</th>
+		<th colspan="3"><img src="<c:url value="/img/icons/launch_run.gif" />">&nbsp;Geospatial search</th>
 	</tr>
 	
 	<tr class="odd" nowrap="nowrap" valign="bottom">
@@ -269,4 +269,4 @@
 		</td>
 	</tr>
 	
-</table>
+</table> --%>

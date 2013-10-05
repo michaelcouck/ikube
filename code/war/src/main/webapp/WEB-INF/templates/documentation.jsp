@@ -13,7 +13,7 @@
 	<meta http-equiv="refresh" content="1800">
 	
 	<title><tiles:insertAttribute name="title" /></title>
-	<link rel="shortcut icon" href="<c:url value="/images/icons/favicon.ico" />">
+	<link rel="shortcut icon" href="<c:url value="/img/icons/favicon.ico" />">
 	
 	<meta name="Keywords" content="Ikube, Enterprise Search, Web Site Search, Database Search, High Volume" />
 	<meta name="Description" content="Ikube Enterprise Search." />

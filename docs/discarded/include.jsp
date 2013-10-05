@@ -44,7 +44,7 @@
 					<c:if test="${entry.key == 'name' || entry.key == 'path' || entry.key == 'id'}">
 						<img 
 							alt="Document type" 
-							src='<c:url value="/images/icons/${ikube:documentIcon(entry.value, icons, blank)}" />'
+							src='<c:url value="/img/icons/${ikube:documentIcon(entry.value, icons, blank)}" />'
 							height="15px"
 							width="15px"
 							align="bottom" />

@@ -20,7 +20,7 @@
 					class="btn btn-small btn-success" 
 					value="Update">
 			</security:authorize>
-			<img src="<c:url value="/images/icons/jar_l_obj.gif" />" />&nbsp;Property file: {{key}}<br><br>
+			<img src="<c:url value="/img/icons/jar_l_obj.gif" />" />&nbsp;Property file: {{key}}<br><br>
 			<textarea name="contents" rows="10" cols="450" class="well" style="width: 95%;" ng-model="propertyFiles[key]">{{value}}</textarea>
 			</form>
 		</td>

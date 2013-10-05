@@ -24,18 +24,18 @@
 		<td>{{server.freeDiskSpace}}</td>
 		<td>
 			<div ng-show="server.threadsRunning">
-				<img src="<c:url value="/images/icons/open.gif" />">{{server.threadsRunning}}<br>
+				<img src="<c:url value="/img/icons/open.gif" />">{{server.threadsRunning}}<br>
 			</div>
 			<div ng-show="!server.threadsRunning">
-				<img src="<c:url value="/images/icons/red_square.gif" />">{{server.threadsRunning}}<br>
+				<img src="<c:url value="/img/icons/red_square.gif" />">{{server.threadsRunning}}<br>
 			</div>
 		</td>
 		<td>
 			<div ng-show="server.cpuThrottling">
-				<img src="<c:url value="/images/icons/open.gif" />">{{server.cpuThrottling}}<br>
+				<img src="<c:url value="/img/icons/open.gif" />">{{server.cpuThrottling}}<br>
 			</div>
 			<div ng-show="!server.cpuThrottling">
-				<img src="<c:url value="/images/icons/red_square.gif" />">{{server.cpuThrottling}}<br>
+				<img src="<c:url value="/img/icons/red_square.gif" />">{{server.cpuThrottling}}<br>
 			</div>
 		</td>
 		<td>{{date(server.age)}}</td>

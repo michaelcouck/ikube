@@ -1,32 +1,47 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-
-<% response.setHeader("Access-Control-Allow-Origin", "*"); %>
-
-<table ng-controller="SearcherController" class="table table-condensed">
-
-	<form ng-submit="doSearch()">
-	
+<table ng-controller="SearcherController" class="table table-condensed"">
 	<tr>
-		<td><b>Collection:</b></td>
 		<td>
-			<select ng-controller="IndexesController" ng-model="indexName" ng-change="doFields()">
-				<option ng-repeat="index in indexes" value="{{index}}">{{index}}</option>
-			</select>
+			<form ng-submit="doSearch()">
+			<table border="0">
+				<tr>
+					<td><b>Collection:</b></td>
+					<td colspan="2">
+						<select ng-controller="IndexesController" ng-model="indexName" ng-change="addFields(indexName);setIndex(indexName);">
+							<option ng-repeat="index in indexes" value="{{index}}">{{index}}</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td><b>Fields:</b></td>
+					<td colspan="2">
+						<select ng-model="field" ng-model="fields" ng-options="field for field in fields" ng-change="addField(field)">
+							<option style="display:none" value="">select a field</option>
+						</select>
+					</td>
+				</tr>
+				<!-- ng-model="search.searchFields" -->
+				<tr ng-repeat="field in search.searchFields" ng-show="search.searchFields">
+					<td><b>{{field}}</b></td>
+					<td><input id="{{field}}" name="{{field}}" ng-model="searchString" ng-change="addSearchString($index, searchString)"></td>
+					<td>
+						<button class="btn btn-small btn-success : hover" ng-click="removeField($index);removeSearchString($index);">Remove</button>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<!-- ng-click="doSearch()" -->
+						<button 
+							type="submit" 
+							class="btn btn-warning : hover">Go!</button>
+					</td>
+				</tr>
+			</table>
+			</form>
+		</td>
+		<td>
+			Map here if required
 		</td>
 	</tr>
-	<tr>
-		<td><b>Field:</b></td>
-		<td><input id="bla" name="bla"></td>
-	</tr>
-	
-	<tr>
-		<td colspan="2">
-			<button type="submit" class="btn" id="submit" name="submit">Go!</button>
-		</td>
-	</tr>
-	</form>
 	
 	<tr ng-show="search.indexName" >
 		<td colspan="2">
@@ -38,7 +53,7 @@
 			duration : {{statistics.duration}}</td>
 	</tr>
 	
-	<tr>
+	<tr ng-show="pagination">
 		<td colspan="2">
 			<span ng-repeat="page in pagination">
 				<a style="font-color : {{page.active}}" href="#" ng-click="
@@ -50,7 +65,7 @@
 	
 	<tr><td colspan="2">&nbsp;</td></tr>
 	
-	<tr ng-repeat="datum in data">
+	<tr ng-repeat="datum in data" ng-show="pagination">
 		<td colspan="2">
 			<span ng-hide="!datum.id"><b>Identifier</b> : {{datum.id}}<br></span> 
 			<b>Score</b> : {{datum.score}}<br>
@@ -59,10 +74,8 @@
 		</td>
 	</tr>
 	
-	<tr><td colspan="2">&nbsp;</td></tr>
-	
 	<tr>
-		<td colspan="2">
+		<td ng-show="pagination" colspan="2">
 			<span ng-repeat="page in pagination">
 				<a style="font-color : {{page.active}}" href="#" ng-click="doFirstResult(page.firstResult);doSearch();">{{page.page}}</a>
 			</span>

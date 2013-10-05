@@ -1,4 +1,4 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%-- <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
@@ -103,7 +103,7 @@
 
 <table ng-app="ikube" ng-controller="SearcherController" style="border : 1px solid #aaaaaa;" width="100%">
 	<tr>
-		<th colspan="2"><img src="<c:url value="/images/icons/launch_run.gif" />">&nbsp;Advanced search</th>
+		<th colspan="2"><img src="<c:url value="/img/icons/launch_run.gif" />">&nbsp;Advanced search</th>
 	</tr>
 	<form ng-submit="doSearch()">
 	<tr class="odd" nowrap="nowrap" valign="bottom">
@@ -186,4 +186,4 @@
 		</td>
 	</tr>
 	
-</table>
+</table> --%>

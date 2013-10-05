@@ -11,7 +11,7 @@
 	<meta http-equiv="Pragma" content="no-cache">
 	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
 	
-	<link rel="shortcut icon" href="<c:url value="/images/icons/favicon.ico" />">
+	<link rel="shortcut icon" href="<c:url value="/img/icons/favicon.ico" />">
 	
 	<meta name="Keywords" content="Ikube, Enterprise Search, Web Site Search, Database Search, High Volume" />
 	<meta name="Description" content="Ikube Enterprise Search." />

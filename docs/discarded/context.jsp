@@ -40,7 +40,7 @@
 			The index context is the top level object in the configuration. It will contain the internet site configurations and database 
 			configurations, essentially a wrapper for a Lucene index:<br><br>
 			
-			<img src="<c:url value="/images/index.context.xml.jpg" />" alt="The default index context" /><br><br>
+			<img src="<c:url value="/img/index.context.xml.jpg" />" alt="The default index context" /><br><br>
 		</td>
 	</tr>
 	

@@ -92,7 +92,7 @@ public abstract class Resource {
 			return newInstance(clazz, json);
 		}
 	}
-	
+
 	private <T> T newInstance(final Class<T> clazz, final String json) {
 		try {
 			// If we don't have the class in the input stream then create one for the caller

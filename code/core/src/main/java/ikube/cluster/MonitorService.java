@@ -4,7 +4,6 @@ import ikube.IConstants;
 import ikube.cluster.listener.IListener;
 import ikube.model.Attribute;
 import ikube.model.IndexContext;
-import ikube.model.Indexable;
 import ikube.scheduling.schedule.Event;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
@@ -13,6 +12,7 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,6 +21,11 @@ import java.util.TreeSet;
 import javax.persistence.Column;
 
 import org.apache.log4j.Logger;
+import org.apache.lucene.index.FieldInfo;
+import org.apache.lucene.index.FieldInfos;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Searchable;
+import org.apache.lucene.util.ReaderUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ReflectionUtils;
 
@@ -30,6 +35,7 @@ import org.springframework.util.ReflectionUtils;
  * @since 28.12.10
  * @version 01.00
  */
+@SuppressWarnings("deprecation")
 public class MonitorService implements IMonitorService {
 
 	private static final Logger LOGGER = Logger.getLogger(MonitorService.class);
@@ -57,9 +63,25 @@ public class MonitorService implements IMonitorService {
 	@Override
 	public String[] getIndexFieldNames(final String indexName) {
 		IndexContext<?> indexContext = getIndexContext(indexName);
-		if (indexContext != null) {
-			Set<String> fieldNames = getFields(indexContext.getChildren(), new TreeSet<String>());
-			return fieldNames.toArray(new String[fieldNames.size()]);
+		if (indexContext.getMultiSearcher() != null) {
+			Set<String> fields = new TreeSet<String>();
+			Searchable[] searchables = indexContext.getMultiSearcher().getSearchables();
+			for (final Searchable searchable : searchables) {
+				IndexSearcher indexSearcher = (IndexSearcher) searchable;
+				FieldInfos fieldInfos = null;
+				try {
+					fieldInfos = ReaderUtil.getMergedFieldInfos(indexSearcher.getIndexReader());
+					Iterator<FieldInfo> iterator = fieldInfos.iterator();
+					while (iterator.hasNext()) {
+						FieldInfo fieldInfo = iterator.next();
+						fields.add(fieldInfo.name);
+					}
+				} catch (NullPointerException e) {
+					LOGGER.warn("Null pointer : ");
+					LOGGER.debug(null, e);
+				}
+			}
+			return fields.toArray(new String[fields.size()]);
 		}
 		return new String[0];
 	}
@@ -240,44 +262,6 @@ public class MonitorService implements IMonitorService {
 
 		Event takeSnapshotEvent = IListener.EventGenerator.getEvent(Event.TAKE_SNAPSHOT, time, null, Boolean.FALSE);
 		clusterManager.sendMessage(takeSnapshotEvent);
-	}
-
-	/**
-	 * Gets all the fields for the indexable. Fields are defined by adding the {@link ikube.model.Field} annotation to the field.
-	 * 
-	 * @param indexables the indexables to look through and get the fields
-	 * @param fieldNames set of field names to collect the fields in
-	 * @return the set of field names from the indexable, and child indexables if there are any
-	 */
-	protected Set<String> getFields(final List<Indexable<?>> indexables, final Set<String> fieldNames) {
-		if (indexables != null) {
-			for (final Indexable<?> indexable : indexables) {
-				getFields(indexable, fieldNames);
-			}
-		}
-		return fieldNames;
-	}
-
-	/**
-	 * See {@link MonitorService#getFields(List, Set)}
-	 */
-	protected Set<String> getFields(final Indexable<?> indexable, final Set<String> fieldNames) {
-		if (indexable == null) {
-			return fieldNames;
-		}
-		Field[] fields = indexable.getClass().getDeclaredFields();
-		for (final Field field : fields) {
-			Attribute annotation = field.getAnnotation(Attribute.class);
-			if (annotation != null && annotation.field()) {
-				try {
-					fieldNames.add(field.getName());
-				} catch (Exception e) {
-					LOGGER.error("Illegal access with forced access?", e);
-				}
-			}
-		}
-		getFields(indexable.getChildren(), fieldNames);
-		return fieldNames;
 	}
 
 }

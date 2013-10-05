@@ -4,36 +4,36 @@
 <table ng-controller="IndexContextsController" class="table table-condensed">
 	<tr>
 		<th nowrap="nowrap">
-			<img src="<c:url value="/images/icons/index.gif" />">
+			<img src="<c:url value="/img/icons/index.gif" />">
 			&nbsp;Name
 			<button class="btn btn-mini btn-link" ng-click="sort('name')"><i class="icon-sort"></i></button>
 		</th>
 		<th nowrap="nowrap">
-			<img src="<c:url value="/images/icons/open.gif" />">
+			<img src="<c:url value="/img/icons/open.gif" />">
 			&nbsp;Open</a>
 			<button class="btn btn-mini btn-link" ng-click="sort('open')"><i class="icon-sort"></i></button>
 		</th>
 		<th nowrap="nowrap">
-			<img src="<c:url value="/images/icons/link_obj.gif" />">
+			<img src="<c:url value="/img/icons/link_obj.gif" />">
 			&nbsp;Documents</a>
 			<button class="btn btn-mini btn-link" ng-click="sort('numDocsForSearchers')"><i class="icon-sort"></i></button>
 		</th>
 		<th nowrap="nowrap">
-			<img src="<c:url value="/images/icons/repository.gif" />">
+			<img src="<c:url value="/img/icons/repository.gif" />">
 			&nbsp;Size</a>
 			<button class="btn btn-mini btn-link" ng-click="sort('snapshot.indexSize')"><i class="icon-sort"></i></button>
 		</th>
 		<th nowrap="nowrap">
-			<img src="<c:url value="/images/icons/refresh.gif" />">
+			<img src="<c:url value="/img/icons/refresh.gif" />">
 			&nbsp;Index timestamp</a>
 			<button class="btn btn-mini btn-link" ng-click="sort('snapshot.latestIndexTimestamp')"><i class="icon-sort"></i></button>
 		</th>
 		<th nowrap="nowrap">
-			<img src="<c:url value="/images/icons/jar_l_obj.gif" />">
+			<img src="<c:url value="/img/icons/jar_l_obj.gif" />">
 			&nbsp;Path</a>
 			<button class="btn btn-mini btn-link" ng-click="sort('indexDirectoryPath')"><i class="icon-sort"></i></button>
 		</th>
-		<th><img src="<c:url value="/images/icons/launch_run.gif" />">&nbsp;Function</th>
+		<th><img src="<c:url value="/img/icons/launch_run.gif" />">&nbsp;Function</th>
 	</tr>
 	<tr ng-repeat="indexContext in indexContexts | orderBy:orderProp:direction" ng-class="{ 'well' : indexContext.indexing == true }">
 		<td>{{indexContext.name}}</td>

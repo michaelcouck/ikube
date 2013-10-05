@@ -496,15 +496,16 @@ module.controller('CreateController', function($http, $scope) {
 });
 
 //The controller that does the search
-module.controller('SearcherController', function($http, $scope) {
+module.controller('SearcherController', function($scope, $http) {
 	
 	$scope.headers = { headers: { 'Content-Type' : 'application/json' } };
 	
 	// The model data that we bind to in the form
-	$scope.statistics = {};
+	$scope.search = null;
+	$scope.statistics = null;
+	$scope.fields = [];
 	$scope.pageBlock = 10;
-	$scope.search = { indexName : null };
-
+	
 	// Go to the web service for the results
 	$scope.doSearch = function() {
 		// Advanced search
@@ -514,9 +515,11 @@ module.controller('SearcherController', function($http, $scope) {
 			// Pop the statistics Json off the array
 			$scope.search = data;
 			$scope.status = status;
+			alert('Search : ' + data + ', ' + $scope.search.searchFields);
 			if ($scope.search.searchResults != undefined && $scope.search.searchResults.size) {
 				$scope.statistics = $scope.search.searchResults.pop();
 				// $scope.doPagination($scope.search.searchResults);
+				alert('Search : ' + $scope.search.searchResults + ', ' + $scope.statistics);
 			}
 		});
 		promise.error(function(data, status) {
@@ -532,19 +535,45 @@ module.controller('SearcherController', function($http, $scope) {
 		$scope.search.firstResult = firstResult;
 	}
 	
-	$scope.doFields = function() {
+	$scope.setIndex = function(indexName) {
+		$scope.search.indexName = indexName;
+	};
+	
+	$scope.addFields = function(indexName) {
 		$scope.url = getServiceUrl('/ikube/service/monitor/fields');
-		$scope.parameters = { indexName : $scope.search.indexName };
+		$scope.parameters = { indexName : indexName };
 		$scope.config = { params : $scope.parameters };
 		var promise = $http.get($scope.url, $scope.config);
 		promise.success(function(data, status) {
 			// Pop the statistics Json off the array
+			$scope.fields = [];
 			$scope.fields = data;
 			$scope.status = status;
+			$scope.searchFields = {};
+			// alert('Fields : ' + $scope.fields + ', ' + indexName);
 		});
 		promise.error(function(data, status) {
 			$scope.status = status;
 		});
+	};
+	
+	$scope.addField = function(searchField) {
+		$scope.search.searchFields.push(searchField);
+		// alert('Add search field : ' + searchField + ', ' + $scope.search.searchFields);
+	};
+	
+	$scope.removeField = function($index) {
+		$scope.search.searchFields.splice($index,1);
+		// alert('Remove search field : ' + $scope.search.searchFields);
+	};
+	
+	$scope.addSearchString = function($index, searchString) {
+		$scope.search.searchStrings.splice($index,1);
+		$scope.search.searchStrings.push(searchString);
+	};
+	
+	$scope.removeSearchString = function($index) {
+		$scope.search.searchStrings.splice($index, 1);
 	};
 	
 	// Creates the Json pagination array for the next pages in the search
