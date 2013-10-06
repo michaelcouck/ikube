@@ -38,8 +38,8 @@ public class GeospatialEnrichmentStrategyIntegration extends IntegrationTest {
 
 	@Before
 	public void before() {
-		indexContext = ApplicationContextManager.getBean("min-eco");
-		indexableFileSystemCsv = ApplicationContextManager.getBean("min-eco-csv-files");
+		indexContext = ApplicationContextManager.getBean("geoname-csv");
+		indexableFileSystemCsv = ApplicationContextManager.getBean("geoname-csv-csv-files");
 		indexableHandlerFilesystemCsvHandler = ApplicationContextManager.getBean(IndexableFilesystemCsvHandler.class);
 	}
 

@@ -5,7 +5,7 @@
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 
 <table ng-controller="PropertiesController" class="table table-condensed">
-	<tr ng-model="propertyFiles" ng-repeat="(key, value) in propertyFiles track by $index">
+	<tr ng-model="propertyFiles" ng-repeat="(key, value) in propertyFiles">
 		<td>
 			<form 
 				id="{{$index}}" 

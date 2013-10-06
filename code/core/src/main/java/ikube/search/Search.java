@@ -352,6 +352,9 @@ public abstract class Search {
 	 */
 	protected void addStatistics(final ArrayList<HashMap<String, String>> results, final long totalHits, final float highScore, final long duration,
 			final Exception exception) {
+		if (results == null) {
+			return;
+		}
 		// Add the search results size as a last category
 		HashMap<String, String> statistics = new HashMap<String, String>();
 		String[] correctedSearchStrings = getCorrections();
@@ -371,7 +374,6 @@ public abstract class Search {
 			statistics.put(IConstants.EXCEPTION_STACK, outputStream.toString());
 			statistics.put(IConstants.EXCEPTION_MESSAGE, exception.getMessage());
 		}
-
 		results.add(statistics);
 	}
 
@@ -444,6 +446,9 @@ public abstract class Search {
 	 * @return the sort that can be used together with the filter to sort the results based on the specified fields
 	 */
 	protected Sort getSort(final Query query) {
+		if (sortFields == null || sortFields.length == 0) {
+			return null;
+		}
 		Sort sort = new Sort();
 		SortField[] fields = new SortField[sortFields.length];
 		int sortFieldIndex = 0;

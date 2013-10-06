@@ -95,7 +95,7 @@ public class FileResourceHandler extends ResourceHandler<IndexableFileSystem> {
 			IndexManager.addStringField(IConstants.FILE_ID, fileId, document, Store.YES, Index.NOT_ANALYZED, TermVector.NO);
 			IndexManager.addStringField(pathFieldName, file.getAbsolutePath(), document, Store.YES, analyzed, termVector);
 			IndexManager.addStringField(nameFieldName, file.getName(), document, Store.YES, analyzed, termVector);
-			IndexManager.addStringField(modifiedFieldName, Long.toString(file.lastModified()), document, Store.YES, analyzed, termVector);
+			IndexManager.addNumericField(modifiedFieldName, Long.toString(file.lastModified()), document, Store.YES);
 			IndexManager.addStringField(lengthFieldName, Long.toString(file.length()), document, Store.YES, analyzed, termVector);
 			IndexManager.addStringField(contentFieldName, parsedContent, document, store, analyzed, termVector);
 			addDocument(indexContext, indexableFileSystem, document);

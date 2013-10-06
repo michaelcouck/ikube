@@ -5,7 +5,7 @@
 			<table border="0">
 				<tr>
 					<td><b>Collection:</b></td>
-					<td colspan="2">
+					<td colspan="4">
 						<select ng-controller="IndexesController" ng-model="indexName" ng-change="addFields(indexName);setIndex(indexName);">
 							<option ng-repeat="index in indexes" value="{{index}}">{{index}}</option>
 						</select>
@@ -13,7 +13,7 @@
 				</tr>
 				<tr>
 					<td><b>Fields:</b></td>
-					<td colspan="2">
+					<td colspan="4">
 						<select ng-model="field" ng-model="fields" ng-options="field for field in fields" ng-change="addField(field)">
 							<option style="display:none" value="">select a field</option>
 						</select>
@@ -23,6 +23,8 @@
 				<tr ng-repeat="field in search.searchFields" ng-show="search.searchFields">
 					<td><b>{{field}}</b></td>
 					<td><input id="{{field}}" name="{{field}}" ng-model="searchString" ng-change="addSearchString($index, searchString)"></td>
+					<td>Numeric:<input type="checkbox" ng-model="sortField" ng-change="addNumericField($index);"></td>
+					<td>Sort:<input type="checkbox" ng-model="sortField" ng-change="addSortField($index);"></td>
 					<td>
 						<button class="btn btn-small btn-success : hover" ng-click="removeField($index);removeSearchString($index);">Remove</button>
 					</td>

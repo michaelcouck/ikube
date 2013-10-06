@@ -19,13 +19,19 @@ import java.util.Map;
 
 import mockit.Mockit;
 
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.MultiSearcher;
+import org.apache.lucene.search.Searchable;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("deprecation")
 public class MonitorServiceTest extends AbstractTest {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -36,9 +42,6 @@ public class MonitorServiceTest extends AbstractTest {
 	public void before() {
 		monitorService = new MonitorService();
 
-		indexContext = new IndexContext<Object>();
-		indexContext.setIndexName("indexName");
-		indexContext.setIndexDirectoryPath("./indexes");
 		List<Indexable<?>> indexables = new ArrayList<Indexable<?>>(Arrays.asList(new IndexableFileSystem()));
 		indexContext.setChildren(indexables);
 
@@ -51,6 +54,7 @@ public class MonitorServiceTest extends AbstractTest {
 	@After
 	public void after() {
 		Mockit.tearDownMocks();
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 
 	@Test
@@ -72,19 +76,25 @@ public class MonitorServiceTest extends AbstractTest {
 	}
 
 	@Test
-	public void getIndexFieldNames() {
-		logger.info("Index context : " + indexContext);
-		String[] fieldNames = monitorService.getIndexFieldNames(indexContext.getIndexName());
-		assertTrue(fieldNames.length > 0);
+	public void getIndexFieldNames() throws Exception {
+		MultiSearcher multiSearcher = null;
+		try {
+			File indexDirectory = createIndexFileSystem(indexContext, "Hello world");
+			logger.info("Index directory : " + indexDirectory.getAbsolutePath());
 
-		List<String> indexFieldNamesList = Arrays.asList(fieldNames);
-		assertTrue("The id field should be in the Ikube index : ", indexFieldNamesList.contains("nameFieldName"));
-		assertTrue("The title field should be in the Ikube index : ", indexFieldNamesList.contains("pathFieldName"));
-		assertTrue("The content field should be in the Ikube index : ", indexFieldNamesList.contains("lastModifiedFieldName"));
+			Directory directory = FSDirectory.open(indexDirectory);
+			Searchable[] searchables = new Searchable[] { new IndexSearcher(directory) };
+			multiSearcher = new MultiSearcher(searchables);
+			Mockito.when(indexContext.getMultiSearcher()).thenReturn(multiSearcher);
+
+			String[] fieldNames = monitorService.getIndexFieldNames(indexContext.getIndexName());
+			assertTrue(fieldNames.length > 0);
+		} finally {
+			multiSearcher.close();
+		}
 	}
 
 	@Test
-	@Ignore
 	public void getSetProperties() throws IOException {
 		File propertiesFile = null;
 		try {

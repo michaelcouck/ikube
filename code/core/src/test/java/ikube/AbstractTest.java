@@ -261,8 +261,7 @@ public abstract class AbstractTest {
 		try {
 			indexWriter = IndexManager.openIndexWriter(indexContext, time, ip);
 			addDocuments(indexWriter, IConstants.CONTENTS, strings);
-			File indexDirectory = ((FSDirectory) indexWriter.getDirectory()).getDirectory();
-			return indexDirectory;
+			return ((FSDirectory) indexWriter.getDirectory()).getDirectory();
 		} catch (Exception e) {
 			logger.error("Exception creating the index : ", e);
 		} finally {

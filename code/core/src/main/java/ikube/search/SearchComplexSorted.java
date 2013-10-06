@@ -33,6 +33,9 @@ public class SearchComplexSorted extends SearchComplex {
 	@Override
 	protected TopDocs search(final Query query) throws IOException {
 		Sort sort = getSort(query);
+		if (sort == null) {
+			return super.search(query);
+		}
 		Filter filter = new QueryWrapperFilter(query);
 		return searcher.search(query, filter, firstResult + maxResults, sort);
 	}

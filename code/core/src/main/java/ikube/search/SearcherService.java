@@ -402,7 +402,7 @@ public class SearcherService implements ISearcherService {
 	protected void persistSearch(final String indexName, final String[] searchStrings, final String[] searchStringsCorrected,
 			final ArrayList<HashMap<String, String>> results) {
 		// Don't persist the auto complete searches
-		if (IConstants.AUTOCOMPLETE.equals(indexName)) {
+		if (IConstants.AUTOCOMPLETE.equals(indexName) || results == null) {
 			return;
 		}
 		Map<String, String> statistics = results.get(results.size() - 1);

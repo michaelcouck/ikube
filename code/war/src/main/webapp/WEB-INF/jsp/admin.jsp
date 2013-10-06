@@ -4,41 +4,35 @@
 <table ng-controller="ServersController" class="table table-condensed">
 	<tr>
 		<td>
-			<div ng-show="server.cpuThrottling">
-				<img src="<c:url value="/img/icons/open.gif" />">&nbsp;<b>Cpu Throttling:</b> {{server.cpuThrottling}}<br>
-			</div>
-			<div ng-show="!server.cpuThrottling">
-				<img src="<c:url value="/img/icons/red_square.gif" />">&nbsp;<b>Cpu Throttling:</b> {{server.cpuThrottling}}<br>
-			</div>
+			<div ng-show="server.cpuThrottling"><img src="<c:url value="/img/icons/open.gif" />">&nbsp;CPU throttling</div>
+			<div ng-show="!server.cpuThrottling"><img src="<c:url value="/img/icons/red_square.gif" />">&nbsp;CPU throttling</div>
 		</td>
 		<td>
-			&nbsp;&nbsp;&nbsp;<input ng-click="toggleCpuThrottling();" type="image" src="<c:url value="/img/icons/run_on_server.gif" />" value="Go!">
+			<input 
+					type="submit" 
+					class="btn btn-small btn-warning" 
+					value="Terminate"
+					ng-click="toggleCpuThrottling();"
+					title="Toggle the CPU throttling">
 		</td>
-		<td>Turns the cpu throttling on or off, potentially slowing down the indexing, for the whole cluster</td>
 	</tr>
 	<tr>
 		<td>
-			<div ng-show="server.threadsRunning">
-				<img src="<c:url value="/img/icons/open.gif" />">&nbsp;<b>Threads running:</b> {{server.threadsRunning}}<br>
-			</div>
-			<div ng-show="!server.threadsRunning">
-				<img src="<c:url value="/img/icons/red_square.gif" />">&nbsp;<b>Threads running:</b> {{server.threadsRunning}}<br>
-			</div>
+			<div ng-show="server.threadsRunning"><img src="<c:url value="/img/icons/open.gif" />">&nbsp;Threads running</div>
+			<div ng-show="!server.threadsRunning"><img src="<c:url value="/img/icons/red_square.gif" />">&nbsp;Threads running</div>
 		</td>
 		<td>
-			<div ng-show="server.threadsRunning">
-				&nbsp;&nbsp;&nbsp;<input ng-click="terminateAll();" type="image" src="<c:url value="/img/icons/run_on_server.gif" />" value="Go!">
-			</div>
-			<div ng-show="!server.threadsRunning">
-				&nbsp;&nbsp;&nbsp;<input ng-click="startupAll();" type="image" src="<c:url value="/img/icons/run_on_server.gif" />" value="Go!">
-			</div>
+			<input 
+					type="submit" 
+					class="btn btn-small btn-warning" 
+					value="Terminate"
+					ng-click="terminateAll();"
+					title="Toggle the threads running">
 		</td>
-		<td>Starts/stops all the thread pools if not initialized and refreshes the thread pools if already initialized, for the whole cluster</td>
 	</tr>
 </table>
-<br><br>
 
-<table ng-controller="ServersController">
+<table ng-controller="ServersController" class="table table-condensed">
 	<tr>
 		<th><img src="<c:url value="/img/icons/server.gif" />">&nbsp;Server log tails</th>
 	</tr>
@@ -48,7 +42,7 @@
 				<img src="<c:url value="/img/icons/web.gif" />">&nbsp;<b>Address</b> : {{server.address}} <br>
 			</a>
 			<div ng-show="!server.show">
-				<textarea rows="10" cols="100">{{server.logTail}}</textarea>
+				<textarea rows="10" cols="450" class="well" style="width: 750px;">{{server.logTail}}</textarea>
 			</div>
 		</td>
 	</tr>

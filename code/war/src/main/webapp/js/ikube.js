@@ -515,7 +515,7 @@ module.controller('SearcherController', function($scope, $http) {
 			// Pop the statistics Json off the array
 			$scope.search = data;
 			$scope.status = status;
-			alert('Search : ' + data + ', ' + $scope.search.searchFields);
+			// alert('Search : ' + data + ', ' + $scope.search.searchFields);
 			if ($scope.search.searchResults != undefined && $scope.search.searchResults.size) {
 				$scope.statistics = $scope.search.searchResults.pop();
 				// $scope.doPagination($scope.search.searchResults);
@@ -559,11 +559,13 @@ module.controller('SearcherController', function($scope, $http) {
 	
 	$scope.addField = function(searchField) {
 		$scope.search.searchFields.push(searchField);
+		$scope.search.typeFields.push('string');
 		// alert('Add search field : ' + searchField + ', ' + $scope.search.searchFields);
 	};
 	
 	$scope.removeField = function($index) {
 		$scope.search.searchFields.splice($index,1);
+		$scope.search.typeFields.splice($index,1);
 		// alert('Remove search field : ' + $scope.search.searchFields);
 	};
 	
@@ -574,6 +576,14 @@ module.controller('SearcherController', function($scope, $http) {
 	
 	$scope.removeSearchString = function($index) {
 		$scope.search.searchStrings.splice($index, 1);
+	};
+	
+	$scope.addNumericField = function($index) {
+		// TODO add the type to the array
+	};
+	
+	$scope.addSortField = function($index) {
+		// TODO Add the sort field to the array
 	};
 	
 	// Creates the Json pagination array for the next pages in the search
