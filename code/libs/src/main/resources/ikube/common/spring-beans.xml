@@ -78,10 +78,10 @@
 		property:showSql="false" />
 	<util:map id="jpaPropertyMap">
 		<!-- <entry key="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true,PrettyPrintLineLength=150" /> -->
-		<entry key="openjpa.Log" value="DefaultLevel=TRACE,JDBC=TRACE,SQL=TRACE,File=ikube/openjpa.log,Runtime=TRACE,Tool=TRACE" />
+		<entry key="openjpa.Log" value="DefaultLevel=INFO,JDBC=INFO,SQL=INFO,File=ikube/openjpa.log,Runtime=INFO,Tool=INFO" />
 
-		<entry key="openjpa.DataCache" value="true(CacheSize=0,SoftReferenceSize=0)" />
-		<entry key="openjpa.QueryCache" value="true(CacheSize=0,SoftReferenceSize=0)" />
+		<entry key="openjpa.DataCache" value="true(CacheSize=10000,SoftReferenceSize=10000)" />
+		<entry key="openjpa.QueryCache" value="true(CacheSize=10000,SoftReferenceSize=10000)" />
 
 		<entry key="openjpa.Optimistic" value="true" />
 		<entry key="openjpa.ReadLockLevel" value="read" />
