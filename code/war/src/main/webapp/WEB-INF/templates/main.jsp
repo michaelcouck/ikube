@@ -55,6 +55,9 @@
 		</td>
 	</tr>
 	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>
+	<tr>
 		<td colspan="2" valign="bottom" style="margin-top: 30px;">
 			<tiles:insertAttribute name="footer" />
 		</td>
