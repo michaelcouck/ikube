@@ -35,8 +35,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Various tests for Lucene indexes, including language indexing and searching. This is just a sanity test for language support etc. Can
- * Lucene search for other character sets and are the results in the correct format, things like that, just to stay ahead of the insane.
+ * Various tests for Lucene indexes, including language indexing and searching. This is just a sanity test for language support etc. Can Lucene search for other
+ * character sets and are the results in the correct format, things like that, just to stay ahead of the insane.
  * 
  * @author Michael Couck
  * @since 06.03.10
@@ -71,7 +71,7 @@ public class LuceneTest extends AbstractTest {
 
 	@Test
 	public void search() throws Exception {
-		SearchSingle searchSingle = createIndexAndSearch(SearchSingle.class, new StemmingAnalyzer(), IConstants.CONTENTS, russian, german, french,
+		SearchSingle searchSingle = createIndexRamAndSearch(SearchSingle.class, new StemmingAnalyzer(), IConstants.CONTENTS, russian, german, french,
 				somethingElseAlToGether, string, somethingNumeric);
 		searchSingle.setFirstResult(0);
 		searchSingle.setFragment(true);
@@ -98,7 +98,7 @@ public class LuceneTest extends AbstractTest {
 	}
 
 	@Test
-	public void concurrentReadAndWriteToIndex() {
+	public void concurrentReadAndWriteToIndex() throws Exception {
 		final long sleep = 100;
 		final int iterations = 3;
 		long time = System.currentTimeMillis();
@@ -142,8 +142,7 @@ public class LuceneTest extends AbstractTest {
 					int index = iterations;
 					while (index-- > 0) {
 						IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, indexDirectory, Boolean.FALSE);
-						Document document = getDocument(Long.toHexString(System.currentTimeMillis()), string, IConstants.CONTENTS,
-								Index.ANALYZED);
+						Document document = getDocument(Long.toHexString(System.currentTimeMillis()), string, IConstants.CONTENTS, Index.ANALYZED);
 						indexWriter.addDocument(document);
 						indexWriter.commit();
 						indexWriter.close(Boolean.TRUE);
@@ -202,8 +201,7 @@ public class LuceneTest extends AbstractTest {
 				try {
 					int index = iterations;
 					while (index-- > 0) {
-						Document document = getDocument(Long.toHexString(System.currentTimeMillis()), string, IConstants.CONTENTS,
-								Index.ANALYZED);
+						Document document = getDocument(Long.toHexString(System.currentTimeMillis()), string, IConstants.CONTENTS, Index.ANALYZED);
 						indexWriter.addDocument(document);
 						indexWriter.commit();
 						// indexWriter.close(Boolean.TRUE);
@@ -222,8 +220,7 @@ public class LuceneTest extends AbstractTest {
 	@Test
 	@SuppressWarnings("resource")
 	public void numericSearch() throws Exception {
-		Directory directory = createIndexRam(indexContext, russian, german, french, somethingElseAlToGether, string,
-				somethingNumeric.trim());
+		Directory directory = createIndexRam(indexContext, russian, german, french, somethingElseAlToGether, string, somethingNumeric.trim());
 		IndexReader indexReader = IndexReader.open(directory);
 		IndexSearcher indexSearcher = new IndexSearcher(indexReader);
 		TermQuery numberQuery = new TermQuery(new Term(IConstants.CONTENTS, NumericUtils.doubleToPrefixCoded(123456789L)));

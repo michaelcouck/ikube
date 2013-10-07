@@ -1,5 +1,6 @@
 package ikube.analytics;
 
+import static junit.framework.Assert.assertEquals;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.toolkit.FileUtilities;
@@ -8,7 +9,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import weka.classifiers.Classifier;
@@ -18,26 +18,43 @@ import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.SparseInstance;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.StringToWordVector;
 
 public class WekaTest extends AbstractTest {
 
 	@Test
-	@Ignore
 	public void readArff() throws Exception {
+		WekaClassifier wekaClassifier = new WekaClassifier();
+
 		File file = FileUtilities.findFileRecursively(new File("."), "instance.arff");
 		FileReader fileReader = new FileReader(file);
 		BufferedReader bufferedReader = new BufferedReader(fileReader);
 		Instances instances = new Instances(bufferedReader);
 		logger.info(instances.toString());
 
-		Instance instance = new Instance(1.0, new double[] { 1, 2, 3, 4 });
-
 		Classifier classifier = new SMO();
-		classifier.buildClassifier(instances);
+		Filter filter = new StringToWordVector();
+
+		instances.setClassIndex(0);
+		filter.setInputFormat(instances);
+		Instances filteredData = Filter.useFilter(instances, filter);
+
+		classifier.buildClassifier(filteredData);
+
+		Instance instance = wekaClassifier.makeInstance(IConstants.NEGATIVE, instances);
+		filter.input(instance);
+		Instance filteredInstance = filter.output();
+
+		double result = classifier.classifyInstance(filteredInstance);
+		String classificationClass = instances.classAttribute().value((int) result);
+		logger.info("Classification : " + classificationClass);
+
+		assertEquals(IConstants.NEGATIVE, classificationClass);
 	}
 
 	@Test
-	public void build() throws Exception {
+	public void createProgrammatically() throws Exception {
 		FastVector attributes = new FastVector();
 
 		attributes.addElement(new Attribute("att1"));
@@ -70,6 +87,8 @@ public class WekaTest extends AbstractTest {
 		double classification = classifier.classifyInstance(dataSet.firstInstance());
 		String classificationClass = dataSet.classAttribute().value((int) classification);
 		logger.info("Classification class : " + classificationClass);
+		
+		assertEquals(IConstants.POSITIVE, classificationClass);
 	}
-	
+
 }

@@ -36,7 +36,7 @@ public class AreIndexesCreatedTest extends AbstractTest {
 	}
 
 	@Test
-	public void evaluate() {
+	public void evaluate() throws Exception {
 		boolean result = indexesCreated.evaluate(indexContext);
 		// This seems to fail in Maven, probably because of
 		// conflicts in the creation of the indexes

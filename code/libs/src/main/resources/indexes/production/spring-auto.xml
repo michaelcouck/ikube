@@ -70,10 +70,10 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="searchStrings"
+		id="indexName"
 		class="ikube.model.IndexableColumn"
-		property:name="searchStrings"
-		property:fieldName="content"
+		property:name="indexName"
+		property:fieldName="indexName"
 		property:address="false"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"

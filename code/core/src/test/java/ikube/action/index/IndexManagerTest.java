@@ -148,7 +148,7 @@ public class IndexManagerTest extends AbstractTest {
 	}
 
 	@Test
-	public void getLatestIndexDirectoryFileFile() {
+	public void getLatestIndexDirectoryFileFile() throws Exception {
 		File latest = IndexManager.getLatestIndexDirectory(indexFolderOne.getParentFile().getParentFile(), null);
 		logger.info("Latest index directory : " + latest);
 		assertEquals(indexFolderTwo.getParentFile(), latest);

@@ -1,0 +1,47 @@
+package ikube.search;
+
+import static org.junit.Assert.assertNotNull;
+import ikube.AbstractTest;
+import ikube.IConstants;
+import ikube.action.index.analyzer.NgramAnalyzer;
+import ikube.search.Search.TypeField;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.search.Query;
+import org.junit.Before;
+import org.junit.Test;
+
+/**
+ * @author Michael Couck
+ * @since 07.10.2013
+ * @version 01.00
+ */
+public class SearchComplexSortedTest extends AbstractTest {
+
+	private SearchComplexSorted searchComplexSorted;
+
+	@Before
+	public void before() throws Exception {
+		searchComplexSorted = createIndexRamAndSearch(SearchComplexSorted.class, new NgramAnalyzer(), IConstants.CONTENT, "123456", "234567", "345678", "456789");
+	}
+
+	@Test
+	public void getQueryAndSearch() throws ParseException {
+		searchComplexSorted.setFirstResult(0);
+		searchComplexSorted.setFragment(Boolean.TRUE);
+		searchComplexSorted.setMaxResults(10);
+		searchComplexSorted.setSearchField(IConstants.CONTENT);
+		searchComplexSorted.setSearchString("123456");
+		searchComplexSorted.setSortField(IConstants.CONTENT);
+		searchComplexSorted.setTypeFields(TypeField.NUMERIC.fieldType());
+		Query query = searchComplexSorted.getQuery();
+		assertNotNull(query);
+
+		ArrayList<HashMap<String, String>> results = searchComplexSorted.execute();
+		logger.info("Results : " + results);
+	}
+
+}

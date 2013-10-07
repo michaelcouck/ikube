@@ -1,0 +1,1 @@
+tail -1000f ikube/ikube.log

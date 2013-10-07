@@ -36,6 +36,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
@@ -234,76 +235,86 @@ public abstract class AbstractTest {
 	}
 
 	protected File createIndexFileSystem(final IndexContext<?> indexContext, final String... strings) {
-		return createIndexFileSystem(indexContext, System.currentTimeMillis(), ip, strings);
+		try {
+			return createIndexFileSystem(indexContext, System.currentTimeMillis(), ip, strings);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
-	protected Directory createIndexRam(final IndexContext<?> indexContext, final String... strings) {
-		IndexWriter indexWriter = null;
-		try {
-			Directory directory = new RAMDirectory();
-			indexWriter = IndexManager.openIndexWriter(indexContext, directory, true);
-			addDocuments(indexWriter, IConstants.CONTENTS, strings);
-			return directory;
-		} catch (Exception e) {
-			logger.error("Exception creating the index : ", e);
-		} finally {
-			try {
-				indexWriter.close();
-			} catch (Exception e) {
-				logger.error(null, e);
-			}
-		}
-		return null;
+	protected Directory createIndexRam(final IndexContext<?> indexContext, final String... strings) throws Exception {
+		IndexWriter indexWriter = getRamIndexWriter(new StandardAnalyzer(IConstants.VERSION));
+		addDocuments(indexWriter, IConstants.CONTENTS, strings);
+		return indexWriter.getDirectory();
 	}
 
-	protected File createIndexFileSystem(final IndexContext<?> indexContext, final long time, final String ip, final String... strings) {
+	protected File createIndexFileSystem(final IndexContext<?> indexContext, final long time, final String ip, final String... strings) throws Exception {
 		IndexWriter indexWriter = null;
-		try {
-			indexWriter = IndexManager.openIndexWriter(indexContext, time, ip);
-			addDocuments(indexWriter, IConstants.CONTENTS, strings);
-			return ((FSDirectory) indexWriter.getDirectory()).getDirectory();
-		} catch (Exception e) {
-			logger.error("Exception creating the index : ", e);
-		} finally {
-			IndexManager.closeIndexWriter(indexWriter);
-		}
-		return null;
+		indexWriter = IndexManager.openIndexWriter(indexContext, time, ip);
+		addDocuments(indexWriter, IConstants.CONTENTS, strings);
+		File indexDirectory = ((FSDirectory) indexWriter.getDirectory()).getDirectory();
+		IndexManager.closeIndexWriter(indexWriter);
+		return indexDirectory;
 	}
 
 	protected List<File> createIndexesFileSystem(final IndexContext<?> indexContext, final long time, final String[] ips, final String... strings) {
-		List<File> serverIndexDirectories = new ArrayList<File>();
-		for (String ip : ips) {
-			File serverIndexDirectory = createIndexFileSystem(indexContext, time, ip, strings);
-			serverIndexDirectories.add(serverIndexDirectory);
+		try {
+			List<File> serverIndexDirectories = new ArrayList<File>();
+			for (String ip : ips) {
+				File serverIndexDirectory = createIndexFileSystem(indexContext, time, ip, strings);
+				serverIndexDirectories.add(serverIndexDirectory);
+			}
+			return serverIndexDirectories;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
-		return serverIndexDirectories;
 	}
 
-	public <T extends Search> T createIndexAndSearch(final Class<T> searchClass, final Analyzer analyzer, final String field, final String... strings)
+	protected <T extends Search> T createIndexRamAndSearch(final Class<T> searchClass, final Analyzer analyzer, final String field, final String... strings)
 			throws Exception {
+		IndexWriter indexWriter = getRamIndexWriter(analyzer);
+		addDocuments(indexWriter, field, strings);
+		IndexReader indexReader = IndexReader.open(indexWriter.getDirectory());
+		Searcher searcher = new IndexSearcher(indexReader);
+		Searchable[] searchables = new Searchable[] { searcher };
+		MultiSearcher multiSearcher = new MultiSearcher(searchables);
+		return searchClass.getConstructor(Searcher.class, Analyzer.class).newInstance(multiSearcher, analyzer);
+	}
+
+	private IndexWriter getRamIndexWriter(final Analyzer analyzer) throws Exception {
 		IndexWriterConfig conf = new IndexWriterConfig(IConstants.VERSION, analyzer);
 		Directory directory = new RAMDirectory();
-		IndexWriter indexWriter = new IndexWriter(directory, conf);
-		try {
-			addDocuments(indexWriter, field, strings);
-		} finally {
-			indexWriter.close();
-		}
-		IndexReader indexReader = IndexReader.open(directory);
-		Searcher searcher = new IndexSearcher(indexReader);
-		return searchClass.getConstructor(Searcher.class, Analyzer.class).newInstance(searcher, analyzer);
+		return new IndexWriter(directory, conf);
 	}
 
-	protected void addDocuments(final IndexWriter indexWriter, final String field, final String... strings) {
-		for (String string : strings) {
+	protected <T extends Search> T createIndexRamAndSearch(final Class<T> searchClass, final Analyzer analyzer, final String[] fields, final String[][] strings)
+			throws Exception {
+		for (int i = 0; i < strings.length; i++) {
+			String id = Long.toString(System.currentTimeMillis());
+			Document document = new Document();
+			IndexManager.addNumericField(IConstants.ID, id, document, Store.YES);
+			for (int j = 0; j < strings[i].length; i++) {
+				String field = fields[j];
+				String string = strings[i][j];
+				if (StringUtils.isNumeric(string.trim())) {
+					IndexManager.addNumericField(field, string.trim(), document, Store.YES);
+				} else {
+					IndexManager.addStringField(field, string, document, Store.YES, Index.ANALYZED, TermVector.NO);
+				}
+			}
+			indexWriter.addDocument(document);
+		}
+		return null;
+	}
+
+	protected void addDocuments(final IndexWriter indexWriter, final String field, final String... strings) throws Exception {
+		for (final String string : strings) {
 			String id = Long.toString(System.currentTimeMillis());
 			Document document = getDocument(id, string, field, Index.ANALYZED);
-			try {
-				indexWriter.addDocument(document);
-			} catch (Exception e) {
-				logger.error(null, e);
-			}
+			indexWriter.addDocument(document);
 		}
+		indexWriter.commit();
+		indexWriter.maybeMerge();
 	}
 
 	protected Document getDocument(final String id, final String string, final String field, final Index analyzed) {

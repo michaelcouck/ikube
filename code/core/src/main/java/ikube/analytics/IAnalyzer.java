@@ -48,6 +48,13 @@ public interface IAnalyzer<I, O, TrainI, TrainO> {
 	TrainO train(final String clazz, final TrainI trainingInput) throws Exception;
 
 	/**
+	 * This method will load the model data from the file(s) specified.
+	 * 
+	 * @param filePattern the pattern of the files that are to be loaded, typically there will only be on of course.
+	 */
+	void file(final String filePattern);
+
+	/**
 	 * TODO Document me...
 	 * 
 	 * @author michael

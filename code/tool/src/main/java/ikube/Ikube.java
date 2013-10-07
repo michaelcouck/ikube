@@ -8,6 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * This is a central class to execute the tools from the command line. It will call the specified tool and pass in the arguments less the first one which is the
+ * class to execute.
+ * 
  * @author Michael Couck
  * @since at least 14.04.2012
  * @version 01.00
@@ -30,8 +33,9 @@ public final class Ikube {
 			System.arraycopy(args, 1, newArgs, 0, newArgs.length);
 			method.invoke(target, new Object[] { newArgs });
 		} catch (Exception e) {
-			LOGGER.error("Usage is: [class-to-execute] <parameters...>", e);
+			LOGGER.error("Usage is: [class-to-execute] <parameters...>");
 			LOGGER.error("For example to unpack bzip2 files : java -jar ikube-tool-4.2.2-SNAPSHOT.jar ikube.data.wiki.WikiDataUnpacker unpack /media/nas/xfs-one/history");
+			LOGGER.error(null, e);
 		}
 	}
 

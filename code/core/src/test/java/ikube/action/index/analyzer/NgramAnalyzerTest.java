@@ -38,7 +38,7 @@ public class NgramAnalyzerTest extends AbstractTest {
 
 	@Test
 	public void endToEnd() throws Exception {
-		SearchSingle searchSingle = createIndexAndSearch(SearchSingle.class, ngramAnalyzer, IConstants.CONTENT, "Michael Couck");
+		SearchSingle searchSingle = createIndexRamAndSearch(SearchSingle.class, ngramAnalyzer, IConstants.CONTENT, "Michael Couck");
 		searchSingle.setFirstResult(0);
 		searchSingle.setFragment(true);
 		searchSingle.setMaxResults(10);

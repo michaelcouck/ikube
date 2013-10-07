@@ -40,7 +40,6 @@ public final class IndexToolkit {
 				}
 			}
 		}
-
 	}
 
 	public static void printIndex(final IndexReader indexReader, final int numDocs) throws Exception {

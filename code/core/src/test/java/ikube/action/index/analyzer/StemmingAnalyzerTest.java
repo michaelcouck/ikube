@@ -39,7 +39,7 @@ public class StemmingAnalyzerTest extends AbstractTest {
 
 	@Test
 	public void endToEnd() throws Exception {
-		SearchSingle searchSingle = createIndexAndSearch(SearchSingle.class, stemmingAnalyzer, IConstants.CONTENT, "duck", "ducks", "peoples", "peopled",
+		SearchSingle searchSingle = createIndexRamAndSearch(SearchSingle.class, stemmingAnalyzer, IConstants.CONTENT, "duck", "ducks", "peoples", "peopled",
 				"oranges", "orange");
 		searchSingle.setFirstResult(0);
 		searchSingle.setFragment(true);

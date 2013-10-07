@@ -34,7 +34,7 @@ public class AreUnopenedIndexesTest extends AbstractTest {
 
 	@Test
 	@SuppressWarnings("deprecation")
-	public void evaluate() {
+	public void evaluate() throws Exception {
 		boolean result = areUnopenedIndexes.evaluate(indexContext);
 		assertFalse(result);
 

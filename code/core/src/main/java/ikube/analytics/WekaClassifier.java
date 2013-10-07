@@ -1,6 +1,11 @@
 package ikube.analytics;
 
 import ikube.IConstants;
+import ikube.toolkit.FileUtilities;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +22,8 @@ import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
 /**
- * This class is a classifier for sentiment essentially, i.e. positive/negative. This classifier is based on the {@link SMO} classification algorithm from mWeka,
- * which is a support vector classifier.
+ * This class is a classifier for sentiment essentially, i.e. positive/negative. This classifier is based on the {@link SMO} classification algorithm from
+ * mWeka, which is a support vector classifier.
  * 
  * @author Michael Couck
  * @since 14.08.13
@@ -38,6 +43,7 @@ public class WekaClassifier implements IAnalyzer<String, String, String, Boolean
 	private volatile Instances classificationInstances;
 	/** The number of vectors to keep in the training data set before we re-build the classifier. */
 	private int buildThreshold = 1000;
+	private String filePattern;
 
 	/**
 	 * {@inheritDoc}
@@ -46,21 +52,31 @@ public class WekaClassifier implements IAnalyzer<String, String, String, Boolean
 	public void initialize() {
 		classifier = new SMO();
 		filter = new StringToWordVector();
+		if (filePattern != null) {
+			try {
+				File file = FileUtilities.findFileRecursively(new File("."), filePattern);
+				FileReader fileReader = new FileReader(file);
+				BufferedReader bufferedReader = new BufferedReader(fileReader);
+				trainingInstances = new Instances(bufferedReader);
+			} catch (Exception e) {
+				LOGGER.error("", e);
+			}
+		} else {
+			// The general attributes for the instances, contains the string
+			// attribute for the input text and the class attributes for the output
+			FastVector attributes = new FastVector(2);
+			// The class attributes, i.e. positive and negative
+			FastVector classValues = new FastVector(2);
+			classValues.addElement(IConstants.POSITIVE);
+			classValues.addElement(IConstants.NEGATIVE);
 
-		// The general attributes for the instances, contains the string
-		// attribute for the input text and the class attributes for the output
-		FastVector attributes = new FastVector(2);
-		// The class attributes, i.e. positive and negative
-		FastVector classValues = new FastVector(2);
-		classValues.addElement(IConstants.POSITIVE);
-		classValues.addElement(IConstants.NEGATIVE);
+			// Add the class attributes for the output classification
+			attributes.addElement(new Attribute(IConstants.CLASS_ATTRIBUTE, classValues));
+			// Add the input text attribute
+			attributes.addElement(new Attribute(IConstants.TEXT_ATTRIBUTE, (FastVector) null));
 
-		// Add the class attributes for the output classification
-		attributes.addElement(new Attribute(IConstants.CLASS_ATTRIBUTE, classValues));
-		// Add the input text attribute
-		attributes.addElement(new Attribute(IConstants.TEXT_ATTRIBUTE, (FastVector) null));
-
-		trainingInstances = new Instances("Training Instance", attributes, 100);
+			trainingInstances = new Instances("Training Instance", attributes, 100);
+		}
 		trainingInstances.setClassIndex(0);
 	}
 
@@ -134,7 +150,7 @@ public class WekaClassifier implements IAnalyzer<String, String, String, Boolean
 
 			filter.setInputFormat(trainingInstances);
 			Instances filteredData = Filter.useFilter(trainingInstances, filter);
-			Classifier classifier = Classifier.makeCopy(this.classifier);
+			Classifier classifier = new SMO();
 			classifier.buildClassifier(filteredData);
 			this.classifier = classifier;
 			// We take a copy of the training instances, although we don't really have to I guess
@@ -144,7 +160,7 @@ public class WekaClassifier implements IAnalyzer<String, String, String, Boolean
 			evaluation.evaluateModel(classifier, filteredData);
 			String evaluationReport = evaluation.toSummaryString();
 			LOGGER.info("Classifier evaluation : " + evaluationReport);
-			// IOUtils.writeInstancesToArffFile(filteredData, this.getClass().getSimpleName() + ".arff");
+			IOUtils.writeInstancesToArffFile(filteredData, this.toString() + ".arff");
 			return;
 		} catch (Exception e) {
 			LOGGER.info("Exception building classifier : ", e);
@@ -162,7 +178,7 @@ public class WekaClassifier implements IAnalyzer<String, String, String, Boolean
 	 * @param instances the instances data set that will hold the instance for classification
 	 * @return the instance with the text data as a vector
 	 */
-	private synchronized Instance makeInstance(final String text, final Instances instances) {
+	synchronized Instance makeInstance(final String text, final Instances instances) {
 		// Create instance of length two, the first attribute is the class and the second is the vector from the text
 		SparseInstance instance = new SparseInstance(2);
 		// Set value for message attribute
@@ -171,6 +187,14 @@ public class WekaClassifier implements IAnalyzer<String, String, String, Boolean
 		// Give instance access to attribute information from the dataset
 		instance.setDataset(instances);
 		return instance;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void file(final String filePattern) {
+		this.filePattern = filePattern;
 	}
 
 }
