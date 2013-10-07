@@ -355,6 +355,9 @@ public class SearcherService implements ISearcherService {
 			String[] searchStringsCorrected = searchComplexSorted.getCorrections();
 			persistSearch(search.getIndexName(), search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]), searchStringsCorrected,
 					results);
+			search.setCorrectedSearchStrings(Arrays.asList(searchStringsCorrected));
+			search.setCorrections(searchStringsCorrected != null && searchStringsCorrected.length > 0);
+			search.setSearchResults(results);
 			return search;
 		} catch (final Exception e) {
 			handleException(search.getIndexName(), e);

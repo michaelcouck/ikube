@@ -10,7 +10,7 @@
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 		</a>
-		<a class="brand" href="#top" style="margin-left: 1px; margin-top: 4px;">Ikube</a>
+		<a class="brand" href="<spring:url value="/index.html" />" style="margin-left: 1px; margin-top: 4px;">Ikube</a>
 		<security:authorize access="isAuthenticated()">
 			<form>
 				<ul class="nav">

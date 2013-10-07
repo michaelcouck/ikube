@@ -505,6 +505,8 @@ module.controller('SearcherController', function($scope, $http) {
 	$scope.statistics = null;
 	$scope.fields = [];
 	$scope.pageBlock = 10;
+	$scope.pagination = null;
+	$scope.endResult = 0;
 	
 	// Go to the web service for the results
 	$scope.doSearch = function() {
@@ -515,16 +517,13 @@ module.controller('SearcherController', function($scope, $http) {
 			// Pop the statistics Json off the array
 			$scope.search = data;
 			$scope.status = status;
-			// alert('Search : ' + data + ', ' + $scope.search.searchFields);
-			if ($scope.search.searchResults != undefined && $scope.search.searchResults.size) {
-				$scope.statistics = $scope.search.searchResults.pop();
-				// $scope.doPagination($scope.search.searchResults);
-				alert('Search : ' + $scope.search.searchResults + ', ' + $scope.statistics);
+			if ($scope.search.searchResults != undefined && $scope.search.searchResults.length > 0) {
+				$scope.doPagination();
+				// alert('Search : ' + $scope.search.searchResults + ', ' + $scope.statistics);
 			}
 		});
 		promise.error(function(data, status) {
 			alert('Data : ' + data + ', status : ' + status);
-			$scope.status = status;
 		});
 	};
 	// We execute this once to get the search object from the server
@@ -578,6 +577,10 @@ module.controller('SearcherController', function($scope, $http) {
 		$scope.search.searchStrings.splice($index, 1);
 	};
 	
+	$scope.setMaxResults = function(maxResults) {
+		$scope.search.maxResults = maxResults;
+	};
+	
 	$scope.addNumericField = function($index) {
 		// TODO add the type to the array
 	};
@@ -587,7 +590,7 @@ module.controller('SearcherController', function($scope, $http) {
 	};
 	
 	// Creates the Json pagination array for the next pages in the search
-	$scope.doPagination = function(data) {
+	$scope.doPagination = function() {
 		$scope.pagination = [];
 		$scope.statistics = $scope.search.searchResults.pop();
 		var total = $scope.statistics.total;
@@ -602,8 +605,7 @@ module.controller('SearcherController', function($scope, $http) {
 		// Create one 'page' for each block of results
 		for (var i = 0; i < pages && i < $scope.pageBlock; i++) {
 			var firstResult = i * $scope.pageBlock;
-			var active = firstResult == $scope.search.firstResult ? 'black' : 'blue';
-			$scope.pagination[i] = { page : i, firstResult : firstResult, active : active };
+			$scope.pagination[i] = { page : i, firstResult : firstResult };
 		};
 		// Find the 'to' result being displayed
 		var modulo = total % $scope.pageBlock;
