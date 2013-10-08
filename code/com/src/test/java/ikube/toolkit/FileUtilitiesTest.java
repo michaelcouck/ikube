@@ -6,10 +6,19 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.params.HttpClientParams;
+import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
+import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -137,6 +146,30 @@ public class FileUtilitiesTest extends AbstractTest {
 		File textSentimentFolder = FileUtilities.findDirectoryRecursively(folder, 2, "txt_sentoken");
 		logger.info("Sentiment folder : " + textSentimentFolder);
 		assertNotNull(textSentimentFolder);
+	}
+
+	@Test
+	public void getContents() throws IOException {
+		HttpClient httpClient = getHttpClient();
+		GetMethod getMethod = new GetMethod("http://www.google.com");
+		httpClient.executeMethod(getMethod);
+		InputStream inputStream = getMethod.getResponseBodyAsStream();
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		FileUtilities.getContents(inputStream, byteArrayOutputStream, Integer.MAX_VALUE);
+		System.out.println(byteArrayOutputStream.toString());
+		assertTrue(!StringUtils.isEmpty(byteArrayOutputStream.toString()));
+	}
+
+	private HttpClient getHttpClient() {
+		MultiThreadedHttpConnectionManager multiThreadedHttpConnectionManager = new MultiThreadedHttpConnectionManager();
+		HttpConnectionManagerParams connectionManagerParams = new HttpConnectionManagerParams();
+		connectionManagerParams.setDefaultMaxConnectionsPerHost(10000);
+		connectionManagerParams.setMaxTotalConnections(100000);
+		connectionManagerParams.setStaleCheckingEnabled(true);
+		connectionManagerParams.setTcpNoDelay(true);
+		multiThreadedHttpConnectionManager.setParams(connectionManagerParams);
+		HttpClientParams httpClientParams = new HttpClientParams();
+		return new HttpClient(httpClientParams, multiThreadedHttpConnectionManager);
 	}
 
 }

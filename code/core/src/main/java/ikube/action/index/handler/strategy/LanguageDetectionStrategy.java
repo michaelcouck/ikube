@@ -59,8 +59,7 @@ public final class LanguageDetectionStrategy extends AStrategy {
 			try {
 				Detector detector = DetectorFactory.create();
 				detector.append(content.toString());
-				String language = detector.detect();
-				return language;
+				return detector.detect();
 			} catch (LangDetectException e) {
 				logger.debug("Language processing error : {} ", e.getMessage());
 			}

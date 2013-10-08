@@ -4,6 +4,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.IConstants;
+import ikube.action.index.content.ByteOutputStream;
+import ikube.action.index.content.IContentProvider;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
@@ -15,6 +17,7 @@ import java.util.concurrent.ForkJoinTask;
 
 import mockit.Deencapsulation;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +29,7 @@ import org.junit.Test;
  */
 public class IndexableInternetHandlerTest extends AbstractTest {
 
-	private String url = "http://code.google.com/p/ikube/";
+	private String url = "http://www.google.com";
 	private List<Document> documents;
 	private IndexableInternet indexableInternet;
 	private IndexableInternetHandler indexableInternetHandler;
@@ -69,17 +72,20 @@ public class IndexableInternetHandlerTest extends AbstractTest {
 	public void handleResource() {
 		Url url = new Url();
 		url.setUrl(this.url);
-		// String title = "The title";
-		// String content = "<html><head><title>" + title + "</title></head><body>Hello world</body></html>";
 		url.setContentType("text/html");
-		// url.setRawContent(content.getBytes());
-		// url.setParsedContent("Hello world");
-
 		List<Url> urls = indexableInternetHandler.handleResource(indexContext, indexableInternet, url);
 		logger.info("Urls : " + urls);
-
 		assertNotNull(urls);
 		assertTrue(urls.size() > 0);
+	}
+
+	@Test
+	public void getContentFromUrl() {
+		indexableInternet.setUrl(this.url);
+		Url url = new Url();
+		url.setUrl(this.url);
+		ByteOutputStream content = indexableInternetHandler.getContentFromUrl((IContentProvider<IndexableInternet>) null, indexableInternet, url);
+		assertTrue(!StringUtils.isEmpty(content.toString()));
 	}
 
 }

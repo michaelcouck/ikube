@@ -12,6 +12,7 @@ import ikube.action.index.parse.XMLParser;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
+import ikube.toolkit.FileUtilities;
 import ikube.toolkit.HashUtilities;
 import ikube.toolkit.UriUtilities;
 
@@ -41,7 +42,7 @@ import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.util.UriUtils;
@@ -61,7 +62,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 		IResourceProvider<Url> internetResourceProvider = new InternetResourceProvider(indexableInternet);
 		return getRecursiveAction(indexContext, indexableInternet, internetResourceProvider);
 	}
-	
+
 	void initialize() {
 		MultiThreadedHttpConnectionManager multiThreadedHttpConnectionManager = new MultiThreadedHttpConnectionManager();
 		HttpConnectionManagerParams connectionManagerParams = new HttpConnectionManagerParams();
@@ -132,27 +133,28 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	 */
 	protected ByteOutputStream getContentFromUrl(final IContentProvider<IndexableInternet> contentProvider, final IndexableInternet indexable, final Url url) {
 		GetMethod get = null;
-		InputStream responseInputStream = null;
 		ByteOutputStream byteOutputStream = null;
 		try {
 			String encodedUrl = UriUtils.encodeUri(url.getUrl(), IConstants.ENCODING);
-			get = new GetMethod(encodedUrl);
-			httpClient.executeMethod(get);
-			responseInputStream = get.getResponseBodyAsStream();
-			indexable.setCurrentInputStream(responseInputStream);
+
+			GetMethod getMethod = new GetMethod(encodedUrl);
+			httpClient.executeMethod(getMethod);
+			InputStream inputStream = getMethod.getResponseBodyAsStream();
 			byteOutputStream = new ByteOutputStream();
-			contentProvider.getContent(indexable, byteOutputStream);
+			FileUtilities.getContents(inputStream, byteOutputStream, Integer.MAX_VALUE);
+
 			url.setRawContent(byteOutputStream.getBytes());
 			if (url.getUrl() != null) {
 				// Add the url to the content
 				byteOutputStream.write(" ".getBytes());
 				byteOutputStream.write(url.getUrl().getBytes());
 			}
-			return byteOutputStream;
+			if (StringUtils.isEmpty(byteOutputStream.toString())) {
+				logger.info("No content for url : " + encodedUrl);
+			}
 		} catch (Exception e) {
 			handleException(indexable, e);
 		} finally {
-			IOUtils.closeQuietly(responseInputStream);
 			try {
 				if (get != null) {
 					get.releaseConnection();

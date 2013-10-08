@@ -31,6 +31,7 @@ import org.junit.Test;
  */
 public class IndexableInternetHandlerIntegration extends IntegrationTest {
 
+	private String url = "http://www.google.com";
 	private IndexContext<?> indexContext;
 	private IndexableInternet indexableInternet;
 	private IndexableInternetHandler indexableInternetHandler;
@@ -39,6 +40,8 @@ public class IndexableInternetHandlerIntegration extends IntegrationTest {
 	public void before() {
 		indexContext = monitorService.getIndexContext("indexContext");
 		indexableInternet = ApplicationContextManager.getBean("ikubeGoogleCode");
+		indexableInternet.setUrl(url);
+		indexableInternet.setBaseUrl(url);
 		indexableInternetHandler = ApplicationContextManager.getBean(IndexableInternetHandler.class);
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 
@@ -57,15 +60,14 @@ public class IndexableInternetHandlerIntegration extends IntegrationTest {
 		ThreadUtilities.sleep(3000);
 		ThreadUtilities.cancellForkJoinPool(indexContext.getName());
 		int expectedAtLeast = 1;
+		logger.info("Num docs : " + indexContext.getIndexWriters()[0].numDocs());
 		assertTrue("There must be some documents in the index : ", indexContext.getIndexWriters()[0].numDocs() >= expectedAtLeast);
 	}
 
 	@Test
 	public void extractLinksFromContent() throws Exception {
 		int expectedAtLeast = 3;
-
 		InputStream inputStream = new URL(indexableInternet.getUrl()).openStream();
-
 		List<Url> urls = Deencapsulation.invoke(indexableInternetHandler, "extractLinksFromContent", indexableInternet, inputStream);
 		assertTrue("Expected more than " + expectedAtLeast + " and got : " + urls.size(), urls.size() > expectedAtLeast);
 	}

@@ -5,27 +5,34 @@
 			<table>
 				<tr>
 					<td><b>Collection:</b></td>
-					<td colspan="3">
-						<select ng-controller="IndexesController" ng-model="indexName" ng-change="addFields(indexName);setIndex(indexName);">
-							<option ng-repeat="index in indexes" value="{{index}}">{{index}}</option>
+					<td colspan="4" nowrap="nowrap">
+						<select 
+							ng-controller="IndexesController" 
+							ng-model="indexName" 
+							ng-model="indexes" 
+							ng-options="index for index in indexes" 
+							ng-change="addFields(indexName);setIndex(indexName);">
+							<option style="display:none" value="">collection</option>
+							<!-- <option ng-repeat="index in indexes" value="{{index}}">{{index}}</option> -->
 						</select>
-					</td>
-					<td>
-						<select ng-model="maxResults" ng-change="setMaxResults(maxResults);">
-							<option id="maxResults" value="10" selected="selected">10</option>
-							<option id="maxResults" value="25">25</option>
-							<option id="maxResults" value="50">50</option>
-							<option id="maxResults" value="100">100</option>
-							<option id="maxResults" value="1000">1000</option>
-							<option id="maxResults" value="1000000">stupid</option>
+						<!-- setMaxResults(10); -->
+						<!-- ng-change="setMaxResults(maxResults);" -->
+						<select ng-model="maxResults;" ng-init="maxResults=10;" ng-change="setMaxResults(maxResults);" ng-required>
+							<!-- <option value="{{search.maxResults}}" ng-selected="selected" selected="selected">{{search.maxResults}}</option> -->
+							<option value="10" >10</option>
+							<option value="25">25</option>
+							<option value="50">50</option>
+							<option value="100">100</option>
+							<option value="1000">1000</option>
+							<option value="10000">stupid</option>
 						</select>
 					</td>
 				</tr>
 				<tr>
 					<td><b>Fields:</b></td>
 					<td colspan="4">
-						<select ng-model="field" ng-model="fields" ng-options="field for field in fields" ng-change="addField(field)">
-							<option style="display:none" value="">select a field</option>
+						<select ng-model="field" ng-model="fields" ng-options="field for field in fields" ng-change="addField(field);">
+							<option style="display:none" value="">field</option>
 						</select>
 					</td>
 				</tr>
@@ -34,7 +41,7 @@
 					<td><input id="{{field}}" name="{{field}}" ng-model="searchString" ng-change="addSearchString($index, searchString)"></td>
 					<td>Numeric : <input type="checkbox" ng-model="sortField" ng-change="addNumericField($index);"></td>
 					<td>Sort : <input type="checkbox" ng-model="sortField" ng-change="addSortField($index);"></td>
-					<td><button class="btn btn-small btn-success : hover" ng-click="removeField($index);removeSearchString($index);">Remove</button></td>
+					<td><a href="#" class="btn btn-small btn-success : hover" ng-click="removeField($index);removeSearchString($index);">Remove</a></td>
 				</tr>
 				<tr>
 					<td colspan="5">
@@ -44,7 +51,13 @@
 			</table>
 			</form>
 		</td>
-		<td>Map here if required</td>
+		<td>
+			<table>
+				<tr>
+					<td>Map</td>
+				</tr>
+			</table>
+		</td>
 	</tr>
 	
 	<tr ng-show="statistics != undefined && statistics">
@@ -53,11 +66,6 @@
 			<div ng-show="statistics != undefined && statistics.corrections != undefined && statistics.corrections.length > 0">
 				<a href="#" ng-model="searchStrings" ng-click="setSearchStrings(statistics.corrections);doSearch();">Did you mean : {{statistics.corrections}}</a>
 			</div>
-		</td>
-	</tr>
-	
-	<tr ng-show="endResult > 0">
-		<td colspan="2">
 			<div class="row">
 	      		<div class="span6">
 					<div class="pagination">
@@ -71,8 +79,6 @@
 			</div>
 		</td>
 	</tr>
-	
-	<tr><td colspan="2">&nbsp;</td></tr>
 	
 	<tr ng-repeat="result in search.searchResults" ng-show="search.searchResults != undefined && endResult > 0">
 		<td colspan="2">
@@ -97,4 +103,3 @@
 	</tr>
 	
 </table>
-<br><br><br><br>

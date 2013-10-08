@@ -10,6 +10,15 @@ import java.io.ByteArrayOutputStream;
  * @version 01.00
  */
 public class ByteOutputStream extends ByteArrayOutputStream {
+	
+	public ByteOutputStream() {
+		super();
+	}
+	
+	public ByteOutputStream(final byte[] buf) {
+		super();
+		this.buf = buf;
+	}
 
 	public byte[] getBytes() {
 		return buf;

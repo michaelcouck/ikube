@@ -578,6 +578,7 @@ module.controller('SearcherController', function($scope, $http) {
 	};
 	
 	$scope.setMaxResults = function(maxResults) {
+		// alert('Max results : ' + maxResults);
 		$scope.search.maxResults = maxResults;
 	};
 	

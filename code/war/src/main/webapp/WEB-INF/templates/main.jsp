@@ -50,8 +50,9 @@
 		<td valign="top">
 			<tiles:insertAttribute name="menu" />
 		</td>
-		<td valign="top">
+		<td valign="top" style="padding-left: 10px; padding-top: 5px;">
 			<tiles:insertAttribute name="content" />
+			<br>
 		</td>
 	</tr>
 	<tr>

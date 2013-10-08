@@ -58,7 +58,6 @@
 		property:maxExceptions="10" />
 	<util:list id="autocompleteColumnsH2">
 		<ref local="id" />
-		<ref local="searchStrings" />
 	</util:list>
 	
 	<bean
