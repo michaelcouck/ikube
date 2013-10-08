@@ -41,7 +41,6 @@ public class UdpBroadcaster {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Future<?>> initialize() {
 		ThreadUtilities.initialize();
 

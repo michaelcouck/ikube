@@ -30,6 +30,20 @@
 					title="Toggle the threads running">
 		</td>
 	</tr>
+	<tr>
+		<td>
+			<div ng-show="server.threadsRunning"><img src="<c:url value="/img/icons/open.gif" />">&nbsp;Optimizer running</div>
+			<div ng-show="!server.threadsRunning"><img src="<c:url value="/img/icons/red_square.gif" />">&nbsp;Optimizer running</div>
+		</td>
+		<td>
+			<input 
+					type="submit" 
+					class="btn btn-small btn-warning" 
+					value="Optimize"
+					ng-click="alert('Not implemented')"
+					title="Optimizer not running">
+		</td>
+	</tr>
 </table>
 
 <table ng-controller="ServersController" class="table table-condensed">

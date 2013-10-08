@@ -217,9 +217,9 @@ public final class IndexManager {
 			directory = indexWriter.getDirectory();
 			indexWriter.commit();
 			indexWriter.maybeMerge();
-			// indexWriter.forceMerge(10, Boolean.TRUE);
+			indexWriter.forceMerge(10, Boolean.TRUE);
 			indexWriter.deleteUnusedFiles();
-			// indexWriter.optimize(10);
+			indexWriter.optimize(10);
 		} catch (NullPointerException e) {
 			LOGGER.error("Null pointer, in the index writer : " + indexWriter);
 			LOGGER.debug(null, e);

@@ -42,7 +42,7 @@
 		property:strategies-ref="geoname-strategies" />
 	<util:list id="geospatialIndexables">
 		<ref local="geoname" />
-		<ref local="alternatename" />
+		<!-- <ref local="alternatename" /> -->
 	</util:list>
 	
 	<bean
