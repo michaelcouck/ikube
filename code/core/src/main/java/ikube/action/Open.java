@@ -3,6 +3,7 @@ package ikube.action;
 import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.search.SearcherService;
+import ikube.toolkit.Optimizer;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -66,6 +67,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 					if (IndexWriter.isLocked(directory) && !indexContext.isDelta()) {
 						continue;
 					}
+					Optimizer.optimize(indexContext);
 					reader = IndexReader.open(directory, Boolean.TRUE);
 					searcher = new IndexSearcher(reader);
 					searchers.add(searcher);
