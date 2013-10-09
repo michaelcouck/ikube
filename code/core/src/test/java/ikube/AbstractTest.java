@@ -1,5 +1,7 @@
 package ikube;
 
+import static ikube.toolkit.ApplicationContextManager.getBean;
+import static ikube.toolkit.ObjectToolkit.populateFields;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -212,16 +214,31 @@ public abstract class AbstractTest {
 
 	protected static void delete(final IDataBase dataBase, final Class<?>... klasses) {
 		for (final Class<?> klass : klasses) {
+			List<?> list = dataBase.find(klass, 0, 1000);
+			do {
+				dataBase.removeBatch(list);
+				list = dataBase.find(klass, 0, 1000);
+			} while (list.size() > 0);
+		}
+	}
+
+	protected static <T> void insert(final Class<T> klass, final int entities) {
+		IDataBase dataBase = getBean(IDataBase.class);
+		List<T> tees = new ArrayList<T>();
+		for (int i = 0; i < entities; i++) {
+			T tee;
 			try {
-				List<?> list = dataBase.find(klass, 0, 1000);
-				do {
-					dataBase.removeBatch(list);
-					list = dataBase.find(klass, 0, 1000);
-				} while (list.size() > 0);
+				tee = populateFields(klass, klass.newInstance(), Boolean.TRUE, 1, "id", "indexContext");
+				tees.add(tee);
+				if (tees.size() >= 1000) {
+					dataBase.persistBatch(tees);
+					tees.clear();
+				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
 		}
+		dataBase.persistBatch(tees);
 	}
 
 	/**

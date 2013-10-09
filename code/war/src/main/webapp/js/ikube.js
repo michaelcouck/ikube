@@ -498,28 +498,23 @@ module.controller('CreateController', function($http, $scope) {
 //The controller that does the search
 module.controller('SearcherController', function($scope, $http) {
 	
-	$scope.headers = { headers: { 'Content-Type' : 'application/json' } };
-	
-	// The model data that we bind to in the form
-	$scope.search = null;
-	$scope.statistics = null;
 	$scope.fields = [];
+	$scope.statistics = null;
 	$scope.pageBlock = 10;
 	$scope.pagination = null;
-	$scope.endResult = 0;
+	$scope.search = { maxResults : $scope.pageBlock };
+	$scope.headers = { headers: { 'Content-Type' : 'application/json' } };
 	
 	// Go to the web service for the results
 	$scope.doSearch = function() {
-		// Advanced search
+		$scope.search.maxResults = $scope.pageBlock;
 		$scope.url = getServiceUrl('/ikube/service/search/json/complex/sorted/json');
 		var promise = $http.post($scope.url, $scope.search);
 		promise.success(function(data, status) {
-			// Pop the statistics Json off the array
 			$scope.search = data;
 			$scope.status = status;
 			if ($scope.search.searchResults != undefined && $scope.search.searchResults.length > 0) {
 				$scope.doPagination();
-				// alert('Search : ' + $scope.search.searchResults + ', ' + $scope.statistics);
 			}
 		});
 		promise.error(function(data, status) {
@@ -529,89 +524,58 @@ module.controller('SearcherController', function($scope, $http) {
 	// We execute this once to get the search object from the server
 	$scope.doSearch();
 	
-	// Sets the first result based on the pagination page requested
-	$scope.doFirstResult = function(firstResult) {
-		$scope.search.firstResult = firstResult;
-	}
-	
-	$scope.setIndex = function(indexName) {
-		$scope.search.indexName = indexName;
-	};
-	
-	$scope.addFields = function(indexName) {
+	// Get the fields for the index
+	$scope.doFields = function(indexName) {
 		$scope.url = getServiceUrl('/ikube/service/monitor/fields');
 		$scope.parameters = { indexName : indexName };
 		$scope.config = { params : $scope.parameters };
 		var promise = $http.get($scope.url, $scope.config);
 		promise.success(function(data, status) {
-			// Pop the statistics Json off the array
 			$scope.fields = [];
 			$scope.fields = data;
 			$scope.status = status;
 			$scope.searchFields = {};
-			// alert('Fields : ' + $scope.fields + ', ' + indexName);
 		});
 		promise.error(function(data, status) {
 			$scope.status = status;
 		});
 	};
 	
-	$scope.addField = function(searchField) {
-		$scope.search.searchFields.push(searchField);
-		$scope.search.typeFields.push('string');
-		// alert('Add search field : ' + searchField + ', ' + $scope.search.searchFields);
-	};
-	
-	$scope.removeField = function($index) {
-		$scope.search.searchFields.splice($index,1);
-		$scope.search.typeFields.splice($index,1);
-		// alert('Remove search field : ' + $scope.search.searchFields);
-	};
-	
-	$scope.addSearchString = function($index, searchString) {
-		$scope.search.searchStrings.splice($index,1);
-		$scope.search.searchStrings.push(searchString);
-	};
-	
-	$scope.removeSearchString = function($index) {
-		$scope.search.searchStrings.splice($index, 1);
-	};
-	
-	$scope.setMaxResults = function(maxResults) {
-		// alert('Max results : ' + maxResults);
-		$scope.search.maxResults = maxResults;
-	};
-	
-	$scope.addNumericField = function($index) {
-		// TODO add the type to the array
-	};
-	
-	$scope.addSortField = function($index) {
-		// TODO Add the sort field to the array
-	};
-	
 	// Creates the Json pagination array for the next pages in the search
 	$scope.doPagination = function() {
 		$scope.pagination = [];
 		$scope.statistics = $scope.search.searchResults.pop();
-		var total = $scope.statistics.total;
 		// Exception or no results
-		if (total == null || total == 0) {
-			$scope.search.firstResult = 0;
+		if ($scope.statistics == undefined || $scope.statistics.total == undefined || $scope.statistics.total == null || $scope.statistics.total == 0) {
 			$scope.endResult = 0;
+			$scope.search.firstResult = 0;
 			return;
 		}
 		// We just started a search and got the first results
-		var pages = total / $scope.pageBlock;
+		var pages = $scope.statistics.total / $scope.pageBlock;
 		// Create one 'page' for each block of results
-		for (var i = 0; i < pages && i < $scope.pageBlock; i++) {
+		for (var i = 0; i < pages && i < 10; i++) {
 			var firstResult = i * $scope.pageBlock;
 			$scope.pagination[i] = { page : i, firstResult : firstResult };
 		};
 		// Find the 'to' result being displayed
-		var modulo = total % $scope.pageBlock;
-		$scope.endResult = $scope.search.firstResult + modulo == total ? total : $scope.search.firstResult + $scope.pageBlock;
+		var modulo = $scope.statistics.total % $scope.pageBlock;
+		$scope.endResult = $scope.search.firstResult + modulo == $scope.statistics.total ? $scope.statistics.total : $scope.search.firstResult + parseInt($scope.pageBlock, 10);
 	}
+	
+	// Set and remove fields from the search object and local scoped objects 
+	$scope.setField = function(field, value) {
+		$scope.search[field] = value;
+	}
+	$scope.removeField = function(field, $index) {
+		$scope.search[field].splice($index, 1);
+	};
+	$scope.pushField = function(field, value) {
+		$scope.search[field].push(value);
+	};
+	$scope.pushFieldScope = function(item, value) {
+		$scope[item].push(value);
+	};
 });
 
 //module.controller('TypeaheadController', function($scope, $http, $timeout) {

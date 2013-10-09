@@ -2,7 +2,6 @@ package ikube.action.index.handler.database;
 
 import static ikube.toolkit.ApplicationContextManager.getBean;
 import static ikube.toolkit.DatabaseUtilities.close;
-import static ikube.toolkit.ObjectToolkit.populateFields;
 import static mockit.Deencapsulation.invoke;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -25,7 +24,6 @@ import ikube.toolkit.PropertyConfigurer;
 import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.UriUtilities;
 
-import java.io.FileNotFoundException;
 import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -33,7 +31,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ForkJoinTask;
@@ -67,29 +64,11 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
 	private IndexableTableHandler indexableTableHandler;
 
 	@BeforeClass
-	public static void beforeClass() throws FileNotFoundException, SQLException {
+	public static void beforeClass() throws Exception {
 		getBean(Scheduler.class).shutdown();
 		IDataBase dataBase = getBean(IDataBase.class);
 		delete(dataBase, Snapshot.class);
-		insertData(Snapshot.class, 11000);
-	}
-
-	public static <T> void insertData(final Class<T> klass, final int entities) throws SQLException, FileNotFoundException {
-		IDataBase dataBase = getBean(IDataBase.class);
-		List<T> tees = new ArrayList<T>();
-		try {
-			for (int i = 0; i < entities; i++) {
-				T tee = populateFields(klass, klass.newInstance(), Boolean.TRUE, 1, "id", "indexContext");
-				tees.add(tee);
-				if (tees.size() >= 1000) {
-					dataBase.persistBatch(tees);
-					tees.clear();
-				}
-			}
-			dataBase.persistBatch(tees);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		insert(Snapshot.class, 11000);
 	}
 
 	@Before

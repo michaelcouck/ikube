@@ -76,6 +76,7 @@
 	<mvc:view-controller path="/admin.html" />
 	<mvc:view-controller path="/twitter.html" />
 	<mvc:view-controller path="/happy.html" />
+	<mvc:view-controller path="/crud.html" />
 	
 	<mvc:interceptors>
 		<bean 
