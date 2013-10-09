@@ -309,4 +309,16 @@ public class SearcherXml extends Searcher {
 		throw new UnsupportedOperationException("This is a Json sall to an xml resource");
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@POST
+	@Path(SearcherJson.COMPLEX_SORTED_JSON_ALL)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Override
+	public Response searchComplexSortedAll(HttpServletRequest request, UriInfo uriInfo) {
+		throw new UnsupportedOperationException("This is a Json sall to an xml resource");
+	}
+
 }

@@ -171,5 +171,10 @@ public interface ISearcherService {
 	 * TODO Document me...
 	 */
 	Search searchComplexSorted(final Search search);
+	
+	/**
+	 * TODO Document me...
+	 */
+	Search searchComplexSortedAll(final Search search);
 
 }

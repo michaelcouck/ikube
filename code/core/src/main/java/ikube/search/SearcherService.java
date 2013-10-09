@@ -11,7 +11,10 @@ import ikube.toolkit.HashUtilities;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ejb.Remote;
@@ -347,8 +350,8 @@ public class SearcherService implements ISearcherService {
 			searchComplexSorted.setFirstResult(search.getFirstResult());
 			searchComplexSorted.setFragment(search.isFragment());
 			searchComplexSorted.setMaxResults(search.getMaxResults());
-			searchComplexSorted.setSearchField(search.getSearchFields().toArray(new String[search.getSearchFields().size()]));
 			searchComplexSorted.setSearchString(search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]));
+			searchComplexSorted.setSearchField(search.getSearchFields().toArray(new String[search.getSearchFields().size()]));
 			searchComplexSorted.setTypeFields(search.getTypeFields().toArray(new String[search.getTypeFields().size()]));
 			searchComplexSorted.setSortField(search.getSortFields().toArray(new String[search.getSortFields().size()]));
 			ArrayList<HashMap<String, String>> results = searchComplexSorted.execute();
@@ -363,6 +366,51 @@ public class SearcherService implements ISearcherService {
 			handleException(search.getIndexName(), e);
 			return search;
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Search searchComplexSortedAll(final Search search) {
+		String[] indexNames = monitorService.getIndexNames();
+		String[] searchStrings = search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]);
+		ArrayList<HashMap<String, String>> searchResults = new ArrayList<HashMap<String, String>>();
+		long totalHits = 0;
+		float highScore = 0;
+		long duration = 0;
+		Exception exception = null;
+		HashMap<String, String> statistics = new HashMap<String, String>();
+		for (final String indexName : indexNames) {
+			List<HashMap<String, String>> searchSubResults = searchMultiAll(indexName, searchStrings, search.isFragment(), search.getFirstResult(),
+					search.getMaxResults());
+			statistics = searchSubResults.remove(searchSubResults.size() - 1);
+			totalHits += Long.parseLong(statistics.get(IConstants.TOTAL));
+			highScore += Float.parseFloat(statistics.get(IConstants.SCORE));
+			duration += Long.parseLong(statistics.get(IConstants.DURATION));
+			searchResults.addAll(searchSubResults);
+		}
+		statistics.put(IConstants.TOTAL, Long.toString(totalHits));
+		statistics.put(IConstants.DURATION, Long.toString(duration));
+		statistics.put(IConstants.SCORE, Float.toString(highScore));
+		// Sort all the results according to the score
+		Collections.sort(searchResults, new Comparator<HashMap<String, String>>() {
+			@Override
+			public int compare(final HashMap<String, String> o1, final HashMap<String, String> o2) {
+				Double scoreOne = Double.parseDouble(o1.get(IConstants.SCORE));
+				Double scoreTwo = Double.parseDouble(o2.get(IConstants.SCORE));
+				return scoreOne.compareTo(scoreTwo);
+			}
+		});
+		ArrayList<HashMap<String, String>> topResults = new ArrayList<HashMap<String, String>>();
+		topResults.addAll(searchResults.subList(0, search.getMaxResults()));
+		
+		SearchSingle searchSingle = new SearchSingle(null);
+		searchSingle.setSearchString(searchStrings);
+		searchSingle.addStatistics(topResults, totalHits, highScore, duration, exception);
+		
+		search.setSearchResults(topResults);
+		return search;
 	}
 
 	private ArrayList<HashMap<String, String>> handleException(final String indexName, final Exception e) {

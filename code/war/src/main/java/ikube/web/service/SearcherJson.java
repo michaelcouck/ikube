@@ -2,9 +2,12 @@ package ikube.web.service;
 
 import ikube.IConstants;
 import ikube.model.Search;
+import ikube.toolkit.ObjectToolkit;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -23,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * Path looks like this: http://localhost:9080/ikube/service/search/json/multi
@@ -257,23 +261,28 @@ public class SearcherJson extends Searcher {
 		Search search = unmarshall(Search.class, request);
 		if (search != null && search.getSearchStrings() != null && search.getSearchStrings().size() > 0) {
 			searcherService.searchComplexSorted(search);
-		}
-		if (search.getIndexName() == null) {
-			search.setIndexName("");
-		}
-		if (search.getSearchFields() == null) {
-			search.setSearchFields(new ArrayList<String>());
-		}
-		if (search.getSearchStrings() == null) {
-			search.setSearchStrings(new ArrayList<String>());
-		}
-		if (search.getTypeFields() == null) {
-			search.setTypeFields(new ArrayList<String>());
-		}
-		if (search.getSortFields() == null) {
-			search.setSortFields(new ArrayList<String>());
+		} else {
+			ObjectToolkit.populateFields(search, Boolean.TRUE, 3, "id");
 		}
 		return buildResponse(search);
 	}
-
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@POST
+	@Override
+	@Path(SearcherJson.COMPLEX_SORTED_JSON_ALL)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response searchComplexSortedAll(@Context final HttpServletRequest request, @Context final UriInfo uriInfo) {
+		Search search = unmarshall(Search.class, request);
+		if (search != null && search.getSearchStrings() != null && search.getSearchStrings().size() > 0) {
+			searcherService.searchComplexSortedAll(search);
+		} else {
+			ObjectToolkit.populateFields(search, Boolean.TRUE, 3, "id");
+		}
+		return buildResponse(search);
+	}
+	
 }

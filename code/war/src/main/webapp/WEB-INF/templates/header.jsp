@@ -18,8 +18,8 @@
 						type="text" 
 						placeholder="Search..." 
 						style="margin-top: 9px;"
-						ng-model="$searchStrings"
-						typeahead="result for result in doSearch('/ikube/service/search/json/multi/all', 'autocomplete', $viewValue)"
+						ng-model="searchString"
+						typeahead="result for result in doSearch('/ikube/service/search/json/complex/sorted/json/all', searchString)"
 						typeahead-min-length="3" 
 						typeahead-wait-ms="250">
 					<button type="submit" class="btn" style="margin-top: 0px;">Go!</button>

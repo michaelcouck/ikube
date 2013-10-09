@@ -41,6 +41,7 @@ public abstract class Resource {
 	public static final String COMPLEX = "/complex";
 	public static final String COMPLEX_SORTED = "/complex/sorted";
 	public static final String COMPLEX_SORTED_JSON = "/complex/sorted/json";
+	public static final String COMPLEX_SORTED_JSON_ALL = "/complex/sorted/json/all";
 
 	public static final String SEPARATOR = ",;:|";
 

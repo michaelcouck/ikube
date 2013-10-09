@@ -580,49 +580,37 @@ module.controller('SearcherController', function($scope, $http) {
 
 //module.controller('TypeaheadController', function($scope, $http, $timeout) {
 function TypeaheadController($scope, $http, $timeout) {
-	$scope.selected = undefined;
-	// Go to the web service for the results
-	$scope.data = null;
+	$scope.search = {
+		maxResults : 10
+	};
 	$scope.results = new Array();
-	$scope.doSearch = function(url, indexName, searchStrings, field) {
-		/* '/ikube/service/search/json/multi/all' */
-		$scope.url = url;
-		// The form parameters we send to the server
-		$scope.searchParameters = {
-			indexName : indexName,
-			searchStrings : searchStrings,
-			fragment : true,
-			firstResult : 0,
-			maxResults : 10
-		};
-		// The configuration for the request to the server for the results
-		$scope.config = {
-			params : $scope.searchParameters
-		};
-		var promise = $http.get($scope.url, $scope.config);
+	$scope.doSearch = function(uri, searchString) {
+		$scope.url = getServiceUrl(uri);
+		$scope.search.fragment = true;
+		$scope.search.searchStrings = [searchString];
+		// alert('Url : ' + $scope.url);
+		var promise = $http.post($scope.url, $scope.search);
 		promise.success(function(data, status) {
 			// Pop the statistics Json off the array
-			$scope.data = data;
+			$scope.search = data;
 			$scope.status = status;
-			$scope.statistics = $scope.data.pop();
-			$scope.convertToArray($scope.data);
+			$scope.convertToArray();
+			// alert('Array : ' + $scope.results);
 		});
 		promise.error(function(data, status) {
 			$scope.status = status;
 		});
 		$scope.results = new Array();
 		// Convert all the data to an array for the auto complete
-		$scope.convertToArray = function(data) {
-			var total = $scope.statistics.total;
+		$scope.convertToArray = function() {
+			$scope.statistics = $scope.search.searchResults.pop();
 			// Exception or no results
-			if (total == null || total == 0) {
-				$scope.searchParameters.firstResult = 0;
-				$scope.endResult = 0;
+			if ($scope.statistics == undefined || $scope.statistics.total == undefined || $scope.statistics.total == 0) {
 				return;
 			}
 			// Iterate through the results from the Json data
-			for (var key in data) {
-				$scope.results.push(data[key][field]);
+			for (var key in $scope.search.searchResults) {
+				$scope.results.push($scope.search.searchResults['fragment']);
 			}
 		}
 		// Wait for a while for the server to return some data, note 
