@@ -104,7 +104,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 		logger.debug("Post process action : " + this.getClass() + ", " + indexContext.getName());
 		IndexManager.closeIndexWriters(indexContext);
 		indexContext.setIndexWriters(new IndexWriter[0]);
-		Optimizer.optimize(indexContext);
+		// Optimizer.optimize(indexContext);
 		return Boolean.TRUE;
 	}
 
