@@ -31,7 +31,7 @@ import org.junit.Test;
  */
 public class IndexableInternetHandlerIntegration extends IntegrationTest {
 
-	private String url = "http://www.google.com";
+	private String url = "http://code.google.com/p/ikube/";
 	private IndexContext<?> indexContext;
 	private IndexableInternet indexableInternet;
 	private IndexableInternetHandler indexableInternetHandler;

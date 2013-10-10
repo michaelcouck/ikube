@@ -29,7 +29,7 @@ import org.junit.Test;
  */
 public class IndexableInternetHandlerTest extends AbstractTest {
 
-	private String url = "http://www.google.com";
+	private String url = "http://code.google.com/p/ikube/";
 	private List<Document> documents;
 	private IndexableInternet indexableInternet;
 	private IndexableInternetHandler indexableInternetHandler;
