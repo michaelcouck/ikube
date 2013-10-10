@@ -16,6 +16,7 @@ import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
 import ikube.toolkit.DatabaseUtilities;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.HashUtilities;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.ByteArrayInputStream;
@@ -158,6 +159,9 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			TermVector termVector = indexable.isVectored() ? TermVector.YES : TermVector.NO;
 			String fieldContent = parsedOutputStream.toString();
 			if (indexable.isNumeric()) {
+				if (indexable.isHashed()) {
+					fieldContent = HashUtilities.hash(fieldContent).toString();
+				}
 				IndexManager.addNumericField(fieldName, fieldContent, document, store);
 			} else {
 				IndexManager.addStringField(fieldName, fieldContent, document, store, analyzed, termVector);

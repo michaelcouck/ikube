@@ -44,9 +44,10 @@ public final class QueryBuilder {
 				selectQuery.addColumn(table, indexableColumn.getName());
 				if (indexableColumn.getForeignKey() != null) {
 					// Get the parent table and make a join with this table
-					IndexableColumn primarkKeyColumn = getIdColumn(((IndexableTable) indexableTable.getParent()).getChildren());
+					// Note to self: This was a serious bug!
+					// IndexableColumn primarkKeyColumn = getIdColumn(((IndexableTable) indexableTable.getParent()).getChildren());
 					IndexableColumn foreignKeyColumn = indexableColumn.getForeignKey();
-					selectQuery.addJoin(parentTable, primarkKeyColumn.getName(), table, foreignKeyColumn.getName());
+					selectQuery.addJoin(parentTable, foreignKeyColumn.getName(), table, indexableColumn.getName());
 				}
 			} else if (IndexableTable.class.isAssignableFrom(childIndexable.getClass())) {
 				IndexableTable joinedIndexableTable = (IndexableTable) childIndexable;

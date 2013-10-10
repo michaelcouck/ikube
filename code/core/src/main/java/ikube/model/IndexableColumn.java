@@ -33,6 +33,9 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 	@Column
 	private boolean numeric;
 	@Column
+	@Attribute(description = "Whether the data from the column is hashed before adding to the document. Typically this is when the data should be numeric, or at least searchable numerically but is actually a string or alphanumeric.")
+	private boolean hashed;
+	@Column
 	@PrimaryKeyJoinColumn
 	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private IndexableColumn foreignKey;
@@ -43,11 +46,19 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 	 */
 	private IndexableColumn nameColumn;
 
+	public int getColumnType() {
+		return columnType;
+	}
+
+	public void setColumnType(int columnType) {
+		this.columnType = columnType;
+	}
+
 	public String getFieldName() {
 		return fieldName;
 	}
 
-	public void setFieldName(final String fieldName) {
+	public void setFieldName(String fieldName) {
 		this.fieldName = fieldName;
 	}
 
@@ -55,7 +66,7 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 		return idColumn;
 	}
 
-	public void setIdColumn(final boolean idColumn) {
+	public void setIdColumn(boolean idColumn) {
 		this.idColumn = idColumn;
 	}
 
@@ -75,11 +86,19 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 		this.numeric = numeric;
 	}
 
+	public boolean isHashed() {
+		return hashed;
+	}
+
+	public void setHashed(boolean hash) {
+		this.hashed = hash;
+	}
+
 	public IndexableColumn getForeignKey() {
 		return foreignKey;
 	}
 
-	public void setForeignKey(final IndexableColumn foreignKey) {
+	public void setForeignKey(IndexableColumn foreignKey) {
 		this.foreignKey = foreignKey;
 	}
 
@@ -87,16 +106,8 @@ public class IndexableColumn extends Indexable<IndexableColumn> {
 		return nameColumn;
 	}
 
-	public void setNameColumn(final IndexableColumn indexableColumn) {
-		this.nameColumn = indexableColumn;
-	}
-
-	public int getColumnType() {
-		return columnType;
-	}
-
-	public void setColumnType(final int columnType) {
-		this.columnType = columnType;
+	public void setNameColumn(IndexableColumn nameColumn) {
+		this.nameColumn = nameColumn;
 	}
 
 }

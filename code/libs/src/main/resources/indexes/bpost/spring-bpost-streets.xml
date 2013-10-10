@@ -40,7 +40,7 @@
 		property:children-ref="street_indexables" 
 		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer.street" />
 	<util:list id="street_indexables">
-		<ref local="physical_point_suffix" />
+		<ref local="administrative_area" />
 	</util:list>
 	<bean 
 		id="ikube.action.index.analyzer.NgramAnalyzer.street"
@@ -50,36 +50,94 @@
 		property:maxGram="15" />
 		
 	<bean
-		id="physical_point_suffix"
+		id="administrative_area"
 		class="ikube.model.IndexableTable"
-		property:name="physical_point_suffix"
+		property:name="administrative_area"
 		property:address="false"
 		property:allColumns="false"
 		property:dataSource-ref="roma_database"
-		property:children-ref="physical_point_suffix_columns" 
+		property:children-ref="administrative_area_columns" 
 		property:maxExceptions="100" />
-	<util:list id="physical_point_suffix_columns">
-		<ref bean="physical_point_suffix_id" />
+	<util:list id="administrative_area_columns">
+		<ref bean="admin_area_id" />
+		<ref bean="aar_admin_area_id" />
+		<ref bean="administrative_area_name" />
+		<ref bean="street" />
 	</util:list>
-
 	<bean
-		id="street-table"
+		id="admin_area_id"
+		class="ikube.model.IndexableColumn"
+		property:name="admin_area_id"
+		property:idColumn="true"
+		property:analyzed="false"
+		property:stored="true"
+		property:vectored="false" />
+	<bean
+		id="aar_admin_area_id"
+		class="ikube.model.IndexableColumn"
+		property:name="aar_admin_area_id"
+		property:idColumn="false"
+		property:analyzed="false"
+		property:stored="false"
+		property:vectored="false" />
+	
+	<bean
+		id="administrative_area_name"
+		class="ikube.model.IndexableTable"
+		property:name="administrative_area_name"
+		property:address="true"
+		property:allColumns="false"
+		property:dataSource-ref="roma_database"
+		property:children-ref="administrative_area_name_columns" 
+		property:maxExceptions="100" />
+	<util:list id="administrative_area_name_columns">
+		<ref bean="admin_area_name_id" />
+		<ref bean="aan_aar_admin_area_id" />
+		<ref bean="admin_area_name" />
+	</util:list>
+	<bean
+		id="admin_area_name_id"
+		class="ikube.model.IndexableColumn"
+		property:name="admin_area_name_id"
+		property:idColumn="true"
+		property:analyzed="false"
+		property:stored="true"
+		property:vectored="false" />
+	<bean
+		id="aan_aar_admin_area_id"
+		class="ikube.model.IndexableColumn"
+		property:name="aar_admin_area_id"
+		property:idColumn="false"
+		property:analyzed="false"
+		property:stored="false"
+		property:vectored="false"
+		property:foreignKey-ref="aar_admin_area_id" />
+	<bean
+		id="admin_area_name"
+		class="ikube.model.IndexableColumn"
+		property:name="admin_area_name"
+		property:idColumn="false"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
+		
+	<bean
+		id="street"
 		class="ikube.model.IndexableTable"
 		property:name="street"
 		property:address="false"
 		property:allColumns="false"
-		property:dataSource-ref="roma-database"
-		property:children-ref="street-table-columns" 
+		property:dataSource-ref="roma_database"
+		property:children-ref="street_columns" 
 		property:maxExceptions="100" />
-	<util:list id="street-table-columns">
-		<ref bean="street-id" />
-		<ref bean="aar-admin-area-id" />
-		<ref bean="active" />
-		<ref bean="street-name-table" />
+	<util:list id="street_columns">
+		<ref bean="street_id" />
+		<ref bean="s_aar_admin_area_id" />
+		<ref bean="street_name" />
+		<ref bean="postal_street_segment" />
 	</util:list>
-	
 	<bean
-		id="street-id"
+		id="street_id"
 		class="ikube.model.IndexableColumn"
 		property:name="street_id"
 		property:idColumn="true"
@@ -87,47 +145,32 @@
 		property:stored="true"
 		property:vectored="false" />
 	<bean
-		id="aar-admin-area-id"
+		id="s_aar_admin_area_id"
 		class="ikube.model.IndexableColumn"
 		property:name="aar_admin_area_id"
 		property:address="false"
 		property:analyzed="true"
 		property:stored="true"
-		property:vectored="true" />
-	<bean
-		id="active"
-		class="ikube.model.IndexableColumn"
-		property:name="active"
-		property:address="false"
-		property:analyzed="true"
-		property:stored="true"
-		property:vectored="true" />
+		property:vectored="true"
+		property:foreignKey-ref="aar_admin_area_id" />
 
 	<bean
-		id="street-name-table"
+		id="street_name"
 		class="ikube.model.IndexableTable"
 		property:name="street_name"
 		property:address="false"
 		property:allColumns="false"
-		property:dataSource-ref="roma-database"
-		property:children-ref="street-name-table-columns"
-		property:strategies-ref="street-strategies" 
+		property:dataSource-ref="roma_database"
+		property:children-ref="street_name_columns"
 		property:maxExceptions="100" />
-	<util:list id="street-name-table-columns">
-		<ref bean="street-name-id" />
-		<ref bean="str-street-id" />
-		<ref bean="street-name" />
-		<ref bean="street-language" />
+	<util:list id="street_name_columns">
+		<ref bean="street_name_id" />
+		<ref bean="str_street_id" />
+		<ref bean="street_name_text" />
+		<ref bean="street_language" />
 	</util:list>
-	<util:list id="street-strategies">
-	    <ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
-	    <bean 
-	    	class="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy"
-	    	init-method="initialize" />
-	</util:list>
-	
 	<bean
-		id="street-name-id"
+		id="street_name_id"
 		class="ikube.model.IndexableColumn"
 		property:name="street_name_id"
 		property:idColumn="true"
@@ -135,15 +178,15 @@
 		property:stored="true"
 		property:vectored="false" />
 	<bean
-		id="str-street-id"
+		id="str_street_id"
 		class="ikube.model.IndexableColumn"
 		property:name="str_street_id"
 		property:analyzed="false"
 		property:stored="true"
 		property:vectored="false"
-		property:foreignKey-ref="street-id" />
+		property:foreignKey-ref="street_id" />
 	<bean
-		id="street-name"
+		id="street_name_text"
 		class="ikube.model.IndexableColumn"
 		property:name="street_name"
 		property:address="true"
@@ -151,29 +194,185 @@
 		property:stored="true"
 		property:vectored="true" />
 	<bean
-		id="street-language"
+		id="street_language"
 		class="ikube.model.IndexableColumn"
 		property:name="street_language"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
+		
+	<bean
+		id="postal_street_segment"
+		class="ikube.model.IndexableTable"
+		property:name="postal_street_segment"
+		property:address="false"
+		property:dataSource-ref="roma_database"
+		property:children-ref="postal_street_segment_columns" 
+		property:maxExceptions="100" />
+	<util:list id="postal_street_segment_columns">
+		<ref bean="postal_street_segment_id" />
+		<ref bean="pss_street_id" />
+		<ref bean="activity_segment" />
+	</util:list>
+	<bean
+		id="postal_street_segment_id"
+		class="ikube.model.IndexableColumn"
+		property:name="postal_street_segment_id"
+		property:idColumn="true"
 		property:analyzed="false"
 		property:stored="false"
 		property:vectored="false" />
+	<bean
+		id="pss_street_id"
+		class="ikube.model.IndexableColumn"
+		property:name="street_id"
+		property:idColumn="false"
+		property:analyzed="false"
+		property:stored="false"
+		property:vectored="false" 
+		property:foreignKey-ref="street_id" />
 	
-	<bean id="roma-database"
+	<bean
+		id="activity_segment"
+		class="ikube.model.IndexableTable"
+		property:name="activity_segment"
+		property:address="false"
+		property:dataSource-ref="roma_database"
+		property:children-ref="activity_segment_columns" 
+		property:maxExceptions="100" />
+	<util:list id="activity_segment_columns">
+		<ref bean="activity_segment_id" />
+		<ref bean="as_postal_street_segment_id" />
+		<ref bean="physical_point" />
+	</util:list>
+	<bean
+		id="activity_segment_id"
+		class="ikube.model.IndexableColumn"
+		property:name="activity_segment_id"
+		property:idColumn="true"
+		property:analyzed="false"
+		property:stored="false"
+		property:vectored="false" />
+	<bean
+		id="as_postal_street_segment_id"
+		class="ikube.model.IndexableColumn"
+		property:name="postal_street_segment_id"
+		property:idColumn="true"
+		property:analyzed="false"
+		property:stored="false"
+		property:vectored="false"
+		property:foreignKey-ref="postal_street_segment_id" />
+		
+	<bean
+		id="physical_point"
+		class="ikube.model.IndexableTable"
+		property:name="physical_point"
+		property:address="false"
+		property:dataSource-ref="roma_database"
+		property:children-ref="physical_point_columns" 
+		property:maxExceptions="100" />
+	<util:list id="physical_point_columns">
+		<ref bean="pdp_id" />
+		<ref bean="actual_civic_number" />
+		<ref bean="pp_activity_segment_id" />
+	</util:list>
+	<bean
+		id="pdp_id"
+		class="ikube.model.IndexableColumn"
+		property:name="pdp_id"
+		property:idColumn="true"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true"
+		property:numeric="true" />
+	<bean
+		id="actual_civic_number"
+		class="ikube.model.IndexableColumn"
+		property:name="actual_civic_number"
+		property:idColumn="false"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true"
+		property:numeric="true"
+		property:hashed="true" />
+	<bean
+		id="pp_activity_segment_id"
+		class="ikube.model.IndexableColumn"
+		property:name="activity_segment_id"
+		property:idColumn="false"
+		property:analyzed="false"
+		property:stored="false"
+		property:vectored="false" 
+		property:foreignKey-ref="activity_segment_id" />
+		
+	<bean
+		id="physical_point_suffix"
+		class="ikube.model.IndexableTable"
+		property:name="physical_point_suffix"
+		property:address="false"
+		property:allColumns="false"
+		property:dataSource-ref="roma_database"
+		property:children-ref="physical_point_suffix_columns" 
+		property:maxExceptions="100"
+		property:threads="4" />
+	<util:list id="physical_point_suffix_columns">
+		<ref bean="suffix_id" />
+		<ref bean="pp_id" />
+		<ref bean="actual_bus_number" />
+		<ref bean="business_name" />
+		<!-- <ref bean="physical_point" /> -->
+	</util:list>
+	<bean
+		id="suffix_id"
+		class="ikube.model.IndexableColumn"
+		property:name="suffix_id"
+		property:idColumn="true"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true"
+		property:numeric="true" />
+	<bean
+		id="pp_id"
+		class="ikube.model.IndexableColumn"
+		property:name="pp_id"
+		property:analyzed="false"
+		property:stored="false"
+		property:vectored="false" />
+	<bean
+		id="actual_bus_number"
+		class="ikube.model.IndexableColumn"
+		property:name="actual_bus_number"
+		property:idColumn="false"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true"
+		property:numeric="true"
+		property:hashed="true" />
+	<bean
+		id="business_name"
+		class="ikube.model.IndexableColumn"
+		property:name="business_name"
+		property:idColumn="false"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true" />
+	
+	<bean id="roma_database"
 		class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close"
 		property:user="ROMAOWNER"
 		property:password="ROMAOWNER"
 		property:jdbcUrl="jdbc:oracle:thin:@ldap://OID.NETPOST:389/ROMD3,cn=OracleContext,dc=pr,dc=netpost,dc=be"
-		property:driverClass="${oracle.jdbc.driver}"
-		property:initialPoolSize="${jdbc.minPoolSize}"
-		property:maxPoolSize="${jdbc.maxPoolSize}"
-		property:maxStatements="${jdbc.maxStatements}"
-		property:checkoutTimeout="${jdbc.checkOutTimeout}"
-		property:numHelperThreads="${jdbc.numHelperThreads}" 
-		property:breakAfterAcquireFailure="${jdbc.breakAfterAcquireFailure}"
-		property:debugUnreturnedConnectionStackTraces="${jdbc.debugUnreturnedConnectionStackTraces}"
-		property:testConnectionOnCheckin="${jdbc.testConnectionOnCheckin}"
-		property:testConnectionOnCheckout="${jdbc.testConnectionOnCheckout}"
-		property:unreturnedConnectionTimeout="${jdbc.unreturnedConnectionTimeout}" />
+		property:driverClass="oracle.jdbc.driver.OracleDriver"
+		property:initialPoolSize="3"
+		property:maxPoolSize="25"
+		property:maxStatements="1000"
+		property:checkoutTimeout="120000"
+		property:numHelperThreads="5" 
+		property:breakAfterAcquireFailure="true"
+		property:debugUnreturnedConnectionStackTraces="true"
+		property:testConnectionOnCheckin="true"
+		property:testConnectionOnCheckout="true"
+		property:unreturnedConnectionTimeout="120000" />
 
 </beans>

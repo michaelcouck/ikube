@@ -102,6 +102,12 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>ikube</groupId>
+			<artifactId>ikube-core</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>jdom</groupId>
 			<artifactId>jdom</artifactId>
 			<version>1.1</version>

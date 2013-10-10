@@ -10,6 +10,7 @@ import ikube.toolkit.ApplicationContextManager;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -85,6 +86,16 @@ public class QueryBuilderTest extends AbstractTest {
 		IndexableTable indexContextTable = ApplicationContextManager.getBean("indexContextTable");
 		String indexContextSql = queryBuilder.buildQuery(indexContextTable, 0l, 1000l);
 		logger.info(indexContextSql);
+	}
+
+	@Test
+	@Ignore
+	public void getPostQuery() {
+		ApplicationContextManager.closeApplicationContext();
+		ApplicationContextManager.getApplicationContextFilesystem("C:/Eclipse/workspace/ikube/code/war/ikube/bpost/spring-bpost-streets.xml");
+		IndexableTable indexableTable = ApplicationContextManager.getBean("administrative_area");
+		String sql = queryBuilder.buildQuery(indexableTable, 0, 1000);
+		logger.info("Sql : " + sql);
 	}
 
 }
