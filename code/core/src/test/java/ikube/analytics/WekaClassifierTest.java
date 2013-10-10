@@ -28,7 +28,7 @@ public class WekaClassifierTest extends AbstractTest {
 		wekaClassifier.train(IConstants.NEGATIVE, IConstants.NEGATIVE);
 		wekaClassifier.build();
 		classify(wekaClassifier);
-		trainOnSentimentData(wekaClassifier);
+		// trainOnSentimentData(wekaClassifier);
 	}
 
 	@Test
@@ -38,7 +38,7 @@ public class WekaClassifierTest extends AbstractTest {
 		wekaClassifier.initialize();
 		wekaClassifier.build();
 		classify(wekaClassifier);
-		trainOnSentimentData(wekaClassifier);
+		// trainOnSentimentData(wekaClassifier);
 	}
 
 	private void classify(final WekaClassifier wekaClassifier) throws Exception {
