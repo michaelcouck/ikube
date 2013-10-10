@@ -72,7 +72,7 @@ public class IndexSizeSchedule extends Schedule {
 				// We don't close the index writers here any more because they can still be used in the delta indexing. And
 				// we close all the indexes in the context in the index manager at the end of the job
 				// Note: the delta is not implemented so we close them here again
-				IndexManager.closeIndexWriter(indexWriters[indexWriters.length]);
+				IndexManager.closeIndexWriter(indexWriters[indexWriters.length - 2]);
 			} catch (Exception e) {
 				LOGGER.error("Exception starting a new index : ", e);
 				success = Boolean.FALSE;
