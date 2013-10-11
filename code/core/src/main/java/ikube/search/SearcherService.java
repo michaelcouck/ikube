@@ -347,69 +347,83 @@ public class SearcherService implements ISearcherService {
 				LOGGER.warn("Searcher null for index : " + search.getIndexName());
 				return search;
 			}
+			String[] searchStrings = search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]);
+			String[] searchFields = search.getSearchFields().toArray(new String[search.getSearchFields().size()]);
+			String[] typeFields = search.getTypeFields().toArray(new String[search.getTypeFields().size()]);
+			String[] sortFields = search.getSortFields().toArray(new String[search.getSortFields().size()]);
+			// TODO Change the field types based on the search strings for those fields, for example if the field 
+			// is something like 123-456 then this is a range query for the field
+
 			searchComplexSorted.setFirstResult(search.getFirstResult());
 			searchComplexSorted.setFragment(search.isFragment());
 			searchComplexSorted.setMaxResults(search.getMaxResults());
-			searchComplexSorted.setSearchString(search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]));
-			searchComplexSorted.setSearchField(search.getSearchFields().toArray(new String[search.getSearchFields().size()]));
-			searchComplexSorted.setTypeFields(search.getTypeFields().toArray(new String[search.getTypeFields().size()]));
-			searchComplexSorted.setSortField(search.getSortFields().toArray(new String[search.getSortFields().size()]));
+			searchComplexSorted.setSearchString(searchStrings);
+			searchComplexSorted.setSearchField(searchFields);
+			searchComplexSorted.setTypeFields(typeFields);
+			searchComplexSorted.setSortField(sortFields);
 			ArrayList<HashMap<String, String>> results = searchComplexSorted.execute();
 			String[] searchStringsCorrected = searchComplexSorted.getCorrections();
-			persistSearch(search.getIndexName(), search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]), searchStringsCorrected,
-					results);
+			persistSearch(search.getIndexName(), searchStrings, searchStringsCorrected, results);
 			search.setCorrectedSearchStrings(Arrays.asList(searchStringsCorrected));
 			search.setCorrections(searchStringsCorrected != null && searchStringsCorrected.length > 0);
 			search.setSearchResults(results);
-			return search;
 		} catch (final Exception e) {
 			handleException(search.getIndexName(), e);
-			return search;
 		}
+		return search;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * This method is particularly expensive, it will do a search on every index in the system.
 	 */
 	@Override
 	public Search searchComplexSortedAll(final Search search) {
-		String[] indexNames = monitorService.getIndexNames();
-		String[] searchStrings = search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]);
-		ArrayList<HashMap<String, String>> searchResults = new ArrayList<HashMap<String, String>>();
-		long totalHits = 0;
-		float highScore = 0;
-		long duration = 0;
-		Exception exception = null;
-		HashMap<String, String> statistics = new HashMap<String, String>();
-		for (final String indexName : indexNames) {
-			List<HashMap<String, String>> searchSubResults = searchMultiAll(indexName, searchStrings, search.isFragment(), search.getFirstResult(),
-					search.getMaxResults());
-			statistics = searchSubResults.remove(searchSubResults.size() - 1);
-			totalHits += Long.parseLong(statistics.get(IConstants.TOTAL));
-			highScore += Float.parseFloat(statistics.get(IConstants.SCORE));
-			duration += Long.parseLong(statistics.get(IConstants.DURATION));
-			searchResults.addAll(searchSubResults);
-		}
-		statistics.put(IConstants.TOTAL, Long.toString(totalHits));
-		statistics.put(IConstants.DURATION, Long.toString(duration));
-		statistics.put(IConstants.SCORE, Float.toString(highScore));
-		// Sort all the results according to the score
-		Collections.sort(searchResults, new Comparator<HashMap<String, String>>() {
-			@Override
-			public int compare(final HashMap<String, String> o1, final HashMap<String, String> o2) {
-				Double scoreOne = Double.parseDouble(o1.get(IConstants.SCORE));
-				Double scoreTwo = Double.parseDouble(o2.get(IConstants.SCORE));
-				return scoreOne.compareTo(scoreTwo);
+		try {
+			long totalHits = 0;
+			float highScore = 0;
+			long duration = 0;
+
+			String[] indexNames = monitorService.getIndexNames();
+			String[] searchStrings = search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]);
+			ArrayList<HashMap<String, String>> searchResults = new ArrayList<HashMap<String, String>>();
+
+			boolean fragment = search.isFragment();
+			int firstResult = search.getFirstResult();
+			int maxResults = search.getMaxResults();
+
+			Exception exception = null;
+			HashMap<String, String> statistics = new HashMap<String, String>();
+			for (final String indexName : indexNames) {
+				List<HashMap<String, String>> searchSubResults = searchMultiAll(indexName, searchStrings, fragment, firstResult, maxResults);
+				statistics = searchSubResults.remove(searchSubResults.size() - 1);
+				totalHits += Long.parseLong(statistics.get(IConstants.TOTAL));
+				highScore += Float.parseFloat(statistics.get(IConstants.SCORE));
+				duration += Long.parseLong(statistics.get(IConstants.DURATION));
+				searchResults.addAll(searchSubResults);
 			}
-		});
-		ArrayList<HashMap<String, String>> topResults = new ArrayList<HashMap<String, String>>();
-		topResults.addAll(searchResults.subList(0, search.getMaxResults()));
-		
-		SearchSingle searchSingle = new SearchSingle(null);
-		searchSingle.setSearchString(searchStrings);
-		searchSingle.addStatistics(topResults, totalHits, highScore, duration, exception);
-		
-		search.setSearchResults(topResults);
+			statistics.put(IConstants.TOTAL, Long.toString(totalHits));
+			statistics.put(IConstants.DURATION, Long.toString(duration));
+			statistics.put(IConstants.SCORE, Float.toString(highScore));
+			// Sort all the results according to the score
+			Collections.sort(searchResults, new Comparator<HashMap<String, String>>() {
+				@Override
+				public int compare(final HashMap<String, String> o1, final HashMap<String, String> o2) {
+					Double scoreOne = Double.parseDouble(o1.get(IConstants.SCORE));
+					Double scoreTwo = Double.parseDouble(o2.get(IConstants.SCORE));
+					return scoreOne.compareTo(scoreTwo);
+				}
+			});
+			ArrayList<HashMap<String, String>> topResults = new ArrayList<HashMap<String, String>>();
+			topResults.addAll(searchResults.subList(0, search.getMaxResults()));
+
+			SearchSingle searchSingle = new SearchSingle(null);
+			searchSingle.setSearchString(searchStrings);
+			searchSingle.addStatistics(topResults, totalHits, highScore, duration, exception);
+
+			search.setSearchResults(topResults);
+		} catch (Exception e) {
+			handleException(search.getIndexName(), e);
+		}
 		return search;
 	}
 

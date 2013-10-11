@@ -39,14 +39,11 @@
 						</select>
 					</td>
 				</tr>
-				<tr ng-repeat="field in search.searchFields" ng-show="search.searchFields">
+				<tr ng-repeat="field in search.searchFields" ng-hide="search.searchFields == undefined || search.searchFields == null || search.searchFields.length == 0">
 					<td><b>{{field}}</b></td>
-					<td><input id="{{field}}" name="{{field}}" ng-model="search.searchStrings[$index]"></td>
-					<td>Numeric : <input type="checkbox"></td>
-					<td>Sort : <input type="checkbox"></td>
+					<td colspan="3"><input id="{{field}}" name="{{field}}" ng-model="search.searchStrings[$index]"></td>
 					<td>
-						<a 
-							href="#" 
+						<a href="#" 
 							class="btn btn-small btn-success : hover" 
 							ng-click="
 								removeField('searchFields', $index); 
@@ -65,7 +62,9 @@
 		<td>
 			<table>
 				<tr>
-					<td>Map</td>
+					<td>
+						<div id="map_canvas" google-map style="height: 340px; width: 550px; border : 1px solid black;"></div>
+					</td>
 				</tr>
 			</table>
 		</td>
@@ -74,6 +73,13 @@
 	<tr ng-show="statistics != undefined && statistics">
 		<td colspan="2">
 			Showing results '{{search.firstResult}} to {{endResult}} of {{statistics.total}}' for search '{{search.searchStrings}}', duration : {{statistics.duration}}<br>
+			Sorting by {{predicate}}; reverse = {{reverse}}
+			<select 
+				ng-model="predicate"
+				ng-model="fields" 
+				ng-options="field for field in fields">
+				<option style="display:none" value="">sort</option>
+			</select>
 			<div ng-show="statistics != undefined && statistics.corrections != undefined && statistics.corrections.length > 0">
 				<a href="#" ng-click="setField('searchStrings', statistics.corrections);doSearch();">Did you mean : {{statistics.corrections}}</a>
 			</div>
@@ -92,7 +98,9 @@
 	</tr>
 	
 	<tr ng-repeat="result in search.searchResults" ng-show="search.searchResults != undefined && endResult > 0">
-		<td colspan="2" nowrap="nowrap"><div ng-repeat="(field, value) in result">{{field}} : {{value}}</div></td>
+		<td colspan="2" nowrap="nowrap">
+			<div ng-repeat="(field, value) in result | orderBy:predicate:reverse">{{field}} : {{value}}</div>
+		</td>
 	</tr>
 	
 	<tr ng-show="endResult > 0">

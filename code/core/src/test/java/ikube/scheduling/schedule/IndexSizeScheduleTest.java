@@ -72,6 +72,8 @@ public class IndexSizeScheduleTest extends AbstractTest {
 		indexWriters = indexContext.getIndexWriters();
 		logger.info("Index writers : " + indexWriters.length);
 		assertTrue(indexWriters.length == 1);
+		
+		// TODO Write tests for the fail over
 	}
 
 }

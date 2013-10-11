@@ -99,6 +99,31 @@ module.directive('indexing', function($http) {
 	}
 });
 
+/** This directive will just init the map and put it on the page. */
+module.directive('googleMap', function() {
+	return {
+		restrict : 'A',
+		compile : function($tElement, $tAttributes, $transclude) {
+			return function($scope, $element, $attributes) {
+				$scope.$watch($tAttributes.event, function(value) {
+					var latitude = -33.9693580;
+					var longitude = 18.4622110;
+					var mapElement = document.getElementById('map_canvas');
+					var options = {
+						zoom: 13,
+						center: new google.maps.LatLng(latitude, longitude),
+						mapTypeId: google.maps.MapTypeId.ROADMAP
+					};
+					map = new google.maps.Map(mapElement, options);
+				});
+			}
+		},
+		controller : function($scope, $element, $location) {
+			// Put something here?
+		}
+	};
+});
+
 module.directive('ng-enter', function($http) {
 	return function(scope, element, attrs) {
 		element.bind("keydown keypress", function(event) {
@@ -504,6 +529,8 @@ module.controller('SearcherController', function($scope, $http) {
 	$scope.pagination = null;
 	$scope.search = { maxResults : $scope.pageBlock };
 	$scope.headers = { headers: { 'Content-Type' : 'application/json' } };
+	$scope.predicate = '';
+	$scope.reverse = false;
 	
 	// Go to the web service for the results
 	$scope.doSearch = function() {
@@ -576,6 +603,75 @@ module.controller('SearcherController', function($scope, $http) {
 	$scope.pushFieldScope = function(item, value) {
 		$scope[item].push(value);
 	};
+	
+	// This function will put the markers on the map
+	$scope.doMarkers = function() {
+		var latitude = $scope.searchParameters.latitude;
+		var longitude = $scope.searchParameters.longitude;
+		var origin = new google.maps.LatLng(latitude, longitude);
+		var mapElement = document.getElementById('map_canvas');
+		var options = {
+			zoom: 13,
+			center: new google.maps.LatLng(latitude, longitude),
+			mapTypeId: google.maps.MapTypeId.ROADMAP
+		};
+		map = new google.maps.Map(mapElement, options);
+		// Add the point or origin marker
+		var marker = new google.maps.Marker({
+			map : map,
+			position: origin,
+			title : 'You are here :) => [' + latitude + ', ' + longitude + ']',
+			icon: '/ikube/img/icons/center_pin.png'
+		});
+		for (var key in $scope.data) {
+			var datum = $scope.data[key];
+			if (datum.latitude != null && datum.longitude) {
+				pointMarker = new google.maps.Marker({
+					map : map,
+					position: new google.maps.LatLng(datum.latitude, datum.longitude),
+					title : 'Name : ' + datum.name + ', distance : ' + datum.distance
+				});
+			}
+		}
+		// And finally set the waypoints
+		$scope.doWaypoints(origin);
+	};
+	
+	// This function will put the way points on the map
+	$scope.doWaypoints = function(origin) {
+		var waypoints = [];
+		var destination = origin;
+		var maxWaypoints = 8;
+		for (var key in $scope.data) {
+			var waypoint = new google.maps.LatLng($scope.data[key].latitude, $scope.data[key].longitude);
+			waypoints.push({ location: waypoint });
+			destination = waypoint;
+			if (waypoints.length >= maxWaypoints) {
+				break;
+			}
+		}
+		var rendererOptions = { map: map };
+		var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
+		var request = {
+				origin: origin,
+				destination: destination,
+				waypoints: waypoints,
+				optimizeWaypoints : true,
+				travelMode: google.maps.TravelMode.DRIVING,
+				unitSystem: google.maps.UnitSystem.METRIC
+		};
+		var directionsService = new google.maps.DirectionsService();
+		directionsService.route(request, 
+			function(response, status) {
+				if (status == google.maps.DirectionsStatus.OK) {
+					directionsDisplay.setDirections(response);
+				} else {
+					alert ('Failed to get directions from Googy, sorry : ' + status);
+				}
+			}
+		);
+	};
+	
 });
 
 //module.controller('TypeaheadController', function($scope, $http, $timeout) {

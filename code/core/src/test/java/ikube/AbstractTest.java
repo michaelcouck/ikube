@@ -330,8 +330,12 @@ public abstract class AbstractTest {
 			Document document = getDocument(id, string, field, Index.ANALYZED);
 			indexWriter.addDocument(document);
 		}
-		indexWriter.commit();
-		indexWriter.maybeMerge();
+		try {
+			indexWriter.commit();
+			indexWriter.maybeMerge();
+		} catch (Exception e) {
+			logger.info("Error comitting writer : " + e.getMessage());
+		}
 	}
 
 	protected Document getDocument(final String id, final String string, final String field, final Index analyzed) {
