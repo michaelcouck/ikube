@@ -59,25 +59,27 @@ public class IndexSizeSchedule extends Schedule {
 			boolean success = Boolean.TRUE;
 			File newIndexDirectory = null;
 			IndexWriter newIndexWriter = null;
+			IndexWriter oldIndexWriter = indexWriters[indexWriters.length - 1];
 			try {
 				newIndexDirectory = getNewIndexDirectory(indexWriters);
 				LOGGER.info("Starting new index : " + indexContext.getIndexName() + ", " + newIndexDirectory);
 				newIndexWriter = IndexManager.openIndexWriter(indexContext, newIndexDirectory, true);
-
+				
 				IndexWriter[] newIndexWriters = new IndexWriter[indexWriters.length + 1];
 				System.arraycopy(indexWriters, 0, newIndexWriters, 0, indexWriters.length);
 				newIndexWriters[newIndexWriters.length - 1] = newIndexWriter;
 				LOGGER.info("Switched to the new index writer : " + indexContext);
 				indexContext.setIndexWriters(newIndexWriters);
-				// We don't close the index writers here any more because they can still be used in the delta indexing. And
-				// we close all the indexes in the context in the index manager at the end of the job
-				// Note: the delta is not implemented so we close them here again
-				IndexManager.closeIndexWriter(indexWriters[indexWriters.length - 2]);
 			} catch (Exception e) {
 				LOGGER.error("Exception starting a new index : ", e);
 				success = Boolean.FALSE;
 			} finally {
-				if (!success) {
+				if (success) {
+					// We don't close the index writers here any more because they can still be used in the delta indexing. And
+					// we close all the indexes in the context in the index manager at the end of the job
+					// Note: the delta is not implemented so we close them here again
+					IndexManager.closeIndexWriter(oldIndexWriter);
+				} else {
 					// Try to close and delete the new index writer and index directory
 					IndexManager.closeIndexWriter(newIndexWriter);
 					FileUtilities.deleteFile(newIndexDirectory, 1);
