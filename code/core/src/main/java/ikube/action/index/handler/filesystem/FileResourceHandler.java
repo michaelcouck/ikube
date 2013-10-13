@@ -43,6 +43,9 @@ public class FileResourceHandler extends ResourceHandler<IndexableFileSystem> {
 			final Object resource) throws Exception {
 		File file = (File) resource;
 		try {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Processing file : " + file);
+			}
 			handleResource(indexContext, indexableFileSystem, document, file, file.getName());
 		} catch (Exception e) {
 			if (SAXParseException.class.isAssignableFrom(e.getClass())) {
@@ -90,8 +93,7 @@ public class FileResourceHandler extends ResourceHandler<IndexableFileSystem> {
 			String lengthFieldName = indexableFileSystem.getLengthFieldName();
 			String contentFieldName = indexableFileSystem.getContentFieldName();
 
-			// NOTE to self: To be able to delete using the index writer the identifier field must be non analyzed and non
-			// tokenized/vectored!
+			// NOTE to self: To be able to delete using the index writer the identifier field must be non analyzed and non tokenized/vectored!
 			IndexManager.addStringField(IConstants.FILE_ID, fileId, document, Store.YES, Index.NOT_ANALYZED, TermVector.NO);
 			IndexManager.addStringField(pathFieldName, file.getAbsolutePath(), document, Store.YES, analyzed, termVector);
 			IndexManager.addStringField(nameFieldName, file.getName(), document, Store.YES, analyzed, termVector);
