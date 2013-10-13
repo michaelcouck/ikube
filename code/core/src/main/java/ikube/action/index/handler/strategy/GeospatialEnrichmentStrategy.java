@@ -4,8 +4,8 @@ package ikube.action.index.handler.strategy;
 
 import ikube.IConstants;
 import ikube.action.index.handler.IStrategy;
-import ikube.action.index.handler.strategy.geocode.Coordinate;
 import ikube.action.index.handler.strategy.geocode.IGeocoder;
+import ikube.model.Coordinate;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
@@ -121,15 +121,15 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 	}
 
 	public final void addSpatialLocationFields(final Coordinate coordinate, final Document document) {
-		document.add(new Field(IConstants.LAT, NumericUtils.doubleToPrefixCoded(coordinate.getLat()), Field.Store.YES, Field.Index.NOT_ANALYZED));
-		document.add(new Field(IConstants.LNG, NumericUtils.doubleToPrefixCoded(coordinate.getLon()), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		document.add(new Field(IConstants.LAT, NumericUtils.doubleToPrefixCoded(coordinate.getLatitude()), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		document.add(new Field(IConstants.LNG, NumericUtils.doubleToPrefixCoded(coordinate.getLongitude()), Field.Store.YES, Field.Index.NOT_ANALYZED));
 		addCartesianTiers(coordinate, document);
 	}
 
 	final void addCartesianTiers(final Coordinate coordinate, final Document document) {
 		for (int tier = startTier; tier <= endTier; tier++) {
 			CartesianTierPlotter cartesianTierPlotter = new CartesianTierPlotter(tier, sinusodialProjector, CartesianTierPlotter.DEFALT_FIELD_PREFIX);
-			final double boxId = cartesianTierPlotter.getTierBoxId(coordinate.getLat(), coordinate.getLon());
+			final double boxId = cartesianTierPlotter.getTierBoxId(coordinate.getLatitude(), coordinate.getLongitude());
 			document.add(new Field(cartesianTierPlotter.getTierFieldName(), NumericUtils.doubleToPrefixCoded(boxId), Field.Store.YES,
 					Field.Index.NOT_ANALYZED_NO_NORMS));
 		}

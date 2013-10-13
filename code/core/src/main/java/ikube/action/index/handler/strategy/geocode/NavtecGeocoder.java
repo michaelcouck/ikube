@@ -1,6 +1,8 @@
 package ikube.action.index.handler.strategy.geocode;
 
 
+import ikube.model.Coordinate;
+
 import org.apache.log4j.Logger;
 
 /**

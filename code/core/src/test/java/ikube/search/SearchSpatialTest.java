@@ -7,8 +7,8 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
 import ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy;
-import ikube.action.index.handler.strategy.geocode.Coordinate;
 import ikube.mock.SpellingCheckerMock;
+import ikube.model.Coordinate;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;

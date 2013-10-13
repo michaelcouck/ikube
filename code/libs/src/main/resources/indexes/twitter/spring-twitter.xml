@@ -56,7 +56,7 @@
 		class="ikube.model.IndexableTweets"
 		property:name="twitter-index"
 		property:address="false"
-		property:maxExceptions="1000"
+		property:maxExceptions="100"
 		property:stored="true"
 		property:analyzed="true"
 		property:vectored="true"

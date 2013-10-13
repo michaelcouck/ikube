@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.Inheritance;
@@ -48,6 +49,8 @@ public class Search extends Persistable {
 	private int firstResult;
 	@Column
 	private int maxResults;
+	@Column
+	private int distance;
 
 	@Column
 	private int count;
@@ -68,10 +71,11 @@ public class Search extends Persistable {
 	private List<String> sortFields;
 	@ElementCollection
 	private List<String> typeFields;
+	@Embedded
+	private Coordinate coordinate;
 
 	@ElementCollection
 	private List<String> correctedSearchStrings;
-
 	@Transient
 	private ArrayList<HashMap<String, String>> searchResults;
 
@@ -105,6 +109,14 @@ public class Search extends Persistable {
 
 	public void setMaxResults(int maxResults) {
 		this.maxResults = maxResults;
+	}
+
+	public int getDistance() {
+		return distance;
+	}
+
+	public void setDistance(int distance) {
+		this.distance = distance;
 	}
 
 	public int getCount() {
@@ -185,6 +197,14 @@ public class Search extends Persistable {
 
 	public void setCorrectedSearchStrings(List<String> correctedSearchStrings) {
 		this.correctedSearchStrings = correctedSearchStrings;
+	}
+
+	public Coordinate getCoordinate() {
+		return coordinate;
+	}
+
+	public void setCoordinate(Coordinate coordinate) {
+		this.coordinate = coordinate;
 	}
 
 	public ArrayList<HashMap<String, String>> getSearchResults() {

@@ -51,8 +51,10 @@ module.directive('searching', function($http) {
 					$scope.status = status;
 				});
 			}
+			
 			// Initially draw the chart from the server data
 			$scope.drawSearchingChart();
+			
 			// And re-draw it every few seconds to give the live update feel
 			setInterval(function() {
 				$scope.drawSearchingChart();
@@ -106,6 +108,7 @@ module.directive('googleMap', function() {
 		compile : function($tElement, $tAttributes, $transclude) {
 			return function($scope, $element, $attributes) {
 				$scope.$watch($tAttributes.event, function(value) {
+					// The initial coordinates are for Cape Town
 					var latitude = -33.9693580;
 					var longitude = 18.4622110;
 					var mapElement = document.getElementById('map_canvas');
@@ -124,27 +127,13 @@ module.directive('googleMap', function() {
 	};
 });
 
-module.directive('ng-enter', function($http) {
-	return function(scope, element, attrs) {
-		element.bind("keydown keypress", function(event) {
-			if (event.which === 13) {
-				scope.$apply(function() {
-					scope.$eval(attrs.ngEnter);
-				});
-				event.preventDefault();
-			}
-		});
-	};
-});
-
 /**
- * Load the Google visual after the directives to avoid some kind of recursive
- * lookup.
+ * Load the Google visual after the directives to avoid some kind of recursive lookup.
  */
 try {
 	google.load('visualization', '1', { packages : [ 'corechart' ] });
 } catch (err) {
-	// alert('Oops : ' + err);
+	window.status = err;
 }
 
 /** This controller will get the server data from the grid. */
@@ -517,160 +506,6 @@ module.controller('CreateController', function($http, $scope) {
 			$scope.status = status;
 		});
 	}
-	
-});
-
-//The controller that does the search
-module.controller('SearcherController', function($scope, $http) {
-	
-	$scope.fields = [];
-	$scope.statistics = null;
-	$scope.pageBlock = 10;
-	$scope.pagination = null;
-	$scope.search = { maxResults : $scope.pageBlock };
-	$scope.headers = { headers: { 'Content-Type' : 'application/json' } };
-	$scope.predicate = '';
-	$scope.reverse = false;
-	
-	// Go to the web service for the results
-	$scope.doSearch = function() {
-		$scope.search.maxResults = $scope.pageBlock;
-		$scope.url = getServiceUrl('/ikube/service/search/json/complex/sorted/json');
-		var promise = $http.post($scope.url, $scope.search);
-		promise.success(function(data, status) {
-			$scope.search = data;
-			$scope.status = status;
-			if ($scope.search.searchResults != undefined && $scope.search.searchResults.length > 0) {
-				$scope.doPagination();
-			}
-		});
-		promise.error(function(data, status) {
-			alert('Data : ' + data + ', status : ' + status);
-		});
-	};
-	// We execute this once to get the search object from the server
-	$scope.doSearch();
-	
-	// Get the fields for the index
-	$scope.doFields = function(indexName) {
-		$scope.url = getServiceUrl('/ikube/service/monitor/fields');
-		$scope.parameters = { indexName : indexName };
-		$scope.config = { params : $scope.parameters };
-		var promise = $http.get($scope.url, $scope.config);
-		promise.success(function(data, status) {
-			$scope.fields = [];
-			$scope.fields = data;
-			$scope.status = status;
-			$scope.searchFields = {};
-		});
-		promise.error(function(data, status) {
-			$scope.status = status;
-		});
-	};
-	
-	// Creates the Json pagination array for the next pages in the search
-	$scope.doPagination = function() {
-		$scope.pagination = [];
-		$scope.statistics = $scope.search.searchResults.pop();
-		// Exception or no results
-		if ($scope.statistics == undefined || $scope.statistics.total == undefined || $scope.statistics.total == null || $scope.statistics.total == 0) {
-			$scope.endResult = 0;
-			$scope.search.firstResult = 0;
-			return;
-		}
-		// We just started a search and got the first results
-		var pages = $scope.statistics.total / $scope.pageBlock;
-		// Create one 'page' for each block of results
-		for (var i = 0; i < pages && i < 10; i++) {
-			var firstResult = i * $scope.pageBlock;
-			$scope.pagination[i] = { page : i, firstResult : firstResult };
-		};
-		// Find the 'to' result being displayed
-		var modulo = $scope.statistics.total % $scope.pageBlock;
-		$scope.endResult = $scope.search.firstResult + modulo == $scope.statistics.total ? $scope.statistics.total : $scope.search.firstResult + parseInt($scope.pageBlock, 10);
-	}
-	
-	// Set and remove fields from the search object and local scoped objects 
-	$scope.setField = function(field, value) {
-		$scope.search[field] = value;
-	}
-	$scope.removeField = function(field, $index) {
-		$scope.search[field].splice($index, 1);
-	};
-	$scope.pushField = function(field, value) {
-		$scope.search[field].push(value);
-	};
-	$scope.pushFieldScope = function(item, value) {
-		$scope[item].push(value);
-	};
-	
-	// This function will put the markers on the map
-	$scope.doMarkers = function() {
-		var latitude = $scope.searchParameters.latitude;
-		var longitude = $scope.searchParameters.longitude;
-		var origin = new google.maps.LatLng(latitude, longitude);
-		var mapElement = document.getElementById('map_canvas');
-		var options = {
-			zoom: 13,
-			center: new google.maps.LatLng(latitude, longitude),
-			mapTypeId: google.maps.MapTypeId.ROADMAP
-		};
-		map = new google.maps.Map(mapElement, options);
-		// Add the point or origin marker
-		var marker = new google.maps.Marker({
-			map : map,
-			position: origin,
-			title : 'You are here :) => [' + latitude + ', ' + longitude + ']',
-			icon: '/ikube/img/icons/center_pin.png'
-		});
-		for (var key in $scope.data) {
-			var datum = $scope.data[key];
-			if (datum.latitude != null && datum.longitude) {
-				pointMarker = new google.maps.Marker({
-					map : map,
-					position: new google.maps.LatLng(datum.latitude, datum.longitude),
-					title : 'Name : ' + datum.name + ', distance : ' + datum.distance
-				});
-			}
-		}
-		// And finally set the waypoints
-		$scope.doWaypoints(origin);
-	};
-	
-	// This function will put the way points on the map
-	$scope.doWaypoints = function(origin) {
-		var waypoints = [];
-		var destination = origin;
-		var maxWaypoints = 8;
-		for (var key in $scope.data) {
-			var waypoint = new google.maps.LatLng($scope.data[key].latitude, $scope.data[key].longitude);
-			waypoints.push({ location: waypoint });
-			destination = waypoint;
-			if (waypoints.length >= maxWaypoints) {
-				break;
-			}
-		}
-		var rendererOptions = { map: map };
-		var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
-		var request = {
-				origin: origin,
-				destination: destination,
-				waypoints: waypoints,
-				optimizeWaypoints : true,
-				travelMode: google.maps.TravelMode.DRIVING,
-				unitSystem: google.maps.UnitSystem.METRIC
-		};
-		var directionsService = new google.maps.DirectionsService();
-		directionsService.route(request, 
-			function(response, status) {
-				if (status == google.maps.DirectionsStatus.OK) {
-					directionsDisplay.setDirections(response);
-				} else {
-					alert ('Failed to get directions from Googy, sorry : ' + status);
-				}
-			}
-		);
-	};
 	
 });
 

@@ -61,6 +61,18 @@ public class SearchComplexSortedTest extends AbstractTest {
 
 		ArrayList<HashMap<String, String>> results = searchComplexSorted.execute();
 		assertEquals("Should be the statistics and a result : ", 2, results.size());
+		
+		class New implements AutoCloseable {
+			@Override
+			public void close() throws Exception {
+			}
+		}
+		
+		try (New o = new New()) {
+			o.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -47,8 +47,6 @@ public class IndexCommitScheduleTest extends AbstractTest {
 	@Test
 	public void run() throws Exception {
 		IndexWriter[] indexWriters = null;
-		IndexReader indexReader = null;
-
 		try {
 			indexWriters = IndexManager.openIndexWriterDelta(indexContext);
 
@@ -71,9 +69,6 @@ public class IndexCommitScheduleTest extends AbstractTest {
 				for (final IndexWriter indexWriter : indexWriters) {
 					IndexManager.closeIndexWriter(indexWriter);
 				}
-			}
-			if (indexReader != null) {
-				indexReader.close();
 			}
 		}
 

@@ -333,8 +333,8 @@ public abstract class AbstractTest {
 		try {
 			indexWriter.commit();
 			indexWriter.maybeMerge();
-		} catch (Exception e) {
-			logger.info("Error comitting writer : " + e.getMessage());
+		} catch (NullPointerException e) {
+			logger.error("Null pointer, mock? : " + e.getMessage());
 		}
 	}
 

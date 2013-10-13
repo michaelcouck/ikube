@@ -46,13 +46,14 @@ public class TwitterResourceHandler extends ResourceHandler<IndexableTweets> {
 		String textField = indexableTweets.getTextField();
 
 		// NOTE to self: To be able to delete using the index writer the identifier field must be non analyzed and non tokenized/vectored!
-		IndexManager.addStringField(IConstants.ID, tweetId, document, Store.YES, Index.NOT_ANALYZED, TermVector.NO);
+		// IndexManager.addStringField(IConstants.ID, tweetId, document, Store.YES, Index.NOT_ANALYZED, TermVector.NO);
+		IndexManager.addNumericField(IConstants.ID, tweetId, document, Store.YES);
 		IndexManager.addNumericField(createdAtField, Long.toString(tweet.getCreatedAt().getTime()), document, Store.YES);
 
 		IndexManager.addStringField(fromUserField, tweet.getFromUser(), document, store, analyzed, termVector);
 		IndexManager.addStringField(locationField, indexableTweets.getAddressContent(), document, store, analyzed, termVector);
 		IndexManager.addStringField(textField, indexableTweets.getContent().toString(), document, store, analyzed, termVector);
-
+		
 		if (counter.getAndIncrement() % 10000 == 0) {
 			logger.info("Document : " + document);
 		}

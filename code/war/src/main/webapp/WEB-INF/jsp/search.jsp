@@ -3,15 +3,25 @@
 		<td>
 			<form ng-submit="doSearch()">
 			<table>
+				<!-- <tr>
+					<td colspan="5">
+						<a href="#" 
+							class="btn btn-small : hover" 
+							ng-click="isConfiguring = !isConfiguring">Configuration</a>
+						<div ng-show="isConfiguring">
+							Configuration:
+						</div>
+					</td>
+				</tr> -->
 				<tr>
-					<td><b>Collection:</b></td>
-					<td colspan="4" nowrap="nowrap">
+					<td style="border: 0px solid black;"><b>Collection:</b></td>
+					<td colspan="4" nowrap="nowrap" style="border: 0px solid black;">
 						<select 
 							ng-controller="IndexesController" 
 							ng-model="indexName" 
 							ng-model="indexes" 
 							ng-options="index for index in indexes" 
-							ng-change="doFields(indexName);setField('indexName', indexName);">
+							ng-change="resetSearch();doFields(indexName);setField('indexName', indexName);">
 							<option style="display:none" value="">collection</option>
 						</select>
 						<select ng-model="pageBlock">
@@ -25,7 +35,7 @@
 					</td>
 				</tr>
 				<tr>
-					<td><b>Fields:</b></td>
+					<td width="180px"><b>Fields:</b></td>
 					<td colspan="4">
 						<select 
 							ng-model="field" 
@@ -40,7 +50,7 @@
 					</td>
 				</tr>
 				<tr ng-repeat="field in search.searchFields" ng-hide="search.searchFields == undefined || search.searchFields == null || search.searchFields.length == 0">
-					<td><b>{{field}}</b></td>
+					<td><b>{{field}}:</b></td>
 					<td colspan="3"><input id="{{field}}" name="{{field}}" ng-model="search.searchStrings[$index]"></td>
 					<td>
 						<a href="#" 
@@ -59,27 +69,26 @@
 			</table>
 			</form>
 		</td>
-		<td>
-			<table>
-				<tr>
-					<td>
-						<div id="map_canvas" google-map style="height: 340px; width: 550px; border : 1px solid black;"></div>
-					</td>
-				</tr>
-			</table>
+		<td
+			ng-show="
+				search.coordinate != undefined && 
+				search.coordinate != null && 
+				search.coordinate.latitude != 0 && 
+				search.coordinate.longitude != 0">
+			<div id="map_canvas" google-map style="height: 340px; width: 550px; border : 2px solid black;" ></div>
 		</td>
 	</tr>
 	
 	<tr ng-show="statistics != undefined && statistics">
 		<td colspan="2">
 			Showing results '{{search.firstResult}} to {{endResult}} of {{statistics.total}}' for search '{{search.searchStrings}}', duration : {{statistics.duration}}<br>
-			Sorting by {{predicate}}; reverse = {{reverse}}
+			<!-- Sorting by {{predicate}}; reverse = {{reverse}}
 			<select 
 				ng-model="predicate"
 				ng-model="fields" 
 				ng-options="field for field in fields">
 				<option style="display:none" value="">sort</option>
-			</select>
+			</select> -->
 			<div ng-show="statistics != undefined && statistics.corrections != undefined && statistics.corrections.length > 0">
 				<a href="#" ng-click="setField('searchStrings', statistics.corrections);doSearch();">Did you mean : {{statistics.corrections}}</a>
 			</div>
@@ -118,5 +127,4 @@
 			</div>
 		</td>
 	</tr>
-	
 </table>

@@ -2,8 +2,8 @@ package ikube.action.index.handler.enrich.geocode;
 
 import static org.junit.Assert.assertNull;
 import ikube.AbstractTest;
-import ikube.action.index.handler.strategy.geocode.Coordinate;
 import ikube.action.index.handler.strategy.geocode.NavtecGeocoder;
+import ikube.model.Coordinate;
 
 import org.junit.Test;
 

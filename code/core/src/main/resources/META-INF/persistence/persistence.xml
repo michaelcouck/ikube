@@ -29,6 +29,7 @@
 		<class>ikube.model.IndexableEmail</class>
 		<class>ikube.model.IndexableColumn</class>
 		<class>ikube.model.Search</class>
+		<class>ikube.model.Coordinate</class>
 		<class>ikube.model.Snapshot</class>
 		<class>ikube.model.IndexableDataSource</class>
 		<class>ikube.model.IndexableDictionary</class>
@@ -84,6 +85,7 @@
 		<class>ikube.model.IndexableEmail</class>
 		<class>ikube.model.IndexableColumn</class>
 		<class>ikube.model.Search</class>
+		<class>ikube.model.Coordinate</class>
 		<class>ikube.model.Snapshot</class>
 		<class>ikube.model.IndexableDataSource</class>
 		<class>ikube.model.IndexableDictionary</class>
@@ -123,6 +125,7 @@
 		<class>ikube.model.IndexableEmail</class>
 		<class>ikube.model.IndexableColumn</class>
 		<class>ikube.model.Search</class>
+		<class>ikube.model.Coordinate</class>
 		<class>ikube.model.Snapshot</class>
 		<class>ikube.model.IndexableDataSource</class>
 		<class>ikube.model.IndexableDictionary</class>
@@ -162,6 +165,7 @@
 		<class>ikube.model.IndexableEmail</class>
 		<class>ikube.model.IndexableColumn</class>
 		<class>ikube.model.Search</class>
+		<class>ikube.model.Coordinate</class>
 		<class>ikube.model.Snapshot</class>
 		<class>ikube.model.IndexableDataSource</class>
 		<class>ikube.model.IndexableDictionary</class>

@@ -1,7 +1,7 @@
 package ikube.search;
 
 import ikube.IConstants;
-import ikube.action.index.handler.strategy.geocode.Coordinate;
+import ikube.model.Coordinate;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ import org.apache.lucene.spatial.tier.projections.CartesianTierPlotter;
  * @version 01.00
  */
 @SuppressWarnings("deprecation")
-public class SearchSpatial extends SearchMulti {
+public class SearchSpatial extends SearchComplex {
 
 	/** The distance from the origin that we will accept in the results. */
 	protected transient int distance;
@@ -56,7 +56,7 @@ public class SearchSpatial extends SearchMulti {
 	@Override
 	protected TopDocs search(final Query query) throws IOException {
 		logger.info("Coordinate : " + coordinate);
-		DistanceQueryBuilder queryBuilder = new DistanceQueryBuilder(coordinate.getLat(), coordinate.getLon(), distance, IConstants.LAT,
+		DistanceQueryBuilder queryBuilder = new DistanceQueryBuilder(coordinate.getLatitude(), coordinate.getLongitude(), distance, IConstants.LAT,
 				IConstants.LNG, CartesianTierPlotter.DEFALT_FIELD_PREFIX, Boolean.TRUE, 0, 100);
 		// As the radius filter has performed the distance calculations already, pass in the filter to reuse the results
 		DistanceFieldComparatorSource fieldComparator = new DistanceFieldComparatorSource(queryBuilder.getDistanceFilter());

@@ -4,10 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.action.index.handler.strategy.geocode.Coordinate;
 import ikube.action.index.handler.strategy.geocode.Geocoder;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
+import ikube.model.Coordinate;
 import ikube.toolkit.SerializationUtilities;
 
 import java.io.IOException;
@@ -94,8 +94,8 @@ public class GeocoderTest extends AbstractTest {
 
 		Coordinate coordinate = geocoder.getCoordinate("9 avenue road, cape town, south africa");
 		assertNotNull(coordinate);
-		double lat = coordinate.getLat();
-		double lon = coordinate.getLon();
+		double lat = coordinate.getLatitude();
+		double lon = coordinate.getLongitude();
 		assertEquals(-33.9693580, lat, 1.0);
 		assertEquals(18.4622110, lon, 1.0);
 	}

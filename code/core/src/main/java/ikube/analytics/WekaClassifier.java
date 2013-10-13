@@ -6,6 +6,7 @@ import ikube.toolkit.FileUtilities;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,7 @@ public class WekaClassifier implements IAnalyzer<String, String, String, Boolean
 	private volatile Instances classificationInstances;
 	/** The number of vectors to keep in the training data set before we re-build the classifier. */
 	private int buildThreshold = 1000;
+	/** The file that contains the initial training data and instances. */
 	private String filePattern;
 
 	/**
@@ -160,7 +162,7 @@ public class WekaClassifier implements IAnalyzer<String, String, String, Boolean
 			evaluation.evaluateModel(classifier, filteredData);
 			String evaluationReport = evaluation.toSummaryString();
 			LOGGER.info("Classifier evaluation : " + evaluationReport);
-			IOUtils.writeInstancesToArffFile(filteredData, this.toString() + ".arff");
+			writeInstances(trainingInstances, classificationInstances, filteredData);
 			return;
 		} catch (Exception e) {
 			LOGGER.info("Exception building classifier : ", e);
@@ -169,6 +171,12 @@ public class WekaClassifier implements IAnalyzer<String, String, String, Boolean
 		// training instances of the last batch of vectors as this was obviously the problem
 		trainingInstances.delete();
 		classificationInstances.delete();
+	}
+	
+	void writeInstances(final Instances... instances) throws IOException {
+		for (final Instances i : instances) {
+			IOUtils.writeInstancesToArffFile(i, i.relationName() + ".arff");
+		}
 	}
 
 	/**

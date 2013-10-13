@@ -30,12 +30,14 @@
 	<script src="<c:url value="/js/bootstrap.min.js" />" type="text/javascript" ></script>
 	<script src="<c:url value="/js/ui-bootstrap-tpls-0.4.0.js" />" type='text/javascript'></script>
 	
+	<!-- Dont' need jquery... -->
 	<%-- <link rel="stylesheet" href="<c:url value="/js/bootstrap-combined.min.css" />"> --%>
 	<%-- <script src="<c:url value="/js/jquery-ui.js" />" type='text/javascript'></script>
 	<script src="<c:url value="/js/jquery-1.9.1.js" />" type='text/javascript'></script> --%>
 	
 	<!-- Must be after Angular -->
 	<script src="<c:url value="/js/ikube.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/js/searcher-controller.js" />" type="text/javascript"></script>
 </head>
 
 <body data-spy="scroll" data-target=".navbar" onload="JavaScript:track();">

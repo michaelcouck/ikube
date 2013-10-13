@@ -1,8 +1,11 @@
 package ikube.search;
 
+import ikube.IConstants;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
@@ -34,6 +37,9 @@ public class SearchComplex extends SearchSingle {
 	 */
 	@Override
 	public Query getQuery() throws ParseException {
+		if (typeFields == null || typeFields.length == 0 || searchStrings.length != typeFields.length) {
+			return MultiFieldQueryParser.parse(IConstants.VERSION, searchStrings, searchFields, analyzer);
+		}
 		BooleanQuery booleanQuery = new BooleanQuery();
 		for (int i = 0; i < searchStrings.length; i++) {
 			final String typeField = typeFields[i];

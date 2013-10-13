@@ -1,5 +1,7 @@
 package ikube.action.index.handler.strategy.geocode;
 
+import ikube.model.Coordinate;
+
 
 /**
  * This class will search the geospatial index for the target address. If there are results then there will be a latitude and longitude for

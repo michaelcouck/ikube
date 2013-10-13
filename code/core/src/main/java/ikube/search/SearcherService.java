@@ -1,9 +1,9 @@
 package ikube.search;
 
 import ikube.IConstants;
-import ikube.action.index.handler.strategy.geocode.Coordinate;
 import ikube.cluster.IMonitorService;
 import ikube.database.IDataBase;
+import ikube.model.Coordinate;
 import ikube.model.IndexContext;
 import ikube.model.Search;
 import ikube.toolkit.HashUtilities;

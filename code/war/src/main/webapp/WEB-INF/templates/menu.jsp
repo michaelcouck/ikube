@@ -11,7 +11,7 @@
 				<a class="dropdown-toggle" data-toggle="dropdown" href="#">Dash<b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					<li><a href="<c:url value="/dash.html" />">Servers and actions</a></li>
-					<li><a href="#" ng-click="show = !show">Indexing and searching graphs</a></li>
+					<li><a href="#" ng-click="show = !show">Graphs</a></li>
 				</ul>
 			</li>
 

@@ -1,6 +1,7 @@
 package ikube.action.index.handler.strategy.geocode;
 
 import ikube.IConstants;
+import ikube.model.Coordinate;
 import ikube.security.WebServiceAuthentication;
 import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.ThreadUtilities;

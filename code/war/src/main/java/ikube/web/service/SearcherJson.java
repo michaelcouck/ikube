@@ -4,10 +4,8 @@ import ikube.IConstants;
 import ikube.model.Search;
 import ikube.toolkit.ObjectToolkit;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -26,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * Path looks like this: http://localhost:9080/ikube/service/search/json/multi
@@ -262,11 +259,11 @@ public class SearcherJson extends Searcher {
 		if (search != null && search.getSearchStrings() != null && search.getSearchStrings().size() > 0) {
 			searcherService.searchComplexSorted(search);
 		} else {
-			ObjectToolkit.populateFields(search, Boolean.TRUE, 3, "id");
+			getSearch(search);
 		}
 		return buildResponse(search);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -280,9 +277,33 @@ public class SearcherJson extends Searcher {
 		if (search != null && search.getSearchStrings() != null && search.getSearchStrings().size() > 0) {
 			searcherService.searchComplexSortedAll(search);
 		} else {
-			ObjectToolkit.populateFields(search, Boolean.TRUE, 3, "id");
+			getSearch(search);
 		}
 		return buildResponse(search);
 	}
 	
+	private Search getSearch(final Search search) {
+		ObjectToolkit.populateFields(search, Boolean.TRUE, 3, "id");
+		if (search.getSearchFields() != null) {
+			search.getSearchFields().clear();
+		}
+		if (search.getSearchResults() != null) {
+			search.getSearchResults().clear();
+		}
+		if (search.getSearchStrings() != null) {
+			search.getSearchStrings().clear();
+		}
+		if (search.getSortFields() != null) {
+			search.getSortFields().clear();
+		}
+		if (search.getTypeFields() != null) {
+			search.getTypeFields().clear();
+		}
+		if (search.getCoordinate() != null) {
+			search.getCoordinate().setLatitude(0);
+			search.getCoordinate().setLongitude(0);
+		}
+		return search;
+	}
+
 }
