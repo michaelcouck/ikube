@@ -97,22 +97,22 @@ public class ThreadUtilitiesTest extends AbstractTest {
 		assertTrue(duration < 20000);
 	}
 
-	@Test
-	public void submitDestroy() {
-		String name = "name";
-		Future<?> future = ThreadUtilities.submit(name, new Sleepy(Integer.MAX_VALUE));
-		if (future != null) {
-			logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
-		}
+	// @Test
+	// public void submitDestroy() {
+		// String name = "name";
+		// Future<?> future = ThreadUtilities.submit(name, new Sleepy(Integer.MAX_VALUE));
+		// if (future != null) {
+			// logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
+		// }
 
-		ThreadUtilities.sleep(3000);
-		ThreadUtilities.destroy(name);
-		ThreadUtilities.sleep(3000);
-		logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
+		// ThreadUtilities.sleep(3000);
+		// ThreadUtilities.destroy(name);
+		// ThreadUtilities.sleep(3000);
+		// logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
 
-		assertTrue(future.isDone());
-		assertTrue(future.isCancelled());
-	}
+		// assertTrue(future.isDone());
+		// assertTrue(future.isCancelled());
+	// }
 
 	/** This method just checks the concurrency of the threading, that there are no blocking synchronized blocks. */
 	@Test
