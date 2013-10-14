@@ -105,10 +105,10 @@ public class SearchSpatialTest extends AbstractTest {
 		assertNotNull(results);
 		assertEquals(5, results.size());
 		// Four co-ordinates fall into the search region, in this order
-		assertTrue(results.get(0).get(IConstants.CONTENTS).equals(zurichCoordinate.toString()));
-		assertTrue(results.get(1).get(IConstants.CONTENTS).equals(schwammeningenCoordinate.toString()));
-		assertTrue(results.get(2).get(IConstants.CONTENTS).equals(seebackCoordinate.toString()));
-		assertTrue(results.get(3).get(IConstants.CONTENTS).equals(adliswilCoordinate.toString()));
+		assertTrue(results.get(0).get(IConstants.CONTENTS).contains(zurichCoordinate.getName()));
+		assertTrue(results.get(1).get(IConstants.CONTENTS).contains(schwammeningenCoordinate.getName()));
+		assertTrue(results.get(2).get(IConstants.CONTENTS).contains(seebackCoordinate.getName()));
+		assertTrue(results.get(3).get(IConstants.CONTENTS).contains(adliswilCoordinate.getName()));
 
 		searchSpatial = new SearchSpatialAll(searcher);
 		searchSpatial.setDistance(10);
@@ -122,10 +122,10 @@ public class SearchSpatialTest extends AbstractTest {
 		assertNotNull(results);
 		assertEquals(5, results.size());
 		// Four co-ordinates fall into the search region, in this order
-		assertTrue(results.get(0).get(IConstants.CONTENTS).equals(zurichCoordinate.toString()));
-		assertTrue(results.get(1).get(IConstants.CONTENTS).equals(schwammeningenCoordinate.toString()));
-		assertTrue(results.get(2).get(IConstants.CONTENTS).equals(seebackCoordinate.toString()));
-		assertTrue(results.get(3).get(IConstants.CONTENTS).equals(adliswilCoordinate.toString()));
+		assertTrue(results.get(0).get(IConstants.CONTENTS).contains(zurichCoordinate.getName()));
+		assertTrue(results.get(1).get(IConstants.CONTENTS).contains(schwammeningenCoordinate.getName()));
+		assertTrue(results.get(2).get(IConstants.CONTENTS).contains(seebackCoordinate.getName()));
+		assertTrue(results.get(3).get(IConstants.CONTENTS).contains(adliswilCoordinate.getName()));
 	}
 
 }

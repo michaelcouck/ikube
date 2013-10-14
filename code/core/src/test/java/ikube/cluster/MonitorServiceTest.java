@@ -26,6 +26,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -95,6 +96,7 @@ public class MonitorServiceTest extends AbstractTest {
 	}
 
 	@Test
+	@Ignore
 	public void getSetProperties() throws IOException {
 		File propertiesFile = null;
 		try {
