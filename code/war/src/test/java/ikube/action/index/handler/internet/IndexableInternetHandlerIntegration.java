@@ -31,7 +31,7 @@ import org.junit.Test;
  */
 public class IndexableInternetHandlerIntegration extends IntegrationTest {
 
-	private String url = "http://ikube.be/site/index.html";
+	private String url = "http://www.hazelcast.com";
 	private IndexContext<?> indexContext;
 	private IndexableInternet indexableInternet;
 	private IndexableInternetHandler indexableInternetHandler;
@@ -42,7 +42,7 @@ public class IndexableInternetHandlerIntegration extends IntegrationTest {
 		indexableInternet = ApplicationContextManager.getBean("ikubeGoogleCode");
 		indexableInternet.setUrl(url);
 		indexableInternet.setBaseUrl(url);
-    indexableInternet.setThreads(10);
+		indexableInternet.setThreads(10);
 		indexableInternetHandler = ApplicationContextManager.getBean(IndexableInternetHandler.class);
 		IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 

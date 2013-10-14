@@ -7,11 +7,8 @@ import ikube.AbstractTest;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.Future;
-import java.util.concurrent.RecursiveTask;
 
 import org.junit.After;
 import org.junit.Before;
@@ -97,22 +94,22 @@ public class ThreadUtilitiesTest extends AbstractTest {
 		assertTrue(duration < 20000);
 	}
 
-	// @Test
-	// public void submitDestroy() {
-		// String name = "name";
-		// Future<?> future = ThreadUtilities.submit(name, new Sleepy(Integer.MAX_VALUE));
-		// if (future != null) {
-			// logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
-		// }
+	@Test
+	public void submitDestroy() {
+		String name = "name";
+		Future<?> future = ThreadUtilities.submit(name, new Sleepy(Integer.MAX_VALUE));
+		if (future != null) {
+			logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
+		}
 
-		// ThreadUtilities.sleep(3000);
-		// ThreadUtilities.destroy(name);
-		// ThreadUtilities.sleep(3000);
-		// logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
+		ThreadUtilities.sleep(3000);
+		ThreadUtilities.destroy(name);
+		ThreadUtilities.sleep(3000);
+		logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
 
-		// assertTrue(future.isDone());
-		// assertTrue(future.isCancelled());
-	// }
+		assertTrue(future.isDone());
+		assertTrue(future.isCancelled());
+	}
 
 	/** This method just checks the concurrency of the threading, that there are no blocking synchronized blocks. */
 	@Test
@@ -157,29 +154,29 @@ public class ThreadUtilitiesTest extends AbstractTest {
 		assertTrue(forkJoinPool.isTerminated());
 	}
 
-// 	@Test
-// 	public void executeForkJoinTasks() {
-// 		final String forkJoinPoolName = this.getClass().getSimpleName();
-// 		ForkJoinTask<Object> forkJoinTask = new RecursiveTask<Object>() {
-// 			@Override
-// 			protected Object compute() {
-// 				ThreadUtilities.sleep(5000);
-// 				return null;
-// 			}
-// 		};
-// 		new Thread(new Runnable() {
-// 			public void run() {
-// 				ThreadUtilities.sleep(3000);
-// 				ThreadUtilities.cancellForkJoinPool(forkJoinPoolName);
-// 			}
-// 		}).start();
-// 		try {
-// 			ThreadUtilities.executeForkJoinTasks(forkJoinPoolName, 3, forkJoinTask);
-// 		} catch (CancellationException e) {
-// 			// Ignore?
-// 		}
-// 
-// 		assertTrue(forkJoinTask.isCancelled());
-// }
+	// @Test
+	// public void executeForkJoinTasks() {
+	// final String forkJoinPoolName = this.getClass().getSimpleName();
+	// ForkJoinTask<Object> forkJoinTask = new RecursiveTask<Object>() {
+	// @Override
+	// protected Object compute() {
+	// ThreadUtilities.sleep(5000);
+	// return null;
+	// }
+	// };
+	// new Thread(new Runnable() {
+	// public void run() {
+	// ThreadUtilities.sleep(3000);
+	// ThreadUtilities.cancellForkJoinPool(forkJoinPoolName);
+	// }
+	// }).start();
+	// try {
+	// ThreadUtilities.executeForkJoinTasks(forkJoinPoolName, 3, forkJoinTask);
+	// } catch (CancellationException e) {
+	// // Ignore?
+	// }
+	//
+	// assertTrue(forkJoinTask.isCancelled());
+	// }
 
 }

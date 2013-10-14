@@ -127,7 +127,6 @@ public class FileUtilitiesTest extends AbstractTest {
 	@Test
 	public void findDirectoryRecursively() {
 		File file = FileUtilities.findDirectoryRecursively(new File("."), "data");
-		logger.info("Data directory : " + file.getAbsolutePath());
 		assertNotNull(file);
 		assertTrue(file.exists());
 		assertTrue(file.isDirectory());
@@ -144,7 +143,6 @@ public class FileUtilitiesTest extends AbstractTest {
 	public void findDirectoryRecursivelyUp() {
 		File folder = new File(".").getAbsoluteFile();
 		File textSentimentFolder = FileUtilities.findDirectoryRecursively(folder, 2, "txt_sentoken");
-		logger.info("Sentiment folder : " + textSentimentFolder);
 		assertNotNull(textSentimentFolder);
 	}
 
@@ -156,7 +154,6 @@ public class FileUtilitiesTest extends AbstractTest {
 		InputStream inputStream = getMethod.getResponseBodyAsStream();
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		FileUtilities.getContents(inputStream, byteArrayOutputStream, Integer.MAX_VALUE);
-		System.out.println(byteArrayOutputStream.toString());
 		assertTrue(!StringUtils.isEmpty(byteArrayOutputStream.toString()));
 	}
 

@@ -82,6 +82,7 @@ public class TwitterHandlerTest extends AbstractTest {
 		final ForkJoinTask<?> forkJoinTask = twitterHandler.handleIndexableForked(indexContext, indexableTweets);
 		try {
 			ThreadUtilities.executeForkJoinTasks(forkJoinPoolName, indexableTweets.getThreads(), forkJoinTask);
+			ThreadUtilities.sleep(15000);
 		} catch (CancellationException e) {
 			// Ignore
 		}

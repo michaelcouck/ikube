@@ -74,7 +74,6 @@ public class IndexableInternetHandlerTest extends AbstractTest {
 		url.setUrl(this.url);
 		url.setContentType("text/html");
 		List<Url> urls = indexableInternetHandler.handleResource(indexContext, indexableInternet, url);
-		logger.info("Urls : " + urls);
 		assertNotNull(urls);
 		assertTrue(urls.size() > 0);
 	}

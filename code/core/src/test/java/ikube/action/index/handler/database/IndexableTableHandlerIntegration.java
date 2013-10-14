@@ -32,7 +32,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.List;
-import java.util.concurrent.CancellationException;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -108,10 +108,118 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
 			snapshotTable.setPredicate("snapshot.id = " + snapshotTable.getMinimumId());
 			ForkJoinTask<?> forkJoinTask = indexableTableHandler.handleIndexableForked(indexContext, snapshotTable);
 			ThreadUtilities.executeForkJoinTasks(indexContext.getName(), snapshotTable.getThreads(), forkJoinTask);
+			ThreadUtilities.sleep(5000);
 			assertTrue("There must be more than one document in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);
 		} finally {
 			snapshotTable.setPredicate(predicate);
 			ThreadUtilities.cancellForkJoinPool(indexContext.getName());
+		}
+	}
+
+	@Test
+	public void handleColumn() throws Exception {
+		IndexableColumn snapshotIdIndexableColumn = QueryBuilder.getIdColumn(snapshotTableChildren);
+		snapshotIdIndexableColumn.setContent("Hello World!");
+		snapshotIdIndexableColumn.setColumnType(Types.VARCHAR);
+		Document document = new Document();
+		IContentProvider<IndexableColumn> contentProvider = new ColumnContentProvider();
+		invoke(indexableTableHandler, "handleColumn", contentProvider, snapshotIdIndexableColumn, document);
+		// This must just succeed as the sub components are tested separately
+		assertTrue(Boolean.TRUE);
+	}
+
+	@Test
+	public void setIdField() throws Exception {
+		Document document = new Document();
+		Statement statement = connection.createStatement();
+		ResultSet resultSet = statement.executeQuery("select * from snapshot");
+		resultSet.next();
+
+		invoke(indexableTableHandler, "setColumnTypesAndData", snapshotTableChildren, resultSet);
+		invoke(indexableTableHandler, "setIdField", snapshotTable, document);
+
+		String idFieldValue = document.get(IConstants.ID);
+		assertTrue("The id field for the table is the name of the table and the column name, then the value : " + idFieldValue,
+				idFieldValue.contains("snapshot id"));
+
+		close(resultSet);
+		close(statement);
+	}
+
+	@Test
+	public void setColumnTypes() throws Exception {
+		snapshotColumn.setColumnType(0);
+		Statement statement = connection.createStatement();
+		ResultSet resultSet = statement.executeQuery("select * from snapshot");
+		resultSet.next();
+
+		invoke(indexableTableHandler, "setColumnTypesAndData", snapshotTableChildren, resultSet);
+		close(resultSet);
+		close(statement);
+
+		// This is NUMERIC on Oracle and BIGINT on H2!
+		assertEquals("Snapshot id column type : " + snapshotColumn.getColumnType(), Types.BIGINT, snapshotColumn.getColumnType());
+	}
+
+	@Test
+	public void handleTable() throws Exception {
+		try {
+			String ip = InetAddress.getLocalHost().getHostAddress();
+			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
+			indexContext.setIndexWriters(indexWriter);
+
+			ForkJoinTask<?> forkJoinTask = indexableTableHandler.handleIndexableForked(indexContext, snapshotTable);
+			ThreadUtilities.executeForkJoinTasks(indexContext.getName(), snapshotTable.getThreads(), forkJoinTask);
+			ThreadUtilities.sleep(5000);
+			assertTrue("There must be some data in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);
+		} finally {
+			ThreadUtilities.cancellForkJoinPool(indexContext.getName());
+		}
+	}
+
+	@Test
+	public void handleAllColumnsAllTables() throws Exception {
+		String ip = InetAddress.getLocalHost().getHostAddress();
+		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
+		indexContext.setIndexWriters(indexWriter);
+		for (Indexable<?> indexable : indexContext.getChildren()) {
+			if (!IndexableTable.class.isAssignableFrom(indexable.getClass())) {
+				continue;
+			}
+			try {
+				ForkJoinTask<?> forkJoinTask = indexableTableHandler.handleIndexableForked(indexContext, (IndexableTable) indexable);
+				ThreadUtilities.executeForkJoinTasks(indexContext.getName(), snapshotTable.getThreads(), forkJoinTask);
+				ThreadUtilities.sleep(5000);
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+			}
+		}
+		assertTrue("There must be some data in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);
+	}
+
+	@Test
+	public void interrupt() throws Exception {
+		try {
+			indexContext.setBatchSize(10);
+			indexContext.setThrottle(60000);
+			indexContext.setIndexWriters(IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), UriUtilities.getIp()));
+			Thread thread = new Thread(new Runnable() {
+				public void run() {
+					ThreadUtilities.sleep(10000);
+					ThreadUtilities.cancellForkJoinPool(indexContext.getName());
+				}
+			});
+			thread.setDaemon(Boolean.TRUE);
+			thread.start();
+
+			ForkJoinTask<?> forkJoinTask = indexableTableHandler.handleIndexableForked(indexContext, snapshotTable);
+			// This should throw a cancellation exception
+			ForkJoinPool forkJoinPool = ThreadUtilities.executeForkJoinTasks(indexContext.getName(), snapshotTable.getThreads(), forkJoinTask);
+			ThreadUtilities.sleep(15000);
+			assertTrue(forkJoinPool.isShutdown() || forkJoinPool.isTerminated() || forkJoinPool.isTerminating()); 
+		} finally {
+			indexContext.setThrottle(0);
+			indexContext.setBatchSize(1000);
 		}
 	}
 
@@ -171,109 +279,6 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
 		Statement statement = resultSet.getStatement();
 		DatabaseUtilities.close(resultSet);
 		DatabaseUtilities.close(statement);
-	}
-
-	@Test
-	public void handleColumn() throws Exception {
-		IndexableColumn snapshotIdIndexableColumn = QueryBuilder.getIdColumn(snapshotTableChildren);
-		snapshotIdIndexableColumn.setContent("Hello World!");
-		snapshotIdIndexableColumn.setColumnType(Types.VARCHAR);
-		Document document = new Document();
-		IContentProvider<IndexableColumn> contentProvider = new ColumnContentProvider();
-		invoke(indexableTableHandler, "handleColumn", contentProvider, snapshotIdIndexableColumn, document);
-		// This must just succeed as the sub components are tested separately
-		assertTrue(Boolean.TRUE);
-	}
-
-	@Test
-	public void setIdField() throws Exception {
-		Document document = new Document();
-		Statement statement = connection.createStatement();
-		ResultSet resultSet = statement.executeQuery("select * from snapshot");
-		resultSet.next();
-
-		invoke(indexableTableHandler, "setColumnTypesAndData", snapshotTableChildren, resultSet);
-		invoke(indexableTableHandler, "setIdField", snapshotTable, document);
-
-		String idFieldValue = document.get(IConstants.ID);
-		assertTrue("The id field for the table is the name of the table and the column name, then the value : " + idFieldValue,
-				idFieldValue.contains("snapshot id"));
-
-		close(resultSet);
-		close(statement);
-	}
-
-	@Test
-	public void setColumnTypes() throws Exception {
-		snapshotColumn.setColumnType(0);
-		Statement statement = connection.createStatement();
-		ResultSet resultSet = statement.executeQuery("select * from snapshot");
-		resultSet.next();
-
-		invoke(indexableTableHandler, "setColumnTypesAndData", snapshotTableChildren, resultSet);
-		close(resultSet);
-		close(statement);
-
-		// This is NUMERIC on Oracle and BIGINT on H2!
-		assertEquals("Snapshot id column type : " + snapshotColumn.getColumnType(), Types.BIGINT, snapshotColumn.getColumnType());
-	}
-
-	@Test
-	public void handleTable() throws Exception {
-		try {
-			String ip = InetAddress.getLocalHost().getHostAddress();
-			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
-			indexContext.setIndexWriters(indexWriter);
-
-			ForkJoinTask<?> forkJoinTask = indexableTableHandler.handleIndexableForked(indexContext, snapshotTable);
-			ThreadUtilities.executeForkJoinTasks(indexContext.getName(), snapshotTable.getThreads(), forkJoinTask);
-			assertTrue("There must be some data in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);
-		} finally {
-			ThreadUtilities.cancellForkJoinPool(indexContext.getName());
-		}
-	}
-
-	@Test
-	public void handleAllColumnsAllTables() throws Exception {
-		String ip = InetAddress.getLocalHost().getHostAddress();
-		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
-		indexContext.setIndexWriters(indexWriter);
-		for (Indexable<?> indexable : indexContext.getChildren()) {
-			if (!IndexableTable.class.isAssignableFrom(indexable.getClass())) {
-				continue;
-			}
-			try {
-				ForkJoinTask<?> forkJoinTask = indexableTableHandler.handleIndexableForked(indexContext, (IndexableTable) indexable);
-				ThreadUtilities.executeForkJoinTasks(indexContext.getName(), snapshotTable.getThreads(), forkJoinTask);
-			} catch (Exception e) {
-				logger.error(e.getMessage());
-			}
-		}
-		assertTrue("There must be some data in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);
-	}
-
-	@Test(expected = CancellationException.class)
-	public void interrupt() throws Exception {
-		try {
-			indexContext.setBatchSize(10);
-			indexContext.setThrottle(60000);
-			indexContext.setIndexWriters(IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), UriUtilities.getIp()));
-			Thread thread = new Thread(new Runnable() {
-				public void run() {
-					ThreadUtilities.sleep(10000);
-					ThreadUtilities.cancellForkJoinPool(indexContext.getName());
-				}
-			});
-			thread.setDaemon(Boolean.TRUE);
-			thread.start();
-
-			ForkJoinTask<?> forkJoinTask = indexableTableHandler.handleIndexableForked(indexContext, snapshotTable);
-			// This should throw a cancellation exception
-			ThreadUtilities.executeForkJoinTasks(indexContext.getName(), snapshotTable.getThreads(), forkJoinTask);
-		} finally {
-			indexContext.setThrottle(0);
-			indexContext.setBatchSize(1000);
-		}
 	}
 
 }
