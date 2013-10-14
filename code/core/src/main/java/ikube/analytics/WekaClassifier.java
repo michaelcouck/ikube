@@ -162,7 +162,11 @@ public class WekaClassifier implements IAnalyzer<String, String, String, Boolean
 			evaluation.evaluateModel(classifier, filteredData);
 			String evaluationReport = evaluation.toSummaryString();
 			LOGGER.info("Classifier evaluation : " + evaluationReport);
-			writeInstances(trainingInstances, classificationInstances, filteredData);
+			
+			filteredData.setRelationName("filtered_data");
+			trainingInstances.setRelationName("training_data");
+			classificationInstances.setRelationName("classification_data");
+			// writeInstances(trainingInstances, classificationInstances, filteredData);
 			return;
 		} catch (Exception e) {
 			LOGGER.info("Exception building classifier : ", e);

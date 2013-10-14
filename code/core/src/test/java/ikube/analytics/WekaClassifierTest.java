@@ -13,7 +13,6 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -35,8 +34,8 @@ public class WekaClassifierTest extends AbstractTest {
 		wekaClassifier.file("instance.arff");
 		wekaClassifier.initialize();
 		wekaClassifier.build();
-		// trainOnSentimentData(wekaClassifier);
 		classify(wekaClassifier);
+		// trainOnSentimentData(wekaClassifier);
 	}
 
 	private void classify(final WekaClassifier wekaClassifier) throws Exception {
@@ -86,18 +85,16 @@ public class WekaClassifierTest extends AbstractTest {
 	}
 
 	@Test
-	@Ignore
 	public void classify() throws Exception {
 		wekaClassifier.initialize();
 		wekaClassifier.train(IConstants.POSITIVE, IConstants.POSITIVE);
 		wekaClassifier.train(IConstants.NEGATIVE, IConstants.NEGATIVE);
 		wekaClassifier.build();
-		// trainOnSentimentData(wekaClassifier);
 		classify(wekaClassifier);
+		// trainOnSentimentData(wekaClassifier);
 	}
 
 	@Test
-	@Ignore
 	public void performance() {
 		wekaClassifier.initialize();
 		int iterations = 1001;
