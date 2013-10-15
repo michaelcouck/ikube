@@ -7,8 +7,11 @@ import ikube.AbstractTest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.Future;
+import java.util.concurrent.RecursiveTask;
 
 import org.junit.After;
 import org.junit.Before;
@@ -56,7 +59,7 @@ public class ThreadUtilitiesTest extends AbstractTest {
 
 	@After
 	public void after() {
-		ThreadUtilities.initialize();
+		ThreadUtilities.destroy();
 	}
 
 	@Test
@@ -77,6 +80,7 @@ public class ThreadUtilitiesTest extends AbstractTest {
 
 	@Test
 	public void waitForFuture() {
+		ThreadUtilities.initialize();
 		// We just wait for this future to finish, must be less than the time we expect to wait
 		long start = System.currentTimeMillis();
 		Future<?> future = ThreadUtilities.submit(null, new Sleepy(3000));
@@ -96,6 +100,7 @@ public class ThreadUtilitiesTest extends AbstractTest {
 
 	@Test
 	public void submitDestroy() {
+		ThreadUtilities.initialize();
 		String name = "name";
 		Future<?> future = ThreadUtilities.submit(name, new Sleepy(Integer.MAX_VALUE));
 		if (future != null) {
@@ -139,6 +144,7 @@ public class ThreadUtilitiesTest extends AbstractTest {
 
 	@Test
 	public void cancellForkJoinPool() {
+		ThreadUtilities.initialize();
 		ForkJoinPool forkJoinPool = ThreadUtilities.getForkJoinPool(this.getClass().getSimpleName(), 3);
 		ForkJoinPool cancelledForkJoinPool = ThreadUtilities.cancellForkJoinPool(this.getClass().getSimpleName());
 		assertEquals(forkJoinPool, cancelledForkJoinPool);
@@ -148,35 +154,38 @@ public class ThreadUtilitiesTest extends AbstractTest {
 
 	@Test
 	public void cancellAllForkJoinPools() {
+		ThreadUtilities.initialize();
 		ForkJoinPool forkJoinPool = ThreadUtilities.getForkJoinPool(this.getClass().getSimpleName(), 3);
 		ThreadUtilities.cancellAllForkJoinPools();
 		assertTrue(forkJoinPool.isShutdown());
 		assertTrue(forkJoinPool.isTerminated());
 	}
 
-	// @Test
-	// public void executeForkJoinTasks() {
-	// final String forkJoinPoolName = this.getClass().getSimpleName();
-	// ForkJoinTask<Object> forkJoinTask = new RecursiveTask<Object>() {
-	// @Override
-	// protected Object compute() {
-	// ThreadUtilities.sleep(5000);
-	// return null;
-	// }
-	// };
-	// new Thread(new Runnable() {
-	// public void run() {
-	// ThreadUtilities.sleep(3000);
-	// ThreadUtilities.cancellForkJoinPool(forkJoinPoolName);
-	// }
-	// }).start();
-	// try {
-	// ThreadUtilities.executeForkJoinTasks(forkJoinPoolName, 3, forkJoinTask);
-	// } catch (CancellationException e) {
-	// // Ignore?
-	// }
-	//
-	// assertTrue(forkJoinTask.isCancelled());
-	// }
+	@Test
+	public void executeForkJoinTasks() {
+		ThreadUtilities.initialize();
+		final String forkJoinPoolName = this.getClass().getSimpleName();
+		ForkJoinTask<Object> forkJoinTask = new RecursiveTask<Object>() {
+			@Override
+			protected Object compute() {
+				ThreadUtilities.sleep(5000);
+				return null;
+			}
+		};
+		new Thread(new Runnable() {
+			public void run() {
+				ThreadUtilities.sleep(3000);
+				ThreadUtilities.cancellForkJoinPool(forkJoinPoolName);
+			}
+		}).start();
+		try {
+			ThreadUtilities.executeForkJoinTasks(forkJoinPoolName, 3, forkJoinTask);
+			ThreadUtilities.sleep(10000);
+		} catch (CancellationException e) {
+			// Ignore?
+		}
+
+		assertTrue(forkJoinTask.isCancelled());
+	}
 
 }
