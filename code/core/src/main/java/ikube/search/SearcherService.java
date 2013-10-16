@@ -351,7 +351,7 @@ public class SearcherService implements ISearcherService {
 			String[] searchFields = search.getSearchFields().toArray(new String[search.getSearchFields().size()]);
 			String[] typeFields = search.getTypeFields().toArray(new String[search.getTypeFields().size()]);
 			String[] sortFields = search.getSortFields().toArray(new String[search.getSortFields().size()]);
-			// TODO Change the field types based on the search strings for those fields, for example if the field 
+			// TODO Change the field types based on the search strings for those fields, for example if the field
 			// is something like 123-456 then this is a range query for the field
 
 			searchComplexSorted.setFirstResult(search.getFirstResult());
@@ -372,6 +372,21 @@ public class SearcherService implements ISearcherService {
 		} catch (final Exception e) {
 			handleException(search.getIndexName(), e);
 		}
+		return search;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Search searchMultiSpacial(final Search search) {
+		String indexName = search.getIndexName();
+		String[] searchStrings = search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]);
+		String[] searchFields = search.getSearchFields().toArray(new String[search.getSearchFields().size()]);
+		Coordinate coordinate = search.getCoordinate();
+		ArrayList<HashMap<String, String>> results = searchMultiSpacial(indexName, searchStrings, searchFields, search.isFragment(), search.getFirstResult(),
+				search.getMaxResults(), search.getDistance(), coordinate.getLatitude(), coordinate.getLongitude());
+		search.setSearchResults(results);
 		return search;
 	}
 

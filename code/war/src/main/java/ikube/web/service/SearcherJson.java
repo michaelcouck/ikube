@@ -281,7 +281,7 @@ public class SearcherJson extends Searcher {
 		}
 		return buildResponse(search);
 	}
-	
+
 	private Search getSearch(final Search search) {
 		ObjectToolkit.populateFields(search, Boolean.TRUE, 3, "id");
 		if (search.getSearchFields() != null) {
@@ -304,6 +304,24 @@ public class SearcherJson extends Searcher {
 			search.getCoordinate().setLongitude(0);
 		}
 		return search;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@POST
+	@Override
+	@Path(SearcherJson.MULTI_SPATIAL_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response searchMultiSpacial(@Context HttpServletRequest request, @Context UriInfo uriInfo) {
+		Search search = unmarshall(Search.class, request);
+		if (search != null && search.getSearchStrings() != null && search.getSearchStrings().size() > 0) {
+			searcherService.searchMultiSpacial(search);
+		} else {
+			getSearch(search);
+		}
+		return buildResponse(search);
 	}
 
 }

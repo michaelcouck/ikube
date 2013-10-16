@@ -55,7 +55,9 @@ public class SearchSpatial extends SearchComplex {
 	 */
 	@Override
 	protected TopDocs search(final Query query) throws IOException {
-		logger.info("Coordinate : " + coordinate);
+		if (logger.isDebugEnabled()) {
+			logger.debug("Coordinate : " + coordinate);
+		}
 		DistanceQueryBuilder queryBuilder = new DistanceQueryBuilder(coordinate.getLatitude(), coordinate.getLongitude(), distance, IConstants.LAT,
 				IConstants.LNG, CartesianTierPlotter.DEFALT_FIELD_PREFIX, Boolean.TRUE, 0, 100);
 		// As the radius filter has performed the distance calculations already, pass in the filter to reuse the results
@@ -64,7 +66,9 @@ public class SearchSpatial extends SearchComplex {
 		Sort sort = new Sort(new SortField("geo_distance", fieldComparator));
 		TopDocs topDocs = searcher.search(query, queryBuilder.getFilter(), firstResult + maxResults, sort);
 		distances = queryBuilder.getDistanceFilter().getDistances();
-		logger.info("Total docs : " + topDocs.totalHits + ", score docs : " + topDocs.scoreDocs.length);
+		if (logger.isDebugEnabled()) {
+			logger.debug("Total docs : " + topDocs.totalHits + ", score docs : " + topDocs.scoreDocs.length);
+		}
 		return topDocs;
 	}
 

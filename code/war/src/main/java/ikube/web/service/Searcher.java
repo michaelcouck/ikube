@@ -141,4 +141,9 @@ public abstract class Searcher extends Resource {
 	 * TODO Comment me.
 	 */
 	abstract Response searchComplexSortedAll(@Context final HttpServletRequest request, @Context final UriInfo uriInfo);
+	
+	/**
+	 * TODO Comment me.
+	 */
+	abstract Response searchMultiSpacial(@Context final HttpServletRequest request, @Context final UriInfo uriInfo);
 }

@@ -176,5 +176,10 @@ public interface ISearcherService {
 	 * TODO Document me...
 	 */
 	Search searchComplexSortedAll(final Search search);
+	
+	/**
+	 * TODO Document me...
+	 */
+	Search searchMultiSpacial(final Search search);
 
 }

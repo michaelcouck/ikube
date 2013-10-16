@@ -64,6 +64,7 @@ public class ThreadUtilitiesTest extends AbstractTest {
 
 	@Test
 	public void waitForThreads() {
+		ThreadUtilities.initialize();
 		List<Thread> threads = new ArrayList<Thread>();
 		for (int i = 0; i < 3; i++) {
 			Thread thread = new Thread(new Sleepy());

@@ -63,13 +63,10 @@ public class SearcherXml extends Searcher {
 	@Path(SearcherXml.SINGLE)
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_XML)
-	public Response searchSingle(@QueryParam(value = IConstants.INDEX_NAME)
-	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
-	final String searchStrings, @QueryParam(value = IConstants.SEARCH_FIELDS)
-	final String searchFields, @QueryParam(value = IConstants.FRAGMENT)
-	final boolean fragment, @QueryParam(value = IConstants.FIRST_RESULT)
-	final int firstResult, @QueryParam(value = IConstants.MAX_RESULTS)
-	final int maxResults) {
+	public Response searchSingle(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
+			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings, @QueryParam(value = IConstants.SEARCH_FIELDS) final String searchFields,
+			@QueryParam(value = IConstants.FRAGMENT) final boolean fragment, @QueryParam(value = IConstants.FIRST_RESULT) final int firstResult,
+			@QueryParam(value = IConstants.MAX_RESULTS) final int maxResults) {
 		ArrayList<HashMap<String, String>> results = searcherService.searchSingle(indexName, searchStrings, searchFields, fragment, firstResult, maxResults);
 		return buildResponse().entity(SerializationUtilities.serialize(results)).build();
 	}
@@ -82,13 +79,10 @@ public class SearcherXml extends Searcher {
 	@Path(SearcherXml.MULTI)
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_XML)
-	public Response searchMulti(@QueryParam(value = IConstants.INDEX_NAME)
-	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
-	final String searchStrings, @QueryParam(value = IConstants.SEARCH_FIELDS)
-	final String searchFields, @QueryParam(value = IConstants.FRAGMENT)
-	final boolean fragment, @QueryParam(value = IConstants.FIRST_RESULT)
-	final int firstResult, @QueryParam(value = IConstants.MAX_RESULTS)
-	final int maxResults) {
+	public Response searchMulti(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
+			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings, @QueryParam(value = IConstants.SEARCH_FIELDS) final String searchFields,
+			@QueryParam(value = IConstants.FRAGMENT) final boolean fragment, @QueryParam(value = IConstants.FIRST_RESULT) final int firstResult,
+			@QueryParam(value = IConstants.MAX_RESULTS) final int maxResults) {
 		String[] searchStringsArray = StringUtils.split(searchStrings, SEPARATOR);
 		String[] searchFieldsArray = StringUtils.split(searchFields, SEPARATOR);
 		ArrayList<HashMap<String, String>> results = searcherService.searchMulti(indexName, searchStringsArray, searchFieldsArray, fragment, firstResult,
@@ -104,14 +98,10 @@ public class SearcherXml extends Searcher {
 	@Path(SearcherXml.MULTI_SORTED)
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_XML)
-	public Response searchMultiSorted(@QueryParam(value = IConstants.INDEX_NAME)
-	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
-	final String searchStrings, @QueryParam(value = IConstants.SEARCH_FIELDS)
-	final String searchFields, @QueryParam(value = IConstants.SORT_FIELDS)
-	final String sortFields, @QueryParam(value = IConstants.FRAGMENT)
-	final boolean fragment, @QueryParam(value = IConstants.FIRST_RESULT)
-	final int firstResult, @QueryParam(value = IConstants.MAX_RESULTS)
-	final int maxResults) {
+	public Response searchMultiSorted(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
+			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings, @QueryParam(value = IConstants.SEARCH_FIELDS) final String searchFields,
+			@QueryParam(value = IConstants.SORT_FIELDS) final String sortFields, @QueryParam(value = IConstants.FRAGMENT) final boolean fragment,
+			@QueryParam(value = IConstants.FIRST_RESULT) final int firstResult, @QueryParam(value = IConstants.MAX_RESULTS) final int maxResults) {
 		String[] searchStringsArray = StringUtils.split(searchStrings, SEPARATOR);
 		String[] searchFieldsArray = StringUtils.split(searchFields, SEPARATOR);
 		String[] sortFieldsArray = StringUtils.split(sortFields, SEPARATOR);
@@ -128,12 +118,9 @@ public class SearcherXml extends Searcher {
 	@Path(SearcherXml.MULTI_ALL)
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_XML)
-	public Response searchMultiAll(@QueryParam(value = IConstants.INDEX_NAME)
-	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
-	final String searchStrings, @QueryParam(value = IConstants.FRAGMENT)
-	final boolean fragment, @QueryParam(value = IConstants.FIRST_RESULT)
-	final int firstResult, @QueryParam(value = IConstants.MAX_RESULTS)
-	final int maxResults) {
+	public Response searchMultiAll(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
+			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings, @QueryParam(value = IConstants.FRAGMENT) final boolean fragment,
+			@QueryParam(value = IConstants.FIRST_RESULT) final int firstResult, @QueryParam(value = IConstants.MAX_RESULTS) final int maxResults) {
 		String[] searchStringsArray = StringUtils.split(searchStrings, SEPARATOR);
 		ArrayList<HashMap<String, String>> results = searcherService.searchMultiAll(indexName, searchStringsArray, fragment, firstResult, maxResults);
 		return buildResponse().entity(SerializationUtilities.serialize(results)).build();
@@ -147,16 +134,11 @@ public class SearcherXml extends Searcher {
 	@Path(SearcherXml.MULTI_SPATIAL)
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_XML)
-	public Response searchMultiSpacial(@QueryParam(value = IConstants.INDEX_NAME)
-	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
-	final String searchStrings, @QueryParam(value = IConstants.SEARCH_FIELDS)
-	final String searchFields, @QueryParam(value = IConstants.FRAGMENT)
-	final boolean fragment, @QueryParam(value = IConstants.FIRST_RESULT)
-	final int firstResult, @QueryParam(value = IConstants.MAX_RESULTS)
-	final int maxResults, @QueryParam(value = IConstants.DISTANCE)
-	final int distance, @QueryParam(value = IConstants.LATITUDE)
-	final String latitude, @QueryParam(value = IConstants.LONGITUDE)
-	final String longitude) {
+	public Response searchMultiSpacial(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
+			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings, @QueryParam(value = IConstants.SEARCH_FIELDS) final String searchFields,
+			@QueryParam(value = IConstants.FRAGMENT) final boolean fragment, @QueryParam(value = IConstants.FIRST_RESULT) final int firstResult,
+			@QueryParam(value = IConstants.MAX_RESULTS) final int maxResults, @QueryParam(value = IConstants.DISTANCE) final int distance,
+			@QueryParam(value = IConstants.LATITUDE) final String latitude, @QueryParam(value = IConstants.LONGITUDE) final String longitude) {
 		String[] searchStringsArray = StringUtils.split(searchStrings, SEPARATOR);
 		String[] searchFieldsArray = StringUtils.split(searchFields, SEPARATOR);
 		ArrayList<HashMap<String, String>> results = searcherService.searchMultiSpacial(indexName, searchStringsArray, searchFieldsArray, fragment,
@@ -172,15 +154,11 @@ public class SearcherXml extends Searcher {
 	@Path(SearcherXml.MULTI_SPATIAL_ALL)
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_XML)
-	public Response searchMultiSpacialAll(@QueryParam(value = IConstants.INDEX_NAME)
-	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
-	final String searchStrings, @QueryParam(value = IConstants.FRAGMENT)
-	final boolean fragment, @QueryParam(value = IConstants.FIRST_RESULT)
-	final int firstResult, @QueryParam(value = IConstants.MAX_RESULTS)
-	final int maxResults, @QueryParam(value = IConstants.DISTANCE)
-	final int distance, @QueryParam(value = IConstants.LATITUDE)
-	final String latitude, @QueryParam(value = IConstants.LONGITUDE)
-	final String longitude) {
+	public Response searchMultiSpacialAll(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
+			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings, @QueryParam(value = IConstants.FRAGMENT) final boolean fragment,
+			@QueryParam(value = IConstants.FIRST_RESULT) final int firstResult, @QueryParam(value = IConstants.MAX_RESULTS) final int maxResults,
+			@QueryParam(value = IConstants.DISTANCE) final int distance, @QueryParam(value = IConstants.LATITUDE) final String latitude,
+			@QueryParam(value = IConstants.LONGITUDE) final String longitude) {
 		String[] searchStringsArray = StringUtils.split(searchStrings, SEPARATOR);
 		ArrayList<HashMap<String, String>> results = searcherService.searchMultiSpacialAll(indexName, searchStringsArray, fragment, firstResult, maxResults,
 				distance, Double.parseDouble(latitude), Double.parseDouble(longitude));
@@ -195,13 +173,10 @@ public class SearcherXml extends Searcher {
 	@Path(SearcherXml.MULTI_ADVANCED)
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_XML)
-	public Response searchMultiAdvanced(@QueryParam(value = IConstants.INDEX_NAME)
-	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
-	final String searchStrings, @QueryParam(value = IConstants.SEARCH_FIELDS)
-	final String searchField, @QueryParam(value = IConstants.FRAGMENT)
-	final boolean fragment, @QueryParam(value = IConstants.FIRST_RESULT)
-	final int firstResult, @QueryParam(value = IConstants.MAX_RESULTS)
-	final int maxResults) {
+	public Response searchMultiAdvanced(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
+			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings, @QueryParam(value = IConstants.SEARCH_FIELDS) final String searchField,
+			@QueryParam(value = IConstants.FRAGMENT) final boolean fragment, @QueryParam(value = IConstants.FIRST_RESULT) final int firstResult,
+			@QueryParam(value = IConstants.MAX_RESULTS) final int maxResults) {
 		String[] searchStringsArray = StringUtils.split(searchStrings, SEPARATOR);
 		String[] searchFieldsArray = StringUtils.split(searchField, SEPARATOR);
 		ArrayList<HashMap<String, String>> results = searcherService.searchMultiAdvanced(indexName, searchStringsArray, searchFieldsArray, fragment,
@@ -217,12 +192,9 @@ public class SearcherXml extends Searcher {
 	@Path(SearcherXml.NUMERIC_ALL)
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_XML)
-	public Response searchNumericAll(@QueryParam(value = IConstants.INDEX_NAME)
-	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
-	final String searchStrings, @QueryParam(value = IConstants.FRAGMENT)
-	final boolean fragment, @QueryParam(value = IConstants.FIRST_RESULT)
-	final int firstResult, @QueryParam(value = IConstants.MAX_RESULTS)
-	final int maxResults) {
+	public Response searchNumericAll(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
+			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings, @QueryParam(value = IConstants.FRAGMENT) final boolean fragment,
+			@QueryParam(value = IConstants.FIRST_RESULT) final int firstResult, @QueryParam(value = IConstants.MAX_RESULTS) final int maxResults) {
 		String[] searchStringsArray = StringUtils.split(searchStrings, SEPARATOR);
 		ArrayList<HashMap<String, String>> results = searcherService.searchNumericAll(indexName, searchStringsArray, fragment, firstResult, maxResults);
 		return buildResponse().entity(SerializationUtilities.serialize(results)).build();
@@ -236,12 +208,9 @@ public class SearcherXml extends Searcher {
 	@Path(SearcherXml.NUMERIC_RANGE)
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_XML)
-	public Response searchNumericRange(@QueryParam(value = IConstants.INDEX_NAME)
-	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
-	final String searchStrings, @QueryParam(value = IConstants.FRAGMENT)
-	final boolean fragment, @QueryParam(value = IConstants.FIRST_RESULT)
-	final int firstResult, @QueryParam(value = IConstants.MAX_RESULTS)
-	final int maxResults) {
+	public Response searchNumericRange(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
+			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings, @QueryParam(value = IConstants.FRAGMENT) final boolean fragment,
+			@QueryParam(value = IConstants.FIRST_RESULT) final int firstResult, @QueryParam(value = IConstants.MAX_RESULTS) final int maxResults) {
 		String[] searchStringsArray = StringUtils.split(searchStrings, SEPARATOR);
 		ArrayList<HashMap<String, String>> results = searcherService.searchNumericRange(indexName, searchStringsArray, fragment, firstResult, maxResults);
 		return buildResponse().entity(SerializationUtilities.serialize(results)).build();
@@ -255,14 +224,10 @@ public class SearcherXml extends Searcher {
 	@Path(SearcherXml.COMPLEX)
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_XML)
-	public Response searchComplex(@QueryParam(value = IConstants.INDEX_NAME)
-	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
-	final String searchStrings, @QueryParam(value = IConstants.SEARCH_FIELDS)
-	final String searchFields, @QueryParam(value = IConstants.TYPE_FIELDS)
-	final String typeFields, @QueryParam(value = IConstants.FRAGMENT)
-	final boolean fragment, @QueryParam(value = IConstants.FIRST_RESULT)
-	final int firstResult, @QueryParam(value = IConstants.MAX_RESULTS)
-	final int maxResults) {
+	public Response searchComplex(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
+			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings, @QueryParam(value = IConstants.SEARCH_FIELDS) final String searchFields,
+			@QueryParam(value = IConstants.TYPE_FIELDS) final String typeFields, @QueryParam(value = IConstants.FRAGMENT) final boolean fragment,
+			@QueryParam(value = IConstants.FIRST_RESULT) final int firstResult, @QueryParam(value = IConstants.MAX_RESULTS) final int maxResults) {
 		String[] searchStringsArray = StringUtils.split(searchStrings, SEPARATOR);
 		String[] searchFieldsArray = StringUtils.split(searchFields, SEPARATOR);
 		String[] typeFieldsArray = StringUtils.split(typeFields, SEPARATOR);
@@ -279,15 +244,11 @@ public class SearcherXml extends Searcher {
 	@Path(SearcherXml.COMPLEX_SORTED)
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_XML)
-	public Response searchComplexSorted(@QueryParam(value = IConstants.INDEX_NAME)
-	final String indexName, @QueryParam(value = IConstants.SEARCH_STRINGS)
-	final String searchStrings, @QueryParam(value = IConstants.SEARCH_FIELDS)
-	final String searchFields, @QueryParam(value = IConstants.TYPE_FIELDS)
-	final String typeFields, @QueryParam(value = IConstants.SORT_FIELDS)
-	final String sortFields, @QueryParam(value = IConstants.FRAGMENT)
-	final boolean fragment, @QueryParam(value = IConstants.FIRST_RESULT)
-	final int firstResult, @QueryParam(value = IConstants.MAX_RESULTS)
-	final int maxResults) {
+	public Response searchComplexSorted(@QueryParam(value = IConstants.INDEX_NAME) final String indexName,
+			@QueryParam(value = IConstants.SEARCH_STRINGS) final String searchStrings, @QueryParam(value = IConstants.SEARCH_FIELDS) final String searchFields,
+			@QueryParam(value = IConstants.TYPE_FIELDS) final String typeFields, @QueryParam(value = IConstants.SORT_FIELDS) final String sortFields,
+			@QueryParam(value = IConstants.FRAGMENT) final boolean fragment, @QueryParam(value = IConstants.FIRST_RESULT) final int firstResult,
+			@QueryParam(value = IConstants.MAX_RESULTS) final int maxResults) {
 		String[] searchStringsArray = StringUtils.split(searchStrings, SEPARATOR);
 		String[] searchFieldsArray = StringUtils.split(searchFields, SEPARATOR);
 		String[] typeFieldsArray = StringUtils.split(typeFields, SEPARATOR);
@@ -318,6 +279,18 @@ public class SearcherXml extends Searcher {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Override
 	public Response searchComplexSortedAll(HttpServletRequest request, UriInfo uriInfo) {
+		throw new UnsupportedOperationException("This is a Json sall to an xml resource");
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@POST
+	@Override
+	@Path(SearcherJson.MULTI_SPATIAL_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	Response searchMultiSpacial(@Context HttpServletRequest request, @Context UriInfo uriInfo) {
 		throw new UnsupportedOperationException("This is a Json sall to an xml resource");
 	}
 

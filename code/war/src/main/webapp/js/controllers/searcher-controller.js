@@ -9,7 +9,6 @@ module.controller('SearcherController', function($scope, $http) {
 	$scope.headers = { headers: { 'Content-Type' : 'application/json' } };
 	$scope.predicate = '';
 	$scope.reverse = false;
-	$scope.isConfiguring = false;
 	
 	$scope.isNumeric = function(string) {
 		return !isNaN(string);
@@ -28,7 +27,7 @@ module.controller('SearcherController', function($scope, $http) {
 			var searchString = search.searchStrings[i];
 			if (searchField == 'latitude') {
 				search.coordinate.latitude = searchString;
-				search.distance = 10; 
+				// search.distance = 10; 
 			} else if (searchField == 'longitude') {
 				search.coordinate.longitude = searchString;
 			} else if ($scope.isNumeric(searchString)) {
@@ -47,13 +46,21 @@ module.controller('SearcherController', function($scope, $http) {
 	$scope.doSearch = function() {
 		$scope.doSearchPreProcessing($scope.search);
 		$scope.search.maxResults = $scope.pageBlock;
-		$scope.url = getServiceUrl('/ikube/service/search/json/complex/sorted/json');
+		if ($scope.search != undefined && 
+			$scope.search.searchFields != undefined && 
+			$scope.search.searchFields.indexOf('latitude') > -1 && 
+			$scope.search.searchFields.indexOf('longitude') > -1) {
+			$scope.url = getServiceUrl('/ikube/service/search/json/multi/spatial/json');
+		} else {
+			$scope.url = getServiceUrl('/ikube/service/search/json/complex/sorted/json');
+		}
 		var promise = $http.post($scope.url, $scope.search);
 		promise.success(function(data, status) {
 			$scope.search = data;
 			$scope.status = status;
 			if ($scope.search.searchResults != undefined && $scope.search.searchResults.length > 0) {
 				$scope.doPagination();
+				$scope.doMarkers();
 			}
 		});
 		promise.error(function(data, status) {
@@ -140,16 +147,16 @@ module.controller('SearcherController', function($scope, $http) {
 			title : 'You are here :) => [' + latitude + ', ' + longitude + ']',
 			icon: '/ikube/img/icons/center_pin.png'
 		});
-		for (var key in $scope.data) {
-			var datum = $scope.data[key];
-			if (datum.latitude != null && datum.longitude) {
+		angular.forEach($scope.search.searchResults, function(key, value) {
+		    // alert('Key : ' + key['latitude'] + ', ' + key['longitude']);
+		    if (key['latitude'] != undefined && key['longitude'] != undefined) {
 				pointMarker = new google.maps.Marker({
 					map : map,
-					position: new google.maps.LatLng(datum.latitude, datum.longitude),
-					title : 'Name : ' + datum.name + ', distance : ' + datum.distance
+					position: new google.maps.LatLng(key['latitude'], key['longitude']),
+					title : 'Name : ' + key['fragment'] + ', distance : ' + key['distance']
 				});
 			}
-		}
+		});
 		// And finally set the waypoints
 		$scope.doWaypoints(origin);
 	};
@@ -159,14 +166,17 @@ module.controller('SearcherController', function($scope, $http) {
 		var waypoints = [];
 		var destination = origin;
 		var maxWaypoints = 8;
-		for (var key in $scope.data) {
-			var waypoint = new google.maps.LatLng($scope.data[key].latitude, $scope.data[key].longitude);
-			waypoints.push({ location: waypoint });
-			destination = waypoint;
-			if (waypoints.length >= maxWaypoints) {
-				break;
+		
+		angular.forEach($scope.search.searchResults, function(key, value) {
+		    if (key['latitude'] != undefined && key['longitude'] != undefined) {
+				if (waypoints.length < maxWaypoints) {
+					var waypoint = new google.maps.LatLng(key['latitude'], key['longitude']);
+   				    waypoints.push({ location: waypoint });
+        			destination = waypoint;
+				}
 			}
-		}
+		});
+		
 		var rendererOptions = { map: map };
 		var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
 		var request = {
@@ -178,15 +188,11 @@ module.controller('SearcherController', function($scope, $http) {
 				unitSystem: google.maps.UnitSystem.METRIC
 		};
 		var directionsService = new google.maps.DirectionsService();
-		directionsService.route(request, 
-			function(response, status) {
-				if (status == google.maps.DirectionsStatus.OK) {
-					directionsDisplay.setDirections(response);
-				} else {
-					alert ('Failed to get directions from Googy, sorry : ' + status);
-				}
-			}
-		);
+		directionsService.route(request, function(result, status) {
+            if (status == google.maps.DirectionsStatus.OK) {
+              directionsDisplay.setDirections(result);
+            }
+        });
 	};
 	
 });

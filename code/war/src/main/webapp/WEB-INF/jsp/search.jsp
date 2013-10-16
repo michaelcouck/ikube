@@ -3,16 +3,6 @@
 		<td>
 			<form ng-submit="doSearch()">
 			<table>
-				<!-- <tr>
-					<td colspan="5">
-						<a href="#" 
-							class="btn btn-small : hover" 
-							ng-click="isConfiguring = !isConfiguring">Configuration</a>
-						<div ng-show="isConfiguring">
-							Configuration:
-						</div>
-					</td>
-				</tr> -->
 				<tr>
 					<td style="border: 0px solid black;"><b>Collection:</b></td>
 					<td colspan="4" nowrap="nowrap" style="border: 0px solid black;">
@@ -30,13 +20,13 @@
 							<option value="50">50</option>
 							<option value="100">100</option>
 							<option value="1000">1000</option>
-							<option value="10000">stupid</option>
+							<option value="10000">10000</option>
 						</select>
 					</td>
 				</tr>
 				<tr>
 					<td width="180px"><b>Fields:</b></td>
-					<td colspan="4">
+					<td colspan="3">
 						<select 
 							ng-model="field" 
 							ng-model="fields" 
@@ -46,6 +36,22 @@
 								pushField('typeFields', 'string');
 								setField('firstResult', 0);">
 							<option style="display:none" value="">field</option>
+						</select>
+					</td>
+					<td ng-show="
+						search.searchFields.indexOf('latitude') > -1 && 
+						search.searchFields.indexOf('longitude') > -1">
+						<select 
+							ng-model="distance" 
+							ng-model="search.distance"
+							ng-change="setField('distance', distance);">
+							<option value="1" selected="selected">1</option>
+							<option value="3">3</option>
+							<option value="5">5</option>
+							<option value="10">10</option>
+							<option value="20">20</option>
+							<option value="100">100</option>
+							<option value="1000">1000</option>
 						</select>
 					</td>
 				</tr>
@@ -69,26 +75,21 @@
 			</table>
 			</form>
 		</td>
-		<td
-			ng-show="
-				search.coordinate != undefined && 
-				search.coordinate != null && 
-				search.coordinate.latitude != 0 && 
-				search.coordinate.longitude != 0">
-			<div id="map_canvas" google-map style="height: 340px; width: 550px; border : 2px solid black;" ></div>
+		<td ng-show="
+			search.searchFields.indexOf('latitude') > -1 && 
+			search.searchFields.indexOf('longitude') > -1">
+			<div id="map_canvas" google-map style="height: 250px; width: 350px; border : 2px solid black;" ></div>
 		</td>
 	</tr>
 	
 	<tr ng-show="statistics != undefined && statistics">
 		<td colspan="2">
-			Showing results '{{search.firstResult}} to {{endResult}} of {{statistics.total}}' for search '{{search.searchStrings}}', duration : {{statistics.duration}}<br>
-			<!-- Sorting by {{predicate}}; reverse = {{reverse}}
-			<select 
-				ng-model="predicate"
-				ng-model="fields" 
-				ng-options="field for field in fields">
-				<option style="display:none" value="">sort</option>
-			</select> -->
+			Showing results {{search.firstResult}} 
+			to {{endResult}} 
+			of {{statistics.total}} 
+			for {{search.searchStrings}} 
+			in fields {{search.searchFields}}, 
+			duration {{statistics.duration}} milliseconds<br>
 			<div ng-show="statistics != undefined && statistics.corrections != undefined && statistics.corrections.length > 0">
 				<a href="#" ng-click="setField('searchStrings', statistics.corrections);doSearch();">Did you mean : {{statistics.corrections}}</a>
 			</div>

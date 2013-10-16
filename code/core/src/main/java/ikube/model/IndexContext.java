@@ -24,14 +24,13 @@ import org.apache.lucene.search.MultiSearcher;
 
 /**
  * This is the context for a single index. It has the properties that define the index like what it is going to index, i.e. the databases, intranets etc., and
- * properties relating to the Lucene index. This object acts a like the command in the 'Command Pattern' as in this context is passed to handlers that will
- * perform certain logic based on the properties of this context.
+ * properties relating to the Lucene index.
  * 
  * @author Michael Couck
  * @since 21.11.10
  * @version 01.00
  */
-@Entity()
+@Entity
 @SuppressWarnings({ "serial", "deprecation" })
 @Inheritance(strategy = InheritanceType.JOINED)
 @NamedQueries({ @NamedQuery(name = IndexContext.FIND_BY_NAME, query = IndexContext.FIND_BY_NAME) })
