@@ -412,11 +412,13 @@ public class SearcherService implements ISearcherService {
 			HashMap<String, String> statistics = new HashMap<String, String>();
 			for (final String indexName : indexNames) {
 				List<HashMap<String, String>> searchSubResults = searchMultiAll(indexName, searchStrings, fragment, firstResult, maxResults);
-				statistics = searchSubResults.remove(searchSubResults.size() - 1);
-				totalHits += Long.parseLong(statistics.get(IConstants.TOTAL));
-				highScore += Float.parseFloat(statistics.get(IConstants.SCORE));
-				duration += Long.parseLong(statistics.get(IConstants.DURATION));
-				searchResults.addAll(searchSubResults);
+				if (searchSubResults != null && searchSubResults.size() > 1) {
+					statistics = searchSubResults.remove(searchSubResults.size() - 1);
+					totalHits += Long.parseLong(statistics.get(IConstants.TOTAL));
+					highScore += Float.parseFloat(statistics.get(IConstants.SCORE));
+					duration += Long.parseLong(statistics.get(IConstants.DURATION));
+					searchResults.addAll(searchSubResults);
+				}
 			}
 			statistics.put(IConstants.TOTAL, Long.toString(totalHits));
 			statistics.put(IConstants.DURATION, Long.toString(duration));

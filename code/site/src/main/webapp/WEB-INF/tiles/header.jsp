@@ -8,20 +8,10 @@
 			<td width="50%">
 				<h1><a href="<c:url value="/index.html" />">Ikube</a></h1>
 			</td>
-			<!-- ng-controller="TypeaheadController" -->
 			<td width="25%" style="float : right;" nowrap="nowrap">
 					<form id="search-form" name="search-form" action="<c:url value="/results.html" />">
 						<input type="submit" value="Go!">
 						<input id="searchString" name="searchString" value="${param.searchString}" width="150px">
-						<%-- <input 
-							id="searchString"
-							name="searchString"
-							value="${param.searchString}"
-							type="text" 
-							ng-model="selected"
-							typeahead="result for result in doSearch($viewValue)"
-							typeahead-min-length="3" 
-							typeahead-wait-ms="250"> --%>
 					</form>
 			</td>
 			<td nowrap="nowrap">

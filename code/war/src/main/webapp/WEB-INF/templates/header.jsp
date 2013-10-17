@@ -3,6 +3,13 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
 
+<script type="text/javascript">
+// Focus on the first field in the form
+angular.element(document).ready(function() {
+	doFocus('search');
+});
+</script>
+
 <div class="navbar navbar-fixed-top"">
 	<div ng-controller="TypeaheadController" class="navbar-inner">
 		<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
@@ -14,14 +21,22 @@
 		<security:authorize access="isAuthenticated()">
 			<form>
 				<ul class="nav">
-					<input 
+					<!-- | filter:$viewValue | limitTo:6 -->
+					<!-- doSearch('/ikube/service/search/json/complex/sorted/json/all', searchString) -->
+					<!-- typeahead-loading="loading" -->
+					<input
+						id="search"
 						type="text" 
-						placeholder="Search..." 
+						name="search" 
 						style="margin-top: 9px;"
-						ng-model="searchString"
-						typeahead="result for result in doSearch('/ikube/service/search/json/complex/sorted/json/all', searchString)"
+						placeholder="Search documentation..."
+						
+						ng-model="result"
+						typeahead="result for result in doSearch('/ikube/service/search/json/complex/sorted/json/all', $viewValue)"
+						
 						typeahead-min-length="3" 
-						typeahead-wait-ms="250">
+						typeahead-wait-ms="250"
+						typeahead-on-select="doModalResults();">
 					<button type="submit" class="btn" style="margin-top: 0px;">Go!</button>
 					<li><a href="http://www.ikube.be/site" style="margin-left: 1px; margin-top: 3px;">Documentation</a></li>
 					<li>

@@ -11,10 +11,14 @@
 							ng-model="indexName" 
 							ng-model="indexes" 
 							ng-options="index for index in indexes" 
-							ng-change="resetSearch();doFields(indexName);setField('indexName', indexName);">
+							ng-change="
+								resetSearch();
+								doFields(indexName);
+								setField('indexName', indexName);"
+								class="input-medium">
 							<option style="display:none" value="">collection</option>
 						</select>
-						<select ng-model="pageBlock">
+						<select ng-model="pageBlock" class="input-small">
 							<option value="10" >10</option>
 							<option value="25">25</option>
 							<option value="50">50</option>
@@ -25,8 +29,8 @@
 					</td>
 				</tr>
 				<tr>
-					<td width="180px"><b>Fields:</b></td>
-					<td colspan="3">
+					<td><b>Fields:</b></td>
+					<td colspan="4">
 						<select 
 							ng-model="field" 
 							ng-model="fields" 
@@ -34,18 +38,20 @@
 							ng-change="
 								pushField('searchFields', field); 
 								pushField('typeFields', 'string');
-								setField('firstResult', 0);">
+								setField('firstResult', 0);"
+							class="input-medium">
 							<option style="display:none" value="">field</option>
 						</select>
-					</td>
-					<td ng-show="
-						search.searchFields.indexOf('latitude') > -1 && 
-						search.searchFields.indexOf('longitude') > -1">
 						<select 
 							ng-model="distance" 
 							ng-model="search.distance"
-							ng-change="setField('distance', distance);">
-							<option value="1" selected="selected">1</option>
+							ng-change="setField('distance', distance);"
+							ng-show="
+								search.searchFields.indexOf('latitude') > -1 && 
+								search.searchFields.indexOf('longitude') > -1"
+							class="input-small">
+							<option style="display:none" value="">distance</option>
+							<option value="1">1</option>
 							<option value="3">3</option>
 							<option value="5">5</option>
 							<option value="10">10</option>
@@ -78,7 +84,10 @@
 		<td ng-show="
 			search.searchFields.indexOf('latitude') > -1 && 
 			search.searchFields.indexOf('longitude') > -1">
-			<div id="map_canvas" google-map style="height: 250px; width: 350px; border : 2px solid black;" ></div>
+			<div 
+				id="map_canvas" 
+				google-map 
+				style="height: 250px; width: 350px; border : 2px solid black;"></div>
 		</td>
 	</tr>
 	

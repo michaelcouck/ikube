@@ -45,6 +45,13 @@
 		<!-- <ref local="alternatename" /> -->
 	</util:list>
 	
+	<bean 
+		id="ikube.action.index.analyzer.NgramAnalyzer.Geospatial"
+		name="ikube.action.index.analyzer.NgramAnalyzer.Geospatial" 
+		class="ikube.action.index.analyzer.NgramAnalyzer"
+		property:minGram="4"
+		property:maxGram="24" />
+	
 	<bean
 		id="geoname"
 		class="ikube.model.IndexableTable"
