@@ -79,7 +79,6 @@ public final class UriUtilities {
 		URI resolved = resolve(baseURI, uri);
 
 		builder.append(resolved.toString());
-		builder.append("/");
 		builder.append(query);
 
 		return builder.toString();
