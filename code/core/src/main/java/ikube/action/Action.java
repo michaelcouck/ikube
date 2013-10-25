@@ -16,13 +16,13 @@ import java.io.Closeable;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.jexl2.JexlEngine;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Searchable;
 import org.apache.lucene.store.Directory;
-import org.nfunk.jep.JEP;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -66,7 +66,7 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 	/**
 	 * This is the predicate that will be evaluated. The predicate consists of a boolean expression that contains the individual results of the rules. For
 	 * example '!IsThisServerWorking && !AnyServersWorking'. The rules' results will be inserted into the parameter place holders and the expression evaluated
-	 * by {@link JEP}.
+	 * by {@link JexlEngine}.
 	 */
 	private String predicate;
 

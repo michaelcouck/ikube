@@ -17,8 +17,8 @@ $(document).ready(function() {
 <form id="create" name="create" action="<c:url value="/service/database/entity/create" />" method="post">
 <table ng-controller="CreateController" style="border : 1px solid #aaaaaa;" width="100%">
 	<tr ng-model="entity" ng-repeat="(key, value) in entity" >
-		<td class="bordered">{{key}}</td>
-		<td class="bordered"><input type="text" value="{{value}}"></td>
+		<td>{{key}}</td>
+		<td><input type="text" value="{{value}}"></td>
 	</tr>
 	<tr>
 		<td>

@@ -1,12 +1,16 @@
 <%@ page errorPage="/WEB-INF/jsp/error.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
 <%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
+<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <!doctype html>
 <html ng-app="ikube">
 <head>
+	
+	<meta charset="utf-8">
+	<meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+	
 	<meta http-equiv="Expires" content="-1">
 	<meta http-equiv="Pragma" content="no-cache">
 	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
@@ -18,16 +22,27 @@
 	<meta name="Description" content="Ikube Enterprise Search." />
 	<meta name="Keywords" content="Ikube, Enterprise Search, Web Site Search, Database Search, Network Search, High Volume, Data Mining, Analytics, Machine Learning" />
 	
-	<link rel="stylesheet" href="<c:url value="/css/bootstrap.min.css" />" />
-	<link rel="stylesheet" href="<c:url value="/css/bootstrap-responsive.min.css" />" />
-	<link rel="stylesheet" href="<c:url value="/css/font-awesome.min.css" />" />
-	<link rel="stylesheet" href="<c:url value="/css/darkstrap.min.css" />" />
+	<link href="<c:url value="/assets/stylesheets/application.css" />" media="screen" rel="stylesheet" type="text/css" />
+	
+	<!--[if lt IE 9]>
+		<script src="<c:url value="/assets/javascripts/html5shiv.js" />" type="text/javascript"></script>
+		<script src="<c:url value="/assets/javascripts/excanvas.js" />" type="text/javascript"></script>
+		<script src="<c:url value="/assets/javascripts/iefix.js" />" type="text/javascript"></script>
+		<link href="<c:url value="/assets/stylesheets/iefix.css" />" media="screen" rel="stylesheet" type="text/css" />
+	<![endif]-->
+	
+	<script src="<c:url value="/assets/javascripts/application.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/docs.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/docs_charts.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/documentation.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/prettify.js" />" type="text/javascript"></script>
+	
+	<link href="<c:url value="/assets/stylesheets/prettify.css" />" media="screen" rel="stylesheet" type="text/css" />
 	
 	<script src="https://www.google.com/jsapi" type="text/javascript" ></script>
 	<script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
 	<script src="http://www.google-analytics.com/ga.js" type="text/javascript"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
-	<script src="<c:url value="/js/bootstrap.min.js" />" type="text/javascript" ></script>
 	<script src="<c:url value="/js/ui-bootstrap-tpls-0.4.0.js" />" type='text/javascript'></script>
 	
 	<!-- Must be after Angular -->
@@ -42,38 +57,25 @@
 	<script src="<c:url value="/js/controllers/servers-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/js/controllers/typeahead-controller.js" />" type="text/javascript"></script>
 	
-	<!-- Dont' need jquery... -->
-	<%-- <link rel="stylesheet" href="<c:url value="/js/bootstrap-combined.min.css" />"> --%>
-	<%-- <script src="<c:url value="/js/jquery-ui.js" />" type='text/javascript'></script>
-	<script src="<c:url value="/js/jquery-1.9.1.js" />" type='text/javascript'></script> --%>
 </head>
 
-<body data-spy="scroll" data-target=".navbar" onload="JavaScript:track();">
-
-<table style="margin-top: 55px; padding: 8px; margin-left: 5px;">
-	<tr>
-		<td colspan="2" valign="top" align="left">
+<body onload="JavaScript:track();">
+	
+	<security:authorize access="isAuthenticated()">
+		<tiles:insertAttribute name="menu" />
+	</security:authorize>
+	<section id="main">
+		<security:authorize access="isAuthenticated()">
 			<tiles:insertAttribute name="header" />
-		</td>
-	</tr>
-	<tr>
-		<td valign="top">
-			<tiles:insertAttribute name="menu" />
-		</td>
-		<td valign="top" style="padding-left: 10px; padding-top: 5px;">
-			<tiles:insertAttribute name="content" />
-			<br>
-		</td>
-	</tr>
-	<tr>
-		<td colspan="2">&nbsp;</td>
-	</tr>
-	<tr>
-		<td colspan="2" valign="bottom" style="margin-top: 30px;">
-			<tiles:insertAttribute name="footer" />
-		</td>
-	</tr>
-</table>
-
+		</security:authorize>
+		<tiles:insertAttribute name="content" />
+		<tiles:insertAttribute name="footer" />
+	</section>
+	
 </body>
+
+<script type="text/javascript">
+   	prettyPrint();
+</script>
+
 </html>

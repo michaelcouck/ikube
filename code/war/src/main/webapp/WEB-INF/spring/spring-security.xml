@@ -29,6 +29,9 @@
 		<anonymous />
 		<!-- The restriction exceptions -->
 		<intercept-url 
+			pattern="/assets/**" 
+			access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<intercept-url 
 			pattern="/docs/**" 
 			access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url 
@@ -46,9 +49,9 @@
 		<intercept-url 
 			pattern="/login**" 
 			access="IS_AUTHENTICATED_ANONYMOUSLY" />
-		<intercept-url 
+		<!-- <intercept-url 
 			pattern="/search**"
-			access="IS_AUTHENTICATED_ANONYMOUSLY" />
+			access="IS_AUTHENTICATED_ANONYMOUSLY" /> -->
 		<!-- By default the search web services are open!  -->
 		<intercept-url 
 			pattern="/service/**" 
@@ -69,6 +72,7 @@
 			invalidate-session="true"
 			logout-success-url="/login.html"
 			logout-url="/logout" />
+		<remember-me key="ikube-remember-me-key" token-validity-seconds="864000" />
 	</http>
 
 	<!--

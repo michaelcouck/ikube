@@ -60,14 +60,14 @@
 	<bean 
 		id="vewResolver" 
 		class="org.springframework.web.servlet.view.UrlBasedViewResolver" 
-		property:order="2"
-		property:suffix=".jsp"
-		property:prefix="/WEB-INF/jsp/" 
-		property:viewClass="org.springbyexample.web.servlet.view.tiles2.DynamicTilesView" />
+		property:viewClass="org.springframework.web.servlet.view.tiles2.TilesView" />
+	<!-- property:order="2"
+	property:suffix=".jsp"
+	property:prefix="/WEB-INF/jsp/" --> 
+	<!-- org.springbyexample.web.servlet.view.tiles2.DynamicTilesView -->
 
 	<!-- These are static resources basically. -->
 	<mvc:view-controller path="/index.html" />
-	<mvc:view-controller path="/dash.html" />
 	<mvc:view-controller path="/login.html" />
 	<mvc:view-controller path="/indexes.html" />
 	<mvc:view-controller path="/analytics.html" />

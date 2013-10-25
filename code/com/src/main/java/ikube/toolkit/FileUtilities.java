@@ -605,10 +605,10 @@ public final class FileUtilities {
 		if (file == null) {
 			return Boolean.TRUE;
 		}
-		if (!file.canRead() || !file.exists()) {
+		if (!file.exists() || !file.canRead()) {
 			return Boolean.TRUE;
 		}
-		if (file.getName() == null || file.getAbsolutePath() == null) {
+		if (StringUtils.isEmpty(file.getName()) || StringUtils.isEmpty(file.getAbsolutePath())) {
 			return Boolean.TRUE;
 		}
 		String name = file.getName();

@@ -151,4 +151,12 @@ public class UriUtilitiesTest extends AbstractTest {
 		assertFalse(ipAddress.equals("127.0.0.1"));
 		assertFalse(ipAddress.equals("127.0.1.1"));
 	}
+	
+	@Test
+	public void pattern() {
+		String stringPattern = ".*(serenity/source).*";
+		Pattern pattern = Pattern.compile(stringPattern);
+		boolean matches = pattern.matcher("/usr/serenity/source").matches();
+		assertTrue(matches);
+	}
 }

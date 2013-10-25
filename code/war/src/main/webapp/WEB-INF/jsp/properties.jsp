@@ -4,7 +4,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 
-<table ng-controller="PropertiesController" class="table table-condensed">
+<table ng-controller="PropertiesController">
 	<tr ng-model="propertyFiles" ng-repeat="(key, value) in propertyFiles">
 		<td>
 			<form 
@@ -17,11 +17,10 @@
 					id="button-{{$index}}" 
 					name="button-{{$index}}" 
 					type="submit" 
-					class="btn btn-small btn-success" 
 					value="Update">
 			</security:authorize>
 			<img src="<c:url value="/img/icons/jar_l_obj.gif" />" />&nbsp;Property file: {{key}}<br><br>
-			<textarea name="contents" rows="10" cols="450" class="well" style="width: 95%;" ng-model="propertyFiles[key]">{{value}}</textarea>
+			<textarea name="contents" rows="10" cols="450" style="width: 95%;" ng-model="propertyFiles[key]">{{value}}</textarea>
 			</form>
 		</td>
 	</tr>

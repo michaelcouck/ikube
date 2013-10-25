@@ -1,7 +1,7 @@
 <%@ page isErrorPage = "true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<table class="table table-condensed">
+<table>
 	<tr>
 		<td>
 			Request that failed: ${pageContext.errorData.requestURI}

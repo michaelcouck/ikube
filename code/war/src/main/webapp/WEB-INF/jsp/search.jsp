@@ -1,11 +1,11 @@
-<table ng-controller="SearcherController" class="table table-condensed"">
+<table ng-controller="SearcherController">
 	<tr>
 		<td>
 			<form ng-submit="doSearch()">
 			<table>
 				<tr>
 					<td style="border: 0px solid black;"><b>Collection:</b></td>
-					<td colspan="4" nowrap="nowrap" style="border: 0px solid black;">
+					<td colspan="4" nowrap="nowrap">
 						<select 
 							ng-controller="IndexesController" 
 							ng-model="indexName" 
@@ -18,7 +18,7 @@
 								class="input-medium">
 							<option style="display:none" value="">collection</option>
 						</select>
-						<select ng-model="pageBlock" class="input-small">
+						<select ng-model="pageBlock">
 							<option value="10" >10</option>
 							<option value="25">25</option>
 							<option value="50">50</option>
@@ -38,8 +38,7 @@
 							ng-change="
 								pushField('searchFields', field); 
 								pushField('typeFields', 'string');
-								setField('firstResult', 0);"
-							class="input-medium">
+								setField('firstResult', 0);">
 							<option style="display:none" value="">field</option>
 						</select>
 						<select 
@@ -48,8 +47,7 @@
 							ng-change="setField('distance', distance);"
 							ng-show="
 								search.searchFields.indexOf('latitude') > -1 && 
-								search.searchFields.indexOf('longitude') > -1"
-							class="input-small">
+								search.searchFields.indexOf('longitude') > -1">
 							<option style="display:none" value="">distance</option>
 							<option value="1">1</option>
 							<option value="3">3</option>
@@ -66,7 +64,6 @@
 					<td colspan="3"><input id="{{field}}" name="{{field}}" ng-model="search.searchStrings[$index]"></td>
 					<td>
 						<a href="#" 
-							class="btn btn-small btn-success : hover" 
 							ng-click="
 								removeField('searchFields', $index); 
 								removeField('searchStrings', $index); 
@@ -75,7 +72,7 @@
 				</tr>
 				<tr>
 					<td colspan="5">
-						<button type="submit" class="btn btn-warning : hover">Go!</button>
+						<button type="submit">Go!</button>
 					</td>
 				</tr>
 			</table>
@@ -102,9 +99,9 @@
 			<div ng-show="statistics != undefined && statistics.corrections != undefined && statistics.corrections.length > 0">
 				<a href="#" ng-click="setField('searchStrings', statistics.corrections);doSearch();">Did you mean : {{statistics.corrections}}</a>
 			</div>
-			<div class="row">
-	      		<div class="span6">
-					<div class="pagination">
+			<div>
+	      		<div>
+					<div>
 						<ul>
 							<li ng-repeat="page in pagination">
 								<a href="#" ng-click="setField('firstResult', page.firstResult);doSearch();">{{page.page}}</a>
@@ -124,9 +121,9 @@
 	
 	<tr ng-show="endResult > 0">
 		<td colspan="2">
-			<div class="row">
-	      		<div class="span6">
-					<div class="pagination">
+			<div>
+	      		<div>
+					<div>
 						<ul>
 							<li ng-repeat="page in pagination">
 								<a href="#" ng-click="setField('firstResult', page.firstResult);doSearch();">{{page.page}}</a>

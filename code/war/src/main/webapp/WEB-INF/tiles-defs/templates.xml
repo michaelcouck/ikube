@@ -1,18 +1,83 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <!DOCTYPE tiles-definitions PUBLIC
-       "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
-       "http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
 <tiles-definitions>
 	<definition name=".mainTemplate" template="/WEB-INF/templates/main.jsp">
 		<put-attribute name="title" value="Ikube" type="string" />
 		<put-attribute name="header" value="/WEB-INF/templates/header.jsp" />
-		<put-attribute name="menu" value="/WEB-INF/templates/menu.jsp" />
-		<put-attribute name="content" value="/WEB-INF/templates/dash.jsp" />
-		<put-attribute name="footer" value="/WEB-INF/templates/footer.jsp" />
-	</definition>
-	<definition name=".documentation.mainTemplate" template="/WEB-INF/templates/documentation.jsp">
-		<put-attribute name="title" value="Ikube Documentation" type="string" />
+		<put-attribute name="menu">
+			<definition template="/WEB-INF/templates/menu.jsp">
+				<put-attribute name="sub-menu" value="/WEB-INF/templates/blank.jsp" />
+			</definition>
+		</put-attribute>
 		<put-attribute name="content" value="/WEB-INF/templates/blank.jsp" />
 		<put-attribute name="footer" value="/WEB-INF/templates/footer.jsp" />
 	</definition>
+	
+	<definition name="index" extends=".mainTemplate">
+		<put-attribute name="title" value="Ikube Dashboard" type="string" />
+		<put-attribute name="menu">
+			<definition template="/WEB-INF/templates/menu.jsp">
+				<put-attribute name="sub-menu" value="/WEB-INF/jsp/menu/dash.jsp" />
+			</definition>
+		</put-attribute>
+		<put-attribute name="content" value="/WEB-INF/jsp/index.jsp" />
+	</definition>
+	
+	<definition name="search" extends=".mainTemplate">
+		<put-attribute name="title" value="Ikube Search" type="string" />
+		<put-attribute name="menu">
+			<definition template="/WEB-INF/templates/menu.jsp">
+				<put-attribute name="sub-menu" value="/WEB-INF/jsp/menu/search.jsp" />
+			</definition>
+		</put-attribute>
+		<put-attribute name="content" value="/WEB-INF/jsp/search.jsp" />
+	</definition>
+	
+	<definition name="analytics" extends=".mainTemplate">
+		<put-attribute name="title" value="Ikube Analytics" type="string" />
+		<put-attribute name="menu">
+			<definition template="/WEB-INF/templates/menu.jsp">
+				<put-attribute name="sub-menu" value="/WEB-INF/jsp/menu/analytics.jsp" />
+			</definition>
+		</put-attribute>
+		<put-attribute name="content" value="/WEB-INF/jsp/analytics.jsp" />
+	</definition>
+	
+	<definition name="indexes" extends=".mainTemplate">
+		<put-attribute name="title" value="Ikube Indexes" type="string" />
+		<put-attribute name="menu">
+			<definition template="/WEB-INF/templates/menu.jsp">
+				<put-attribute name="sub-menu" value="/WEB-INF/jsp/menu/indexes.jsp" />
+			</definition>
+		</put-attribute>
+		<put-attribute name="content" value="/WEB-INF/jsp/indexes.jsp" />
+	</definition>
+	
+	<definition name="properties" extends=".mainTemplate">
+		<put-attribute name="title" value="Ikube Properties" type="string" />
+		<put-attribute name="menu">
+			<definition template="/WEB-INF/templates/menu.jsp">
+				<put-attribute name="sub-menu" value="/WEB-INF/jsp/menu/properties.jsp" />
+			</definition>
+		</put-attribute>
+		<put-attribute name="content" value="/WEB-INF/jsp/properties.jsp" />
+	</definition>
+	
+	<definition name="admin" extends=".mainTemplate">
+		<put-attribute name="title" value="Ikube Administration" type="string" />
+		<put-attribute name="menu">
+			<definition template="/WEB-INF/templates/menu.jsp">
+				<put-attribute name="sub-menu" value="/WEB-INF/jsp/menu/admin.jsp" />
+			</definition>
+		</put-attribute>
+		<put-attribute name="content" value="/WEB-INF/jsp/admin.jsp" />
+	</definition>
+	
+	<definition name="login" extends=".mainTemplate">
+		<put-attribute name="title" value="Login to Ikube Administration Console" type="string" />
+		<put-attribute name="content" value="/WEB-INF/jsp/login.jsp" />
+	</definition>
+	
 </tiles-definitions>
