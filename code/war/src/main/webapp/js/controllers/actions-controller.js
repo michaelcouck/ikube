@@ -35,4 +35,24 @@ module.controller('ActionsController', function($http, $scope) {
 			$scope.direction = true;
 		}
 	};
+	
+	// This function will send a terminate event to the cluster
+	$scope.terminateAction = function(indexName) {
+		$scope.url = getServiceUrl('/ikube/service/monitor/terminate');
+		// The parameters for the terminate
+		$scope.parameters = { 
+			indexName : indexName
+		};
+		// The configuration for the request to the server
+		$scope.config = { params : $scope.parameters };
+		// And terminate the indexing for the index
+		var promise = $http.get($scope.url, $scope.config);
+		promise.success(function(data, status) {
+			$scope.status = status;
+		});
+		promise.error(function(data, status) {
+			$scope.status = status;
+		});
+	};
+	
 });

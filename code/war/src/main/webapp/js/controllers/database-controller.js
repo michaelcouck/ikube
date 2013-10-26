@@ -1,11 +1,11 @@
-module.controller('DatabaseController', function($http, $scope) {
+module.controller('DatabaseController', function($http, $scope, $timeout) {
 	$scope.entities = null;
-	$scope.doIndexContexts = function() {
+	$scope.getEntities = function(klass, startIndex, endIndex) {
 		$scope.url = getServiceUrl('/ikube/service/database/entities');
 		$scope.parameters = { 
-			class : 'ikube.model.IndexContext',
-			startIndex : 0,
-			endIndex : 10
+			class : klass,
+			startIndex : startIndex,
+			endIndex : endIndex
 		};
 		// The configuration for the request to the server
 		$scope.config = { params : $scope.parameters };
@@ -18,8 +18,11 @@ module.controller('DatabaseController', function($http, $scope) {
 			alert('Problem accessing the data : ' + status);
 			$scope.status = status;
 		});
-	}
-	$scope.doIndexContexts();
+		// return $scope.entities;
+//		return $timeout(function() {
+//			alert('Got the response : ' + $scope.entities);
+//		}, 250);
+	};
 });
 
 module.controller('CreateController', function($http, $scope) {
@@ -45,7 +48,7 @@ module.controller('CreateController', function($http, $scope) {
 	
 	$scope.createEntity = function() {
 		$scope.url = getServiceUrl('/ikube/service/database/entity/create');
-		$scope.headers = { 
+		$scope.headers = {
 			Accept : 'application/json'
 		};
 		$scope.config = { headers : $scope.headers };

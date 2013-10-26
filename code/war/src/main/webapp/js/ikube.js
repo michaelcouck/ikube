@@ -130,20 +130,6 @@ function doFocus(elementId) {
 	}
 }
 
-function popup(mylink, windowname) {
-	if (!window.focus) {
-		return true;
-	}
-	var href;
-	if (typeof(mylink) == 'string') {
-		href=mylink;
-	} else {
-		href=mylink.href;
-	}
-	window.open(href, windowname, 'width=750,height=463,scrollbars=yes');
-	return false;
-}
-
 /**
  * This function will capitalize the first letter of a string.
  * 
@@ -168,20 +154,41 @@ function getServiceUrl(path) {
 	return url.join('');
 }
 
-//This function will set the width of the iframe dynamically
-//so it can take advantage of more space on the screen if it is available
-function setIframeWidth(iframe) {
-	var PositionXY = {
-		Width : 0,
-		Height : 0
-	};
-	var db = document.body;
-	var dde = document.documentElement;
-	PositionXY.Width = Math.max(db.scrollTop, dde.scrollTop, db.offsetWidth, dde.offsetWidth, db.clientWidth, dde.clientWidth);
-	PositionXY.Height = Math.max(db.scrollHeight, dde.scrollHeight, db.offsetHeight, dde.offsetHeight, db.clientHeight, dde.clientHeight);
-	// Now take the smaller of the document width and the actual browser width
-	PositionXY.Width = Math.min(PositionXY.Width, $(window).width());
-	$('#' + iframe).attr('width', PositionXY.Width);
-	$('#' + iframe).attr('height', PositionXY.Height);
-	return PositionXY;
+(function() {
+	$(function() {
+		var _this = this;
+		new Notifications({
+			container : $("body"),
+			bootstrapPositionClass : "span8 offset2"
+		});
+		return $("#notification-enterprise-version").click(function() {
+			var imagePath = getServiceUrl('/ikube/assets/images/michael-couck.jpg');
+			return Notifications.push({
+				imagePath : imagePath,
+				text : "<p>This feature is only in the enterprise version, contact michael.couck@gmail.com</p>",
+				autoDismiss : 5
+			});
+		});
+	});
+}).call(this);
+
+function notification(text, image, duration) {
+	var imagePath = getServiceUrl(image);
+	new Notifications({
+		container : $("body"),
+		bootstrapPositionClass : "span8 offset2"
+	});
+	Notifications.push({
+		imagePath : imagePath,
+		text : text,
+		autoDismiss : duration
+	});
+};
+
+function enterpriseNotification() {
+	notification('This feature is only in the enterprise version, contact michael.couck@gmail.com', '/ikube/assets/images/michael-couck.jpg', '5');
+}
+
+function modal(element) {
+	return $(element).modal();
 }

@@ -64,41 +64,47 @@ module.controller('ServersController', function($http, $scope) {
 	}
 	
 	$scope.terminateAll = function() {
-		if (confirm('Terminate all schedules and actions in the cluster : ')) {
-			$scope.url = getServiceUrl('/ikube/service/monitor/terminate-all');
-			$scope.parameters = {};
-			// The configuration for the request to the server
-			$scope.config = { params : $scope.parameters };
-			// And terminate the schedules in the cluster
-			var promise = $http.get($scope.url, $scope.config);
-			promise.success(function(data, status) {
-				$scope.status = status;
-			});
-			promise.error(function(data, status) {
-				$scope.status = status;
-			});
-		}
+		$scope.url = getServiceUrl('/ikube/service/monitor/terminate-all');
+		$scope.parameters = {};
+		// The configuration for the request to the server
+		$scope.config = { params : $scope.parameters };
+		// And terminate the schedules in the cluster
+		var promise = $http.get($scope.url, $scope.config);
+		promise.success(function(data, status) {
+			$scope.status = status;
+		});
+		promise.error(function(data, status) {
+			$scope.status = status;
+		});
 	}
 	
 	$scope.date = function(millis) {
 		return new Date(millis).toLocaleTimeString();
 	};
 	
-	$scope.toggleCpuThrottling = function() {
-		if (confirm('Turn the CPU throttling on/off : ')) {
-			$scope.url = getServiceUrl('/ikube/service/monitor/cpu-throttling');
-			$scope.parameters = {};
-			// The configuration for the request to the server
-			$scope.config = { params : $scope.parameters };
-			// And terminate the schedules in the cluster
-			var promise = $http.get($scope.url, $scope.config);
-			promise.success(function(data, status) {
-				$scope.status = status;
-			});
-			promise.error(function(data, status) {
-				$scope.status = status;
-			});
+	$scope.toggleSchedules = function() {
+		if ($scope.server.threadsRunning) {
+			$scope.terminateAll();
+		} else {
+			$scope.startupAll();
 		}
+		$scope.refreshServer();
+	};
+	
+	$scope.toggleCpuThrottling = function() {
+		$scope.url = getServiceUrl('/ikube/service/monitor/cpu-throttling');
+		$scope.parameters = {};
+		// The configuration for the request to the server
+		$scope.config = { params : $scope.parameters };
+		// And terminate the schedules in the cluster
+		var promise = $http.get($scope.url, $scope.config);
+		promise.success(function(data, status) {
+			$scope.status = status;
+		});
+		promise.error(function(data, status) {
+			$scope.status = status;
+		});
+		$scope.refreshServer();
 	}
 	
 	$scope.cpuLoadTooHigh = function(server) {

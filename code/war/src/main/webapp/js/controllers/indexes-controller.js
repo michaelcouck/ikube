@@ -1,6 +1,5 @@
 // The controller that populates the indexes drop down
 module.controller('IndexesController', function($http, $scope) {
-	$scope.index = null;
 	$scope.indexes = null;
 	$scope.doIndexes = function() {
 		$scope.url = getServiceUrl('/ikube/service/monitor/indexes');

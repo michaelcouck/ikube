@@ -21,7 +21,7 @@ module.controller('PropertiesController', function($http, $scope) {
 	
 	$scope.getProperties();
 	
-	$scope.onSubmit = function() {
+	$scope.setProperties = function() {
 		$scope.url = getServiceUrl('/ikube/service/monitor/set-properties');
 		$scope.headers = { headers: { 'Content-Type' : 'application/json' } };
 		var promise = $http.post($scope.url, $scope.propertyFiles, $scope.headers);
