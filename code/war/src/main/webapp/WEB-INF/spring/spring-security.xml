@@ -49,9 +49,6 @@
 		<intercept-url 
 			pattern="/login**" 
 			access="IS_AUTHENTICATED_ANONYMOUSLY" />
-		<!-- <intercept-url 
-			pattern="/search**"
-			access="IS_AUTHENTICATED_ANONYMOUSLY" /> -->
 		<!-- By default the search web services are open!  -->
 		<intercept-url 
 			pattern="/service/**" 
@@ -63,7 +60,7 @@
 		<!-- The login page, this goes to the login controller then to the login view/page(login.jsp). -->
 		<form-login
 			always-use-default-target="false"
-			default-target-url="/index.html"
+			default-target-url="/system/dash.html"
 			login-page="/login.html" 
 			authentication-failure-url="/login.html" 
 			login-processing-url="/login" />
