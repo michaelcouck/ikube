@@ -48,6 +48,8 @@
 	<!-- Must be after Angular -->
 	<script src="<c:url value="/js/ikube.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/js/directives/directive.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/js/directives/active-directive.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/js/directives/textarea-onblur-directive.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/js/controllers/searcher-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/js/controllers/actions-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/js/controllers/database-controller.js" />" type="text/javascript"></script>
@@ -56,6 +58,7 @@
 	<script src="<c:url value="/js/controllers/properties-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/js/controllers/servers-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/js/controllers/typeahead-controller.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/js/controllers/active-controller.js" />" type="text/javascript"></script>
 	
 </head>
 

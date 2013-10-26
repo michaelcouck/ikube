@@ -13,28 +13,27 @@ angular.element(document).ready(function() {
 </script>
 
 <nav id="primary" class="main-nav">
-	<ul>
-		
-		<li class="active"><a href="<c:url value="/index.html" />"><i class="icon-dashboard"></i>Dashboard</a></li>
-		<li class=""><a href="<c:url value="/search.html" />"><i class="icon-list-alt"></i>Search</a></li>
-		<li class=""><a href="<c:url value="/analytics.html" />"><i class="icon-beaker"></i>Analytics</a></li>
-		<li class=""><a href="<c:url value="/indexes.html" />"><i class="icon-plus-sign"></i>Indexes</a></li>
-		<li class=""><a href="<c:url value="/properties.html" />"><i class="icon-bar-chart"></i>Properties</a></li>
-		<li class=""><a href="<c:url value="/admin.html" />"><i class="icon-bar-chart"></i>Admin</a></li>
-		
+	<ul ng-controller="ActiveController">
+		<li href="system" active-link="active"><a href="<c:url value="/system/dash.html" />"><i class="icon-cogs"></i>System</a></li>
+		<li href="search" active-link="active"><a href="<c:url value="/search/search.html" />"><i class="icon-list-alt"></i>Search</a></li>
+		<li href="analytics" active-link="active"><a href="<c:url value="/analytics/analytics.html" />"><i class="icon-beaker"></i>Analytics</a></li>
+		<%-- <li href="search" active-link="active"><a href="<c:url value="/indexes.html" />"><i class="icon-plus-sign"></i>Indexes</a></li> --%>
+		<%-- <li class=""><a href="<c:url value="/properties.html" />"><i class="icon-bar-chart"></i>Properties</a></li> --%>
+		<%-- <li class=""><a href="<c:url value="/admin.html" />"><i class="icon-bar-chart"></i>Admin</a></li> --%>
 		<li class="dropdown">
 			<a class="dropdown-toggle" data-toggle="dropdown">
 				<i class="icon-share-alt"></i>More<span class="caret"></span>
 			</a>
 			<ul class="dropdown-menu">
-				<li><a href="#"><i class="icon-warning-sign"></i>Cluster graphs</a></li>
+				<li><a href="#"><i class="icon-warning-sign"></i>Something else</a></li>
 				<li class="divider"></li>
 				<li>
 					<a href="<spring:url value="/logout" htmlEscape="true" />" title="<spring:message code="security.logout" />">
-							<i class="icon-off"></i><spring:message code="security.logout" />
-						</a>
+						<i class="icon-off"></i><spring:message code="security.logout" />
+					</a>
 				</li>
-			</ul></li>
+			</ul>
+		</li>
 	</ul>
 </nav>
 
@@ -55,16 +54,16 @@ angular.element(document).ready(function() {
 					<i class="icon-search"></i>
 				</button>
 				<button class="button mini inset black">Projects</button>
-				<button class="button mini inset black dropdown-toggle"
-					data-toggle="dropdown">
+				<button class="button mini inset black dropdown-toggle" data-toggle="dropdown">
 					<i class="icon-cog"></i>
 				</button>
 				<ul class="dropdown-menu black-box-dropdown">
-					<li><a href="#">Action</a></li>
-					<li><a href="#">Another action</a></li>
-					<li><a href="#">Something else here</a></li>
+					<!-- id="modal-link", id="modal-link" -->
+					<li><a href="#" onClick="modal('#logs-modal');">Server logs</a></li>
+					<li><a href="#" onClick="modal('#properties-modal');">System properties</a></li>
+					<!-- <li><a href="#">Something else here</a></li>
 					<li class="divider"></li>
-					<li><a href="#">Separated link</a></li>
+					<li><a href="#">Separated link</a></li> -->
 				</ul>
 			</div>
 		</div>
@@ -81,44 +80,9 @@ angular.element(document).ready(function() {
 
 </nav>
 
-<div id="modal" class="black-box modal hide fade">
-	<div class="modal-header tab-header">
-		<button type="button" class="close" data-dismiss="modal">&times;</button>
-		<span>Some modal title</span>
-	</div>
-	<div class="modal-body separator">
-		<h4>Text in a modal</h4>
-		<p>Duis mollis, est non commodo luctus, nisi erat porttitor
-			ligula, eget lacinia odio sem.</p>
-	</div>
-	<div class="modal-footer">
-		<div class="inner-well">
-			<a class="button mini rounded light-gray" data-dismiss="modal">Close</a>
-			<a class="button mini rounded blue">Save changes</a>
-		</div>
-	</div>
-</div>
-
-<div id="modal-gallery" class="black-box modal modal-gallery hide fade">
-	<div class="modal-header tab-header">
-		<button type="button" class="close" data-dismiss="modal">&times;</button>
-		<span class="modal-title"></span>
-	</div>
-	<div class="modal-body">
-		<div class="modal-image"></div>
-	</div>
-	<div class="modal-footer">
-		<div class="pull-left">
-			You can also change the images<br /> by scrolling the mouse wheel!
-		</div>
-		<div class="pull-right">
-			<a class="button blue modal-next">Next<i class="icon-arrow-right icon-white"></i></a>
-			<a class="button gray modal-prev"><i class="icon-arrow-left icon-white"></i> Previous</a>
-			<a class="button green modal-play modal-slideshow" data-slideshow="5000"><i class="icon-play icon-white"></i>Slideshow</a>
-			<a class="button black" target="_blank"><i class="icon-download"></i>Download</a>
-		</div>
-	</div>
-</div>
+<!-- Include the modals for the input -->
+<jsp:include page="/WEB-INF/jsp/modal/logs.jsp" />
+<jsp:include page="/WEB-INF/jsp/modal/properties.jsp" />
 
 <script type="text/html" id="template-notification">
 <div class="notification animated fadeInLeftMiddle fast{{ item.itemClass }}">
