@@ -1,6 +1,7 @@
 package ikube.toolkit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.atLeastOnce;
@@ -131,9 +132,17 @@ public class DatabaseUtilitiesTest extends AbstractTest {
 			DatabaseUtilities.close(connection);
 		}
 	}
+	
+	@Test
+	@Ignore
+	public void getConnection() throws SQLException {
+		Connection connection = getDb2Connection();
+		assertNotNull(connection);
+	}
 
 	private Connection getDb2Connection() throws SQLException {
-		return DriverManager.getConnection("jdbc:db2://81.95.118.139:50000/icube", "db2", "Bp0st2013");
+		return DriverManager.getConnection("jdbc:db2://192.168.1.10:50000/ikube", "db2inst1", "Caherl1ne2013");
+		// return DriverManager.getConnection("jdbc:db2://81.95.118.139:50000/icube", "db2", "Bp0st2013");
 	}
 
 }

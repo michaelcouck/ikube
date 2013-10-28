@@ -104,7 +104,7 @@
 							</tr>
 							<tr>
 								<td>Index name : </td>
-								<td>{{action.indexName}}</td>
+								<td><strong>{{action.indexName}}</strong></td>
 							</tr>
 							<tr>
 								<td>Current indexable name :</td>
@@ -258,7 +258,7 @@
 				<div class="span12">
 					<div class="black-box tex">
 						<div class="tab-header">Recent searches</div>
-						<ul class="recent-comments" ng-controller="DatabaseController" ng-init="getEntities('ikube.model.Search', 0, 5)">
+						<ul class="recent-comments" ng-controller="ServersController">
 							<li class="separator" ng-repeat="entity in entities">
 								<div class="avatar pull-left">
 									<img src="<c:url value="/assets/images/MYP_1376-small.jpg" />" />

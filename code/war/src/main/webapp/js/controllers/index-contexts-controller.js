@@ -5,6 +5,7 @@ module.controller('IndexContextsController', function($http, $scope, $timeout) {
 	$scope.indexContexts = [];
 	$scope.sortField = 'name';
 	$scope.descending = true;
+	$scope.viewAll = false;
 	
 	$scope.refreshIndexContexts = function() {
 		$scope.url = getServiceUrl('/ikube/service/monitor/index-contexts');
@@ -32,6 +33,7 @@ module.controller('IndexContextsController', function($http, $scope, $timeout) {
 
 	// This function will publish a start event in the cluster
 	$scope.startIndexing = function(indexName) {
+		alert('Starting indexing : ' + indexName);
 		$scope.url = getServiceUrl('/ikube/service/monitor/start');
 		// The parameters for the start
 		$scope.parameters = { 
@@ -51,6 +53,7 @@ module.controller('IndexContextsController', function($http, $scope, $timeout) {
 	
 	// This function will delete the index completely on the file system
 	$scope.deleteIndex = function(indexName) {
+		alert('Deleting index : ' + indexName);
 		$scope.url = getServiceUrl('/ikube/service/monitor/delete-index');
 		// The parameters for the delete of the index
 		$scope.parameters = { 
@@ -94,8 +97,8 @@ module.controller('IndexContextsController', function($http, $scope, $timeout) {
 			"aoColumns": [
 			    { "sTitle" : "Name" },
 			    { "sTitle" : "Open" },
-			    { "sTitle" : "Max age" },
-			    { "sTitle" : "Path" },
+//			    { "sTitle" : "Max age" },
+//			    { "sTitle" : "Path" },
 			    { "sTitle" : "Documents" },
 			    { "sTitle" : "Size" }
 	        ],
@@ -110,7 +113,7 @@ module.controller('IndexContextsController', function($http, $scope, $timeout) {
 						var indexContext = $scope.indexContexts[i];
 						if (name == indexContext.name) {
 							$scope.indexContext = indexContext;
-							$scope.modal("#crud-modal");
+							// $scope.modal("#crud-modal");
 							$scope.$apply();
 						}
 					}
@@ -133,8 +136,8 @@ module.controller('IndexContextsController', function($http, $scope, $timeout) {
 			var row = [];
 			row.push(indexContext.name);
 			row.push(indexContext.open);
-			row.push(indexContext.maxAge);
-			row.push(indexContext.indexDirectoryPath);
+//			row.push(indexContext.maxAge);
+//			row.push(indexContext.indexDirectoryPath);
 			row.push(indexContext.numDocsForSearchers);
 			row.push(indexContext.snapshot.indexSize);
 			table.push(row);

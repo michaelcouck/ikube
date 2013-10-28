@@ -1,6 +1,8 @@
 package ikube.geospatial;
 
 import ikube.database.IDataBase;
+import ikube.model.geospatial.GeoName;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.Logging;
 import ikube.toolkit.ThreadUtilities;
 
@@ -31,14 +33,14 @@ public class GeonamePopulator {
 	}
 
 	public static void main(String[] args) throws Exception {
-		// persist(GeoName.class);
+		persist(GeoName.class);
 		// persist(AlternateName.class);
 	}
 
 	protected static void persist(final Class<?> clazz) {
-		String sessionName = "alternatename";
+		String sessionName = "geoname";
 		Session session = SessionFactory.getSession(sessionName);
-		IDataBase dataBase = null; // ApplicationContextManager.getBean(IDataBase.class);
+		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
 		ThreadUtilities.destroy();
 		int batchSize = 1000;
 		List<Object> geoNames = new ArrayList<Object>();

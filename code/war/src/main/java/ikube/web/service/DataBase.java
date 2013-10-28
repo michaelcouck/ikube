@@ -48,9 +48,8 @@ public class DataBase extends Resource {
 	@Path(DataBase.ENTITY)
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response entity(@QueryParam(value = IConstants.CLASS)
-	final String clazz, @QueryParam(value = IConstants.ID)
-	final long id) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+	public Response entity(@QueryParam(value = IConstants.CLASS) final String clazz, @QueryParam(value = IConstants.ID) final long id) throws Exception {
+		// TODO This must be implemented, this is just place holder code
 		Object entity = dataBase.find(Class.forName(clazz), id);
 		if (entity == null) {
 			entity = Class.forName(clazz).newInstance();
@@ -63,11 +62,9 @@ public class DataBase extends Resource {
 	@Path(DataBase.ENTITIES)
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response entities(@QueryParam(value = IConstants.CLASS)
-	final String clazz, @QueryParam(value = IConstants.START_INDEX)
-	final int startIndex, @QueryParam(value = IConstants.END_INDEX)
-	final int endIndex) throws ClassNotFoundException {
-		List<?> list = dataBase.find(IndexContext.class, startIndex, endIndex);
+	public Response entities(@QueryParam(value = IConstants.CLASS) final String clazz, @QueryParam(value = IConstants.START_INDEX) final int startIndex,
+			@QueryParam(value = IConstants.END_INDEX) final int endIndex) throws Exception {
+		List<?> list = dataBase.find(Class.forName(clazz), startIndex, endIndex);
 		return buildResponse(list);
 	}
 
@@ -75,13 +72,13 @@ public class DataBase extends Resource {
 	@Path(DataBase.ENTITY_CREATE)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response createIndexContext(final String entity) throws ClassNotFoundException {
+	public Response create(final String entity) throws Exception {
 		logger.info("Entity : " + entity);
-		Object object = createEntity(IndexContext.class, entity);
+		Object object = create(IndexContext.class, entity);
 		return buildResponse(object);
 	}
 
-	private <T> T createEntity(final Class<T> type, final String entity) {
+	private <T> T create(final Class<T> type, final String entity) {
 		T t = gson.fromJson(entity, type);
 		logger.info("Entity : " + t);
 		dataBase.persist(t);

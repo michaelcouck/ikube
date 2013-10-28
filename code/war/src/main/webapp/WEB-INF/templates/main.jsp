@@ -51,13 +51,14 @@
 	<script src="<c:url value="/js/ui-bootstrap-tpls-0.4.0.js" />" type='text/javascript'></script>
 	
 	<!-- Must be after Angular -->
+	<script src="<c:url value="/js/services/database-service.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/js/ikube.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/js/directives/directive.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/js/directives/active-directive.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/js/directives/textarea-onblur-directive.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/js/controllers/searcher-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/js/controllers/actions-controller.js" />" type="text/javascript"></script>
-	<script src="<c:url value="/js/controllers/database-controller.js" />" type="text/javascript"></script>
+	<%-- <script src="<c:url value="/js/controllers/database-controller.js" />" type="text/javascript"></script> --%>
 	<script src="<c:url value="/js/controllers/index-contexts-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/js/controllers/indexes-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/js/controllers/properties-controller.js" />" type="text/javascript"></script>

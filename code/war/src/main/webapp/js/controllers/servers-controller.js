@@ -1,7 +1,8 @@
 /** This controller will get the server data from the grid. */
-module.controller('ServersController', function($http, $scope) {
+module.controller('ServersController', function($http, $scope, databaseService) {
 	$scope.server;
 	$scope.servers = [];
+	$scope.entities = undefined;
 	
 	$scope.refreshServer = function() {
 		$scope.url = getServiceUrl('/ikube/service/monitor/server');
@@ -110,5 +111,7 @@ module.controller('ServersController', function($http, $scope) {
 	$scope.cpuLoadTooHigh = function(server) {
 		return server.averageCpuLoad / server.processors > 0.9;
 	}
+	
+	$scope.entities = databaseService.getEntities('ikube.model.Search', '0', '10');
 	
 });

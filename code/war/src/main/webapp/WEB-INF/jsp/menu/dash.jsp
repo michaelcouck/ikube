@@ -14,13 +14,10 @@
 		</a>
 	</li>
 	
-	<li href="crud" active-link="active">
+	<%-- <li href="crud" active-link="active">
 		<a href="<c:url value="/system/crud.html" />">
 			<i class="icon-th"></i>Database
 		</a>
-	</li>
+	</li> --%>
 	
-	<!-- <li id="notification-full-image"><a href="#"><i class="icon-list-alt"></i>Notification #1</a></li>
-	<li id="notification-small-image"><a href="#"><i class="icon-table"></i>Notification #2</a></li>
-	<li><a id="notification-auto-dismiss" href="#"><i class="icon-share-alt"></i> With auto-dismiss</a></li> -->
 </ul>
