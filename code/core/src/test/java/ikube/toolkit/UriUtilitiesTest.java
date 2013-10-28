@@ -43,8 +43,8 @@ public class UriUtilitiesTest extends AbstractTest {
 		string = Integer.toString(baseUri.getPort());
 		logger.info("Port        : " + string);
 
-		URI uri = new URI(baseUri.getScheme(), baseUri.getUserInfo(), baseUri.getHost(), baseUri.getPort(), baseUri.getPath(),
-				baseUri.getQuery(), baseUri.getFragment());
+		URI uri = new URI(baseUri.getScheme(), baseUri.getUserInfo(), baseUri.getHost(), baseUri.getPort(), baseUri.getPath(), baseUri.getQuery(),
+				baseUri.getFragment());
 		logger.info("Uri : " + uri);
 
 		reference = "http://www.ikokoon.eu/ikokoon/info/about.html;jsessionid=96069DDCEF2D6525AA946B529817214E?language=russian";
@@ -107,11 +107,16 @@ public class UriUtilitiesTest extends AbstractTest {
 
 	@Test
 	public void resolve() {
-		URI baseURI = URI
-				.create("http://www.ikokoon.eu/ikokoon/info/about.html;jsessionid=96069DDCEF2D6525AA946B529817214E?language=russian");
-		String reference = "/software/free.html;jsessionid=96069DDCEF2D6525AA946B529817214E?language=english";
+		URI baseURI = URI.create("http://www.ikokoon.eu/ikokoon/info/about.html;jsessionid=96069DD?language=russian");
+		String reference = "/ikokoon/software/free.html;jsessionid=96069DD?language=english";
 		String resolved = UriUtilities.resolve(baseURI, reference);
-		logger.debug("Resolved : " + resolved);
+		logger.info("Resolved : " + resolved);
+		assertEquals("http://www.ikokoon.eu/ikokoon/software/free.html;jsessionid=96069DD?language=english", resolved.toString());
+		
+		reference = "../free.html;jsessionid=96069DD?language=english";
+		resolved = UriUtilities.resolve(baseURI, reference);
+		logger.info("Resolved : " + resolved);
+		assertEquals("http://www.ikokoon.eu/ikokoon/free.html;jsessionid=96069DD?language=english", resolved.toString());
 	}
 
 	@Test
@@ -151,7 +156,7 @@ public class UriUtilitiesTest extends AbstractTest {
 		assertFalse(ipAddress.equals("127.0.0.1"));
 		assertFalse(ipAddress.equals("127.0.1.1"));
 	}
-	
+
 	@Test
 	public void pattern() {
 		String stringPattern = ".*(serenity/source).*";

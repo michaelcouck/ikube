@@ -2,6 +2,7 @@ package ikube.toolkit;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URI;
@@ -65,22 +66,13 @@ public final class UriUtilities {
 		StringBuilder builder = new StringBuilder();
 		// Strip the space characters from the reference
 		String trimmedReference = UriUtilities.stripBlanks(reference);
-		int index = trimmedReference.indexOf('?');
-		URI uri = null;
-		String query = "";
-		if (index > -1) {
-			query = trimmedReference.substring(index);
-			String strippedReference = trimmedReference.substring(0, index);
-			uri = URI.create(strippedReference);
-		} else {
-			uri = URI.create(trimmedReference);
+		URL resolved = null;
+		try {
+			resolved = new URL(baseURI.toURL(), trimmedReference);
+		} catch (MalformedURLException e) {
+			LOGGER.error("Exception resolving url : " + baseURI + ", " + trimmedReference, e);
 		}
-
-		URI resolved = resolve(baseURI, uri);
-
-		builder.append(resolved.toString());
-		builder.append(query);
-
+		builder.append(resolved);
 		return builder.toString();
 	}
 

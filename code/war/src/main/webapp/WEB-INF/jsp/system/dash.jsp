@@ -5,8 +5,6 @@
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-
-
 <div class="container-fluid">
 	<div class="row-fluid">
 		<div class="span6">
@@ -15,11 +13,11 @@
 					<div style="margin-bottom: 20px;">
 						<div class="big-button-bar">
 							<a class="button large" href="#" onclick="enterpriseNotification();"><i class="icon-list-ul"></i><span>Create Index</span></a>
-							<a class="button large" href="#" onclick="enterpriseNotification();"><i class="icon-th"></i><span>Create Database</span></a>
+							<a class="button large" href="#" onclick="enterpriseNotification();"><i class="icon-th"></i><span>Create Db</span></a>
 							<a class="button large" href="#" onclick="enterpriseNotification();"><i class="icon-user"></i><span>Create User</span></a>
 							<a class="button large" href="#" onclick="enterpriseNotification();"><i class="icon-folder-open"></i><span>File system</span></a>
-							<a class="button large" href="#" onclick="enterpriseNotification();"><i class="icon-picture"></i><span>Upload Photos</span></a>
-							<a class="button large" href="http://www.ikube.be/site"><i class="icon-file"></i><span>Documentation</span></a>
+							<a class="button large" href="#" onclick="enterpriseNotification();"><i class="icon-picture"></i><span>Photos</span></a>
+							<a class="button large" href="http://www.ikube.be/site"><i class="icon-file"></i><span>Docs</span></a>
 						</div>
 					</div>
 				</div>
@@ -292,4 +290,4 @@
 
 		</div>
 	</div>
-
+</div>

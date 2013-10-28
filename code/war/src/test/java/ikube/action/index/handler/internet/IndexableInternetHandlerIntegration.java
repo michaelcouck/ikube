@@ -55,10 +55,11 @@ public class IndexableInternetHandlerIntegration extends IntegrationTest {
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
 		indexContext.setIndexWriters(indexWriter);
+		indexableInternet.setThreads(1);
 
 		ForkJoinTask<?> forkJoinTask = indexableInternetHandler.handleIndexableForked(indexContext, indexableInternet);
 		ThreadUtilities.executeForkJoinTasks(indexContext.getName(), indexableInternet.getThreads(), forkJoinTask);
-		ThreadUtilities.sleep(3000);
+		ThreadUtilities.sleep(15000);
 		ThreadUtilities.cancellForkJoinPool(indexContext.getName());
 		int expectedAtLeast = 1;
 		logger.info("Num docs : " + indexContext.getIndexWriters()[0].numDocs());
