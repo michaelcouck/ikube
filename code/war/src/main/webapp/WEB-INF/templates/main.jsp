@@ -36,36 +36,30 @@
 	<script src="<c:url value="/assets/javascripts/docs_charts.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/documentation.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/prettify.js" />" type="text/javascript"></script>
-	<%-- <script src="<c:url value="/assets/javascripts/ng-table.js" />" type="text/javascript"></script> --%>
 	
 	<link href="<c:url value="/assets/stylesheets/prettify.css" />" media="screen" rel="stylesheet" type="text/css" />
-	<%-- <link href="<c:url value="/assets/stylesheets/ng-table.css" />" media="screen" rel="stylesheet" type="text/css" /> --%>
-    <!-- <link data-require="ng-table@*" data-semver="0.3.0" rel="stylesheet" href="http://bazalt-cms.com/assets/ng-table/0.3.0/ng-table.css" /> -->
 	
 	<script src="https://www.google.com/jsapi" type="text/javascript" ></script>
 	<script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
 	<script src="http://www.google-analytics.com/ga.js" type="text/javascript"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
-	<!-- <script data-require="angular.js@*" data-semver="1.2.0-rc3-nonmin" src="http://code.angularjs.org/1.2.0-rc.3/angular.js"></script> -->
-    <!-- <script data-require="ng-table@*" data-semver="0.3.0" src="http://bazalt-cms.com/assets/ng-table/0.3.0/ng-table.js"></script> -->
-	<script src="<c:url value="/js/ui-bootstrap-tpls-0.4.0.js" />" type='text/javascript'></script>
+	<script src="<c:url value="/assets/javascripts/ui-bootstrap-tpls-0.4.0.js" />" type='text/javascript'></script>
 	
 	<!-- Must be after Angular -->
-	<script src="<c:url value="/js/services/database-service.js" />" type="text/javascript"></script>
-	<script src="<c:url value="/js/ikube.js" />" type="text/javascript"></script>
-	<script src="<c:url value="/js/directives/directive.js" />" type="text/javascript"></script>
-	<script src="<c:url value="/js/directives/active-directive.js" />" type="text/javascript"></script>
-	<script src="<c:url value="/js/directives/textarea-onblur-directive.js" />" type="text/javascript"></script>
-	<script src="<c:url value="/js/controllers/searcher-controller.js" />" type="text/javascript"></script>
-	<script src="<c:url value="/js/controllers/actions-controller.js" />" type="text/javascript"></script>
-	<%-- <script src="<c:url value="/js/controllers/database-controller.js" />" type="text/javascript"></script> --%>
-	<script src="<c:url value="/js/controllers/index-contexts-controller.js" />" type="text/javascript"></script>
-	<script src="<c:url value="/js/controllers/indexes-controller.js" />" type="text/javascript"></script>
-	<script src="<c:url value="/js/controllers/properties-controller.js" />" type="text/javascript"></script>
-	<script src="<c:url value="/js/controllers/servers-controller.js" />" type="text/javascript"></script>
-	<script src="<c:url value="/js/controllers/typeahead-controller.js" />" type="text/javascript"></script>
-	<script src="<c:url value="/js/controllers/active-controller.js" />" type="text/javascript"></script>
-	<script src="<c:url value="/assets/javascripts/ng-table.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/services/database-service.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/ikube.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/directives/directive.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/directives/active-directive.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/directives/textarea-onblur-directive.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/controllers/searcher-controller.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/controllers/actions-controller.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/controllers/index-contexts-controller.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/controllers/indexes-controller.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/controllers/properties-controller.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/controllers/servers-controller.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/controllers/typeahead-controller.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/controllers/active-controller.js" />" type="text/javascript"></script>
+	<%-- <script src="<c:url value="/assets/javascripts/ng-table.js" />" type="text/javascript"></script> --%>
 	
 </head>
 
