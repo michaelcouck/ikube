@@ -20,6 +20,25 @@
 		of the geonames table on the Ikube server. 
 	</description>
 	
+	<bean 
+		id="nonXaDataSourceGeo"
+		class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close"
+		property:user="${h2.jdbc.userid}"
+		property:password="${h2.jdbc.password}"
+		property:driverClass="${h2.jdbc.driver}"
+		property:jdbcUrl="jdbc:h2:tcp://ikube.be:9082/ikube"
+		property:initialPoolSize="${jdbc.minPoolSize}"
+		property:maxPoolSize="${jdbc.maxPoolSize}"
+		property:maxStatements="${jdbc.maxStatements}"
+		property:checkoutTimeout="${jdbc.checkOutTimeout}"
+		property:numHelperThreads="${jdbc.numHelperThreads}"
+		property:breakAfterAcquireFailure="${jdbc.breakAfterAcquireFailure}"
+		property:debugUnreturnedConnectionStackTraces="${jdbc.debugUnreturnedConnectionStackTraces}"
+		property:testConnectionOnCheckin="${jdbc.testConnectionOnCheckin}"
+		property:testConnectionOnCheckout="${jdbc.testConnectionOnCheckout}"
+		property:unreturnedConnectionTimeout="${jdbc.unreturnedConnectionTimeout}" />
+	
 	<bean
 		id="geospatial"
 		class="ikube.model.IndexContext"
@@ -63,7 +82,7 @@
 		property:analyzed="${analyzed}"
 		property:vectored="${vectored}"
 		property:children-ref="geonameColumnsDb2"
-		property:dataSource-ref="nonXaDataSourceDb2"
+		property:dataSource-ref="nonXaDataSourceGeo"
 		property:strategies-ref="geoname-strategies" />
 	<util:list id="geonameColumnsDb2">
 		<ref local="geospatialId" />
@@ -283,7 +302,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	
-	<!-- property:dataSource-ref="nonXaDataSourceDb2" -->
+	<!-- property:dataSource-ref="nonXaDataSourceGeo" -->
 	<bean
 		id="alternatename"
 		class="ikube.model.IndexableTable"
