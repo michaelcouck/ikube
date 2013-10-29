@@ -72,8 +72,8 @@ public class Auto extends Resource {
 			stringBuilder.append(token);
 			first = Boolean.FALSE;
 		}
-		ArrayList<HashMap<String, String>> results = searcherService.searchSingle(IConstants.AUTOCOMPLETE, stringBuilder.toString(),
-				IConstants.CONTENT, Boolean.TRUE, 0, 100);
+		ArrayList<HashMap<String, String>> results = searcherService.search(IConstants.AUTOCOMPLETE, new String[] { stringBuilder.toString() },
+				new String[] { IConstants.CONTENT }, Boolean.TRUE, 0, 100);
 		if (results.size() > 0) {
 			results.remove(results.size() - 1);
 		}

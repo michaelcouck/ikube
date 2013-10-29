@@ -7,7 +7,7 @@ import ikube.IConstants;
 import ikube.action.index.IndexManager;
 import ikube.action.index.analyzer.StemmingAnalyzer;
 import ikube.mock.SpellingCheckerMock;
-import ikube.search.SearchSingle;
+import ikube.search.SearchComplex;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -71,7 +71,7 @@ public class LuceneTest extends AbstractTest {
 
 	@Test
 	public void search() throws Exception {
-		SearchSingle searchSingle = createIndexRamAndSearch(SearchSingle.class, new StemmingAnalyzer(), IConstants.CONTENTS, russian, german, french,
+		SearchComplex searchSingle = createIndexRamAndSearch(SearchComplex.class, new StemmingAnalyzer(), IConstants.CONTENTS, russian, german, french,
 				somethingElseAlToGether, string, somethingNumeric);
 		searchSingle.setFirstResult(0);
 		searchSingle.setFragment(true);
@@ -117,7 +117,7 @@ public class LuceneTest extends AbstractTest {
 							IndexReader reader = IndexReader.open(directory);
 							IndexSearcher indexSearcher = new IndexSearcher(reader);
 
-							SearchSingle searchSingle = new SearchSingle(indexSearcher);
+							SearchComplex searchSingle = new SearchComplex(indexSearcher);
 							searchSingle.setFirstResult(0);
 							searchSingle.setFragment(Boolean.TRUE);
 							searchSingle.setMaxResults(Integer.MAX_VALUE);
@@ -177,7 +177,7 @@ public class LuceneTest extends AbstractTest {
 
 							IndexSearcher indexSearcher = searcherManager.acquire();
 
-							SearchSingle searchSingle = new SearchSingle(indexSearcher);
+							SearchComplex searchSingle = new SearchComplex(indexSearcher);
 							searchSingle.setFirstResult(0);
 							searchSingle.setFragment(Boolean.TRUE);
 							searchSingle.setMaxResults(Integer.MAX_VALUE);

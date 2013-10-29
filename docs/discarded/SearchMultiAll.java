@@ -21,7 +21,7 @@ import org.apache.lucene.search.Searcher;
  * @since 02.09.08
  * @version 01.00
  */
-@SuppressWarnings("deprecation")
+@Deprecated
 public class SearchMultiAll extends SearchMulti {
 
 	public SearchMultiAll(final Searcher searcher) {

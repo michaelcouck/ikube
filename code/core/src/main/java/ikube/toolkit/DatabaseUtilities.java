@@ -219,10 +219,8 @@ public final class DatabaseUtilities {
 				// Oracle and Db2 are fine with upper case
 				tableName = table.toUpperCase();
 			}
-			LOGGER.info("Database name : " + databaseName);
 			DatabaseMetaData databaseMetaData = connection.getMetaData();
 			columnsResultSet = databaseMetaData.getColumns(null, null, tableName, null);
-			// printResultSet(columnsResultSet);
 			while (columnsResultSet.next()) {
 				Object columnValue = columnsResultSet.getObject("COLUMN_NAME");
 				columnNames.add(columnValue.toString());
@@ -248,6 +246,8 @@ public final class DatabaseUtilities {
 			}
 		} catch (SQLException e) {
 			LOGGER.error("Exception getting the primary keys for table : " + table, e);
+		} finally {
+			close(primaryKeyResultSet);
 		}
 		return primaryKeyColumns;
 	}
@@ -270,7 +270,7 @@ public final class DatabaseUtilities {
 		} catch (SQLException e) {
 			LOGGER.error("Exception printing the category set : ", e);
 		} finally {
-			DatabaseUtilities.close(resultSet);
+			close(resultSet);
 		}
 	}
 

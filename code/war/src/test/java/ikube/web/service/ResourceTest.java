@@ -32,7 +32,7 @@ public class ResourceTest extends BaseTest {
 	@Test
 	public void buildResponse() {
 		String[] result = { russian, german, french, somthingElseAlToGether };
-		Response response = resource.buildResponse(result);
+		Response response = resource.buildJsonResponse(result);
 		Object entity = response.getEntity();
 		logger.info("Entity : " + entity);
 		logger.info("Entity : " + Arrays.deepToString(result));

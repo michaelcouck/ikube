@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.search.SearchSingle;
+import ikube.search.SearchComplex;
 
 import java.io.Reader;
 import java.io.StringReader;
@@ -38,7 +38,7 @@ public class NgramAnalyzerTest extends AbstractTest {
 
 	@Test
 	public void endToEnd() throws Exception {
-		SearchSingle searchSingle = createIndexRamAndSearch(SearchSingle.class, ngramAnalyzer, IConstants.CONTENT, "Michael Couck");
+		SearchComplex searchSingle = createIndexRamAndSearch(SearchComplex.class, ngramAnalyzer, IConstants.CONTENT, "Michael Couck");
 		searchSingle.setFirstResult(0);
 		searchSingle.setFragment(true);
 		searchSingle.setMaxResults(10);

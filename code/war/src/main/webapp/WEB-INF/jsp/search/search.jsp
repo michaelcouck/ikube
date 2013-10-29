@@ -35,12 +35,11 @@
 							<div class="inner-well clearfix" ng-repeat="index in indexes">
 								<b>{{index}}</b>
 								<div class="pull-right">
-									<input type="checkbox" id="checky2" class="checky" />
-									<label for="checky2" class="checky"><span></span></label>
+									<input type="checkbox" id="{{index}}" class="checky" />
+									<label for="{{index}}" class="checky"><span></span></label>
 								</div>
 							</div>
 						</div>
-						<div class="separator"></div>
 					</div>
 					<div class="tab-pane" id="tab2">
 						<div class="padded">
@@ -120,8 +119,6 @@
 							</div>
 						</div>
 					</li>
-					<li class="separator" style="text-align: center"><a href="#">View
-							all</a></li>
 				</ul>
 			</div>
 		</div>

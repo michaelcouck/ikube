@@ -56,7 +56,7 @@ public class Classifier extends Resource {
 	public Response classify(@Context
 	final HttpServletRequest request, @Context
 	final UriInfo uriInfo) {
-		return buildResponse("nothing");
+		return buildJsonResponse("nothing");
 	}
 
 	/**
@@ -73,7 +73,7 @@ public class Classifier extends Resource {
 		analysis.setInput(content);
 		analysis.setAnalyzer(analyzer);
 		analyticsService.analyze(analysis);
-		return buildResponse(analysis);
+		return buildJsonResponse(analysis);
 	}
 
 }

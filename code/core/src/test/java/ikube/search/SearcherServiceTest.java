@@ -67,68 +67,38 @@ public class SearcherServiceTest extends AbstractTest {
 
 	@Test
 	public void searchSingle() {
-		searcherService.searchSingle(indexName, searchStrings[0], searchFields[0], true, 0, 10);
-		verify();
-	}
-
-	@Test
-	public void searchMulti() {
-		searcherService.searchMulti(indexName, searchStrings, searchFields, fragment, firstResult, maxResults);
+		searcherService.search(indexName, searchStrings, searchFields, true, 0, 10);
 		verify();
 	}
 
 	@Test
 	public void searchMultiSorted() {
-		searcherService.searchMultiSorted(indexName, searchStrings, searchFields, sortFields, fragment, firstResult, maxResults);
-		verify();
-	}
-
-	@Test
-	public void searchMultiAll() {
-		searcherService.searchMultiAll(indexName, searchStrings, fragment, firstResult, maxResults);
+		searcherService.search(indexName, searchStrings, searchFields, typeFields, sortFields, fragment, firstResult, maxResults);
 		verify();
 	}
 
 	@Test
 	public void searchMultiSpacial() {
-		searcherService.searchMultiSpacial(indexName, searchStrings, searchFields, fragment, firstResult, maxResults, distance, latitude, longitude);
-		verify();
-	}
-
-	@Test
-	public void searchMultiSpacialAll() {
-		searcherService.searchMultiSpacialAll(indexName, searchStrings, fragment, firstResult, maxResults, distance, latitude, longitude);
-		verify();
-	}
-
-	@Test
-	public void searchNumericAll() {
-		searcherService.searchNumericAll(indexName, searchStrings, fragment, firstResult, maxResults);
+		searcherService.search(indexName, searchStrings, searchFields, typeFields, fragment, firstResult, maxResults, distance, latitude, longitude);
 		verify();
 	}
 
 	@Test
 	public void searchNumericRange() {
-		searcherService.searchNumericRange(indexName, new String[] { "0.0", "0.0" }, fragment, firstResult, maxResults);
+		searcherService.search(indexName, new String[] { "0.0-0.0" }, searchFields, typeFields, sortFields, fragment, firstResult, maxResults);
 		verify();
 	}
 
 	@Test
 	public void searchComplex() {
-		searcherService.searchComplex(indexName, searchStrings, searchFields, typeFields, fragment, firstResult, maxResults);
-		verify();
-	}
-
-	@Test
-	public void searchComplexSorted() {
-		searcherService.searchComplexSorted(indexName, searchStrings, searchFields, typeFields, sortFields, fragment, firstResult, maxResults);
+		searcherService.search(indexName, searchStrings, searchFields, typeFields, sortFields, fragment, firstResult, maxResults);
 		verify();
 	}
 
 	@Test
 	public void searchComplexSortedJson() {
 		ikube.model.Search search = ObjectToolkit.populateFields(new ikube.model.Search(), Boolean.TRUE, 10);
-		searcherService.searchComplexSorted(search);
+		searcherService.search(search);
 		verify();
 	}
 

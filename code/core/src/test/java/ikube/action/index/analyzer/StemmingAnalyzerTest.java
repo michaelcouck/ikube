@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.search.SearchSingle;
+import ikube.search.SearchComplex;
 
 import java.io.Reader;
 import java.io.StringReader;
@@ -39,7 +39,7 @@ public class StemmingAnalyzerTest extends AbstractTest {
 
 	@Test
 	public void endToEnd() throws Exception {
-		SearchSingle searchSingle = createIndexRamAndSearch(SearchSingle.class, stemmingAnalyzer, IConstants.CONTENT, "duck", "ducks", "peoples", "peopled",
+		SearchComplex searchSingle = createIndexRamAndSearch(SearchComplex.class, stemmingAnalyzer, IConstants.CONTENT, "duck", "ducks", "peoples", "peopled",
 				"oranges", "orange");
 		searchSingle.setFirstResult(0);
 		searchSingle.setFragment(true);

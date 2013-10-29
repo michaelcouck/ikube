@@ -43,7 +43,7 @@ public class ClassificationReportScheduleTest extends AbstractTest {
 		File file = FileUtilities.findFileRecursively(new File("."), "twitter.results.xml");
 		String xml = FileUtilities.getContents(file, Integer.MAX_VALUE).toString();
 		ArrayList<HashMap<String, String>> results = (ArrayList<HashMap<String, String>>) SerializationUtilities.deserialize(xml);
-		when(searcherService.searchComplex(anyString(), any(String[].class), any(String[].class), any(String[].class), anyBoolean(), anyInt(), anyInt()))
+		when(searcherService.search(anyString(), any(String[].class), any(String[].class), any(String[].class), any(String[].class), anyBoolean(), anyInt(), anyInt()))
 				.thenReturn(results);
 	}
 

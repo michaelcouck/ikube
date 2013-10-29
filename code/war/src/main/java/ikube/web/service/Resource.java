@@ -29,21 +29,6 @@ public abstract class Resource {
 	/** Constants for the paths to the web services. */
 	public static final String REQUEST = "request";
 
-	public static final String SINGLE = "/single";
-	public static final String MULTI = "/multi";
-	public static final String MULTI_SORTED = "/multi/sorted";
-	public static final String MULTI_ALL = "/multi/all";
-	public static final String MULTI_SPATIAL = "/multi/spatial";
-	public static final String MULTI_SPATIAL_ALL = "/multi/spatial/all";
-	public static final String MULTI_SPATIAL_JSON = "/multi/spatial/json";
-	public static final String MULTI_ADVANCED = "/multi/advanced";
-	public static final String NUMERIC_ALL = "/numeric/all";
-	public static final String NUMERIC_RANGE = "/numeric/range";
-	public static final String COMPLEX = "/complex";
-	public static final String COMPLEX_SORTED = "/complex/sorted";
-	public static final String COMPLEX_SORTED_JSON = "/complex/sorted/json";
-	public static final String COMPLEX_SORTED_JSON_ALL = "/complex/sorted/json/all";
-
 	public static final String SEPARATOR = ",;:|";
 
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -64,12 +49,23 @@ public abstract class Resource {
 	 * This method will create the response builder, then convert the results to Json and add them the the response payload, then build the response object from
 	 * the builder.
 	 * 
-	 * @param category the category to convert to the Json response
+	 * @param result the data to convert to Json
 	 * @return the Json response object to send to the caller/client
 	 */
-	protected Response buildResponse(final Object result) {
+	protected Response buildJsonResponse(final Object result) {
 		String jsonString = gson.toJson(result);
 		return buildResponse().entity(jsonString).build();
+	}
+
+	/**
+	 * This method will create the response builder, then convert the results to xml and add them the the response payload, then build the response object from
+	 * the builder.
+	 * 
+	 * @param result the data to convert to xml
+	 * @return the xml response object to send to the caller/client
+	 */
+	protected Response buildXmlResponse(final Object result) {
+		return buildResponse().entity(result).build();
 	}
 
 	/**

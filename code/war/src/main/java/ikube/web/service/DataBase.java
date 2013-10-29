@@ -55,7 +55,7 @@ public class DataBase extends Resource {
 			entity = Class.forName(clazz).newInstance();
 			ObjectToolkit.populateFields(entity, Boolean.TRUE, 1, EXCLUDED_PROPERTIES);
 		}
-		return buildResponse(entity);
+		return buildJsonResponse(entity);
 	}
 
 	@GET
@@ -65,7 +65,7 @@ public class DataBase extends Resource {
 	public Response entities(@QueryParam(value = IConstants.CLASS) final String clazz, @QueryParam(value = IConstants.START_INDEX) final int startIndex,
 			@QueryParam(value = IConstants.END_INDEX) final int endIndex) throws Exception {
 		List<?> list = dataBase.find(Class.forName(clazz), startIndex, endIndex);
-		return buildResponse(list);
+		return buildJsonResponse(list);
 	}
 
 	@POST
@@ -75,7 +75,7 @@ public class DataBase extends Resource {
 	public Response create(final String entity) throws Exception {
 		logger.info("Entity : " + entity);
 		Object object = create(IndexContext.class, entity);
-		return buildResponse(object);
+		return buildJsonResponse(object);
 	}
 
 	private <T> T create(final Class<T> type, final String entity) {

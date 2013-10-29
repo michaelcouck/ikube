@@ -129,8 +129,8 @@ module.controller('IndexContextsController', function($http, $scope, $timeout) {
 			var row = [];
 			row.push(indexContext.name);
 			row.push(indexContext.open);
-			row.push(indexContext.numDocsForSearchers);
-			row.push(indexContext.snapshot.indexSize);
+			row.push(indexContext.numDocsForSearchers / 1000000);
+			row.push(indexContext.snapshot.indexSize / 1000000);
 			table.push(row);
 		}
 		return table;

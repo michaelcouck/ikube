@@ -18,7 +18,7 @@ ikubeServices.service('databaseService', function($rootScope, $http, $timeout) {
 			// alert('Problem accessing the data : ' + status);
 		});
 		return $timeout(function() {
-			// alert('Gor results for : ' + klass + ', ' + startIndex + ', ' + endIndex + ', ' + entities);
+			// alert('Got results for : ' + klass + ', ' + startIndex + ', ' + endIndex + ', ' + entities);
 			return entities;
 		}, 250);
 	};
@@ -37,7 +37,6 @@ ikubeServices.service('CreateController', function($rootScope, $http) {
 			// alert('Problem creating the entity : ' + status);
 		});
 	}
-	
 });
 
 //function factory('databaseFactory', function($rootScope) {

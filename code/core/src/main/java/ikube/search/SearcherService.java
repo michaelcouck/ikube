@@ -6,7 +6,9 @@ import ikube.database.IDataBase;
 import ikube.model.Coordinate;
 import ikube.model.IndexContext;
 import ikube.model.Search;
+import ikube.search.Search.TypeField;
 import ikube.toolkit.HashUtilities;
+import ikube.toolkit.SerializationUtilities;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -16,8 +18,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.ejb.Remote;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.search.Searcher;
@@ -29,10 +29,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @see ISearcherService
  * @author Michael Couck
  * @since 21.11.10
- * @version 01.00
+ * @version 02.00
  */
 @SuppressWarnings("deprecation")
-@Remote(ISearcherService.class)
 public class SearcherService implements ISearcherService {
 
 	static final Logger LOGGER = LoggerFactory.getLogger(SearcherService.class);
@@ -50,23 +49,26 @@ public class SearcherService implements ISearcherService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ArrayList<HashMap<String, String>> searchSingle(final String indexName, final String searchString, final String searchField, final boolean fragment,
+	@SuppressWarnings("unchecked")
+	public ArrayList<HashMap<String, String>> search(final String indexName, final String[] searchStrings, final String[] searchFields, final boolean fragment,
 			final int firstResult, final int maxResults) {
 		try {
-			SearchSingle searchSingle = getSearch(SearchSingle.class, indexName);
-			if (searchSingle == null) {
-				LOGGER.warn("Searcher null for index : " + indexName);
-				return EMPTY_RESULTS;
-			}
-			searchSingle.setFirstResult(firstResult);
-			searchSingle.setFragment(fragment);
-			searchSingle.setMaxResults(maxResults);
-			searchSingle.setSearchField(searchField);
-			searchSingle.setSearchString(searchString);
-			ArrayList<HashMap<String, String>> results = searchSingle.execute();
-			String[] searchStringsCorrected = searchSingle.getCorrections();
-			persistSearch(indexName, new String[] { searchString }, searchStringsCorrected, results);
-			return results;
+			Search search = new Search();
+			search.setIndexName(indexName);
+
+			String[] typeFields = new String[searchFields.length];
+			Arrays.fill(typeFields, TypeField.STRING.fieldType());
+
+			search.setSearchStrings(Arrays.asList(searchStrings));
+			search.setSearchFields(Arrays.asList(searchFields));
+			search.setTypeFields(Arrays.asList(typeFields));
+			search.setSortFields(Collections.EMPTY_LIST);
+
+			search.setFragment(fragment);
+			search.setFirstResult(firstResult);
+			search.setMaxResults(maxResults);
+			search(search);
+			return search.getSearchResults();
 		} catch (final Exception e) {
 			return handleException(indexName, e);
 		}
@@ -76,50 +78,25 @@ public class SearcherService implements ISearcherService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ArrayList<HashMap<String, String>> searchMulti(final String indexName, final String[] searchStrings, final String[] searchFields,
-			final boolean fragment, final int firstResult, final int maxResults) {
-		try {
-			SearchMulti searchMulti = getSearch(SearchMulti.class, indexName);
-			if (searchMulti == null) {
-				LOGGER.warn("Searcher null for index : " + indexName);
-				return EMPTY_RESULTS;
-			}
-			searchMulti.setFirstResult(firstResult);
-			searchMulti.setFragment(fragment);
-			searchMulti.setMaxResults(maxResults);
-			searchMulti.setSearchField(searchFields);
-			searchMulti.setSearchString(searchStrings);
-			ArrayList<HashMap<String, String>> results = searchMulti.execute();
-			String[] searchStringsCorrected = searchMulti.getCorrections();
-			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
-			return results;
-		} catch (final Exception e) {
-			return handleException(indexName, e);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ArrayList<HashMap<String, String>> searchMultiSorted(final String indexName, final String[] searchStrings, final String[] searchFields,
+	public ArrayList<HashMap<String, String>> search(final String indexName, final String[] searchStrings, final String[] searchFields,
 			final String[] sortFields, final boolean fragment, final int firstResult, final int maxResults) {
 		try {
-			SearchMultiSorted searchMultiSorted = getSearch(SearchMultiSorted.class, indexName);
-			if (searchMultiSorted == null) {
-				LOGGER.warn("Searcher null for index : " + indexName);
-				return EMPTY_RESULTS;
-			}
-			searchMultiSorted.setFirstResult(firstResult);
-			searchMultiSorted.setFragment(fragment);
-			searchMultiSorted.setMaxResults(maxResults);
-			searchMultiSorted.setSearchField(searchFields);
-			searchMultiSorted.setSearchString(searchStrings);
-			searchMultiSorted.setSortField(sortFields);
-			ArrayList<HashMap<String, String>> results = searchMultiSorted.execute();
-			String[] searchStringsCorrected = searchMultiSorted.getCorrections();
-			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
-			return results;
+			Search search = new Search();
+			search.setIndexName(indexName);
+
+			String[] typeFields = new String[searchFields.length];
+			Arrays.fill(typeFields, TypeField.STRING.fieldType());
+
+			search.setSearchStrings(Arrays.asList(searchStrings));
+			search.setSearchFields(Arrays.asList(searchFields));
+			search.setTypeFields(Arrays.asList(typeFields));
+			search.setSortFields(Arrays.asList(sortFields));
+
+			search.setFragment(fragment);
+			search.setFirstResult(firstResult);
+			search.setMaxResults(maxResults);
+			search(search);
+			return search.getSearchResults();
 		} catch (final Exception e) {
 			return handleException(indexName, e);
 		}
@@ -129,208 +106,22 @@ public class SearcherService implements ISearcherService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ArrayList<HashMap<String, String>> searchMultiAll(final String indexName, final String[] searchStrings, final boolean fragment,
-			final int firstResult, final int maxResults) {
-		try {
-			SearchMultiAll searchMultiAll = getSearch(SearchMultiAll.class, indexName);
-			if (searchMultiAll == null) {
-				LOGGER.warn("Searcher null for index : " + indexName);
-				return EMPTY_RESULTS;
-			}
-			searchMultiAll.setFirstResult(firstResult);
-			searchMultiAll.setFragment(fragment);
-			searchMultiAll.setMaxResults(maxResults);
-			searchMultiAll.setSearchString(searchStrings);
-			ArrayList<HashMap<String, String>> results = searchMultiAll.execute();
-			String[] searchStringsCorrected = searchMultiAll.getCorrections();
-			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
-			return results;
-		} catch (final Exception e) {
-			return handleException(indexName, e);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ArrayList<HashMap<String, String>> searchMultiSpacial(final String indexName, final String[] searchStrings, final String[] searchFields,
-			final boolean fragment, final int firstResult, final int maxResults, final int distance, final double latitude, final double longitude) {
-		try {
-			SearchSpatial searchSpatial = getSearch(SearchSpatial.class, indexName);
-			if (searchSpatial == null) {
-				LOGGER.warn("Searcher null for index : " + indexName);
-				return EMPTY_RESULTS;
-			}
-			searchSpatial.setFirstResult(firstResult);
-			searchSpatial.setFragment(fragment);
-			searchSpatial.setMaxResults(maxResults);
-			searchSpatial.setSearchString(searchStrings);
-			searchSpatial.setSearchField(searchFields);
-			searchSpatial.setCoordinate(new Coordinate(latitude, longitude));
-			searchSpatial.setDistance(distance);
-			ArrayList<HashMap<String, String>> results = searchSpatial.execute();
-			String[] searchStringsCorrected = searchSpatial.getCorrections();
-			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
-			return results;
-		} catch (final Exception e) {
-			return handleException(indexName, e);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ArrayList<HashMap<String, String>> searchMultiSpacialAll(final String indexName, final String[] searchStrings, final boolean fragment,
-			final int firstResult, final int maxResults, final int distance, final double latitude, final double longitude) {
-		try {
-			SearchSpatialAll searchSpatialAll = getSearch(SearchSpatialAll.class, indexName);
-			if (searchSpatialAll == null) {
-				LOGGER.warn("Searcher null for index : " + indexName);
-				return EMPTY_RESULTS;
-			}
-			searchSpatialAll.setFirstResult(firstResult);
-			searchSpatialAll.setFragment(fragment);
-			searchSpatialAll.setMaxResults(maxResults);
-			searchSpatialAll.setSearchString(searchStrings);
-			searchSpatialAll.setCoordinate(new Coordinate(latitude, longitude));
-			searchSpatialAll.setDistance(distance);
-			ArrayList<HashMap<String, String>> results = searchSpatialAll.execute();
-			String[] searchStringsCorrected = searchSpatialAll.getCorrections();
-			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
-			return results;
-		} catch (final Exception e) {
-			return handleException(indexName, e);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ArrayList<HashMap<String, String>> searchMultiAdvanced(final String indexName, final String[] searchStrings, final String[] searchFields,
-			final boolean fragment, final int firstResult, final int maxResults) {
-		try {
-			SearchAdvanced searchAdvanced = getSearch(SearchAdvanced.class, indexName);
-			if (searchAdvanced == null) {
-				LOGGER.warn("Searcher null for index : " + indexName);
-				return EMPTY_RESULTS;
-			}
-			searchAdvanced.setFirstResult(firstResult);
-			searchAdvanced.setFragment(fragment);
-			searchAdvanced.setMaxResults(maxResults);
-			searchAdvanced.setSearchString(searchStrings);
-			searchAdvanced.setSearchField(searchFields);
-			ArrayList<HashMap<String, String>> results = searchAdvanced.execute();
-			String[] searchStringsCorrected = searchAdvanced.getCorrections();
-			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
-			return results;
-		} catch (final Exception e) {
-			return handleException(indexName, e);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ArrayList<HashMap<String, String>> searchNumericAll(final String indexName, final String[] searchStrings, final boolean fragment,
-			final int firstResult, final int maxResults) {
-		try {
-			SearchNumericAll searchNumericAll = getSearch(SearchNumericAll.class, indexName);
-			if (searchNumericAll == null) {
-				LOGGER.warn("Searcher null for index : " + indexName);
-				return EMPTY_RESULTS;
-			}
-			searchNumericAll.setFirstResult(firstResult);
-			searchNumericAll.setFragment(fragment);
-			searchNumericAll.setMaxResults(maxResults);
-			searchNumericAll.setSearchString(searchStrings[0]);
-			ArrayList<HashMap<String, String>> results = searchNumericAll.execute();
-			String[] searchStringsCorrected = searchNumericAll.getCorrections();
-			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
-			return results;
-		} catch (final Exception e) {
-			return handleException(indexName, e);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ArrayList<HashMap<String, String>> searchNumericRange(final String indexName, final String[] searchStrings, final boolean fragment,
-			final int firstResult, final int maxResults) {
-		try {
-			SearchNumericRange searchNumericRange = getSearch(SearchNumericRange.class, indexName);
-			if (searchNumericRange == null) {
-				LOGGER.warn("Searcher null for index : " + indexName);
-				return EMPTY_RESULTS;
-			}
-			searchNumericRange.setFirstResult(firstResult);
-			searchNumericRange.setFragment(fragment);
-			searchNumericRange.setMaxResults(maxResults);
-			searchNumericRange.setSearchString(searchStrings);
-			ArrayList<HashMap<String, String>> results = searchNumericRange.execute();
-			String[] searchStringsCorrected = searchNumericRange.getCorrections();
-			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
-			return results;
-		} catch (final Exception e) {
-			return handleException(indexName, e);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ArrayList<HashMap<String, String>> searchComplex(final String indexName, final String[] searchStrings, final String[] searchFields,
-			final String[] typeFields, final boolean fragment, final int firstResult, final int maxResults) {
-		try {
-			SearchComplex searchComplex = getSearch(SearchComplex.class, indexName);
-			if (searchComplex == null) {
-				LOGGER.warn("Searcher null for index : " + indexName);
-				return EMPTY_RESULTS;
-			}
-			searchComplex.setFirstResult(firstResult);
-			searchComplex.setFragment(fragment);
-			searchComplex.setMaxResults(maxResults);
-			searchComplex.setSearchField(searchFields);
-			searchComplex.setSearchString(searchStrings);
-			searchComplex.setTypeFields(typeFields);
-			ArrayList<HashMap<String, String>> results = searchComplex.execute();
-			String[] searchStringsCorrected = searchComplex.getCorrections();
-			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
-			return results;
-		} catch (final Exception e) {
-			return handleException(indexName, e);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ArrayList<HashMap<String, String>> searchComplexSorted(final String indexName, final String[] searchStrings, final String[] searchFields,
+	public ArrayList<HashMap<String, String>> search(final String indexName, final String[] searchStrings, final String[] searchFields,
 			final String[] typeFields, final String[] sortFields, final boolean fragment, final int firstResult, final int maxResults) {
 		try {
-			SearchComplexSorted searchComplexSorted = getSearch(SearchComplexSorted.class, indexName);
-			if (searchComplexSorted == null) {
-				LOGGER.warn("Searcher null for index : " + indexName);
-				return EMPTY_RESULTS;
-			}
-			searchComplexSorted.setFirstResult(firstResult);
-			searchComplexSorted.setFragment(fragment);
-			searchComplexSorted.setMaxResults(maxResults);
-			searchComplexSorted.setSearchField(searchFields);
-			searchComplexSorted.setSearchString(searchStrings);
-			searchComplexSorted.setTypeFields(typeFields);
-			searchComplexSorted.setSortField(sortFields);
-			ArrayList<HashMap<String, String>> results = searchComplexSorted.execute();
-			String[] searchStringsCorrected = searchComplexSorted.getCorrections();
-			persistSearch(indexName, searchStrings, searchStringsCorrected, results);
-			return results;
+			Search search = new Search();
+			search.setIndexName(indexName);
+
+			search.setSearchStrings(Arrays.asList(searchStrings));
+			search.setSearchFields(Arrays.asList(searchFields));
+			search.setTypeFields(Arrays.asList(typeFields));
+			search.setSortFields(Arrays.asList(sortFields));
+
+			search.setFragment(fragment);
+			search.setFirstResult(firstResult);
+			search.setMaxResults(maxResults);
+			search(search);
+			return search.getSearchResults();
 		} catch (final Exception e) {
 			return handleException(indexName, e);
 		}
@@ -340,7 +131,36 @@ public class SearcherService implements ISearcherService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Search searchComplexSorted(final Search search) {
+	@SuppressWarnings("unchecked")
+	public ArrayList<HashMap<String, String>> search(final String indexName, final String[] searchStrings, final String[] searchFields,
+			final String[] typeFields, final boolean fragment, final int firstResult, final int maxResults, final int distance, final double latitude,
+			final double longitude) {
+		try {
+			Search search = new Search();
+			search.setIndexName(indexName);
+			search.setSearchStrings(Arrays.asList(searchStrings));
+			search.setSearchFields(Arrays.asList(searchFields));
+			search.setTypeFields(Arrays.asList(typeFields));
+			search.setSortFields(Collections.EMPTY_LIST);
+
+			search.setDistance(distance);
+			search.setCoordinate(new Coordinate(latitude, longitude));
+
+			search.setFragment(fragment);
+			search.setFirstResult(firstResult);
+			search.setMaxResults(maxResults);
+			search(search);
+			return search.getSearchResults();
+		} catch (final Exception e) {
+			return handleException(indexName, e);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Search search(final Search search) {
 		try {
 			SearchComplexSorted searchComplexSorted = getSearch(SearchComplexSorted.class, search.getIndexName());
 			if (searchComplexSorted == null) {
@@ -376,25 +196,9 @@ public class SearcherService implements ISearcherService {
 	}
 
 	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Search searchMultiSpacial(final Search search) {
-		String indexName = search.getIndexName();
-		String[] searchStrings = search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]);
-		String[] searchFields = search.getSearchFields().toArray(new String[search.getSearchFields().size()]);
-		Coordinate coordinate = search.getCoordinate();
-		ArrayList<HashMap<String, String>> results = searchMultiSpacial(indexName, searchStrings, searchFields, search.isFragment(), search.getFirstResult(),
-				search.getMaxResults(), search.getDistance(), coordinate.getLatitude(), coordinate.getLongitude());
-		search.setSearchResults(results);
-		return search;
-	}
-
-	/**
 	 * This method is particularly expensive, it will do a search on every index in the system.
 	 */
-	@Override
-	public Search searchComplexSortedAll(final Search search) {
+	public Search searchAll(final Search search) {
 		try {
 			long totalHits = 0;
 			float highScore = 0;
@@ -404,14 +208,13 @@ public class SearcherService implements ISearcherService {
 			String[] searchStrings = search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]);
 			ArrayList<HashMap<String, String>> searchResults = new ArrayList<HashMap<String, String>>();
 
-			boolean fragment = search.isFragment();
-			int firstResult = search.getFirstResult();
-			int maxResults = search.getMaxResults();
-
 			Exception exception = null;
 			HashMap<String, String> statistics = new HashMap<String, String>();
 			for (final String indexName : indexNames) {
-				List<HashMap<String, String>> searchSubResults = searchMultiAll(indexName, searchStrings, fragment, firstResult, maxResults);
+				Search clonedSearch = (Search) SerializationUtilities.clone(search);
+				clonedSearch.setIndexName(indexName);
+				search(clonedSearch);
+				List<HashMap<String, String>> searchSubResults = clonedSearch.getSearchResults();
 				if (searchSubResults != null && searchSubResults.size() > 1) {
 					statistics = searchSubResults.remove(searchSubResults.size() - 1);
 					totalHits += Long.parseLong(statistics.get(IConstants.TOTAL));
@@ -435,7 +238,7 @@ public class SearcherService implements ISearcherService {
 			ArrayList<HashMap<String, String>> topResults = new ArrayList<HashMap<String, String>>();
 			topResults.addAll(searchResults.subList(0, search.getMaxResults()));
 
-			SearchSingle searchSingle = new SearchSingle(null);
+			SearchComplex searchSingle = new SearchComplex(null);
 			searchSingle.setSearchString(searchStrings);
 			searchSingle.addStatistics(topResults, totalHits, highScore, duration, exception);
 
@@ -444,6 +247,10 @@ public class SearcherService implements ISearcherService {
 			handleException(search.getIndexName(), e);
 		}
 		return search;
+	}
+
+	public Search multiComplex() {
+		return null;
 	}
 
 	private ArrayList<HashMap<String, String>> handleException(final String indexName, final Exception e) {

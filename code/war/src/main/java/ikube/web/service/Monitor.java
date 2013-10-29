@@ -80,14 +80,14 @@ public class Monitor extends Resource {
 	@Path(Monitor.FIELDS)
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response fields(@QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
-		return buildResponse(monitorService.getIndexFieldNames(indexName));
+		return buildJsonResponse(monitorService.getIndexFieldNames(indexName));
 	}
 
 	@GET
 	@Path(Monitor.INDEXES)
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response indexes() {
-		return buildResponse(monitorService.getIndexNames());
+		return buildJsonResponse(monitorService.getIndexNames());
 	}
 
 	@GET
@@ -96,7 +96,7 @@ public class Monitor extends Resource {
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response indexContext(@QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
 		IndexContext indexContext = cloneIndexContext(monitorService.getIndexContext(indexName));
-		return buildResponse(indexContext);
+		return buildJsonResponse(indexContext);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -129,7 +129,7 @@ public class Monitor extends Resource {
 				}
 			});
 		}
-		return buildResponse(indexContexts);
+		return buildJsonResponse(indexContexts);
 	}
 
 	@GET
@@ -138,7 +138,7 @@ public class Monitor extends Resource {
 	public Response server() {
 		Server server = clusterManager.getServer();
 		Server cloneServer = cloneServer(server);
-		return buildResponse(cloneServer);
+		return buildJsonResponse(cloneServer);
 	}
 
 	@GET
@@ -152,7 +152,7 @@ public class Monitor extends Resource {
 			Server cloneServer = cloneServer(server);
 			result.add(cloneServer);
 		}
-		return buildResponse(result);
+		return buildJsonResponse(result);
 	}
 
 	private Server cloneServer(final Server server) {
@@ -253,7 +253,7 @@ public class Monitor extends Resource {
 				clonedActions.add(clonedAction);
 			}
 		}
-		return buildResponse(clonedActions);
+		return buildJsonResponse(clonedActions);
 	}
 
 	@GET
@@ -277,7 +277,7 @@ public class Monitor extends Resource {
 	@Consumes(MediaType.APPLICATION_XML)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getProperties() {
-		return buildResponse(monitorService.getProperties());
+		return buildJsonResponse(monitorService.getProperties());
 	}
 
 	@POST

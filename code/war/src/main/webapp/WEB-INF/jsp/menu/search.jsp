@@ -7,10 +7,10 @@
 			<i class="icon-search"></i>Search
 		</a>
 	</li>
-	<li href="navigate" active-link="active">
+	<!-- <li href="navigate" active-link="active">
 		<a href="#" onClick="enterpriseNotification();">
 			<i class="icon-list"></i>Navigate
 		</a>
-	</li>
+	</li> -->
 	
 </ul>

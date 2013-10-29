@@ -80,7 +80,7 @@ public class SearchSpatialTest extends AbstractTest {
 		indexReader = IndexReader.open(directory);
 		IndexSearcher indexSearcher = new IndexSearcher(indexReader);
 		searcher = new MultiSearcher(new Searchable[] { indexSearcher });
-		printIndex(indexReader, Integer.MAX_VALUE);
+		// printIndex(indexReader, Integer.MAX_VALUE);
 	}
 
 	@After
@@ -101,24 +101,6 @@ public class SearchSpatialTest extends AbstractTest {
 		searchSpatial.setSearchString(zurichCoordinate.getName());
 		searchSpatial.setCoordinate(zurichCoordinate);
 		ArrayList<HashMap<String, String>> results = searchSpatial.execute();
-		logger.info("Results : " + results);
-		assertNotNull(results);
-		assertEquals(5, results.size());
-		// Four co-ordinates fall into the search region, in this order
-		assertTrue(results.get(0).get(IConstants.CONTENTS).contains(zurichCoordinate.getName()));
-		assertTrue(results.get(1).get(IConstants.CONTENTS).contains(schwammeningenCoordinate.getName()));
-		assertTrue(results.get(2).get(IConstants.CONTENTS).contains(seebackCoordinate.getName()));
-		assertTrue(results.get(3).get(IConstants.CONTENTS).contains(adliswilCoordinate.getName()));
-
-		searchSpatial = new SearchSpatialAll(searcher);
-		searchSpatial.setDistance(10);
-		searchSpatial.setFirstResult(0);
-		searchSpatial.setMaxResults(10);
-		searchSpatial.setFragment(Boolean.TRUE);
-		searchSpatial.setSearchString(zurichCoordinate.getName());
-		searchSpatial.setCoordinate(zurichCoordinate);
-		results = searchSpatial.execute();
-		logger.info("Results : " + results);
 		assertNotNull(results);
 		assertEquals(5, results.size());
 		// Four co-ordinates fall into the search region, in this order

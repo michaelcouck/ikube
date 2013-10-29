@@ -81,7 +81,8 @@ public class ClassificationReportSchedule extends Schedule {
 		String[] searchStrings = { language, timeRange, targetFieldValue };
 		String[] searchFields = { IConstants.LANGUAGE, timestampFieldName, targetField };
 		String[] typeFields = { Search.TypeField.STRING.fieldType(), Search.TypeField.RANGE.fieldType(), Search.TypeField.STRING.fieldType() };
-		ArrayList<HashMap<String, String>> results = searcherService.searchComplex(indexName, searchStrings, searchFields, typeFields, false, 0, 10);
+		String[] sortFields = {};
+		ArrayList<HashMap<String, String>> results = searcherService.search(indexName, searchStrings, searchFields, typeFields, sortFields, false, 0, 10);
 		HashMap<String, String> statistics = results.get(results.size() - 1);
 		int total = Integer.parseInt(statistics.get(IConstants.TOTAL));
 		return total;

@@ -6828,11 +6828,11 @@ nav#primary {
   background: url('../images/linen-gray.png');
   float: left;
   height: 100%;
-  width: 68px; }
+  width: 72px; }
   /* line 93, layout.css.scss */
   nav#primary > ul > li > a {
     font-size: 11px;
-    line-height: 24px;
+    line-height: 22px;
     opacity: .9; }
     /* line 98, layout.css.scss */
     nav#primary > ul > li > a i {
@@ -6846,7 +6846,7 @@ nav#primary {
 /* line 113, layout.css.scss */
 nav#secondary {
   float: left;
-  width: 170px;
+  width: 174px;
   height: 100%;
   background: url('../images/linen-gray.png');
   -webkit-box-shadow: -2px 0px 15px rgba(0, 0, 0, 0.4);
@@ -6857,7 +6857,7 @@ nav#secondary {
   /* line 124, layout.css.scss */
   nav#secondary > ul > li > a {
     font-size: 12px;
-    line-height: 28px;
+    line-height: 26px;
     padding-left: 15px;
     text-align: left; }
     /* line 130, layout.css.scss */

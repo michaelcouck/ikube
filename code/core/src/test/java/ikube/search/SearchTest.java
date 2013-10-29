@@ -8,6 +8,7 @@ import ikube.IConstants;
 import ikube.action.index.IndexManager;
 import ikube.mock.ReaderUtilMock;
 import ikube.mock.SpellingCheckerMock;
+import ikube.search.Search.TypeField;
 import ikube.search.spelling.SpellingChecker;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.StringUtilities;
@@ -27,17 +28,15 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriter.MaxFieldLength;
-import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
-import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searchable;
 import org.apache.lucene.search.Searcher;
-import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -109,15 +108,6 @@ public class SearchTest extends AbstractTest {
 
 		Searchable[] searchables = new Searchable[] { new IndexSearcher(directory) };
 		SEARCHER = new MultiSearcher(searchables);
-
-		QueryParser queryParser = new QueryParser(IConstants.VERSION, IConstants.CONTENTS, Search.ANALYZER);
-		Query query = queryParser.parse(russian);
-		TopDocs topDocs = SEARCHER.search(query, 10);
-		System.out.println("Total hits : " + topDocs.totalHits);
-
-		query = queryParser.parse("michael");
-		topDocs = SEARCHER.search(query, 10);
-		System.out.println("Total hits : " + topDocs.totalHits);
 	}
 
 	@AfterClass
@@ -133,7 +123,7 @@ public class SearchTest extends AbstractTest {
 
 	@Test
 	public void searchSingle() {
-		SearchSingle searchSingle = new SearchSingle(SEARCHER);
+		SearchComplex searchSingle = new SearchComplex(SEARCHER);
 		searchSingle.setFirstResult(0);
 		searchSingle.setFragment(Boolean.TRUE);
 		searchSingle.setMaxResults(maxResults);
@@ -146,7 +136,7 @@ public class SearchTest extends AbstractTest {
 
 	@Test
 	public void searchMulti() {
-		SearchMulti searchMulti = new SearchMulti(SEARCHER);
+		SearchComplex searchMulti = new SearchComplex(SEARCHER);
 		searchMulti.setFirstResult(0);
 		searchMulti.setFragment(Boolean.TRUE);
 		searchMulti.setMaxResults(maxResults);
@@ -159,7 +149,7 @@ public class SearchTest extends AbstractTest {
 
 	@Test
 	public void searchMultiSorted() {
-		SearchMultiSorted searchMultiSorted = new SearchMultiSorted(SEARCHER);
+		SearchComplexSorted searchMultiSorted = new SearchComplexSorted(SEARCHER);
 		searchMultiSorted.setFirstResult(0);
 		searchMultiSorted.setFragment(Boolean.TRUE);
 		searchMultiSorted.setMaxResults(maxResults);
@@ -182,8 +172,10 @@ public class SearchTest extends AbstractTest {
 	}
 
 	@Test
+	@Ignore
+	@Deprecated
 	public void searchMultiAll() {
-		SearchMultiAll searchMultiAll = new SearchMultiAll(SEARCHER);
+		SearchComplex searchMultiAll = new SearchComplex(SEARCHER);
 		searchMultiAll.setFirstResult(0);
 		searchMultiAll.setFragment(Boolean.TRUE);
 		searchMultiAll.setMaxResults(maxResults);
@@ -195,8 +187,10 @@ public class SearchTest extends AbstractTest {
 	}
 
 	@Test
+	@Ignore
+	@Deprecated
 	public void searchNumericAll() {
-		SearchNumericAll searchNumericAll = new SearchNumericAll(SEARCHER);
+		SearchComplex searchNumericAll = new SearchComplex(SEARCHER);
 		searchNumericAll.setFirstResult(0);
 		searchNumericAll.setFragment(Boolean.TRUE);
 		searchNumericAll.setMaxResults(10);
@@ -212,20 +206,21 @@ public class SearchTest extends AbstractTest {
 
 	@Test
 	public void searchNumericRange() {
-		SearchNumericRange searchNumericRange = new SearchNumericRange(SEARCHER);
+		SearchComplex searchNumericRange = new SearchComplex(SEARCHER);
 		searchNumericRange.setFirstResult(0);
 		searchNumericRange.setFragment(Boolean.TRUE);
 		searchNumericRange.setMaxResults(10);
 		searchNumericRange.setSearchField(IConstants.CONTENTS);
-		searchNumericRange.setSearchString("123.456790", "123.456796");
+		searchNumericRange.setSearchString("123.456790-123.456796");
+		searchNumericRange.setTypeFields(TypeField.RANGE.fieldType());
 		ArrayList<HashMap<String, String>> results = searchNumericRange.execute();
 		assertTrue(results.size() > 1);
 
-		searchNumericRange.setSearchString("888888888", "999999999");
+		searchNumericRange.setSearchString("888888888-999999999");
 		results = searchNumericRange.execute();
 		assertEquals("There shoud be no results, i.e. only the statistics from this range : ", 1, results.size());
 
-		searchNumericRange.setSearchString("111", "122");
+		searchNumericRange.setSearchString("111-122");
 		results = searchNumericRange.execute();
 		assertEquals("There shoud be no results, i.e. only the statistics from this range : ", 1, results.size());
 	}
@@ -233,7 +228,7 @@ public class SearchTest extends AbstractTest {
 	@Test
 	public void addStatistics() {
 		String searchString = "michael AND couck";
-		Search search = new SearchMultiAll(SEARCHER);
+		Search search = new SearchComplex(SEARCHER);
 		search.setSearchString(searchString);
 
 		ArrayList<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
@@ -256,7 +251,7 @@ public class SearchTest extends AbstractTest {
 			spellingChecker.initialize();
 
 			String[] searchStrings = { "some correct words", "unt soome are niet corekt", "AND there are AND some gobblie words WITH AND another" };
-			Search search = new SearchSingle(SEARCHER);
+			Search search = new SearchComplex(SEARCHER);
 			search.setSearchString(searchStrings);
 			String[] correctedSearchStrings = search.getCorrections();
 			String correctedSearchString = Arrays.deepToString(correctedSearchStrings);

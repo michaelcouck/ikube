@@ -27,7 +27,7 @@ public class SearcherClientIntegration {
 
 	@Test
 	public void main() throws Exception {
-		String path = "/ikube/service/search/multi/spatial/all";
+		String path = "/ikube/service/" + Searcher.SEARCH + SearcherXml.XML + Searcher.GEOSPATIAL;
 		URL url = new URL("http", "localhost", 9090, path);
 
 		String[] names = { "indexName", "searchStrings", "fragment", "firstResult", "maxResults", "distance", "latitude", "longitude" };

@@ -1,9 +1,8 @@
 package ikube.web.service;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
+
+import static org.mockito.Matchers.*;
 import ikube.BaseTest;
 import ikube.IConstants;
 import ikube.search.ISearcherService;
@@ -31,11 +30,10 @@ public class AutoTest extends BaseTest {
 		auto = new Auto();
 		File file = FileUtilities.findFileRecursively(new File("."), "autocomplete.results.xml");
 		String contents = FileUtilities.getContents(file, IConstants.ENCODING);
-		ArrayList<HashMap<String, String>> defaultResults = (ArrayList<HashMap<String, String>>) SerializationUtilities
-				.deserialize(contents);
+		ArrayList<HashMap<String, String>> defaultResults = (ArrayList<HashMap<String, String>>) SerializationUtilities.deserialize(contents);
 		ISearcherService searcherService = Mockito.mock(ISearcherService.class);
-		Mockito.when(searcherService.searchSingle(anyString(), anyString(), anyString(), anyBoolean(), anyInt(), anyInt())).thenReturn(
-				defaultResults);
+		Mockito.when(searcherService.search(anyString(), any(String[].class), any(String[].class), any(String[].class), anyBoolean(), anyInt(), anyInt()))
+				.thenReturn(defaultResults);
 		Deencapsulation.setField(auto, searcherService);
 	}
 

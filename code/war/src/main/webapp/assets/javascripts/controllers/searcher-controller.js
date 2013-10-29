@@ -50,9 +50,9 @@ module.controller('SearcherController', function($scope, $http) {
 			$scope.search.searchFields != undefined && 
 			$scope.search.searchFields.indexOf('latitude') > -1 && 
 			$scope.search.searchFields.indexOf('longitude') > -1) {
-			$scope.url = getServiceUrl('/ikube/service/search/json/multi/spatial/json');
+			$scope.url = getServiceUrl('/ikube/service/search/json/geospatial');
 		} else {
-			$scope.url = getServiceUrl('/ikube/service/search/json/complex/sorted/json');
+			$scope.url = getServiceUrl('/ikube/service/search/json/sorted/typed');
 		}
 		var promise = $http.post($scope.url, $scope.search);
 		promise.success(function(data, status) {
@@ -180,12 +180,12 @@ module.controller('SearcherController', function($scope, $http) {
 		var rendererOptions = { map: map };
 		var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
 		var request = {
-				origin: origin,
-				destination: destination,
-				waypoints: waypoints,
-				optimizeWaypoints : true,
-				travelMode: google.maps.TravelMode.DRIVING,
-				unitSystem: google.maps.UnitSystem.METRIC
+			origin: origin,
+			destination: destination,
+			waypoints: waypoints,
+			optimizeWaypoints : true,
+			travelMode: google.maps.TravelMode.DRIVING,
+			unitSystem: google.maps.UnitSystem.METRIC
 		};
 		var directionsService = new google.maps.DirectionsService();
 		directionsService.route(request, function(result, status) {
