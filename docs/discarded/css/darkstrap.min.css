@@ -1,0 +1,568 @@
+
+
+
+<!DOCTYPE html>
+<html>
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# githubog: http://ogp.me/ns/fb/githubog#">
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>darkstrap/darkstrap.min.css at master · danneu/darkstrap · GitHub</title>
+    <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="GitHub" />
+    <link rel="fluid-icon" href="https://github.com/fluidicon.png" title="GitHub" />
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-114.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-144.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144.png" />
+    <link rel="logo" type="image/svg" href="https://github-media-downloads.s3.amazonaws.com/github-logo.svg" />
+    <meta property="og:image" content="https://github.global.ssl.fastly.net/images/modules/logos_page/Octocat.png">
+    <meta name="hostname" content="github-fe122-cp1-prd.iad.github.net">
+    <meta name="ruby" content="ruby 1.9.3p194-tcs-github-tcmalloc (2012-05-25, TCS patched 2012-05-27, GitHub v1.0.36) [x86_64-linux]">
+    <link rel="assets" href="https://github.global.ssl.fastly.net/">
+    <link rel="conduit-xhr" href="https://ghconduit.com:25035/">
+    <link rel="xhr-socket" href="/_sockets" />
+    
+
+
+    <meta name="msapplication-TileImage" content="/windows-tile.png" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="selected-link" value="repo_source" data-pjax-transient />
+    <meta content="collector.githubapp.com" name="octolytics-host" /><meta content="github" name="octolytics-app-id" /><meta content="C1BFB4EB:6829:1C0F780:52444DB0" name="octolytics-dimension-request_id" />
+    
+
+    
+    
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+
+    <meta content="authenticity_token" name="csrf-param" />
+<meta content="gW/0QPi4ju03C+3KIfX7ItBzbnkFmU6B8/NiwYOA8jc=" name="csrf-token" />
+
+    <link href="https://github.global.ssl.fastly.net/assets/github-40dc3dc635ba7070b4d85ccb1850bb83eab67dbe.css" media="all" rel="stylesheet" type="text/css" />
+    <link href="https://github.global.ssl.fastly.net/assets/github2-546255f1b8702b827f9dba35e9fd3259aac96aef.css" media="all" rel="stylesheet" type="text/css" />
+    
+
+    
+
+      <script src="https://github.global.ssl.fastly.net/assets/frameworks-4e5aeedcc7a86dcff8294cb84644a333b46202a2.js" type="text/javascript"></script>
+      <script src="https://github.global.ssl.fastly.net/assets/github-611d1f69d539f2a5cdb6c1ed7d4c93d2d0d6769b.js" type="text/javascript"></script>
+      
+      <meta http-equiv="x-pjax-version" content="52b9fc44650e511f867b92a6eb6e5ca2">
+
+        <link data-pjax-transient rel='permalink' href='/danneu/darkstrap/blob/7b929e04e5410e0664871cf1bf55033dcab8824d/darkstrap.min.css'>
+  <meta property="og:title" content="darkstrap"/>
+  <meta property="og:type" content="githubog:gitrepository"/>
+  <meta property="og:url" content="https://github.com/danneu/darkstrap"/>
+  <meta property="og:image" content="https://github.global.ssl.fastly.net/images/gravatars/gravatar-user-420.png"/>
+  <meta property="og:site_name" content="GitHub"/>
+  <meta property="og:description" content="darkstrap - a dark theme for twitter bootstrap 2"/>
+
+  <meta name="description" content="darkstrap - a dark theme for twitter bootstrap 2" />
+
+  <meta content="529580" name="octolytics-dimension-user_id" /><meta content="danneu" name="octolytics-dimension-user_login" /><meta content="3331515" name="octolytics-dimension-repository_id" /><meta content="danneu/darkstrap" name="octolytics-dimension-repository_nwo" /><meta content="true" name="octolytics-dimension-repository_public" /><meta content="false" name="octolytics-dimension-repository_is_fork" /><meta content="3331515" name="octolytics-dimension-repository_network_root_id" /><meta content="danneu/darkstrap" name="octolytics-dimension-repository_network_root_nwo" />
+  <link href="https://github.com/danneu/darkstrap/commits/master.atom" rel="alternate" title="Recent Commits to darkstrap:master" type="application/atom+xml" />
+
+  </head>
+
+
+  <body class="logged_out  env-production windows vis-public  page-blob">
+    <div class="wrapper">
+      
+      
+      
+
+
+      
+      <div class="header header-logged-out">
+  <div class="container clearfix">
+
+    <a class="header-logo-wordmark" href="https://github.com/">
+      <span class="mega-octicon octicon-logo-github"></span>
+    </a>
+
+    <div class="header-actions">
+        <a class="button primary" href="/signup">Sign up</a>
+      <a class="button signin" href="/login?return_to=%2Fdanneu%2Fdarkstrap%2Fblob%2Fmaster%2Fdarkstrap.min.css">Sign in</a>
+    </div>
+
+    <div class="command-bar js-command-bar  in-repository">
+
+      <ul class="top-nav">
+          <li class="explore"><a href="/explore">Explore</a></li>
+        <li class="features"><a href="/features">Features</a></li>
+          <li class="enterprise"><a href="https://enterprise.github.com/">Enterprise</a></li>
+          <li class="blog"><a href="/blog">Blog</a></li>
+      </ul>
+        <form accept-charset="UTF-8" action="/search" class="command-bar-form" id="top_search_form" method="get">
+
+<input type="text" data-hotkey="/ s" name="q" id="js-command-bar-field" placeholder="Search or type a command" tabindex="1" autocapitalize="off"
+    
+    
+      data-repo="danneu/darkstrap"
+      data-branch="master"
+      data-sha="c0854642e45b37b6404e516d022442775e47e063"
+  >
+
+    <input type="hidden" name="nwo" value="danneu/darkstrap" />
+
+    <div class="select-menu js-menu-container js-select-menu search-context-select-menu">
+      <span class="minibutton select-menu-button js-menu-target">
+        <span class="js-select-button">This repository</span>
+      </span>
+
+      <div class="select-menu-modal-holder js-menu-content js-navigation-container">
+        <div class="select-menu-modal">
+
+          <div class="select-menu-item js-navigation-item js-this-repository-navigation-item selected">
+            <span class="select-menu-item-icon octicon octicon-check"></span>
+            <input type="radio" class="js-search-this-repository" name="search_target" value="repository" checked="checked" />
+            <div class="select-menu-item-text js-select-button-text">This repository</div>
+          </div> <!-- /.select-menu-item -->
+
+          <div class="select-menu-item js-navigation-item js-all-repositories-navigation-item">
+            <span class="select-menu-item-icon octicon octicon-check"></span>
+            <input type="radio" name="search_target" value="global" />
+            <div class="select-menu-item-text js-select-button-text">All repositories</div>
+          </div> <!-- /.select-menu-item -->
+
+        </div>
+      </div>
+    </div>
+
+  <span class="octicon help tooltipped downwards" title="Show command bar help">
+    <span class="octicon octicon-question"></span>
+  </span>
+
+
+  <input type="hidden" name="ref" value="cmdform">
+
+</form>
+    </div>
+
+  </div>
+</div>
+
+
+      
+
+
+          <div class="site" itemscope itemtype="http://schema.org/WebPage">
+    
+    <div class="pagehead repohead instapaper_ignore readability-menu">
+      <div class="container">
+        
+
+<ul class="pagehead-actions">
+
+
+  <li>
+  <a href="/login?return_to=%2Fdanneu%2Fdarkstrap"
+  class="minibutton with-count js-toggler-target star-button entice tooltipped upwards"
+  title="You must be signed in to use this feature" rel="nofollow">
+  <span class="octicon octicon-star"></span>Star
+</a>
+<a class="social-count js-social-count" href="/danneu/darkstrap/stargazers">
+  261
+</a>
+
+  </li>
+
+    <li>
+      <a href="/login?return_to=%2Fdanneu%2Fdarkstrap"
+        class="minibutton with-count js-toggler-target fork-button entice tooltipped upwards"
+        title="You must be signed in to fork a repository" rel="nofollow">
+        <span class="octicon octicon-git-branch"></span>Fork
+      </a>
+      <a href="/danneu/darkstrap/network" class="social-count">
+        67
+      </a>
+    </li>
+</ul>
+
+        <h1 itemscope itemtype="http://data-vocabulary.org/Breadcrumb" class="entry-title public">
+          <span class="repo-label"><span>public</span></span>
+          <span class="mega-octicon octicon-repo"></span>
+          <span class="author">
+            <a href="/danneu" class="url fn" itemprop="url" rel="author"><span itemprop="title">danneu</span></a></span
+          ><span class="repohead-name-divider">/</span><strong
+          ><a href="/danneu/darkstrap" class="js-current-repository js-repo-home-link">darkstrap</a></strong>
+
+          <span class="page-context-loader">
+            <img alt="Octocat-spinner-32" height="16" src="https://github.global.ssl.fastly.net/images/spinners/octocat-spinner-32.gif" width="16" />
+          </span>
+
+        </h1>
+      </div><!-- /.container -->
+    </div><!-- /.repohead -->
+
+    <div class="container">
+
+      <div class="repository-with-sidebar repo-container ">
+
+        <div class="repository-sidebar">
+            
+
+<div class="repo-nav repo-nav-full js-repository-container-pjax js-octicon-loaders">
+  <div class="repo-nav-contents">
+    <ul class="repo-menu">
+      <li class="tooltipped leftwards" title="Code">
+        <a href="/danneu/darkstrap" aria-label="Code" class="js-selected-navigation-item selected" data-gotokey="c" data-pjax="true" data-selected-links="repo_source repo_downloads repo_commits repo_tags repo_branches /danneu/darkstrap">
+          <span class="octicon octicon-code"></span> <span class="full-word">Code</span>
+          <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="https://github.global.ssl.fastly.net/images/spinners/octocat-spinner-32.gif" width="16" />
+</a>      </li>
+
+        <li class="tooltipped leftwards" title="Issues">
+          <a href="/danneu/darkstrap/issues" aria-label="Issues" class="js-selected-navigation-item js-disable-pjax" data-gotokey="i" data-selected-links="repo_issues /danneu/darkstrap/issues">
+            <span class="octicon octicon-issue-opened"></span> <span class="full-word">Issues</span>
+            <span class='counter'>14</span>
+            <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="https://github.global.ssl.fastly.net/images/spinners/octocat-spinner-32.gif" width="16" />
+</a>        </li>
+
+      <li class="tooltipped leftwards" title="Pull Requests"><a href="/danneu/darkstrap/pulls" aria-label="Pull Requests" class="js-selected-navigation-item js-disable-pjax" data-gotokey="p" data-selected-links="repo_pulls /danneu/darkstrap/pulls">
+            <span class="octicon octicon-git-pull-request"></span> <span class="full-word">Pull Requests</span>
+            <span class='counter'>1</span>
+            <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="https://github.global.ssl.fastly.net/images/spinners/octocat-spinner-32.gif" width="16" />
+</a>      </li>
+
+
+    </ul>
+    <div class="repo-menu-separator"></div>
+    <ul class="repo-menu">
+
+      <li class="tooltipped leftwards" title="Pulse">
+        <a href="/danneu/darkstrap/pulse" aria-label="Pulse" class="js-selected-navigation-item " data-pjax="true" data-selected-links="pulse /danneu/darkstrap/pulse">
+          <span class="octicon octicon-pulse"></span> <span class="full-word">Pulse</span>
+          <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="https://github.global.ssl.fastly.net/images/spinners/octocat-spinner-32.gif" width="16" />
+</a>      </li>
+
+      <li class="tooltipped leftwards" title="Graphs">
+        <a href="/danneu/darkstrap/graphs" aria-label="Graphs" class="js-selected-navigation-item " data-pjax="true" data-selected-links="repo_graphs repo_contributors /danneu/darkstrap/graphs">
+          <span class="octicon octicon-graph"></span> <span class="full-word">Graphs</span>
+          <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="https://github.global.ssl.fastly.net/images/spinners/octocat-spinner-32.gif" width="16" />
+</a>      </li>
+
+      <li class="tooltipped leftwards" title="Network">
+        <a href="/danneu/darkstrap/network" aria-label="Network" class="js-selected-navigation-item js-disable-pjax" data-selected-links="repo_network /danneu/darkstrap/network">
+          <span class="octicon octicon-git-branch"></span> <span class="full-word">Network</span>
+          <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="https://github.global.ssl.fastly.net/images/spinners/octocat-spinner-32.gif" width="16" />
+</a>      </li>
+    </ul>
+
+
+  </div>
+</div>
+
+            <div class="only-with-full-nav">
+              
+
+  
+
+<div class="clone-url open"
+  data-protocol-type="http"
+  data-url="/users/set_protocol?protocol_selector=http&amp;protocol_type=clone">
+  <h3><strong>HTTPS</strong> clone URL</h3>
+  <div class="clone-url-box">
+    <input type="text" class="clone js-url-field"
+           value="https://github.com/danneu/darkstrap.git" readonly="readonly">
+
+    <span class="js-zeroclipboard url-box-clippy minibutton zeroclipboard-button" data-clipboard-text="https://github.com/danneu/darkstrap.git" data-copied-hint="copied!" title="copy to clipboard"><span class="octicon octicon-clippy"></span></span>
+  </div>
+</div>
+
+  
+
+<div class="clone-url "
+  data-protocol-type="subversion"
+  data-url="/users/set_protocol?protocol_selector=subversion&amp;protocol_type=clone">
+  <h3><strong>Subversion</strong> checkout URL</h3>
+  <div class="clone-url-box">
+    <input type="text" class="clone js-url-field"
+           value="https://github.com/danneu/darkstrap" readonly="readonly">
+
+    <span class="js-zeroclipboard url-box-clippy minibutton zeroclipboard-button" data-clipboard-text="https://github.com/danneu/darkstrap" data-copied-hint="copied!" title="copy to clipboard"><span class="octicon octicon-clippy"></span></span>
+  </div>
+</div>
+
+
+<p class="clone-options">You can clone with
+      <a href="#" class="js-clone-selector" data-protocol="http">HTTPS</a>,
+      or <a href="#" class="js-clone-selector" data-protocol="subversion">Subversion</a>.
+  <span class="octicon help tooltipped upwards" title="Get help on which URL is right for you.">
+    <a href="https://help.github.com/articles/which-remote-url-should-i-use">
+    <span class="octicon octicon-question"></span>
+    </a>
+  </span>
+</p>
+
+
+  <a href="http://windows.github.com" class="minibutton sidebar-button">
+    <span class="octicon octicon-device-desktop"></span>
+    Clone in Desktop
+  </a>
+
+                <a href="/danneu/darkstrap/archive/master.zip"
+                   class="minibutton sidebar-button"
+                   title="Download this repository as a zip file"
+                   rel="nofollow">
+                  <span class="octicon octicon-cloud-download"></span>
+                  Download ZIP
+                </a>
+            </div>
+        </div><!-- /.repository-sidebar -->
+
+        <div id="js-repo-pjax-container" class="repository-content context-loader-container" data-pjax-container>
+          
+
+
+<!-- blob contrib key: blob_contributors:v21:9c5aef104dcec6092ffd29d2c1685b49 -->
+<!-- blob contrib frag key: views10/v8/blob_contributors:v21:9c5aef104dcec6092ffd29d2c1685b49 -->
+
+<p title="This is a placeholder element" class="js-history-link-replace hidden"></p>
+
+<a href="/danneu/darkstrap/find/master" data-pjax data-hotkey="t" class="js-show-file-finder" style="display:none">Show File Finder</a>
+
+<div class="file-navigation">
+  
+
+
+<div class="select-menu js-menu-container js-select-menu" >
+  <span class="minibutton select-menu-button js-menu-target" data-hotkey="w"
+    data-master-branch="master"
+    data-ref="master"
+    role="button" aria-label="Switch branches or tags" tabindex="0">
+    <span class="octicon octicon-git-branch"></span>
+    <i>branch:</i>
+    <span class="js-select-button">master</span>
+  </span>
+
+  <div class="select-menu-modal-holder js-menu-content js-navigation-container" data-pjax>
+
+    <div class="select-menu-modal">
+      <div class="select-menu-header">
+        <span class="select-menu-title">Switch branches/tags</span>
+        <span class="octicon octicon-remove-close js-menu-close"></span>
+      </div> <!-- /.select-menu-header -->
+
+      <div class="select-menu-filters">
+        <div class="select-menu-text-filter">
+          <input type="text" aria-label="Filter branches/tags" id="context-commitish-filter-field" class="js-filterable-field js-navigation-enable" placeholder="Filter branches/tags">
+        </div>
+        <div class="select-menu-tabs">
+          <ul>
+            <li class="select-menu-tab">
+              <a href="#" data-tab-filter="branches" class="js-select-menu-tab">Branches</a>
+            </li>
+            <li class="select-menu-tab">
+              <a href="#" data-tab-filter="tags" class="js-select-menu-tab">Tags</a>
+            </li>
+          </ul>
+        </div><!-- /.select-menu-tabs -->
+      </div><!-- /.select-menu-filters -->
+
+      <div class="select-menu-list select-menu-tab-bucket js-select-menu-tab-bucket" data-tab-filter="branches">
+
+        <div data-filterable-for="context-commitish-filter-field" data-filterable-type="substring">
+
+
+            <div class="select-menu-item js-navigation-item selected">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/danneu/darkstrap/blob/master/darkstrap.min.css"
+                 data-name="master"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="master">master</a>
+            </div> <!-- /.select-menu-item -->
+        </div>
+
+          <div class="select-menu-no-results">Nothing to show</div>
+      </div> <!-- /.select-menu-list -->
+
+      <div class="select-menu-list select-menu-tab-bucket js-select-menu-tab-bucket" data-tab-filter="tags">
+        <div data-filterable-for="context-commitish-filter-field" data-filterable-type="substring">
+
+
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/danneu/darkstrap/tree/v0.9.2/darkstrap.min.css"
+                 data-name="v0.9.2"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="v0.9.2">v0.9.2</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/danneu/darkstrap/tree/v0.9.1/darkstrap.min.css"
+                 data-name="v0.9.1"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="v0.9.1">v0.9.1</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/danneu/darkstrap/tree/v0.9.0/darkstrap.min.css"
+                 data-name="v0.9.0"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="v0.9.0">v0.9.0</a>
+            </div> <!-- /.select-menu-item -->
+        </div>
+
+        <div class="select-menu-no-results">Nothing to show</div>
+      </div> <!-- /.select-menu-list -->
+
+    </div> <!-- /.select-menu-modal -->
+  </div> <!-- /.select-menu-modal-holder -->
+</div> <!-- /.select-menu -->
+
+  <div class="breadcrumb">
+    <span class='repo-root js-repo-root'><span itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb"><a href="/danneu/darkstrap" data-branch="master" data-direction="back" data-pjax="true" itemscope="url"><span itemprop="title">darkstrap</span></a></span></span><span class="separator"> / </span><strong class="final-path">darkstrap.min.css</strong> <span class="js-zeroclipboard minibutton zeroclipboard-button" data-clipboard-text="darkstrap.min.css" data-copied-hint="copied!" title="copy to clipboard"><span class="octicon octicon-clippy"></span></span>
+  </div>
+</div>
+
+
+  
+  <div class="commit file-history-tease">
+      <img class="main-avatar" height="24" src="https://1.gravatar.com/avatar/b1f037f0d1e6195a59865d24cb7ee875?d=https%3A%2F%2Fidenticons.github.com%2F6638fd40e03bd79cffafd1c7536868b4.png&amp;s=140" width="24" />
+      <span class="author"><a href="/intothev01d" rel="author">intothev01d</a></span>
+      <time class="js-relative-date" datetime="2013-05-06T09:52:52-07:00" title="2013-05-06 09:52:52">May 06, 2013</time>
+      <div class="commit-title">
+          <a href="/danneu/darkstrap/commit/a2fa704d3df26ce148a81ea7fb9968deec4e0484" class="message" data-pjax="true" title="added minified version of darkstrap. updated .gitignore">added minified version of darkstrap. updated .gitignore</a>
+      </div>
+
+      <div class="participation">
+        <p class="quickstat"><a href="#blob_contributors_box" rel="facebox"><strong>1</strong> contributor</a></p>
+        
+      </div>
+      <div id="blob_contributors_box" style="display:none">
+        <h2 class="facebox-header">Users who have contributed to this file</h2>
+        <ul class="facebox-user-list">
+          <li class="facebox-user-list-item">
+            <img height="24" src="https://1.gravatar.com/avatar/b1f037f0d1e6195a59865d24cb7ee875?d=https%3A%2F%2Fidenticons.github.com%2F6638fd40e03bd79cffafd1c7536868b4.png&amp;s=140" width="24" />
+            <a href="/intothev01d">intothev01d</a>
+          </li>
+        </ul>
+      </div>
+  </div>
+
+
+<div id="files" class="bubble">
+  <div class="file">
+    <div class="meta">
+      <div class="info">
+        <span class="icon"><b class="octicon octicon-file-text"></b></span>
+        <span class="mode" title="File Mode">file</span>
+          <span>1 lines (1 sloc)</span>
+        <span>20.63 kb</span>
+      </div>
+      <div class="actions">
+        <div class="button-group">
+              <a class="minibutton disabled js-entice" href=""
+                 data-entice="You must be signed in to make or propose changes">Edit</a>
+          <a href="/danneu/darkstrap/raw/master/darkstrap.min.css" class="button minibutton " id="raw-url">Raw</a>
+            <a href="/danneu/darkstrap/blame/master/darkstrap.min.css" class="button minibutton ">Blame</a>
+          <a href="/danneu/darkstrap/commits/master/darkstrap.min.css" class="button minibutton " rel="nofollow">History</a>
+        </div><!-- /.button-group -->
+            <a class="minibutton danger empty-icon js-entice" href=""
+               data-entice="You must be signed in and on a branch to make or propose changes">
+            Delete
+          </a>
+      </div><!-- /.actions -->
+
+    </div>
+        <div class="blob-wrapper data type-css js-blob-data">
+        <table class="file-code file-diff">
+          <tr class="file-code-line">
+            <td class="blob-line-nums">
+              <span id="L1" rel="#L1">1</span>
+
+            </td>
+            <td class="blob-line-code">
+                  <div class='line' id='LC1'>tr.warning,tr.success,tr.error,tr.info{color:#fff}body{color:#c6c6c6;background-color:#2f2f2f}a:hover{color:#1ab2ff}textarea,input[type=&quot;text&quot;],input[type=&quot;password&quot;],input[type=&quot;datetime&quot;],input[type=&quot;datetime-local&quot;],input[type=&quot;date&quot;],input[type=&quot;month&quot;],input[type=&quot;time&quot;],input[type=&quot;week&quot;],input[type=&quot;number&quot;],input[type=&quot;email&quot;],input[type=&quot;url&quot;],input[type=&quot;search&quot;],input[type=&quot;tel&quot;],input[type=&quot;color&quot;],.uneditable-input{background-color:#ccc}select{background-color:#ccc}.uneditable-input,.uneditable-textarea{background-color:#c9c9c9}input:-moz-placeholder,textarea:-moz-placeholder{color:#666}input:-ms-input-placeholder,textarea:-ms-input-placeholder{color:#666}input::-webkit-input-placeholder,textarea::-webkit-input-placeholder{color:#666}.control-group.warning .input-prepend .add-on,.control-group.warning .input-append .add-on{background-color:#faa732}.control-group.error .input-prepend .add-on,.control-group.error .input-append .add-on{background-color:#fc5b5e}.control-group.success .input-prepend .add-on,.control-group.success .input-append .add-on{background-color:#5bb75b}.control-group.info .input-prepend .add-on,.control-group.info .input-append .add-on{background-color:#3a87ad}.form-actions{background-color:#444}.help-block,.help-inline{color:#ececec}.table th,.table td{border-top:1px solid #666}.table tbody+tbody{border-top:2px solid #666}.table .table{background-color:#2f2f2f}.table-bordered{border:1px solid #666}.table-bordered th,.table-bordered td{border-left:1px solid #666}.table-striped tbody&gt;tr:nth-child(odd)&gt;td,.table-striped tbody&gt;tr:nth-child(odd)&gt;th{background-color:#444}.table-hover tbody tr:hover td,.table-hover tbody tr:hover th{background-color:#666}.table tbody tr.success td{background-color:#5bb75b}.table tbody tr.error td{background-color:#fc5b5e}.table tbody tr.warning td{background-color:#faa732}.table tbody tr.info td{background-color:#3a87ad}.table-hover tbody tr.success:hover td{background-color:#4cad4c}.table-hover tbody tr.error:hover td{background-color:#fc4245}.table-hover tbody tr.warning:hover td{background-color:#f99c19}.table-hover tbody tr.info:hover td{background-color:#34789a}[class^=&quot;icon-&quot;],[class*=&quot; icon-&quot;]{background-image:url(&quot;../img/glyphicons-halflings-white.png&quot;)}.icon-white,.nav-pills&gt;.active&gt;a&gt;[class^=&quot;icon-&quot;],.nav-pills&gt;.active&gt;a&gt;[class*=&quot; icon-&quot;],.nav-list&gt;.active&gt;a&gt;[class^=&quot;icon-&quot;],.nav-list&gt;.active&gt;a&gt;[class*=&quot; icon-&quot;],.navbar-inverse .nav&gt;.active&gt;a&gt;[class^=&quot;icon-&quot;],.navbar-inverse .nav&gt;.active&gt;a&gt;[class*=&quot; icon-&quot;],.dropdown-menu&gt;li&gt;a:hover&gt;[class^=&quot;icon-&quot;],.dropdown-menu&gt;li&gt;a:hover&gt;[class*=&quot; icon-&quot;],.dropdown-menu&gt;.active&gt;a&gt;[class^=&quot;icon-&quot;],.dropdown-menu&gt;.active&gt;a&gt;[class*=&quot; icon-&quot;],.dropdown-submenu:hover&gt;a&gt;[class^=&quot;icon-&quot;],.dropdown-submenu:hover&gt;a&gt;[class*=&quot; icon-&quot;]{background-image:url(&quot;../img/glyphicons-halflings-white.png&quot;)}.btn-link:hover{color:#1ab2ff}.alert{background-color:#faa732;border:1px solid #fa7d23}.alert-success{background-color:#5bb75b;border-color:#5cad4c}.alert-danger,.alert-error{background-color:#fc5b5e;border-color:#fc4c6d}.alert-info{background-color:#3a87ad;border-color:#318292}.nav-tabs&gt;.active&gt;a,.nav-tabs&gt;.active&gt;a:hover{background-color:#2f2f2f}.nav .dropdown-toggle:hover .caret{border-top-color:#1ab2ff;border-bottom-color:#1ab2ff}.navbar-inner{background-color:#363636;background-image:-moz-linear-gradient(top,#444,#222);background-image:-webkit-gradient(linear,0 0,0 100%,from(#444),to(#222));background-image:-webkit-linear-gradient(top,#444,#222);background-image:-o-linear-gradient(top,#444,#222);background-image:linear-gradient(to bottom,#444,#222);filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=&#39;#FF444444&#39;,endColorstr=&#39;#FF222222&#39;,GradientType=0);border:1px solid #030303}.navbar .brand{color:#c6c6c6;text-shadow:0 1px 0 #444}.navbar-text{color:#c6c6c6}.navbar-link{color:#c6c6c6}.navbar-link:hover{color:white}.navbar .divider-vertical{border-left:1px solid #222;border-right:1px solid #444}.navbar .nav&gt;li&gt;a{color:#c6c6c6;text-shadow:0 1px 0 #444}.navbar .nav&gt;li&gt;a:focus,.navbar .nav&gt;li&gt;a:hover{color:white}.navbar .nav&gt;.active&gt;a,.navbar .nav&gt;.active&gt;a:hover,.navbar .nav&gt;.active&gt;a:focus{color:white;background-color:#151515}.navbar .btn-navbar{background-color:#292929;background-image:-moz-linear-gradient(top,#373737,#151515);background-image:-webkit-gradient(linear,0 0,0 100%,from(#373737),to(#151515));background-image:-webkit-linear-gradient(top,#373737,#151515);background-image:-o-linear-gradient(top,#373737,#151515);background-image:linear-gradient(to bottom,#373737,#151515);filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=&#39;#FF373737&#39;,endColorstr=&#39;#FF151515&#39;,GradientType=0);border-color:#151515 #151515 black;*background-color:#151515}.navbar .btn-navbar:hover,.navbar .btn-navbar:active,.navbar .btn-navbar.active,.navbar .btn-navbar.disabled,.navbar .btn-navbar[disabled]{background-color:#151515;*background-color:#090909}.navbar .btn-navbar:active,.navbar .btn-navbar.active{background-color:black \9}.navbar .nav li.dropdown&gt;a:hover .caret{border-top-color:white;border-bottom-color:white}.navbar .nav li.dropdown.open&gt;.dropdown-toggle,.navbar .nav li.dropdown.active&gt;.dropdown-toggle,.navbar .nav li.dropdown.open.active&gt;.dropdown-toggle{background-color:#151515;color:white}.navbar .nav li.dropdown&gt;.dropdown-toggle .caret{border-top-color:#c6c6c6;border-bottom-color:#c6c6c6}.navbar .nav li.dropdown.open&gt;.dropdown-toggle .caret,.navbar .nav li.dropdown.active&gt;.dropdown-toggle .caret,.navbar .nav li.dropdown.open.active&gt;.dropdown-toggle .caret{border-top-color:white;border-bottom-color:white}.well{-webkit-box-shadow:rgba(255,255,255,0.1) 0 1px 0,rgba(0,0,0,0.8) 0 1px 7px 0 inset;-moz-box-shadow:rgba(255,255,255,0.1) 0 1px 0,rgba(0,0,0,0.8) 0 1px 7px 0 inset;box-shadow:rgba(255,255,255,0.1) 0 1px 0,rgba(0,0,0,0.8) 0 1px 7px 0 inset;background:#202020;background-color:rgba(0,0,0,0.3);border:0;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#88000000,endColorstr=#88000000)}.darkwell,.breadcrumb,code,pre,select,input[type=&quot;text&quot;],input[type=&quot;password&quot;],input[type=&quot;datetime&quot;],input[type=&quot;datetime-local&quot;],input[type=&quot;date&quot;],input[type=&quot;month&quot;],input[type=&quot;time&quot;],input[type=&quot;week&quot;],input[type=&quot;number&quot;],input[type=&quot;email&quot;],input[type=&quot;url&quot;],input[type=&quot;search&quot;],input[type=&quot;tel&quot;],input[type=&quot;color&quot;],.uneditable-input,textarea,.hero-unit,.progress{-webkit-box-shadow:rgba(255,255,255,0.1) 0 1px 0,rgba(0,0,0,0.8) 0 1px 7px 0 inset;-moz-box-shadow:rgba(255,255,255,0.1) 0 1px 0,rgba(0,0,0,0.8) 0 1px 7px 0 inset;box-shadow:rgba(255,255,255,0.1) 0 1px 0,rgba(0,0,0,0.8) 0 1px 7px 0 inset;background:#202020;background-color:rgba(0,0,0,0.3);border:0;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#88000000,endColorstr=#88000000)}.breadcrumb{border:0}.breadcrumb li{text-shadow:0 1px 0 black}.page-header{-webkit-box-shadow:rgba(255,255,255,0.07) 0 1px 0;-moz-box-shadow:rgba(255,255,255,0.07) 0 1px 0;box-shadow:rgba(255,255,255,0.07) 0 1px 0;border-bottom:1px solid #121212}h1,h2,h3,h4,h5,h6{color:white}h6{color:#999}blockquote{border-left-color:#111}blockquote.pull-right{border-right-color:#111}hr{-webkit-box-shadow:rgba(255,255,255,0.07) 0 1px 0;-moz-box-shadow:rgba(255,255,255,0.07) 0 1px 0;box-shadow:rgba(255,255,255,0.07) 0 1px 0;border-bottom:1px solid #121212;border-top:0}code{border:0;padding:2px 4px}pre{border:0;color:#c6c6c6;padding:8px}legend{-webkit-box-shadow:rgba(255,255,255,0.07) 0 1px 0;-moz-box-shadow:rgba(255,255,255,0.07) 0 1px 0;box-shadow:rgba(255,255,255,0.07) 0 1px 0;border-bottom:1px solid #121212;color:#fff}select,input[type=&quot;text&quot;],input[type=&quot;password&quot;],input[type=&quot;datetime&quot;],input[type=&quot;datetime-local&quot;],input[type=&quot;date&quot;],input[type=&quot;month&quot;],input[type=&quot;time&quot;],input[type=&quot;week&quot;],input[type=&quot;number&quot;],input[type=&quot;email&quot;],input[type=&quot;url&quot;],input[type=&quot;search&quot;],input[type=&quot;tel&quot;],input[type=&quot;color&quot;],.uneditable-input{color:white;height:21px}select:-moz-placeholder,input[type=&quot;text&quot;]:-moz-placeholder,input[type=&quot;password&quot;]:-moz-placeholder,input[type=&quot;datetime&quot;]:-moz-placeholder,input[type=&quot;datetime-local&quot;]:-moz-placeholder,input[type=&quot;date&quot;]:-moz-placeholder,input[type=&quot;month&quot;]:-moz-placeholder,input[type=&quot;time&quot;]:-moz-placeholder,input[type=&quot;week&quot;]:-moz-placeholder,input[type=&quot;number&quot;]:-moz-placeholder,input[type=&quot;email&quot;]:-moz-placeholder,input[type=&quot;url&quot;]:-moz-placeholder,input[type=&quot;search&quot;]:-moz-placeholder,input[type=&quot;tel&quot;]:-moz-placeholder,input[type=&quot;color&quot;]:-moz-placeholder,.uneditable-input:-moz-placeholder{color:#666}select:-ms-input-placeholder,input[type=&quot;text&quot;]:-ms-input-placeholder,input[type=&quot;password&quot;]:-ms-input-placeholder,input[type=&quot;datetime&quot;]:-ms-input-placeholder,input[type=&quot;datetime-local&quot;]:-ms-input-placeholder,input[type=&quot;date&quot;]:-ms-input-placeholder,input[type=&quot;month&quot;]:-ms-input-placeholder,input[type=&quot;time&quot;]:-ms-input-placeholder,input[type=&quot;week&quot;]:-ms-input-placeholder,input[type=&quot;number&quot;]:-ms-input-placeholder,input[type=&quot;email&quot;]:-ms-input-placeholder,input[type=&quot;url&quot;]:-ms-input-placeholder,input[type=&quot;search&quot;]:-ms-input-placeholder,input[type=&quot;tel&quot;]:-ms-input-placeholder,input[type=&quot;color&quot;]:-ms-input-placeholder,.uneditable-input:-ms-input-placeholder{color:#666}select::-webkit-input-placeholder,input[type=&quot;text&quot;]::-webkit-input-placeholder,input[type=&quot;password&quot;]::-webkit-input-placeholder,input[type=&quot;datetime&quot;]::-webkit-input-placeholder,input[type=&quot;datetime-local&quot;]::-webkit-input-placeholder,input[type=&quot;date&quot;]::-webkit-input-placeholder,input[type=&quot;month&quot;]::-webkit-input-placeholder,input[type=&quot;time&quot;]::-webkit-input-placeholder,input[type=&quot;week&quot;]::-webkit-input-placeholder,input[type=&quot;number&quot;]::-webkit-input-placeholder,input[type=&quot;email&quot;]::-webkit-input-placeholder,input[type=&quot;url&quot;]::-webkit-input-placeholder,input[type=&quot;search&quot;]::-webkit-input-placeholder,input[type=&quot;tel&quot;]::-webkit-input-placeholder,input[type=&quot;color&quot;]::-webkit-input-placeholder,.uneditable-input::-webkit-input-placeholder{color:#666}textarea{color:white}textarea:-moz-placeholder{color:#666}textarea:-ms-input-placeholder{color:#666}textarea::-webkit-input-placeholder{color:#666}select{height:29px}.input-prepend .add-on,.input-append .add-on{background:#444;color:#c6c6c6;border-color:#111;text-shadow:0 1px 0 black}.form-actions{border-top-color:#222}.well .form-actions{border-top-color:#000;background-color:rgba(0,0,0,0.3);margin-left:-17px;margin-right:-17px;margin-bottom:-17px}.help-inline,.help-block{color:#999}.control-group.warning input,.control-group.warning select,.control-group.warning textarea{color:#faa732;border-color:#faa732;-webkit-box-shadow:rgba(255,255,255,0.1) 0 1px 0,rgba(0,0,0,0.8) 0 1px 7px 0 inset;-moz-box-shadow:rgba(255,255,255,0.1) 0 1px 0,rgba(0,0,0,0.8) 0 1px 7px 0 inset;box-shadow:rgba(255,255,255,0.1) 0 1px 0,rgba(0,0,0,0.8) 0 1px 7px 0 inset;background:#202020;background-color:rgba(0,0,0,0.3)}.control-group.warning input:focus,.control-group.warning select:focus,.control-group.warning textarea:focus{border-color:#faa732;-webkit-box-shadow:0 0 6px #faa732;-moz-box-shadow:0 0 6px #faa732;box-shadow:0 0 6px #faa732}.control-group.warning .control-label,.control-group.warning .help-block,.control-group.warning .help-inline{color:#faa732}.control-group.success input,.control-group.success select,.control-group.success textarea{color:#5bb75b;border-color:#5bb75b;-webkit-box-shadow:rgba(255,255,255,0.1) 0 1px 0,rgba(0,0,0,0.8) 0 1px 7px 0 inset;-moz-box-shadow:rgba(255,255,255,0.1) 0 1px 0,rgba(0,0,0,0.8) 0 1px 7px 0 inset;box-shadow:rgba(255,255,255,0.1) 0 1px 0,rgba(0,0,0,0.8) 0 1px 7px 0 inset;background:#202020;background-color:rgba(0,0,0,0.3)}.control-group.success input:focus,.control-group.success select:focus,.control-group.success textarea:focus{border-color:#5bb75b;-webkit-box-shadow:0 0 6px #5bb75b;-moz-box-shadow:0 0 6px #5bb75b;box-shadow:0 0 6px #5bb75b}.control-group.success .control-label,.control-group.success .help-block,.control-group.success .help-inline{color:#5bb75b}.control-group.error input,.control-group.error select,.control-group.error textarea{color:#fc5b5e;border-color:#fc5b5e;-webkit-box-shadow:rgba(255,255,255,0.1) 0 1px 0,rgba(0,0,0,0.8) 0 1px 7px 0 inset;-moz-box-shadow:rgba(255,255,255,0.1) 0 1px 0,rgba(0,0,0,0.8) 0 1px 7px 0 inset;box-shadow:rgba(255,255,255,0.1) 0 1px 0,rgba(0,0,0,0.8) 0 1px 7px 0 inset;background:#202020;background-color:rgba(0,0,0,0.3)}.control-group.error input:focus,.control-group.error select:focus,.control-group.error textarea:focus{border-color:#fc5b5e;-webkit-box-shadow:0 0 6px #fc5b5e;-moz-box-shadow:0 0 6px #fc5b5e;box-shadow:0 0 6px #fc5b5e}.control-group.error .control-label,.control-group.error .help-block,.control-group.error .help-inline{color:#fc5b5e}.control-group.info input,.control-group.info select,.control-group.info textarea{color:#3a87ad;border-color:#3a87ad;-webkit-box-shadow:rgba(255,255,255,0.1) 0 1px 0,rgba(0,0,0,0.8) 0 1px 7px 0 inset;-moz-box-shadow:rgba(255,255,255,0.1) 0 1px 0,rgba(0,0,0,0.8) 0 1px 7px 0 inset;box-shadow:rgba(255,255,255,0.1) 0 1px 0,rgba(0,0,0,0.8) 0 1px 7px 0 inset;background:#202020;background-color:rgba(0,0,0,0.3)}.control-group.info input:focus,.control-group.info select:focus,.control-group.info textarea:focus{border-color:#3a87ad;-webkit-box-shadow:0 0 6px #3a87ad;-moz-box-shadow:0 0 6px #3a87ad;box-shadow:0 0 6px #3a87ad}.control-group.info .control-label,.control-group.info .help-block,.control-group.info .help-inline{color:#3a87ad}input:focus:invalid,textarea:focus:invalid,select:focus:invalid{border-color:#fc5b5e}input:focus:invalid:focus,textarea:focus:invalid:focus,select:focus:invalid:focus{border-color:#fc5b5e;box-shadow:0 0 6px #fc5b5e}.btn-link{text-shadow:none}.img-polaroid{background-color:#111;background-color:rgba(0,0,0,0.3)}.nav-tabs .open .dropdown-toggle,.nav-pills .open .dropdown-toggle,.nav&gt;.open.active&gt;a:hover{background-color:rgba(0,0,0,0.25);border-color:transparent transparent #666 transparent}.nav&gt;.dropdown.active&gt;a:hover{color:#fff}.nav-tabs .active .dropdown-toggle .caret,.nav-pills .active .dropdown-toggle .caret{border-top-color:#fff}.nav-tabs{border-bottom:1px solid #666}.nav-tabs&gt;.active&gt;a,.nav-tabs&gt;.active&gt;a:hover{background-color:#2f2f2f;color:#fff;border-color:#666 #666 transparent #666}.nav-tabs&gt;li&gt;a:hover{border-color:#2f2f2f #2f2f2f #666 #2f2f2f;background-color:rgba(0,0,0,0.25);color:#0af}.nav-tabs.nav-stacked&gt;li&gt;a,.nav-tabs.nav-stacked&gt;li&gt;a:hover{border-color:#666}.well&gt;.nav-tabs&gt;.active&gt;a,.well&gt;.nav-tabs&gt;.active&gt;a:hover{background-color:#202020}.nav-pills&gt;li&gt;a:hover{background-color:rgba(0,0,0,0.25);color:#0af}.nav-list&gt;li&gt;a,.nav-list .nav-header{text-shadow:0 1px 0 black}.nav-list&gt;li&gt;a:hover{background-color:rgba(0,0,0,0.25);color:#0af}.nav-list .active&gt;a:hover{background-color:#08c;color:white}.tabs-below .nav-tabs{border-top:1px solid #666}.tabs-left .nav-tabs{border-right:1px solid #666}.tabs-right .nav-tabs{border-left:1px solid #666}.tabs-below .nav-tabs&gt;li&gt;a:hover{border-top:1px solid #666}.tabs-left .nav-tabs&gt;li&gt;a:hover{border-color:transparent #666 transparent transparent}.tabs-right .nav-tabs&gt;li&gt;a:hover{border-color:transparent transparent transparent #666}.tabs-below .nav-tabs .active&gt;a,.tabs-below .nav-tabs .active&gt;a:hover{border-color:transparent #666 #666 #666}.tabs-left .nav-tabs .active&gt;a,.tabs-left .nav-tabs .active&gt;a:hover{border-color:#666 transparent #666 #666}.tabs-right .nav-tabs .active&gt;a,.tabs-right .nav-tabs .active&gt;a:hover{border-color:#666 #666 #666 transparent}.nav-list&gt;li&gt;a,.nav-list .nav-header{text-shadow:0 1px 0 rgba(0,0,0,0.5)}.nav-tabs&gt;li&gt;a:hover{border-color:transparent transparent #666 transparent}.nav&gt;.disabled&gt;a:hover{color:#999}.nav-list .divider{background-color:transparent;-webkit-box-shadow:rgba(255,255,255,0.07) 0 1px 0;-moz-box-shadow:rgba(255,255,255,0.07) 0 1px 0;box-shadow:rgba(255,255,255,0.07) 0 1px 0;border-bottom:1px solid #121212}.navbar .brand{text-shadow:0 1px 0 black}.navbar .divider-vertical{border:transparent;-webkit-box-shadow:rgba(255,255,255,0.07) 1px 0 0;-moz-box-shadow:rgba(255,255,255,0.07) 1px 0 0;box-shadow:rgba(255,255,255,0.07) 1px 0 0;border-right:1px solid #121212}.navbar-inverse .brand{color:#555;text-shadow:0 1px 0 white}.navbar-inverse .brand:hover{color:#555}.navbar-inverse .navbar-inner{background:#fafafa;border:1px solid #030303;box-shadow:0 1px 4px rgba(0,0,0,0.5);background:-moz-linear-gradient(top,white 0,#999 100%);background:-webkit-gradient(linear,left top,left bottom,color-stop(0%,white),color-stop(100%,#999));background:-webkit-linear-gradient(top,white 0,#999 100%);background:-o-linear-gradient(top,white 0,#999 100%);background:-ms-linear-gradient(top,white 0,#999 100%);background:linear-gradient(to bottom,#fff 0,#999 100%);filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=&#39;#ffffff&#39;,endColorstr=&#39;#999999&#39;,GradientType=0)}.navbar-inverse .nav&gt;li&gt;a{color:#555}.navbar-inverse .nav&gt;li&gt;a:hover{color:#333}.navbar-inverse .nav&gt;.active&gt;a,.navbar-inverse .nav&gt;.active&gt;a:hover{background-color:#e5e5e5;box-shadow:0 3px 8px rgba(0,0,0,0.125) inset;color:#555}.navbar-inverse .nav li.dropdown.open&gt;.dropdown-toggle,.navbar-inverse .nav li.dropdown.active&gt;.dropdown-toggle,.navbar-inverse .nav li.dropdown.open.active&gt;.dropdown-toggle{background-color:#e5e5e5;color:#555}.navbar-inverse .nav li.dropdown&gt;a:hover .caret{border-top-color:#555;color:#555}.navbar-inverse .nav&gt;li&gt;a:focus,.navbar-inverse .nav&gt;li&gt;a:hover{background-color:transparent;color:#333}.navbar-inverse .nav li.dropdown.open&gt;.dropdown-toggle,.navbar-inverse .nav li.dropdown.active&gt;.dropdown-toggle,.navbar-inverse .nav li.dropdown.open.active&gt;.dropdown-toggle{background-color:#e5e5e5;color:#555}.navbar-inverse .nav li.dropdown.open&gt;.dropdown-toggle .caret,.navbar-inverse .nav li.dropdown.active&gt;.dropdown-toggle .caret,.navbar-inverse .nav li.dropdown.open.active&gt;.dropdown-toggle .caret{border-bottom-color:#555;border-top-color:#555;color:#555}.navbar-inverse .navbar-search .search-query{box-shadow:0 3px 8px rgba(0,0,0,0.6) inset;background-color:white;color:#333}.navbar-inverse .navbar-search input.search-query:focus{box-shadow:0 3px 8px rgba(0,0,0,0.6) inset,0 0 8px rgba(82,168,236,0.6);box-shadow:0 3px 8px rgba(0,0,0,0.6) inset,0 0 8px rgba(82,168,236,0.9);padding:4px 14px;outline:0 none}.navbar-inverse .nav li.dropdown&gt;.dropdown-toggle .caret{border-bottom-color:#555;border-top-color:#555}.navbar-inverse .nav li.dropdown&gt;a:hover .caret{border-bottom-color:#333;border-top-color:#333}.navbar-inverse .navbar-search .search-query:-moz-placeholder{color:#999}.pagination ul&gt;li&gt;a,.pagination ul&gt;li&gt;span{background:transparent;border-color:#666}.pagination ul&gt;li&gt;a:hover,.pagination ul&gt;.active&gt;a,.pagination ul&gt;.active&gt;span{background-color:rgba(0,0,0,0.25)}.pager li&gt;a,.pager li&gt;span{background-color:transparent;border-color:#666}.pager li&gt;a:hover{background-color:rgba(0,0,0,0.25)}.pager .disabled&gt;a,.pager .disabled&gt;a:hover,.pager .disabled&gt;span{background-color:transparent}.label,.badge{text-shadow:1px 1px 0 black;box-shadow:1px 1px 0 black}.label-inverse,.badge-inverse{background-color:#111}.hero-unit{background:#111;color:#ccc}.thumbnail{border-color:#666;box-shadow:0 1px 3px black}.thumbnail .caption{color:#999}.alert{color:white;border-color:#a86404;text-shadow:0 1px 0 rgba(0,0,0,0.25)}.alert h1,.alert h2,.alert h3,.alert h4,.alert h5,.alert h6{color:#c17305}.alert-error{border-color:#d40408}.alert-error h1,.alert-error h2,.alert-error h3,.alert-error h4,.alert-error h5,.alert-error h6{color:#ed0409}.alert-success{border-color:#2d662d}.alert-success h1,.alert-success h2,.alert-success h3,.alert-success h4,.alert-success h5,.alert-success h6{color:#347834}.alert-info{border-color:#1a3c4e}.alert-info h1,.alert-info h2,.alert-info h3,.alert-info h4,.alert-info h5,.alert-info h6{color:#204b61}select::-webkit-scrollbar{-webkit-appearance:none;width:11px}select::-webkit-scrollbar-thumb{border-radius:8px;border:2px solid #202020;background-color:rgba(0,0,0,0.5)}.modal{background-color:#444}.modal-header{border-bottom:1px solid #222}.modal-body p{color:#c6c6c6}.modal-footer{background-color:#373737;border-top:1px solid #222;-moz-box-shadow:0 1px 0 #333 inset;-webkit-box-shadow:0 1px 0 #333 inset;-o-box-shadow:0 1px 0 #333 inset;box-shadow:0 1px 0 #333 inset}.popover{background:#444;border:1px solid rgba(0,0,0,0.5);border:1px solid black}.popover-title{background:#373737;border-bottom-color:#222}.popover.top .arrow:after{border-top-color:#444}.popover.right .arrow:after{border-right-color:#444}.popover.bottom .arrow:after{border-bottom-color:#444}.popover.left .arrow:after{border-left-color:#444}</div>
+            </td>
+          </tr>
+        </table>
+  </div>
+
+  </div>
+</div>
+
+<a href="#jump-to-line" rel="facebox[.linejump]" data-hotkey="l" class="js-jump-to-line" style="display:none">Jump to Line</a>
+<div id="jump-to-line" style="display:none">
+  <form accept-charset="UTF-8" class="js-jump-to-line-form">
+    <input class="linejump-input js-jump-to-line-field" type="text" placeholder="Jump to line&hellip;" autofocus>
+    <button type="submit" class="button">Go</button>
+  </form>
+</div>
+
+        </div>
+
+      </div><!-- /.repo-container -->
+      <div class="modal-backdrop"></div>
+    </div><!-- /.container -->
+  </div><!-- /.site -->
+
+
+    </div><!-- /.wrapper -->
+
+      <div class="container">
+  <div class="site-footer">
+    <ul class="site-footer-links right">
+      <li><a href="https://status.github.com/">Status</a></li>
+      <li><a href="http://developer.github.com">API</a></li>
+      <li><a href="http://training.github.com">Training</a></li>
+      <li><a href="http://shop.github.com">Shop</a></li>
+      <li><a href="/blog">Blog</a></li>
+      <li><a href="/about">About</a></li>
+
+    </ul>
+
+    <a href="/">
+      <span class="mega-octicon octicon-mark-github"></span>
+    </a>
+
+    <ul class="site-footer-links">
+      <li>&copy; 2013 <span title="0.02155s from github-fe122-cp1-prd.iad.github.net">GitHub</span>, Inc.</li>
+        <li><a href="/site/terms">Terms</a></li>
+        <li><a href="/site/privacy">Privacy</a></li>
+        <li><a href="/security">Security</a></li>
+        <li><a href="/contact">Contact</a></li>
+    </ul>
+  </div><!-- /.site-footer -->
+</div><!-- /.container -->
+
+
+    <div class="fullscreen-overlay js-fullscreen-overlay" id="fullscreen_overlay">
+  <div class="fullscreen-container js-fullscreen-container">
+    <div class="textarea-wrap">
+      <textarea name="fullscreen-contents" id="fullscreen-contents" class="js-fullscreen-contents" placeholder="" data-suggester="fullscreen_suggester"></textarea>
+          <div class="suggester-container">
+              <div class="suggester fullscreen-suggester js-navigation-container" id="fullscreen_suggester"
+                 data-url="/danneu/darkstrap/suggestions/commit">
+              </div>
+          </div>
+    </div>
+  </div>
+  <div class="fullscreen-sidebar">
+    <a href="#" class="exit-fullscreen js-exit-fullscreen tooltipped leftwards" title="Exit Zen Mode">
+      <span class="mega-octicon octicon-screen-normal"></span>
+    </a>
+    <a href="#" class="theme-switcher js-theme-switcher tooltipped leftwards"
+      title="Switch themes">
+      <span class="octicon octicon-color-mode"></span>
+    </a>
+  </div>
+</div>
+
+
+
+    <div id="ajax-error-message" class="flash flash-error">
+      <span class="octicon octicon-alert"></span>
+      <a href="#" class="octicon octicon-remove-close close ajax-error-dismiss"></a>
+      Something went wrong with that request. Please try again.
+    </div>
+
+  </body>
+</html>
+
