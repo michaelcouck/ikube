@@ -2,7 +2,7 @@
 module.controller('IndexContextsController', function($http, $scope, $timeout) {
 	
 	$scope.indexContext = undefined;
-	$scope.indexContexts = [];
+	$scope.indexContexts = undefined;
 	$scope.sortField = 'name';
 	$scope.descending = true;
 	$scope.viewAll = false;
@@ -23,13 +23,12 @@ module.controller('IndexContextsController', function($http, $scope, $timeout) {
 			$scope.status = status;
 		});
 	}
-	// Immediately refresh the data
+	// Immediately get the data
 	$scope.refreshIndexContexts();
 	// Refresh the index contexts every so often
 	setInterval(function() {
 		$scope.refreshIndexContexts();
 	}, refreshInterval);
-	
 
 	// This function will publish a start event in the cluster
 	$scope.startIndexing = function(indexName) {
@@ -87,18 +86,19 @@ module.controller('IndexContextsController', function($http, $scope, $timeout) {
 	$scope.parent = function() {
 		// TODO Get the parent on the page for editing
 	};
-	
-	$scope.dataTable = function dataTable(element, data) {
+
+	// These functions produce the table of indexes
+	$scope.dataTable = function dataTable(element) {
+		var data = $scope.buildTable();
 		var target = $("#" + element);
 		target.dataTable( {
 			"bJQueryUI" : true,
+			"bDestroy" : true,
 			"sPaginationType" : "full_numbers",
 			"sDom" : '<""l>t<"F"fp>',
 			"aoColumns": [
 			    { "sTitle" : "Name" },
 			    { "sTitle" : "Open" },
-//			    { "sTitle" : "Max age" },
-//			    { "sTitle" : "Path" },
 			    { "sTitle" : "Documents" },
 			    { "sTitle" : "Size" }
 	        ],
@@ -109,41 +109,46 @@ module.controller('IndexContextsController', function($http, $scope, $timeout) {
 				$('td', nRow).attr('nowrap','nowrap');
 				row.on("click", function() {
 					var name = row.find("td:first").text();
-					for (var i = 0; i < $scope.indexContexts.length; i++) {
-						var indexContext = $scope.indexContexts[i];
-						if (name == indexContext.name) {
-							$scope.indexContext = indexContext;
-							// $scope.modal("#crud-modal");
-							$scope.$apply();
+					if (name != undefined && $scope.indexContexts != undefined && $scope.indexContexts != null) {
+						for (var i = 0; i < $scope.indexContexts.length; i++) {
+							var indexContext = $scope.indexContexts[i];
+							if (name == indexContext.name) {
+								$scope.indexContext = indexContext;
+								$scope.$apply();
+							}
 						}
 					}
 				});
 			}
 	    } );
 	}
-	
-	$scope.modal = function modal(element) {
-		return $(element).modal();
-	}
-	
-	return $timeout(function() {
-		// We need to create an array of arrays for the data table
-		// because it seems that the population using pure Json data
-		// does not work!
+	$scope.buildTable = function() {
 		var table = [];
 		for (var i = 0; i < $scope.indexContexts.length; i++) {
 			var indexContext = $scope.indexContexts[i];
 			var row = [];
 			row.push(indexContext.name);
 			row.push(indexContext.open);
-//			row.push(indexContext.maxAge);
-//			row.push(indexContext.indexDirectoryPath);
 			row.push(indexContext.numDocsForSearchers);
 			row.push(indexContext.snapshot.indexSize);
 			table.push(row);
 		}
-		$scope.dataTable("data-table-json", table);
-		return $scope.indexContexts;
-	}, 250);
+		return table;
+	};
+	var maxRetries = 10;
+	$scope.wait = function() {
+		$timeout(function() {
+			if (maxRetries-- > 0 && $scope.indexContexts != undefined && $scope.indexContexts != null) {
+				$scope.dataTable("data-table-json");
+			} else {
+				$scope.wait();
+			}
+		}, 250);
+	};
+	
+	// Call the wait function that will wait for the index contexts to 
+	// come back from the server before calling the create table function 
+	// to produce the table
+	$scope.wait();
 	
 });

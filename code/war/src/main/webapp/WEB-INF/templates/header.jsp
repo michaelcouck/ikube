@@ -21,7 +21,7 @@ angular.element(document).ready(function() {
 						<li class="active"><a href="#">Here</a></li>
 						<button class="button mini inset black" title="<security:authentication property="authorities" />" href="#">
 							<spring:message code="security.logged.in.as" />
-							<img src="<c:url value="/img/icons/person_obj.gif" />">
+							<img src="<c:url value="/assets/images/icons/person_obj.gif" />">
 							<security:authentication property="name" />
 						</button>
 					</ul>

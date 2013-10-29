@@ -103,6 +103,7 @@ public class Monitor extends Resource {
 	private IndexContext cloneIndexContext(final IndexContext indexContext) {
 		IndexContext cloneIndexContext = (IndexContext) SerializationUtilities.clone(indexContext);
 		cloneIndexContext.setChildren(null);
+		// cloneIndexContext.setSnapshots(null);
 		return cloneIndexContext;
 	}
 

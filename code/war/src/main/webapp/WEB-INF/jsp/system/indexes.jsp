@@ -5,7 +5,8 @@
 	<div class="row-fluid">
 		<div class="span6">
 			<div class="box" style="position: relative;">
-				<div class="tab-header">Indexes</div>
+				<div class="tab-header">Indexes 
+					<i class="icon-refresh" ng-click="dataTable('data-table-json');"></i></div>
 				<table id="data-table-json" class="table table-striped" style="cursor: pointer;"></table>
 			</div>
 		</div>
@@ -40,5 +41,3 @@
 		
 	</div>
 </div>
-
-<jsp:include page="/WEB-INF/jsp/modal/crud.jsp" />
