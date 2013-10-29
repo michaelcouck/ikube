@@ -8,7 +8,6 @@ import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.regex.Pattern;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,11 +23,10 @@ public class FileSystemResourceProviderTest extends AbstractTest {
 
 	@Before
 	public void before() throws IOException {
+		ThreadUtilities.initialize();
 		IndexableFileSystem indexableFileSystem = new IndexableFileSystem();
-		indexableFileSystem.setPath("/");
-		Pattern pattern = Pattern.compile(".*(nothing).*");
-		fileSystemResourceProvider = new FileSystemResourceProvider(indexableFileSystem, pattern);
-		ThreadUtilities.sleep(3000);
+		indexableFileSystem.setPath(".");
+		fileSystemResourceProvider = new FileSystemResourceProvider(indexableFileSystem, null);
 	}
 
 	@Test
@@ -38,7 +36,7 @@ public class FileSystemResourceProviderTest extends AbstractTest {
 		while (file != null) {
 			file = fileSystemResourceProvider.getResource();
 		}
-		// All files depleted
+		// All files consumed
 		assertNull(file);
 	}
 

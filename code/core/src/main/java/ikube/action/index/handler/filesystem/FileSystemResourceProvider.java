@@ -59,7 +59,7 @@ class FileSystemResourceProvider implements IResourceProvider<File> {
 			private void walkFileSystem(final File file) {
 				try {
 					while (files.size() > IConstants.MILLION) {
-						ThreadUtilities.sleep(1000);
+						ThreadUtilities.sleep(10000);
 					}
 					if (FileUtilities.isExcluded(file, pattern)) {
 						excluded++;
@@ -67,7 +67,7 @@ class FileSystemResourceProvider implements IResourceProvider<File> {
 					}
 					if (file.isDirectory()) {
 						File[] files = file.listFiles();
-						if (files !=null && files.length > 0) {
+						if (files != null && files.length > 0) {
 							for (final File child : files) {
 								walkFileSystem(child);
 							}

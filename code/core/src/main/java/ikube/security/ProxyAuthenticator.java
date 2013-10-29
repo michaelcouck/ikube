@@ -3,6 +3,7 @@ package ikube.security;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * @version 01.00
  */
 public class ProxyAuthenticator {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProxyAuthenticator.class);
 
 	/**
@@ -26,8 +27,8 @@ public class ProxyAuthenticator {
 		final String proxyPassword = System.getProperty("http.proxyPassword");
 		final String proxyPort = System.getProperty("http.proxyPort");
 		final String proxyHost = System.getProperty("http.proxyHost");
-		LOGGER.info("Proxy user : " + proxyUser + ", proxy port : " + proxyPort + ", proxy host : " + proxyHost);
-		if (proxyUser != null && proxyPassword != null) {
+		if (!StringUtils.isEmpty(proxyUser) && !StringUtils.isEmpty(proxyPassword) && !StringUtils.isEmpty(proxyPort) && !StringUtils.isEmpty(proxyHost)) {
+			LOGGER.info("Proxy user : " + proxyUser + ", proxy port : " + proxyPort + ", proxy host : " + proxyHost);
 			Authenticator.setDefault(new Authenticator() {
 				public PasswordAuthentication getPasswordAuthentication() {
 					return new PasswordAuthentication(proxyUser, proxyPassword.toCharArray());

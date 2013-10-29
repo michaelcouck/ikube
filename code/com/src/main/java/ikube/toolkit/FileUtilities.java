@@ -608,8 +608,11 @@ public final class FileUtilities {
 		if (!file.exists() || !file.canRead()) {
 			return Boolean.TRUE;
 		}
-		if (StringUtils.isEmpty(file.getName()) || StringUtils.isEmpty(file.getAbsolutePath())) {
+		if (StringUtils.isEmpty(file.getAbsolutePath())) {
 			return Boolean.TRUE;
+		}
+		if (pattern == null) {
+			return Boolean.FALSE;
 		}
 		String name = file.getName();
 		String path = file.getAbsolutePath();
@@ -623,6 +626,7 @@ public final class FileUtilities {
 			exceptionReading = Boolean.TRUE;
 			LOGGER.error(null, e);
 		}
+		// LOGGER.info("Name : " + isNameExcluded + ", " + isPathExcluded + ", " + isSymLink + ", " + exceptionReading);
 		return isNameExcluded || isPathExcluded || isSymLink || exceptionReading;
 	}
 
