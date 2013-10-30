@@ -73,7 +73,7 @@ public class SearchComplex extends Search {
 				String message = "Field must have a type to create the query : " + typeField + ", field : " + searchField + ", string : " + searchString;
 				throw new RuntimeException(message);
 			}
-			booleanQuery.add(query, BooleanClause.Occur.MUST);
+			booleanQuery.add(query, BooleanClause.Occur.SHOULD);
 		}
 		return booleanQuery;
 	}

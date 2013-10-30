@@ -1,22 +1,21 @@
 package ikube.action.index.handler.email;
 
 import ikube.action.index.IndexManager;
+import ikube.action.index.handler.IResourceProvider;
 import ikube.action.index.handler.IndexableHandler;
 import ikube.action.index.parse.IParser;
 import ikube.action.index.parse.ParserProvider;
 import ikube.model.IndexContext;
 import ikube.model.IndexableEmail;
-import ikube.toolkit.ThreadUtilities;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.Future;
+import java.util.concurrent.ForkJoinTask;
 
 import javax.mail.Authenticator;
 import javax.mail.BodyPart;
@@ -53,22 +52,25 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final IndexableEmail indexable) throws Exception {
-		Runnable runnable = new Runnable() {
+	public ForkJoinTask<?> handleIndexableForked(final IndexContext<?> indexContext, final IndexableEmail indexableEmail) throws Exception {
+		IResourceProvider<IndexableEmail> emailResourceProvider = new IResourceProvider<IndexableEmail>() {
+
 			@Override
-			public void run() {
-				handleEmail(indexContext, indexable);
+			public IndexableEmail getResource() {
+				return indexableEmail;
+			}
+
+			@Override
+			public void setResources(final List<IndexableEmail> resources) {
 			}
 		};
-		Future<?> future = ThreadUtilities.submit(indexContext.getIndexName(), runnable);
-		List<Future<?>> futures = new ArrayList<Future<?>>();
-		futures.add(future);
-		return futures;
+		return getRecursiveAction(indexContext, indexableEmail, emailResourceProvider);
 	}
 
 	@Override
 	protected List<?> handleResource(final IndexContext<?> indexContext, final IndexableEmail indexableEmail, final Object resource) {
 		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
+		handleEmail(indexContext, indexableEmail);
 		return null;
 	}
 

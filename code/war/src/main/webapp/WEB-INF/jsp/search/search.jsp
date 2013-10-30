@@ -1,73 +1,59 @@
 <%@ page errorPage="/WEB-INF/jsp/error.jsp"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
-<div class="container-fluid">
+<div class="container-fluid" ng-controller="SearcherController">
 	<div class="row-fluid">
 		<div class="span4">
-			<div class="tabbable black-box" style="margin-bottom: 18px;">
-				<div class="tab-header">
-					Search indexes and options
+			<div class="box">
+				<div class="tab-header">Search form
 					<span class="pull-right">
-						<span class="options">
-							<div class="btn-group">
-								<a class="dropdown-toggle" data-toggle="dropdown">
-									<i class="icon-cog"></i>
-								</a>
-								<ul class="dropdown-menu black-box-dropdown dropdown-left">
-									<li><a href="#">Show images</a></li>
-									<li><a href="#">Toggle instant search</a></li>
-									<li><a href="#">Toggle table or list for results</a></li>
-									<li class="divider"></li>
-									<li><a href="#">Separated link</a></li>
-								</ul>
-							</div>
-					</span>
+						<span class="options"><a href="#"><i class="icon-cog"></i></a></span>
 					</span>
 				</div>
-				<ul class="nav nav-tabs">
-					<li class="active"><a href="#tab1" data-toggle="tab">Indexes</a></li>
-					<li class=""><a href="#tab2" data-toggle="tab">Search</a></li>
-					<li class=""><a href="#tab3" data-toggle="tab">Geospatial</a></li>
-				</ul>
-				<div class="tab-content">
-					<div class="tab-pane active" id="tab1" ng-controller="IndexesController">
-						<div class="padded">
-							<div class="inner-well clearfix" ng-repeat="index in indexes">
-								<b>{{index}}</b>
-								<div class="pull-right">
-									<input type="checkbox" id="{{index}}" class="checky" />
-									<label for="{{index}}" class="checky"><span></span></label>
+				<form class="fill-up">
+					<div class="row-fluid">
+						<div class="span12">
+							<div class="padded">
+								<div class="note pull-right">Please choose an index to search</div>
+								<div class="input" ng-controller="IndexesController">
+									<select 
+										ng-controller="IndexesController" 
+										ng-model="indexName" 
+										ng-model="indexes" 
+										ng-options="index for index in indexes" 
+										ng-change="
+											resetSearch();
+											doFields(indexName);
+											setField('indexName', indexName);"
+											class="fill-up">
+										<option style="display:none" value="">index</option>
+									</select>
+								</div>
+								<div class="note pull-right">Note that multiple indexes can be searched</div>
+								<div class="input">
+									<input type="text" placeholder="Email" />
+								</div>
+								<div class="input">
+									<input type="text" placeholder="Address" />
+								</div>
+								<div class="input">
+									<input type="text" placeholder="Username" class="error" /> <span
+										class="input-error" data-title="please write a valid username">
+										<i class="icon-warning-sign"></i>
+									</span>
+								</div>
+								<div class="input">
+									<input type="password" placeholder="Password" class="error" />
+									<span class="input-error" data-title="please write a valid password">
+										<i class="icon-warning-sign"></i>
+									</span>
 								</div>
 							</div>
 						</div>
 					</div>
-					<div class="tab-pane" id="tab2">
-						<div class="padded">
-							<p>
-								<span style="display: inline-block; min-width: 150px;">badge
-									color gray</span> <span class="badge gray">1</span>
-							</p>
-							<p>
-								<span style="display: inline-block; min-width: 150px;">badge
-									color green</span> <span class="badge green">1</span>
-							</p>
-						</div>
-					</div>
-					<div class="tab-pane" id="tab3">
-						<div class="padded">
-							<p>
-								<span style="display: inline-block; min-width: 150px;">badge
-									color blue</span> <span class="badge blue">1</span>
-							</p>
-							<p>
-								<span style="display: inline-block; min-width: 150px;">badge
-									color gray</span> <span class="badge gray">1</span>
-							</p>
-						</div>
-					</div>
-				</div>
+				</form>
 			</div>
-		</div>
+		</div>	
 		
 		<div class="span8">
 			<div class="black-box tex">
@@ -122,127 +108,12 @@
 				</ul>
 			</div>
 		</div>
-		
-		<!-- <div class="span6">
-			<div class="box" style="position: relative;">
-				<div class="tab-header">Browser stats</div>
-				<table class="table table-striped data-table">
-					<thead>
-						<tr>
-							<th>Rendering engine</th>
-							<th>Browser</th>
-							<th>Platform(s)</th>
-							<th>Engine version</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr class="gradeX">
-							<td>Trident</td>
-							<td>Internet Explorer 4.0</td>
-							<td>Win 95+</td>
-							<td class="center">4</td>
-						</tr>
-						<tr class="gradeC">
-							<td>Trident</td>
-							<td>Internet Explorer 5.0</td>
-							<td>Win 95+</td>
-							<td class="center">5</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div> -->
-		
 	</div>
-
+	
 	<div class="row-fluid">
-		<!-- <div class="span6">
-			<div class="black-box tex">
-				<div class="tab-header">Recent comments</div>
-				<ul class="recent-comments">
-					<li class="separator">
-						<div class="avatar pull-left">
-							<img src="<c:url value="/assets/images/MYP_1376-small.jpg" />" />
-						</div>
-						<div class="article-post">
-							<div class="user-info">Posted by jordan, 3 days ago</div>
-							<div class="user-content">Vivamus sed auctor nibh congue,
-								ligula vitae tempus pharetra... Vivamus sed auctor nibh congue,
-								ligula vitae tempus pharetra... Vivamus sed auctor nibh congue,
-								ligula vitae tempus pharetra...</div>
-							<div class="btn-group">
-								<button class="button black mini">
-									<i class="icon-pencil"></i> Edit
-								</button>
-								<button class="button black mini">
-									<i class="icon-remove"></i> Delete
-								</button>
-								<button class="button black mini">
-									<i class="icon-ok"></i> Approve
-								</button>
-							</div>
-						</div>
-					</li>
-					<li class="separator">
-						<div class="avatar pull-left">
-							<img src="<c:url value="/assets/images/MYP_1376-small.jpg" />" />
-						</div>
-						<div class="article-post">
-							<div class="user-info">Posted by jordan, 3 days ago</div>
-							<div class="user-content">Vivamus sed auctor nibh congue,
-								ligula vitae tempus pharetra... Vivamus sed auctor nibh congue,
-								ligula vitae tempus pharetra... Vivamus sed auctor nibh congue,
-								ligula vitae tempus pharetra...</div>
-							<div class="btn-group">
-								<button class="button black mini">
-									<i class="icon-pencil"></i> Edit
-								</button>
-								<button class="button black mini">
-									<i class="icon-remove"></i> Delete
-								</button>
-								<button class="button black mini">
-									<i class="icon-ok"></i> Approve
-								</button>
-							</div>
-						</div>
-					</li>
-					<li class="separator" style="text-align: center"><a href="#">View
-							all</a></li>
-				</ul>
-			</div>
-		</div>  -->
-		<!-- <div class="span6">
-			<div class="box" style="position: relative;">
-				<div class="tab-header">Browser stats</div>
-				<table class="table table-striped data-table">
-					<thead>
-						<tr>
-							<th>Rendering engine</th>
-							<th>Browser</th>
-							<th>Platform(s)</th>
-							<th>Engine version</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr class="gradeX">
-							<td>Trident</td>
-							<td>Internet Explorer 4.0</td>
-							<td>Win 95+</td>
-							<td class="center">4</td>
-						</tr>
-						<tr class="gradeC">
-							<td>Trident</td>
-							<td>Internet Explorer 5.0</td>
-							<td>Win 95+</td>
-							<td class="center">5</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div> -->
-	</div>
-
-	<!-- <table ng-controller="SearcherController">
+		<div class="span4">
+			<div class="box">
+<table ng-controller="SearcherController">
 	<tr>
 		<td>
 			<form ng-submit="doSearch()">
@@ -378,4 +249,8 @@
 			</div>
 		</td>
 	</tr>
-</table> -->
+</table>
+			</div>
+		</div>
+	</div>
+</div>

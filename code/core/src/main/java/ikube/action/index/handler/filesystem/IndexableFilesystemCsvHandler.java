@@ -1,6 +1,7 @@
 package ikube.action.index.handler.filesystem;
 
 import ikube.IConstants;
+import ikube.action.index.handler.IResourceProvider;
 import ikube.action.index.handler.IndexableHandler;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
@@ -13,7 +14,7 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Future;
+import java.util.concurrent.ForkJoinTask;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
@@ -36,37 +37,45 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
 	private RowResourceHandler rowResourceHandler;
 
 	@Override
-	public List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final IndexableFileSystemCsv indexableFileSystem) throws Exception {
-		List<Future<?>> futures = new ArrayList<Future<?>>();
-		Runnable runnable = new Runnable() {
-			public void run() {
+	public ForkJoinTask<?> handleIndexableForked(final IndexContext<?> indexContext, final IndexableFileSystemCsv indexableFileSystem) throws Exception {
+		IResourceProvider<File> fileSystemResourceProvider = new IResourceProvider<File>() {
+
+			private List<File> resources;
+
+			{
 				File[] files = new File(indexableFileSystem.getPath()).listFiles(new FileFilter() {
 					@Override
 					public boolean accept(File pathname) {
 						return !isExcluded(pathname);
 					}
 				});
-				if (files == null || files.length == 0) {
-					logger.warn("No files in directory : " + indexableFileSystem.getPath());
-					return;
+				setResources(Arrays.asList(files));
+			}
+
+			@Override
+			public synchronized File getResource() {
+				if (resources.isEmpty()) {
+					return null;
 				}
-				for (final File file : files) {
-					try {
-						handleFile(indexContext, indexableFileSystem, file);
-					} catch (Exception e) {
-						handleException(indexableFileSystem, e);
-					}
-				}
+				return resources.remove(0);
+			}
+
+			@Override
+			public void setResources(final List<File> resources) {
+				this.resources = resources;
 			}
 		};
-		Future<?> future = ThreadUtilities.submit(indexContext.getIndexName(), runnable);
-		futures.add(future);
-		return futures;
+		return getRecursiveAction(indexContext, indexableFileSystem, fileSystemResourceProvider);
 	}
 
 	@Override
 	protected List<?> handleResource(final IndexContext<?> indexContext, final IndexableFileSystemCsv indexableFileSystemCsv, final Object resource) {
 		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
+		try {
+			handleFile(indexContext, indexableFileSystemCsv, (File) resource);
+		} catch (Exception e) {
+			handleException(indexableFileSystemCsv, e, "Exception handling csv file : " + resource);
+		}
 		return null;
 	}
 

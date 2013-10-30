@@ -1,12 +1,11 @@
 package ikube.action.index.handler.filesystem;
 
 import ikube.action.index.IndexManager;
+import ikube.action.index.handler.IResourceProvider;
 import ikube.action.index.handler.IndexableHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystemLog;
 import ikube.toolkit.FileUtilities;
-import ikube.toolkit.SerializationUtilities;
-import ikube.toolkit.ThreadUtilities;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,7 +14,7 @@ import java.io.FileReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
+import java.util.concurrent.ForkJoinTask;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
@@ -36,47 +35,60 @@ public class IndexableFilesystemLogHandler extends IndexableHandler<IndexableFil
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final IndexableFileSystemLog indexable) throws Exception {
-		List<Future<?>> futures = new ArrayList<Future<?>>();
-		try {
-			final IndexableFileSystemLog indexableFileSystem = (IndexableFileSystemLog) SerializationUtilities.clone(indexable);
-			Runnable runnable = new Runnable() {
-				public void run() {
-					String directoryPath = indexableFileSystem.getPath();
-					File directory = FileUtilities.getFile(directoryPath, Boolean.TRUE);
-					indexLogs(directory);
-				}
+	public ForkJoinTask<?> handleIndexableForked(final IndexContext<?> indexContext, final IndexableFileSystemLog indexable) throws Exception {
+		IResourceProvider<File> fileSystemResourceProvider = new IResourceProvider<File>() {
 
-				private void indexLogs(final File directory) {
-					File[] logFiles = directory.listFiles(new FileFilter() {
-						@Override
-						public boolean accept(File pathname) {
-							// We need the directories of the log files below this point
-							return pathname.getName().contains("log") || pathname.isDirectory();
+			private List<File> resources;
+
+			{
+				String directoryPath = indexable.getPath();
+				File directory = FileUtilities.getFile(directoryPath, Boolean.TRUE);
+				resources = new ArrayList<File>();
+				getLogFiles(directory);
+			}
+
+			@Override
+			public File getResource() {
+				if (resources.isEmpty()) {
+					return null;
+				}
+				return resources.remove(0);
+			}
+
+			@Override
+			public void setResources(final List<File> resources) {
+				this.resources = resources;
+			}
+
+			private void getLogFiles(final File directory) {
+				File[] logFiles = directory.listFiles(new FileFilter() {
+					@Override
+					public boolean accept(File pathname) {
+						// We need the directories of the log files below this point
+						logger.info("Looking for logs files : " + pathname);
+						return pathname.getName().contains("log") || pathname.isDirectory();
+					}
+				});
+				if (logFiles != null) {
+					for (File logFile : logFiles) {
+						if (logFile.isDirectory()) {
+							getLogFiles(logFile);
+							continue;
 						}
-					});
-					if (logFiles != null) {
-						for (File logFile : logFiles) {
-							if (logFile.isDirectory()) {
-								indexLogs(logFile);
-								continue;
-							}
-							logger.info("Indexing file : " + logFile);
-							handleFile(indexContext, indexableFileSystem, logFile);
-						}
+						logger.info("Adding logs file : " + logFile);
+						resources.add(logFile);
 					}
 				}
-			};
-			futures.add(ThreadUtilities.submit(indexContext.getIndexName(), runnable));
-		} catch (Exception e) {
-			handleException(indexable, e);
-		}
-		return futures;
+			}
+
+		};
+		return getRecursiveAction(indexContext, indexable, fileSystemResourceProvider);
 	}
 
 	@Override
 	protected List<?> handleResource(final IndexContext<?> indexContext, final IndexableFileSystemLog indexableFileSystemLog, final Object resource) {
 		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
+		handleFile(indexContext, indexableFileSystemLog, (File) resource);
 		return null;
 	}
 

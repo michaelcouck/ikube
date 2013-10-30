@@ -50,6 +50,15 @@ public interface IIndexableHandler<T extends Indexable<?>> {
 	 */
 	List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final T indexable) throws Exception;
 
+	/**
+	 * This method takes advantage of the fork/join logic from the concurrent package. Implementations must return a single fork join task that may or may not
+	 * have child tasks. The task will then be scheduled to run asynchronously along with any children.
+	 * 
+	 * @param indexContext the index context for the index
+	 * @param indexable the object being processed, i.e. file system etc.
+	 * @return the task that will be executed asynchronously
+	 * @throws Exception any exception is bubbled up to the caller, where everything is caught in the caller
+	 */
 	ForkJoinTask<?> handleIndexableForked(final IndexContext<?> indexContext, final T indexable) throws Exception;
 
 }

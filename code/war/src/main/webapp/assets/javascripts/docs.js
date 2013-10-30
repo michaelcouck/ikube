@@ -171,6 +171,25 @@
 		});
 		$('.input-error').tooltip();
 		$(".chzn-select").chosen();
+		
+//		$(".chzn-select-indexes").ajaxChosen({
+//			  method: 'GET',
+//			  url: 'http://localhost:9090/ikube/service/monitor/indexes',
+//			  dataType: 'json',
+//			  minTermLength: 3,
+//			  afterTypeDelay: 300
+//			}, function (data) {
+//			  var terms = {};
+//
+//			  $.each(data, function (i, val) {
+//			     terms[i] = val;
+//			  });
+//
+//			  return terms;
+//			});
+//		
+//		$(".chosen-select-indexes").val();
+		
 		$('textarea.tagme').tagify();
 		new Faq($(".faq-list"));
 		$('#datetimepicker').datepicker();

@@ -112,7 +112,7 @@ public class SearchSpatial extends SearchComplex {
 		}
 		long duration = System.currentTimeMillis() - start;
 		// Add the search results size as a last category
-		addStatistics(results, totalHits, highScore, duration, exception);
+		addStatistics(searchStrings, results, totalHits, highScore, duration, exception);
 		return results;
 	}
 

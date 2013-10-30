@@ -37,7 +37,6 @@ import org.mockito.Mockito;
  */
 public class IndexableFileSystemHandlerTest extends AbstractTest {
 
-	private File analyticsFolder;
 	private String analyticsFolderPath;
 	private FileResourceHandler resourceHandler;
 	/** Class under test. */
@@ -45,7 +44,7 @@ public class IndexableFileSystemHandlerTest extends AbstractTest {
 
 	@Before
 	public void before() {
-		analyticsFolder = FileUtilities.findDirectoryRecursively(new File("."), "analytics");
+		File analyticsFolder = FileUtilities.findDirectoryRecursively(new File("."), "analytics");
 		analyticsFolderPath = FileUtilities.cleanFilePath(analyticsFolder.getAbsolutePath());
 		resourceHandler = mock(FileResourceHandler.class);
 		indexableFileSystemHandler = new IndexableFileSystemHandler();
@@ -58,7 +57,8 @@ public class IndexableFileSystemHandlerTest extends AbstractTest {
 		indexableFileSystem.setUnpackZips(Boolean.FALSE);
 		ForkJoinTask<?> forkJoinTask = indexableFileSystemHandler.handleIndexableForked(indexContext, indexableFileSystem);
 		ThreadUtilities.executeForkJoinTasks(this.getClass().getSimpleName(), 3, forkJoinTask);
-		ThreadUtilities.sleep(3000);
+		ThreadUtilities.sleep(5000);
+		ThreadUtilities.cancellForkJoinPool(this.getClass().getSimpleName());
 		verify(resourceHandler, atLeastOnce()).handleResource(any(IndexContext.class), any(IndexableFileSystem.class), any(Document.class), any(File.class));
 	}
 

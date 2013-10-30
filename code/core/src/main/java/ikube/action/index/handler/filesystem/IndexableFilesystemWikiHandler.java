@@ -2,6 +2,7 @@ package ikube.action.index.handler.filesystem;
 
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
+import ikube.action.index.handler.IResourceProvider;
 import ikube.action.index.handler.IndexableHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystemWiki;
@@ -11,11 +12,10 @@ import ikube.toolkit.ThreadUtilities;
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Future;
+import java.util.concurrent.ForkJoinTask;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.lucene.document.Document;
@@ -40,6 +40,7 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 		volatile int counter;
 	}
 
+	private Counter counter;
 	@Value("${wiki.read.length}")
 	private long readLength = 1024 * 1024 * 100;
 
@@ -47,32 +48,39 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final IndexableFileSystemWiki indexable) throws Exception {
-		List<Future<?>> futures = new ArrayList<Future<?>>();
-		String filePath = indexable.getPath();
-		File directory = FileUtilities.getFile(filePath, Boolean.TRUE);
-		final File[] bZip2Files = FileUtilities.findFiles(directory, new String[] { FILE_TYPE });
-		final Iterator<File> iterator = new ArrayList<File>(Arrays.asList(bZip2Files)).iterator();
-		final Counter counter = new Counter();
-		for (int i = 0; i < indexable.getThreads(); i++) {
-			Runnable runnable = new Runnable() {
-				public void run() {
-					while (iterator.hasNext() && ThreadUtilities.isInitialized()) {
-						File bZip2File = iterator.next();
-						logger.info("Indexing compressed file : " + bZip2File);
-						handleFile(indexContext, indexable, bZip2File, counter);
-					}
+	public ForkJoinTask<?> handleIndexableForked(final IndexContext<?> indexContext, final IndexableFileSystemWiki indexable) throws Exception {
+		counter = new Counter();
+
+		IResourceProvider<File> fileSystemResourceProvider = new IResourceProvider<File>() {
+
+			private Iterator<File> iterator;
+
+			{
+				String filePath = indexable.getPath();
+				File directory = FileUtilities.getFile(filePath, Boolean.TRUE);
+				File[] bZip2Files = FileUtilities.findFiles(directory, new String[] { FILE_TYPE });
+				this.setResources(Arrays.asList(bZip2Files));
+			}
+
+			@Override
+			public synchronized File getResource() {
+				if (!iterator.hasNext()) {
+					return null;
 				}
-			};
-			Future<?> future = ThreadUtilities.submit(indexContext.getIndexName(), runnable);
-			futures.add(future);
-		}
-		return futures;
+				return iterator.next();
+			}
+
+			@Override
+			public void setResources(final List<File> resources) {
+				iterator = resources.iterator();
+			}
+		};
+		return getRecursiveAction(indexContext, indexable, fileSystemResourceProvider);
 	}
 
 	@Override
 	protected List<?> handleResource(final IndexContext<?> indexContext, final IndexableFileSystemWiki indexableFileSystemWiki, final Object resource) {
-		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
+		handleFile(indexContext, indexableFileSystemWiki, (File) resource, counter);
 		return null;
 	}
 

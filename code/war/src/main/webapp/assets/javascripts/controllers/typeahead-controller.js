@@ -44,12 +44,12 @@ function TypeaheadController($scope, $http, $timeout) {
 	// retrieve the results if any. To prevent concurrent searches(due to the un-synch)
 	// nature of Angular we set a flag when we post, and we set a timeout that will re-try 
 	// the service until there are results or there are too many re-tries
-	$scope.doSearch = function(uri, searchString) {
+	$scope.doSearch = function(uri) {
 		if (!$scope.loading) {
 			$scope.loading = true;
 			$scope.url = getServiceUrl(uri);
 			$scope.search.fragment = true;
-			$scope.search.searchStrings = [searchString];
+			$scope.search.searchStrings = [$scope.searchString];
 			$scope.search.maxResults = 6;
 			
 			var promise = $http.post($scope.url, $scope.search);

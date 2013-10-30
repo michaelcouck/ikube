@@ -11,8 +11,7 @@ import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
-import java.util.List;
-import java.util.concurrent.Future;
+import java.util.concurrent.ForkJoinTask;
 
 import mockit.Deencapsulation;
 
@@ -49,8 +48,10 @@ public class IndexableFilesystemLogHandlerTest extends AbstractTest {
 		ResourceHandler<IndexableFileSystemLog> resourceBaseHandler = Mockito.mock(ResourceHandler.class);
 		Deencapsulation.setField(indexableFilesystemLogHandler, "resourceHandler", resourceBaseHandler);
 
-		List<Future<?>> futures = indexableFilesystemLogHandler.handleIndexable(indexContext, indexableFileSystemLog);
-		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
+		ForkJoinTask<?> forkJoinTask = indexableFilesystemLogHandler.handleIndexableForked(indexContext, indexableFileSystemLog);
+		ThreadUtilities.executeForkJoinTasks(this.getClass().getSimpleName(), 3, forkJoinTask);
+		ThreadUtilities.sleep(3000);
+		ThreadUtilities.cancellForkJoinPool(this.getClass().getSimpleName());
 		verify(resourceBaseHandler, atLeastOnce()).handleResource(any(IndexContext.class), any(IndexableFileSystemLog.class), any(Document.class),
 				any(Object.class));
 	}

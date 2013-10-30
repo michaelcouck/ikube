@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -44,9 +45,12 @@ import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.index.FieldInfo;
+import org.apache.lucene.index.FieldInfos;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.FieldInfo.IndexOptions;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
@@ -61,6 +65,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.Lock;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.ReaderUtil;
 import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -262,6 +267,7 @@ public abstract class AbstractTest {
 	protected Directory createIndexRam(final IndexContext<?> indexContext, final String... strings) throws Exception {
 		IndexWriter indexWriter = getRamIndexWriter(new StandardAnalyzer(IConstants.VERSION));
 		addDocuments(indexWriter, IConstants.CONTENTS, strings);
+		printIndex(indexWriter.getReader(), 100);
 		return indexWriter.getDirectory();
 	}
 
@@ -295,6 +301,7 @@ public abstract class AbstractTest {
 		Searcher searcher = new IndexSearcher(indexReader);
 		Searchable[] searchables = new Searchable[] { searcher };
 		MultiSearcher multiSearcher = new MultiSearcher(searchables);
+		printIndex(indexReader, 100);
 		return searchClass.getConstructor(Searcher.class, Analyzer.class).newInstance(multiSearcher, analyzer);
 	}
 
@@ -304,24 +311,39 @@ public abstract class AbstractTest {
 		return new IndexWriter(directory, conf);
 	}
 
-	protected <T extends Search> T createIndexRamAndSearch(final Class<T> searchClass, final Analyzer analyzer, final String[] fields, final String[][] strings)
-			throws Exception {
-		for (int i = 0; i < strings.length; i++) {
-			String id = Long.toString(System.currentTimeMillis());
+	protected <T extends Search> T createIndexRamAndSearch(final Class<T> searchClass, final Analyzer analyzer, final String[] fields,
+			final String[]... strings) throws Exception {
+		IndexWriter indexWriter = getRamIndexWriter(analyzer);
+
+		for (final String[] row : strings) {
+			int i = 0;
 			Document document = new Document();
-			IndexManager.addNumericField(IConstants.ID, id, document, Store.YES);
-			for (int j = 0; j < strings[i].length; i++) {
-				String field = fields[j];
-				String string = strings[i][j];
-				if (StringUtils.isNumeric(string.trim())) {
-					IndexManager.addNumericField(field, string.trim(), document, Store.YES);
+			for (final String column : row) {
+				String field = fields[i];
+				if (StringUtils.isNumeric(column.trim())) {
+					IndexManager.addNumericField(field, column.trim(), document, Store.YES);
 				} else {
-					IndexManager.addStringField(field, string, document, Store.YES, Index.ANALYZED, TermVector.NO);
+					IndexManager.addStringField(field, column, document, Store.YES, Index.ANALYZED, TermVector.NO);
 				}
+				i++;
 			}
 			indexWriter.addDocument(document);
 		}
-		return null;
+
+		Directory directory = indexWriter.getDirectory();
+
+		indexWriter.commit();
+		indexWriter.maybeMerge();
+		indexWriter.forceMerge(5);
+		indexWriter.close(Boolean.TRUE);
+
+		IndexReader indexReader = IndexReader.open(directory);
+		// printIndex(indexReader, 10);
+		Searcher searcher = new IndexSearcher(indexReader);
+
+		Searchable[] searchables = new Searchable[] { searcher };
+		MultiSearcher multiSearcher = new MultiSearcher(searchables);
+		return searchClass.getConstructor(Searcher.class, Analyzer.class).newInstance(multiSearcher, analyzer);
 	}
 
 	protected void addDocuments(final IndexWriter indexWriter, final String field, final String... strings) throws Exception {
@@ -343,6 +365,7 @@ public abstract class AbstractTest {
 		IndexManager.addStringField(IConstants.ID, id, document, Store.YES, analyzed, TermVector.YES);
 		IndexManager.addStringField(IConstants.NAME, string, document, Store.YES, analyzed, TermVector.YES);
 		if (StringUtils.isNumeric(string.trim())) {
+			// logger.info("Adding numeric field : " + string);
 			IndexManager.addNumericField(field, string.trim(), document, Store.YES);
 		} else {
 			IndexManager.addStringField(field, string, document, Store.YES, Index.ANALYZED, TermVector.NO);
@@ -372,6 +395,13 @@ public abstract class AbstractTest {
 	 */
 	protected void printIndex(final IndexReader indexReader, final int numDocs) throws Exception {
 		logger.info("Num docs : " + indexReader.numDocs());
+		FieldInfos fieldInfos = ReaderUtil.getMergedFieldInfos(indexReader);
+		Iterator<FieldInfo> iterator = fieldInfos.iterator();
+		while (iterator.hasNext()) {
+			FieldInfo fieldInfo = iterator.next();
+			IndexOptions indexOptions = fieldInfo.indexOptions;
+			logger.info("Field : " + fieldInfo.name + ", " + fieldInfo.number + ", " + indexOptions.name());
+		}
 		for (int i = 0; i < numDocs && i < indexReader.numDocs(); i++) {
 			Document document = indexReader.document(i);
 			logger.info("Document : " + i);

@@ -53,7 +53,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 	 * @return the recursive action that has already spawned off the sub tasks, if necessary
 	 */
 	protected ForkJoinTask<?> getRecursiveAction(final IndexContext<?> indexContext, final T indexable, final IResourceProvider<?> resourceProvider) {
-		logger.error("Recursive : ");
+		logger.info("Threads : " + indexable.getThreads());
 		class RecursiveActionImpl extends RecursiveAction {
 			/** @see IndexableHandler#getRecursiveAction(IndexContext, T, IResourceProvider) */
 			@Override
@@ -63,9 +63,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 				computeRecursive(indexContext, indexable, resourceProvider);
 				do {
 					// When there are no more resources we exit this task
-					// logger.info("Getting resource : ");
 					Object resource = resourceProvider.getResource();
-					// logger.info("Got resource : " + resource);
 					if (resource == null || isCancelled() || isDone() || isCompletedNormally() || isCompletedAbnormally()) {
 						break;
 					}
@@ -76,21 +74,27 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 					// Sleep for the required time
 					ThreadUtilities.sleep(indexContext.getThrottle());
 				} while (true);
-				logger.error("Finished : " + this + ", " + RecursiveAction.getPool().getRunningThreadCount());
+				logger.info("Finished : " + this + ", " + RecursiveAction.getPool().getRunningThreadCount());
 			}
 		}
 		// And hup
 		return new RecursiveActionImpl();
 	}
 
+	/**
+	 * This method splits off left and right tasks that essentially break the problem into parts that can be handled concurrently. The parent will have two
+	 * child tasks, and the children will each have two tasks until the 'threads' threshold defined for the indexable has been reached. Each task is not
+	 * necessarily create a new thread for each task, but can.
+	 * 
+	 * @param indexContext the context to propagate to the next task
+	 * @param indexable the indexable that is being processed
+	 * @param resourceProvider the resource provider for the indexable, file system, internet etc.
+	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void computeRecursive(final IndexContext<?> indexContext, final T indexable, final IResourceProvider<?> resourceProvider) {
-		logger.info("Recursive : 1");
 		if (indexable.incrementThreads(-1) <= 0) {
-			logger.info("Recursive : 2");
 			return;
 		}
-		logger.info("This : " + this + ", " + indexable.getThreads());
 		// Split off some more threads to help do the work
 		T leftIndexable = (T) SerializationUtilities.clone(indexable);
 		T rightIndexable = (T) SerializationUtilities.clone(indexable);
@@ -102,7 +106,6 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 		ForkJoinTask<?> leftRecursiveAction = getRecursiveAction(indexContext, leftIndexable, resourceProvider);
 		ForkJoinTask<?> rightRecursiveAction = getRecursiveAction(indexContext, rightIndexable, resourceProvider);
 		ForkJoinTask.invokeAll(leftRecursiveAction, rightRecursiveAction);
-		logger.info("Recursive : 3");
 	}
 
 	/**
@@ -140,7 +143,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 	 * @param indexable the indexable that is currently being indexed
 	 * @param exception the exception thrown, if this is an interrupted exception or a cancellation exception then we re-throw it immediately. Having said that
 	 *        there are times when such exceptions are not thrown by ikube internally, but by Hazelcast and even Lucene, and these also halt the execution
-	 * @param messages
+	 * @param messages any strings that sill be printed along with the exceptions
 	 */
 	protected void handleException(final Indexable<?> indexable, final Exception exception, final String... messages) {
 		if (InterruptedException.class.isAssignableFrom(exception.getClass()) || CancellationException.class.isAssignableFrom(exception.getClass())) {

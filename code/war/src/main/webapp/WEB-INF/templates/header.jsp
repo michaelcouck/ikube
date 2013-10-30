@@ -31,11 +31,11 @@
 						name="search" 
 						placeholder="Quick search, every field in every index..."
 						
-						ng-model="result"
-						typeahead="result for result in doSearch('/ikube/service/search/json/all', $viewValue)"
+						ng-model="searchString"
+						typeahead="result for result in doSearch('/ikube/service/search/json/all')"
 						
 						typeahead-min-length="3" 
-						typeahead-wait-ms="250"
+						typeahead-wait-ms="500"
 						typeahead-on-select="doModalResults();">
 				</form>
 			</div>

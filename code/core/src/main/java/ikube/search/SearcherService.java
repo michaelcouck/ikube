@@ -182,7 +182,8 @@ public class SearcherService implements ISearcherService {
 			searchComplexSorted.setTypeFields(typeFields);
 			searchComplexSorted.setSortField(sortFields);
 			ArrayList<HashMap<String, String>> results = searchComplexSorted.execute();
-			String[] searchStringsCorrected = searchComplexSorted.getCorrections();
+			String[] searchStringsCorrected = searchComplexSorted.getCorrections(search.getSearchStrings()
+					.toArray(new String[search.getSearchStrings().size()]));
 			persistSearch(search.getIndexName(), searchStrings, searchStringsCorrected, results);
 			if (searchStringsCorrected != null) {
 				search.setCorrectedSearchStrings(Arrays.asList(searchStringsCorrected));
@@ -198,7 +199,9 @@ public class SearcherService implements ISearcherService {
 	/**
 	 * This method is particularly expensive, it will do a search on every index in the system.
 	 */
+	@SuppressWarnings("unchecked")
 	public Search searchAll(final Search search) {
+		LOGGER.info("Search all");
 		try {
 			long totalHits = 0;
 			float highScore = 0;
@@ -213,7 +216,32 @@ public class SearcherService implements ISearcherService {
 			for (final String indexName : indexNames) {
 				Search clonedSearch = (Search) SerializationUtilities.clone(search);
 				clonedSearch.setIndexName(indexName);
+
+				String[] searchFields = monitorService.getIndexFieldNames(indexName);
+				String[] typeFields = new String[0];
+				// Arrays.fill(typeFields, TypeField.STRING.fieldType());
+				if (searchFields == null || searchFields.length == 0 || searchFields.length < searchStrings.length) {
+					continue;
+				}
+
+				String[] newSearchStrings = new String[searchFields.length];
+				int minLength = Math.min(searchStrings.length, newSearchStrings.length);
+				System.arraycopy(searchStrings, 0, newSearchStrings, 0, minLength);
+				String searchString = searchStrings != null && searchStrings.length > 0 ? searchStrings[0] : "";
+				Arrays.fill(newSearchStrings, minLength, newSearchStrings.length, searchString);
+				searchStrings = newSearchStrings;
+
+				// LOGGER.info("Searching index : " + indexName + ", " + deepToString(searchStrings) + ", " + deepToString(searchFields) + ", "
+				// + deepToString(typeFields));
+				clonedSearch.setSearchStrings(Arrays.asList(searchStrings));
+				clonedSearch.setSearchFields(Arrays.asList(searchFields));
+				clonedSearch.setTypeFields(Arrays.asList(typeFields));
+				clonedSearch.setSortFields(Collections.EMPTY_LIST);
+
+				// Search each index separately
 				search(clonedSearch);
+
+				// Consolidate the results, i.e. merge them
 				List<HashMap<String, String>> searchSubResults = clonedSearch.getSearchResults();
 				if (searchSubResults != null && searchSubResults.size() > 1) {
 					statistics = searchSubResults.remove(searchSubResults.size() - 1);
@@ -230,27 +258,25 @@ public class SearcherService implements ISearcherService {
 			Collections.sort(searchResults, new Comparator<HashMap<String, String>>() {
 				@Override
 				public int compare(final HashMap<String, String> o1, final HashMap<String, String> o2) {
-					Double scoreOne = Double.parseDouble(o1.get(IConstants.SCORE));
-					Double scoreTwo = Double.parseDouble(o2.get(IConstants.SCORE));
+					String scoreOneString = o1.get(IConstants.SCORE);
+					String scoreTwoString = o2.get(IConstants.SCORE);
+					Double scoreOne = Double.parseDouble(scoreOneString);
+					Double scoreTwo = Double.parseDouble(scoreTwoString);
 					return scoreOne.compareTo(scoreTwo);
 				}
 			});
 			ArrayList<HashMap<String, String>> topResults = new ArrayList<HashMap<String, String>>();
-			topResults.addAll(searchResults.subList(0, search.getMaxResults()));
+			topResults.addAll(searchResults.subList(0, Math.min(search.getMaxResults(), searchResults.size())));
 
 			SearchComplex searchSingle = new SearchComplex(null);
 			searchSingle.setSearchString(searchStrings);
-			searchSingle.addStatistics(topResults, totalHits, highScore, duration, exception);
+			searchSingle.addStatistics(searchStrings, topResults, totalHits, highScore, duration, exception);
 
 			search.setSearchResults(topResults);
 		} catch (Exception e) {
 			handleException(search.getIndexName(), e);
 		}
 		return search;
-	}
-
-	public Search multiComplex() {
-		return null;
 	}
 
 	private ArrayList<HashMap<String, String>> handleException(final String indexName, final Exception e) {

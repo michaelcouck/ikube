@@ -139,7 +139,6 @@ public class SearcherXml extends Searcher {
 	 */
 	@POST
 	@Override
-	@Path(SearcherXml.JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response search(//
 			@Context final HttpServletRequest request, //
@@ -154,7 +153,7 @@ public class SearcherXml extends Searcher {
 	 */
 	@POST
 	@Override
-	@Path(SearcherXml.XML + SearcherXml.ALL)
+	@Path(SearcherXml.ALL)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response searchAll(//
 			@Context final HttpServletRequest request, //

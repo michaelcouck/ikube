@@ -14,7 +14,7 @@
 	<meta http-equiv="Expires" content="-1">
 	<meta http-equiv="Pragma" content="no-cache">
 	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
-	<meta http-equiv="refresh" content="1800">
+	<!-- <meta http-equiv="refresh" content="1800"> -->
 	
 	<title><tiles:insertAttribute name="title" /></title>
 	<link rel="shortcut icon" href="<c:url value="/img/icons/favicon.ico" />">

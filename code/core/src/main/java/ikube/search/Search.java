@@ -214,7 +214,7 @@ public abstract class Search {
 			}
 			long duration = System.currentTimeMillis() - start;
 			// Add the search results size as a last category
-			addStatistics(results, totalHits, highScore, duration, exception);
+			addStatistics(searchStrings, results, totalHits, highScore, duration, exception);
 		}
 		return results;
 	}
@@ -350,14 +350,14 @@ public abstract class Search {
 	 * @param totalHits the total hits
 	 * @param duration how long the search took in milliseconds
 	 */
-	protected void addStatistics(final ArrayList<HashMap<String, String>> results, final long totalHits, final float highScore, final long duration,
+	protected void addStatistics(final String[] searchStrings, final ArrayList<HashMap<String, String>> results, final long totalHits, final float highScore, final long duration,
 			final Exception exception) {
 		if (results == null) {
 			return;
 		}
 		// Add the search results size as a last category
 		HashMap<String, String> statistics = new HashMap<String, String>();
-		String[] correctedSearchStrings = getCorrections();
+		String[] correctedSearchStrings = getCorrections(searchStrings);
 		String searchString = StringUtils.strip(Arrays.deepToString(searchStrings), IConstants.STRIP_CHARACTERS);
 		String correctedSearchString = StringUtils.strip(Arrays.deepToString(correctedSearchStrings), IConstants.STRIP_CHARACTERS);
 
@@ -383,7 +383,7 @@ public abstract class Search {
 	 * 
 	 * @return the array of strings that have been corrected using the language and word lists in the language directory
 	 */
-	protected String[] getCorrections() {
+	protected String[] getCorrections(final String... searchStrings) {
 		boolean corrections = Boolean.FALSE;
 		String[] correctedSearchStrings = new String[searchStrings.length];
 		System.arraycopy(searchStrings, 0, correctedSearchStrings, 0, correctedSearchStrings.length);

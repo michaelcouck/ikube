@@ -1,17 +1,21 @@
 package ikube.search;
 
+import static ikube.toolkit.ObjectToolkit.populateFields;
+import static junit.framework.Assert.assertEquals;
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.toolkit.ObjectToolkit;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import mockit.Deencapsulation;
+import mockit.Mock;
+import mockit.MockClass;
 import mockit.Mockit;
 
-import org.apache.lucene.util.ReaderUtil;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.lucene.search.Searcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,10 +23,49 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("deprecation")
 public class SearcherServiceTest extends AbstractTest {
 
 	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(SearcherServiceTest.class);
+
+	@MockClass(realClass = Search.class)
+	public class SearchComplexMock {
+		@Mock
+		public ArrayList<HashMap<String, String>> execute() {
+			HashMap<String, String> result = new HashMap<String, String>();
+			result.put(IConstants.CONTENTS, IConstants.CONTENTS);
+			result.put(IConstants.SCORE, Float.toString((float) Math.random()));
+
+			HashMap<String, String> statistics = new HashMap<String, String>();
+			statistics.put(IConstants.TOTAL, Long.toString(526));
+			statistics.put(IConstants.DURATION, Long.toString(652));
+			statistics.put(IConstants.SCORE, Float.toString(0.236f));
+
+			ArrayList<HashMap<String, String>> searchResults = new ArrayList<HashMap<String, String>>();
+			searchResults.add(result);
+			searchResults.add(statistics);
+
+			return searchResults;
+		}
+	}
+
+	@MockClass(realClass = SearcherService.class)
+	public class SearcherServiceMock {
+		@Mock
+		@SuppressWarnings("unchecked")
+		protected <T> T getSearch(final Class<?> klass, final String indexName) throws Exception {
+			Search search = (Search) Mockito.mock(klass);
+			searches.add(search);
+			return (T) search;
+		}
+
+		@Mock
+		protected void persistSearch(final String indexName, final String[] searchStrings, final String[] searchStringsCorrected,
+				final ArrayList<HashMap<String, String>> results) {
+			// Nothing
+		}
+	}
 
 	/** Class under test. */
 	private SearcherService searcherService;
@@ -38,31 +81,23 @@ public class SearcherServiceTest extends AbstractTest {
 	private int distance = 10;
 	private double latitude = 0.0;
 	private double longitude = 0.0;
+	private ikube.model.Search search;
 
 	private List<Search> searches = new ArrayList<>();
 
 	@Before
 	public void before() {
-		searcherService = new SearcherService() {
-			@SuppressWarnings("unchecked")
-			protected <T> T getSearch(final Class<?> klass, final String indexName) throws Exception {
-				Search search = (Search) Mockito.mock(klass);
-				searches.add(search);
-				return (T) search;
-			}
+		search = new ikube.model.Search();
+		search = populateFields(new ikube.model.Search(), Boolean.TRUE, 10);
 
-			protected void persistSearch(final String indexName, final String[] searchStrings, final String[] searchStringsCorrected,
-					final ArrayList<HashMap<String, String>> results) {
-				// Nothing
-			}
-
-		};
+		Mockit.setUpMocks(new SearcherServiceMock(), new SearchComplexMock());
+		searcherService = new SearcherService();
 		indexName = indexContext.getIndexName();
 	}
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks(ReaderUtil.class);
+		Mockit.tearDownMocks();
 	}
 
 	@Test
@@ -97,13 +132,40 @@ public class SearcherServiceTest extends AbstractTest {
 
 	@Test
 	public void searchComplexSortedJson() {
-		ikube.model.Search search = ObjectToolkit.populateFields(new ikube.model.Search(), Boolean.TRUE, 10);
 		searcherService.search(search);
 		verify();
 	}
 
 	@Test
+	public void searchAll() {
+		searcherService.search(search);
+		verify();
+	}
+
+	@Test
+	public void searchAllIntegrate() {
+		Mockit.tearDownMocks(SearcherService.class);
+		searcherService = new SearcherService() {
+			@SuppressWarnings({ "unchecked" })
+			protected <T> T getSearch(final Class<?> klass, final String indexName) throws Exception {
+				return (T) klass.getConstructor(Searcher.class).newInstance(indexSearcher);
+			}
+		};
+
+		Mockito.when(monitorService.getIndexNames()).thenReturn(new String[] { "index-one", "index-two", "index-three", "index-four" });
+		Mockito.when(monitorService.getIndexFieldNames(Mockito.anyString())).thenReturn(new String[] { "field-one", "field-two", "field-three", "field-four" });
+
+		Deencapsulation.setField(searcherService, dataBase);
+		Deencapsulation.setField(searcherService, monitorService);
+		ikube.model.Search searchResult = searcherService.searchAll(search);
+		logger.info("Search : " + ToStringBuilder.reflectionToString(searchResult));
+		int totalResultsPlusStats = monitorService.getIndexNames().length + 1;
+		assertEquals("There should be a result for each index and the statistics : ", totalResultsPlusStats, searchResult.getSearchResults().size());
+	}
+
+	@Test
 	public void persistSearch() {
+		Mockit.tearDownMocks();
 		searcherService = new SearcherService();
 		Deencapsulation.setField(searcherService, dataBase);
 		ArrayList<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();

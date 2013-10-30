@@ -126,7 +126,6 @@ public class SearcherJson extends Searcher {
 	 */
 	@POST
 	@Override
-	@Path(SearcherJson.JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response search(//
 			@Context final HttpServletRequest request, //
@@ -141,13 +140,13 @@ public class SearcherJson extends Searcher {
 	 */
 	@POST
 	@Override
-	@Path(SearcherJson.JSON + SearcherJson.ALL)
+	@Path(SearcherJson.ALL)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response searchAll(//
 			@Context final HttpServletRequest request, //
 			@Context final UriInfo uriInfo) {
 		Search search = unmarshall(Search.class, request);
-		Object results = searcherService.search(search);
+		Object results = searcherService.searchAll(search);
 		return buildJsonResponse(results);
 	}
 

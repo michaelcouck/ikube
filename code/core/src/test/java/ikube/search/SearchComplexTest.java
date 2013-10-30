@@ -1,34 +1,29 @@
 package ikube.search;
 
+import static ikube.search.Search.TypeField.NUMERIC;
+import static ikube.search.Search.TypeField.RANGE;
+import static ikube.search.Search.TypeField.STRING;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.action.index.IndexManager;
+import ikube.action.index.analyzer.StemmingAnalyzer;
 import ikube.toolkit.FileUtilities;
-import ikube.toolkit.StringUtilities;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
+ * NOTE to self: Lucene does not like underscores in the field names!!!
+ * 
  * @author Michael Couck
  * @since 20.02.2012
  * @version 01.00
@@ -36,58 +31,96 @@ import org.junit.Test;
 public class SearchComplexTest extends AbstractTest {
 
 	private SearchComplex searchComplex;
-	private IndexSearcher indexSearcher;
-	private IndexWriter indexWriter;
 
 	@Before
 	public void before() throws Exception {
 		File file = FileUtilities.findFileRecursively(new File("."), "index-data.csv");
-		File indexDirectory = FileUtilities.getFile("./indexes", Boolean.TRUE);
-		indexWriter = IndexManager.openIndexWriter(indexContext, indexDirectory, Boolean.TRUE);
-		LineIterator lineIterator = FileUtils.lineIterator(file, IConstants.ENCODING);
-		String headerLine = lineIterator.nextLine();
-		String[] columns = StringUtils.split(headerLine, ',');
-		while (lineIterator.hasNext()) {
-			String line = lineIterator.nextLine();
-			String[] values = StringUtils.split(line, ',');
-			Document document = new Document();
-			for (int i = 0; i < columns.length && i < values.length; i++) {
-				if (StringUtilities.isNumeric(values[i])) {
-					IndexManager.addNumericField(columns[i], values[i], document, Store.YES);
-				} else {
-					IndexManager.addStringField(columns[i], values[i], document, Store.YES, Index.ANALYZED, TermVector.NO);
-				}
-			}
-			indexWriter.addDocument(document);
+		List<String> lines = FileUtils.readLines(file);
+		String[] columns = StringUtils.split(lines.get(0), ';');
+		List<String[]> data = new ArrayList<String[]>();
+
+		for (final String line : lines) {
+			String[] values = StringUtils.split(line, ';');
+			data.add(values);
 		}
-		IndexReader indexReader = IndexReader.open(indexWriter, Boolean.TRUE);
-		indexSearcher = new IndexSearcher(indexReader);
-		searchComplex = new SearchComplex(indexSearcher);
+
+		String[][] strings = data.toArray(new String[data.size()][]);
+		strings = Arrays.copyOfRange(strings, 1, strings.length);
+		searchComplex = createIndexRamAndSearch(SearchComplex.class, new StemmingAnalyzer(), columns, strings);
+		searchComplex.setFirstResult(0);
+		searchComplex.setFragment(true);
+		searchComplex.setMaxResults(10);
 	}
 
 	@After
+	@SuppressWarnings("deprecation")
 	public void after() throws Exception {
-		indexWriter.close();
-		FileUtilities.deleteFile(new File("./indexes"), 1);
-		indexSearcher.close();
+		searchComplex.searcher.close();
 	}
 
 	@Test
-	public void getQueryAndSearch() throws ParseException {
-		// TODO When we get the min-eco data with the coordinates
-		// then update this test to search against the geospatial data too
-		// Coordinate coordinate = new Coordinate(52.52274, 13.4166);
-		searchComplex.setFirstResult(0);
-		searchComplex.setFragment(Boolean.TRUE);
-		searchComplex.setMaxResults(10);
-		searchComplex.setSearchField("NAME", "ANNEE", "NR_KBO_BCE_CO_NR");
-		searchComplex.setSearchString("INTERCOMMUNALE", "2000", "200362210-200952524");
-		searchComplex.setTypeFields("string", "numeric", "range");
-		Query query = searchComplex.getQuery();
-		assertNotNull(query);
+	public void singleField() throws Exception {
+		searchComplex.setSearchField("name");
+		searchComplex.setSearchString("Michael Couck");
+		searchComplex.setSortField("name");
 
 		ArrayList<HashMap<String, String>> results = searchComplex.execute();
-		assertEquals("There must be 4 results and the statistics : ", 5, results.size());
+		String fragment = results.get(0).get(IConstants.FRAGMENT);
+		assertEquals("This is the highlighted hit : ", "cv   <B>Michael</B> <B>Couck</B> ", fragment);
+	}
+
+	@Test
+	public void numericQuery() throws Exception {
+		searchComplex.setSearchField("annee");
+		searchComplex.setSearchString("2001");
+		searchComplex.setTypeFields(NUMERIC.fieldType());
+		searchComplex.setSortField("annee");
+
+		ArrayList<HashMap<String, String>> results = searchComplex.execute();
+		assertEquals("There must be 1 result and the statistics : ", 2, results.size());
+
+		searchComplex.setSearchString("2001", "6");
+		searchComplex.setSearchField("annee", "column-two");
+		searchComplex.setTypeFields(NUMERIC.fieldType(), NUMERIC.fieldType());
+		searchComplex.setSortField("annee");
+
+		results = searchComplex.execute();
+		assertEquals("There must be 2 result and the statistics : ", 3, results.size());
+	}
+
+	@Test
+	public void rangeQuery() throws Exception {
+		searchComplex.setSearchField("annee");
+		searchComplex.setSearchString("2001-2003");
+		searchComplex.setTypeFields(RANGE.fieldType());
+		searchComplex.setSortField("annee");
+		ArrayList<HashMap<String, String>> results = searchComplex.execute();
+		assertEquals("There must be 3 results and the statistics : ", 4, results.size());
+
+		searchComplex.setSearchField("annee", "annee");
+		searchComplex.setSearchString("2001-2003", "2005-2006");
+		searchComplex.setTypeFields(RANGE.fieldType(), RANGE.fieldType());
+		searchComplex.setSortField("annee");
+		results = searchComplex.execute();
+		assertEquals("There must be 5 results and the statistics : ", 6, results.size());
+
+		searchComplex.setSearchField("column-two");
+		searchComplex.setSearchString("5-7");
+		searchComplex.setTypeFields(RANGE.fieldType());
+		searchComplex.setSortField("column-two");
+		results = searchComplex.execute();
+		assertEquals("There must be 3 results and the statistics : ", 4, results.size());
+	}
+
+	@Test
+	public void complexQuery() throws Exception {
+		searchComplex.setSearchField("name", "annee", "column-two");
+		searchComplex.setSearchString("cie interc", "2002", "7-9");
+		searchComplex.setTypeFields(STRING.fieldType(), NUMERIC.fieldType(), RANGE.fieldType());
+		searchComplex.setSortField("column-two");
+
+		ArrayList<HashMap<String, String>> results = searchComplex.execute();
+		assertEquals("There must be 6 results and the statistics : ", 7, results.size());
 	}
 
 }

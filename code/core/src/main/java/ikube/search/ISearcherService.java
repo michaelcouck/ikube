@@ -32,5 +32,8 @@ public interface ISearcherService {
 
 	/** Search json */
 	Search search(final Search search);
+	
+	/** Every field in every index */
+	Search searchAll(final Search search);
 
 }

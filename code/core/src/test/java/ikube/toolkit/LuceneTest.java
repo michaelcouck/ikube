@@ -23,6 +23,8 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.NumericRangeQuery;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SearcherFactory;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.search.TermQuery;
@@ -57,6 +59,7 @@ public class LuceneTest extends AbstractTest {
 			french + " " + //
 			somethingElseAlToGether + " ";
 	private String somethingNumeric = " 123456789 ";
+	private String somethingElseNumeric = " 1234567890 ";
 
 	@Before
 	public void before() {
@@ -72,7 +75,7 @@ public class LuceneTest extends AbstractTest {
 	@Test
 	public void search() throws Exception {
 		SearchComplex searchSingle = createIndexRamAndSearch(SearchComplex.class, new StemmingAnalyzer(), IConstants.CONTENTS, russian, german, french,
-				somethingElseAlToGether, string, somethingNumeric);
+				somethingElseAlToGether, string, somethingNumeric, somethingElseNumeric);
 		searchSingle.setFirstResult(0);
 		searchSingle.setFragment(true);
 		searchSingle.setMaxResults(10);
@@ -225,7 +228,19 @@ public class LuceneTest extends AbstractTest {
 		IndexSearcher indexSearcher = new IndexSearcher(indexReader);
 		TermQuery numberQuery = new TermQuery(new Term(IConstants.CONTENTS, NumericUtils.doubleToPrefixCoded(123456789L)));
 		TopDocs topDocs = indexSearcher.search(numberQuery, 100);
-		assertEquals("There must be exactly one category from the search : ", 1, topDocs.scoreDocs.length);
+		assertEquals("There must be exactly one result from the search : ", 1, topDocs.scoreDocs.length);
+	}
+
+	@Test
+	@SuppressWarnings("resource")
+	public void rangeSearch() throws Exception {
+		Directory directory = createIndexRam(indexContext, russian, german, french, somethingElseAlToGether, string, somethingNumeric.trim(),
+				somethingElseNumeric.trim());
+		IndexReader indexReader = IndexReader.open(directory);
+		IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+		Query query = NumericRangeQuery.newDoubleRange(IConstants.CONTENTS, 123456789d, 1234567890d, Boolean.TRUE, Boolean.TRUE);
+		TopDocs topDocs = indexSearcher.search(query, 100);
+		assertEquals("There must be exactly two, i.e. both numbers from the search : ", 2, topDocs.scoreDocs.length);
 	}
 
 }

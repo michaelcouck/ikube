@@ -17,9 +17,7 @@ angular.element(document).ready(function() {
 		<li href="system" active-link="active"><a href="<c:url value="/system/dash.html" />"><i class="icon-cogs"></i>System</a></li>
 		<li href="search" active-link="active"><a href="<c:url value="/search/search.html" />"><i class="icon-list-alt"></i>Search</a></li>
 		<li href="analytics" active-link="active"><a href="<c:url value="/analytics/analytics.html" />"><i class="icon-beaker"></i>Analytics</a></li>
-		<%-- <li href="search" active-link="active"><a href="<c:url value="/indexes.html" />"><i class="icon-plus-sign"></i>Indexes</a></li> --%>
-		<%-- <li class=""><a href="<c:url value="/properties.html" />"><i class="icon-bar-chart"></i>Properties</a></li> --%>
-		<%-- <li class=""><a href="<c:url value="/admin.html" />"><i class="icon-bar-chart"></i>Admin</a></li> --%>
+		<li href="grid" active-link="active"><a href="#" onClick="enterpriseNotification();"><i class="icon-th"></i>Grid</a></li>
 		<li class="dropdown">
 			<a class="dropdown-toggle" data-toggle="dropdown">
 				<i class="icon-share-alt"></i>More<span class="caret"></span>

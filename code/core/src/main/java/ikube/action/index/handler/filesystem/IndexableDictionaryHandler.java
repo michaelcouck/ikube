@@ -27,6 +27,7 @@ import org.apache.lucene.store.FSDirectory;
  * @since 01.10.11
  * @version 01.00
  */
+@Deprecated
 public class IndexableDictionaryHandler extends IndexableHandler<IndexableDictionary> {
 
 	/**

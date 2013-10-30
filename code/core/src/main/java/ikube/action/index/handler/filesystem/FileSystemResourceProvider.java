@@ -87,11 +87,11 @@ class FileSystemResourceProvider implements IResourceProvider<File> {
 	/**
 	 * {@inheritDoc}
 	 */
-	public synchronized File getResource() {
+	public File getResource() {
 		return getResource(5);
 	}
 
-	private synchronized File getResource(final int retry) {
+	private File getResource(final int retry) {
 		File file = null;
 		if (retry > 0) {
 			if (files.size() > 0) {

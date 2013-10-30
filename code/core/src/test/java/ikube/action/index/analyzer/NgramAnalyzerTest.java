@@ -47,13 +47,10 @@ public class NgramAnalyzerTest extends AbstractTest {
 		searchSingle.setSortField(IConstants.CONTENT);
 
 		ArrayList<HashMap<String, String>> results = searchSingle.execute();
-		logger.info("Results : " + results);
-
 		assertEquals("This is the highlighted hit : ", "Mic<B>hae</B>l C<B>ouc</B>k ", results.get(0).get(IConstants.FRAGMENT));
 
 		searchSingle.setSearchString("poo");
 		results = searchSingle.execute();
-		logger.info("Results : " + results);
 		assertEquals("There should be no results from the search : ", 1, results.size());
 	}
 

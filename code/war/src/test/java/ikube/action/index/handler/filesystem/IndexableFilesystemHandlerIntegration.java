@@ -54,7 +54,7 @@ public class IndexableFilesystemHandlerIntegration extends IntegrationTest {
 		try {
 			ForkJoinTask<?> forkJoinTask = indexableFilesystemHandler.handleIndexableForked(desktop, desktopFolder);
 			ThreadUtilities.executeForkJoinTasks(desktop.getName(), desktopFolder.getThreads(), forkJoinTask);
-			ThreadUtilities.sleep(3000);
+			ThreadUtilities.sleep(15000);
 			ThreadUtilities.cancellForkJoinPool(desktop.getName());
 			// Verify that there are some documents in the index
 			assertNotNull("The index writer should still be available : ", desktop.getIndexWriters());

@@ -52,7 +52,7 @@ module.controller('SearcherController', function($scope, $http) {
 			$scope.search.searchFields.indexOf('longitude') > -1) {
 			$scope.url = getServiceUrl('/ikube/service/search/json/geospatial');
 		} else {
-			$scope.url = getServiceUrl('/ikube/service/search/json/sorted/typed');
+			$scope.url = getServiceUrl('/ikube/service/search/json');
 		}
 		var promise = $http.post($scope.url, $scope.search);
 		promise.success(function(data, status) {
