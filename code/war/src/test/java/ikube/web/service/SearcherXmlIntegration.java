@@ -18,7 +18,7 @@ public class SearcherXmlIntegration extends BaseTest {
 	@Test
 	public void searchSingle() throws Exception {
 		// String, String, String, boolean, int, int
-		String url = getUrl(SearcherXml.SIMPLE);
+		String url = getUrl(SearcherXml.SINGLE);
 		logger.info("Looking for url : " + url);
 
 		String[] names = { //
@@ -49,7 +49,7 @@ public class SearcherXmlIntegration extends BaseTest {
 	@Test
 	public void searchMulti() throws Exception {
 		// String, String, String, boolean, int, int
-		String url = getUrl(SearcherXml.SIMPLE);
+		String url = getUrl(SearcherXml.SINGLE);
 		logger.info("Looking for url : " + url);
 
 		String[] names = { //

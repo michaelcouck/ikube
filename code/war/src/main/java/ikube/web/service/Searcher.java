@@ -20,12 +20,12 @@ public abstract class Searcher extends Resource {
 
 	public static final String SEARCH = "/search";
 
-	public static final String SIMPLE = "/simple";
-	public static final String SORTED = "/sorted";
-	public static final String SORTED_TYPED = "/sorted/typed";
-	public static final String GEOSPATIAL = "/geospatial";
-	public static final String JSON = "/json";
 	public static final String ALL = "/all";
+	public static final String JSON = "/json";
+	public static final String SINGLE = "/single";
+	public static final String SORTED = "/sorted";
+	public static final String GEOSPATIAL = "/geospatial";
+	public static final String SORTED_TYPED = "/sorted/typed";
 
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 

@@ -45,7 +45,7 @@ public class IndexableFilesystemWikiHandlerIntegration extends IntegrationTest {
 			String ip = InetAddress.getLocalHost().getHostAddress();
 			IndexWriter indexWriter = IndexManager.openIndexWriter(wikiHistoryArabic, System.currentTimeMillis(), ip);
 			wikiHistoryArabic.setIndexWriters(indexWriter);
-			indexableFilesystemHandler.handleIndexable(wikiHistoryArabic, wikiHistoryDataArabic);
+			indexableFilesystemHandler.handleIndexableForked(wikiHistoryArabic, wikiHistoryDataArabic);
 
 			Thread.sleep(10000);
 

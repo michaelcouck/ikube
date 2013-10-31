@@ -12,6 +12,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -55,15 +57,22 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	public ForkJoinTask<?> handleIndexableForked(final IndexContext<?> indexContext, final IndexableEmail indexableEmail) throws Exception {
 		IResourceProvider<IndexableEmail> emailResourceProvider = new IResourceProvider<IndexableEmail>() {
 
+			List<IndexableEmail> indexableEmails;
+
 			@Override
 			public IndexableEmail getResource() {
-				return indexableEmail;
+				if (indexableEmails.isEmpty()) {
+					return null;
+				}
+				return indexableEmails.get(0);
 			}
 
 			@Override
 			public void setResources(final List<IndexableEmail> resources) {
+				this.indexableEmails = resources;
 			}
 		};
+		emailResourceProvider.setResources(new ArrayList<IndexableEmail>(Arrays.asList(indexableEmail)));
 		return getRecursiveAction(indexContext, indexableEmail, emailResourceProvider);
 	}
 

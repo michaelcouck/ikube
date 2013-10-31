@@ -40,7 +40,7 @@ public class IndexableFilesystemHandlerIntegration extends IntegrationTest {
 		// This should be true for performance testing, however there is a problem with running this test
 		// in Eclipse with the unpack to true, OpenJpa throws a stack over flow for some reason, I think because
 		// the classes are not enhanced
-		desktopFolder.setUnpackZips(Boolean.FALSE);
+		desktopFolder.setUnpackZips(Boolean.TRUE);
 		desktop.setIndexWriters(indexWriter);
 	}
 
