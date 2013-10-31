@@ -143,27 +143,26 @@
 			<div class="row-fluid">
 				<div class="span12">
 					<div class="tabbable black-box" style="margin-bottom: 18px;">
-
+						
 						<div class="tab-header">
 							Cluster statistics 
 							<span class="pull-right">
 								<span class="options" ng-controller="ServersController">
-										<div class="btn-group">
-											<a class="dropdown-toggle" data-toggle="dropdown">
-												<i class="icon-cog"></i>
-											</a>
-											<ul class="dropdown-menu black-box-dropdown dropdown-left">
-												<li><a href="#" ng-click="refreshServers();">Refresh</a></li>
-												<!-- <li><a href="#">Another action</a></li>
-												<li><a href="#">Something else here</a></li>
-												<li class="divider"></li>
-												<li><a href="#">Separated link</a></li> -->
-											</ul>
-										</div>
+									<div class="btn-group">
+										<a class="dropdown-toggle" data-toggle="dropdown">
+											<i class="icon-cog"></i>
+										</a>
+										<ul class="dropdown-menu black-box-dropdown dropdown-left">
+											<li><a href="#" ng-click="refreshServers();">Refresh</a></li>
+											<!-- <li><a href="#">Another action</a></li>
+											<li><a href="#">Something else here</a></li>
+											<li class="divider"></li>
+											<li><a href="#">Separated link</a></li> -->
+										</ul>
+									</div>
 								</span>
 							</span>
 						</div>
-
 						<ul class="nav nav-tabs">
 							<li class="active"><a href="#tab1" data-toggle="tab"><i class="icon-globe"></i>Indexing</a></li>
 							<li class=""><a href="#tab2" data-toggle="tab"><i class="icon-search"></i>Searching</a></li>
@@ -180,59 +179,27 @@
 												type="checkbox" 
 												id="VKZp4" 
 												class="checky" 
-												checked="{'checked' : server.threadsRunning}" 
-												ng-click="toggleSchedules();" />
+												ng-data="server" 
+												ng-checked="server.threadsRunning"
+												ng-click="toggleThreadsRunning();" />
 											<label for="VKZp4" class="checky"><span></span></label>
 										</div>
 									</div>
 									<div class="inner-well clearfix">
-										<div class="pull-left">Cpu throttling active</div>
+										<div class="pull-left">Cpu throttling</div>
 										<div class="pull-right">
 											<input 
 												rel="confirm-check" 
 												type="checkbox" 
 												id="FNNqp" 
 												class="checky" 
-												checked="{'checked' : server.cpuThrottling}" 
+												ng-data="server" 
+												ng-checked="server.cpuThrottling" 
 												ng-click="toggleCpuThrottling();" />
 											<label for="FNNqp" class="checky"><span></span></label>
 										</div>
 									</div>
 								</div>
-								<!-- <div class="padded">
-									<div id="fix-stats">
-										<p>
-											<a rel="action" class='button mini rounded inset light-gray'>Toggle schedules and throttling</a>
-										</p>
-										<div style="display: none;" rel="confirm-action">
-											<div class="inner-well clearfix">
-												<b>Are you sure?</b>
-												<div class="pull-right">
-													<input rel="confirm-check" type="checkbox" id="NxwYk"
-														class="checky" /> <label for="NxwYk" class="checky green"><span></span></label>
-												</div>
-											</div>
-											<div class="clearfix vpadded">
-												<div class="pull-left">
-													<a href="#" class="button red" rel="confirm-do" onclick="terminateAll();">Stop schedules</a>
-												</div>
-											</div>
-											<div class="clearfix vpadded">
-												<div class="pull-left">
-													<a href="#" class="button red" rel="confirm-do" onclick="startupAll();">Start schedules</a>
-												</div>
-											</div>
-											<div class="clearfix vpadded">
-												<div class="pull-left">
-													<a href="#" class="button red" rel="confirm-do" onclick="toggleCpuThrottling();">Toggle cpu throttling</a>
-												</div>
-												<div class="pull-right">
-													<a href="#" class="button gray" rel="confirm-cancel">Cancel</a>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div> -->
 								<div class="separator">
 									<div class="inner-well">
 										<div indexing style="width: 100%;">The indexing performance graph</div>
@@ -253,7 +220,7 @@
 					</div>
 				</div>
 			</div>
-
+			
 			<div class="row-fluid">
 				<div class="span12">
 					<div class="black-box tex">
@@ -287,7 +254,7 @@
 					</div>
 				</div>
 			</div>
-
+			
 		</div>
 	</div>
 </div>

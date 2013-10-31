@@ -171,8 +171,6 @@ public class SearcherService implements ISearcherService {
 			String[] searchFields = search.getSearchFields().toArray(new String[search.getSearchFields().size()]);
 			String[] typeFields = search.getTypeFields().toArray(new String[search.getTypeFields().size()]);
 			String[] sortFields = search.getSortFields().toArray(new String[search.getSortFields().size()]);
-			// TODO Change the field types based on the search strings for those fields, for example if the field
-			// is something like 123-456 then this is a range query for the field
 
 			searchComplexSorted.setFirstResult(search.getFirstResult());
 			searchComplexSorted.setFragment(search.isFragment());
@@ -219,20 +217,29 @@ public class SearcherService implements ISearcherService {
 
 				String[] searchFields = monitorService.getIndexFieldNames(indexName);
 				String[] typeFields = new String[0];
-				// Arrays.fill(typeFields, TypeField.STRING.fieldType());
-				if (searchFields == null || searchFields.length == 0 || searchFields.length < searchStrings.length) {
+				if (searchFields == null || searchFields.length == 0) {
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.info("Index : " + indexName + ", search fields : " + Arrays.deepToString(searchFields));
+					}
 					continue;
 				}
 
-				String[] newSearchStrings = new String[searchFields.length];
-				int minLength = Math.min(searchStrings.length, newSearchStrings.length);
-				System.arraycopy(searchStrings, 0, newSearchStrings, 0, minLength);
-				String searchString = searchStrings != null && searchStrings.length > 0 ? searchStrings[0] : "";
-				Arrays.fill(newSearchStrings, minLength, newSearchStrings.length, searchString);
-				searchStrings = newSearchStrings;
+				// String[] newSearchStrings = new String[searchFields.length];
+				// int minLength = Math.min(searchStrings.length, newSearchStrings.length);
+				// System.arraycopy(searchStrings, 0, newSearchStrings, 0, minLength);
+				// String searchString = searchStrings != null && searchStrings.length > 0 ? searchStrings[0] : "";
+				// Arrays.fill(newSearchStrings, minLength, newSearchStrings.length, searchString);
+				// searchStrings = newSearchStrings;
 
-				// LOGGER.info("Searching index : " + indexName + ", " + deepToString(searchStrings) + ", " + deepToString(searchFields) + ", "
-				// + deepToString(typeFields));
+				searchStrings = fillArray(searchFields, searchStrings);
+
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Searching index : " + indexName + ", " + //
+							Arrays.deepToString(searchStrings) + ", " + //
+							Arrays.deepToString(searchFields) + ", " + //
+							Arrays.deepToString(typeFields));
+				}
+
 				clonedSearch.setSearchStrings(Arrays.asList(searchStrings));
 				clonedSearch.setSearchFields(Arrays.asList(searchFields));
 				clonedSearch.setTypeFields(Arrays.asList(typeFields));
@@ -277,6 +284,15 @@ public class SearcherService implements ISearcherService {
 			handleException(search.getIndexName(), e);
 		}
 		return search;
+	}
+
+	private String[] fillArray(final String[] lengthOfThisArray, final String[] originalStrings) {
+		String[] newStrings = new String[lengthOfThisArray.length];
+		int minLength = Math.min(originalStrings.length, newStrings.length);
+		System.arraycopy(originalStrings, 0, newStrings, 0, minLength);
+		String fillerString = originalStrings != null && originalStrings.length > 0 ? originalStrings[0] : "";
+		Arrays.fill(newStrings, minLength, newStrings.length, fillerString);
+		return newStrings;
 	}
 
 	private ArrayList<HashMap<String, String>> handleException(final String indexName, final Exception e) {

@@ -1,5 +1,9 @@
-<%@ page errorPage="/WEB-INF/jsp/error.jsp"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ page errorPage="/WEB-INF/jsp/error.jsp" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <div class="container-fluid" ng-controller="SearcherController">
 	<div class="row-fluid">
@@ -7,13 +11,51 @@
 			<div class="box">
 				<div class="tab-header">Search form
 					<span class="pull-right">
-						<span class="options"><a href="#"><i class="icon-cog"></i></a></span>
+						<span class="options">
+							<a href="#"><i class="icon-cog"></i></a>
+							<!-- <div class="btn-group">
+								<a data-toggle="dropdown">
+									<i class="icon-cog"></i>
+								</a>
+								<ul class="dropdown-menu dropdown-left">
+									<li><a href="#" ng-click="refreshServers();">Refresh</a></li>
+									<li><a href="#">Another action</a></li>
+									<li><a href="#">Something else here</a></li>
+									<li class="divider"></li>
+									<li><a href="#">Separated link</a></li>
+								</ul>
+							</div> -->
+						</span>
 					</span>
 				</div>
 				<form class="fill-up">
 					<div class="row-fluid">
 						<div class="span12">
 							<div class="padded">
+								<li class="dropdown">
+									<a class="dropdown-toggle" data-toggle="dropdown">
+										<i class="icon-share-alt"></i>More<span class="caret"></span>
+									</a>
+									<ul class="dropdown-menu">
+										<li><a href="#"><i class="icon-warning-sign"></i>Something else</a></li>
+										<li class="divider"></li>
+										<li>
+											<a href="<spring:url value="/logout" htmlEscape="true" />" title="<spring:message code="security.logout" />">
+												<i class="icon-off"></i>
+												<spring:message code="security.logout" />
+											</a>
+										</li>
+									</ul>
+								</li>
+
+								<div class="input">
+									<li class="dropdown" ng-controller="DropdownCtrl">
+										<a class="dropdown-toggle"> Click me for a dropdown, yo! </a>
+										<ul class="dropdown-menu">
+											<li ng-repeat="choice in items"><a>{{choice}}</a></li>
+										</ul>
+									</li>
+								</div>
 								<div class="note pull-right">Please choose an index to search</div>
 								<div class="input" ng-controller="IndexesController">
 									<select 
@@ -30,8 +72,25 @@
 									</select>
 								</div>
 								<div class="note pull-right">Note that multiple indexes can be searched</div>
-								<div class="input">
-									<input type="text" placeholder="Email" />
+								<div 
+									class="input" 
+									ng-controller="TypeaheadController" 
+									ng-init="
+										searchProperty('indexName', 'autocomplete', false);
+										searchProperty('searchFields', 'word', true);
+										searchProperty('typeFields', 'string', true);
+										searchProperty('sortFields', 'autocomplete', true);">
+									<input
+										id="search"
+										type="text"
+										class="search" 
+										name="search" 
+										placeholder="Quick search, every field in every index..."
+										ng-model="searchString"
+										typeahead="result for result in doSearch('/ikube/service/search/json')"
+										typeahead-min-length="3" 
+										typeahead-wait-ms="250"
+										typeahead-on-select="doModalResults();">
 								</div>
 								<div class="input">
 									<input type="text" placeholder="Address" />
@@ -109,11 +168,12 @@
 			</div>
 		</div>
 	</div>
-	
-	<div class="row-fluid">
+</div>
+
+<!-- 	<div class="row-fluid">
 		<div class="span4">
-			<div class="box">
-<table ng-controller="SearcherController">
+			<div class="box"> -->
+<!-- <table ng-controller="SearcherController">
 	<tr>
 		<td>
 			<form ng-submit="doSearch()">
@@ -249,8 +309,8 @@
 			</div>
 		</td>
 	</tr>
-</table>
-			</div>
+</table> -->
+<!-- 			</div>
 		</div>
 	</div>
-</div>
+</div> -->

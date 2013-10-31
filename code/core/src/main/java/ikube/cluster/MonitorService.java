@@ -256,7 +256,7 @@ public class MonitorService implements IMonitorService {
 	@Override
 	public void cpuThrottling() {
 		long time = System.currentTimeMillis();
-		Event cpuThrottleEvent = IListener.EventGenerator.getEvent(Event.CPU_LOAD_THROTTLING_GOGGLE, time, null, Boolean.FALSE);
+		Event cpuThrottleEvent = IListener.EventGenerator.getEvent(Event.CPU_LOAD_THROTTLING, time, null, Boolean.FALSE);
 		LOGGER.info("Toggling cpu throttling : " + cpuThrottleEvent);
 		clusterManager.sendMessage(cpuThrottleEvent);
 

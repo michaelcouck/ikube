@@ -4,6 +4,7 @@ import ikube.cluster.IClusterManager;
 import ikube.cluster.IMonitorService;
 import ikube.search.ISearcherService;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.SerializationUtilities;
 
 import java.io.IOException;
 
@@ -53,6 +54,9 @@ public abstract class Resource {
 	 * @return the Json response object to send to the caller/client
 	 */
 	protected Response buildJsonResponse(final Object result) {
+		if (result == null) {
+			return buildResponse().build();
+		}
 		String jsonString = gson.toJson(result);
 		return buildResponse().entity(jsonString).build();
 	}
@@ -65,7 +69,10 @@ public abstract class Resource {
 	 * @return the xml response object to send to the caller/client
 	 */
 	protected Response buildXmlResponse(final Object result) {
-		return buildResponse().entity(result).build();
+		if (result == null) {
+			return buildResponse().build();
+		}
+		return buildResponse().entity(SerializationUtilities.serialize(result)).build();
 	}
 
 	/**

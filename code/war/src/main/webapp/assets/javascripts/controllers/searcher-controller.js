@@ -46,9 +46,10 @@ module.controller('SearcherController', function($scope, $http) {
 	$scope.doSearch = function() {
 		$scope.doSearchPreProcessing($scope.search);
 		$scope.search.maxResults = $scope.pageBlock;
-		if ($scope.search != undefined && 
-			$scope.search.searchFields != undefined && 
-			$scope.search.searchFields.indexOf('latitude') > -1 && 
+		if ($scope.search == undefined || 
+			$scope.search.searchFields == undefined) {
+			$scope.url = getServiceUrl('/ikube/service/search/json');
+		} else if ($scope.search.searchFields.indexOf('latitude') > -1 && 
 			$scope.search.searchFields.indexOf('longitude') > -1) {
 			$scope.url = getServiceUrl('/ikube/service/search/json/geospatial');
 		} else {

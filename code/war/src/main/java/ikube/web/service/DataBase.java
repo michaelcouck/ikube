@@ -38,8 +38,17 @@ public class DataBase extends Resource {
 	public static final String ENTITY = "/entity";
 	public static final String ENTITIES = "/entities";
 	public static final String ENTITY_CREATE = "/entity/create";
-	public static String[] EXCLUDED_PROPERTIES = { "id", "parent", "children", "snapshot", "snapshots", "availableDiskSpace", "exceptions", "indexing",
-			"numDocsForSearchers", "open" };
+	public static String[] EXCLUDED_PROPERTIES = {//
+	"id", //
+			"parent", //
+			"children", //
+			"snapshot", //
+			"snapshots", //
+			"availableDiskSpace", //
+			"exceptions", //
+			"indexing", //
+			"numDocsForSearchers", //
+			"open" };
 
 	@Autowired
 	private IDataBase dataBase;

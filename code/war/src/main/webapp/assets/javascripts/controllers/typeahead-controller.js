@@ -33,8 +33,15 @@ function TypeaheadController($scope, $http, $timeout) {
 			$scope.results = new Array();
 			// Iterate through the results from the Json data
 			angular.forEach($scope.search.searchResults, function(key, value) {
-				var string = key['fragment'].substring(0, 120);
-				$scope.results.push(string);
+				var string = [];
+				string.push('<b>Id : </b>');
+				string.push(key['id']);
+				if (!!key['fragment']) {
+					string.push(', <b>fragment : </b>');
+					string.push(key['fragment']);
+				}
+				var result = string.join('').substring(0, 120);
+				$scope.results.push(result);
 			});
 		}
 		return $scope.results;
@@ -46,6 +53,8 @@ function TypeaheadController($scope, $http, $timeout) {
 	// the service until there are results or there are too many re-tries
 	$scope.doSearch = function(uri) {
 		if (!$scope.loading) {
+			// alert('Index name : ' + $scope.search.indexName);
+			$scope.results = null;
 			$scope.loading = true;
 			$scope.url = getServiceUrl(uri);
 			$scope.search.fragment = true;
@@ -58,6 +67,7 @@ function TypeaheadController($scope, $http, $timeout) {
 				$scope.status = status;
 				$scope.convertToArray();
 				$scope.loading = false;
+				// alert('Index name : ' + $scope.search.indexName);
 			});
 			promise.error(function(data, status) {
 				$scope.status = status;
@@ -71,8 +81,11 @@ function TypeaheadController($scope, $http, $timeout) {
 						return $scope.wait();
 					}
 					return $scope.results;
-				}, 250);
+				}, 100);
 			};
+			// Because http requests are asynchronous we have to wait explicitly
+			// for the results to come back from the server before we pass them to the 
+			// type ahead controller as they will be null to begin with
 			return $scope.wait();
 		}
 	};
@@ -85,9 +98,16 @@ function TypeaheadController($scope, $http, $timeout) {
 	$scope.property = function(name, value) {
 		$scope[name] = value;
 	};
+	$scope.searchProperty = function(name, value, array) {
+		if (!array) {
+			$scope.search[name] = value;
+		} else {
+			$scope.search[name] = [value];
+		}
+	};
 	
 	$scope.doModalResults = function() {
-		// Popup the results on a modal that can be navigated with a mouse or the keyboard
+		// Popup the results on a modal that can be navigated with a mouse or the keyboard?
 	};
 	
 }

@@ -43,7 +43,8 @@
 	<script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
 	<script src="http://www.google-analytics.com/ga.js" type="text/javascript"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
-	<script src="<c:url value="/assets/javascripts/ui-bootstrap-tpls-0.4.0.js" />" type='text/javascript'></script>
+	<!-- <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.2/angular.min.js"></script> -->
+	<script src="<c:url value="/assets/javascripts/ui-bootstrap-tpls-0.6.0.js" />" type='text/javascript'></script>
 	
 	<!-- Must be after Angular -->
 	<script src="<c:url value="/assets/javascripts/services/database-service.js" />" type="text/javascript"></script>
@@ -59,7 +60,7 @@
 	<script src="<c:url value="/assets/javascripts/controllers/servers-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/typeahead-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/active-controller.js" />" type="text/javascript"></script>
-	<%-- <script src="<c:url value="/assets/javascripts/ng-table.js" />" type="text/javascript"></script> --%>
+	<script src="<c:url value="/assets/javascripts/controllers/dropdown-controller.js" />" type="text/javascript"></script>
 	
 </head>
 

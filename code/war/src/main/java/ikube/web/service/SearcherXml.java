@@ -158,10 +158,6 @@ public class SearcherXml extends Searcher {
 	public Response searchAll(//
 			@Context final HttpServletRequest request, //
 			@Context final UriInfo uriInfo) {
-
-		// monitorService.getIndexNames();
-		// monitorService.getIndexFieldNames(indexName);
-
 		Search search = unmarshall(Search.class, request);
 		Object results = searcherService.search(search);
 		return buildXmlResponse(results);

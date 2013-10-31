@@ -8,7 +8,7 @@ import ikube.model.IndexContext;
 import ikube.scheduling.schedule.Event;
 import ikube.toolkit.ThreadUtilities;
 
-import java.io.File;
+import java.util.Date;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -20,9 +20,8 @@ import com.hazelcast.core.Message;
 import com.hazelcast.core.MessageListener;
 
 /**
- * This class starts the indexing mechanism. In the first case it will set the max age for the index context to 0 which will trigger the
- * indexing process by one of the servers in the cluster. In the second case it just starts the thread pool that executes the indexing and
- * jobs.
+ * This class starts the indexing mechanism. In the first case it will set the max age for the index context to 0 which will trigger the indexing process by one
+ * of the servers in the cluster. In the second case it just starts the thread pool that executes the indexing and jobs.
  * 
  * @author Michael Couck
  * @since 30.08.12
@@ -49,24 +48,23 @@ public class StartListener implements IListener<Message<Object>>, MessageListene
 		final Event event = (Event) object;
 		if (Event.STARTUP.equals(event.getType())) {
 			event.setConsumed(Boolean.TRUE);
-			LOGGER.info("Manually starting indexing : " + ToStringBuilder.reflectionToString(event, ToStringStyle.SHORT_PREFIX_STYLE));
+			LOGGER.info("Starting indexing : " + ToStringBuilder.reflectionToString(event, ToStringStyle.SHORT_PREFIX_STYLE));
 			final String indexName = event.getObject().toString();
 			final IndexContext<?> indexContext = monitorService.getIndexContexts().get(indexName);
 			final long maxAge = indexContext.getMaxAge();
 			indexContext.setMaxAge(0);
 			// Start a thread to revert the max age of the index
-			ThreadUtilities.submit(null, new Runnable() {
+			ThreadUtilities.submit(this.getClass().getSimpleName(), new Runnable() {
 				public void run() {
-					File newLatestIndexDirectory = null;
-					File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
-					do {
-						if (latestIndexDirectory == null) {
-							break;
-						}
-						ThreadUtilities.sleep(10000);
-						newLatestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
-						LOGGER.info("Latest : " + latestIndexDirectory + ", new latest : " + newLatestIndexDirectory);
-					} while (latestIndexDirectory.equals(newLatestIndexDirectory));
+					Date indexDate = IndexManager.getLatestIndexDirectoryDate(indexContext);
+					Date newIndexDate = IndexManager.getLatestIndexDirectoryDate(indexContext);
+					if (indexDate != null) {
+						do {
+							ThreadUtilities.sleep(60000);
+							newIndexDate = IndexManager.getLatestIndexDirectoryDate(indexContext);
+							LOGGER.info("Index date : " + indexDate + ", new date : " + newIndexDate);
+						} while (indexDate.equals(newIndexDate));
+					}
 					LOGGER.info("Setting the max age back to the original : " + maxAge);
 					indexContext.setMaxAge(maxAge);
 				}

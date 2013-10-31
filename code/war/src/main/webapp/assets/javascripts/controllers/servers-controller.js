@@ -37,31 +37,18 @@ module.controller('ServersController', function($http, $scope, databaseService) 
 	}, refreshInterval);
 	
 	$scope.startupAll = function() {
-		if (confirm('Re-start all schedules and actions in the cluster : ')) {
-			$scope.url = getServiceUrl('/ikube/service/monitor/startup-all');
-			$scope.parameters = {};
-			// The configuration for the request to the server
-			$scope.config = { params : $scope.parameters };
-			// And start all the schedules again
-			var promise = $http.get($scope.url, $scope.config);
-			promise.success(function(data, status) {
-				$scope.status = status;
-			});
-			promise.error(function(data, status) {
-				$scope.status = status;
-			});
-		}
-		
-		$scope.direction = true;
-		$scope.orderProp = "address";
-		$scope.sort = function(column) {
-			if ($scope.orderProp === column) {
-				$scope.direction = !$scope.direction;
-			} else {
-				$scope.orderProp = column;
-				$scope.direction = true;
-			}
-		};
+		$scope.url = getServiceUrl('/ikube/service/monitor/startup-all');
+		$scope.parameters = {};
+		// The configuration for the request to the server
+		$scope.config = { params : $scope.parameters };
+		// And start all the schedules again
+		var promise = $http.get($scope.url, $scope.config);
+		promise.success(function(data, status) {
+			$scope.status = status;
+		});
+		promise.error(function(data, status) {
+			$scope.status = status;
+		});
 	}
 	
 	$scope.terminateAll = function() {
@@ -83,13 +70,13 @@ module.controller('ServersController', function($http, $scope, databaseService) 
 		return new Date(millis).toLocaleTimeString();
 	};
 	
-	$scope.toggleSchedules = function() {
+	$scope.toggleThreadsRunning = function() {
 		if ($scope.server.threadsRunning) {
 			$scope.terminateAll();
 		} else {
 			$scope.startupAll();
 		}
-		$scope.refreshServer();
+		$scope.server.threadsRunning = !$scope.server.threadsRunning;
 	};
 	
 	$scope.toggleCpuThrottling = function() {
@@ -105,7 +92,7 @@ module.controller('ServersController', function($http, $scope, databaseService) 
 		promise.error(function(data, status) {
 			$scope.status = status;
 		});
-		$scope.refreshServer();
+		$scope.server.cpuThrottling = !$scope.server.cpuThrottling;
 	}
 	
 	$scope.cpuLoadTooHigh = function(server) {

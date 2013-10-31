@@ -48,7 +48,7 @@ public final class ThreadUtilities {
 	 */
 	public static Future<?> submit(final String name, final Runnable runnable) {
 		if (EXECUTER_SERVICE == null || EXECUTER_SERVICE.isShutdown()) {
-			LOGGER.warn("Executer service is shutdown : " + runnable);
+			LOGGER.debug("Executer service is shutdown : " + runnable);
 			return null;
 		}
 		Future<?> future = EXECUTER_SERVICE.submit(runnable);
@@ -90,7 +90,7 @@ public final class ThreadUtilities {
 			int maxRetryCount = MAX_RETRY_COUNT;
 			while (maxRetryCount-- > 0) {
 				if (future.cancel(true) || future.isCancelled() || future.isDone()) {
-					// LOGGER.info("Cancelled future : " + name + ", " + future + ", " + maxRetryCount);
+					LOGGER.debug("Cancelled future : " + name + ", " + future + ", " + maxRetryCount);
 					break;
 				}
 				ThreadUtilities.sleep(1);
@@ -124,7 +124,7 @@ public final class ThreadUtilities {
 	 */
 	public static void waitForFuture(final Future<?> future, final long maxWait) {
 		if (future == null) {
-			LOGGER.info("Future null returning : ");
+			LOGGER.debug("Future null returning : ");
 			return;
 		}
 		try {
@@ -133,7 +133,7 @@ public final class ThreadUtilities {
 			LOGGER.warn("Coitus interruptus... : " + e.getMessage());
 			LOGGER.debug(null, e);
 		} catch (TimeoutException e) {
-			LOGGER.info("Timed out waiting for future : " + e.getMessage());
+			LOGGER.debug("Timed out waiting for future : " + e.getMessage());
 		} catch (CancellationException e) {
 			LOGGER.debug("Future cancelled : " + e.getMessage());
 			LOGGER.debug(null, e);
@@ -241,7 +241,7 @@ public final class ThreadUtilities {
 	 */
 	public static void destroy() {
 		if (EXECUTER_SERVICE == null || EXECUTER_SERVICE.isShutdown()) {
-			LOGGER.info("Executer service already shutdown : ");
+			LOGGER.debug("Executer service already shutdown : ");
 			return;
 		}
 		Collection<String> futureNames = new ArrayList<String>(FUTURES.keySet());
@@ -253,8 +253,7 @@ public final class ThreadUtilities {
 			int maxRetryCount = MAX_RETRY_COUNT;
 			while (!EXECUTER_SERVICE.awaitTermination(10, TimeUnit.SECONDS) && maxRetryCount-- > 0) {
 				List<Runnable> runnables = EXECUTER_SERVICE.shutdownNow();
-				LOGGER.info("Shutdown runnables : " + runnables);
-				LOGGER.info("Still waiting to shutdown : ");
+				LOGGER.info("Still waiting to shutdown : " + runnables);
 				EXECUTER_SERVICE.shutdown();
 			}
 		} catch (InterruptedException e) {
@@ -264,7 +263,7 @@ public final class ThreadUtilities {
 		}
 		ThreadUtilities.cancellAllForkJoinPools();
 		List<Runnable> runnables = EXECUTER_SERVICE.shutdownNow();
-		LOGGER.info("Shutdown runnables : " + runnables);
+		LOGGER.info("Runnables shutdown : " + runnables);
 		FUTURES.clear();
 		FUTURES = null;
 		EXECUTER_SERVICE = null;

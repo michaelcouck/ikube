@@ -26,6 +26,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -151,13 +152,9 @@ public class SnapshotSchedule extends Schedule {
 		RandomAccessFile inputStream = null;
 		try {
 			inputStream = new RandomAccessFile(logFile, "r");
-			// 1000000
 			int fileLength = (int) logFile.length();
-			// 900000
 			int offset = Math.max(fileLength - (IConstants.MILLION / 100), 0);
-			// 100000
 			int lengthToRead = Math.max(0, fileLength - offset);
-			// 100000
 			byte[] bytes = new byte[lengthToRead];
 			inputStream.seek(offset);
 			inputStream.read(bytes, 0, lengthToRead);
@@ -167,13 +164,7 @@ public class SnapshotSchedule extends Schedule {
 		} catch (Exception e) {
 			LOGGER.error("Error reading log file : ", e);
 		} finally {
-			try {
-				if (inputStream != null) {
-					inputStream.close();
-				}
-			} catch (Exception e) {
-				LOGGER.error("Exception closing the file reader on the log file : ", e);
-			}
+			IOUtils.closeQuietly(inputStream);
 		}
 	}
 

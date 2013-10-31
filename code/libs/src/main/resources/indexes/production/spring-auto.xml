@@ -41,39 +41,54 @@
 		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer"
 		property:children-ref="autocompleteIndexables" />
 	<util:list id="autocompleteIndexables">
-		<ref local="search" />
-	</util:list>
-	
-	<bean 
-		id="ikube.action.index.analyzer.NgramAnalyzer" 
-		class="ikube.action.index.analyzer.NgramAnalyzer" />
-	
-	<bean
-		id="search"
-		class="ikube.model.IndexableTable"
-		property:name="search"
-		property:address="false"
-		property:dataSource-ref="${ikube.dataSource}"
-		property:children-ref="autocompleteColumnsH2" 
-		property:maxExceptions="10" />
-	<util:list id="autocompleteColumnsH2">
-		<ref local="id" />
+		<ref local="autocomplete-word-lists" />
 	</util:list>
 	
 	<bean
-		id="id"
+		id="autocomplete-word-lists"
+		class="ikube.model.IndexableFileSystemCsv"
+		property:name="autocomplete-word-lists"
+		property:path="./ikube/common/languages"
+		
+		property:separator="path"
+		property:encoding="UTF-8"
+		property:lineNumberFieldName="line-number"
+		
+		property:pathFieldName="path"
+		property:nameFieldName="name"
+		property:lengthFieldName="length"
+		property:contentFieldName="contents"
+		property:lastModifiedFieldName="lastmodified"
+		
+		property:unpackZips="${unpack.zips}"
+		property:stored="${stored}"
+		property:analyzed="${analyzed}"
+		property:vectored="${vectored}"
+		property:excludedPattern="${files.excluded.pattern}"
+		property:batchSize="${file.batch.size}"
+		property:maxReadLength="${max.read.length}" 
+		property:maxExceptions="1000"
+		property:threads="1"
+		property:children-ref="autocomplete-word-lists-columns" />
+	
+	<util:list id="autocomplete-word-lists-columns">
+		<ref local="autocomplete-word-lists-word" />
+		<ref local="autocomplete-word-lists-synonym" />
+	</util:list>
+	
+	<bean
+		id="autocomplete-word-lists-word"
 		class="ikube.model.IndexableColumn"
-		property:name="id"
-		property:idColumn="true"
+		property:name="word"
+		property:fieldName="word"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />
 	<bean
-		id="indexName"
+		id="autocomplete-word-lists-synonym"
 		class="ikube.model.IndexableColumn"
-		property:name="indexName"
-		property:fieldName="indexName"
-		property:address="false"
+		property:name="synonym"
+		property:fieldName="synonym"
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}" />

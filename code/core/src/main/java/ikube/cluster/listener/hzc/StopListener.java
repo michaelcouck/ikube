@@ -39,12 +39,10 @@ public class StopListener implements IListener<Message<Object>>, MessageListener
 			if (Event.TERMINATE.equals(event.getType())) {
 				event.setConsumed(Boolean.TRUE);
 				Object indexName = event.getObject();
-				if (indexName != null && String.class.isAssignableFrom(indexName.getClass())) {
-					if (logger != null) {
-						logger.info("Terminating indexing : " + indexName);
-						ThreadUtilities.destroy((String) indexName);
-						ThreadUtilities.cancellForkJoinPool((String) indexName);
-					}
+				if (indexName != null) {
+					logger.info("Terminating indexing : " + indexName);
+					ThreadUtilities.destroy(indexName.toString());
+					ThreadUtilities.cancellForkJoinPool(indexName.toString());
 				}
 			} else if (Event.TERMINATE_ALL.equals(event.getType())) {
 				event.setConsumed(Boolean.TRUE);

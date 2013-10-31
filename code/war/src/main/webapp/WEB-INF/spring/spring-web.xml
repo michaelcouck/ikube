@@ -67,6 +67,7 @@
 	<!-- org.springbyexample.web.servlet.view.tiles2.DynamicTilesView -->
 
 	<mvc:view-controller path="/login.html" />
+	<!-- <mvc:view-controller path="/" view-name="/system/dash.html" /> -->
 	
 	<mvc:view-controller path="/system/dash.html" />
 	<mvc:view-controller path="/system/indexes.html" />

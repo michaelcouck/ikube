@@ -23,21 +23,19 @@
 		</div>
 		<div class="row-fluid search-bar-nav">
 			<div class="span12">
-				<form>
-					<input
-						id="search"
-						type="text"
-						class="search" 
-						name="search" 
-						placeholder="Quick search, every field in every index..."
-						
-						ng-model="searchString"
-						typeahead="result for result in doSearch('/ikube/service/search/json/all')"
-						
-						typeahead-min-length="3" 
-						typeahead-wait-ms="500"
-						typeahead-on-select="doModalResults();">
-				</form>
+				<input
+					id="search"
+					type="text"
+					class="search" 
+					name="search" 
+					placeholder="Quick search, every field in every index..."
+					
+					ng-model="searchString"
+					typeahead="result for result in doSearch('/ikube/service/search/json/all')"
+					
+					typeahead-min-length="3" 
+					typeahead-wait-ms="250"
+					typeahead-on-select="doModalResults();">
 			</div>
 		</div>
 	</div>

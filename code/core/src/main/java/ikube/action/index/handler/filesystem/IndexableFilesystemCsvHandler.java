@@ -1,7 +1,6 @@
 package ikube.action.index.handler.filesystem;
 
 import ikube.IConstants;
-import ikube.action.index.handler.IResourceProvider;
 import ikube.action.index.handler.IndexableHandler;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
@@ -10,10 +9,11 @@ import ikube.model.IndexableFileSystemCsv;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ForkJoinTask;
 
 import org.apache.commons.io.FileUtils;
@@ -38,40 +38,13 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
 
 	@Override
 	public ForkJoinTask<?> handleIndexableForked(final IndexContext<?> indexContext, final IndexableFileSystemCsv indexableFileSystem) throws Exception {
-		IResourceProvider<File> fileSystemResourceProvider = new IResourceProvider<File>() {
-
-			private List<File> resources;
-
-			{
-				File[] files = new File(indexableFileSystem.getPath()).listFiles(new FileFilter() {
-					@Override
-					public boolean accept(File pathname) {
-						return !isExcluded(pathname);
-					}
-				});
-				setResources(Arrays.asList(files));
-			}
-
-			@Override
-			public synchronized File getResource() {
-				if (resources.isEmpty()) {
-					return null;
-				}
-				return resources.remove(0);
-			}
-
-			@Override
-			public void setResources(final List<File> resources) {
-				this.resources = resources;
-			}
-		};
-		return getRecursiveAction(indexContext, indexableFileSystem, fileSystemResourceProvider);
+		return getRecursiveAction(indexContext, indexableFileSystem, new FileSystemCsvResourceProvider(indexableFileSystem.getPath()));
 	}
 
 	@Override
 	protected List<?> handleResource(final IndexContext<?> indexContext, final IndexableFileSystemCsv indexableFileSystemCsv, final Object resource) {
-		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
 		try {
+			logger.info("Handling resource : " + resource);
 			handleFile(indexContext, indexableFileSystemCsv, (File) resource);
 		} catch (Exception e) {
 			handleException(indexableFileSystemCsv, e, "Exception handling csv file : " + resource);
@@ -102,14 +75,14 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
 
 			int lineNumber = 0;
 			indexableFileSystemCsv.setFile(file);
+			Map<Integer, String> differentLines = new HashMap<Integer, String>();
 			while (lineIterator.hasNext() && ThreadUtilities.isInitialized()) {
 				indexableFileSystemCsv.setLineNumber(lineNumber);
 				try {
 					String line = lineIterator.nextLine();
 					String[] values = StringUtils.split(line, separator);
 					if (indexableColumns.size() != values.length) {
-						logger.warn("Columns and values different on line : " + lineNumber + ", columns : " + columns.length + ", values : " + values.length
-								+ ", data : " + Arrays.deepToString(values));
+						differentLines.put(lineNumber, Arrays.deepToString(values));
 					}
 					for (int i = 0; i < values.length && i < indexableColumns.size(); i++) {
 						IndexableColumn indexableColumn = (IndexableColumn) indexableColumns.get(i);
@@ -124,15 +97,20 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
 				++lineNumber;
 				if (lineNumber % 10000 == 0) {
 					logger.info("Lines done : " + lineNumber);
+					for (final Map.Entry<Integer, String> mapEntry : differentLines.entrySet()) {
+						logger.warn("Columns and values different on line : " + mapEntry.getKey() + ", columns : " + columns.length + ", values : "
+								+ mapEntry.getValue());
+						if (!logger.isDebugEnabled()) {
+							// Only print one line if it is not in debug
+							break;
+						}
+					}
+					differentLines.clear();
 				}
 			}
 		} finally {
 			LineIterator.closeQuietly(lineIterator);
 		}
-	}
-
-	protected synchronized boolean isExcluded(final File file) {
-		return !file.getName().endsWith(".csv");
 	}
 
 	protected List<Indexable<?>> getIndexableColumns(final Indexable<?> indexable, final String[] columns) {

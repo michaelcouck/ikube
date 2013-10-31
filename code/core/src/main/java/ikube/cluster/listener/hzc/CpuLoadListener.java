@@ -32,7 +32,7 @@ public class CpuLoadListener implements IListener<Message<Object>>, MessageListe
 				return;
 			}
 			event.setConsumed(Boolean.TRUE);
-			if (Event.CPU_LOAD_THROTTLING_GOGGLE.equals(event.getType())) {
+			if (Event.CPU_LOAD_THROTTLING.equals(event.getType())) {
 				event.setConsumed(Boolean.TRUE);
 				Server server = clusterManager.getServer();
 				server.setCpuThrottling(!server.isCpuThrottling());

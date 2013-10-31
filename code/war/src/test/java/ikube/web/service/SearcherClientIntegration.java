@@ -1,8 +1,6 @@
 package ikube.web.service;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import ikube.toolkit.SerializationUtilities;
+import ikube.IConstants;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -27,11 +25,39 @@ public class SearcherClientIntegration {
 
 	@Test
 	public void main() throws Exception {
-		String path = "/ikube/service/" + Searcher.SEARCH + SearcherXml.XML + Searcher.GEOSPATIAL;
-		URL url = new URL("http", "localhost", 9090, path);
 
-		String[] names = { "indexName", "searchStrings", "fragment", "firstResult", "maxResults", "distance", "latitude", "longitude" };
-		String[] values = { "geospatial", "berlin", "true", "0", "10", "10", "52.52274", "13.4166" };
+		StringBuilder builder = new StringBuilder();
+		// http://localhost:9090/ikube/service/search/xml/geospatial
+		builder.append("/ikube");
+		builder.append("/service");
+		builder.append("/search");
+		builder.append("/xml");
+		builder.append("/geospatial");
+		URL url = new URL("http", "localhost", 9090, builder.toString());
+		System.out.println(url);
+
+		String[] names = { //
+		"indexName", //
+				"searchStrings", //
+				"searchFields", //
+				"typeFields", //
+				"fragment", //
+				"firstResult", //
+				"maxResults", //
+				"distance", //
+				"latitude", //
+				"longitude" };
+		String[] values = { //
+		IConstants.GEOSPATIAL, //
+				"saur kraut|berlin", //
+				"name|name", //
+				"string|string", //
+				"true", //
+				"0", //
+				"10", //
+				"20", //
+				"-33.9693580", //
+				"18.4622110" };
 		NameValuePair[] params = getNameValuePairs(names, values);
 
 		GetMethod getMethod = new GetMethod(url.toString());
@@ -39,12 +65,10 @@ public class SearcherClientIntegration {
 		HttpClient httpClient = new HttpClient();
 		authenticate(httpClient, url.getHost(), url.getPort(), "guest", "guest");
 
-		@SuppressWarnings("unused")
 		int result = httpClient.executeMethod(getMethod);
-		String results = getMethod.getResponseBodyAsString();
-		Object deserialized = SerializationUtilities.deserialize(results);
-		assertNotNull(deserialized);
-		assertTrue(List.class.isAssignableFrom(deserialized.getClass()));
+		getMethod.getResponseBodyAsString();
+		assert result == 200;
+		assert getMethod.getStatusCode() == 200;
 	}
 
 	public void authenticate(final HttpClient httpClient, final String domain, final int port, final String userid, final String password) {

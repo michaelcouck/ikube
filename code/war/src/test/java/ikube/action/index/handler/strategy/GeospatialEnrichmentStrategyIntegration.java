@@ -13,8 +13,7 @@ import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.UriUtilities;
 
 import java.io.File;
-import java.util.List;
-import java.util.concurrent.Future;
+import java.util.concurrent.ForkJoinTask;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
@@ -24,8 +23,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * TODO Document me.
- * 
  * @author Michael Couck
  * @since 20.01.2012
  * @version 01.00
@@ -49,8 +46,12 @@ public class GeospatialEnrichmentStrategyIntegration extends IntegrationTest {
 		indexableFileSystemCsv.setPath(file.getParentFile().getAbsolutePath());
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), UriUtilities.getIp());
 		indexContext.setIndexWriters(indexWriter);
-		List<Future<?>> futures = indexableHandlerFilesystemCsvHandler.handleIndexable(indexContext, indexableFileSystemCsv);
-		ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
+		ForkJoinTask<?> forkJoinTask = indexableHandlerFilesystemCsvHandler.handleIndexableForked(indexContext, indexableFileSystemCsv);
+
+		ThreadUtilities.executeForkJoinTasks(indexContext.getName(), indexableFileSystemCsv.getThreads(), forkJoinTask);
+		ThreadUtilities.sleep(15000);
+		ThreadUtilities.cancellForkJoinPool(indexContext.getName());
+
 		IndexManager.closeIndexWriter(indexWriter);
 		String indexPath = IndexManager.getIndexDirectoryPath(indexContext);
 		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexPath);

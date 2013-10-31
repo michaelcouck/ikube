@@ -59,7 +59,6 @@ public class IndexSizeSchedule extends Schedule {
 			boolean success = Boolean.TRUE;
 			File newIndexDirectory = null;
 			IndexWriter newIndexWriter = null;
-			IndexWriter oldIndexWriter = indexWriters[indexWriters.length - 1];
 			try {
 				newIndexDirectory = getNewIndexDirectory(indexWriters);
 				LOGGER.info("Starting new index : " + indexContext.getIndexName() + ", " + newIndexDirectory);
