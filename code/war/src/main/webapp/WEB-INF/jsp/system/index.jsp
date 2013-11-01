@@ -2,7 +2,7 @@
 <div class="user-info">Backup path : {{indexContext.indexDirectoryPathBackup}}/{{indexContext.name}}</div>
 <div class="user-content">
 	Open : {{indexContext.open}}<br>
-	Indexing : : {{indexContext.indexing}}<br><br>
+	Indexing : {{indexContext.indexing}}<br><br>
 	
 	Documents : {{indexContext.numDocsForSearchers}}<br>
 	Index size on disk : {{indexContext.snapshot.indexSize}}<br><br>

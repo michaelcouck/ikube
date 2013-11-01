@@ -32,9 +32,6 @@
 			pattern="/assets/**" 
 			access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url 
-			pattern="/system/**" 
-			access="IS_AUTHENTICATED_ANONYMOUSLY" />
-		<intercept-url 
 			pattern="/docs/**" 
 			access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url 

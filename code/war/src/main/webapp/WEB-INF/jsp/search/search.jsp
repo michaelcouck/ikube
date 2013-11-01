@@ -80,21 +80,42 @@
 										searchProperty('searchFields', 'word', true);
 										searchProperty('typeFields', 'string', true);
 										searchProperty('sortFields', 'autocomplete', true);">
+									<!-- class="search" --> 
 									<input
 										id="search"
 										type="text"
-										class="search" 
 										name="search" 
-										placeholder="Quick search, every field in every index..."
+										placeholder="Instant search, every field, every index..."
 										ng-model="searchString"
 										typeahead="result for result in doSearch('/ikube/service/search/json')"
 										typeahead-min-length="3" 
 										typeahead-wait-ms="250"
 										typeahead-on-select="doModalResults();">
 								</div>
-								<div class="input">
-									<input type="text" placeholder="Address" />
+								
+								<div class="span6">
+									<div class="prepend-transparent">
+										<span class="add-on button">@</span><input
+											class="input-transparent" id="prependedInput" size="16"
+											type="text" placeholder="Username">
+									</div>
 								</div>
+								
+								<!-- <div class="span6">
+									<div class="append-transparent">
+										<input class="input-transparent" id="appendedInput2" size="16"
+											type="text">
+										<button class="add-on button">GO</button>
+									</div>
+								</div>
+								
+								<div class="span6">
+									<div class="append-transparent">
+										<input class="input-transparent" id="appendedInput" size="16"
+											type="text"><span class="add-on button">.00</span>
+									</div>
+								</div> -->
+
 								<div class="input">
 									<input type="text" placeholder="Username" class="error" /> <span
 										class="input-error" data-title="please write a valid username">

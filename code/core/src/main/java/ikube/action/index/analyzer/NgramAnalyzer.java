@@ -35,7 +35,7 @@ public final class NgramAnalyzer extends Analyzer {
 	 * {@link ShingleMatrixFilter} with a lower case filter because this splits the text bi-word strings, not n-gram strings.
 	 */
 	@Override
-	public final TokenStream tokenStream(String fieldName, Reader reader) {
+	public final TokenStream tokenStream(final String fieldName, final Reader reader) {
 		Tokenizer tokenizer = new LowerCaseTokenizer(IConstants.VERSION, reader);
 		return new NGramTokenFilter(tokenizer, minGram, maxGram);
 	}

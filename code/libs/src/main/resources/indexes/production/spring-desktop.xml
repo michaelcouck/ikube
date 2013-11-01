@@ -37,11 +37,18 @@
 		property:delta="false"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path}"
-		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer"
+		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer.Desktop"
 		property:children-ref="desktopFolders" />
 	<util:list id="desktopFolders">
 		<ref local="desktopFolder" />
 	</util:list>
+	
+	<bean 
+		id="ikube.action.index.analyzer.NgramAnalyzer.Desktop" 
+		name="ikube.action.index.analyzer.NgramAnalyzer.Desktop" 
+		class="ikube.action.index.analyzer.NgramAnalyzer"
+		property:minGram="5"
+		property:maxGram="32" />
 	
 	<!-- 
 		Note that the path to the files is a slash, on Linux this is the root and on Windows this will be the
@@ -56,15 +63,15 @@
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
 		property:contentFieldName="contents"
-		property:unpackZips="${unpack.zips}"
+		property:lastModifiedFieldName="lastmodified"
+		property:unpackZips="false"
 		property:stored="${stored}"
 		property:analyzed="${analyzed}"
 		property:vectored="${vectored}"
 		property:excludedPattern="${files.excluded.pattern}"
-		property:lastModifiedFieldName="lastmodified"
 		property:batchSize="${file.batch.size}"
 		property:maxReadLength="${max.read.length}" 
-		property:maxExceptions="10000"
+		property:maxExceptions="1000"
 		property:threads="4"
 		property:strategies-ref="desktop-strategies" />
 
