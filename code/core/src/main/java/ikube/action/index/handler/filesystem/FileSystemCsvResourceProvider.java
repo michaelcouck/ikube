@@ -30,7 +30,9 @@ public class FileSystemCsvResourceProvider implements IResourceProvider<File> {
 		File[] files = new File(filePath).listFiles(new FileFilter() {
 			@Override
 			public boolean accept(File pathname) {
-				return isIncluded(pathname);
+				boolean included = isIncluded(pathname);
+				LOGGER.info("Included : " + included + ", " + pathname);
+				return included;
 			}
 		});
 		if (files != null) {
