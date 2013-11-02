@@ -178,7 +178,8 @@ public interface IConstants {
 	String ROLE_USER = "ROLE_USER";
 	String ROLE_ADMIN = "ROLE_ADMIN";
 
-	int MILLION = 1000000;
+	int HUNDRED_THOUSAND = 100000;
+	int MILLION = HUNDRED_THOUSAND * 10;
 
 	String DELIMITER_CHARACTERS = ";,|:";
 	String LINE_NUMBER = "lineNumber";

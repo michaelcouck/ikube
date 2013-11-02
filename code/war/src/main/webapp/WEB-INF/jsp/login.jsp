@@ -22,7 +22,7 @@
 							The default userid and password is user/user, guest/guest or administrator/administrator.<br><br>
 					</c:if>
 					<div class="input-group">
-						<input id="j_username" name="j_username" type="text" placeholder="administrator" class="input-transparent" />
+						<input id="j_username" name="j_username" type="text" placeholder="administrator" class="input-transparent" focus-me="{{true}}" />
 						<input name="j_password" type="text" placeholder="administrator" class="input-transparent" />
 					</div>
 					<button id="login-submit" type="submit" class="login-button">Login</button>

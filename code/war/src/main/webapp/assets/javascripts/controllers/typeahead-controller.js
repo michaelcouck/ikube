@@ -6,9 +6,10 @@
  * 
  * @param $scope
  * @param $http
+ * @param $injector
  * @param $timeout
  */
-function TypeaheadController($scope, $http, $timeout) {
+function TypeaheadController($scope, $http, $injector, $timeout) {
 	
 	// Flag to prevent multiple calls concurrently
 	$scope.loading = false;
@@ -22,7 +23,7 @@ function TypeaheadController($scope, $http, $timeout) {
 	// This function converts the Json data which is a list of 
 	// maps to an array that can be displayed in the 'drop down'. The fragments
 	// from the results are taken and shortened to +- 120 characters
-	$scope.convertToArray = function() {
+	$scope.convertToArray = function(resultsBuilderService) {
 		$scope.results = new Array();
 		if ($scope.search != undefined && $scope.search != null && $scope.search.searchResults != undefined && $scope.search.searchResults != null) {
 			$scope.statistics = $scope.search.searchResults.pop();
@@ -30,19 +31,7 @@ function TypeaheadController($scope, $http, $timeout) {
 			if ($scope.statistics == undefined || $scope.statistics.total == undefined || $scope.statistics.total == 0) {
 				return;
 			}
-			$scope.results = new Array();
-			// Iterate through the results from the Json data
-			angular.forEach($scope.search.searchResults, function(key, value) {
-				var string = [];
-				string.push('<b>Id : </b>');
-				string.push(key['id']);
-				if (!!key['fragment']) {
-					string.push(', <b>fragment : </b>');
-					string.push(key['fragment']);
-				}
-				var result = string.join('').substring(0, 120);
-				$scope.results.push(result);
-			});
+			$scope.results = $injector.get(resultsBuilderService).buildResults($scope.search.searchResults);
 		}
 		return $scope.results;
 	}
@@ -51,9 +40,8 @@ function TypeaheadController($scope, $http, $timeout) {
 	// retrieve the results if any. To prevent concurrent searches(due to the un-synch)
 	// nature of Angular we set a flag when we post, and we set a timeout that will re-try 
 	// the service until there are results or there are too many re-tries
-	$scope.doSearch = function(uri) {
+	$scope.doSearch = function(uri, resultsBuilderService) {
 		if (!$scope.loading) {
-			// alert('Index name : ' + $scope.search.indexName);
 			$scope.results = null;
 			$scope.loading = true;
 			$scope.url = getServiceUrl(uri);
@@ -65,9 +53,8 @@ function TypeaheadController($scope, $http, $timeout) {
 			promise.success(function(data, status) {
 				$scope.search = data;
 				$scope.status = status;
-				$scope.convertToArray();
+				$scope.convertToArray(resultsBuilderService);
 				$scope.loading = false;
-				// alert('Index name : ' + $scope.search.indexName);
 			});
 			promise.error(function(data, status) {
 				$scope.status = status;
@@ -80,6 +67,10 @@ function TypeaheadController($scope, $http, $timeout) {
 					if (maxRetries-- > 0 && $scope.result == null || $scope.results == undefined) {
 						return $scope.wait();
 					}
+					// Emit the search object to any parent controllers
+					// that may be interested in the fact that the user has
+					// selected a search string
+					$scope.$emit('doSearch', $scope.search);
 					return $scope.results;
 				}, 100);
 			};
@@ -98,6 +89,9 @@ function TypeaheadController($scope, $http, $timeout) {
 	$scope.property = function(name, value) {
 		$scope[name] = value;
 	};
+	/**
+	 * Same as the above only the search object is populated, i.e. fields are set. 
+	 */
 	$scope.searchProperty = function(name, value, array) {
 		if (!array) {
 			$scope.search[name] = value;
@@ -106,8 +100,19 @@ function TypeaheadController($scope, $http, $timeout) {
 		}
 	};
 	
-	$scope.doModalResults = function() {
-		// Popup the results on a modal that can be navigated with a mouse or the keyboard?
+	/**
+	 * This method can be called after the user selects one of the drop down results, and calls a service
+	 * that will then perform further logic on the selection, like doing the actual search for the selected 
+	 * search string. The service must have a single function called 'execute' that takes a single parameter.
+	 * 
+	 * @param the name of the service to call
+	 * @param the parameter to pass to the function call of the service
+	 */
+	$scope.callService = function(name, parameter) {
+		var service = $injector.get(name);
+		if (!!service) {
+			service.execute(parameter);
+		}
 	};
 	
 }

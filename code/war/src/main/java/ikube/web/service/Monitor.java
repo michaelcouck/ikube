@@ -80,6 +80,9 @@ public class Monitor extends Resource {
 	@Path(Monitor.FIELDS)
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response fields(@QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
+		if (StringUtils.isEmpty(indexName)) {
+			return buildJsonResponse(new String[0]);
+		}
 		return buildJsonResponse(monitorService.getIndexFieldNames(indexName));
 	}
 

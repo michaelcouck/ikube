@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
- * Path looks like this: http://localhost:9080/ikube/service/search/json/multi
+ * Path looks like this: http://localhost:9080/ikube/service/search/json/xxx
  * 
  * @author Michael couck
  * @since 21.01.12

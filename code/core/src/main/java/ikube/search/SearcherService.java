@@ -199,7 +199,7 @@ public class SearcherService implements ISearcherService {
 	 */
 	@SuppressWarnings("unchecked")
 	public Search searchAll(final Search search) {
-		LOGGER.info("Search all");
+		LOGGER.debug("Search all");
 		try {
 			long totalHits = 0;
 			float highScore = 0;
@@ -219,17 +219,10 @@ public class SearcherService implements ISearcherService {
 				String[] typeFields = new String[0];
 				if (searchFields == null || searchFields.length == 0) {
 					if (LOGGER.isDebugEnabled()) {
-						LOGGER.info("Index : " + indexName + ", search fields : " + Arrays.deepToString(searchFields));
+						LOGGER.debug("Index : " + indexName + ", search fields : " + Arrays.deepToString(searchFields));
 					}
 					continue;
 				}
-
-				// String[] newSearchStrings = new String[searchFields.length];
-				// int minLength = Math.min(searchStrings.length, newSearchStrings.length);
-				// System.arraycopy(searchStrings, 0, newSearchStrings, 0, minLength);
-				// String searchString = searchStrings != null && searchStrings.length > 0 ? searchStrings[0] : "";
-				// Arrays.fill(newSearchStrings, minLength, newSearchStrings.length, searchString);
-				// searchStrings = newSearchStrings;
 
 				searchStrings = fillArray(searchFields, searchStrings);
 

@@ -30,7 +30,7 @@ class InternetResourceProvider implements IResourceProvider<Url> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Url getResource() {
+	public synchronized Url getResource() {
 		if (urls.isEmpty()) {
 			// We'll wait a few seconds to see if any other thread will add some urls to the stack
 			ThreadUtilities.sleep(10000);

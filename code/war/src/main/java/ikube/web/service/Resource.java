@@ -1,22 +1,29 @@
 package ikube.web.service;
 
+import ikube.action.index.parse.HtmlParser;
 import ikube.cluster.IClusterManager;
 import ikube.cluster.IMonitorService;
 import ikube.search.ISearcherService;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.SerializationUtilities;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.tools.ant.filters.StringInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * This is the base class for all web services, common logic and properties.
@@ -30,7 +37,7 @@ public abstract class Resource {
 	/** Constants for the paths to the web services. */
 	public static final String REQUEST = "request";
 
-	public static final String SEPARATOR = ",;:|";
+	public static final String SEPARATOR = ",;:| \t\n";
 
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -43,7 +50,7 @@ public abstract class Resource {
 	protected IClusterManager clusterManager;
 
 	{
-		gson = new Gson();
+		gson = new GsonBuilder().disableHtmlEscaping().create();
 	}
 
 	/**
@@ -107,6 +114,21 @@ public abstract class Resource {
 		} catch (IllegalAccessException e) {
 			throw new RuntimeException("Couldn't unmarshall : " + json + ", to : " + clazz, e);
 		}
+	}
+	
+	String[] split(final String string) {
+		String cleaned = string;
+		HtmlParser htmlParser = new HtmlParser();
+		OutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			htmlParser.parse(new StringInputStream(string), outputStream);
+			cleaned = outputStream.toString();
+		} catch (Exception e) {
+			logger.error("Exception cleaning the search string of html : " + string, e);
+		} finally {
+			IOUtils.closeQuietly(outputStream);
+		}
+		return StringUtils.split(cleaned, SEPARATOR);
 	}
 
 }

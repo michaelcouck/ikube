@@ -13,18 +13,6 @@
 					<span class="pull-right">
 						<span class="options">
 							<a href="#"><i class="icon-cog"></i></a>
-							<!-- <div class="btn-group">
-								<a data-toggle="dropdown">
-									<i class="icon-cog"></i>
-								</a>
-								<ul class="dropdown-menu dropdown-left">
-									<li><a href="#" ng-click="refreshServers();">Refresh</a></li>
-									<li><a href="#">Another action</a></li>
-									<li><a href="#">Something else here</a></li>
-									<li class="divider"></li>
-									<li><a href="#">Separated link</a></li>
-								</ul>
-							</div> -->
 						</span>
 					</span>
 				</div>
@@ -32,46 +20,8 @@
 					<div class="row-fluid">
 						<div class="span12">
 							<div class="padded">
-								<li class="dropdown">
-									<a class="dropdown-toggle" data-toggle="dropdown">
-										<i class="icon-share-alt"></i>More<span class="caret"></span>
-									</a>
-									<ul class="dropdown-menu">
-										<li><a href="#"><i class="icon-warning-sign"></i>Something else</a></li>
-										<li class="divider"></li>
-										<li>
-											<a href="<spring:url value="/logout" htmlEscape="true" />" title="<spring:message code="security.logout" />">
-												<i class="icon-off"></i>
-												<spring:message code="security.logout" />
-											</a>
-										</li>
-									</ul>
-								</li>
-
-								<div class="input">
-									<li class="dropdown" ng-controller="DropdownCtrl">
-										<a class="dropdown-toggle"> Click me for a dropdown, yo! </a>
-										<ul class="dropdown-menu">
-											<li ng-repeat="choice in items"><a>{{choice}}</a></li>
-										</ul>
-									</li>
-								</div>
-								<div class="note pull-right">Please choose an index to search</div>
-								<div class="input" ng-controller="IndexesController">
-									<select 
-										ng-controller="IndexesController" 
-										ng-model="indexName" 
-										ng-model="indexes" 
-										ng-options="index for index in indexes" 
-										ng-change="
-											resetSearch();
-											doFields(indexName);
-											setField('indexName', indexName);"
-											class="fill-up">
-										<option style="display:none" value="">index</option>
-									</select>
-								</div>
-								<div class="note pull-right">Note that multiple indexes can be searched</div>
+								<form ng-submit="doSearch()">
+								<div class="note pull-right"><b>Search all fields in all indexes</b></div>
 								<div 
 									class="input" 
 									ng-controller="TypeaheadController" 
@@ -79,55 +29,44 @@
 										searchProperty('indexName', 'autocomplete', false);
 										searchProperty('searchFields', 'word', true);
 										searchProperty('typeFields', 'string', true);
-										searchProperty('sortFields', 'autocomplete', true);">
-									<!-- class="search" --> 
+										searchProperty('sortFields', 'word', true);">
 									<input
-										id="search"
+										id="instant-search"
+										name="instant-search" 
 										type="text"
-										name="search" 
-										placeholder="Instant search, every field, every index..."
+										class="search"
 										ng-model="searchString"
-										typeahead="result for result in doSearch('/ikube/service/search/json')"
+										focus-me="{{true}}"
+										placeholder="Instant search..."
+										typeahead="result for result in doSearch('/ikube/service/search/json', 'autocompleteResultsBuilderService')"
 										typeahead-min-length="3" 
-										typeahead-wait-ms="250"
-										typeahead-on-select="doModalResults();">
+										typeahead-wait-ms="50"
+										typeahead-on-select="callService('name', 'parameter');">
+									<button type="submit" class="button blue">Go</button>
+								</div>
+								</form>
+								
+								<div class="note pull-right"><b>Choose an index to search</b></div>
+								<div class="input search">
+									<select 
+										ng-model="indexName"
+										ng-model="indexes"
+										ng-options="index for index in indexes"
+										class="fill-up">
+										<option style="display:none" value="">choose</option>
+									</select>
 								</div>
 								
-								<div class="span6">
-									<div class="prepend-transparent">
-										<span class="add-on button">@</span><input
-											class="input-transparent" id="prependedInput" size="16"
-											type="text" placeholder="Username">
-									</div>
+								<div 
+									class="prepend-transparent"
+									ng-show="!!search.searchFields && search.searchFields.length > 0"
+									ng-repeat="field in search.searchFields">
+									<span class="add-on button">@</span>
+									<input class="input-transparent" type="text" placeholder="{{field}}" value="{{field}}" />
 								</div>
-								
-								<!-- <div class="span6">
-									<div class="append-transparent">
-										<input class="input-transparent" id="appendedInput2" size="16"
-											type="text">
-										<button class="add-on button">GO</button>
-									</div>
-								</div>
-								
-								<div class="span6">
-									<div class="append-transparent">
-										<input class="input-transparent" id="appendedInput" size="16"
-											type="text"><span class="add-on button">.00</span>
-									</div>
-								</div> -->
 
-								<div class="input">
-									<input type="text" placeholder="Username" class="error" /> <span
-										class="input-error" data-title="please write a valid username">
-										<i class="icon-warning-sign"></i>
-									</span>
-								</div>
-								<div class="input">
-									<input type="password" placeholder="Password" class="error" />
-									<span class="input-error" data-title="please write a valid password">
-										<i class="icon-warning-sign"></i>
-									</span>
-								</div>
+								<br><br><br><br><br><br><br>
+
 							</div>
 						</div>
 					</div>
@@ -138,50 +77,49 @@
 		<div class="span8">
 			<div class="black-box tex">
 				<div class="tab-header">Search results</div>
-				<ul class="recent-comments">
+				<ul class="recent-comments" ng-show="!!statistics">
 					<li class="separator">
-						<div class="avatar pull-left">
-							<img src="<c:url value="/assets/images/MYP_1376-small.jpg" />" />
-						</div>
 						<div class="article-post">
-							<div class="user-info">Posted by jordan, 3 days ago</div>
-							<div class="user-content">Vivamus sed auctor nibh congue,
-								ligula vitae tempus pharetra... Vivamus sed auctor nibh congue,
-								ligula vitae tempus pharetra... Vivamus sed auctor nibh congue,
-								ligula vitae tempus pharetra...</div>
-							<div class="btn-group">
-								<button class="button black mini">
-									<i class="icon-pencil"></i> Edit
-								</button>
-								<button class="button black mini">
-									<i class="icon-remove"></i> Delete
-								</button>
-								<button class="button black mini">
-									<i class="icon-ok"></i> Approve
-								</button>
+							<div class="user-content">
+								Showing results {{search.firstResult}} 
+								to {{endResult}} 
+								of {{statistics.total}} 
+								for {{search.searchStrings}} 
+								in fields {{search.searchFields}}, 
+								duration {{statistics.duration}} milliseconds<br>
+								<div class="btn-group">
+									<button class="button mini" ng-repeat="page in pagination" ng-click="setField('firstResult', page.firstResult);doSearch();">{{page.page}}</button>
+								</div>
 							</div>
 						</div>
 					</li>
+				</ul>
+				
+				<ul class="recent-comments" ng-show="!!search.searchFields.latitude && !!search.searchFields.longitude">
+					<li class="separator">
+						<div class="article-post">
+							<div class="user-content">
+								<div id="map_canvas" google-map style="height: 250px; width: 350px; border : 2px solid black;"></div>
+							</div>
+						</div>
+					</li>
+				</ul>
+				
+				<ul class="recent-comments" ng-show="!!search.searchResults && endResult > 0" ng-repeat="result in search.searchResults">
 					<li class="separator">
 						<div class="avatar pull-left">
 							<img src="<c:url value="/assets/images/MYP_1376-small.jpg" />" />
 						</div>
 						<div class="article-post">
-							<div class="user-info">Posted by jordan, 3 days ago</div>
-							<div class="user-content">Vivamus sed auctor nibh congue,
-								ligula vitae tempus pharetra... Vivamus sed auctor nibh congue,
-								ligula vitae tempus pharetra... Vivamus sed auctor nibh congue,
-								ligula vitae tempus pharetra...</div>
+							<div class="user-info" ng-show="!!result.id">Id : {{result.id}}</div>
+							<div class="user-info" ng-show="!!result.path">Path : {{result.path}}</div>
+							<div class="user-info" ng-show="!!result.url">Url : {{result.url}}</div>
+							<div class="user-info">Score : {{result.score}}</div>
+							<div class="user-content" ng-bind-html-unsafe="'Fragment : ' + result.fragment">Fragment :</div>
 							<div class="btn-group">
-								<button class="button black mini">
-									<i class="icon-pencil"></i> Edit
-								</button>
-								<button class="button black mini">
-									<i class="icon-remove"></i> Delete
-								</button>
-								<button class="button black mini">
-									<i class="icon-ok"></i> Approve
-								</button>
+								<button class="button black mini" onClick="enterpriseNotification();"><i class="icon-pencil"></i>Edit</button>
+								<button class="button black mini" onClick="enterpriseNotification();"><i class="icon-remove"></i>Delete</button>
+								<button class="button black mini" ng-click="search.searchResults.splice($index, 1)"><i class="icon-stop"></i>Hide</button>
 							</div>
 						</div>
 					</li>

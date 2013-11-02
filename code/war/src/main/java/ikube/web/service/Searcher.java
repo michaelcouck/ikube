@@ -4,7 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,9 +49,5 @@ public abstract class Searcher extends Resource {
 
 	/** Search Json, all fields in all indexes, just for convenience. */
 	public abstract Response searchAll(final HttpServletRequest request, final UriInfo uriInfo);
-
-	String[] split(final String string) {
-		return StringUtils.split(string, SEPARATOR);
-	}
 
 }
