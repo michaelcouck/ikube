@@ -50,7 +50,7 @@
 		property:name="autocomplete-word-lists"
 		property:path="./ikube/common/languages"
 		
-		property:separator="path"
+		property:separator=","
 		property:encoding="UTF-8"
 		property:lineNumberFieldName="line-number"
 		

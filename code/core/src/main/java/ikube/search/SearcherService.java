@@ -199,50 +199,18 @@ public class SearcherService implements ISearcherService {
 	/**
 	 * This method is particularly expensive, it will do a search on every index in the system.
 	 */
-	@SuppressWarnings("unchecked")
 	public Search searchAll(final Search search) {
 		LOGGER.debug("Search all");
 		try {
-			long totalHits = 0;
-			float highScore = 0;
-			long duration = 0;
-
 			String[] indexNames = monitorService.getIndexNames();
-			String[] searchStrings = search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]);
-			ArrayList<HashMap<String, String>> searchResults = new ArrayList<HashMap<String, String>>();
-
-			Exception exception = null;
-			HashMap<String, String> statistics = new HashMap<String, String>();
 			List<Future<?>> futures = new ArrayList<Future<?>>();
 			List<Search> searches = new ArrayList<Search>();
 			for (final String indexName : indexNames) {
-				final Search clonedSearch = (Search) SerializationUtilities.clone(search);
-				clonedSearch.setIndexName(indexName);
-				searches.add(clonedSearch);
-
-				String[] searchFields = monitorService.getIndexFieldNames(indexName);
-				String[] typeFields = new String[0];
-				if (searchFields == null || searchFields.length == 0) {
-					if (LOGGER.isDebugEnabled()) {
-						LOGGER.debug("Index : " + indexName + ", search fields : " + Arrays.deepToString(searchFields));
-					}
+				final Search clonedSearch = cloneSearch(search, indexName);
+				if (clonedSearch == null) {
 					continue;
 				}
-
-				searchStrings = fillArray(searchFields, searchStrings);
-
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("Searching index : " + indexName + ", " + //
-							Arrays.deepToString(searchStrings) + ", " + //
-							Arrays.deepToString(searchFields) + ", " + //
-							Arrays.deepToString(typeFields));
-				}
-
-				clonedSearch.setSearchStrings(Arrays.asList(searchStrings));
-				clonedSearch.setSearchFields(Arrays.asList(searchFields));
-				clonedSearch.setTypeFields(Arrays.asList(typeFields));
-				clonedSearch.setSortFields(Collections.EMPTY_LIST);
-
+				searches.add(clonedSearch);
 				Future<?> future = ThreadUtilities.submit(Integer.toString(clonedSearch.hashCode()), new Runnable() {
 					public void run() {
 						// Search each index separately
@@ -251,47 +219,91 @@ public class SearcherService implements ISearcherService {
 				});
 				futures.add(future);
 			}
-
 			ThreadUtilities.waitForFutures(futures, 60000);
-			for (final Search clonedSearch : searches) {
-				// Consolidate the results, i.e. merge them
-				List<HashMap<String, String>> searchSubResults = clonedSearch.getSearchResults();
-				if (searchSubResults != null && searchSubResults.size() > 1) {
-					statistics = searchSubResults.remove(searchSubResults.size() - 1);
-					totalHits += Long.parseLong(statistics.get(IConstants.TOTAL));
-					highScore += Float.parseFloat(statistics.get(IConstants.SCORE));
-					duration += Long.parseLong(statistics.get(IConstants.DURATION));
-					searchResults.addAll(searchSubResults);
-				}
-				ThreadUtilities.destroy(Integer.toString(clonedSearch.hashCode()));
-			}
-
-			statistics.put(IConstants.TOTAL, Long.toString(totalHits));
-			statistics.put(IConstants.DURATION, Long.toString(duration));
-			statistics.put(IConstants.SCORE, Float.toString(highScore));
-			// Sort all the results according to the score
-			Collections.sort(searchResults, new Comparator<HashMap<String, String>>() {
-				@Override
-				public int compare(final HashMap<String, String> o1, final HashMap<String, String> o2) {
-					String scoreOneString = o1.get(IConstants.SCORE);
-					String scoreTwoString = o2.get(IConstants.SCORE);
-					Double scoreOne = Double.parseDouble(scoreOneString);
-					Double scoreTwo = Double.parseDouble(scoreTwoString);
-					return scoreOne.compareTo(scoreTwo);
-				}
-			});
-			ArrayList<HashMap<String, String>> topResults = new ArrayList<HashMap<String, String>>();
-			topResults.addAll(searchResults.subList(0, Math.min(search.getMaxResults(), searchResults.size())));
-
-			SearchComplex searchSingle = new SearchComplex(null);
-			searchSingle.setSearchString(searchStrings);
-			searchSingle.addStatistics(searchStrings, topResults, totalHits, highScore, duration, exception);
-
-			search.setSearchResults(topResults);
+			aggregateResults(search, searches);
 		} catch (Exception e) {
 			handleException(search.getIndexName(), e);
 		}
 		return search;
+	}
+
+	private void aggregateResults(final Search search, final List<Search> searches) {
+		long totalHits = 0;
+		float highScore = 0;
+		long duration = 0;
+
+		ArrayList<HashMap<String, String>> searchResults = new ArrayList<HashMap<String, String>>();
+
+		for (final Search clonedSearch : searches) {
+			// Consolidate the results, i.e. merge them
+			List<HashMap<String, String>> searchSubResults = clonedSearch.getSearchResults();
+			if (searchSubResults != null && searchSubResults.size() > 1) {
+				HashMap<String, String> statistics = searchSubResults.remove(searchSubResults.size() - 1);
+				totalHits += Long.parseLong(statistics.get(IConstants.TOTAL));
+				highScore += Float.parseFloat(statistics.get(IConstants.SCORE));
+				long subSearchDuration = Long.parseLong(statistics.get(IConstants.DURATION));
+				duration = Math.max(duration, subSearchDuration);
+				searchResults.addAll(searchSubResults);
+			}
+			ThreadUtilities.destroy(Integer.toString(clonedSearch.hashCode()));
+		}
+
+		HashMap<String, String> statistics = new HashMap<String, String>();
+		statistics.put(IConstants.TOTAL, Long.toString(totalHits));
+		statistics.put(IConstants.DURATION, Long.toString(duration));
+		statistics.put(IConstants.SCORE, Float.toString(highScore));
+		// Sort all the results according to the score
+		Collections.sort(searchResults, new Comparator<HashMap<String, String>>() {
+			@Override
+			public int compare(final HashMap<String, String> o1, final HashMap<String, String> o2) {
+				String scoreOneString = o1.get(IConstants.SCORE);
+				String scoreTwoString = o2.get(IConstants.SCORE);
+				Double scoreOne = Double.parseDouble(scoreOneString);
+				Double scoreTwo = Double.parseDouble(scoreTwoString);
+				return scoreOne.compareTo(scoreTwo);
+			}
+		});
+		ArrayList<HashMap<String, String>> topResults = new ArrayList<HashMap<String, String>>();
+		topResults.addAll(searchResults.subList(0, Math.min(search.getMaxResults(), searchResults.size())));
+
+		String[] searchStrings = search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]);
+		SearchComplex searchSingle = new SearchComplex(null);
+		searchSingle.setSearchString(searchStrings);
+		searchSingle.addStatistics(searchStrings, topResults, totalHits, highScore, duration, null);
+
+		search.setSearchResults(topResults);
+	}
+
+	@SuppressWarnings("unchecked")
+	private Search cloneSearch(final Search search, final String indexName) {
+		final Search clonedSearch = (Search) SerializationUtilities.clone(search);
+		clonedSearch.setIndexName(indexName);
+
+		String[] searchStrings = search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]);
+		String[] searchFields = monitorService.getIndexFieldNames(indexName);
+		String[] typeFields = new String[0];
+		if (searchFields == null || searchFields.length == 0) {
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Index : " + indexName + ", search fields : " + Arrays.deepToString(searchFields));
+			}
+			return null;
+		}
+
+		searchStrings = fillArray(searchFields, searchStrings);
+
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Searching index : " + indexName + ", " + //
+					Arrays.deepToString(searchStrings) + ", " + //
+					Arrays.deepToString(searchFields) + ", " + //
+					Arrays.deepToString(typeFields));
+		}
+
+		clonedSearch.setSearchStrings(Arrays.asList(searchStrings));
+		clonedSearch.setSearchFields(Arrays.asList(searchFields));
+		clonedSearch.setTypeFields(Arrays.asList(typeFields));
+		clonedSearch.setSortFields(Collections.EMPTY_LIST);
+
+		return clonedSearch;
 	}
 
 	private String[] fillArray(final String[] lengthOfThisArray, final String[] originalStrings) {

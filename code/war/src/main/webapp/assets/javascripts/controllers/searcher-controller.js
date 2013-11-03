@@ -15,7 +15,6 @@ module.controller('SearcherController', function($scope, $http, $timeout) {
 		fragment : true
 	};
 	$scope.headers = { headers: { 'Content-Type' : 'application/json' } };
-	$scope.reverse = false;
 	$scope.indexes;
 	$scope.indexName;
 	$scope.searching = false;
@@ -24,7 +23,11 @@ module.controller('SearcherController', function($scope, $http, $timeout) {
 	$scope.$watch('indexName', function() {
 		$scope.waitForDigest = function() {
 			return $timeout(function() {
+				$scope.doPagination();
+				$scope.search.statistics = undefined;
+				$scope.search.searchResults = undefined;
 				$scope.doFields($scope.indexName);
+				$scope.$apply();
 			}, 100);
 		};
 		$scope.waitForDigest();
@@ -154,44 +157,27 @@ module.controller('SearcherController', function($scope, $http, $timeout) {
 	// Creates the Json pagination array for the next pages in the search
 	$scope.doPagination = function() {
 		$scope.pagination = [];
-		$scope.statistics = $scope.search.searchResults.pop();
-		// Exception or no results
-		if ($scope.statistics == undefined || $scope.statistics.total == undefined || $scope.statistics.total == null || $scope.statistics.total == 0) {
-			$scope.endResult = 0;
-			$scope.search.firstResult = 0;
-			return;
+		if (!!$scope.search.searchResults) {
+			$scope.statistics = $scope.search.searchResults.pop();
+			if (!!$scope.statistics && !!$scope.statistics.total && $scope.statistics.total != 0) {
+				// We just started a search and got the first results
+				var pages = $scope.statistics.total / $scope.pageBlock;
+				// Create one 'page' for each block of results
+				for (var i = 0; i < pages && i < 10; i++) {
+					var firstResult = i * $scope.pageBlock;
+					$scope.pagination[i] = { page : i, firstResult : firstResult };
+				};
+				// Find the 'to' result being displayed
+				var modulo = $scope.statistics.total % $scope.pageBlock;
+				$scope.endResult = $scope.search.firstResult + modulo == $scope.statistics.total ? $scope.statistics.total : $scope.search.firstResult + parseInt($scope.pageBlock, 10);
+				return;
+			}
 		}
-		// We just started a search and got the first results
-		var pages = $scope.statistics.total / $scope.pageBlock;
-		// Create one 'page' for each block of results
-		for (var i = 0; i < pages && i < 10; i++) {
-			var firstResult = i * $scope.pageBlock;
-			$scope.pagination[i] = { page : i, firstResult : firstResult };
-		};
-		// Find the 'to' result being displayed
-		var modulo = $scope.statistics.total % $scope.pageBlock;
-		$scope.endResult = $scope.search.firstResult + modulo == $scope.statistics.total ? $scope.statistics.total : $scope.search.firstResult + parseInt($scope.pageBlock, 10);
+		// Exception or no results
+		$scope.endResult = 0;
+		$scope.search.firstResult = 0;
 	}
 	
-	// Set and remove fields from the search object and local scoped objects 
-	$scope.setField = function(field, value) {
-		$scope.search[field] = value;
-		alert('Field : ' + field + ', ' + value + ', ' + $scope.search[field]);
-	}
-	$scope.removeField = function(field, $index) {
-		$scope.search[field].splice($index, 1);
-	};
-	$scope.pushField = function(field, value) {
-		$scope.search[field].push(value);
-	};
-	$scope.pushFieldScope = function(item, value) {
-		$scope[item].push(value);
-	};
-	$scope.resetSearch = function() {
-		$scope.search.searchStrings.splice(0, $scope.search.searchStrings.length);
-		$scope.search.searchFields.splice(0, $scope.search.searchFields.length);
-		$scope.search.typeFields.splice(0, $scope.search.typeFields.length);
-	};
 	/**
 	 * Same as the above only the search object is populated, i.e. fields are set. 
 	 */

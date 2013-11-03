@@ -11,10 +11,15 @@
  */
 function TypeaheadController($scope, $http, $injector, $timeout) {
 	
+	// The configuration object with the uri and other parameters
+	$scope.config;
 	// Flag to prevent multiple calls concurrently
 	$scope.loading = false;
 	// We don't want too many results, looks bad
-	$scope.search = { maxResults : 6 };
+	$scope.search = { 
+		maxResults : 6,
+		fragment : true
+	};
 	// The results that will be created from the response from the server
 	$scope.results = new Array();
 	// The search string that we will send for searching against
@@ -23,15 +28,14 @@ function TypeaheadController($scope, $http, $injector, $timeout) {
 	// This function converts the Json data which is a list of 
 	// maps to an array that can be displayed in the 'drop down'. The fragments
 	// from the results are taken and shortened to +- 120 characters
-	$scope.convertToArray = function(resultsBuilderService) {
+	$scope.convertToArray = function() {
 		$scope.results = new Array();
-		if ($scope.search != undefined && $scope.search != null && $scope.search.searchResults != undefined && $scope.search.searchResults != null) {
+		if (!!$scope.search && !!$scope.search.searchResults) {
 			$scope.statistics = $scope.search.searchResults.pop();
 			// Exception or no results
-			if ($scope.statistics == undefined || $scope.statistics.total == undefined || $scope.statistics.total == 0) {
-				return;
+			if (!!$scope.statistics && !!$scope.statistics.total && $scope.statistics.total > 0) {
+				$scope.results = $injector.get($scope.config.resultsBuilder).buildResults($scope.search.searchResults);
 			}
-			$scope.results = $injector.get(resultsBuilderService).buildResults($scope.search.searchResults);
 		}
 		return $scope.results;
 	}
@@ -40,20 +44,17 @@ function TypeaheadController($scope, $http, $injector, $timeout) {
 	// retrieve the results if any. To prevent concurrent searches(due to the un-synch)
 	// nature of Angular we set a flag when we post, and we set a timeout that will re-try 
 	// the service until there are results or there are too many re-tries
-	$scope.doSearch = function(uri, resultsBuilderService) {
+	$scope.doSearch = function() {
 		if (!$scope.loading) {
-			$scope.results = null;
 			$scope.loading = true;
-			$scope.url = getServiceUrl(uri);
-			$scope.search.fragment = true;
+			$scope.url = getServiceUrl($scope.config.uri);
 			$scope.search.searchStrings = [$scope.searchString];
-			$scope.search.maxResults = 6;
 			
 			var promise = $http.post($scope.url, $scope.search);
 			promise.success(function(data, status) {
 				$scope.search = data;
 				$scope.status = status;
-				$scope.convertToArray(resultsBuilderService);
+				$scope.convertToArray();
 				$scope.loading = false;
 			});
 			promise.error(function(data, status) {
@@ -61,17 +62,20 @@ function TypeaheadController($scope, $http, $injector, $timeout) {
 				$scope.loading = false;
 			});
 			
-			var maxRetries = 5;
+			var maxRetries = 50;
 			$scope.wait = function() {
 				return $timeout(function() {
-					if (maxRetries-- > 0 && $scope.result == null || $scope.results == undefined) {
+					if (!!$scope.results) {
+						if (!!$scope.config.emitHierarchyFunction) {
+							// Emit the search object to any parent controllers
+							// that may be interested in the fact that the user has
+							// selected a search string
+							$scope.$emit($scope.config.emitHierarchyFunction, $scope.search);
+						}
+						return $scope.results;
+					} else if (maxRetries-- > 0) {
 						return $scope.wait();
 					}
-					// Emit the search object to any parent controllers
-					// that may be interested in the fact that the user has
-					// selected a search string
-					$scope.$emit('doSearch', $scope.search);
-					return $scope.results;
 				}, 100);
 			};
 			// Because http requests are asynchronous we have to wait explicitly
@@ -82,22 +86,14 @@ function TypeaheadController($scope, $http, $injector, $timeout) {
 	};
 	
 	/**
-	 * This function will set a value to a property in the scope by name.
-	 * @param the name of the property in the current scope
-	 * @param the value to set for the property
-	 */
-	$scope.property = function(name, value) {
-		$scope[name] = value;
-	};
-	/**
 	 * Same as the above only the search object is populated, i.e. fields are set. 
 	 */
-	$scope.searchProperty = function(name, value, array) {
-		if (!array) {
-			$scope.search[name] = value;
-		} else {
-			$scope.search[name] = [value];
-		}
+	$scope.doConfig = function(configName) {
+		$scope.config = $injector.get('configService').getConfig(configName);
+		$scope.search.indexName = $scope.config.indexName;
+		$scope.search.searchFields = $scope.config.searchFields;
+		$scope.search.typeFields = $scope.config.typeFields;
+		$scope.search.sortFields = $scope.config.sortFields;
 	};
 	
 	/**

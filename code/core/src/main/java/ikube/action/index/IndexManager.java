@@ -465,6 +465,8 @@ public final class IndexManager {
 				StringBuilder builder = new StringBuilder(fieldValue).append(' ').append(fieldContent);
 				field.setValue(builder.toString());
 			}
+			// Add this for the autocomplete
+			// field.setOmitNorms(omitNorms);
 		}
 		return document;
 	}

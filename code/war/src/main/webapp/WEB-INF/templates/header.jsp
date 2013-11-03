@@ -3,7 +3,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
 
-<div class="top-nav" ng-controller="TypeaheadController">
+<div class="top-nav" ng-controller="TypeaheadController" ng-init="doConfig('quickSearchConfig');">
 	<div class="container-fluid">
 		<div class="row-fluid search-button-bar-container">
 			<div class="span12">
@@ -31,7 +31,7 @@
 					placeholder="Quick search, every field in every index..."
 					
 					ng-model="searchString"
-					typeahead="result for result in doSearch('/ikube/service/search/json/all', 'resultsBuilderService')"
+					typeahead="result for result in doSearch()"
 					
 					typeahead-min-length="3" 
 					typeahead-wait-ms="250"

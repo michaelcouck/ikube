@@ -72,7 +72,7 @@ module.controller('IndexContextsController', function($http, $scope, $timeout) {
 	}
 	
 	$scope.editing = function() {
-		return $scope.indexContext != undefined && $scope.indexContext != null;
+		return !!$scope.indexContext;
 	};
 	
 	$scope.cancel = function() {
@@ -99,6 +99,7 @@ module.controller('IndexContextsController', function($http, $scope, $timeout) {
 			"aoColumns": [
 			    { "sTitle" : "Name" },
 			    { "sTitle" : "Open" },
+			    { "sTitle" : "Indexing" },
 			    { "sTitle" : "Documents" },
 			    { "sTitle" : "Size" }
 	        ],
@@ -129,6 +130,7 @@ module.controller('IndexContextsController', function($http, $scope, $timeout) {
 			var row = [];
 			row.push(indexContext.name);
 			row.push(indexContext.open);
+			row.push(indexContext.indexing);
 			row.push(indexContext.numDocsForSearchers / 1000000);
 			row.push(indexContext.snapshot.indexSize / 1000000);
 			table.push(row);

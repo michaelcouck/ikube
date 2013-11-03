@@ -49,7 +49,8 @@
 	
 	<!-- Must be after Angular -->
 	<script src="<c:url value="/assets/javascripts/services/database-service.js" />" type="text/javascript"></script>
-	<script src="<c:url value="/assets/javascripts/services/results-builder-services.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/services/results-builder-service.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/services/config-service.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/ikube.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/directives/directive.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/directives/active-directive.js" />" type="text/javascript"></script>
