@@ -54,6 +54,6 @@ public class FileSystemCsvResourceProvider implements IResourceProvider<File> {
 	}
 
 	protected synchronized boolean isIncluded(final File file) {
-		return file.getName().endsWith(".csv");
+		return file.getName().endsWith("csv");
 	}
 }

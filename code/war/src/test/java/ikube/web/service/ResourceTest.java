@@ -37,7 +37,7 @@ public class ResourceTest extends BaseTest {
 		logger.info("Entity : " + entity);
 		logger.info("Entity : " + Arrays.deepToString(result));
 		assertTrue("Must have the wierd characters : ", entity.toString().contains(somthingElseAlToGether));
-		assertTrue("Must contain the escaped sngle quote : ", entity.toString().contains("0027"));
+		assertTrue("Must have the wierd characters : ", entity.toString().contains("ä"));
 	}
 
 }

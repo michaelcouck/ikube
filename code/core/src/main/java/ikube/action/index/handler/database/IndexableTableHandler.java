@@ -74,12 +74,14 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		try {
 			do {
 				Document document = new Document();
-				// The category set is already moved to the first row, i.e. next()
+				// The result set is already moved to the first row, i.e. next()
 				try {
 					handleRow(indexContext, indexableTable, resultSet, document, contentProvider);
 					// Add the document to the index
 					resourceHandler.handleResource(indexContext, indexableTable, document, null);
 					ThreadUtilities.sleep(indexContext.getThrottle());
+				} catch (InterruptedException e) {
+					throw new RuntimeException("Indexing terminated : ", e);
 				} catch (Exception e) {
 					handleException(indexableTable, e, "Exception indexing table : " + indexableTable.getName());
 				}

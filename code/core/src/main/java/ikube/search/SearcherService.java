@@ -9,6 +9,7 @@ import ikube.model.Search;
 import ikube.search.Search.TypeField;
 import ikube.toolkit.HashUtilities;
 import ikube.toolkit.SerializationUtilities;
+import ikube.toolkit.ThreadUtilities;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.search.Searcher;
@@ -211,9 +213,12 @@ public class SearcherService implements ISearcherService {
 
 			Exception exception = null;
 			HashMap<String, String> statistics = new HashMap<String, String>();
+			List<Future<?>> futures = new ArrayList<Future<?>>();
+			List<Search> searches = new ArrayList<Search>();
 			for (final String indexName : indexNames) {
-				Search clonedSearch = (Search) SerializationUtilities.clone(search);
+				final Search clonedSearch = (Search) SerializationUtilities.clone(search);
 				clonedSearch.setIndexName(indexName);
+				searches.add(clonedSearch);
 
 				String[] searchFields = monitorService.getIndexFieldNames(indexName);
 				String[] typeFields = new String[0];
@@ -238,9 +243,17 @@ public class SearcherService implements ISearcherService {
 				clonedSearch.setTypeFields(Arrays.asList(typeFields));
 				clonedSearch.setSortFields(Collections.EMPTY_LIST);
 
-				// Search each index separately
-				search(clonedSearch);
+				Future<?> future = ThreadUtilities.submit(Integer.toString(clonedSearch.hashCode()), new Runnable() {
+					public void run() {
+						// Search each index separately
+						search(clonedSearch);
+					}
+				});
+				futures.add(future);
+			}
 
+			ThreadUtilities.waitForFutures(futures, 60000);
+			for (final Search clonedSearch : searches) {
 				// Consolidate the results, i.e. merge them
 				List<HashMap<String, String>> searchSubResults = clonedSearch.getSearchResults();
 				if (searchSubResults != null && searchSubResults.size() > 1) {
@@ -250,7 +263,9 @@ public class SearcherService implements ISearcherService {
 					duration += Long.parseLong(statistics.get(IConstants.DURATION));
 					searchResults.addAll(searchSubResults);
 				}
+				ThreadUtilities.destroy(Integer.toString(clonedSearch.hashCode()));
 			}
+
 			statistics.put(IConstants.TOTAL, Long.toString(totalHits));
 			statistics.put(IConstants.DURATION, Long.toString(duration));
 			statistics.put(IConstants.SCORE, Float.toString(highScore));

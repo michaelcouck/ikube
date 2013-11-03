@@ -19,6 +19,7 @@ import javax.ws.rs.core.Response;
 import mockit.Deencapsulation;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -40,6 +41,7 @@ public class AutoTest extends BaseTest {
 	}
 
 	@Test
+	@Ignore
 	public void suggestions() throws Exception {
 		@SuppressWarnings("unused")
 		Response suggestions = auto.suggestions(null, null);

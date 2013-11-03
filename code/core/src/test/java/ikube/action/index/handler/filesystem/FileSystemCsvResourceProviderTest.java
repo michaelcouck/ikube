@@ -14,7 +14,7 @@ public class FileSystemCsvResourceProviderTest extends AbstractTest {
 
 	@Test
 	public void getResource() {
-		File file = FileUtilities.findFileRecursively(new File("."), "languages");
+		File file = FileUtilities.findFileRecursively(new File("."), 2, "english.csv").getParentFile();
 		FileSystemCsvResourceProvider csvResourceProvider = new FileSystemCsvResourceProvider(FileUtilities.cleanFilePath(file.getAbsolutePath()));
 		ThreadUtilities.sleep(3000);
 		File resource = csvResourceProvider.getResource();
