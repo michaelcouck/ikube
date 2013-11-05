@@ -36,7 +36,7 @@
 										placeholder="Instant search..."
 										typeahead="result for result in doSearch()"
 										typeahead-min-length="3" 
-										typeahead-wait-ms="50"
+										typeahead-wait-ms="350"
 										typeahead-on-select="callService('name', 'parameter');">
 									<button type="submit" class="button blue" ng-click="doSearchAll();">Go</button>
 								</div>
