@@ -14,6 +14,7 @@ import ikube.model.Snapshot;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
 import ikube.toolkit.ObjectToolkit;
+import ikube.toolkit.SerializationUtilities;
 
 import java.io.File;
 import java.sql.Timestamp;
@@ -86,15 +87,14 @@ public class SnapshotScheduleTest extends AbstractTest {
 		for (int i = 0; i < maxSnapshots; i++) {
 			snapshotSchedule.run();
 		}
-		logger.info("Snapshots : " + indexContext.getSnapshots().size());
 		Mockito.verify(action, Mockito.atLeastOnce()).setSnapshot(Mockito.any(Snapshot.class));
 	}
 
 	@Test
 	public void getDocsPerMinute() {
+		when(indexContext.isDelta()).thenReturn(Boolean.TRUE);
 		Snapshot snapshot = new Snapshot();
 		long docsPerMinute = snapshotSchedule.getDocsPerMinute(indexContext, snapshot);
-		logger.info("Docs per minute : " + docsPerMinute);
 		assertEquals(0, docsPerMinute);
 
 		Snapshot previous = new Snapshot();
@@ -107,8 +107,24 @@ public class SnapshotScheduleTest extends AbstractTest {
 		when(indexContext.getSnapshots()).thenReturn(Arrays.asList(previous));
 
 		docsPerMinute = snapshotSchedule.getDocsPerMinute(indexContext, snapshot);
-		logger.info("Docs per minute : " + docsPerMinute);
 		assertTrue(docsPerMinute > 100 && docsPerMinute < 125);
+		
+		Snapshot one = (Snapshot) SerializationUtilities.clone(previous);
+		Snapshot two = (Snapshot) SerializationUtilities.clone(previous);
+		Snapshot three = (Snapshot) SerializationUtilities.clone(previous);
+		Snapshot four = (Snapshot) SerializationUtilities.clone(previous);
+		Snapshot five = (Snapshot) SerializationUtilities.clone(previous);
+		Snapshot six = (Snapshot) SerializationUtilities.clone(previous);
+		
+		one.setNumDocsForIndexWriters(0);
+		two.setNumDocsForIndexWriters(Integer.MAX_VALUE);
+		
+		when(indexContext.getSnapshots()).thenReturn(Arrays.asList(one, two, three, four, five, six));
+		for (int i = 0; i < 100; i++) {
+			snapshotSchedule.getDocsPerMinute(indexContext, snapshot);
+		}
+		assertTrue(two.getNumDocsForIndexWriters() > 100 && two.getNumDocsForIndexWriters() < IConstants.TEN_THOUSAND);
+		Mockito.verify(dataBase, Mockito.atLeastOnce()).merge(any());
 	}
 
 	@Test
@@ -118,7 +134,6 @@ public class SnapshotScheduleTest extends AbstractTest {
 		Snapshot snapshot = new Snapshot();
 
 		long searchesPerMinute = snapshotSchedule.getSearchesPerMinute(indexContext, snapshot);
-		logger.info("Searches per minute : " + searchesPerMinute);
 		assertEquals(0, searchesPerMinute);
 
 		Snapshot previous = new Snapshot();
@@ -131,7 +146,6 @@ public class SnapshotScheduleTest extends AbstractTest {
 		when(indexContext.getSnapshots()).thenReturn(Arrays.asList(previous));
 
 		searchesPerMinute = snapshotSchedule.getSearchesPerMinute(indexContext, snapshot);
-		logger.info("Searches per minute : " + searchesPerMinute);
 		assertTrue(searchesPerMinute > 50 && searchesPerMinute < 100);
 	}
 

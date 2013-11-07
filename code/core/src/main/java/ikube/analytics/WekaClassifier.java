@@ -60,8 +60,10 @@ public class WekaClassifier implements IAnalyzer<String, String, String, Boolean
 				FileReader fileReader = new FileReader(file);
 				BufferedReader bufferedReader = new BufferedReader(fileReader);
 				trainingInstances = new Instances(bufferedReader);
+				trainingInstances.setClassIndex(0);
+				build();
 			} catch (Exception e) {
-				LOGGER.error("", e);
+				LOGGER.error(null, e);
 			}
 		} else {
 			// The general attributes for the instances, contains the string
@@ -78,8 +80,8 @@ public class WekaClassifier implements IAnalyzer<String, String, String, Boolean
 			attributes.addElement(new Attribute(IConstants.TEXT_ATTRIBUTE, (FastVector) null));
 
 			trainingInstances = new Instances("Training Instance", attributes, 100);
+			trainingInstances.setClassIndex(0);
 		}
-		trainingInstances.setClassIndex(0);
 	}
 
 	/**
@@ -107,7 +109,9 @@ public class WekaClassifier implements IAnalyzer<String, String, String, Boolean
 		} catch (Exception e) {
 			LOGGER.error("Exception classifying content : " + input, e);
 		} finally {
-			classificationInstances.delete();
+			if (classificationInstances.numInstances() > buildThreshold) {
+				classificationInstances.delete();
+			}
 		}
 		return null;
 	}
@@ -148,15 +152,12 @@ public class WekaClassifier implements IAnalyzer<String, String, String, Boolean
 			int numAttributes = trainingInstances.numAttributes();
 			int numInstances = trainingInstances.numInstances();
 			LOGGER.info("Building classifier, classes : " + numClasses + ", attributes : " + numAttributes + ", instances : " + numInstances);
-			// LOGGER.info("Training instances : " + trainingInstances.toString());
 
 			filter.setInputFormat(trainingInstances);
 			Instances filteredData = Filter.useFilter(trainingInstances, filter);
 			Classifier classifier = new SMO();
 			classifier.buildClassifier(filteredData);
 			this.classifier = classifier;
-			// We take a copy of the training instances, although we don't really have to I guess
-			classificationInstances = trainingInstances.stringFreeStructure();
 
 			Evaluation evaluation = new Evaluation(filteredData);
 			evaluation.evaluateModel(classifier, filteredData);
@@ -165,13 +166,12 @@ public class WekaClassifier implements IAnalyzer<String, String, String, Boolean
 			
 			filteredData.setRelationName("filtered_data");
 			trainingInstances.setRelationName("training_data");
-			classificationInstances.setRelationName("classification_data");
 			// writeInstances(trainingInstances, classificationInstances, filteredData);
 			return;
 		} catch (Exception e) {
 			LOGGER.info("Exception building classifier : ", e);
 		}
-		// If we get here then there was and exception so we clean the
+		// If we get here then there was an exception so we clean the
 		// training instances of the last batch of vectors as this was obviously the problem
 		trainingInstances.delete();
 		classificationInstances.delete();

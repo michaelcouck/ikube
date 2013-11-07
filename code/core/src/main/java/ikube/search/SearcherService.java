@@ -171,8 +171,20 @@ public class SearcherService implements ISearcherService {
 			}
 			String[] searchStrings = search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]);
 			String[] searchFields = search.getSearchFields().toArray(new String[search.getSearchFields().size()]);
-			String[] typeFields = search.getTypeFields().toArray(new String[search.getTypeFields().size()]);
-			String[] sortFields = search.getSortFields().toArray(new String[search.getSortFields().size()]);
+
+			String[] typeFields;
+			if (search.getTypeFields() == null || search.getTypeFields().size() < searchStrings.length) {
+				typeFields = new String[searchStrings.length];
+				Arrays.fill(typeFields, TypeField.STRING.fieldType());
+			} else {
+				typeFields = search.getTypeFields().toArray(new String[search.getTypeFields().size()]);
+			}
+			String[] sortFields;
+			if (search.getSortFields() == null) {
+				sortFields = new String[searchStrings.length];
+			} else {
+				sortFields = search.getSortFields().toArray(new String[search.getSortFields().size()]);
+			}
 
 			searchComplexSorted.setFirstResult(search.getFirstResult());
 			searchComplexSorted.setFragment(search.isFragment());

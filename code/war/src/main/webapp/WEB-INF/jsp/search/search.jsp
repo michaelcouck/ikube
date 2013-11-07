@@ -9,7 +9,10 @@
 	<div class="row-fluid">
 		<div class="span4">
 			<div class="box">
-				<div class="tab-header">Search form
+				<div class="tab-header">
+					Search form
+					&nbsp;&nbsp;
+					<img ng-show="searching" alt="Loading spinner" src="<c:url value="/assets/images/loading.gif" />" height="16px" width="16px" >
 					<span class="pull-right">
 						<span class="options">
 							<a href="#"><i class="icon-cog"></i></a>
@@ -20,7 +23,7 @@
 					<div class="row-fluid">
 						<div class="span12">
 							<div class="padded">
-								<form ng-submit="doSearch()">
+								<form ng-submit="doSearchAll()">
 								<div class="note pull-right"><b>Search all fields in all indexes</b></div>
 								<div 
 									class="input" 
@@ -42,6 +45,7 @@
 								</div>
 								</form>
 								
+								<form ng-submit="doSearch()">
 								<div class="note pull-right"><b>Choose an index to search</b></div>
 								<div class="input search">
 									<select 
@@ -53,15 +57,25 @@
 									</select>
 								</div>
 								
+								<!-- class="prepend-transparent" -->
+								<!-- <span class="add-on button">@</span> -->
 								<div 
-									class="prepend-transparent"
 									ng-show="!!search.searchFields && search.searchFields.length > 0"
 									ng-repeat="field in search.searchFields">
-									<span class="add-on button">@</span>
-									<input class="input-transparent" type="text" placeholder="{{field}}" value="{{field}}" />
+									<!-- ng-change="{{search.searchStrings[$index] = $viewValue}}" -->
+									<!-- placeholder="{{field}}" --> 
+									<!-- <div class="note pull-right">{{field}}</div> -->
+									<input 
+										class="input-transparent" 
+										type="text" 
+										placeholder="{{field}}..."
+										ng-model="search.searchStrings[$index]" />
 								</div>
+								
+								<button type="submit" class="button blue" ng-click="doSearch();">Go</button>
+								</form>
 
-								<br><br><br><br><br><br><br>
+								<br><br><br><br><br><br>
 
 							</div>
 						</div>

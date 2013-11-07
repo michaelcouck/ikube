@@ -3,7 +3,6 @@
 <html>
 	<head>
 		<title>Ikube</title>
-		<link rel="shortcut icon" href="/img/icon.ico">
 	</head>
 	<body>
 		<%-- Redirected because we can't set the welcome page to a virtual URL. --%>

@@ -6,6 +6,7 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.PerformanceTester;
+import ikube.toolkit.Timer;
 
 import java.io.File;
 import java.io.FileReader;
@@ -35,7 +36,18 @@ public class WekaClassifierTest extends AbstractTest {
 		wekaClassifier.initialize();
 		wekaClassifier.build();
 		classify(wekaClassifier);
-		// trainOnSentimentData(wekaClassifier);
+		final int maxFiles = 150;
+		long duration = Timer.execute(new Timer.Timed() {
+			@Override
+			public void execute() {
+				try {
+					trainOnSentimentData(wekaClassifier, maxFiles);
+				} catch (Exception e) {
+					logger.error(null, e);
+				}
+			}
+		});
+		logger.warn("Training : " + maxFiles + ", duration : " + duration);
 	}
 
 	private void classify(final WekaClassifier wekaClassifier) throws Exception {
@@ -54,19 +66,18 @@ public class WekaClassifierTest extends AbstractTest {
 		assertEquals(IConstants.NEGATIVE, negative);
 	}
 
-	void trainOnSentimentData(final WekaClassifier wekaClassifier) throws Exception {
+	void trainOnSentimentData(final WekaClassifier wekaClassifier, final int maxFiles) throws Exception {
 		File directory = FileUtilities.findDirectoryRecursively(new File("."), 2, "txt_sentoken");
 		File positiveDirectory = FileUtilities.findDirectoryRecursively(directory, "pos");
 		File negativeDirectory = FileUtilities.findDirectoryRecursively(directory, "neg");
-		trainOnSentimentData(wekaClassifier, IConstants.POSITIVE, positiveDirectory.listFiles());
-		trainOnSentimentData(wekaClassifier, IConstants.NEGATIVE, negativeDirectory.listFiles());
+		trainOnSentimentData(wekaClassifier, IConstants.POSITIVE, maxFiles, positiveDirectory.listFiles());
+		trainOnSentimentData(wekaClassifier, IConstants.NEGATIVE, maxFiles, negativeDirectory.listFiles());
 	}
 
-	void trainOnSentimentData(final WekaClassifier wekaClassifier, final String clazz, final File[] files) throws Exception {
+	void trainOnSentimentData(final WekaClassifier wekaClassifier, final String clazz, int maxFiles, final File[] files) throws Exception {
 		logger.info("Files size : " + files.length);
 		int totalLines = 0;
 		int doneFiles = 0;
-		int maxFiles = 50;
 		for (final File file : files) {
 			if (maxFiles-- <= 0) {
 				break;
@@ -79,7 +90,7 @@ public class WekaClassifierTest extends AbstractTest {
 			}
 			doneFiles++;
 			if (doneFiles % 10 == 0) {
-				logger.info("Done files : " + doneFiles + ", lines : " + lines.size() + ", " + totalLines);
+				logger.info("Done files : " + doneFiles + ", lines : " + lines.size() + ", total lines/instances : " + totalLines);
 			}
 		}
 	}

@@ -1,31 +1,27 @@
 //The controller that does the search
 module.controller('SearcherController', function($scope, $http, $timeout) {
 	
-	$scope.indexesUrl = '/ikube/service/monitor/indexes';
-	$scope.geospatialUrl = '/ikube/service/search/json/geospatial';
 	$scope.searchUrl = '/ikube/service/search/json';
-	$scope.searchAllUrl = '/ikube/service/search/json/all';
 	$scope.fieldsUrl = '/ikube/service/monitor/fields';
-	
-	$scope.statistics = null;
-	$scope.pageBlock = 10;
-	$scope.pagination = null;
-	$scope.search = { 
-		maxResults : $scope.pageBlock,
-		fragment : true
-	};
+	$scope.indexesUrl = '/ikube/service/monitor/indexes';
+	$scope.searchAllUrl = '/ikube/service/search/json/all';
 	$scope.headers = { headers: { 'Content-Type' : 'application/json' } };
+	
+	$scope.search = null;
+	$scope.statistics = null;
+	$scope.pagination = null;
 	$scope.indexes;
 	$scope.indexName;
+	
+	$scope.pageBlock = 10;
 	$scope.searching = false;
 	
 	// Watch the index name and get the search fields
 	$scope.$watch('indexName', function() {
 		$scope.waitForDigest = function() {
 			return $timeout(function() {
-				$scope.doPagination();
-				$scope.search.statistics = undefined;
-				$scope.search.searchResults = undefined;
+				$scope.resetSearch();
+				// $scope.doPagination();
 				$scope.doFields($scope.indexName);
 				$scope.$apply();
 			}, 100);
@@ -33,14 +29,7 @@ module.controller('SearcherController', function($scope, $http, $timeout) {
 		$scope.waitForDigest();
     }, true);
 	
-	// This is called by the sub controller(s), probably the 
-	// type ahead controller when the user has selected a 
-	// search string
-	$scope.$on('doSearch', function(event, search) {
-		$scope.search.searchStrings = search.searchStrings;
-		$scope.doSearchAll();
-	});
-	
+	// This function gets all the index names from the server
 	$scope.doIndexes = function() {
 		var url = getServiceUrl($scope.indexesUrl);
 		var promise = $http.get(url);
@@ -53,58 +42,62 @@ module.controller('SearcherController', function($scope, $http, $timeout) {
 	}
 	$scope.doIndexes();
 	
+	// This function sets the type of search for the fields and checks
+	// if this is a geospatial search, setting the co-ordinate in the search object
 	$scope.doSearchPreProcessing = function(search) {
-		if (!!search && !!search.searchStrings && !!search.searchFields && !!search.typeFields) {
-			// Iterate through the search object fields convert:
-			// 1) The latitude and longitude from fields to a co-ordinate object
-			// 2) The type to numeric in if the search string is all numbers 
-			// 3) The type to range if the search string is all numbers and there is a hyphen in the middle
-			for (var i = 0; i < search.searchStrings.length; i++) {
-				var searchField = search.searchFields[i];
-				var searchString = search.searchStrings[i];
-				if (searchField == 'latitude') {
-					search.coordinate.latitude = searchString;
-					// search.distance = 10; 
-				} else if (searchField == 'longitude') {
-					search.coordinate.longitude = searchString;
-				} else if ($scope.isNumeric(searchString)) {
-					if (searchString.indexOf('-') == -1) {
-						// This is numeric field i.e. 123456
-						search.typeFields.splice(i, 1, 'numeric');
-					} else {
-						// This is a range query, i.e. 123-456
-						search.typeFields.splice(i, 1, 'range');
-					}
-				}
+		var search = angular.copy($scope.search);
+		search.indexName = $scope.indexName;
+		
+		var searchStrings = new Array();
+		var searchFields = new Array();
+		var typeFields = new Array();
+		
+		for (var i = 0; i < search.searchStrings.length; i++) {
+			var searchString = search.searchStrings[i];
+			if (!!searchString) {
+				searchStrings.push(searchString);
+				searchFields.push(search.searchFields[i]);
+				typeFields.push('string');
 			}
-		};
+		}
+		
+		search.searchStrings = searchStrings;
+		search.searchFields = searchFields;
+		search.typeFields = typeFields;
+		
+		return search;
 	};
 	
 	// Go to the web service for the results
 	$scope.doSearch = function() {
-		$scope.doSearchPreProcessing($scope.search);
-		$scope.search.maxResults = $scope.pageBlock;
-		if (!!$scope.search.searchFields && 
-			!!$scope.search.searchFields.indexOf('latitude') && 
-			!!$scope.search.searchFields.indexOf('longitude')) {
-			$scope.url = getServiceUrl($scope.geospatialUrl);
-		} else {
+		if (!$scope.searching) {
+			$scope.searching = true;
 			$scope.url = getServiceUrl($scope.searchUrl);
+			// Keep the search fields
+			var searchFields = $scope.search.searchFields;
+			var search = $scope.doSearchPreProcessing($scope.search);
+			// $scope.search.maxResults = $scope.pageBlock;
+			var promise = $http.post($scope.url, search);
+			
+			// $scope.resetSearch();
+			promise.success(function(data, status) {
+				$scope.searching = false;
+				$scope.search = data;
+				$scope.search.searchFields = searchFields;
+				$scope.status = status;
+				if (!!$scope.search.searchResults && $scope.search.searchResults.length > 0) {
+					$scope.doPagination();
+					$scope.doMarkers();
+				}
+			});
+			promise.error(function(data, status) {
+				$scope.searching = false;
+				alert('Data : ' + data + ', status : ' + status);
+			});
 		}
-		var promise = $http.post($scope.url, $scope.search);
-		promise.success(function(data, status) {
-			$scope.search = data;
-			$scope.status = status;
-			if (!!$scope.search.searchResults && $scope.search.searchResults.length > 0) {
-				$scope.doPagination();
-				$scope.doMarkers();
-			}
-		});
-		promise.error(function(data, status) {
-			alert('Data : ' + data + ', status : ' + status);
-		});
 	};
 	
+	// This function will search every field in every index, expensive!
 	$scope.doSearchAll = function() {
 		if (!$scope.searching) {
 			$scope.searching = true;
@@ -112,6 +105,8 @@ module.controller('SearcherController', function($scope, $http, $timeout) {
 			$scope.search.maxResults = $scope.pageBlock;
 			$scope.url = getServiceUrl($scope.searchAllUrl);
 			var promise = $http.post($scope.url, $scope.search);
+			
+			$scope.resetSearch();
 			promise.success(function(data, status) {
 				$scope.searching = false;
 				$scope.search = data;
@@ -127,6 +122,27 @@ module.controller('SearcherController', function($scope, $http, $timeout) {
 			});
 		}
 	};
+	
+	// This is called by the sub controller(s), probably the type ahead 
+	// controller when the user has selected a search string
+	$scope.$on('doSearch', function(event, search) {
+		$scope.search.searchStrings = search.searchStrings;
+		$scope.doSearchAll();
+	});
+	
+	// This function resets the search and nulls the statistics and pagination
+	$scope.resetSearch = function() {
+		$scope.search = { 
+			distance : 10,
+			sortFields : [],
+			fragment : true,
+			searchStrings : [],
+			maxResults : $scope.pageBlock
+		};
+		$scope.statistics = null;
+		$scope.pagination = null;
+	};
+	$scope.resetSearch();
 	
 	// Get the fields for the index
 	$scope.doFields = function(indexName) {
@@ -146,6 +162,8 @@ module.controller('SearcherController', function($scope, $http, $timeout) {
 		$scope.wait = function() {
 			return $timeout(function() {
 				if (maxRetries-- > 0 && !!$scope.search.searchFields) {
+					$scope.search.searchStrings = new Array($scope.search.searchFields.length);
+					$scope.search.typeFields = new Array($scope.search.searchFields.length);
 					return $scope.search.searchFields;
 				}
 				return $scope.wait();
@@ -177,18 +195,6 @@ module.controller('SearcherController', function($scope, $http, $timeout) {
 		$scope.endResult = 0;
 		$scope.search.firstResult = 0;
 	}
-	
-	/**
-	 * Same as the above only the search object is populated, i.e. fields are set. 
-	 */
-	$scope.searchProperty = function(name, value, array) {
-		if (!array) {
-			$scope.search[name] = value;
-		} else {
-			$scope.search[name] = [value];
-		}
-		// alert('Search property : ' + $scope.search[name]);
-	};
 	
 	// This function will put the markers on the map
 	$scope.doMarkers = function() {

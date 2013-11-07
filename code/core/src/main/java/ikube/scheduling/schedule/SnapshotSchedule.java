@@ -184,20 +184,37 @@ public class SnapshotSchedule extends Schedule {
 		return Math.max(0, searchesPerMinute);
 	}
 
-	protected long getDocsPerMinute(final IndexContext<?> indexContext, final Snapshot snapshot) {
+	protected long getDocsPerMinute(final IndexContext<?> indexContext, final Snapshot current) {
 		List<Snapshot> snapshots = indexContext.getSnapshots();
 		if (snapshots == null || snapshots.size() == 0) {
 			return 0;
 		}
 		Snapshot previous = snapshots.get(snapshots.size() - 1);
-		double ratio = getRatio(previous, snapshot);
-		long docsPerMinute = (long) ((snapshot.getNumDocsForIndexWriters() - previous.getNumDocsForIndexWriters()) / ratio);
-		// We can never do a million documents per minute with the hardware
-		// that we have at the current time, perhaps with nano cpus and 3d memory
-		docsPerMinute = docsPerMinute < 0 ? 0 : Math.min(docsPerMinute, IConstants.HUNDRED_THOUSAND);
-		// If the previous docs per minute was 1000000 and this one is 0 then the index was just
-		// opened and it looks like there are a million documents per minute, but we'll correct that
+		double ratio = getRatio(previous, current);
+		long docsPerMinute = (long) ((current.getNumDocsForIndexWriters() - previous.getNumDocsForIndexWriters()) / ratio);
+		normalizeNumDocsForIndexWriters(indexContext);
 		return docsPerMinute;
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void normalizeNumDocsForIndexWriters(final IndexContext indexContext) {
+		List<Snapshot> snapshots = indexContext.getSnapshots();
+		if (indexContext.isDelta() && snapshots.size() > 5) {
+			long totalDocsPerMinute = 0;
+			for (int i = snapshots.size() - 1; i >= 0; i--) {
+				Snapshot snapshot = snapshots.get(i);
+				long averageDocsPerMinute = totalDocsPerMinute / snapshots.size() - i;
+				if (snapshot.getNumDocsForIndexWriters() == 0) {
+					Snapshot next = snapshots.get(i + 1);
+					if (averageDocsPerMinute * 5 < next.getNumDocsForIndexWriters()) {
+						next.setNumDocsForIndexWriters(averageDocsPerMinute);
+						dataBase.merge(next);
+					}
+					break;
+				}
+				totalDocsPerMinute += snapshot.getNumDocsForIndexWriters();
+			}
+		}
 	}
 
 	protected double getRatio(final Snapshot previous, final Snapshot snapshot) {
