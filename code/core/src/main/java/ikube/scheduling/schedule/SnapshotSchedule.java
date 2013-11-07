@@ -205,12 +205,14 @@ public class SnapshotSchedule extends Schedule {
 				Snapshot snapshot = snapshots.get(i);
 				long averageDocsPerMinute = totalDocsPerMinute / snapshots.size() - i;
 				if (snapshot.getNumDocsForIndexWriters() == 0) {
-					Snapshot next = snapshots.get(i + 1);
-					if (averageDocsPerMinute * 5 < next.getNumDocsForIndexWriters()) {
-						next.setNumDocsForIndexWriters(averageDocsPerMinute);
-						dataBase.merge(next);
+					if (snapshots.size() > i + 1) {
+						Snapshot next = snapshots.get(i + 1);
+						if (averageDocsPerMinute * 5 < next.getNumDocsForIndexWriters()) {
+							next.setNumDocsForIndexWriters(averageDocsPerMinute);
+							dataBase.merge(next);
+						}
+						break;
 					}
-					break;
 				}
 				totalDocsPerMinute += snapshot.getNumDocsForIndexWriters();
 			}

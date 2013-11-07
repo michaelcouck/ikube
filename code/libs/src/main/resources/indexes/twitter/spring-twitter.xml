@@ -103,7 +103,7 @@
 		class="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
 		init-method="initialize"
 		property:language="en" 
-		property:maxTraining="50000" 
+		property:maxTraining="100000" 
 		property:classifier-ref="ikube.analytics.WekaClassifier.en" />
 	<bean 
     	id="ikube.analytics.WekaClassifier.es"
@@ -117,7 +117,7 @@
     	class="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
     	init-method="initialize"
     	property:language="es"
-    	property:maxTraining="50000"
+    	property:maxTraining="100000"
     	property:classifier-ref="ikube.analytics.WekaClassifier.es" />
 	<bean 
     	id="ikube.analytics.WekaClassifier.jp"
@@ -131,7 +131,7 @@
     	class="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
     	init-method="initialize"
     	property:language="jp"
-    	property:maxTraining="50000"
+    	property:maxTraining="100000"
     	property:classifier-ref="ikube.analytics.WekaClassifier.jp" />
    	<bean 
     	id="ikube.analytics.WekaClassifier.cn"
@@ -145,7 +145,7 @@
     	class="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
     	init-method="initialize"
     	property:language="cn"
-    	property:maxTraining="50000"
+    	property:maxTraining="100000"
     	property:classifier-ref="ikube.analytics.WekaClassifier.cn" />
     <bean 
     	id="ikube.analytics.WekaClassifier.nl"
@@ -159,7 +159,7 @@
     	class="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
     	init-method="initialize"
     	property:language="nl"
-    	property:maxTraining="50000"
+    	property:maxTraining="100000"
     	property:classifier-ref="ikube.analytics.WekaClassifier.nl" />
     <bean 
     	id="ikube.analytics.WekaClassifier.fr"
@@ -173,7 +173,7 @@
     	class="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
     	init-method="initialize"
     	property:language="fr"
-    	property:maxTraining="50000"
+    	property:maxTraining="100000"
     	property:classifier-ref="ikube.analytics.WekaClassifier.fr" />
     <bean 
     	id="ikube.analytics.WekaClassifier.de"
@@ -187,7 +187,7 @@
     	class="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
     	init-method="initialize"
     	property:language="de"
-    	property:maxTraining="50000"
+    	property:maxTraining="100000"
     	property:classifier-ref="ikube.analytics.WekaClassifier.de" />
     <bean 
     	id="ikube.analytics.WekaClassifier.sv"
@@ -201,7 +201,7 @@
     	class="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
     	init-method="initialize"
     	property:language="sv"
-    	property:maxTraining="50000"
+    	property:maxTraining="100000"
     	property:classifier-ref="ikube.analytics.WekaClassifier.sv" />
     <bean 
     	id="ikube.analytics.WekaClassifier.th"
@@ -215,7 +215,7 @@
     	class="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
     	init-method="initialize"
     	property:language="th"
-    	property:maxTraining="50000"
+    	property:maxTraining="100000"
     	property:classifier-ref="ikube.analytics.WekaClassifier.th" />
 	<bean 
     	id="ikube.analytics.WekaClassifier.ar"
@@ -229,7 +229,7 @@
 		class="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
 		init-method="initialize" 
 		property:language="ar" 
-		property:maxTraining="50000" 
+		property:maxTraining="100000" 
 		property:classifier-ref="ikube.analytics.WekaClassifier.ar" />
 	<bean 
     	id="ikube.analytics.WekaClassifier.tr"
@@ -243,7 +243,7 @@
 		class="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
 		init-method="initialize" 
 		property:language="tr" 
-		property:maxTraining="50000" 
+		property:maxTraining="100000" 
 		property:classifier-ref="ikube.analytics.WekaClassifier.tr" />
 	<bean 
     	id="ikube.analytics.WekaClassifier.ru"
@@ -257,7 +257,7 @@
 		class="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
 		init-method="initialize" 
 		property:language="ru" 
-		property:maxTraining="50000" 
+		property:maxTraining="100000" 
 		property:classifier-ref="ikube.analytics.WekaClassifier.ru" />
 		
 		
