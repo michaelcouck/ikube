@@ -82,6 +82,7 @@ public class WekaClassifier implements IAnalyzer<String, String, String, Boolean
 			trainingInstances = new Instances("Training Instance", attributes, 100);
 			trainingInstances.setClassIndex(0);
 		}
+		classificationInstances = trainingInstances.stringFreeStructure();
 	}
 
 	/**
@@ -158,12 +159,14 @@ public class WekaClassifier implements IAnalyzer<String, String, String, Boolean
 			Classifier classifier = new SMO();
 			classifier.buildClassifier(filteredData);
 			this.classifier = classifier;
+			// We take a copy of the training instances, although we don't really have to I guess
+			classificationInstances = trainingInstances.stringFreeStructure();
 
 			Evaluation evaluation = new Evaluation(filteredData);
 			evaluation.evaluateModel(classifier, filteredData);
 			String evaluationReport = evaluation.toSummaryString();
 			LOGGER.info("Classifier evaluation : " + evaluationReport);
-			
+
 			filteredData.setRelationName("filtered_data");
 			trainingInstances.setRelationName("training_data");
 			// writeInstances(trainingInstances, classificationInstances, filteredData);
@@ -176,7 +179,7 @@ public class WekaClassifier implements IAnalyzer<String, String, String, Boolean
 		trainingInstances.delete();
 		classificationInstances.delete();
 	}
-	
+
 	void writeInstances(final Instances... instances) throws IOException {
 		for (final Instances i : instances) {
 			IOUtils.writeInstancesToArffFile(i, i.relationName() + ".arff");
