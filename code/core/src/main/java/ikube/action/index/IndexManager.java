@@ -3,6 +3,7 @@ package ikube.action.index;
 import ikube.IConstants;
 import ikube.action.index.analyzer.StemmingAnalyzer;
 import ikube.model.IndexContext;
+import ikube.model.Indexable;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.UriUtilities;
@@ -37,7 +38,6 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Searchable;
 import org.apache.lucene.store.AlreadyClosedException;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.store.NIOFSDirectory;
 
@@ -455,8 +455,12 @@ public final class IndexManager {
 		return FileUtilities.cleanFilePath(builder.toString());
 	}
 
-	public static Document addStringField(final String fieldName, final String fieldContent, final Document document, final Store store, final Index analyzed,
-			final TermVector termVector) {
+	public static Document addStringField(final String fieldName, final String fieldContent, final Indexable<?> indexable, final Document document) {
+		
+		Store store = indexable.isStored() ? Store.YES : Store.NO;
+		Index analyzed = indexable.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
+		TermVector termVector = indexable.isVectored() ? TermVector.YES : TermVector.NO;
+		
 		if (fieldName != null && fieldContent != null) {
 			Field field = document.getField(fieldName);
 			if (field == null) {

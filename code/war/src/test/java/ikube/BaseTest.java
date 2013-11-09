@@ -16,9 +16,6 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -90,11 +87,11 @@ public abstract class BaseTest {
 			ip = UriUtilities.getIp();
 			indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
 			Document document = new Document();
-			IndexManager.addStringField(IConstants.CONTENTS, "Michael Couck", document, Store.YES, Field.Index.ANALYZED, TermVector.YES);
+			IndexManager.addStringField(IConstants.CONTENTS, "Michael Couck", indexContext, document);
 			indexWriter.addDocument(document);
 			for (String string : strings) {
 				document = new Document();
-				IndexManager.addStringField(IConstants.CONTENTS, string, document, Store.YES, Field.Index.ANALYZED, TermVector.YES);
+				IndexManager.addStringField(IConstants.CONTENTS, string, indexContext, document);
 				indexWriter.addDocument(document);
 			}
 		} catch (Exception e) {

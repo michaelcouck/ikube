@@ -208,7 +208,7 @@ public class SnapshotSchedule extends Schedule {
 					if (snapshots.size() > i + 1) {
 						Snapshot next = snapshots.get(i + 1);
 						if (averageDocsPerMinute * 5 < next.getNumDocsForIndexWriters()) {
-							next.setNumDocsForIndexWriters(averageDocsPerMinute);
+							next.setNumDocsForIndexWriters(Math.max(0, averageDocsPerMinute));
 							dataBase.merge(next);
 						}
 						break;

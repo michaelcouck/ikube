@@ -17,9 +17,6 @@ import java.util.List;
 import java.util.concurrent.ForkJoinTask;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
 
 /**
  * This handler is a custom handler for the BPost. It will index log files in a particular directory, and unlike the {@link IndexableFilesystemHandler} which
@@ -102,9 +99,7 @@ public class IndexableFilesystemLogHandler extends IndexableHandler<IndexableFil
 	private void handleFile(final IndexContext<?> indexContext, final IndexableFileSystemLog indexableFileSystem, final File logFile) {
 		Reader reader = null;
 		BufferedReader bufferedReader = null;
-		Store store = indexableFileSystem.isStored() ? Store.YES : Store.NO;
-		Index analyzed = indexableFileSystem.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
-		TermVector termVector = indexableFileSystem.isVectored() ? TermVector.YES : TermVector.NO;
+
 		int lineNumber = 1;
 		try {
 			reader = new FileReader(logFile);
@@ -117,10 +112,10 @@ public class IndexableFilesystemLogHandler extends IndexableHandler<IndexableFil
 				String lineFieldName = indexableFileSystem.getLineFieldName();
 				String stringLineNumber = Integer.toString(lineNumber);
 				String contentFieldName = indexableFileSystem.getContentFieldName();
-				IndexManager.addStringField(fileFieldName, logFile.getName(), document, Store.YES, Index.ANALYZED, TermVector.YES);
-				IndexManager.addStringField(pathFieldName, logFile.getAbsolutePath(), document, Store.YES, Index.ANALYZED, TermVector.YES);
-				IndexManager.addStringField(lineFieldName, stringLineNumber, document, Store.YES, Index.ANALYZED, TermVector.YES);
-				IndexManager.addStringField(contentFieldName, line, document, store, analyzed, termVector);
+				IndexManager.addStringField(fileFieldName, logFile.getName(), indexableFileSystem, document);
+				IndexManager.addStringField(pathFieldName, logFile.getAbsolutePath(), indexableFileSystem, document);
+				IndexManager.addStringField(lineFieldName, stringLineNumber, indexableFileSystem, document);
+				IndexManager.addStringField(contentFieldName, line, indexableFileSystem, document);
 				resourceHandler.handleResource(indexContext, indexableFileSystem, document, null);
 				line = bufferedReader.readLine();
 				lineNumber++;

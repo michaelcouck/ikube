@@ -9,9 +9,7 @@ import ikube.model.IndexableTweets;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
 import org.springframework.social.twitter.api.Tweet;
 
 /**
@@ -34,9 +32,6 @@ public class TwitterResourceHandler extends ResourceHandler<IndexableTweets> {
 	public Document handleResource(final IndexContext<?> indexContext, final IndexableTweets indexableTweets, final Document document, final Object resource)
 			throws Exception {
 		Tweet tweet = (Tweet) resource;
-		Store store = indexableTweets.isStored() ? Store.YES : Store.NO;
-		Index analyzed = indexableTweets.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
-		TermVector termVector = indexableTweets.isVectored() ? TermVector.YES : TermVector.NO;
 
 		// This is the unique id of the resource to be able to delete it
 		String tweetId = Long.toString(tweet.getId());
@@ -50,10 +45,10 @@ public class TwitterResourceHandler extends ResourceHandler<IndexableTweets> {
 		IndexManager.addNumericField(IConstants.ID, tweetId, document, Store.YES);
 		IndexManager.addNumericField(createdAtField, Long.toString(tweet.getCreatedAt().getTime()), document, Store.YES);
 
-		IndexManager.addStringField(fromUserField, tweet.getFromUser(), document, store, analyzed, termVector);
-		IndexManager.addStringField(locationField, indexableTweets.getAddressContent(), document, store, analyzed, termVector);
-		IndexManager.addStringField(textField, indexableTweets.getContent().toString(), document, store, analyzed, termVector);
-		
+		IndexManager.addStringField(fromUserField, tweet.getFromUser(), indexableTweets, document);
+		IndexManager.addStringField(locationField, indexableTweets.getAddressContent(), indexableTweets, document);
+		IndexManager.addStringField(textField, indexableTweets.getContent().toString(), indexableTweets, document);
+
 		if (counter.getAndIncrement() % 10000 == 0) {
 			logger.info("Document : " + document);
 		}

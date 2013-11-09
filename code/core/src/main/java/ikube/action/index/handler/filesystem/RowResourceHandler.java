@@ -13,9 +13,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
 
 public class RowResourceHandler extends ResourceHandler<IndexableFileSystemCsv> {
 
@@ -29,8 +27,8 @@ public class RowResourceHandler extends ResourceHandler<IndexableFileSystemCsv> 
 	 * @throws Exception
 	 */
 	@Override
-	public Document handleResource(IndexContext<?> indexContext, IndexableFileSystemCsv indexableFileSystemCsv, Document document,
-			Object resource) throws Exception {
+	public Document handleResource(IndexContext<?> indexContext, IndexableFileSystemCsv indexableFileSystemCsv, Document document, Object resource)
+			throws Exception {
 		// fileName, lineNumber, lineNumberFieldName
 		String fileName = indexableFileSystemCsv.getFile().getName();
 		int lineNumber = indexableFileSystemCsv.getLineNumber();
@@ -39,7 +37,7 @@ public class RowResourceHandler extends ResourceHandler<IndexableFileSystemCsv> 
 
 		String identifier = StringUtils.join(new Object[] { fileName, Integer.toString(lineNumber) }, IConstants.SPACE);
 		// Add the line number field
-		IndexManager.addStringField(lineNumberFieldName, identifier, document, Store.YES, Index.ANALYZED, TermVector.NO);
+		IndexManager.addStringField(lineNumberFieldName, identifier, indexableFileSystemCsv, document);
 		for (Indexable<?> indexable : indexableColumns) {
 			if (!IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
 				continue;
@@ -49,8 +47,6 @@ public class RowResourceHandler extends ResourceHandler<IndexableFileSystemCsv> 
 			String fieldValue = (String) indexableColumn.getContent();
 
 			Store store = indexableColumn.isStored() ? Store.YES : Store.NO;
-			Index index = indexableColumn.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
-			TermVector termVector = indexableColumn.isVectored() ? TermVector.YES : TermVector.NO;
 
 			if (fieldValue == null) {
 				continue;
@@ -59,7 +55,7 @@ public class RowResourceHandler extends ResourceHandler<IndexableFileSystemCsv> 
 				IndexManager.addNumericField(fieldName, fieldValue, document, store);
 			} else {
 				fieldValue = StringUtilities.strip(fieldValue, "\"");
-				IndexManager.addStringField(fieldName, fieldValue, document, store, index, termVector);
+				IndexManager.addStringField(fieldName, fieldValue, indexableFileSystemCsv, document);
 			}
 			indexableColumn.setContent(null);
 		}

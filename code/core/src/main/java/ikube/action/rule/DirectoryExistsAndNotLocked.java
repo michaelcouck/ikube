@@ -5,7 +5,7 @@ import java.io.File;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.NIOFSDirectory;
 
 /**
  * This rule checks whether the index has been created and is not locked by the index writer. Generally this rule will be used to see if the index searcher can
@@ -25,7 +25,8 @@ public class DirectoryExistsAndNotLocked extends ARule<File> {
 		boolean existsAndNotLocked = Boolean.FALSE;
 		Directory directory = null;
 		try {
-			directory = FSDirectory.open(indexDirectory);
+			directory = NIOFSDirectory.open(indexDirectory);
+			// directory = FSDirectory.open(indexDirectory);
 			boolean exists = IndexReader.indexExists(directory);
 			boolean locked = IndexWriter.isLocked(directory);
 			if (exists && !locked) {

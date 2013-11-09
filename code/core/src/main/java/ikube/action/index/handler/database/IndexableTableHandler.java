@@ -29,9 +29,7 @@ import java.util.List;
 import java.util.concurrent.ForkJoinTask;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
 
 /**
  * This class performs the indexing of tables. It is the primary focus of Ikube. This class is essentially a database crawler, and is multi threaded. Because
@@ -157,8 +155,6 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 
 			String fieldName = indexable.getFieldName() != null ? indexable.getFieldName() : indexable.getName();
 			Store store = indexable.isStored() ? Store.YES : Store.NO;
-			Index analyzed = indexable.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
-			TermVector termVector = indexable.isVectored() ? TermVector.YES : TermVector.NO;
 			String fieldContent = parsedOutputStream.toString();
 			if (indexable.isNumeric()) {
 				if (indexable.isHashed()) {
@@ -166,7 +162,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 				}
 				IndexManager.addNumericField(fieldName, fieldContent, document, store);
 			} else {
-				IndexManager.addStringField(fieldName, fieldContent, document, store, analyzed, termVector);
+				IndexManager.addStringField(fieldName, fieldContent, indexable, document);
 			}
 		} finally {
 			FileUtilities.close(inputStream);
@@ -198,7 +194,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 		builder.append(idColumn.getContent());
 
 		String id = builder.toString();
-		IndexManager.addStringField(IConstants.ID, id, document, Store.YES, Index.ANALYZED, TermVector.YES);
+		IndexManager.addStringField(IConstants.ID, id, indexableTable, document);
 	}
 
 	/**

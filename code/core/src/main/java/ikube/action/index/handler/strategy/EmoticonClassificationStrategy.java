@@ -19,9 +19,6 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
 
 /**
  * @author Michael Couck
@@ -71,10 +68,10 @@ public final class EmoticonClassificationStrategy extends AStrategy {
 				}
 				if (positive > 1 && negative == 0) {
 					// Positive sentiment
-					IndexManager.addStringField(IConstants.CLASSIFICATION, IConstants.POSITIVE, document, Store.YES, Index.ANALYZED, TermVector.NO);
+					IndexManager.addStringField(IConstants.CLASSIFICATION, IConstants.POSITIVE, indexable, document);
 				} else if (negative > 1 && positive == 0) {
 					// Negative sentiment
-					IndexManager.addStringField(IConstants.CLASSIFICATION, IConstants.NEGATIVE, document, Store.YES, Index.ANALYZED, TermVector.NO);
+					IndexManager.addStringField(IConstants.CLASSIFICATION, IConstants.NEGATIVE, indexable, document);
 				}
 			}
 		}

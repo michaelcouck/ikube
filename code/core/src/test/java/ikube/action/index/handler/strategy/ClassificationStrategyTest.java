@@ -18,9 +18,6 @@ import java.util.Map;
 import java.util.concurrent.Future;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -50,7 +47,7 @@ public class ClassificationStrategyTest extends AbstractTest {
 
 		// Strangely enough everything is classified as positive at this point, why?
 		Document document = new Document();
-		document = addStringField(IConstants.LANGUAGE, "en", document, Store.YES, Index.ANALYZED, TermVector.YES);
+		document = addStringField(IConstants.LANGUAGE, "en", indexableColumn, document);
 		dynamicallyTrainedLanguageSpecificClassificationStrategy.aroundProcess(indexContext, indexableColumn, document, null);
 		logger.info("Document : " + document);
 		assertEquals(IConstants.POSITIVE, document.get(IConstants.CLASSIFICATION));
@@ -67,21 +64,21 @@ public class ClassificationStrategyTest extends AbstractTest {
 
 		indexableColumn.setContent("Perfect day");
 		document = new Document();
-		document = addStringField(IConstants.LANGUAGE, "en", document, Store.YES, Index.ANALYZED, TermVector.YES);
+		document = addStringField(IConstants.LANGUAGE, "en", indexableColumn, document);
 		dynamicallyTrainedLanguageSpecificClassificationStrategy.aroundProcess(indexContext, indexableColumn, document, null);
 		logger.info("Document : " + document);
 		assertEquals(IConstants.POSITIVE, document.get(IConstants.CLASSIFICATION));
 
 		indexableColumn.setContent("Not well");
 		document = new Document();
-		document = addStringField(IConstants.LANGUAGE, "en", document, Store.YES, Index.ANALYZED, TermVector.YES);
+		document = addStringField(IConstants.LANGUAGE, "en", indexableColumn, document);
 		dynamicallyTrainedLanguageSpecificClassificationStrategy.aroundProcess(indexContext, indexableColumn, document, null);
 		logger.info("Document : " + document);
 		assertEquals(IConstants.NEGATIVE, document.get(IConstants.CLASSIFICATION));
 
 		// We add the positive field for classification and the strategy should also classify the data as positive and there should be no conflict field
 		// document = addStringField(IConstants.LANGUAGE, "en", document, Store.YES, Index.ANALYZED, TermVector.YES);
-		document = addStringField(IConstants.CLASSIFICATION, IConstants.POSITIVE, document, Store.YES, Index.ANALYZED, TermVector.YES);
+		document = addStringField(IConstants.CLASSIFICATION, IConstants.POSITIVE, indexableColumn, document);
 		dynamicallyTrainedLanguageSpecificClassificationStrategy.aroundProcess(indexContext, indexableColumn, document, null);
 		logger.info("Document : " + document);
 		// Static classification of positive

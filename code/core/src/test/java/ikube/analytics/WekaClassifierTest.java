@@ -36,7 +36,7 @@ public class WekaClassifierTest extends AbstractTest {
 		wekaClassifier.initialize();
 		wekaClassifier.build();
 		classify(wekaClassifier);
-		final int maxFiles = 150;
+		final int maxFiles = 50;
 		long duration = Timer.execute(new Timer.Timed() {
 			@Override
 			public void execute() {

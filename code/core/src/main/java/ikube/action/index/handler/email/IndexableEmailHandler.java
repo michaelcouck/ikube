@@ -33,7 +33,6 @@ import javax.mail.URLName;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
 
 import com.sun.mail.pop3.POP3SSLStore;
 
@@ -161,14 +160,10 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 			logger.debug("Message number : " + messageNumber);
 		}
 
-		Field.Store mustStore = indexableMail.isStored() ? Field.Store.YES : Field.Store.NO;
-		Field.Index analyzed = indexableMail.isAnalyzed() ? Field.Index.ANALYZED : Field.Index.NOT_ANALYZED;
-		Field.TermVector termVector = indexableMail.isVectored() ? Field.TermVector.YES : Field.TermVector.NO;
-
 		// Add the id field to the document
-		IndexManager.addStringField(indexableMail.getIdField(), messageId, document, mustStore, analyzed, termVector);
+		IndexManager.addStringField(indexableMail.getIdField(), messageId, indexableMail, document);
 		// Add the title field to the document
-		IndexManager.addStringField(indexableMail.getTitleField(), message.getSubject(), document, mustStore, analyzed, termVector);
+		IndexManager.addStringField(indexableMail.getTitleField(), message.getSubject(), indexableMail, document);
 		String messageContent = getMessageContent(message);
 		if (StringUtils.isNotEmpty(messageContent)) {
 			byte[] bytes = messageContent.getBytes();
@@ -176,7 +171,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 			OutputStream outputStream = parser.parse(new ByteArrayInputStream(bytes), new ByteArrayOutputStream());
 			String fieldContent = outputStream.toString();
 			// Add the content field to the document
-			IndexManager.addStringField(indexableMail.getContentField(), fieldContent, document, mustStore, analyzed, termVector);
+			IndexManager.addStringField(indexableMail.getContentField(), fieldContent, indexableMail, document);
 		}
 		resourceHandler.handleResource(indexContext, indexableMail, document, message);
 		return document;

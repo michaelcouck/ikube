@@ -5,7 +5,7 @@ import java.io.File;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.NIOFSDirectory;
 
 /**
  * This rule checks whether the index exists but is still locked, i.e. still being indexed.
@@ -24,7 +24,8 @@ public class DirectoryExistsAndIsLocked extends ARule<File> {
 		boolean existsAndIsLocked = Boolean.FALSE;
 		Directory directory = null;
 		try {
-			directory = FSDirectory.open(indexDirectory);
+			// directory = FSDirectory.open(indexDirectory);
+			directory = NIOFSDirectory.open(indexDirectory);
 			boolean exists = IndexReader.indexExists(directory);
 			boolean locked = IndexWriter.isLocked(directory);
 			if (exists && locked) {

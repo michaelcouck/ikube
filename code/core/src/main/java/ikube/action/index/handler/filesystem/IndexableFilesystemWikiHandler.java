@@ -19,9 +19,6 @@ import java.util.concurrent.ForkJoinTask;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
@@ -151,14 +148,10 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 	 */
 	Document handleResource(final IndexContext<?> indexContext, final IndexableFileSystemWiki indexableFileSystem, final Document document, final Object content)
 			throws Exception {
-		Store store = indexableFileSystem.isStored() ? Store.YES : Store.NO;
-		Index analyzed = indexableFileSystem.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED_NO_NORMS;
-		TermVector termVector = indexableFileSystem.isVectored() ? TermVector.YES : TermVector.NO;
-
 		String pathFieldName = indexableFileSystem.getPathFieldName();
 		String contentFieldName = indexableFileSystem.getContentFieldName();
-		IndexManager.addStringField(pathFieldName, indexableFileSystem.getPath(), document, Store.YES, Index.ANALYZED, TermVector.YES);
-		IndexManager.addStringField(contentFieldName, (String) content, document, store, analyzed, termVector);
+		IndexManager.addStringField(pathFieldName, indexableFileSystem.getPath(), indexableFileSystem, document);
+		IndexManager.addStringField(contentFieldName, (String) content, indexableFileSystem, document);
 		resourceHandler.handleResource(indexContext, indexableFileSystem, document, null);
 		return document;
 	}

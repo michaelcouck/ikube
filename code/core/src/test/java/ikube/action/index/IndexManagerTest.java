@@ -15,6 +15,7 @@ import ikube.action.Close;
 import ikube.action.Open;
 import ikube.mock.IndexWriterMock;
 import ikube.model.IndexContext;
+import ikube.model.Indexable;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -25,7 +26,6 @@ import mockit.Mockit;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.IndexWriter;
@@ -43,9 +43,9 @@ public class IndexManagerTest extends AbstractTest {
 
 	private String fieldName = "fieldName";
 	private Document document = new Document();
+	private Indexable<?> indexable;
 	private Store store = Store.YES;
 	private TermVector termVector = TermVector.YES;
-	private Index index = Index.ANALYZED;
 
 	private File indexFolderOne;
 	private File indexFolderTwo;
@@ -53,6 +53,8 @@ public class IndexManagerTest extends AbstractTest {
 
 	@Before
 	public void before() {
+		indexable = new Indexable<Object>() {
+		};
 		indexFolderOne = FileUtilities.getFile("./" + IndexManagerTest.class.getSimpleName() + "/1234567889/127.0.0.1", Boolean.TRUE);
 		indexFolderTwo = FileUtilities.getFile("./" + IndexManagerTest.class.getSimpleName() + "/1234567891/127.0.0.2", Boolean.TRUE);
 		indexFolderThree = FileUtilities.getFile("./" + IndexManagerTest.class.getSimpleName() + "/1234567890/127.0.0.3", Boolean.TRUE);
@@ -74,7 +76,7 @@ public class IndexManagerTest extends AbstractTest {
 	@Test
 	public void addStringField() throws Exception {
 		String stringFieldValue = "string field value";
-		IndexManager.addStringField(fieldName, stringFieldValue, document, store, index, termVector);
+		IndexManager.addStringField(fieldName, stringFieldValue, indexable, document);
 
 		// Verify that it not null
 		Field field = document.getField(fieldName);
@@ -84,7 +86,7 @@ public class IndexManagerTest extends AbstractTest {
 
 		// Add another field with the same name and
 		// verify that the string fields have been merged
-		IndexManager.addStringField(fieldName, stringFieldValue, document, store, index, termVector);
+		IndexManager.addStringField(fieldName, stringFieldValue, indexable, document);
 
 		field = document.getField(fieldName);
 		assertNotNull(field);

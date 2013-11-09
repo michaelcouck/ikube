@@ -223,12 +223,14 @@ public class SearcherService implements ISearcherService {
 					continue;
 				}
 				searches.add(clonedSearch);
-				Future<?> future = ThreadUtilities.submit(Integer.toString(clonedSearch.hashCode()), new Runnable() {
+				Runnable searchRunnable = new Runnable() {
 					public void run() {
 						// Search each index separately
 						search(clonedSearch);
 					}
-				});
+				};
+				String name = Integer.toString(clonedSearch.hashCode());
+				Future<?> future = ThreadUtilities.submit(name, searchRunnable);
 				futures.add(future);
 			}
 			ThreadUtilities.waitForFutures(futures, 60000);

@@ -8,7 +8,7 @@ import java.io.File;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.NIOFSDirectory;
 
 /**
  * This action checks to see if the indexes are still ok.
@@ -36,7 +36,8 @@ public class IsIndexCorrupt extends ARule<IndexContext<?>> {
 		for (File serverIndexDirectory : serverIndexDirectories) {
 			Directory directory = null;
 			try {
-				directory = FSDirectory.open(serverIndexDirectory);
+				// directory = FSDirectory.open(serverIndexDirectory);
+				directory = NIOFSDirectory.open(serverIndexDirectory);
 				if (IndexWriter.isLocked(directory)) {
 					continue;
 				}

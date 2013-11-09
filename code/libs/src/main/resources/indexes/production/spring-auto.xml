@@ -81,16 +81,20 @@
 		class="ikube.model.IndexableColumn"
 		property:name="word"
 		property:fieldName="word"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true"
+		property:omitNorms="true" />
+		<!-- Do not normalize for length -->
 	<bean
 		id="autocomplete-word-lists-synonym"
 		class="ikube.model.IndexableColumn"
 		property:name="synonym"
 		property:fieldName="synonym"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true"
+		property:omitNorms="true" />
+		<!-- Do not normalize for length -->
 	
 </beans>

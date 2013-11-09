@@ -20,7 +20,7 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.spell.PlainTextDictionary;
 import org.apache.lucene.search.spell.SpellChecker;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.NIOFSDirectory;
 
 /**
  * @author Michael Couck
@@ -38,7 +38,8 @@ public class IndexableDictionaryHandler extends IndexableHandler<IndexableDictio
 		List<Future<?>> futures = new ArrayList<Future<?>>();
 		try {
 			File spellingIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
-			Directory directory = FSDirectory.open(spellingIndexDirectory);
+			// Directory directory = FSDirectory.open(spellingIndexDirectory);
+			Directory directory = NIOFSDirectory.open(spellingIndexDirectory);
 			@SuppressWarnings("resource")
 			final SpellChecker spellChecker = new SpellChecker(directory);
 			for (int i = 0; i < indexable.getThreads(); i++) {

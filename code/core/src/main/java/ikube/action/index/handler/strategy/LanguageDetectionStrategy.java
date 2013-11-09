@@ -11,9 +11,6 @@ import java.io.File;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
 
 import com.cybozu.labs.langdetect.Detector;
 import com.cybozu.labs.langdetect.DetectorFactory;
@@ -48,7 +45,7 @@ public final class LanguageDetectionStrategy extends AStrategy {
 			String content = getContent(indexable, new StringBuilder()).toString();
 			String language = detectLanguage(content);
 			if (language != null) {
-				IndexManager.addStringField(IConstants.LANGUAGE, language, document, Store.YES, Index.ANALYZED, TermVector.NO);
+				IndexManager.addStringField(IConstants.LANGUAGE, language, indexable, document);
 			}
 		}
 		return super.aroundProcess(indexContext, indexable, document, resource);

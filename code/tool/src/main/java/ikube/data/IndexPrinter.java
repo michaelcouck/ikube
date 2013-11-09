@@ -8,7 +8,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.NIOFSDirectory;
 
 public class IndexPrinter {
 
@@ -19,7 +19,8 @@ public class IndexPrinter {
 		try {
 			args = new String[] { "/tmp/index/ikube/1362304143294/192.168.122.1-8002" };
 			File file = new File(args[0]);
-			Directory directory = FSDirectory.open(file);
+			// Directory directory = FSDirectory.open(file);
+			Directory directory = NIOFSDirectory.open(file);
 			indexReader = IndexReader.open(directory);
 			LOGGER.info("Num docs : " + indexReader.numDocs());
 			for (int i = 0; i < indexReader.numDocs(); i++) {

@@ -9,6 +9,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.NIOFSDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +24,8 @@ public final class IndexToolkit {
 		FSDirectory directory = null;
 		IndexReader indexReader = null;
 		try {
-			directory = FSDirectory.open(indexDirectory);
+			// directory = FSDirectory.open(indexDirectory);
+			directory = NIOFSDirectory.open(indexDirectory);
 			indexReader = IndexReader.open(directory);
 			printIndex(indexReader, numDocs);
 		} catch (Exception e) {

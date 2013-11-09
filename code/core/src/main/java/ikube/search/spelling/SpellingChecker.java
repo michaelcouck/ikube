@@ -16,6 +16,7 @@ import org.apache.lucene.search.spell.PlainTextDictionary;
 import org.apache.lucene.search.spell.SpellChecker;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.NIOFSDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -77,7 +78,8 @@ public class SpellingChecker {
 	public void initialize() throws Exception {
 		File spellingIndexDirectory = FileUtilities.getFile(spellingIndexDirectoryPath, Boolean.TRUE);
 		LOGGER.info("Spelling directory : " + spellingIndexDirectory + ", " + spellingIndexDirectoryPath);
-		Directory directory = FSDirectory.open(spellingIndexDirectory);
+		// Directory directory = FSDirectory.open(spellingIndexDirectory);
+		Directory directory = NIOFSDirectory.open(spellingIndexDirectory);
 		spellChecker = new SpellChecker(directory);
 		indexLanguageFiles();
 		LOGGER.info("Opened spelling index on : " + spellingIndexDirectory);

@@ -62,6 +62,9 @@ public class Indexable<E> extends Persistable {
 	@Column
 	@Attribute(field = false, description = "Whether this field should be vectored in the index")
 	private boolean vectored = Boolean.TRUE;
+	@Column
+	@Attribute(field = false, description = "Whether this field should have the normalization opitted, i.e. the tf-idf omitted, meaning that longer documents will score higher")
+	private boolean omitNorms = Boolean.FALSE;
 
 	@Column
 	@Min(value = 1)
@@ -142,6 +145,14 @@ public class Indexable<E> extends Persistable {
 
 	public void setVectored(final boolean vectored) {
 		this.vectored = vectored;
+	}
+
+	public boolean isOmitNorms() {
+		return omitNorms;
+	}
+
+	public void setOmitNorms(boolean omitNorms) {
+		this.omitNorms = omitNorms;
 	}
 
 	public long getMaxExceptions() {

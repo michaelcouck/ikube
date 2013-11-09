@@ -14,9 +14,6 @@ import java.io.IOException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
 
 /**
  * This strategy will train a classifier, typically for sentiment, i.e. positive and negative. It will expect some data that already has been classified, like
@@ -82,7 +79,7 @@ public class DynamicallyTrainedLanguageSpecificClassificationStrategy extends AS
 					if (StringUtils.isEmpty(previousClassification)) {
 						if (!StringUtils.isEmpty(currentClassification)) {
 							// Not analyzed so add the sentiment that we get
-							addStringField(CLASSIFICATION, currentClassification, document, Store.YES, Index.ANALYZED, TermVector.NO);
+							addStringField(CLASSIFICATION, currentClassification, indexable, document);
 						}
 					} else {
 						// We only train if we have had this tweet classified already
@@ -91,7 +88,7 @@ public class DynamicallyTrainedLanguageSpecificClassificationStrategy extends AS
 						}
 						if (!StringUtils.isEmpty(currentClassification) && !previousClassification.contains(currentClassification)) {
 							// We don't change the original analysis, do we?
-							addStringField(CLASSIFICATION_CONFLICT, currentClassification, document, Store.YES, Index.ANALYZED, TermVector.NO);
+							addStringField(CLASSIFICATION_CONFLICT, currentClassification, indexable, document);
 						}
 					}
 				}

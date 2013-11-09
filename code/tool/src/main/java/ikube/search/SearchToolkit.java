@@ -11,7 +11,9 @@ import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.NIOFSDirectory;
 import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +36,8 @@ public final class SearchToolkit {
 		String searchString = args[2];
 		IndexSearcher indexSearcher = null;
 		try {
-			FSDirectory directory = FSDirectory.open(indexDirectory);
+			// Directory directory = FSDirectory.open(indexDirectory);
+			Directory directory = NIOFSDirectory.open(indexDirectory);
 			IndexReader indexReader = IndexReader.open(directory);
 			indexSearcher = new IndexSearcher(indexReader);
 			Query query = new QueryParser(Version.LUCENE_36, searchField, new StandardAnalyzer(Version.LUCENE_36)).parse(searchString);

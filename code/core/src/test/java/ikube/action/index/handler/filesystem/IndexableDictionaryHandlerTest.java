@@ -38,6 +38,7 @@ public class IndexableDictionaryHandlerTest extends AbstractTest {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	public void handle() throws Exception {
 		IndexableDictionary indexableDictionary = mock(IndexableDictionary.class);
 		File dictionariesDirectory = FileUtilities.findFileRecursively(new File("."), "dictionaries");

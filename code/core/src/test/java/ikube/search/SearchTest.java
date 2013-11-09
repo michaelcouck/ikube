@@ -8,6 +8,7 @@ import ikube.IConstants;
 import ikube.action.index.IndexManager;
 import ikube.mock.ReaderUtilMock;
 import ikube.mock.SpellingCheckerMock;
+import ikube.model.Indexable;
 import ikube.search.Search.TypeField;
 import ikube.search.spelling.SpellingChecker;
 import ikube.toolkit.FileUtilities;
@@ -23,9 +24,7 @@ import mockit.Deencapsulation;
 import mockit.Mockit;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriter.MaxFieldLength;
 import org.apache.lucene.search.IndexSearcher;
@@ -82,6 +81,7 @@ public class SearchTest extends AbstractTest {
 
 		Directory directory = FSDirectory.open(indexDirectory);
 
+		Indexable<?> indexable = new Indexable<Object>() {};
 		IndexWriter indexWriter = new IndexWriter(directory, Search.ANALYZER, true, MaxFieldLength.UNLIMITED);
 		int numDocs = 50;
 		for (int i = 0; i < numDocs; i++) {
@@ -91,13 +91,13 @@ public class SearchTest extends AbstractTest {
 				String contents = new StringBuilder("Hello world. " + stringTrimmed).append(i).toString();
 
 				Document document = new Document();
-				IndexManager.addStringField(IConstants.ID, id, document, Store.YES, Index.ANALYZED, TermVector.YES);
+				IndexManager.addStringField(IConstants.ID, id, indexable, document);
 				if (StringUtilities.isNumeric(stringTrimmed)) {
 					IndexManager.addNumericField(IConstants.CONTENTS, stringTrimmed, document, Store.YES);
 				} else {
-					IndexManager.addStringField(IConstants.CONTENTS, contents, document, Store.YES, Index.ANALYZED, TermVector.YES);
+					IndexManager.addStringField(IConstants.CONTENTS, contents, indexable, document);
 				}
-				IndexManager.addStringField(IConstants.NAME, "michael couck. " + stringTrimmed, document, Store.YES, Index.ANALYZED, TermVector.YES);
+				IndexManager.addStringField(IConstants.NAME, "michael couck. " + stringTrimmed, indexable, document);
 				indexWriter.addDocument(document);
 			}
 		}

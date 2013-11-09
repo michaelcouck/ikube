@@ -2,6 +2,7 @@ package ikube.mock;
 
 import static org.mockito.Mockito.mock;
 import ikube.action.index.IndexManager;
+import ikube.model.Indexable;
 
 import java.io.IOException;
 
@@ -10,9 +11,6 @@ import mockit.MockClass;
 
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.AlreadyClosedException;
@@ -51,10 +49,11 @@ public class IndexReaderMock {
 
 	private Document getDocument() {
 		Document document = new Document();
-		IndexManager.addStringField("path", Long.toString(RandomUtils.nextLong()), document, Store.YES, Index.ANALYZED, TermVector.NO);
-		IndexManager.addStringField("length", Long.toString(RandomUtils.nextLong()), document, Store.YES, Index.ANALYZED, TermVector.NO);
-		IndexManager.addStringField("last-modified", Long.toString(RandomUtils.nextLong()), document, Store.YES, Index.ANALYZED,
-				TermVector.NO);
+		Indexable<?> indexable = new Indexable<Object>() {
+		};
+		IndexManager.addStringField("path", Long.toString(RandomUtils.nextLong()), indexable, document);
+		IndexManager.addStringField("length", Long.toString(RandomUtils.nextLong()), indexable, document);
+		IndexManager.addStringField("last-modified", Long.toString(RandomUtils.nextLong()), indexable, document);
 		return document;
 	}
 

@@ -18,9 +18,6 @@ import java.util.HashMap;
 import mockit.Mockit;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
@@ -70,7 +67,7 @@ public class SearchSpatialTest extends AbstractTest {
 
 		for (Coordinate coordinate : coordinates) {
 			Document document = new Document();
-			IndexManager.addStringField(IConstants.CONTENTS, coordinate.toString(), document, Store.YES, Index.ANALYZED, TermVector.YES);
+			IndexManager.addStringField(IConstants.CONTENTS, coordinate.toString(), indexableColumn, document);
 			enrichmentStrategy.addSpatialLocationFields(coordinate, document);
 			indexWriter.addDocument(document);
 		}

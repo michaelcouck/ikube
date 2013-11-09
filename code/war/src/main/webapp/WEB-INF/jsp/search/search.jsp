@@ -12,7 +12,12 @@
 				<div class="tab-header">
 					Search form
 					&nbsp;&nbsp;
-					<img ng-show="searching" alt="Loading spinner" src="<c:url value="/assets/images/loading.gif" />" height="16px" width="16px" >
+					<img 
+						ng-show="!statistics || statistics.total == 0" 
+						alt="Loading spinner" 
+						src="<c:url value="/assets/images/loading.gif" />" 
+						height="16px" 
+						width="16px" >
 					<span class="pull-right">
 						<span class="options">
 							<a href="#"><i class="icon-cog"></i></a>
@@ -34,12 +39,12 @@
 										name="instant-search" 
 										type="text"
 										class="search"
-										ng-model="searchString"
 										focus-me="true"
+										ng-model="searchString"
 										placeholder="Instant search..."
 										typeahead="result for result in doSearch()"
 										typeahead-min-length="3" 
-										typeahead-wait-ms="350"
+										typeahead-wait-ms="500"
 										typeahead-on-select="callService('name', 'parameter');">
 									<button type="submit" class="button blue" ng-click="doSearchAll();">Go</button>
 								</div>
@@ -49,7 +54,7 @@
 								<div class="note pull-right"><b>Choose an index to search</b></div>
 								<div class="input search">
 									<select 
-										ng-model="indexName"
+										ng-model="search.indexName"
 										ng-model="indexes"
 										ng-options="index for index in indexes"
 										class="fill-up">
@@ -57,14 +62,9 @@
 									</select>
 								</div>
 								
-								<!-- class="prepend-transparent" -->
-								<!-- <span class="add-on button">@</span> -->
 								<div 
-									ng-show="!!search.searchFields && search.searchFields.length > 0"
+									ng-show="!!search.indexName"
 									ng-repeat="field in search.searchFields">
-									<!-- ng-change="{{search.searchStrings[$index] = $viewValue}}" -->
-									<!-- placeholder="{{field}}" --> 
-									<!-- <div class="note pull-right">{{field}}</div> -->
 									<input 
 										class="input-transparent" 
 										type="text" 
@@ -87,18 +87,36 @@
 		<div class="span8">
 			<div class="black-box tex">
 				<div class="tab-header">Search results</div>
-				<ul class="recent-comments" ng-show="!!statistics">
+				<ul class="recent-comments" ng-show="!!statistics && statistics.total > 0 && !!search.searchResults && search.searchResults.length > 0">
 					<li class="separator">
 						<div class="article-post">
 							<div class="user-content">
 								Showing results {{search.firstResult}} 
-								to {{endResult}} 
-								of {{statistics.total}} 
-								for {{search.searchStrings}} 
-								<span ng-show="!!search.searchFields && search.searchFields.length != 0">in fields {{search.searchFields}},</span> 
-								duration {{statistics.duration}} milliseconds<br>
+								to {{search.endResult}} 
+								of {{statistics.total}}, 
+								duration {{statistics.duration}} milliseconds 
+								<span ng-show="!!search.searchStrings && search.searchStrings.length != 0">
+									for 
+									<span ng-repeat="searchString in search.searchStrings">
+										<span ng-show="!!searchString">
+											'{{searchString}}'&nbsp;
+										</span>
+									</span> 
+									<span ng-show="!!search.searchFields && search.searchFields.length > 0">
+										in fields 
+										<span ng-repeat="searchField in search.searchFields">
+											<span ng-show="!!search.searchStrings[$index]">
+												'{{searchField}}'&nbsp;
+											</span>
+										</span>
+									</span>
+								</span> 
+								<br>
 								<div class="btn-group">
-									<button class="button mini" ng-repeat="page in pagination" ng-click="setField('firstResult', page.firstResult);doSearch();">{{page.page}}</button>
+									<button 
+										class="button mini" 
+										ng-repeat="page in pagination" 
+										ng-click="doPagedSearch(page.firstResult);">{{page.page}}</button>
 								</div>
 							</div>
 						</div>
@@ -115,7 +133,7 @@
 					</li>
 				</ul>
 				
-				<ul class="recent-comments" ng-show="!!search.searchResults && endResult > 0" ng-repeat="result in search.searchResults">
+				<ul class="recent-comments" ng-show="!!statistics && !!search.searchResults && search.endResult > 0" ng-repeat="result in search.searchResults">
 					<li class="separator">
 						<div class="avatar pull-left">
 							<img src="<c:url value="/assets/images/MYP_1376-small.jpg" />" />
@@ -130,6 +148,21 @@
 								<button class="button black mini" onClick="enterpriseNotification();"><i class="icon-pencil"></i>Edit</button>
 								<button class="button black mini" onClick="enterpriseNotification();"><i class="icon-remove"></i>Delete</button>
 								<button class="button black mini" ng-click="search.searchResults.splice($index, 1)"><i class="icon-stop"></i>Hide</button>
+							</div>
+						</div>
+					</li>
+				</ul>
+				
+				<ul class="recent-comments" ng-show="!!statistics && statistics.total > 0 && !!search.searchResults && search.searchResults.length > 0">
+					<li class="separator">
+						<div class="article-post">
+							<div class="user-content">
+								<div class="btn-group">
+									<button 
+										class="button mini" 
+										ng-repeat="page in pagination" 
+										ng-click="doPagedSearch(page.firstResult);">{{page.page}}</button>
+								</div>
 							</div>
 						</div>
 					</li>

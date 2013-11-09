@@ -26,7 +26,6 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -63,7 +62,7 @@ public class MonitorServiceTest extends AbstractTest {
 		String[] fieldNames = monitorService.getFieldNames(IndexableEmail.class);
 		logger.info("Field names : " + Arrays.deepToString(fieldNames));
 		assertEquals(
-				"[idField, titleField, contentField, mailHost, username, password, port, protocol, secureSocketLayer, name, address, stored, analyzed, vectored, maxExceptions, threads, id]",
+				"[idField, titleField, contentField, mailHost, username, password, port, protocol, secureSocketLayer, name, address, stored, analyzed, vectored, omitNorms, maxExceptions, threads, id]",
 				Arrays.deepToString(fieldNames));
 		fieldNames = monitorService.getFieldNames(IndexContext.class);
 		logger.info("Field names : " + Arrays.deepToString(fieldNames));
@@ -96,7 +95,6 @@ public class MonitorServiceTest extends AbstractTest {
 	}
 
 	@Test
-	@Ignore
 	public void getSetProperties() throws IOException {
 		File propertiesFile = null;
 		try {

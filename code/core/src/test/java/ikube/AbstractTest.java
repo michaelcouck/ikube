@@ -43,14 +43,13 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.FieldInfo;
+import org.apache.lucene.index.FieldInfo.IndexOptions;
 import org.apache.lucene.index.FieldInfos;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.FieldInfo.IndexOptions;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
@@ -207,6 +206,11 @@ public abstract class AbstractTest {
 		when(indexableColumn.getContent()).thenReturn("9a avenue road, cape town, south africa");
 		when(indexableColumn.isAddress()).thenReturn(Boolean.TRUE);
 		when(indexableColumn.getName()).thenReturn("indexableName");
+		
+		when(indexableColumn.isAnalyzed()).thenReturn(Boolean.TRUE);
+		when(indexableColumn.isStored()).thenReturn(Boolean.TRUE);
+		when(indexableColumn.isVectored()).thenReturn(Boolean.TRUE);
+		
 		when(ApplicationContextManagerMock.HANDLER.getIndexableClass()).thenReturn(IndexableTable.class);
 
 		indexables.add(indexableTable);
@@ -301,7 +305,7 @@ public abstract class AbstractTest {
 		Searcher searcher = new IndexSearcher(indexReader);
 		Searchable[] searchables = new Searchable[] { searcher };
 		MultiSearcher multiSearcher = new MultiSearcher(searchables);
-		printIndex(indexReader, 100);
+		// printIndex(indexReader, 100);
 		return searchClass.getConstructor(Searcher.class, Analyzer.class).newInstance(multiSearcher, analyzer);
 	}
 
@@ -315,6 +319,7 @@ public abstract class AbstractTest {
 			final String[]... strings) throws Exception {
 		IndexWriter indexWriter = getRamIndexWriter(analyzer);
 
+		Indexable<?> indexable = new Indexable<Object>() {};
 		for (final String[] row : strings) {
 			int i = 0;
 			Document document = new Document();
@@ -323,7 +328,7 @@ public abstract class AbstractTest {
 				if (StringUtils.isNumeric(column.trim())) {
 					IndexManager.addNumericField(field, column.trim(), document, Store.YES);
 				} else {
-					IndexManager.addStringField(field, column, document, Store.YES, Index.ANALYZED, TermVector.NO);
+					IndexManager.addStringField(field, column, indexable, document);
 				}
 				i++;
 			}
@@ -362,13 +367,14 @@ public abstract class AbstractTest {
 
 	protected Document getDocument(final String id, final String string, final String field, final Index analyzed) {
 		Document document = new Document();
-		IndexManager.addStringField(IConstants.ID, id, document, Store.YES, analyzed, TermVector.YES);
-		IndexManager.addStringField(IConstants.NAME, string, document, Store.YES, analyzed, TermVector.YES);
+		Indexable<?> indexable = new Indexable<Object>() {};
+		IndexManager.addStringField(IConstants.ID, id, indexable, document);
+		IndexManager.addStringField(IConstants.NAME, string, indexable, document);
 		if (StringUtils.isNumeric(string.trim())) {
 			// logger.info("Adding numeric field : " + string);
 			IndexManager.addNumericField(field, string.trim(), document, Store.YES);
 		} else {
-			IndexManager.addStringField(field, string, document, Store.YES, Index.ANALYZED, TermVector.NO);
+			IndexManager.addStringField(field, string, indexable, document);
 		}
 		return document;
 	}

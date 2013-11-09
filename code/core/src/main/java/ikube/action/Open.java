@@ -14,7 +14,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Searchable;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.NIOFSDirectory;
 
 /**
  * This action is called to open the searcher on potentially new indexes. The close operation should run just before this action. In that case the searcher in
@@ -58,7 +58,8 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 				IndexReader reader = null;
 				Searchable searcher = null;
 				try {
-					directory = FSDirectory.open(serverIndexDirectory);
+					directory = NIOFSDirectory.open(serverIndexDirectory);
+					// directory = FSDirectory.open(serverIndexDirectory);
 					if (!IndexReader.indexExists(directory)) {
 						directory.close();
 						continue;

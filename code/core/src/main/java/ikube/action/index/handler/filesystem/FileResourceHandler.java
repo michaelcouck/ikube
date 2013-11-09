@@ -17,9 +17,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
 import org.xml.sax.SAXParseException;
 
 import de.schlichtherle.truezip.file.TFile;
@@ -81,10 +79,6 @@ public class FileResourceHandler extends ResourceHandler<IndexableFileSystem> {
 			IParser parser = ParserProvider.getParser(file.getName(), byteBuffer);
 			String parsedContent = parser.parse(byteInputStream, byteOutputStream).toString();
 
-			Store store = indexableFileSystem.isStored() ? Store.YES : Store.NO;
-			Index analyzed = indexableFileSystem.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
-			TermVector termVector = indexableFileSystem.isVectored() ? TermVector.YES : TermVector.NO;
-
 			// This is the unique id of the resource to be able to delete it
 			String fileId = HashUtilities.hash(file.getAbsolutePath()).toString();
 			String pathFieldName = indexableFileSystem.getPathFieldName();
@@ -94,12 +88,12 @@ public class FileResourceHandler extends ResourceHandler<IndexableFileSystem> {
 			String contentFieldName = indexableFileSystem.getContentFieldName();
 
 			// NOTE to self: To be able to delete using the index writer the identifier field must be non analyzed and non tokenized/vectored!
-			IndexManager.addStringField(IConstants.FILE_ID, fileId, document, Store.YES, Index.NOT_ANALYZED, TermVector.NO);
-			IndexManager.addStringField(pathFieldName, file.getAbsolutePath(), document, Store.YES, analyzed, termVector);
-			IndexManager.addStringField(nameFieldName, file.getName(), document, Store.YES, analyzed, termVector);
+			IndexManager.addStringField(IConstants.FILE_ID, fileId, indexableFileSystem, document);
+			IndexManager.addStringField(pathFieldName, file.getAbsolutePath(), indexableFileSystem, document);
+			IndexManager.addStringField(nameFieldName, file.getName(), indexableFileSystem, document);
 			IndexManager.addNumericField(modifiedFieldName, Long.toString(file.lastModified()), document, Store.YES);
-			IndexManager.addStringField(lengthFieldName, Long.toString(file.length()), document, Store.YES, analyzed, termVector);
-			IndexManager.addStringField(contentFieldName, parsedContent, document, store, analyzed, termVector);
+			IndexManager.addStringField(lengthFieldName, Long.toString(file.length()), indexableFileSystem, document);
+			IndexManager.addStringField(contentFieldName, parsedContent, indexableFileSystem, document);
 			addDocument(indexContext, indexableFileSystem, document);
 
 			indexableFileSystem.setContent(parsedContent);

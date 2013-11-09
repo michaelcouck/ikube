@@ -13,40 +13,11 @@ module.controller('SearcherController', function($scope, $http, $timeout) {
 	$scope.indexes;
 	$scope.indexName;
 	
-	$scope.pageBlock = 10;
-	$scope.searching = false;
+	$scope.instantSearchStrings = null;
 	
-	// Watch the index name and get the search fields
-	$scope.$watch('indexName', function() {
-		$scope.waitForDigest = function() {
-			return $timeout(function() {
-				$scope.resetSearch();
-				// $scope.doPagination();
-				$scope.doFields($scope.indexName);
-				$scope.$apply();
-			}, 100);
-		};
-		$scope.waitForDigest();
-    }, true);
-	
-	// This function gets all the index names from the server
-	$scope.doIndexes = function() {
-		var url = getServiceUrl($scope.indexesUrl);
-		var promise = $http.get(url);
-		promise.success(function(data, status) {
-			$scope.indexes = data;
-		});
-		promise.error(function(data, status) {
-			alert('Data : ' + data + ', status : ' + status);
-		});
-	}
-	$scope.doIndexes();
-	
-	// This function sets the type of search for the fields and checks
-	// if this is a geospatial search, setting the co-ordinate in the search object
 	$scope.doSearchPreProcessing = function(search) {
+		$scope.statistics = null;
 		var search = angular.copy($scope.search);
-		search.indexName = $scope.indexName;
 		
 		var searchStrings = new Array();
 		var searchFields = new Array();
@@ -70,79 +41,111 @@ module.controller('SearcherController', function($scope, $http, $timeout) {
 	
 	// Go to the web service for the results
 	$scope.doSearch = function() {
-		if (!$scope.searching) {
-			$scope.searching = true;
-			$scope.url = getServiceUrl($scope.searchUrl);
-			// Keep the search fields
-			var searchFields = $scope.search.searchFields;
-			var search = $scope.doSearchPreProcessing($scope.search);
-			// $scope.search.maxResults = $scope.pageBlock;
-			var promise = $http.post($scope.url, search);
-			
-			// $scope.resetSearch();
-			promise.success(function(data, status) {
-				$scope.searching = false;
-				$scope.search = data;
-				$scope.search.searchFields = searchFields;
-				$scope.status = status;
-				if (!!$scope.search.searchResults && $scope.search.searchResults.length > 0) {
-					$scope.doPagination();
-					$scope.doMarkers();
-				}
-			});
-			promise.error(function(data, status) {
-				$scope.searching = false;
-				alert('Data : ' + data + ', status : ' + status);
-			});
-		}
+		$scope.url = getServiceUrl($scope.searchUrl);
+		var search = $scope.doSearchPreProcessing($scope.search);
+		
+		var promise = $http.post($scope.url, search);
+		promise.success(function(data, status) {
+			$scope.status = status;
+			$scope.search.searchResults = data.searchResults;
+			$scope.doSearchPostProcessing($scope.search);
+		});
+		promise.error(function(data, status) {
+			$scope.status = status;
+			alert('Data : ' + data + ', status : ' + status);
+		});
 	};
 	
 	// This function will search every field in every index, expensive!
 	$scope.doSearchAll = function() {
-		if (!$scope.searching) {
-			$scope.searching = true;
-			$scope.search.searchFields = null;
-			$scope.search.maxResults = $scope.pageBlock;
-			$scope.url = getServiceUrl($scope.searchAllUrl);
-			var promise = $http.post($scope.url, $scope.search);
-			
-			$scope.resetSearch();
-			promise.success(function(data, status) {
-				$scope.searching = false;
-				$scope.search = data;
-				$scope.status = status;
-				if (!!$scope.search.searchResults && $scope.search.searchResults.length > 0) {
-					$scope.doPagination();
-					$scope.doMarkers();
-				}
-			});
-			promise.error(function(data, status) {
-				$scope.searching = false;
-				alert('Data : ' + data + ', status : ' + status);
-			});
+		$scope.statistics.total = 0;
+		$scope.search.searchFields = [];
+		$scope.search.searchResults = null;
+		$scope.search.indexName = null;
+		$scope.url = getServiceUrl($scope.searchAllUrl);
+		
+		var promise = $http.post($scope.url, $scope.search);
+		promise.success(function(data, status) {
+			$scope.status = status;
+			$scope.search.searchResults = data.searchResults;
+			$scope.doSearchPostProcessing($scope.search);
+		});
+		promise.error(function(data, status) {
+			alert('Data : ' + data + ', status : ' + status);
+		});
+	};
+	
+	$scope.doPagedSearch = function(firstResult) {
+		$scope.search.firstResult = firstResult;
+		if (!!$scope.search.indexName) {
+			$scope.doSearch();
+		} else {
+			$scope.doSearchAll();
 		}
 	};
+	
+	$scope.doSearchPostProcessing = function(search) {
+		if (!!search.searchResults && search.searchResults.length > 0) {
+			$scope.statistics = search.searchResults.pop();
+			if (!!$scope.statistics.total && $scope.statistics.total > 0) {
+				$scope.doPagination();
+			}
+			if (!!search.coordinate && !!search.coordinate.latitude && !!search.coordinate.longitude) {
+				$scope.doMarkers();
+			}
+		}
+	};
+	
+	// This function resets the search and nulls the statistics and pagination
+	$scope.resetSearch = function() {
+		$scope.search = { 
+			searchStrings : [],
+			sortFields : [],
+			distance : 10,
+			fragment : true,
+			firstResult : 0,
+			maxResults : 10
+		};
+		$scope.statistics = {};
+		$scope.pagination = null;
+	};
+	$scope.resetSearch();
 	
 	// This is called by the sub controller(s), probably the type ahead 
 	// controller when the user has selected a search string
 	$scope.$on('doSearch', function(event, search) {
 		$scope.search.searchStrings = search.searchStrings;
+		$scope.search.firstResult = 0;
 		$scope.doSearchAll();
 	});
 	
-	// This function resets the search and nulls the statistics and pagination
-	$scope.resetSearch = function() {
-		$scope.search = { 
-			distance : 10,
-			sortFields : [],
-			fragment : true,
-			searchStrings : [],
-			maxResults : $scope.pageBlock
+	// Watch the index name and get the search fields
+	$scope.$watch('search.indexName', function() {
+		$scope.waitForDigest = function() {
+			return $timeout(function() {
+				$scope.search.searchResults = null;
+				$scope.search.firstResult = 0;
+				if (!!$scope.search.indexName) {
+					$scope.doFields($scope.search.indexName);
+					$scope.$apply();
+				}
+			}, 100);
 		};
-		$scope.statistics = null;
-		$scope.pagination = null;
-	};
-	$scope.resetSearch();
+		$scope.waitForDigest();
+    }, true);
+	
+	// This function gets all the index names from the server
+	$scope.doIndexes = function() {
+		var url = getServiceUrl($scope.indexesUrl);
+		var promise = $http.get(url);
+		promise.success(function(data, status) {
+			$scope.indexes = data;
+		});
+		promise.error(function(data, status) {
+			alert('Data : ' + data + ', status : ' + status);
+		});
+	}
+	$scope.doIndexes();
 	
 	// Get the fields for the index
 	$scope.doFields = function(indexName) {
@@ -175,64 +178,54 @@ module.controller('SearcherController', function($scope, $http, $timeout) {
 	// Creates the Json pagination array for the next pages in the search
 	$scope.doPagination = function() {
 		$scope.pagination = [];
-		if (!!$scope.search.searchResults) {
-			$scope.statistics = $scope.search.searchResults.pop();
-			if (!!$scope.statistics && !!$scope.statistics.total && $scope.statistics.total != 0) {
-				// We just started a search and got the first results
-				var pages = $scope.statistics.total / $scope.pageBlock;
-				// Create one 'page' for each block of results
-				for (var i = 0; i < pages && i < 10; i++) {
-					var firstResult = i * $scope.pageBlock;
-					$scope.pagination[i] = { page : i, firstResult : firstResult };
-				};
-				// Find the 'to' result being displayed
-				var modulo = $scope.statistics.total % $scope.pageBlock;
-				$scope.endResult = $scope.search.firstResult + modulo == $scope.statistics.total ? $scope.statistics.total : $scope.search.firstResult + parseInt($scope.pageBlock, 10);
-				return;
-			}
-		}
-		// Exception or no results
-		$scope.endResult = 0;
-		$scope.search.firstResult = 0;
+		// We just started a search and got the first results
+		var pages = $scope.statistics.total / $scope.search.maxResults;
+		// Create one 'page' for each block of results
+		for (var i = 0; i < pages && i < 10; i++) {
+			var firstResult = i * $scope.search.maxResults;
+			$scope.pagination[i] = { page : i, firstResult : firstResult };
+		};
+		// Find the 'to' result being displayed
+		var modulo = $scope.statistics.total % $scope.search.maxResults;
+		$scope.search.endResult = $scope.search.firstResult + modulo == $scope.statistics.total ? $scope.statistics.total : $scope.search.firstResult + parseInt($scope.search.maxResults, 10);
+		return;
 	}
 	
 	// This function will put the markers on the map
 	$scope.doMarkers = function() {
-		if (!!$scope.search.coordinate && !!$scope.search.coordinate.latitude && !!$scope.search.coordinate.longitude) {
-			var latitude = $scope.search.coordinate.latitude;
-			var longitude = $scope.search.coordinate.longitude;
-			var origin = new google.maps.LatLng(latitude, longitude);
-			var mapElement = document.getElementById('map_canvas');
-			var options = {
-					zoom: 13,
-					center: new google.maps.LatLng(latitude, longitude),
-					mapTypeId: google.maps.MapTypeId.ROADMAP
-			};
-			map = new google.maps.Map(mapElement, options);
-			// Add the point or origin marker
-			var marker = new google.maps.Marker({
-				map : map,
-				position: origin,
-				title : 'You are here :) => [' + latitude + ', ' + longitude + ']',
-				icon: '/ikube/img/icons/center_pin.png'
-			});
-			angular.forEach($scope.search.searchResults, function(key, value) {
-				var latitude = key['latitude'];
-				var longitude = key['longitude'];
-				var fragment = key['fragment'];
-				var distance = key['distance'];
-				// alert('Key : ' + key['latitude'] + ', ' + key['longitude']);
-				if (!!latitude && !!longitude) {
-					pointMarker = new google.maps.Marker({
-						map : map,
-						position: new google.maps.LatLng(latitude, longitude),
-						title : 'Name : ' + fragment + ', distance : ' + distance
-					});
-				}
-			});
-			// And finally set the waypoints
-			$scope.doWaypoints(origin);
-		}
+		var latitude = $scope.search.coordinate.latitude;
+		var longitude = $scope.search.coordinate.longitude;
+		var origin = new google.maps.LatLng(latitude, longitude);
+		var mapElement = document.getElementById('map_canvas');
+		var options = {
+				zoom: 13,
+				center: new google.maps.LatLng(latitude, longitude),
+				mapTypeId: google.maps.MapTypeId.ROADMAP
+		};
+		map = new google.maps.Map(mapElement, options);
+		// Add the point or origin marker
+		var marker = new google.maps.Marker({
+			map : map,
+			position: origin,
+			title : 'You are here :) => [' + latitude + ', ' + longitude + ']',
+			icon: '/ikube/img/icons/center_pin.png'
+		});
+		angular.forEach($scope.search.searchResults, function(key, value) {
+			var latitude = key['latitude'];
+			var longitude = key['longitude'];
+			var fragment = key['fragment'];
+			var distance = key['distance'];
+			// alert('Key : ' + key['latitude'] + ', ' + key['longitude']);
+			if (!!latitude && !!longitude) {
+				pointMarker = new google.maps.Marker({
+					map : map,
+					position: new google.maps.LatLng(latitude, longitude),
+					title : 'Name : ' + fragment + ', distance : ' + distance
+				});
+			}
+		});
+		// And finally set the waypoints
+		$scope.doWaypoints(origin);
 	};
 	
 	// This function will put the way points on the map
