@@ -31,7 +31,7 @@ public abstract class SearcherIntegration extends BaseTest {
 
 	@Test
 	public void searchSingle() throws Exception {
-		String url = getUrl(SearcherXml.SINGLE);
+		String url = getUrl(SearcherXml.SIMPLE);
 
 		String[] names = { //
 		IConstants.INDEX_NAME, //
@@ -53,7 +53,7 @@ public abstract class SearcherIntegration extends BaseTest {
 
 	@Test
 	public void searchMulti() throws Exception {
-		String url = getUrl(SearcherXml.SINGLE);
+		String url = getUrl(SearcherXml.SIMPLE);
 
 		String[] names = { //
 		IConstants.INDEX_NAME, //

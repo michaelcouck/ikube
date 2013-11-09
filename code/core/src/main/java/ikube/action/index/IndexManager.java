@@ -39,6 +39,7 @@ import org.apache.lucene.store.AlreadyClosedException;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
+import org.apache.lucene.store.NIOFSDirectory;
 
 /**
  * This class opens and closes the Lucene index writer. There are also methods that get the path to the index directory based on the path in the index context.
@@ -145,7 +146,8 @@ public final class IndexManager {
 	 */
 	public static synchronized IndexWriter openIndexWriter(final IndexContext<?> indexContext, final File indexDirectory, final boolean create)
 			throws Exception {
-		Directory directory = FSDirectory.open(indexDirectory);
+		Directory directory = NIOFSDirectory.open(indexDirectory);
+		// Directory directory = FSDirectory.open(indexDirectory);
 		return openIndexWriter(indexContext, directory, create);
 	}
 

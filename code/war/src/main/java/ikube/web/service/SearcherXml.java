@@ -62,7 +62,7 @@ public class SearcherXml extends Searcher {
 	 */
 	@GET
 	@Override
-	@Path(SearcherXml.SINGLE)
+	@Path(SearcherXml.SIMPLE)
 	public Response search(//
 			@QueryParam(value = INDEX_NAME) final String indexName, //
 			@QueryParam(value = SEARCH_STRINGS) final String searchStrings, //

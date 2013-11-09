@@ -4,11 +4,11 @@
 	<h2>Search API</h2>
 	
 			The access to search results is a via a rest web service. The formats are Xml and Json. These links are the Xml services, but for Json just 
-			add json after the search in the path, i.e. http://ikube.be:8080:8080/ikube/service/search/json/single? . Method signatures for the web 
+			add json after the search in the path, i.e. http://ikube.be:8080:8080/ikube/service/search/json/simple? . Method signatures for the web 
 			service methods for searching are:
 			<br><br>
 			
-			<c:url var="single" value="http://www.ikube.be:8080/ikube/service/search/single">
+			<c:url var="simple" value="http://www.ikube.be:8080/ikube/service/search/json/simple">
 				<c:param name="indexName" value="geospatial" />
 				<c:param name="searchStrings" value="cape AND town AND university" />
 				<c:param name="searchFields" value="name" />
@@ -17,37 +17,32 @@
 				<c:param name="maxResults" value="10" />
 			</c:url>
 			
-			<c:url var="multi" value="http://www.ikube.be:8080/ikube/service/search/multi">
+			<c:url var="sorted" value="http://www.ikube.be:8080/ikube/service/search/json/sorted">
 				<c:param name="indexName" value="geospatial" />
 				<c:param name="searchStrings" value="university:south AND africa" />
 				<c:param name="searchFields" value="name:country" />
+				<c:param name="sortFields" value="name" />
 				<c:param name="fragment" value="true" />
 				<c:param name="firstResult" value="0" />
 				<c:param name="maxResults" value="10" />
 			</c:url>
 			
-			<c:url var="multiAll" value="http://www.ikube.be:8080/ikube/service/search/multi/all">
-				<c:param name="indexName" value="geospatial" />
-				<c:param name="searchStrings" value="university:south AND africa" />
-				<c:param name="fragment" value="true" />
-				<c:param name="firstResult" value="0" />
-				<c:param name="maxResults" value="10" />
-			</c:url>
-			
-			<c:url var="multiSorted" value="http://www.ikube.be:8080/ikube/service/search/multi/sorted">
+			<c:url var="sortedTyped" value="http://www.ikube.be:8080/ikube/service/search/json/sorted/typed">
 				<c:param name="indexName" value="geospatial" />
 				<c:param name="searchStrings" value="university:south AND africa" />
 				<c:param name="searchFields" value="name:country" />
-				<c:param name="sortFields" value="name:country" />
+				<c:param name="typeFields" value="string:string" />
+				<c:param name="sortFields" value="name" />
 				<c:param name="fragment" value="true" />
 				<c:param name="firstResult" value="0" />
 				<c:param name="maxResults" value="10" />
 			</c:url>
 			
-			<c:url var="multiSpatial" value="http://www.ikube.be:8080/ikube/service/search/multi/spatial">
+			<c:url var="geospatial" value="http://www.ikube.be:8080/ikube/service/search/json/geospatial">
 				<c:param name="indexName" value="geospatial" />
 				<c:param name="searchStrings" value="cape AND town AND university" />
 				<c:param name="searchFields" value="name" />
+				<c:param name="typeFields" value="string" />
 				<c:param name="fragment" value="true" />
 				<c:param name="firstResult" value="0" />
 				<c:param name="maxResults" value="10" />
@@ -56,41 +51,21 @@
 				<c:param name="longitude" value="18.46082" />
 			</c:url>
 			
-			<c:url var="multiSpatialAll" value="http://www.ikube.be:8080/ikube/service/search/multi/spatial/all">
-				<c:param name="indexName" value="geospatial" />
-				<c:param name="searchStrings" value="cape AND town AND university" />
-				<c:param name="fragment" value="true" />
-				<c:param name="firstResult" value="0" />
-				<c:param name="maxResults" value="10" />
-				<c:param name="distance" value="10" />
-				<c:param name="latitude" value="-33.95796" />
-				<c:param name="longitude" value="18.46082" />
-			</c:url>
+			<c:url var="search" value="http://www.ikube.be:8080/ikube/service/search/json" />
 			
-			<c:url var="complex" value="http://www.ikube.be:8080/ikube/service/search/complex">
-				<c:param name="indexName" value="geospatial" />
-				<c:param name="searchStrings" value="cape|town" />
-				<c:param name="searchFields" value="name|name" />
-				<c:param name="typeFields" value="string|string" />
-				<c:param name="fragment" value="true" />
-				<c:param name="firstResult" value="0" />
-				<c:param name="maxResults" value="10" />
-			</c:url>
+			<c:url var="searchAll" value="http://www.ikube.be:8080/ikube/service/search/json/all" />
 			
-			1) Search in a single field in the index - 
-				<a href="#" onclick="JavaScript:popup('<c:out value="${single}" />', 'Single Field Search');">single field</a><br>
-			2) Search multiple fields in the index - 
-				<a href="#" onclick="JavaScript:popup('<c:out value="${multi}" />', 'Multiple Field Search');">multiple fields</a><br>
-			3) Search all the fields in the index - 
-				<a href="#" onclick="JavaScript:popup('<c:out value="${multiAll}" />', 'Multi All Field Search');">multiple strings, all fields</a><br>
-			4) Search all the fields in the index and sort them according to the sort fields - 
-				<a href="#" onclick="JavaScript:popup('<c:out value="${multiSorted}" />', 'Multi Sorted Field Search');">multiple fields, sorted on two fields</a><br>
-			5) Search a single field and sort the results according to distance from a point - 
-				<a href="#" onclick="JavaScript:popup('<c:out value="${multiSpatial}" />', 'Multi Spatial Field Search');">multiple fields, spatial</a><br>
-			6) Search all the fields and sort the results according to distance from a point - 
-				<a href="#" onclick="JavaScript:popup('<c:out value="${multiSpatialAll}" />', 'Multi Spatial All Field Search');">multiple string, all fields, spatial</a><br>
-			7) Complex search, using numeric, string and possibly ranges - 
-				<a href="#" onclick="JavaScript:popup('<c:out value="${complex}" />', 'Complex search');">complex search on string fields</a><br>
+			1) Search multiple string fields in the index - 
+				<a href="#" onclick="JavaScript:popup('<c:out value="${single}" />', 'Simple Search');">simple</a><br>
+			2) Search multiple string fields in the index and sort based on one or more fields -
+				<a href="#" onclick="JavaScript:popup('<c:out value="${sorted}" />', 'Sorted Search');">sorted</a><br>
+			3) Search multiple string fields in the index and sort based on one or more fields, and specify the type of field, numeric, range, etc. - 
+				<a href="#" onclick="JavaScript:popup('<c:out value="${sortedTyped}" />', 'Sorted Typed Search');">sorted and typed</a><br>
+			4) Search all the fields and sort the results according to distance from a point - 
+				<a href="#" onclick="JavaScript:popup('<c:out value="${geospatial}" />', 'Geospatial Search');">geospatial</a><br>
+			5) Json post search, based on the Json 'search' object, various ways to execute this search, but must be done in a rest client.<br>
+			6) Json post search, based on the Json 'search' object, various ways to execute this search, will search every index, and every field - 
+				<a href="#" onclick="JavaScript:popup('<c:out value="${searchAll}" />', 'Search All');">search everything</a><br>
 			
 			<br><br>
 			<strong>Parameters for searching:</strong><br>
@@ -157,14 +132,23 @@
 			<strong>Examples of the rest API and parameters for the web service are:</strong>
 			<br><br>
 			
-			<h3>Single search : </h3><textarea rows="3" cols="80"><c:out value="${single}" /></textarea><br><br>
-			<h3>Single multi : </h3><textarea rows="3" cols="80"><c:out value="${multi}" /></textarea><br><br>
-			<h3>Single multi all : </h3><textarea rows="3" cols="80"><c:out value="${multiAll}" /></textarea><br><br>
-			<h3>Single multi sorted : </h3><textarea rows="3" cols="80"><c:out value="${multiSorted}" /></textarea><br><br>
-			<h3>Single multi spatial : </h3><textarea rows="3" cols="80"><c:out value="${multiSpatial}" /></textarea><br><br>
-			<h3>Single multi spatial all : </h3><textarea rows="3" cols="80"><c:out value="${multiSpatialAll}" /></textarea><br><br>
-			<h3>Single complex : </h3><textarea rows="3" cols="80"><c:out value="${complex}" /></textarea><br><br>
-			
+			<h3>Simple : </h3><textarea rows="3" cols="80"><c:out value="${simple}" /></textarea><br><br>
+			<h3>Sorted : </h3><textarea rows="3" cols="80"><c:out value="${sorted}" /></textarea><br><br>
+			<h3>Sorted typed : </h3><textarea rows="3" cols="80"><c:out value="${sortedTyped}" /></textarea><br><br>
+			<h3>Geospatial : </h3><textarea rows="3" cols="80"><c:out value="${geospatial}" /></textarea><br><br>
+			<h3>Json search : </h3>
+				<textarea rows="3" cols="80">
+					<c:out value="${search}" /><br>
+					
+					{"distance":10,"sortFields":[],"fragment":true,"searchStrings":["password"],"maxResults":10,"searchFields":["contents"],"typeFields":["string"],"indexName":"desktop"}
+					
+				</textarea>
+			<br><br>
+			<h3>Json search all : </h3>
+				<textarea rows="3" cols="80">
+					<c:out value="${searchAll}" /><br>
+					{"distance":10,"sortFields":[],"fragment":true,"searchStrings":["password"],"maxResults":10,"searchFields":["contents"],"typeFields":["string"],"indexName":"desktop"}
+				</textarea>
 			<br><br>
 	
 </div>

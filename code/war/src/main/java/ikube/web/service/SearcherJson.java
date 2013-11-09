@@ -49,7 +49,7 @@ public class SearcherJson extends Searcher {
 	 */
 	@GET
 	@Override
-	@Path(SearcherJson.SINGLE)
+	@Path(SearcherJson.SIMPLE)
 	public Response search(//
 			@QueryParam(value = INDEX_NAME) final String indexName, //
 			@QueryParam(value = SEARCH_STRINGS) final String searchStrings, //

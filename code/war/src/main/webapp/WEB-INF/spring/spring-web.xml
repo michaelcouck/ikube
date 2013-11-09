@@ -61,13 +61,8 @@
 		id="vewResolver" 
 		class="org.springframework.web.servlet.view.UrlBasedViewResolver" 
 		property:viewClass="org.springframework.web.servlet.view.tiles2.TilesView" />
-	<!-- property:order="2"
-	property:suffix=".jsp"
-	property:prefix="/WEB-INF/jsp/" --> 
-	<!-- org.springbyexample.web.servlet.view.tiles2.DynamicTilesView -->
 
 	<mvc:view-controller path="/login.html" />
-	<!-- <mvc:view-controller path="/" view-name="/system/dash.html" /> -->
 	
 	<mvc:view-controller path="/system/dash.html" />
 	<mvc:view-controller path="/system/indexes.html" />
