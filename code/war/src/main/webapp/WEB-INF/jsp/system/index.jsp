@@ -4,9 +4,9 @@
 	Open : {{indexContext.open}}<br>
 	Indexing : {{indexContext.indexing}}<br><br>
 	
-	Documents : {{indexContext.numDocsForSearchers}}<br>
+	Documents : {{indexContext.numDocsForSearchers / 1000000}}<br>
 	Timestamp : {{indexContext.snapshots.pop().latestIndexTimestamp}}<br>
-	Index size on disk : {{indexContext.snapshot.indexSize}}<br><br>
+	Index size on disk : {{indexContext.snapshot.indexSize / 1000000}}<br><br>
 	
 	Max age : {{indexContext.maxAge}}<br>
 	Throttle : {{indexContext.throttle}}<br>

@@ -132,7 +132,11 @@ module.controller('IndexContextsController', function($http, $scope, $timeout) {
 			row.push(indexContext.open);
 			row.push(indexContext.indexing);
 			row.push(indexContext.numDocsForSearchers / 1000000);
-			row.push(indexContext.snapshot.indexSize / 1000000);
+			if (!indexContext.snapshot) {
+				row.push(0);
+			} else {
+				row.push(indexContext.snapshot.indexSize / 1000000);
+			}
 			table.push(row);
 		}
 		return table;

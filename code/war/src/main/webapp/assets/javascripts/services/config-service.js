@@ -16,8 +16,6 @@ ikubeServices.service('configService', function($rootScope) {
 		resultsBuilder : 'autocompleteResultsBuilderService',
 		indexName : 'autocomplete',
 		searchFields : ['word'],
-		typeFields : ['string'],
-		sortFields : ['word'],
 		emitHierarchyFunction : 'doSearch'
 	};
 	

@@ -1,6 +1,9 @@
 package ikube.search;
 
-import ikube.IConstants;
+import static ikube.IConstants.DISTANCE;
+import static ikube.IConstants.LAT;
+import static ikube.IConstants.LNG;
+import static org.apache.lucene.spatial.tier.projections.CartesianTierPlotter.DEFALT_FIELD_PREFIX;
 import ikube.model.Coordinate;
 
 import java.io.IOException;
@@ -15,12 +18,12 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.spatial.tier.DistanceFieldComparatorSource;
+import org.apache.lucene.spatial.tier.DistanceFilter;
 import org.apache.lucene.spatial.tier.DistanceQueryBuilder;
-import org.apache.lucene.spatial.tier.projections.CartesianTierPlotter;
+import org.apache.lucene.spatial.tier.LatLongDistanceFilter;
 
 /**
- * Executes a spatial search. One of these classes needs to be instantiated for each search as the member variables are for a particular
- * search.
+ * Executes a spatial search. One of these classes needs to be instantiated for each search as the member variables are for a particular search.
  * 
  * @see Search
  * @author Michael Couck
@@ -58,11 +61,27 @@ public class SearchSpatial extends SearchComplex {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Coordinate : " + coordinate);
 		}
-		DistanceQueryBuilder queryBuilder = new DistanceQueryBuilder(coordinate.getLatitude(), coordinate.getLongitude(), distance, IConstants.LAT,
-				IConstants.LNG, CartesianTierPlotter.DEFALT_FIELD_PREFIX, Boolean.TRUE, 0, 100);
+		double latitude = coordinate.getLatitude();
+		double longitude = coordinate.getLongitude();
+		final DistanceQueryBuilder queryBuilder = new DistanceQueryBuilder(latitude, longitude, distance, LAT, LNG, DEFALT_FIELD_PREFIX, Boolean.TRUE, 0, 100);
+
 		// As the radius filter has performed the distance calculations already, pass in the filter to reuse the results
-		DistanceFieldComparatorSource fieldComparator = new DistanceFieldComparatorSource(queryBuilder.getDistanceFilter());
-		// Create a distance sort
+		final DistanceFilter distanceFilter = queryBuilder.getDistanceFilter();
+		// This is a hack to fix the null pointer in the distance filter. It appears that the results are not affected if this filter
+		// returns null as a distance, so we replace it with zero and all is well. Essentially this is just wrapping the filter in another one
+		// and checking that the result from the getDistance method does not return null
+		LatLongDistanceFilter latLongDistanceFilter = new LatLongDistanceFilter(distanceFilter, latitude, longitude, distance, LAT, LNG) {
+			public Double getDistance(int docid) {
+				Double distance = distanceFilter.getDistance(docid);
+				if (distance == null) {
+					distance = 0d;
+				}
+				return distance;
+			}
+		};
+		DistanceFieldComparatorSource fieldComparator = new DistanceFieldComparatorSource(latLongDistanceFilter);
+		// Create a distance sort, the result of the above hack is that the results are not sorted as all the 
+		// distances seem to be null, i.e. 0. Perhaps upgrading to Lucene 4 will solve this?
 		Sort sort = new Sort(new SortField("geo_distance", fieldComparator));
 		TopDocs topDocs = searcher.search(query, queryBuilder.getFilter(), firstResult + maxResults, sort);
 		distances = queryBuilder.getDistanceFilter().getDistances();
@@ -100,7 +119,7 @@ public class SearchSpatial extends SearchComplex {
 					final int docID = topDocs.scoreDocs[i].doc;
 					double distanceFromOrigin = distances.get(docID);
 					Map<String, String> result = results.get(j++);
-					result.put(IConstants.DISTANCE, Double.toString(distanceFromOrigin));
+					result.put(DISTANCE, Double.toString(distanceFromOrigin));
 				}
 			}
 		} catch (Exception e) {
@@ -116,11 +135,11 @@ public class SearchSpatial extends SearchComplex {
 		return results;
 	}
 
-	public void setDistance(int distance) {
+	public void setDistance(final int distance) {
 		this.distance = distance;
 	}
 
-	public void setCoordinate(Coordinate coordinate) {
+	public void setCoordinate(final Coordinate coordinate) {
 		this.coordinate = coordinate;
 	}
 

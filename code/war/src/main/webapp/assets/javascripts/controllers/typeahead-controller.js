@@ -13,8 +13,6 @@ function TypeaheadController($scope, $http, $injector, $timeout) {
 	
 	// The configuration object with the uri and other parameters
 	$scope.config;
-	// Flag to prevent multiple calls concurrently
-	$scope.loading = false;
 	// We don't want too many results, looks bad
 	$scope.search = { 
 		maxResults : 6,
@@ -40,49 +38,58 @@ function TypeaheadController($scope, $http, $injector, $timeout) {
 		return $scope.results;
 	}
 	
+	// We add a watch so that when a selection is made from the drop down,
+	// which is a fragment, and has html tags in it, we can remove the html before
+	// passing the string to the caller that will do the search
+	$scope.$watch('searchString', function() {
+		$scope.searchString = $scope.stripTags($scope.searchString);
+	});
+	
+	// Removes html tags from a string using the browser
+	$scope.stripTags = function(html) {
+		var div = document.createElement("div");
+		div.innerHTML = html;
+		return div.innerText.trim();
+	};
+	
 	// This function will go the post to the server, using the search object, and 
 	// retrieve the results if any. To prevent concurrent searches(due to the un-synch)
 	// nature of Angular we set a flag when we post, and we set a timeout that will re-try 
 	// the service until there are results or there are too many re-tries
 	$scope.doSearch = function() {
-		if (!$scope.loading) {
-			$scope.loading = true;
-			$scope.url = getServiceUrl($scope.config.uri);
-			$scope.search.searchStrings = [$scope.searchString];
-			
-			var promise = $http.post($scope.url, $scope.search);
-			promise.success(function(data, status) {
-				$scope.search = data;
-				$scope.status = status;
-				$scope.convertToArray();
-				$scope.loading = false;
-			});
-			promise.error(function(data, status) {
-				$scope.status = status;
-				$scope.loading = false;
-			});
-			
-			var maxRetries = 50;
-			$scope.wait = function() {
-				return $timeout(function() {
-					if (!!$scope.results) {
-						if (!!$scope.config.emitHierarchyFunction) {
-							// Emit the search object to any parent controllers
-							// that may be interested in the fact that the user has
-							// selected a search string
-							$scope.$emit($scope.config.emitHierarchyFunction, $scope.search);
-						}
-						return $scope.results;
-					} else if (maxRetries-- > 0) {
-						return $scope.wait();
+		$scope.url = getServiceUrl($scope.config.uri);
+		$scope.search.searchStrings = [$scope.searchString];
+		
+		var promise = $http.post($scope.url, $scope.search);
+		promise.success(function(data, status) {
+			$scope.search = data;
+			$scope.status = status;
+			$scope.convertToArray();
+		});
+		promise.error(function(data, status) {
+			$scope.status = status;
+		});
+		
+		var maxRetries = 50;
+		$scope.wait = function() {
+			return $timeout(function() {
+				if (!!$scope.results) {
+					if (!!$scope.config.emitHierarchyFunction) {
+						// Emit the search object to any parent controllers
+						// that may be interested in the fact that the user has
+						// selected a search string
+						$scope.$emit($scope.config.emitHierarchyFunction, $scope.search);
 					}
-				}, 100);
-			};
-			// Because http requests are asynchronous we have to wait explicitly
-			// for the results to come back from the server before we pass them to the 
-			// type ahead controller as they will be null to begin with
-			return $scope.wait();
-		}
+					return $scope.results;
+				} else if (maxRetries-- > 0) {
+					return $scope.wait();
+				}
+			}, 100);
+		};
+		// Because http requests are asynchronous we have to wait explicitly
+		// for the results to come back from the server before we pass them to the 
+		// type ahead controller as they will be null to begin with
+		return $scope.wait();
 	};
 	
 	/**

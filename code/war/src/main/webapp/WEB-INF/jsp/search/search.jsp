@@ -5,6 +5,14 @@
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
+<!--
+	Test cases:
+	* String *
+	* Numeric *
+	* Range *
+	* Geospatial (need the sort fix for Lucene) * 
+ -->
+
 <div class="container-fluid" ng-controller="SearcherController">
 	<div class="row-fluid">
 		<div class="span4">
@@ -13,7 +21,7 @@
 					Search form
 					&nbsp;&nbsp;
 					<img 
-						ng-show="!statistics || statistics.total == 0" 
+						ng-show="!status" 
 						alt="Loading spinner" 
 						src="<c:url value="/assets/images/loading.gif" />" 
 						height="16px" 
@@ -28,7 +36,7 @@
 					<div class="row-fluid">
 						<div class="span12">
 							<div class="padded">
-								<form ng-submit="doSearchAll()">
+								<form ng-submit="doSearchAll([searchString])">
 								<div class="note pull-right"><b>Search all fields in all indexes</b></div>
 								<div 
 									class="input" 
@@ -45,8 +53,8 @@
 										typeahead="result for result in doSearch()"
 										typeahead-min-length="3" 
 										typeahead-wait-ms="500"
-										typeahead-on-select="callService('name', 'parameter');">
-									<button type="submit" class="button blue" ng-click="doSearchAll();">Go</button>
+										typeahead-on-select="doSearchAll([searchString]);">
+									<button type="submit" class="button blue" ng-disabled="!searchString" ng-click="doSearchAll([searchString]);">Go</button>
 								</div>
 								</form>
 								
@@ -62,20 +70,35 @@
 									</select>
 								</div>
 								
+								<!-- <div class="note pull-right"><b>Distance</b></div>
+								<div>
+									<select 
+										ng-model="search.coordinate.distance"
+										ng-model="distances"
+										ng-options="distance for distance in distances"
+										class="fill-up">
+									</select>
+									<input type="checkbox">
+								</div> -->
 								<div 
 									ng-show="!!search.indexName"
 									ng-repeat="field in search.searchFields">
+									<div class="prepend-transparent" ng-show="!!search.searchFields[$index]">
+      								<span 
+      									class="add-on button" 
+      									ng-click="search.searchFields[$index] = ''">-</span>
 									<input 
 										class="input-transparent" 
 										type="text" 
 										placeholder="{{field}}..."
 										ng-model="search.searchStrings[$index]" />
+									</div>
 								</div>
 								
-								<button type="submit" class="button blue" ng-click="doSearch();">Go</button>
+								<button type="submit" class="button blue" ng-disabled="!search.indexName" ng-click="doSearch();">Go</button>
 								</form>
 
-								<br><br><br><br><br><br>
+								<div style="width: 10px; height: 60px;"></div>
 
 							</div>
 						</div>
@@ -87,6 +110,17 @@
 		<div class="span8">
 			<div class="black-box tex">
 				<div class="tab-header">Search results</div>
+				
+				<ul class="recent-comments" ng-show="!!search.coordinate">
+					<li class="separator">
+						<div class="article-post">
+							<div class="user-content">
+								<div id="map_canvas" google-map style="height: 300px; width: 450px; border : 1px solid black;"></div>
+							</div>
+						</div>
+					</li>
+				</ul>
+				
 				<ul class="recent-comments" ng-show="!!statistics && statistics.total > 0 && !!search.searchResults && search.searchResults.length > 0">
 					<li class="separator">
 						<div class="article-post">
@@ -123,16 +157,6 @@
 					</li>
 				</ul>
 				
-				<ul class="recent-comments" ng-show="!!search.searchFields.latitude && !!search.searchFields.longitude">
-					<li class="separator">
-						<div class="article-post">
-							<div class="user-content">
-								<div id="map_canvas" google-map style="height: 250px; width: 350px; border : 2px solid black;"></div>
-							</div>
-						</div>
-					</li>
-				</ul>
-				
 				<ul class="recent-comments" ng-show="!!statistics && !!search.searchResults && search.endResult > 0" ng-repeat="result in search.searchResults">
 					<li class="separator">
 						<div class="avatar pull-left">
@@ -142,7 +166,11 @@
 							<div class="user-info" ng-show="!!result.id">Id : {{result.id}}</div>
 							<div class="user-info" ng-show="!!result.path">Path : {{result.path}}</div>
 							<div class="user-info" ng-show="!!result.url">Url : {{result.url}}</div>
-							<div class="user-info">Score : {{result.score}}</div>
+							<div class="user-info" ng-show="!!result.score">Score : {{result.score}}</div>
+							<div class="user-info" ng-show="!!result.distance">Distance : {{result.distance}}</div>
+							<div class="user-info" ng-show="!!result.latitude">Latitude : {{result.latitude}}</div>
+							<div class="user-info" ng-show="!!result.longitude">Longitude : {{result.longitude}}</div>
+							<div class="user-info" ng-show="!!result.lastmodified">Last modified : {{result.lastmodified}}</div>
 							<div class="user-content" ng-bind-html-unsafe="'Fragment : ' + result.fragment">Fragment :</div>
 							<div class="btn-group">
 								<button class="button black mini" onClick="enterpriseNotification();"><i class="icon-pencil"></i>Edit</button>

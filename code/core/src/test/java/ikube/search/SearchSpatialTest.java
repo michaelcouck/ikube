@@ -5,15 +5,19 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.IConstants;
+import ikube.action.Close;
+import ikube.action.Open;
 import ikube.action.index.IndexManager;
 import ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy;
 import ikube.mock.SpellingCheckerMock;
 import ikube.model.Coordinate;
+import ikube.model.IndexContext;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import mockit.Mockit;
 
@@ -28,6 +32,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -105,6 +110,50 @@ public class SearchSpatialTest extends AbstractTest {
 		assertTrue(results.get(1).get(IConstants.CONTENTS).contains(schwammeningenCoordinate.getName()));
 		assertTrue(results.get(2).get(IConstants.CONTENTS).contains(seebackCoordinate.getName()));
 		assertTrue(results.get(3).get(IConstants.CONTENTS).contains(adliswilCoordinate.getName()));
+
+		searchSpatial.setSearchString("hullaballou");
+		results = searchSpatial.execute();
+		assertNotNull(results);
+		assertEquals(1, results.size());
+	}
+
+	@Test
+	@Ignore
+	public void adHoc() throws Exception {
+		try {
+			Open open = new Open();
+			IndexContext<?> indexContext = new IndexContext<>();
+			indexContext.setIndexName("geospatial");
+			indexContext.setIndexDirectoryPath("/home/indexes");
+
+			open.execute(indexContext);
+
+			SearchSpatial searchSpatial = new SearchSpatial(indexContext.getMultiSearcher());
+			searchSpatial.setDistance(10);
+			searchSpatial.setFirstResult(0);
+			searchSpatial.setMaxResults(10);
+			searchSpatial.setFragment(Boolean.TRUE);
+			searchSpatial.setSearchField("name");
+			searchSpatial.setSearchString("cape town");
+			searchSpatial.setCoordinate(new Coordinate(-33.9693580, 18.4622110));
+
+			ArrayList<HashMap<String, String>> results = searchSpatial.execute();
+			logger.info("Results : " + results);
+			printResults(results);
+			assertTrue(results.size() > 0);
+		} finally {
+			Close close = new Close();
+			close.execute(indexContext);
+		}
+	}
+
+	private void printResults(final ArrayList<HashMap<String, String>> results) {
+		for (final HashMap<String, String> result : results) {
+			logger.info("Result : ");
+			for (final Map.Entry<String, String> mapEntry : result.entrySet()) {
+				logger.info("       : " + mapEntry.getKey() + "-" + mapEntry.getValue());
+			}
+		}
 	}
 
 }
