@@ -38,6 +38,9 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	public boolean internalExecute(final IndexContext<?> indexContext) {
+		if (indexContext.isDelta()) {
+			return Boolean.FALSE;
+		}
 		return openOnFile(indexContext);
 	}
 
