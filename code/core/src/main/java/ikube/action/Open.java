@@ -64,7 +64,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 						directory.close();
 						continue;
 					}
-					if (IndexWriter.isLocked(directory) && !indexContext.isDelta()) {
+					if (IndexWriter.isLocked(directory)) {
 						continue;
 					}
 					reader = IndexReader.open(directory, Boolean.TRUE);
@@ -87,7 +87,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 		}
 	}
 
-	private boolean open(final IndexContext<?> indexContext, final List<Searchable> searchers) {
+	boolean open(final IndexContext<?> indexContext, final List<Searchable> searchers) {
 		try {
 			if (!searchers.isEmpty()) {
 				Searchable[] searchables = searchers.toArray(new IndexSearcher[searchers.size()]);
