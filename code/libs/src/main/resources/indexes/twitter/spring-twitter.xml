@@ -39,17 +39,10 @@
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
 		property:children-ref="twitter-indexables"
-		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer.Twitter" />
+		property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer" />
 	<util:list id="twitter-indexables">
 		<ref local="twitter-index" />
 	</util:list>
-	
-	<bean 
-		id="ikube.action.index.analyzer.NgramAnalyzer.Twitter"
-		name="ikube.action.index.analyzer.NgramAnalyzer.Twitter"
-		class="ikube.action.index.analyzer.NgramAnalyzer" 
-		property:minGram="3"
-		property:maxGram="15" />
 	
 	<bean
 		id="twitter-index"

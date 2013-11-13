@@ -7,6 +7,11 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 	$scope.searchAllUrl = '/ikube/service/search/json/all';
 	$scope.headers = { headers: { 'Content-Type' : 'application/json' } };
 	
+	$scope.path = '/ikube/assets/images/icons/file-types/';
+	$scope.icon = getServiceUrl($scope.path + 'txt.png');
+	$scope.images = new Array();
+	$scope.testedImages = new Array();
+	
 	$scope.status = null;
 	$scope.search = null;
 	$scope.statistics = null;
@@ -14,7 +19,6 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 	
 	$scope.indexes;
 	$scope.indexName;
-	$scope.distances = [1, 2, 3, 5, 10, 20, 50, 100, 1000, 10000];
 	
 	$scope.doSearchPreProcessing = function(search) {
 		$scope.status = null;
@@ -72,12 +76,12 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 		
 		var promise = $http.post($scope.url, search);
 		promise.success(function(data, status) {
-			$scope.log('Status' , status);
+			$scope.log('Do search status' , status);
 			$scope.search.searchResults = data.searchResults;
 			$scope.doSearchPostProcessing($scope.search);
 		});
 		promise.error(function(data, status) {
-			$scope.log('Status' , status);
+			$scope.log('Do search status' , status);
 		});
 	};
 	
@@ -94,12 +98,12 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 		
 		var promise = $http.post($scope.url, $scope.search);
 		promise.success(function(data, status) {
-			$scope.log('Status' , status);
+			$scope.log('Do search all status' , status);
 			$scope.search.searchResults = data.searchResults;
 			$scope.doSearchPostProcessing($scope.search);
 		});
 		promise.error(function(data, status) {
-			$scope.log('Status' , status);
+			$scope.log('Do search all status' , status);
 		});
 	};
 	
@@ -122,6 +126,57 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 				$scope.doMarkers();
 			}
 		}
+	};
+	
+	$scope.doFileTypeImage = function(identifier) {
+		if (!identifier) {
+			return $scope.icon;
+		}
+		var extension = identifier.substr((~-identifier.lastIndexOf(".") >>> 0) + 2);
+		if (!extension) {
+			return $scope.icon;
+		}
+		var stringBuilder = [];
+		stringBuilder.push($scope.path);
+		stringBuilder.push(extension);
+		stringBuilder.push('.png');
+		var iconUrl = getServiceUrl(stringBuilder.join(''));
+		
+		// Verify that the image exists
+		if ($scope.images.indexOf(iconUrl) > -1) {
+			return iconUrl;
+		} else {
+			if ($scope.testedImages.indexOf(iconUrl) < 0) {
+				$scope.testedImages.push(iconUrl);
+				var retries = 5;
+				var iconStatus = null;
+				var promise = $http.get(iconUrl);
+				promise.success(function(data, status) {
+					iconStatus = status;
+				});
+				promise.error(function(data, status) {
+					iconStatus = status;
+				});
+				$scope.checkImage = function() {
+					return $timeout(function() {
+						$scope.log('Get icon : ' + iconUrl, iconStatus);
+						if (!!iconStatus) {
+							if (iconStatus === 200) {
+								$scope.images.push(iconUrl);
+								return iconUrl;
+							}
+							return iconUrl;
+						} else if (retries-- > 0) {
+							return $scope.checkImage();
+						} else {
+							return $scope.icon;
+						}
+					}, 100);
+				};
+				return $scope.checkImage();
+			}
+		}
+		return $scope.icon;
 	};
 	
 	$scope.log = function(message, status) {

@@ -33,7 +33,7 @@
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
 		property:throttle="1"
-		property:threads="4"
+		property:threads="1"
 		property:delta="false"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path}"
@@ -72,7 +72,7 @@
 		property:batchSize="${file.batch.size}"
 		property:maxReadLength="${max.read.length}" 
 		property:maxExceptions="1000"
-		property:threads="4"
+		property:threads="1"
 		property:strategies-ref="desktop-strategies" />
 
 	<util:list id="desktop-strategies">

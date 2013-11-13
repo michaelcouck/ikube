@@ -115,7 +115,7 @@
 					<li class="separator">
 						<div class="article-post">
 							<div class="user-content">
-								<div id="map_canvas" google-map style="height: 300px; width: 450px; border : 1px solid black;"></div>
+								<div id="map_canvas" google-map></div>
 							</div>
 						</div>
 					</li>
@@ -160,7 +160,8 @@
 				<ul class="recent-comments" ng-show="!!statistics && !!search.searchResults && search.endResult > 0" ng-repeat="result in search.searchResults">
 					<li class="separator">
 						<div class="avatar pull-left">
-							<img src="<c:url value="/assets/images/MYP_1376-small.jpg" />" />
+							<img ng-src="{{doFileTypeImage(result.id)}}" />
+							<%-- <img src="<c:url value="/assets/images/MYP_1376-small.jpg" />" /> --%>
 						</div>
 						<div class="article-post">
 							<div class="user-info" ng-show="!!result.id">Id : {{result.id}}</div>

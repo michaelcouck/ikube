@@ -38,16 +38,11 @@
 		property:throttle="${throttle}"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path}"
-		property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer.Autocomplete"
+		property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer"
 		property:children-ref="autocompleteIndexables" />
 	<util:list id="autocompleteIndexables">
 		<ref local="autocomplete-word-lists" />
 	</util:list>
-	
-	<bean 
-		id="ikube.action.index.analyzer.EdgeNgramAnalyzer.Autocomplete"
-		name="ikube.action.index.analyzer.EdgeNgramAnalyzer.Autocomplete"
-		class="ikube.action.index.analyzer.EdgeNgramAnalyzer" />
 	
 	<bean
 		id="autocomplete-word-lists"

@@ -1,8 +1,8 @@
 package ikube.web.service;
 
 import ikube.model.Search;
+import ikube.toolkit.SerializationUtilities;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -44,15 +45,13 @@ public class Auto extends Resource {
 			@Context final HttpServletRequest request, //
 			@Context final UriInfo uriInfo) {
 		Search search = unmarshall(Search.class, request);
-		List<String> words = new ArrayList<String>();
 		List<String> searchStrings = search.getSearchStrings();
 		for (final String searchString : searchStrings) {
-			String[] split = split(searchString);
-			words.addAll(Arrays.asList(split));
-		}
-		for (final String word : words) {
-			search.setSearchStrings(Arrays.asList(word));
-			Object results = searcherService.search(search);
+			String[] words = StringUtils.split(searchString, ' ');
+			Search cloneSearch = (Search) SerializationUtilities.clone(search);
+			for (final String word : words) {
+				cloneSearch.setSearchStrings(Arrays.asList(word));
+			}
 		}
 		return buildJsonResponse(search);
 	}

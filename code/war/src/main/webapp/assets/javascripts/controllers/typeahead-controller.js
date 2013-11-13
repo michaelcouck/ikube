@@ -57,6 +57,7 @@ function TypeaheadController($scope, $http, $injector, $timeout) {
 	// nature of Angular we set a flag when we post, and we set a timeout that will re-try 
 	// the service until there are results or there are too many re-tries
 	$scope.doSearch = function() {
+		$scope.results = null;
 		$scope.url = getServiceUrl($scope.config.uri);
 		$scope.search.searchStrings = [$scope.searchString];
 		
@@ -70,7 +71,7 @@ function TypeaheadController($scope, $http, $injector, $timeout) {
 			$scope.status = status;
 		});
 		
-		var maxRetries = 50;
+		var maxRetries = 10;
 		$scope.wait = function() {
 			return $timeout(function() {
 				if (!!$scope.results) {
