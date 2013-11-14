@@ -88,10 +88,13 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 	// This function will search every field in every index, expensive!
 	$scope.doSearchAll = function(searchStrings) {
 		$scope.status = null;
+		$scope.statistics = null;
+		
 		$scope.search.sortFields = null;
 		$scope.search.coordinate = null;
 		$scope.search.indexName = null;
 		$scope.search.searchFields = null;
+		$scope.search.searchResults = null;
 		$scope.search.searchStrings = searchStrings;
 		// var search = $scope.doSearchPreProcessing($scope.search);
 		$scope.url = getServiceUrl($scope.searchAllUrl);
@@ -124,6 +127,9 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 			}
 			if (!!search.coordinate && !!search.coordinate.latitude && !!search.coordinate.longitude) {
 				$scope.doMarkers();
+			}
+			if (!!$scope.statistics && (!$scope.statistics.corrections || $scope.statistics.corrections.length == 0)) {
+				$scope.statistics.corrections = null;
 			}
 		}
 	};

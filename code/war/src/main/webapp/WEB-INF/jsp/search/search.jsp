@@ -54,6 +54,15 @@
 										typeahead-min-length="3" 
 										typeahead-wait-ms="500"
 										typeahead-on-select="doSearchAll([searchString]);">
+									<div class="input search pull-right" ng-show="!!statistics && !!statistics.corrections">
+										Did you mean : 
+										<a 
+											href="#" 
+											ng-click="
+												searchString = statistics.corrections;
+												doSearchAll([statistics.corrections]);">{{statistics.corrections}}
+										</a>
+									</div>
 									<button type="submit" class="button blue" ng-disabled="!searchString" ng-click="doSearchAll([searchString]);">Go</button>
 								</div>
 								</form>

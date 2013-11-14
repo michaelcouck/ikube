@@ -381,6 +381,7 @@ public abstract class Search {
 	 * This method will return an array of strings that have been corrected using the spelling and words defined in the languages directory. If there are no
 	 * corrections, i.e. the strings are all correct then this array will be empty.
 	 * 
+	 * @param searchStrings the array of search strings and terms that are to be corrected for spelling
 	 * @return the array of strings that have been corrected using the language and word lists in the language directory
 	 */
 	protected String[] getCorrections(final String... searchStrings) {
