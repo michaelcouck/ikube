@@ -64,7 +64,7 @@
 	<script src="<c:url value="/assets/javascripts/controllers/servers-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/typeahead-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/active-controller.js" />" type="text/javascript"></script>
-	<script src="<c:url value="/assets/javascripts/controllers/dropdown-controller.js" />" type="text/javascript"></script>
+	<%-- <script src="<c:url value="/assets/javascripts/controllers/dropdown-controller.js" />" type="text/javascript"></script> --%>
 	
 </head>
 

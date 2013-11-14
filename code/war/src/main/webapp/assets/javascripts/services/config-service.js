@@ -12,7 +12,7 @@ ikubeServices.service('configService', function($rootScope) {
 	
 	// The search form autocomplete configuration
 	$rootScope.searchFormConfig = {
-		uri : '/ikube/service/search/json',
+		uri : '/ikube/service/auto',
 		resultsBuilder : 'autocompleteResultsBuilderService',
 		indexName : 'autocomplete',
 		searchFields : ['word'],

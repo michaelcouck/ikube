@@ -1,19 +1,19 @@
 package ikube.web.service;
 
+import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import ikube.BaseTest;
 import ikube.IConstants;
+import ikube.model.Search;
 import ikube.search.ISearcherService;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.SerializationUtilities;
 
-import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
 import mockit.Deencapsulation;
@@ -21,23 +21,94 @@ import mockit.Deencapsulation;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Mockito;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class AutoTest extends BaseTest {
 
+	/** Class under test */
 	private Auto auto;
+	private Search search;
+	private ISearcherService searcherService;
 
 	@Before
-	@SuppressWarnings("unchecked")
 	public void before() throws Exception {
-		auto = new Auto();
-		File file = FileUtilities.findFileRecursively(new File("."), "autocomplete.results.xml");
-		String contents = FileUtilities.getContents(file, IConstants.ENCODING);
-		ArrayList<HashMap<String, String>> defaultResults = (ArrayList<HashMap<String, String>>) SerializationUtilities.deserialize(contents);
-		ISearcherService searcherService = Mockito.mock(ISearcherService.class);
-		Mockito.when(searcherService.search(anyString(), any(String[].class), any(String[].class), any(String[].class), anyBoolean(), anyInt(), anyInt()))
-				.thenReturn(defaultResults);
+		searcherService = mock(ISearcherService.class);
+		search = new Search();
+		search.setMaxResults(6);
+		search.setSearchStrings(Arrays.asList("hello java world", "michael couck the omnipotent", "pearls before swine"));
+		auto = new Auto() {
+			@SuppressWarnings("unchecked")
+			<T> T unmarshall(final Class<T> clazz, final HttpServletRequest request) {
+				return (T) search;
+			}
+		};
 		Deencapsulation.setField(auto, searcherService);
+	}
+
+	@Test
+	public void auto() {
+		Search search = getSearch("hello", "hellos", "helloed", "helloes", "hellova", "chello");
+		Search[] searches = {//
+		getSearch("java", "javan", "javas", "javali", "javari", "javary"), //
+				getSearch("world", "worlds", "worldy", "worlded", "worldly", "worldful"), //
+				getSearch("michael"), //
+				getSearch("couch", "coucal", "coucha", "couchy", "couchä", "scouch"), //
+				getSearch("the", "thea", "theb", "thed", "thee", "them"), //
+				getSearch("omnipotent", "omnipotently", "omnipotents", "omnipotentces", "omnipotentcies"), //
+				getSearch("pearls", "pearls", "pearlspar", "pearla", "pearle", "pearly"), //
+				getSearch("before", "beforehand", "beforeness", "beforesaid", "beforested", "beforetime"), //
+				getSearch("swine", "swines", "swiney", "swinely") //
+		};
+		when(searcherService.search(any(Search.class))).thenReturn(search, searches);
+
+		Response response = auto.auto(null, null);
+		Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+		String string = (String) response.getEntity();
+		Search resultSearch = gson.fromJson(string, Search.class);
+		ArrayList<HashMap<String, String>> results = resultSearch.getSearchResults();
+		String[] fragments = {//
+		"hello java world", //
+				"hellos javan worlds", //
+				"helloed javas worldy", //
+				"helloes javali worlded", //
+				"hellova javari worldly", //
+				"chello javary worldful", //
+				"michael couch the omnipotent", //
+				"michael coucal thea omnipotently", //
+				"michael coucha theb omnipotents", //
+				"michael couchy thed omnipotentces", //
+				"michael couchä thee omnipotentcies", //
+				"michael scouch them omnipotent", //
+				"pearls before swine", //
+				"pearls beforehand swines", //
+				"pearlspar beforeness swiney", //
+				"pearla beforesaid swinely", //
+				"pearle beforested swine", //
+				"pearly beforetime swine" };
+		for (int i = 0; i < results.size(); i++) {
+			HashMap<String, String> result = results.get(i);
+			assertEquals(result.get(IConstants.FRAGMENT), fragments[i]);
+		}
+	}
+
+	private Search getSearch(final String... fragments) {
+		Search search = new Search();
+		ArrayList<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
+		for (final String fragment : fragments) {
+			results.add(getResult(fragment));
+		}
+		// Add one for the statistics
+		results.add(new HashMap<String, String>());
+		search.setSearchResults(results);
+		return search;
+	}
+
+	private HashMap<String, String> getResult(final String fragment) {
+		HashMap<String, String> result = new HashMap<String, String>();
+		result.put(IConstants.FRAGMENT, fragment);
+		return result;
 	}
 
 	@Test
