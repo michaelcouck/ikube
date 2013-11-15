@@ -167,6 +167,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 		String messageContent = getMessageContent(message);
 		if (StringUtils.isNotEmpty(messageContent)) {
 			byte[] bytes = messageContent.getBytes();
+			indexableMail.setRawContent(bytes);
 			IParser parser = ParserProvider.getParser(message.getContentType(), bytes);
 			OutputStream outputStream = parser.parse(new ByteArrayInputStream(bytes), new ByteArrayOutputStream());
 			String fieldContent = outputStream.toString();

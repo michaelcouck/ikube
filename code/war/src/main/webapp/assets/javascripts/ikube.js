@@ -1,7 +1,10 @@
 /** Note: This file must be loaded after all the other JavaScript files. */
 
 /**
- * This function will track the page view for Google Analytics.
+ * This function will track the page view for Google Analytics..
+ * 
+ * @author Michael Couck
+ * @since long time, probably around 2008 I guess
  */ 
 function track() {
 	try {

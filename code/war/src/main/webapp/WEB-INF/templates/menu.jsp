@@ -5,13 +5,6 @@
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<script type="text/javascript">
-// Focus on the first field in the form
-angular.element(document).ready(function() {
-	doFocus('search');
-});
-</script>
-
 <nav id="primary" class="main-nav">
 	<ul ng-controller="ActiveController">
 		<li href="system" active-link="active"><a href="<c:url value="/system/dash.html" />"><i class="icon-cogs"></i>System</a></li>
@@ -23,7 +16,11 @@ angular.element(document).ready(function() {
 				<i class="icon-share-alt"></i>More<span class="caret"></span>
 			</a>
 			<ul class="dropdown-menu">
-				<li><a href="#"><i class="icon-warning-sign"></i>Something else</a></li>
+				<li><a href="#" onClick="supportNotification();"><i class="icon-warning-sign"></i>Support</a></li>
+				<li class="divider"></li>
+				<li><a href="#"><i class="icon-file"></i>Documentation</a></li>
+				<li><a href="#"><i class="icon-bolt"></i>Quick start</a></li>
+				<li><a href="#"><i class="icon-bolt"></i>Creating indexes</a></li>
 				<li class="divider"></li>
 				<li>
 					<a href="<spring:url value="/logout" htmlEscape="true" />" title="<spring:message code="security.logout" />">

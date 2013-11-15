@@ -103,6 +103,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 			// Get the content from the url
 			ByteOutputStream byteOutputStream = getContentFromUrl(contentProvider, indexable, url);
 			if (byteOutputStream != null && byteOutputStream.size() > 0) {
+				indexable.setRawContent(byteOutputStream.getBytes());
 				InputStream inputStream = new ByteArrayInputStream(byteOutputStream.getBytes());
 				// Extract the links from the url if any
 				extractedUrls = extractLinksFromContent(indexable, inputStream);

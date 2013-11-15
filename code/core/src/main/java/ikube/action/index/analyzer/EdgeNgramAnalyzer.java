@@ -22,7 +22,7 @@ import org.apache.lucene.analysis.shingle.ShingleMatrixFilter;
 public final class EdgeNgramAnalyzer extends Analyzer {
 
 	private int minGram = 3;
-	private int maxGram = 21;
+	private int maxGram = 32;
 
 	/**
 	 * This method will produce n-grams from the text stream.

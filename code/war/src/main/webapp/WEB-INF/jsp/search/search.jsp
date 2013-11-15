@@ -53,7 +53,7 @@
 										typeahead="result for result in doSearch()"
 										typeahead-min-length="3" 
 										typeahead-wait-ms="500"
-										typeahead-on-select="doSearchAll([searchString]);">
+										typeahead-on-select="doSearchAll([stripTags(searchString)]);">
 									<div class="input search pull-right" ng-show="!!statistics && !!statistics.corrections">
 										Did you mean : 
 										<a 
@@ -79,16 +79,6 @@
 									</select>
 								</div>
 								
-								<!-- <div class="note pull-right"><b>Distance</b></div>
-								<div>
-									<select 
-										ng-model="search.coordinate.distance"
-										ng-model="distances"
-										ng-options="distance for distance in distances"
-										class="fill-up">
-									</select>
-									<input type="checkbox">
-								</div> -->
 								<div 
 									ng-show="!!search.indexName"
 									ng-repeat="field in search.searchFields">
@@ -169,8 +159,7 @@
 				<ul class="recent-comments" ng-show="!!statistics && !!search.searchResults && search.endResult > 0" ng-repeat="result in search.searchResults">
 					<li class="separator">
 						<div class="avatar pull-left">
-							<img ng-src="{{doFileTypeImage(result.id)}}" />
-							<%-- <img src="<c:url value="/assets/images/MYP_1376-small.jpg" />" /> --%>
+							<img ng-src="{{doFileTypeImage(result.id, result.mimeType)}}" />
 						</div>
 						<div class="article-post">
 							<div class="user-info" ng-show="!!result.id">Id : {{result.id}}</div>

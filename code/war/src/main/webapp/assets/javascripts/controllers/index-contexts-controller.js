@@ -1,19 +1,28 @@
-/** This controller gathers the index context data from the server for presentation. */
-module.controller('IndexContextsController', function($http, $scope, $timeout) {
-	
+/**
+ * This controller gathers the index context data from the server for
+ * presentation.
+ * 
+ * @author Michael Couck
+ * @since 10-11-2012
+ */
+module.controller('IndexContextsController', function($http, $scope, $injector, $timeout, notificationService) {
+
 	$scope.indexContext = undefined;
 	$scope.indexContexts = undefined;
 	$scope.sortField = 'name';
 	$scope.descending = true;
 	$scope.viewAll = false;
-	
+	// $scope.notificationService;
+
 	$scope.refreshIndexContexts = function() {
 		$scope.url = getServiceUrl('/ikube/service/monitor/index-contexts');
-		$scope.parameters = { 
+		$scope.parameters = {
 			sortField : $scope.sortField,
 			descending : $scope.descending
 		};
-		$scope.config = { params : $scope.parameters };
+		$scope.config = {
+			params : $scope.parameters
+		};
 		var promise = $http.get($scope.url, $scope.config);
 		promise.success(function(data, status) {
 			$scope.indexContexts = data;
@@ -32,57 +41,66 @@ module.controller('IndexContextsController', function($http, $scope, $timeout) {
 
 	// This function will publish a start event in the cluster
 	$scope.startIndexing = function(indexName) {
-		// alert('Starting indexing : ' + indexName);
 		$scope.url = getServiceUrl('/ikube/service/monitor/start');
 		// The parameters for the start
-		$scope.parameters = { 
+		$scope.parameters = {
 			indexName : indexName
 		};
 		// The configuration for the request to the server
-		$scope.config = { params : $scope.parameters };
+		$scope.config = {
+			params : $scope.parameters
+		};
 		// And terminate the indexing for the index
 		var promise = $http.get($scope.url, $scope.config);
 		promise.success(function(data, status) {
 			$scope.status = status;
+			$scope.notification('Start indexing', indexName);
 		});
 		promise.error(function(data, status) {
 			$scope.status = status;
 		});
 	}
-	
+
 	// This function will delete the index completely on the file system
 	$scope.deleteIndex = function(indexName) {
 		// alert('Deleting index : ' + indexName);
 		$scope.url = getServiceUrl('/ikube/service/monitor/delete-index');
 		// The parameters for the delete of the index
-		$scope.parameters = { 
+		$scope.parameters = {
 			indexName : indexName
 		};
 		// The configuration for the request to the server
-		$scope.config = { params : $scope.parameters };
+		$scope.config = {
+			params : $scope.parameters
+		};
 		// And delete the index
 		var promise = $http.get($scope.url, $scope.config);
 		promise.success(function(data, status) {
 			$scope.status = status;
+			$scope.notification('Delete', indexName);
 		});
 		promise.error(function(data, status) {
 			$scope.status = status;
 			// alert('Error sending delete message : ' + status);
 		});
 	}
-	
+
+	$scope.notification = function(action, indexName) {
+		notificationService.notification(action + ' for index \'' + indexName + '\' executed', '/ikube/assets/images/cloud.png', '5');
+	};
+
 	$scope.editing = function() {
 		return !!$scope.indexContext;
 	};
-	
+
 	$scope.cancel = function() {
 		$scope.indexContext = null;
 	};
-	
+
 	$scope.update = function() {
 		// TODO Update the database
 	};
-	
+
 	$scope.parent = function() {
 		// TODO Get the parent on the page for editing
 	};
@@ -91,27 +109,31 @@ module.controller('IndexContextsController', function($http, $scope, $timeout) {
 	$scope.dataTable = function dataTable(element) {
 		var data = $scope.buildTable();
 		var target = $("#" + element);
-		target.dataTable( {
+		target.dataTable({
 			"bJQueryUI" : true,
 			"bDestroy" : true,
 			"sPaginationType" : "full_numbers",
 			"sDom" : '<""l>t<"F"fp>',
-			"aoColumns": [
-			    { "sTitle" : "Name" },
-			    { "sTitle" : "Open" },
-			    { "sTitle" : "Indexing" },
-			    { "sTitle" : "Documents" },
-			    { "sTitle" : "Size" }
-	        ],
-	        "aaData" : data,
-			 fnRowCallback : function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+			"aoColumns" : [ {
+				"sTitle" : "Name"
+			}, {
+				"sTitle" : "Open"
+			}, {
+				"sTitle" : "Indexing"
+			}, {
+				"sTitle" : "Documents"
+			}, {
+				"sTitle" : "Size"
+			} ],
+			"aaData" : data,
+			fnRowCallback : function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
 				// Row click
 				var row = $(nRow)
-				$('td', nRow).attr('nowrap','nowrap');
+				$('td', nRow).attr('nowrap', 'nowrap');
 				row.on("click", function() {
 					var name = row.find("td:first").text();
 					if (name != undefined && $scope.indexContexts != undefined && $scope.indexContexts != null) {
-						for (var i = 0; i < $scope.indexContexts.length; i++) {
+						for ( var i = 0; i < $scope.indexContexts.length; i++) {
 							var indexContext = $scope.indexContexts[i];
 							if (name == indexContext.name) {
 								$scope.indexContext = indexContext;
@@ -121,11 +143,11 @@ module.controller('IndexContextsController', function($http, $scope, $timeout) {
 					}
 				});
 			}
-	    } );
+		});
 	}
 	$scope.buildTable = function() {
 		var table = [];
-		for (var i = 0; i < $scope.indexContexts.length; i++) {
+		for ( var i = 0; i < $scope.indexContexts.length; i++) {
 			var indexContext = $scope.indexContexts[i];
 			var row = [];
 			row.push(indexContext.name);
@@ -151,10 +173,10 @@ module.controller('IndexContextsController', function($http, $scope, $timeout) {
 			}
 		}, 250);
 	};
-	
-	// Call the wait function that will wait for the index contexts to 
-	// come back from the server before calling the create table function 
+
+	// Call the wait function that will wait for the index contexts to
+	// come back from the server before calling the create table function
 	// to produce the table
 	$scope.wait();
-	
+
 });

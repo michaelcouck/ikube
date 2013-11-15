@@ -61,6 +61,7 @@ public interface IConstants {
 	String CONTENTS = "contents";
 	String FILE = "file";
 	String FRAGMENT = "fragment";
+	String MIME_TYPE = "mimeType";
 	String TOTAL = "total";
 	String DURATION = "duration";
 	String TITLE = "title";

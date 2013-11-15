@@ -38,7 +38,7 @@
 		property:throttle="0"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
-		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer" 
+		property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer" 
 		property:children-ref="ikubeIndexables" />
 	<util:list id="ikubeIndexables">
 		<ref local="ikubeInternet" />
@@ -57,7 +57,8 @@
 		property:stored="true"
 		property:vectored="true"
 		property:threads="5"
-		property:internetBatchSize="${internet.batch.size}" />
+		property:internetBatchSize="${internet.batch.size}" 
+		property:strategies-ref="internet-strategies" />
 		
 	<bean
 		id="ikubeGoogleCode"
@@ -71,6 +72,12 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}"
 		property:threads="5"
-		property:internetBatchSize="${internet.batch.size}" />
+		property:internetBatchSize="${internet.batch.size}" 
+		property:strategies-ref="internet-strategies" />
+	
+	<util:list id="internet-strategies">
+		<ref bean="ikube.action.index.handler.strategy.ContentTypeStrategy" />
+		<ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
+	</util:list>
 	
 </beans>

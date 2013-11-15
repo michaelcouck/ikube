@@ -383,6 +383,12 @@
     	class="ikube.action.index.handler.strategy.EmoticonClassificationStrategy" 
     	init-method="initialize" />
     	
+	<bean
+		id="ikube.action.index.handler.strategy.ContentTypeStrategy"
+		name="ikube.action.index.handler.strategy.ContentTypeStrategy" 
+    	class="ikube.action.index.handler.strategy.ContentTypeStrategy" 
+    	init-method="initialize" />
+    	
     <bean 
     	id="ikube.analytics.WekaClassifier"
     	name="ikube.analytics.WekaClassifier"

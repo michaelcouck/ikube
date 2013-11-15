@@ -76,19 +76,20 @@ public class AutoTest extends BaseTest {
 				"hellova javari worldly", //
 				"chello javary worldful", //
 				"michael couch the omnipotent", //
-				"michael coucal thea omnipotently", //
-				"michael coucha theb omnipotents", //
-				"michael couchy thed omnipotentces", //
-				"michael couchä thee omnipotentcies", //
-				"michael scouch them omnipotent", //
+				"<b>michael</b> coucal thea omnipotently", //
+				"<b>michael</b> coucha theb omnipotents", //
+				"<b>michael</b> couchy thed omnipotentces", //
+				"<b>michael</b> couchä thee omnipotentcies", //
+				"<b>michael</b> scouch them <b>omnipotent</b>", //
 				"pearls before swine", //
 				"pearls beforehand swines", //
 				"pearlspar beforeness swiney", //
 				"pearla beforesaid swinely", //
-				"pearle beforested swine", //
-				"pearly beforetime swine" };
-		for (int i = 0; i < results.size(); i++) {
+				"pearle beforested <b>swine</b>", //
+				"pearly beforetime <b>swine</b>" };
+		for (int i = 0; i < results.size() && i < fragments.length; i++) {
 			HashMap<String, String> result = results.get(i);
+			logger.info(result);
 			assertEquals(result.get(IConstants.FRAGMENT), fragments[i]);
 		}
 	}

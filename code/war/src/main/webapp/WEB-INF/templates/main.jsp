@@ -42,7 +42,7 @@
 	<script src="https://www.google.com/jsapi" type="text/javascript" ></script>
 	<script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
 	<script src="http://www.google-analytics.com/ga.js" type="text/javascript"></script>
-	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.js"></script>
 	<!-- <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.2/angular.min.js"></script> -->
 	<%-- <script src="<c:url value="/assets/javascripts/ui-bootstrap-tpls-0.4.0.js" />" type='text/javascript'></script> --%>
 	<script src="<c:url value="/assets/javascripts/ui-bootstrap-tpls-0.6.0.js" />" type='text/javascript'></script>
@@ -51,7 +51,10 @@
 	<script src="<c:url value="/assets/javascripts/services/database-service.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/services/results-builder-service.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/services/config-service.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/services/notification-service.js" />" type="text/javascript"></script>
+	
 	<script src="<c:url value="/assets/javascripts/ikube.js" />" type="text/javascript"></script>
+	
 	<script src="<c:url value="/assets/javascripts/directives/directive.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/directives/active-directive.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/directives/textarea-onblur-directive.js" />" type="text/javascript"></script>
@@ -64,7 +67,6 @@
 	<script src="<c:url value="/assets/javascripts/controllers/servers-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/typeahead-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/active-controller.js" />" type="text/javascript"></script>
-	<%-- <script src="<c:url value="/assets/javascripts/controllers/dropdown-controller.js" />" type="text/javascript"></script> --%>
 	
 </head>
 

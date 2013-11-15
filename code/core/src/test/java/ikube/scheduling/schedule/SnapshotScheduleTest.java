@@ -27,6 +27,7 @@ import java.util.Map;
 import mockit.Deencapsulation;
 import mockit.Mockit;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -96,18 +97,12 @@ public class SnapshotScheduleTest extends AbstractTest {
 		Snapshot snapshot = new Snapshot();
 		long docsPerMinute = snapshotSchedule.getDocsPerMinute(indexContext, snapshot);
 		assertEquals(0, docsPerMinute);
+		snapshot.setNumDocsForIndexWriters(250);
+		snapshot.setTimestamp(new Timestamp(System.currentTimeMillis()));
 
 		Snapshot previous = new Snapshot();
 		previous.setTimestamp(new Timestamp(System.currentTimeMillis() - 65000));
 		previous.setNumDocsForIndexWriters(125);
-
-		snapshot.setNumDocsForIndexWriters(250);
-		snapshot.setTimestamp(new Timestamp(System.currentTimeMillis()));
-
-		when(indexContext.getSnapshots()).thenReturn(Arrays.asList(previous));
-
-		docsPerMinute = snapshotSchedule.getDocsPerMinute(indexContext, snapshot);
-		assertTrue(docsPerMinute > 100 && docsPerMinute < 125);
 		
 		Snapshot one = (Snapshot) SerializationUtilities.clone(previous);
 		Snapshot two = (Snapshot) SerializationUtilities.clone(previous);
@@ -117,13 +112,12 @@ public class SnapshotScheduleTest extends AbstractTest {
 		Snapshot six = (Snapshot) SerializationUtilities.clone(previous);
 		
 		one.setNumDocsForIndexWriters(0);
-		two.setNumDocsForIndexWriters(Integer.MAX_VALUE);
+		six.setNumDocsForIndexWriters(Integer.MAX_VALUE);
 		
 		when(indexContext.getSnapshots()).thenReturn(Arrays.asList(one, two, three, four, five, six));
-		for (int i = 0; i < 100; i++) {
-			snapshotSchedule.getDocsPerMinute(indexContext, snapshot);
-		}
-		assertTrue(two.getNumDocsForIndexWriters() > 100 && two.getNumDocsForIndexWriters() < IConstants.TEN_THOUSAND);
+		snapshotSchedule.getDocsPerMinute(indexContext, snapshot);
+		logger.info(ToStringBuilder.reflectionToString(six));
+		assertTrue(six.getNumDocsForIndexWriters() > 100 && six.getNumDocsForIndexWriters() < 250);
 		Mockito.verify(dataBase, Mockito.atLeastOnce()).merge(any());
 	}
 

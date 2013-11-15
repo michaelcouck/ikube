@@ -57,19 +57,12 @@
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
 		property:children-ref="geospatialIndexables"
-		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer"
+		property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer"
 		property:strategies-ref="geoname-strategies" />
 	<util:list id="geospatialIndexables">
 		<ref local="geoname" />
 		<!-- <ref local="alternatename" /> -->
 	</util:list>
-	
-	<bean 
-		id="ikube.action.index.analyzer.NgramAnalyzer.Geospatial"
-		name="ikube.action.index.analyzer.NgramAnalyzer.Geospatial" 
-		class="ikube.action.index.analyzer.NgramAnalyzer"
-		property:minGram="4"
-		property:maxGram="24" />
 	
 	<bean
 		id="geoname"

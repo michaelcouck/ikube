@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -41,8 +39,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @version 01.00
  */
 public class SnapshotSchedule extends Schedule {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(SnapshotSchedule.class);
 
 	static final int MAX_SNAPSHOTS_CONTEXT = 90;
 	static final double ONE_MINUTE_MILLIS = 60000;
@@ -102,7 +98,7 @@ public class SnapshotSchedule extends Schedule {
 					}
 				}
 			} catch (Exception e) {
-				LOGGER.error("Exception persisting snapshot : ", e);
+				logger.error("Exception persisting snapshot : ", e);
 			}
 		}
 	}
@@ -136,7 +132,7 @@ public class SnapshotSchedule extends Schedule {
 			// long availableDiskSpace = FileSystemUtils.freeSpaceKb("/") / IConstants.MILLION;
 			// server.setFreeDiskSpace(availableDiskSpace);
 		} catch (Exception e) {
-			LOGGER.error("Exception accessing the disk space : ", e);
+			logger.error("Exception accessing the disk space : ", e);
 		}
 		setLogTail(server);
 	}
@@ -145,7 +141,7 @@ public class SnapshotSchedule extends Schedule {
 		File logFile = Logging.getLogFile();
 		if (logFile == null || !logFile.exists() || !logFile.isFile() || !logFile.canRead()) {
 			String message = "Can't find log file : " + logFile;
-			LOGGER.warn(message);
+			logger.warn(message);
 			System.err.println(message);
 			return;
 		}
@@ -160,9 +156,9 @@ public class SnapshotSchedule extends Schedule {
 			inputStream.read(bytes, 0, lengthToRead);
 			server.setLogTail(new String(bytes));
 		} catch (FileNotFoundException e) {
-			LOGGER.error("Log file not found : " + e.getMessage());
+			logger.error("Log file not found : " + e.getMessage());
 		} catch (Exception e) {
-			LOGGER.error("Error reading log file : ", e);
+			logger.error("Error reading log file : ", e);
 		} finally {
 			IOUtils.closeQuietly(inputStream);
 		}
@@ -191,30 +187,29 @@ public class SnapshotSchedule extends Schedule {
 		}
 		Snapshot previous = snapshots.get(snapshots.size() - 1);
 		double ratio = getRatio(previous, current);
-		long docsPerMinute = (long) ((current.getNumDocsForIndexWriters() - previous.getNumDocsForIndexWriters()) / ratio);
 		normalizeNumDocsForIndexWriters(indexContext);
+		long docsPerMinute = (long) ((current.getNumDocsForIndexWriters() - previous.getNumDocsForIndexWriters()) / ratio);
 		return docsPerMinute;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void normalizeNumDocsForIndexWriters(final IndexContext indexContext) {
 		List<Snapshot> snapshots = indexContext.getSnapshots();
-		if (indexContext.isDelta() && snapshots.size() > 5) {
-			long totalDocsPerMinute = 0;
-			for (int i = snapshots.size() - 1; i >= 0; i--) {
-				Snapshot snapshot = snapshots.get(i);
-				long averageDocsPerMinute = totalDocsPerMinute / snapshots.size() - i;
-				if (snapshot.getNumDocsForIndexWriters() == 0) {
-					if (snapshots.size() > i + 1) {
-						Snapshot next = snapshots.get(i + 1);
-						if (averageDocsPerMinute * 5 < next.getNumDocsForIndexWriters()) {
-							next.setNumDocsForIndexWriters(Math.max(0, averageDocsPerMinute));
-							dataBase.merge(next);
-						}
-						break;
-					}
-				}
-				totalDocsPerMinute += snapshot.getNumDocsForIndexWriters();
+		if (snapshots.size() < 5) {
+			return;
+		}
+		// Get the average for the last snapshots
+		long totalDocsPerMinute = 0;
+		List<Snapshot> tailSnapshots = snapshots.subList(snapshots.size() - 5, snapshots.size());
+		for (final Snapshot snapshot : tailSnapshots) {
+			totalDocsPerMinute += snapshot.getNumDocsForIndexWriters();
+		}
+		// If any of the docs per minute are over a certain threshold then normalize them
+		for (final Snapshot snapshot : tailSnapshots) {
+			long averageDocsPerMinute = (totalDocsPerMinute - snapshot.getNumDocsForIndexWriters()) / (tailSnapshots.size() - 1);
+			if (snapshot.getNumDocsForIndexWriters() > averageDocsPerMinute * 5) {
+				snapshot.setNumDocsForIndexWriters(Math.abs(averageDocsPerMinute));
+				dataBase.merge(snapshot);
 			}
 		}
 	}

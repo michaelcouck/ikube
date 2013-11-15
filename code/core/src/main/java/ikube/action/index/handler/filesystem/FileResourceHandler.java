@@ -61,8 +61,7 @@ public class FileResourceHandler extends ResourceHandler<IndexableFileSystem> {
 		ByteArrayOutputStream byteOutputStream = null;
 
 		try {
-			int length = file.length() > 0 && file.length() < indexableFileSystem.getMaxReadLength() ? (int) file.length() : (int) indexableFileSystem
-					.getMaxReadLength();
+			int length = (int) Math.min(file.length(), indexableFileSystem.getMaxReadLength());
 			byte[] byteBuffer = new byte[length];
 
 			if (TFile.class.isAssignableFrom(file.getClass())) {
@@ -72,6 +71,7 @@ public class FileResourceHandler extends ResourceHandler<IndexableFileSystem> {
 			}
 
 			int read = inputStream.read(byteBuffer, 0, byteBuffer.length);
+			indexableFileSystem.setRawContent(byteBuffer);
 
 			byteInputStream = new ByteArrayInputStream(byteBuffer, 0, read);
 			byteOutputStream = new ByteArrayOutputStream();

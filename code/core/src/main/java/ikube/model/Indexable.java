@@ -34,6 +34,8 @@ public class Indexable<E> extends Persistable {
 	@Transient
 	private transient volatile Object content;
 	@Transient
+	private transient volatile Object rawContent;
+	@Transient
 	private transient volatile String addressContent;
 	@Transient
 	private AtomicInteger exceptions = new AtomicInteger(0);
@@ -190,6 +192,14 @@ public class Indexable<E> extends Persistable {
 
 	public void setContent(final Object content) {
 		this.content = content;
+	}
+
+	public Object getRawContent() {
+		return rawContent;
+	}
+
+	public void setRawContent(Object rawContent) {
+		this.rawContent = rawContent;
 	}
 
 	public String getAddressContent() {

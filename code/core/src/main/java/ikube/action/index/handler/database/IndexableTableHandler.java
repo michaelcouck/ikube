@@ -146,6 +146,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			byte[] buffer = byteOutputStream.getBytes();
 			int length = Math.min(buffer.length, 1024);
 			byte[] bytes = new byte[length];
+			indexable.setRawContent(buffer);
 
 			System.arraycopy(buffer, 0, bytes, 0, bytes.length);
 

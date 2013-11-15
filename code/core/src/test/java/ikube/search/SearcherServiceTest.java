@@ -30,7 +30,7 @@ public class SearcherServiceTest extends AbstractTest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SearcherServiceTest.class);
 
 	@MockClass(realClass = Search.class)
-	public class SearchComplexMock {
+	public class SearchComplexSortedMock {
 		@Mock
 		public ArrayList<HashMap<String, String>> execute() {
 			HashMap<String, String> result = new HashMap<String, String>();
@@ -90,7 +90,7 @@ public class SearcherServiceTest extends AbstractTest {
 		search = new ikube.model.Search();
 		search = populateFields(new ikube.model.Search(), Boolean.TRUE, 10);
 
-		Mockit.setUpMocks(new SearcherServiceMock(), new SearchComplexMock());
+		Mockit.setUpMocks(new SearcherServiceMock(), new SearchComplexSortedMock());
 		searcherService = new SearcherService();
 		indexName = indexContext.getIndexName();
 	}
@@ -144,7 +144,6 @@ public class SearcherServiceTest extends AbstractTest {
 
 	@Test
 	public void searchAllIntegrate() {
-		Mockit.tearDownMocks(SearcherService.class);
 		searcherService = new SearcherService() {
 			@SuppressWarnings({ "unchecked" })
 			protected <T> T getSearch(final Class<?> klass, final String indexName) throws Exception {
@@ -155,6 +154,7 @@ public class SearcherServiceTest extends AbstractTest {
 		Mockito.when(monitorService.getIndexNames()).thenReturn(new String[] { "index-one", "index-two", "index-three", "index-four" });
 		Mockito.when(monitorService.getIndexFieldNames(Mockito.anyString())).thenReturn(new String[] { "field-one", "field-two", "field-three", "field-four" });
 
+		search.setCoordinate(null);
 		Deencapsulation.setField(searcherService, dataBase);
 		Deencapsulation.setField(searcherService, monitorService);
 		ikube.model.Search searchResult = searcherService.searchAll(search);

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -43,6 +44,7 @@ public class Auto extends Resource {
 	/** Constants for the paths to the web services. */
 	public static final String AUTO = "/auto";
 	public static final String SUGGEST = "/suggest";
+	private static final Pattern CONJUNCTIONS = Pattern.compile(".*(AND).*|.*(OR).*|.*(NOT).*");
 
 	/**
 	 * This method will return suggestions based on the closest match of the word in the index. The index can be a word list, which is probably the best choice,
@@ -96,17 +98,24 @@ public class Auto extends Resource {
 		String[] words = StringUtils.split(searchString, ' ');
 		Search cloneSearch = (Search) SerializationUtilities.clone(search);
 		for (final String word : words) {
-			cloneSearch.setSearchStrings(Arrays.asList(word));
-			cloneSearch = searcherService.search(cloneSearch);
-			ArrayList<HashMap<String, String>> results = cloneSearch.getSearchResults();
-			// Remove the statistics, we don't need it
-			results.remove(results.size() - 1);
+			ArrayList<HashMap<String, String>> results = null;
+			if (CONJUNCTIONS.matcher(word).matches()) {
+				results = new ArrayList<HashMap<String, String>>();
+			} else {
+				cloneSearch.setSearchStrings(Arrays.asList(word));
+				cloneSearch = searcherService.search(cloneSearch);
+				results = cloneSearch.getSearchResults();
+				// Remove the statistics, we don't need it
+				results.remove(results.size() - 1);
+			}
 			for (int i = 0; i < autocompleteSuggestions.length; i++) {
 				if (results.size() > i) {
 					String fragment = results.get(i).get(IConstants.FRAGMENT);
 					autocompleteSuggestions[i].append(fragment);
 				} else {
+					autocompleteSuggestions[i].append("<b>");
 					autocompleteSuggestions[i].append(word);
+					autocompleteSuggestions[i].append("</b>");
 				}
 				autocompleteSuggestions[i].append(' ');
 			}

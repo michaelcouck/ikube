@@ -244,6 +244,9 @@ public class SearcherService implements ISearcherService {
 				futures.add(future);
 			}
 			ThreadUtilities.waitForFutures(futures, 60000);
+			for (final Search clonedSearch : searches) {
+				ThreadUtilities.destroy(Integer.toString(clonedSearch.hashCode()));
+			}
 			aggregateResults(search, searches);
 		} catch (Exception e) {
 			handleException(search.getIndexName(), e);
@@ -269,7 +272,6 @@ public class SearcherService implements ISearcherService {
 				duration = Math.max(duration, subSearchDuration);
 				searchResults.addAll(searchSubResults);
 			}
-			ThreadUtilities.destroy(Integer.toString(clonedSearch.hashCode()));
 		}
 
 		HashMap<String, String> statistics = new HashMap<String, String>();

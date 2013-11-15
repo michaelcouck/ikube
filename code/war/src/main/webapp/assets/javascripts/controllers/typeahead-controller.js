@@ -4,7 +4,10 @@
  * package. The search object will then be populated with the strings and fields that are to be 
  * searched in the index. 
  * 
- * @param $scope
+ * @author Michael Couck
+ * @since 10-11-2013
+ * 
+ * @param $scope 
  * @param $http
  * @param $injector
  * @param $timeout
@@ -27,7 +30,7 @@ function TypeaheadController($scope, $http, $injector, $timeout) {
 	// maps to an array that can be displayed in the 'drop down'. The fragments
 	// from the results are taken and shortened to +- 120 characters
 	$scope.convertToArray = function() {
-		$scope.results = new Array();
+		// $scope.results = new Array();
 		if (!!$scope.search && !!$scope.search.searchResults) {
 			$scope.statistics = $scope.search.searchResults.pop();
 			// Exception or no results
@@ -43,6 +46,7 @@ function TypeaheadController($scope, $http, $injector, $timeout) {
 	// passing the string to the caller that will do the search
 	$scope.$watch('searchString', function() {
 		$scope.searchString = $scope.stripTags($scope.searchString);
+		$scope.search.searchStrings = [$scope.searchString];
 	});
 	
 	// Removes html tags from a string using the browser
@@ -71,9 +75,11 @@ function TypeaheadController($scope, $http, $injector, $timeout) {
 			$scope.status = status;
 		});
 		
-		var maxRetries = 10;
+		var maxRetries = 1000;
 		$scope.wait = function() {
 			return $timeout(function() {
+				// Check that we have some results and that the search strings that were searched
+				// for are the same ones that the user typed last, i.e. the last search that was done
 				if (!!$scope.results) {
 					if (!!$scope.config.emitHierarchyFunction) {
 						// Emit the search object to any parent controllers

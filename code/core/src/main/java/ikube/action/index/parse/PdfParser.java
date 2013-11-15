@@ -1,6 +1,6 @@
 package ikube.action.index.parse;
 
-
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -42,20 +42,21 @@ public class PdfParser implements IParser {
 				// DecryptDocument decr = new DecryptDocument(pdf);
 				// decr.decryptDocument("");
 			}
-			// collect text
+			// Collect information in the document if exists
+			PDDocumentInformation info = pdfDocument.getDocumentInformation();
+			addInfo(info.getTitle(), outputStream);
+			addInfo(info.getAuthor(), outputStream);
+			addInfo(info.getSubject(), outputStream);
+			addInfo(info.getCreator(), outputStream);
+			addInfo(info.getProducer(), outputStream);
+			addInfo(info.getTrapped(), outputStream);
+			addInfo(info.getCreationDate(), outputStream);
+			addInfo(info.getModificationDate(), outputStream);
+			// Collect content
 			PDFTextStripper stripper = new PDFTextStripper();
 			String text = stripper.getText(pdfDocument);
 			outputStream.write(text.getBytes());
-			// collect title
-			PDDocumentInformation info = pdfDocument.getDocumentInformation();
-			String title = info.getTitle();
-			if (title != null) {
-				outputStream.write(title.getBytes());
-			}
-			// more useful info, currently not used. please keep them for future use.
-			// pdf.getPageCount();info.getAuthor();info.getSubject();info.getKeywords();
-			// info.getCreator();info.getProducer();info.getTrapped();formatDate(info.getCreationDate())
-			// formatDate(info.getModificationDate());
+			// More useful info, currently not used. please keep them for future use: pdf.getPageCount()
 		} finally {
 			try {
 				if (pdfDocument != null) {
@@ -67,6 +68,13 @@ public class PdfParser implements IParser {
 			}
 		}
 		return outputStream;
+	}
+
+	private void addInfo(final Object info, final OutputStream outputStream) throws IOException {
+		if (info != null) {
+			outputStream.write(info.toString().getBytes());
+			outputStream.write(" ".getBytes());
+		}
 	}
 
 }
