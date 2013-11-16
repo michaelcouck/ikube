@@ -16,8 +16,8 @@ function track() {
 }
 
 /** The global refresh variable. */
-var refreshInterval = 2000000;
-var chartRefreshInterval = 500000;
+var refreshInterval = 20000;
+var chartRefreshInterval = 5000;
 
 /**
  * This is the main Angular module for the iKube application on the 
