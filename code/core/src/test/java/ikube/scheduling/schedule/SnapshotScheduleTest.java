@@ -112,12 +112,12 @@ public class SnapshotScheduleTest extends AbstractTest {
 		Snapshot six = (Snapshot) SerializationUtilities.clone(previous);
 		
 		one.setNumDocsForIndexWriters(0);
-		six.setNumDocsForIndexWriters(Integer.MAX_VALUE);
+		five.setNumDocsForIndexWriters(Integer.MAX_VALUE);
 		
 		when(indexContext.getSnapshots()).thenReturn(Arrays.asList(one, two, three, four, five, six));
 		snapshotSchedule.getDocsPerMinute(indexContext, snapshot);
-		logger.info(ToStringBuilder.reflectionToString(six));
-		assertTrue(six.getNumDocsForIndexWriters() > 100 && six.getNumDocsForIndexWriters() < 250);
+		logger.info(ToStringBuilder.reflectionToString(five));
+		assertTrue(five.getNumDocsForIndexWriters() > 100 && five.getNumDocsForIndexWriters() < 250);
 		Mockito.verify(dataBase, Mockito.atLeastOnce()).merge(any());
 	}
 

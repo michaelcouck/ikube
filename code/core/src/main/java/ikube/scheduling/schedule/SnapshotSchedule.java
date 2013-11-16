@@ -185,31 +185,30 @@ public class SnapshotSchedule extends Schedule {
 		if (snapshots == null || snapshots.size() == 0) {
 			return 0;
 		}
+		normalizeNumDocsForIndexWriters(indexContext);
 		Snapshot previous = snapshots.get(snapshots.size() - 1);
 		double ratio = getRatio(previous, current);
-		normalizeNumDocsForIndexWriters(indexContext);
-		long docsPerMinute = (long) ((current.getNumDocsForIndexWriters() - previous.getNumDocsForIndexWriters()) / ratio);
-		return docsPerMinute;
+		return (long) ((current.getNumDocsForIndexWriters() - previous.getNumDocsForIndexWriters()) / ratio);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void normalizeNumDocsForIndexWriters(final IndexContext indexContext) {
 		List<Snapshot> snapshots = indexContext.getSnapshots();
-		if (snapshots.size() < 5) {
+		if (snapshots.size() < 3) {
 			return;
 		}
-		// Get the average for the last snapshots
-		long totalDocsPerMinute = 0;
-		List<Snapshot> tailSnapshots = snapshots.subList(snapshots.size() - 5, snapshots.size());
-		for (final Snapshot snapshot : tailSnapshots) {
-			totalDocsPerMinute += snapshot.getNumDocsForIndexWriters();
-		}
-		// If any of the docs per minute are over a certain threshold then normalize them
-		for (final Snapshot snapshot : tailSnapshots) {
-			long averageDocsPerMinute = (totalDocsPerMinute - snapshot.getNumDocsForIndexWriters()) / (tailSnapshots.size() - 1);
-			if (snapshot.getNumDocsForIndexWriters() > averageDocsPerMinute * 5) {
-				snapshot.setNumDocsForIndexWriters(Math.abs(averageDocsPerMinute));
-				dataBase.merge(snapshot);
+		Snapshot previous = snapshots.get(snapshots.size() - 3);
+		Snapshot current = snapshots.get(snapshots.size() - 2);
+		Snapshot next = snapshots.get(snapshots.size() - 1);
+
+		long previousNumDocs = previous.getNumDocsForIndexWriters();
+		long currentNumDocs = current.getNumDocsForIndexWriters();
+		long nextNumDocs = next.getNumDocsForIndexWriters();
+
+		if (currentNumDocs > (previousNumDocs * 5)) {
+			if (currentNumDocs > (nextNumDocs * 5)) {
+				current.setNumDocsForIndexWriters((previousNumDocs + nextNumDocs) / 2l);
+				dataBase.merge(current);
 			}
 		}
 	}
