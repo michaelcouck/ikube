@@ -129,6 +129,9 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 	}
 
 	private void persist(final List<Tweet> tweets) {
+		if (tweets == null) {
+			return;
+		}
 		try {
 			File analylticsDirectory = FileUtilities.getOrCreateDirectory(IConstants.ANALYTICS_DIRECTORY);
 			File tweetsDirectory = FileUtilities.getOrCreateDirectory(new File(analylticsDirectory, "tweets"));
