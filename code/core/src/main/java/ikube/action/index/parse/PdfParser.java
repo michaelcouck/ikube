@@ -7,7 +7,6 @@ import java.io.OutputStream;
 import org.apache.log4j.Logger;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.util.PDFTextStripper;
 
 /**
@@ -43,15 +42,15 @@ public class PdfParser implements IParser {
 				// decr.decryptDocument("");
 			}
 			// Collect information in the document if exists
-			PDDocumentInformation info = pdfDocument.getDocumentInformation();
-			addInfo(info.getTitle(), outputStream);
-			addInfo(info.getAuthor(), outputStream);
-			addInfo(info.getSubject(), outputStream);
-			addInfo(info.getCreator(), outputStream);
-			addInfo(info.getProducer(), outputStream);
-			addInfo(info.getTrapped(), outputStream);
-			addInfo(info.getCreationDate(), outputStream);
-			addInfo(info.getModificationDate(), outputStream);
+			// PDDocumentInformation info = pdfDocument.getDocumentInformation();
+			// addInfo(info.getTitle(), outputStream);
+			// addInfo(info.getAuthor(), outputStream);
+			// addInfo(info.getSubject(), outputStream);
+			// addInfo(info.getCreator(), outputStream);
+			// addInfo(info.getProducer(), outputStream);
+			// addInfo(info.getTrapped(), outputStream);
+			// addInfo(info.getCreationDate(), outputStream);
+			// addInfo(info.getModificationDate(), outputStream);
 			// Collect content
 			PDFTextStripper stripper = new PDFTextStripper();
 			String text = stripper.getText(pdfDocument);
@@ -70,7 +69,7 @@ public class PdfParser implements IParser {
 		return outputStream;
 	}
 
-	private void addInfo(final Object info, final OutputStream outputStream) throws IOException {
+	void addInfo(final Object info, final OutputStream outputStream) throws IOException {
 		if (info != null) {
 			outputStream.write(info.toString().getBytes());
 			outputStream.write(" ".getBytes());

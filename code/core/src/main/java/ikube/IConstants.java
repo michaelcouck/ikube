@@ -22,6 +22,8 @@ public interface IConstants {
 	/** The file separator for the system. */
 	String SEP = "/";
 	String IKUBE_DIRECTORY = "." + SEP + IKUBE;
+	String ANALYTICS_DIRECTORY = IKUBE_DIRECTORY + SEP + "analytics";
+	
 	String SPACE = " ";
 	String BCK_SEP = "\\";
 	String META_INF = SEP + "META-INF";

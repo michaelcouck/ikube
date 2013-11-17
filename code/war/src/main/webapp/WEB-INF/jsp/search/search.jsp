@@ -170,7 +170,7 @@
 							<div class="user-info" ng-show="!!result.latitude">Latitude : {{result.latitude}}</div>
 							<div class="user-info" ng-show="!!result.longitude">Longitude : {{result.longitude}}</div>
 							<div class="user-info" ng-show="!!result.lastmodified">Last modified : {{result.lastmodified}}</div>
-							<div class="user-content" ng-bind-html-unsafe="'Fragment : ' + result.fragment">Fragment :</div>
+							<div class="user-content" ng-show="!!result.fragment" ng-bind-html-unsafe="'Fragment : ' + result.fragment">Fragment :</div>
 							<div class="btn-group">
 								<button class="button black mini" onClick="enterpriseNotification();"><i class="icon-pencil"></i>Edit</button>
 								<button class="button black mini" onClick="enterpriseNotification();"><i class="icon-remove"></i>Delete</button>

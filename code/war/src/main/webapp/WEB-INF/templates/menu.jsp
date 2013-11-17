@@ -53,12 +53,10 @@
 					<i class="icon-cog"></i>
 				</button>
 				<ul class="dropdown-menu black-box-dropdown">
-					<!-- id="modal-link", id="modal-link" -->
-					<li><a href="#" onClick="modal('#logs-modal');">Server logs</a></li>
-					<li><a href="#" onClick="modal('#properties-modal');">System properties</a></li>
-					<!-- <li><a href="#">Something else here</a></li>
+					<li><a href="#"><i class="icon-eye-open">&nbsp;</i>Configuration</a></li>
 					<li class="divider"></li>
-					<li><a href="#">Separated link</a></li> -->
+					<li><a href="#" onClick="modal('#logs-modal');"><i class="icon-list-ol">&nbsp;</i>Server logs</a></li>
+					<li><a href="#" onClick="modal('#properties-modal');"><i class="icon-tasks">&nbsp;</i>System properties</a></li>
 				</ul>
 			</div>
 		</div>

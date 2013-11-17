@@ -71,7 +71,7 @@
 		property:analyzed="${analyzed}"
 		property:stored="${stored}"
 		property:vectored="${vectored}"
-		property:threads="5"
+		property:threads="25"
 		property:internetBatchSize="${internet.batch.size}" 
 		property:strategies-ref="internet-strategies" />
 	

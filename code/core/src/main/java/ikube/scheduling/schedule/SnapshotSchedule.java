@@ -207,7 +207,8 @@ public class SnapshotSchedule extends Schedule {
 
 		if (currentNumDocs > (previousNumDocs * 5)) {
 			if (currentNumDocs > (nextNumDocs * 5)) {
-				current.setNumDocsForIndexWriters((previousNumDocs + nextNumDocs) / 2l);
+				long numDocsForIndexWriters = Math.abs((previousNumDocs + nextNumDocs) / 2l);
+				current.setNumDocsForIndexWriters(numDocsForIndexWriters);
 				dataBase.merge(current);
 			}
 		}

@@ -31,7 +31,7 @@ public class DynamicallyTrainedLanguageSpecificClassificationStrategy extends AS
 	private int negative;
 	private String language = "en";
 
-	private IAnalyzer<String, String, String, Boolean> classifier;
+	private IAnalyzer<String, String> classifier;
 
 	public DynamicallyTrainedLanguageSpecificClassificationStrategy() {
 		this(null);
@@ -127,7 +127,7 @@ public class DynamicallyTrainedLanguageSpecificClassificationStrategy extends AS
 		this.maxTraining = maxTraining;
 	}
 
-	public void setClassifier(final IAnalyzer<String, String, String, Boolean> classifier) {
+	public void setClassifier(final IAnalyzer<String, String> classifier) {
 		this.classifier = classifier;
 	}
 

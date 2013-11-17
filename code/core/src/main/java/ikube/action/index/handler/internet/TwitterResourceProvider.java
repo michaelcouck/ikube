@@ -1,8 +1,13 @@
 package ikube.action.index.handler.internet;
 
+import ikube.IConstants;
+import ikube.action.index.IndexManager;
 import ikube.action.index.handler.IResourceProvider;
 import ikube.model.IndexableTweets;
+import ikube.toolkit.FileUtilities;
+import ikube.toolkit.ThreadUtilities;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -17,6 +22,8 @@ import org.springframework.social.twitter.api.StreamWarningEvent;
 import org.springframework.social.twitter.api.StreamingOperations;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.impl.TwitterTemplate;
+
+import com.google.gson.Gson;
 
 /**
  * This class will use the Spring social module to get tweets from Twitter, at a rate of around 1% of the tweets.
@@ -117,6 +124,32 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 	public synchronized void setResources(final List<Tweet> resources) {
 		if (resources != null) {
 			tweets.addAll(resources);
+		}
+		persist(resources);
+	}
+
+	private void persist(final List<Tweet> tweets) {
+		try {
+			File analylticsDirectory = FileUtilities.getOrCreateDirectory(IConstants.ANALYTICS_DIRECTORY);
+			File tweetsDirectory = FileUtilities.getOrCreateDirectory(new File(analylticsDirectory, "tweets"));
+			File latestDirectory = IndexManager.getLatestIndexDirectory(tweetsDirectory, null);
+			if (latestDirectory == null) {
+				latestDirectory = FileUtilities.getOrCreateDirectory(new File(tweetsDirectory, Long.toString(System.currentTimeMillis())));
+			} else {
+				String[] files = latestDirectory.list();
+				if (files != null && files.length > 10000) {
+					latestDirectory = FileUtilities.getOrCreateDirectory(new File(tweetsDirectory, Long.toString(System.currentTimeMillis())));
+				}
+			}
+			Gson gson = new Gson();
+			for (final Tweet tweet : tweets) {
+				String string = gson.toJson(tweet);
+				File outputFile = FileUtilities.getOrCreateFile(new File(tweetsDirectory, Long.toString(System.currentTimeMillis())));
+				FileUtilities.setContents(outputFile, string.getBytes());
+				ThreadUtilities.sleep(1);
+			}
+		} catch (Exception e) {
+			logger.error(null, e);
 		}
 	}
 

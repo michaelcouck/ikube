@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -31,8 +32,9 @@ public class WekaClassifierTest extends AbstractTest {
 	}
 
 	@Test
+	@Ignore
 	public void classifyFromFile() throws Exception {
-		wekaClassifier.file("instance.arff");
+		// wekaClassifier.file("instance.arff");
 		wekaClassifier.initialize();
 		wekaClassifier.build();
 		classify(wekaClassifier);

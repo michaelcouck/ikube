@@ -297,7 +297,7 @@ public final class IndexManager {
 		}
 	}
 
-	protected static synchronized File getLatestIndexDirectory(final File file, final File latestSoFar) {
+	public static synchronized File getLatestIndexDirectory(final File file, final File latestSoFar) {
 		if (file == null) {
 			return latestSoFar;
 		}
