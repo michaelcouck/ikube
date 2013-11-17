@@ -13,9 +13,8 @@ import org.apache.lucene.search.Searchable;
 import org.apache.lucene.store.FSDirectory;
 
 /**
- * This rule checks whether there are indexes that are created but are not yet opened. This typically needs to be checked if an index is
- * still in the process of being generated. In this case when the index is finished being created the searcher should be opened on all the
- * index directories.
+ * This rule checks whether there are indexes that are created but are not yet opened. This typically needs to be checked if an index is still in the process of
+ * being generated. In this case when the index is finished being created the searcher should be opened on all the index directories.
  * 
  * @author Michael Couck
  * @since 12.02.2011
@@ -51,13 +50,17 @@ public class AreUnopenedIndexes implements IRule<IndexContext<?>> {
 			for (File serverIndexDirectory : serverIndexDirectories) {
 				boolean indexAlreadyOpen = Boolean.FALSE;
 				for (Searchable searchable : searchables) {
-					IndexSearcher indexSearcher = (IndexSearcher) searchable;
-					IndexReader indexReader = indexSearcher.getIndexReader();
-					FSDirectory fsDirectory = (FSDirectory) indexReader.directory();
-					File indexDirectory = fsDirectory.getFile();
-					if (areDirectoriesEqual.evaluate(new File[] { serverIndexDirectory, indexDirectory })) {
-						indexAlreadyOpen = directoryExistsAndNotLocked.evaluate(serverIndexDirectory);
-						break;
+					try {
+						IndexSearcher indexSearcher = (IndexSearcher) searchable;
+						IndexReader indexReader = indexSearcher.getIndexReader();
+						FSDirectory fsDirectory = (FSDirectory) indexReader.directory();
+						File indexDirectory = fsDirectory.getFile();
+						if (areDirectoriesEqual.evaluate(new File[] { serverIndexDirectory, indexDirectory })) {
+							indexAlreadyOpen = directoryExistsAndNotLocked.evaluate(serverIndexDirectory);
+							break;
+						}
+					} catch (Exception e) {
+						LOGGER.error("Error checking index directory : " + serverIndexDirectory, e);
 					}
 				}
 				if (!indexAlreadyOpen) {

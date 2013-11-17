@@ -110,14 +110,21 @@ public class SnapshotScheduleTest extends AbstractTest {
 		Snapshot four = (Snapshot) SerializationUtilities.clone(previous);
 		Snapshot five = (Snapshot) SerializationUtilities.clone(previous);
 		Snapshot six = (Snapshot) SerializationUtilities.clone(previous);
+		Snapshot seven = (Snapshot) SerializationUtilities.clone(previous);
+		Snapshot eight = (Snapshot) SerializationUtilities.clone(previous);
+		Snapshot nine = (Snapshot) SerializationUtilities.clone(previous);
+		Snapshot ten = (Snapshot) SerializationUtilities.clone(previous);
 		
 		one.setNumDocsForIndexWriters(0);
 		five.setNumDocsForIndexWriters(Integer.MAX_VALUE);
+		seven.setNumDocsForIndexWriters(Integer.MAX_VALUE);
 		
-		when(indexContext.getSnapshots()).thenReturn(Arrays.asList(one, two, three, four, five, six));
+		when(indexContext.getSnapshots()).thenReturn(Arrays.asList(one, two, three, four, five, six, seven, eight, nine, ten));
 		snapshotSchedule.getDocsPerMinute(indexContext, snapshot);
 		logger.info(ToStringBuilder.reflectionToString(five));
 		assertTrue(five.getNumDocsForIndexWriters() > 100 && five.getNumDocsForIndexWriters() < 250);
+		assertTrue(six.getNumDocsForIndexWriters() > 100 && six.getNumDocsForIndexWriters() < 250);
+		assertTrue(seven.getNumDocsForIndexWriters() > 100 && seven.getNumDocsForIndexWriters() < 250);
 		Mockito.verify(dataBase, Mockito.atLeastOnce()).merge(any());
 	}
 

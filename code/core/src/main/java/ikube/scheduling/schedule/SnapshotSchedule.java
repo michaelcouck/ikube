@@ -197,19 +197,21 @@ public class SnapshotSchedule extends Schedule {
 		if (snapshots.size() < 3) {
 			return;
 		}
-		Snapshot previous = snapshots.get(snapshots.size() - 3);
-		Snapshot current = snapshots.get(snapshots.size() - 2);
-		Snapshot next = snapshots.get(snapshots.size() - 1);
-
-		long previousNumDocs = previous.getNumDocsForIndexWriters();
-		long currentNumDocs = current.getNumDocsForIndexWriters();
-		long nextNumDocs = next.getNumDocsForIndexWriters();
-
-		if (currentNumDocs > (previousNumDocs * 5)) {
-			if (currentNumDocs > (nextNumDocs * 5)) {
-				long numDocsForIndexWriters = Math.abs((previousNumDocs + nextNumDocs) / 2l);
-				current.setNumDocsForIndexWriters(numDocsForIndexWriters);
-				dataBase.merge(current);
+		for (int i = 0; i < snapshots.size() - 3; i++) {
+			Snapshot previous = snapshots.get(i);
+			Snapshot current = snapshots.get(i + 1);
+			Snapshot next = snapshots.get(i + 2);
+			
+			long previousNumDocs = previous.getNumDocsForIndexWriters();
+			long currentNumDocs = current.getNumDocsForIndexWriters();
+			long nextNumDocs = next.getNumDocsForIndexWriters();
+			
+			if (currentNumDocs > (previousNumDocs * 5)) {
+				if (currentNumDocs > (nextNumDocs * 5)) {
+					long numDocsForIndexWriters = Math.abs((previousNumDocs + nextNumDocs) / 2l);
+					current.setNumDocsForIndexWriters(numDocsForIndexWriters);
+					dataBase.merge(current);
+				}
 			}
 		}
 	}

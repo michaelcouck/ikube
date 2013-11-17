@@ -26,7 +26,7 @@ import org.springframework.social.twitter.api.impl.TwitterTemplate;
 import com.google.gson.Gson;
 
 /**
- * This class will use the Spring social module to get tweets from Twitter, at a rate of around 1% of the tweets.
+ * This class will use the Spring social module to get stack from Twitter, at a rate of around 1% of the stack.
  * 
  * @author Michael Couck
  * @since 19.06.13
@@ -36,16 +36,37 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 
 	private class TwitterStreamListener implements StreamListener {
 
+		/** A counter to see how many stack we have done. */
+		private AtomicLong counter;
+		private Stack<Tweet> stack;
+		/** The directories where the stack will be persisted to the file system. */
+		private File analylticsDirectory;
+		private File tweetsDirectory;
+
+		public TwitterStreamListener() {
+			counter = new AtomicLong();
+			stack = new Stack<Tweet>();
+			analylticsDirectory = FileUtilities.getOrCreateDirectory(IConstants.ANALYTICS_DIRECTORY);
+			tweetsDirectory = FileUtilities.getOrCreateDirectory(new File(analylticsDirectory, "tweets"));
+		}
+
 		/**
 		 * {@inheritDoc}
 		 */
 		@Override
 		public void onTweet(final Tweet tweet) {
-			if (tweets.size() < 1000000) {
-				tweets.push(tweet);
-				if (counter.incrementAndGet() % 1000 == 0) {
-					logger.info("Tweet counter : " + counter.get() + ", stack : " + tweets.size());
+			if (stack.size() < 1000000) {
+				if (stack.size() > 1000) {
+					synchronized (stack) {
+						logger.info("Tweet counter : " + counter.get() + ", stack : " + stack.size());
+						setResources(stack);
+						persistResources(stack);
+						stack.clear();
+						stack.notifyAll();
+					}
 				}
+				stack.push(tweet);
+				counter.incrementAndGet();
 			}
 		}
 
@@ -71,13 +92,35 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 		public void onWarning(final StreamWarningEvent warnEvent) {
 			logger.info("Tweet warning : " + warnEvent.getCode());
 		}
+
+		private void persistResources(final List<Tweet> tweets) {
+			try {
+				File latestDirectory = IndexManager.getLatestIndexDirectory(tweetsDirectory, null);
+				if (latestDirectory == null) {
+					latestDirectory = FileUtilities.getOrCreateDirectory(new File(tweetsDirectory, Long.toString(System.currentTimeMillis())));
+				} else {
+					String[] files = latestDirectory.list();
+					if (files != null && files.length > 10000) {
+						latestDirectory = FileUtilities.getOrCreateDirectory(new File(tweetsDirectory, Long.toString(System.currentTimeMillis())));
+					}
+				}
+				Gson gson = new Gson();
+				for (final Tweet tweet : tweets) {
+					String string = gson.toJson(tweet);
+					File output = new File(latestDirectory, Long.toString(System.currentTimeMillis()) + ".json");
+					File outputFile = FileUtilities.getOrCreateFile(output);
+					FileUtilities.setContents(outputFile, string.getBytes());
+					ThreadUtilities.sleep(1);
+				}
+			} catch (Exception e) {
+				logger.error(null, e);
+			}
+		}
 	}
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	/** A counter to see how many tweets we have done. */
-	private AtomicLong counter;
-	/** This collection is used to stock pile the tweets, waiting for consumers. */
+	/** This collection is used to stock pile the stack, waiting for consumers. */
 	private Stack<Tweet> tweets;
 
 	/**
@@ -88,7 +131,6 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 	 */
 	TwitterResourceProvider(final IndexableTweets indexableTweets) throws IOException {
 		tweets = new Stack<Tweet>();
-		counter = new AtomicLong();
 		TwitterTemplate twitter = new TwitterTemplate( //
 				indexableTweets.getConsumerKey(), //
 				indexableTweets.getConsumerSecret(), //
@@ -121,38 +163,9 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized void setResources(final List<Tweet> resources) {
-		if (resources != null) {
-			tweets.addAll(resources);
-		}
-		persist(resources);
-	}
-
-	private void persist(final List<Tweet> tweets) {
-		if (tweets == null) {
-			return;
-		}
-		try {
-			File analylticsDirectory = FileUtilities.getOrCreateDirectory(IConstants.ANALYTICS_DIRECTORY);
-			File tweetsDirectory = FileUtilities.getOrCreateDirectory(new File(analylticsDirectory, "tweets"));
-			File latestDirectory = IndexManager.getLatestIndexDirectory(tweetsDirectory, null);
-			if (latestDirectory == null) {
-				latestDirectory = FileUtilities.getOrCreateDirectory(new File(tweetsDirectory, Long.toString(System.currentTimeMillis())));
-			} else {
-				String[] files = latestDirectory.list();
-				if (files != null && files.length > 10000) {
-					latestDirectory = FileUtilities.getOrCreateDirectory(new File(tweetsDirectory, Long.toString(System.currentTimeMillis())));
-				}
-			}
-			Gson gson = new Gson();
-			for (final Tweet tweet : tweets) {
-				String string = gson.toJson(tweet);
-				File outputFile = FileUtilities.getOrCreateFile(new File(tweetsDirectory, Long.toString(System.currentTimeMillis())));
-				FileUtilities.setContents(outputFile, string.getBytes());
-				ThreadUtilities.sleep(1);
-			}
-		} catch (Exception e) {
-			logger.error(null, e);
+	public synchronized void setResources(final List<Tweet> tweets) {
+		if (tweets != null) {
+			this.tweets.addAll(tweets);
 		}
 	}
 

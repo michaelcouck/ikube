@@ -52,12 +52,12 @@
 				<button class="button mini inset black dropdown-toggle" data-toggle="dropdown">
 					<i class="icon-cog"></i>
 				</button>
-				<ul class="dropdown-menu black-box-dropdown">
-					<li><a href="#"><i class="icon-eye-open">&nbsp;</i>Configuration</a></li>
-					<li class="divider"></li>
-					<li><a href="#" onClick="modal('#logs-modal');"><i class="icon-list-ol">&nbsp;</i>Server logs</a></li>
-					<li><a href="#" onClick="modal('#properties-modal');"><i class="icon-tasks">&nbsp;</i>System properties</a></li>
-				</ul>
+					<ul class="dropdown-menu" style="font-size: small;">
+						<li><a href="#"><i class="icon-eye-open">&nbsp;</i>Configuration</a></li>
+						<li class="divider"></li>
+						<li><a href="#" onClick="modal('#logs-modal');"><i class="icon-list-ol">&nbsp;</i>Server logs</a></li>
+						<li><a href="#" onClick="modal('#properties-modal');"><i class="icon-tasks">&nbsp;</i>System properties</a></li>
+					</ul>
 			</div>
 		</div>
 		
