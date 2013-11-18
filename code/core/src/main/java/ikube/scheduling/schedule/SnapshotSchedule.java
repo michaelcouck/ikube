@@ -202,6 +202,11 @@ public class SnapshotSchedule extends Schedule {
 			Snapshot current = snapshots.get(i + 1);
 			Snapshot next = snapshots.get(i + 2);
 			
+			if (previous.getNumDocsForIndexWriters() < 0) {
+				previous.setNumDocsForIndexWriters(0);
+				dataBase.merge(previous);
+			}
+			
 			long previousNumDocs = previous.getNumDocsForIndexWriters();
 			long currentNumDocs = current.getNumDocsForIndexWriters();
 			long nextNumDocs = next.getNumDocsForIndexWriters();
