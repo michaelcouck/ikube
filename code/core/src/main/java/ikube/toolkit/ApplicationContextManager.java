@@ -9,15 +9,9 @@ import ikube.model.IndexableInternet;
 import ikube.model.IndexableTable;
 import ikube.model.Url;
 
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -61,7 +55,6 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 		} catch (Exception e) {
 			LOGGER.error("Exception setting the transient fields : ", e);
 		}
-		printIkubeToSystemOut();
 	}
 
 	/**
@@ -110,20 +103,6 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 	public static synchronized <T> T getBean(final Class<T> klass) {
 		try {
 			return getApplicationContext().getBean(klass);
-		} finally {
-			ApplicationContextManager.class.notifyAll();
-		}
-	}
-
-	public static synchronized Map<String, Object> getBeans() {
-		try {
-			Map<String, Object> beans = new HashMap<String, Object>();
-			String[] beanNames = getApplicationContext().getBeanDefinitionNames();
-			for (String beanName : beanNames) {
-				Object bean = getApplicationContext().getBean(beanName);
-				beans.put(beanName, bean);
-			}
-			return beans;
 		} finally {
 			ApplicationContextManager.class.notifyAll();
 		}
@@ -223,28 +202,6 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 		} else {
 			LOGGER.info("Application context already loaded : " + APPLICATION_CONTEXT);
 		}
-	}
-
-	private static final void printIkubeToSystemOut() {
-		System.out.println("");
-		BufferedImage image = new BufferedImage(144, 32, BufferedImage.TYPE_INT_RGB);
-		Graphics g = image.getGraphics();
-		g.setFont(new Font("Dialog", Font.PLAIN, 16));
-		Graphics2D graphics = (Graphics2D) g;
-		graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-		String version = VersionUtilities.version();
-		graphics.drawString("ikube - " + version, 10, 10);
-		for (int y = 0; y < 32; y++) {
-			StringBuilder sb = new StringBuilder();
-			for (int x = 0; x < 144; x++) {
-				sb.append(image.getRGB(x, y) == -16777216 ? " " : image.getRGB(x, y) == -1 ? "i" : "i");
-			}
-			if (sb.toString().trim().isEmpty()) {
-				continue;
-			}
-			System.out.println(sb);
-		}
-		System.out.println("");
 	}
 
 }

@@ -51,7 +51,7 @@ public class DynamicallyTrainedLanguageSpecificClassificationStrategy extends AS
 		try {
 			classifier.train(IConstants.POSITIVE, IConstants.POSITIVE);
 			classifier.train(IConstants.NEGATIVE, IConstants.NEGATIVE);
-			((WekaClassifier) classifier).build();
+			((WekaClassifier) classifier).build(null);
 			positive = maxTraining / 2;
 			negative = maxTraining / 2;
 		} catch (final Exception e) {

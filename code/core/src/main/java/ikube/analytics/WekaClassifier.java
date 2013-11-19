@@ -1,6 +1,7 @@
 package ikube.analytics;
 
 import ikube.IConstants;
+import ikube.model.Buildable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,6 @@ public class WekaClassifier implements IAnalyzer<String, String> {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void initialize() {
 		classifier = new SMO();
 		filter = new StringToWordVector();
@@ -113,7 +113,7 @@ public class WekaClassifier implements IAnalyzer<String, String> {
 				// If we reach the threshold for the vectors in the training corpus then
 				// we rebuild the classifier, which can be expensive of course, but not very
 				if (trainingInstances.numInstances() > 0 && trainingInstances.numInstances() % buildThreshold == 0) {
-					build();
+					build(null);
 				}
 				return Boolean.TRUE;
 			}
@@ -127,7 +127,7 @@ public class WekaClassifier implements IAnalyzer<String, String> {
 	 * This method will build the classifier again using the training instances. When the training instances get to a certain number we can re-build the
 	 * classifier from the training data. We catch all exceptions and clean the training instance data set of all the instances that are a problem.
 	 */
-	public synchronized void build() {
+	public synchronized void build(final Buildable buildable) {
 		try {
 			int numClasses = trainingInstances.numClasses();
 			int numAttributes = trainingInstances.numAttributes();

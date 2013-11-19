@@ -11,14 +11,20 @@
             http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
             http://www.springframework.org/schema/context
             http://www.springframework.org/schema/context/spring-context-3.0.xsd">
-    
-    <bean id="nonXaDataSourcePostgresql"
+
+	<description>
+		This file is not to be modified by users generally.
+		This is the configuration of the Db2 database on the Ikube server.
+	</description>
+	
+	<bean 
+		id="nonXaDataSourceH2"
 		class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close"
-		property:user="${postgres.jdbc.userid}"
-		property:password="${postgres.jdbc.password}"
-		property:driverClass="${postgres.jdbc.driver}"
-		property:jdbcUrl="${postgres.jdbc.url}"
+		property:user="${h2.jdbc.userid}"
+		property:password="${h2.jdbc.password}"
+		property:driverClass="${h2.jdbc.driver}"
+		property:jdbcUrl="jdbc:h2:tcp://ikube.be:9082/ikube"
 		property:initialPoolSize="${jdbc.minPoolSize}"
 		property:maxPoolSize="${jdbc.maxPoolSize}"
 		property:maxStatements="${jdbc.maxStatements}"
@@ -30,14 +36,14 @@
 		property:testConnectionOnCheckout="${jdbc.testConnectionOnCheckout}"
 		property:unreturnedConnectionTimeout="${jdbc.unreturnedConnectionTimeout}" />
 	
-	<bean id="nonXaDataSourcePostgresqlBinder" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+	<bean id="h2DataSourceBinder" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
 		property:staticMethod="ikube.toolkit.JndiInjector.bind">
 		<property name="arguments">
 			<array>
-				<value>nonXaDataSourcePostgresql</value>
-				<ref local="nonXaDataSourcePostgresql" />
+				<value>nonXaDataSourceH2</value>
+				<ref local="nonXaDataSourceH2" />
 			</array>
 		</property>
 	</bean>
-	
+
 </beans>

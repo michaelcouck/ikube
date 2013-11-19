@@ -1,5 +1,7 @@
 package ikube.analytics;
 
+import ikube.model.Buildable;
+
 /**
  * TODO Document me...
  * 
@@ -12,12 +14,10 @@ package ikube.analytics;
  */
 public interface IAnalyzer<I, O> {
 
-	void initialize() throws Exception;
+	void build(final Buildable buildable) throws Exception;
 
 	@SuppressWarnings({ "unchecked" })
 	boolean train(final I... input) throws Exception;
-
-	void build() throws Exception;
 
 	O analyze(final I input) throws Exception;
 

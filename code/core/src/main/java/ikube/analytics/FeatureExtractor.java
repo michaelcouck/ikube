@@ -12,6 +12,11 @@ import org.apache.lucene.util.Version;
 import weka.filters.Filter;
 import weka.filters.UnsupervisedFilter;
 
+/**
+ * @author Michael Couck
+ * @since 10.04.13
+ * @version 01.00
+ */
 public final class FeatureExtractor extends Filter implements UnsupervisedFilter {
 
 	int minGram = 3;

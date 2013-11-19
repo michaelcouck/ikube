@@ -5,13 +5,13 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 
 /**
- * This class represents data that is to be analyzed as well as the results from the analysis if any. The data is based on the Weka format for instances.
+ * This class represents data that is to be analyzed as well as the results from the analysis if any.
  * 
  * @author Michael Couck
- * @since 01.03.12
+ * @since 10.04.13
  * @version 01.00
  */
-@Entity()
+@Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Analysis<I, O> extends Persistable {
 

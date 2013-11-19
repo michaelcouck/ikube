@@ -6,6 +6,14 @@ import ikube.toolkit.Timer;
 
 import java.sql.Timestamp;
 
+/**
+ * This class is implemented as a state pattern. The user specifies the type of analyzer, and the service 'connects' to the correct implementation and executes
+ * the analysis logic.
+ * 
+ * @author Michael Couck
+ * @since 10.04.13
+ * @version 01.00
+ */
 public class AnalyticsService implements IAnalyticsService {
 
 	@Override

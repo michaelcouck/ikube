@@ -39,39 +39,16 @@
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
 		property:children-ref="geospatialIndexablesPostgres" />
 	<util:list id="geospatialIndexablesPostgres">
-		<!-- <ref local="geonamePostgres" /> -->
+		<ref local="geonamePostgres" />
 	</util:list>
 	
-	<!-- <bean
+	<bean
 		id="geonamePostgres"
 		class="ikube.model.IndexableTable"
 		property:name="geoname"
 		property:address="true"
 		property:dataSource-ref="nonXaDataSourcePostgresql"
-		property:children-ref="geonameColumnsPostgres" 
+		property:children-ref="geonameColumns" 
 		property:maxExceptions="10" />
-	<util:list id="geonameColumnsPostgres">
-		<ref bean="geospatialId" />
-		<ref bean="geospatialName" />
-		<ref bean="geospatialCity" />
-		<ref bean="geospatialCountry" />
-		<ref bean="geospatialAsciiname" />
-		<ref bean="geospatialAlternatenames" />
-		<ref bean="geospatialLatitude" />
-		<ref bean="geospatialLongitude" />
-		<ref bean="geospatialFeatureClass" />
-		<ref bean="geospatialFeatureCode" />
-		<ref bean="geospatialCountryCode" />
-		<ref bean="geospatialTimezone" />
-		<ref bean="geospatialCc2" />
-		<ref bean="geospatialGeonameid" />
-		<ref bean="geospatialAdmin1Code" />
-		<ref bean="geospatialAdmin2Code" />
-		<ref bean="geospatialAdmin3Code" />
-		<ref bean="geospatialAdmin4Code" />
-		<ref bean="geospatialModification" />
-		<ref bean="geospatialPopulation" />
-		<ref bean="geospatialElevation" />
-		<ref bean="geospatialGtopo30" />
-	</util:list> -->
+
 </beans>

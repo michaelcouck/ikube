@@ -36,7 +36,7 @@ public class WekaClassifierTest extends AbstractTest {
 	public void classifyFromFile() throws Exception {
 		// wekaClassifier.file("instance.arff");
 		wekaClassifier.initialize();
-		wekaClassifier.build();
+		wekaClassifier.build(null);
 		classify(wekaClassifier);
 		final int maxFiles = 50;
 		long duration = Timer.execute(new Timer.Timed() {
@@ -60,7 +60,7 @@ public class WekaClassifierTest extends AbstractTest {
 
 		wekaClassifier.train(IConstants.POSITIVE, "Hello darling, what a wonderful dinner! :)");
 		wekaClassifier.train(IConstants.NEGATIVE, "What a terrible pain I have in the neck. :(");
-		wekaClassifier.build();
+		wekaClassifier.build(null);
 
 		positive = wekaClassifier.analyze("Wonderful dinner on the beach");
 		assertEquals(IConstants.POSITIVE, positive);
@@ -102,7 +102,7 @@ public class WekaClassifierTest extends AbstractTest {
 		wekaClassifier.initialize();
 		wekaClassifier.train(IConstants.POSITIVE, IConstants.POSITIVE);
 		wekaClassifier.train(IConstants.NEGATIVE, IConstants.NEGATIVE);
-		wekaClassifier.build();
+		wekaClassifier.build(null);
 		classify(wekaClassifier);
 		// trainOnSentimentData(wekaClassifier);
 	}

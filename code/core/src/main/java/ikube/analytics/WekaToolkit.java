@@ -11,6 +11,11 @@ import weka.core.converters.ArffSaver;
 import weka.filters.Filter;
 import weka.filters.unsupervised.instance.NonSparseToSparse;
 
+/**
+ * @author Michael Couck
+ * @since 10.04.13
+ * @version 01.00
+ */
 public final class WekaToolkit {
 
 	private static final Logger LOGGER = Logger.getLogger(WekaToolkit.class);
