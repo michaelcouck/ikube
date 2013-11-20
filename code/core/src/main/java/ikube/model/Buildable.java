@@ -17,6 +17,7 @@ import javax.persistence.InheritanceType;
 public class Buildable extends Persistable {
 
 	private String type;
+	private boolean log;
 	private String filePath;
 
 	public String getType() {
@@ -25,6 +26,14 @@ public class Buildable extends Persistable {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public boolean isLog() {
+		return log;
+	}
+
+	public void setLog(boolean log) {
+		this.log = log;
 	}
 
 	public String getFilePath() {

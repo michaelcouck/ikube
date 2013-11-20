@@ -17,9 +17,14 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.AbstractRefreshableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
@@ -136,6 +141,18 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 			return getApplicationContext().getBeansOfType(klass);
 		} finally {
 			ApplicationContextManager.class.notifyAll();
+		}
+	}
+
+	public static synchronized void setBean(final String name, final Object bean) {
+		ApplicationContext applicationContext = getApplicationContext();
+		if (applicationContext.getClass().isAssignableFrom(AbstractRefreshableApplicationContext.class)) {
+			BeanFactory beanFactory = ((AbstractRefreshableApplicationContext) applicationContext).getBeanFactory();
+			if (beanFactory.getClass().isAssignableFrom(DefaultListableBeanFactory.class)) {
+				BeanDefinition beanDefinition = new GenericBeanDefinition();
+				beanDefinition.setBeanClassName(bean.getClass().getName());
+				((DefaultListableBeanFactory) beanFactory).registerBeanDefinition(name, beanDefinition);
+			}
 		}
 	}
 

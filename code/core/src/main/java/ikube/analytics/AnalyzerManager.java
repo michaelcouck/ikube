@@ -1,5 +1,7 @@
 package ikube.analytics;
 
+import ikube.model.Buildable;
+
 /**
  * This factory for analyzers is implemented as builder. Typically taking multiple simple objects and building a complex one, all the time shielding the complex
  * object from the complexity of it's construction.
@@ -10,11 +12,9 @@ package ikube.analytics;
  */
 public class AnalyzerManager {
 
-	@SuppressWarnings("unchecked")
-	public static void buildAnalyzer(final IAnalyzer<?, ?> analyzer) throws Exception {
-		analyzer.build(null);
-		analyzer.train(null, null);
-		analyzer.analyze(null);
+	public static void buildAnalyzer(final Buildable buildable, final IAnalyzer<?, ?> analyzer) throws Exception {
+		analyzer.init(buildable);
+		analyzer.build(buildable);
 	}
 
 }

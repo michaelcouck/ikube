@@ -1,5 +1,6 @@
 package ikube.analytics;
 
+import static junit.framework.Assert.assertNotNull;
 import ikube.AbstractTest;
 import ikube.model.Buildable;
 import ikube.toolkit.FileUtilities;
@@ -13,7 +14,12 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
+import weka.clusterers.CLOPE;
+import weka.clusterers.Cobweb;
 import weka.clusterers.EM;
+import weka.clusterers.FarthestFirst;
+import weka.clusterers.HierarchicalClusterer;
+import weka.clusterers.SimpleKMeans;
 
 /**
  * @author Michael Couck
@@ -23,29 +29,58 @@ import weka.clusterers.EM;
 public class WekaClustererTest extends AbstractTest {
 
 	private File dataFile;
+	private Buildable buildable;
 	private WekaClusterer wekaClassifier;
+	private String line = "35_51,FEMALE,INNER_CITY,0_24386,NO,1,NO,NO,NO,NO,YES";
 
 	@Before
 	public void before() throws Exception {
 		dataFile = FileUtilities.findFileRecursively(new File("."), "bank-data.arff");
-		Buildable buildable = new Buildable();
+
+		buildable = new Buildable();
 		buildable.setFilePath(FileUtilities.cleanFilePath(dataFile.getAbsolutePath()));
-		buildable.setType(EM.class.getName());
 
 		wekaClassifier = new WekaClusterer();
-		wekaClassifier.build(buildable);
 	}
 
 	@Test
 	public void analyze() throws Exception {
+		buildable.setType(EM.class.getName());
+		wekaClassifier.init(buildable);
+		wekaClassifier.build(buildable);
 		List<String> lines = IOUtils.readLines(new FileInputStream(dataFile));
 		for (final String line : lines) {
 			if (StringUtils.isEmpty(line) || line.startsWith("@")) {
 				continue;
 			}
-			String cluster = wekaClassifier.analyze(line);
-			logger.info("Cluster : " + cluster);
 		}
+		String cluster = wekaClassifier.analyze(line);
+		assertNotNull(cluster);
+	}
+
+	@Test
+	public void buildAndAnalyzeAll() throws Exception {
+		// These are not interesting clusterers
+		// buildAndAnalyze(DBSCAN.class.getName());
+		// buildAndAnalyze(OPTICS.class.getName());
+
+		buildAndAnalyze(CLOPE.class.getName());
+		buildAndAnalyze(HierarchicalClusterer.class.getName());
+		buildAndAnalyze(Cobweb.class.getName());
+		buildAndAnalyze(FarthestFirst.class.getName());
+		buildAndAnalyze(SimpleKMeans.class.getName());
+
+		// These are specialized and need to be integrated properly
+		// buildAndAnalyze(sIB.class.getName());
+		// buildAndAnalyze(XMeans.class.getName());
+	}
+
+	private void buildAndAnalyze(final String type) throws Exception {
+		buildable.setType(type);
+		wekaClassifier.init(buildable);
+		wekaClassifier.build(buildable);
+		String cluster = wekaClassifier.analyze(line);
+		assertNotNull(cluster);
 	}
 
 }

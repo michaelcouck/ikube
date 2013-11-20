@@ -1,6 +1,7 @@
 package ikube.analytics;
 
 import ikube.model.Buildable;
+import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,6 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -40,6 +42,16 @@ public class WekaClusterer implements IAnalyzer<String, String> {
 		InputStream inputStream = null;
 		try {
 			File file = new File(filePath);
+			if (file == null || !file.exists() || !file.canRead()) {
+				LOGGER.warn("Can't find data file : " + filePath + ", will search for it...");
+				String fileName = FilenameUtils.getName(filePath);
+				file = FileUtilities.findFileRecursively(new File("."), fileName);
+				if (file == null || !file.exists() || !file.canRead()) {
+					throw new RuntimeException("Couldn't find file for analyzer or can't read file : " + filePath);
+				} else {
+					LOGGER.info("Found data file : " + file.getAbsolutePath());
+				}
+			}
 			inputStream = new FileInputStream(file);
 			Reader reader = new InputStreamReader(inputStream);
 			instances = new Instances(reader);
@@ -70,19 +82,8 @@ public class WekaClusterer implements IAnalyzer<String, String> {
 	@Override
 	public void build(final Buildable buildable) throws Exception {
 		clusterer.buildClusterer(instances);
-
-		ClusterEvaluation clusterEvaluation = new ClusterEvaluation();
-		clusterEvaluation.setClusterer(clusterer);
-		clusterEvaluation.evaluateClusterer(instances);
-
-		LOGGER.info("Num clusters : " + clusterEvaluation.clusterResultsToString());
-
-		for (int i = 0; i < instances.numAttributes(); i++) {
-			Attribute attribute = instances.attribute(i);
-			LOGGER.info("Attribute : " + attribute.name() + ", " + attribute.type());
-			for (int j = 0; j < attribute.numValues(); j++) {
-				LOGGER.info("          : " + attribute.value(j));
-			}
+		if (buildable.isLog()) {
+			log();
 		}
 	}
 
@@ -111,6 +112,20 @@ public class WekaClusterer implements IAnalyzer<String, String> {
 		}
 		instance.setDataset(instances);
 		return instance;
+	}
+
+	private void log() throws Exception {
+		ClusterEvaluation clusterEvaluation = new ClusterEvaluation();
+		clusterEvaluation.setClusterer(clusterer);
+		clusterEvaluation.evaluateClusterer(instances);
+		LOGGER.info("Num clusters : " + clusterEvaluation.clusterResultsToString());
+		for (int i = 0; i < instances.numAttributes(); i++) {
+			Attribute attribute = instances.attribute(i);
+			LOGGER.info("Attribute : " + attribute.name() + ", " + attribute.type());
+			for (int j = 0; j < attribute.numValues(); j++) {
+				LOGGER.info("          : " + attribute.value(j));
+			}
+		}
 	}
 
 }
