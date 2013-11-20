@@ -39,6 +39,10 @@ public class WekaClassifier implements IAnalyzer<String, String> {
 	private volatile Instances classificationInstances;
 	/** The number of vectors to keep in the training data set before we re-build the classifier. */
 	private int buildThreshold = 1000;
+	
+	public void initialize() {
+		init(null);
+	}
 
 	/**
 	 * {@inheritDoc}
