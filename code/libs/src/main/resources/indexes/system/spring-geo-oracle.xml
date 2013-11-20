@@ -34,10 +34,32 @@
 		property:mergeFactor="${merge.factor}"
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
+		property:address="true"
+		property:throttle="0"
+		property:indexDirectoryPath="${index.directory.path}"
+		property:indexDirectoryPathBackup="${index.directory.path.backup}"
+		property:children-ref="geospatialIndexablesOracle"
+		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer"
+		property:strategies-ref="geoname-strategies" />
+	
+<!-- 	<bean
+		id="geospatialOracle"
+		class="ikube.model.IndexContext"
+		property:name="geospatialOracle"
+		property:maxAge="${max.age.geospatial}"
+		property:compoundFile="${compound.file}"
+		property:bufferedDocs="${buffered.docs}"
+		property:bufferSize="${buffer.size}"
+		property:batchSize="${jdbc.batch.size}"
+		property:internetBatchSize="${internet.batch.size}"
+		property:mergeFactor="${merge.factor}"
+		property:maxFieldLength="${max.field.length}"
+		property:maxReadLength="${max.read.length}"
 		property:throttle="${throttle}"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
-		property:children-ref="geospatialIndexablesOracle" />
+		property:children-ref="geospatialIndexablesOracle" /> -->
+		
 	<util:list id="geospatialIndexablesOracle">
 		<ref local="geonameOracle" />
 	</util:list>

@@ -43,7 +43,7 @@ public class WekaClassifier implements IAnalyzer<String, String> {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void initialize() {
+	public void init(final Buildable buildable) {
 		classifier = new SMO();
 		filter = new StringToWordVector();
 		// The general attributes for the instances, contains the string

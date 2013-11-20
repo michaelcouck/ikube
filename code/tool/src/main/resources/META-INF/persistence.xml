@@ -1,0 +1,180 @@
+<?xml version="1.0"?>
+
+<persistence 
+	xmlns="http://java.sun.com/xml/ns/persistence" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	
+	xsi:schemaLocation="
+		http://java.sun.com/xml/ns/persistence
+    	http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd" version="1.0">
+
+	<persistence-unit name="IkubePersistenceUnitH2" transaction-type="RESOURCE_LOCAL">
+		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+		
+		<class>ikube.model.Persistable</class>
+		<class>ikube.model.Url</class>
+		<class>ikube.model.File</class>
+		<class>ikube.model.Server</class>
+		<class>ikube.model.Action</class>
+
+		<class>ikube.model.Indexable</class>
+		<class>ikube.model.IndexContext</class>
+		<class>ikube.model.IndexableDataSource</class>
+		<class>ikube.model.IndexableTable</class>
+		<class>ikube.model.IndexableInternet</class>
+		<class>ikube.model.IndexableFileSystem</class>
+		<class>ikube.model.IndexableFileSystemWiki</class>
+		<class>ikube.model.IndexableFileSystemLog</class>
+		<class>ikube.model.IndexableFileSystemCsv</class>
+		<class>ikube.model.IndexableEmail</class>
+		<class>ikube.model.IndexableColumn</class>
+		<class>ikube.model.Search</class>
+		<class>ikube.model.Coordinate</class>
+		<class>ikube.model.Snapshot</class>
+		<class>ikube.model.IndexableDataSource</class>
+		<class>ikube.model.IndexableDictionary</class>
+		
+		<class>ikube.model.geospatial.GeoName</class>
+		<class>ikube.model.geospatial.AlternateName</class>
+		
+		<exclude-unlisted-classes>false</exclude-unlisted-classes>
+		
+		<properties>
+			<property name="openjpa.ConnectionUserName" value="sa" />
+			<property name="openjpa.ConnectionPassword" value="" />
+			<property name="openjpa.ConnectionURL" value="jdbc:h2:tcp://ikube.be:9082/ikube" />
+			<property name="openjpa.ConnectionDriverName" value="org.h2.Driver" />
+			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
+			<property name="openjpa.jdbc.SchemaFactory" value="native(ForeignKeys=true)"/>
+			<property name="openjpa.InverseManager" value="true(Action=warn)"/>
+			<!-- ForeignKeys=true,Indexes=true,SchemaAction='drop,add',SchemaAction='add,deleteTableContents' -->
+		</properties>
+	</persistence-unit>
+	
+ 	<persistence-unit name="IkubePersistenceUnitDb2" transaction-type="RESOURCE_LOCAL">
+		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+		
+		<class>ikube.model.Persistable</class>
+		<class>ikube.model.Url</class>
+		<class>ikube.model.File</class>
+		<class>ikube.model.Server</class>
+		<class>ikube.model.Action</class>
+
+		<class>ikube.model.Indexable</class>
+		<class>ikube.model.IndexContext</class>
+		<class>ikube.model.IndexableDataSource</class>
+		<class>ikube.model.IndexableTable</class>
+		<class>ikube.model.IndexableInternet</class>
+		<class>ikube.model.IndexableFileSystem</class>
+		<class>ikube.model.IndexableFileSystemWiki</class>
+		<class>ikube.model.IndexableFileSystemLog</class>
+		<class>ikube.model.IndexableFileSystemCsv</class>
+		<class>ikube.model.IndexableEmail</class>
+		<class>ikube.model.IndexableColumn</class>
+		<class>ikube.model.Search</class>
+		<class>ikube.model.Coordinate</class>
+		<class>ikube.model.Snapshot</class>
+		<class>ikube.model.IndexableDataSource</class>
+		<class>ikube.model.IndexableDictionary</class>
+		
+		<class>ikube.model.geospatial.GeoName</class>
+		<class>ikube.model.geospatial.AlternateName</class>
+		
+		<exclude-unlisted-classes>false</exclude-unlisted-classes>
+		
+		<properties>
+			<property name="openjpa.ConnectionUserName" value="ubuntu" />
+			<property name="openjpa.ConnectionPassword" value="Caherl1ne" />
+			<property name="openjpa.ConnectionURL" value="jdbc:db2://ikube.be:50000/ikube" />
+			<property name="openjpa.ConnectionDriverName" value="com.ibm.db2.jcc.DB2Driver" />
+			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
+			<property name="openjpa.jdbc.SchemaFactory" value="native(ForeignKeys=true)"/>
+			<property name="openjpa.InverseManager" value="true(Action=warn)"/>
+		</properties>
+	</persistence-unit>
+	
+	<persistence-unit name="IkubePersistenceUnitOracle" transaction-type="RESOURCE_LOCAL">
+		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+		
+		<class>ikube.model.Persistable</class>
+		<class>ikube.model.Url</class>
+		<class>ikube.model.File</class>
+		<class>ikube.model.Server</class>
+		<class>ikube.model.Action</class>
+
+		<class>ikube.model.Indexable</class>
+		<class>ikube.model.IndexContext</class>
+		<class>ikube.model.IndexableDataSource</class>
+		<class>ikube.model.IndexableTable</class>
+		<class>ikube.model.IndexableInternet</class>
+		<class>ikube.model.IndexableFileSystem</class>
+		<class>ikube.model.IndexableFileSystemWiki</class>
+		<class>ikube.model.IndexableFileSystemLog</class>
+		<class>ikube.model.IndexableFileSystemCsv</class>
+		<class>ikube.model.IndexableEmail</class>
+		<class>ikube.model.IndexableColumn</class>
+		<class>ikube.model.Search</class>
+		<class>ikube.model.Coordinate</class>
+		<class>ikube.model.Snapshot</class>
+		<class>ikube.model.IndexableDataSource</class>
+		<class>ikube.model.IndexableDictionary</class>
+		
+		<class>ikube.model.geospatial.GeoName</class>
+		<class>ikube.model.geospatial.AlternateName</class>
+		
+		<exclude-unlisted-classes>false</exclude-unlisted-classes>
+		
+		<properties>
+			<property name="openjpa.ConnectionUserName" value="oracle" />
+			<property name="openjpa.ConnectionPassword" value="Caherl1ne" />
+			<property name="openjpa.ConnectionURL" value="jdbc:oracle:thin:@//ikube.be:1521/XE" />
+			<property name="openjpa.ConnectionDriverName" value="oracle.jdbc.driver.OracleDriver" />
+			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
+			<property name="openjpa.jdbc.SchemaFactory" value="native(ForeignKeys=true)"/>
+			<property name="openjpa.InverseManager" value="true(Action=warn)"/>
+		</properties>
+	</persistence-unit>
+	
+	<persistence-unit name="IkubePersistenceUnitPostgres" transaction-type="RESOURCE_LOCAL">
+		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+
+		<class>ikube.model.Persistable</class>
+		<class>ikube.model.Url</class>
+		<class>ikube.model.File</class>
+		<class>ikube.model.Server</class>
+		<class>ikube.model.Action</class>
+
+		<class>ikube.model.Indexable</class>
+		<class>ikube.model.IndexContext</class>
+		<class>ikube.model.IndexableDataSource</class>
+		<class>ikube.model.IndexableTable</class>
+		<class>ikube.model.IndexableInternet</class>
+		<class>ikube.model.IndexableFileSystem</class>
+		<class>ikube.model.IndexableFileSystemWiki</class>
+		<class>ikube.model.IndexableFileSystemLog</class>
+		<class>ikube.model.IndexableFileSystemCsv</class>
+		<class>ikube.model.IndexableEmail</class>
+		<class>ikube.model.IndexableColumn</class>
+		<class>ikube.model.Search</class>
+		<class>ikube.model.Coordinate</class>
+		<class>ikube.model.Snapshot</class>
+		<class>ikube.model.IndexableDataSource</class>
+		<class>ikube.model.IndexableDictionary</class>
+		
+		<class>ikube.model.geospatial.GeoName</class>
+		<class>ikube.model.geospatial.AlternateName</class>
+		
+		<exclude-unlisted-classes>false</exclude-unlisted-classes>
+		
+		<properties>
+			<property name="openjpa.ConnectionUserName" value="postgres" />
+			<property name="openjpa.ConnectionPassword" value="Caherl1ne" />
+			<property name="openjpa.ConnectionURL" value="jdbc:postgresql://ikube.be:5432/ikube" />
+			<property name="openjpa.ConnectionDriverName" value="org.postgresql.Driver" />
+			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
+			<property name="openjpa.jdbc.SchemaFactory" value="native(ForeignKeys=true)"/>
+			<property name="openjpa.InverseManager" value="true(Action=warn)"/>
+		</properties>
+	</persistence-unit>
+	
+</persistence>

@@ -14,10 +14,12 @@ import ikube.model.Buildable;
  */
 public interface IAnalyzer<I, O> {
 
-	void build(final Buildable buildable) throws Exception;
+	void init(final Buildable buildable) throws Exception;
 
 	@SuppressWarnings({ "unchecked" })
 	boolean train(final I... input) throws Exception;
+
+	void build(final Buildable buildable) throws Exception;
 
 	O analyze(final I input) throws Exception;
 

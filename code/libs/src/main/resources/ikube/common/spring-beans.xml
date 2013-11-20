@@ -352,12 +352,16 @@
 	<bean 
 		id="ikube.action.index.analyzer.NgramAnalyzer"
 		name="ikube.action.index.analyzer.NgramAnalyzer" 
-		class="ikube.action.index.analyzer.NgramAnalyzer" />
+		class="ikube.action.index.analyzer.NgramAnalyzer" 
+		property:minGram="4"
+		property:maxGram="21" />
 		
 	<bean 
 		id="ikube.action.index.analyzer.EdgeNgramAnalyzer"
 		name="ikube.action.index.analyzer.EdgeNgramAnalyzer"
-		class="ikube.action.index.analyzer.EdgeNgramAnalyzer" />
+		class="ikube.action.index.analyzer.EdgeNgramAnalyzer"
+		property:minGram="4"
+		property:maxGram="21" />
 	
 	<bean 
 		id="ikube.action.index.handler.strategy.LanguageCleaningStrategy"

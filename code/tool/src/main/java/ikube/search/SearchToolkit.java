@@ -12,7 +12,6 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
@@ -36,7 +35,6 @@ public final class SearchToolkit {
 		String searchString = args[2];
 		IndexSearcher indexSearcher = null;
 		try {
-			// Directory directory = FSDirectory.open(indexDirectory);
 			Directory directory = NIOFSDirectory.open(indexDirectory);
 			IndexReader indexReader = IndexReader.open(directory);
 			indexSearcher = new IndexSearcher(indexReader);

@@ -30,7 +30,7 @@ public class ClassificationStrategyTest extends AbstractTest {
 	public void before() {
 		dynamicallyTrainedLanguageSpecificClassificationStrategy = new DynamicallyTrainedLanguageSpecificClassificationStrategy();
 		WekaClassifier wekaClassifier = new WekaClassifier();
-		wekaClassifier.initialize();
+		wekaClassifier.init(null);
 		dynamicallyTrainedLanguageSpecificClassificationStrategy.setClassifier(wekaClassifier);
 		dynamicallyTrainedLanguageSpecificClassificationStrategy.initialize();
 

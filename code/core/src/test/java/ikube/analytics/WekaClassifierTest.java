@@ -35,7 +35,7 @@ public class WekaClassifierTest extends AbstractTest {
 	@Ignore
 	public void classifyFromFile() throws Exception {
 		// wekaClassifier.file("instance.arff");
-		wekaClassifier.initialize();
+		wekaClassifier.init(null);
 		wekaClassifier.build(null);
 		classify(wekaClassifier);
 		final int maxFiles = 50;
@@ -99,7 +99,7 @@ public class WekaClassifierTest extends AbstractTest {
 
 	@Test
 	public void classify() throws Exception {
-		wekaClassifier.initialize();
+		wekaClassifier.init(null);
 		wekaClassifier.train(IConstants.POSITIVE, IConstants.POSITIVE);
 		wekaClassifier.train(IConstants.NEGATIVE, IConstants.NEGATIVE);
 		wekaClassifier.build(null);
@@ -109,7 +109,7 @@ public class WekaClassifierTest extends AbstractTest {
 
 	@Test
 	public void performance() {
-		wekaClassifier.initialize();
+		wekaClassifier.init(null);
 		int iterations = 1001;
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			public void execute() throws Throwable {
