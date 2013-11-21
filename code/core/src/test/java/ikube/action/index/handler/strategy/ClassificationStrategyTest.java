@@ -5,7 +5,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.analytics.WekaClassifier;
+import ikube.analytics.WekaClassifierSentiment;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.toolkit.PerformanceTester;
@@ -27,9 +27,9 @@ public class ClassificationStrategyTest extends AbstractTest {
 	private DynamicallyTrainedLanguageSpecificClassificationStrategy dynamicallyTrainedLanguageSpecificClassificationStrategy;
 
 	@Before
-	public void before() {
+	public void before() throws Exception {
 		dynamicallyTrainedLanguageSpecificClassificationStrategy = new DynamicallyTrainedLanguageSpecificClassificationStrategy();
-		WekaClassifier wekaClassifier = new WekaClassifier();
+		WekaClassifierSentiment wekaClassifier = new WekaClassifierSentiment();
 		wekaClassifier.init(null);
 		dynamicallyTrainedLanguageSpecificClassificationStrategy.setClassifier(wekaClassifier);
 		dynamicallyTrainedLanguageSpecificClassificationStrategy.initialize();

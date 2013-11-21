@@ -37,7 +37,7 @@
 		property:delta="false"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path}"
-		property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer"
+		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer"
 		property:children-ref="desktopFolders" />
 	<util:list id="desktopFolders">
 		<ref local="desktopFolder" />

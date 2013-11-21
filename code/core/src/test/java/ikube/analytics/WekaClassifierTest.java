@@ -1,21 +1,14 @@
 package ikube.analytics;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.PerformanceTester;
-import ikube.toolkit.Timer;
+import ikube.model.Buildable;
 
-import java.io.File;
-import java.io.FileReader;
-import java.util.List;
-
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+
+import weka.classifiers.functions.SMO;
+import weka.filters.unsupervised.attribute.StringToWordVector;
 
 /**
  * @author Michael Couck
@@ -24,100 +17,39 @@ import org.junit.Test;
  */
 public class WekaClassifierTest extends AbstractTest {
 
+	private Buildable buildable;
 	private WekaClassifier wekaClassifier;
+	private String input = "my beautiful little girl";
 
 	@Before
 	public void before() {
+		buildable = new Buildable();
 		wekaClassifier = new WekaClassifier();
+		buildable.setFilePath("src/test/resources/analytics/classification.arff");
+		buildable.setFilter(StringToWordVector.class.getName());
+		buildable.setLog(true);
+		buildable.setType(SMO.class.getName());
 	}
 
 	@Test
-	@Ignore
-	public void classifyFromFile() throws Exception {
-		// wekaClassifier.file("instance.arff");
-		wekaClassifier.init(null);
-		wekaClassifier.build(null);
-		classify(wekaClassifier);
-		final int maxFiles = 50;
-		long duration = Timer.execute(new Timer.Timed() {
-			@Override
-			public void execute() {
-				try {
-					trainOnSentimentData(wekaClassifier, maxFiles);
-				} catch (Exception e) {
-					logger.error(null, e);
-				}
-			}
-		});
-		logger.warn("Training : " + maxFiles + ", duration : " + duration);
-	}
-
-	private void classify(final WekaClassifier wekaClassifier) throws Exception {
-		String positive = wekaClassifier.analyze(IConstants.POSITIVE);
-		assertEquals(IConstants.POSITIVE, positive);
-		String negative = wekaClassifier.analyze(IConstants.NEGATIVE);
-		assertEquals(IConstants.NEGATIVE, negative);
-
-		wekaClassifier.train(IConstants.POSITIVE, "Hello darling, what a wonderful dinner! :)");
-		wekaClassifier.train(IConstants.NEGATIVE, "What a terrible pain I have in the neck. :(");
-		wekaClassifier.build(null);
-
-		positive = wekaClassifier.analyze("Wonderful dinner on the beach");
-		assertEquals(IConstants.POSITIVE, positive);
-		negative = wekaClassifier.analyze("Terrible pain all over");
-		assertEquals(IConstants.NEGATIVE, negative);
-	}
-
-	void trainOnSentimentData(final WekaClassifier wekaClassifier, final int maxFiles) throws Exception {
-		File directory = FileUtilities.findDirectoryRecursively(new File("."), 2, "txt_sentoken");
-		File positiveDirectory = FileUtilities.findDirectoryRecursively(directory, "pos");
-		File negativeDirectory = FileUtilities.findDirectoryRecursively(directory, "neg");
-		trainOnSentimentData(wekaClassifier, IConstants.POSITIVE, maxFiles, positiveDirectory.listFiles());
-		trainOnSentimentData(wekaClassifier, IConstants.NEGATIVE, maxFiles, negativeDirectory.listFiles());
-	}
-
-	void trainOnSentimentData(final WekaClassifier wekaClassifier, final String clazz, int maxFiles, final File[] files) throws Exception {
-		logger.info("Files size : " + files.length);
-		int totalLines = 0;
-		int doneFiles = 0;
-		for (final File file : files) {
-			if (maxFiles-- <= 0) {
-				break;
-			}
-			FileReader fileReader = new FileReader(file);
-			List<String> lines = IOUtils.readLines(fileReader);
-			totalLines += lines.size();
-			for (final String line : lines) {
-				wekaClassifier.train(clazz, line);
-			}
-			doneFiles++;
-			if (doneFiles % 10 == 0) {
-				logger.info("Done files : " + doneFiles + ", lines : " + lines.size() + ", total lines/instances : " + totalLines);
-			}
-		}
+	public void init() throws Exception {
+		wekaClassifier.init(buildable);
 	}
 
 	@Test
-	public void classify() throws Exception {
-		wekaClassifier.init(null);
-		wekaClassifier.train(IConstants.POSITIVE, IConstants.POSITIVE);
-		wekaClassifier.train(IConstants.NEGATIVE, IConstants.NEGATIVE);
-		wekaClassifier.build(null);
-		classify(wekaClassifier);
-		// trainOnSentimentData(wekaClassifier);
+	public void train() throws Exception {
+		wekaClassifier.train(IConstants.POSITIVE, input);
 	}
 
 	@Test
-	public void performance() {
-		wekaClassifier.init(null);
-		int iterations = 1001;
-		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
-			public void execute() throws Throwable {
-				wekaClassifier.train(IConstants.POSITIVE, IConstants.POSITIVE);
-				wekaClassifier.train(IConstants.NEGATIVE, IConstants.NEGATIVE);
-			}
-		}, "SMO classification training : ", iterations, Boolean.TRUE);
-		assertTrue(executionsPerSecond > 1000);
+	public void build() throws Exception {
+		wekaClassifier.build(buildable);
+	}
+
+	@Test
+	public void analyze() throws Exception {
+		String result = wekaClassifier.analyze(input);
+		logger.info("Result : " + result);
 	}
 
 }

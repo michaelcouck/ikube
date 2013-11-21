@@ -42,7 +42,7 @@ public class WekaTest extends AbstractTest {
 
 		classifier.buildClassifier(filteredData);
 
-		Instance instance = wekaClassifier.makeInstance(IConstants.NEGATIVE, instances);
+		Instance instance = wekaClassifier.instance(IConstants.NEGATIVE, instances);
 		filter.input(instance);
 		Instance filteredInstance = filter.output();
 

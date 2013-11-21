@@ -24,8 +24,8 @@ import org.apache.lucene.analysis.shingle.ShingleMatrixFilter;
  */
 public final class NgramAnalyzer extends Analyzer {
 
-	private int minGram = 3;
-	private int maxGram = 32;
+	private int minGram = 4;
+	private int maxGram = 21;
 
 	/**
 	 * This method will produce n-grams from the text stream. We don't want to stop the words and we don't need to stem them because n-grams

@@ -19,14 +19,70 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 	$scope.images = new Array();
 	$scope.testedImages = new Array();
 
-	$scope.status = null;
+	$scope.status = 200;
 	$scope.search = null;
 	$scope.statistics = null;
 	$scope.pagination = null;
 
 	$scope.indexes;
 	$scope.indexName;
+	
+	// Go to the web service for the results
+	$scope.doSearch = function() {
+		$scope.url = getServiceUrl($scope.searchUrl);
+		var search = $scope.doSearchPreProcessing($scope.search);
 
+		var promise = $http.post($scope.url, search);
+		promise.success(function(data, status) {
+			$scope.status = status;
+			$scope.search.searchResults = data.searchResults;
+			$scope.doSearchPostProcessing($scope.search);
+		});
+		promise.error(function(data, status) {
+			$scope.status = status;
+			$scope.log('Error in doSearch', status);
+		});
+	};
+	
+
+	// This function will search every field in every index, expensive!
+	$scope.doSearchAll = function(searchStrings) {
+		$scope.status = null;
+		$scope.statistics = null;
+
+		$scope.search.sortFields = null;
+		$scope.search.coordinate = null;
+		$scope.search.indexName = null;
+		$scope.search.searchFields = null;
+		$scope.search.searchResults = null;
+		$scope.search.searchStrings = searchStrings;
+		$scope.url = getServiceUrl($scope.searchAllUrl);
+
+		var promise = $http.post($scope.url, $scope.search);
+		promise.success(function(data, status) {
+			if (!!data.searchStrings && data.searchStrings.toString() == $scope.search.searchStrings.toString()) {
+				$scope.status = status;
+				$scope.search.searchResults = data.searchResults;
+				$scope.doSearchPostProcessing($scope.search);
+			} else {
+				$scope.log('Old search : ' + data.searchStrings.toString(), status);
+			}
+		});
+		promise.error(function(data, status) {
+			$scope.status = status;
+			$scope.log('Do search all error', status);
+		});
+	};
+
+	$scope.doPagedSearch = function(firstResult) {
+		$scope.search.firstResult = firstResult;
+		if (!!$scope.search.indexName) {
+			$scope.doSearch();
+		} else {
+			$scope.doSearchAll($scope.search.searchStrings);
+		}
+	};
+	
 	$scope.doSearchPreProcessing = function(search) {
 		$scope.status = null;
 		$scope.statistics = null;
@@ -76,59 +132,10 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 		search.coordinate[property] = value;
 	};
 
-	// Go to the web service for the results
-	$scope.doSearch = function() {
-		$scope.url = getServiceUrl($scope.searchUrl);
-		var search = $scope.doSearchPreProcessing($scope.search);
-
-		var promise = $http.post($scope.url, search);
-		promise.success(function(data, status) {
-			$scope.log('Do search status', status);
-			$scope.search.searchResults = data.searchResults;
-			$scope.doSearchPostProcessing($scope.search);
-		});
-		promise.error(function(data, status) {
-			$scope.log('Do search status', status);
-		});
-	};
-
-	// This function will search every field in every index, expensive!
-	$scope.doSearchAll = function(searchStrings) {
-		$scope.status = null;
-		$scope.statistics = null;
-
-		$scope.search.sortFields = null;
-		$scope.search.coordinate = null;
-		$scope.search.indexName = null;
-		$scope.search.searchFields = null;
-		$scope.search.searchResults = null;
-		$scope.search.searchStrings = searchStrings;
-		// var search = $scope.doSearchPreProcessing($scope.search);
-		$scope.url = getServiceUrl($scope.searchAllUrl);
-
-		var promise = $http.post($scope.url, $scope.search);
-		promise.success(function(data, status) {
-			$scope.log('Do search all status', status);
-			$scope.search.searchResults = data.searchResults;
-			$scope.doSearchPostProcessing($scope.search);
-		});
-		promise.error(function(data, status) {
-			$scope.log('Do search all status', status);
-		});
-	};
-
-	$scope.doPagedSearch = function(firstResult) {
-		$scope.search.firstResult = firstResult;
-		if (!!$scope.search.indexName) {
-			$scope.doSearch();
-		} else {
-			$scope.doSearchAll($scope.search.searchStrings);
-		}
-	};
-
 	$scope.doSearchPostProcessing = function(search) {
 		if (!!search.searchResults && search.searchResults.length > 0) {
 			$scope.statistics = search.searchResults.pop();
+			$scope.log('Corrections : ' + $scope.statistics.corrections, 200);
 			if (!!$scope.statistics.total && $scope.statistics.total > 0) {
 				$scope.doPagination();
 			}
@@ -138,6 +145,12 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 			if (!!$scope.statistics && (!$scope.statistics.corrections || $scope.statistics.corrections.length == 0)) {
 				$scope.statistics.corrections = null;
 			}
+			$scope.doApply = function() {
+				return $timeout(function() {
+					$scope.$apply();
+				}, 100);
+			};
+			$scope.doApply();
 		}
 	};
 
@@ -198,7 +211,6 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 	};
 
 	$scope.log = function(message, status) {
-		$scope.status = status;
 		$log.log(message + ':' + status);
 	};
 

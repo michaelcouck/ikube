@@ -56,15 +56,13 @@
 										typeahead-on-select="doSearchAll([stripTags(searchString)]);">
 									<div class="input search pull-right" ng-show="!!statistics && !!statistics.corrections">
 										Did you mean : 
-										<a 
-											href="#" 
-											ng-click="
+										<a href="#" ng-click="
 												searchString = statistics.corrections;
 												doSearchAll([statistics.corrections]);">{{statistics.corrections}}
 										</a>
 									</div>
-									<button type="submit" class="button blue" ng-disabled="!searchString" ng-click="doSearchAll([searchString]);">Go</button>
 								</div>
+								<button type="submit" class="button blue" ng-disabled="!searchString" ng-click="doSearchAll([searchString]);">Go</button>
 								</form>
 								
 								<form ng-submit="doSearch()">
@@ -92,6 +90,10 @@
 										placeholder="{{field}}..."
 										ng-model="search.searchStrings[$index]" />
 									</div>
+								</div>
+								
+								<div class="input search pull-right" ng-show="!!statistics && !!statistics.corrections && !!search.indexName">
+									Corrections : {{statistics.corrections}}
 								</div>
 								
 								<button type="submit" class="button blue" ng-disabled="!search.indexName" ng-click="doSearch();">Go</button>

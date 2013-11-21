@@ -39,7 +39,7 @@
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
 		property:children-ref="twitter-indexables"
-		property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer" />
+		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer" />
 	<util:list id="twitter-indexables">
 		<ref local="twitter-index" />
 	</util:list>
@@ -85,9 +85,9 @@
 	</util:list>
 
 	<bean 
-    	id="ikube.analytics.WekaClassifier.en"
-    	name="ikube.analytics.WekaClassifier.en"
-    	class="ikube.analytics.WekaClassifier"
+    	id="ikube.analytics.WekaClassifierSentiment.en"
+    	name="ikube.analytics.WekaClassifierSentiment.en"
+    	class="ikube.analytics.WekaClassifierSentiment"
     	init-method="initialize"
     	lazy-init="false" />
 	<bean 
@@ -97,11 +97,11 @@
 		init-method="initialize"
 		property:language="en" 
 		property:maxTraining="100000" 
-		property:classifier-ref="ikube.analytics.WekaClassifier.en" />
+		property:classifier-ref="ikube.analytics.WekaClassifierSentiment.en" />
 	<bean 
-    	id="ikube.analytics.WekaClassifier.es"
-    	name="ikube.analytics.WekaClassifier.es"
-    	class="ikube.analytics.WekaClassifier"
+    	id="ikube.analytics.WekaClassifierSentiment.es"
+    	name="ikube.analytics.WekaClassifierSentiment.es"
+    	class="ikube.analytics.WekaClassifierSentiment"
     	init-method="initialize" 
     	lazy-init="false" />
     <bean
@@ -111,11 +111,11 @@
     	init-method="initialize"
     	property:language="es"
     	property:maxTraining="100000"
-    	property:classifier-ref="ikube.analytics.WekaClassifier.es" />
+    	property:classifier-ref="ikube.analytics.WekaClassifierSentiment.es" />
 	<bean 
-    	id="ikube.analytics.WekaClassifier.jp"
-    	name="ikube.analytics.WekaClassifier.jp"
-    	class="ikube.analytics.WekaClassifier"
+    	id="ikube.analytics.WekaClassifierSentiment.jp"
+    	name="ikube.analytics.WekaClassifierSentiment.jp"
+    	class="ikube.analytics.WekaClassifierSentiment"
     	init-method="initialize" 
     	lazy-init="false" />
     <bean
@@ -125,11 +125,11 @@
     	init-method="initialize"
     	property:language="jp"
     	property:maxTraining="100000"
-    	property:classifier-ref="ikube.analytics.WekaClassifier.jp" />
+    	property:classifier-ref="ikube.analytics.WekaClassifierSentiment.jp" />
    	<bean 
-    	id="ikube.analytics.WekaClassifier.cn"
-    	name="ikube.analytics.WekaClassifier.cn"
-    	class="ikube.analytics.WekaClassifier"
+    	id="ikube.analytics.WekaClassifierSentiment.cn"
+    	name="ikube.analytics.WekaClassifierSentiment.cn"
+    	class="ikube.analytics.WekaClassifierSentiment"
     	init-method="initialize" 
     	lazy-init="false" />
     <bean
@@ -139,11 +139,11 @@
     	init-method="initialize"
     	property:language="cn"
     	property:maxTraining="100000"
-    	property:classifier-ref="ikube.analytics.WekaClassifier.cn" />
+    	property:classifier-ref="ikube.analytics.WekaClassifierSentiment.cn" />
     <bean 
-    	id="ikube.analytics.WekaClassifier.nl"
-    	name="ikube.analytics.WekaClassifier.nl"
-    	class="ikube.analytics.WekaClassifier"
+    	id="ikube.analytics.WekaClassifierSentiment.nl"
+    	name="ikube.analytics.WekaClassifierSentiment.nl"
+    	class="ikube.analytics.WekaClassifierSentiment"
     	init-method="initialize" 
     	lazy-init="false" />
     <bean
@@ -153,11 +153,11 @@
     	init-method="initialize"
     	property:language="nl"
     	property:maxTraining="100000"
-    	property:classifier-ref="ikube.analytics.WekaClassifier.nl" />
+    	property:classifier-ref="ikube.analytics.WekaClassifierSentiment.nl" />
     <bean 
-    	id="ikube.analytics.WekaClassifier.fr"
-    	name="ikube.analytics.WekaClassifier.fr"
-    	class="ikube.analytics.WekaClassifier"
+    	id="ikube.analytics.WekaClassifierSentiment.fr"
+    	name="ikube.analytics.WekaClassifierSentiment.fr"
+    	class="ikube.analytics.WekaClassifierSentiment"
     	init-method="initialize" 
     	lazy-init="false" />
     <bean
@@ -167,11 +167,11 @@
     	init-method="initialize"
     	property:language="fr"
     	property:maxTraining="100000"
-    	property:classifier-ref="ikube.analytics.WekaClassifier.fr" />
+    	property:classifier-ref="ikube.analytics.WekaClassifierSentiment.fr" />
     <bean 
-    	id="ikube.analytics.WekaClassifier.de"
-    	name="ikube.analytics.WekaClassifier.de"
-    	class="ikube.analytics.WekaClassifier"
+    	id="ikube.analytics.WekaClassifierSentiment.de"
+    	name="ikube.analytics.WekaClassifierSentiment.de"
+    	class="ikube.analytics.WekaClassifierSentiment"
     	init-method="initialize" 
     	lazy-init="false" />
     <bean
@@ -181,11 +181,11 @@
     	init-method="initialize"
     	property:language="de"
     	property:maxTraining="100000"
-    	property:classifier-ref="ikube.analytics.WekaClassifier.de" />
+    	property:classifier-ref="ikube.analytics.WekaClassifierSentiment.de" />
     <bean 
-    	id="ikube.analytics.WekaClassifier.sv"
-    	name="ikube.analytics.WekaClassifier.sv"
-    	class="ikube.analytics.WekaClassifier"
+    	id="ikube.analytics.WekaClassifierSentiment.sv"
+    	name="ikube.analytics.WekaClassifierSentiment.sv"
+    	class="ikube.analytics.WekaClassifierSentiment"
     	init-method="initialize" 
     	lazy-init="false" />
     <bean
@@ -195,11 +195,11 @@
     	init-method="initialize"
     	property:language="sv"
     	property:maxTraining="100000"
-    	property:classifier-ref="ikube.analytics.WekaClassifier.sv" />
+    	property:classifier-ref="ikube.analytics.WekaClassifierSentiment.sv" />
     <bean 
-    	id="ikube.analytics.WekaClassifier.th"
-    	name="ikube.analytics.WekaClassifier.th"
-    	class="ikube.analytics.WekaClassifier"
+    	id="ikube.analytics.WekaClassifierSentiment.th"
+    	name="ikube.analytics.WekaClassifierSentiment.th"
+    	class="ikube.analytics.WekaClassifierSentiment"
     	init-method="initialize" 
     	lazy-init="false" />
     <bean
@@ -209,11 +209,11 @@
     	init-method="initialize"
     	property:language="th"
     	property:maxTraining="100000"
-    	property:classifier-ref="ikube.analytics.WekaClassifier.th" />
+    	property:classifier-ref="ikube.analytics.WekaClassifierSentiment.th" />
 	<bean 
-    	id="ikube.analytics.WekaClassifier.ar"
-    	name="ikube.analytics.WekaClassifier.ar"
-    	class="ikube.analytics.WekaClassifier"
+    	id="ikube.analytics.WekaClassifierSentiment.ar"
+    	name="ikube.analytics.WekaClassifierSentiment.ar"
+    	class="ikube.analytics.WekaClassifierSentiment"
     	init-method="initialize" 
     	lazy-init="false" />
 	<bean 
@@ -223,11 +223,11 @@
 		init-method="initialize" 
 		property:language="ar" 
 		property:maxTraining="100000" 
-		property:classifier-ref="ikube.analytics.WekaClassifier.ar" />
+		property:classifier-ref="ikube.analytics.WekaClassifierSentiment.ar" />
 	<bean 
-    	id="ikube.analytics.WekaClassifier.tr"
-    	name="ikube.analytics.WekaClassifier.tr"
-    	class="ikube.analytics.WekaClassifier"
+    	id="ikube.analytics.WekaClassifierSentiment.tr"
+    	name="ikube.analytics.WekaClassifierSentiment.tr"
+    	class="ikube.analytics.WekaClassifierSentiment"
     	init-method="initialize" 
     	lazy-init="false" />
 	<bean 
@@ -237,11 +237,11 @@
 		init-method="initialize" 
 		property:language="tr" 
 		property:maxTraining="100000" 
-		property:classifier-ref="ikube.analytics.WekaClassifier.tr" />
+		property:classifier-ref="ikube.analytics.WekaClassifierSentiment.tr" />
 	<bean 
-    	id="ikube.analytics.WekaClassifier.ru"
-    	name="ikube.analytics.WekaClassifier.ru"
-    	class="ikube.analytics.WekaClassifier"
+    	id="ikube.analytics.WekaClassifierSentiment.ru"
+    	name="ikube.analytics.WekaClassifierSentiment.ru"
+    	class="ikube.analytics.WekaClassifierSentiment"
     	init-method="initialize" 
     	lazy-init="false" />
 	<bean 
@@ -251,7 +251,7 @@
 		init-method="initialize" 
 		property:language="ru" 
 		property:maxTraining="100000" 
-		property:classifier-ref="ikube.analytics.WekaClassifier.ru" />
+		property:classifier-ref="ikube.analytics.WekaClassifierSentiment.ru" />
 		
 		
 </beans>

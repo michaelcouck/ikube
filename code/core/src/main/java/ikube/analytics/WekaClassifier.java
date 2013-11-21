@@ -1,21 +1,19 @@
 package ikube.analytics;
 
-import ikube.IConstants;
 import ikube.model.Buildable;
 
+import java.io.IOException;
+
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.functions.SMO;
-import weka.core.Attribute;
-import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.core.SparseInstance;
 import weka.filters.Filter;
-import weka.filters.unsupervised.attribute.StringToWordVector;
 
 /**
  * This class is a classifier for sentiment essentially, i.e. positive/negative. This classifier is based on the {@link SMO} classification algorithm from
@@ -25,80 +23,30 @@ import weka.filters.unsupervised.attribute.StringToWordVector;
  * @since 14.08.13
  * @version 01.00
  */
-public class WekaClassifier implements IAnalyzer<String, String> {
+public class WekaClassifier extends Analyzer {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WekaClassifier.class);
 
-	/** This is the filter that will convert the text to tf-idf vectors. */
 	private Filter filter;
-	/** The classifier that will be built from time to time. */
-	private volatile Classifier classifier;
-	/** The instances that are used to train the classifier, i.e. these are pre-analyzed and correct with respect to the class attribute. */
 	private Instances trainingInstances;
-	/** The instances that is used to add the instance to for classification. */
-	private volatile Instances classificationInstances;
-	/** The number of vectors to keep in the training data set before we re-build the classifier. */
 	private int buildThreshold = 1000;
-	
-	public void initialize() {
-		init(null);
-	}
+
+	private volatile Classifier classifier;
+	private volatile Instances classificationInstances;
 
 	/**
 	 * {@inheritDoc}
+	 * 
+	 * @throws IOException
 	 */
-	public void init(final Buildable buildable) {
-		classifier = new SMO();
-		filter = new StringToWordVector();
-		// The general attributes for the instances, contains the string
-		// attribute for the input text and the class attributes for the output
-		FastVector attributes = new FastVector(2);
-		// The class attributes, i.e. positive and negative
-		FastVector classValues = new FastVector(2);
-		classValues.addElement(IConstants.POSITIVE);
-		classValues.addElement(IConstants.NEGATIVE);
-
-		// Add the class attributes for the output classification
-		attributes.addElement(new Attribute(IConstants.CLASS_ATTRIBUTE, classValues));
-		// Add the input text attribute
-		attributes.addElement(new Attribute(IConstants.TEXT_ATTRIBUTE, (FastVector) null));
-
-		trainingInstances = new Instances("Training Instance", attributes, 100);
-		trainingInstances.setClassIndex(0);
-
+	public void init(final Buildable buildable) throws Exception {
+		classifier = (Classifier) Class.forName(buildable.getType()).newInstance();
+		trainingInstances = instances(buildable);
 		classificationInstances = trainingInstances.stringFreeStructure();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public synchronized String analyze(final String input) {
-		try {
-			// Create the instance with the text
-			Instance instance = makeInstance(input, classificationInstances);
-			// Filter the text from a string to a bag of words and finally a vector which is the TFIDF
-			// (http://en.wikipedia.org/wiki/Tf%E2%80%93idf) or the inverse document frequency, or the number of
-			// times the word appears in the text relative to the number of times it appears in the rest of the corpus
-			filter.input(instance);
-			Instance filteredInstance = filter.output();
-
-			// Get the more 'likely' class for the vector distribution
-			double classification = classifier.classifyInstance(filteredInstance);
-			String classificationClass = classificationInstances.classAttribute().value((int) classification);
-
-			// This is not really necessary because we get the classification and not a distribution
-			// double[] result = classifier.distributionForInstance(filteredInstance);
-			// LOGGER.info("Result : " + classificationClass + ", " + classification + ", " + Arrays.toString(result));
-			return classificationClass;
-		} catch (Exception e) {
-			LOGGER.error("Exception classifying content : " + input, e);
-		} finally {
-			if (classificationInstances.numInstances() > buildThreshold) {
-				classificationInstances.delete();
-			}
+		if (!StringUtils.isEmpty(buildable.getFilter())) {
+			filter = (Filter) Class.forName(buildable.getFilter()).newInstance();
 		}
-		return null;
+		trainingInstances.setClassIndex(0);
 	}
 
 	/**
@@ -107,20 +55,13 @@ public class WekaClassifier implements IAnalyzer<String, String> {
 	@Override
 	public synchronized boolean train(final String... strings) {
 		try {
-			if (IConstants.POSITIVE.equals(strings[0]) || IConstants.NEGATIVE.equals(strings[0])) {
-				// Make message into instance.
-				Instance instance = makeInstance(strings[1], trainingInstances);
-				// Set class value for instance.
-				instance.setClassValue(strings[0]);
-				// Add instance to training data.
-				trainingInstances.add(instance);
-				// If we reach the threshold for the vectors in the training corpus then
-				// we rebuild the classifier, which can be expensive of course, but not very
-				if (trainingInstances.numInstances() > 0 && trainingInstances.numInstances() % buildThreshold == 0) {
-					build(null);
-				}
-				return Boolean.TRUE;
+			Instance instance = instance(strings[1], trainingInstances);
+			instance.setClassValue(strings[0]);
+			trainingInstances.add(instance);
+			if (trainingInstances.numInstances() > 0 && trainingInstances.numInstances() % buildThreshold == 0) {
+				build(null);
 			}
+			return Boolean.TRUE;
 		} catch (Exception e) {
 			LOGGER.error("Exception creating a training instance : ", e);
 		}
@@ -133,53 +74,70 @@ public class WekaClassifier implements IAnalyzer<String, String> {
 	 */
 	public synchronized void build(final Buildable buildable) {
 		try {
-			int numClasses = trainingInstances.numClasses();
-			int numAttributes = trainingInstances.numAttributes();
-			int numInstances = trainingInstances.numInstances();
-			LOGGER.info("Building classifier, classes : " + numClasses + ", attributes : " + numAttributes + ", instances : " + numInstances);
+			log(null);
 
-			filter.setInputFormat(trainingInstances);
-			Instances filteredData = Filter.useFilter(trainingInstances, filter);
+			Instances filteredData = null;
+
+			if (filter == null) {
+				filteredData = trainingInstances;
+			} else {
+				filter.setInputFormat(trainingInstances);
+				filteredData = Filter.useFilter(trainingInstances, filter);
+			}
+
 			Classifier classifier = new SMO();
 			classifier.buildClassifier(filteredData);
 			this.classifier = classifier;
-			// We take a copy of the training instances, although we don't really have to I guess
 			classificationInstances = trainingInstances.stringFreeStructure();
-
-			Evaluation evaluation = new Evaluation(filteredData);
-			evaluation.evaluateModel(classifier, filteredData);
-			String evaluationReport = evaluation.toSummaryString();
-			LOGGER.info("Classifier evaluation : " + evaluationReport);
 
 			filteredData.setRelationName("filtered_data");
 			trainingInstances.setRelationName("training_data");
-			// writeInstances(trainingInstances, classificationInstances, filteredData);
+			log(filteredData);
 			return;
 		} catch (Exception e) {
 			LOGGER.info("Exception building classifier : ", e);
 		}
-		// If we get here then there was an exception so we clean the
-		// training instances of the last batch of vectors as this was obviously the problem
 		trainingInstances.delete();
 		classificationInstances.delete();
 	}
 
 	/**
-	 * This method will create one instance of data, i.e. a single vector from the text provided and add it to the instances for classification.
-	 * 
-	 * @param text the text to create a vector from for classification
-	 * @param instances the instances data set that will hold the instance for classification
-	 * @return the instance with the text data as a vector
+	 * {@inheritDoc}
 	 */
-	synchronized Instance makeInstance(final String text, final Instances instances) {
-		// Create instance of length two, the first attribute is the class and the second is the vector from the text
-		SparseInstance instance = new SparseInstance(2);
-		// Set value for message attribute
-		Attribute messageAtt = instances.attribute(IConstants.TEXT_ATTRIBUTE);
-		instance.setValue(messageAtt, messageAtt.addStringValue(text));
-		// Give instance access to attribute information from the dataset
-		instance.setDataset(instances);
-		return instance;
+	@Override
+	public synchronized String analyze(final String input) {
+		try {
+			double classification = -1;
+			Instance instance = instance(input, classificationInstances);
+			if (filter != null) {
+				filter.input(instance);
+				Instance filteredInstance = filter.output();
+				classification = classifier.classifyInstance(filteredInstance);
+			} else {
+				classification = classifier.classifyInstance(instance);
+			}
+			return classificationInstances.classAttribute().value((int) classification);
+		} catch (Exception e) {
+			LOGGER.error("Exception classifying content : " + input, e);
+		} finally {
+			if (classificationInstances.numInstances() > buildThreshold) {
+				classificationInstances.delete();
+			}
+		}
+		return null;
+	}
+
+	private void log(final Instances instances) throws Exception {
+		int numClasses = trainingInstances.numClasses();
+		int numAttributes = trainingInstances.numAttributes();
+		int numInstances = trainingInstances.numInstances();
+		LOGGER.info("Building classifier, classes : " + numClasses + ", attributes : " + numAttributes + ", instances : " + numInstances);
+		if (instances != null) {
+			Evaluation evaluation = new Evaluation(instances);
+			evaluation.evaluateModel(classifier, instances);
+			String evaluationReport = evaluation.toSummaryString();
+			LOGGER.info("Classifier evaluation : " + evaluationReport);
+		}
 	}
 
 }

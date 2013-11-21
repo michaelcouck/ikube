@@ -36,7 +36,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	static final int MAX_STACK_SIZE = 100;
+	static final int MAX_STACK_SIZE = 10000;
 
 	/** This collection is used to stock pile the stack, waiting for consumers. */
 	private Stack<Tweet> stack;

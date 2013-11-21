@@ -32,9 +32,9 @@ function TypeaheadController($scope, $http, $injector, $timeout) {
 	$scope.convertToArray = function() {
 		// $scope.results = new Array();
 		if (!!$scope.search && !!$scope.search.searchResults) {
-			$scope.statistics = $scope.search.searchResults.pop();
+			$scope.typeStatistics = $scope.search.searchResults.pop();
 			// Exception or no results
-			if (!!$scope.statistics && !!$scope.statistics.total && $scope.statistics.total > 0) {
+			if (!!$scope.typeStatistics && !!$scope.typeStatistics.total && $scope.typeStatistics.total > 0) {
 				$scope.results = $injector.get($scope.config.resultsBuilder).buildResults($scope.search.searchResults);
 			}
 		}
