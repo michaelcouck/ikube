@@ -61,8 +61,8 @@
 												doSearchAll([statistics.corrections]);">{{statistics.corrections}}
 										</a>
 									</div>
+									<button type="submit" class="button blue" ng-disabled="!searchString" ng-click="doSearchAll([searchString]);">Go</button>
 								</div>
-								<button type="submit" class="button blue" ng-disabled="!searchString" ng-click="doSearchAll([searchString]);">Go</button>
 								</form>
 								
 								<form ng-submit="doSearch()">
