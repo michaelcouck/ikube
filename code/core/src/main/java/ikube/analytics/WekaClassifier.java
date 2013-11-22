@@ -25,11 +25,12 @@ import weka.filters.Filter;
  */
 public class WekaClassifier extends Analyzer {
 
+	public static final int BUILD_THRESHOLD = 1000;
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(WekaClassifier.class);
 
 	private Filter filter;
 	private Instances trainingInstances;
-	private int buildThreshold = 1000;
 
 	private volatile Classifier classifier;
 	private volatile Instances classificationInstances;
@@ -42,11 +43,10 @@ public class WekaClassifier extends Analyzer {
 	public void init(final Buildable buildable) throws Exception {
 		classifier = (Classifier) Class.forName(buildable.getType()).newInstance();
 		trainingInstances = instances(buildable);
-		classificationInstances = trainingInstances.stringFreeStructure();
+		trainingInstances.setClassIndex(0);
 		if (!StringUtils.isEmpty(buildable.getFilter())) {
 			filter = (Filter) Class.forName(buildable.getFilter()).newInstance();
 		}
-		trainingInstances.setClassIndex(0);
 	}
 
 	/**
@@ -58,14 +58,14 @@ public class WekaClassifier extends Analyzer {
 			Instance instance = instance(strings[1], trainingInstances);
 			instance.setClassValue(strings[0]);
 			trainingInstances.add(instance);
-			if (trainingInstances.numInstances() > 0 && trainingInstances.numInstances() % buildThreshold == 0) {
+			if (trainingInstances.numInstances() > 0 && trainingInstances.numInstances() % BUILD_THRESHOLD == 0) {
 				build(null);
 			}
 			return Boolean.TRUE;
 		} catch (Exception e) {
 			LOGGER.error("Exception creating a training instance : ", e);
+			throw new RuntimeException(e);
 		}
-		return Boolean.FALSE;
 	}
 
 	/**
@@ -96,9 +96,10 @@ public class WekaClassifier extends Analyzer {
 			return;
 		} catch (Exception e) {
 			LOGGER.info("Exception building classifier : ", e);
+			trainingInstances.delete();
+			classificationInstances.delete();
+			throw new RuntimeException(e);
 		}
-		trainingInstances.delete();
-		classificationInstances.delete();
 	}
 
 	/**
@@ -119,12 +120,12 @@ public class WekaClassifier extends Analyzer {
 			return classificationInstances.classAttribute().value((int) classification);
 		} catch (Exception e) {
 			LOGGER.error("Exception classifying content : " + input, e);
+			throw new RuntimeException(e);
 		} finally {
-			if (classificationInstances.numInstances() > buildThreshold) {
+			if (classificationInstances.numInstances() > BUILD_THRESHOLD) {
 				classificationInstances.delete();
 			}
 		}
-		return null;
 	}
 
 	private void log(final Instances instances) throws Exception {

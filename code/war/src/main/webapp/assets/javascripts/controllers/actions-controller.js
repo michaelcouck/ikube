@@ -11,13 +11,32 @@ module.controller('ActionsController', function($http, $scope) {
 	$scope.getActions = function() {
 		var promise = $http.get($scope.url);
 		promise.success(function(data, status) {
-			$scope.actions = data;
+			
+			var actions = data;
+			if (!!$scope.actions) {
+				if ($scope.actions.length == actions.length) {
+					for (var i = 0; i < $scope.actions.length; i++) {
+						actions[i].show = $scope.actions[i].show;
+					}
+				} else {
+					$scope.doShow(actions);
+				}
+			} else {
+				$scope.doShow(actions);
+			}
+			
+			$scope.actions = actions;
 			$scope.status = status;
 		});
 		promise.error(function(data, status) {
 			$scope.status = status;
 		});
 	}
+	$scope.doShow = function(actions) {
+		angular.forEach(actions, function(action, index) {
+			action.show = false;
+		});
+	};
 	// Execute the action in startup
 	$scope.getActions();
 	// Refresh from time to time

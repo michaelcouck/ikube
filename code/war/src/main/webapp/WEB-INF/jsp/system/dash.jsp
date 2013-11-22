@@ -9,133 +9,74 @@
 	<div class="row-fluid">
 		<div class="span6">
 			<div class="row-fluid">
-				<div class="span12">
-					<div style="margin-bottom: 20px;">
-						<div class="big-button-bar">
-							<a class="button large" href="#" onclick="enterpriseNotification();"><i class="icon-list-ul"></i><span>Create Index</span></a>
-							<a class="button large" href="#" onclick="enterpriseNotification();"><i class="icon-th"></i><span>Create Db</span></a>
-							<a class="button large" href="#" onclick="enterpriseNotification();"><i class="icon-user"></i><span>Create User</span></a>
-							<a class="button large" href="#" onclick="enterpriseNotification();"><i class="icon-folder-open"></i><span>File system</span></a>
-							<a class="button large" href="#" onclick="enterpriseNotification();"><i class="icon-picture"></i><span>Photos</span></a>
-							<a class="button large" href="http://www.ikube.be/site"><i class="icon-file"></i><span>Docs</span></a>
-						</div>
+				<div style="margin-bottom: 20px;">
+					<div class="big-button-bar">
+						<a class="button large" href="#" onclick="enterpriseNotification();"><i class="icon-list-ul"></i><span>Create Index</span></a>
+						<a class="button large" href="#" onclick="enterpriseNotification();"><i class="icon-th"></i><span>Create Db</span></a>
+						<a class="button large" href="#" onclick="enterpriseNotification();"><i class="icon-user"></i><span>Create User</span></a>
+						<a class="button large" href="#" onclick="enterpriseNotification();"><i class="icon-folder-open"></i><span>File system</span></a>
+						<a class="button large" href="#" onclick="enterpriseNotification();"><i class="icon-picture"></i><span>Photos</span></a>
+						<a class="button large" href="http://www.ikube.be/site"><i class="icon-file"></i><span>Docs</span></a>
 					</div>
 				</div>
 			</div>
 
-			<div class="row-fluid" ng-controller="ServersController">
-				<div class="span12" ng-repeat="server in servers">
-					<table class="table table-striped table-bordered box">
-						<thead>
-							<tr>
-								<th colspan="2">Server : {{server.address}}</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>Cpu load : </td>
-								<td><strong>{{server.averageCpuLoad}}</strong></td>
-							</tr>
-							<tr>
-								<td>Free  memory : </td>
-								<td>{{server.freeMemory / 1000}} gig</td>
-							</tr>
-							<tr>
-								<td>Max memory :</td>
-								<td>{{server.maxMemory / 1000}} gig</td>
-							</tr>
-							<tr>
-								<td>Total memory : </td>
-								<td>{{server.totalMemory / 1000}} gig</td>
-							</tr>
-							<tr>
-								<td>Free disk space : </td>
-								<td>{{server.freeDiskSpace}}</td>
-							</tr>
-							<tr>
-								<td>Schedules running : </td>
-								<td>{{server.threadsRunning}}</td>
-							</tr>
-							<tr>
-								<td>Cpu throttling : </td>
-								<td>{{server.cpuThrottling}}</td>
-							</tr>
-							<tr>
-								<td>Server birth timestamp : </td>
-								<td>{{date(server.age)}}</td>
-							</tr>
-							<tr>
-								<td>Available processors : </td>
-								<td>{{server.processors}}</td>
-							</tr>
-							<tr>
-								<td>Architecture : </td>
-								<td>{{server.architecture}}</td>
-							</tr>
-						</tbody>
-						<tfoot>
-							<tr>
-								<td colspan="2">
-									<div class="clearfix" style="padding: 0 5px;">
-										<div class="pull-left">
-											<a href="#" class="button blue" ng-click="refreshServer();">Refresh server</a>
-											<!-- <a href="#" class="button">Terminate CPU throttling</a> -->
-										</div>
-									</div>
-								</td>
-							</tr>
-						</tfoot>
-					</table>
-				</div>
+			<!-- Servers -->
+			<div class="nav-menu box" ng-controller="ServersController">
+				<ul class="nav nav-list">
+					<li class="active">
+						<a href="#"><i class="icon-cloud"></i>Servers</a>
+					</li>
+					<li ng-repeat="server in servers">
+						<a href="#" ng-click="server.show = !server.show">
+							<i class="icon-globe"></i>{{server.address}}
+							<span class="pull-right badge" title="Cpu load">{{server.averageCpuLoad}}</span>
+						</a>
+						<ul class="nav nav-list" style="margin-left: 30px; padding: 5px;" ng-show="server.show">
+							<li><i class="icon-th-list"></i>Free memory : {{server.freeMemory / 1000}} gig</li>
+							<li><i class="icon-th"></i>Max memory : {{server.maxMemory / 1000}} gig</li>
+							<li><i class="icon-th-large"></i>Total memory : {{server.totalMemory / 1000}} gig</li>
+							<li><i class="icon-hdd"></i>Free disk space : {{server.freeDiskSpace}}</li>
+							<li><i class="icon-play-circle"></i>Jobs running : {{server.threadsRunning}}</li>
+							<li><i class="icon-play-circle"></i>Cpu throttling : {{server.cpuThrottling}}</li>
+							<li><i class="icon-time"></i>Server timestamp : {{date(server.age)}}</li>
+							<li><i class="icon-stop"></i>Available processors : {{server.processors}}</li>
+							<li><i class="icon-cogs"></i>Architecture : {{server.architecture}}</li>
+						</ul>
+					</li>
+				</ul>
 			</div>
 			
-			<div class="row-fluid" ng-controller="ActionsController" ng-hide="!actions.length">
-				<div class="span12" ng-repeat="action in actions">
-					<table class="table table-striped table-bordered box">
-						<thead>
-							<tr>
-								<th colspan="2">Server executing action : {{action.server.address}}</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>Action id and name : </td>
-								<td><strong>{{action.id}}:{{action.actionName}}</strong></td>
-							</tr>
-							<tr>
-								<td>Index name : </td>
-								<td><strong>{{action.indexName}}</strong></td>
-							</tr>
-							<tr>
-								<td>Current indexable name :</td>
-								<td>{{action.indexableName}}</td>
-							</tr>
-							<tr>
-								<td>Documents per minute : </td>
-								<td>{{action.snapshot.docsPerMinute}}</td>
-							</tr>
-							<tr>
-								<td>Total documents done : </td>
-								<td>{{action.snapshot.numDocsForIndexWriters}}</td>
-							</tr>
-							<tr>
-								<td>Start time : </td>
-								<td>{{action.startTime}}</td>
-							</tr>
-						</tbody>
-						<tfoot>
-							<tr>
-								<td colspan="2">
-									<div class="clearfix" style="padding: 0 5px;">
-										<div class="pull-left">
-											<a href="#" class="button blue" ng-click="terminateAction(action.indexName);">Terminate action</a>
-										</div>
-									</div>
-								</td>
-							</tr>
-						</tfoot>
-					</table>
-				</div>
+			<!-- Actions -->
+			<div class="nav-menu box" ng-controller="ActionsController" ng-hide="!actions.length">
+				<ul class="nav nav-list">
+					<li class="active">
+						<a href="#"><i class="icon-briefcase"></i>Jobs</a>
+					</li>
+					<li ng-repeat="action in actions">
+						<a href="#" title="Action, index, indexable being executed" ng-click="action.show = !action.show">
+							<i class="icon-play-circle"></i>
+							{{action.actionName}} : {{action.indexName}} : {{action.indexableName}}
+							<span 
+								class="pull-right badge" 
+								title="Documents per minute" 
+								ng-show="!!action.snapshot.docsPerMinute">{{action.snapshot.docsPerMinute}}</span>
+						</a>
+						<ul class="nav nav-list" style="margin-left: 30px; padding: 5px;" ng-show="action.show">
+							<li><i class="icon-globe"></i>Server : {{action.server.address}}</li>
+							<li><i class="icon-time"></i>Start timestamp : {{action.startTime}}</li>
+							<li><i class="icon-th-list"></i>Index writer documents : {{action.snapshot.numDocsForIndexWriters}}</li>
+							<li>
+								<ul>
+									<li>
+										<i class="icon-stop"></i>
+										<a href="#" ng-click="terminateAction(action.indexName);" style="padding: 3px; font-weight: bold;">Terminate action</a>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+				</ul>
 			</div>
 		</div>
 
@@ -152,12 +93,8 @@
 										<a class="dropdown-toggle" data-toggle="dropdown">
 											<i class="icon-cog"></i>
 										</a>
-										<ul class="dropdown-menu black-box-dropdown dropdown-left">
-											<li><a href="#" ng-click="refreshServers();">Refresh</a></li>
-											<!-- <li><a href="#">Another action</a></li>
-											<li><a href="#">Something else here</a></li>
-											<li class="divider"></li>
-											<li><a href="#">Separated link</a></li> -->
+										<ul class="dropdown dropdown-menu black-box-dropdown dropdown-left" style="font-size: small;">
+											<li><a href="#" ng-click="refreshServers();"><i class="icon-refresh">&nbsp;</i>Refresh</a></li>
 										</ul>
 									</div>
 								</span>
@@ -171,34 +108,73 @@
 							<!-- Start: Indexing tab and graph -->
 							<div class="tab-pane active" id="tab1">
 								<div class="separator">
+									<!-- Threads -->
 									<div class="inner-well clearfix">
-										<div class="pull-left">Schedules running</div>
+										<div class="pull-left">Jobs running : {{servers[0].threadsRunning}}</div>
 										<div class="pull-right">
-											<input 
-												rel="confirm-check" 
-												type="checkbox" 
-												id="VKZp4" 
-												class="checky" 
-												ng-data="server" 
-												ng-checked="server.threadsRunning"
-												ng-click="toggleThreadsRunning();" />
-											<label for="VKZp4" class="checky"><span></span></label>
+											<a class="button mini rounded inset light-gray" ng-click="terminateThreads = !terminateThreads">Stop</a>
 										</div>
 									</div>
-									<div class="inner-well clearfix">
-										<div class="pull-left">Cpu throttling</div>
-										<div class="pull-right">
-											<input 
-												rel="confirm-check" 
-												type="checkbox" 
-												id="FNNqp" 
-												class="checky" 
-												ng-data="server" 
-												ng-checked="server.cpuThrottling" 
-												ng-click="toggleCpuThrottling();" />
-											<label for="FNNqp" class="checky"><span></span></label>
+									<div class="inner-well clearfix" ng-show="terminateThreads">
+										<div ng-show="true">
+											<div class="inner-well clearfix">
+												<b>Are you sure?</b>
+												<div class="pull-right">
+													<input id="gtnDu" class="checky" type="checkbox" />
+													<label for="gtnDu" class="checky green" ng-click="terminateThreadsConfirmed = !terminateThreadsConfirmed"><span></span></label>
+												</div>
+											</div>
+											<div class="clearfix vpadded" ng-show="terminateThreadsConfirmed">
+												<div class="pull-left">
+													<label 
+														for="gtnDu" 
+														href="#" 
+														class="button red" 
+														ng-click="
+															terminateThreads = false;
+															terminateThreadsConfirmed = false;
+															toggleThreadsRunning();">Toggle jobs</label>
+												</div>
+												<div class="pull-right">
+													<label for="gtnDu" href="#" class="button gray" ng-click="terminateThreads = false;terminateThreadsConfirmed = false;">Cancel</label>
+												</div>
+											</div>
 										</div>
 									</div>
+									<!-- Cpu -->
+									<div class="inner-well clearfix">
+										<div class="pull-left">Cpu throttling : {{servers[0].cpuThrottling}}</div>
+										<div class="pull-right">
+											<a class="button mini rounded inset light-gray" ng-click="terminateThrottling = !terminateThrottling">Stop</a>
+										</div>
+									</div>
+									<div class="inner-well clearfix" ng-show="terminateThrottling">
+										<div ng-show="true">
+											<div class="inner-well clearfix">
+												<b>Are you sure?</b>
+												<div class="pull-right">
+													<input id="gtnCpu" class="checky" type="checkbox" />
+													<label for="gtnCpu" class="checky green" ng-click="terminateThrottlingConfirmed = !terminateThrottlingConfirmed"><span></span></label>
+												</div>
+											</div>
+											<div class="clearfix vpadded" ng-show="terminateThrottlingConfirmed">
+												<div class="pull-left">
+													<label 
+														for="gtnCpu" 
+														href="#" 
+														class="button red" 
+														ng-click="
+															terminateThrottling = false;
+															terminateThrottlingConfirmed = false;
+															toggleCpuThrottling();">Toggle throttling</label>
+												</div>
+												<div class="pull-right">
+													<label for="gtnCpu" href="#" class="button gray" ng-click="terminateThrottling = false;terminateThrottlingConfirmed = false;">Cancel</label>
+												</div>
+											</div>
+										</div>
+									</div>
+									
 								</div>
 								<div class="separator">
 									<div class="inner-well">

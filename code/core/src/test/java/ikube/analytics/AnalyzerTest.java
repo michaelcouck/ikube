@@ -1,17 +1,19 @@
 package ikube.analytics;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
 import ikube.model.Buildable;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import weka.classifiers.functions.SMO;
 import weka.core.Attribute;
 import weka.core.FastVector;
+import weka.core.Instance;
 import weka.core.Instances;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
@@ -37,25 +39,31 @@ public class AnalyzerTest extends AbstractTest {
 	}
 
 	@Test
-	@Ignore
 	public void instance() throws Exception {
 		Instances instances = mock(Instances.class);
-		Attribute attTwo = new Attribute("one", (FastVector) null);
-		Attribute attThree = new Attribute("two", (FastVector) null);
-		
-//		when(attTwo.type()).thenReturn(Attribute.NOMINAL);
-//		when(attThree.type()).thenReturn(Attribute.STRING);
+		Attribute attTwo = new Attribute("one", (FastVector) null, 1);
+		Attribute attThree = new Attribute("two", (FastVector) null, 2);
 
 		when(instances.numAttributes()).thenReturn(3);
 		when(instances.attribute(1)).thenReturn(attTwo);
 		when(instances.attribute(2)).thenReturn(attThree);
 
-		wekaClassifier.instance(input + ", " + input, instances);
+		Instance instance = wekaClassifier.instance(input + ", " + input, instances);
+		assertEquals(instances, instance.dataset());
+		assertEquals(3, instance.numAttributes());
+		assertEquals(3, instance.numValues());
+
+		assertEquals(attTwo, instance.attribute(1));
+		assertEquals(attThree, instance.attribute(2));
 	}
 
 	@Test
 	public void instances() throws Exception {
-		wekaClassifier.instances(buildable);
+		Instances instances = wekaClassifier.instances(buildable);
+		assertNotNull(instances);
+		assertEquals(2, instances.numAttributes());
+		assertEquals(Attribute.NOMINAL, instances.attribute(0).type());
+		assertEquals(Attribute.STRING, instances.attribute(1).type());
 	}
 
 }

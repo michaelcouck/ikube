@@ -1,5 +1,6 @@
 package ikube.analytics;
 
+import static junit.framework.Assert.assertEquals;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Buildable;
@@ -17,18 +18,22 @@ import weka.filters.unsupervised.attribute.StringToWordVector;
  */
 public class WekaClassifierTest extends AbstractTest {
 
+	/** Class under test */
+	private IAnalyzer<String, String> wekaClassifier;
+
 	private Buildable buildable;
-	private WekaClassifier wekaClassifier;
-	private String input = "my beautiful little girl";
+	private String positive = "my beautiful little girl";
+	private String negative = "you selfish stupid woman";
 
 	@Before
 	public void before() {
 		buildable = new Buildable();
-		wekaClassifier = new WekaClassifier();
-		buildable.setFilePath("src/test/resources/analytics/classification.arff");
-		buildable.setFilter(StringToWordVector.class.getName());
-		buildable.setLog(true);
+		buildable.setLog(false);
 		buildable.setType(SMO.class.getName());
+		buildable.setFilter(StringToWordVector.class.getName());
+		buildable.setFilePath("src/test/resources/analytics/instance.arff");
+
+		wekaClassifier = new WekaClassifier();
 	}
 
 	@Test
@@ -38,18 +43,27 @@ public class WekaClassifierTest extends AbstractTest {
 
 	@Test
 	public void train() throws Exception {
-		wekaClassifier.train(IConstants.POSITIVE, input);
+		wekaClassifier.init(buildable);
+		int iterations = WekaClassifier.BUILD_THRESHOLD + 1;
+		do {
+			wekaClassifier.train(IConstants.POSITIVE, positive);
+		} while (iterations-- >= 0);
 	}
 
 	@Test
 	public void build() throws Exception {
+		wekaClassifier.init(buildable);
 		wekaClassifier.build(buildable);
 	}
 
 	@Test
 	public void analyze() throws Exception {
-		String result = wekaClassifier.analyze(input);
-		logger.info("Result : " + result);
+		wekaClassifier.init(buildable);
+		wekaClassifier.build(buildable);
+		String result = wekaClassifier.analyze(positive);
+		assertEquals(IConstants.POSITIVE, result);
+		result = wekaClassifier.analyze(negative);
+		assertEquals(IConstants.NEGATIVE, result);
 	}
 
 }

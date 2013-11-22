@@ -1,36 +1,40 @@
 /** This controller will get the server data from the grid. */
 module.controller('ServersController', function($http, $scope, databaseService) {
-	$scope.server;
 	$scope.servers = [];
 	$scope.entities = undefined;
-	
-	$scope.refreshServer = function() {
-		$scope.url = getServiceUrl('/ikube/service/monitor/server');
-		var promise = $http.get($scope.url);
-		promise.success(function(data, status) {
-			$scope.server = data;
-			$scope.status = status;
-		});
-		promise.error(function(data, status) {
-			$scope.status = status;
-		});
-	}
-	$scope.refreshServer();
-	setInterval(function() {
-		$scope.refreshServer();
-	}, refreshInterval);
+	$scope.terminateThreads = false;
+	$scope.terminateThreadsConfirmed = false;
+	$scope.terminateThrottling = false;
+	$scope.terminateThrottlingConfirmed = false;
 	
 	$scope.refreshServers = function() {
 		$scope.url = getServiceUrl('/ikube/service/monitor/servers');
 		var promise = $http.get($scope.url);
 		promise.success(function(data, status) {
+			var servers = data;
+			if (!!$scope.servers) {
+				if ($scope.servers.length == servers.length) {
+					for (var i = 0; i < $scope.servers.length; i++) {
+						servers[i].show = $scope.servers[i].show;
+					}
+				} else {
+					$scope.doShow(servers);
+				}
+			} else {
+				$scope.doShow(servers);
+			}
 			$scope.servers = data;
 			$scope.status = status;
 		});
 		promise.error(function(data, status) {
 			$scope.status = status;
 		});
-	}
+	};
+	$scope.doShow = function(servers) {
+		angular.forEach(servers, function(server, index) {
+			server.show = false;
+		});
+	};
 	$scope.refreshServers();
 	setInterval(function() {
 		$scope.refreshServers();
@@ -49,7 +53,7 @@ module.controller('ServersController', function($http, $scope, databaseService) 
 		promise.error(function(data, status) {
 			$scope.status = status;
 		});
-	}
+	};
 	
 	$scope.terminateAll = function() {
 		$scope.url = getServiceUrl('/ikube/service/monitor/terminate-all');
@@ -64,7 +68,7 @@ module.controller('ServersController', function($http, $scope, databaseService) 
 		promise.error(function(data, status) {
 			$scope.status = status;
 		});
-	}
+	};
 	
 	$scope.date = function(millis) {
 		return new Date(millis).toLocaleTimeString();
@@ -76,7 +80,7 @@ module.controller('ServersController', function($http, $scope, databaseService) 
 		} else {
 			$scope.startupAll();
 		}
-		$scope.server.threadsRunning = !$scope.server.threadsRunning;
+		$scope.servers[0].threadsRunning = !$scope.server[0].threadsRunning;
 	};
 	
 	$scope.toggleCpuThrottling = function() {
@@ -92,12 +96,12 @@ module.controller('ServersController', function($http, $scope, databaseService) 
 		promise.error(function(data, status) {
 			$scope.status = status;
 		});
-		$scope.server.cpuThrottling = !$scope.server.cpuThrottling;
-	}
+		$scope.servers[0].cpuThrottling = !$scope.servers[0].cpuThrottling;
+	};
 	
 	$scope.cpuLoadTooHigh = function(server) {
 		return server.averageCpuLoad / server.processors > 0.9;
-	}
+	};
 	
 	$scope.entities = databaseService.getEntities('ikube.model.Search', '0', '10');
 	
