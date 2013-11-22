@@ -394,9 +394,9 @@
     	init-method="initialize" />
     	
     <bean 
-    	id="ikube.analytics.WekaClassifier"
-    	name="ikube.analytics.WekaClassifier"
-    	class="ikube.analytics.WekaClassifier"
+    	id="ikube.analytics.WekaClassifierSentiment"
+    	name="ikube.analytics.WekaClassifierSentiment"
+    	class="ikube.analytics.WekaClassifierSentiment"
     	init-method="initialize" />
     	
     <bean
@@ -404,7 +404,7 @@
 		name="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy" 
     	class="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
     	init-method="initialize"
-    	property:classifier-ref="ikube.analytics.WekaClassifier" />
+    	property:classifier-ref="ikube.analytics.WekaClassifierSentiment" />
     
     <!-- 
 		This bean is the geocoder, it will enrich the data with spatial co-ordinates if

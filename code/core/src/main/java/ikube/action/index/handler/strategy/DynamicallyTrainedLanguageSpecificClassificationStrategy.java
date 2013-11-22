@@ -6,7 +6,7 @@ import static ikube.action.index.IndexManager.addStringField;
 import ikube.IConstants;
 import ikube.action.index.handler.IStrategy;
 import ikube.analytics.IAnalyzer;
-import ikube.analytics.WekaClassifier;
+import ikube.analytics.WekaClassifierSentiment;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 
@@ -51,7 +51,7 @@ public class DynamicallyTrainedLanguageSpecificClassificationStrategy extends AS
 		try {
 			classifier.train(IConstants.POSITIVE, IConstants.POSITIVE);
 			classifier.train(IConstants.NEGATIVE, IConstants.NEGATIVE);
-			((WekaClassifier) classifier).build(null);
+			((WekaClassifierSentiment) classifier).build(null);
 			positive = maxTraining / 2;
 			negative = maxTraining / 2;
 		} catch (final Exception e) {
