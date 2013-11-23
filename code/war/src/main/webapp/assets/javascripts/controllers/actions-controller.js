@@ -11,31 +11,24 @@ module.controller('ActionsController', function($http, $scope) {
 	$scope.getActions = function() {
 		var promise = $http.get($scope.url);
 		promise.success(function(data, status) {
-			
-			var actions = data;
-			if (!!$scope.actions) {
-				if ($scope.actions.length == actions.length) {
-					for (var i = 0; i < $scope.actions.length; i++) {
-						actions[i].show = $scope.actions[i].show;
-					}
-				} else {
-					$scope.doShow(actions);
-				}
-			} else {
-				$scope.doShow(actions);
-			}
-			
-			$scope.actions = actions;
+			$scope.doShow($scope.actions, data);
+			$scope.actions = data;
 			$scope.status = status;
 		});
 		promise.error(function(data, status) {
 			$scope.status = status;
 		});
 	}
-	$scope.doShow = function(actions) {
-		angular.forEach(actions, function(action, index) {
-			action.show = false;
-		});
+	$scope.doShow = function(scopeActions, resultActions) {
+		if (!!scopeActions && !!resultActions) {
+			angular.forEach(scopeActions, function(scopeAction, index) {
+				angular.forEach(resultActions, function(resultAction, index) {
+					if (scopeAction.indexName === resultAction.indexName) {
+						resultAction.show = scopeAction.show;
+					}
+				});
+			});
+		}
 	};
 	// Execute the action in startup
 	$scope.getActions();

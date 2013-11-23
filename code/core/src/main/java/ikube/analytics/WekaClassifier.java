@@ -41,11 +41,11 @@ public class WekaClassifier extends Analyzer {
 	 * @throws IOException
 	 */
 	public void init(final Buildable buildable) throws Exception {
-		classifier = (Classifier) Class.forName(buildable.getType()).newInstance();
+		classifier = (Classifier) Class.forName(buildable.getAlgorithmType()).newInstance();
 		trainingInstances = instances(buildable);
 		trainingInstances.setClassIndex(0);
-		if (!StringUtils.isEmpty(buildable.getFilter())) {
-			filter = (Filter) Class.forName(buildable.getFilter()).newInstance();
+		if (!StringUtils.isEmpty(buildable.getFilterType())) {
+			filter = (Filter) Class.forName(buildable.getFilterType()).newInstance();
 		}
 	}
 

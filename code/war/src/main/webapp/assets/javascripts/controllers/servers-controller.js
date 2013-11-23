@@ -11,18 +11,7 @@ module.controller('ServersController', function($http, $scope, databaseService) 
 		$scope.url = getServiceUrl('/ikube/service/monitor/servers');
 		var promise = $http.get($scope.url);
 		promise.success(function(data, status) {
-			var servers = data;
-			if (!!$scope.servers) {
-				if ($scope.servers.length == servers.length) {
-					for (var i = 0; i < $scope.servers.length; i++) {
-						servers[i].show = $scope.servers[i].show;
-					}
-				} else {
-					$scope.doShow(servers);
-				}
-			} else {
-				$scope.doShow(servers);
-			}
+			$scope.doShow($scope.servers, data);
 			$scope.servers = data;
 			$scope.status = status;
 		});
@@ -30,10 +19,16 @@ module.controller('ServersController', function($http, $scope, databaseService) 
 			$scope.status = status;
 		});
 	};
-	$scope.doShow = function(servers) {
-		angular.forEach(servers, function(server, index) {
-			server.show = false;
-		});
+	$scope.doShow = function(scopeServers, resultServers) {
+		if (!!scopeServers && !!resultServers) {
+			angular.forEach(scopeServers, function(scopeServer, index) {
+				angular.forEach(resultServers, function(resultServer, index) {
+					if (scopeServer.address === resultServer.address) {
+						resultServer.show = scopeServer.show;
+					}
+				});
+			});
+		}
 	};
 	$scope.refreshServers();
 	setInterval(function() {

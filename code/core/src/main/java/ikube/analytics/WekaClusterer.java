@@ -29,7 +29,7 @@ public class WekaClusterer extends Analyzer {
 	@Override
 	public void init(final Buildable buildable) throws Exception {
 		instances = instances(buildable);
-		String type = buildable.getType();
+		String type = buildable.getAlgorithmType();
 		clusterer = (Clusterer) Class.forName(type).newInstance();
 	}
 

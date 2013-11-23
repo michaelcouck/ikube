@@ -3,6 +3,8 @@ package ikube.model;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 
 /**
  * This class represents data that is to be analyzed as well as the results from the analysis if any.
@@ -21,6 +23,9 @@ public class Analysis<I, O> extends Persistable {
 	private O output;
 	private double duration;
 	private Exception exception;
+	@OneToOne
+	@PrimaryKeyJoinColumn
+	private Buildable buildable;
 
 	public String getAnalyzer() {
 		return analyzer;
@@ -60,6 +65,14 @@ public class Analysis<I, O> extends Persistable {
 
 	public void setException(Exception exception) {
 		this.exception = exception;
+	}
+
+	public Buildable getBuildable() {
+		return buildable;
+	}
+
+	public void setBuildable(Buildable buildable) {
+		this.buildable = buildable;
 	}
 
 }

@@ -1,6 +1,5 @@
 package ikube.action.index.handler.internet;
 
-import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import ikube.AbstractTest;
@@ -11,9 +10,7 @@ import ikube.toolkit.PerformanceTester;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -62,16 +59,6 @@ public class TwitterResourceProviderTest extends AbstractTest {
 		twitterResourceProvider.persistResources(Arrays.asList(tweet));
 		File tweetFile = FileUtilities.findFileRecursively(new File(IConstants.ANALYTICS_DIRECTORY), ".json");
 		assertNotNull(tweetFile);
-	}
-
-	@Test
-	public void onTweet() {
-		for (int i = 0; i < TwitterResourceProvider.MAX_STACK_SIZE + 10; i++) {
-			Tweet tweet = mock(Tweet.class);
-			twitterResourceProvider.onTweet(tweet);
-		}
-		List<File> tweetFiles = FileUtilities.findFilesRecursively(new File(IConstants.ANALYTICS_DIRECTORY), new ArrayList<File>(), ".json");
-		assertEquals(101, tweetFiles.size());
 	}
 
 }

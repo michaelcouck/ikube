@@ -126,19 +126,17 @@
 					<li class="separator">
 						<div class="article-post">
 							<div class="user-content">
-								Showing results {{search.firstResult}} 
-								to {{search.endResult}} 
-								of {{statistics.total}}, 
-								duration {{statistics.duration}} milliseconds 
+								Results {{search.firstResult}} to {{search.endResult}} of {{statistics.total}}<br> 
+								Duration {{statistics.duration}} milliseconds 
 								<span ng-show="!!search.searchStrings && search.searchStrings.length != 0">
-									for 
+									Search strings :  
 									<span ng-repeat="searchString in search.searchStrings">
 										<span ng-show="!!searchString">
 											'{{searchString}}'&nbsp;
 										</span>
-									</span> 
+									</span><br> 
 									<span ng-show="!!search.searchFields && search.searchFields.length > 0">
-										in fields 
+										Fields :  
 										<span ng-repeat="searchField in search.searchFields">
 											<span ng-show="!!search.searchStrings[$index]">
 												'{{searchField}}'&nbsp;

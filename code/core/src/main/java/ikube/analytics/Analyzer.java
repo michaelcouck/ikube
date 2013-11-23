@@ -63,7 +63,7 @@ abstract class Analyzer implements IAnalyzer<String, String> {
 	 * @throws IOException
 	 */
 	Instances instances(final Buildable buildable) throws IOException {
-		String filePath = buildable.getFilePath();
+		String filePath = buildable.getTrainingFilePath();
 		InputStream inputStream = null;
 		try {
 			File file = new File(filePath);

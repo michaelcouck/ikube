@@ -38,14 +38,14 @@ public class WekaClustererTest extends AbstractTest {
 		dataFile = FileUtilities.findFileRecursively(new File("."), "bank-data.arff");
 
 		buildable = new Buildable();
-		buildable.setFilePath(FileUtilities.cleanFilePath(dataFile.getAbsolutePath()));
+		buildable.setTrainingFilePath(FileUtilities.cleanFilePath(dataFile.getAbsolutePath()));
 
 		wekaClassifier = new WekaClusterer();
 	}
 
 	@Test
 	public void analyze() throws Exception {
-		buildable.setType(EM.class.getName());
+		buildable.setAlgorithmType(EM.class.getName());
 		wekaClassifier.init(buildable);
 		wekaClassifier.build(buildable);
 		List<String> lines = IOUtils.readLines(new FileInputStream(dataFile));
@@ -76,7 +76,7 @@ public class WekaClustererTest extends AbstractTest {
 	}
 
 	private void buildAndAnalyze(final String type) throws Exception {
-		buildable.setType(type);
+		buildable.setAlgorithmType(type);
 		wekaClassifier.init(buildable);
 		wekaClassifier.build(buildable);
 		String cluster = wekaClassifier.analyze(line);

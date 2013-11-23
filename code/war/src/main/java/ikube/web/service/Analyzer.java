@@ -32,13 +32,13 @@ import org.springframework.stereotype.Component;
  * @version 01.00
  */
 @Component
-@Path(Analyzer.CLASSIFIER)
+@Path(Analyzer.ANALYZER)
 @Scope(Resource.REQUEST)
 @Produces(MediaType.APPLICATION_JSON)
 public class Analyzer extends Resource {
 
-	public static final String CLASSIFY = "/classify";
-	public static final String CLASSIFIER = "/classifier/json";
+	public static final String ANALYZE = "/analyze";
+	public static final String ANALYZER = "/analyze/json";
 
 	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(Analyzer.class);
@@ -51,9 +51,9 @@ public class Analyzer extends Resource {
 	 * the analysis object and serialize it for the caller.
 	 */
 	@POST
-	@Path(Analyzer.CLASSIFY)
+	@Path(Analyzer.ANALYZE)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response classify(@Context
+	public Response analyze(@Context
 	final HttpServletRequest request, @Context
 	final UriInfo uriInfo) {
 		return buildJsonResponse("nothing");
@@ -64,9 +64,9 @@ public class Analyzer extends Resource {
 	 * classification results to the analysis object and serialize it for the caller.
 	 */
 	@GET
-	@Path(Analyzer.CLASSIFY)
+	@Path(Analyzer.ANALYZE)
 	@Consumes(MediaType.APPLICATION_XML)
-	public Response classify(@QueryParam(value = IConstants.CLASSIFIER)
+	public Response analyze(@QueryParam(value = IConstants.ANALYZER)
 	final String analyzer, @QueryParam(value = IConstants.CONTENT)
 	final String content) throws IOException {
 		Analysis<String, String> analysis = new Analysis<String, String>();

@@ -32,10 +32,10 @@ public class AnalyzerTest extends AbstractTest {
 	public void before() {
 		buildable = new Buildable();
 		wekaClassifier = new WekaClassifier();
-		buildable.setFilePath("src/test/resources/analytics/classification.arff");
-		buildable.setFilter(StringToWordVector.class.getName());
+		buildable.setTrainingFilePath("src/test/resources/analytics/classification.arff");
+		buildable.setFilterType(StringToWordVector.class.getName());
 		buildable.setLog(true);
-		buildable.setType(SMO.class.getName());
+		buildable.setAlgorithmType(SMO.class.getName());
 	}
 
 	@Test

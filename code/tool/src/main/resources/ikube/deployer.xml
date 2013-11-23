@@ -52,8 +52,6 @@
 	
 	<util:list id="servers">
 		<ref local="server-one" />
-		<ref local="server-two" />
-		<ref local="server-three" />
 	</util:list>
 	
 	<bean 
@@ -80,56 +78,18 @@
 	<util:list id="stop-commands">
 		<value>. /etc/profile;</value>
 		<value>cd ${tomcat-one-bin};./catalina.sh stop;</value>
-		<value>cd ${tomcat-two-bin};./catalina.sh stop;</value>
-		<value>cd ${tomcat-three-bin};./catalina.sh stop;</value>
-		
 		<value>ps -ef | grep ${tomcat-one} | grep -v grep | awk '{print $2}' | xargs kill -9;</value>
-		<value>ps -ef | grep ${tomcat-two} | grep -v grep | awk '{print $2}' | xargs kill -9;</value>
-		<value>ps -ef | grep ${tomcat-three} | grep -v grep | awk '{print $2}' | xargs kill -9;</value>
-
 		<value>chmod 777 -R ${tomcat-one-home};</value>
-		<value>chmod 777 -R ${tomcat-two-home};</value>
-		<value>chmod 777 -R ${tomcat-three-home};</value>
-		
 		<value>rm -rf ${tomcat-one-bin}/ikube;</value>
-		<value>rm -rf ${tomcat-two-bin}/ikube;</value>
-		<value>rm -rf ${tomcat-three-bin}/ikube;</value>
-		
 		<value>rm -rf ${tomcat-one-webapps}/ikube*;</value>
-		<value>rm -rf ${tomcat-two-webapps}/ikube*;</value>
-		<value>rm -rf ${tomcat-three-webapps}/ikube*;</value>
-		
 		<value>rm -rf ${tomcat-one-home}/logs;</value>
-		<value>rm -rf ${tomcat-two-home}/logs;</value>
-		<value>rm -rf ${tomcat-three-home}/logs;</value>
-		
 		<value>rm -rf ${tomcat-one-home}/temp;</value>
-		<value>rm -rf ${tomcat-two-home}/temp;</value>
-		<value>rm -rf ${tomcat-three-home}/temp;</value>
-		
 		<value>rm -rf ${tomcat-one-home}/work/Catalina/localhost;</value>
-		<value>rm -rf ${tomcat-two-home}/work/Catalina/localhost;</value>
-		<value>rm -rf ${tomcat-three-home}/work/Catalina/localhost;</value>
-		
 		<value>mkdir -p ${tomcat-one-bin}/ikube;</value>
-		<value>mkdir -p ${tomcat-two-bin}/ikube;</value>
-		<value>mkdir -p ${tomcat-three-bin}/ikube;</value>
-		
 		<value>mkdir -p ${tomcat-one-home}/logs;</value>
-		<value>mkdir -p ${tomcat-two-home}/logs;</value>
-		<value>mkdir -p ${tomcat-three-home}/logs;</value>
-		
 		<value>mkdir -p ${tomcat-one-home}/temp;</value>
-		<value>mkdir -p ${tomcat-two-home}/temp;</value>
-		<value>mkdir -p ${tomcat-three-home}/temp;</value>
-		
 		<value>mkdir -p ${tomcat-one-home}/work/Catalina/localhost;</value>
-		<value>mkdir -p ${tomcat-two-home}/work/Catalina/localhost;</value>
-		<value>mkdir -p ${tomcat-three-home}/work/Catalina/localhost;</value>
-		
 		<value>chmod 777 -R ${tomcat-one-home};</value>
-		<value>chmod 777 -R ${tomcat-two-home};</value>
-		<value>chmod 777 -R ${tomcat-three-home};</value>
 	</util:list>
 	
 	<bean 
@@ -141,26 +101,15 @@
 		property:directories-ref="directories" />
 	<util:map id="files">
 		<entry key="${target-directory}/${ikube-war}"  value="${tomcat-one-webapps}" />
-		<entry key="${target-directory}/${ikube-war}"  value="${tomcat-two-webapps}" />
-		<entry key="${target-directory}/${ikube-war}"  value="${tomcat-three-webapps}" />
-		
-		<entry key="${configuration-directory}/log4j.properties" value="${tomcat-one-bin}/ikube" />
-		<entry key="${configuration-directory}/log4j.properties" value="${tomcat-two-bin}/ikube" />
-		<entry key="${configuration-directory}/log4j.properties" value="${tomcat-three-bin}/ikube" />
-		
-		<entry key="${configuration-directory}/spring.xml" value="${tomcat-one-bin}/ikube" />
-		<entry key="${configuration-directory}/spring.xml" value="${tomcat-two-bin}/ikube" />
-		<entry key="${configuration-directory}/spring.xml" value="${tomcat-three-bin}/ikube" />
-		
+		<entry key="${target-directory}/log4j.properties" value="${tomcat-one-bin}/ikube" />
+		<entry key="${target-directory}/spring.xml" value="${tomcat-one-bin}/ikube" />
 		<entry key="${resources-directory}/indexes/system.properties" value="${tomcat-one-bin}/ikube" />
-		<entry key="${resources-directory}/indexes/system.properties" value="${tomcat-two-bin}/ikube" />
-		<entry key="${resources-directory}/indexes/system.properties" value="${tomcat-three-bin}/ikube" />
 	</util:map>
 	<util:map id="directories">
-		<entry key="${configuration-directory}/common" value="${tomcat-directory}/bin/ikube" />
-		<entry key="${configuration-directory}/production" value="${tomcat-directory}/bin/ikube" />
-		<entry key="${resources-directory}/indexes/twitter" value="${tomcat-directory}/bin/ikube" />
-		<entry key="${resources-directory}/indexes/integration" value="${tomcat-directory}/bin/ikube" />
+		<entry key="${target-directory}/common" value="${tomcat-one-bin}/bin/ikube" />
+		<entry key="${target-directory}/production" value="${tomcat-one-bin}/bin/ikube" />
+		<entry key="${resources-directory}/indexes/twitter" value="${tomcat-one-bin}/bin/ikube" />
+		<entry key="${resources-directory}/indexes/integration" value="${tomcat-one-bin}/bin/ikube" />
 	</util:map>
 	
 	<bean 
@@ -171,8 +120,8 @@
 		property:commands-ref="start-commands" />
 	<util:list id="start-commands">
 		<value>. /etc/profile;</value>
-		<value>chmod 777 -R ${tomcat-directory};</value>
-		<value>cd ${tomcat-bin-directory};./catalina.sh start;</value>
+		<value>chmod 777 -R ${tomcat-one};</value>
+		<value>cd ${tomcat-one-bin};./catalina.sh start;</value>
 	</util:list>
 	
 </beans>

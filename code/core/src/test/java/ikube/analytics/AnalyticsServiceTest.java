@@ -1,10 +1,14 @@
 package ikube.analytics;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import ikube.AbstractTest;
+import ikube.IConstants;
 import ikube.model.Analysis;
 import ikube.model.Buildable;
+import ikube.toolkit.FileUtilities;
 
+import java.io.File;
 import java.util.HashMap;
 
 import org.junit.Before;
@@ -21,32 +25,51 @@ public class AnalyticsServiceTest extends AbstractTest {
 
 	private Buildable buildable;
 	private IAnalyzer<?, ?> analyzer;
+	private Analysis<String, String> analysis;
 	private AnalyticsService analyticsService;
 	private String line = "35_51,FEMALE,INNER_CITY,0_24386,NO,1,NO,NO,NO,NO,YES";
 
 	@Before
 	public void before() throws Exception {
+		analysis = new Analysis<String, String>();
+		analysis.setAnalyzer("analyzer-em");
+		analysis.setInput(line);
+
 		buildable = new Buildable();
-		buildable.setFilePath("bank-data.arff");
-		buildable.setType(EM.class.getName());
+		buildable.setTrainingFilePath("bank-data.arff");
+		buildable.setAlgorithmType(EM.class.getName());
 		analyzer = new WekaClusterer();
 		analyzer.init(buildable);
 		analyzer.build(buildable);
 		analyticsService = new AnalyticsService();
 		analyticsService.setAnalyzers(new HashMap<String, IAnalyzer<?, ?>>() {
 			{
-				put("analyzer-em", analyzer);
+				put(analysis.getAnalyzer(), analyzer);
 			}
 		});
 	}
 
 	@Test
 	public void analyze() {
-		Analysis<String, String> analysis = new Analysis<String, String>();
-		analysis.setAnalyzer("analyzer-em");
-		analysis.setInput(line);
 		analyticsService.analyze(analysis);
 		assertEquals("1", analysis.getOutput());
+	}
+
+	@Test
+	public void getAnalyzer() {
+		File externalConfig = FileUtilities.findDirectoryRecursively(new File("."), "external");
+		File springConfig = FileUtilities.findFileRecursively(externalConfig, "spring\\.xml");
+		String springConfigPath = FileUtilities.cleanFilePath(springConfig.getAbsolutePath());
+		System.setProperty(IConstants.IKUBE_CONFIGURATION, springConfigPath);
+
+		analysis.setAnalyzer("analyzer-em-different");
+		analysis.setBuildable(buildable);
+
+		buildable.setAlgorithmType(EM.class.getName());
+		buildable.setAnalyzerType(WekaClusterer.class.getName());
+
+		IAnalyzer<?, ?> analyzer = analyticsService.getAnalyzer(analysis);
+		assertNotNull(analyzer);
 	}
 
 }

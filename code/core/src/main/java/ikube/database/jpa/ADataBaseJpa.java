@@ -22,8 +22,8 @@ import javax.persistence.metamodel.EntityType;
 import org.apache.log4j.Logger;
 
 /**
- * This class is the API to the database, specifically the JPA implementation. This class will typically be wired for transactions either
- * using a transaction handling library like Spring or in the server.
+ * This class is the API to the database, specifically the JPA implementation. This class will typically be wired for transactions either using a transaction
+ * handling library like Spring or in the server.
  * 
  * @see IDataBase
  * @author Michael Couck
@@ -185,8 +185,7 @@ public abstract class ADataBaseJpa implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T> List<T> find(final Class<T> klass, final String[] fieldsToSortOn, final Boolean[] directionOfSort, final int firstResult,
-			final int maxResults) {
+	public <T> List<T> find(final Class<T> klass, final String[] fieldsToSortOn, final Boolean[] directionOfSort, final int firstResult, final int maxResults) {
 		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
 		CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(klass);
 		Root<T> root = criteriaQuery.from(klass);
@@ -225,8 +224,8 @@ public abstract class ADataBaseJpa implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T> List<T> findCriteria(final Class<T> klass, final String[] fieldsToFilterOn, final Object[] valuesToFilterOn,
-			final int firstResult, final int maxResults) {
+	public <T> List<T> findCriteria(final Class<T> klass, final String[] fieldsToFilterOn, final Object[] valuesToFilterOn, final int firstResult,
+			final int maxResults) {
 		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
 		CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(klass);
 		Root<T> root = criteriaQuery.from(klass);
@@ -282,8 +281,7 @@ public abstract class ADataBaseJpa implements IDataBase {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> List<T> find(final Class<T> klass, final String sql, final Map<String, Object> parameters, final int startPosition,
-			final int maxResults) {
+	public <T> List<T> find(final Class<T> klass, final String sql, final Map<String, Object> parameters, final int startPosition, final int maxResults) {
 		Query query = getEntityManager().createNamedQuery(sql, klass);
 		query.setFirstResult(startPosition);
 		query.setMaxResults(maxResults);
@@ -307,8 +305,7 @@ public abstract class ADataBaseJpa implements IDataBase {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> List<T> find(final Class<T> klass, final String sql, final String[] names, final Object[] values, final int startPosition,
-			final int maxResults) {
+	public <T> List<T> find(final Class<T> klass, final String sql, final String[] names, final Object[] values, final int startPosition, final int maxResults) {
 		Query query = getEntityManager().createNamedQuery(sql, klass);
 		query.setFirstResult(startPosition);
 		query.setMaxResults(maxResults);
@@ -351,6 +348,16 @@ public abstract class ADataBaseJpa implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public int executeUpdate(final String sql, final String[] names, final Object[] values) {
+		Query query = getEntityManager().createQuery(sql);
+		setParameters(query, names, values);
+		return query.executeUpdate();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public <T> T refresh(final T t) {
 		getEntityManager().refresh(t);
 		return t;
@@ -376,8 +383,8 @@ public abstract class ADataBaseJpa implements IDataBase {
 	}
 
 	/**
-	 * This method is for sub-classes to implement. The entity managers are defined in annotations, and essentially hard coded, meaning that
-	 * each database like DB2 or H2 needs to have their own persistence unit in the {@link PersistenceContext} annotation at compile time.
+	 * This method is for sub-classes to implement. The entity managers are defined in annotations, and essentially hard coded, meaning that each database like
+	 * DB2 or H2 needs to have their own persistence unit in the {@link PersistenceContext} annotation at compile time.
 	 * 
 	 * @return the entity manager that is defined in the sub-class for a specific database and persistence unit
 	 */

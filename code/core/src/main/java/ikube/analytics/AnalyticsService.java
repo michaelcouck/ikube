@@ -6,6 +6,9 @@ import ikube.toolkit.Timer;
 import java.sql.Timestamp;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This class is implemented as a state pattern. The user specifies the type of analyzer, and the service 'connects' to the correct implementation and executes
  * the analysis logic.
@@ -16,12 +19,13 @@ import java.util.Map;
  */
 public class AnalyticsService implements IAnalyticsService {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(AnalyticsService.class);
+
 	private Map<String, IAnalyzer<?, ?>> analyzers;
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public <I, O> Analysis<I, O> analyze(final Analysis<I, O> analysis) {
-		final IAnalyzer<I, O> analyzer = (IAnalyzer<I, O>) analyzers.get(analysis.getAnalyzer());
+		final IAnalyzer<I, O> analyzer = getAnalyzer(analysis);
 		double duration = Timer.execute(new Timer.Timed() {
 			@Override
 			public void execute() {
@@ -36,6 +40,20 @@ public class AnalyticsService implements IAnalyticsService {
 		analysis.setDuration(duration);
 		analysis.setTimestamp(new Timestamp(System.currentTimeMillis()));
 		return analysis;
+	}
+
+	@SuppressWarnings("unchecked")
+	<I, O> IAnalyzer<I, O> getAnalyzer(final Analysis<I, O> analysis) {
+		if (analyzers.get(analysis.getAnalyzer()) == null) {
+			try {
+				IAnalyzer<?, ?> analyzer = AnalyzerManager.buildAnalyzer(analysis);
+				analyzers.put(analysis.getAnalyzer(), analyzer);
+			} catch (Exception e) {
+				LOGGER.error(null, e);
+				throw new RuntimeException(e);
+			}
+		}
+		return (IAnalyzer<I, O>) analyzers.get(analysis.getAnalyzer());
 	}
 
 	public void setAnalyzers(final Map<String, IAnalyzer<?, ?>> analyzers) {

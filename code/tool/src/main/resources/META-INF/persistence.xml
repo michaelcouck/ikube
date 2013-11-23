@@ -87,7 +87,7 @@
 			<property name="openjpa.ConnectionPassword" value="Caherl1ne" />
 			<property name="openjpa.ConnectionURL" value="jdbc:db2://ikube.be:50000/ikube" />
 			<property name="openjpa.ConnectionDriverName" value="com.ibm.db2.jcc.DB2Driver" />
-			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
+			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true,Indexes=true)" />
 			<property name="openjpa.jdbc.SchemaFactory" value="native(ForeignKeys=true)"/>
 			<property name="openjpa.InverseManager" value="true(Action=warn)"/>
 		</properties>

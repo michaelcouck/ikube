@@ -144,16 +144,24 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 		}
 	}
 
-	public static synchronized void setBean(final String name, final Object bean) {
+	/**
+	 * This method will register a bean dynamically. There are no properties set in the bean and the default constructor will probably be used by Spring.
+	 * 
+	 * @param name the name of the bean, unique in the application context, i.e. the id
+	 * @param beanClassName the class type of the bean to create
+	 * @return the newly created bean, as a singleton, for convenience
+	 */
+	public static synchronized <T> T setBean(final String name, final String beanClassName) {
 		ApplicationContext applicationContext = getApplicationContext();
-		if (applicationContext.getClass().isAssignableFrom(AbstractRefreshableApplicationContext.class)) {
+		if (AbstractRefreshableApplicationContext.class.isAssignableFrom(applicationContext.getClass())) {
 			BeanFactory beanFactory = ((AbstractRefreshableApplicationContext) applicationContext).getBeanFactory();
-			if (beanFactory.getClass().isAssignableFrom(DefaultListableBeanFactory.class)) {
+			if (DefaultListableBeanFactory.class.isAssignableFrom(beanFactory.getClass())) {
 				BeanDefinition beanDefinition = new GenericBeanDefinition();
-				beanDefinition.setBeanClassName(bean.getClass().getName());
+				beanDefinition.setBeanClassName(beanClassName);
 				((DefaultListableBeanFactory) beanFactory).registerBeanDefinition(name, beanDefinition);
 			}
 		}
+		return getBean(name);
 	}
 
 	/**

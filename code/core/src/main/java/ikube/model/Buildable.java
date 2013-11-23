@@ -16,25 +16,73 @@ import javax.persistence.InheritanceType;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Buildable extends Persistable {
 
-	private String type;
-	private String filter;
+	private String filterType;
+	private String analyzerType;
+	private String algorithmType;
+
+	private String trainingData;
+	private String analysisData;
+
+	private String trainingFilePath;
+	private String analysisFilePath;
+
 	private boolean log;
-	private String filePath;
+	private boolean compressed;
 
-	public String getType() {
-		return type;
+	public String getFilterType() {
+		return filterType;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setFilterType(String filterType) {
+		this.filterType = filterType;
 	}
 
-	public String getFilter() {
-		return filter;
+	public String getAnalyzerType() {
+		return analyzerType;
 	}
 
-	public void setFilter(String filter) {
-		this.filter = filter;
+	public void setAnalyzerType(String analyzerType) {
+		this.analyzerType = analyzerType;
+	}
+
+	public String getAlgorithmType() {
+		return algorithmType;
+	}
+
+	public void setAlgorithmType(String algorithmType) {
+		this.algorithmType = algorithmType;
+	}
+
+	public String getTrainingData() {
+		return trainingData;
+	}
+
+	public void setTrainingData(String trainingData) {
+		this.trainingData = trainingData;
+	}
+
+	public String getAnalysisData() {
+		return analysisData;
+	}
+
+	public void setAnalysisData(String analysisData) {
+		this.analysisData = analysisData;
+	}
+
+	public String getTrainingFilePath() {
+		return trainingFilePath;
+	}
+
+	public void setTrainingFilePath(String trainingFilePath) {
+		this.trainingFilePath = trainingFilePath;
+	}
+
+	public String getAnalysisFilePath() {
+		return analysisFilePath;
+	}
+
+	public void setAnalysisFilePath(String analysisFilePath) {
+		this.analysisFilePath = analysisFilePath;
 	}
 
 	public boolean isLog() {
@@ -45,12 +93,12 @@ public class Buildable extends Persistable {
 		this.log = log;
 	}
 
-	public String getFilePath() {
-		return filePath;
+	public boolean isCompressed() {
+		return compressed;
 	}
 
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
+	public void setCompressed(boolean compressed) {
+		this.compressed = compressed;
 	}
 
 }
