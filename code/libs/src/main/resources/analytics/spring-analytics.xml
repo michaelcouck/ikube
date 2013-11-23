@@ -13,8 +13,8 @@
 		id="buildable-em"
 		class="ikube.model.Buildable"
 		property:log="true"
-		property:type="weka.clusterers.EM"
-		property:filePath="./ikube/analytics/bank-data.arff" />
+		property:algorithmType="weka.clusterers.EM"
+		property:trainingFilePath="./ikube/analytics/bank-data.arff" />
 	<bean 
 		id="analyzer-em" 
 		class="ikube.analytics.WekaClusterer" />

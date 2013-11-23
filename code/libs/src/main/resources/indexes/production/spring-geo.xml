@@ -51,6 +51,7 @@
 		property:name="geoname"
 		property:address="true"
 		property:maxExceptions="10"
+		property:threads="4"
 		property:allColumns="true"
 		property:stored="${stored}"
 		property:analyzed="${analyzed}"

@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
 
 import mockit.Deencapsulation;
 
@@ -35,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @since at least 18.11.2013
  * @version 01.00
  */
-public final class DatabaseCopy {
+public final class DatabaseCopy extends ADatabase {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseCopy.class);
 
@@ -98,38 +97,6 @@ public final class DatabaseCopy {
 		entityManager.flush();
 		entityManager.clear();
 		entityManager.getTransaction().commit();
-	}
-
-	/**
-	 * This method will instantiate the persistence units for the databases concerned.
-	 * 
-	 * @param types the types of {@link ADataBaseJpa} classes to instantiate and inject the entity manager into
-	 * @param persistenceUnits the name of the persistence units to use to instantiate the entity managers
-	 * @return the list of {@link ADataBaseJpa} objects for the target databases
-	 * @throws Exception
-	 */
-	private static final List<ADataBaseJpa> getDataBases(final String[] persistenceUnits) throws Exception {
-		List<ADataBaseJpa> dataBases = new ArrayList<ADataBaseJpa>();
-		for (final String persistenceUnit : persistenceUnits) {
-			ADataBaseJpa aDataBaseJpa = getDataBase(DataBaseJpaH2.class, persistenceUnit);
-			dataBases.add(aDataBaseJpa);
-		}
-		return dataBases;
-	}
-
-	/**
-	 * This method will instantiate a single database(dao, {@link ADataBaseJpa}) object and inject the entity manager into it.
-	 * 
-	 * @param type the type of database dao to instantiate
-	 * @param persistenceUnit the persistence unit name, same as in the persistence.xml
-	 * @return the database dao with the entity manager injected
-	 * @throws Exception
-	 */
-	private static final ADataBaseJpa getDataBase(final Class<? extends ADataBaseJpa> type, final String persistenceUnit) throws Exception {
-		EntityManager entityManager = Persistence.createEntityManagerFactory(persistenceUnit).createEntityManager();
-		ADataBaseJpa aDataBaseJpa = type.newInstance();
-		Deencapsulation.setField(aDataBaseJpa, entityManager);
-		return aDataBaseJpa;
 	}
 
 }

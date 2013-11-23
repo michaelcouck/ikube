@@ -1,13 +1,17 @@
-package ikube.geospatial;
+package ikube.data;
 
+import ikube.IConstants;
 import ikube.database.IDataBase;
+import ikube.database.jpa.ADataBaseJpa;
+import ikube.database.jpa.DataBaseJpaH2;
 import ikube.model.geospatial.GeoName;
-import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.Logging;
-import ikube.toolkit.ThreadUtilities;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.persistence.EntityManager;
+
+import mockit.Deencapsulation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,44 +20,35 @@ import co.uk.hjcs.canyon.session.Session;
 import co.uk.hjcs.canyon.session.SessionFactory;
 
 /**
- * This class will read the Geonames data from the CSV file and persist the entities as {@link GeoName} objects in the database using the
- * JPA from Ikube.
+ * This class will read the Geonames data from the CSV file and persist the entities as {@link GeoName} objects in the database using the JPA from Ikube.
  * 
  * @author Michael Couck
  * @since long time
  * @version 01.00
  */
-public class GeonamePopulator {
+public final class GeonamePopulator extends ADatabase {
 
-	static Logger LOGGER;
-
-	static {
-		Logging.configure();
-		LOGGER = LoggerFactory.getLogger(GeonamePopulator.class);
-	}
+	static Logger LOGGER = LoggerFactory.getLogger(GeonamePopulator.class);
 
 	public static void main(String[] args) throws Exception {
 		persist(GeoName.class);
 		// persist(AlternateName.class);
 	}
 
-	protected static void persist(final Class<?> clazz) {
+	protected static void persist(final Class<?> clazz) throws Exception {
+		int count = 0;
+		int batchSize = 10000;
 		String sessionName = "geoname";
 		Session session = SessionFactory.getSession(sessionName);
-		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
-		ThreadUtilities.destroy();
-		int batchSize = 1000;
+		ADataBaseJpa dataBase = getDataBase(DataBaseJpaH2.class, IConstants.PERSISTENCE_UNIT_POSTGRES);
 		List<Object> geoNames = new ArrayList<Object>();
-		int count = 0;
 		while (session.hasNext(clazz)) {
 			count++;
 			try {
 				Object geoName = session.next(clazz);
-				if (count % 10000 == 0) {
-					LOGGER.info("Count : " + count);
-				}
 				geoNames.add(geoName);
 				if (geoNames.size() >= batchSize || !session.hasNext(clazz)) {
+					LOGGER.info("Count : " + count);
 					persistBatch(dataBase, geoNames);
 				}
 			} catch (Exception e) {
@@ -64,8 +59,9 @@ public class GeonamePopulator {
 	}
 
 	private static void persistBatch(IDataBase dataBase, List<Object> geoNames) {
+		EntityManager entityManager = Deencapsulation.getField(dataBase, EntityManager.class);
 		try {
-			// LOGGER.info("Persisting batch : " + geoNames.size());
+			entityManager.getTransaction().begin();
 			dataBase.persistBatch(geoNames);
 			geoNames.clear();
 		} catch (Exception e) {
@@ -79,6 +75,10 @@ public class GeonamePopulator {
 				}
 			}
 			geoNames.clear();
+			entityManager.flush();
+			entityManager.clear();
+			entityManager.getTransaction().commit();
+
 		}
 	}
 

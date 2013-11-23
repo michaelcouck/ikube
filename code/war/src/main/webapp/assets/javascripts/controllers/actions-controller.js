@@ -6,10 +6,10 @@
 module.controller('ActionsController', function($http, $scope) {
 	// The data that we will iterate over
 	$scope.actions = {};
-	$scope.url = getServiceUrl('/ikube/service/monitor/actions');
 	// The function to get the Json from the server
 	$scope.getActions = function() {
-		var promise = $http.get($scope.url);
+		var url = getServiceUrl('/ikube/service/monitor/actions');
+		var promise = $http.get(url);
 		promise.success(function(data, status) {
 			$scope.doShow($scope.actions, data);
 			$scope.actions = data;
@@ -50,15 +50,15 @@ module.controller('ActionsController', function($http, $scope) {
 	
 	// This function will send a terminate event to the cluster
 	$scope.terminateAction = function(indexName) {
-		$scope.url = getServiceUrl('/ikube/service/monitor/terminate');
+		var url = getServiceUrl('/ikube/service/monitor/terminate');
 		// The parameters for the terminate
-		$scope.parameters = { 
+		var parameters = { 
 			indexName : indexName
 		};
 		// The configuration for the request to the server
-		$scope.config = { params : $scope.parameters };
+		var config = { params : parameters };
 		// And terminate the indexing for the index
-		var promise = $http.get($scope.url, $scope.config);
+		var promise = $http.get(url, config);
 		promise.success(function(data, status) {
 			$scope.status = status;
 		});

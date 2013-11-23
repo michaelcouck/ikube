@@ -1,8 +1,8 @@
 29.11.12
-* Add the auto complete to the search boxes
-* Re-test the advanced search in the interface
-* Add icons to the interface
-* Draw circle on GoogleMap for geospatial search circle
+* Add the auto complete to the search boxes *
+* Re-test the advanced search in the interface *
+* Add icons to the interface *
+* Draw circle on GoogleMap for geospatial search circle *
 
 03.11.10
 21.05.12

@@ -8,7 +8,7 @@ public class DatabaseDeleteTest extends AbstractTest {
 
 	@Test
 	public void main() {
-		DatabaseDelete.main(new String[] { "10000", "IkubePersistenceUnitPostgres", "ikube.model.geospatial.GeoName" });
+		DatabaseDelete.main(new String[] { "10000", "IkubePersistenceUnitH2", "ikube.model.geospatial.GeoName" });
 	}
 
 }

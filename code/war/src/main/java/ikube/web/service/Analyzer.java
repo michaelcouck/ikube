@@ -56,7 +56,9 @@ public class Analyzer extends Resource {
 	public Response analyze(@Context
 	final HttpServletRequest request, @Context
 	final UriInfo uriInfo) {
-		return buildJsonResponse("nothing");
+		Analysis<?, ?> analysis = unmarshall(Analysis.class, request);
+		analyticsService.analyze(analysis);
+		return buildJsonResponse(analysis);
 	}
 
 	/**

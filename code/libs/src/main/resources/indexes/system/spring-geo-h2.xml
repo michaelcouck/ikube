@@ -22,9 +22,9 @@
 	</description>
 	
 	<bean
-		id="geospatialOracle"
+		id="geospatialH2"
 		class="ikube.model.IndexContext"
-		property:name="geospatialOracle"
+		property:name="geospatialH2"
 		property:maxAge="${max.age.geospatial}"
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}"
@@ -38,20 +38,20 @@
 		property:throttle="0"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
-		property:children-ref="geospatialIndexablesOracle"
+		property:children-ref="geospatialIndexablesH2"
 		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer"
 		property:strategies-ref="geoname-strategies" />
 	
-	<util:list id="geospatialIndexablesOracle">
-		<ref local="geonameOracle" />
+	<util:list id="geospatialIndexablesH2">
+		<ref local="geonameH2" />
 	</util:list>
 	
 	<bean
-		id="geonameOracle"
+		id="geonameH2"
 		class="ikube.model.IndexableTable"
 		property:name="geoname"
 		property:address="true"
-		property:dataSource-ref="nonXaDataSourceOracle"
+		property:dataSource-ref="nonXaDataSourceH2Geo"
 		property:children-ref="geonameColumns" 
 		property:maxExceptions="10"
 		property:threads="4"

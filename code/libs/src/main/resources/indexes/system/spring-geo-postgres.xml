@@ -42,24 +42,6 @@
 		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer"
 		property:strategies-ref="geoname-strategies" />
 	
-	<!-- <bean
-		id="geospatialPostgres"
-		class="ikube.model.IndexContext"
-		property:name="geospatialPostgres"
-		property:maxAge="${max.age.geospatial}"
-		property:compoundFile="${compound.file}"
-		property:bufferedDocs="${buffered.docs}"
-		property:bufferSize="${buffer.size}"
-		property:batchSize="${jdbc.batch.size}"
-		property:internetBatchSize="${internet.batch.size}"
-		property:mergeFactor="${merge.factor}"
-		property:maxFieldLength="${max.field.length}"
-		property:maxReadLength="${max.read.length}"
-		property:throttle="${throttle}"
-		property:indexDirectoryPath="${index.directory.path}"
-		property:indexDirectoryPathBackup="${index.directory.path.backup}"
-		property:children-ref="geospatialIndexablesPostgres" /> -->
-		
 	<util:list id="geospatialIndexablesPostgres">
 		<ref local="geonamePostgres" />
 	</util:list>
@@ -71,6 +53,8 @@
 		property:address="true"
 		property:dataSource-ref="nonXaDataSourcePostgresql"
 		property:children-ref="geonameColumns" 
-		property:maxExceptions="10" />
+		property:maxExceptions="10"
+		property:threads="4" 
+		property:strategies-ref="geoname-strategies" />
 
 </beans>

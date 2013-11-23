@@ -53,7 +53,6 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 	 * @return the recursive action that has already spawned off the sub tasks, if necessary
 	 */
 	protected ForkJoinTask<?> getRecursiveAction(final IndexContext<?> indexContext, final T indexable, final IResourceProvider<?> resourceProvider) {
-		logger.info("Threads : " + indexable.getThreads());
 		class RecursiveActionImpl extends RecursiveAction {
 			/** @see IndexableHandler#getRecursiveAction(IndexContext, T, IResourceProvider) */
 			@Override
@@ -61,6 +60,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 			protected void compute() {
 				// Lets see if we should split off some threads
 				computeRecursive(indexContext, indexable, resourceProvider);
+				logger.info("Thread starting : " + this.hashCode());
 				do {
 					// When there are no more resources we exit this task
 					Object resource = resourceProvider.getResource();
@@ -74,7 +74,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 					// Sleep for the required time
 					ThreadUtilities.sleep(indexContext.getThrottle());
 				} while (true);
-				logger.info("Finished : " + this + ", " + RecursiveAction.getPool().getRunningThreadCount());
+				logger.info("Thread finished : " + this.hashCode() + ", thread count : " + RecursiveAction.getPool().getRunningThreadCount());
 			}
 		}
 		// And hup
@@ -100,8 +100,8 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 		T rightIndexable = (T) SerializationUtilities.clone(indexable);
 		((Indexable) leftIndexable).setStrategies(indexable.getStrategies());
 		((Indexable) rightIndexable).setStrategies(indexable.getStrategies());
-		leftIndexable.incrementThreads(-2);
-		rightIndexable.incrementThreads(-2);
+		leftIndexable.incrementThreads(-1);
+		rightIndexable.incrementThreads(-1);
 
 		ForkJoinTask<?> leftRecursiveAction = getRecursiveAction(indexContext, leftIndexable, resourceProvider);
 		ForkJoinTask<?> rightRecursiveAction = getRecursiveAction(indexContext, rightIndexable, resourceProvider);
