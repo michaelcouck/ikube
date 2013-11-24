@@ -6,6 +6,6 @@
 	</head>
 	<body>
 		<%-- Redirected because we can't set the welcome page to a virtual URL. --%>
-		<c:redirect url="/login" />
+		<%-- <c:redirect url="/login" /> --%>
 	</body>
 </html>
