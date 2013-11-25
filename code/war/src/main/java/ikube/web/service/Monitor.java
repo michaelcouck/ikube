@@ -75,6 +75,7 @@ public class Monitor extends Resource {
 
 	public static final String DELETE_INDEX = "/delete-index";
 	public static final String CPU_THROTTLING = "/cpu-throttling";
+	public static final String ANALYZERS = "/analyzers";
 
 	@GET
 	@Path(Monitor.FIELDS)
@@ -326,6 +327,14 @@ public class Monitor extends Resource {
 	public Response cpuThrottling() {
 		monitorService.cpuThrottling();
 		return buildResponse().build();
+	}
+
+	@GET
+	@Path(Monitor.ANALYZERS)
+	@Consumes(MediaType.APPLICATION_XML)
+	public Response analyzers() {
+		String[] analyzers = monitorService.getAnalyzers();
+		return buildJsonResponse(analyzers);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unused" })

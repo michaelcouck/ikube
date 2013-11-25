@@ -59,7 +59,7 @@
 			access="ROLE_USER,ROLE_ADMIN" />
 		<!-- The login page, this goes to the login controller then to the login view/page(login.jsp). -->
 		<form-login
-			always-use-default-target="false"
+			always-use-default-target="true"
 			default-target-url="/system/dash.html"
 			login-page="/login.html" 
 			authentication-failure-url="/login.html" 

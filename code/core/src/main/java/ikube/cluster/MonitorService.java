@@ -1,6 +1,7 @@
 package ikube.cluster;
 
 import ikube.IConstants;
+import ikube.analytics.IAnalyzer;
 import ikube.cluster.listener.IListener;
 import ikube.model.Attribute;
 import ikube.model.IndexContext;
@@ -262,6 +263,13 @@ public class MonitorService implements IMonitorService {
 
 		Event takeSnapshotEvent = IListener.EventGenerator.getEvent(Event.TAKE_SNAPSHOT, time, null, Boolean.FALSE);
 		clusterManager.sendMessage(takeSnapshotEvent);
+	}
+
+	@Override
+	@SuppressWarnings("rawtypes")
+	public String[] getAnalyzers() {
+		Map<String, IAnalyzer> analyzers = ApplicationContextManager.getBeans(IAnalyzer.class);
+		return analyzers.keySet().toArray(new String[analyzers.keySet().size()]);
 	}
 
 }

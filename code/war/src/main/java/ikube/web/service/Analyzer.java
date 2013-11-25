@@ -37,8 +37,8 @@ import org.springframework.stereotype.Component;
 @Produces(MediaType.APPLICATION_JSON)
 public class Analyzer extends Resource {
 
+	public static final String ANALYZER = "/analyzer";
 	public static final String ANALYZE = "/analyze";
-	public static final String ANALYZER = "/analyze/json";
 
 	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(Analyzer.class);

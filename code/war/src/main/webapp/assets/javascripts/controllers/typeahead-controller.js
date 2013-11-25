@@ -67,9 +67,11 @@ function TypeaheadController($scope, $http, $injector, $timeout) {
 		
 		var promise = $http.post($scope.url, $scope.search);
 		promise.success(function(data, status) {
-			$scope.search = data;
-			$scope.status = status;
-			$scope.convertToArray();
+			if (!!data.searchStrings && data.searchStrings.toString() == $scope.search.searchStrings.toString()) {
+				$scope.search = data;
+				$scope.status = status;
+				$scope.convertToArray();
+			}
 		});
 		promise.error(function(data, status) {
 			$scope.status = status;

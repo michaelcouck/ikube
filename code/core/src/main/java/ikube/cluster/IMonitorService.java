@@ -117,5 +117,12 @@ public interface IMonitorService {
 	 * This will toggle the throttling for the server, enabling the automatic throttling and disabling it.
 	 */
 	void cpuThrottling();
+	
+	/**
+	 * This method will return the names of the analyzers in the system. Typically the name of the analyzer is the unique Spring identifier.
+	 * 
+	 * @return the name of the analyzers
+	 */
+	String[] getAnalyzers();
 
 }

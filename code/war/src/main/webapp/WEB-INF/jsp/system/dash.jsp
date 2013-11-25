@@ -112,7 +112,7 @@
 									<div class="inner-well clearfix">
 										<div class="pull-left"><b>Jobs running : </b>{{servers[0].threadsRunning}}</div>
 										<div class="pull-right">
-											<a class="button mini rounded inset" ng-click="terminateThreads = !terminateThreads">Stop</a>
+											<a class="button mini rounded inset light-gray" ng-click="terminateThreads = !terminateThreads">Stop</a>
 										</div>
 									</div>
 									<div class="inner-well clearfix" ng-show="terminateThreads">
@@ -145,7 +145,7 @@
 									<div class="inner-well clearfix">
 										<div class="pull-left"><b>Cpu throttling : </b>{{servers[0].cpuThrottling}}</div>
 										<div class="pull-right">
-											<a class="button mini rounded inset" ng-click="terminateThrottling = !terminateThrottling">Stop</a>
+											<a class="button mini rounded inset light-gray" ng-click="terminateThrottling = !terminateThrottling">Stop</a>
 										</div>
 									</div>
 									<div class="inner-well clearfix" ng-show="terminateThrottling">

@@ -430,9 +430,4 @@
 	
 	<bean class="ikube.security.ProxyAuthenticator" init-method="initialize" />
 	
-	<bean
-		id="ikube.analytics.IAnalyticsService"
-		name="ikube.analytics.IAnalyticsService" 
-		class="ikube.analytics.AnalyticsService" />
-	
 </beans>

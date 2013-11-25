@@ -23,7 +23,9 @@
 					</c:if>
 					<div class="input-group">
 						<input name="j_username" type="text" placeholder="guest..." id="j_username" class="input-transparent" focus-me="{{true}}" />
-						<input name="j_password" type="text" placeholder="guest..." class="input-transparent" />
+						<input name="j_password" type="text" placeholder="guest..." class="input-transparent" /><br>
+						<input type="checkbox" id="ch1" name="_spring_security_remember_me" class="normal-check" checked="checked" />
+						<label for="ch1" class="input">Remember me...</label>
 					</div>
 					<button id="login-submit" type="submit" class="login-button">Login</button>
 				</form>

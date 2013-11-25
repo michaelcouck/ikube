@@ -10,7 +10,8 @@
 	* String *
 	* Numeric *
 	* Range *
-	* Geospatial (need the sort fix for Lucene) * 
+	* Geospatial (need the sort fix for Lucene) *
+	* Done all of the above... ;) *
  -->
 
 <div class="container-fluid" ng-controller="SearcherController">
@@ -73,7 +74,7 @@
 										ng-model="indexes"
 										ng-options="index for index in indexes"
 										class="fill-up">
-										<option style="display:none" value="">choose</option>
+										<option style="display:none" value="">choose...</option>
 									</select>
 								</div>
 								

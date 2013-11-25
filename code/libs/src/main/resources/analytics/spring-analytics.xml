@@ -32,8 +32,8 @@
 	</bean>
 	
 	<bean
-		id="ikube.analytics.AnalyticsService"
-		name="ikube.analytics.AnalyticsService"
+		id="ikube.analytics.IAnalyticsService"
+		name="ikube.analytics.IAnalyticsService"
 		class="ikube.analytics.AnalyticsService"
 		property:analyzers-ref="analyzers" />
 	 

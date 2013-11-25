@@ -21,10 +21,7 @@ public class Buildable extends Persistable {
 	private String algorithmType;
 
 	private String trainingData;
-	private String analysisData;
-
 	private String trainingFilePath;
-	private String analysisFilePath;
 
 	private boolean log;
 	private boolean compressed;
@@ -61,28 +58,12 @@ public class Buildable extends Persistable {
 		this.trainingData = trainingData;
 	}
 
-	public String getAnalysisData() {
-		return analysisData;
-	}
-
-	public void setAnalysisData(String analysisData) {
-		this.analysisData = analysisData;
-	}
-
 	public String getTrainingFilePath() {
 		return trainingFilePath;
 	}
 
 	public void setTrainingFilePath(String trainingFilePath) {
 		this.trainingFilePath = trainingFilePath;
-	}
-
-	public String getAnalysisFilePath() {
-		return analysisFilePath;
-	}
-
-	public void setAnalysisFilePath(String analysisFilePath) {
-		this.analysisFilePath = analysisFilePath;
 	}
 
 	public boolean isLog() {
