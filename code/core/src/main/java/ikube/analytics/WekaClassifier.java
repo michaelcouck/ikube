@@ -1,5 +1,6 @@
 package ikube.analytics;
 
+import ikube.model.Analysis;
 import ikube.model.Buildable;
 
 import java.io.IOException;
@@ -25,15 +26,11 @@ import weka.filters.Filter;
  */
 public class WekaClassifier extends Analyzer {
 
-	public static final int BUILD_THRESHOLD = 1000;
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(WekaClassifier.class);
 
 	private Filter filter;
-	private Instances trainingInstances;
-
+	private volatile Instances instances;
 	private volatile Classifier classifier;
-	private volatile Instances classificationInstances;
 
 	/**
 	 * {@inheritDoc}
@@ -41,31 +38,13 @@ public class WekaClassifier extends Analyzer {
 	 * @throws IOException
 	 */
 	public void init(final Buildable buildable) throws Exception {
-		classifier = (Classifier) Class.forName(buildable.getAlgorithmType()).newInstance();
-		trainingInstances = instances(buildable);
-		trainingInstances.setClassIndex(0);
+		instances = instances(buildable);
+		instances.setClassIndex(0);
 		if (!StringUtils.isEmpty(buildable.getFilterType())) {
 			filter = (Filter) Class.forName(buildable.getFilterType()).newInstance();
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public synchronized boolean train(final String... strings) {
-		try {
-			Instance instance = instance(strings[1], trainingInstances);
-			instance.setClassValue(strings[0]);
-			trainingInstances.add(instance);
-			if (trainingInstances.numInstances() > 0 && trainingInstances.numInstances() % BUILD_THRESHOLD == 0) {
-				build(null);
-			}
-			return Boolean.TRUE;
-		} catch (Exception e) {
-			LOGGER.error("Exception creating a training instance : ", e);
-			throw new RuntimeException(e);
-		}
+		String type = buildable.getAlgorithmType();
+		classifier = (Classifier) Class.forName(type).newInstance();
 	}
 
 	/**
@@ -79,25 +58,57 @@ public class WekaClassifier extends Analyzer {
 			Instances filteredData = null;
 
 			if (filter == null) {
-				filteredData = trainingInstances;
+				filteredData = instances;
 			} else {
-				filter.setInputFormat(trainingInstances);
-				filteredData = Filter.useFilter(trainingInstances, filter);
+				filter.setInputFormat(instances);
+				filteredData = Filter.useFilter(instances, filter);
 			}
 
 			Classifier classifier = new SMO();
 			classifier.buildClassifier(filteredData);
 			this.classifier = classifier;
-			classificationInstances = trainingInstances.stringFreeStructure();
+			instances = instances.stringFreeStructure();
 
 			filteredData.setRelationName("filtered_data");
-			trainingInstances.setRelationName("training_data");
+			instances.setRelationName("training_data");
 			log(filteredData);
 			return;
 		} catch (Exception e) {
 			LOGGER.info("Exception building classifier : ", e);
-			trainingInstances.delete();
-			classificationInstances.delete();
+			instances.delete();
+			// classificationInstances.delete();
+			throw new RuntimeException(e);
+		}
+	}
+
+	private void log(final Instances instances) throws Exception {
+		if (instances != null) {
+			int numClasses = instances.numClasses();
+			int numAttributes = instances.numAttributes();
+			int numInstances = instances.numInstances();
+			LOGGER.info("Building classifier, classes : " + numClasses + ", attributes : " + numAttributes + ", instances : " + numInstances);
+			Evaluation evaluation = new Evaluation(instances);
+			evaluation.evaluateModel(classifier, instances);
+			String evaluationReport = evaluation.toSummaryString();
+			LOGGER.info("Classifier evaluation : " + evaluationReport);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public boolean train(final Analysis<String, double[]>... analyses) throws Exception {
+		try {
+			for (final Analysis<String, double[]> analysis : analyses) {
+				Instance instance = instance(analysis.getInput(), instances);
+				instance.setClassValue(analysis.getClazz().toString());
+				instances.add(instance);
+			}
+			return Boolean.TRUE;
+		} catch (Exception e) {
+			LOGGER.error("Exception creating a training instance : ", e);
 			throw new RuntimeException(e);
 		}
 	}
@@ -106,38 +117,33 @@ public class WekaClassifier extends Analyzer {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized String analyze(final String input) {
+	public Analysis<String, double[]> analyze(final Analysis<String, double[]> analysis) throws Exception {
 		try {
-			double classification = -1;
-			Instance instance = instance(input, classificationInstances);
+			// Create the instance from the data
+			Instance instance = instance(analysis.getInput(), instances);
+			// Filter from string to inverse vector if necessary
 			if (filter != null) {
 				filter.input(instance);
-				Instance filteredInstance = filter.output();
-				classification = classifier.classifyInstance(filteredInstance);
-			} else {
-				classification = classifier.classifyInstance(instance);
+				instance = filter.output();
 			}
-			return classificationInstances.classAttribute().value((int) classification);
+			// Classify the instance
+			double classification = classifier.classifyInstance(instance);
+
+			// Set the output for the client
+			String clazz = instances.classAttribute().value((int) classification);
+			double[] output = classifier.distributionForInstance(instance);
+			analysis.setClazz(clazz);
+			analysis.setOutput(output);
+
+			return analysis;
 		} catch (Exception e) {
-			LOGGER.error("Exception classifying content : " + input, e);
+			LOGGER.error("Exception classifying content : " + analysis.getInput(), e);
 			throw new RuntimeException(e);
 		} finally {
-			if (classificationInstances.numInstances() > BUILD_THRESHOLD) {
-				classificationInstances.delete();
+			// Clear the instances every so often to avoid an out of memory
+			if (instances.numInstances() > 1000) {
+				instances.delete();
 			}
-		}
-	}
-
-	private void log(final Instances instances) throws Exception {
-		int numClasses = trainingInstances.numClasses();
-		int numAttributes = trainingInstances.numAttributes();
-		int numInstances = trainingInstances.numInstances();
-		LOGGER.info("Building classifier, classes : " + numClasses + ", attributes : " + numAttributes + ", instances : " + numInstances);
-		if (instances != null) {
-			Evaluation evaluation = new Evaluation(instances);
-			evaluation.evaluateModel(classifier, instances);
-			String evaluationReport = evaluation.toSummaryString();
-			LOGGER.info("Classifier evaluation : " + evaluationReport);
 		}
 	}
 

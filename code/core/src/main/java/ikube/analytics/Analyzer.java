@@ -1,5 +1,6 @@
 package ikube.analytics;
 
+import ikube.model.Analysis;
 import ikube.model.Buildable;
 import ikube.toolkit.FileUtilities;
 
@@ -27,7 +28,7 @@ import weka.core.Instances;
  * @since 18.11.13
  * @version 01.00
  */
-abstract class Analyzer implements IAnalyzer<String, String> {
+abstract class Analyzer implements IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Analyzer.class);
 

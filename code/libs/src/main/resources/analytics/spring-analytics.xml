@@ -38,7 +38,8 @@
 		property:analyzers-ref="analyzers" />
 	 
 	 <util:map id="analyzers">
-	 	<entry key="analyzer-em" value-ref="analyzer-em" />
+		<entry key="analyzer-em" value-ref="analyzer-em" />
+		<entry key="classifier-smo" value-ref="classifier-smo" />
 	 </util:map>
 
 </beans>

@@ -5,7 +5,6 @@
 		<title>Ikube</title>
 	</head>
 	<body>
-		<%-- Redirected because we can't set the welcome page to a virtual URL. --%>
-		<%-- <c:redirect url="/login" /> --%>
+		<c:redirect url="/system/dash.html" />
 	</body>
 </html>

@@ -2,6 +2,7 @@ package ikube.analytics;
 
 import static junit.framework.Assert.assertNotNull;
 import ikube.AbstractTest;
+import ikube.model.Analysis;
 import ikube.model.Buildable;
 import ikube.toolkit.FileUtilities;
 
@@ -54,8 +55,9 @@ public class WekaClustererTest extends AbstractTest {
 				continue;
 			}
 		}
-		String cluster = wekaClassifier.analyze(line);
-		assertNotNull(cluster);
+		Analysis<String, double[]> analysis = getAnalysis(null, line);
+		Analysis<String, double[]> result = wekaClassifier.analyze(analysis);
+		assertNotNull(result.getClazz());
 	}
 
 	@Test
@@ -79,8 +81,9 @@ public class WekaClustererTest extends AbstractTest {
 		buildable.setAlgorithmType(type);
 		wekaClassifier.init(buildable);
 		wekaClassifier.build(buildable);
-		String cluster = wekaClassifier.analyze(line);
-		assertNotNull(cluster);
+		Analysis<String, double[]> analysis = getAnalysis(null, line);
+		Analysis<String, double[]> result = wekaClassifier.analyze(analysis);
+		assertNotNull(result.getClazz());
 	}
 
 }

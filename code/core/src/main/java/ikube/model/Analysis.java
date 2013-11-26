@@ -15,14 +15,21 @@ import javax.persistence.PrimaryKeyJoinColumn;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class Analysis<I, O> extends Persistable {
+public class Analysis<Input, Output> extends Persistable {
 
+	/** The name of the analyzer in the system, for example clusterer-em. */
 	private String analyzer;
 
-	private I input;
-	private O output;
+	/** The class/cluster for the instance. */
+	private Object clazz;
+	/** The input data, for training too. */
+	private Input input;
+	/** The output data, could be a string or a double array for distribution. */
+	private Output output;
 	private double duration;
 	private Exception exception;
+	private boolean compressed;
+
 	@OneToOne
 	@PrimaryKeyJoinColumn
 	private Buildable buildable;
@@ -35,19 +42,27 @@ public class Analysis<I, O> extends Persistable {
 		this.analyzer = analyzer;
 	}
 
-	public I getInput() {
+	public Object getClazz() {
+		return clazz;
+	}
+
+	public void setClazz(Object clazz) {
+		this.clazz = clazz;
+	}
+
+	public Input getInput() {
 		return input;
 	}
 
-	public void setInput(I input) {
+	public void setInput(Input input) {
 		this.input = input;
 	}
 
-	public O getOutput() {
+	public Output getOutput() {
 		return output;
 	}
 
-	public void setOutput(O output) {
+	public void setOutput(Output output) {
 		this.output = output;
 	}
 
@@ -65,6 +80,14 @@ public class Analysis<I, O> extends Persistable {
 
 	public void setException(Exception exception) {
 		this.exception = exception;
+	}
+
+	public boolean isCompressed() {
+		return compressed;
+	}
+
+	public void setCompressed(boolean compressed) {
+		this.compressed = compressed;
 	}
 
 	public Buildable getBuildable() {

@@ -28,10 +28,10 @@ public class AnalyticsService implements IAnalyticsService {
 		final IAnalyzer<I, O> analyzer = getAnalyzer(analysis);
 		double duration = Timer.execute(new Timer.Timed() {
 			@Override
+			@SuppressWarnings("unchecked")
 			public void execute() {
 				try {
-					O output = analyzer.analyze(analysis.getInput());
-					analysis.setOutput(output);
+					analyzer.analyze((I) analysis);
 				} catch (Exception e) {
 					analysis.setException(e);
 				}
@@ -44,16 +44,21 @@ public class AnalyticsService implements IAnalyticsService {
 
 	@SuppressWarnings("unchecked")
 	<I, O> IAnalyzer<I, O> getAnalyzer(final Analysis<I, O> analysis) {
-		if (analyzers.get(analysis.getAnalyzer()) == null) {
+		IAnalyzer<?, ?> analyzer = analyzers.get(analysis.getAnalyzer());
+		if (analyzer == null) {
 			try {
-				IAnalyzer<?, ?> analyzer = AnalyzerManager.buildAnalyzer(analysis);
+				analyzer = AnalyzerManager.buildAnalyzer(analysis);
 				analyzers.put(analysis.getAnalyzer(), analyzer);
 			} catch (Exception e) {
 				LOGGER.error(null, e);
 				throw new RuntimeException(e);
 			}
 		}
-		return (IAnalyzer<I, O>) analyzers.get(analysis.getAnalyzer());
+		return (IAnalyzer<I, O>) analyzer;
+	}
+
+	public Map<String, IAnalyzer<?, ?>> getAnalyzers() {
+		return analyzers;
 	}
 
 	public void setAnalyzers(final Map<String, IAnalyzer<?, ?>> analyzers) {

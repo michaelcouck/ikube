@@ -3,6 +3,7 @@ package ikube.analytics;
 import static junit.framework.Assert.assertEquals;
 import ikube.AbstractTest;
 import ikube.IConstants;
+import ikube.model.Analysis;
 import ikube.model.Buildable;
 
 import org.junit.Before;
@@ -19,14 +20,14 @@ import weka.filters.unsupervised.attribute.StringToWordVector;
 public class WekaClassifierTest extends AbstractTest {
 
 	/** Class under test */
-	private IAnalyzer<String, String> wekaClassifier;
+	private IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>> wekaClassifier;
 
 	private Buildable buildable;
 	private String positive = "my beautiful little girl";
 	private String negative = "you selfish stupid woman";
 
 	@Before
-	public void before() {
+	public void before() throws Exception {
 		buildable = new Buildable();
 		buildable.setLog(false);
 		buildable.setAlgorithmType(SMO.class.getName());
@@ -42,11 +43,13 @@ public class WekaClassifierTest extends AbstractTest {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void train() throws Exception {
 		wekaClassifier.init(buildable);
-		int iterations = WekaClassifier.BUILD_THRESHOLD + 1;
+		int iterations = 1000 + 1;
 		do {
-			wekaClassifier.train(IConstants.POSITIVE, positive);
+			Analysis<String, double[]> analysis = getAnalysis(IConstants.POSITIVE, positive);
+			wekaClassifier.train(analysis);
 		} while (iterations-- >= 0);
 	}
 
@@ -60,10 +63,14 @@ public class WekaClassifierTest extends AbstractTest {
 	public void analyze() throws Exception {
 		wekaClassifier.init(buildable);
 		wekaClassifier.build(buildable);
-		String result = wekaClassifier.analyze(positive);
-		assertEquals(IConstants.POSITIVE, result);
-		result = wekaClassifier.analyze(negative);
-		assertEquals(IConstants.NEGATIVE, result);
+
+		Analysis<String, double[]> analysis = getAnalysis(null, positive);
+		Analysis<String, double[]> result = wekaClassifier.analyze(analysis);
+		assertEquals(IConstants.POSITIVE, result.getClazz());
+
+		analysis = getAnalysis(null, negative);
+		result = wekaClassifier.analyze(analysis);
+		assertEquals(IConstants.NEGATIVE, result.getClazz());
 	}
 
 }

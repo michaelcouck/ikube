@@ -25,13 +25,13 @@ public class AnalyticsServiceTest extends AbstractTest {
 
 	private Buildable buildable;
 	private IAnalyzer<?, ?> analyzer;
-	private Analysis<String, String> analysis;
 	private AnalyticsService analyticsService;
+	private Analysis<String, double[]> analysis;
 	private String line = "35_51,FEMALE,INNER_CITY,0_24386,NO,1,NO,NO,NO,NO,YES";
 
 	@Before
 	public void before() throws Exception {
-		analysis = new Analysis<String, String>();
+		analysis = new Analysis<String, double[]>();
 		analysis.setAnalyzer("analyzer-em");
 		analysis.setInput(line);
 
@@ -52,7 +52,7 @@ public class AnalyticsServiceTest extends AbstractTest {
 	@Test
 	public void analyze() {
 		analyticsService.analyze(analysis);
-		assertEquals("1", analysis.getOutput());
+		assertEquals(1, analysis.getClazz());
 	}
 
 	@Test

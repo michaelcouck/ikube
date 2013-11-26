@@ -1,5 +1,6 @@
 package ikube.analytics;
 
+import ikube.model.Analysis;
 import ikube.model.Buildable;
 
 import org.slf4j.Logger;
@@ -37,18 +38,6 @@ public class WekaClusterer extends Analyzer {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean train(final String... strings) throws Exception {
-		for (final String string : strings) {
-			Instance instance = instance(string, instances);
-			instances.add(instance);
-		}
-		return true;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public void build(final Buildable buildable) throws Exception {
 		clusterer.buildClusterer(instances);
 		if (buildable.isLog()) {
@@ -60,10 +49,30 @@ public class WekaClusterer extends Analyzer {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String analyze(final String input) throws Exception {
-		Instance instance = instance(input, instances);
+	@SuppressWarnings("unchecked")
+	public boolean train(final Analysis<String, double[]>... analyses) throws Exception {
+		for (final Analysis<String, double[]> analysis : analyses) {
+			Instance instance = instance(analysis.getInput(), instances);
+			instances.add(instance);
+		}
+		return true;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Analysis<String, double[]> analyze(Analysis<String, double[]> analysis) throws Exception {
+		// Create the instance from the data
+		Instance instance = instance(analysis.getInput(), instances);
+
+		// Set the output for the client
 		int cluster = clusterer.clusterInstance(instance);
-		return Integer.toString(cluster);
+		double[] output = clusterer.distributionForInstance(instance);
+		analysis.setClazz(cluster);
+		analysis.setOutput(output);
+
+		return analysis;
 	}
 
 	private void log() throws Exception {

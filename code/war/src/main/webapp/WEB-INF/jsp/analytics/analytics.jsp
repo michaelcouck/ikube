@@ -5,7 +5,8 @@
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<div class="container-fluid" ng-controller="AnalyticsController">
+<div ng-controller="AnalyticsController">
+<div class="container-fluid">
 	<div class="row-fluid">
 		<div class="span12">
 			<div class="box">
@@ -24,11 +25,11 @@
 					</span>
 				</div>
 				
+				<!-- ng-submit="doAnalysis()" -->
 				<form class="fill-up">
 					<div class="row-fluid">
 						<div class="span6">
 							<div class="padded">
-								<form ng-submit="doAnalysis()">
 								Analysis
 								<div class="note pull-right"><b>Select an analyzer</b></div>
 								<div class="input search">
@@ -48,26 +49,33 @@
 								<div class="input">
 									<textarea 
 										placeholder="Input data in Weka format...(essentially csv format)" 
-										rows="8"
+										rows="5"
 										ng-model="analysis.input" 
 										title="datum,datum,datum...
 datum,datum,datum..."></textarea>
 								</div>
 								<div class="input search">
-									<input type="file" >
+									<div style="position: relative;">
+										<a class="button blue" href="#">
+											Choose File... 
+											<input 
+												type="file" 
+												style="position: absolute; z-index: 2; top: 0; left: 0; filter: alpha(opacity = 0);opacity: 0; background-color: transparent; color: transparent;"
+												file-upload multiple
+												onchange="$('#upload-file-info').html($(this).val());" />
+										</a>
+										<span id="upload-file-info"></span>
+									</div>
 								</div>
-								<button type="submit" class="button blue" ng-disabled="!analysis.input" ng-click="doAnalysis();">Go</button>
-								</form>
+								<button type="submit" class="button blue" ng-click="doAnalysis()">Go</button>
 							</div>
 						</div>
 						
 						<div class="span6">
 							<div class="padded">
-								<form ng-submit="doTrain()">
 								<b>Analyzer training</b>
 								<div class="note pull-right"><b>Specify analyzer unique identifier</b></div>
 								<div class="input">
-									<!-- ng-model="analysis.analyzer" -->
 									<input
 										id="analyzer-identifier"
 										name="analyzer-identifier" 
@@ -86,8 +94,8 @@ datum,datum,datum..."></textarea>
 								<div class="input">
 									<textarea 
 										placeholder="Training data in Weka format..." 
-										rows="12"
-										ng-model="analysis.buildable.trainingData"
+										rows="8"
+										ng-model="analysis.input"
 										title="@relation sentiment
 @attribute class {positive,negative}
 @attribute text String
@@ -103,7 +111,6 @@ negative,'you selfish stupid woman'"></textarea>
 									<input type="file" >
 								</div>
 								<button type="submit" class="button blue" ng-disabled="!searchString" ng-click="doSearchAll([searchString]);">Go</button>
-								</form>
 							</div>
 						</div>
 					</div>
@@ -139,3 +146,4 @@ negative,'you selfish stupid woman'"></textarea>
 			</div>
 		</div>
 	</div>
+</div>

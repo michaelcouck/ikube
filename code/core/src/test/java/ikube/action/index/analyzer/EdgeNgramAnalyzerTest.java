@@ -29,6 +29,7 @@ public class EdgeNgramAnalyzerTest extends AbstractTest {
 	@Before
 	public void before() {
 		edgeNgramAnalyzer = new EdgeNgramAnalyzer();
+		edgeNgramAnalyzer.setMinGram(3);
 	}
 
 	@Test

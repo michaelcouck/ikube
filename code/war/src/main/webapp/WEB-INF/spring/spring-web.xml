@@ -63,6 +63,8 @@
 		property:viewClass="org.springframework.web.servlet.view.tiles2.TilesView" />
 
 	<mvc:view-controller path="/login.html" />
+	<!-- <mvc:view-controller view-name="default" path="/" /> -->
+	<!-- <mvc:view-controller view-name="index" path="/index.html" /> -->
 	
 	<mvc:view-controller path="/system/dash.html" />
 	<mvc:view-controller path="/system/indexes.html" />

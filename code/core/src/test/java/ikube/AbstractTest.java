@@ -17,6 +17,7 @@ import ikube.database.IDataBase;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.IndexManagerMock;
 import ikube.model.Action;
+import ikube.model.Analysis;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
@@ -423,6 +424,13 @@ public abstract class AbstractTest {
 			int fieldLength = fieldValue != null ? fieldValue.length() : 0;
 			logger.info("        : " + fieldName + ", " + fieldLength + ", " + fieldValue);
 		}
+	}
+	
+	protected Analysis<String, double[]> getAnalysis(final String clazz, final String input) {
+		Analysis<String, double[]> analysis = new Analysis<String, double[]>();
+		analysis.setClazz(clazz);
+		analysis.setInput(input);
+		return analysis;
 	}
 
 }

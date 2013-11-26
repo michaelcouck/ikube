@@ -36,7 +36,7 @@ public final class GeonamePopulator extends ADatabase {
 	}
 
 	protected static void persist(final Class<?> clazz) throws Exception {
-		int start = 4179485;
+		int start = 7021288;
 		int count = 0;
 		int batchSize = 10000;
 		String sessionName = "geoname";

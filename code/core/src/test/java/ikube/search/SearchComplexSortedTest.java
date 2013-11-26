@@ -26,8 +26,9 @@ public class SearchComplexSortedTest extends AbstractTest {
 
 	@Before
 	public void before() throws Exception {
-		searchComplexSorted = createIndexRamAndSearch(SearchComplexSorted.class, new NgramAnalyzer(), IConstants.CONTENT, "123456", "234567", "345678",
-				"456789", "abc123");
+		NgramAnalyzer analyzer = new NgramAnalyzer();
+		analyzer.setMinGram(3);
+		searchComplexSorted = createIndexRamAndSearch(SearchComplexSorted.class, analyzer, IConstants.CONTENT, "123456", "234567", "345678", "456789", "abc123");
 	}
 
 	@Test
@@ -61,13 +62,13 @@ public class SearchComplexSortedTest extends AbstractTest {
 
 		ArrayList<HashMap<String, String>> results = searchComplexSorted.execute();
 		assertEquals("Should be the statistics and a result : ", 2, results.size());
-		
+
 		class New implements AutoCloseable {
 			@Override
 			public void close() throws Exception {
 			}
 		}
-		
+
 		try (New o = new New()) {
 			o.close();
 		} catch (Exception e) {

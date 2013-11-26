@@ -27,6 +27,7 @@ public class NgramAnalyzerTest extends AbstractTest {
 	@Before
 	public void before() {
 		ngramAnalyzer = new NgramAnalyzer();
+		ngramAnalyzer.setMinGram(3);
 	}
 
 	@Test

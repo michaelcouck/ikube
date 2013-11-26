@@ -20,7 +20,6 @@ public class Buildable extends Persistable {
 	private String analyzerType;
 	private String algorithmType;
 
-	private String trainingData;
 	private String trainingFilePath;
 
 	private boolean log;
@@ -48,14 +47,6 @@ public class Buildable extends Persistable {
 
 	public void setAlgorithmType(String algorithmType) {
 		this.algorithmType = algorithmType;
-	}
-
-	public String getTrainingData() {
-		return trainingData;
-	}
-
-	public void setTrainingData(String trainingData) {
-		this.trainingData = trainingData;
 	}
 
 	public String getTrainingFilePath() {

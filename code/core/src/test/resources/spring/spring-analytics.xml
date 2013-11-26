@@ -13,8 +13,8 @@
 		id="buildable-em"
 		class="ikube.model.Buildable"
 		property:log="true"
-		property:type="weka.clusterers.EM"
-		property:filePath="./ikube/analytics/bank-data.arff" />
+		property:algorithmType="weka.clusterers.EM"
+		property:trainingFilePath="./ikube/analytics/bank-data.arff" />
 	<bean 
 		id="analyzer-em" 
 		class="ikube.analytics.WekaClusterer" />
@@ -32,13 +32,13 @@
 	</bean>
 	
 	<bean
-		id="ikube.analytics.AnalyticsService"
-		name="ikube.analytics.AnalyticsService"
+		id="ikube.analytics.IAnalyticsService"
+		name="ikube.analytics.IAnalyticsService"
 		class="ikube.analytics.AnalyticsService"
 		property:analyzers-ref="analyzers" />
 	 
 	 <util:map id="analyzers">
-	 	<entry key="analyzer-em" value-ref="analyzer-em" />
+		<entry key="analyzer-em" value-ref="analyzer-em" />
 	 </util:map>
 
 </beans>

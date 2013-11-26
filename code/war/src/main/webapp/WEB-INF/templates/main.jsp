@@ -59,6 +59,7 @@
 	<script src="<c:url value="/assets/javascripts/directives/active-directive.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/directives/textarea-onblur-directive.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/directives/focus-directive.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/directives/file-upload-directive.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/searcher-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/actions-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/index-contexts-controller.js" />" type="text/javascript"></script>
