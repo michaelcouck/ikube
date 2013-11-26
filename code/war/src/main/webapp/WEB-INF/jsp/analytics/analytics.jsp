@@ -1,4 +1,4 @@
-<%@ page errorPage="/WEB-INF/jsp/error.jsp" %>
+<%-- <%@ page errorPage="/WEB-INF/jsp/error.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -146,4 +146,4 @@ negative,'you selfish stupid woman'"></textarea>
 			</div>
 		</div>
 	</div>
-</div>
+</div> --%>
