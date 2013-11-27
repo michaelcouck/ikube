@@ -81,19 +81,6 @@ public class WekaClassifier extends Analyzer {
 		}
 	}
 
-	private void log(final Instances instances) throws Exception {
-		if (instances != null) {
-			int numClasses = instances.numClasses();
-			int numAttributes = instances.numAttributes();
-			int numInstances = instances.numInstances();
-			LOGGER.info("Building classifier, classes : " + numClasses + ", attributes : " + numAttributes + ", instances : " + numInstances);
-			Evaluation evaluation = new Evaluation(instances);
-			evaluation.evaluateModel(classifier, instances);
-			String evaluationReport = evaluation.toSummaryString();
-			LOGGER.info("Classifier evaluation : " + evaluationReport);
-		}
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -134,6 +121,7 @@ public class WekaClassifier extends Analyzer {
 			double[] output = classifier.distributionForInstance(instance);
 			analysis.setClazz(clazz);
 			analysis.setOutput(output);
+			analysis.setAlgorithmOutput(classifier.toString());
 
 			return analysis;
 		} catch (Exception e) {
@@ -144,6 +132,19 @@ public class WekaClassifier extends Analyzer {
 			if (instances.numInstances() > 1000) {
 				instances.delete();
 			}
+		}
+	}
+	
+	private void log(final Instances instances) throws Exception {
+		if (instances != null) {
+			int numClasses = instances.numClasses();
+			int numAttributes = instances.numAttributes();
+			int numInstances = instances.numInstances();
+			LOGGER.info("Building classifier, classes : " + numClasses + ", attributes : " + numAttributes + ", instances : " + numInstances);
+			Evaluation evaluation = new Evaluation(instances);
+			evaluation.evaluateModel(classifier, instances);
+			String evaluationReport = evaluation.toSummaryString();
+			LOGGER.info("Classifier evaluation : " + evaluationReport);
 		}
 	}
 

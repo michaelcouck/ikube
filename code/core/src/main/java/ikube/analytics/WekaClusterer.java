@@ -71,6 +71,7 @@ public class WekaClusterer extends Analyzer {
 		double[] output = clusterer.distributionForInstance(instance);
 		analysis.setClazz(cluster);
 		analysis.setOutput(output);
+		analysis.setAlgorithmOutput(clusterer.toString());
 
 		return analysis;
 	}

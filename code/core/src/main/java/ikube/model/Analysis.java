@@ -6,6 +6,8 @@ import javax.persistence.InheritanceType;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 
+import weka.classifiers.functions.SMO;
+
 /**
  * This class represents data that is to be analyzed as well as the results from the analysis if any.
  * 
@@ -26,6 +28,8 @@ public class Analysis<Input, Output> extends Persistable {
 	private Input input;
 	/** The output data, could be a string or a double array for distribution. */
 	private Output output;
+	/** An algorithm specific output, could be toString from the {@link SMO} function. */
+	private Object algorithmOutput;
 	private double duration;
 	private Exception exception;
 	private boolean compressed;
@@ -64,6 +68,14 @@ public class Analysis<Input, Output> extends Persistable {
 
 	public void setOutput(Output output) {
 		this.output = output;
+	}
+
+	public Object getAlgorithmOutput() {
+		return algorithmOutput;
+	}
+
+	public void setAlgorithmOutput(Object algorithmOutput) {
+		this.algorithmOutput = algorithmOutput;
 	}
 
 	public double getDuration() {

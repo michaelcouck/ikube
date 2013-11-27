@@ -14,20 +14,32 @@ import ikube.toolkit.ApplicationContextManager;
  */
 public class AnalyzerManager {
 
-	public static IAnalyzer<?, ?> buildAnalyzer(final Analysis<?, ?> analysis) throws Exception {
-		Buildable buildable = analysis.getBuildable();
-		String name = analysis.getAnalyzer();
-		String type = buildable.getAnalyzerType();
-		IAnalyzer<?, ?> analyzer = ApplicationContextManager.setBean(name, type);
-		return AnalyzerManager.buildAnalyzer(buildable, analyzer);
+	public static final IAnalyzer<?, ?>[] buildAnalyzer(final Analysis<?, ?>... analyses) throws Exception {
+		int index = 0;
+		IAnalyzer<?, ?>[] analyzers = new IAnalyzer<?, ?>[analyses.length];
+		for (final Analysis<?, ?> analysis : analyses) {
+			Buildable buildable = analysis.getBuildable();
+			String name = analysis.getAnalyzer();
+			String type = buildable.getAnalyzerType();
+			IAnalyzer<?, ?> analyzer = ApplicationContextManager.setBean(name, type);
+			AnalyzerManager.buildAnalyzer(buildable, analyzer);
+			analyzers[index] = analyzer;
+		}
+		return analyzers;
 	}
 
-	public static IAnalyzer<?, ?> buildAnalyzer(final Buildable buildable) throws Exception {
-		IAnalyzer<?, ?> analyzer = (IAnalyzer<?, ?>) Class.forName(buildable.getAlgorithmType()).newInstance();
-		return buildAnalyzer(buildable, analyzer);
+	public static final IAnalyzer<?, ?>[] buildAnalyzer(final Buildable... buildables) throws Exception {
+		int index = 0;
+		IAnalyzer<?, ?>[] analyzers = new IAnalyzer<?, ?>[buildables.length];
+		for (final Buildable buildable : buildables) {
+			IAnalyzer<?, ?> analyzer = (IAnalyzer<?, ?>) Class.forName(buildable.getAlgorithmType()).newInstance();
+			buildAnalyzer(buildable, analyzer);
+			analyzers[index] = analyzer;
+		}
+		return analyzers;
 	}
 
-	public static IAnalyzer<?, ?> buildAnalyzer(final Buildable buildable, final IAnalyzer<?, ?> analyzer) throws Exception {
+	public static final IAnalyzer<?, ?> buildAnalyzer(final Buildable buildable, final IAnalyzer<?, ?> analyzer) throws Exception {
 		analyzer.init(buildable);
 		analyzer.build(buildable);
 		return analyzer;

@@ -15,18 +15,37 @@
 		property:log="true"
 		property:algorithmType="weka.clusterers.EM"
 		property:trainingFilePath="./ikube/analytics/bank-data.arff" />
+	<bean
+		id="buildable-smo"
+		class="ikube.model.Buildable"
+		property:log="true"
+		property:filterType="weka.filters.unsupervised.attribute.StringToWordVector"
+		property:algorithmType="weka.classifiers.functions.SMO"
+		property:trainingFilePath="./ikube/analytics/instance.arff" />
 	<bean 
 		id="analyzer-em" 
 		class="ikube.analytics.WekaClusterer" />
+	<bean 
+		id="analyzer-smo" 
+		class="ikube.analytics.WekaClassifier" />
 		
 	<bean 
-		id="analyzerManager" 
 		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
 		property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
 		<property name="arguments">
 			<array>
 				<ref local="buildable-em" />
 				<ref local="analyzer-em" />
+			</array>
+		</property>
+	</bean>
+	<bean 
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+		property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
+		<property name="arguments">
+			<array>
+				<ref local="buildable-smo" />
+				<ref local="analyzer-smo" />
 			</array>
 		</property>
 	</bean>
@@ -39,6 +58,7 @@
 	 
 	 <util:map id="analyzers">
 		<entry key="analyzer-em" value-ref="analyzer-em" />
+		<entry key="analyzer-smo" value-ref="analyzer-smo" />
 	 </util:map>
 
 </beans>
