@@ -1,3 +1,4 @@
+<!-- NOT USED, SCHEDULED FOR DELETION. -->
 <ul class="secondary-nav-menu">
 	<li class="active"><a href="stats.html"> <i
 			class="icon-dashboard"></i> Stats

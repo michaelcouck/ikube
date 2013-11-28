@@ -30,9 +30,14 @@ public class Analysis<Input, Output> extends Persistable {
 	private Output output;
 	/** An algorithm specific output, could be toString from the {@link SMO} function. */
 	private Object algorithmOutput;
+	/** The correlation co-efficients for the data set. */
+	private double[][] correlationCoefficients;
+	private double[][] distributionForInstances;
 	private double duration;
 	private Exception exception;
+	private boolean correlation;
 	private boolean compressed;
+	private boolean distribution;
 
 	@OneToOne
 	@PrimaryKeyJoinColumn
@@ -78,6 +83,22 @@ public class Analysis<Input, Output> extends Persistable {
 		this.algorithmOutput = algorithmOutput;
 	}
 
+	public double[][] getCorrelationCoefficients() {
+		return correlationCoefficients;
+	}
+
+	public void setCorrelationCoefficients(double[][] correlationCoefficients) {
+		this.correlationCoefficients = correlationCoefficients;
+	}
+
+	public double[][] getDistributionForInstances() {
+		return distributionForInstances;
+	}
+
+	public void setDistributionForInstances(double[][] distributionForInstances) {
+		this.distributionForInstances = distributionForInstances;
+	}
+
 	public double getDuration() {
 		return duration;
 	}
@@ -94,12 +115,28 @@ public class Analysis<Input, Output> extends Persistable {
 		this.exception = exception;
 	}
 
+	public boolean isCorrelation() {
+		return correlation;
+	}
+
+	public void setCorrelation(boolean correlation) {
+		this.correlation = correlation;
+	}
+
 	public boolean isCompressed() {
 		return compressed;
 	}
 
 	public void setCompressed(boolean compressed) {
 		this.compressed = compressed;
+	}
+
+	public boolean isDistribution() {
+		return distribution;
+	}
+
+	public void setDistribution(boolean distribution) {
+		this.distribution = distribution;
 	}
 
 	public Buildable getBuildable() {

@@ -9,7 +9,7 @@
 	<ul ng-controller="ActiveController">
 		<li href="system" active-link="active"><a href="<c:url value="/system/dash.html" />"><i class="icon-cogs"></i>System</a></li>
 		<li href="search" active-link="active"><a href="<c:url value="/search/search.html" />"><i class="icon-list-alt"></i>Search</a></li>
-		<li href="analytics" active-link="active"><a href="<c:url value="/analytics/analytics.html" />"><i class="icon-beaker"></i>Analytics</a></li>
+		<li href="analytics" active-link="active"><a href="<c:url value="/analytics/analyze.html" />"><i class="icon-beaker"></i>Analytics</a></li>
 		<li href="grid" active-link="active"><a href="#" onClick="enterpriseNotification();"><i class="icon-th"></i>Grid</a></li>
 		<li class="dropdown">
 			<a class="dropdown-toggle" data-toggle="dropdown">
@@ -33,15 +33,12 @@
 </nav>
 
 <nav id="secondary" class="main-nav">
-
 	<div class="profile-menu">
-
 		<div class="pull-left">
 			<div class="avatar">
 				<img src="<c:url value="/assets/images/MYP_1376-small.jpg" />" />
 			</div>
 		</div>
-
 		<div class="pull-left">
 			<div class="title">Ikube</div>
 			<div class="btn-group">
@@ -60,17 +57,13 @@
 					</ul>
 			</div>
 		</div>
-		
 		<div class="pull-right profile-menu-nav-collapse">
 			<button class="button black">
 				<i class="icon-reorder"></i>
 			</button>
 		</div>
-
 	</div>
-	
 	<tiles:insertAttribute name="sub-menu" />
-
 </nav>
 
 <!-- Include the modals for the input -->
@@ -95,8 +88,7 @@
 	<div class="row" id="notifications-wrapper">
 		<div id="notifications"
 			class="{{ bootstrapPositionClass }} notifications animated">
-			<div id="dismiss-all" class="dismiss-all button blue">Dismiss
-				all</div>
+			<div id="dismiss-all" class="dismiss-all button blue">Dismiss all</div>
 			<div id="content">
 				<div id="notes"></div>
 			</div>

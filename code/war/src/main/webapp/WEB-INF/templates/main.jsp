@@ -48,22 +48,30 @@
 	<script src="<c:url value="/assets/javascripts/ui-bootstrap-tpls-0.6.0.js" />" type='text/javascript'></script>
 	
 	<!-- Must be after Angular -->
+	<script src="<c:url value="/assets/javascripts/ng-google-chart.js" />" type="text/javascript"></script>
+	<!-- Services that are injected into controllers. -->
 	<script src="<c:url value="/assets/javascripts/services/database-service.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/services/results-builder-service.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/services/config-service.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/services/notification-service.js" />" type="text/javascript"></script>
-	
+	<!-- Base logic and functions -->
 	<script src="<c:url value="/assets/javascripts/ikube.js" />" type="text/javascript"></script>
+	<!-- Directives -->
+	<script src="<c:url value="/assets/javascripts/directives/google-map-directive.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/directives/index-graph-directive.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/directives/search-graph-directive.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/directives/chart-directive.js" />" type="text/javascript"></script>
 	
 	<script src="<c:url value="/assets/javascripts/directives/directive.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/directives/active-directive.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/directives/textarea-onblur-directive.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/directives/focus-directive.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/directives/file-upload-directive.js" />" type="text/javascript"></script>
+	<!-- Controllers -->
 	<script src="<c:url value="/assets/javascripts/controllers/searcher-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/actions-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/index-contexts-controller.js" />" type="text/javascript"></script>
-	<script src="<c:url value="/assets/javascripts/controllers/indexes-controller.js" />" type="text/javascript"></script>
+	<%-- <script src="<c:url value="/assets/javascripts/controllers/indexes-controller.js" />" type="text/javascript"></script> --%>
 	<script src="<c:url value="/assets/javascripts/controllers/properties-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/servers-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/typeahead-controller.js" />" type="text/javascript"></script>

@@ -24,7 +24,7 @@ var chartRefreshInterval = 5000;
  * client. This module will spawn and create the controllers and other
  * artifacts as required.
  */
-var module = angular.module('ikube', [ 'ui.bootstrap', 'ikube-services' ]);
+var module = angular.module('ikube', [ 'ui.bootstrap', 'ikube-services', 'googlechart' ]);
 
 function writeDate() {
 	var d = new Date();

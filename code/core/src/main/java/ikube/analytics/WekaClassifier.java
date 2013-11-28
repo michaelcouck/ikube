@@ -6,8 +6,6 @@ import ikube.model.Buildable;
 import java.io.IOException;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
@@ -25,8 +23,6 @@ import weka.filters.Filter;
  * @version 01.00
  */
 public class WekaClassifier extends Analyzer {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(WekaClassifier.class);
 
 	private Filter filter;
 	private volatile Instances instances;
@@ -74,7 +70,7 @@ public class WekaClassifier extends Analyzer {
 			log(filteredData);
 			return;
 		} catch (Exception e) {
-			LOGGER.info("Exception building classifier : ", e);
+			logger.info("Exception building classifier : ", e);
 			instances.delete();
 			// classificationInstances.delete();
 			throw new RuntimeException(e);
@@ -95,7 +91,7 @@ public class WekaClassifier extends Analyzer {
 			}
 			return Boolean.TRUE;
 		} catch (Exception e) {
-			LOGGER.error("Exception creating a training instance : ", e);
+			logger.error("Exception creating a training instance : ", e);
 			throw new RuntimeException(e);
 		}
 	}
@@ -122,10 +118,14 @@ public class WekaClassifier extends Analyzer {
 			analysis.setClazz(clazz);
 			analysis.setOutput(output);
 			analysis.setAlgorithmOutput(classifier.toString());
+			// analysis.setCorrelationCoefficients(getCorrelationCoefficients(instances));
+			if (analysis.isDistribution()) {
+				analysis.setDistributionForInstances(getDistributionForInstances(instances));
+			}
 
 			return analysis;
 		} catch (Exception e) {
-			LOGGER.error("Exception classifying content : " + analysis.getInput(), e);
+			logger.error("Exception classifying content : " + analysis.getInput(), e);
 			throw new RuntimeException(e);
 		} finally {
 			// Clear the instances every so often to avoid an out of memory
@@ -134,17 +134,27 @@ public class WekaClassifier extends Analyzer {
 			}
 		}
 	}
-	
+
+	@Override
+	double classOrCluster(final Instance instance) throws Exception {
+		return classifier.classifyInstance(instance);
+	}
+
+	@Override
+	double[] distributionForInstance(final Instance instance) throws Exception {
+		return classifier.distributionForInstance(instance);
+	}
+
 	private void log(final Instances instances) throws Exception {
 		if (instances != null) {
 			int numClasses = instances.numClasses();
 			int numAttributes = instances.numAttributes();
 			int numInstances = instances.numInstances();
-			LOGGER.info("Building classifier, classes : " + numClasses + ", attributes : " + numAttributes + ", instances : " + numInstances);
+			logger.info("Building classifier, classes : " + numClasses + ", attributes : " + numAttributes + ", instances : " + numInstances);
 			Evaluation evaluation = new Evaluation(instances);
 			evaluation.evaluateModel(classifier, instances);
 			String evaluationReport = evaluation.toSummaryString();
-			LOGGER.info("Classifier evaluation : " + evaluationReport);
+			logger.info("Classifier evaluation : " + evaluationReport);
 		}
 	}
 

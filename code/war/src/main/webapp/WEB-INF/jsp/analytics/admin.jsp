@@ -2,10 +2,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="security"
-	uri="http://www.springframework.org/security/tags"%>
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <div ng-controller="AnalyticsController">
 	<div class="container-fluid">
@@ -13,7 +11,7 @@
 			<div class="span12">
 				<div class="box">
 					<div class="tab-header">
-						<b>Analytics<b>
+						<b>Analyzer administration<b>
 						<img 
 							ng-show="!!status"
 							alt="Loading spinner"
@@ -128,26 +126,34 @@ negative,'you selfish stupid woman'"></textarea>
 	</div>
 
 	<div class="container-fluid">
+
 		<div class="row-fluid">
-			<div class="span12">
-				<div class="box padded">
-					Class/cluster : {{analysis.clazz}}
+			<div class="span6">
+				<div class="box">
+					<div class="tab-header">
+						<i class="icon-th-list"></i> Analyzer output
+					</div>
+					<div class="padded" ng-show="!!analysis.clazz" style="font-weight: normal;">
+						Class/cluster : {{analysis.clazz}} <br>
+						<div ng-repeat="probability in analysis.output">
+							Cluster : {{$index}}, probability : {{probability}}
+						</div>
+						<br>
+						Algorithm output : {{analysis.algorithmOutput}}
+					</div>
+				</div>
+			</div>
+			<div class="span6">
+				<div class="box">
+					<div class="tab-header">
+						<i class="icon-th-list"></i> Cluster distribution
+					</div>
+					<div class="padded">
+						<div google-chart chart="chart" style="{{chart.cssStyle}}" />
+					</div>
 				</div>
 			</div>
 		</div>
-		<div class="row-fluid">
-			<div class="span12">
-				<div class="box padded">
-					Distribution : {{analysis.output.toString()}}
-				</div>
-			</div>
-		</div>
-		<div class="row-fluid">
-			<div class="span12">
-				<div class="box padded">
-					Algorithm output : {{analysis.algorithmOutput}}
-				</div>
-			</div>
-		</div>
+
 	</div>
 </div>

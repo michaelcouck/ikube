@@ -18,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +38,8 @@ import org.springframework.stereotype.Component;
 @Produces(MediaType.APPLICATION_JSON)
 public class Analyzer extends Resource {
 
-	public static final String ANALYZER = "/analyzer";
 	public static final String ANALYZE = "/analyze";
+	public static final String ANALYZER = "/analyzer";
 
 	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(Analyzer.class);
@@ -53,11 +54,10 @@ public class Analyzer extends Resource {
 	@POST
 	@Path(Analyzer.ANALYZE)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response analyze(@Context
-	final HttpServletRequest request, @Context
-	final UriInfo uriInfo) {
+	public Response analyze(@Context final HttpServletRequest request, @Context final UriInfo uriInfo) {
 		Analysis<?, ?> analysis = unmarshall(Analysis.class, request);
 		analyticsService.analyze(analysis);
+		analysis.setAlgorithmOutput(newLineToLineBreak(analysis.getAlgorithmOutput()));
 		return buildJsonResponse(analysis);
 	}
 
@@ -68,14 +68,23 @@ public class Analyzer extends Resource {
 	@GET
 	@Path(Analyzer.ANALYZE)
 	@Consumes(MediaType.APPLICATION_XML)
-	public Response analyze(@QueryParam(value = IConstants.ANALYZER)
-	final String analyzer, @QueryParam(value = IConstants.CONTENT)
-	final String content) throws IOException {
+	public Response analyze(@QueryParam(value = IConstants.ANALYZER) final String analyzer, @QueryParam(value = IConstants.CONTENT) final String content)
+			throws IOException {
 		Analysis<String, String> analysis = new Analysis<String, String>();
 		analysis.setInput(content);
 		analysis.setAnalyzer(analyzer);
 		analyticsService.analyze(analysis);
+		analysis.setAlgorithmOutput(newLineToLineBreak(analysis.getAlgorithmOutput()));
 		return buildJsonResponse(analysis);
+	}
+
+	private Object newLineToLineBreak(final Object object) {
+		if (object != null && String.class.isAssignableFrom(object.getClass())) {
+			Object result = StringUtils.replace(object.toString(), "\n", "<br>");
+			result = StringUtils.replace(result.toString(), "\r", "<br>");
+			return result;
+		}
+		return object;
 	}
 
 }

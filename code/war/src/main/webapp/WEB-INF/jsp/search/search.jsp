@@ -35,7 +35,7 @@
 				</div>
 				<form class="fill-up">
 					<div class="row-fluid">
-						<div class="span12">
+						<!-- <div class="span12"> -->
 							<div class="padded">
 								<form ng-submit="doSearchAll([searchString])">
 								<div class="note pull-right"><b>Search all fields in all indexes</b></div>
@@ -103,7 +103,7 @@
 								<div style="width: 10px; height: 60px;"></div>
 
 							</div>
-						</div>
+						<!-- </div> -->
 					</div>
 				</form>
 			</div>
@@ -143,6 +143,9 @@
 												'{{searchField}}'&nbsp;
 											</span>
 										</span>
+									</span><br>
+									<span ng-show="!!statistics.corrections && statistics.corrections.length > 0">
+										Corrections :  {{statistics.corrections}}
 									</span>
 								</span> 
 								<br>

@@ -333,7 +333,7 @@ public class Monitor extends Resource {
 	@Path(Monitor.ANALYZERS)
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response analyzers() {
-		String[] analyzers = monitorService.getAnalyzers();
+		String[] analyzers = analyticsService.getAnalyzers().keySet().toArray(new String[analyticsService.getAnalyzers().keySet().size()]);
 		return buildJsonResponse(analyzers);
 	}
 

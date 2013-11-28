@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.Enumeration;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -20,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.Utils;
 
 /**
  * TODO Document me...
@@ -30,7 +32,7 @@ import weka.core.Instances;
  */
 abstract class Analyzer implements IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(Analyzer.class);
+	final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	/**
 	 * This method will create an instance from the input string. The string is assumed to be a comma separated list of values, with the same dimensions as the
@@ -69,13 +71,13 @@ abstract class Analyzer implements IAnalyzer<Analysis<String, double[]>, Analysi
 		try {
 			File file = new File(filePath);
 			if (file == null || !file.exists() || !file.canRead()) {
-				LOGGER.warn("Can't find data file : " + filePath + ", will search for it...");
+				logger.warn("Can't find data file : " + filePath + ", will search for it...");
 				String fileName = FilenameUtils.getName(filePath);
 				file = FileUtilities.findFileRecursively(new File("."), fileName);
 				if (file == null || !file.exists() || !file.canRead()) {
 					throw new RuntimeException("Couldn't find file for analyzer or can't read file : " + filePath);
 				} else {
-					LOGGER.info("Found data file : " + file.getAbsolutePath());
+					logger.info("Found data file : " + file.getAbsolutePath());
 				}
 			}
 			inputStream = new FileInputStream(file);
@@ -87,5 +89,49 @@ abstract class Analyzer implements IAnalyzer<Analysis<String, double[]>, Analysi
 			}
 		}
 	}
+
+	double[][] getCorrelationCoefficients(final Instances instances) {
+		int numAttributes = instances.numAttributes();
+		double[][] correlationCoefficients = new double[numAttributes][numAttributes];
+		for (int i = 0; i < numAttributes; i++) {
+			double[] attributeValuesArrayI = instances.attributeToDoubleArray(i);
+			for (int j = 0; j < i; j++) {
+				double[] attributeValuesArrayJ = instances.attributeToDoubleArray(j);
+				double correlationCoefficient = Utils.correlation(attributeValuesArrayI, attributeValuesArrayJ, numAttributes);
+				correlationCoefficients[i][j] = correlationCoefficient;
+			}
+		}
+		return correlationCoefficients;
+	}
+
+	@SuppressWarnings("unchecked")
+	double[][] getDistributionForInstances(final Instances instances) throws Exception {
+		double[][] distributionForInstances = new double[instances.numInstances()][];
+		if (instances.numInstances() > 0) {
+			Enumeration<Instance> enumeration = instances.enumerateInstances();
+			int index = 0;
+			do {
+				Instance instance = enumeration.nextElement();
+				double cluster = classOrCluster(instance);
+				double greatest = 0;
+				double[] distribution = distributionForInstance(instance);
+				for (final double probability : distribution) {
+					if (Math.abs(probability) > Math.abs(greatest)) {
+						greatest = probability;
+					}
+				}
+				double[] distributionForInstance = new double[2];
+				distributionForInstance[0] = cluster;
+				distributionForInstance[1] = greatest;
+				distributionForInstances[index] = distributionForInstance;
+				index++;
+			} while (enumeration.hasMoreElements());
+		}
+		return distributionForInstances;
+	}
+
+	abstract double classOrCluster(final Instance instance) throws Exception;
+
+	abstract double[] distributionForInstance(final Instance instance) throws Exception;
 
 }

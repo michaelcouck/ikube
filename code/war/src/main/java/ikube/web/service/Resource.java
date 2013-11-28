@@ -1,6 +1,7 @@
 package ikube.web.service;
 
 import ikube.action.index.parse.HtmlParser;
+import ikube.analytics.IAnalyticsService;
 import ikube.cluster.IClusterManager;
 import ikube.cluster.IMonitorService;
 import ikube.search.ISearcherService;
@@ -48,6 +49,8 @@ public abstract class Resource {
 	protected ISearcherService searcherService;
 	@Autowired
 	protected IClusterManager clusterManager;
+	@Autowired
+	protected IAnalyticsService analyticsService;
 
 	{
 		gson = new GsonBuilder().disableHtmlEscaping().create();

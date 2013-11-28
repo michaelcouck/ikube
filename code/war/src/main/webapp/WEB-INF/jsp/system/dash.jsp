@@ -32,7 +32,7 @@
 							<i class="icon-globe"></i>{{server.address}}
 							<span class="pull-right badge" title="Cpu load">{{server.averageCpuLoad}}</span>
 						</a>
-						<ul class="nav nav-list" style="margin-left: 30px; padding: 5px;" ng-show="server.show">
+						<ul class="nav nav-list" style="margin-left: 10px; padding: 5px;" ng-show="server.show">
 							<li><i class="icon-th-list"></i>Free memory : {{server.freeMemory / 1000}} gig</li>
 							<li><i class="icon-th"></i>Max memory : {{server.maxMemory / 1000}} gig</li>
 							<li><i class="icon-th-large"></i>Total memory : {{server.totalMemory / 1000}} gig</li>
@@ -62,7 +62,7 @@
 								title="Documents per minute" 
 								ng-show="!!action.snapshot.docsPerMinute">{{action.snapshot.docsPerMinute}}</span>
 						</a>
-						<ul class="nav nav-list" style="margin-left: 30px; padding: 5px;" ng-show="action.show">
+						<ul class="nav nav-list" style="margin-left: 10px; padding: 5px;" ng-show="action.show">
 							<li><i class="icon-globe"></i>Server : {{action.server.address}}</li>
 							<li><i class="icon-time"></i>Start timestamp : {{action.startTime}}</li>
 							<li><i class="icon-th-list"></i>Index writer documents : {{action.snapshot.numDocsForIndexWriters}}</li>
