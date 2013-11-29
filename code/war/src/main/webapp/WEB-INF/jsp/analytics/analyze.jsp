@@ -60,7 +60,7 @@
 		</div>
 
 		<div class="span6">
-			<div class="black-box tex">
+			<div class="box">
 				<div class="tab-header">Analyzer output</div>
 				<ul class="recent-comments">
 					<li class="separator">
@@ -78,10 +78,20 @@
 								<i class="icon-pencil"></i> Note: This output is for all the instances/rows/data that were used in the input.
 							</div>
 							Class/cluster : <span style="color: blue; font-weight: bold;" ng-bind-html-unsafe="analysis.clazz"></span><br><br>
-							<div ng-repeat="probability in analysis.output">
+							<table class="table table-striped table-bordered table-condensed table-hover data-table">
+								<tr ng-repeat="probability in analysis.output">
+									<td>Cluster</td>
+									<td>{{probability}}</td>
+								</tr>
+								<tr>
+									<td>Algorithm output</td>
+									<td><span ng-bind-html-unsafe="analysis.algorithmOutput"></td>
+								</tr>
+							</table>
+							<!-- <div ng-repeat="probability in analysis.output">
 							Cluster : {{$index}}, probability : {{probability}}
-							<br><br>
-							Algorithm output : <span ng-bind-html-unsafe="analysis.algorithmOutput">
+							<br><br> -->
+							<!-- Algorithm output : <span ng-bind-html-unsafe="analysis.algorithmOutput"> -->
 						</div>
 					</li>
 				</ul>

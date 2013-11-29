@@ -1,4 +1,7 @@
 <% response.setHeader("Access-Control-Allow-Origin", "*"); %>
+<% response.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept"); %>
+<% response.setHeader("Access-Control-Allow-Methods", "GET, POST"); %>
+<% response.setHeader("Access-Control-Allow-Credentials", "true"); %>
 
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
@@ -26,7 +29,7 @@
 	
 	<!-- <script src="https://www.google.com/jsapi" type="text/javascript" ></script> -->
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript"></script>
-	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js" type="text/javascript"></script>
+	<!-- <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js" type="text/javascript"></script> -->
 	<!-- <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min.js" type="text/javascript"></script> -->
 	<!-- <script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script> -->
 	<!-- <script src="http://www.google-analytics.com/ga.js" type="text/javascript"></script> -->
@@ -34,6 +37,7 @@
 	
 	<%-- <link rel="stylesheet" type="text/css" href="<c:url value="/js/bootstrap-combined.min.css" />"> --%>
 	<script type='text/javascript' src="<c:url value="/js/angular.js" />"></script>
+	<!-- <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.js"></script> -->
 	<script type='text/javascript' src="<c:url value="/js/ui-bootstrap-tpls-0.4.0.js" />"></script>
 	
 	<!-- Must be after Angular -->

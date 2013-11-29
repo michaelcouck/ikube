@@ -38,7 +38,7 @@
 		property:throttle="0"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
-		property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer" 
+		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer" 
 		property:children-ref="ikubeIndexables" />
 	<util:list id="ikubeIndexables">
 		<ref local="ikubeInternet" />

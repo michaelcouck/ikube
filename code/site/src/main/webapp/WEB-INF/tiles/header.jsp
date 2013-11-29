@@ -2,6 +2,11 @@
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+<% response.setHeader("Access-Control-Allow-Origin", "*"); %>
+<% response.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept"); %>
+<% response.setHeader("Access-Control-Allow-Methods", "GET, POST"); %>
+<% response.setHeader("Access-Control-Allow-Credentials", "true"); %>
+
 <div id="header" class="header">
 	<table width="100%" border="0">
 		<tr>

@@ -2,6 +2,11 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
+<% response.setHeader("Access-Control-Allow-Origin", "*"); %>
+<% response.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept"); %>
+<% response.setHeader("Access-Control-Allow-Methods", "GET, POST"); %>
+<% response.setHeader("Access-Control-Allow-Credentials", "true"); %>
+
 <div id="maincontent" ng-controller="SearcherController" ng-init="doSearch(0);">
 	<h2>Search Ikube</h2>
 	Results '{{searchParameters.firstResult}} 

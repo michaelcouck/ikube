@@ -393,19 +393,6 @@
     	class="ikube.action.index.handler.strategy.ContentTypeStrategy" 
     	init-method="initialize" />
     	
-    <bean 
-    	id="ikube.analytics.WekaClassifierSentiment"
-    	name="ikube.analytics.WekaClassifierSentiment"
-    	class="ikube.analytics.WekaClassifierSentiment"
-    	init-method="initialize" />
-    	
-    <bean
-		id="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
-		name="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy" 
-    	class="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
-    	init-method="initialize"
-    	property:classifier-ref="ikube.analytics.WekaClassifierSentiment" />
-    
     <!-- 
 		This bean is the geocoder, it will enrich the data with spatial co-ordinates if
 		the indexables contain address fields. The Url for this service  

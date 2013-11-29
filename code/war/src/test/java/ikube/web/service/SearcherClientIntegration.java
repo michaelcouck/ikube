@@ -27,13 +27,13 @@ public class SearcherClientIntegration {
 	public void main() throws Exception {
 
 		StringBuilder builder = new StringBuilder();
-		// http://localhost:9090/ikube/service/search/xml/geospatial
+		// http://localhost:9200/ikube/service/search/xml/geospatial
 		builder.append("/ikube");
 		builder.append("/service");
 		builder.append("/search");
 		builder.append("/xml");
 		builder.append("/geospatial");
-		URL url = new URL("http", "localhost", 9090, builder.toString());
+		URL url = new URL("http", "localhost", 9200, builder.toString());
 		System.out.println(url);
 
 		String[] names = { //
