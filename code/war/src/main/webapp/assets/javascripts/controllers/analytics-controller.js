@@ -10,11 +10,15 @@
 module.controller('AnalyticsController', function($http, $scope, $injector, $timeout) {
 	
 	$scope.status = 200;
+	$scope.showAlgorithmOutput = false;
+	$scope.showCorrelationCoefficients = false;
+	$scope.showDistributionForInstances = false;
 	var textColour = "#aaaaaa";
 	
 	$scope.headers = ["Cluster", "Cluster probability"];
 	$scope.origin = [0, 0];
 	$scope.analysis = {
+		correlation : true,
 		distribution : true,
 		distributionForInstances : [$scope.headers, $scope.origin]
 	};
@@ -51,11 +55,11 @@ module.controller('AnalyticsController', function($http, $scope, $injector, $tim
 	$scope.doChart = function(distributionForInstances) {
 		var chart = {
 			type : "ScatterChart",
-			cssStyle : "height:200px; width:100%;",
+			cssStyle : "height:300px; width:100%;",
 			data : google.visualization.arrayToDataTable(distributionForInstances),
 			options : {
 				legend : { position : 'bottom', textStyle : { color : '#aaaaaa', fontSize : 10 } },
-				title : "Instances in cluster",
+				title : "Clustered instances",
 				titleTextStyle : { fontSize : 16, color: '#999999' },
 				vAxis: { title : 'Probability',  titleTextStyle: { color: textColour, fontSize : 13 } },
 				hAxis : { title : 'Clusters',  titleTextStyle : { color: textColour, fontSize : 13 } },

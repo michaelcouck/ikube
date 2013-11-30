@@ -46,7 +46,7 @@
 							<div style="position: relative;">
 								<a class="button blue icon-file" href="#"> Choose File... <input
 									type="file"
-									style="position: absolute; z-index: 2; top: 0; left: 0; filter: alpha(opacity = 0); opacity: 0; background-color: transparent; color: transparent;"
+									style="position: absolute; z-index: 2; top: 0; left: 0; filter: alpha(opacity =     0); opacity: 0; background-color: transparent; color: transparent;"
 									file-upload multiple
 									onchange="$('#upload-file-info').html($(this).val());" />
 								</a> <span id="upload-file-info"></span>
@@ -60,53 +60,56 @@
 		</div>
 
 		<div class="span6">
+			<div class="nav-menu box">
+				<ul class="nav nav-list">
+					<li class="active"><a href="#">
+						<i class="icon-random"></i>
+						Cluster/class/result <span class="pull-right badge blue" ng-bind-html-unsafe="analysis.clazz">{{analysis.clazz}}</span> </a></li>
+					<li>
+						<a href="#" ng-click="showCorrelationCoefficients = !showCorrelationCoefficients">
+							<i class="icon-book"></i>
+							Correlation coefficients
+							
+							<ul class="nav nav-list" style="margin-left: 10px;" ng-show="showCorrelationCoefficients">
+								<li ng-repeat="correlationCoefficient in analysis.correlationCoefficients">
+									{{$index}} : 
+									<div ng-repeat="coefficient in correlationCoefficient">
+										&nbsp;&nbsp;{{coefficient}}
+									</div>
+								</li>
+							</ul>
+						</a>
+					</li>
+					<li>
+						<a href="#" ng-click="showAlgorithmOutput = !showAlgorithmOutput">
+							<i class="icon-folder-close"></i>
+							Algorithm output 
+							
+							<ul class="nav nav-list" style="margin-left: 10px; padding: 5px;" ng-show="showAlgorithmOutput">
+								<li>
+									<i class="icon-th-list"></i>
+									<span ng-bind-html-unsafe="analysis.algorithmOutput">{{analysis.algorithmOutput}}</span>
+								</li>
+							</ul>
+						</a>
+					</li>
+					<li class="nav-header">Cluster statistics</li>
+					<li><a href="#"><i class="icon-home"></i>...</a></li>
+					<li><a href="#"><i class="icon-book"></i>...</a></li>
+					<li><a href="#"><i class="icon-folder-close"></i>...</a></li>
+					<li class="nav-header">Header...</li>
+					<li><a href="#"><i class="icon-user"></i>...</a></li>
+					<li><a href="#"><i class="icon-wrench"></i>...</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<div class="row-fluid">
+		<div class="span12">
 			<div class="box">
-				<div class="tab-header">Analyzer output</div>
-				<ul class="recent-comments">
-					<li class="separator">
-						<div class="article-post">
-							<div class="user-content">
-								<div google-chart chart="chart" style="" />
-							</div>
-						</div>
-					</li>
-				</ul>
-				<ul class="recent-comments">
-					<li class="separator">
-						<div ng-show="!!analysis.clazz" style="font-weight: normal; width: 100%; height: 250px; overflow: auto;">
-							<div class="note large">
-								<i class="icon-pencil"></i> Note: This output is for all the instances/rows/data that were used in the input.
-							</div>
-							Class/cluster : <span style="color: blue; font-weight: bold;" ng-bind-html-unsafe="analysis.clazz"></span><br><br>
-							<table class="table table-striped table-bordered table-condensed table-hover data-table">
-								<tr ng-repeat="probability in analysis.output">
-									<td>Cluster</td>
-									<td>{{probability}}</td>
-								</tr>
-								<tr>
-									<td>Algorithm output</td>
-									<td><span ng-bind-html-unsafe="analysis.algorithmOutput"></td>
-								</tr>
-							</table>
-							<!-- <div ng-repeat="probability in analysis.output">
-							Cluster : {{$index}}, probability : {{probability}}
-							<br><br> -->
-							<!-- Algorithm output : <span ng-bind-html-unsafe="analysis.algorithmOutput"> -->
-						</div>
-					</li>
-				</ul>
-				<ul class="recent-comments">
-					<li class="separator">
-						<div class="article-post">
-							<div class="user-content">
-								<div class="btn-group">
-									<button class="button mini" ng-repeat="page in pagination"
-										ng-click="doPagedSearch(page.firstResult);">{{page.page}}</button>
-								</div>
-							</div>
-						</div>
-					</li>
-				</ul>
+				<div class="tab-header">Cluster distribution</div>
+				<div google-chart chart="chart" style="{{chart.cssStyle}}" />
 			</div>
 		</div>
 	</div>
