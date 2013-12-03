@@ -34,7 +34,7 @@ public final class LanguageCleaningStrategy extends AStrategy {
 		return super.aroundProcess(indexContext, indexable, document, resource);
 	}
 
-	public String cleanContent(final String content) {
+	String cleanContent(final String content) {
 		if (!StringUtils.isEmpty(content)) {
 			StringBuilder stringBuilder = new StringBuilder();
 			// Remove multiple characters, like aaaaahhhhhyyyeeeah, to aahhyyeeah

@@ -37,8 +37,7 @@ public abstract class Resource {
 
 	/** Constants for the paths to the web services. */
 	public static final String REQUEST = "request";
-
-	public static final String SEPARATOR = ",;:| \t\n";
+	private static final String SEPARATOR = "|";
 
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 

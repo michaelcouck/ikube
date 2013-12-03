@@ -99,7 +99,7 @@ public final class ThreadUtilities {
 				ThreadUtilities.sleep(1);
 			}
 			if (!future.isCancelled() && !future.isDone()) {
-				LOGGER.warn("Couldn't cancel future : " + name + ", " + future + ", " + FUTURES.size() + ", " + maxRetryCount);
+				LOGGER.warn("Couldn't cancel future : " + name + ", " + future + ", " + maxRetryCount);
 			}
 		}
 		futures.clear();
@@ -189,14 +189,14 @@ public final class ThreadUtilities {
 	 * This method initializes the executer service, and the thread pool that will execute runnables.
 	 */
 	public static void initialize() {
-		if (EXECUTER_SERVICE != null && !EXECUTER_SERVICE.isShutdown()) {
+		if (EXECUTER_SERVICE != null && !EXECUTER_SERVICE.isShutdown() && FUTURES != null && FORK_JOIN_POOLS != null) {
 			LOGGER.info("Executer service already initialized : ");
 			return;
 		}
-		FUTURES = Collections.synchronizedMap(new HashMap<String, List<Future<?>>>());
-		FORK_JOIN_POOLS = Collections.synchronizedMap(new HashMap<String, ForkJoinPool>());
 		EXECUTER_SERVICE = Executors.newCachedThreadPool();
 		EXECUTER_SERVICE_SYSTEM = Executors.newCachedThreadPool();
+		FUTURES = Collections.synchronizedMap(new HashMap<String, List<Future<?>>>());
+		FORK_JOIN_POOLS = Collections.synchronizedMap(new HashMap<String, ForkJoinPool>());
 	}
 
 	public static final synchronized ForkJoinPool cancellForkJoinPool(final String name) {
@@ -243,7 +243,7 @@ public final class ThreadUtilities {
 	 * method.
 	 */
 	public static void destroy() {
-		if (EXECUTER_SERVICE == null || EXECUTER_SERVICE.isShutdown()) {
+		if (EXECUTER_SERVICE == null || EXECUTER_SERVICE.isShutdown() || FUTURES == null || FORK_JOIN_POOLS == null) {
 			LOGGER.debug("Executer service already shutdown : ");
 			return;
 		}
@@ -267,27 +267,31 @@ public final class ThreadUtilities {
 		ThreadUtilities.cancellAllForkJoinPools();
 		List<Runnable> runnables = EXECUTER_SERVICE.shutdownNow();
 		LOGGER.info("Runnables shutdown : " + runnables);
+
 		FUTURES.clear();
-		FUTURES = null;
+		FORK_JOIN_POOLS.clear();
+
 		EXECUTER_SERVICE = null;
+		FUTURES = null;
+		FORK_JOIN_POOLS = null;
 	}
 
 	public static final boolean isInitialized() {
-		return EXECUTER_SERVICE != null;
+		return EXECUTER_SERVICE != null && FUTURES != null && FORK_JOIN_POOLS != null;
 	}
 
-	@SuppressWarnings("unchecked")
 	protected static List<Future<?>> getFutures(final String name) {
 		List<Future<?>> futures = null;
 		if (FUTURES != null) {
 			futures = FUTURES.get(name);
 			if (futures == null) {
 				futures = Collections.synchronizedList(new ArrayList<Future<?>>());
-				FUTURES.put(name, futures);
 			}
 		} else {
-			futures = Collections.EMPTY_LIST;
+			initialize();
+			futures = Collections.synchronizedList(new ArrayList<Future<?>>());
 		}
+		FUTURES.put(name, futures);
 		return futures;
 	}
 

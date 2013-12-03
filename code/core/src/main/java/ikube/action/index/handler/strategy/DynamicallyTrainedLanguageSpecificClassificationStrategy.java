@@ -24,6 +24,7 @@ import org.apache.lucene.document.Document;
  * @since 07.07.13
  * @version 01.00
  */
+@Deprecated
 public class DynamicallyTrainedLanguageSpecificClassificationStrategy extends AStrategy {
 
 	private int maxTraining = 10000;
