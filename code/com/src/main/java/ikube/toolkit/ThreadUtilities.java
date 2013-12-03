@@ -35,7 +35,10 @@ public final class ThreadUtilities {
 	private static ExecutorService EXECUTER_SERVICE_SYSTEM;
 	/** The number of times to try to cancel the future(s). */
 	private static int MAX_RETRY_COUNT = 3;
-	/** A list of futures by name so we can kill them. */
+	/**
+	 * A list of futures by name so we can kill them. The map contains the name of the caller, which must be unique, and the futures that were spawned by the
+	 * caller. In this way the caller or an observer of the futures can cancel them using the name.
+	 */
 	private static Map<String, List<Future<?>>> FUTURES;
 	private static Map<String, ForkJoinPool> FORK_JOIN_POOLS;
 
@@ -273,11 +276,17 @@ public final class ThreadUtilities {
 		return EXECUTER_SERVICE != null;
 	}
 
+	@SuppressWarnings("unchecked")
 	protected static List<Future<?>> getFutures(final String name) {
-		List<Future<?>> futures = FUTURES.get(name);
-		if (futures == null) {
-			futures = Collections.synchronizedList(new ArrayList<Future<?>>());
-			FUTURES.put(name, futures);
+		List<Future<?>> futures = null;
+		if (FUTURES != null) {
+			futures = FUTURES.get(name);
+			if (futures == null) {
+				futures = Collections.synchronizedList(new ArrayList<Future<?>>());
+				FUTURES.put(name, futures);
+			}
+		} else {
+			futures = Collections.EMPTY_LIST;
 		}
 		return futures;
 	}

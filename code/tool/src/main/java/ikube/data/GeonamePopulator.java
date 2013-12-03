@@ -36,20 +36,14 @@ public final class GeonamePopulator extends ADatabase {
 	}
 
 	protected static void persist(final Class<?> clazz) throws Exception {
-		int start = 7021288;
+		int start = 0;
 		int count = 0;
 		int batchSize = 10000;
 		String sessionName = "geoname";
 		Session session = SessionFactory.getSession(sessionName);
-		ADataBaseJpa dataBase = getDataBase(DataBaseJpaH2.class, IConstants.PERSISTENCE_UNIT_POSTGRES);
+		ADataBaseJpa dataBase = getDataBase(DataBaseJpaH2.class, IConstants.PERSISTENCE_UNIT_H2);
 		List<Object> geoNames = new ArrayList<Object>();
-		while (session.hasNext(clazz) && start-- > 0) {
-			try {
-				session.next(clazz);
-			} catch (Exception e) {
-				LOGGER.error("Exception scrolling to the correct index in the data : ", e);
-			}
-		}
+		skipTo(clazz, session, start);
 		while (session.hasNext(clazz)) {
 			count++;
 			try {
@@ -66,6 +60,17 @@ public final class GeonamePopulator extends ADatabase {
 		}
 	}
 
+	private static void skipTo(final Class<?> clazz, final Session session, final int index) {
+		int start = index;
+		while (session.hasNext(clazz) && start-- > 0) {
+			try {
+				session.next(clazz);
+			} catch (Exception e) {
+				LOGGER.error("Exception scrolling to the correct index in the data : ", e);
+			}
+		}
+	}
+
 	private static void persistBatch(IDataBase dataBase, List<Object> geoNames) {
 		EntityManager entityManager = Deencapsulation.getField(dataBase, EntityManager.class);
 		try {
@@ -75,7 +80,7 @@ public final class GeonamePopulator extends ADatabase {
 		} catch (Exception e) {
 			LOGGER.error("Exception inserting geoname : ", e);
 		} finally {
-			for (Object geoName : geoNames) {
+			for (final Object geoName : geoNames) {
 				try {
 					dataBase.persist(geoName);
 				} catch (Exception ex) {

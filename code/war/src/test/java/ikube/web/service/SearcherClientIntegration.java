@@ -33,7 +33,7 @@ public class SearcherClientIntegration {
 		builder.append("/search");
 		builder.append("/xml");
 		builder.append("/geospatial");
-		URL url = new URL("http", "localhost", 9200, builder.toString());
+		URL url = new URL("http", "localhost", 8080, builder.toString());
 		System.out.println(url);
 
 		String[] names = { //

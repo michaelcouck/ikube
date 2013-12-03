@@ -130,21 +130,24 @@
 								Results {{search.firstResult}} to {{search.endResult}} of {{statistics.total}}<br> 
 								Duration {{statistics.duration}} milliseconds 
 								<span ng-show="!!search.searchStrings && search.searchStrings.length != 0">
+									<br>
 									Search strings :  
 									<span ng-repeat="searchString in search.searchStrings">
 										<span ng-show="!!searchString">
 											'{{searchString}}'&nbsp;
 										</span>
-									</span><br> 
+									</span> 
 									<span ng-show="!!search.searchFields && search.searchFields.length > 0">
+										<br>
 										Fields :  
 										<span ng-repeat="searchField in search.searchFields">
 											<span ng-show="!!search.searchStrings[$index]">
 												'{{searchField}}'&nbsp;
 											</span>
 										</span>
-									</span><br>
+									</span>
 									<span ng-show="!!statistics.corrections && statistics.corrections.length > 0">
+										<br>
 										Corrections :  {{statistics.corrections}}
 									</span>
 								</span> 

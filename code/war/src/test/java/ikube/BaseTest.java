@@ -35,12 +35,12 @@ public abstract class BaseTest {
 
 	protected Logger logger = Logger.getLogger(this.getClass());
 
+	protected static int SERVER_PORT = 8080;
 	protected static String LOCALHOST = "localhost";
+	protected static String REST_PASSWORD = "user";
+	protected static String REST_USER_NAME = "user";
 	/** This client({@link HttpClient}) is for the web services. */
 	protected static HttpClient HTTP_CLIENT = new HttpClient();
-	protected static int SERVER_PORT = 9200;
-	protected static String REST_USER_NAME = "user";
-	protected static String REST_PASSWORD = "user";
 
 	static {
 		Logging.configure();

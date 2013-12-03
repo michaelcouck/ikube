@@ -43,5 +43,10 @@ public class ApplicationContextManagerTest extends AbstractTest {
 		Object wekaAnalyzer = ApplicationContextManager.getBean(name);
 		assertNotNull(wekaAnalyzer);
 	}
+	
+	@Test
+	public void write() {
+		System.out.printf("%03d", 2);
+	}
 
 }

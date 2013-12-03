@@ -52,7 +52,7 @@ public class AnalyticsServiceTest extends AbstractTest {
 	@Test
 	public void analyze() {
 		analyticsService.analyze(analysis);
-		assertEquals(1, analysis.getClazz());
+		assertEquals(0, analysis.getClazz());
 	}
 
 	@Test

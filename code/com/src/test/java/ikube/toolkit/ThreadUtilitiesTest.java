@@ -127,13 +127,13 @@ public class ThreadUtilitiesTest extends AbstractTest {
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
 					int i = iterations;
-					while (i-- > 0) {
+					do {
 						ThreadUtilities.sleep(10);
 						ThreadUtilities.submit(this.toString(), new Sleepy());
 						ThreadUtilities.getFutures(this.toString());
 						ThreadUtilities.submit(null, new Sleepy());
 						ThreadUtilities.destroy(this.toString());
-					}
+					} while (i-- > 0);
 				}
 			});
 			thread.start();

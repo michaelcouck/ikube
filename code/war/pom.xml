@@ -84,7 +84,7 @@
 								<copy todir="ikube" failonerror="true">
 									<fileset dir="../libs/src/main/resources/ikube" />
 								</copy>
-								<!-- <copy todir="ikube/integration" failonerror="true">
+								<copy todir="ikube/integration" failonerror="true">
 									<fileset dir="../libs/src/main/resources/indexes/integration" />
 								</copy>
 								<copy todir="ikube/production" failonerror="true">
@@ -92,7 +92,7 @@
 								</copy>
 								<copy todir="ikube/analytics" failonerror="true">
 									<fileset dir="../libs/src/main/resources/analytics" />
-								</copy> -->
+								</copy>
 							</target>
 						</configuration>
 						<goals>
@@ -112,7 +112,7 @@
 				<version>6.1.25</version>
 				<configuration>
 					<stopKey>stop</stopKey>
-					<stopPort>9100</stopPort>
+					<stopPort>8180</stopPort>
 					<scanIntervalSeconds>10000</scanIntervalSeconds>
 					<contextPath>/ikube</contextPath>
 					<scanTargets>
@@ -121,7 +121,7 @@
 					</scanTargets>
 					<connectors>
 						<connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-							<port>9200</port>
+							<port>8080</port>
 							<maxIdleTime>60000</maxIdleTime>
 						</connector>
 					</connectors>
@@ -279,6 +279,12 @@
 			<version>2.2.2</version>
 			<scope>compile</scope>
 		</dependency>
+		<!-- <dependency>
+			<groupId>org.mortbay.jetty</groupId>
+			<artifactId>maven-jetty-plugin</artifactId>
+			<version>7.0.0.pre5</version>
+			<type>pom</type>
+		</dependency> -->
 	</dependencies>
 
 </project>

@@ -17,11 +17,13 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ILock;
 import com.hazelcast.core.MessageListener;
 
@@ -37,16 +39,27 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 	private Server server;
 	@Autowired
 	private IMonitorService monitorService;
+	private HazelcastInstance hazelcastInstance;
 
 	public void setListeners(final List<MessageListener<Object>> listeners) {
 		ip = UriUtilities.getIp();
-		address = ip + "-" + Hazelcast.getCluster().getLocalMember().getInetSocketAddress().getPort();
-		Hazelcast.getConfig().getNetworkConfig().getInterfaces().setInterfaces(Arrays.asList(ip));
-		for (final MessageListener<Object> listener : listeners) {
-			if (listener == null) {
-				continue;
+		hazelcastInstance = Hazelcast.getHazelcastInstanceByName(IConstants.IKUBE);
+		if (hazelcastInstance == null) {
+			Set<HazelcastInstance> instances = Hazelcast.getAllHazelcastInstances();
+			for (final HazelcastInstance hazelcastInstance : instances) {
+				System.out.println("Name : " + hazelcastInstance.getName());
 			}
-			Hazelcast.getTopic(IConstants.TOPIC).addMessageListener(listener);
+			hazelcastInstance = Hazelcast.newHazelcastInstance();
+		}
+		address = ip + "-" + hazelcastInstance.getCluster().getLocalMember().getInetSocketAddress().getPort();
+		hazelcastInstance.getConfig().getNetworkConfig().getInterfaces().setInterfaces(Arrays.asList(ip));
+		if (listeners != null) {
+			for (final MessageListener<Object> listener : listeners) {
+				if (listener == null) {
+					continue;
+				}
+				hazelcastInstance.getTopic(IConstants.TOPIC).addMessageListener(listener);
+			}
 		}
 	}
 
@@ -56,10 +69,11 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 	@Override
 	public synchronized boolean lock(final String name) {
 		try {
-			ILock lock = Hazelcast.getLock(name);
+			ILock lock = hazelcastInstance.getLock(name);
 			boolean gotLock = false;
 			try {
 				gotLock = lock.tryLock(250, TimeUnit.MILLISECONDS);
+				logger.debug("Got lock : " + gotLock + ", thread : " + Thread.currentThread().hashCode());
 			} catch (InterruptedException e) {
 				logger.error("Exception trying for the lock : ", e);
 			}
@@ -75,8 +89,13 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 	@Override
 	public synchronized boolean unlock(final String name) {
 		try {
-			ILock lock = Hazelcast.getLock(name);
-			lock.unlock();
+			ILock lock = hazelcastInstance.getLock(name);
+			if (lock.isLocked()) {
+				if (lock.isLockedByCurrentThread()) {
+					logger.debug("Unlocking : " + Thread.currentThread().hashCode());
+					lock.unlock();
+				}
+			}
 			return true;
 		} finally {
 			notifyAll();
@@ -128,7 +147,7 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 			Server server = getServer();
 			action = getAction(actionName, indexName, indexableName);
 			server.getActions().add(action);
-			Hazelcast.getMap(IConstants.IKUBE).put(server.getAddress(), server);
+			hazelcastInstance.getMap(IConstants.IKUBE).put(server.getAddress(), server);
 		} catch (Exception e) {
 			logger.error("Exception starting action : " + actionName + ", " + indexName + ", " + indexableName, e);
 		} finally {
@@ -158,7 +177,7 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 					logger.debug("Removed grid action : " + gridAction.getId() + ", " + actions.size());
 				}
 			}
-			Hazelcast.getMap(IConstants.IKUBE).put(server.getAddress(), server);
+			hazelcastInstance.getMap(IConstants.IKUBE).put(server.getAddress(), server);
 		} finally {
 			notifyAll();
 		}
@@ -169,7 +188,7 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 	 */
 	@Override
 	public Map<String, Server> getServers() {
-		return Hazelcast.getMap(IConstants.IKUBE);
+		return hazelcastInstance.getMap(IConstants.IKUBE);
 	}
 
 	/**
@@ -199,7 +218,7 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 	 */
 	@Override
 	public void sendMessage(final Serializable serializable) {
-		Hazelcast.getTopic(IConstants.TOPIC).publish(serializable);
+		hazelcastInstance.getTopic(IConstants.TOPIC).publish(serializable);
 	}
 
 	/**
@@ -207,7 +226,7 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 	 */
 	@Override
 	public void remove(final Object key) {
-		Hazelcast.getMap(IConstants.IKUBE).remove(key);
+		hazelcastInstance.getMap(IConstants.IKUBE).remove(key);
 	}
 
 	/**
@@ -223,7 +242,7 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 	 */
 	@Override
 	public Object get(final Object key) {
-		return Hazelcast.getMap(IConstants.IKUBE).get(key);
+		return hazelcastInstance.getMap(IConstants.IKUBE).get(key);
 	}
 
 	/**
@@ -231,7 +250,7 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 	 */
 	@Override
 	public void put(final Object key, final Serializable value) {
-		Hazelcast.getMap(IConstants.IKUBE).put(key, value);
+		hazelcastInstance.getMap(IConstants.IKUBE).put(key, value);
 	}
 
 }

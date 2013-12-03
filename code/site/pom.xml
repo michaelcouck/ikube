@@ -61,7 +61,7 @@
 				<version>6.1.25</version>
 				<configuration>
 					<stopKey>stop</stopKey>
-					<stopPort>9100</stopPort>
+					<stopPort>81</stopPort>
 					<scanIntervalSeconds>10000</scanIntervalSeconds>
 					<contextPath>/site</contextPath>
 					<scanTargets>
@@ -70,7 +70,7 @@
 					</scanTargets>
 					<connectors>
 						<connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-							<port>9090</port>
+							<port>80</port>
 							<maxIdleTime>60000</maxIdleTime>
 						</connector>
 					</connectors>
