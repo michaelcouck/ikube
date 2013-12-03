@@ -105,18 +105,21 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 			handleException(indexableMail, e);
 		}
 
-		// TODO - We would like to access all the folders, but how?
-		Folder[] folders;
+		// This is not implemented in JavaMail!
+		List<Folder> folders = new ArrayList<>();
 		try {
-			folders = store.getPersonalNamespaces();
+			folders.addAll(Arrays.asList(store.getPersonalNamespaces()));
+			folders.addAll(Arrays.asList(store.getDefaultFolder()));
+			folders.addAll(Arrays.asList(store.getSharedNamespaces()));
+			folders.addAll(Arrays.asList(store.getUserNamespaces(indexableMail.getUsername())));
 		} catch (MessagingException e) {
 			handleException(indexableMail, e);
-			return;
 		}
-
 		for (final Folder folder : folders) {
 			try {
-				handleFolder(indexContext, indexableMail, folder);
+				// No point...
+				logger.info("Handling folder : " + folder.getName());
+				// handleFolder(indexContext, indexableMail, folder);
 			} catch (Exception e) {
 				handleException(indexableMail, e);
 			}

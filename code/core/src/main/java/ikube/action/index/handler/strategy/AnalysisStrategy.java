@@ -5,6 +5,7 @@ import static ikube.action.index.IndexManager.addStringField;
 import ikube.IConstants;
 import ikube.action.index.handler.IStrategy;
 import ikube.analytics.IAnalyzer;
+import ikube.model.Analysis;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 
@@ -21,7 +22,7 @@ public class AnalysisStrategy extends AStrategy {
 	/** In the event this should analyzer is language specific. */
 	private String language;
 	/** The wrapper for the 'real' analyzer, probably Weka */
-	private IAnalyzer<Object, Object> classifier;
+	private IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>> classifier;
 
 	public AnalysisStrategy() {
 		this(null);
@@ -52,7 +53,9 @@ public class AnalysisStrategy extends AStrategy {
 				}
 			}
 			if (process) {
-				Object currentClassification = classifier.analyze(content);
+				Analysis<String, double[]> analysis = new Analysis<>();
+				analysis.setInput(content);
+				Object currentClassification = classifier.analyze(analysis).getClazz();
 				if (currentClassification != null && !StringUtils.isEmpty(currentClassification.toString())) {
 					// We concatenate the current classification to the existing one if it already exists,
 					// in this way we can differentiate between the classifiers in the stack, perhaps first
@@ -70,7 +73,7 @@ public class AnalysisStrategy extends AStrategy {
 		this.language = language;
 	}
 
-	public void setClassifier(final IAnalyzer<Object, Object> classifier) {
+	public void setClassifier(final IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>> classifier) {
 		this.classifier = classifier;
 	}
 

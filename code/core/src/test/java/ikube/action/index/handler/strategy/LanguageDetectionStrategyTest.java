@@ -44,20 +44,16 @@ public class LanguageDetectionStrategyTest extends AbstractTest {
 
 	@Test
 	public void aroundProcess() throws Exception {
-		try {
-			Document document = new Document();
-			languageDetectionStrategy.aroundProcess(indexContext, indexableTable, document, null);
-			String language = document.get(IConstants.LANGUAGE);
-			assertEquals("We expect English for this one : ", "en", language);
-
-			when(indexableColumn.getContent()).thenReturn("soms een andere taal");
-			document = new Document();
-			languageDetectionStrategy.aroundProcess(indexContext, indexableTable, document, null);
-			language = document.get(IConstants.LANGUAGE);
-			assertTrue("We expect Afrikaans for this one : ", "af".equals(language) || "nl".equals(language));
-		} catch (Throwable t) {
-			logger.error(null, t);
-		}
+		Document document = new Document();
+		languageDetectionStrategy.aroundProcess(indexContext, indexableTable, document, null);
+		String language = document.get(IConstants.LANGUAGE);
+		assertEquals("We expect English for this one : ", "en", language);
+		
+		when(indexableColumn.getContent()).thenReturn("soms een andere taal");
+		document = new Document();
+		languageDetectionStrategy.aroundProcess(indexContext, indexableTable, document, null);
+		language = document.get(IConstants.LANGUAGE);
+		assertTrue("We expect Afrikaans for this one : ", "af".equals(language) || "nl".equals(language));
 	}
 
 	@Test

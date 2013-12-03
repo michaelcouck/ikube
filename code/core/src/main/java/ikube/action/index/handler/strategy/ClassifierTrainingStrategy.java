@@ -4,6 +4,7 @@ import static ikube.IConstants.CLASSIFICATION;
 import ikube.IConstants;
 import ikube.action.index.handler.IStrategy;
 import ikube.analytics.IAnalyzer;
+import ikube.model.Analysis;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 
@@ -24,7 +25,7 @@ public class ClassifierTrainingStrategy extends AStrategy {
 	/** In the event this should only train on a specific language. */
 	private String language;
 	/** The wrapper for the 'real' classifier, probably Weka */
-	private IAnalyzer<String, String> classifier;
+	private IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>> classifier;
 
 	public ClassifierTrainingStrategy() {
 		this(null);
@@ -61,6 +62,7 @@ public class ClassifierTrainingStrategy extends AStrategy {
 		return super.aroundProcess(indexContext, indexable, document, resource);
 	}
 
+	@SuppressWarnings("unchecked")
 	void train(final String clazz, final String content) {
 		if (IConstants.POSITIVE.equals(clazz)) {
 			if (positive < 0) {
@@ -77,7 +79,9 @@ public class ClassifierTrainingStrategy extends AStrategy {
 			return;
 		}
 		try {
-			classifier.train(clazz, content);
+			Analysis<String, double[]> analysis = new Analysis<>();
+			analysis.setInput(content);
+			classifier.train(analysis);
 		} catch (Exception e) {
 			logger.error(null, e);
 		}
@@ -95,7 +99,7 @@ public class ClassifierTrainingStrategy extends AStrategy {
 		this.language = language;
 	}
 
-	public void setClassifier(final IAnalyzer<String, String> classifier) {
+	public void setClassifier(final IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>> classifier) {
 		this.classifier = classifier;
 	}
 

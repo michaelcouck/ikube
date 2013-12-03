@@ -84,13 +84,25 @@
 								<copy todir="ikube" failonerror="true">
 									<fileset dir="../libs/src/main/resources/ikube" />
 								</copy>
-								<!-- <copy todir="ikube/integration" failonerror="true">
-									<fileset dir="../libs/src/main/resources/indexes/integration" />
-								</copy> -->
+								<copy todir="../../ikube" failonerror="true">
+									<fileset dir="../libs/src/main/resources/ikube" />
+								</copy>
 								<copy todir="ikube/production" failonerror="true">
 									<fileset dir="../libs/src/main/resources/indexes/production" />
 								</copy>
+								<copy todir="../../ikube/production" failonerror="true">
+									<fileset dir="../libs/src/main/resources/indexes/production" />
+								</copy>
+								<copy todir="ikube/integration" failonerror="true">
+									<fileset dir="../libs/src/main/resources/indexes/integration" />
+								</copy>
+								<copy todir="../../ikube/integration" failonerror="true">
+									<fileset dir="../libs/src/main/resources/indexes/integration" />
+								</copy>
 								<copy todir="ikube/analytics" failonerror="true">
+									<fileset dir="../libs/src/main/resources/analytics" />
+								</copy>
+								<copy todir="../../ikube/analytics" failonerror="true">
 									<fileset dir="../libs/src/main/resources/analytics" />
 								</copy>
 							</target>

@@ -32,7 +32,7 @@
 		property:mergeFactor="${merge.factor}"
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
-		property:throttle="1"
+		property:throttle="0"
 		property:threads="1"
 		property:delta="false"
 		property:indexDirectoryPath="${index.directory.path}"
@@ -65,12 +65,26 @@
 		property:batchSize="${file.batch.size}"
 		property:maxReadLength="${max.read.length}" 
 		property:maxExceptions="1000"
-		property:threads="1"
+		property:threads="3"
 		property:strategies-ref="desktop-strategies" />
 
 	<util:list id="desktop-strategies">
+		<ref bean="ikube.action.index.handler.strategy.LanguageCleaningStrategy" />
+		<ref bean="ikube.action.index.handler.strategy.LanguageFilterStrategy" />
 		<ref bean="ikube.action.index.handler.strategy.ContentTypeStrategy" />
 		<ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
+		<!-- Classification strategies, from Twitter training -->
+		<ref bean="wekaClassificationStrategy.en" />
+		<ref bean="wekaClassificationStrategy.es" />
+		<ref bean="wekaClassificationStrategy.jp" />
+		<ref bean="wekaClassificationStrategy.cn" />
+		<ref bean="wekaClassificationStrategy.nl" />
+		<ref bean="wekaClassificationStrategy.fr" />
+		<ref bean="wekaClassificationStrategy.de" />
+		<ref bean="wekaClassificationStrategy.sv" />
+		<ref bean="wekaClassificationStrategy.th" />
+		<ref bean="wekaClassificationStrategy.ar" />
+		<ref bean="wekaClassificationStrategy.tr" />
 	</util:list>
 	
 </beans>

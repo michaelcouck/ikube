@@ -64,7 +64,6 @@ public class ThreadUtilitiesTest extends AbstractTest {
 
 	@Test
 	public void waitForThreads() {
-		ThreadUtilities.initialize();
 		List<Thread> threads = new ArrayList<Thread>();
 		for (int i = 0; i < 3; i++) {
 			Thread thread = new Thread(new Sleepy());
@@ -81,7 +80,6 @@ public class ThreadUtilitiesTest extends AbstractTest {
 
 	@Test
 	public void waitForFuture() {
-		ThreadUtilities.initialize();
 		// We just wait for this future to finish, must be less than the time we expect to wait
 		long start = System.currentTimeMillis();
 		Future<?> future = ThreadUtilities.submit(null, new Sleepy(3000));
@@ -101,26 +99,23 @@ public class ThreadUtilitiesTest extends AbstractTest {
 
 	@Test
 	public void submitDestroy() {
-		ThreadUtilities.initialize();
-		String name = "name";
+		String name = Long.toHexString(System.currentTimeMillis());
 		Future<?> future = ThreadUtilities.submit(name, new Sleepy(Integer.MAX_VALUE));
 		if (future != null) {
 			logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
+			ThreadUtilities.sleep(3000);
+			ThreadUtilities.destroy(name);
+			ThreadUtilities.sleep(3000);
+			logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
+			
+			assertTrue(future.isDone());
+			assertTrue(future.isCancelled());
 		}
-
-		ThreadUtilities.sleep(3000);
-		ThreadUtilities.destroy(name);
-		ThreadUtilities.sleep(3000);
-		logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
-
-		assertTrue(future.isDone());
-		assertTrue(future.isCancelled());
 	}
 
 	/** This method just checks the concurrency of the threading, that there are no blocking synchronized blocks. */
 	@Test
 	public void multiThreaded() {
-		ThreadUtilities.initialize();
 		final int iterations = 100;
 		List<Thread> threads = new ArrayList<Thread>();
 		for (int i = 0; i < 10; i++) {
@@ -145,7 +140,6 @@ public class ThreadUtilitiesTest extends AbstractTest {
 
 	@Test
 	public void cancellForkJoinPool() {
-		ThreadUtilities.initialize();
 		ForkJoinPool forkJoinPool = ThreadUtilities.getForkJoinPool(this.getClass().getSimpleName(), 3);
 		ForkJoinPool cancelledForkJoinPool = ThreadUtilities.cancellForkJoinPool(this.getClass().getSimpleName());
 		assertEquals(forkJoinPool, cancelledForkJoinPool);
@@ -155,7 +149,6 @@ public class ThreadUtilitiesTest extends AbstractTest {
 
 	@Test
 	public void cancellAllForkJoinPools() {
-		ThreadUtilities.initialize();
 		ForkJoinPool forkJoinPool = ThreadUtilities.getForkJoinPool(this.getClass().getSimpleName(), 3);
 		ThreadUtilities.cancellAllForkJoinPools();
 		assertTrue(forkJoinPool.isShutdown());
@@ -164,7 +157,6 @@ public class ThreadUtilitiesTest extends AbstractTest {
 
 	@Test
 	public void executeForkJoinTasks() {
-		ThreadUtilities.initialize();
 		final String forkJoinPoolName = this.getClass().getSimpleName();
 		ForkJoinTask<Object> forkJoinTask = new RecursiveTask<Object>() {
 			@Override

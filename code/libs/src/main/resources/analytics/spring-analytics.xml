@@ -52,13 +52,24 @@
 	
 	<bean
 		id="ikube.analytics.IAnalyticsService"
-		name="ikube.analytics.IAnalyticsService"
 		class="ikube.analytics.AnalyticsService"
 		property:analyzers-ref="analyzers" />
 	 
 	 <util:map id="analyzers">
 		<entry key="analyzer-em" value-ref="analyzer-em" />
 		<entry key="analyzer-smo" value-ref="analyzer-smo" />
+		
+		<entry key="wekaClassifier.smo.en" value-ref="wekaClassifier.smo.en" />
+		<entry key="wekaClassifier.smo.es" value-ref="wekaClassifier.smo.es" />
+		<entry key="wekaClassifier.smo.jp" value-ref="wekaClassifier.smo.jp" />
+		<entry key="wekaClassifier.smo.cn" value-ref="wekaClassifier.smo.cn" />
+		<entry key="wekaClassifier.smo.nl" value-ref="wekaClassifier.smo.nl" />
+		<entry key="wekaClassifier.smo.fr" value-ref="wekaClassifier.smo.fr" />
+		<entry key="wekaClassifier.smo.de" value-ref="wekaClassifier.smo.de" />
+		<entry key="wekaClassifier.smo.sv" value-ref="wekaClassifier.smo.sv" />
+		<entry key="wekaClassifier.smo.th" value-ref="wekaClassifier.smo.th" />
+		<entry key="wekaClassifier.smo.ar" value-ref="wekaClassifier.smo.ar" />
+		<entry key="wekaClassifier.smo.tr" value-ref="wekaClassifier.smo.tr" />
 	 </util:map>
 
 </beans>

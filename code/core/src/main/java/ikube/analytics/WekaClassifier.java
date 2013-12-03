@@ -72,7 +72,6 @@ public class WekaClassifier extends Analyzer {
 		} catch (Exception e) {
 			logger.info("Exception building classifier : ", e);
 			instances.delete();
-			// classificationInstances.delete();
 			throw new RuntimeException(e);
 		}
 	}
@@ -125,14 +124,19 @@ public class WekaClassifier extends Analyzer {
 
 			return analysis;
 		} catch (Exception e) {
-			logger.error("Exception classifying content : " + analysis.getInput(), e);
-			throw new RuntimeException(e);
+			String content = analysis.getInput();
+			if (!StringUtils.isEmpty(content) && content.length() > 128) {
+				content = content.substring(0, 128);
+			}
+			logger.error("Exception classifying content : " + analysis, e);
+			// throw new RuntimeException(e);
 		} finally {
 			// Clear the instances every so often to avoid an out of memory
 			if (instances.numInstances() > 1000) {
 				instances.delete();
 			}
 		}
+		return analysis;
 	}
 
 	@Override

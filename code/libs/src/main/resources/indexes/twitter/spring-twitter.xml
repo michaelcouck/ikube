@@ -6,7 +6,7 @@
 	xmlns:property="http://www.springframework.org/schema/p"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:util="http://www.springframework.org/schema/util"
-
+	
 	xsi:schemaLocation="
 			http://www.springframework.org/schema/beans
             http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
@@ -14,7 +14,7 @@
             http://www.springframework.org/schema/context/spring-context-3.0.xsd
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util.xsd">
-
+	
 	<description>
 		This file is not to be modified by users generally. This is the configuration for the geospatial index which is an index 
 		of the geonames table on the Ikube server. 
@@ -53,7 +53,7 @@
 		property:stored="true"
 		property:analyzed="true"
 		property:vectored="true"
-		property:threads="5"
+		property:threads="3"
 		
 		property:consumerKey="Sohh43DylUwaXr7smSojBA"
 		property:consumerSecret="90xubtexbSwhHBbKXM62pF4QfJnz1NWVkpevwde3Qxo"
@@ -71,187 +71,265 @@
 		<ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
 		<!-- <ref bean="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy" /> -->
 		<ref bean="ikube.action.index.handler.strategy.EmoticonClassificationStrategy" />
-		<ref bean="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.en" />
-		<ref bean="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.es" />
-		<ref bean="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.jp" />
-		<ref bean="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.cn" />
-		<ref bean="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.nl" />
-		<ref bean="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.fr" />
-		<ref bean="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.de" />
-		<ref bean="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.sv" />
-		<ref bean="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.th" />
-		<ref bean="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.ar" />
-		<ref bean="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.tr" />
+		<!-- Train the language specific classifiers -->
+		<ref bean="wekaTwitterTrainingStrategy.en" />
+		<ref bean="wekaTwitterTrainingStrategy.es" />
+		<ref bean="wekaTwitterTrainingStrategy.jp" />
+		<ref bean="wekaTwitterTrainingStrategy.cn" />
+		<ref bean="wekaTwitterTrainingStrategy.nl" />
+		<ref bean="wekaTwitterTrainingStrategy.fr" />
+		<ref bean="wekaTwitterTrainingStrategy.de" />
+		<ref bean="wekaTwitterTrainingStrategy.sv" />
+		<ref bean="wekaTwitterTrainingStrategy.th" />
+		<ref bean="wekaTwitterTrainingStrategy.ar" />
+		<ref bean="wekaTwitterTrainingStrategy.tr" />
+		<!-- Use the trained language specific classifiers -->
+		<ref bean="wekaClassificationStrategy.en" />
+		<ref bean="wekaClassificationStrategy.es" />
+		<ref bean="wekaClassificationStrategy.jp" />
+		<ref bean="wekaClassificationStrategy.cn" />
+		<ref bean="wekaClassificationStrategy.nl" />
+		<ref bean="wekaClassificationStrategy.fr" />
+		<ref bean="wekaClassificationStrategy.de" />
+		<ref bean="wekaClassificationStrategy.sv" />
+		<ref bean="wekaClassificationStrategy.th" />
+		<ref bean="wekaClassificationStrategy.ar" />
+		<ref bean="wekaClassificationStrategy.tr" />
 	</util:list>
 
+	<bean id="wekaClassifier.smo.en" class="ikube.analytics.WekaClassifier" />
+	<bean id="wekaClassifier.smo.es" class="ikube.analytics.WekaClassifier" />
+	<bean id="wekaClassifier.smo.jp" class="ikube.analytics.WekaClassifier" />
+	<bean id="wekaClassifier.smo.cn" class="ikube.analytics.WekaClassifier" />
+	<bean id="wekaClassifier.smo.nl" class="ikube.analytics.WekaClassifier" />
+	<bean id="wekaClassifier.smo.fr" class="ikube.analytics.WekaClassifier" />
+	<bean id="wekaClassifier.smo.de" class="ikube.analytics.WekaClassifier" />
+	<bean id="wekaClassifier.smo.sv" class="ikube.analytics.WekaClassifier" />
+	<bean id="wekaClassifier.smo.th" class="ikube.analytics.WekaClassifier" />
+	<bean id="wekaClassifier.smo.ar" class="ikube.analytics.WekaClassifier" />
+	<bean id="wekaClassifier.smo.tr" class="ikube.analytics.WekaClassifier" />
+	
 	<bean 
-    	id="ikube.analytics.WekaClassifierSentiment.en"
-    	name="ikube.analytics.WekaClassifierSentiment.en"
-    	class="ikube.analytics.WekaClassifierSentiment"
-    	init-method="initialize"
-    	lazy-init="false" />
+		id="wekaTwitterTrainingStrategy.en" 
+		class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
+		property:language="en"
+		property:positive="10000"
+		property:negative="10000"
+		property:classifier-ref="wekaClassifier.smo.en" />
 	<bean 
-		id="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.en" 
-		name="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.en" 
-		class="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
-		init-method="initialize"
-		property:language="en" 
-		property:maxTraining="100000" 
-		property:classifier-ref="ikube.analytics.WekaClassifierSentiment.en" />
+		id="wekaTwitterTrainingStrategy.es" 
+		class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
+		property:language="es"
+		property:positive="10000"
+		property:negative="10000"
+		property:classifier-ref="wekaClassifier.smo.es" />
 	<bean 
-    	id="ikube.analytics.WekaClassifierSentiment.es"
-    	name="ikube.analytics.WekaClassifierSentiment.es"
-    	class="ikube.analytics.WekaClassifierSentiment"
-    	init-method="initialize" 
-    	lazy-init="false" />
-    <bean
-		id="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.es"
-		name="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.es" 
-    	class="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
-    	init-method="initialize"
-    	property:language="es"
-    	property:maxTraining="100000"
-    	property:classifier-ref="ikube.analytics.WekaClassifierSentiment.es" />
+		id="wekaTwitterTrainingStrategy.jp" 
+		class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
+		property:language="jp"
+		property:positive="10000"
+		property:negative="10000"
+		property:classifier-ref="wekaClassifier.smo.jp" />
 	<bean 
-    	id="ikube.analytics.WekaClassifierSentiment.jp"
-    	name="ikube.analytics.WekaClassifierSentiment.jp"
-    	class="ikube.analytics.WekaClassifierSentiment"
-    	init-method="initialize" 
-    	lazy-init="false" />
-    <bean
-		id="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.jp"
-		name="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.jp" 
-    	class="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
-    	init-method="initialize"
-    	property:language="jp"
-    	property:maxTraining="100000"
-    	property:classifier-ref="ikube.analytics.WekaClassifierSentiment.jp" />
-   	<bean 
-    	id="ikube.analytics.WekaClassifierSentiment.cn"
-    	name="ikube.analytics.WekaClassifierSentiment.cn"
-    	class="ikube.analytics.WekaClassifierSentiment"
-    	init-method="initialize" 
-    	lazy-init="false" />
-    <bean
-		id="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.cn"
-		name="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.cn" 
-    	class="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
-    	init-method="initialize"
-    	property:language="cn"
-    	property:maxTraining="100000"
-    	property:classifier-ref="ikube.analytics.WekaClassifierSentiment.cn" />
-    <bean 
-    	id="ikube.analytics.WekaClassifierSentiment.nl"
-    	name="ikube.analytics.WekaClassifierSentiment.nl"
-    	class="ikube.analytics.WekaClassifierSentiment"
-    	init-method="initialize" 
-    	lazy-init="false" />
-    <bean
-		id="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.nl"
-		name="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.nl" 
-    	class="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
-    	init-method="initialize"
-    	property:language="nl"
-    	property:maxTraining="100000"
-    	property:classifier-ref="ikube.analytics.WekaClassifierSentiment.nl" />
-    <bean 
-    	id="ikube.analytics.WekaClassifierSentiment.fr"
-    	name="ikube.analytics.WekaClassifierSentiment.fr"
-    	class="ikube.analytics.WekaClassifierSentiment"
-    	init-method="initialize" 
-    	lazy-init="false" />
-    <bean
-		id="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.fr"
-		name="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.fr" 
-    	class="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
-    	init-method="initialize"
-    	property:language="fr"
-    	property:maxTraining="100000"
-    	property:classifier-ref="ikube.analytics.WekaClassifierSentiment.fr" />
-    <bean 
-    	id="ikube.analytics.WekaClassifierSentiment.de"
-    	name="ikube.analytics.WekaClassifierSentiment.de"
-    	class="ikube.analytics.WekaClassifierSentiment"
-    	init-method="initialize" 
-    	lazy-init="false" />
-    <bean
-		id="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.de"
-		name="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.de" 
-    	class="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
-    	init-method="initialize"
-    	property:language="de"
-    	property:maxTraining="100000"
-    	property:classifier-ref="ikube.analytics.WekaClassifierSentiment.de" />
-    <bean 
-    	id="ikube.analytics.WekaClassifierSentiment.sv"
-    	name="ikube.analytics.WekaClassifierSentiment.sv"
-    	class="ikube.analytics.WekaClassifierSentiment"
-    	init-method="initialize" 
-    	lazy-init="false" />
-    <bean
-		id="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.sv"
-		name="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.sv" 
-    	class="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
-    	init-method="initialize"
-    	property:language="sv"
-    	property:maxTraining="100000"
-    	property:classifier-ref="ikube.analytics.WekaClassifierSentiment.sv" />
-    <bean 
-    	id="ikube.analytics.WekaClassifierSentiment.th"
-    	name="ikube.analytics.WekaClassifierSentiment.th"
-    	class="ikube.analytics.WekaClassifierSentiment"
-    	init-method="initialize" 
-    	lazy-init="false" />
-    <bean
-		id="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.th"
-		name="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.th" 
-    	class="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
-    	init-method="initialize"
-    	property:language="th"
-    	property:maxTraining="100000"
-    	property:classifier-ref="ikube.analytics.WekaClassifierSentiment.th" />
+		id="wekaTwitterTrainingStrategy.cn" 
+		class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
+		property:language="cn"
+		property:positive="10000"
+		property:negative="10000"
+		property:classifier-ref="wekaClassifier.smo.cn" />
 	<bean 
-    	id="ikube.analytics.WekaClassifierSentiment.ar"
-    	name="ikube.analytics.WekaClassifierSentiment.ar"
-    	class="ikube.analytics.WekaClassifierSentiment"
-    	init-method="initialize" 
-    	lazy-init="false" />
+		id="wekaTwitterTrainingStrategy.nl" 
+		class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
+		property:language="nl"
+		property:positive="10000"
+		property:negative="10000"
+		property:classifier-ref="wekaClassifier.smo.nl" />
 	<bean 
-		id="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.ar" 
-		name="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.ar" 
-		class="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
-		init-method="initialize" 
-		property:language="ar" 
-		property:maxTraining="100000" 
-		property:classifier-ref="ikube.analytics.WekaClassifierSentiment.ar" />
+		id="wekaTwitterTrainingStrategy.fr" 
+		class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
+		property:language="fr"
+		property:positive="10000"
+		property:negative="10000"
+		property:classifier-ref="wekaClassifier.smo.fr" />
 	<bean 
-    	id="ikube.analytics.WekaClassifierSentiment.tr"
-    	name="ikube.analytics.WekaClassifierSentiment.tr"
-    	class="ikube.analytics.WekaClassifierSentiment"
-    	init-method="initialize" 
-    	lazy-init="false" />
+		id="wekaTwitterTrainingStrategy.de" 
+		class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
+		property:language="de"
+		property:positive="10000"
+		property:negative="10000"
+		property:classifier-ref="wekaClassifier.smo.de" />
 	<bean 
-		id="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.tr" 
-		name="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.tr" 
-		class="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
-		init-method="initialize" 
-		property:language="tr" 
-		property:maxTraining="100000" 
-		property:classifier-ref="ikube.analytics.WekaClassifierSentiment.tr" />
+		id="wekaTwitterTrainingStrategy.sv" 
+		class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
+		property:language="sv"
+		property:positive="10000"
+		property:negative="10000"
+		property:classifier-ref="wekaClassifier.smo.sv" />
 	<bean 
-    	id="ikube.analytics.WekaClassifierSentiment.ru"
-    	name="ikube.analytics.WekaClassifierSentiment.ru"
-    	class="ikube.analytics.WekaClassifierSentiment"
-    	init-method="initialize" 
-    	lazy-init="false" />
+		id="wekaTwitterTrainingStrategy.th" 
+		class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
+		property:language="th"
+		property:positive="10000"
+		property:negative="10000"
+		property:classifier-ref="wekaClassifier.smo.th" />
 	<bean 
-		id="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.ru" 
-		name="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.ru" 
-		class="ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy"
-		init-method="initialize" 
-		property:language="ru" 
-		property:maxTraining="100000" 
-		property:classifier-ref="ikube.analytics.WekaClassifierSentiment.ru" />
+		id="wekaTwitterTrainingStrategy.ar" 
+		class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
+		property:language="ar"
+		property:positive="10000"
+		property:negative="10000"
+		property:classifier-ref="wekaClassifier.smo.ar" />
+	<bean 
+		id="wekaTwitterTrainingStrategy.tr" 
+		class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
+		property:language="tr"
+		property:positive="10000"
+		property:negative="10000"
+		property:classifier-ref="wekaClassifier.smo.tr" />
+	
+	<bean 
+		id="wekaClassificationStrategy.en" 
+		class="ikube.action.index.handler.strategy.AnalysisStrategy"
+		property:language="en"
+		property:classifier-ref="wekaClassifier.smo.en" />
+	<bean 
+		id="wekaClassificationStrategy.es" 
+		class="ikube.action.index.handler.strategy.AnalysisStrategy"
+		property:language="es"
+		property:classifier-ref="wekaClassifier.smo.es" />
+	<bean 
+		id="wekaClassificationStrategy.jp" 
+		class="ikube.action.index.handler.strategy.AnalysisStrategy"
+		property:language="jp"
+		property:classifier-ref="wekaClassifier.smo.jp" />
+	<bean 
+		id="wekaClassificationStrategy.cn" 
+		class="ikube.action.index.handler.strategy.AnalysisStrategy"
+		property:language="cn"
+		property:classifier-ref="wekaClassifier.smo.cn" />
+	<bean 
+		id="wekaClassificationStrategy.nl" 
+		class="ikube.action.index.handler.strategy.AnalysisStrategy"
+		property:language="nl"
+		property:classifier-ref="wekaClassifier.smo.nl" />
+	<bean 
+		id="wekaClassificationStrategy.fr" 
+		class="ikube.action.index.handler.strategy.AnalysisStrategy"
+		property:language="fr"
+		property:classifier-ref="wekaClassifier.smo.fr" />
+	<bean 
+		id="wekaClassificationStrategy.de" 
+		class="ikube.action.index.handler.strategy.AnalysisStrategy"
+		property:language="de"
+		property:classifier-ref="wekaClassifier.smo.de" />
+	<bean 
+		id="wekaClassificationStrategy.sv" 
+		class="ikube.action.index.handler.strategy.AnalysisStrategy"
+		property:language="sv"
+		property:classifier-ref="wekaClassifier.smo.sv" />
+	<bean 
+		id="wekaClassificationStrategy.th" 
+		class="ikube.action.index.handler.strategy.AnalysisStrategy"
+		property:language="th"
+		property:classifier-ref="wekaClassifier.smo.th" />
+	<bean 
+		id="wekaClassificationStrategy.ar" 
+		class="ikube.action.index.handler.strategy.AnalysisStrategy"
+		property:language="ar"
+		property:classifier-ref="wekaClassifier.smo.ar" />
+	<bean 
+		id="wekaClassificationStrategy.tr" 
+		class="ikube.action.index.handler.strategy.AnalysisStrategy"
+		property:language="tr"
+		property:classifier-ref="wekaClassifier.smo.tr" />
 		
-		
+	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
+		<property name="arguments">
+			<array>
+				<ref bean="buildable-smo" />
+				<ref bean="wekaClassifier.smo.en" />
+			</array>
+		</property>
+	</bean>
+	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
+		<property name="arguments">
+			<array>
+				<ref bean="buildable-smo" />
+				<ref bean="wekaClassifier.smo.es" />
+			</array>
+		</property>
+	</bean>
+	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
+		<property name="arguments">
+			<array>
+				<ref bean="buildable-smo" />
+				<ref bean="wekaClassifier.smo.jp" />
+			</array>
+		</property>
+	</bean>
+	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
+		<property name="arguments">
+			<array>
+				<ref bean="buildable-smo" />
+				<ref bean="wekaClassifier.smo.cn" />
+			</array>
+		</property>
+	</bean>
+	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
+		<property name="arguments">
+			<array>
+				<ref bean="buildable-smo" />
+				<ref bean="wekaClassifier.smo.nl" />
+			</array>
+		</property>
+	</bean>
+	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
+		<property name="arguments">
+			<array>
+				<ref bean="buildable-smo" />
+				<ref bean="wekaClassifier.smo.fr" />
+			</array>
+		</property>
+	</bean>
+	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
+		<property name="arguments">
+			<array>
+				<ref bean="buildable-smo" />
+				<ref bean="wekaClassifier.smo.de" />
+			</array>
+		</property>
+	</bean>
+	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
+		<property name="arguments">
+			<array>
+				<ref bean="buildable-smo" />
+				<ref bean="wekaClassifier.smo.sv" />
+			</array>
+		</property>
+	</bean>
+	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
+		<property name="arguments">
+			<array>
+				<ref bean="buildable-smo" />
+				<ref bean="wekaClassifier.smo.th" />
+			</array>
+		</property>
+	</bean>
+	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
+		<property name="arguments">
+			<array>
+				<ref bean="buildable-smo" />
+				<ref bean="wekaClassifier.smo.ar" />
+			</array>
+		</property>
+	</bean>
+	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
+		<property name="arguments">
+			<array>
+				<ref bean="buildable-smo" />
+				<ref bean="wekaClassifier.smo.tr" />
+			</array>
+		</property>
+	</bean>
+	
 </beans>

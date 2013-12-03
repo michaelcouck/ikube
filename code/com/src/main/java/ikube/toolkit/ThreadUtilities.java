@@ -286,12 +286,11 @@ public final class ThreadUtilities {
 			futures = FUTURES.get(name);
 			if (futures == null) {
 				futures = Collections.synchronizedList(new ArrayList<Future<?>>());
+				FUTURES.put(name, futures);
 			}
 		} else {
-			initialize();
 			futures = Collections.synchronizedList(new ArrayList<Future<?>>());
 		}
-		FUTURES.put(name, futures);
 		return futures;
 	}
 
