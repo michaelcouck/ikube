@@ -2,8 +2,10 @@ package ikube.data;
 
 import ikube.AbstractTest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class DatabaseDeleteTest extends AbstractTest {
 
 	@Test
