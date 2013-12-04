@@ -15,6 +15,7 @@ import java.util.concurrent.RecursiveTask;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -98,6 +99,7 @@ public class ThreadUtilitiesTest extends AbstractTest {
 	}
 
 	@Test
+	@Ignore
 	public void submitDestroy() {
 		String name = Long.toHexString(System.currentTimeMillis());
 		Future<?> future = ThreadUtilities.submit(name, new Sleepy(Integer.MAX_VALUE));
