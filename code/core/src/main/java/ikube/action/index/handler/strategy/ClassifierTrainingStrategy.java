@@ -1,6 +1,9 @@
 package ikube.action.index.handler.strategy;
 
 import static ikube.IConstants.CLASSIFICATION;
+
+import java.util.concurrent.locks.ReentrantLock;
+
 import ikube.IConstants;
 import ikube.action.index.handler.IStrategy;
 import ikube.analytics.IAnalyzer;
@@ -31,6 +34,8 @@ public class ClassifierTrainingStrategy extends AStrategy {
 	private String language;
 	/** The number of instances used for training. */
 	private int trainingCount = 0;
+	/** Lock to ensure that multiple threads don't try to train at the same time. */
+	private ReentrantLock reentrantLock = new ReentrantLock();
 	/** The wrapper for the 'real' classifier, probably Weka */
 	private IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>> classifier;
 
@@ -91,6 +96,7 @@ public class ClassifierTrainingStrategy extends AStrategy {
 			return;
 		}
 		try {
+			reentrantLock.lock();
 			Analysis<String, double[]> analysis = new Analysis<>();
 			analysis.setClazz(clazz);
 			analysis.setInput(content);
@@ -100,6 +106,8 @@ public class ClassifierTrainingStrategy extends AStrategy {
 			}
 		} catch (Exception e) {
 			logger.error(null, e);
+		} finally {
+			reentrantLock.unlock();
 		}
 	}
 
