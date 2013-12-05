@@ -2,12 +2,12 @@ package ikube.action.rule;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,18 +33,17 @@ public class AreUnopenedIndexesTest extends AbstractTest {
 	}
 
 	@Test
-	@SuppressWarnings("deprecation")
 	public void evaluate() throws Exception {
 		boolean result = areUnopenedIndexes.evaluate(indexContext);
 		assertFalse(result);
 
 		File latestIndexDirectory = createIndexFileSystem(indexContext, "some words to index");
 		result = areUnopenedIndexes.evaluate(indexContext);
-		assertTrue(result);
-
-		when(fsDirectory.getFile()).thenReturn(latestIndexDirectory);
-		result = areUnopenedIndexes.evaluate(indexContext);
 		assertFalse(result);
+
+		FileUtils.copyDirectory(latestIndexDirectory, new File(latestIndexDirectory.getParent(), "127.0.0.1.1234567890"));
+		result = areUnopenedIndexes.evaluate(indexContext);
+		assertTrue(result);
 	}
 
 }

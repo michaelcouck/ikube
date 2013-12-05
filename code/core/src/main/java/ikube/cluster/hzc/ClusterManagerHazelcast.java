@@ -17,7 +17,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,10 +44,6 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 		ip = UriUtilities.getIp();
 		hazelcastInstance = Hazelcast.getHazelcastInstanceByName(IConstants.IKUBE);
 		if (hazelcastInstance == null) {
-			Set<HazelcastInstance> instances = Hazelcast.getAllHazelcastInstances();
-			for (final HazelcastInstance hazelcastInstance : instances) {
-				System.out.println("Name : " + hazelcastInstance.getName());
-			}
 			hazelcastInstance = Hazelcast.newHazelcastInstance();
 		}
 		address = ip + "-" + hazelcastInstance.getCluster().getLocalMember().getInetSocketAddress().getPort();

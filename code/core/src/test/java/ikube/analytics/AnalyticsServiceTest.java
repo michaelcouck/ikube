@@ -14,6 +14,9 @@ import java.util.HashMap;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import weka.clusterers.EM;
 
 /**
@@ -47,6 +50,10 @@ public class AnalyticsServiceTest extends AbstractTest {
 				put(analysis.getAnalyzer(), analyzer);
 			}
 		});
+		
+		Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+		String string = gson.toJson(analysis);
+		logger.info(string);
 	}
 
 	@Test

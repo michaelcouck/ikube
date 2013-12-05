@@ -44,6 +44,7 @@ public class LanguageDetectionStrategyTest extends AbstractTest {
 	}
 
 	@Test
+	@Ignore
 	public void aroundProcess() throws Exception {
 		try {
 			Document document = new Document();

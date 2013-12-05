@@ -5,6 +5,7 @@ import ikube.action.index.IndexManager;
 import ikube.action.index.handler.IResourceProvider;
 import ikube.model.IndexableTweets;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
@@ -36,10 +37,6 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	static final int MAX_STACK_SIZE = 500;
-
-	/** This collection is used to stock pile the stack, waiting for consumers. */
-	private Stack<Tweet> stack;
 	private Stack<Tweet> tweets;
 
 	/** A counter to see how many tweets we have done. */
@@ -54,7 +51,6 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
 	 * @throws IOException
 	 */
 	TwitterResourceProvider(final IndexableTweets indexableTweets) throws IOException {
-		stack = new Stack<Tweet>();
 		tweets = new Stack<Tweet>();
 		counter = new AtomicLong();
 		tweetsDirectory = FileUtilities.getOrCreateDirectory(new File(IConstants.ANALYTICS_DIRECTORY, "tweets"));
@@ -103,17 +99,12 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
 	 */
 	@Override
 	public void onTweet(final Tweet tweet) {
-		if (stack.size() > MAX_STACK_SIZE) {
-			synchronized (stack) {
-				setResources(stack);
-				// persistResources(stack);
-				// logger.info("Tweet counter : " + counter.get() + ", stack : " + stack.size());
-				stack.clear();
-				stack.notifyAll();
-			}
-		}
-		stack.push(tweet);
-		counter.incrementAndGet();
+		int clones = 99;
+		do {
+			Tweet clone = (Tweet) SerializationUtilities.clone(tweet);
+			tweets.push(clone);
+			counter.incrementAndGet();
+		} while (--clones > 0);
 	}
 
 	/**
