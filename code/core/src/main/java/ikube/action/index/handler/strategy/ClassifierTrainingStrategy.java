@@ -18,12 +18,19 @@ import org.apache.lucene.document.Document;
  */
 public class ClassifierTrainingStrategy extends AStrategy {
 
+	/** The number of instances in training before rebuilding the classifier. */
+	static final int REBUILD_COUNT = 1000;
+
 	/** The maximum number of positive training folds */
 	private int positive;
 	/** The maximum number of negative training folds */
 	private int negative;
+	/** The maximum number of neutral training folds */
+	private int neutral;
 	/** In the event this should only train on a specific language. */
 	private String language;
+	/** The number of instances used for training. */
+	private int trainingCount = 0;
 	/** The wrapper for the 'real' classifier, probably Weka */
 	private IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>> classifier;
 
@@ -74,14 +81,23 @@ public class ClassifierTrainingStrategy extends AStrategy {
 				return;
 			}
 			negative--;
+		} else if (IConstants.NEUTRAL.equals(clazz)) {
+			if (neutral < 0) {
+				return;
+			}
+			neutral--;
 		} else {
-			logger.info("Can't train with class : " + clazz);
+			// logger.info("Can't train with class : " + clazz);
 			return;
 		}
 		try {
 			Analysis<String, double[]> analysis = new Analysis<>();
+			analysis.setClazz(clazz);
 			analysis.setInput(content);
 			classifier.train(analysis);
+			if (trainingCount++ % REBUILD_COUNT == 0) {
+				classifier.build(null);
+			}
 		} catch (Exception e) {
 			logger.error(null, e);
 		}
@@ -93,6 +109,10 @@ public class ClassifierTrainingStrategy extends AStrategy {
 
 	public void setNegative(final int negative) {
 		this.negative = negative;
+	}
+
+	public void setNeutral(final int neutral) {
+		this.neutral = neutral;
 	}
 
 	public void setLanguage(final String language) {

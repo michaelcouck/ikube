@@ -35,9 +35,11 @@ public class Reopen extends Open {
 					Directory directory = indexWriter.getDirectory();
 					IndexReader reader;
 					try {
-						reader = IndexReader.open(directory, Boolean.TRUE);
-						IndexSearcher indexSearcher = new IndexSearcher(reader);
-						searchers.add(indexSearcher);
+						if (IndexReader.indexExists(directory)) {
+							reader = IndexReader.open(directory, Boolean.TRUE);
+							IndexSearcher indexSearcher = new IndexSearcher(reader);
+							searchers.add(indexSearcher);
+						}
 					} catch (CorruptIndexException e) {
 						logger.error("Index corrupt while indexing delta : ", e);
 					} catch (IOException e) {

@@ -99,12 +99,14 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
 	 */
 	@Override
 	public void onTweet(final Tweet tweet) {
-		int clones = 99;
-		do {
-			Tweet clone = (Tweet) SerializationUtilities.clone(tweet);
-			tweets.push(clone);
-			counter.incrementAndGet();
-		} while (--clones > 0);
+		if (tweets.size() < IConstants.MILLION) {
+			int clones = 99;
+			do {
+				Tweet clone = (Tweet) SerializationUtilities.clone(tweet);
+				tweets.push(clone);
+				counter.incrementAndGet();
+			} while (--clones > 0);
+		}
 	}
 
 	/**

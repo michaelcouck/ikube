@@ -1,7 +1,7 @@
 @relation sentiment
 
-@attribute class {positive,negative,neutral}
-@attribute text String
+@attribute @class@ {positive,negative,neutral}
+@attribute @text@ String
 
 @data
 positive,'Fantastic holiday'

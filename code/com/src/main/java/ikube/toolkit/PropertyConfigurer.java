@@ -100,12 +100,12 @@ public class PropertyConfigurer extends Properties {
 
 	private void checkPropertiesFilesOnFileSystemFromDotFolder() {
 		List<File> propertyFiles = FileUtilities.findFilesRecursively(new File("."), new ArrayList<File>(), fileNamePattern);
-		for (File propertyFile : propertyFiles) {
+		for (final File propertyFile : propertyFiles) {
 			try {
-				if (propertyFile == null || !propertyFile.canRead() || propertyFile.isDirectory()) {
+				if (propertyFile == null || !propertyFile.canRead() || propertyFile.isDirectory() || propertyFile.getAbsolutePath().contains(".svn")) {
 					continue;
 				}
-				LOGGER.info("         : Loading properties from : " + propertyFile);
+				LOGGER.debug("         : Loading properties from : " + propertyFile);
 				this.load(new FileInputStream(propertyFile));
 			} catch (Exception e) {
 				LOGGER.error("Exception reading property file : " + propertyFile, e);
@@ -116,7 +116,7 @@ public class PropertyConfigurer extends Properties {
 	private void checkJarsOnFileSystemFromDotFolder() {
 		// Check all the jars in the path of the server
 		List<File> jarFiles = FileUtilities.findFilesRecursively(new File("."), new ArrayList<File>(), ".jar\\Z");
-		for (File jarFile : jarFiles) {
+		for (final File jarFile : jarFiles) {
 			try {
 				checkJar(jarFile);
 			} catch (Exception e) {
@@ -148,11 +148,12 @@ public class PropertyConfigurer extends Properties {
 	 * 
 	 * @param file the file to check for properties entries
 	 */
-	protected void checkJar(File file) {
+	protected void checkJar(final File file) {
 		if (file == null || !file.isFile() || !file.canRead()) {
 			return;
 		}
 		try {
+			LOGGER.debug("Reading properties from jar : " + file);
 			checkJar(new JarFile(file));
 		} catch (Exception e) {
 			LOGGER.error("Exception accessing the properties in jar file : " + file, e);
@@ -171,7 +172,7 @@ public class PropertyConfigurer extends Properties {
 				JarEntry jarEntry = jarEntries.nextElement();
 				String entryName = jarEntry.getName();
 				if (fileNamePattern != null && Pattern.compile(".*(" + fileNamePattern + ").*").matcher(entryName).matches()) {
-					LOGGER.info("Jar file : " + jarFile.getName() + ", " + jarEntry);
+					LOGGER.debug("Jar file : " + jarFile.getName() + ", " + jarEntry);
 					InputStream inputStream = jarFile.getInputStream(jarEntry);
 					this.load(inputStream);
 				}

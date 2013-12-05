@@ -4,6 +4,7 @@ import ikube.model.Analysis;
 import ikube.model.Buildable;
 
 import java.io.IOException;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -27,6 +28,7 @@ public class WekaClassifier extends Analyzer {
 	private Filter filter;
 	private volatile Instances instances;
 	private volatile Classifier classifier;
+	private ReentrantLock reentrantLock;
 
 	/**
 	 * {@inheritDoc}
@@ -41,14 +43,15 @@ public class WekaClassifier extends Analyzer {
 		}
 		String type = buildable.getAlgorithmType();
 		classifier = (Classifier) Class.forName(type).newInstance();
+		reentrantLock = new ReentrantLock(Boolean.TRUE);
 	}
 
 	/**
-	 * This method will build the classifier again using the training instances. When the training instances get to a certain number we can re-build the
-	 * classifier from the training data. We catch all exceptions and clean the training instance data set of all the instances that are a problem.
+	 * {@inheritDoc}
 	 */
-	public synchronized void build(final Buildable buildable) {
+	public void build(final Buildable buildable) {
 		try {
+			reentrantLock.lock();
 			log(null);
 
 			Instances filteredData = null;
@@ -73,6 +76,8 @@ public class WekaClassifier extends Analyzer {
 			logger.info("Exception building classifier : ", e);
 			instances.delete();
 			throw new RuntimeException(e);
+		} finally {
+			reentrantLock.unlock();
 		}
 	}
 
@@ -83,6 +88,7 @@ public class WekaClassifier extends Analyzer {
 	@SuppressWarnings("unchecked")
 	public boolean train(final Analysis<String, double[]>... analyses) throws Exception {
 		try {
+			reentrantLock.lock();
 			for (final Analysis<String, double[]> analysis : analyses) {
 				Instance instance = instance(analysis.getInput(), instances);
 				instance.setClassValue(analysis.getClazz().toString());
@@ -92,6 +98,8 @@ public class WekaClassifier extends Analyzer {
 		} catch (Exception e) {
 			logger.error("Exception creating a training instance : ", e);
 			throw new RuntimeException(e);
+		} finally {
+			reentrantLock.unlock();
 		}
 	}
 
@@ -101,42 +109,43 @@ public class WekaClassifier extends Analyzer {
 	@Override
 	public Analysis<String, double[]> analyze(final Analysis<String, double[]> analysis) throws Exception {
 		try {
-			// Create the instance from the data
-			Instance instance = instance(analysis.getInput(), instances);
-			// Filter from string to inverse vector if necessary
-			if (filter != null) {
-				filter.input(instance);
-				instance = filter.output();
+			reentrantLock.lock();
+			if (!StringUtils.isEmpty(analysis.getInput())) {
+				// Create the instance from the data
+				Instance instance = instance(analysis.getInput(), instances);
+				// Filter from string to inverse vector if necessary
+				if (filter != null) {
+					filter.input(instance);
+					instance = filter.output();
+				}
+				// Classify the instance
+				double classification = classifier.classifyInstance(instance);
+				// Set the output for the client
+				String clazz = instances.classAttribute().value((int) classification);
+				double[] output = classifier.distributionForInstance(instance);
+				analysis.setClazz(clazz);
+				analysis.setOutput(output);
+				analysis.setAlgorithmOutput(classifier.toString());
+				// analysis.setCorrelationCoefficients(getCorrelationCoefficients(instances));
+				if (analysis.isDistribution()) {
+					analysis.setDistributionForInstances(getDistributionForInstances(instances));
+				}
 			}
-			// Classify the instance
-			double classification = classifier.classifyInstance(instance);
-
-			// Set the output for the client
-			String clazz = instances.classAttribute().value((int) classification);
-			double[] output = classifier.distributionForInstance(instance);
-			analysis.setClazz(clazz);
-			analysis.setOutput(output);
-			analysis.setAlgorithmOutput(classifier.toString());
-			// analysis.setCorrelationCoefficients(getCorrelationCoefficients(instances));
-			if (analysis.isDistribution()) {
-				analysis.setDistributionForInstances(getDistributionForInstances(instances));
-			}
-
 			return analysis;
 		} catch (Exception e) {
 			String content = analysis.getInput();
 			if (!StringUtils.isEmpty(content) && content.length() > 128) {
 				content = content.substring(0, 128);
 			}
-			logger.error("Exception classifying content : " + analysis, e);
-			// throw new RuntimeException(e);
+			logger.error("Exception classifying content : " + analysis.getInput(), e);
+			throw new RuntimeException(e);
 		} finally {
 			// Clear the instances every so often to avoid an out of memory
 			if (instances.numInstances() > 1000) {
 				instances.delete();
 			}
+			reentrantLock.unlock();
 		}
-		return analysis;
 	}
 
 	@Override
@@ -150,15 +159,21 @@ public class WekaClassifier extends Analyzer {
 	}
 
 	private void log(final Instances instances) throws Exception {
-		if (instances != null) {
-			int numClasses = instances.numClasses();
-			int numAttributes = instances.numAttributes();
-			int numInstances = instances.numInstances();
-			logger.info("Building classifier, classes : " + numClasses + ", attributes : " + numAttributes + ", instances : " + numInstances);
-			Evaluation evaluation = new Evaluation(instances);
-			evaluation.evaluateModel(classifier, instances);
-			String evaluationReport = evaluation.toSummaryString();
-			logger.info("Classifier evaluation : " + evaluationReport);
+		try {
+			reentrantLock.lock();
+			if (instances != null) {
+				int numClasses = instances.numClasses();
+				int numAttributes = instances.numAttributes();
+				int numInstances = instances.numInstances();
+				logger.info("Building classifier, classes : " + numClasses + ", attributes : " + numAttributes + ", instances : " + numInstances
+						+ ", classifier : " + classifier.hashCode());
+				Evaluation evaluation = new Evaluation(instances);
+				evaluation.evaluateModel(classifier, instances);
+				String evaluationReport = evaluation.toSummaryString();
+				logger.info("Classifier evaluation : " + evaluationReport);
+			}
+		} finally {
+			reentrantLock.unlock();
 		}
 	}
 

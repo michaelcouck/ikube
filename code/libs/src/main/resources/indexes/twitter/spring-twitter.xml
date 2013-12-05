@@ -53,7 +53,7 @@
 		property:stored="true"
 		property:analyzed="true"
 		property:vectored="true"
-		property:threads="3"
+		property:threads="24"
 		
 		property:consumerKey="Sohh43DylUwaXr7smSojBA"
 		property:consumerSecret="90xubtexbSwhHBbKXM62pF4QfJnz1NWVkpevwde3Qxo"
@@ -67,10 +67,10 @@
 		
 		property:strategies-ref="twitter-strategies" />
 	<util:list id="twitter-strategies">
+		<ref bean="ikube.action.index.handler.strategy.EmoticonClassificationStrategy" />
+		<ref bean="ikube.action.index.handler.strategy.LanguageFilterStrategy" />
 		<ref bean="ikube.action.index.handler.strategy.LanguageCleaningStrategy" />
 		<ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
-		<!-- <ref bean="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy" /> -->
-		<ref bean="ikube.action.index.handler.strategy.EmoticonClassificationStrategy" />
 		<!-- Train the language specific classifiers -->
 		<ref bean="wekaTwitterTrainingStrategy.en" />
 		<ref bean="wekaTwitterTrainingStrategy.es" />
@@ -115,6 +115,7 @@
 		property:language="en"
 		property:positive="10000"
 		property:negative="10000"
+		property:neutral="10000"
 		property:classifier-ref="wekaClassifier.smo.en" />
 	<bean 
 		id="wekaTwitterTrainingStrategy.es" 
@@ -122,6 +123,7 @@
 		property:language="es"
 		property:positive="10000"
 		property:negative="10000"
+		property:neutral="10000"
 		property:classifier-ref="wekaClassifier.smo.es" />
 	<bean 
 		id="wekaTwitterTrainingStrategy.jp" 
@@ -129,6 +131,7 @@
 		property:language="jp"
 		property:positive="10000"
 		property:negative="10000"
+		property:neutral="10000"
 		property:classifier-ref="wekaClassifier.smo.jp" />
 	<bean 
 		id="wekaTwitterTrainingStrategy.cn" 
@@ -136,6 +139,7 @@
 		property:language="cn"
 		property:positive="10000"
 		property:negative="10000"
+		property:neutral="10000"
 		property:classifier-ref="wekaClassifier.smo.cn" />
 	<bean 
 		id="wekaTwitterTrainingStrategy.nl" 
@@ -143,6 +147,7 @@
 		property:language="nl"
 		property:positive="10000"
 		property:negative="10000"
+		property:neutral="10000"
 		property:classifier-ref="wekaClassifier.smo.nl" />
 	<bean 
 		id="wekaTwitterTrainingStrategy.fr" 
@@ -150,6 +155,7 @@
 		property:language="fr"
 		property:positive="10000"
 		property:negative="10000"
+		property:neutral="10000"
 		property:classifier-ref="wekaClassifier.smo.fr" />
 	<bean 
 		id="wekaTwitterTrainingStrategy.de" 
@@ -157,6 +163,7 @@
 		property:language="de"
 		property:positive="10000"
 		property:negative="10000"
+		property:neutral="10000"
 		property:classifier-ref="wekaClassifier.smo.de" />
 	<bean 
 		id="wekaTwitterTrainingStrategy.sv" 
@@ -164,6 +171,7 @@
 		property:language="sv"
 		property:positive="10000"
 		property:negative="10000"
+		property:neutral="10000"
 		property:classifier-ref="wekaClassifier.smo.sv" />
 	<bean 
 		id="wekaTwitterTrainingStrategy.th" 
@@ -171,6 +179,7 @@
 		property:language="th"
 		property:positive="10000"
 		property:negative="10000"
+		property:neutral="10000"
 		property:classifier-ref="wekaClassifier.smo.th" />
 	<bean 
 		id="wekaTwitterTrainingStrategy.ar" 
@@ -178,6 +187,7 @@
 		property:language="ar"
 		property:positive="10000"
 		property:negative="10000"
+		property:neutral="10000"
 		property:classifier-ref="wekaClassifier.smo.ar" />
 	<bean 
 		id="wekaTwitterTrainingStrategy.tr" 
@@ -185,6 +195,7 @@
 		property:language="tr"
 		property:positive="10000"
 		property:negative="10000"
+		property:neutral="10000"
 		property:classifier-ref="wekaClassifier.smo.tr" />
 	
 	<bean 
