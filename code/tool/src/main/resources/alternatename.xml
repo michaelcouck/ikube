@@ -3,7 +3,7 @@
 	GeoName entity. The mapping is done by the Canyon flat file mapping tool. 
  -->
 <mapping>
-	<class name="ikube.model.geospatial.AlternateName" type="DELIMITED" delimiter=";">
+	<class name="ikube.model.geospatial.GeoAltName" type="DELIMITED" delimiter=";">
 		<property name="geonameid" position="0" type="integer" trim="true" />
 		<property name="alternateNameId" position="1" type="integer" trim="true" />
 		<property name="isolanguage" position="2" type="string" trim="true" />

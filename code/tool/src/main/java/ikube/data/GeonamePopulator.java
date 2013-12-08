@@ -32,7 +32,7 @@ public final class GeonamePopulator extends ADatabase {
 
 	public static void main(String[] args) throws Exception {
 		persist(GeoName.class);
-		// persist(AlternateName.class);
+		// persist(GeoAltName.class);
 	}
 
 	protected static void persist(final Class<?> clazz) throws Exception {

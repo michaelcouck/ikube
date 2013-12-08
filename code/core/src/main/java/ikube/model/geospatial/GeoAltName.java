@@ -9,7 +9,7 @@ import ikube.model.Persistable;
 
 @Entity()
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class AlternateName extends Persistable {
+public class GeoAltName extends Persistable {
 
 	private int alternateNameId; // : the id of this alternate name, int
 	private int geonameid; // : geonameId referring to id in table 'geoname', int
