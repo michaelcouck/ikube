@@ -54,13 +54,12 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
 		tweets = new Stack<Tweet>();
 		counter = new AtomicLong();
 		tweetsDirectory = FileUtilities.getOrCreateDirectory(new File(IConstants.ANALYTICS_DIRECTORY, "tweets"));
-		TwitterTemplate twitter = new TwitterTemplate( //
+		TwitterTemplate twitterTemplate = new TwitterTemplate( //
 				indexableTweets.getConsumerKey(), //
 				indexableTweets.getConsumerSecret(), //
 				indexableTweets.getToken(), //
 				indexableTweets.getTokenSecret());
-		// StreamListener listener = new TwitterStreamListener();
-		StreamingOperations streamingOperations = twitter.streamingOperations();
+		StreamingOperations streamingOperations = twitterTemplate.streamingOperations();
 		StreamListener streamListener = this;
 		List<StreamListener> listeners = Arrays.asList(streamListener);
 		streamingOperations.sample(listeners);
@@ -100,7 +99,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
 	@Override
 	public void onTweet(final Tweet tweet) {
 		if (tweets.size() < IConstants.MILLION) {
-			int clones = 99;
+			int clones = 3;
 			do {
 				Tweet clone = (Tweet) SerializationUtilities.clone(tweet);
 				tweets.push(clone);

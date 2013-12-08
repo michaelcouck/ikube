@@ -5,7 +5,7 @@
 	Indexing : {{indexContext.indexing}}<br><br>
 	
 	Documents : {{indexContext.numDocsForSearchers / 1000000}}<br>
-	<!-- Timestamp : {{indexContext.snapshots.pop().latestIndexTimestamp | date:'yyyy-MM-dd HH:mm:ss'}}<br> -->
+	Timestamp : {{indexContext.snapshots.pop().latestIndexTimestamp | date:'yyyy-MM-dd HH:mm:ss'}}<br>
 	Index size on disk : {{indexContext.snapshot.indexSize / 1000000}}<br><br>
 	
 	Max age : {{indexContext.maxAge}}<br>

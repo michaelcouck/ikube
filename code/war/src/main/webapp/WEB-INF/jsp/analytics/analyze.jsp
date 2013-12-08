@@ -1,22 +1,18 @@
-<%@ page errorPage="/WEB-INF/jsp/error.jsp"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="security"
-	uri="http://www.springframework.org/security/tags"%>
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page errorPage="/WEB-INF/jsp/error.jsp" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <div class="container-fluid" ng-controller="AnalyticsController">
 	<div class="row-fluid">
 		<div class="span6">
 			<div class="box">
 				<div class="tab-header">
-					Analytics <img ng-show="!!status" alt="Loading spinner"
-						src="<c:url value="/assets/images/loading.gif" />" height="16px"
-						width="16px"> <span class="pull-right"> <span
-						class="options"><a href="#"><i class="icon-cog"></i></span>
-					</span>
+					Analytics 
+					<img ng-show="!!status" alt="Loading spinner" src="<c:url value="/assets/images/loading.gif" />" height="16px" width="16px">
+					<span class="pull-right"><span class="options"><a href="#"><i class="icon-cog"></i></span></span>
 				</div>
 
 				<form class="fill-up">

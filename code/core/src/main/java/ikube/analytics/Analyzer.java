@@ -22,6 +22,7 @@ import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.Utils;
+import weka.filters.Filter;
 
 /**
  * TODO Document me...
@@ -88,6 +89,29 @@ abstract class Analyzer implements IAnalyzer<Analysis<String, double[]>, Analysi
 				IOUtils.closeQuietly(inputStream);
 			}
 		}
+	}
+
+	Instance filter(final Instance instance, final Filter filter) throws Exception {
+		// Filter from string to inverse vector if necessary
+		Instance filteredData;
+		if (filter == null) {
+			filteredData = instance;
+		} else {
+			filter.input(instance);
+			filteredData = filter.output();
+		}
+		return filteredData;
+	}
+
+	Instances filter(final Instances instances, final Filter filter) throws Exception {
+		Instances filteredData = null;
+		if (filter == null) {
+			filteredData = instances;
+		} else {
+			filter.setInputFormat(instances);
+			filteredData = Filter.useFilter(instances, filter);
+		}
+		return filteredData;
 	}
 
 	double[][] getCorrelationCoefficients(final Instances instances) {

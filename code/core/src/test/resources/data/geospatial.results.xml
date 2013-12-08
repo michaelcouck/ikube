@@ -1,0 +1,921 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.7.0_11" class="java.beans.XMLDecoder">
+	<object class="java.util.ArrayList">
+		<void method="add">
+			<object class="java.util.HashMap">
+				<void method="put">
+					<string>index</string>
+					<string>8503896</string>
+				</void>
+				<void method="put">
+					<string>countrycode</string>
+					<string>ZA</string>
+				</void>
+				<void method="put">
+					<string>featureclass</string>
+					<string>S</string>
+				</void>
+				<void method="put">
+					<string>score</string>
+					<string>NaN</string>
+				</void>
+				<void method="put">
+					<string>id</string>
+					<string>geoname id 8489992 8489992</string>
+				</void>
+				<void method="put">
+					<string>admin2code</string>
+					<string>CPT</string>
+				</void>
+				<void method="put">
+					<string>distance</string>
+					<string>0.7924391741155125</string>
+				</void>
+				<void method="put">
+					<string>modification</string>
+					<string>1342044000000</string>
+				</void>
+				<void method="put">
+					<string>timezone</string>
+					<string>Africa/Johannesburg</string>
+				</void>
+				<void method="put">
+					<string>admin1code</string>
+					<string>11</string>
+				</void>
+				<void method="put">
+					<string>asciiname</string>
+					<string>University of Cape Town</string>
+				</void>
+				<void method="put">
+					<string>admin3code</string>
+					<string>CPT</string>
+				</void>
+				<void method="put">
+					<string>name</string>
+					<string>University of Cape Town</string>
+				</void>
+				<void method="put">
+					<string>gtopo30</string>
+					<string>114</string>
+				</void>
+				<void method="put">
+					<string>geonameid</string>
+					<string>3369156</string>
+				</void>
+				<void method="put">
+					<string>longitude</string>
+					<string>18.46082</string>
+				</void>
+				<void method="put">
+					<string>language</string>
+					<string>en</string>
+				</void>
+				<void method="put">
+					<string>latitude</string>
+					<string>-33.95796</string>
+				</void>
+				<void method="put">
+					<string>fragment</string>
+					<string>University of &lt;B&gt;Cape&lt;/B&gt; &lt;B&gt;Town&lt;/B&gt; </string>
+				</void>
+				<void method="put">
+					<string>alternatenames</string>
+					<string>University of Cape Town</string>
+				</void>
+				<void method="put">
+					<string>featurecode</string>
+					<string>SCHC</string>
+				</void>
+				<void method="put">
+					<string>population</string>
+					<string>0</string>
+				</void>
+			</object>
+		</void>
+		<void method="add">
+			<object class="java.util.HashMap">
+				<void method="put">
+					<string>index</string>
+					<string>8490529</string>
+				</void>
+				<void method="put">
+					<string>countrycode</string>
+					<string>ZA</string>
+				</void>
+				<void method="put">
+					<string>featureclass</string>
+					<string>S</string>
+				</void>
+				<void method="put">
+					<string>score</string>
+					<string>NaN</string>
+				</void>
+				<void method="put">
+					<string>id</string>
+					<string>geoname id 8492056 8492056</string>
+				</void>
+				<void method="put">
+					<string>admin2code</string>
+					<string>CPT</string>
+				</void>
+				<void method="put">
+					<string>distance</string>
+					<string>1.9672015308688626</string>
+				</void>
+				<void method="put">
+					<string>modification</string>
+					<string>1342044000000</string>
+				</void>
+				<void method="put">
+					<string>timezone</string>
+					<string>Africa/Johannesburg</string>
+				</void>
+				<void method="put">
+					<string>admin1code</string>
+					<string>11</string>
+				</void>
+				<void method="put">
+					<string>asciiname</string>
+					<string>Heart of Cape Town Museum</string>
+				</void>
+				<void method="put">
+					<string>admin3code</string>
+					<string>CPT</string>
+				</void>
+				<void method="put">
+					<string>name</string>
+					<string>Heart of Cape Town Museum</string>
+				</void>
+				<void method="put">
+					<string>gtopo30</string>
+					<string>54</string>
+				</void>
+				<void method="put">
+					<string>longitude</string>
+					<string>18.46355</string>
+				</void>
+				<void method="put">
+					<string>geonameid</string>
+					<string>7302725</string>
+				</void>
+				<void method="put">
+					<string>language</string>
+					<string>en</string>
+				</void>
+				<void method="put">
+					<string>latitude</string>
+					<string>-33.94094</string>
+				</void>
+				<void method="put">
+					<string>fragment</string>
+					<string>Heart of &lt;B&gt;Cape&lt;/B&gt; &lt;B&gt;Town&lt;/B&gt; Museum </string>
+				</void>
+				<void method="put">
+					<string>featurecode</string>
+					<string>MUS</string>
+				</void>
+				<void method="put">
+					<string>population</string>
+					<string>0</string>
+				</void>
+			</object>
+		</void>
+		<void method="add">
+			<object class="java.util.HashMap">
+				<void method="put">
+					<string>index</string>
+					<string>8489289</string>
+				</void>
+				<void method="put">
+					<string>countrycode</string>
+					<string>ZA</string>
+				</void>
+				<void method="put">
+					<string>featureclass</string>
+					<string>S</string>
+				</void>
+				<void method="put">
+					<string>score</string>
+					<string>NaN</string>
+				</void>
+				<void method="put">
+					<string>id</string>
+					<string>geoname id 8491739 8491739</string>
+				</void>
+				<void method="put">
+					<string>admin2code</string>
+					<string>CPT</string>
+				</void>
+				<void method="put">
+					<string>distance</string>
+					<string>3.1193754279861126</string>
+				</void>
+				<void method="put">
+					<string>modification</string>
+					<string>1342044000000</string>
+				</void>
+				<void method="put">
+					<string>timezone</string>
+					<string>Africa/Johannesburg</string>
+				</void>
+				<void method="put">
+					<string>admin1code</string>
+					<string>11</string>
+				</void>
+				<void method="put">
+					<string>asciiname</string>
+					<string>Best Western Cape Suites Hotel</string>
+				</void>
+				<void method="put">
+					<string>admin3code</string>
+					<string>CPT</string>
+				</void>
+				<void method="put">
+					<string>name</string>
+					<string>Best Western Cape Suites Hotel</string>
+				</void>
+				<void method="put">
+					<string>gtopo30</string>
+					<string>80</string>
+				</void>
+				<void method="put">
+					<string>longitude</string>
+					<string>18.4263</string>
+				</void>
+				<void method="put">
+					<string>geonameid</string>
+					<string>6502536</string>
+				</void>
+				<void method="put">
+					<string>language</string>
+					<string>en</string>
+				</void>
+				<void method="put">
+					<string>latitude</string>
+					<string>-33.9355</string>
+				</void>
+				<void method="put">
+					<string>fragment</string>
+					<string>Best Western &lt;B&gt;Cape&lt;/B&gt; Suites Hotel </string>
+				</void>
+				<void method="put">
+					<string>featurecode</string>
+					<string>HTL</string>
+				</void>
+				<void method="put">
+					<string>population</string>
+					<string>0</string>
+				</void>
+			</object>
+		</void>
+		<void method="add">
+			<object class="java.util.HashMap">
+				<void method="put">
+					<string>index</string>
+					<string>8490755</string>
+				</void>
+				<void method="put">
+					<string>countrycode</string>
+					<string>ZA</string>
+				</void>
+				<void method="put">
+					<string>featureclass</string>
+					<string>S</string>
+				</void>
+				<void method="put">
+					<string>score</string>
+					<string>NaN</string>
+				</void>
+				<void method="put">
+					<string>id</string>
+					<string>geoname id 8492134 8492134</string>
+				</void>
+				<void method="put">
+					<string>admin2code</string>
+					<string>CPT</string>
+				</void>
+				<void method="put">
+					<string>distance</string>
+					<string>3.202716151503304</string>
+				</void>
+				<void method="put">
+					<string>modification</string>
+					<string>1342044000000</string>
+				</void>
+				<void method="put">
+					<string>timezone</string>
+					<string>Africa/Johannesburg</string>
+				</void>
+				<void method="put">
+					<string>admin1code</string>
+					<string>11</string>
+				</void>
+				<void method="put">
+					<string>asciiname</string>
+					<string>Royal Cape Golf Club</string>
+				</void>
+				<void method="put">
+					<string>admin3code</string>
+					<string>CPT</string>
+				</void>
+				<void method="put">
+					<string>name</string>
+					<string>Royal Cape Golf Club</string>
+				</void>
+				<void method="put">
+					<string>gtopo30</string>
+					<string>26</string>
+				</void>
+				<void method="put">
+					<string>longitude</string>
+					<string>18.48059</string>
+				</void>
+				<void method="put">
+					<string>geonameid</string>
+					<string>7627093</string>
+				</void>
+				<void method="put">
+					<string>language</string>
+					<string>en</string>
+				</void>
+				<void method="put">
+					<string>latitude</string>
+					<string>-34.01308</string>
+				</void>
+				<void method="put">
+					<string>fragment</string>
+					<string>Royal &lt;B&gt;Cape&lt;/B&gt; Golf Club </string>
+				</void>
+				<void method="put">
+					<string>featurecode</string>
+					<string>RECG</string>
+				</void>
+				<void method="put">
+					<string>population</string>
+					<string>0</string>
+				</void>
+			</object>
+		</void>
+		<void method="add">
+			<object class="java.util.HashMap">
+				<void method="put">
+					<string>index</string>
+					<string>8489034</string>
+				</void>
+				<void method="put">
+					<string>countrycode</string>
+					<string>ZA</string>
+				</void>
+				<void method="put">
+					<string>featureclass</string>
+					<string>S</string>
+				</void>
+				<void method="put">
+					<string>score</string>
+					<string>NaN</string>
+				</void>
+				<void method="put">
+					<string>id</string>
+					<string>geoname id 8491699 8491699</string>
+				</void>
+				<void method="put">
+					<string>admin2code</string>
+					<string>CPT</string>
+				</void>
+				<void method="put">
+					<string>distance</string>
+					<string>3.7159961774363603</string>
+				</void>
+				<void method="put">
+					<string>modification</string>
+					<string>1342044000000</string>
+				</void>
+				<void method="put">
+					<string>timezone</string>
+					<string>Africa/Johannesburg</string>
+				</void>
+				<void method="put">
+					<string>admin1code</string>
+					<string>11</string>
+				</void>
+				<void method="put">
+					<string>asciiname</string>
+					<string>Cape Diamond Hotel</string>
+				</void>
+				<void method="put">
+					<string>admin3code</string>
+					<string>CPT</string>
+				</void>
+				<void method="put">
+					<string>name</string>
+					<string>Cape Diamond Hotel</string>
+				</void>
+				<void method="put">
+					<string>gtopo30</string>
+					<string>6</string>
+				</void>
+				<void method="put">
+					<string>longitude</string>
+					<string>18.4277</string>
+				</void>
+				<void method="put">
+					<string>geonameid</string>
+					<string>6496465</string>
+				</void>
+				<void method="put">
+					<string>language</string>
+					<string>en</string>
+				</void>
+				<void method="put">
+					<string>latitude</string>
+					<string>-33.9239</string>
+				</void>
+				<void method="put">
+					<string>fragment</string>
+					<string>&lt;B&gt;Cape&lt;/B&gt; Diamond Hotel </string>
+				</void>
+				<void method="put">
+					<string>featurecode</string>
+					<string>HTL</string>
+				</void>
+				<void method="put">
+					<string>population</string>
+					<string>0</string>
+				</void>
+			</object>
+		</void>
+		<void method="add">
+			<object class="java.util.HashMap">
+				<void method="put">
+					<string>index</string>
+					<string>8503902</string>
+				</void>
+				<void method="put">
+					<string>countrycode</string>
+					<string>ZA</string>
+				</void>
+				<void method="put">
+					<string>featureclass</string>
+					<string>P</string>
+				</void>
+				<void method="put">
+					<string>score</string>
+					<string>NaN</string>
+				</void>
+				<void method="put">
+					<string>id</string>
+					<string>geoname id 8489993 8489993</string>
+				</void>
+				<void method="put">
+					<string>admin2code</string>
+					<string>CPT</string>
+				</void>
+				<void method="put">
+					<string>distance</string>
+					<string>3.7505794141873525</string>
+				</void>
+				<void method="put">
+					<string>modification</string>
+					<string>1376776800000</string>
+				</void>
+				<void method="put">
+					<string>timezone</string>
+					<string>Africa/Johannesburg</string>
+				</void>
+				<void method="put">
+					<string>admin1code</string>
+					<string>11</string>
+				</void>
+				<void method="put">
+					<string>asciiname</string>
+					<string>Cape Town</string>
+				</void>
+				<void method="put">
+					<string>admin3code</string>
+					<string>CPT</string>
+				</void>
+				<void method="put">
+					<string>name</string>
+					<string>Cape Town</string>
+				</void>
+				<void method="put">
+					<string>gtopo30</string>
+					<string>16</string>
+				</void>
+				<void method="put">
+					<string>geonameid</string>
+					<string>3369157</string>
+				</void>
+				<void method="put">
+					<string>longitude</string>
+					<string>18.42322</string>
+				</void>
+				<void method="put">
+					<string>language</string>
+					<string>en</string>
+				</void>
+				<void method="put">
+					<string>latitude</string>
+					<string>-33.92584</string>
+				</void>
+				<void method="put">
+					<string>fragment</string>
+					<string>&lt;B&gt;Cape&lt;/B&gt; &lt;B&gt;Town&lt;/B&gt; </string>
+				</void>
+				<void method="put">
+					<string>alternatenames</string>
+					<string>Altepetl In Cabo,Ar C&apos;hab,CPT,Cape Toun,Cape Town,Cidade do Cabo,Cita del Cap,Citta del Capo,Cittae </string>
+				</void>
+				<void method="put">
+					<string>featurecode</string>
+					<string>PPLA</string>
+				</void>
+				<void method="put">
+					<string>population</string>
+					<string>3433441</string>
+				</void>
+			</object>
+		</void>
+		<void method="add">
+			<object class="java.util.HashMap">
+				<void method="put">
+					<string>index</string>
+					<string>8489073</string>
+				</void>
+				<void method="put">
+					<string>countrycode</string>
+					<string>ZA</string>
+				</void>
+				<void method="put">
+					<string>featureclass</string>
+					<string>S</string>
+				</void>
+				<void method="put">
+					<string>score</string>
+					<string>NaN</string>
+				</void>
+				<void method="put">
+					<string>id</string>
+					<string>geoname id 8491718 8491718</string>
+				</void>
+				<void method="put">
+					<string>admin2code</string>
+					<string>CPT</string>
+				</void>
+				<void method="put">
+					<string>distance</string>
+					<string>3.774994116888059</string>
+				</void>
+				<void method="put">
+					<string>modification</string>
+					<string>1342044000000</string>
+				</void>
+				<void method="put">
+					<string>timezone</string>
+					<string>Africa/Johannesburg</string>
+				</void>
+				<void method="put">
+					<string>admin1code</string>
+					<string>11</string>
+				</void>
+				<void method="put">
+					<string>asciiname</string>
+					<string>Townhouse Hotel</string>
+				</void>
+				<void method="put">
+					<string>admin3code</string>
+					<string>CPT</string>
+				</void>
+				<void method="put">
+					<string>name</string>
+					<string>Townhouse Hotel</string>
+				</void>
+				<void method="put">
+					<string>gtopo30</string>
+					<string>32</string>
+				</void>
+				<void method="put">
+					<string>longitude</string>
+					<string>18.4221</string>
+				</void>
+				<void method="put">
+					<string>geonameid</string>
+					<string>6500516</string>
+				</void>
+				<void method="put">
+					<string>language</string>
+					<string>en</string>
+				</void>
+				<void method="put">
+					<string>latitude</string>
+					<string>-33.9261</string>
+				</void>
+				<void method="put">
+					<string>fragment</string>
+					<string>&lt;B&gt;Town&lt;/B&gt;house Hotel </string>
+				</void>
+				<void method="put">
+					<string>featurecode</string>
+					<string>HTL</string>
+				</void>
+				<void method="put">
+					<string>population</string>
+					<string>0</string>
+				</void>
+			</object>
+		</void>
+		<void method="add">
+			<object class="java.util.HashMap">
+				<void method="put">
+					<string>index</string>
+					<string>8471923</string>
+				</void>
+				<void method="put">
+					<string>countrycode</string>
+					<string>ZA</string>
+				</void>
+				<void method="put">
+					<string>featureclass</string>
+					<string>P</string>
+				</void>
+				<void method="put">
+					<string>score</string>
+					<string>NaN</string>
+				</void>
+				<void method="put">
+					<string>id</string>
+					<string>geoname id 8482510 8482510</string>
+				</void>
+				<void method="put">
+					<string>admin2code</string>
+					<string>CPT</string>
+				</void>
+				<void method="put">
+					<string>distance</string>
+					<string>3.914614156215907</string>
+				</void>
+				<void method="put">
+					<string>modification</string>
+					<string>1342044000000</string>
+				</void>
+				<void method="put">
+					<string>timezone</string>
+					<string>Africa/Johannesburg</string>
+				</void>
+				<void method="put">
+					<string>admin1code</string>
+					<string>11</string>
+				</void>
+				<void method="put">
+					<string>asciiname</string>
+					<string>Silvertown</string>
+				</void>
+				<void method="put">
+					<string>admin3code</string>
+					<string>CPT</string>
+				</void>
+				<void method="put">
+					<string>name</string>
+					<string>Silvertown</string>
+				</void>
+				<void method="put">
+					<string>gtopo30</string>
+					<string>16</string>
+				</void>
+				<void method="put">
+					<string>longitude</string>
+					<string>18.5301</string>
+				</void>
+				<void method="put">
+					<string>geonameid</string>
+					<string>3361633</string>
+				</void>
+				<void method="put">
+					<string>language</string>
+					<string>en</string>
+				</void>
+				<void method="put">
+					<string>latitude</string>
+					<string>-33.96365</string>
+				</void>
+				<void method="put">
+					<string>fragment</string>
+					<string>Silver&lt;B&gt;town&lt;/B&gt; </string>
+				</void>
+				<void method="put">
+					<string>featurecode</string>
+					<string>PPLX</string>
+				</void>
+				<void method="put">
+					<string>population</string>
+					<string>0</string>
+				</void>
+			</object>
+		</void>
+		<void method="add">
+			<object class="java.util.HashMap">
+				<void method="put">
+					<string>index</string>
+					<string>8488699</string>
+				</void>
+				<void method="put">
+					<string>countrycode</string>
+					<string>ZA</string>
+				</void>
+				<void method="put">
+					<string>featureclass</string>
+					<string>S</string>
+				</void>
+				<void method="put">
+					<string>score</string>
+					<string>NaN</string>
+				</void>
+				<void method="put">
+					<string>id</string>
+					<string>geoname id 8491604 8491604</string>
+				</void>
+				<void method="put">
+					<string>admin2code</string>
+					<string>CPT</string>
+				</void>
+				<void method="put">
+					<string>distance</string>
+					<string>3.9654446222331274</string>
+				</void>
+				<void method="put">
+					<string>modification</string>
+					<string>1342044000000</string>
+				</void>
+				<void method="put">
+					<string>timezone</string>
+					<string>Africa/Johannesburg</string>
+				</void>
+				<void method="put">
+					<string>admin1code</string>
+					<string>11</string>
+				</void>
+				<void method="put">
+					<string>asciiname</string>
+					<string>Cape Town Hollow</string>
+				</void>
+				<void method="put">
+					<string>admin3code</string>
+					<string>CPT</string>
+				</void>
+				<void method="put">
+					<string>name</string>
+					<string>Cape Town Hollow</string>
+				</void>
+				<void method="put">
+					<string>gtopo30</string>
+					<string>34</string>
+				</void>
+				<void method="put">
+					<string>longitude</string>
+					<string>18.417</string>
+				</void>
+				<void method="put">
+					<string>geonameid</string>
+					<string>6469888</string>
+				</void>
+				<void method="put">
+					<string>language</string>
+					<string>en</string>
+				</void>
+				<void method="put">
+					<string>latitude</string>
+					<string>-33.926</string>
+				</void>
+				<void method="put">
+					<string>fragment</string>
+					<string>&lt;B&gt;Cape&lt;/B&gt; &lt;B&gt;Town&lt;/B&gt; Hollow </string>
+				</void>
+				<void method="put">
+					<string>featurecode</string>
+					<string>HTL</string>
+				</void>
+				<void method="put">
+					<string>population</string>
+					<string>0</string>
+				</void>
+			</object>
+		</void>
+		<void method="add">
+			<object class="java.util.HashMap">
+				<void method="put">
+					<string>index</string>
+					<string>8488904</string>
+				</void>
+				<void method="put">
+					<string>countrycode</string>
+					<string>ZA</string>
+				</void>
+				<void method="put">
+					<string>featureclass</string>
+					<string>S</string>
+				</void>
+				<void method="put">
+					<string>score</string>
+					<string>NaN</string>
+				</void>
+				<void method="put">
+					<string>id</string>
+					<string>geoname id 8491632 8491632</string>
+				</void>
+				<void method="put">
+					<string>admin2code</string>
+					<string>CPT</string>
+				</void>
+				<void method="put">
+					<string>distance</string>
+					<string>4.136072410733664</string>
+				</void>
+				<void method="put">
+					<string>modification</string>
+					<string>1342044000000</string>
+				</void>
+				<void method="put">
+					<string>timezone</string>
+					<string>Africa/Johannesburg</string>
+				</void>
+				<void method="put">
+					<string>admin1code</string>
+					<string>11</string>
+				</void>
+				<void method="put">
+					<string>asciiname</string>
+					<string>Capetonian Hotel</string>
+				</void>
+				<void method="put">
+					<string>admin3code</string>
+					<string>CPT</string>
+				</void>
+				<void method="put">
+					<string>name</string>
+					<string>Capetonian Hotel</string>
+				</void>
+				<void method="put">
+					<string>gtopo30</string>
+					<string>16</string>
+				</void>
+				<void method="put">
+					<string>longitude</string>
+					<string>18.4255</string>
+				</void>
+				<void method="put">
+					<string>geonameid</string>
+					<string>6475803</string>
+				</void>
+				<void method="put">
+					<string>language</string>
+					<string>en</string>
+				</void>
+				<void method="put">
+					<string>latitude</string>
+					<string>-33.9179</string>
+				</void>
+				<void method="put">
+					<string>fragment</string>
+					<string>&lt;B&gt;Cape&lt;/B&gt;tonian Hotel </string>
+				</void>
+				<void method="put">
+					<string>featurecode</string>
+					<string>HTL</string>
+				</void>
+				<void method="put">
+					<string>population</string>
+					<string>0</string>
+				</void>
+			</object>
+		</void>
+		<void method="add">
+			<object class="java.util.HashMap">
+				<void method="put">
+					<string>total</string>
+					<string>29</string>
+				</void>
+				<void method="put">
+					<string>searchStrings</string>
+					<string>cape town</string>
+				</void>
+				<void method="put">
+					<string>duration</string>
+					<string>36</string>
+				</void>
+				<void method="put">
+					<string>indexName</string>
+					<string>geospatial</string>
+				</void>
+				<void method="put">
+					<string>score</string>
+					<string>NaN</string>
+				</void>
+				<void method="put">
+					<string>corrections</string>
+					<string></string>
+				</void>
+			</object>
+		</void>
+	</object>
+</java>

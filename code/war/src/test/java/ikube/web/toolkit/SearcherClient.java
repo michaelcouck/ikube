@@ -21,18 +21,19 @@ import org.apache.commons.httpclient.methods.GetMethod;
 public class SearcherClient {
 
 	public static void main(String[] args) throws Exception {
-		String path = "/ikube/service/search/multi/spatial";
-		String url = new URL("http", "81.95.118.139", 80, path).toString();
+		String host = "localhost";
+		int port = 8080;
+		String path = "/ikube/service/search/xml/geospatial";
+		String url = new URL("http", host, port , path).toString();
 
-		String[] names = { "indexName", "searchStrings", "searchFields", "fragment", "firstResult", "maxResults", "distance", "latitude",
-				"longitude" };
-		String[] values = { "geospatial", "cape AND town", "name", "true", "0", "10", "20", "-33.9693580", "18.4622110" };
+		String[] names = { "indexName", "searchStrings", "searchFields", "typeFields", "fragment", "firstResult", "maxResults", "distance", "latitude", "longitude" };
+		String[] values = { "geospatial", "cape town", "name", "string", "true", "0", "10", "10", "-33.9693580", "18.4622110" };
 		NameValuePair[] params = getNameValuePairs(names, values);
 
 		GetMethod getMethod = new GetMethod(url);
 		getMethod.setQueryString(params);
 		HttpClient httpClient = new HttpClient();
-		authenticate(httpClient, "81.95.118.139", 80, "guest", "guest");
+		authenticate(httpClient, host, port, "guest", "guest");
 
 		int result = httpClient.executeMethod(getMethod);
 		String results = getMethod.getResponseBodyAsString();
@@ -40,8 +41,7 @@ public class SearcherClient {
 		System.out.println("Results : " + results);
 	}
 
-	public static void authenticate(final HttpClient httpClient, final String domain, final int port, final String userid,
-			final String password) {
+	public static void authenticate(final HttpClient httpClient, final String domain, final int port, final String userid, final String password) {
 		List<String> authPrefs = new ArrayList<String>(2);
 		authPrefs.add(AuthPolicy.BASIC);
 		authPrefs.add(AuthPolicy.DIGEST);

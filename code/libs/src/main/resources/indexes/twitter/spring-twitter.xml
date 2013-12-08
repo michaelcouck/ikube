@@ -39,7 +39,7 @@
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
 		property:children-ref="twitter-indexables"
-		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer" />
+		property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer" />
 	<util:list id="twitter-indexables">
 		<ref local="twitter-index" />
 	</util:list>
@@ -53,7 +53,7 @@
 		property:stored="true"
 		property:analyzed="true"
 		property:vectored="true"
-		property:threads="24"
+		property:threads="3"
 		
 		property:consumerKey="Sohh43DylUwaXr7smSojBA"
 		property:consumerSecret="90xubtexbSwhHBbKXM62pF4QfJnz1NWVkpevwde3Qxo"
@@ -64,6 +64,12 @@
 		property:createdAtField="created-at"
 		property:fromUserField="from-user"
 		property:locationField="location"
+		property:userLocationField="userLocation"
+		property:userNameField="userName"
+		property:userScreenNameField="userScreenName"
+		property:userTimeZoneField="userTimeZone"
+		property:userUtcOffsetField="userUtcOffset"
+		property:userLanguageField="userLanguage"
 		
 		property:strategies-ref="twitter-strategies" />
 	<util:list id="twitter-strategies">
@@ -97,18 +103,6 @@
 		<ref bean="wekaClassificationStrategy.tr" />
 	</util:list>
 
-	<bean id="wekaClassifier.smo.en" class="ikube.analytics.WekaClassifier" />
-	<bean id="wekaClassifier.smo.es" class="ikube.analytics.WekaClassifier" />
-	<bean id="wekaClassifier.smo.jp" class="ikube.analytics.WekaClassifier" />
-	<bean id="wekaClassifier.smo.cn" class="ikube.analytics.WekaClassifier" />
-	<bean id="wekaClassifier.smo.nl" class="ikube.analytics.WekaClassifier" />
-	<bean id="wekaClassifier.smo.fr" class="ikube.analytics.WekaClassifier" />
-	<bean id="wekaClassifier.smo.de" class="ikube.analytics.WekaClassifier" />
-	<bean id="wekaClassifier.smo.sv" class="ikube.analytics.WekaClassifier" />
-	<bean id="wekaClassifier.smo.th" class="ikube.analytics.WekaClassifier" />
-	<bean id="wekaClassifier.smo.ar" class="ikube.analytics.WekaClassifier" />
-	<bean id="wekaClassifier.smo.tr" class="ikube.analytics.WekaClassifier" />
-	
 	<bean 
 		id="wekaTwitterTrainingStrategy.en" 
 		class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
@@ -254,93 +248,4 @@
 		property:language="tr"
 		property:classifier-ref="wekaClassifier.smo.tr" />
 		
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
-		<property name="arguments">
-			<array>
-				<ref bean="buildable-smo" />
-				<ref bean="wekaClassifier.smo.en" />
-			</array>
-		</property>
-	</bean>
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
-		<property name="arguments">
-			<array>
-				<ref bean="buildable-smo" />
-				<ref bean="wekaClassifier.smo.es" />
-			</array>
-		</property>
-	</bean>
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
-		<property name="arguments">
-			<array>
-				<ref bean="buildable-smo" />
-				<ref bean="wekaClassifier.smo.jp" />
-			</array>
-		</property>
-	</bean>
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
-		<property name="arguments">
-			<array>
-				<ref bean="buildable-smo" />
-				<ref bean="wekaClassifier.smo.cn" />
-			</array>
-		</property>
-	</bean>
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
-		<property name="arguments">
-			<array>
-				<ref bean="buildable-smo" />
-				<ref bean="wekaClassifier.smo.nl" />
-			</array>
-		</property>
-	</bean>
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
-		<property name="arguments">
-			<array>
-				<ref bean="buildable-smo" />
-				<ref bean="wekaClassifier.smo.fr" />
-			</array>
-		</property>
-	</bean>
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
-		<property name="arguments">
-			<array>
-				<ref bean="buildable-smo" />
-				<ref bean="wekaClassifier.smo.de" />
-			</array>
-		</property>
-	</bean>
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
-		<property name="arguments">
-			<array>
-				<ref bean="buildable-smo" />
-				<ref bean="wekaClassifier.smo.sv" />
-			</array>
-		</property>
-	</bean>
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
-		<property name="arguments">
-			<array>
-				<ref bean="buildable-smo" />
-				<ref bean="wekaClassifier.smo.th" />
-			</array>
-		</property>
-	</bean>
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
-		<property name="arguments">
-			<array>
-				<ref bean="buildable-smo" />
-				<ref bean="wekaClassifier.smo.ar" />
-			</array>
-		</property>
-	</bean>
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
-		<property name="arguments">
-			<array>
-				<ref bean="buildable-smo" />
-				<ref bean="wekaClassifier.smo.tr" />
-			</array>
-		</property>
-	</bean>
-	
 </beans>

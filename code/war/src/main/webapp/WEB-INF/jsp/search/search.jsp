@@ -35,75 +35,77 @@
 				</div>
 				<form class="fill-up">
 					<div class="row-fluid">
-						<!-- <div class="span12"> -->
-							<div class="padded">
-								<form ng-submit="doSearchAll([searchString])">
-								<div class="note pull-right"><b>Search all fields in all indexes</b></div>
-								<div 
-									class="input" 
-									ng-controller="TypeaheadController" 
-									ng-init="doConfig('searchFormConfig');">
-									<input
-										id="instant-search"
-										name="instant-search" 
-										type="text"
-										class="search"
-										focus-me="true"
-										ng-model="searchString"
-										placeholder="Instant search..."
-										typeahead="result for result in doSearch()"
-										typeahead-min-length="3" 
-										typeahead-wait-ms="500"
-										typeahead-on-select="doSearchAll([stripTags(searchString)]);">
-									<div class="input search pull-right" ng-show="!!statistics && !!statistics.corrections">
-										Did you mean : 
-										<a href="#" ng-click="
-												searchString = statistics.corrections;
-												doSearchAll([statistics.corrections]);">{{statistics.corrections}}
-										</a>
-									</div>
-									<button type="submit" class="button blue" ng-disabled="!searchString" ng-click="doSearchAll([searchString]);">Go</button>
+						<div class="padded">
+							<form>
+							<div class="note pull-right"><b>Search all fields in all indexes</b></div>
+							<div 
+								class="input" 
+								ng-controller="TypeaheadController" 
+								ng-init="doConfig('searchFormConfig');">
+								<input
+									id="instant-search"
+									name="instant-search" 
+									type="text"
+									class="search"
+									focus-me="true"
+									ng-model="searchString"
+									placeholder="Instant search..."
+									typeahead="result for result in doSearch()"
+									typeahead-min-length="3" 
+									typeahead-wait-ms="500"
+									typeahead-on-select="doSearchAll([stripTags(searchString)]);">
+								<div class="input search pull-right" ng-show="!!statistics && !!statistics.corrections">
+									Did you mean : 
+									<a href="#" ng-click="
+											searchString = statistics.corrections;
+											doSearchAll([statistics.corrections]);">{{statistics.corrections}}
+									</a>
 								</div>
-								</form>
-								
-								<form ng-submit="doSearch()">
-								<div class="note pull-right"><b>Choose an index to search</b></div>
-								<div class="input search">
-									<select 
-										ng-model="search.indexName"
-										ng-model="indexes"
-										ng-options="index for index in indexes"
-										class="fill-up">
-										<option style="display:none" value="">choose...</option>
-									</select>
-								</div>
-								
-								<div 
-									ng-show="!!search.indexName"
-									ng-repeat="field in search.searchFields">
-									<div class="prepend-transparent" ng-show="!!search.searchFields[$index]">
-      								<span 
-      									class="add-on button" 
-      									ng-click="search.searchFields[$index] = ''">-</span>
-									<input 
-										class="input-transparent" 
-										type="text" 
-										placeholder="{{field}}..."
-										ng-model="search.searchStrings[$index]" />
-									</div>
-								</div>
-								
-								<div class="input search pull-right" ng-show="!!statistics && !!statistics.corrections && !!search.indexName">
-									Corrections : {{statistics.corrections}}
-								</div>
-								
-								<button type="submit" class="button blue" ng-disabled="!search.indexName" ng-click="doSearch();">Go</button>
-								</form>
-
-								<div style="width: 10px; height: 60px;"></div>
-
+								<!-- 
+									This executes the search when clicked. The typeahead, typeahead-on-select and the enter 
+									button will trigger the search. The ng-click attribute on the button will be activated in these cases
+									because the button is of type submit. The searchString is from the type ahead scope and needs 
+									to be fed into the searcher controller as an array of strings. 
+								-->
+								<button type="submit" class="button blue" ng-disabled="!searchString" ng-click="doSearchAll([searchString]);">Go</button>
 							</div>
-						<!-- </div> -->
+							</form>
+							
+							<form ng-submit="doSearch()">
+							<div class="note pull-right"><b>Choose an index to search</b></div>
+							<div class="input search">
+								<select 
+									ng-model="search.indexName"
+									ng-model="indexes"
+									ng-options="index for index in indexes"
+									class="fill-up">
+									<option style="display:none" value="">choose...</option>
+								</select>
+							</div>
+								
+							<div 
+								ng-show="!!search.indexName"
+								ng-repeat="field in search.searchFields">
+								<div class="prepend-transparent" ng-show="!!search.searchFields[$index]">
+   								<span 
+   									class="add-on button" 
+   									ng-click="search.searchFields[$index] = ''">-</span>
+								<input 
+									class="input-transparent" 
+									type="text" 
+									placeholder="{{field}}..."
+									ng-model="search.searchStrings[$index]" />
+								</div>
+							</div>
+							
+							<div class="input search pull-right" ng-show="!!statistics && !!statistics.corrections && !!search.indexName">
+								Corrections : {{statistics.corrections}}
+							</div>
+							
+							<button type="submit" class="button blue" ng-disabled="!search.indexName" ng-submit="doSearch()">Go</button>
+							</form>
+							<div style="width: 10px; height: 60px;"></div>
+						</div>
 					</div>
 				</form>
 			</div>

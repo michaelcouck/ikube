@@ -52,26 +52,15 @@ public class WekaClassifier extends Analyzer {
 	public void build(final Buildable buildable) {
 		try {
 			reentrantLock.lock();
-			log(null);
 
-			Instances filteredData = null;
+			Instances filteredData = filter(instances, filter);
 
-			if (filter == null) {
-				filteredData = instances;
-			} else {
-				filter.setInputFormat(instances);
-				filteredData = Filter.useFilter(instances, filter);
-			}
-
-			Classifier classifier = new SMO();
 			classifier.buildClassifier(filteredData);
-			this.classifier = classifier;
 			instances = instances.stringFreeStructure();
 
-			filteredData.setRelationName("filtered_data");
 			instances.setRelationName("training_data");
+			filteredData.setRelationName("filtered_data");
 			log(filteredData);
-			return;
 		} catch (Exception e) {
 			logger.info("Exception building classifier : ", e);
 			instances.delete();
@@ -113,16 +102,12 @@ public class WekaClassifier extends Analyzer {
 			if (!StringUtils.isEmpty(analysis.getInput())) {
 				// Create the instance from the data
 				Instance instance = instance(analysis.getInput(), instances);
-				// Filter from string to inverse vector if necessary
-				if (filter != null) {
-					filter.input(instance);
-					instance = filter.output();
-				}
+				Instance filteredInstance = filter(instance, filter);
 				// Classify the instance
-				double classification = classifier.classifyInstance(instance);
+				double classification = classifier.classifyInstance(filteredInstance);
 				// Set the output for the client
 				String clazz = instances.classAttribute().value((int) classification);
-				double[] output = classifier.distributionForInstance(instance);
+				double[] output = classifier.distributionForInstance(filteredInstance);
 				analysis.setClazz(clazz);
 				analysis.setOutput(output);
 				analysis.setAlgorithmOutput(classifier.toString());

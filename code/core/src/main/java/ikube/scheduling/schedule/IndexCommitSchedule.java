@@ -42,7 +42,7 @@ public class IndexCommitSchedule extends Schedule {
 			for (final IndexWriter indexWriter : indexWriters) {
 				try {
 					indexWriter.maybeMerge();
-					indexWriter.forceMerge(100, Boolean.TRUE);
+					indexWriter.forceMerge(10, Boolean.TRUE);
 					indexWriter.commit();
 					indexWriter.deleteUnusedFiles();
 				} catch (IOException e) {

@@ -27,7 +27,7 @@ public class WekaTest extends AbstractTest {
 	public void readArff() throws Exception {
 		WekaClassifier wekaClassifier = new WekaClassifier();
 
-		File file = FileUtilities.findFileRecursively(new File("."), "instance.arff");
+		File file = FileUtilities.findFileRecursively(new File("."), "classification.arff");
 		FileReader fileReader = new FileReader(file);
 		BufferedReader bufferedReader = new BufferedReader(fileReader);
 		Instances instances = new Instances(bufferedReader);

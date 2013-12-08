@@ -236,11 +236,11 @@
 		property:port="465"
 		property:auth="true"
 		property:protocol="pop3"
-		property:user="ikube.ikube"
-		property:password="Caherl2ne"
+		property:user="ikube.notifications"
+		property:password="1kubenotifications"
 		property:mailHost="smtp.gmail.com"
-		property:sender="ikube.ikube@gmail.com"
-		property:recipients="ikube.ikube@gmail.com" />
+		property:sender="ikube.notifications@gmail.com"
+		property:recipients="ikube.notifications@gmail.com" />
 
 	<bean 
 		id="messageSource" 

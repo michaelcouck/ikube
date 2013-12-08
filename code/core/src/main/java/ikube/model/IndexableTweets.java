@@ -16,6 +16,7 @@ import javax.validation.constraints.NotNull;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class IndexableTweets extends Indexable<IndexableTweets> {
 
+	/** Login details for the stream, mine obviously. */
 	@Column
 	@NotNull
 	@Attribute(field = false, description = "This is the consumer key for the OAuth security")
@@ -33,6 +34,7 @@ public class IndexableTweets extends Indexable<IndexableTweets> {
 	@Attribute(field = false, description = "This is the token secret for the OAuth security")
 	private String tokenSecret;
 
+	/** Fields in the index. */
 	@Column
 	@Attribute(field = false, description = "This is the text field name of the tweet in the Lucene index")
 	private String textField;
@@ -40,11 +42,31 @@ public class IndexableTweets extends Indexable<IndexableTweets> {
 	@Attribute(field = false, description = "This is the date created field name of the tweet in the Lucene index")
 	private String createdAtField;
 	@Column
-	@Attribute(field = false, description = "This is the user namd field name of the tweet in the Lucene index")
+	@Attribute(field = false, description = "This is the user name field name of the tweet in the Lucene index")
 	private String fromUserField;
 	@Column
-	@Attribute(field = false, description = "This is the location/address field name of the tweet in the Lucene index")
+	@Attribute(field = false, description = "This is the location/address field name of the tweet in the Lucene index when tweeted, could be different from the users actual location when registering")
 	private String locationField;
+
+	/** Details of the user, try to place them on the map. */
+	@Column
+	@Attribute(field = false, description = "?")
+	private String userLocationField;
+	@Column
+	@Attribute(field = false, description = "?")
+	private String userNameField;
+	@Column
+	@Attribute(field = false, description = "?")
+	private String userScreenNameField;
+	@Column
+	@Attribute(field = false, description = "?")
+	private String userTimeZoneField;
+	@Column
+	@Attribute(field = false, description = "?")
+	private String userUtcOffsetField;
+	@Column
+	@Attribute(field = false, description = "?")
+	private String userLanguageField;
 
 	public String getConsumerKey() {
 		return consumerKey;
@@ -108,6 +130,54 @@ public class IndexableTweets extends Indexable<IndexableTweets> {
 
 	public void setLocationField(String locationField) {
 		this.locationField = locationField;
+	}
+
+	public String getUserLocationField() {
+		return userLocationField;
+	}
+
+	public void setUserLocationField(String userLocationField) {
+		this.userLocationField = userLocationField;
+	}
+
+	public String getUserNameField() {
+		return userNameField;
+	}
+
+	public void setUserNameField(String userNameField) {
+		this.userNameField = userNameField;
+	}
+
+	public String getUserScreenNameField() {
+		return userScreenNameField;
+	}
+
+	public void setUserScreenNameField(String userScreenNameField) {
+		this.userScreenNameField = userScreenNameField;
+	}
+
+	public String getUserTimeZoneField() {
+		return userTimeZoneField;
+	}
+
+	public void setUserTimeZoneField(String userTimeZoneField) {
+		this.userTimeZoneField = userTimeZoneField;
+	}
+
+	public String getUserUtcOffsetField() {
+		return userUtcOffsetField;
+	}
+
+	public void setUserUtcOffsetField(String userUtcOffsetField) {
+		this.userUtcOffsetField = userUtcOffsetField;
+	}
+
+	public String getUserLanguageField() {
+		return userLanguageField;
+	}
+
+	public void setUserLanguageField(String userLanguageField) {
+		this.userLanguageField = userLanguageField;
 	}
 
 }

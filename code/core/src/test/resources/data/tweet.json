@@ -1,0 +1,437 @@
+{
+	"id":402070796501544960,
+	"text":"RT @Rdhak_waljnnah: @250khd @nassereem1300 @S_o_s_22 @lool1399 @fahad_fraj @Nas249 @sultanaljataley @abdoullah999 @Naassr2014 @odi20999 @Na…",
+	"createdAt":"Nov 17, 2013 2:48:42 PM",
+	"fromUser":"nassereem1300",
+	"profileImageUrl":"http://pbs.twimg.com/profile_images/378800000724460338/492b05bdb663065ba39d219f01803142_normal.png",
+	"toUserId":0,
+	"inReplyToScreenName":"null",
+	"fromUserId":1356442261,
+	"languageCode":"und",
+	"source":"\u003ca href\u003d\"http://twitter.com/download/android\" rel\u003d\"nofollow\"\u003eTwitter for Android\u003c/a\u003e",
+	"retweetCount":0,
+	"retweeted":false,
+	"geo":{"coordinates":[-33.9769,18.5080],"type":"Point"},
+	"retweetedStatus":{
+		"id":401982452719423488,
+		"text":"@250khd @nassereem1300 @S_o_s_22 @lool1399 @fahad_fraj @Nas249 @sultanaljataley @abdoullah999 @Naassr2014 @odi20999 @Nassr_I_love",
+		"createdAt":"Nov 17, 2013 8:57:39 AM",
+		"fromUser":"Rdhak_waljnnah",
+		"profileImageUrl":"http://pbs.twimg.com/profile_images/378800000741891121/583e0279924bfb41a38f826ba4098beb_normal.jpeg",
+		"toUserId":709379875,
+		"inReplyToStatusId":401974136433823744,
+		"inReplyToUserId":709379875,
+		"inReplyToScreenName":"250khd",
+		"fromUserId":564743356,
+		"languageCode":"und",
+		"source":"\u003ca href\u003d\"http://twitter.com/#!/download/ipad\" rel\u003d\"nofollow\"\u003eTwitter for iPad\u003c/a\u003e",
+		"retweetCount":2,
+		"retweeted":false,
+		"favorited":false,
+		"favoriteCount":0,
+		"entities":{
+			"urls":[
+				
+			],
+			"tags":[
+				
+			],
+			"mentions":[
+				{
+					"id":709379875,
+					"screenName":"250khd",
+					"name":"خالد #NFC# العالمي",
+					"indices":[
+						0,
+						7
+					],
+					"extraData":{
+						"id_str":"709379875"
+					}
+				},
+				{
+					"id":1356442261,
+					"screenName":"nassereem1300",
+					"name":"★☆ناصر العنزي ★☆",
+					"indices":[
+						8,
+						22
+					],
+					"extraData":{
+						"id_str":"1356442261"
+					}
+				},
+				{
+					"id":851363558,
+					"screenName":"S_o_s_22",
+					"name":" ابومحمد",
+					"indices":[
+						23,
+						32
+					],
+					"extraData":{
+						"id_str":"851363558"
+					}
+				},
+				{
+					"id":441022773,
+					"screenName":"lool1399",
+					"name":"نوماس الحربي✨",
+					"indices":[
+						33,
+						42
+					],
+					"extraData":{
+						"id_str":"441022773"
+					}
+				},
+				{
+					"id":1367664090,
+					"screenName":"fahad_fraj",
+					"name":"فهد فراج",
+					"indices":[
+						43,
+						54
+					],
+					"extraData":{
+						"id_str":"1367664090"
+					}
+				},
+				{
+					"id":1198354093,
+					"screenName":"Nas249",
+					"name":"أخـــبـار الــنـصــر",
+					"indices":[
+						55,
+						62
+					],
+					"extraData":{
+						"id_str":"1198354093"
+					}
+				},
+				{
+					"id":628361328,
+					"screenName":"sultanaljataley",
+					"name":"سلطان القصيم  ",
+					"indices":[
+						63,
+						79
+					],
+					"extraData":{
+						"id_str":"628361328"
+					}
+				},
+				{
+					"id":1314433250,
+					"screenName":"abdoullah999",
+					"name":"Graham BeL",
+					"indices":[
+						80,
+						93
+					],
+					"extraData":{
+						"id_str":"1314433250"
+					}
+				},
+				{
+					"id":1428621631,
+					"screenName":"Naassr2014",
+					"name":"محمد العالمي ",
+					"indices":[
+						94,
+						105
+					],
+					"extraData":{
+						"id_str":"1428621631"
+					}
+				},
+				{
+					"id":1375053434,
+					"screenName":"odi20999",
+					"name":"اعتزاز",
+					"indices":[
+						106,
+						115
+					],
+					"extraData":{
+						"id_str":"1375053434"
+					}
+				},
+				{
+					"id":1324659692,
+					"screenName":"Nassr_I_love",
+					"name":"ناصرالعالمي❤️ متصدر",
+					"indices":[
+						116,
+						129
+					],
+					"extraData":{
+						"id_str":"1324659692"
+					}
+				}
+			],
+			"tickerSymbols":[
+				
+			],
+			"extraData":{
+				"symbols":[
+					
+				]
+			}
+		},
+		"user":{
+			"id":564743356,
+			"screenName":"Rdhak_waljnnah",
+			"name":"ميمي شمر#المتصدر24/",
+			"profileImageUrl":"http://pbs.twimg.com/profile_images/378800000741891121/583e0279924bfb41a38f826ba4098beb_normal.jpeg",
+			"description":"لكني لآ آرتجي آهتمام آحد غيرك يالله انت ربي وانا أمتك غايتي ومناي #رضاك_والجنه",
+			"location":"",
+			"createdDate":"Apr 27, 2012 6:29:54 PM",
+			"language":"ar",
+			"statusesCount":65142,
+			"friendsCount":278,
+			"followersCount":6311,
+			"favoritesCount":1007,
+			"listedCount":24,
+			"following":false,
+			"followRequestSent":false,
+			"isProtected":false,
+			"notificationsEnabled":false,
+			"verified":false,
+			"geoEnabled":true,
+			"contributorsEnabled":false,
+			"translator":false,
+			"timeZone":"Baghdad",
+			"utcOffset":10800,
+			"sidebarBorderColor":"C0DEED",
+			"sidebarFillColor":"DDEEF6",
+			"backgroundColor":"C0DEED",
+			"useBackgroundImage":true,
+			"backgroundImageUrl":"http://abs.twimg.com/images/themes/theme1/bg.png",
+			"backgroundImageTiled":false,
+			"textColor":"333333",
+			"linkColor":"0084B4",
+			"showAllInlineMedia":false,
+			"extraData":{
+				"profile_image_url_https":"https://pbs.twimg.com/profile_images/378800000741891121/583e0279924bfb41a38f826ba4098beb_normal.jpeg",
+				"profile_background_image_url_https":"https://abs.twimg.com/images/themes/theme1/bg.png",
+				"default_profile":true,
+				"id_str":"564743356",
+				"default_profile_image":false,
+				"profile_banner_url":"https://pbs.twimg.com/profile_banners/564743356/1384666001"
+			}
+		},
+		"extraData":{
+			
+		}
+	},
+	"favorited":false,
+	"favoriteCount":0,
+	"entities":{
+		"urls":[
+			
+		],
+		"tags":[
+			
+		],
+		"mentions":[
+			{
+				"id":564743356,
+				"screenName":"Rdhak_waljnnah",
+				"name":"ميمي شمر#المتصدر24/",
+				"indices":[
+					3,
+					18
+				],
+				"extraData":{
+					"id_str":"564743356"
+				}
+			},
+			{
+				"id":709379875,
+				"screenName":"250khd",
+				"name":"خالد #NFC# العالمي",
+				"indices":[
+					20,
+					27
+				],
+				"extraData":{
+					"id_str":"709379875"
+				}
+			},
+			{
+				"id":1356442261,
+				"screenName":"nassereem1300",
+				"name":"★☆ناصر العنزي ★☆",
+				"indices":[
+					28,
+					42
+				],
+				"extraData":{
+					"id_str":"1356442261"
+				}
+			},
+			{
+				"id":851363558,
+				"screenName":"S_o_s_22",
+				"name":" ابومحمد",
+				"indices":[
+					43,
+					52
+				],
+				"extraData":{
+					"id_str":"851363558"
+				}
+			},
+			{
+				"id":441022773,
+				"screenName":"lool1399",
+				"name":"نوماس الحربي✨",
+				"indices":[
+					53,
+					62
+				],
+				"extraData":{
+					"id_str":"441022773"
+				}
+			},
+			{
+				"id":1367664090,
+				"screenName":"fahad_fraj",
+				"name":"فهد فراج",
+				"indices":[
+					63,
+					74
+				],
+				"extraData":{
+					"id_str":"1367664090"
+				}
+			},
+			{
+				"id":1198354093,
+				"screenName":"Nas249",
+				"name":"أخـــبـار الــنـصــر",
+				"indices":[
+					75,
+					82
+				],
+				"extraData":{
+					"id_str":"1198354093"
+				}
+			},
+			{
+				"id":628361328,
+				"screenName":"sultanaljataley",
+				"name":"سلطان القصيم  ",
+				"indices":[
+					83,
+					99
+				],
+				"extraData":{
+					"id_str":"628361328"
+				}
+			},
+			{
+				"id":1314433250,
+				"screenName":"abdoullah999",
+				"name":"Graham BeL",
+				"indices":[
+					100,
+					113
+				],
+				"extraData":{
+					"id_str":"1314433250"
+				}
+			},
+			{
+				"id":1428621631,
+				"screenName":"Naassr2014",
+				"name":"محمد العالمي ",
+				"indices":[
+					114,
+					125
+				],
+				"extraData":{
+					"id_str":"1428621631"
+				}
+			},
+			{
+				"id":1375053434,
+				"screenName":"odi20999",
+				"name":"اعتزاز",
+				"indices":[
+					126,
+					135
+				],
+				"extraData":{
+					"id_str":"1375053434"
+				}
+			},
+			{
+				"id":186552155,
+				"screenName":"NA",
+				"name":"jeff",
+				"indices":[
+					136,
+					139
+				],
+				"extraData":{
+					"id_str":"186552155"
+				}
+			}
+		],
+		"tickerSymbols":[
+			
+		],
+		"extraData":{
+			"symbols":[
+				
+			]
+		}
+	},
+	"user":{
+		"id":1356442261,
+		"screenName":"nassereem1300",
+		"name":"★☆ناصر العنزي ★☆",
+		"profileImageUrl":"http://pbs.twimg.com/profile_images/378800000724460338/492b05bdb663065ba39d219f01803142_normal.png",
+		"description":"‏‏‏‏‏‏‏‏‏‏‏‏‏‏‏عاشق للموسيقى الكلاسيكية الهادئة فقط ولفريق العااالمي الكبير بجمهوره",
+		"location":"الرياض",
+		"createdDate":"Apr 16, 2013 11:11:27 AM",
+		"language":"ar",
+		"statusesCount":39765,
+		"friendsCount":8075,
+		"followersCount":8077,
+		"favoritesCount":1979,
+		"listedCount":16,
+		"following":false,
+		"followRequestSent":false,
+		"isProtected":false,
+		"notificationsEnabled":false,
+		"verified":false,
+		"geoEnabled":true,
+		"contributorsEnabled":false,
+		"translator":false,
+		"timeZone":"Baghdad",
+		"utcOffset":10800,
+		"sidebarBorderColor":"000000",
+		"sidebarFillColor":"7AC3EE",
+		"backgroundColor":"642D8B",
+		"useBackgroundImage":true,
+		"backgroundImageUrl":"http://a0.twimg.com/profile_background_images/378800000049720990/4e54035c56b75df6b715441a1867f038.jpeg",
+		"backgroundImageTiled":true,
+		"textColor":"3D1957",
+		"linkColor":"2706C9",
+		"showAllInlineMedia":false,
+		"extraData":{
+			"profile_image_url_https":"https://pbs.twimg.com/profile_images/378800000724460338/492b05bdb663065ba39d219f01803142_normal.png",
+			"profile_background_image_url_https":"https://si0.twimg.com/profile_background_images/378800000049720990/4e54035c56b75df6b715441a1867f038.jpeg",
+			"default_profile":false,
+			"id_str":"1356442261",
+			"default_profile_image":false,
+			"profile_banner_url":"https://pbs.twimg.com/profile_banners/1356442261/1381984337"
+		}
+	},
+	"extraData":{
+		
+	}
+}

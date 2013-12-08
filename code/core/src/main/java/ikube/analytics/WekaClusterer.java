@@ -2,11 +2,17 @@ package ikube.analytics;
 
 import ikube.model.Analysis;
 import ikube.model.Buildable;
+
+import java.util.concurrent.locks.ReentrantLock;
+
+import org.apache.commons.lang.StringUtils;
+
 import weka.clusterers.ClusterEvaluation;
 import weka.clusterers.Clusterer;
 import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.filters.Filter;
 
 /**
  * @author Michael Couck
@@ -15,8 +21,10 @@ import weka.core.Instances;
  */
 public class WekaClusterer extends Analyzer {
 
+	private Filter filter;
 	private Clusterer clusterer;
 	private Instances instances;
+	private ReentrantLock reentrantLock;
 
 	/**
 	 * {@inheritDoc}
@@ -24,8 +32,12 @@ public class WekaClusterer extends Analyzer {
 	@Override
 	public void init(final Buildable buildable) throws Exception {
 		instances = instances(buildable);
+		if (!StringUtils.isEmpty(buildable.getFilterType())) {
+			filter = (Filter) Class.forName(buildable.getFilterType()).newInstance();
+		}
 		String type = buildable.getAlgorithmType();
 		clusterer = (Clusterer) Class.forName(type).newInstance();
+		reentrantLock = new ReentrantLock(Boolean.TRUE);
 	}
 
 	/**
@@ -33,9 +45,17 @@ public class WekaClusterer extends Analyzer {
 	 */
 	@Override
 	public void build(final Buildable buildable) throws Exception {
-		clusterer.buildClusterer(instances);
-		if (buildable.isLog()) {
-			log();
+		try {
+			reentrantLock.lock();
+			Instances filteredData = filter(instances, filter);
+			clusterer.buildClusterer(filteredData);
+			instances.setRelationName("training_data");
+			filteredData.setRelationName("filtered_data");
+			if (buildable.isLog()) {
+				log();
+			}
+		} finally {
+			reentrantLock.unlock();
 		}
 	}
 
@@ -45,9 +65,14 @@ public class WekaClusterer extends Analyzer {
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean train(final Analysis<String, double[]>... analyses) throws Exception {
-		for (final Analysis<String, double[]> analysis : analyses) {
-			Instance instance = instance(analysis.getInput(), instances);
-			instances.add(instance);
+		try {
+			reentrantLock.lock();
+			for (final Analysis<String, double[]> analysis : analyses) {
+				Instance instance = instance(analysis.getInput(), instances);
+				instances.add(instance);
+			}
+		} finally {
+			reentrantLock.unlock();
 		}
 		return true;
 	}
@@ -57,23 +82,28 @@ public class WekaClusterer extends Analyzer {
 	 */
 	@Override
 	public Analysis<String, double[]> analyze(final Analysis<String, double[]> analysis) throws Exception {
-		// Create the instance from the data
-		Instance instance = instance(analysis.getInput(), instances);
-
-		// Set the output for the client
-		int cluster = clusterer.clusterInstance(instance);
-		double[] distributionForInstance = clusterer.distributionForInstance(instance);
-		analysis.setClazz(cluster);
-		analysis.setOutput(distributionForInstance);
-		analysis.setAlgorithmOutput(clusterer.toString());
-		if (analysis.isCorrelation()) {
-			analysis.setCorrelationCoefficients(getCorrelationCoefficients(instances));
+		try {
+			reentrantLock.lock();
+			// Create the instance from the data
+			Instance instance = instance(analysis.getInput(), instances);
+			Instance filteredInstance = filter(instance, filter);
+			// Set the output for the client
+			int cluster = clusterer.clusterInstance(filteredInstance);
+			double[] distributionForInstance = clusterer.distributionForInstance(filteredInstance);
+			analysis.setClazz(cluster);
+			analysis.setOutput(distributionForInstance);
+			analysis.setAlgorithmOutput(clusterer.toString());
+			if (analysis.isCorrelation()) {
+				analysis.setCorrelationCoefficients(getCorrelationCoefficients(instances));
+			}
+			if (analysis.isDistribution()) {
+				Instances filteredData = filter(instances, filter);
+				analysis.setDistributionForInstances(getDistributionForInstances(filteredData));
+			}
+			return analysis;
+		} finally {
+			reentrantLock.unlock();
 		}
-		if (analysis.isDistribution()) {
-			analysis.setDistributionForInstances(getDistributionForInstances(instances));
-		}
-
-		return analysis;
 	}
 
 	@Override

@@ -21,7 +21,7 @@
 		property:log="true"
 		property:filterType="weka.filters.unsupervised.attribute.StringToWordVector"
 		property:algorithmType="weka.classifiers.functions.SMO"
-		property:trainingFilePath="./ikube/analytics/instance.arff" />
+		property:trainingFilePath="./ikube/analytics/classification.arff" />
 	<bean 
 		id="analyzer-em" 
 		class="ikube.analytics.WekaClusterer" />

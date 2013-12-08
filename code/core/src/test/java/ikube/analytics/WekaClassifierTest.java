@@ -32,7 +32,7 @@ public class WekaClassifierTest extends AbstractTest {
 		buildable.setLog(false);
 		buildable.setAlgorithmType(SMO.class.getName());
 		buildable.setFilterType(StringToWordVector.class.getName());
-		buildable.setTrainingFilePath("src/test/resources/analytics/instance.arff");
+		buildable.setTrainingFilePath("src/test/resources/analytics/classification.arff");
 
 		wekaClassifier = new WekaClassifier();
 	}

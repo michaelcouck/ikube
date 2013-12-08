@@ -36,6 +36,7 @@
 		
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.AlternateName</class>
+		<class>ikube.model.geospatial.GeoZone</class>
 		
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		
@@ -92,6 +93,7 @@
 		
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.AlternateName</class>
+		<class>ikube.model.geospatial.GeoZone</class>
 		
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		
@@ -132,6 +134,7 @@
 		
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.AlternateName</class>
+		<class>ikube.model.geospatial.GeoZone</class>
 		
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		
@@ -172,6 +175,7 @@
 		
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.AlternateName</class>
+		<class>ikube.model.geospatial.GeoZone</class>
 		
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		

@@ -8,6 +8,9 @@ import ikube.model.Indexable;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
@@ -25,13 +28,14 @@ import com.cybozu.labs.langdetect.LangDetectException;
  */
 public final class LanguageDetectionStrategy extends AStrategy {
 
+	private Map<String, Locale> languageLocale;
+
 	public LanguageDetectionStrategy() {
 		this(null);
 	}
 
 	public LanguageDetectionStrategy(final IStrategy nextStrategy) {
 		super(nextStrategy);
-		initialize();
 	}
 
 	/**
@@ -54,9 +58,17 @@ public final class LanguageDetectionStrategy extends AStrategy {
 	public String detectLanguage(final String content) {
 		if (!StringUtils.isEmpty(content)) {
 			try {
+				String language = null;
 				Detector detector = DetectorFactory.create();
 				detector.append(content.toString());
-				return detector.detect();
+				String languageCode = detector.detect();
+				Locale locale = languageLocale.get(languageCode);
+				if (locale == null) {
+					language = languageCode;
+				} else {
+					language = locale.getDisplayLanguage(Locale.ENGLISH);
+				}
+				return language;
 			} catch (LangDetectException e) {
 				logger.debug("Language processing error : {} ", e.getMessage());
 			}
@@ -81,20 +93,25 @@ public final class LanguageDetectionStrategy extends AStrategy {
 	 */
 	@Override
 	public void initialize() {
-		if (DetectorFactory.getLangList() != null && DetectorFactory.getLangList().size() > 0) {
-			return;
+		languageLocale = new HashMap<String, Locale>();
+		Locale[] locales = Locale.getAvailableLocales();
+		for (final Locale locale : locales) {
+			String language = locale.getLanguage();
+			languageLocale.put(language, locale);
 		}
-		File profileDirectory = FileUtilities.findDirectoryRecursively(new File("."), IConstants.LANGUAGE_DETECT_PROFILES_DIRECTORY);
-		try {
-			if (profileDirectory != null) {
-				String profileDirectoryPath = FileUtilities.cleanFilePath(profileDirectory.getAbsolutePath());
-				DetectorFactory.loadProfile(profileDirectoryPath);
-				logger.debug("Loading language profiles from : " + profileDirectoryPath + ", " + DetectorFactory.getLangList());
-			} else {
-				logger.warn("Couldn't find the language detection profile's directory : ");
+		if (DetectorFactory.getLangList() == null || DetectorFactory.getLangList().size() == 0) {
+			File profileDirectory = FileUtilities.findDirectoryRecursively(new File("."), IConstants.LANGUAGE_DETECT_PROFILES_DIRECTORY);
+			try {
+				if (profileDirectory != null) {
+					String profileDirectoryPath = FileUtilities.cleanFilePath(profileDirectory.getAbsolutePath());
+					DetectorFactory.loadProfile(profileDirectoryPath);
+					logger.debug("Loading language profiles from : " + profileDirectoryPath + ", " + DetectorFactory.getLangList());
+				} else {
+					logger.warn("Couldn't find the language detection profile's directory : ");
+				}
+			} catch (Exception e) {
+				logger.error("Exception starting the language detector, configuration issues : profile directory : " + profileDirectory, e);
 			}
-		} catch (Exception e) {
-			logger.error("Exception starting the language detector, configuration issues : profile directory : " + profileDirectory, e);
 		}
 	}
 

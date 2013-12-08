@@ -25,6 +25,7 @@ import weka.clusterers.FarthestFirst;
 import weka.clusterers.HierarchicalClusterer;
 import weka.clusterers.SimpleKMeans;
 import weka.core.Instances;
+import weka.filters.unsupervised.attribute.StringToWordVector;
 
 /**
  * @author Michael Couck
@@ -109,6 +110,40 @@ public class WekaClustererTest extends AbstractTest {
 			logger.info("Dist : " + distribution[0] + ", " + distribution[1]);
 			assertTrue(distribution[0] >= 0 && distribution[0] <= 10);
 			assertTrue(distribution[1] >= 0 && distribution[1] <= 1);
+		}
+	}
+
+	@Test
+	public void clusterText() throws Exception {
+		File dataFile = FileUtilities.findFileRecursively(new File("."), "clustering.arff");
+
+		Buildable buildable = new Buildable();
+		buildable.setAlgorithmType(EM.class.getName());
+		buildable.setFilterType(StringToWordVector.class.getName());
+		buildable.setTrainingFilePath(FileUtilities.cleanFilePath(dataFile.getAbsolutePath()));
+
+		WekaClusterer wekaclusterer = (WekaClusterer) AnalyzerManager.buildAnalyzer(buildable, new WekaClusterer());
+
+		Analysis<String, double[]> analysis = getAnalysis(null, "Some arbitrary text to cluster into whatever");
+		analysis.setCorrelation(Boolean.TRUE);
+		analysis.setDistribution(Boolean.TRUE);
+		Analysis<String, double[]> result = wekaclusterer.analyze(analysis);
+		logger.info("Result : " + result.getAlgorithmOutput());
+		logger.info("Result : " + result.getClazz());
+		for (final double[] correlation : result.getCorrelationCoefficients()) {
+			for (final double cor : correlation) {
+				logger.info("        : " + cor);
+			}
+		}
+		if (result.getDistributionForInstances() != null) {
+			for (final double[] distribution : result.getDistributionForInstances()) {
+				for (final double dis : distribution) {
+					logger.info("        : " + dis);
+				}
+			}
+		}
+		for (final double output : result.getOutput()) {
+			logger.info("        : " + output);
 		}
 	}
 

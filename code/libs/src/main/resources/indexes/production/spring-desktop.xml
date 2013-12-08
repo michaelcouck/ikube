@@ -69,12 +69,12 @@
 		property:strategies-ref="desktop-strategies" />
 
 	<util:list id="desktop-strategies">
-		<ref bean="ikube.action.index.handler.strategy.LanguageCleaningStrategy" />
 		<ref bean="ikube.action.index.handler.strategy.LanguageFilterStrategy" />
+		<ref bean="ikube.action.index.handler.strategy.LanguageCleaningStrategy" />
 		<ref bean="ikube.action.index.handler.strategy.ContentTypeStrategy" />
 		<ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
 		<!-- Classification strategies, from Twitter training -->
-		<ref bean="wekaClassificationStrategy.en" />
+		<!-- <ref bean="wekaClassificationStrategy.en" />
 		<ref bean="wekaClassificationStrategy.es" />
 		<ref bean="wekaClassificationStrategy.jp" />
 		<ref bean="wekaClassificationStrategy.cn" />
@@ -84,7 +84,7 @@
 		<ref bean="wekaClassificationStrategy.sv" />
 		<ref bean="wekaClassificationStrategy.th" />
 		<ref bean="wekaClassificationStrategy.ar" />
-		<ref bean="wekaClassificationStrategy.tr" />
+		<ref bean="wekaClassificationStrategy.tr" /> -->
 	</util:list>
 	
 </beans>

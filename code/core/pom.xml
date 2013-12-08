@@ -99,6 +99,51 @@
 					</execution>
 				</executions>
 			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<id>copy-configuration</id>
+						<phase>test</phase>
+						<configuration>
+							<target>
+								<echo message="Base directory : ${basedir}, ">Base directory : ${basedir}</echo>
+								<copy todir="ikube" failonerror="true">
+									<fileset dir="../libs/src/main/resources/ikube" />
+								</copy>
+								<copy todir="ikube" failonerror="true">
+									<fileset dir="../libs/src/main/resources/ikube" />
+								</copy>
+								<copy todir="ikube/production" failonerror="true">
+									<fileset dir="../libs/src/main/resources/indexes/production" />
+								</copy>
+								<copy todir="../../ikube/production" failonerror="true">
+									<fileset dir="../libs/src/main/resources/indexes/production" />
+								</copy>
+								<copy todir="ikube/integration" failonerror="true">
+									<fileset dir="../libs/src/main/resources/indexes/integration" />
+								</copy>
+								<copy todir="../../ikube/integration" failonerror="true">
+									<fileset dir="../libs/src/main/resources/indexes/integration" />
+								</copy>
+								<copy todir="ikube/analytics" failonerror="true">
+									<fileset dir="../libs/src/main/resources/analytics" />
+								</copy>
+								<copy todir="../../ikube/analytics" failonerror="true">
+									<fileset dir="../libs/src/main/resources/analytics" />
+								</copy>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			
 		</plugins>
 	</build>
 	

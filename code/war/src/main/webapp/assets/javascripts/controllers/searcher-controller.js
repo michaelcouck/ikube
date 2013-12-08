@@ -350,6 +350,8 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 			if (!!latitude && !!longitude) {
 				pointMarker = new google.maps.Marker({
 					map : map,
+					draggable: true,
+					icon: getServiceUrl('/ikube/assets/images/icons/person_obj.gif'),
 					position : new google.maps.LatLng(latitude, longitude),
 					title : 'Name : ' + fragment + ', distance : ' + distance
 				});

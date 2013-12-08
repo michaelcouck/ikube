@@ -68,6 +68,7 @@ public interface IConstants {
 	String DURATION = "duration";
 	String TITLE = "title";
 	String NAME = "name";
+	String ALTERNATE_NAMES = "alternatenames";
 	String URL = "url";
 	String URL_DONE = "urlDone";
 	String URL_ID = "urlId";
