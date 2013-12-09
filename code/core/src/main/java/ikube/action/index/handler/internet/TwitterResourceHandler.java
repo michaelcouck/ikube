@@ -6,41 +6,21 @@ import ikube.action.index.handler.ResourceHandler;
 import ikube.database.IDataBase;
 import ikube.model.IndexContext;
 import ikube.model.IndexableTweets;
-import ikube.model.geospatial.GeoZone;
 import ikube.search.ISearcherService;
-import ikube.toolkit.FileUtilities;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.commons.beanutils.BeanUtilsBean;
-import org.apache.commons.beanutils.BeanUtilsBean2;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.TwitterProfile;
-
-import au.com.bytecode.opencsv.CSVReader;
 
 /**
  * This class simply takes the specific data from Twitter and adds it to the index.
@@ -53,72 +33,15 @@ public class TwitterResourceHandler extends ResourceHandler<IndexableTweets> {
 
 	private AtomicLong counter = new AtomicLong();
 	private Properties countryLanguage;
-	
+
 	@Autowired
 	private IDataBase dataBase;
 	@Autowired
 	private ISearcherService searcherService;
 
-	private List<GeoZone> geoZones;
-	private Map<Double, Collection<GeoZone>> gmtGeoZones;
-
 	public void init() {
 		counter = new AtomicLong(0);
-		geoZones = new ArrayList<GeoZone>();
-		gmtGeoZones = new HashMap<Double, Collection<GeoZone>>();
-		countryLanguage = new Properties();
-		InputStream inputStream = null;
-		CSVReader csvReader = null;
-		try {
-			File ikubeFolder = new File(IConstants.IKUBE_DIRECTORY);
-			File file = FileUtilities.findFileRecursively(ikubeFolder, "time-zones.csv");
-			Reader reader = new FileReader(file);
-			csvReader = new CSVReader(reader, ',');
-			String[] headers = csvReader.readNext();
-			String[] values = csvReader.readNext();
-			BeanUtilsBean beanUtilsBean = BeanUtilsBean2.getInstance();
-			do {
-				GeoZone geoZone = new GeoZone();
-				for (int i = 0; i < headers.length; i++) {
-					beanUtilsBean.setProperty(geoZone, headers[i], values[i]);
-				}
-				geoZones.add(geoZone);
-				values = csvReader.readNext();
-			} while (values != null);
-			Collections.sort(geoZones, new Comparator<GeoZone>() {
-				@Override
-				public int compare(final GeoZone o1, final GeoZone o2) {
-					return Double.valueOf(o1.getGmt()).compareTo(Double.valueOf(o2.getGmt()));
-				}
-			});
-			for (double zone = -12; zone < 12; zone++) {
-				final double gmtZone = zone;
-				@SuppressWarnings("unchecked")
-				Collection<GeoZone> gmtGeoZone = CollectionUtils.select(geoZones, new Predicate() {
-					@Override
-					public boolean evaluate(final Object object) {
-						GeoZone geoZone = (GeoZone) object;
-						return gmtZone == geoZone.getGmt();
-					}
-				});
-				gmtGeoZones.put(zone, gmtGeoZone);
-			}
-			File countryLanguageFile = FileUtilities.findFileRecursively(ikubeFolder, "country-language.properties");
-			inputStream = new FileInputStream(countryLanguageFile);
-			countryLanguage.load(inputStream);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		} finally {
-			IOUtils.closeQuietly(inputStream);
-			try {
-				if (csvReader != null) {
-					csvReader.close();
-				}
-			} catch (IOException e) {
-				logger.error(null, e);
-				throw new RuntimeException(e);
-			}
-		}
+
 	}
 
 	/**
@@ -199,10 +122,7 @@ public class TwitterResourceHandler extends ResourceHandler<IndexableTweets> {
 			}
 
 			// Try the language and the UTC offset combination
-
 			String[] utcTimeZones = TimeZone.getAvailableIDs(utcOffsetSeconds * 1000);
-			@SuppressWarnings("unused")
-			Collection<GeoZone> gmtGeoZone = gmtGeoZones.get(Double.valueOf(utcOffsetSeconds / 60d / 60d));
 			if (StringUtils.isEmpty(userLanguage)) {
 				// Get the document language if it exists
 				userLanguage = document.get(IConstants.LANGUAGE);

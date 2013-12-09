@@ -1,6 +1,5 @@
 package ikube.model.geospatial;
 
-import ikube.model.Persistable;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -17,7 +16,7 @@ import javax.persistence.PrimaryKeyJoinColumn;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class GeoCountry extends Persistable {
+public class GeoCountry extends Composite<GeoCountry, GeoCity> {
 
 	private String name;
 	private double language;

@@ -29,6 +29,7 @@
 	
 	<util:list id="ikube.scheduling.schedule.IndexSchedule.actions">
 		<ref bean="ikube.action.Close"  />
+		<ref bean="ikube.action.Optimizer"  />
 		<ref bean="ikube.action.Reset" />
 		<ref bean="ikube.action.Restore" />
 		<ref bean="ikube.action.Index"  />
@@ -96,6 +97,26 @@
 		<property name="rules">
 			<util:list>
 				<ref local="ikube.action.rule.IsIndexCorrupt" />
+			</util:list>
+		</property>
+	</bean>
+	<bean 
+		id="ikube.action.Optimizer" 
+		class="ikube.action.Optimizer" 
+		property:ruleExpression="
+			(!AnyServersWorkingThisIndex &#38;&#38; IsNewIndexCreated) || 
+			(!AnyServersWorkingThisIndex &#38;&#38; 
+			  (!IsMultiSearcherInitialised || !AreSearchablesInitialised) &#38;&#38;
+			  (AreIndexesCreated || AreUnopenedIndexes))"
+		property:requiresClusterLock="false">
+		<property name="rules">
+			<util:list>
+				<ref local="ikube.action.rule.IsNewIndexCreated" />
+				<ref local="ikube.action.rule.AreIndexesCreated" />
+				<ref local="ikube.action.rule.AreUnopenedIndexes" />
+				<ref local="ikube.action.rule.IsMultiSearcherInitialised" />
+				<ref local="ikube.action.rule.AreSearchablesInitialised" />
+				<ref local="ikube.action.rule.AnyServersWorkingThisIndex" />
 			</util:list>
 		</property>
 	</bean>

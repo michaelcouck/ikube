@@ -40,9 +40,4 @@ public class OptimizerTest extends AbstractTest {
 		}
 	}
 
-	@Test
-	public void optimize() {
-		Optimizer.optimize(indexContext);
-	}
-
 }
