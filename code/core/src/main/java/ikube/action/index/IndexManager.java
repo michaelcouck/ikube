@@ -105,7 +105,7 @@ public final class IndexManager {
 		IndexWriter indexWriter = null;
 		try {
 			String indexDirectoryPath = getIndexDirectory(indexContext, time, ip);
-			indexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
+			indexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE); 
 			indexDirectory.setReadable(true);
 			indexDirectory.setWritable(true, false);
 			LOGGER.info("Index directory time : " + time + ", date : " + new Date(time) + ", writing index to directory " + indexDirectoryPath);

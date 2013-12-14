@@ -347,7 +347,8 @@
 		class="ikube.action.index.handler.internet.InternetResourceHandler" />
 	<bean 
 		id="ikube.action.index.handler.internet.TwitterResourceHandler" 
-		class="ikube.action.index.handler.internet.TwitterResourceHandler" />
+		class="ikube.action.index.handler.internet.TwitterResourceHandler"
+		init-method="init" />
 		
 	<bean 
 		id="ikube.action.index.analyzer.NgramAnalyzer"

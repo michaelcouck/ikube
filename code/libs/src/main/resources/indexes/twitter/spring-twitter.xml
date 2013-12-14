@@ -77,6 +77,8 @@
 		<ref bean="ikube.action.index.handler.strategy.LanguageFilterStrategy" />
 		<ref bean="ikube.action.index.handler.strategy.LanguageCleaningStrategy" />
 		<ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
+		<ref bean="ikube.action.index.handler.strategy.TwitterGeospatialEnrichmentStrategy" />
+		
 		<!-- Train the language specific classifiers -->
 		<ref bean="wekaTwitterTrainingStrategy.en" />
 		<ref bean="wekaTwitterTrainingStrategy.es" />
@@ -102,6 +104,12 @@
 		<ref bean="wekaClassificationStrategy.ar" />
 		<ref bean="wekaClassificationStrategy.tr" />
 	</util:list>
+	
+	<bean
+		id="ikube.action.index.handler.strategy.TwitterGeospatialEnrichmentStrategy"
+		name="ikube.action.index.handler.strategy.TwitterGeospatialEnrichmentStrategy" 
+    	class="ikube.action.index.handler.strategy.TwitterGeospatialEnrichmentStrategy" 
+    	init-method="initialize" />
 
 	<bean 
 		id="wekaTwitterTrainingStrategy.en" 

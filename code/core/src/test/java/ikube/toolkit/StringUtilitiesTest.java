@@ -67,7 +67,7 @@ public class StringUtilitiesTest extends AbstractTest {
 	public void stripToAlphaNumeric() {
 		String string = "Hello � World";
 		string = StringUtilities.stripToAlphaNumeric(string);
-		assertEquals("Hello World", string);
+		assertEquals("hello world", string);
 	}
 
 }

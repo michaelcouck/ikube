@@ -191,17 +191,19 @@ public final class FileUtilities {
 			}
 			File parent = file.getParentFile();
 			parent = getOrCreateDirectory(parent.getAbsolutePath());
+			boolean created = Boolean.FALSE;
 			if (parent != null) {
 				try {
-					LOGGER.debug("creating file " + file.getAbsolutePath());
-					boolean created = file.createNewFile();
-					if (created && file.exists()) {
-						return file;
-					}
+					LOGGER.debug("Creating file : " + file.getAbsolutePath());
+					created = file.createNewFile();
 				} catch (IOException e) {
 					LOGGER.error("Exception creating file : " + file, e);
 				}
 			}
+			if (created && file != null && file.exists()) {
+				return file;
+			}
+			LOGGER.debug("Couldn't create file : " + file.getAbsolutePath());
 			return null;
 		} finally {
 			FileUtilities.class.notifyAll();
@@ -219,11 +221,12 @@ public final class FileUtilities {
 			if (file.exists() && file.isDirectory()) {
 				return file;
 			}
-			LOGGER.debug("creating directory " + file.getAbsolutePath());
+			LOGGER.debug("Creating directory : " + file.getAbsolutePath());
 			boolean created = file.mkdirs();
 			if (created && file.exists()) {
 				return file;
 			}
+			LOGGER.debug("Couldn't create directory(ies) " + file.getAbsolutePath());
 			return null;
 		} finally {
 			FileUtilities.class.notifyAll();

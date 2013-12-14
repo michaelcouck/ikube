@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -15,6 +16,9 @@ import javax.validation.constraints.NotNull;
 @SuppressWarnings("serial")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class IndexableTweets extends Indexable<IndexableTweets> {
+
+	@Transient
+	private transient Coordinate coordinate;
 
 	/** Login details for the stream, mine obviously. */
 	@Column
@@ -67,6 +71,14 @@ public class IndexableTweets extends Indexable<IndexableTweets> {
 	@Column
 	@Attribute(field = false, description = "?")
 	private String userLanguageField;
+
+	public Coordinate getCoordinate() {
+		return coordinate;
+	}
+
+	public void setCoordinate(Coordinate coordinate) {
+		this.coordinate = coordinate;
+	}
 
 	public String getConsumerKey() {
 		return consumerKey;

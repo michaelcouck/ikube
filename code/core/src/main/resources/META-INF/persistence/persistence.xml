@@ -34,9 +34,12 @@
 		<class>ikube.model.IndexableDataSource</class>
 		<class>ikube.model.IndexableDictionary</class>
 		
+		<class>ikube.model.geospatial.Composite</class>
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.GeoAltName</class>
 		<class>ikube.model.geospatial.GeoZone</class>
+		<class>ikube.model.geospatial.GeoCountry</class>
+		<class>ikube.model.geospatial.GeoCity</class>
 		
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		
@@ -91,9 +94,12 @@
 		<class>ikube.model.IndexableDataSource</class>
 		<class>ikube.model.IndexableDictionary</class>
 		
+		<class>ikube.model.geospatial.Composite</class>
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.GeoAltName</class>
 		<class>ikube.model.geospatial.GeoZone</class>
+		<class>ikube.model.geospatial.GeoCountry</class>
+		<class>ikube.model.geospatial.GeoCity</class>
 		
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		
@@ -132,9 +138,12 @@
 		<class>ikube.model.IndexableDataSource</class>
 		<class>ikube.model.IndexableDictionary</class>
 		
+		<class>ikube.model.geospatial.Composite</class>
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.GeoAltName</class>
 		<class>ikube.model.geospatial.GeoZone</class>
+		<class>ikube.model.geospatial.GeoCountry</class>
+		<class>ikube.model.geospatial.GeoCity</class>
 		
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		
@@ -173,9 +182,12 @@
 		<class>ikube.model.IndexableDataSource</class>
 		<class>ikube.model.IndexableDictionary</class>
 		
+		<class>ikube.model.geospatial.Composite</class>
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.GeoAltName</class>
 		<class>ikube.model.geospatial.GeoZone</class>
+		<class>ikube.model.geospatial.GeoCountry</class>
+		<class>ikube.model.geospatial.GeoCity</class>
 		
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		

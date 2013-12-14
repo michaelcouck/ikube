@@ -8,6 +8,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 
 /**
+ * This class will replace aaaaaahhhhhh type tokens with aahh, removing the characters that are repeated too many times.
+ * 
  * @author Michael Couck
  * @since 01.07.13
  * @version 01.00

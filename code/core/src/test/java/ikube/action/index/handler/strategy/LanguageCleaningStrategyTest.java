@@ -11,6 +11,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+/**
+ * @author Michael Couck
+ * @since 01.07.13
+ * @version 01.00
+ */
 public class LanguageCleaningStrategyTest extends AbstractTest {
 
 	private LanguageCleaningStrategy languageCleaningStrategy;

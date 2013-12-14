@@ -377,6 +377,9 @@ public abstract class ADataBaseJpa implements IDataBase {
 	}
 
 	private void setParameters(final Query query, final String[] names, final Object[] values) {
+		if (names == null || names.length == 0 || values == null || values.length == 0) {
+			return;
+		}
 		for (int i = 0; i < names.length; i++) {
 			query.setParameter(names[i], values[i]);
 		}

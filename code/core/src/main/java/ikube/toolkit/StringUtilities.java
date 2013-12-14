@@ -1,5 +1,7 @@
 package ikube.toolkit;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * General utilities for strings that are not available in the general string classes from Apache or Spring.
  * 
@@ -93,23 +95,37 @@ public final class StringUtilities {
 		return new String(strippedChars, 0, j);
 	}
 
-	public static final String stripToAlphaNumeric(final String string) {
-		char[] chars = string.toCharArray();
-		char[] strippedChars = new char[chars.length];
-		int j = 0;
-		for (int i = 0; i < chars.length; i++) {
-			final char c = chars[i];
-			if (!Character.isLetterOrDigit(c)) {
-				if (j != 0 && strippedChars[j - 1] != SPACE) {
-					strippedChars[j] = SPACE;
-					j++;
+	public static final String stripToAlphaNumeric(final String content) {
+		if (!StringUtils.isEmpty(content)) {
+			StringBuilder b = new StringBuilder();
+			// Remove single characters and numbers and anything that isn't human
+			// and strips the whitespace to one character if there are more than one
+			// or a character is removed
+			char p = SPACE;
+			char[] cs = content.toCharArray();
+			for (int i = 0; i < cs.length; i++) {
+				char c = cs[i];
+				boolean a = Boolean.FALSE;
+				if (Character.isWhitespace(c)) {
+					if (p != SPACE) {
+						a = Boolean.TRUE;
+					}
+				} else if (Character.isAlphabetic(c)) {
+					a = Boolean.TRUE;
+				} else {
+					if (p != ' ') {
+						p = SPACE;
+						b.append(SPACE);
+					}
 				}
-				continue;
+				if (a) {
+					p = c;
+					b.append(c);
+				}
 			}
-			strippedChars[j] = c;
-			j++;
+			return b.toString().toLowerCase();
 		}
-		return new String(strippedChars, 0, j);
+		return content;
 	}
 
 }

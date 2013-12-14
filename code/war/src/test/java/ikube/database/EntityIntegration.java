@@ -21,6 +21,11 @@ import ikube.model.Search;
 import ikube.model.Server;
 import ikube.model.Snapshot;
 import ikube.model.Url;
+import ikube.model.geospatial.GeoAltName;
+import ikube.model.geospatial.GeoCity;
+import ikube.model.geospatial.GeoCountry;
+import ikube.model.geospatial.GeoName;
+import ikube.model.geospatial.GeoZone;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.ObjectToolkit;
 
@@ -40,8 +45,8 @@ import org.junit.Test;
 import org.springframework.util.ReflectionUtils;
 
 /**
- * This class will scan the class path looking for entities. Then build an entity graph, persist, update and delete the entity, verifying
- * that the operations were successful as a sanity test for the mappings between the entities and the database.
+ * This class will scan the class path looking for entities. Then build an entity graph, persist, update and delete the entity, verifying that the operations
+ * were successful as a sanity test for the mappings between the entities and the database.
  * 
  * @author U365981
  * @since 16-may-12 14:22:16
@@ -58,10 +63,10 @@ public class EntityIntegration extends IntegrationTest {
 
 	private IDataBase dataBase;
 	/** The names of the classes that we will test in the package. */
-	private Class<?>[] entityClasses = new Class<?>[] { Action.class, IndexableDataSource.class, File.class, IndexableColumn.class,
-			IndexableDictionary.class, IndexableEmail.class, IndexableFileSystem.class, IndexableFileSystemLog.class,
-			IndexableFileSystemWiki.class, IndexableInternet.class, IndexableTable.class, IndexContext.class, Search.class, Server.class,
-			Snapshot.class, Url.class };
+	private Class<?>[] entityClasses = new Class<?>[] { Action.class, IndexableDataSource.class, File.class, IndexableColumn.class, IndexableDictionary.class,
+			IndexableEmail.class, IndexableFileSystem.class, IndexableFileSystemLog.class, IndexableFileSystemWiki.class, IndexableInternet.class,
+			IndexableTable.class, IndexContext.class, Search.class, Server.class, Snapshot.class, Url.class, GeoAltName.class, GeoCity.class, GeoCountry.class,
+			GeoName.class, GeoZone.class };
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -145,12 +150,10 @@ public class EntityIntegration extends IntegrationTest {
 				}, new ReflectionUtils.FieldFilter() {
 					@Override
 					public boolean matches(Field field) {
-						if (field == null || field.getType() == null || field.getType().getPackage() == null
-								|| field.getType().getPackage().getName() == null) {
+						if (field == null || field.getType() == null || field.getType().getPackage() == null || field.getType().getPackage().getName() == null) {
 							return false;
 						}
-						return containsJpaAnnotations(field)
-								&& field.getType().getPackage().getName().contains(Object.class.getPackage().getName());
+						return containsJpaAnnotations(field) && field.getType().getPackage().getName().contains(Object.class.getPackage().getName());
 					}
 				});
 			}
@@ -180,8 +183,8 @@ public class EntityIntegration extends IntegrationTest {
 	}
 
 	/**
-	 * This method will check that the Jpa mapping is cascade type all so that adding one to the collection and persisting the parent will
-	 * not throw an exception that the child is not persisted or transient.
+	 * This method will check that the Jpa mapping is cascade type all so that adding one to the collection and persisting the parent will not throw an
+	 * exception that the child is not persisted or transient.
 	 * 
 	 * @param field the field to check for the cascade type
 	 * @return whether the cascade type includes the all type

@@ -1,15 +1,21 @@
 package ikube.action.index.analyzer;
 
-import java.io.Reader;
+import ikube.IConstants;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.LowerCaseTokenizer;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.ngram.EdgeNGramTokenizer;
-import org.apache.lucene.analysis.ngram.NGramTokenFilter;
 import org.apache.lucene.analysis.ngram.NGramTokenizer;
 import org.apache.lucene.analysis.shingle.ShingleAnalyzerWrapper;
 import org.apache.lucene.analysis.shingle.ShingleMatrixFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This analyzer will boost the edges of words. So for example dictionaries that have only one word, words that start with a certain character pattern will
@@ -20,6 +26,8 @@ import org.apache.lucene.analysis.shingle.ShingleMatrixFilter;
  * @version 01.00
  */
 public final class EdgeNgramAnalyzer extends Analyzer {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(EdgeNgramAnalyzer.class);
 
 	private int minGram = 4;
 	private int maxGram = 21;
@@ -33,8 +41,25 @@ public final class EdgeNgramAnalyzer extends Analyzer {
 	@Override
 	public final TokenStream tokenStream(final String fieldName, final Reader reader) {
 		EdgeNGramTokenizer.Side side = EdgeNGramTokenizer.Side.FRONT;
-		Tokenizer tokenizer = new EdgeNGramTokenizer(reader, side, minGram, maxGram);
-		return new NGramTokenFilter(tokenizer, minGram, maxGram);
+		// There is a problem in the edge n-gram filter so we have to create the reader again
+		int read = -1;
+		char[] cbuf = new char[1024];
+		StringBuilder stringBuilder = new StringBuilder();
+		try {
+			while ((read = reader.read(cbuf)) > 0) {
+				stringBuilder.append(cbuf, 0, read);
+			}
+		} catch (IOException e) {
+			LOGGER.error(null, e);
+		} finally {
+			IOUtils.closeQuietly(reader);
+		}
+		StringReader stringReader = new StringReader(stringBuilder.toString());
+		if (stringBuilder.length() == 0) {
+			return new LowerCaseTokenizer(IConstants.VERSION, stringReader);
+		}
+		return new EdgeNGramTokenizer(stringReader, side, minGram, maxGram);
+		// return new NGramTokenFilter(tokenizer, minGram, maxGram);
 	}
 
 	public void setMinGram(int minGram) {

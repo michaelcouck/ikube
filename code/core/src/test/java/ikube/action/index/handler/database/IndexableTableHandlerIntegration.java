@@ -77,6 +77,7 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
 
 		indexContext = getBean("indexContext");
 		indexContext.setBatchSize(10000);
+		indexContext.setIndexDirectoryPath(".");
 		snapshotTable = getBean("snapshotTable");
 		snapshotTable.setThreads(4);
 		snapshotTableChildren = snapshotTable.getChildren();

@@ -24,7 +24,7 @@ public class AnalyzerManagerTest extends AbstractTest {
 			Analysis<String, double[]> cluster = analyzer.analyze(analysis);
 			// Verify that the manager had initialized the analyzer, that Spring configuration
 			// is fine and that indeed the analyzer is correctly clustering at least one instance
-			assertEquals(0, cluster.getClazz());
+			assertEquals(1, cluster.getClazz());
 		} finally {
 			ApplicationContextManager.closeApplicationContext();
 		}
