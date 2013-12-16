@@ -91,6 +91,7 @@
 		<ref bean="wekaTwitterTrainingStrategy.th" />
 		<ref bean="wekaTwitterTrainingStrategy.ar" />
 		<ref bean="wekaTwitterTrainingStrategy.tr" />
+		<ref bean="wekaTwitterTrainingStrategy.ru" />
 		<!-- Use the trained language specific classifiers -->
 		<ref bean="wekaClassificationStrategy.en" />
 		<ref bean="wekaClassificationStrategy.es" />
@@ -103,6 +104,7 @@
 		<ref bean="wekaClassificationStrategy.th" />
 		<ref bean="wekaClassificationStrategy.ar" />
 		<ref bean="wekaClassificationStrategy.tr" />
+		<ref bean="wekaClassificationStrategy.ru" />
 	</util:list>
 	
 	<bean
@@ -199,6 +201,14 @@
 		property:negative="10000"
 		property:neutral="10000"
 		property:classifier-ref="wekaClassifier.smo.tr" />
+	<bean 
+		id="wekaTwitterTrainingStrategy.ru" 
+		class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
+		property:language="ru"
+		property:positive="10000"
+		property:negative="10000"
+		property:neutral="10000"
+		property:classifier-ref="wekaClassifier.smo.ru" />
 	
 	<bean 
 		id="wekaClassificationStrategy.en" 
@@ -255,5 +265,10 @@
 		class="ikube.action.index.handler.strategy.AnalysisStrategy"
 		property:language="tr"
 		property:classifier-ref="wekaClassifier.smo.tr" />
+	<bean 
+		id="wekaClassificationStrategy.ru" 
+		class="ikube.action.index.handler.strategy.AnalysisStrategy"
+		property:language="ru"
+		property:classifier-ref="wekaClassifier.smo.ru" />
 		
 </beans>

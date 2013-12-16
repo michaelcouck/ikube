@@ -6,17 +6,29 @@ ikubeServices.service('configService', function($rootScope) {
 	
 	// The quick search in the header file
 	$rootScope.quickSearchConfig = {
+		name : 'Quick search',
 		uri : '/ikube/service/search/json/all',
 		resultsBuilder : 'resultsBuilderService'
 	};
 	
 	// The search form autocomplete configuration
 	$rootScope.searchFormConfig = {
+		name : 'Search',
 		uri : '/ikube/service/auto',
 		resultsBuilder : 'autocompleteResultsBuilderService',
 		indexName : 'autocomplete',
 		searchFields : ['word'],
 		emitHierarchyFunction : 'doSearch'
+	};
+	
+	// The Twitter search form autocomplete configuration
+	$rootScope.searchTwitterFormConfig = {
+		name : 'Twitter search',
+		uri : '/ikube/service/auto',
+		resultsBuilder : 'autocompleteResultsBuilderService',
+		indexName : 'autocomplete',
+		searchFields : ['word'],
+		emitHierarchyFunction : 'setSearchStrings'
 	};
 	
 	/**

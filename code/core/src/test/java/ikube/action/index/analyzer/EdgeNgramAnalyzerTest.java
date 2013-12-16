@@ -49,12 +49,12 @@ public class EdgeNgramAnalyzerTest extends AbstractTest {
 		search.setSearchField(IConstants.CONTENT);
 		search.setSortField(IConstants.CONTENT);
 
-		doSearch("hello world", "<B>world</B> ", search);
+		doSearch("hello world", "<B>hello</B> ", search);
 		doSearch("hello", "<B>hello</B> ", search);
 		doSearch("world", "<B>world</B> ", search);
 
 		doSearch("comp", "<B>comp</B>etent ", search);
-		doSearch("incom", "<B>incom</B><B>incom</B>petent ", search);
+		doSearch("incom", "<B>incom</B>petent ", search);
 	}
 
 	private void doSearch(final String searchString, final String expected, final Search search) {

@@ -87,9 +87,10 @@
 								ng-show="!!search.indexName"
 								ng-repeat="field in search.searchFields">
 								<div class="prepend-transparent" ng-show="!!search.searchFields[$index]">
+   								<!-- [$index] = '' -->
    								<span 
    									class="add-on button" 
-   									ng-click="search.searchFields[$index] = ''">-</span>
+   									ng-click="search.searchFields.splice($index, 1);search.searchStrings.splice($index, 1)">-</span>
 								<input 
 									class="input-transparent" 
 									type="text" 
@@ -118,7 +119,7 @@
 				<ul class="recent-comments" ng-show="!!search.coordinate">
 					<li class="separator">
 						<div class="article-post">
-							<div class="user-content">
+							<div class="user-content" style="width: 90%;">
 								<div id="map_canvas" google-map></div>
 							</div>
 						</div>
@@ -134,7 +135,7 @@
 								<span ng-show="!!search.searchStrings && search.searchStrings.length != 0">
 									<br>
 									Search strings :  
-									<span ng-repeat="searchString in search.searchStrings">
+									<span ng-repeat="searchString in search.searchStrings track by $index">
 										<span ng-show="!!searchString">
 											'{{searchString}}'&nbsp;
 										</span>

@@ -5,7 +5,7 @@
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<div class="container-fluid" ng-controller="SearcherController">
+<div class="container-fluid" ng-controller="TwitterController" ng-init="doConfig('searchTwitterFormConfig');">
 	<div class="row-fluid">
 		<div class="span4">
 			<div class="box">
@@ -28,50 +28,63 @@
 					<div class="row-fluid">
 						<div class="padded">
 							<form>
-							<div class="input">
-								<a class="button green mini" onClick="enterpriseNotification();"><i class="icon-thumbs-up"></i>&nbsp;Positive</a>
-								<a class="button red mini" onClick="enterpriseNotification();"><i class="icon-thumbs-down"></i>&nbsp;Negative</a>
-							</div><br>
+							<span class="note pull-right"><b>Find term in Twitter time line...(optional)</b></span>
 							<div 
 								class="input" 
 								ng-controller="TypeaheadController" 
-								ng-init="doConfig('searchFormConfig');">
+								ng-init="doConfig('searchTwitterFormConfig');"
+								style="padding-bottom: 10px;">
 								<input
-									id="instant-search"
-									name="instant-search" 
 									type="text"
-									class="search"
+									class="search fill-up"
 									focus-me="true"
 									ng-model="searchString"
 									placeholder="Find this..."
 									typeahead="result for result in doSearch()"
-									typeahead-min-length="3" 
+									typeahead-min-length="0" 
 									typeahead-wait-ms="500"
-									typeahead-on-select="doSearchAll([stripTags(searchString)]);"
-									style="width: 200px;">
+									typeahead-on-select="setSearchStrings([stripTags(searchString)]);">
 								<div class="input search pull-right" ng-show="!!statistics && !!statistics.corrections">
 									Did you mean : 
 									<a href="#" ng-click="
 											searchString = statistics.corrections;
-											doSearchAll([statistics.corrections]);">{{statistics.corrections}}
+											setSearchStrings([statistics.corrections]);
+											doTwitterSearch(search.sentiment);">{{statistics.corrections}}
 									</a>
 								</div>
-								<!-- 
-									This executes the search when clicked. The typeahead, typeahead-on-select and the enter 
-									button will trigger the search. The ng-click attribute on the button will be activated in these cases
-									because the button is of type submit. The searchString is from the type ahead scope and needs 
-									to be fed into the searcher controller as an array of strings. 
-								-->
 							</div>
 							
-							<div class="input">
-								<input id="from-date" type="text" class="search" value="From date..." style="width: 200px;">
-								<input id="to-date" type="text" class="search" value="To date..." style="width: 200px;">
-								<input type="text" class="search" value="Latitude..." style="width: 200px;">
-								<input type="text" class="search" value="Longitude..." style="width: 200px;">
+							<span class="note pull-right"><b>Hours of twitter history ({{search.startHour}})</b></span>
+							<div ui-slider min="-168" max="0" ng-model="search.startHour" style="margin-top: 22px;"></div>
+							
+							<span class="note pull-right" style="margin-top: 22px;"><b>Around the point...(optional)</b></span><br>
+							<div class="input" style="margin-top: 30px;">
+								<a class="button mini" style="width: 49%;" ng-click="doShowMap(!showMap);"><i class="icon-globe"></i>&nbsp;Map</a>
+								<a class="button mini" style="width: 49%;" ng-click="doClearCoordinate();"><i class="icon-remove-circle"></i>&nbsp;Clear</a>
 							</div>
 							
-							<button type="submit" class="button blue" ng-disabled="!searchString" ng-click="doSearchAll([searchString]);">Go</button>
+							<div class="fill-up" style="margin-top: 10px;" ng-show="showMap">
+								<span class="note"><b>Coordinate : ({{search.coordinate.latitude}},{{search.coordinate.longitude}})</b></span>
+								<div id="map_canvas" google-map style="margin-top: 10px;"></div>
+							</div>
+							
+							<span class="note pull-right" style="margin-top: 22px;"><b>Select a language...(optional)</b></span><br>
+							
+							<select 
+								ng-model="languages"
+								ng-model="language"
+								ng-options="language for language in languages"
+								class="fill-up"
+								style="height: 26px; width: 100%; margin-bottom: 15px;">
+								<option style="display:none" value="">Language...</option>
+							</select>
+							
+							<span class="note"><b>Positive or negative sentiment?</b></span>
+							<div class="input" style="margin-top: 8px;">
+								<a class="button mini" style="width: 49%;" ng-click="doTwitterSearch('positive');"><i class="icon-thumbs-up"></i>&nbsp;Positive</a>
+								<a class="button mini" style="width: 49%;" ng-click="doTwitterSearch('negative');"><i class="icon-thumbs-down"></i>&nbsp;Negative</a><br><br>
+							</div>
+							<a class="button mini" style="width: 99%;" ng-click="doTwitterSearch(undefined);"><i class="icon-thumbs-up"></i>&nbsp;Both&nbsp;<i class="icon-thumbs-down"></i></a>
 							
 							</form>
 							<div style="width: 10px; height: 60px;"></div>
@@ -82,20 +95,22 @@
 		</div>	
 		
 		<div class="span8">
-			<div class="black-box tex">
+			<div class="box tex">
 				<div class="tab-header">Tweets...</div>
+				<div id="chart_div" style="width: 95%; height: 446px;"></div>
+			</div>
+		</div>
+	</div>
+	
+	Show results : {{showResults && !!statistics && statistics.total > 0 && !!search.searchResults && search.searchResults.length > 0}}
+	
+	<div class="row-fluid">
+		<div class="span12" ng-show="showResults && !!statistics && statistics.total > 0 && !!search.searchResults && search.searchResults.length > 0">
+			<div class="black-box tex">
+				
+				<div class="tab-header">Tweets analyzed</div>
 				
 				<ul class="recent-comments">
-					<li class="separator">
-						<div class="article-post">
-							<div class="user-content">
-								<div id="map_canvas" google-map></div>
-							</div>
-						</div>
-					</li>
-				</ul>
-				
-				<ul class="recent-comments" ng-show="!!statistics && statistics.total > 0 && !!search.searchResults && search.searchResults.length > 0">
 					<li class="separator">
 						<div class="article-post">
 							<div class="user-content">
@@ -135,26 +150,19 @@
 					</li>
 				</ul>
 				
-				<ul class="recent-comments" ng-show="!!statistics && !!search.searchResults && search.endResult > 0" ng-repeat="result in search.searchResults">
+				<ul class="recent-comments" ng-repeat="result in search.searchResults">
 					<li class="separator">
 						<div class="avatar pull-left">
-							<img ng-src="{{doFileTypeImage(result.id, result.mimeType)}}" />
+							<!-- <img ng-src="{{doFileTypeImage(result.id, result.mimeType)}}" /> -->
+							<a href="#"><i class="icon-twitter"></i></a>
 						</div>
 						<div class="article-post">
-							<div class="user-info" ng-show="!!result.id">Id : {{result.id}}</div>
-							<div class="user-info" ng-show="!!result.path">Path : {{result.path}}</div>
-							<div class="user-info" ng-show="!!result.url">Url : {{result.url}}</div>
+							<div class="user-info">From user : {{result['from-user']}}</div>
 							<div class="user-info" ng-show="!!result.score">Score : {{result.score}}</div>
 							<div class="user-info" ng-show="!!result.distance">Distance : {{result.distance}}</div>
 							<div class="user-info" ng-show="!!result.latitude">Latitude : {{result.latitude}}</div>
 							<div class="user-info" ng-show="!!result.longitude">Longitude : {{result.longitude}}</div>
-							<div class="user-info" ng-show="!!result.lastmodified">Last modified : {{result.lastmodified}}</div>
 							<div class="user-content" ng-show="!!result.fragment" ng-bind-html-unsafe="'Fragment : ' + result.fragment">Fragment :</div>
-							<div class="btn-group">
-								<button class="button black mini" onClick="enterpriseNotification();"><i class="icon-pencil"></i>Edit</button>
-								<button class="button black mini" onClick="enterpriseNotification();"><i class="icon-remove"></i>Delete</button>
-								<button class="button black mini" ng-click="search.searchResults.splice($index, 1)"><i class="icon-stop"></i>Hide</button>
-							</div>
 						</div>
 					</li>
 				</ul>

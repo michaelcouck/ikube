@@ -11,8 +11,9 @@
  * @param $http
  * @param $injector
  * @param $timeout
+ * @param $log
  */
-function TypeaheadController($scope, $http, $injector, $timeout) {
+function TypeaheadController($scope, $http, $injector, $timeout, $log) {
 	
 	// The configuration object with the uri and other parameters
 	$scope.config;
@@ -47,6 +48,8 @@ function TypeaheadController($scope, $http, $injector, $timeout) {
 	$scope.$watch('searchString', function() {
 		$scope.searchString = $scope.stripTags($scope.searchString);
 		$scope.search.searchStrings = [$scope.searchString];
+		// $log.log('Search string : ' + $scope.searchString);
+		// $scope.emit();
 	});
 	
 	// Removes html tags from a string using the browser
@@ -77,28 +80,30 @@ function TypeaheadController($scope, $http, $injector, $timeout) {
 			$scope.status = status;
 		});
 		
-		var maxRetries = 1000;
-		$scope.wait = function() {
-			return $timeout(function() {
-				// Check that we have some results and that the search strings that were searched
-				// for are the same ones that the user typed last, i.e. the last search that was done
-				if (!!$scope.results) {
-					if (!!$scope.config.emitHierarchyFunction) {
-						// Emit the search object to any parent controllers
-						// that may be interested in the fact that the user has
-						// selected a search string
-						$scope.$emit($scope.config.emitHierarchyFunction, $scope.search);
-					}
-					return $scope.results;
-				} else if (maxRetries-- > 0) {
-					return $scope.wait();
-				}
-			}, 100);
-		};
 		// Because http requests are asynchronous we have to wait explicitly
 		// for the results to come back from the server before we pass them to the 
 		// type ahead controller as they will be null to begin with
-		return $scope.wait();
+		return $scope.emit();
+	};
+	
+	var maxRetries = 100;
+	$scope.emit = function() {
+		return $timeout(function() {
+			// Check that we have some results and that the search strings that were searched
+			// for are the same ones that the user typed last, i.e. the last search that was done
+			if (!!$scope.results) {
+				if (!!$scope.config.emitHierarchyFunction) {
+					// $log.log('Emitting to : ' + $scope.config.emitHierarchyFunction);
+					// Emit the search object to any parent controllers
+					// that may be interested in the fact that the user has
+					// selected a search string
+					$scope.$emit($scope.config.emitHierarchyFunction, $scope.search);
+				}
+				return $scope.results;
+			} else if (maxRetries-- > 0) {
+				return $scope.emit();
+			}
+		}, 100);
 	};
 	
 	/**
@@ -106,6 +111,7 @@ function TypeaheadController($scope, $http, $injector, $timeout) {
 	 */
 	$scope.doConfig = function(configName) {
 		$scope.config = $injector.get('configService').getConfig(configName);
+		// $log.log('Configuration : ' + $scope.config.name);
 		$scope.search.indexName = $scope.config.indexName;
 		$scope.search.searchFields = $scope.config.searchFields;
 		$scope.search.typeFields = $scope.config.typeFields;

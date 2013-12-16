@@ -22,7 +22,11 @@
 	<meta name="Description" content="Ikube Enterprise Search." />
 	<meta name="Keywords" content="Ikube, Enterprise Search, Web Site Search, Database Search, Network Search, High Volume, Data Mining, Analytics, Machine Learning" />
 	
+	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.css">
+	
+	
 	<link href="<c:url value="/assets/stylesheets/application.css" />" media="screen" rel="stylesheet" type="text/css" />
+	<link href="<c:url value="/assets/stylesheets/prettify.css" />" media="screen" rel="stylesheet" type="text/css" />
 	
 	<!--[if lt IE 9]>
 		<script src="<c:url value="/assets/javascripts/html5shiv.js" />" type="text/javascript"></script>
@@ -31,21 +35,29 @@
 		<link href="<c:url value="/assets/stylesheets/iefix.css" />" media="screen" rel="stylesheet" type="text/css" />
 	<![endif]-->
 	
+	<!-- jQuery -->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+	<!-- Angular core -->
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.4/angular.min.js"></script>
+	<!-- <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.js"></script> -->
+	<!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.4/angular.min.js"></script> -->
+	<!-- <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.2/angular.min.js"></script> -->
+	
+	<!-- Console Plastique -->
 	<script src="<c:url value="/assets/javascripts/application.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/docs.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/docs_charts.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/documentation.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/prettify.js" />" type="text/javascript"></script>
 	
-	<link href="<c:url value="/assets/stylesheets/prettify.css" />" media="screen" rel="stylesheet" type="text/css" />
-	
 	<script src="https://www.google.com/jsapi" type="text/javascript" ></script>
 	<script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
 	<script src="http://www.google-analytics.com/ga.js" type="text/javascript"></script>
-	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.js"></script>
-	<!-- <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.2/angular.min.js"></script> -->
-	<%-- <script src="<c:url value="/assets/javascripts/ui-bootstrap-tpls-0.4.0.js" />" type='text/javascript'></script> --%>
+	
 	<script src="<c:url value="/assets/javascripts/ui-bootstrap-tpls-0.6.0.js" />" type='text/javascript'></script>
+	<%-- <script src="<c:url value="/assets/javascripts/ui-bootstrap-tpls-0.4.0.js" />" type='text/javascript'></script> --%>
+	<script type="text/javascript" src="http://angular-ui.github.io/ui-slider/src/slider.js"></script>
 	
 	<!-- Must be after Angular -->
 	<script src="<c:url value="/assets/javascripts/ng-google-chart.js" />" type="text/javascript"></script>
@@ -71,12 +83,12 @@
 	<script src="<c:url value="/assets/javascripts/controllers/searcher-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/actions-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/index-contexts-controller.js" />" type="text/javascript"></script>
-	<%-- <script src="<c:url value="/assets/javascripts/controllers/indexes-controller.js" />" type="text/javascript"></script> --%>
 	<script src="<c:url value="/assets/javascripts/controllers/properties-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/servers-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/typeahead-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/active-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/analytics-controller.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/controllers/twitter-controller.js" />" type="text/javascript"></script>
 	
 </head>
 

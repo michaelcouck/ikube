@@ -135,7 +135,7 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 	$scope.doSearchPostProcessing = function(search) {
 		if (!!search.searchResults && search.searchResults.length > 0) {
 			$scope.statistics = search.searchResults.pop();
-			$scope.log('Corrections : ' + $scope.statistics.corrections, 200);
+			// $scope.log('Corrections : ' + $scope.statistics.corrections, 200);
 			if (!!$scope.statistics.total && $scope.statistics.total > 0) {
 				$scope.doPagination();
 			}
@@ -190,7 +190,7 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 				});
 				$scope.checkImage = function() {
 					return $timeout(function() {
-						$scope.log('Get icon : ' + iconUrl, iconStatus);
+						// $scope.log('Get icon : ' + iconUrl, iconStatus);
 						if (!!iconStatus) {
 							if (iconStatus === 200) {
 								$scope.images.push(iconUrl);
@@ -259,7 +259,7 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 		var url = getServiceUrl($scope.indexesUrl);
 		var promise = $http.get(url);
 		promise.success(function(data, status) {
-			$scope.log('Status', status);
+			// $scope.log('Status', status);
 			$scope.indexes = data;
 		});
 		promise.error(function(data, status) {
@@ -341,22 +341,24 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 			title : 'You are here :) => [' + latitude + ', ' + longitude + ']',
 			icon : '/ikube/assets/images/icons/person_obj.gif'
 		});
-		angular.forEach($scope.search.searchResults, function(key, value) {
-			var latitude = key['latitude'];
-			var longitude = key['longitude'];
-			var fragment = key['fragment'];
-			var distance = key['distance'];
-			// alert('Key : ' + key['latitude'] + ', ' + key['longitude']);
-			if (!!latitude && !!longitude) {
-				pointMarker = new google.maps.Marker({
-					map : map,
-					draggable: true,
-					icon: getServiceUrl('/ikube/assets/images/icons/person_obj.gif'),
-					position : new google.maps.LatLng(latitude, longitude),
-					title : 'Name : ' + fragment + ', distance : ' + distance
-				});
-			}
-		});
+		if (!!$scope.search.searchResults) {
+			angular.forEach($scope.search.searchResults, function(key, value) {
+				var latitude = key['latitude'];
+				var longitude = key['longitude'];
+				var fragment = key['fragment'];
+				var distance = key['distance'];
+				// alert('Key : ' + key['latitude'] + ', ' + key['longitude']);
+				if (!!latitude && !!longitude) {
+					pointMarker = new google.maps.Marker({
+						map : map,
+						draggable: true,
+						icon: getServiceUrl('/ikube/assets/images/icons/person_obj.gif'),
+						position : new google.maps.LatLng(latitude, longitude),
+						title : 'Name : ' + fragment + ', distance : ' + distance
+					});
+				}
+			});
+		}
 		// And finally set the waypoints
 		$scope.doWaypoints(origin);
 	};

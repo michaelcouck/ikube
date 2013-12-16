@@ -42,13 +42,17 @@ public final class EdgeNgramAnalyzer extends Analyzer {
 	public final TokenStream tokenStream(final String fieldName, final Reader reader) {
 		EdgeNGramTokenizer.Side side = EdgeNGramTokenizer.Side.FRONT;
 		// There is a problem in the edge n-gram filter so we have to create the reader again
-		int read = -1;
 		char[] cbuf = new char[1024];
 		StringBuilder stringBuilder = new StringBuilder();
 		try {
-			while ((read = reader.read(cbuf)) > 0) {
+			int read = -1;
+			do {
+				read = reader.read(cbuf);
+				if (read < 0) {
+					break;
+				}
 				stringBuilder.append(cbuf, 0, read);
-			}
+			} while (true);
 		} catch (IOException e) {
 			LOGGER.error(null, e);
 		} finally {
@@ -59,7 +63,8 @@ public final class EdgeNgramAnalyzer extends Analyzer {
 			return new LowerCaseTokenizer(IConstants.VERSION, stringReader);
 		}
 		return new EdgeNGramTokenizer(stringReader, side, minGram, maxGram);
-		// return new NGramTokenFilter(tokenizer, minGram, maxGram);
+		// EdgeNGramTokenizer edgeNGramTokenizer = new EdgeNGramTokenizer(stringReader, side, minGram, maxGram);
+		// return new NGramTokenFilter(edgeNGramTokenizer, minGram, maxGram);
 	}
 
 	public void setMinGram(int minGram) {

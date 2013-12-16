@@ -1,37 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <model:Screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:model="http://wireframesketcher.com/1.0/model.ecore">
-  <widgets xsi:type="model:DateField" id="1" x="198" y="112" text="  /  /  " measuredWidth="57" measuredHeight="23"/>
-  <widgets xsi:type="model:Button" id="2" x="56" y="200" text="Go" measuredWidth="35" measuredHeight="25">
+  <widgets xsi:type="model:Button" id="2" x="56" y="272" text="Go" measuredWidth="35" measuredHeight="25">
     <font/>
   </widgets>
-  <widgets xsi:type="model:ButtonBar" id="3" x="56" y="80" text="Positive, Negative, Neutral" measuredWidth="199" measuredHeight="27" selection="0">
+  <widgets xsi:type="model:ButtonBar" id="3" x="56" y="80" width="199" text="Positive, Negative" measuredWidth="199" measuredHeight="27" selection="0">
     <font/>
-    <items x="0" y="0" width="65" height="27" text="Positive"/>
-    <items x="65" y="0" width="70" height="27" text="Negative"/>
-    <items x="135" y="0" width="64" height="27" text="Neutral"/>
+    <items x="0" y="0" width="93" height="27" text="Positive"/>
+    <items x="93" y="0" width="106" height="27" text="Negative"/>
   </widgets>
-  <widgets xsi:type="model:Label" id="4" x="56" y="112" text="From date" measuredWidth="63" measuredHeight="23">
-    <font/>
-  </widgets>
-  <widgets xsi:type="model:Label" id="5" x="56" y="134" text="To date" measuredWidth="47" measuredHeight="23">
+  <widgets xsi:type="model:TextField" id="7" x="56" y="115" width="199" text="Find(name, term, brand...)..." measuredWidth="199" measuredHeight="23">
     <font/>
   </widgets>
-  <widgets xsi:type="model:DateField" id="6" x="198" y="134" text="  /  /  " measuredWidth="57" measuredHeight="23"/>
-  <widgets xsi:type="model:TextField" id="7" x="56" y="168" width="199" text="Find(name, term, brand...)..." measuredWidth="199" measuredHeight="23">
+  <widgets xsi:type="model:Accordion" id="11" x="56" y="320" width="689" text="Results&#xA;-Result 1&#xA;-Result 2&#xA;-Result 3&#xA;Statistics Two&#xA;Statistics Three&#xA;Statistics Four&#xA;..." measuredWidth="689" measuredHeight="207" selection="0">
+    <items x="0" y="2" width="689" height="25" text="Results"/>
+    <items x="0" y="27" width="689" height="25" text="-Result 1"/>
+    <items x="0" y="52" width="689" height="25" text="-Result 2"/>
+    <items x="0" y="77" width="689" height="25" text="-Result 3"/>
+    <items x="0" y="107" width="689" height="25" text="Statistics Two"/>
+    <items x="0" y="132" width="689" height="25" text="Statistics Three"/>
+    <items x="0" y="157" width="689" height="25" text="Statistics Four"/>
+    <items x="0" y="182" width="689" height="25" text="..."/>
+  </widgets>
+  <widgets xsi:type="model:Chart" id="12" x="280" y="80" width="633" measuredWidth="633" measuredHeight="200"/>
+  <widgets xsi:type="model:Button" id="14" x="128" y="272" width="127" text="Show results" measuredWidth="127" measuredHeight="25">
     <font/>
   </widgets>
-  <widgets xsi:type="model:Panel" id="8" x="320" y="80" width="425" height="177" measuredWidth="425" measuredHeight="177"/>
-  <widgets xsi:type="model:Map" id="10" x="320" y="80" width="425" height="177" measuredWidth="425" measuredHeight="177"/>
-  <widgets xsi:type="model:Accordion" id="11" x="320" y="280" width="425" text="Results&#xA;-Result 1&#xA;-Result 2&#xA;-Result 3&#xA;Statistics Two&#xA;Statistics Three&#xA;Statistics Four&#xA;..." measuredWidth="425" measuredHeight="207" selection="0">
-    <items x="0" y="2" width="425" height="25" text="Results"/>
-    <items x="0" y="27" width="425" height="25" text="-Result 1"/>
-    <items x="0" y="52" width="425" height="25" text="-Result 2"/>
-    <items x="0" y="77" width="425" height="25" text="-Result 3"/>
-    <items x="0" y="107" width="425" height="25" text="Statistics Two"/>
-    <items x="0" y="132" width="425" height="25" text="Statistics Three"/>
-    <items x="0" y="157" width="425" height="25" text="Statistics Four"/>
-    <items x="0" y="182" width="425" height="25" text="..."/>
+  <widgets xsi:type="model:Label" id="15" x="56" y="144" text="Time range" measuredWidth="68" measuredHeight="23">
+    <font/>
   </widgets>
+  <widgets xsi:type="model:Combo" id="17" x="128" y="177" width="129" text="Combo" measuredWidth="129" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Label" id="18" x="56" y="177" text="Language" measuredWidth="58" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Label" id="22" x="56" y="213" text="Latitude" measuredWidth="53" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Label" id="23" x="56" y="243" text="Longitude" measuredWidth="62" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Spinner" id="26" x="135" y="213" width="120" text="0" measuredWidth="120" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Spinner" id="27" x="135" y="243" width="120" text="0" measuredWidth="120" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:HSlider" id="28" x="128" y="147" width="127" measuredWidth="127" measuredHeight="17"/>
   <hRuler/>
   <vRuler/>
   <font size="12px"/>

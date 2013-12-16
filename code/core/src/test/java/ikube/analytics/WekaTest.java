@@ -31,7 +31,6 @@ public class WekaTest extends AbstractTest {
 		FileReader fileReader = new FileReader(file);
 		BufferedReader bufferedReader = new BufferedReader(fileReader);
 		Instances instances = new Instances(bufferedReader);
-		logger.info(instances.toString());
 
 		Classifier classifier = new SMO();
 		Filter filter = new StringToWordVector();
@@ -48,7 +47,6 @@ public class WekaTest extends AbstractTest {
 
 		double result = classifier.classifyInstance(filteredInstance);
 		String classificationClass = instances.classAttribute().value((int) result);
-		logger.info("Classification : " + classificationClass);
 
 		assertEquals(IConstants.NEGATIVE, classificationClass);
 	}
@@ -86,8 +84,7 @@ public class WekaTest extends AbstractTest {
 
 		double classification = classifier.classifyInstance(dataSet.firstInstance());
 		String classificationClass = dataSet.classAttribute().value((int) classification);
-		logger.info("Classification class : " + classificationClass);
-		
+
 		assertEquals(IConstants.POSITIVE, classificationClass);
 	}
 

@@ -14,9 +14,21 @@ module.directive('googleMap', function($window, $log) {
 				$scope.doMap = function() {
 					var parent = angular.element($element).parent();
 					$scope.styleMap = function() {
-						style.width = (parent.width() - 70) + 'px';
+						// We need this because none of the parents might have
+						// no size which creates an infinite iteration
+						var count = 100;
+						do {
+							if (parent.width() <= 0) {
+								parent = parent.parent();
+							}
+						} while (!!parent && count-- > 0);
+						if (parent.width() > 0) {
+							style.width = parent.width() + 'px';
+						} else {
+							style.width = 150 + 'px';
+						}
 						$element.css(style);
-						$log.log('Do map : ' + style.width + ', ' + $element.width() + ', ' + parent.width());
+						// $log.log('Do map : ' + style.width + ', element : ' + $element.width() + ', parent : ' + parent.width());
 						return style;
 					};
 					
@@ -29,7 +41,7 @@ module.directive('googleMap', function($window, $log) {
 						center: new google.maps.LatLng(latitude, longitude),
 						mapTypeId: google.maps.MapTypeId.ROADMAP
 					};
-					map = new google.maps.Map(mapElement, options);
+					var map = new google.maps.Map(mapElement, options);
 					$scope.styleMap();
 				};
 				

@@ -169,8 +169,8 @@
 		$("#modal-link").click(function() {
 			return $('#modal').modal();
 		});
-		$('.input-error').tooltip();
-		$(".chzn-select").chosen();
+//		$('.input-error').tooltip();
+//		$(".chzn-select").chosen();
 		
 //		$(".chzn-select-indexes").ajaxChosen({
 //			  method: 'GET',
@@ -190,41 +190,41 @@
 //		
 //		$(".chosen-select-indexes").val();
 		
-		$('textarea.tagme').tagify();
-		new Faq($(".faq-list"));
-		$('#datetimepicker').datepicker();
-		$('#from-date').datepicker();
-		$('#to-date').datepicker();
+//		$('textarea.tagme').tagify();
+//		new Faq($(".faq-list"));
+//		$('#datetimepicker').datepicker();
+//		$('#from-date').datepicker();
+//		$('#to-date').datepicker();
 		new ConfirmAction($("#fix-stats"));
 		new ConfirmAction($("#fix-stats2"));
 		new CalendarEvents($('#external-events'));
 
-		$('.data-table').dataTable({
-			"bJQueryUI" : true,
-			"sPaginationType" : "full_numbers",
-			"sDom" : '<""l>t<"F"fp>'
-		});
+//		$('.data-table').dataTable({
+//			"bJQueryUI" : true,
+//			"sPaginationType" : "full_numbers",
+//			"sDom" : '<""l>t<"F"fp>'
+//		});
 
-		return $("#calendar").fullCalendar({
-			header : {
-				left : 'prev,next today',
-				center : 'title',
-				right : 'month,agendaWeek,agendaDay'
-			},
-			editable : true,
-			droppable : true,
-			drop : function(date, allDay) {
-				var copiedEventObject, originalEventObject;
-				originalEventObject = $(this).data('eventObject');
-				copiedEventObject = $.extend({}, originalEventObject);
-				copiedEventObject.start = date;
-				copiedEventObject.allDay = allDay;
-				$("#calendar").fullCalendar('renderEvent', copiedEventObject, true);
-				if ($("#drop-remove").is(":checked")) {
-					return $(this).remove();
-				}
-			}
-		});
+//		return $("#calendar").fullCalendar({
+//			header : {
+//				left : 'prev,next today',
+//				center : 'title',
+//				right : 'month,agendaWeek,agendaDay'
+//			},
+//			editable : true,
+//			droppable : true,
+//			drop : function(date, allDay) {
+//				var copiedEventObject, originalEventObject;
+//				originalEventObject = $(this).data('eventObject');
+//				copiedEventObject = $.extend({}, originalEventObject);
+//				copiedEventObject.start = date;
+//				copiedEventObject.allDay = allDay;
+//				$("#calendar").fullCalendar('renderEvent', copiedEventObject, true);
+//				if ($("#drop-remove").is(":checked")) {
+//					return $(this).remove();
+//				}
+//			}
+//		});
 	});
 
 }).call(this);

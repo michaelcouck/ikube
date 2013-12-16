@@ -66,6 +66,7 @@
 	<bean id="wekaClassifier.smo.th" class="ikube.analytics.WekaClassifier" />
 	<bean id="wekaClassifier.smo.ar" class="ikube.analytics.WekaClassifier" />
 	<bean id="wekaClassifier.smo.tr" class="ikube.analytics.WekaClassifier" />
+	<bean id="wekaClassifier.smo.ru" class="ikube.analytics.WekaClassifier" />
 	
 		<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
 		<property name="arguments">
@@ -155,6 +156,14 @@
 			</array>
 		</property>
 	</bean>
+	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
+		<property name="arguments">
+			<array>
+				<ref bean="buildable-smo" />
+				<ref bean="wekaClassifier.smo.ru" />
+			</array>
+		</property>
+	</bean>
 	 
 	 <util:map id="analyzers">
 		<entry key="analyzer-em" value-ref="analyzer-em" />
@@ -171,6 +180,7 @@
 		<entry key="wekaClassifier.smo.th" value-ref="wekaClassifier.smo.th" />
 		<entry key="wekaClassifier.smo.ar" value-ref="wekaClassifier.smo.ar" />
 		<entry key="wekaClassifier.smo.tr" value-ref="wekaClassifier.smo.tr" />
+		<entry key="wekaClassifier.smo.ru" value-ref="wekaClassifier.smo.ru" />
 	 </util:map>
 
 </beans>
