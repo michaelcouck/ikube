@@ -45,6 +45,8 @@ public abstract class IntegrationTest extends BaseTest {
 		new MimeTypes(IConstants.MIME_TYPES);
 		new MimeMapper(IConstants.MIME_MAPPING);
 
+		// We'll sleep for a full minute to allow Jett to start
+		Thread.sleep(60000);
 		ApplicationContextManager.getBean(Scheduler.class).shutdown();
 		Thread.sleep(3000);
 		insertData(Snapshot.class, 11000);
