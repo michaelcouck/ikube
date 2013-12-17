@@ -22,8 +22,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -38,8 +36,6 @@ import org.springframework.stereotype.Component;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class Auto extends Resource {
-
-	static final Logger LOGGER = LoggerFactory.getLogger(Auto.class);
 
 	/** Constants for the paths to the web services. */
 	public static final String AUTO = "/auto";

@@ -4,9 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * This is the base class for all searcher web services, common logic and properties. Also all the methods that are exposed to clients for xml and Json
  * responses are defined here. This class could be seen as the API that is exposed to iKube clients.
@@ -25,8 +22,6 @@ public abstract class Searcher extends Resource {
 	public static final String SORTED = "/sorted";
 	public static final String GEOSPATIAL = "/geospatial";
 	public static final String SORTED_TYPED = "/sorted/typed";
-
-	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	/** Basic */
 	public abstract Response search(final String indexName, final String searchStrings, final String searchFields, final boolean fragment,

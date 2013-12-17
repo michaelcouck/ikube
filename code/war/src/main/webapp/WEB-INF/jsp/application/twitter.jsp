@@ -70,12 +70,11 @@
 							
 							<span class="note pull-right" style="margin-top: 22px;"><b>Select a language...(optional)</b></span><br>
 							
-							<select 
-								ng-model="languages"
-								ng-model="language"
-								ng-options="language for language in languages"
+							<select
 								class="fill-up"
-								style="height: 26px; width: 100%; margin-bottom: 15px;">
+								style="height: 26px; margin-bottom: 15px;"
+								ng-model="language" 
+								ng-options="language for language in languages">
 								<option style="display:none" value="">Language...</option>
 							</select>
 							
@@ -84,9 +83,13 @@
 								<a class="button mini" style="width: 49%;" ng-click="doTwitterSearch('positive');"><i class="icon-thumbs-up"></i>&nbsp;Positive</a>
 								<a class="button mini" style="width: 49%;" ng-click="doTwitterSearch('negative');"><i class="icon-thumbs-down"></i>&nbsp;Negative</a><br><br>
 							</div>
-							<a class="button mini" style="width: 99%;" ng-click="doTwitterSearch(undefined);"><i class="icon-thumbs-up"></i>&nbsp;Both&nbsp;<i class="icon-thumbs-down"></i></a>
+							<a class="button mini" style="width: 99%;" ng-click="doTwitterSearch(null);"><i class="icon-thumbs-up"></i>&nbsp;Both&nbsp;<i class="icon-thumbs-down"></i></a>
 							
 							</form>
+							
+							<br><br>
+							<div>Similar searches...(clustered data)</div>
+							
 							<div style="width: 10px; height: 60px;"></div>
 						</div>
 					</div>
@@ -119,7 +122,7 @@
 								<span ng-show="!!search.searchStrings && search.searchStrings.length != 0">
 									<br>
 									Search strings :  
-									<span ng-repeat="searchString in search.searchStrings">
+									<span ng-repeat="searchString in search.searchStrings track by $index">
 										<span ng-show="!!searchString">
 											'{{searchString}}'&nbsp;
 										</span>
@@ -127,7 +130,7 @@
 									<span ng-show="!!search.searchFields && search.searchFields.length > 0">
 										<br>
 										Fields :  
-										<span ng-repeat="searchField in search.searchFields">
+										<span ng-repeat="searchField in search.searchFields track by $index">
 											<span ng-show="!!search.searchStrings[$index]">
 												'{{searchField}}'&nbsp;
 											</span>

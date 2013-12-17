@@ -8,7 +8,7 @@
 		<div class="row-fluid search-button-bar-container">
 			<div class="span12">
 				<ul class="breadcrumb">
-					<li><a href="<c:url value="/dash.html" />"><i class="icon-home"></i>Home</a></li>
+					<li><a href="<c:url value="/system/dash.html" />"><i class="icon-home"></i>Home</a></li>
 					<li><a href="<c:url value="/search/search.html" />">Search</a></li>
 					<li><a href="<c:url value="/analytics/analytics.html" />">Analytics</a></li>
 					<li class="active"><a href="#">Here</a></li>

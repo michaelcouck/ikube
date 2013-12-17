@@ -9,7 +9,8 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 	$scope.status = 200;
 	// The running zoom in the map
 	$scope.zoom = 13;
-	$scope.languages = ['Chinese', 'Dutch', 'English', 'Spanish', 'Japanese', 'French', 'German', 'Swedish', 'Thai', 'Arabic', 'Turkish', 'Russian'];
+	$scope.languages = new Array();
+	$scope.languages.push('', 'Chinese', 'Dutch', 'English', 'Spanish', 'Japanese', 'French', 'German', 'Swedish', 'Thai', 'Arabic', 'Turkish', 'Russian');
 	$scope.languages.sort();
 	$scope.language = undefined;
 	// Ths original co-ordinate, if it is exactly this then
@@ -23,6 +24,7 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 	$scope.showResults = true;
 	$scope.statistics = undefined;
 	
+	// 'contents', 'classification', 'language'
 	// Re-define the search for this controller
 	$scope.search = {
 		fragment : true,
@@ -31,14 +33,13 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 		distance : 20,
 		startHour : -168,
 		endHour : 0,
-		sentiment : 'positive',
 		coordinate : angular.copy($scope.coordinate),
 		indexName : 'twitter',
-		searchStrings : ['', '0-12345678900000'],
-		searchFields : ['contents', 'created-at'],
-		typeFields : ['string', 'range']
+		searchStrings : ['0-12345678900000'],
+		searchFields : ['created-at'],
+		typeFields : ['range']
 	};
-	$scope.searchUrl = '/ikube/service/analyzer/twitter';
+	$scope.searchUrl = '/ikube/service/twitter/analyze';
 	
 	$scope.doConfig = function(configName) {
 		$scope.config = $injector.get('configService').getConfig(configName);
@@ -48,16 +49,13 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 	};
 	
 	$scope.setSearchStrings = function(searchStrings) {
-		$scope.search.searchStrings.splice(0, 1, searchStrings[0]);
+		$scope.search.searchStrings[0] = searchStrings[0];
 	};
 	
 	//searchStrings 
 	$scope.doTwitterSearch = function(sentiment) {
 		$scope.status = undefined;
 		$timeout(function() {
-			$scope.search.sentiment = sentiment;
-			
-			var url = getServiceUrl($scope.searchUrl);
 			// Set the time range to search within
 			var fromHour = $scope.setTimeInMillisPlusHours($scope.search.startHour);
 			var endHour = $scope.setTimeInMillisPlusHours($scope.search.endHour);
@@ -65,18 +63,21 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 			timeRange.push(fromHour);
 			timeRange.push('-');
 			timeRange.push(endHour);
-			$scope.search.searchStrings.splice(1, 1, timeRange.join(''));
+			$scope.search.searchStrings[1] = timeRange.join('');
 			
 			var search = angular.copy($scope.search);
-			if (!search.searchStrings[0]) {
-				search.searchStrings.splice(0, 1);
-				search.searchFields.splice(0, 1);
-				search.typeFields.splice(0, 1);
+			
+			// Set the sentiment if defined
+			if (!!sentiment) {
+				setSearchString(search, searchString, 'classification', 'string');
 			}
+			// Remove the co-ordinate search field if it is not set
 			if (search.coordinate.latitude === $scope.coordinate.latitude) {
+				$log.log('Removed coordinate');
 				search.coordinate = undefined;
 			}
 			
+			var url = getServiceUrl($scope.searchUrl);
 			var promise = $http.post(url, search);
 			promise.success(function(data, status) {
 				$scope.status = status;
@@ -90,6 +91,12 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 				$log.log('Error in doTwitterSearch : ' + status);
 			});
 		}, 1000);
+	};
+	
+	$scope.setSearchString = function(search, searchString, searchField, typeField, index) {
+		search.searchStrings.splice(searchString);
+		search.searchFields.push(searchField);
+		search.typeFields.push(typeField);
 	};
 	
 	$scope.setTimeInMillisPlusHours = function(hours) {
@@ -145,10 +152,6 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 		return $timeout(function() {
 			$scope.$apply();
 		}, 100);
-	};
-	
-	$scope.setSentiment = function(sentiment) {
-		$scope.search.sentiment = sentiment;
 	};
 	
 	$scope.drawChart = function drawChart() {

@@ -45,6 +45,7 @@ public final class ClusterManagerHazelcast extends AClusterManager {
 		hazelcastInstance = Hazelcast.getHazelcastInstanceByName(IConstants.IKUBE);
 		if (hazelcastInstance == null) {
 			hazelcastInstance = Hazelcast.newHazelcastInstance();
+			logger.info("New Hazelcast instance : " + hazelcastInstance);
 		}
 		address = ip + "-" + hazelcastInstance.getCluster().getLocalMember().getInetSocketAddress().getPort();
 		hazelcastInstance.getConfig().getNetworkConfig().getInterfaces().setInterfaces(Arrays.asList(ip));

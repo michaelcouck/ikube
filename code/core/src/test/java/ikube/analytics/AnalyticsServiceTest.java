@@ -1,7 +1,7 @@
 package ikube.analytics;
 
-import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Analysis;
@@ -14,10 +14,10 @@ import java.util.HashMap;
 import org.junit.Before;
 import org.junit.Test;
 
+import weka.clusterers.EM;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-import weka.clusterers.EM;
 
 /**
  * @author Michael Couck
@@ -50,7 +50,7 @@ public class AnalyticsServiceTest extends AbstractTest {
 				put(analysis.getAnalyzer(), analyzer);
 			}
 		});
-		
+
 		Gson gson = new GsonBuilder().disableHtmlEscaping().create();
 		String string = gson.toJson(analysis);
 		logger.info(string);
@@ -59,7 +59,8 @@ public class AnalyticsServiceTest extends AbstractTest {
 	@Test
 	public void analyze() {
 		analyticsService.analyze(analysis);
-		assertEquals(0, analysis.getClazz());
+		Integer clazz = (Integer) analysis.getClazz();
+		assertTrue(clazz == 0 || clazz == 1);
 	}
 
 	@Test

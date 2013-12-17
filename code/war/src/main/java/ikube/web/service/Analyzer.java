@@ -3,7 +3,6 @@ package ikube.web.service;
 import ikube.IConstants;
 import ikube.analytics.IAnalyticsService;
 import ikube.model.Analysis;
-import ikube.model.Search;
 
 import java.io.IOException;
 
@@ -20,8 +19,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -41,10 +38,6 @@ public class Analyzer extends Resource {
 
 	public static final String ANALYZER = "/analyzer";
 	public static final String ANALYZE = "/analyze";
-	public static final String TWITTER = "/twitter";
-
-	@SuppressWarnings("unused")
-	private static final Logger LOGGER = LoggerFactory.getLogger(Analyzer.class);
 
 	@Autowired
 	protected IAnalyticsService analyticsService;
@@ -78,15 +71,6 @@ public class Analyzer extends Resource {
 		analyticsService.analyze(analysis);
 		analysis.setAlgorithmOutput(newLineToLineBreak(analysis.getAlgorithmOutput()));
 		return buildJsonResponse(analysis);
-	}
-
-	@POST
-	@Path(Analyzer.TWITTER)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response twitter(@Context final HttpServletRequest request, @Context final UriInfo uriInfo) {
-		Search search = unmarshall(Search.class, request);
-		Object results = searcherService.search(search);
-		return buildJsonResponse(results);
 	}
 
 	private Object newLineToLineBreak(final Object object) {
