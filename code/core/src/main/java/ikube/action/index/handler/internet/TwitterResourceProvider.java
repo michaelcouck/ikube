@@ -37,6 +37,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+	private int clones;
 	private Stack<Tweet> tweets;
 
 	/** A counter to see how many tweets we have done. */
@@ -51,6 +52,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
 	 * @throws IOException
 	 */
 	TwitterResourceProvider(final IndexableTweets indexableTweets) throws IOException {
+		clones = indexableTweets.getClones();
 		tweets = new Stack<Tweet>();
 		counter = new AtomicLong();
 		tweetsDirectory = FileUtilities.getOrCreateDirectory(new File(IConstants.ANALYTICS_DIRECTORY, "tweets"));
@@ -99,12 +101,15 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
 	@Override
 	public void onTweet(final Tweet tweet) {
 		if (tweets.size() < IConstants.MILLION) {
-			int clones = 3;
-			do {
-				Tweet clone = (Tweet) SerializationUtilities.clone(tweet);
-				tweets.push(clone);
-				counter.incrementAndGet();
-			} while (--clones > 0);
+			tweets.push(tweet);
+			if (this.clones > 0) {
+				int clones = this.clones;
+				do {
+					Tweet clone = (Tweet) SerializationUtilities.clone(tweet);
+					tweets.push(clone);
+					counter.incrementAndGet();
+				} while (--clones > 0);
+			}
 		}
 	}
 

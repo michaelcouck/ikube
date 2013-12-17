@@ -72,6 +72,10 @@ public class IndexableTweets extends Indexable<IndexableTweets> {
 	@Attribute(field = false, description = "?")
 	private String userLanguageField;
 
+	@Column
+	@Attribute(field = false, description = "The number of times to clone the tweets for volume simulation")
+	private int clones = 0;
+
 	public Coordinate getCoordinate() {
 		return coordinate;
 	}
@@ -190,6 +194,14 @@ public class IndexableTweets extends Indexable<IndexableTweets> {
 
 	public void setUserLanguageField(String userLanguageField) {
 		this.userLanguageField = userLanguageField;
+	}
+
+	public int getClones() {
+		return clones;
+	}
+
+	public void setClones(int clones) {
+		this.clones = clones;
 	}
 
 }

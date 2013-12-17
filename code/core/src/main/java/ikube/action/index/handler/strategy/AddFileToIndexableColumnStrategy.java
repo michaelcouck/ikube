@@ -34,13 +34,13 @@ public class AddFileToIndexableColumnStrategy extends AStrategy {
 
 	@Override
 	@SuppressWarnings("null")
-	public boolean aroundProcess(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document,
-			final Object resource) throws Exception {
+	public boolean aroundProcess(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document, final Object resource)
+			throws Exception {
 		IndexableColumn indexableColumn = null;
 		Object content = indexableColumn.getContent();
 		if (content != null && String.class.isAssignableFrom(content.getClass())) {
 			try {
-				addFileContentToColumnContent(indexableColumn, content.toString());
+				addFileContentToColumnContent(indexContext, indexableColumn, content.toString());
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -48,14 +48,15 @@ public class AddFileToIndexableColumnStrategy extends AStrategy {
 		return super.aroundProcess(indexContext, indexable, document, resource);
 	}
 
-	protected void addFileContentToColumnContent(final IndexableColumn indexableColumn, final String filePath) throws Exception {
+	protected void addFileContentToColumnContent(final IndexContext<?> indexContext, final IndexableColumn indexableColumn, final String filePath)
+			throws Exception {
 		InputStream inputStream = null;
 		ByteArrayInputStream byteInputStream = null;
 		ByteArrayOutputStream byteOutputStream = null;
 		try {
 			File file = new File(filePath);
 			inputStream = new FileInputStream(file);
-			long length = getIndexContext(indexableColumn).getMaxReadLength();
+			long length = indexContext.getMaxReadLength();
 			byte[] byteBuffer = new byte[(int) length];
 			int read = inputStream.read(byteBuffer, 0, byteBuffer.length);
 

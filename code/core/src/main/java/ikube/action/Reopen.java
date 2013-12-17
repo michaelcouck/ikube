@@ -3,14 +3,11 @@ package ikube.action;
 import ikube.model.IndexContext;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
-import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Searchable;
-import org.apache.lucene.store.Directory;
 
 /**
  * This action will re-open the indexes in the case it is a delta index.
@@ -27,27 +24,33 @@ public class Reopen extends Open {
 	 */
 	@Override
 	public boolean internalExecute(final IndexContext<?> indexContext) {
-		if (indexContext.isDelta() && indexContext.getMultiSearcher() == null) {
-			ArrayList<Searchable> searchers = new ArrayList<Searchable>();
-			IndexWriter[] indexWriters = indexContext.getIndexWriters();
-			if (indexWriters != null && indexWriters.length > 0) {
-				for (final IndexWriter indexWriter : indexWriters) {
-					Directory directory = indexWriter.getDirectory();
-					IndexReader reader;
-					try {
-						if (IndexReader.indexExists(directory)) {
-							reader = IndexReader.open(directory, Boolean.TRUE);
-							IndexSearcher indexSearcher = new IndexSearcher(reader);
-							searchers.add(indexSearcher);
+		MultiSearcher multiSearcher = indexContext.getMultiSearcher();
+		if (indexContext.isDelta()) {
+			if (multiSearcher == null) {
+				openOnFile(indexContext);
+			} else {
+				Searchable[] searchables = multiSearcher.getSearchables();
+				if (searchables != null && searchables.length > 0) {
+					for (int i = 0; i < searchables.length; i++) {
+						Searchable searchable = searchables[i];
+						if (IndexSearcher.class.isAssignableFrom(searchable.getClass())) {
+							IndexSearcher oldIndexSearcher = (IndexSearcher) searchable;
+							IndexReader indexReader = oldIndexSearcher.getIndexReader();
+							IndexReader newIndexReader = null;
+							try {
+								newIndexReader = IndexReader.openIfChanged(indexReader);
+								if (newIndexReader != null) {
+									logger.info("Re-opening reader on index : " + indexContext.getName());
+									searchables[i] = new IndexSearcher(indexReader);
+									oldIndexSearcher.close();
+								}
+							} catch (IOException e) {
+								logger.error("Exception reopening the searcher on reader : " + indexReader + ", " + newIndexReader, e);
+							}
 						}
-					} catch (CorruptIndexException e) {
-						logger.error("Index corrupt while indexing delta : ", e);
-					} catch (IOException e) {
-						logger.error("IOException while indexing delta : ", e);
 					}
 				}
 			}
-			return open(indexContext, searchers);
 		}
 		return Boolean.TRUE;
 	}

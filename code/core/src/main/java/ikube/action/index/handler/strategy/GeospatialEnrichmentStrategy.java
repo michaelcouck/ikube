@@ -1,10 +1,7 @@
-
 package ikube.action.index.handler.strategy;
-
 
 import ikube.IConstants;
 import ikube.action.index.handler.IStrategy;
-import ikube.action.index.handler.strategy.geocode.IGeocoder;
 import ikube.model.Coordinate;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
@@ -14,13 +11,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
 import org.apache.lucene.spatial.tier.projections.CartesianTierPlotter;
-import org.apache.lucene.spatial.tier.projections.IProjector;
 import org.apache.lucene.spatial.tier.projections.SinusoidalProjector;
-import org.apache.lucene.util.NumericUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
 /**
  * This strategy will intercept typically databases that have co-ordinate data, geo co-ordinates. It will then add ge-hash fields to the documents in the Lucene
@@ -32,24 +24,10 @@ import org.springframework.beans.factory.annotation.Value;
  * @version 01.00
  */
 @SuppressWarnings("deprecation")
-public final class GeospatialEnrichmentStrategy extends AStrategy {
-
-	@Value("${start.tier}")
-	private transient int startTierParam = 10;
-	@Value("${end.tier}")
-	private transient int endTierParam = 20;
-
-	private transient int startTier;
-	private transient int endTier;
+public final class GeospatialEnrichmentStrategy extends AGeospatialEnrichmentStrategy {
 
 	private Pattern latPattern;
 	private Pattern lngPattern;
-
-	/** No idea what this does :) */
-	private transient IProjector sinusodialProjector;
-	/** The geocoder to get the co-ordinates for the indexable. */
-	@Autowired
-	private IGeocoder geocoder;
 
 	public GeospatialEnrichmentStrategy() {
 		this(null);
@@ -118,21 +96,6 @@ public final class GeospatialEnrichmentStrategy extends AStrategy {
 			coordinate = geocoder.getCoordinate(address);
 		}
 		return coordinate;
-	}
-
-	public final void addSpatialLocationFields(final Coordinate coordinate, final Document document) {
-		document.add(new Field(IConstants.LAT, NumericUtils.doubleToPrefixCoded(coordinate.getLatitude()), Field.Store.YES, Field.Index.NOT_ANALYZED));
-		document.add(new Field(IConstants.LNG, NumericUtils.doubleToPrefixCoded(coordinate.getLongitude()), Field.Store.YES, Field.Index.NOT_ANALYZED));
-		addCartesianTiers(coordinate, document);
-	}
-
-	final void addCartesianTiers(final Coordinate coordinate, final Document document) {
-		for (int tier = startTier; tier <= endTier; tier++) {
-			CartesianTierPlotter cartesianTierPlotter = new CartesianTierPlotter(tier, sinusodialProjector, CartesianTierPlotter.DEFALT_FIELD_PREFIX);
-			final double boxId = cartesianTierPlotter.getTierBoxId(coordinate.getLatitude(), coordinate.getLongitude());
-			document.add(new Field(cartesianTierPlotter.getTierFieldName(), NumericUtils.doubleToPrefixCoded(boxId), Field.Store.YES,
-					Field.Index.NOT_ANALYZED_NO_NORMS));
-		}
 	}
 
 	final StringBuilder buildAddress(final Indexable<?> indexable, final StringBuilder builder) {

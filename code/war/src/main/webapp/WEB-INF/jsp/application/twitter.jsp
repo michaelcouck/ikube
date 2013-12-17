@@ -100,7 +100,7 @@
 		<div class="span8">
 			<div class="box tex">
 				<div class="tab-header">Tweets...</div>
-				<div id="chart_div" style="width: 95%; height: 446px;"></div>
+				<div id="chart_div" style="width: 100%; height: 446px;"></div>
 			</div>
 		</div>
 	</div>
@@ -110,38 +110,37 @@
 	<div class="row-fluid">
 		<div class="span12" ng-show="showResults && !!statistics && statistics.total > 0 && !!search.searchResults && search.searchResults.length > 0">
 			<div class="black-box tex">
-				
 				<div class="tab-header">Tweets analyzed</div>
-				
 				<ul class="recent-comments">
 					<li class="separator">
 						<div class="article-post">
 							<div class="user-content">
 								Results {{search.firstResult}} to {{search.endResult}} of {{statistics.total}}<br> 
-								Duration {{statistics.duration}} milliseconds 
-								<span ng-show="!!search.searchStrings && search.searchStrings.length != 0">
-									<br>
-									Search strings :  
-									<span ng-repeat="searchString in search.searchStrings track by $index">
-										<span ng-show="!!searchString">
-											'{{searchString}}'&nbsp;
-										</span>
+								Duration {{statistics.duration}} milliseconds
+								<div class="user-content" ng-show="!!searchClone.searchStrings && searchClone.searchStrings.length != 0">
+									Search strings :
+									<span ng-repeat="searchString in searchClone.searchStrings track by $index">
+										<span ng-show="!!searchString">'{{searchString}}'&nbsp;</span>
 									</span> 
-									<span ng-show="!!search.searchFields && search.searchFields.length > 0">
-										<br>
-										Fields :  
-										<span ng-repeat="searchField in search.searchFields track by $index">
-											<span ng-show="!!search.searchStrings[$index]">
-												'{{searchField}}'&nbsp;
-											</span>
-										</span>
+								</div> 
+								<div class="user-content" ng-show="!!searchClone.searchFields && searchClone.searchFields.length > 0">
+									Fields :  
+									<span ng-repeat="searchField in searchClone.searchFields track by $index">
+										<span ng-show="!!searchField">'{{searchField}}'&nbsp;</span>
 									</span>
-									<span ng-show="!!statistics.corrections && statistics.corrections.length > 0">
-										<br>
-										Corrections :  {{statistics.corrections}}
+								</div>
+								<div class="user-content" ng-show="!!searchClone.typeFields && searchClone.typeFields.length > 0">
+									Types :  
+									<span ng-repeat="typeField in searchClone.typeFields track by $index">
+										<span ng-show="!!typeField">'{{typeField}}'&nbsp;</span>
 									</span>
-								</span> 
-								<br>
+								</div>
+								<div class="user-content" ng-show="!!searchClone.coordinate && searchClone.coordinate.latitude != coordinate.latitude">
+									Coordinate :  [{{searchClone.coordinate.latitude}}, {{searchClone.coordinate.longitude}}]
+								</div>
+								<div class="user-content" ng-show="!!statistics.corrections && statistics.corrections.length > 0">
+									Corrections :  {{statistics.corrections}}
+								</div>
 								<div class="btn-group">
 									<button 
 										class="button mini" 
@@ -156,16 +155,18 @@
 				<ul class="recent-comments" ng-repeat="result in search.searchResults">
 					<li class="separator">
 						<div class="avatar pull-left">
-							<!-- <img ng-src="{{doFileTypeImage(result.id, result.mimeType)}}" /> -->
 							<a href="#"><i class="icon-twitter"></i></a>
 						</div>
 						<div class="article-post">
-							<div class="user-info">From user : {{result['from-user']}}</div>
+							<div class="user-content" ng-repeat="(key, value) in result">
+								<span ng-show="key != 'fragment' && !!value">{{key}} : {{value}}</span>
+							</div>
+							<!-- <div class="user-info">From user : {{result['from-user']}}</div>
 							<div class="user-info" ng-show="!!result.score">Score : {{result.score}}</div>
 							<div class="user-info" ng-show="!!result.distance">Distance : {{result.distance}}</div>
 							<div class="user-info" ng-show="!!result.latitude">Latitude : {{result.latitude}}</div>
-							<div class="user-info" ng-show="!!result.longitude">Longitude : {{result.longitude}}</div>
-							<div class="user-content" ng-show="!!result.fragment" ng-bind-html-unsafe="'Fragment : ' + result.fragment">Fragment :</div>
+							<div class="user-info" ng-show="!!result.longitude">Longitude : {{result.longitude}}</div> -->
+							<div class="user-content" ng-show="!!result.fragment" ng-bind-html-unsafe="'Fragment : ' + result.fragment"></div>
 						</div>
 					</li>
 				</ul>

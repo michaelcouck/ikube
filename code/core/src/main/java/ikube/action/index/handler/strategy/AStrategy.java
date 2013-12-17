@@ -51,17 +51,13 @@ public abstract class AStrategy implements IStrategy {
 	}
 
 	/**
-	 * This method walks backward up the composite hierarchy until it gets to the context, which should be the top level indexable, i.e. the grand parent of all
-	 * indexables.
-	 * 
-	 * @param indexable the indexable to start looking for the index context from
-	 * @return the index context grand parent of the indexable
+	 * {@inheritDoc}
 	 */
-	protected IndexContext<?> getIndexContext(final Indexable<?> indexable) {
-		if (IndexContext.class.isAssignableFrom(indexable.getClass())) {
-			return (IndexContext<?>) indexable;
-		}
-		return getIndexContext(indexable.getParent());
+	@Override
+	public boolean postProcess(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document, final Object resource)
+			throws Exception {
+		// Not all strategies need to post process of course
+		return Boolean.TRUE;
 	}
 
 	/**

@@ -41,6 +41,7 @@ public class IndexCommitSchedule extends Schedule {
 			}
 			for (final IndexWriter indexWriter : indexWriters) {
 				try {
+					logger.info("Comitting index : " + indexContext.getName());
 					indexWriter.maybeMerge();
 					indexWriter.forceMerge(10, Boolean.TRUE);
 					indexWriter.commit();

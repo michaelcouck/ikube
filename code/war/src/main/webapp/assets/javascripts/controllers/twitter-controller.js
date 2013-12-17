@@ -24,21 +24,22 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 	$scope.showResults = true;
 	$scope.statistics = undefined;
 	
-	// 'contents', 'classification', 'language'
-	// Re-define the search for this controller
 	$scope.search = {
 		fragment : true,
 		firstResult : 0,
 		maxResults : 10,
-		distance : 20,
+		distance : 50,
 		startHour : -168,
 		endHour : 0,
 		coordinate : angular.copy($scope.coordinate),
 		indexName : 'twitter',
-		searchStrings : ['0-12345678900000'],
-		searchFields : ['created-at'],
-		typeFields : ['range']
+		searchStrings : ['0-12345678900000', '', '', ''],
+		searchFields : ['created-at', 'classification', 'contents', 'language'],
+		typeFields : ['range', 'string', 'string', 'string']
 	};
+	
+	$scope.searchClone;
+	
 	$scope.searchUrl = '/ikube/service/twitter/analyze';
 	
 	$scope.doConfig = function(configName) {
@@ -52,8 +53,7 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 		$scope.search.searchStrings[0] = searchStrings[0];
 	};
 	
-	//searchStrings 
-	$scope.doTwitterSearch = function(sentiment) {
+	$scope.doTwitterSearch = function(classification) {
 		$scope.status = undefined;
 		$timeout(function() {
 			// Set the time range to search within
@@ -63,22 +63,21 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 			timeRange.push(fromHour);
 			timeRange.push('-');
 			timeRange.push(endHour);
-			$scope.search.searchStrings[1] = timeRange.join('');
+			$scope.search.searchStrings[0] = timeRange.join('');
+			$scope.search.searchStrings[1] = classification;
 			
-			var search = angular.copy($scope.search);
+			$scope.searchClone = angular.copy($scope.search);
+			// Build the search strings
+			$scope.setParameters($scope.search, $scope.searchClone);
 			
-			// Set the sentiment if defined
-			if (!!sentiment) {
-				setSearchString(search, searchString, 'classification', 'string');
-			}
 			// Remove the co-ordinate search field if it is not set
-			if (search.coordinate.latitude === $scope.coordinate.latitude) {
+			if ($scope.searchClone.coordinate.latitude === $scope.coordinate.latitude) {
 				$log.log('Removed coordinate');
-				search.coordinate = undefined;
+				$scope.searchClone.coordinate = undefined;
 			}
 			
 			var url = getServiceUrl($scope.searchUrl);
-			var promise = $http.post(url, search);
+			var promise = $http.post(url, $scope.searchClone);
 			promise.success(function(data, status) {
 				$scope.status = status;
 				$scope.search.searchResults = data.searchResults;
@@ -93,10 +92,18 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 		}, 1000);
 	};
 	
-	$scope.setSearchString = function(search, searchString, searchField, typeField, index) {
-		search.searchStrings.splice(searchString);
-		search.searchFields.push(searchField);
-		search.typeFields.push(typeField);
+	$scope.setParameters = function(search, searchClone) {
+		searchClone.searchStrings = new Array();
+		searchClone.searchFields = new Array();
+		searchClone.typeFields = new Array();
+		searchClone.searchResults = undefined;
+		angular.forEach(search.searchStrings, function(searchString, index) {
+			if (!!searchString) {
+				searchClone.searchStrings.push(search.searchStrings[index]);
+				searchClone.searchFields.push(search.searchFields[index]);
+				searchClone.typeFields.push(search.typeFields[index]);
+			}
+		});
 	};
 	
 	$scope.setTimeInMillisPlusHours = function(hours) {

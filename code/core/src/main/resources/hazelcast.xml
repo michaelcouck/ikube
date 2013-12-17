@@ -1,6 +1,6 @@
 <hazelcast>
 	<group>
-		<name>ikube-development</name>
+		<name>ikube</name>
 		<password>ikube</password>
 	</group>
 	<network>

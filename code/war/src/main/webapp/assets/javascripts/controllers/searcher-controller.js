@@ -31,6 +31,7 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 	$scope.doSearch = function() {
 		$scope.url = getServiceUrl($scope.searchUrl);
 		var search = $scope.doSearchPreProcessing($scope.search);
+		search.searchResults = null;
 
 		var promise = $http.post($scope.url, search);
 		promise.success(function(data, status) {
@@ -96,16 +97,16 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 			var searchString = search.searchStrings[i];
 			var searchField = search.searchFields[i];
 			if (!!searchString) {
-				searchStrings.push(searchString);
-				searchFields.push(searchField);
 				if ($scope.isNumeric(searchString)) {
-					typeFields.push('numeric');
+					// typeFields.push('numeric');
 					if (searchField == 'latitude') {
 						$scope.doCoordinate(search, 'latitude', searchString);
 					} else if (searchField == 'longitude') {
 						$scope.doCoordinate(search, 'longitude', searchString);
 					}
 				} else {
+					searchStrings.push(searchString);
+					searchFields.push(searchField);
 					var strings = searchString.split('-');
 					if (strings.length > 1) {
 						typeFields.push('range');

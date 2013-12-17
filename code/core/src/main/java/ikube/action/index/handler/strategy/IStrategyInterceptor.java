@@ -14,12 +14,11 @@ import org.aspectj.lang.ProceedingJoinPoint;
 public interface IStrategyInterceptor {
 
 	/**
-	 * This method will intercept the handler 'handle' methods, and implementors will then execute strategies that are contained in the contexts of the
-	 * proceeding join point.
+	 * This method will intercept the handler 'handle' methods, and implementations of this interface will then execute strategies that are contained in the
+	 * contexts of the proceeding join point. This method typically will execute before the handlers execute their logic, i.e. pre-processing the data.
 	 * 
 	 * @param proceedingJoinPoint the join point for the handler
-	 * @return the category from executing the join point, or null if the implementing logic decides not to execute the intercepted target
-	 * @throws Throwable
+	 * @return the result from executing the join point, or null if the implementing logic decides not to execute the intercepted target
 	 */
 	Object aroundProcess(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable;
 

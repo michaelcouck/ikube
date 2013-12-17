@@ -69,7 +69,7 @@
 									<fileset dir="../libs/src/main/resources/indexes/production" />
 								</copy>
 								
-								<copy todir="ikube/integration" failonerror="true" verbose="false">
+								<!-- <copy todir="ikube/integration" failonerror="true" verbose="false">
 									<fileset dir="../libs/src/main/resources/indexes/integration" />
 								</copy>
 								<copy todir="../core/ikube/integration" failonerror="true" verbose="false">
@@ -80,7 +80,7 @@
 								</copy>
 								<copy todir="../../ikube/integration" failonerror="true" verbose="false">
 									<fileset dir="../libs/src/main/resources/indexes/integration" />
-								</copy>
+								</copy> -->
 								
 								<copy todir="ikube/analytics" failonerror="true" verbose="false">
 									<fileset dir="../libs/src/main/resources/analytics" />

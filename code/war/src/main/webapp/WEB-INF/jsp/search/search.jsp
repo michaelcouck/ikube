@@ -132,29 +132,21 @@
 							<div class="user-content">
 								Results {{search.firstResult}} to {{search.endResult}} of {{statistics.total}}<br> 
 								Duration {{statistics.duration}} milliseconds 
-								<span ng-show="!!search.searchStrings && search.searchStrings.length != 0">
-									<br>
+								<div class="user-content" ng-show="!!search.searchStrings && search.searchStrings.length != 0">
 									Search strings :  
 									<span ng-repeat="searchString in search.searchStrings track by $index">
-										<span ng-show="!!searchString">
-											'{{searchString}}'&nbsp;
-										</span>
-									</span> 
-									<span ng-show="!!search.searchFields && search.searchFields.length > 0">
-										<br>
-										Fields :  
-										<span ng-repeat="searchField in search.searchFields">
-											<span ng-show="!!search.searchStrings[$index]">
-												'{{searchField}}'&nbsp;
-											</span>
-										</span>
+										<span ng-show="!!searchString">'{{searchString}}'&nbsp;</span>
 									</span>
-									<span ng-show="!!statistics.corrections && statistics.corrections.length > 0">
-										<br>
-										Corrections :  {{statistics.corrections}}
+								</div>
+								<div class="user-content" ng-show="!!search.searchFields && search.searchFields.length > 0">
+									Fields :  
+									<span ng-repeat="searchField in search.searchFields">
+										<span ng-show="!!searchField">'{{searchField}}'&nbsp;</span>
 									</span>
-								</span> 
-								<br>
+								</div>
+								<div class="user-content" ng-show="!!statistics.corrections && statistics.corrections.length > 0">
+									Corrections :  {{statistics.corrections}}
+								</div>
 								<div class="btn-group">
 									<button 
 										class="button mini" 
@@ -172,14 +164,17 @@
 							<img ng-src="{{doFileTypeImage(result.id, result.mimeType)}}" />
 						</div>
 						<div class="article-post">
-							<div class="user-info" ng-show="!!result.id">Id : {{result.id}}</div>
+							<div class="user-content" ng-repeat="(key, value) in result">
+								<span ng-show="key != 'fragment' && !!value">{{key}} : {{value}}</span>
+							</div>
+							<!-- <div class="user-info" ng-show="!!result.id">Id : {{result.id}}</div>
 							<div class="user-info" ng-show="!!result.path">Path : {{result.path}}</div>
 							<div class="user-info" ng-show="!!result.url">Url : {{result.url}}</div>
 							<div class="user-info" ng-show="!!result.score">Score : {{result.score}}</div>
 							<div class="user-info" ng-show="!!result.distance">Distance : {{result.distance}}</div>
 							<div class="user-info" ng-show="!!result.latitude">Latitude : {{result.latitude}}</div>
 							<div class="user-info" ng-show="!!result.longitude">Longitude : {{result.longitude}}</div>
-							<div class="user-info" ng-show="!!result.lastmodified">Last modified : {{result.lastmodified}}</div>
+							<div class="user-info" ng-show="!!result.lastmodified">Last modified : {{result.lastmodified}}</div> -->
 							<div class="user-content" ng-show="!!result.fragment" ng-bind-html-unsafe="'Fragment : ' + result.fragment">Fragment :</div>
 							<div class="btn-group">
 								<button class="button black mini" onClick="enterpriseNotification();"><i class="icon-pencil"></i>Edit</button>

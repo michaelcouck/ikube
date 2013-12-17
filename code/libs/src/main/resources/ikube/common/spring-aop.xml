@@ -73,9 +73,9 @@
 		<aop:aspect ref="ikube.action.index.handler.strategy.IStrategyInterceptor">
 			<aop:around method="aroundProcess" pointcut="execution(* ikube.action.index.handler.*.handleResource*(..))"  />
 		</aop:aspect>
-		<aop:aspect ref="ikube.action.index.handler.strategy.IStrategyInterceptor">
+		<!-- <aop:aspect ref="ikube.action.index.handler.strategy.IStrategyInterceptor">
 			<aop:around method="aroundProcess" pointcut="execution(* ikube.action.index.handler.*.*.handleResource*(..))"  />
-		</aop:aspect>
+		</aop:aspect> -->
 		<!-- <aop:aspect ref="ikube.statistics.TimerInterceptor">
 			<aop:around method="aroundProcess" pointcut="execution(* ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.detectSentiment*(..))"  />
 		</aop:aspect> -->

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Searchable;
@@ -38,13 +37,10 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	public boolean internalExecute(final IndexContext<?> indexContext) {
-		if (indexContext.isDelta()) {
-			return Boolean.FALSE;
-		}
 		return openOnFile(indexContext);
 	}
 
-	private boolean openOnFile(final IndexContext<?> indexContext) {
+	boolean openOnFile(final IndexContext<?> indexContext) {
 		MultiSearcher multiSearcher = indexContext.getMultiSearcher();
 		try {
 			// First open the new searchables
@@ -57,6 +53,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 			}
 			File[] serverIndexDirectories = latestIndexDirectory.listFiles();
 			for (final File serverIndexDirectory : serverIndexDirectories) {
+				logger.info("Index directory : " + serverIndexDirectory);
 				Directory directory = null;
 				IndexReader reader = null;
 				Searchable searcher = null;
@@ -65,14 +62,16 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 					// directory = FSDirectory.open(serverIndexDirectory);
 					if (!IndexReader.indexExists(directory)) {
 						directory.close();
+						logger.info("Not opening index : " + serverIndexDirectory);
 						continue;
 					}
-					if (IndexWriter.isLocked(directory)) {
-						continue;
-					}
-					reader = IndexReader.open(directory, Boolean.TRUE);
+					// if (IndexWriter.isLocked(directory)) {
+					// continue;
+					// }
+					reader = IndexReader.open(directory);
 					searcher = new IndexSearcher(reader);
 					searchers.add(searcher);
+					logger.info("Opened index on : " + serverIndexDirectory);
 				} catch (Exception e) {
 					logger.error("Exception opening directory : " + serverIndexDirectory, e);
 				} finally {
