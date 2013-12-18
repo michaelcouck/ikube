@@ -43,15 +43,8 @@
 									typeahead="result for result in doSearch()"
 									typeahead-min-length="0" 
 									typeahead-wait-ms="500"
-									typeahead-on-select="setSearchStrings([stripTags(searchString)]);">
-								<div class="input search pull-right" ng-show="!!statistics && !!statistics.corrections">
-									Did you mean : 
-									<a href="#" ng-click="
-											searchString = statistics.corrections;
-											setSearchStrings([statistics.corrections]);
-											doTwitterSearch(search.sentiment);">{{statistics.corrections}}
-									</a>
-								</div>
+									typeahead-on-select="setSearchStrings([stripTags(searchString)]);"
+									ng-change="setSearchStrings([stripTags(searchString)]);">
 							</div>
 							
 							<span class="note pull-right"><b>Hours of twitter history ({{search.startHour}})</b></span>
@@ -63,9 +56,11 @@
 								<a class="button mini" style="width: 49%;" ng-click="doClearCoordinate();"><i class="icon-remove-circle"></i>&nbsp;Clear</a>
 							</div>
 							
-							<div class="fill-up" style="margin-top: 10px;" ng-show="showMap">
-								<span class="note"><b>Coordinate : ({{search.coordinate.latitude}},{{search.coordinate.longitude}})</b></span>
-								<div id="map_canvas" google-map style="margin-top: 10px;"></div>
+							<div class="input fill-up" style="margin-top: 10px;" ng-show="showMap">
+								<div id="map_canvas" google-map style="margin-top: 10px; margin-bottom: 10px;"></div>
+								<span class="note pull-right"><b>Coordinates : </b></span>
+								<input class="search" ng-model="search.coordinate.latitude" value="{{search.coordinate.latitude}}">
+								<input class="search" ng-model="search.coordinate.longitude" value="{{search.coordinate.longitude}}">
 							</div>
 							
 							<span class="note pull-right" style="margin-top: 22px;"><b>Select a language...(optional)</b></span><br>

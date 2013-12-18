@@ -1,24 +1,20 @@
 {
 	"fragment":true,
 	"firstResult":0,
-	"maxResults":10,
-	"distance":50,
-	"startHour":-1,
+	"maxResults":100,
+	"distance":20,
+	"startHour":-168,
 	"endHour":0,
+	"coordinate":{
+		"latitude":"38.48799",
+		"longitude":"21.2915"
+	},
 	"indexName":"twitter",
-	"searchStrings":[
-		"1387312646960-1387316246960",
-		"positive"
-	],
-	"searchFields":[
-		"created-at",
-		"classification"
-	],
-	"typeFields":[
-		"range",
-		"string"
-	]
+	"searchStrings":["386757227472-2387362027472"],
+	"searchFields":["created-at"],
+	"typeFields":["range"]
 }
+
 
 {
 	"indexName":"geospatial",

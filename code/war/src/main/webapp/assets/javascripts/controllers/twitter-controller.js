@@ -20,7 +20,7 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 		longitude : 18.4
 	};
 	
-	$scope.showMap = false;
+	$scope.showMap = true;
 	$scope.showResults = true;
 	$scope.statistics = undefined;
 	
@@ -28,7 +28,7 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 		fragment : true,
 		firstResult : 0,
 		maxResults : 10,
-		distance : 50,
+		distance : 20,
 		startHour : -168,
 		endHour : 0,
 		coordinate : angular.copy($scope.coordinate),
@@ -50,7 +50,7 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 	};
 	
 	$scope.setSearchStrings = function(searchStrings) {
-		$scope.search.searchStrings[0] = searchStrings[0];
+		$scope.search.searchStrings[2] = searchStrings[0];
 	};
 	
 	$scope.doTwitterSearch = function(classification) {
@@ -112,6 +112,14 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 		return now.getTime();
 	};
 	
+	$scope.$watch('search.coordinate.latitude', function() {
+		$scope.doShowMap($scope.showMap);
+	});
+	
+	$scope.$watch('search.coordinate.longitude', function() {
+		$scope.doShowMap($scope.showMap);
+	});
+	
 	/**
 	 * Displays the map
 	 */
@@ -163,7 +171,7 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 	
 	$scope.drawChart = function drawChart() {
 		var data = google.visualization.arrayToDataTable([ [ 'Hours of history', 'Positive', 'Negative' ], [ '-4', 1030, 540 ], [ '-3', 660, 1120 ], [ '-2', 1170, 460 ], [ '-1', 1000, 400 ] ]);
-		var options = { title : 'Twitter sentiment timeline', curveType : 'function' };
+		var options = { title : 'Twitter sentiment timeline', curveType : 'function', backgroundColor: { fill : 'transparent' } };
 		var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
 		chart.draw(data, options);
 	};

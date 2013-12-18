@@ -2,8 +2,6 @@ package ikube.action;
 
 import ikube.model.IndexContext;
 
-import java.io.IOException;
-
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
@@ -24,35 +22,34 @@ public class Reopen extends Open {
 	 */
 	@Override
 	public boolean internalExecute(final IndexContext<?> indexContext) {
-		MultiSearcher multiSearcher = indexContext.getMultiSearcher();
+		boolean opened = Boolean.FALSE;
 		if (indexContext.isDelta()) {
-			if (multiSearcher == null) {
-				openOnFile(indexContext);
-			} else {
-				Searchable[] searchables = multiSearcher.getSearchables();
-				if (searchables != null && searchables.length > 0) {
-					for (int i = 0; i < searchables.length; i++) {
-						Searchable searchable = searchables[i];
-						if (IndexSearcher.class.isAssignableFrom(searchable.getClass())) {
-							IndexSearcher oldIndexSearcher = (IndexSearcher) searchable;
-							IndexReader indexReader = oldIndexSearcher.getIndexReader();
-							IndexReader newIndexReader = null;
-							try {
-								newIndexReader = IndexReader.openIfChanged(indexReader);
-								if (newIndexReader != null) {
-									logger.info("Re-opening reader on index : " + indexContext.getName());
-									searchables[i] = new IndexSearcher(indexReader);
-									oldIndexSearcher.close();
-								}
-							} catch (IOException e) {
-								logger.error("Exception reopening the searcher on reader : " + indexReader + ", " + newIndexReader, e);
-							}
-						}
-					}
-				}
+			int docs = numDocs(indexContext.getMultiSearcher());
+			opened = openOnFile(indexContext);
+			int moreDocs = numDocs(indexContext.getMultiSearcher());
+			logger.info("Docs : " + docs + ", " + moreDocs);
+		}
+		return opened;
+	}
+
+	/**
+	 * This method will just get a count of all the documents in the multi searcher.
+	 * 
+	 * @param multiSearcher the searcher to count the documents in
+	 * @return the number of documents in all the readers in the searcher
+	 */
+	int numDocs(final MultiSearcher multiSearcher) {
+		int numDocs = 0;
+		if (multiSearcher != null) {
+			Searchable[] searchables = multiSearcher.getSearchables();
+			for (int i = 0; i < searchables.length; i++) {
+				Searchable searchable = searchables[i];
+				IndexSearcher indexSearcher = (IndexSearcher) searchable;
+				IndexReader indexReader = indexSearcher.getIndexReader();
+				numDocs += indexReader.numDocs();
 			}
 		}
-		return Boolean.TRUE;
+		return numDocs;
 	}
 
 }
