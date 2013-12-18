@@ -70,6 +70,8 @@ public class Search extends Persistable {
 	@ElementCollection
 	private List<String> sortFields;
 	@ElementCollection
+	private List<String> sortDirections;
+	@ElementCollection
 	private List<String> typeFields;
 	@Embedded
 	private Coordinate coordinate;
@@ -183,6 +185,14 @@ public class Search extends Persistable {
 		this.sortFields = sortFields;
 	}
 
+	public List<String> getSortDirections() {
+		return sortDirections;
+	}
+
+	public void setSortDirections(List<String> sortDirections) {
+		this.sortDirections = sortDirections;
+	}
+
 	public List<String> getTypeFields() {
 		return typeFields;
 	}
@@ -191,20 +201,20 @@ public class Search extends Persistable {
 		this.typeFields = typeFields;
 	}
 
-	public List<String> getCorrectedSearchStrings() {
-		return correctedSearchStrings;
-	}
-
-	public void setCorrectedSearchStrings(List<String> correctedSearchStrings) {
-		this.correctedSearchStrings = correctedSearchStrings;
-	}
-
 	public Coordinate getCoordinate() {
 		return coordinate;
 	}
 
 	public void setCoordinate(Coordinate coordinate) {
 		this.coordinate = coordinate;
+	}
+
+	public List<String> getCorrectedSearchStrings() {
+		return correctedSearchStrings;
+	}
+
+	public void setCorrectedSearchStrings(List<String> correctedSearchStrings) {
+		this.correctedSearchStrings = correctedSearchStrings;
 	}
 
 	public ArrayList<HashMap<String, String>> getSearchResults() {

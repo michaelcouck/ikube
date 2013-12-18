@@ -28,7 +28,7 @@
 					<div class="row-fluid">
 						<div class="padded">
 							<form>
-							<span class="note pull-right"><b>Find term in Twitter time line...(optional)</b></span>
+							<span class="note pull-right"><b>Filter by term...(optional)</b></span>
 							<div 
 								class="input" 
 								ng-controller="TypeaheadController" 
@@ -79,8 +79,10 @@
 								<a class="button mini" style="width: 49%;" ng-click="doTwitterSearch('negative');"><i class="icon-thumbs-down"></i>&nbsp;Negative</a><br><br>
 							</div>
 							<a class="button mini" style="width: 99%;" ng-click="doTwitterSearch(null);"><i class="icon-thumbs-up"></i>&nbsp;Both&nbsp;<i class="icon-thumbs-down"></i></a>
-							
 							</form>
+							
+							<br><br>
+							<a class="button mini" style="width: 99%;" onClick="modal('#results-modal');"><i class="icon-eye-open"></i>&nbsp;Show results&nbsp;<i class="icon-eye-closed"></i></a>
 							
 							<br><br>
 							<div>Similar searches...(clustered data)</div>
@@ -94,48 +96,58 @@
 		
 		<div class="span8">
 			<div class="box tex">
-				<div class="tab-header">Tweets...</div>
-				<div id="chart_div" style="width: 100%; height: 446px;"></div>
+				<div class="tab-header">Timeline</div>
+				<div id="chart_div" style="width: 100%; height: 250px;"></div>
+			</div>
+		</div>
+		
+		<div class="span8" ng-show="!!statistics && statistics.total > 0">
+			<div class="box tex">
+				<div class="tab-header">Statistics</div>
+				<div style="padding: 10px;">
+					<div class="user-content">
+						<b>Results</b> {{search.firstResult}} to {{search.endResult}} of {{statistics.total}} 
+					</div>
+					<div class="user-content">
+						<b>Duration</b> {{statistics.duration}} milliseconds
+					</div>
+					<div class="user-content" ng-show="!!searchClone.searchStrings && searchClone.searchStrings.length != 0">
+						<b>Search strings :</b>
+						<span ng-repeat="searchString in searchClone.searchStrings track by $index">
+							<span ng-show="!!searchString">'{{searchString}}'&nbsp;</span>
+						</span> 
+					</div> 
+					<div class="user-content" ng-show="!!searchClone.searchFields && searchClone.searchFields.length > 0">
+						<b>Fields :  </b>
+						<span ng-repeat="searchField in searchClone.searchFields track by $index">
+							<span ng-show="!!searchField">'{{searchField}}'&nbsp;</span>
+						</span>
+					</div>
+					<div class="user-content" ng-show="!!searchClone.typeFields && searchClone.typeFields.length > 0">
+						<b>Types :  </b>
+						<span ng-repeat="typeField in searchClone.typeFields track by $index">
+							<span ng-show="!!typeField">'{{typeField}}'&nbsp;</span>
+						</span>
+					</div>
+					<div class="user-content" ng-show="!!searchClone.coordinate && searchClone.coordinate.latitude != coordinate.latitude">
+						<b>Coordinate : </b> [{{searchClone.coordinate.latitude}}, {{searchClone.coordinate.longitude}}]
+					</div>
+					<div class="user-content" ng-show="!!statistics.corrections && statistics.corrections.length > 0">
+						<b>Corrections : </b> {{statistics.corrections}}
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
 	
-	Show results : {{showResults && !!statistics && statistics.total > 0 && !!search.searchResults && search.searchResults.length > 0}}
-	
-	<div class="row-fluid">
-		<div class="span12" ng-show="showResults && !!statistics && statistics.total > 0 && !!search.searchResults && search.searchResults.length > 0">
+	<!-- <div class="row-fluid">
+		<div class="span12" ng-show="!!statistics && statistics.total > 0 && !!search.searchResults && search.searchResults.length > 0">
 			<div class="black-box tex">
 				<div class="tab-header">Tweets analyzed</div>
-				<ul class="recent-comments">
+				<ul class="recent-comments" ng-show="!!statistics && statistics.total > 0 && !!search.searchResults && search.searchResults.length > 0">
 					<li class="separator">
 						<div class="article-post">
 							<div class="user-content">
-								Results {{search.firstResult}} to {{search.endResult}} of {{statistics.total}}<br> 
-								Duration {{statistics.duration}} milliseconds
-								<div class="user-content" ng-show="!!searchClone.searchStrings && searchClone.searchStrings.length != 0">
-									Search strings :
-									<span ng-repeat="searchString in searchClone.searchStrings track by $index">
-										<span ng-show="!!searchString">'{{searchString}}'&nbsp;</span>
-									</span> 
-								</div> 
-								<div class="user-content" ng-show="!!searchClone.searchFields && searchClone.searchFields.length > 0">
-									Fields :  
-									<span ng-repeat="searchField in searchClone.searchFields track by $index">
-										<span ng-show="!!searchField">'{{searchField}}'&nbsp;</span>
-									</span>
-								</div>
-								<div class="user-content" ng-show="!!searchClone.typeFields && searchClone.typeFields.length > 0">
-									Types :  
-									<span ng-repeat="typeField in searchClone.typeFields track by $index">
-										<span ng-show="!!typeField">'{{typeField}}'&nbsp;</span>
-									</span>
-								</div>
-								<div class="user-content" ng-show="!!searchClone.coordinate && searchClone.coordinate.latitude != coordinate.latitude">
-									Coordinate :  [{{searchClone.coordinate.latitude}}, {{searchClone.coordinate.longitude}}]
-								</div>
-								<div class="user-content" ng-show="!!statistics.corrections && statistics.corrections.length > 0">
-									Corrections :  {{statistics.corrections}}
-								</div>
 								<div class="btn-group">
 									<button 
 										class="button mini" 
@@ -156,11 +168,6 @@
 							<div class="user-content" ng-repeat="(key, value) in result">
 								<span ng-show="key != 'fragment' && !!value">{{key}} : {{value}}</span>
 							</div>
-							<!-- <div class="user-info">From user : {{result['from-user']}}</div>
-							<div class="user-info" ng-show="!!result.score">Score : {{result.score}}</div>
-							<div class="user-info" ng-show="!!result.distance">Distance : {{result.distance}}</div>
-							<div class="user-info" ng-show="!!result.latitude">Latitude : {{result.latitude}}</div>
-							<div class="user-info" ng-show="!!result.longitude">Longitude : {{result.longitude}}</div> -->
 							<div class="user-content" ng-show="!!result.fragment" ng-bind-html-unsafe="'Fragment : ' + result.fragment"></div>
 						</div>
 					</li>
@@ -182,5 +189,8 @@
 				</ul>
 			</div>
 		</div>
-	</div>
+	</div> -->
+	
+	<jsp:include page="/WEB-INF/jsp/modal/results.jsp" />
+	
 </div>

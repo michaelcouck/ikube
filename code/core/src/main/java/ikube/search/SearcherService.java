@@ -166,15 +166,15 @@ public class SearcherService implements ISearcherService {
 		try {
 			ikube.search.Search searchAction;
 			if (search.getCoordinate() != null && search.getDistance() != 0) {
-				searchAction  = getSearch(SearchSpatial.class, search.getIndexName());
+				searchAction = getSearch(SearchSpatial.class, search.getIndexName());
 				((SearchSpatial) searchAction).setDistance(search.getDistance());
 				((SearchSpatial) searchAction).setCoordinate(search.getCoordinate());
 			} else if (search.getSortFields() == null || search.getSortFields().size() == 0) {
-				searchAction  = getSearch(SearchComplex.class, search.getIndexName());
+				searchAction = getSearch(SearchComplex.class, search.getIndexName());
 			} else {
-				searchAction  = getSearch(SearchComplexSorted.class, search.getIndexName());
+				searchAction = getSearch(SearchComplexSorted.class, search.getIndexName());
 			}
-			
+
 			if (searchAction == null) {
 				LOGGER.warn("Searcher null for index : " + search.getIndexName());
 				return search;
@@ -195,6 +195,12 @@ public class SearcherService implements ISearcherService {
 			} else {
 				sortFields = search.getSortFields().toArray(new String[search.getSortFields().size()]);
 			}
+			String[] sortDirections;
+			if (search.getSortDirections() == null) {
+				sortDirections = new String[searchStrings.length];
+			} else {
+				sortDirections = search.getSortDirections().toArray(new String[search.getSortDirections().size()]);
+			}
 
 			searchAction.setFirstResult(search.getFirstResult());
 			searchAction.setFragment(search.isFragment());
@@ -203,9 +209,10 @@ public class SearcherService implements ISearcherService {
 			searchAction.setSearchField(searchFields);
 			searchAction.setTypeFields(typeFields);
 			searchAction.setSortField(sortFields);
+			searchAction.setSortDirections(sortDirections);
+
 			ArrayList<HashMap<String, String>> results = searchAction.execute();
-			String[] searchStringsCorrected = searchAction.getCorrections(search.getSearchStrings()
-					.toArray(new String[search.getSearchStrings().size()]));
+			String[] searchStringsCorrected = searchAction.getCorrections(search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]));
 			persistSearch(search.getIndexName(), searchStrings, searchStringsCorrected, results);
 			if (searchStringsCorrected != null) {
 				search.setCorrectedSearchStrings(Arrays.asList(searchStringsCorrected));

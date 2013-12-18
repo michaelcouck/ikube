@@ -314,8 +314,7 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 				page : i,
 				firstResult : firstResult
 			};
-		}
-		;
+		};
 		// Find the 'to' result being displayed
 		var modulo = $scope.statistics.total % $scope.search.maxResults;
 		$scope.search.endResult = $scope.search.firstResult + modulo == $scope.statistics.total ? $scope.statistics.total

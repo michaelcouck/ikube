@@ -89,7 +89,7 @@ public class AutoTest extends BaseTest {
 				"pearly beforetime <b>swine</b>" };
 		for (int i = 0; i < results.size() && i < fragments.length; i++) {
 			HashMap<String, String> result = results.get(i);
-			logger.info(result);
+			logger.info("" + result);
 			assertEquals(result.get(IConstants.FRAGMENT), fragments[i]);
 		}
 	}

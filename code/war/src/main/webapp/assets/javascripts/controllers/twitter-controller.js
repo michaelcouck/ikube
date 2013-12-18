@@ -4,11 +4,12 @@
  */
 module.controller('TwitterController', function($scope, $http, $injector, $timeout, $log, $controller) {
 	
+	$scope.map;
 	$scope.config;
 	
 	$scope.status = 200;
 	// The running zoom in the map
-	$scope.zoom = 13;
+	$scope.zoom = 7;
 	$scope.languages = new Array();
 	$scope.languages.push('', 'Chinese', 'Dutch', 'English', 'Spanish', 'Japanese', 'French', 'German', 'Swedish', 'Thai', 'Arabic', 'Turkish', 'Russian');
 	$scope.languages.sort();
@@ -21,9 +22,14 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 	};
 	
 	$scope.showMap = true;
-	$scope.showResults = true;
 	$scope.statistics = undefined;
 	
+	$scope.createdAtIndex = 0;
+	$scope.classificationIndex = 1;
+	$scope.contentsIndex = 2;
+	$scope.languageIndex = 3;
+	
+	// sortFields : ['created-at']
 	$scope.search = {
 		fragment : true,
 		firstResult : 0,
@@ -35,7 +41,9 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 		indexName : 'twitter',
 		searchStrings : ['0-12345678900000', '', '', ''],
 		searchFields : ['created-at', 'classification', 'contents', 'language'],
-		typeFields : ['range', 'string', 'string', 'string']
+		typeFields : ['range', 'string', 'string', 'string'],
+		sortFields : ['created-at'],
+		sortDirection : ['true']
 	};
 	
 	$scope.searchClone;
@@ -50,7 +58,7 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 	};
 	
 	$scope.setSearchStrings = function(searchStrings) {
-		$scope.search.searchStrings[2] = searchStrings[0];
+		$scope.search.searchStrings[$scope.contentsIndex] = searchStrings[0];
 	};
 	
 	$scope.doTwitterSearch = function(classification) {
@@ -63,8 +71,9 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 			timeRange.push(fromHour);
 			timeRange.push('-');
 			timeRange.push(endHour);
-			$scope.search.searchStrings[0] = timeRange.join('');
-			$scope.search.searchStrings[1] = classification;
+			$scope.search.searchStrings[$scope.createdAtIndex] = timeRange.join('');
+			$scope.search.searchStrings[$scope.classificationIndex] = classification;
+			$scope.search.searchStrings[$scope.languageIndex] = $scope.language;
 			
 			$scope.searchClone = angular.copy($scope.search);
 			// Build the search strings
@@ -81,8 +90,12 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 			promise.success(function(data, status) {
 				$scope.status = status;
 				$scope.search.searchResults = data.searchResults;
+				$scope.search.timeLineSentiment = data.timeLineSentiment;
 				if (!!$scope.search.searchResults) {
 					$scope.statistics = $scope.search.searchResults.pop();
+					$scope.drawChart();
+					$scope.doMarkers();
+					$scope.doPagination();
 				}
 			});
 			promise.error(function(data, status) {
@@ -92,13 +105,40 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 		}, 1000);
 	};
 	
+	// Creates the Json pagination array for the next pages in the search
+	$scope.doPagination = function() {
+		$scope.pagination = [];
+		// We just started a search and got the first results
+		var pages = $scope.statistics.total / $scope.search.maxResults;
+		// Create one 'page' for each block of results
+		for ( var i = 0; i < pages && i < 10; i++) {
+			var firstResult = i * $scope.search.maxResults;
+			$scope.pagination[i] = {
+				page : i,
+				firstResult : firstResult
+			};
+		};
+		// Find the 'to' result being displayed
+		var modulo = $scope.statistics.total % $scope.search.maxResults;
+		$scope.search.endResult = $scope.search.firstResult + modulo == $scope.statistics.total ? $scope.statistics.total
+				: $scope.search.firstResult + parseInt($scope.search.maxResults, 10);
+		return;
+	}
+	
+	$scope.doPagedSearch = function(firstResult) {
+		$scope.search.firstResult = firstResult;
+		$scope.doTwitterSearch($scope.search.searchStrings[$scope.classificationIndex]);
+	};
+	
 	$scope.setParameters = function(search, searchClone) {
 		searchClone.searchStrings = new Array();
 		searchClone.searchFields = new Array();
 		searchClone.typeFields = new Array();
 		searchClone.searchResults = undefined;
+		
 		angular.forEach(search.searchStrings, function(searchString, index) {
 			if (!!searchString) {
+				$log.log('Added : ' + search.searchStrings[index] + ', ' + search.searchFields[index]);
 				searchClone.searchStrings.push(search.searchStrings[index]);
 				searchClone.searchFields.push(search.searchFields[index]);
 				searchClone.typeFields.push(search.typeFields[index]);
@@ -140,22 +180,22 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 					center : new google.maps.LatLng(latitude, longitude),
 					mapTypeId : google.maps.MapTypeId.ROADMAP
 			};
-			var map = new google.maps.Map(mapElement, options);
+			$scope.map = new google.maps.Map(mapElement, options);
 			// Add the point or origin marker
 			var marker = new google.maps.Marker({
-				map : map,
+				map : $scope.map,
 				position : origin,
 				title : 'You are here => [' + latitude + ', ' + longitude + ']',
 				icon : '/ikube/assets/images/icons/person_obj.gif'
 			});
-			google.maps.event.addListener(map, 'click', function(event) {
+			google.maps.event.addListener($scope.map, 'click', function(event) {
 				$scope.search.coordinate.latitude = event.latLng.lat();
 				$scope.search.coordinate.longitude = event.latLng.lng();
 				// Re-centre the map on the click event
-				$scope.zoom = map.getZoom();
+				$scope.zoom = $scope.map.getZoom();
 				$scope.doShowMap(showMap);
 			});
-		}, 250);
+		}, 100);
 	};
 	
 	$scope.doClearCoordinate = function() {
@@ -170,11 +210,43 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 	};
 	
 	$scope.drawChart = function drawChart() {
-		var data = google.visualization.arrayToDataTable([ [ 'Hours of history', 'Positive', 'Negative' ], [ '-4', 1030, 540 ], [ '-3', 660, 1120 ], [ '-2', 1170, 460 ], [ '-1', 1000, 400 ] ]);
+		var data = undefined;
+		if (!!$scope.search.timeLineSentiment) {
+			data = google.visualization.arrayToDataTable($scope.search.timeLineSentiment);
+		} else {
+			data = google.visualization.arrayToDataTable([ [ 'Hours of history', 'Positive', 'Negative' ], [ '-4', 1030, 540 ], [ '-3', 660, 1120 ], [ '-2', 1170, 460 ], [ '-1', 1000, 400 ] ]);
+		}
 		var options = { title : 'Twitter sentiment timeline', curveType : 'function', backgroundColor: { fill : 'transparent' } };
 		var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
 		chart.draw(data, options);
 	};
+	
+	// This function will put the markers on the map
+	$scope.doMarkers = function() {
+		// This resets the markers, i.e. removes them
+		$scope.doShowMap($scope.showMap);
+		return $timeout(function() {
+			if (!!$scope.search.searchResults) {
+				$log.log('Showing markers : ');
+				angular.forEach($scope.search.searchResults, function(key, value) {
+					var latitude = key['latitude'];
+					var longitude = key['longitude'];
+					var fragment = key['fragment'];
+					var distance = key['distance'];
+					if (!!latitude && !!longitude) {
+						$log.log('       marker : ' + latitude + '-' + longitude);
+						pointMarker = new google.maps.Marker({
+							map : $scope.map,
+							icon: getServiceUrl('/ikube/assets/images/icons/person_obj.gif'),
+							position : new google.maps.LatLng(latitude, longitude),
+							title : 'Name : ' + fragment + ', distance : ' + distance
+						});
+					}
+				});
+			}
+		}, 100);
+	};
+	
 	google.setOnLoadCallback($scope.drawChart);
 
 });

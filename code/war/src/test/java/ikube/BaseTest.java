@@ -14,7 +14,6 @@ import mockit.Deencapsulation;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
-import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexReader;
@@ -22,6 +21,8 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Searchable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is the base test class for the unit tests.
@@ -33,7 +34,7 @@ import org.apache.lucene.search.Searchable;
 @SuppressWarnings("deprecation")
 public abstract class BaseTest {
 
-	protected Logger logger = Logger.getLogger(this.getClass());
+	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	protected static int SERVER_PORT = 8080;
 	protected static String LOCALHOST = "localhost";
