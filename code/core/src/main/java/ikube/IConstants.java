@@ -190,6 +190,7 @@ public interface IConstants {
 	String LINE_NUMBER = "lineNumber";
 
 	String LANGUAGE = "language";
+	String LANGUAGE_ORIGINAL = "language-original";
 	String LANGUAGE_DETECT_PROFILES_DIRECTORY = "profiles";
 	String CLASSIFICATION = "classification";
 	String CLASSIFICATION_CONFLICT = "classification-conflict";

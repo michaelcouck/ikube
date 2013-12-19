@@ -10,10 +10,8 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 	$scope.status = 200;
 	// The running zoom in the map
 	$scope.zoom = 7;
-	$scope.languages = new Array();
-	$scope.languages.push('', 'Chinese', 'Dutch', 'English', 'Spanish', 'Japanese', 'French', 'German', 'Swedish', 'Thai', 'Arabic', 'Turkish', 'Russian');
+	$scope.languages = allLanguages;
 	$scope.languages.sort();
-	$scope.language = undefined;
 	// Ths original co-ordinate, if it is exactly this then
 	// the search will not take the co-ordinate into account
 	$scope.coordinate = {
@@ -35,12 +33,12 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 		firstResult : 0,
 		maxResults : 10,
 		distance : 20,
-		startHour : -168,
+		startHour : -24,
 		endHour : 0,
 		coordinate : angular.copy($scope.coordinate),
 		indexName : 'twitter',
 		searchStrings : ['0-12345678900000', '', '', ''],
-		searchFields : ['created-at', 'classification', 'contents', 'language'],
+		searchFields : ['created-at', 'classification', 'contents', 'language-original'],
 		typeFields : ['range', 'string', 'string', 'string'],
 		sortFields : ['created-at'],
 		sortDirection : ['true']
@@ -73,7 +71,6 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 			timeRange.push(endHour);
 			$scope.search.searchStrings[$scope.createdAtIndex] = timeRange.join('');
 			$scope.search.searchStrings[$scope.classificationIndex] = classification;
-			$scope.search.searchStrings[$scope.languageIndex] = $scope.language;
 			
 			$scope.searchClone = angular.copy($scope.search);
 			// Build the search strings
@@ -156,7 +153,7 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 		$scope.doShowMap($scope.showMap);
 	});
 	
-	$scope.$watch('search.coordinate.longitude', function() {
+	$scope.$watch('search.coordinate.latitude', function() {
 		$scope.doShowMap($scope.showMap);
 	});
 	
@@ -221,6 +218,14 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 		chart.draw(data, options);
 	};
 	
+
+	$scope.drawGeoChart = function drawChart() {
+		var data = google.visualization.arrayToDataTable([ [ 'Country', 'Popularity' ], [ 'Germany', 200 ], [ 'United States', 300 ], [ 'Brazil', 400 ], [ 'Canada', 500 ], [ 'France', 600 ], [ 'RU', 700 ] ]);
+		var options = {};
+		var chart = new google.visualization.GeoChart(document.getElementById('geo_chart_div'));
+		chart.draw(data, options);
+	};
+	
 	// This function will put the markers on the map
 	$scope.doMarkers = function() {
 		// This resets the markers, i.e. removes them
@@ -248,5 +253,6 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 	};
 	
 	google.setOnLoadCallback($scope.drawChart);
+	google.setOnLoadCallback($scope.drawGeoChart);
 
 });

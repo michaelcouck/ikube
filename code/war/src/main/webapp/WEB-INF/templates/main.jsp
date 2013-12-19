@@ -89,7 +89,6 @@
 	<script src="<c:url value="/assets/javascripts/controllers/active-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/analytics-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/twitter-controller.js" />" type="text/javascript"></script>
-	
 </head>
 
 <body onload="JavaScript:track();">

@@ -409,7 +409,7 @@ public abstract class Search {
 			// Break the search string up into tokens to check individually
 			String[] searchStringTokens = StringUtils.split(searchString, " ");
 			for (final String searchStringToken : searchStringTokens) {
-				String correctedSearchStringToken = spellingChecker.checkWord(searchStringToken);
+				String correctedSearchStringToken = spellingChecker.checkWord(searchStringToken.toLowerCase());
 				if (correctedSearchStringToken != null) {
 					// Replace the incorrect token in the original string
 					correctedSearchStrings[i] = StringUtils.replace(correctedSearchStrings[i], searchStringToken, correctedSearchStringToken);

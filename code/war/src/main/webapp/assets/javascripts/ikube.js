@@ -15,9 +15,11 @@ function track() {
 	}
 }
 
-/** The global refresh variable. */
-var refreshInterval = 20000;
+/** The global variables. */
+var refreshInterval = 15000;
 var chartRefreshInterval = 5000;
+var allLanguages = new Array();
+allLanguages.push('汉语', 'Nederlands', 'English', 'Español', '日本語', 'Le français', 'Deutsch', 'Svenska', 'ภาษาพูด', 'العربية', 'Türkçe', 'ру́сский');
 
 /**
  * This is the main Angular module for the iKube application on the 

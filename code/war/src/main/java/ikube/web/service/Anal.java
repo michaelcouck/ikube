@@ -74,49 +74,50 @@ public class Anal extends Resource {
 		long duration = Timer.execute(new Timer.Timed() {
 			@Override
 			public void execute() {
+				// First do the primary search for the term, language, etc...
 				searcherService.search(search);
-
-				// Now we have to search for positive and negative for each hour
-				// going back as far as the user specified, aggregate the results in an
-				// array for the chart
-				long[] range = range(search);
-				long startTime = range[0];
-				long endTime = range[1];
-				long periodTime = endTime - (1000 * 60 * 60);
-				int periods = (int) ((endTime - startTime) / 1000l / 60l / 60l);
-				Object[][] timeLineSentiment = new Object[3][periods + 1];
-				int hour = 0;
-				do {
-					int positiveCount = count(search, periodTime, endTime, IConstants.POSITIVE);
-					int negativeCount = count(search, periodTime, endTime, IConstants.NEGATIVE);
-					timeLineSentiment[0][periods] = Integer.valueOf(positiveCount);
-					timeLineSentiment[1][periods] = Integer.valueOf(negativeCount);
-					timeLineSentiment[2][periods] = Integer.valueOf(hour);
-					// Plus an hour
-					hour--;
-					periods--;
-					endTime = periodTime;
-					periodTime -= 1000 * 60 * 60;
-				} while (startTime < endTime);
-
-				// Invert the matrix
-				timeLineSentiment = invertMatrix(timeLineSentiment);
-
-				// Set the headers
-				timeLineSentiment[0][0] = "Hour";
-				timeLineSentiment[0][1] = "Positive";
-				timeLineSentiment[0][2] = "Negative";
-
-				search.setTimeLineSentiment(timeLineSentiment);
+				// Get the time line for both positive and negative
+				Object[][] invertedTimeLineSentiment = timeLineSentiment(search);
+				search.setTimeLineSentiment(invertedTimeLineSentiment);
+				// Now we have to search based on country and language and aggregate
+				// the results for display on the map i.e. the global break down for positive and negative
 			}
 		});
 
 		search.getSearchResults().get(search.getSearchResults().size() - 1).put(IConstants.DURATION, Long.toString(duration));
-
-		// Now we have to search based on country and language and aggregate
-		// the results for display on the map
-
 		return buildJsonResponse(search);
+	}
+
+	private Object[][] timeLineSentiment(final Search search) {
+		// Now we have to search for positive and negative for each hour
+		// going back as far as the user specified, aggregate the results in an
+		// array for the chart
+		long[] range = range(search);
+		long startTime = range[0];
+		long endTime = range[1];
+		long periodTime = endTime - (1000 * 60 * 60);
+		int periods = (int) ((endTime - startTime) / 1000l / 60l / 60l);
+		final Object[][] timeLineSentiment = new Object[3][periods + 1];
+		int hour = 0;
+		do {
+			int positiveCount = count(search, periodTime, endTime, IConstants.POSITIVE);
+			int negativeCount = count(search, periodTime, endTime, IConstants.NEGATIVE);
+			timeLineSentiment[0][periods] = Integer.valueOf(positiveCount);
+			timeLineSentiment[1][periods] = Integer.valueOf(negativeCount);
+			timeLineSentiment[2][periods] = Integer.valueOf(hour);
+			// Plus an hour
+			hour--;
+			periods--;
+			endTime = periodTime;
+			periodTime -= 1000 * 60 * 60;
+		} while (startTime < endTime);
+		// Invert the matrix
+		Object[][] invertedTimeLineSentiment = invertMatrix(timeLineSentiment);
+		// Set the headers
+		invertedTimeLineSentiment[0][0] = "Hour";
+		invertedTimeLineSentiment[0][1] = "Positive";
+		invertedTimeLineSentiment[0][2] = "Negative";
+		return invertedTimeLineSentiment;
 	}
 
 	private long[] range(final Search search) {

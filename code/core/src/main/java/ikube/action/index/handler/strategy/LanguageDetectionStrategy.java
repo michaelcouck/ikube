@@ -47,15 +47,12 @@ public final class LanguageDetectionStrategy extends AStrategy {
 		// Concatenate the data in the indexable
 		if (StringUtils.isEmpty(document.get(IConstants.LANGUAGE))) {
 			String content = getContent(indexable, new StringBuilder()).toString();
-			String language = detectLanguage(content);
-			if (language != null) {
-				IndexManager.addStringField(IConstants.LANGUAGE, language, indexable, document);
-			}
+			detectLanguage(indexable, document, content);
 		}
 		return super.aroundProcess(indexContext, indexable, document, resource);
 	}
 
-	public String detectLanguage(final String content) {
+	public String detectLanguage(final Indexable<?> indexable, final Document document, final String content) {
 		if (!StringUtils.isEmpty(content)) {
 			try {
 				String language = null;
@@ -67,7 +64,10 @@ public final class LanguageDetectionStrategy extends AStrategy {
 					language = languageCode;
 				} else {
 					language = locale.getDisplayLanguage(Locale.ENGLISH);
+					String languageOriginal = locale.getDisplayLanguage(locale);
+					IndexManager.addStringField(IConstants.LANGUAGE_ORIGINAL, languageOriginal, indexable, document);
 				}
+				IndexManager.addStringField(IConstants.LANGUAGE, language, indexable, document);
 				return language;
 			} catch (LangDetectException e) {
 				logger.debug("Language processing error : {} ", e.getMessage());

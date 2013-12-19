@@ -150,11 +150,13 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
 		String tweetLanguage = document.get(IConstants.LANGUAGE);
 
 		if (!StringUtils.isEmpty(profileLanguage)) {
-			profileLanguage = new Locale(profileLanguage).getDisplayLanguage(Locale.ENGLISH);
+			Locale profileLocale = new Locale(profileLanguage);
+			profileLanguage = profileLocale.getDisplayLanguage(Locale.ENGLISH);
 		}
 
 		if (!StringUtils.isEmpty(tweetLanguage)) {
-			tweetLanguage = new Locale(tweetLanguage).getDisplayLanguage(Locale.ENGLISH);
+			Locale tweetLocale = new Locale(tweetLanguage);
+			tweetLanguage = tweetLocale.getDisplayLanguage(Locale.ENGLISH);
 		}
 
 		// Try the language and the UTC offset combination
