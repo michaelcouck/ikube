@@ -93,6 +93,8 @@ public abstract class Search {
 	protected transient String[] sortDirections;
 	/** The types of fields for the search queries, like numeric etc. */
 	protected transient String[] typeFields;
+	/** The types of fields for the search queries, like numeric etc. */
+	protected transient String[] occurrenceFields;
 
 	/** Whether to generate fragments for the search string or not. */
 	protected transient boolean fragment;
@@ -194,6 +196,15 @@ public abstract class Search {
 	 */
 	public void setTypeFields(final String... typeFields) {
 		this.typeFields = typeFields;
+	}
+
+	/**
+	 * Sets whether the fields should contain these terms, or should not, or lenient, i.e. can contains these terms.
+	 * 
+	 * @param occurrenceFields the occurrence for the field(s)
+	 */
+	public void setOccurrenceFields(String[] occurrenceFields) {
+		this.occurrenceFields = occurrenceFields;
 	}
 
 	/**

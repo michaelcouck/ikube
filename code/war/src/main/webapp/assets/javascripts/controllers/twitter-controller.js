@@ -4,6 +4,7 @@
  */
 module.controller('TwitterController', function($scope, $http, $injector, $timeout, $log, $controller) {
 	
+	$scope.analyzing = false;
 	$scope.map;
 	$scope.config;
 	
@@ -60,6 +61,10 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 	};
 	
 	$scope.doTwitterSearch = function(classification) {
+		if ($scope.analyzing) {
+			return;
+		}
+		$scope.analyzing = true;
 		$scope.status = undefined;
 		$timeout(function() {
 			// Set the time range to search within
@@ -85,6 +90,7 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 			var url = getServiceUrl($scope.searchUrl);
 			var promise = $http.post(url, $scope.searchClone);
 			promise.success(function(data, status) {
+				$scope.analyzing = false;
 				$scope.status = status;
 				$scope.search.searchResults = data.searchResults;
 				$scope.search.timeLineSentiment = data.timeLineSentiment;
@@ -96,6 +102,7 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 				}
 			});
 			promise.error(function(data, status) {
+				$scope.analyzing = false;
 				$scope.status = status;
 				$log.log('Error in doTwitterSearch : ' + status);
 			});

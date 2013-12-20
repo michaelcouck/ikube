@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.concurrent.Future;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.Searcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -201,6 +202,13 @@ public class SearcherService implements ISearcherService {
 			} else {
 				sortDirections = search.getSortDirections().toArray(new String[search.getSortDirections().size()]);
 			}
+			String[] occurrenceFields;
+			if (search.getOccurrenceFields() == null) {
+				occurrenceFields = new String[searchStrings.length];
+				Arrays.fill(occurrenceFields, BooleanClause.Occur.SHOULD.name());
+			} else {
+				occurrenceFields = search.getOccurrenceFields().toArray(new String[search.getOccurrenceFields().size()]);
+			}
 
 			searchAction.setFirstResult(search.getFirstResult());
 			searchAction.setFragment(search.isFragment());
@@ -210,6 +218,7 @@ public class SearcherService implements ISearcherService {
 			searchAction.setTypeFields(typeFields);
 			searchAction.setSortField(sortFields);
 			searchAction.setSortDirections(sortDirections);
+			searchAction.setOccurrenceFields(occurrenceFields);
 
 			ArrayList<HashMap<String, String>> results = searchAction.execute();
 			String[] searchStringsCorrected = searchAction.getCorrections(search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]));

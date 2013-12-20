@@ -73,6 +73,9 @@ public class Search extends Persistable {
 	private List<String> sortDirections;
 	@ElementCollection
 	private List<String> typeFields;
+	@ElementCollection
+	private List<String> occurrenceFields;
+
 	@Embedded
 	private Coordinate coordinate;
 
@@ -199,6 +202,14 @@ public class Search extends Persistable {
 
 	public void setTypeFields(List<String> typeFields) {
 		this.typeFields = typeFields;
+	}
+
+	public List<String> getOccurrenceFields() {
+		return occurrenceFields;
+	}
+
+	public void setOccurrenceFields(List<String> occurrenceFields) {
+		this.occurrenceFields = occurrenceFields;
 	}
 
 	public Coordinate getCoordinate() {

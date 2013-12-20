@@ -43,7 +43,7 @@ public class IndexCommitSchedule extends Schedule {
 				try {
 					logger.info("Comitting index : " + indexContext.getName());
 					indexWriter.maybeMerge();
-					indexWriter.forceMerge(10, Boolean.TRUE);
+					indexWriter.forceMerge(10, Boolean.FALSE);
 					indexWriter.commit();
 					indexWriter.deleteUnusedFiles();
 				} catch (IOException e) {

@@ -4,11 +4,13 @@ import ikube.IConstants;
 import ikube.analytics.IAnalyticsService;
 import ikube.model.Search;
 import ikube.toolkit.SerializationUtilities;
+import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.Timer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Future;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -99,24 +101,40 @@ public class Anal extends Resource {
 		int periods = (int) ((endTime - startTime) / 1000l / 60l / 60l);
 		final Object[][] timeLineSentiment = new Object[3][periods + 1];
 		int hour = 0;
+
+		List<Future<?>> futures = new ArrayList<>();
+
 		do {
-			int positiveCount = count(search, periodTime, endTime, IConstants.POSITIVE);
-			int negativeCount = count(search, periodTime, endTime, IConstants.NEGATIVE);
-			timeLineSentiment[0][periods] = Integer.valueOf(positiveCount);
-			timeLineSentiment[1][periods] = Integer.valueOf(negativeCount);
-			timeLineSentiment[2][periods] = Integer.valueOf(hour);
+
+			final long periodTime_ = periodTime;
+			final long endTime_ = endTime;
+			final int periods_ = periods;
+			final int hour_ = hour;
+
+			Future<?> future = ThreadUtilities.submit(this.getClass().getSimpleName(), new Runnable() {
+				public void run() {
+					int positiveCount = count(search, periodTime_, endTime_, IConstants.POSITIVE);
+					int negativeCount = count(search, periodTime_, endTime_, IConstants.NEGATIVE);
+					timeLineSentiment[0][periods_] = Integer.valueOf(positiveCount);
+					timeLineSentiment[1][periods_] = Integer.valueOf(negativeCount);
+					timeLineSentiment[2][periods_] = Integer.valueOf(hour_);
+				}
+			});
+			futures.add(future);
+
 			// Plus an hour
 			hour--;
 			periods--;
 			endTime = periodTime;
 			periodTime -= 1000 * 60 * 60;
 		} while (startTime < endTime);
+		ThreadUtilities.waitForFutures(futures, 180);
 		// Invert the matrix
 		Object[][] invertedTimeLineSentiment = invertMatrix(timeLineSentiment);
 		// Set the headers
 		invertedTimeLineSentiment[0][0] = "Hour";
-		invertedTimeLineSentiment[0][1] = "Positive";
-		invertedTimeLineSentiment[0][2] = "Negative";
+		invertedTimeLineSentiment[0][1] = "Negative";
+		invertedTimeLineSentiment[0][2] = "Positive";
 		return invertedTimeLineSentiment;
 	}
 

@@ -54,6 +54,7 @@ public class SearchComplex extends Search {
 			final String typeField = typeFields[i];
 			final String searchField = searchFields[i];
 			final String searchString = searchStrings[i];
+			final String occurrenceField = occurrenceFields[i];
 			if (StringUtils.isEmpty(searchString)) {
 				// Just ignore the empty strings
 				continue;
@@ -73,7 +74,15 @@ public class SearchComplex extends Search {
 				String message = "Field must have a type to create the query : " + typeField + ", field : " + searchField + ", string : " + searchString;
 				throw new RuntimeException(message);
 			}
-			booleanQuery.add(query, BooleanClause.Occur.MUST);
+			BooleanClause.Occur occurrence;
+			if (occurrenceField == BooleanClause.Occur.MUST.name()) {
+				occurrence = BooleanClause.Occur.MUST;
+			} else if (occurrenceField == BooleanClause.Occur.MUST_NOT.name()) {
+				occurrence = BooleanClause.Occur.MUST_NOT;
+			} else {
+				occurrence = BooleanClause.Occur.SHOULD;
+			}
+			booleanQuery.add(query, occurrence);
 		}
 		return booleanQuery;
 	}
