@@ -64,6 +64,7 @@ public class Anal extends Resource {
 
 	static final String CREATED_AT = "created-at";
 	static final String CLASSIFICATION = "classification";
+	static final String OCCURRENCE = "must";
 
 	@Autowired
 	protected IAnalyticsService analyticsService;
@@ -90,7 +91,7 @@ public class Anal extends Resource {
 		return buildJsonResponse(search);
 	}
 
-	private Object[][] timeLineSentiment(final Search search) {
+	Object[][] timeLineSentiment(final Search search) {
 		// Now we have to search for positive and negative for each hour
 		// going back as far as the user specified, aggregate the results in an
 		// array for the chart
@@ -138,7 +139,7 @@ public class Anal extends Resource {
 		return invertedTimeLineSentiment;
 	}
 
-	private long[] range(final Search search) {
+	long[] range(final Search search) {
 		List<String> searchFields = search.getSearchFields();
 		int createdAtIndex = searchFields.indexOf(CREATED_AT);
 		String timeRange = search.getSearchStrings().get(createdAtIndex);
@@ -146,21 +147,21 @@ public class Anal extends Resource {
 		return new long[] { Long.parseLong(timeRangeArray[0]), Long.parseLong(timeRangeArray[1]) };
 	}
 
-	private int count(final Search search, final long startTime, final long endTime, final String classification) {
-		int createdAtIndex = search.getSearchFields().indexOf(CREATED_AT);
-		int classificationIndex = search.getSearchFields().indexOf(CLASSIFICATION);
+	int count(final Search search, final long startTime, final long endTime, final String classification) {
+		Search searchClone = SerializationUtilities.clone(Search.class, search);
+		int createdAtIndex = searchClone.getSearchFields().indexOf(CREATED_AT);
+		int classificationIndex = searchClone.getSearchFields().indexOf(CLASSIFICATION);
 		if (classificationIndex < 0) {
-			search.getSearchStrings().add(classification);
-			search.getSearchFields().add(CLASSIFICATION);
-			search.getTypeFields().add(String.class.getSimpleName().toLowerCase());
+			searchClone.getSearchStrings().add(classification);
+			searchClone.getSearchFields().add(CLASSIFICATION);
+			searchClone.getOccurrenceFields().add(OCCURRENCE);
+			searchClone.getTypeFields().add(String.class.getSimpleName().toLowerCase());
 		} else {
-			search.getSearchStrings().set(classificationIndex, classification);
+			searchClone.getSearchStrings().set(classificationIndex, classification);
 		}
+		searchClone.getSearchStrings().set(createdAtIndex, startTime + "-" + endTime);
 
-		Search clone = SerializationUtilities.clone(Search.class, search);
-		clone.getSearchStrings().set(createdAtIndex, startTime + "-" + endTime);
-
-		ArrayList<HashMap<String, String>> searchResults = searcherService.search(clone).getSearchResults();
+		ArrayList<HashMap<String, String>> searchResults = searcherService.search(searchClone).getSearchResults();
 		HashMap<String, String> statistics = searchResults.get(searchResults.size() - 1);
 		return Integer.valueOf(statistics.get(IConstants.TOTAL));
 	}

@@ -40,6 +40,7 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 		indexName : 'twitter',
 		searchStrings : ['0-12345678900000', '', '', ''],
 		searchFields : ['created-at', 'classification', 'contents', 'language-original'],
+		occurrenceFields : ['must', 'must', 'must', 'must'],
 		typeFields : ['range', 'string', 'string', 'string'],
 		sortFields : ['created-at'],
 		sortDirection : ['true']
@@ -134,17 +135,26 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 		$scope.doTwitterSearch($scope.search.searchStrings[$scope.classificationIndex]);
 	};
 	
+	/**
+	 * This function builds the search based on the fields that are filled in
+	 * by the user interface, rather than remove the fields that are empty.
+	 */
 	$scope.setParameters = function(search, searchClone) {
-		searchClone.searchStrings = new Array();
-		searchClone.searchFields = new Array();
-		searchClone.typeFields = new Array();
 		searchClone.searchResults = undefined;
+		searchClone.timeLineSentiment = undefined;
 		
+		// Set all the parameters empty to start with
+		searchClone.searchFields = new Array();
+		searchClone.searchStrings = new Array();
+		searchClone.occurrenceFields = new Array();
+		searchClone.typeFields = new Array();
+		// Populate the parameters one by one based on the user filled information
 		angular.forEach(search.searchStrings, function(searchString, index) {
 			if (!!searchString) {
 				$log.log('Added : ' + search.searchStrings[index] + ', ' + search.searchFields[index]);
-				searchClone.searchStrings.push(search.searchStrings[index]);
 				searchClone.searchFields.push(search.searchFields[index]);
+				searchClone.searchStrings.push(search.searchStrings[index]);
+				searchClone.occurrenceFields.push(search.occurrenceFields[index]);
 				searchClone.typeFields.push(search.typeFields[index]);
 			}
 		});

@@ -17,10 +17,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.Searcher;
@@ -400,25 +402,49 @@ public class SearcherService implements ISearcherService {
 		if (IConstants.AUTOCOMPLETE.equals(indexName) || results == null) {
 			return;
 		}
+		if (searchStrings == null || searchStrings.length == 0) {
+			return;
+		}
 		Map<String, String> statistics = results.get(results.size() - 1);
 		// Add the index name to the statistics here, not elegant, I know
 		statistics.put(IConstants.INDEX_NAME, indexName);
 
-		long hash = HashUtilities.hash(Arrays.deepToString(searchStrings));
-		Search dbSearch = dataBase.findCriteria(Search.class, new String[] { "hash" }, new Object[] { hash });
-		if (dbSearch != null) {
-			dataBase.merge(dbSearch);
-		} else {
-			Search search = new Search();
-			search.setHash(hash);
-			search.setSearchStrings(Arrays.asList(searchStrings));
-			search.setIndexName(indexName);
-			search.setTotalResults(Integer.parseInt(statistics.get(IConstants.TOTAL)));
-			search.setHighScore(Double.parseDouble(statistics.get(IConstants.SCORE)));
-			search.setCorrections(Arrays.deepToString(searchStrings).equals(Arrays.deepToString(searchStringsCorrected)));
-			search.setCorrectedSearchStrings(Arrays.asList(searchStringsCorrected));
-			search.setSearchResults(results);
-			dataBase.persist(search);
+		List<String> cleanedSearchStrings = new ArrayList<>(Arrays.asList(searchStrings));
+		String string;
+		Iterator<String> iterator = cleanedSearchStrings.iterator();
+		do {
+			string = iterator.next();
+			if (StringUtils.isEmpty(string)) {
+				iterator.remove();
+			}
+		} while (iterator.hasNext());
+		if (cleanedSearchStrings.size() == 0) {
+			return;
+		}
+		long hash = HashUtilities.hash(cleanedSearchStrings.toString());
+		try {
+			Search dbSearch = dataBase.findCriteria(Search.class, new String[] { "hash" }, new Object[] { hash });
+			if (dbSearch != null) {
+				// dataBase.merge(dbSearch);
+				Integer count = dbSearch.getCount();
+				dataBase.executeUpdate(Search.UPDATE_SEARCH_COUNT_SEARCHES, new String[] { "count", "indexName" }, new Object[] { count, indexName });
+			} else {
+				Search search = new Search();
+				search.setCount(1);
+				search.setHash(hash);
+				search.setSearchStrings(Arrays.asList(searchStrings));
+				search.setIndexName(indexName);
+				search.setTotalResults(Integer.parseInt(statistics.get(IConstants.TOTAL)));
+				search.setHighScore(Double.parseDouble(statistics.get(IConstants.SCORE)));
+				search.setCorrections(Arrays.deepToString(searchStrings).equals(Arrays.deepToString(searchStringsCorrected)));
+				search.setCorrectedSearchStrings(Arrays.asList(searchStringsCorrected));
+				search.setSearchResults(results);
+				dataBase.persist(search);
+			}
+		} catch (final Exception e) {
+			String message = "Exception setting search in database : ";
+			LOGGER.info(message, e.getMessage());
+			LOGGER.debug(message, e.getMessage());
 		}
 	}
 

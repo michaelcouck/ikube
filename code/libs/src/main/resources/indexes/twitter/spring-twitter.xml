@@ -53,7 +53,7 @@
 		property:stored="true"
 		property:analyzed="true"
 		property:vectored="true"
-		property:threads="3"
+		property:threads="12"
 		
 		property:consumerKey="Sohh43DylUwaXr7smSojBA"
 		property:consumerSecret="90xubtexbSwhHBbKXM62pF4QfJnz1NWVkpevwde3Qxo"
@@ -116,7 +116,7 @@
 	<bean 
 		id="wekaTwitterTrainingStrategy.en" 
 		class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
-		property:language="en"
+		property:language="English"
 		property:positive="10000"
 		property:negative="10000"
 		property:neutral="10000"
@@ -124,7 +124,7 @@
 	<bean 
 		id="wekaTwitterTrainingStrategy.es" 
 		class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
-		property:language="es"
+		property:language="Spanish"
 		property:positive="10000"
 		property:negative="10000"
 		property:neutral="10000"
@@ -132,7 +132,7 @@
 	<bean 
 		id="wekaTwitterTrainingStrategy.jp" 
 		class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
-		property:language="jp"
+		property:language="Japanese"
 		property:positive="10000"
 		property:negative="10000"
 		property:neutral="10000"
@@ -140,7 +140,7 @@
 	<bean 
 		id="wekaTwitterTrainingStrategy.cn" 
 		class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
-		property:language="cn"
+		property:language="Chinese"
 		property:positive="10000"
 		property:negative="10000"
 		property:neutral="10000"
@@ -148,7 +148,7 @@
 	<bean 
 		id="wekaTwitterTrainingStrategy.nl" 
 		class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
-		property:language="nl"
+		property:language="Dutch"
 		property:positive="10000"
 		property:negative="10000"
 		property:neutral="10000"
@@ -156,7 +156,7 @@
 	<bean 
 		id="wekaTwitterTrainingStrategy.fr" 
 		class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
-		property:language="fr"
+		property:language="French"
 		property:positive="10000"
 		property:negative="10000"
 		property:neutral="10000"
@@ -164,7 +164,7 @@
 	<bean 
 		id="wekaTwitterTrainingStrategy.de" 
 		class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
-		property:language="de"
+		property:language="German"
 		property:positive="10000"
 		property:negative="10000"
 		property:neutral="10000"
@@ -172,7 +172,7 @@
 	<bean 
 		id="wekaTwitterTrainingStrategy.sv" 
 		class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
-		property:language="sv"
+		property:language="Swedish"
 		property:positive="10000"
 		property:negative="10000"
 		property:neutral="10000"
@@ -180,7 +180,7 @@
 	<bean 
 		id="wekaTwitterTrainingStrategy.th" 
 		class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
-		property:language="th"
+		property:language="Thai"
 		property:positive="10000"
 		property:negative="10000"
 		property:neutral="10000"
@@ -188,7 +188,7 @@
 	<bean 
 		id="wekaTwitterTrainingStrategy.ar" 
 		class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
-		property:language="ar"
+		property:language="Arabic"
 		property:positive="10000"
 		property:negative="10000"
 		property:neutral="10000"
@@ -196,7 +196,7 @@
 	<bean 
 		id="wekaTwitterTrainingStrategy.tr" 
 		class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
-		property:language="tr"
+		property:language="Turkish"
 		property:positive="10000"
 		property:negative="10000"
 		property:neutral="10000"
@@ -204,7 +204,7 @@
 	<bean 
 		id="wekaTwitterTrainingStrategy.ru" 
 		class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
-		property:language="ru"
+		property:language="Russian"
 		property:positive="10000"
 		property:negative="10000"
 		property:neutral="10000"
@@ -213,62 +213,62 @@
 	<bean 
 		id="wekaClassificationStrategy.en" 
 		class="ikube.action.index.handler.strategy.AnalysisStrategy"
-		property:language="en"
+		property:language="English"
 		property:classifier-ref="wekaClassifier.smo.en" />
 	<bean 
 		id="wekaClassificationStrategy.es" 
 		class="ikube.action.index.handler.strategy.AnalysisStrategy"
-		property:language="es"
+		property:language="Spanish"
 		property:classifier-ref="wekaClassifier.smo.es" />
 	<bean 
 		id="wekaClassificationStrategy.jp" 
 		class="ikube.action.index.handler.strategy.AnalysisStrategy"
-		property:language="jp"
+		property:language="Japanese"
 		property:classifier-ref="wekaClassifier.smo.jp" />
 	<bean 
 		id="wekaClassificationStrategy.cn" 
 		class="ikube.action.index.handler.strategy.AnalysisStrategy"
-		property:language="cn"
+		property:language="Chinese"
 		property:classifier-ref="wekaClassifier.smo.cn" />
 	<bean 
 		id="wekaClassificationStrategy.nl" 
 		class="ikube.action.index.handler.strategy.AnalysisStrategy"
-		property:language="nl"
+		property:language="Dutch"
 		property:classifier-ref="wekaClassifier.smo.nl" />
 	<bean 
 		id="wekaClassificationStrategy.fr" 
 		class="ikube.action.index.handler.strategy.AnalysisStrategy"
-		property:language="fr"
+		property:language="French"
 		property:classifier-ref="wekaClassifier.smo.fr" />
 	<bean 
 		id="wekaClassificationStrategy.de" 
 		class="ikube.action.index.handler.strategy.AnalysisStrategy"
-		property:language="de"
+		property:language="German"
 		property:classifier-ref="wekaClassifier.smo.de" />
 	<bean 
 		id="wekaClassificationStrategy.sv" 
 		class="ikube.action.index.handler.strategy.AnalysisStrategy"
-		property:language="sv"
+		property:language="Swedish"
 		property:classifier-ref="wekaClassifier.smo.sv" />
 	<bean 
 		id="wekaClassificationStrategy.th" 
 		class="ikube.action.index.handler.strategy.AnalysisStrategy"
-		property:language="th"
+		property:language="Thai"
 		property:classifier-ref="wekaClassifier.smo.th" />
 	<bean 
 		id="wekaClassificationStrategy.ar" 
 		class="ikube.action.index.handler.strategy.AnalysisStrategy"
-		property:language="ar"
+		property:language="Arabic"
 		property:classifier-ref="wekaClassifier.smo.ar" />
 	<bean 
 		id="wekaClassificationStrategy.tr" 
 		class="ikube.action.index.handler.strategy.AnalysisStrategy"
-		property:language="tr"
+		property:language="Turkish"
 		property:classifier-ref="wekaClassifier.smo.tr" />
 	<bean 
 		id="wekaClassificationStrategy.ru" 
 		class="ikube.action.index.handler.strategy.AnalysisStrategy"
-		property:language="ru"
+		property:language="Russian"
 		property:classifier-ref="wekaClassifier.smo.ru" />
 		
 </beans>

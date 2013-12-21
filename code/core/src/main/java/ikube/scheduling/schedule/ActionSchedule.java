@@ -42,7 +42,7 @@ public class ActionSchedule extends Schedule {
 		while (iterator.hasNext()) {
 			Action gridAction = iterator.next();
 			Action dbAction = dataBase.find(Action.class, gridAction.getId());
-			if (dbAction == null || dbAction.getEndTime() != null) {
+			if (gridAction.getEndTime() != null || dbAction == null || dbAction.getEndTime() != null) {
 				LOGGER.info("Removing expired action : " + gridAction);
 				iterator.remove();
 			}
