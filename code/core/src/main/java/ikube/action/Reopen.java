@@ -24,10 +24,10 @@ public class Reopen extends Open {
 	public boolean internalExecute(final IndexContext<?> indexContext) {
 		boolean opened = Boolean.FALSE;
 		if (indexContext.isDelta()) {
-			int docs = numDocs(indexContext.getMultiSearcher());
+			// int docs = numDocs(indexContext.getMultiSearcher());
 			opened = openOnFile(indexContext);
-			int moreDocs = numDocs(indexContext.getMultiSearcher());
-			logger.info("Docs : " + docs + ", " + moreDocs);
+			// int moreDocs = numDocs(indexContext.getMultiSearcher());
+			// logger.info("Docs : " + docs + ", " + moreDocs);
 		}
 		return opened;
 	}

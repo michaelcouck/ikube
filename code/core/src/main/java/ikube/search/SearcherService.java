@@ -398,6 +398,13 @@ public class SearcherService implements ISearcherService {
 
 	protected void persistSearch(final String indexName, final String[] searchStrings, final String[] searchStringsCorrected,
 			final ArrayList<HashMap<String, String>> results) {
+		// TODO : This method must be optimized for the database, under stress
+		// the database can't handle the updates and inserts, perhaps a cache of some
+		// sort
+		if (String.class.isAssignableFrom(String.class)) {
+			return;
+		}
+
 		// Don't persist the auto complete searches
 		if (IConstants.AUTOCOMPLETE.equals(indexName) || results == null) {
 			return;

@@ -134,8 +134,8 @@ public class Anal extends Resource {
 		Object[][] invertedTimeLineSentiment = invertMatrix(timeLineSentiment);
 		// Set the headers
 		invertedTimeLineSentiment[0][0] = "Hour";
-		invertedTimeLineSentiment[0][1] = "Positive";
-		invertedTimeLineSentiment[0][2] = "Negative";
+		invertedTimeLineSentiment[0][1] = "Negative";
+		invertedTimeLineSentiment[0][2] = "Positive";
 		return invertedTimeLineSentiment;
 	}
 

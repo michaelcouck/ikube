@@ -3,6 +3,7 @@ package ikube.action;
 import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.search.SearcherService;
+import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -42,9 +43,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 	}
 
 	boolean openOnFile(final IndexContext<?> indexContext) {
-		MultiSearcher multiSearcher = indexContext.getMultiSearcher();
 		MultiSearcher newMultiSearcher = null;
-
 		// First open the new searchables
 		ArrayList<Searchable> searchers = new ArrayList<Searchable>();
 		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
@@ -59,6 +58,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 			Directory directory = null;
 			IndexReader reader = null;
 			Searchable searcher = null;
+			boolean opened = Boolean.FALSE;
 			try {
 				directory = NIOFSDirectory.open(serverIndexDirectory);
 				if (!IndexReader.indexExists(directory)) {
@@ -72,11 +72,12 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 				reader = IndexReader.open(directory);
 				searcher = new IndexSearcher(reader);
 				searchers.add(searcher);
+				opened = Boolean.TRUE;
 				logger.info("Opened index on : " + serverIndexDirectory);
 			} catch (Exception e) {
 				logger.error("Exception opening directory : " + serverIndexDirectory, e);
 			} finally {
-				if (directory == null || searcher == null) {
+				if (!opened) {
 					close(directory, reader, searcher);
 					boolean removed = searchers.remove(searcher);
 					logger.warn("Removed searcher : " + removed + ", " + searcher);
@@ -85,9 +86,16 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 		}
 		newMultiSearcher = open(indexContext, searchers);
 
-		// Make sure that the old searchables are closed
+		final MultiSearcher multiSearcher = indexContext.getMultiSearcher();
+		// Make sure that the old searchables are closed,
+		// but give them some time for the actions on them to finish
 		if (newMultiSearcher != null) {
-			closeSearchables(multiSearcher);
+			ThreadUtilities.submitSystem(new Runnable() {
+				public void run() {
+					ThreadUtilities.sleep(60000);
+					closeSearchables(multiSearcher);
+				}
+			});
 		}
 		return newMultiSearcher != null;
 	}
