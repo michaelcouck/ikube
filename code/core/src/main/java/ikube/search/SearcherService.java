@@ -426,8 +426,8 @@ public class SearcherService implements ISearcherService {
 			Search dbSearch = dataBase.findCriteria(Search.class, new String[] { "hash" }, new Object[] { hash });
 			if (dbSearch != null) {
 				// dataBase.merge(dbSearch);
-				Integer count = dbSearch.getCount();
-				dataBase.executeUpdate(Search.UPDATE_SEARCH_COUNT_SEARCHES, new String[] { "count", "indexName" }, new Object[] { count, indexName });
+				// Integer count = dbSearch.getCount();
+				// dataBase.executeUpdate(Search.UPDATE_SEARCH_COUNT_SEARCHES, new String[] { "count", "indexName" }, new Object[] { count, indexName });
 			} else {
 				Search search = new Search();
 				search.setCount(1);
