@@ -74,14 +74,7 @@ public class SearchComplex extends Search {
 				String message = "Field must have a type to create the query : " + typeField + ", field : " + searchField + ", string : " + searchString;
 				throw new RuntimeException(message);
 			}
-			BooleanClause.Occur occurrence;
-			if (occurrenceField == BooleanClause.Occur.MUST.name()) {
-				occurrence = BooleanClause.Occur.MUST;
-			} else if (occurrenceField == BooleanClause.Occur.MUST_NOT.name()) {
-				occurrence = BooleanClause.Occur.MUST_NOT;
-			} else {
-				occurrence = BooleanClause.Occur.SHOULD;
-			}
+			BooleanClause.Occur occurrence = BooleanClause.Occur.valueOf(occurrenceField.toUpperCase());
 			booleanQuery.add(query, occurrence);
 		}
 		return booleanQuery;

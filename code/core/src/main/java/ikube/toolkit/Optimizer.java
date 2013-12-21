@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @see ikube.action.Optimizer
  * @author Michael Couck
  * @since 08.02.13
  * @version 01.00

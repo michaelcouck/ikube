@@ -20,7 +20,8 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 		longitude : 18.4
 	};
 	
-	$scope.showMap = true;
+	$scope.showMap = false;
+	$scope.showLanguages = false;
 	$scope.statistics = undefined;
 	
 	$scope.createdAtIndex = 0;

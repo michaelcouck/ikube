@@ -134,8 +134,8 @@ public class Anal extends Resource {
 		Object[][] invertedTimeLineSentiment = invertMatrix(timeLineSentiment);
 		// Set the headers
 		invertedTimeLineSentiment[0][0] = "Hour";
-		invertedTimeLineSentiment[0][1] = "Negative";
-		invertedTimeLineSentiment[0][2] = "Positive";
+		invertedTimeLineSentiment[0][1] = "Positive";
+		invertedTimeLineSentiment[0][2] = "Negative";
 		return invertedTimeLineSentiment;
 	}
 
@@ -161,7 +161,8 @@ public class Anal extends Resource {
 		}
 		searchClone.getSearchStrings().set(createdAtIndex, startTime + "-" + endTime);
 
-		ArrayList<HashMap<String, String>> searchResults = searcherService.search(searchClone).getSearchResults();
+		searcherService.search(searchClone);
+		ArrayList<HashMap<String, String>> searchResults = searchClone.getSearchResults();
 		HashMap<String, String> statistics = searchResults.get(searchResults.size() - 1);
 		return Integer.valueOf(statistics.get(IConstants.TOTAL));
 	}

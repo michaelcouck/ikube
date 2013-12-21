@@ -109,6 +109,11 @@ public class AnalTest extends BaseTest {
 
 	@Test
 	public void count() {
+		search.getSearchStrings().add(IConstants.POSITIVE);
+		search.getSearchFields().add(IConstants.CLASSIFICATION);
+		search.getOccurrenceFields().add(Anal.OCCURRENCE);
+		search.getTypeFields().add(String.class.getSimpleName().toLowerCase());
+
 		long startTime = 0;
 		long endTime = 10;
 		String classification = IConstants.POSITIVE;
@@ -116,13 +121,18 @@ public class AnalTest extends BaseTest {
 		assertEquals(2, search.getSearchStrings().size());
 		assertEquals(2, search.getSearchFields().size());
 		assertEquals(2, search.getOccurrenceFields().size());
+		assertEquals(2, search.getTypeFields().size());
+
+		search.getSearchStrings().remove(1);
+		search.getSearchFields().remove(1);
+		search.getOccurrenceFields().remove(1);
+		search.getTypeFields().remove(1);
 
 		anal.count(search, startTime, endTime, classification);
 		assertEquals(2, search.getSearchStrings().size());
 		assertEquals(2, search.getSearchFields().size());
 		assertEquals(2, search.getOccurrenceFields().size());
-
-		search.getSearchFields().add(Anal.CLASSIFICATION);
+		assertEquals(2, search.getTypeFields().size());
 	}
 
 }
