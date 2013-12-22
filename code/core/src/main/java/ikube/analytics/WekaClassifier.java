@@ -55,9 +55,9 @@ public class WekaClassifier extends Analyzer {
 
 			Instances filteredData = filter(instances, filter);
 
-			log(filteredData);
 			classifier.buildClassifier(filteredData);
 			instances = instances.stringFreeStructure();
+			log(filteredData);
 
 			instances.setRelationName("training_data");
 			filteredData.setRelationName("filtered_data");
