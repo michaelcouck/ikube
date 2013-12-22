@@ -55,12 +55,12 @@ public class WekaClassifier extends Analyzer {
 
 			Instances filteredData = filter(instances, filter);
 
+			log(filteredData);
 			classifier.buildClassifier(filteredData);
 			instances = instances.stringFreeStructure();
 
 			instances.setRelationName("training_data");
 			filteredData.setRelationName("filtered_data");
-			log(filteredData);
 		} catch (Exception e) {
 			logger.info("Exception building classifier : ", e);
 			instances.delete();

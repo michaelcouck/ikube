@@ -52,6 +52,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 			logger.info("No indexes : " + indexDirectoryPath);
 			return Boolean.FALSE;
 		}
+		logger.info("Opening searcher on : " + indexContext.getName());
 		File[] serverIndexDirectories = latestIndexDirectory.listFiles();
 		for (final File serverIndexDirectory : serverIndexDirectories) {
 			logger.info("Index directory : " + serverIndexDirectory);
@@ -84,17 +85,19 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 				}
 			}
 		}
-		newMultiSearcher = open(indexContext, searchers);
 
 		final MultiSearcher multiSearcher = indexContext.getMultiSearcher();
+		newMultiSearcher = open(indexContext, searchers);
+
 		// Make sure that the old searchables are closed,
 		// but give them some time for the actions on them to finish
-		if (newMultiSearcher != null) {
+		if (newMultiSearcher != null && multiSearcher != null) {
+			logger.info("Closing searcher : " + indexContext.getName() + ", " + multiSearcher);
+			Thread.dumpStack();
+			// ThreadUtilities.sleep(60000);
+			closeSearchables(multiSearcher);
 			ThreadUtilities.submitSystem(new Runnable() {
 				public void run() {
-					ThreadUtilities.sleep(60000);
-					logger.info("Closing searcher : " + multiSearcher + ", " + indexContext.getName());
-					closeSearchables(multiSearcher);
 				}
 			});
 		}

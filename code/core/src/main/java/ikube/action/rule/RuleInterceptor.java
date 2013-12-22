@@ -5,6 +5,7 @@ import ikube.action.IAction;
 import ikube.action.Index;
 import ikube.action.Open;
 import ikube.cluster.IClusterManager;
+import ikube.database.IDataBase;
 import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.toolkit.ThreadUtilities;
@@ -35,6 +36,8 @@ public class RuleInterceptor implements IRuleInterceptor {
 
 	private static final Logger LOGGER = Logger.getLogger(RuleInterceptor.class);
 
+	@Autowired
+	private IDataBase dataBase;
 	@Autowired
 	private IClusterManager clusterManager;
 
@@ -163,6 +166,20 @@ public class RuleInterceptor implements IRuleInterceptor {
 			}
 		}
 		return null;
+	}
+
+	@SuppressWarnings("rawtypes")
+	void log(final IndexContext indexContext, final Action action) {
+		if (indexContext.getName().equals(IConstants.GEOSPATIAL)) {
+			LOGGER.info("Evaluating : " + indexContext.getName() + ", " + action.getClass().getSimpleName());
+		}
+		// if (indexContext.getName().equals(IConstants.GEOSPATIAL)) {
+		// LOGGER.info("    : " + ruleName + "-" + evaluation);
+		// }
+		// if (indexContext.getName().equals(IConstants.GEOSPATIAL)) {
+		// LOGGER.info("    : " + finalResult);
+		// LOGGER.info("    : " + action.getRuleExpression());
+		// }
 	}
 
 }
