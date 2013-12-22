@@ -42,7 +42,7 @@ public class Reopen extends Open {
 		int numDocs = 0;
 		if (multiSearcher != null) {
 			Searchable[] searchables = multiSearcher.getSearchables();
-			for (int i = 0; i < searchables.length; i++) {
+			for (int i = 0; searchables != null && i < searchables.length; i++) {
 				Searchable searchable = searchables[i];
 				IndexSearcher indexSearcher = (IndexSearcher) searchable;
 				IndexReader indexReader = indexSearcher.getIndexReader();

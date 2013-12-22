@@ -93,6 +93,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 			ThreadUtilities.submitSystem(new Runnable() {
 				public void run() {
 					ThreadUtilities.sleep(60000);
+					logger.info("Closing searcher : " + multiSearcher);  
 					closeSearchables(multiSearcher);
 				}
 			});
@@ -106,6 +107,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 			Searchable[] searchables = searchers.toArray(new IndexSearcher[searchers.size()]);
 			multiSearcher = new MultiSearcher(searchables);
 			indexContext.setMultiSearcher(multiSearcher);
+			logger.info("Opening searcher : " + multiSearcher);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
