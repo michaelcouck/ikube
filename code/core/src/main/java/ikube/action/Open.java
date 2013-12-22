@@ -92,12 +92,12 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 		// Make sure that the old searchables are closed,
 		// but give them some time for the actions on them to finish
 		if (newMultiSearcher != null && multiSearcher != null) {
-			logger.info("Closing searcher : " + indexContext.getName() + ", " + multiSearcher);
-			Thread.dumpStack();
-			// ThreadUtilities.sleep(60000);
-			closeSearchables(multiSearcher);
 			ThreadUtilities.submitSystem(new Runnable() {
 				public void run() {
+					ThreadUtilities.sleep(60000);
+					logger.info("Closing searcher : " + indexContext.getName() + ", " + multiSearcher);
+					Thread.dumpStack();
+					closeSearchables(multiSearcher);
 				}
 			});
 		}
