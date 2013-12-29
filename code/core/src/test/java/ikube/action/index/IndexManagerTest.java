@@ -26,9 +26,8 @@ import mockit.Mockit;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexableField;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,8 +43,6 @@ public class IndexManagerTest extends AbstractTest {
 	private String fieldName = "fieldName";
 	private Document document = new Document();
 	private Indexable<?> indexable;
-	private Store store = Store.YES;
-	private TermVector termVector = TermVector.YES;
 
 	private File indexFolderOne;
 	private File indexFolderTwo;
@@ -79,7 +76,7 @@ public class IndexManagerTest extends AbstractTest {
 		IndexManager.addStringField(fieldName, stringFieldValue, indexable, document);
 
 		// Verify that it not null
-		Field field = document.getField(fieldName);
+		IndexableField field = document.getField(fieldName);
 		assertNotNull(field);
 		// Verify that the value is the same as the field value string
 		assertEquals(stringFieldValue, field.stringValue());
@@ -98,20 +95,20 @@ public class IndexManagerTest extends AbstractTest {
 	public void addReaderField() throws Exception {
 		// We want to add a reader field to the document
 		Reader reader = getReader(Reader.class);
-		IndexManager.addReaderField(fieldName, document, store, termVector, reader);
+		IndexManager.addReaderField(fieldName, document, reader, Boolean.TRUE);
 
 		// Verify that it not null
-		Field field = document.getField(fieldName);
+		Field field = (Field) document.getField(fieldName);
 		assertNotNull(field);
 		document.removeField(fieldName);
-		field = document.getField(fieldName);
+		field = (Field) document.getField(fieldName);
 		assertNull(field);
 
 		// Now we want to add a reader field that will be merged
 		Reader fieldReader = getReader(Reader.class);
 		field = new Field(fieldName, fieldReader);
 		document.add(field);
-		IndexManager.addReaderField(fieldName, document, store, termVector, fieldReader);
+		IndexManager.addReaderField(fieldName, document, fieldReader, Boolean.TRUE);
 
 		// Verify that it is not null
 		Reader finalFieldReader = field.readerValue();
@@ -210,7 +207,7 @@ public class IndexManagerTest extends AbstractTest {
 		logger.info("Index writer test : " + indexWriter);
 		when(indexContext.getMultiSearcher()).thenReturn(multiSearcher);
 		when(indexContext.getIndexWriters()).thenReturn(null);
-		when(multiSearcher.getSearchables()).thenReturn(searchables);
+		// when(multiSearcher.getSearchables()).thenReturn(searchables);
 		when(indexSearcher.getIndexReader()).thenReturn(indexReader);
 		when(indexReader.numDocs()).thenReturn(Integer.MAX_VALUE);
 		long numDocs = IndexManager.getNumDocsForIndexSearchers(indexContext);

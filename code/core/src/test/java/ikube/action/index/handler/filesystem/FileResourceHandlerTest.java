@@ -8,7 +8,7 @@ import ikube.toolkit.FileUtilities;
 import java.io.File;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.index.IndexableField;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,10 +38,10 @@ public class FileResourceHandlerTest extends AbstractTest {
 		File resource = FileUtilities.findFileRecursively(new File("."), "words.txt");
 		document = fileResourceHandler.handleResource(indexContext, indexableFileSystem, document, resource);
 
-		Fieldable fieldable = document.getFieldable(indexableFileSystem.getContentFieldName());
-		assertTrue(fieldable.isIndexed());
-		assertTrue(fieldable.isStored());
-		assertTrue(fieldable.isTokenized());
+		IndexableField fieldable = document.getField(indexableFileSystem.getContentFieldName());
+		assertTrue(fieldable.fieldType().indexed());
+		assertTrue(fieldable.fieldType().stored());
+		assertTrue(fieldable.fieldType().tokenized());
 		String content = fieldable.stringValue();
 		assertTrue(content.contains("abashed"));
 	}

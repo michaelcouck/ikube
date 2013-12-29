@@ -1,18 +1,18 @@
 package ikube.search;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.action.index.IndexManager;
-import ikube.mock.ReaderUtilMock;
+import ikube.action.index.analyzer.NgramAnalyzer;
+import ikube.action.index.analyzer.StemmingAnalyzer;
 import ikube.mock.SpellingCheckerMock;
-import ikube.model.Indexable;
 import ikube.search.Search.TypeField;
 import ikube.search.spelling.SpellingChecker;
 import ikube.toolkit.FileUtilities;
-import ikube.toolkit.StringUtilities;
+import mockit.Deencapsulation;
+import mockit.Mockit;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,142 +20,95 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import mockit.Deencapsulation;
-import mockit.Mockit;
-
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriter.MaxFieldLength;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.MultiSearcher;
-import org.apache.lucene.search.Searchable;
-import org.apache.lucene.search.Searcher;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * @author Michael Couck
- * @since 12.10.2010
  * @version 01.00
+ * @since 12.10.2010
  */
 @SuppressWarnings("deprecation")
 public class SearchTest extends AbstractTest {
 
-	private static Searcher SEARCHER;
-	private static String INDEX_DIRECTORY_PATH = "./" + SearchTest.class.getSimpleName();
+	private String russian = "Россия   русский язык  ";
+	private String german = "Produktivität";
+	private String french = "productivité";
+	private String somthingElseAlToGether = "Soleymān Khāţer";
+	private String string = "Qu'est ce qui détermine la productivité, et comment est-il mesuré? " //
+		+ "Was bestimmt die Produktivität, und wie wird sie gemessen? " //
+		+ "русский язык " + //
+		"Soleymān Khāţer Solţānābād " + //
+		russian + " " + //
+		german + " " + //
+		french + " " + //
+		somthingElseAlToGether + " ";
+	private String somethingNumeric = " 123.456789 ";
+	private String[] strings = {
+		russian,
+		german,
+		french,
+		somthingElseAlToGether,
+		string,
+		somethingNumeric,
+		"123.456789",
+		"123.456790",
+		"123.456791",
+		"123.456792",
+		"123.456793",
+		"123.456794",
+		"123456789",
+		"123456790"
+	};
 
-	private static String russian = "Россия   русский язык  ";
-	private static String german = "Produktivität";
-	private static String french = "productivité";
-	private static String somthingElseAlToGether = "Soleymān Khāţer";
-	private static String string = "Qu'est ce qui détermine la productivité, et comment est-il mesuré? " //
-			+ "Was bestimmt die Produktivität, und wie wird sie gemessen? " //
-			+ "русский язык " + //
-			"Soleymān Khāţer Solţānābād " + //
-			russian + " " + //
-			german + " " + //
-			french + " " + //
-			somthingElseAlToGether + " ";
-	private static String somethingNumeric = " 123.456789 ";
-
-	private static String[] strings = { russian, german, french, somthingElseAlToGether, string, somethingNumeric, "123.456789", "123.456790", "123.456791",
-			"123.456792", "123.456793", "123.456794", "123456789", "123456790" };
-
-	@BeforeClass
-	public static void beforeClass() throws Exception {
-		Mockit.setUpMocks(ReaderUtilMock.class);
+	@Before
+	public void before() throws Exception {
 		SpellingChecker checkerExt = new SpellingChecker();
 		Deencapsulation.setField(checkerExt, "languageWordListsDirectory", "languages");
 		Deencapsulation.setField(checkerExt, "spellingIndexDirectoryPath", "./spellingIndex");
 		checkerExt.initialize();
-
-		// Create the index with multiple fields
-		File indexDirectory = new File(INDEX_DIRECTORY_PATH);
-		FileUtilities.deleteFile(indexDirectory, 1);
-		FileUtilities.getFile(INDEX_DIRECTORY_PATH, Boolean.TRUE);
-
-		Directory directory = FSDirectory.open(indexDirectory);
-
-		Indexable<?> indexable = new Indexable<Object>() {};
-		IndexWriter indexWriter = new IndexWriter(directory, Search.ANALYZER, true, MaxFieldLength.UNLIMITED);
-		int numDocs = 50;
-		for (int i = 0; i < numDocs; i++) {
-			for (final String string : strings) {
-				String stringTrimmed = string.trim();
-				String id = Integer.toString(i * 100);
-				String contents = new StringBuilder("Hello world. " + stringTrimmed).append(i).toString();
-
-				Document document = new Document();
-				IndexManager.addStringField(IConstants.ID, id, indexable, document);
-				if (StringUtilities.isNumeric(stringTrimmed)) {
-					IndexManager.addNumericField(IConstants.CONTENTS, stringTrimmed, document, Store.YES);
-				} else {
-					IndexManager.addStringField(IConstants.CONTENTS, contents, indexable, document);
-				}
-				IndexManager.addStringField(IConstants.NAME, "michael couck. " + stringTrimmed, indexable, document);
-				indexWriter.addDocument(document);
-			}
-		}
-
-		indexWriter.commit();
-		indexWriter.forceMerge(5, Boolean.TRUE);
-		indexWriter.close();
-
-		Searchable[] searchables = new Searchable[] { new IndexSearcher(directory) };
-		SEARCHER = new MultiSearcher(searchables);
 	}
 
-	@AfterClass
-	public static void afterClass() throws Exception {
-		if (SEARCHER != null) {
-			SEARCHER.close();
-		}
-		FileUtilities.deleteFile(new File(INDEX_DIRECTORY_PATH), 1);
+	@After
+	public void after() throws Exception {
 		Mockit.tearDownMocks();
 	}
 
-	private int maxResults = 10;
-
 	@Test
-	public void searchSingle() {
-		SearchComplex searchSingle = new SearchComplex(SEARCHER);
+	public void searchSingle() throws Exception {
+		SearchComplex searchSingle = createIndexRamAndSearch(SearchComplex.class, new StemmingAnalyzer(), IConstants.CONTENTS, strings);
 		searchSingle.setFirstResult(0);
 		searchSingle.setFragment(Boolean.TRUE);
-		searchSingle.setMaxResults(maxResults);
-		searchSingle.setSearchField(IConstants.CONTENTS);
-		searchSingle.setSearchString(russian);
-		searchSingle.setSortField(new String[] { IConstants.ID });
+		searchSingle.setMaxResults(10);
+		searchSingle.setSearchFields(IConstants.CONTENTS);
+		searchSingle.setSearchStrings(russian);
+		searchSingle.setSortField(new String[]{IConstants.ID});
 		ArrayList<HashMap<String, String>> results = searchSingle.execute();
 		assertTrue(results.size() > 1);
 	}
 
 	@Test
-	public void searchMulti() {
-		SearchComplex searchMulti = new SearchComplex(SEARCHER);
+	public void searchMulti() throws Exception {
+		SearchComplex searchMulti = createIndexRamAndSearch(SearchComplex.class, new NgramAnalyzer(), IConstants.ID, strings);
 		searchMulti.setFirstResult(0);
 		searchMulti.setFragment(Boolean.TRUE);
-		searchMulti.setMaxResults(maxResults);
-		searchMulti.setSearchField(IConstants.ID, IConstants.CONTENTS);
-		searchMulti.setSearchString("id.1~", "hello");
-		searchMulti.setSortField(new String[] { IConstants.ID });
+		searchMulti.setMaxResults(10);
+		searchMulti.setSearchFields(IConstants.ID);
+		searchMulti.setSearchStrings("id.123~"); // , "id.1~"
+		searchMulti.setTypeFields(IConstants.STRING);
+		searchMulti.setOccurrenceFields(IConstants.SHOULD);
 		ArrayList<HashMap<String, String>> results = searchMulti.execute();
 		assertTrue(results.size() > 1);
 	}
 
 	@Test
-	public void searchMultiSorted() {
-		SearchComplexSorted searchMultiSorted = new SearchComplexSorted(SEARCHER);
+	public void searchMultiSorted() throws Exception {
+		SearchComplexSorted searchMultiSorted = createIndexRamAndSearch(SearchComplexSorted.class, new StemmingAnalyzer(), IConstants.ID, strings);
 		searchMultiSorted.setFirstResult(0);
 		searchMultiSorted.setFragment(Boolean.TRUE);
-		searchMultiSorted.setMaxResults(maxResults);
-		searchMultiSorted.setSearchField(IConstants.ID, IConstants.CONTENTS);
-		searchMultiSorted.setSearchString("id.1~", "hello");
-		searchMultiSorted.setSortField(new String[] { IConstants.ID });
+		searchMultiSorted.setMaxResults(10);
+		searchMultiSorted.setSearchFields(IConstants.ID, IConstants.CONTENTS);
+		searchMultiSorted.setSearchStrings("id.1~", "hello");
+		searchMultiSorted.setSortField(new String[]{IConstants.ID});
 		ArrayList<HashMap<String, String>> results = searchMultiSorted.execute();
 		assertTrue(results.size() > 1);
 
@@ -172,67 +125,51 @@ public class SearchTest extends AbstractTest {
 	}
 
 	@Test
-	@Ignore
 	@Deprecated
-	public void searchMultiAll() {
-		SearchComplex searchMultiAll = new SearchComplex(SEARCHER);
-		searchMultiAll.setFirstResult(0);
-		searchMultiAll.setFragment(Boolean.TRUE);
-		searchMultiAll.setMaxResults(maxResults);
-		// searchMultiAll.setSearchField(IConstants.NAME);
-		// searchMultiAll.setSortField(IConstants.ID);
-		searchMultiAll.setSearchString("michael");
-		ArrayList<HashMap<String, String>> results = searchMultiAll.execute();
-		assertTrue(results.size() > 1);
-	}
-
-	@Test
-	@Ignore
-	@Deprecated
-	public void searchNumericAll() {
-		SearchComplex searchNumericAll = new SearchComplex(SEARCHER);
+	public void searchNumeric() throws Exception {
+		SearchComplex searchNumericAll = null; // (SearchComplex) getSearch(SearchComplex.class);
 		searchNumericAll.setFirstResult(0);
 		searchNumericAll.setFragment(Boolean.TRUE);
 		searchNumericAll.setMaxResults(10);
-		searchNumericAll.setSearchField(IConstants.CONTENTS);
-		searchNumericAll.setSearchString("123456790");
+		searchNumericAll.setSearchFields(IConstants.CONTENTS);
+		searchNumericAll.setSearchStrings("123456790");
 		ArrayList<HashMap<String, String>> results = searchNumericAll.execute();
 		assertTrue(results.size() > 1);
 
-		searchNumericAll.setSearchString("123.456790");
+		searchNumericAll.setSearchStrings("123.456790");
 		results = searchNumericAll.execute();
 		assertTrue(results.size() > 1);
 	}
 
 	@Test
-	public void searchNumericRange() {
-		SearchComplex searchNumericRange = new SearchComplex(SEARCHER);
+	public void searchNumericRange() throws Exception {
+		SearchComplex searchNumericRange = null; // (SearchComplex) getSearch(SearchComplex.class);
 		searchNumericRange.setFirstResult(0);
 		searchNumericRange.setFragment(Boolean.TRUE);
 		searchNumericRange.setMaxResults(10);
-		searchNumericRange.setSearchField(IConstants.CONTENTS);
-		searchNumericRange.setSearchString("123.456790-123.456796");
+		searchNumericRange.setSearchFields(IConstants.CONTENTS);
+		searchNumericRange.setSearchStrings("123.456790-123.456796");
 		searchNumericRange.setTypeFields(TypeField.RANGE.fieldType());
 		ArrayList<HashMap<String, String>> results = searchNumericRange.execute();
 		assertTrue(results.size() > 1);
 
-		searchNumericRange.setSearchString("888888888-999999999");
+		searchNumericRange.setSearchStrings("888888888-999999999");
 		results = searchNumericRange.execute();
 		assertEquals("There shoud be no results, i.e. only the statistics from this range : ", 1, results.size());
 
-		searchNumericRange.setSearchString("111-122");
+		searchNumericRange.setSearchStrings("111-122");
 		results = searchNumericRange.execute();
 		assertEquals("There shoud be no results, i.e. only the statistics from this range : ", 1, results.size());
 	}
 
 	@Test
-	public void addStatistics() {
+	public void addStatistics() throws Exception {
 		String searchString = "michael AND couck";
-		Search search = new SearchComplex(SEARCHER);
-		search.setSearchString(searchString);
+		Search search = null; // getSearch(SearchComplex.class);
+		search.setSearchStrings(searchString);
 
 		ArrayList<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
-		search.addStatistics(new String[] { searchString }, results, 79, 0.0f, 23, null);
+		search.addStatistics(new String[]{searchString}, results, 79, 0.0f, 23, null);
 		Map<String, String> statistics = results.get(results.size() - 1);
 		logger.info("Search strings : " + statistics.get(IConstants.SEARCH_STRINGS));
 		logger.info("Corrected search strings : " + statistics.get(IConstants.CORRECTIONS));
@@ -250,14 +187,14 @@ public class SearchTest extends AbstractTest {
 			Deencapsulation.setField(spellingChecker, "spellingIndexDirectoryPath", "./spellingIndex");
 			spellingChecker.initialize();
 
-			String[] searchStrings = { "some correct words", "unt soome are niet corekt", "AND there are AND some gobblie words WITH AND another" };
-			Search search = new SearchComplex(SEARCHER);
-			search.setSearchString(searchStrings);
+			String[] searchStrings = {"some correct words", "unt soome are niet corekt", "AND there are AND some gobblie words WITH AND another"};
+			Search search = null; // getSearch(SearchComplex.class);
+			search.setSearchStrings(searchStrings);
 			String[] correctedSearchStrings = search.getCorrections(searchStrings);
 			String correctedSearchString = Arrays.deepToString(correctedSearchStrings);
 			logger.info("Corrected : " + correctedSearchString);
 			assertEquals("Only the completely incorrect words should be replaced : ",
-					"[some correct words, unct sooke are net coreen, AND there are AND some gobble words WITH AND another]", correctedSearchString);
+				"[some correct words, unct sooke are net coreen, AND there are AND some gobble words WITH AND another]", correctedSearchString);
 		} finally {
 			Mockit.setUpMock(SpellingCheckerMock.class);
 		}

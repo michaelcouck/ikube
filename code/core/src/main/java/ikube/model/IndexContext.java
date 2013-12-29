@@ -20,7 +20,7 @@ import javax.validation.constraints.Size;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.search.MultiSearcher;
+import org.apache.lucene.search.IndexSearcher;
 
 /**
  * This is the context for a single index. It has the properties that define the index like what it is going to index, i.e. the databases, intranets etc., and
@@ -31,7 +31,7 @@ import org.apache.lucene.search.MultiSearcher;
  * @version 01.00
  */
 @Entity
-@SuppressWarnings({ "serial", "deprecation" })
+@SuppressWarnings({ "serial" })
 @Inheritance(strategy = InheritanceType.JOINED)
 @NamedQueries({ @NamedQuery(name = IndexContext.FIND_BY_NAME, query = IndexContext.FIND_BY_NAME) })
 public class IndexContext<T> extends Indexable<T> implements Comparable<IndexContext<?>> {
@@ -46,7 +46,7 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 	private transient volatile IndexWriter[] indexWriters;
 	/** Can be null if there is no index created. */
 	@Transient
-	private transient volatile MultiSearcher multiSearcher;
+	private transient volatile IndexSearcher multiSearcher;
 	/** This analyzer will be used to index the data, and indeed to do the searching. */
 	@Transient
 	private transient volatile Analyzer analyzer;
@@ -252,7 +252,7 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 		setIndexing(indexWriters != null && indexWriters.length > 0);
 	}
 
-	public MultiSearcher getMultiSearcher() {
+	public IndexSearcher getMultiSearcher() {
 		return multiSearcher;
 	}
 
@@ -264,7 +264,7 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
 		this.open = open;
 	}
 
-	public void setMultiSearcher(final MultiSearcher multiSearcher) {
+	public void setMultiSearcher(final IndexSearcher multiSearcher) {
 		setOpen(multiSearcher != null);
 		this.multiSearcher = multiSearcher;
 	}

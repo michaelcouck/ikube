@@ -8,12 +8,10 @@ import java.io.StringReader;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.LowerCaseTokenizer;
-import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.core.LowerCaseTokenizer;
 import org.apache.lucene.analysis.ngram.EdgeNGramTokenizer;
-import org.apache.lucene.analysis.ngram.NGramTokenizer;
-import org.apache.lucene.analysis.shingle.ShingleAnalyzerWrapper;
-import org.apache.lucene.analysis.shingle.ShingleMatrixFilter;
+import org.apache.lucene.analysis.ngram.NGramTokenFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,15 +30,8 @@ public final class EdgeNgramAnalyzer extends Analyzer {
 	private int minGram = 4;
 	private int maxGram = 21;
 
-	/**
-	 * This method will produce n-grams from the text stream.
-	 * 
-	 * Possible alternatives are the {@link NGramTokenizer}. We can't use the {@link ShingleAnalyzerWrapper} and the {@link ShingleMatrixFilter} with a lower
-	 * case filter because this splits the text bi-word strings, not n-gram strings.
-	 */
-	@Override
-	public final TokenStream tokenStream(final String fieldName, final Reader reader) {
-		EdgeNGramTokenizer.Side side = EdgeNGramTokenizer.Side.FRONT;
+	protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
+		// EdgeNGramTokenizer side = EdgeNGramTokenizer.FRONT;
 		// There is a problem in the edge n-gram filter so we have to create the reader again
 		char[] cbuf = new char[1024];
 		StringBuilder stringBuilder = new StringBuilder();
@@ -58,13 +49,15 @@ public final class EdgeNgramAnalyzer extends Analyzer {
 		} finally {
 			IOUtils.closeQuietly(reader);
 		}
+		Tokenizer tokenizer = null;
 		StringReader stringReader = new StringReader(stringBuilder.toString());
 		if (stringBuilder.length() == 0) {
-			return new LowerCaseTokenizer(IConstants.VERSION, stringReader);
+			tokenizer = new LowerCaseTokenizer(IConstants.LUCENE_VERSION, stringReader);
+		} else {
+			tokenizer = new EdgeNGramTokenizer(IConstants.LUCENE_VERSION, stringReader, minGram, maxGram);
 		}
-		return new EdgeNGramTokenizer(stringReader, side, minGram, maxGram);
-		// EdgeNGramTokenizer edgeNGramTokenizer = new EdgeNGramTokenizer(stringReader, side, minGram, maxGram);
-		// return new NGramTokenFilter(edgeNGramTokenizer, minGram, maxGram);
+		NGramTokenFilter nGramTokenFilter = new NGramTokenFilter(IConstants.LUCENE_VERSION, tokenizer, minGram, maxGram);
+		return new TokenStreamComponents(tokenizer, nGramTokenFilter);
 	}
 
 	public void setMinGram(int minGram) {

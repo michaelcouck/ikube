@@ -8,16 +8,15 @@ import java.util.Arrays;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.FuzzyQuery;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.NumericRangeQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Searcher;
-import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.util.NumericUtils;
 
 /**
  * @see Search
@@ -25,14 +24,13 @@ import org.apache.lucene.util.NumericUtils;
  * @since 10.01.2012
  * @version 01.00
  */
-@SuppressWarnings("deprecation")
 public class SearchComplex extends Search {
 
-	public SearchComplex(final Searcher searcher) {
+	public SearchComplex(final IndexSearcher searcher) {
 		this(searcher, ANALYZER);
 	}
 
-	public SearchComplex(final Searcher searcher, final Analyzer analyzer) {
+	public SearchComplex(final IndexSearcher searcher, final Analyzer analyzer) {
 		super(searcher, analyzer);
 	}
 
@@ -47,7 +45,7 @@ public class SearchComplex extends Search {
 						+ Arrays.deepToString(searchFields);
 				throw new RuntimeException(message);
 			}
-			return MultiFieldQueryParser.parse(IConstants.VERSION, searchStrings, searchFields, analyzer);
+			return MultiFieldQueryParser.parse(IConstants.LUCENE_VERSION, searchStrings, searchFields, analyzer);
 		}
 		BooleanQuery booleanQuery = new BooleanQuery();
 		for (int i = 0; i < searchStrings.length; i++) {
@@ -59,20 +57,28 @@ public class SearchComplex extends Search {
 				// Just ignore the empty strings
 				continue;
 			}
-			Query query = null;
+			Query query;
 			if (TypeField.STRING.fieldType().equals(typeField)) {
-				query = getQueryParser(searchField).parse(searchString);
-			} else if (TypeField.NUMERIC.fieldType().equals(typeField)) {
-				Double numeric = Double.parseDouble(searchString);
-				query = new TermQuery(new Term(searchField, NumericUtils.doubleToPrefixCoded(numeric)));
-			} else if (TypeField.RANGE.fieldType().equals(typeField)) {
-				String[] values = StringUtils.split(searchString, '-');
-				double min = Double.parseDouble(values[0]);
-				double max = Double.parseDouble(values[1]);
-				query = NumericRangeQuery.newDoubleRange(searchField, min, max, Boolean.TRUE, Boolean.TRUE);
+				if (searchString.contains("~") || searchString.contains("*")) {
+					query = new FuzzyQuery(new Term(searchField, searchString));
+				} else {
+					query = getQueryParser(searchField).parse(searchString);
+				}
 			} else {
-				String message = "Field must have a type to create the query : " + typeField + ", field : " + searchField + ", string : " + searchString;
-				throw new RuntimeException(message);
+				double min;
+				double max;
+				if (TypeField.NUMERIC.fieldType().equals(typeField)) {
+					min = Double.parseDouble(searchString);
+					max = Double.parseDouble(searchString);
+				} else if (TypeField.RANGE.fieldType().equals(typeField)) {
+					String[] values = StringUtils.split(searchString, '-');
+					min = Double.parseDouble(values[0]);
+					max = Double.parseDouble(values[1]);
+				} else {
+					String message = "Field must have a type to create the query : " + typeField + ", field : " + searchField + ", string : " + searchString;
+					throw new RuntimeException(message);
+				}
+				query = NumericRangeQuery.newDoubleRange(searchField, min, max, Boolean.TRUE, Boolean.TRUE);
 			}
 			BooleanClause.Occur occurrence = BooleanClause.Occur.valueOf(occurrenceField.toUpperCase());
 			booleanQuery.add(query, occurrence);

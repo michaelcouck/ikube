@@ -1,22 +1,13 @@
 package ikube.action;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
 import ikube.model.IndexContext;
 import ikube.toolkit.FileUtilities;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import mockit.Deencapsulation;
 import mockit.Mockit;
-
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -24,6 +15,14 @@ import org.apache.lucene.store.Lock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Michael Couck
@@ -64,7 +63,7 @@ public class CleanTest extends AbstractTest {
 
 		Directory directory = FSDirectory.open(latestIndexDirectory);
 		try {
-			assertTrue(IndexReader.indexExists(directory));
+			assertTrue(DirectoryReader.indexExists(directory));
 		} finally {
 			directory.close();
 		}
@@ -87,7 +86,7 @@ public class CleanTest extends AbstractTest {
 		directory = FSDirectory.open(latestIndexDirectory);
 		try {
 			assertTrue("This index exists, but is locked : ", IndexWriter.isLocked(directory));
-			assertTrue("This index exists, but is locked : ", IndexReader.indexExists(directory));
+			assertTrue("This index exists, but is locked : ", DirectoryReader.indexExists(directory));
 		} finally {
 			directory.close();
 		}

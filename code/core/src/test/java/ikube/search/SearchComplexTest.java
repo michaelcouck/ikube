@@ -53,15 +53,14 @@ public class SearchComplexTest extends AbstractTest {
 	}
 
 	@After
-	@SuppressWarnings("deprecation")
 	public void after() throws Exception {
-		searchComplex.searcher.close();
+		searchComplex.searcher.getIndexReader().close();
 	}
 
 	@Test
 	public void singleField() throws Exception {
-		searchComplex.setSearchField("name");
-		searchComplex.setSearchString("Michael Couck");
+		searchComplex.setSearchFields("name");
+		searchComplex.setSearchStrings("Michael Couck");
 		searchComplex.setSortField("name");
 
 		ArrayList<HashMap<String, String>> results = searchComplex.execute();
@@ -71,17 +70,19 @@ public class SearchComplexTest extends AbstractTest {
 
 	@Test
 	public void numericQuery() throws Exception {
-		searchComplex.setSearchField("annee");
-		searchComplex.setSearchString("2001");
+		searchComplex.setSearchFields("annee");
+		searchComplex.setSearchStrings("2001.0");
 		searchComplex.setTypeFields(NUMERIC.fieldType());
-		searchComplex.setSortField("annee");
+		searchComplex.setOccurrenceFields(IConstants.SHOULD);
+		// searchComplex.setSortField("annee");
 
 		ArrayList<HashMap<String, String>> results = searchComplex.execute();
 		assertEquals("There must be 1 result and the statistics : ", 2, results.size());
 
-		searchComplex.setSearchString("2001", "6");
-		searchComplex.setSearchField("annee", "column-two");
+		searchComplex.setSearchStrings("2001", "6");
+		searchComplex.setSearchFields("annee", "column-two");
 		searchComplex.setTypeFields(NUMERIC.fieldType(), NUMERIC.fieldType());
+		searchComplex.setOccurrenceFields(IConstants.SHOULD, IConstants.SHOULD);
 		searchComplex.setSortField("annee");
 
 		results = searchComplex.execute();
@@ -90,23 +91,26 @@ public class SearchComplexTest extends AbstractTest {
 
 	@Test
 	public void rangeQuery() throws Exception {
-		searchComplex.setSearchField("annee");
-		searchComplex.setSearchString("2001-2003");
+		searchComplex.setSearchFields("annee");
+		searchComplex.setSearchStrings("2001-2003");
 		searchComplex.setTypeFields(RANGE.fieldType());
+		searchComplex.setOccurrenceFields(IConstants.SHOULD);
 		searchComplex.setSortField("annee");
 		ArrayList<HashMap<String, String>> results = searchComplex.execute();
 		assertEquals("There must be 3 results and the statistics : ", 4, results.size());
 
-		searchComplex.setSearchField("annee", "annee");
-		searchComplex.setSearchString("2001-2003", "2005-2006");
+		searchComplex.setSearchFields("annee", "annee");
+		searchComplex.setSearchStrings("2001-2003", "2005-2006");
 		searchComplex.setTypeFields(RANGE.fieldType(), RANGE.fieldType());
+		searchComplex.setOccurrenceFields(IConstants.SHOULD, IConstants.SHOULD);
 		searchComplex.setSortField("annee");
 		results = searchComplex.execute();
 		assertEquals("There must be 5 results and the statistics : ", 6, results.size());
 
-		searchComplex.setSearchField("column-two");
-		searchComplex.setSearchString("5-7");
+		searchComplex.setSearchFields("column-two");
+		searchComplex.setSearchStrings("5-7");
 		searchComplex.setTypeFields(RANGE.fieldType());
+		searchComplex.setOccurrenceFields(IConstants.SHOULD);
 		searchComplex.setSortField("column-two");
 		results = searchComplex.execute();
 		assertEquals("There must be 3 results and the statistics : ", 4, results.size());
@@ -114,9 +118,10 @@ public class SearchComplexTest extends AbstractTest {
 
 	@Test
 	public void complexQuery() throws Exception {
-		searchComplex.setSearchField("name", "annee", "column-two");
-		searchComplex.setSearchString("cie interc", "2002", "7-9");
+		searchComplex.setSearchFields("name", "annee", "column-two");
+		searchComplex.setSearchStrings("cie interc", "2002", "7-9");
 		searchComplex.setTypeFields(STRING.fieldType(), NUMERIC.fieldType(), RANGE.fieldType());
+		searchComplex.setOccurrenceFields(IConstants.SHOULD, IConstants.SHOULD, IConstants.SHOULD);
 		searchComplex.setSortField("column-two");
 
 		ArrayList<HashMap<String, String>> results = searchComplex.execute();

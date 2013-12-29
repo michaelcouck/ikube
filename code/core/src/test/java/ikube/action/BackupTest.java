@@ -1,20 +1,19 @@
 package ikube.action;
 
-import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.action.index.IndexManager;
 import ikube.toolkit.FileUtilities;
-
-import java.io.File;
-
 import mockit.Deencapsulation;
-
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.File;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Michael Couck
@@ -52,7 +51,7 @@ public class BackupTest extends AbstractTest {
 		Directory directory = null;
 		try {
 			directory = FSDirectory.open(new File(latestBackupDirectory, ip));
-			assertTrue(IndexReader.indexExists(directory));
+			assertTrue(DirectoryReader.indexExists(directory));
 		} finally {
 			if (directory != null) {
 				directory.close();

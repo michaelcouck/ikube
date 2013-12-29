@@ -45,7 +45,7 @@ public interface IConstants {
 	/** Maps parsers to mime types. */
 	String MIME_MAPPING = "mime-mapping.xml";
 
-	Version VERSION = Version.LUCENE_36;
+	Version LUCENE_VERSION = Version.LUCENE_46;
 
 	long MAX_READ_LENGTH = 1000000;
 	int MAX_RESULT_FIELD_LENGTH = 100;
@@ -107,15 +107,15 @@ public interface IConstants {
 	String ENCODING = "UTF-8";
 
 	/** Url response codes */
-	Integer HTTP_200 = Integer.valueOf(200); // OK
-	Integer HTTP_301 = Integer.valueOf(301); // Move permanently
-	Integer HTTP_400 = Integer.valueOf(400); // Bad request
-	Integer HTTP_401 = Integer.valueOf(401); // Unauthorized
-	Integer HTTP_403 = Integer.valueOf(403); // Forbidden
-	Integer HTTP_404 = Integer.valueOf(404); // Not found
-	Integer HTTP_418 = Integer.valueOf(418); // I"m a tea pot
-	Integer HTTP_500 = Integer.valueOf(500); // Internal server error
-	Integer HTTP_503 = Integer.valueOf(503); // Service unavailable
+	Integer HTTP_200 = 200; // OK
+	Integer HTTP_301 = 301; // Move permanently
+	Integer HTTP_400 = 400; // Bad request
+	Integer HTTP_401 = 401; // Unauthorized
+	Integer HTTP_403 = 403; // Forbidden
+	Integer HTTP_404 = 404; // Not found
+	Integer HTTP_418 = 418; // I"m a tea pot
+	Integer HTTP_500 = 500; // Internal server error
+	Integer HTTP_503 = 503; // Service unavailable
 
 	String INDEX_NAME = "indexName";
 	String MAX_RESULTS = "maxResults";
@@ -137,6 +137,8 @@ public interface IConstants {
 
 	String LATITUDE = "latitude";
 	String LONGITUDE = "longitude";
+	String POSITION_FIELD_NAME = "position";
+
 	String EXCLUDED = "excluded";
 
 	/** The maximum age that the server can get to before it is deleted from the cluster. */
@@ -210,5 +212,9 @@ public interface IConstants {
 	String START_INDEX = "start-index";
 	String END_INDEX = "end-index";
 	String ENTITY = "entity";
+	int MAX_GEOHASH_LEVELS = 11;
 
+	String MUST = "must";
+	String SHOULD = "should";
+	String STRING = "string";
 }

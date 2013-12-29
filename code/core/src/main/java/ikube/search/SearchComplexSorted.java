@@ -4,9 +4,9 @@ import java.io.IOException;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryWrapperFilter;
-import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
 
@@ -16,14 +16,13 @@ import org.apache.lucene.search.TopDocs;
  * @since 02.07.2013
  * @version 01.00
  */
-@SuppressWarnings("deprecation")
 public class SearchComplexSorted extends SearchComplex {
 
-	public SearchComplexSorted(final Searcher searcher) {
+	public SearchComplexSorted(final IndexSearcher searcher) {
 		this(searcher, ANALYZER);
 	}
 
-	public SearchComplexSorted(final Searcher searcher, final Analyzer analyzer) {
+	public SearchComplexSorted(final IndexSearcher searcher, final Analyzer analyzer) {
 		super(searcher, analyzer);
 	}
 

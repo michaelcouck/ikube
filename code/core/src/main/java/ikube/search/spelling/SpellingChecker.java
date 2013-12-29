@@ -3,22 +3,18 @@ package ikube.search.spelling;
 import ikube.IConstants;
 import ikube.action.index.analyzer.StemmingAnalyzer;
 import ikube.toolkit.FileUtilities;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.search.spell.PlainTextDictionary;
-import org.apache.lucene.search.spell.SpellChecker;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class will index the text files with the words form various languages in them, and check tokens or words against the index of words. To add languages
@@ -35,7 +31,7 @@ public class SpellingChecker {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SpellingChecker.class);
 
 	/** The 'real' spelling checker from Lucene. */
-	private SpellChecker spellChecker;
+	// private SpellChecker spellChecker;
 
 	/** The path to the word files in different languages. */
 	@Value("${language.word.lists.directory}")
@@ -79,7 +75,7 @@ public class SpellingChecker {
 		LOGGER.info("Spelling directory : " + spellingIndexDirectory + ", " + spellingIndexDirectoryPath);
 		// Directory directory = FSDirectory.open(spellingIndexDirectory);
 		Directory directory = NIOFSDirectory.open(spellingIndexDirectory);
-		spellChecker = new SpellChecker(directory);
+		// spellChecker = new SpellChecker(directory);
 		indexLanguageFiles();
 		LOGGER.info("Opened spelling index on : " + spellingIndexDirectory);
 	}
@@ -98,8 +94,8 @@ public class SpellingChecker {
 				LOGGER.info("Language file : " + languageDictionaryFile);
 				inputStream = new FileInputStream(languageDictionaryFile);
 				LOGGER.info("Input stream : " + inputStream);
-				IndexWriterConfig indexWriterConfig = new IndexWriterConfig(IConstants.VERSION, new StemmingAnalyzer());
-				spellChecker.indexDictionary(new PlainTextDictionary(inputStream), indexWriterConfig, Boolean.TRUE);
+				IndexWriterConfig indexWriterConfig = new IndexWriterConfig(IConstants.LUCENE_VERSION, new StemmingAnalyzer());
+				// spellChecker.indexDictionary(new PlainTextDictionary(inputStream), indexWriterConfig, Boolean.TRUE);
 			} catch (Exception e) {
 				LOGGER.error("Exception indexing language file : " + languageDictionaryFile, e);
 			} finally {
@@ -116,13 +112,13 @@ public class SpellingChecker {
 	 */
 	public String checkWord(String word) {
 		try {
-			if (!spellChecker.exist(word)) {
-				String[] searchStringCorrection = spellChecker.suggestSimilar(word, 1);
-				if (searchStringCorrection != null && searchStringCorrection.length > 0) {
-					return searchStringCorrection[0];
-				}
-			}
-		} catch (IOException e) {
+			// if (!spellChecker.exist(word)) {
+			//	String[] searchStringCorrection = spellChecker.suggestSimilar(word, 1);
+			//	if (searchStringCorrection != null && searchStringCorrection.length > 0) {
+			//		return searchStringCorrection[0];
+			//	}
+			//}
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 		return null;
@@ -132,12 +128,12 @@ public class SpellingChecker {
 	 * Closes the spelling checker, releasing file system resources.
 	 */
 	public void destroy() {
-		if (this.spellChecker != null) {
-			try {
-				this.spellChecker.close();
-			} catch (Exception e) {
-				LOGGER.error("Exception closing the spelling checker : ", e);
-			}
-		}
+		//if (this.spellChecker != null) {
+		//	try {
+		//		this.spellChecker.close();
+		//	} catch (Exception e) {
+		//		LOGGER.error("Exception closing the spelling checker : ", e);
+		//	}
+		//}
 	}
 }

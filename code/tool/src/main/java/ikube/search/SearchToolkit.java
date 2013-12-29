@@ -7,7 +7,7 @@ import java.util.Arrays;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
@@ -38,7 +38,7 @@ public final class SearchToolkit {
 			Directory directory = NIOFSDirectory.open(indexDirectory);
 			IndexReader indexReader = IndexReader.open(directory);
 			indexSearcher = new IndexSearcher(indexReader);
-			Query query = new QueryParser(Version.LUCENE_36, searchField, new StandardAnalyzer(Version.LUCENE_36)).parse(searchString);
+			Query query = new QueryParser(Version.LUCENE_46, searchField, new StandardAnalyzer(Version.LUCENE_46)).parse(searchString);
 			TopDocs topDocs = indexSearcher.search(query, 100);
 			long totalHits = topDocs.totalHits;
 			long scoreHits = topDocs.scoreDocs.length;
@@ -51,7 +51,7 @@ public final class SearchToolkit {
 		} finally {
 			if (indexSearcher != null) {
 				try {
-					indexSearcher.close();
+					indexSearcher.getIndexReader().close();
 				} catch (IOException e) {
 					LOGGER.error("Exception closing the index searcher : ", e);
 				}

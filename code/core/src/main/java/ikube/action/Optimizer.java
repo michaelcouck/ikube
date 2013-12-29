@@ -42,31 +42,32 @@ public class Optimizer extends Action<IndexContext<?>, Boolean> {
 				logger.debug("Index already opened : " + indexContext.getIndexDirectoryPath());
 				continue;
 			}
-			Directory directory = null;
+			final Directory directory = NIOFSDirectory.open(indexDirectory);
 			try {
-				directory = NIOFSDirectory.open(indexDirectory);
 				if (IndexWriter.isLocked(directory)) {
 					logger.debug("Index locked : " + indexContext.getIndexDirectoryPath());
 					continue;
 				}
-			} finally {
-				directory.close();
-			}
-			logger.info("Optimizing index : " + indexDirectory);
-			Timer.Timed timed = new Timer.Timed() {
-				@Override
-				public void execute() {
-					try {
-						IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, indexDirectory, Boolean.FALSE);
-						IndexManager.closeIndexWriter(indexWriter);
-					} catch (Exception e) {
-						logger.error("Exception optimizing index segments file : " + segmentsFile, e);
+				logger.info("Optimizing index : " + indexDirectory);
+				Timer.Timed timed = new Timer.Timed() {
+					@Override
+					public void execute() {
+						try {
+							IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, directory, Boolean.FALSE);
+							IndexManager.closeIndexWriter(indexWriter);
+						} catch (Exception e) {
+							logger.error("Exception optimizing index segments file : " + segmentsFile, e);
+						}
 					}
+				};
+				long timeTaken = Timer.execute(timed);
+				logger.info("Finished optimizing index : " + indexDirectory + ", " + indexDirectory.listFiles().length + ", in : " + (timeTaken / 1000 / 60)
+						+ " minutes");
+			} finally {
+				if (directory != null) {
+					directory.close();
 				}
-			};
-			long timeTaken = Timer.execute(timed);
-			logger.info("Finished optimizing index : " + indexDirectory + ", " + indexDirectory.listFiles().length + ", in : " + (timeTaken / 1000 / 60)
-					+ " minutes");
+			}
 		}
 		return Boolean.TRUE;
 	}

@@ -13,7 +13,6 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Store;
 
 public class RowResourceHandler extends ResourceHandler<IndexableFileSystemCsv> {
 
@@ -46,13 +45,11 @@ public class RowResourceHandler extends ResourceHandler<IndexableFileSystemCsv> 
 			String fieldName = indexableColumn.getFieldName();
 			String fieldValue = (String) indexableColumn.getContent();
 
-			Store store = indexableColumn.isStored() ? Store.YES : Store.NO;
-
 			if (fieldValue == null) {
 				continue;
 			}
 			if (StringUtilities.isNumeric(fieldValue)) {
-				IndexManager.addNumericField(fieldName, fieldValue, document, store);
+				IndexManager.addNumericField(fieldName, fieldValue, document, indexableColumn.isStored());
 			} else {
 				fieldValue = StringUtilities.strip(fieldValue, "\"");
 				IndexManager.addStringField(fieldName, fieldValue, indexableFileSystemCsv, document);

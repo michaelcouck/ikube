@@ -25,7 +25,7 @@ import java.util.concurrent.Future;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.Searcher;
+import org.apache.lucene.search.IndexSearcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 21.11.10
  * @version 02.00
  */
-@SuppressWarnings("deprecation")
 public class SearcherService implements ISearcherService {
 
 	static final Logger LOGGER = LoggerFactory.getLogger(SearcherService.class);
@@ -215,8 +214,8 @@ public class SearcherService implements ISearcherService {
 			searchAction.setFirstResult(search.getFirstResult());
 			searchAction.setFragment(search.isFragment());
 			searchAction.setMaxResults(search.getMaxResults());
-			searchAction.setSearchString(searchStrings);
-			searchAction.setSearchField(searchFields);
+			searchAction.setSearchStrings(searchStrings);
+			searchAction.setSearchFields(searchFields);
 			searchAction.setTypeFields(typeFields);
 			searchAction.setSortField(sortFields);
 			searchAction.setSortDirections(sortDirections);
@@ -312,7 +311,7 @@ public class SearcherService implements ISearcherService {
 
 		String[] searchStrings = search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]);
 		SearchComplex searchSingle = new SearchComplex(null);
-		searchSingle.setSearchString(searchStrings);
+		searchSingle.setSearchStrings(searchStrings);
 		searchSingle.addStatistics(searchStrings, topResults, totalHits, highScore, duration, null);
 
 		search.setSearchResults(topResults);
@@ -383,10 +382,10 @@ public class SearcherService implements ISearcherService {
 			if (indexContext.getIndexName().equals(indexName)) {
 				if (indexContext.getMultiSearcher() != null) {
 					if (indexContext.getAnalyzer() != null) {
-						Constructor<?> constructor = klass.getConstructor(Searcher.class, Analyzer.class);
+						Constructor<?> constructor = klass.getConstructor(IndexSearcher.class, Analyzer.class);
 						search = (T) constructor.newInstance(indexContext.getMultiSearcher(), indexContext.getAnalyzer());
 					} else {
-						Constructor<?> constructor = klass.getConstructor(Searcher.class);
+						Constructor<?> constructor = klass.getConstructor(IndexSearcher.class);
 						search = (T) constructor.newInstance(indexContext.getMultiSearcher());
 					}
 				}

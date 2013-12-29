@@ -45,7 +45,7 @@ public class DynamicallyTrainedLanguageSpecificClassificationStrategy extends AS
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @throws IOException
+	 * @throws java.io.IOException
 	 */
 	@Override
 	public void initialize() {

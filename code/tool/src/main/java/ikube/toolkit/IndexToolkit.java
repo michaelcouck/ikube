@@ -6,8 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.slf4j.Logger;
@@ -54,8 +54,8 @@ public final class IndexToolkit {
 	}
 
 	public static void printDocument(final Document document) {
-		List<Fieldable> fields = document.getFields();
-		for (Fieldable fieldable : fields) {
+		List<IndexableField> fields = document.getFields();
+		for (IndexableField fieldable : fields) {
 			String fieldName = fieldable.name();
 			String fieldValue = fieldable.stringValue();
 			int fieldLength = fieldValue != null ? fieldValue.length() : 0;

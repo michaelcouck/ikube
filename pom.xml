@@ -50,8 +50,12 @@
 		<!-- <jetty.version>6.1.25</jetty.version> -->
 		<jetty.version>6.1.11</jetty.version>
 		
-		<!-- Was 3.6.1 at 20.03.12 -->
-		<lucene.version>3.6.2</lucene.version>
+		<!-- 
+			Was 3.6.1 at 20.03.12 
+			Was 3.6.2 at 23.12.13 
+		-->
+		<lucene.version>4.6.0</lucene.version>
+		<!-- lucene.spellchecker.version>3.6.2</lucene.spellchecker.version -->
 	</properties>
 
 	<modules>
@@ -573,36 +577,38 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-fast-vector-highlighter</artifactId>
-			<version>3.0.3</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-highlighter</artifactId>
 			<version>${lucene.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>lucene-analyzers</artifactId>
+					<groupId>org.apache.lucene</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
-		<dependency>
+		<!-- dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-spellchecker</artifactId>
 			<version>${lucene.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
-		</dependency>
+		</dependency -->
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-spatial</artifactId>
-			<!-- 3.0.2 -->
+            <version>${lucene.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-misc</artifactId>
 			<version>${lucene.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-misc</artifactId>
-			<!-- 3.0.2 -->
+			<artifactId>lucene-classification</artifactId>
 			<version>${lucene.version}</version>
 			<scope>compile</scope>
 		</dependency>
@@ -1096,6 +1102,44 @@
 			<artifactId>spring-security-crypto</artifactId>
 			<version>3.1.4.RELEASE</version>
 		</dependency>
+		<!-- <dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analyzers</artifactId>
+			<version>3.6.2</version>
+		</dependency> -->
+		<!-- <dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analyzers-common</artifactId>
+			<version>3.6.2</version>
+		</dependency> -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analyzers-common</artifactId>
+            <version>${lucene.version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-spatial</artifactId>
+            <version>${lucene.version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queries</artifactId>
+            <version>${lucene.version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queryparser</artifactId>
+            <version>${lucene.version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<repositories>
@@ -1193,7 +1237,7 @@
 				<configuration>
 					<xmlOutput>true</xmlOutput>
 					<findbugsXmlOutput>true</findbugsXmlOutput>
-					<findbugsXmlWithMessages>true</findbugsXmlWithMessages>
+					<!-- findbugsXmlWithMessages>true</findbugsXmlWithMessages -->
 					<visitors>
 						FindDeadLocalStores,
 						UnreadFields,

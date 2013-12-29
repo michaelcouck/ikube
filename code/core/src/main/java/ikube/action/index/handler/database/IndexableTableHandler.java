@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.concurrent.ForkJoinTask;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Store;
 
 /**
  * This class performs the indexing of tables. It is the primary focus of Ikube. This class is essentially a database crawler, and is multi threaded. Because
@@ -155,13 +154,12 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 			parsedOutputStream = parser.parse(inputStream, new ByteOutputStream());
 
 			String fieldName = indexable.getFieldName() != null ? indexable.getFieldName() : indexable.getName();
-			Store store = indexable.isStored() ? Store.YES : Store.NO;
 			String fieldContent = parsedOutputStream.toString();
 			if (indexable.isNumeric()) {
 				if (indexable.isHashed()) {
 					fieldContent = HashUtilities.hash(fieldContent).toString();
 				}
-				IndexManager.addNumericField(fieldName, fieldContent, document, store);
+				IndexManager.addNumericField(fieldName, fieldContent, document, indexable.isStored());
 			} else {
 				IndexManager.addStringField(fieldName, fieldContent, indexable, document);
 			}

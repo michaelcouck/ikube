@@ -18,11 +18,6 @@ import java.util.Map;
 
 import org.apache.commons.jexl2.JexlEngine;
 import org.apache.log4j.Logger;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.MultiSearcher;
-import org.apache.lucene.search.Searchable;
-import org.apache.lucene.store.Directory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -34,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 21.11.10
  * @version 01.00
  */
-@SuppressWarnings("deprecation")
 public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> {
 
 	protected transient Logger logger = Logger.getLogger(this.getClass());
@@ -224,35 +218,6 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
 			}
 		}
 		throw new RuntimeException("No handler defined for indexable : " + indexable);
-	}
-
-	/**
-	 * This method will close the searchables. All the sub searchables are closed one by one first then the composite searchable to ensure that they are all
-	 * closed completely.
-	 * 
-	 * @param multiSearcher the searcher to close the searchables for
-	 */
-	protected void closeSearchables(final MultiSearcher multiSearcher) {
-		if (multiSearcher == null) {
-			return;
-		}
-		// Get all the searchables from the searcher and close them one by one
-		Searchable[] searchables = multiSearcher.getSearchables();
-		if (searchables != null) {
-			for (final Searchable searchable : searchables) {
-				try {
-					IndexSearcher indexSearcher = (IndexSearcher) searchable;
-					IndexReader reader = indexSearcher.getIndexReader();
-					Directory directory = reader.directory();
-					close(directory, reader, searchable);
-				} catch (final NullPointerException e) {
-					logger.error("Reader closed perhaps?");
-					logger.debug(null, e);
-				} catch (final Exception e) {
-					logger.error("Exception trying to close the searcher", e);
-				}
-			}
-		}
 	}
 
 	/**

@@ -9,14 +9,14 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 /**
- * This action cleans old indexes that are corrupt or partially deleted. This class will also delete the files that were unpacked by the
- * indexing of the file system, i.e. the zip and jar files for example.
+ * This action cleans old indexes that are corrupt or partially deleted. This class will also delete the files that were unpacked by the indexing of the file
+ * system, i.e. the zip and jar files for example.
  * 
  * @author Michael Couck
  * @since 31.10.10
@@ -62,7 +62,7 @@ public class Clean<E, F> extends Action<IndexContext<?>, Boolean> {
 					corrupt = Boolean.FALSE;
 					continue;
 				}
-				if (IndexReader.indexExists(directory)) {
+				if (DirectoryReader.indexExists(directory)) {
 					corrupt = Boolean.FALSE;
 				}
 			} catch (CorruptIndexException e) {

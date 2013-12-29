@@ -1,6 +1,8 @@
 package ikube.search;
 
 import ikube.IConstants;
+
+import ikube.action.index.IndexManager;
 import ikube.action.index.analyzer.StemmingAnalyzer;
 import ikube.search.spelling.SpellingChecker;
 
@@ -11,35 +13,24 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Fieldable;
-import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.index.FieldInfo;
-import org.apache.lucene.index.FieldInfos;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Searchable;
-import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.highlight.Highlighter;
 import org.apache.lucene.search.highlight.QueryScorer;
 import org.apache.lucene.search.highlight.Scorer;
-import org.apache.lucene.util.ReaderUtil;
 
 /**
  * This action does the actual search on the index. The searcher that is current in the Instance is passed to this action. The search is done on the index. The
@@ -56,7 +47,6 @@ import org.apache.lucene.util.ReaderUtil;
  * @since 22.08.08
  * @version 01.00
  */
-@SuppressWarnings("deprecation")
 public abstract class Search {
 
 	public enum TypeField {
@@ -81,7 +71,7 @@ public abstract class Search {
 
 	protected Logger logger;
 	/** The searcher that will be used for the search. */
-	protected transient Searcher searcher;
+	protected transient IndexSearcher searcher;
 
 	/** The search string that we are looking for. */
 	protected transient String[] searchStrings;
@@ -105,11 +95,11 @@ public abstract class Search {
 
 	protected transient Analyzer analyzer;
 
-	Search(final Searcher searcher) {
+	Search(final IndexSearcher searcher) {
 		this(searcher, ANALYZER);
 	}
 
-	Search(final Searcher searcher, final Analyzer analyzer) {
+	Search(final IndexSearcher searcher, final Analyzer analyzer) {
 		this.logger = Logger.getLogger(this.getClass());
 		this.searcher = searcher;
 		this.analyzer = analyzer;
@@ -123,9 +113,9 @@ public abstract class Search {
 	 * <br>
 	 * The fragments are from the current document, so calling get next document will move the document to the next on in the Hits object.
 	 * 
-	 * @param the document to get the fragments from
+	 * @param document to get the fragments from
 	 * @param fieldName the name of the field that was searched
-	 * @param the query that generated the results
+	 * @param query that generated the results
 	 * @return the best fragments of text containing the search keywords
 	 */
 	protected String getFragments(final Document document, final String fieldName, final Query query) {
@@ -152,7 +142,7 @@ public abstract class Search {
 	 * 
 	 * @param searchStrings the search strings
 	 */
-	public void setSearchString(final String... searchStrings) {
+	public void setSearchStrings(final String... searchStrings) {
 		if (searchStrings != null) {
 			// Strip all the characters that Lucene doesn't like
 			for (int i = 0; i < searchStrings.length; i++) {
@@ -167,7 +157,7 @@ public abstract class Search {
 	 * 
 	 * @param searchFields the fields in the index to search through
 	 */
-	public void setSearchField(final String... searchFields) {
+	public void setSearchFields(final String... searchFields) {
 		this.searchFields = searchFields;
 	}
 
@@ -185,7 +175,7 @@ public abstract class Search {
 	 * 
 	 * @param sortDirections the direction of sorting for the sort fields
 	 */
-	public void setSortDirections(String[] sortDirections) {
+	public void setSortDirections(String... sortDirections) {
 		this.sortDirections = sortDirections;
 	}
 
@@ -203,7 +193,7 @@ public abstract class Search {
 	 * 
 	 * @param occurrenceFields the occurrence for the field(s)
 	 */
-	public void setOccurrenceFields(String[] occurrenceFields) {
+	public void setOccurrenceFields(String... occurrenceFields) {
 		this.occurrenceFields = occurrenceFields;
 	}
 
@@ -246,9 +236,8 @@ public abstract class Search {
 	 * Access to the query. This can be any number of query types, defined by the sub classes.
 	 * 
 	 * @return the Lucene query based on the parameters passed to the sub classes, like a span query etc.
-	 * @throws ParseException
 	 */
-	public abstract Query getQuery() throws ParseException;
+	public abstract Query getQuery() throws Exception;
 
 	/**
 	 * Does the actual search on the Lucene index.
@@ -293,7 +282,7 @@ public abstract class Search {
 	 * @return the query parser for the particular field
 	 */
 	protected QueryParser getQueryParser(final String searchField) {
-		return new QueryParser(IConstants.VERSION, searchField, analyzer);
+		return new QueryParser(IConstants.LUCENE_VERSION, searchField, analyzer);
 	}
 
 	/**
@@ -303,9 +292,8 @@ public abstract class Search {
 	 * @param query the query that was used for the query
 	 * @return the list of results from the search
 	 * @throws IOException
-	 * @throws CorruptIndexException
 	 */
-	protected ArrayList<HashMap<String, String>> getResults(final TopDocs topDocs, final Query query) throws CorruptIndexException, IOException {
+	protected ArrayList<HashMap<String, String>> getResults(final TopDocs topDocs, final Query query) throws IOException {
 		ArrayList<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
 		long totalHits = topDocs.totalHits;
 		long scoreHits = topDocs.scoreDocs.length;
@@ -346,11 +334,10 @@ public abstract class Search {
 	 * Adds the fields to the results.
 	 * 
 	 * @param document the document to get the fields from to add to the category
-	 * @param category the category map to add the field values to
-	 * @throws Exception
+	 * @param result map to add the field values to
 	 */
 	protected void addFieldsToResults(final Document document, final HashMap<String, String> result) {
-		for (final Fieldable field : document.getFields()) {
+		for (final IndexableField field : document.getFields()) {
 			String fieldName = field.name();
 			// Don't add the latitude and longitude tier field, very ugly data, and not useful
 			if (fieldName != null && ((fieldName.equals(IConstants.LAT) || fieldName.equals(IConstants.LNG)) || (fieldName.contains(IConstants.TIER)))) {
@@ -440,26 +427,8 @@ public abstract class Search {
 	 * @param searcher the searcher to get all the fields for
 	 * @return all the fields in the searcher that are searchable
 	 */
-	protected String[] getFields(final Searcher searcher) {
-		Searchable[] searchables = ((MultiSearcher) searcher).getSearchables();
-		Set<String> searchFieldNames = new TreeSet<String>();
-		for (Searchable searchable : searchables) {
-			IndexReader indexReader = ((IndexSearcher) searchable).getIndexReader();
-			FieldInfos fieldInfos = null;
-			try {
-				fieldInfos = ReaderUtil.getMergedFieldInfos(indexReader);
-			} catch (NullPointerException e) {
-				logger.warn("Null pointer : ");
-				logger.debug(null, e);
-			}
-			if (fieldInfos != null) {
-				Iterator<FieldInfo> iterator = fieldInfos.iterator();
-				while (iterator.hasNext()) {
-					FieldInfo fieldInfo = iterator.next();
-					searchFieldNames.add(fieldInfo.name);
-				}
-			}
-		}
+	protected String[] getFields(final IndexSearcher searcher) {
+		Collection<String> searchFieldNames = IndexManager.getFieldNames(searcher);
 		return searchFieldNames.toArray(new String[searchFieldNames.size()]);
 	}
 
@@ -479,9 +448,9 @@ public abstract class Search {
 			String sortFieldName = sortFields[i];
 			SortField sortField = null;
 			if (sortDirections == null || sortDirections.length <= i) {
-				sortField = new SortField(sortFieldName, SortField.STRING);
+				sortField = new SortField(sortFieldName, SortField.Type.STRING);
 			} else {
-				sortField = new SortField(sortFieldName, SortField.STRING, Boolean.parseBoolean(sortDirections[i]));
+				sortField = new SortField(sortFieldName, SortField.Type.STRING, Boolean.parseBoolean(sortDirections[i]));
 			}
 			fields[i] = sortField;
 		}

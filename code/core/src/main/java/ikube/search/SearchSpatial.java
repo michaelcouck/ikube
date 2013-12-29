@@ -1,56 +1,71 @@
 package ikube.search;
 
-import static ikube.IConstants.DISTANCE;
-import static ikube.IConstants.LAT;
-import static ikube.IConstants.LNG;
-import static org.apache.lucene.spatial.tier.projections.CartesianTierPlotter.DEFALT_FIELD_PREFIX;
+import com.spatial4j.core.context.SpatialContext;
+import com.spatial4j.core.distance.DistanceUtils;
+import com.spatial4j.core.shape.Circle;
+import com.spatial4j.core.shape.Point;
+import ikube.IConstants;
 import ikube.model.Coordinate;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.queries.function.ValueSource;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.search.*;
+import org.apache.lucene.spatial.SpatialStrategy;
+import org.apache.lucene.spatial.prefix.RecursivePrefixTreeStrategy;
+import org.apache.lucene.spatial.prefix.tree.GeohashPrefixTree;
+import org.apache.lucene.spatial.prefix.tree.SpatialPrefixTree;
+import org.apache.lucene.spatial.query.SpatialArgs;
+import org.apache.lucene.spatial.query.SpatialOperation;
+import org.apache.lucene.spatial.util.CachingDoubleValueSource;
+import org.apache.lucene.spatial.vector.DistanceValueSource;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Map;
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Searcher;
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.SortField;
-import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.spatial.tier.DistanceFieldComparatorSource;
-import org.apache.lucene.spatial.tier.DistanceFilter;
-import org.apache.lucene.spatial.tier.DistanceQueryBuilder;
-import org.apache.lucene.spatial.tier.LatLongDistanceFilter;
+import static ikube.IConstants.DISTANCE;
 
 /**
  * Executes a spatial search. One of these classes needs to be instantiated for each search as the member variables are for a particular search.
- * 
- * @see Search
+ *
  * @author Michael Couck
- * @since 06.03.11
  * @version 01.00
+ * @see Search
+ * @since 06.03.11
  */
-@SuppressWarnings("deprecation")
 public class SearchSpatial extends SearchComplex {
 
-	/** The distance from the origin that we will accept in the results. */
+	/**
+	 * The distance from the origin that we will accept in the results.
+	 */
 	protected transient int distance;
-	/** The origin, i.e. the starting point for the distance search. */
+	/**
+	 * The origin, i.e. the starting point for the distance search.
+	 */
 	protected transient Coordinate coordinate;
-	/** The distances from the point of origin, i.e. the input coordinate. */
-	protected transient Map<Integer, Double> distances;
+	protected SpatialStrategy spatialStrategy;
+	protected SpatialPrefixTree spatialPrefixTree;
+	/**
+	 * The spatial context for calculating distance and so on.
+	 */
+	protected transient SpatialContext spatialContext;
 
 	/**
 	 * Constructor takes the searcher. This class needs to be instantiated for each search performed, and is certainly not thread safe.
-	 * 
+	 *
 	 * @param searcher the searcher, with geolocation data in it, that we will perform the distance search on
 	 */
-	public SearchSpatial(final Searcher searcher) {
+	public SearchSpatial(final IndexSearcher searcher) {
 		this(searcher, ANALYZER);
 	}
 
-	public SearchSpatial(final Searcher searcher, final Analyzer analyzer) {
+	public SearchSpatial(final IndexSearcher searcher, final Analyzer analyzer) {
 		super(searcher, analyzer);
+		spatialContext = SpatialContext.GEO;
+		spatialPrefixTree = new GeohashPrefixTree(spatialContext, IConstants.MAX_GEOHASH_LEVELS);
+		spatialStrategy = new RecursivePrefixTreeStrategy(spatialPrefixTree, IConstants.POSITION_FIELD_NAME);
 	}
 
 	/**
@@ -61,78 +76,56 @@ public class SearchSpatial extends SearchComplex {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Coordinate : " + coordinate);
 		}
-		double latitude = coordinate.getLatitude();
-		double longitude = coordinate.getLongitude();
-		final DistanceQueryBuilder queryBuilder = new DistanceQueryBuilder(latitude, longitude, distance, LAT, LNG, DEFALT_FIELD_PREFIX, Boolean.TRUE, 0, 100);
+		Point origin = getOrigin();
+		// Get the sort field to sort by distance
+		double degToKm = DistanceUtils.degrees2Dist(1, DistanceUtils.EARTH_MEAN_RADIUS_KM);
+		ValueSource valueSource = spatialStrategy.makeDistanceValueSource(origin, degToKm);//the distance (in km)
+		CachingDoubleValueSource cachingDoubleValueSource = new CachingDoubleValueSource(valueSource);
+		SortField sortField = cachingDoubleValueSource.getSortField(false);
+		Sort distSort = new Sort(sortField).rewrite(searcher);//false=asc dist
 
-		// As the radius filter has performed the distance calculations already, pass in the filter to reuse the results
-		final DistanceFilter distanceFilter = queryBuilder.getDistanceFilter();
-		// This is a hack to fix the null pointer in the distance filter. It appears that the results are not affected if this filter
-		// returns null as a distance, so we replace it with zero and all is well. Essentially this is just wrapping the filter in another one
-		// and checking that the result from the getDistance method does not return null
-		LatLongDistanceFilter latLongDistanceFilter = new LatLongDistanceFilter(distanceFilter, latitude, longitude, distance, LAT, LNG) {
-			public Double getDistance(int docid) {
-				Double distance = distanceFilter.getDistance(docid);
-				if (distance == null) {
-					distance = 0d;
-				}
-				return distance;
-			}
-		};
-		DistanceFieldComparatorSource fieldComparator = new DistanceFieldComparatorSource(latLongDistanceFilter);
-		// Create a distance sort, the result of the above hack is that the results are not sorted as all the 
-		// distances seem to be null, i.e. 0. Perhaps upgrading to Lucene 4 will solve this?
-		Sort sort = new Sort(new SortField("geo_distance", fieldComparator));
-		TopDocs topDocs = searcher.search(query, queryBuilder.getFilter(), firstResult + maxResults, sort);
-		distances = queryBuilder.getDistanceFilter().getDistances();
-		if (logger.isDebugEnabled()) {
-			logger.debug("Total docs : " + topDocs.totalHits + ", score docs : " + topDocs.scoreDocs.length);
+		// Reduce the results by maximum distance to the origin
+		double degrees = DistanceUtils.dist2Degrees(distance, DistanceUtils.EARTH_MEAN_RADIUS_KM);
+		Circle circle = spatialContext.makeCircle(origin.getX(), origin.getY(), degrees);
+		SpatialArgs spatialArgs = new SpatialArgs(SpatialOperation.Intersects, circle);
+		Filter filter = spatialStrategy.makeFilter(spatialArgs);
+
+		// Reduce the results by the search string
+		Query baseQuery;
+		try {
+			baseQuery = super.getQuery();
+		} catch (ParseException e) {
+			baseQuery = new MatchAllDocsQuery();
 		}
-		return topDocs;
+
+		// And hup...
+		return searcher.search(baseQuery, filter, maxResults, distSort);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public ArrayList<HashMap<String, String>> execute() {
-		if (searcher == null) {
-			logger.warn("No searcher on any index, is an index created?");
+		ArrayList<HashMap<String, String>> results = super.execute();
+		Point point = getOrigin();
+		// Pop the statistics off the list
+		HashMap<String, String> statistics = results.remove(results.size() - 1);
+		for (final HashMap<String, String> result : results) {
+			// Apparently we can get the distance from the {@link CachingDoubleValueSource} somehow...
+			double latitude = Double.parseDouble(result.get(IConstants.LATITUDE));
+			double longitude = Double.parseDouble(result.get(IConstants.LONGITUDE));
+			double distanceDegrees = spatialContext.getDistCalc().distance(point, latitude, longitude);
+			double distanceKilometres = DistanceUtils.degrees2Dist(distanceDegrees, DistanceUtils.EARTH_MEAN_RADIUS_KM);
+			result.put(DISTANCE, Double.toString(distanceKilometres));
 		}
-		long totalHits = 0;
-		long scoreHits = 0;
-		float highScore = 0;
-		ArrayList<HashMap<String, String>> results = null;
-		long start = System.currentTimeMillis();
-		Exception exception = null;
-		try {
-			Query query = getQuery();
-			TopDocs topDocs = search(query);
-			totalHits = topDocs.totalHits;
-			scoreHits = topDocs.scoreDocs.length;
-			highScore = topDocs.getMaxScore();
-			results = getResults(topDocs, query);
-			if (distances != null) {
-				for (int i = 0, j = 0; i < totalHits && i < scoreHits; i++) {
-					if (i < firstResult) {
-						continue;
-					}
-					final int docID = topDocs.scoreDocs[i].doc;
-					double distanceFromOrigin = distances.get(docID);
-					Map<String, String> result = results.get(j++);
-					result.put(DISTANCE, Double.toString(distanceFromOrigin));
-				}
-			}
-		} catch (Exception e) {
-			exception = e;
-			logger.error("Exception searching for string " + searchStrings[0] + " in searcher " + searcher, e);
-		}
-		if (results == null) {
-			results = new ArrayList<HashMap<String, String>>();
-		}
-		long duration = System.currentTimeMillis() - start;
-		// Add the search results size as a last category
-		addStatistics(searchStrings, results, totalHits, highScore, duration, exception);
+		results.add(statistics);
 		return results;
+	}
+
+	private Point getOrigin() {
+		double latitude = coordinate.getLatitude();
+		double longitude = coordinate.getLongitude();
+		return spatialContext.makePoint(latitude, longitude);
 	}
 
 	public void setDistance(final int distance) {

@@ -1,19 +1,18 @@
 package ikube.search;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.analyzer.NgramAnalyzer;
 import ikube.search.Search.TypeField;
+import org.apache.lucene.search.Query;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.search.Query;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Michael Couck
@@ -32,14 +31,15 @@ public class SearchComplexSortedTest extends AbstractTest {
 	}
 
 	@Test
-	public void getQueryAndSearch() throws ParseException {
+	public void getQueryAndSearch() throws Exception {
 		searchComplexSorted.setFirstResult(0);
 		searchComplexSorted.setFragment(Boolean.TRUE);
 		searchComplexSorted.setMaxResults(10);
-		searchComplexSorted.setSearchField(IConstants.CONTENT);
-		searchComplexSorted.setSearchString("123456");
+		searchComplexSorted.setSearchFields(IConstants.CONTENT);
+		searchComplexSorted.setSearchStrings("123456");
 		searchComplexSorted.setSortField(IConstants.CONTENT);
 		searchComplexSorted.setTypeFields(TypeField.NUMERIC.fieldType());
+		searchComplexSorted.setOccurrenceFields(IConstants.SHOULD);
 		Query query = searchComplexSorted.getQuery();
 		assertNotNull(query);
 
@@ -48,14 +48,15 @@ public class SearchComplexSortedTest extends AbstractTest {
 	}
 
 	@Test
-	public void searchAlphanumeric() throws ParseException {
+	public void searchAlphanumeric() throws Exception {
 		searchComplexSorted.setFirstResult(0);
 		searchComplexSorted.setFragment(Boolean.TRUE);
 		searchComplexSorted.setMaxResults(10);
-		searchComplexSorted.setSearchField(IConstants.CONTENT);
-		searchComplexSorted.setSearchString("abc123");
+		searchComplexSorted.setSearchFields(IConstants.CONTENT);
+		searchComplexSorted.setSearchStrings("abc123");
 		searchComplexSorted.setSortField(IConstants.CONTENT);
 		searchComplexSorted.setTypeFields(TypeField.STRING.fieldType());
+		searchComplexSorted.setOccurrenceFields(IConstants.SHOULD);
 
 		Query query = searchComplexSorted.getQuery();
 		assertNotNull(query);

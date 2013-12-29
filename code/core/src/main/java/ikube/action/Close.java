@@ -2,6 +2,8 @@ package ikube.action;
 
 import ikube.model.IndexContext;
 
+import java.io.IOException;
+
 /**
  * This class takes the searcher and tries to close the searcher on the directory.
  * 
@@ -16,7 +18,13 @@ public class Close extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	public boolean internalExecute(final IndexContext<?> indexContext) {
-		closeSearchables(indexContext.getMultiSearcher());
+		if (indexContext.getMultiSearcher() != null) {
+			try {
+				indexContext.getMultiSearcher().getIndexReader().close();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
 		indexContext.setMultiSearcher(null);
 		return Boolean.TRUE;
 	}

@@ -44,8 +44,8 @@ public class StemmingAnalyzerTest extends AbstractTest {
 		searchSingle.setFirstResult(0);
 		searchSingle.setFragment(true);
 		searchSingle.setMaxResults(10);
-		searchSingle.setSearchField(IConstants.CONTENT);
-		searchSingle.setSearchString("duck peoples orange");
+		searchSingle.setSearchFields(IConstants.CONTENT);
+		searchSingle.setSearchStrings("duck peoples orange");
 		searchSingle.setSortField(IConstants.CONTENT);
 
 		ArrayList<HashMap<String, String>> results = searchSingle.execute();

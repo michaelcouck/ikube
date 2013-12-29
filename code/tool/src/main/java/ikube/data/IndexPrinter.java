@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.NIOFSDirectory;
 
@@ -26,8 +26,8 @@ public class IndexPrinter {
 			for (int i = 0; i < indexReader.numDocs(); i++) {
 				Document document = indexReader.document(i);
 				LOGGER.info("Document : " + i);
-				List<Fieldable> fields = document.getFields();
-				for (Fieldable fieldable : fields) {
+				List<IndexableField> fields = document.getFields();
+				for (IndexableField fieldable : fields) {
 					String fieldName = fieldable.name();
 					String fieldValue = fieldable.stringValue();
 					int fieldLength = fieldValue != null ? fieldValue.length() : 0;

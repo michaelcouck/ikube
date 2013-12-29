@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Store;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.TwitterProfile;
@@ -105,8 +104,8 @@ public class TwitterResourceHandler extends ResourceHandler<IndexableTweets> {
 
 		// NOTE to self: To be able to delete using the index writer the identifier field must be non analyzed and non tokenized/vectored!
 		// IndexManager.addStringField(IConstants.ID, tweetId, document, Store.YES, Index.NOT_ANALYZED, TermVector.NO);
-		IndexManager.addNumericField(IConstants.ID, tweetId, document, Store.YES);
-		IndexManager.addNumericField(createdAtField, Long.toString(tweet.getCreatedAt().getTime()), document, Store.YES);
+		IndexManager.addNumericField(IConstants.ID, tweetId, document, Boolean.TRUE);
+		IndexManager.addNumericField(createdAtField, Long.toString(tweet.getCreatedAt().getTime()), document, Boolean.TRUE);
 		IndexManager.addStringField(fromUserField, tweet.getFromUser(), indexableTweets, document);
 		IndexManager.addStringField(textField, indexableTweets.getContent().toString(), indexableTweets, document);
 
@@ -141,7 +140,7 @@ public class TwitterResourceHandler extends ResourceHandler<IndexableTweets> {
 			IndexManager.addStringField(userScreenNameField, userScreenName, indexableTweets, document);
 			IndexManager.addStringField(userLocationField, userLocation, indexableTweets, document);
 			IndexManager.addStringField(userTimeZoneField, userTimeZone, indexableTweets, document);
-			IndexManager.addNumericField(userUtcOffsetField, Integer.toString(userUtcOffset), document, Store.YES);
+			IndexManager.addNumericField(userUtcOffsetField, Integer.toString(userUtcOffset), document, Boolean.TRUE);
 			IndexManager.addStringField(userLanguageField, userLanguage, indexableTweets, document);
 		}
 	}

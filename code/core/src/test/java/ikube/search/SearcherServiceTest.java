@@ -15,7 +15,7 @@ import mockit.MockClass;
 import mockit.Mockit;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.lucene.search.Searcher;
+import org.apache.lucene.search.IndexSearcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -147,7 +147,7 @@ public class SearcherServiceTest extends AbstractTest {
 		searcherService = new SearcherService() {
 			@SuppressWarnings({ "unchecked" })
 			protected <T> T getSearch(final Class<?> klass, final String indexName) throws Exception {
-				return (T) klass.getConstructor(Searcher.class).newInstance(indexSearcher);
+				return (T) klass.getConstructor(IndexSearcher.class).newInstance(indexSearcher);
 			}
 		};
 

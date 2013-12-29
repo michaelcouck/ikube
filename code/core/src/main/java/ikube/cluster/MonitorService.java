@@ -1,6 +1,7 @@
 package ikube.cluster;
 
 import ikube.IConstants;
+import ikube.action.index.IndexManager;
 import ikube.analytics.IAnalyzer;
 import ikube.cluster.listener.IListener;
 import ikube.model.Attribute;
@@ -12,21 +13,14 @@ import ikube.toolkit.FileUtilities;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 import javax.persistence.Column;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.index.FieldInfo;
-import org.apache.lucene.index.FieldInfos;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Searchable;
-import org.apache.lucene.util.ReaderUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ReflectionUtils;
 
@@ -36,7 +30,6 @@ import org.springframework.util.ReflectionUtils;
  * @since 28.12.10
  * @version 01.00
  */
-@SuppressWarnings("deprecation")
 public class MonitorService implements IMonitorService {
 
 	private static final Logger LOGGER = Logger.getLogger(MonitorService.class);
@@ -63,25 +56,10 @@ public class MonitorService implements IMonitorService {
 	 */
 	@Override
 	public String[] getIndexFieldNames(final String indexName) {
+		// What we return, a unique set of fields
 		IndexContext<?> indexContext = getIndexContext(indexName);
 		if (indexContext.getMultiSearcher() != null) {
-			Set<String> fields = new TreeSet<String>();
-			Searchable[] searchables = indexContext.getMultiSearcher().getSearchables();
-			for (final Searchable searchable : searchables) {
-				IndexSearcher indexSearcher = (IndexSearcher) searchable;
-				FieldInfos fieldInfos = null;
-				try {
-					fieldInfos = ReaderUtil.getMergedFieldInfos(indexSearcher.getIndexReader());
-					Iterator<FieldInfo> iterator = fieldInfos.iterator();
-					while (iterator.hasNext()) {
-						FieldInfo fieldInfo = iterator.next();
-						fields.add(fieldInfo.name);
-					}
-				} catch (NullPointerException e) {
-					LOGGER.warn("Null pointer : ");
-					LOGGER.debug(null, e);
-				}
-			}
+			Collection<String> fields = IndexManager.getFieldNames(indexContext.getMultiSearcher());
 			return fields.toArray(new String[fields.size()]);
 		}
 		return new String[0];

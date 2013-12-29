@@ -6,7 +6,7 @@ import ikube.model.IndexContext;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.NIOFSDirectory;
@@ -41,10 +41,11 @@ public class IsThisIndexCreated extends ARule<IndexContext<?>> {
 					try {
 						// directory = FSDirectory.open(indexDirectory);
 						directory = NIOFSDirectory.open(indexDirectory);
-						boolean exists = IndexReader.indexExists(directory);
+						boolean exists = DirectoryReader.indexExists(directory);
 						boolean locked = IndexWriter.isLocked(directory);
 						indexCreated &= exists || locked;
-						// logger.info("Server directory : " + indexDirectory + ", exists : " + exists + ", locked : " + locked + ", created : " + indexCreated);
+						// logger.info("Server directory : " + indexDirectory + ", exists : " + exists + ", locked : " + locked + ", created : " +
+						// indexCreated);
 					} catch (Exception e) {
 						logger.error("Exception checking index directory : ", e);
 					} finally {

@@ -11,8 +11,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.spatial.tier.projections.CartesianTierPlotter;
-import org.apache.lucene.spatial.tier.projections.SinusoidalProjector;
 
 /**
  * This strategy will intercept typically databases that have co-ordinate data, geo co-ordinates. It will then add ge-hash fields to the documents in the Lucene
@@ -23,7 +21,6 @@ import org.apache.lucene.spatial.tier.projections.SinusoidalProjector;
  * @since 20.01.2012
  * @version 01.00
  */
-@SuppressWarnings("deprecation")
 public final class GeospatialEnrichmentStrategy extends AGeospatialEnrichmentStrategy {
 
 	private Pattern latPattern;
@@ -117,6 +114,7 @@ public final class GeospatialEnrichmentStrategy extends AGeospatialEnrichmentStr
 	}
 
 	public void initialize() {
+		super.initialize();
 		StringBuilder builder = new StringBuilder();
 		builder.append(".*(");
 		builder.append(IConstants.LATITUDE);
@@ -129,11 +127,6 @@ public final class GeospatialEnrichmentStrategy extends AGeospatialEnrichmentStr
 		builder.append(IConstants.LONGITUDE);
 		builder.append(").*");
 		lngPattern = Pattern.compile(builder.toString());
-
-		sinusodialProjector = new SinusoidalProjector();
-		CartesianTierPlotter cartesianTierPlotter = new CartesianTierPlotter(0, sinusodialProjector, CartesianTierPlotter.DEFALT_FIELD_PREFIX);
-		startTier = cartesianTierPlotter.bestFit(startTierParam);
-		endTier = cartesianTierPlotter.bestFit(endTierParam);
 	}
 
 }

@@ -46,7 +46,7 @@ public class EdgeNgramAnalyzerTest extends AbstractTest {
 		search.setFirstResult(0);
 		search.setFragment(true);
 		search.setMaxResults(10);
-		search.setSearchField(IConstants.CONTENT);
+		search.setSearchFields(IConstants.CONTENT);
 		search.setSortField(IConstants.CONTENT);
 
 		doSearch("hello world", "<B>hello</B> ", search);
@@ -58,7 +58,7 @@ public class EdgeNgramAnalyzerTest extends AbstractTest {
 	}
 
 	private void doSearch(final String searchString, final String expected, final Search search) {
-		search.setSearchString(searchString);
+		search.setSearchStrings(searchString);
 		ArrayList<HashMap<String, String>> results = search.execute();
 		Map<String, String> result = results.get(0);
 		String fragment = result.get(IConstants.FRAGMENT);

@@ -2,7 +2,6 @@ package ikube.action.rule;
 
 import java.io.File;
 
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.NIOFSDirectory;
@@ -26,9 +25,9 @@ public class DirectoryExistsAndIsLocked extends ARule<File> {
 		try {
 			// directory = FSDirectory.open(indexDirectory);
 			directory = NIOFSDirectory.open(indexDirectory);
-			boolean exists = IndexReader.indexExists(directory);
+			// boolean exists = IndexReader.indexExists(directory);
 			boolean locked = IndexWriter.isLocked(directory);
-			if (exists && locked) {
+			if (/* exists && */locked) {
 				existsAndIsLocked = Boolean.TRUE;
 			}
 		} catch (Exception e) {

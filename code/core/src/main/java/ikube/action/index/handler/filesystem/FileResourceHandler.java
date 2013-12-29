@@ -17,7 +17,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Store;
 import org.xml.sax.SAXParseException;
 
 import de.schlichtherle.truezip.file.TFile;
@@ -91,7 +90,7 @@ public class FileResourceHandler extends ResourceHandler<IndexableFileSystem> {
 			IndexManager.addStringField(IConstants.FILE_ID, fileId, indexableFileSystem, document);
 			IndexManager.addStringField(pathFieldName, file.getAbsolutePath(), indexableFileSystem, document);
 			IndexManager.addStringField(nameFieldName, file.getName(), indexableFileSystem, document);
-			IndexManager.addNumericField(modifiedFieldName, Long.toString(file.lastModified()), document, Store.YES);
+			IndexManager.addNumericField(modifiedFieldName, Long.toString(file.lastModified()), document, Boolean.TRUE);
 			IndexManager.addStringField(lengthFieldName, Long.toString(file.length()), indexableFileSystem, document);
 			IndexManager.addStringField(contentFieldName, parsedContent, indexableFileSystem, document);
 			addDocument(indexContext, indexableFileSystem, document);

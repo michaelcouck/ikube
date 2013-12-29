@@ -32,6 +32,7 @@ import org.junit.Test;
  * @since 20.01.2012
  * @version 01.00
  */
+@SuppressWarnings("deprecation")
 public class GeospatialEnrichmentStrategyTest extends AbstractTest {
 
 	@Cascading
@@ -50,7 +51,7 @@ public class GeospatialEnrichmentStrategyTest extends AbstractTest {
 		when(indexableTable.isAddress()).thenReturn(Boolean.TRUE);
 		when(indexableColumn.isAddress()).thenReturn(Boolean.TRUE);
 	}
-	
+
 	@After
 	public void after() {
 		Mockit.tearDownMocks();
@@ -58,7 +59,7 @@ public class GeospatialEnrichmentStrategyTest extends AbstractTest {
 
 	@Test
 	public void aroundProcess() throws Exception {
-		Document document = getDocument(RandomStringUtils.random(16), "Some string to index", IConstants.CONTENTS, Index.ANALYZED);
+		Document document = getDocument(RandomStringUtils.random(16), "Some string to index", IConstants.CONTENTS);
 		Deencapsulation.setField(geospatialEnrichmentStrategy, "geocoder", geocoder);
 
 		IndexableTable indexableTable = new IndexableTable();

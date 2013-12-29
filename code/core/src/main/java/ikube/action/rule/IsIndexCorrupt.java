@@ -5,7 +5,7 @@ import ikube.model.IndexContext;
 
 import java.io.File;
 
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.NIOFSDirectory;
@@ -43,7 +43,7 @@ public class IsIndexCorrupt extends ARule<IndexContext<?>> {
 				}
 				// If we get here then the directory is the latest, and it is not locked
 				// so if it doesn't exist then one of the segment files are deleted or corrupt
-				if (!IndexReader.indexExists(directory)) {
+				if (!DirectoryReader.indexExists(directory)) {
 					return Boolean.TRUE;
 				}
 			} catch (Exception e) {

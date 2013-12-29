@@ -17,25 +17,32 @@ import java.io.StringReader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.DoubleField;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
-import org.apache.lucene.document.NumericField;
+import org.apache.lucene.document.FieldType;
+import org.apache.lucene.document.FieldType.NumericType;
+import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.FieldInfo;
+import org.apache.lucene.index.FieldInfo.IndexOptions;
+import org.apache.lucene.index.FieldInfos;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.index.LogByteSizeMergePolicy;
+import org.apache.lucene.index.MultiReader;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Searchable;
 import org.apache.lucene.store.AlreadyClosedException;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.LockObtainFailedException;
@@ -49,7 +56,6 @@ import org.apache.lucene.store.NIOFSDirectory;
  * @since 21.11.10
  * @version 01.00
  */
-@SuppressWarnings("deprecation")
 public final class IndexManager {
 
 	private static final Logger LOGGER = Logger.getLogger(IndexManager.class);
@@ -105,7 +111,7 @@ public final class IndexManager {
 		IndexWriter indexWriter = null;
 		try {
 			String indexDirectoryPath = getIndexDirectory(indexContext, time, ip);
-			indexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE); 
+			indexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
 			indexDirectory.setReadable(true);
 			indexDirectory.setWritable(true, false);
 			LOGGER.info("Index directory time : " + time + ", date : " + new Date(time) + ", writing index to directory " + indexDirectoryPath);
@@ -164,7 +170,7 @@ public final class IndexManager {
 			throws Exception {
 		@SuppressWarnings("resource")
 		Analyzer analyzer = indexContext.getAnalyzer() != null ? indexContext.getAnalyzer() : new StemmingAnalyzer();
-		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(IConstants.VERSION, analyzer);
+		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(IConstants.LUCENE_VERSION, analyzer);
 		indexWriterConfig.setOpenMode(create ? OpenMode.CREATE : OpenMode.APPEND);
 		indexWriterConfig.setRAMBufferSizeMB(indexContext.getBufferSize());
 		indexWriterConfig.setMaxBufferedDocs(indexContext.getBufferedDocs());
@@ -172,7 +178,7 @@ public final class IndexManager {
 			{
 				this.maxMergeDocs = indexContext.getMergeFactor();
 				this.maxMergeSize = (long) indexContext.getBufferSize();
-				this.useCompoundFile = indexContext.isCompoundFile();
+				// this.useCompoundFile = indexContext.isCompoundFile();
 				this.mergeFactor = indexContext.getMergeFactor();
 			}
 		};
@@ -221,7 +227,7 @@ public final class IndexManager {
 			indexWriter.maybeMerge();
 			indexWriter.forceMerge(10, Boolean.TRUE);
 			indexWriter.deleteUnusedFiles();
-			indexWriter.optimize(10);
+			// indexWriter.optimize(10);
 		} catch (NullPointerException e) {
 			LOGGER.error("Null pointer, in the index writer : " + indexWriter);
 			LOGGER.debug(null, e);
@@ -408,9 +414,7 @@ public final class IndexManager {
 	public static long getNumDocsForIndexSearchers(final IndexContext<?> indexContext) {
 		long numDocs = 0;
 		if (indexContext.getMultiSearcher() != null) {
-			for (final Searchable searchable : indexContext.getMultiSearcher().getSearchables()) {
-				numDocs += ((IndexSearcher) searchable).getIndexReader().numDocs();
-			}
+			numDocs = indexContext.getMultiSearcher().getIndexReader().numDocs();
 		}
 		return numDocs;
 	}
@@ -456,38 +460,51 @@ public final class IndexManager {
 	}
 
 	public static Document addStringField(final String fieldName, final String fieldContent, final Indexable<?> indexable, final Document document) {
-		
-		Store store = indexable.isStored() ? Store.YES : Store.NO;
-		Index analyzed = indexable.isAnalyzed() ? Index.ANALYZED : Index.NOT_ANALYZED;
-		TermVector termVector = indexable.isVectored() ? TermVector.YES : TermVector.NO;
-		
 		if (fieldName != null && fieldContent != null) {
-			Field field = document.getField(fieldName);
-			if (field == null) {
-				field = new Field(fieldName, fieldContent, store, analyzed, termVector);
-				document.add(field);
+			Field field;
+			FieldType fieldType = new FieldType();
+			fieldType.setIndexed(indexable.isAnalyzed());
+			fieldType.setStored(indexable.isStored());
+			fieldType.setStoreTermVectors(indexable.isVectored());
+
+			Field oldField = (Field) document.getField(fieldName);
+			if (oldField == null) {
+				field = new Field(fieldName, fieldContent, fieldType);
 			} else {
-				String fieldValue = field.stringValue() != null ? field.stringValue() : "";
-				StringBuilder builder = new StringBuilder(fieldValue).append(' ').append(fieldContent);
-				field.setValue(builder.toString());
+				document.removeField(fieldName);
+
+				StringBuilder builder = new StringBuilder();
+				builder.append(oldField.stringValue());
+				builder.append(" ");
+				builder.append(fieldContent);
+
+				field = new Field(fieldName, builder.toString(), fieldType);
 			}
+			document.add(field);
 			// Add this for the autocomplete
 			// field.setOmitNorms(omitNorms);
 		}
 		return document;
 	}
 
-	public static Document addNumericField(final String fieldName, final String fieldContent, final Document document, final Store store) {
-		document.add(new NumericField(fieldName, store, true).setDoubleValue(Double.parseDouble(fieldContent)));
+	public static Document addNumericField(final String fieldName, final String fieldContent, final Document document, final boolean store) {
+		FieldType doubleFieldType = new FieldType();
+		doubleFieldType.setStored(store);
+		doubleFieldType.setIndexed(Boolean.TRUE);
+		doubleFieldType.setTokenized(Boolean.TRUE);
+		doubleFieldType.setNumericType(FieldType.NumericType.DOUBLE);
+		Field doubleField = new DoubleField(fieldName, Double.parseDouble(fieldContent), doubleFieldType);
+		document.add(doubleField);
 		return document;
 	}
 
-	public static Document addReaderField(final String fieldName, final Document document, final Store store, final TermVector termVector, final Reader reader)
-			throws Exception {
+	public static Document addReaderField(final String fieldName, final Document document, final Reader reader, final boolean vectored) throws Exception {
 		if (fieldName != null && reader != null) {
-			Field field = document.getField(fieldName);
+			FieldType fieldType = new FieldType();
+			Field field = (Field) document.getField(fieldName);
 			if (field == null) {
-				field = new Field(fieldName, reader, termVector);
+				fieldType.setStoreTermVectors(vectored);
+				field = new Field(fieldName, reader, fieldType);
 				document.add(field);
 			} else {
 				Reader fieldReader = field.readerValue();
@@ -512,14 +529,9 @@ public final class IndexManager {
 					}
 					finalReader = new FileReader(tempFile);
 					// This is a string field, and could be stored so we check that
-					if (store.isStored()) {
-						// Remove the field and add it again
-						document.removeField(fieldName);
-						field = new Field(fieldName, finalReader, termVector);
-						document.add(field);
-					} else {
-						field.setValue(finalReader);
-					}
+					document.removeField(fieldName);
+					field = new Field(fieldName, finalReader, fieldType);
+					document.add(field);
 				} catch (Exception e) {
 					LOGGER.error("Exception writing the field value with the file writer : ", e);
 				} finally {
@@ -530,6 +542,27 @@ public final class IndexManager {
 			}
 		}
 		return document;
+	}
+
+	public static final Collection<String> getFieldNames(final IndexSearcher indexSearcher) {
+		Set<String> fields = new TreeSet<String>();
+		MultiReader multiReader = (MultiReader) indexSearcher.getIndexReader();
+		List<AtomicReaderContext> atomicReaderContexts = multiReader.leaves();
+		for (final AtomicReaderContext atomicReaderContext : atomicReaderContexts) {
+			FieldInfos fieldInfos = null;
+			try {
+				fieldInfos = atomicReaderContext.reader().getFieldInfos();
+				Iterator<FieldInfo> iterator = fieldInfos.iterator();
+				while (iterator.hasNext()) {
+					FieldInfo fieldInfo = iterator.next();
+					fields.add(fieldInfo.name);
+				}
+			} catch (NullPointerException e) {
+				LOGGER.warn("Null pointer : ");
+				LOGGER.debug(null, e);
+			}
+		}
+		return fields;
 	}
 
 	/**

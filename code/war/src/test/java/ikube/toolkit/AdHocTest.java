@@ -44,8 +44,8 @@ public class AdHocTest extends BaseTest {
 		searchSpatial.setFirstResult(0);
 		searchSpatial.setMaxResults(10);
 		searchSpatial.setFragment(Boolean.TRUE);
-		searchSpatial.setSearchField("contents");
-		searchSpatial.setSearchString("twitter");
+		searchSpatial.setSearchFields("contents");
+		searchSpatial.setSearchStrings("twitter");
 		Coordinate coordinate = new Coordinate(41.25444, -95.97724);
 		searchSpatial.setCoordinate(coordinate);
 		

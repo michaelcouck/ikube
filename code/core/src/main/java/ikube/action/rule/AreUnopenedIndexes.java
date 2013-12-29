@@ -5,8 +5,8 @@ import ikube.model.IndexContext;
 
 import java.io.File;
 
-import org.apache.lucene.search.MultiSearcher;
-import org.apache.lucene.search.Searchable;
+import org.apache.lucene.index.MultiReader;
+import org.apache.lucene.search.IndexSearcher;
 
 /**
  * This rule checks whether there are indexes that are created but are not yet opened. This typically needs to be checked if an index is still in the process of
@@ -16,7 +16,6 @@ import org.apache.lucene.search.Searchable;
  * @since 12.02.2011
  * @version 01.00
  */
-@SuppressWarnings("deprecation")
 public class AreUnopenedIndexes extends ARule<IndexContext<?>> {
 
 	/**
@@ -24,9 +23,8 @@ public class AreUnopenedIndexes extends ARule<IndexContext<?>> {
 	 */
 	@Override
 	public boolean evaluate(final IndexContext<?> indexContext) {
-		MultiSearcher searcher = indexContext.getMultiSearcher();
-		Searchable[] searchables = searcher != null ? searcher.getSearchables() : null;
-		if (searchables == null) {
+		IndexSearcher searchers = indexContext.getMultiSearcher();
+		if (searchers == null) {
 			return new AreIndexesCreated().evaluate(indexContext);
 		}
 		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
@@ -34,7 +32,8 @@ public class AreUnopenedIndexes extends ARule<IndexContext<?>> {
 		if (latestIndexDirectory == null || (latestIndexDirectory.listFiles() != null && latestIndexDirectory.listFiles().length == 0)) {
 			return Boolean.FALSE;
 		}
-		return searchables.length != latestIndexDirectory.listFiles().length;
+		MultiReader multiReader = (MultiReader) searchers.getIndexReader();
+		return multiReader.getContext().leaves().size() != latestIndexDirectory.listFiles().length;
 	}
 
 }

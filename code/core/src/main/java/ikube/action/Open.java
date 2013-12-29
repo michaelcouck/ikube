@@ -3,17 +3,17 @@ package ikube.action;
 import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.search.SearcherService;
-import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.MultiReader;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.MultiSearcher;
-import org.apache.lucene.search.Searchable;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.NIOFSDirectory;
 
@@ -31,7 +31,6 @@ import org.apache.lucene.store.NIOFSDirectory;
  * @since 31.10.10
  * @version 01.00
  */
-@SuppressWarnings("deprecation")
 public class Open extends Action<IndexContext<?>, Boolean> {
 
 	/**
@@ -43,26 +42,24 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 	}
 
 	boolean openOnFile(final IndexContext<?> indexContext) {
-		MultiSearcher newMultiSearcher = null;
+		IndexSearcher oldIndexSearcher = indexContext.getMultiSearcher();
 		// First open the new searchables
-		ArrayList<Searchable> searchers = new ArrayList<Searchable>();
 		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
 		if (latestIndexDirectory == null) {
 			logger.info("No indexes : " + indexDirectoryPath);
 			return Boolean.FALSE;
 		}
+		List<IndexReader> indexReaders = new ArrayList<>();
 		logger.info("Opening searcher on : " + indexContext.getName());
 		File[] serverIndexDirectories = latestIndexDirectory.listFiles();
 		for (final File serverIndexDirectory : serverIndexDirectories) {
 			logger.info("Index directory : " + serverIndexDirectory);
 			Directory directory = null;
 			IndexReader reader = null;
-			Searchable searcher = null;
-			boolean opened = Boolean.FALSE;
 			try {
 				directory = NIOFSDirectory.open(serverIndexDirectory);
-				if (!IndexReader.indexExists(directory)) {
+				if (!DirectoryReader.indexExists(directory)) {
 					directory.close();
 					logger.info("Not opening index : " + serverIndexDirectory);
 					continue;
@@ -70,51 +67,29 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 				if (IndexWriter.isLocked(directory)) {
 					logger.info("Opening reader on locked directory, indexing perhaps?");
 				}
-				reader = IndexReader.open(directory);
-				searcher = new IndexSearcher(reader);
-				searchers.add(searcher);
-				opened = Boolean.TRUE;
+				reader = DirectoryReader.open(directory);
 				logger.info("Opened index on : " + serverIndexDirectory);
 			} catch (Exception e) {
 				logger.error("Exception opening directory : " + serverIndexDirectory, e);
-			} finally {
-				if (!opened) {
-					close(directory, reader, searcher);
-					boolean removed = searchers.remove(searcher);
-					logger.warn("Removed searcher : " + removed + ", " + searcher);
-				}
+				close(directory, reader);
 			}
 		}
 
-		final MultiSearcher multiSearcher = indexContext.getMultiSearcher();
-		newMultiSearcher = open(indexContext, searchers);
+		IndexReader indexReader = new MultiReader(indexReaders.toArray(new IndexReader[indexReaders.size()]), Boolean.TRUE);
+		IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+		indexContext.setMultiSearcher(indexSearcher);
 
 		// Make sure that the old searchables are closed,
 		// but give them some time for the actions on them to finish
-		if (newMultiSearcher != null && multiSearcher != null) {
-			ThreadUtilities.submitSystem(new Runnable() {
-				public void run() {
-					ThreadUtilities.sleep(60000);
-					logger.info("Closing searcher : " + indexContext.getName() + ", " + multiSearcher);
-					Thread.dumpStack();
-					closeSearchables(multiSearcher);
-				}
-			});
+		if (oldIndexSearcher != null) {
+			try {
+				oldIndexSearcher.getIndexReader().close();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
 		}
-		return newMultiSearcher != null;
-	}
 
-	MultiSearcher open(final IndexContext<?> indexContext, final List<Searchable> searchers) {
-		MultiSearcher multiSearcher = null;
-		try {
-			Searchable[] searchables = searchers.toArray(new IndexSearcher[searchers.size()]);
-			multiSearcher = new MultiSearcher(searchables);
-			indexContext.setMultiSearcher(multiSearcher);
-			logger.info("Opening searcher : " + multiSearcher + ", " + indexContext.getName());
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		return multiSearcher;
+		return indexSearcher != null;
 	}
 
 }

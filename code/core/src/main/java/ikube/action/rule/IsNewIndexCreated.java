@@ -5,12 +5,7 @@ import ikube.model.IndexContext;
 
 import java.io.File;
 
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.MultiSearcher;
-import org.apache.lucene.search.Searchable;
-import org.apache.lucene.store.AlreadyClosedException;
-import org.apache.lucene.store.FSDirectory;
 
 /**
  * This class checks whether the index that is open is the latest index, i.e. whether there is a new index that should be opened.
@@ -19,7 +14,6 @@ import org.apache.lucene.store.FSDirectory;
  * @since 11.06.11
  * @version 01.00
  */
-@SuppressWarnings("deprecation")
 public class IsNewIndexCreated extends ARule<IndexContext<?>> {
 
 	/**
@@ -27,39 +21,14 @@ public class IsNewIndexCreated extends ARule<IndexContext<?>> {
 	 */
 	@Override
 	public boolean evaluate(final IndexContext<?> indexContext) {
-		MultiSearcher searcher = indexContext.getMultiSearcher();
-		Searchable[] searchables = searcher != null ? searcher.getSearchables() : null;
-
-		String baseIndexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
-		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(baseIndexDirectoryPath);
-
-		if (searchables != null) {
-			IRule<File[]> areDirectoriesEqual = new AreDirectoriesEqual();
-			IRule<File> directoryExistsAndNotLocked = new DirectoryExistsAndNotLocked();
-			for (Searchable searchable : searchables) {
-				IndexSearcher indexSearcher = (IndexSearcher) searchable;
-				IndexReader indexReader = indexSearcher.getIndexReader();
-				FSDirectory fsDirectory = (FSDirectory) indexReader.directory();
-				try {
-					File serverIndexDirectoryFromSearcher = fsDirectory.getFile();
-					if (serverIndexDirectoryFromSearcher != null) {
-						File latestIndexDirectoryFromSearcher = serverIndexDirectoryFromSearcher.getParentFile();
-						if (areDirectoriesEqual.evaluate(new File[] { latestIndexDirectory, latestIndexDirectoryFromSearcher })) {
-							File[] serverIndexDirectories = latestIndexDirectory.listFiles();
-							for (File serverIndexDirectory : serverIndexDirectories) {
-								if (directoryExistsAndNotLocked.evaluate(serverIndexDirectory)) {
-									// Here we have found that the latest index is indeed the same as
-									// the index in the searchable, so we return false, i.e. no new index
-									// found
-									return Boolean.FALSE;
-								}
-							}
-						}
-					}
-				} catch (AlreadyClosedException e) {
-					logger.info("Directory already closed : " + e.getMessage());
-				}
-			}
+		IndexSearcher indexSearcher = indexContext.getMultiSearcher();
+		if (indexSearcher != null) {
+			String baseIndexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
+			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(baseIndexDirectoryPath);
+			int readers = indexSearcher.getTopReaderContext().children().size();
+			int directories = latestIndexDirectory.listFiles().length;
+			logger.info("Readers : " + readers + ", directories : " + directories + ", directory : " + latestIndexDirectory);
+			return indexSearcher.getTopReaderContext().children().size() != latestIndexDirectory.listFiles().length;
 		}
 		return new AreIndexesCreated().evaluate(indexContext);
 	}

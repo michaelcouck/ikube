@@ -1,23 +1,20 @@
 package ikube.mock;
 
 import ikube.IConstants;
+import mockit.Mock;
+import mockit.MockClass;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
 
 import java.util.Arrays;
 import java.util.Collection;
 
-import mockit.Mock;
-import mockit.MockClass;
-
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.util.ReaderUtil;
-
-@MockClass(realClass = ReaderUtil.class)
+@MockClass(realClass = DirectoryReader.class)
 public class ReaderUtilMock {
 
-	@Mock
-	public static Collection<String> getIndexedFields(IndexReader reader) {
-		Collection<String> indexedFields = Arrays.asList(IConstants.ID, IConstants.FRAGMENT, IConstants.CONTENTS, IConstants.NAME);
-		return indexedFields;
-	}
+    @Mock
+    public static Collection<String> getIndexedFields(IndexReader reader) {
+        return Arrays.asList(IConstants.ID, IConstants.FRAGMENT, IConstants.CONTENTS, IConstants.NAME);
+    }
 
 }

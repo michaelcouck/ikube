@@ -20,7 +20,6 @@ import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Store;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.TwitterProfile;
@@ -85,8 +84,8 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
 		}
 		if (tweetLocation != null) {
 			IndexManager.addStringField(locationField, tweetLocation.getName(), indexableTweets, document);
-			IndexManager.addNumericField(IConstants.LATITUDE, Double.toString(tweetLocation.getLatitude()), document, Store.YES);
-			IndexManager.addNumericField(IConstants.LONGITUDE, Double.toString(tweetLocation.getLongitude()), document, Store.YES);
+			IndexManager.addNumericField(IConstants.LATITUDE, Double.toString(tweetLocation.getLatitude()), document, Boolean.TRUE);
+			IndexManager.addNumericField(IConstants.LONGITUDE, Double.toString(tweetLocation.getLongitude()), document, Boolean.TRUE);
 			addSpatialLocationFields(tweetLocation, document);
 		}
 	}
