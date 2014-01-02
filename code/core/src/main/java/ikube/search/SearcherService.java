@@ -217,7 +217,7 @@ public class SearcherService implements ISearcherService {
 			searchAction.setSearchStrings(searchStrings);
 			searchAction.setSearchFields(searchFields);
 			searchAction.setTypeFields(typeFields);
-			searchAction.setSortField(sortFields);
+			searchAction.setSortFields(sortFields);
 			searchAction.setSortDirections(sortDirections);
 			searchAction.setOccurrenceFields(occurrenceFields);
 
@@ -359,7 +359,8 @@ public class SearcherService implements ISearcherService {
 	}
 
 	private ArrayList<HashMap<String, String>> handleException(final String indexName, final Exception e) {
-		LOGGER.error("Exception doing search on : " + indexName, e);
+		LOGGER.error("Exception doing search on : " + indexName + ", " + e.getLocalizedMessage());
+		LOGGER.debug(null, e);
 		return EMPTY_RESULTS;
 	}
 

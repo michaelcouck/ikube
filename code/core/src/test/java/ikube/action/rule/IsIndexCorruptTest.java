@@ -1,15 +1,7 @@
 package ikube.action.rule;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.toolkit.FileUtilities;
-
-import java.io.File;
-import java.io.IOException;
-
-import mockit.Mockit;
-
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -17,19 +9,27 @@ import org.apache.lucene.store.Lock;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 /**
  * @author Michael Couck
- * @since 29.03.2011
  * @version 01.00
+ * @since 29.03.2011
  */
 public class IsIndexCorruptTest extends AbstractTest {
 
-	/** Class under test. */
+	/**
+	 * Class under test.
+	 */
 	private IsIndexCorrupt isIndexCorrupt;
 
 	@Before
 	public void before() {
-		Mockit.tearDownMocks();
+		// Mockit.tearDownMocks();
 		isIndexCorrupt = new IsIndexCorrupt();
 	}
 

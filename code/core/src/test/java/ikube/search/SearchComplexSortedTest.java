@@ -37,7 +37,7 @@ public class SearchComplexSortedTest extends AbstractTest {
 		searchComplexSorted.setMaxResults(10);
 		searchComplexSorted.setSearchFields(IConstants.CONTENT);
 		searchComplexSorted.setSearchStrings("123456");
-		searchComplexSorted.setSortField(IConstants.CONTENT);
+		searchComplexSorted.setSortFields(IConstants.CONTENT);
 		searchComplexSorted.setTypeFields(TypeField.NUMERIC.fieldType());
 		searchComplexSorted.setOccurrenceFields(IConstants.SHOULD);
 		Query query = searchComplexSorted.getQuery();
@@ -54,7 +54,7 @@ public class SearchComplexSortedTest extends AbstractTest {
 		searchComplexSorted.setMaxResults(10);
 		searchComplexSorted.setSearchFields(IConstants.CONTENT);
 		searchComplexSorted.setSearchStrings("abc123");
-		searchComplexSorted.setSortField(IConstants.CONTENT);
+		searchComplexSorted.setSortFields(IConstants.CONTENT);
 		searchComplexSorted.setTypeFields(TypeField.STRING.fieldType());
 		searchComplexSorted.setOccurrenceFields(IConstants.SHOULD);
 

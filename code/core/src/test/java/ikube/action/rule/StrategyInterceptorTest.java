@@ -1,29 +1,27 @@
 package ikube.action.rule;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.action.index.handler.IStrategy;
 import ikube.action.index.handler.strategy.StrategyInterceptor;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
-
-import java.util.Arrays;
-
 import mockit.Cascading;
 import mockit.Mockit;
-
 import org.apache.lucene.document.Document;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.util.Arrays;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * @author Michael Couck
- * @since 27.12.12
  * @version 01.00
+ * @since 27.12.12
  */
 public class StrategyInterceptorTest extends AbstractTest {
 
@@ -38,7 +36,9 @@ public class StrategyInterceptorTest extends AbstractTest {
 	private Indexable indexable = Mockito.mock(Indexable.class);
 	private IStrategy strategy = Mockito.mock(IStrategy.class);
 
-	/** Class under test. */
+	/**
+	 * Class under test.
+	 */
 	private StrategyInterceptor strategyInterceptor;
 
 	@Before
@@ -47,14 +47,14 @@ public class StrategyInterceptorTest extends AbstractTest {
 		Mockit.setUpMocks();
 	}
 
-	@After
-	public void after() {
-		Mockit.tearDownMocks();
-	}
+//	@After
+//	public void after() {
+//		Mockit.tearDownMocks();
+//	}
 
 	@Test
 	public void preProcess() throws Throwable {
-		Object[] args = new Object[] { indexContext, indexable, document, resource };
+		Object[] args = new Object[]{indexContext, indexable, document, resource};
 		ProceedingJoinPoint proceedingJoinPoint = Mockito.mock(ProceedingJoinPoint.class);
 
 		Mockito.when(strategy.aroundProcess(indexContext, indexable, document, resource)).thenReturn(Boolean.TRUE);
@@ -63,14 +63,15 @@ public class StrategyInterceptorTest extends AbstractTest {
 		strategyInterceptor.aroundProcess(proceedingJoinPoint);
 
 		Mockito.verify(strategy, Mockito.atLeastOnce()).aroundProcess(indexContext, indexable, document, resource);
-		Mockito.verify(proceedingJoinPoint, Mockito.atLeastOnce()).proceed((Object[]) Mockito.any());
+		Mockito.verify(proceedingJoinPoint, Mockito.atLeastOnce()).proceed();
 
-		Mockito.when(proceedingJoinPoint.proceed((Object[]) Mockito.any())).thenReturn(Boolean.TRUE);
+		Mockito.when(proceedingJoinPoint.proceed()).thenReturn(Boolean.TRUE);
 		Object result = strategyInterceptor.aroundProcess(proceedingJoinPoint);
 		assertTrue(Boolean.TRUE.equals(result));
 
 		IStrategy strategyFail = Mockito.mock(IStrategy.class);
-		Mockito.when(strategyFail.aroundProcess(indexContext, indexable, document, resource)).thenReturn(Boolean.FALSE);
+		Mockito.when(strategyFail.aroundProcess(indexContext, indexable, document,
+			resource)).thenReturn(Boolean.FALSE);
 		Mockito.when(indexable.getStrategies()).thenReturn(Arrays.asList(strategy, strategyFail));
 
 		result = strategyInterceptor.aroundProcess(proceedingJoinPoint);

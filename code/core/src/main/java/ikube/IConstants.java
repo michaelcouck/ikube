@@ -217,4 +217,5 @@ public interface IConstants {
 	String MUST = "must";
 	String SHOULD = "should";
 	String STRING = "string";
+	String WORD = "word";
 }

@@ -1,20 +1,18 @@
 package ikube.action.rule;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.action.index.IndexManager;
 import ikube.toolkit.FileUtilities;
-
-import java.io.File;
-import java.io.IOException;
-
-import mockit.Mockit;
-
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Michael Couck
@@ -28,14 +26,14 @@ public class IsIndexBackedUpTest extends AbstractTest {
 	@Before
 	public void before() {
 		isIndexBackedUp = new IsIndexBackedUp();
-		Mockit.tearDownMocks();
+		// Mockit.tearDownMocks();
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()), 1);
 	}
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks();
+		// Mockit.tearDownMocks();
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()), 1);
 	}

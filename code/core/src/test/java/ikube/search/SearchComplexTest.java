@@ -61,11 +61,13 @@ public class SearchComplexTest extends AbstractTest {
 	public void singleField() throws Exception {
 		searchComplex.setSearchFields("name");
 		searchComplex.setSearchStrings("Michael Couck");
-		searchComplex.setSortField("name");
+		// searchComplex.setSortFields("name");
+		searchComplex.setTypeFields(Search.TypeField.STRING.name());
+		searchComplex.setOccurrenceFields(IConstants.SHOULD);
 
 		ArrayList<HashMap<String, String>> results = searchComplex.execute();
 		String fragment = results.get(0).get(IConstants.FRAGMENT);
-		assertEquals("This is the highlighted hit : ", "cv   <B>Michael</B> <B>Couck</B> ", fragment);
+		assertEquals("This is the highlighted hit : ", "cv   <B>Michael</B> <B>Couck</B>", fragment);
 	}
 
 	@Test
@@ -74,7 +76,7 @@ public class SearchComplexTest extends AbstractTest {
 		searchComplex.setSearchStrings("2001.0");
 		searchComplex.setTypeFields(NUMERIC.fieldType());
 		searchComplex.setOccurrenceFields(IConstants.SHOULD);
-		// searchComplex.setSortField("annee");
+		// searchComplex.setSortFields("annee");
 
 		ArrayList<HashMap<String, String>> results = searchComplex.execute();
 		assertEquals("There must be 1 result and the statistics : ", 2, results.size());
@@ -83,7 +85,7 @@ public class SearchComplexTest extends AbstractTest {
 		searchComplex.setSearchFields("annee", "column-two");
 		searchComplex.setTypeFields(NUMERIC.fieldType(), NUMERIC.fieldType());
 		searchComplex.setOccurrenceFields(IConstants.SHOULD, IConstants.SHOULD);
-		searchComplex.setSortField("annee");
+		searchComplex.setSortFields("annee");
 
 		results = searchComplex.execute();
 		assertEquals("There must be 2 result and the statistics : ", 3, results.size());
@@ -95,7 +97,7 @@ public class SearchComplexTest extends AbstractTest {
 		searchComplex.setSearchStrings("2001-2003");
 		searchComplex.setTypeFields(RANGE.fieldType());
 		searchComplex.setOccurrenceFields(IConstants.SHOULD);
-		searchComplex.setSortField("annee");
+		searchComplex.setSortFields("annee");
 		ArrayList<HashMap<String, String>> results = searchComplex.execute();
 		assertEquals("There must be 3 results and the statistics : ", 4, results.size());
 
@@ -103,7 +105,7 @@ public class SearchComplexTest extends AbstractTest {
 		searchComplex.setSearchStrings("2001-2003", "2005-2006");
 		searchComplex.setTypeFields(RANGE.fieldType(), RANGE.fieldType());
 		searchComplex.setOccurrenceFields(IConstants.SHOULD, IConstants.SHOULD);
-		searchComplex.setSortField("annee");
+		searchComplex.setSortFields("annee");
 		results = searchComplex.execute();
 		assertEquals("There must be 5 results and the statistics : ", 6, results.size());
 
@@ -111,7 +113,7 @@ public class SearchComplexTest extends AbstractTest {
 		searchComplex.setSearchStrings("5-7");
 		searchComplex.setTypeFields(RANGE.fieldType());
 		searchComplex.setOccurrenceFields(IConstants.SHOULD);
-		searchComplex.setSortField("column-two");
+		searchComplex.setSortFields("column-two");
 		results = searchComplex.execute();
 		assertEquals("There must be 3 results and the statistics : ", 4, results.size());
 	}
@@ -122,7 +124,7 @@ public class SearchComplexTest extends AbstractTest {
 		searchComplex.setSearchStrings("cie interc", "2002", "7-9");
 		searchComplex.setTypeFields(STRING.fieldType(), NUMERIC.fieldType(), RANGE.fieldType());
 		searchComplex.setOccurrenceFields(IConstants.SHOULD, IConstants.SHOULD, IConstants.SHOULD);
-		searchComplex.setSortField("column-two");
+		searchComplex.setSortFields("column-two");
 
 		ArrayList<HashMap<String, String>> results = searchComplex.execute();
 		assertEquals("There must be 6 results and the statistics : ", 7, results.size());

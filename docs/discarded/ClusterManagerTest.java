@@ -84,7 +84,7 @@ public class ClusterManagerTest extends ATest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks();
+		Mockit.tearDownMocks(SystemMock.class, ApplicationContextManagerMock.class);
 	}
 
 	// @Test

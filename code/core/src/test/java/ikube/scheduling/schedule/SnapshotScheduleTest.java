@@ -61,7 +61,7 @@ public class SnapshotScheduleTest extends AbstractTest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks();
+		Mockit.tearDownMocks(ApplicationContextManagerMock.class);
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 

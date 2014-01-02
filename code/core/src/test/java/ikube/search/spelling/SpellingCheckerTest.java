@@ -1,57 +1,63 @@
 package ikube.search.spelling;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
+import ikube.IConstants;
 import ikube.mock.SpellingCheckerMock;
-import ikube.toolkit.FileUtilities;
+import ikube.search.Search;
 import ikube.toolkit.PerformanceTester;
-
-import java.io.File;
-
 import mockit.Deencapsulation;
+import mockit.Mock;
+import mockit.MockClass;
 import mockit.Mockit;
-
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * @author Michael Couck
- * @since 27.03.11
  * @version 01.00
+ * @since 27.03.11
  */
 public class SpellingCheckerTest extends AbstractTest {
 
-	private SpellingChecker spellingChecker;
-
-	@AfterClass
-	public static void afterClass() {
-		FileUtilities.deleteFile(new File("./spellingIndex"), 1);
+	@MockClass(realClass = Search.class)
+	public static class SearchMock {
+		@Mock
+		public ArrayList<HashMap<String, String>> execute() {
+			HashMap<String, String> result = new HashMap<>();
+			result.put(IConstants.WORD, IConstants.WORD);
+			ArrayList<HashMap<String, String>> results = new ArrayList<>();
+			results.add(result);
+			return results;
+		}
 	}
+
+	private SpellingChecker spellingChecker;
 
 	@Before
 	public void before() throws Exception {
-		Mockit.tearDownMocks(SpellingChecker.class);
-
+		Mockit.tearDownMocks();
+		Mockit.setUpMocks(SearchMock.class);
 		spellingChecker = new SpellingChecker();
-		File languagesWordFileDirectory = FileUtilities.findFileRecursively(new File("."), "english.txt").getParentFile();
-		Deencapsulation.setField(spellingChecker, "languageWordListsDirectory", languagesWordFileDirectory.getAbsolutePath());
-		Deencapsulation.setField(spellingChecker, "spellingIndexDirectoryPath", "./spellingIndex");
 		spellingChecker.initialize();
+		Deencapsulation.setField(spellingChecker, "indexContext", indexContext);
 	}
 
 	@After
 	public void after() {
-		Mockit.setUpMock(SpellingCheckerMock.class);
+		Mockit.setUpMocks(SpellingCheckerMock.class);
 	}
 
 	@Test
 	public void checkWords() {
 		String corrected = spellingChecker.checkWord("wrongk");
-		logger.info("Corrected words : " + corrected);
-		assertEquals("wrongs", corrected);
+		assertEquals(IConstants.WORD, corrected);
 	}
 
 	@Test

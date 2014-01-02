@@ -155,7 +155,7 @@ public class WekaClassifier extends Analyzer {
 				Evaluation evaluation = new Evaluation(instances);
 				evaluation.evaluateModel(classifier, instances);
 				String evaluationReport = evaluation.toSummaryString();
-				logger.info("Classifier evaluation : " + evaluationReport);
+				logger.debug("Classifier evaluation : " + evaluationReport);
 			}
 		} finally {
 			reentrantLock.unlock();

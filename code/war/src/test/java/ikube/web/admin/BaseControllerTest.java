@@ -35,7 +35,7 @@ public class BaseControllerTest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks();
+		Mockit.tearDownMocks(ApplicationContextManagerMock.class);
 	}
 
 	@Test

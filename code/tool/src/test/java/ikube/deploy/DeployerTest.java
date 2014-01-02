@@ -51,7 +51,7 @@ public class DeployerTest extends AbstractTest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks();
+		Mockit.tearDownMocks(CommandActionMock.class, CopyActionMock.class);
 	}
 
 	@Test

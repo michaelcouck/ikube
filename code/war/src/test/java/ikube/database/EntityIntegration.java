@@ -1,59 +1,37 @@
 package ikube.database;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import ikube.IConstants;
 import ikube.IntegrationTest;
-import ikube.model.Action;
-import ikube.model.File;
-import ikube.model.IndexContext;
-import ikube.model.IndexableColumn;
-import ikube.model.IndexableDataSource;
-import ikube.model.IndexableDictionary;
-import ikube.model.IndexableEmail;
-import ikube.model.IndexableFileSystem;
-import ikube.model.IndexableFileSystemLog;
-import ikube.model.IndexableFileSystemWiki;
-import ikube.model.IndexableInternet;
-import ikube.model.IndexableTable;
-import ikube.model.Search;
-import ikube.model.Server;
-import ikube.model.Snapshot;
-import ikube.model.Url;
-import ikube.model.geospatial.GeoAltName;
-import ikube.model.geospatial.GeoCity;
-import ikube.model.geospatial.GeoCountry;
-import ikube.model.geospatial.GeoName;
-import ikube.model.geospatial.GeoZone;
+import ikube.model.*;
+import ikube.model.geospatial.*;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.ObjectToolkit;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.util.ReflectionUtils;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.List;
+
+import static org.junit.Assert.*;
+
 /**
- * This class will scan the class path looking for entities. Then build an entity graph, persist, update and delete the entity, verifying that the operations
+ * This class will scan the class path looking for entities. Then build an entity graph, persist,
+ * update and delete the entity, verifying that the operations
  * were successful as a sanity test for the mappings between the entities and the database.
- * 
+ *
  * @author U365981
- * @since 16-may-12 14:22:16
- * 
  * @revision 01.00
  * @lastChangedBy Michael Couck
  * @lastChangedDate 16-may-12 14:22:16
+ * @since 16-may-12 14:22:16
  */
 public class EntityIntegration extends IntegrationTest {
 
@@ -62,11 +40,16 @@ public class EntityIntegration extends IntegrationTest {
 	}
 
 	private IDataBase dataBase;
-	/** The names of the classes that we will test in the package. */
-	private Class<?>[] entityClasses = new Class<?>[] { Action.class, IndexableDataSource.class, File.class, IndexableColumn.class, IndexableDictionary.class,
-			IndexableEmail.class, IndexableFileSystem.class, IndexableFileSystemLog.class, IndexableFileSystemWiki.class, IndexableInternet.class,
-			IndexableTable.class, IndexContext.class, Search.class, Server.class, Snapshot.class, Url.class, GeoAltName.class, GeoCity.class, GeoCountry.class,
-			GeoName.class, GeoZone.class };
+	/**
+	 * The names of the classes that we will test in the package.
+	 */
+	private Class<?>[] entityClasses = new Class<?>[]{Action.class, IndexableDataSource.class, File.class,
+		IndexableColumn.class,
+		IndexableEmail.class, IndexableFileSystem.class, IndexableFileSystemLog.class, IndexableFileSystemWiki.class,
+		IndexableInternet.class,
+		IndexableTable.class, IndexContext.class, Search.class, Server.class, Snapshot.class, Url.class,
+		GeoAltName.class, GeoCity.class, GeoCountry.class,
+		GeoName.class, GeoZone.class};
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -105,7 +88,8 @@ public class EntityIntegration extends IntegrationTest {
 				dataBase.persist(entity);
 				// Verify that the object is inserted
 				List<?> entities = getEntities(entity.getClass());
-				assertTrue("There should be at least one " + entity + " in the database : " + entities.size(), entities.size() > 0);
+				assertTrue("There should be at least one " + entity + " in the database : " + entities.size(),
+					entities.size() > 0);
 			}
 		});
 	}
@@ -125,37 +109,40 @@ public class EntityIntegration extends IntegrationTest {
 				dataBase.persist(entity);
 				// Update each field independently
 				ReflectionUtils.doWithFields(entityClass, new ReflectionUtils.FieldCallback() {
-					@Override
-					public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
-						Object value = ObjectToolkit.getObject(field.getType());
-						field.setAccessible(Boolean.TRUE);
-						ReflectionUtils.setField(field, entity, value);
-						dataBase.merge(entity);
-						// Check the database that the entity is updated
-						Object result = null;
-						try {
-							Object id = ObjectToolkit.getIdFieldValue(entity);
-							if (id != null) {
-								result = dataBase.find(entity.getClass(), (Long) id);
+						@Override
+						public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
+							Object value = ObjectToolkit.getObject(field.getType());
+							field.setAccessible(Boolean.TRUE);
+							ReflectionUtils.setField(field, entity, value);
+							dataBase.merge(entity);
+							// Check the database that the entity is updated
+							Object result = null;
+							try {
+								Object id = ObjectToolkit.getIdFieldValue(entity);
+								if (id != null) {
+									result = dataBase.find(entity.getClass(), (Long) id);
+								}
+							} catch (RuntimeException e) {
+								throw e;
 							}
-						} catch (RuntimeException e) {
-							throw e;
+							assertNotNull(result);
+							if (value != null) {
+								Object fieldValue = ReflectionUtils.getField(field, entity);
+								assertEquals(value, fieldValue);
+							}
 						}
-						assertNotNull(result);
-						if (value != null) {
-							Object fieldValue = ReflectionUtils.getField(field, entity);
-							assertEquals(value, fieldValue);
+					}, new ReflectionUtils.FieldFilter() {
+						@Override
+						public boolean matches(Field field) {
+							if (field == null || field.getType() == null || field.getType().getPackage() == null ||
+								field.getType().getPackage().getName() == null) {
+								return false;
+							}
+							return containsJpaAnnotations(field) && field.getType().getPackage().getName().contains
+								(Object.class.getPackage().getName());
 						}
 					}
-				}, new ReflectionUtils.FieldFilter() {
-					@Override
-					public boolean matches(Field field) {
-						if (field == null || field.getType() == null || field.getType().getPackage() == null || field.getType().getPackage().getName() == null) {
-							return false;
-						}
-						return containsJpaAnnotations(field) && field.getType().getPackage().getName().contains(Object.class.getPackage().getName());
-					}
-				});
+				);
 			}
 		});
 	}
@@ -183,9 +170,10 @@ public class EntityIntegration extends IntegrationTest {
 	}
 
 	/**
-	 * This method will check that the Jpa mapping is cascade type all so that adding one to the collection and persisting the parent will not throw an
+	 * This method will check that the Jpa mapping is cascade type all so that adding one to the collection and
+	 * persisting the parent will not throw an
 	 * exception that the child is not persisted or transient.
-	 * 
+	 *
 	 * @param field the field to check for the cascade type
 	 * @return whether the cascade type includes the all type
 	 */
@@ -204,8 +192,9 @@ public class EntityIntegration extends IntegrationTest {
 	}
 
 	/**
-	 * This method checks to see if the field is part of the Jpa model, which is decided if it has any Jpa annotations on the field.
-	 * 
+	 * This method checks to see if the field is part of the Jpa model, which is decided if it has any Jpa annotations
+	 * on the field.
+	 *
 	 * @param field the field to check for Jpa annotations
 	 * @return whether this field is a persisted type
 	 */
@@ -221,7 +210,7 @@ public class EntityIntegration extends IntegrationTest {
 
 	/**
 	 * This method just returns all the entities of a certain class type.
-	 * 
+	 *
 	 * @param entityClass the class of entity to get from the database
 	 * @return all the entities of a certain type
 	 */
@@ -231,7 +220,7 @@ public class EntityIntegration extends IntegrationTest {
 
 	/**
 	 * Perform the validation with an instance of each entity class identified in the test.
-	 * 
+	 *
 	 * @param entityTester the tester that will execute the test on the entity
 	 */
 	private void doTest(EntityTester entityTester) {
@@ -254,7 +243,7 @@ public class EntityIntegration extends IntegrationTest {
 
 	/**
 	 * Remove the given entity. Any exceptions thrown while attempting to remove it are ignored.
-	 * 
+	 *
 	 * @param entity the entity to remove
 	 */
 	private void removeQuietly(Object entity) {

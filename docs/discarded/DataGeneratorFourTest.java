@@ -45,7 +45,7 @@ public class DataGeneratorFourTest {
 
 	@AfterClass
 	public static void afterClass() throws Exception {
-		Mockit.tearDownMocks();
+		// Mockit.tearDownMocks();
 	}
 
 	@Before

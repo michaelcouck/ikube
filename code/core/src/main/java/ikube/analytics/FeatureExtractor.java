@@ -17,10 +17,9 @@ import weka.filters.UnsupervisedFilter;
  * @since 10.04.13
  * @version 01.00
  */
+@Deprecated
 public final class FeatureExtractor extends Filter implements UnsupervisedFilter {
 
-	int minGram = 3;
-	int maxGram = 21;
 	private LinkedList<String> dictionary = new LinkedList<String>();
 
 	public synchronized double[] extractFeatures(final String text, final String... dictionaryTerms) throws IOException {
@@ -63,7 +62,6 @@ public final class FeatureExtractor extends Filter implements UnsupervisedFilter
 	}
 
 	private Tokenizer getTokenizer(final String text) {
-		// return new NGramTokenizer(new StringReader(text.toLowerCase()), minGram, maxGram);
 		return new StandardTokenizer(Version.LUCENE_36, new StringReader(text.toLowerCase()));
 	}
 

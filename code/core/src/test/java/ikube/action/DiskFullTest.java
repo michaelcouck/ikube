@@ -51,7 +51,7 @@ public class DiskFullTest extends AbstractTest {
 
 	@After
 	public void after() throws Exception {
-		Mockit.tearDownMocks();
+		// Mockit.tearDownMocks();
 	}
 
 	@Test
@@ -65,7 +65,7 @@ public class DiskFullTest extends AbstractTest {
 			theDiskIsFull = diskFull.execute(indexContext);
 			assertTrue("The should be full now : ", theDiskIsFull);
 		} finally {
-			Mockit.tearDownMocks();
+			Mockit.tearDownMocks(FileSystemUtilsMock.class);
 		}
 	}
 

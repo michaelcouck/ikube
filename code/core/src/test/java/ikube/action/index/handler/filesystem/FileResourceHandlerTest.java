@@ -1,16 +1,17 @@
 package ikube.action.index.handler.filesystem;
 
-import static junit.framework.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.model.IndexableFileSystem;
 import ikube.toolkit.FileUtilities;
-
-import java.io.File;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.File;
+
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 
 public class FileResourceHandlerTest extends AbstractTest {
 
@@ -41,7 +42,7 @@ public class FileResourceHandlerTest extends AbstractTest {
 		IndexableField fieldable = document.getField(indexableFileSystem.getContentFieldName());
 		assertTrue(fieldable.fieldType().indexed());
 		assertTrue(fieldable.fieldType().stored());
-		assertTrue(fieldable.fieldType().tokenized());
+		assertFalse(fieldable.fieldType().tokenized());
 		String content = fieldable.stringValue();
 		assertTrue(content.contains("abashed"));
 	}

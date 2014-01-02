@@ -72,7 +72,7 @@ public class IndexableFileSystemHandlerWorkerTest extends ATest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks();
+		Mockit.tearDownMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
 	}
 
 	@Test

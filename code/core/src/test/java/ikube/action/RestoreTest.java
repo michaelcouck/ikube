@@ -41,7 +41,7 @@ public class RestoreTest extends AbstractTest {
 
     @After
     public void after() throws Exception {
-        Mockit.tearDownMocks();
+        // Mockit.tearDownMocks();
         FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
         FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()), 1);
     }
@@ -62,7 +62,7 @@ public class RestoreTest extends AbstractTest {
         // Run the restore
         Mockit.setUpMocks(ApplicationContextManagerMock.class);
         restore.execute(indexContext);
-        Mockit.tearDownMocks();
+        // Mockit.tearDownMocks();
 
         indexExists();
 

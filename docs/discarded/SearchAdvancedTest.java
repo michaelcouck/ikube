@@ -62,12 +62,12 @@ public class SearchAdvancedTest extends AbstractTest {
 
 		searcher = new MultiSearcher(new IndexSearcher(directory));
 
-		Mockit.setUpMock(SpellingCheckerMock.class);
+		// Mockit.setUpMock(SpellingCheckerMock.class);
 	}
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks(SpellingCheckerMock.class);
+		// Mockit.tearDownMocks(SpellingCheckerMock.class);
 	}
 
 	@Test

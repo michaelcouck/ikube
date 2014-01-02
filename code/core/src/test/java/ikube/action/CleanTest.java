@@ -40,7 +40,7 @@ public class CleanTest extends AbstractTest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks();
+		Mockit.tearDownMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 

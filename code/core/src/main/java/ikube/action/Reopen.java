@@ -1,39 +1,42 @@
 package ikube.action;
 
 import ikube.model.IndexContext;
-
-import java.io.IOException;
-
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.*;
 import org.apache.lucene.search.IndexSearcher;
 
 /**
  * This action will re-open the indexes in the case it is a delta index.
- * 
+ *
  * @author Michael Couck
- * @since 22.06.13
  * @version 01.00
+ * @since 22.06.13
  */
-public class Reopen extends Open {
+public class Reopen extends Action<IndexContext<?>, Boolean> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public boolean internalExecute(final IndexContext<?> indexContext) {
-		if (indexContext.isDelta()) {
-			logger.info("Opening searcher on index : " + indexContext.getName());
-			IndexSearcher oldIndexSearcher = indexContext.getMultiSearcher();
-			IndexReader indexReader = oldIndexSearcher.getIndexReader();
+		logger.info("Opening searcher on index : " + indexContext.getName());
+		IndexSearcher oldIndexSearcher = indexContext.getMultiSearcher();
+		if (oldIndexSearcher != null && oldIndexSearcher.getIndexReader() != null) {
+			boolean mustReopen = Boolean.FALSE;
 			try {
-				IndexReader newReader = DirectoryReader.openIfChanged((DirectoryReader) indexReader);
-				if (newReader != null) {
-					IndexSearcher indexSearcher = new IndexSearcher(newReader);
-					indexContext.setMultiSearcher(indexSearcher);
-					oldIndexSearcher.getIndexReader().close();
+				MultiReader oldMultiReader = (MultiReader) oldIndexSearcher.getIndexReader();
+				CompositeReaderContext compositeReaderContext = oldMultiReader.getContext();
+				for (final IndexReaderContext indexReaderContext : compositeReaderContext.children()) {
+					IndexReader oldIndexReader = indexReaderContext.reader();
+					IndexReader newIndexReader = DirectoryReader.openIfChanged((DirectoryReader) oldIndexReader);
+					if (newIndexReader != null) {
+						mustReopen = Boolean.TRUE;
+						break;
+					}
 				}
-			} catch (IOException e) {
+				if (mustReopen) {
+					new Open().execute(indexContext);
+				}
+			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
 		}

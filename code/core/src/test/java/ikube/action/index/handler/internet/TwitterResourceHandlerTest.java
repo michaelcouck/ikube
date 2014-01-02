@@ -82,6 +82,9 @@ public class TwitterResourceHandlerTest extends AbstractTest {
 		when(indexableTweets.getUserNameField()).thenReturn("user-name");
 		when(indexableTweets.getUserLocationField()).thenReturn("user-location");
 		when(indexableTweets.getContent()).thenReturn("tweet-content");
+		when(indexableTweets.getUserUtcOffsetField()).thenReturn("tweet-utc-offset");
+		when(indexableTweets.isStored()).thenReturn(Boolean.TRUE);
+		when(indexableTweets.isAnalyzed()).thenReturn(Boolean.TRUE);
 
 		twitterResourceHandler.handleResource(indexContext, indexableTweets, document, tweet);
 	}

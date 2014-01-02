@@ -1,41 +1,22 @@
 package ikube.mock;
 
-import static org.mockito.Mockito.mock;
 import ikube.action.index.IndexManager;
 import ikube.model.Indexable;
-
-import java.io.IOException;
-
 import mockit.Mock;
 import mockit.MockClass;
-
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.AlreadyClosedException;
-import org.apache.lucene.store.Directory;
+
+import java.io.IOException;
 
 @MockClass(realClass = IndexReader.class)
 public class IndexReaderMock {
 
 	public static boolean INDEX_EXISTS;
 	public static IndexReader INDEX_READER;
-
-	@Mock
-	public static boolean indexExists(Directory directory) throws IOException {
-		return INDEX_EXISTS;
-	}
-
-	@Mock
-	public static IndexReader open(final Directory directory, boolean readOnly) throws CorruptIndexException, IOException {
-		return mock(IndexReader.class);
-	}
-
-	@Mock
-	public static IndexReader open(final Directory directory) throws CorruptIndexException, IOException {
-		return INDEX_READER;
-	}
 
 	@Mock
 	protected final void ensureOpen() throws AlreadyClosedException {

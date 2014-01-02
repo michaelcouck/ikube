@@ -39,7 +39,7 @@ public class CpuLoadScheduleTest extends AbstractTest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks();
+		Mockit.tearDownMocks(ApplicationContextManagerMock.class);
 	}
 
 	@Test

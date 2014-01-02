@@ -1,10 +1,5 @@
 package ikube.action.rule;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
 import ikube.action.Action;
 import ikube.action.Close;
@@ -13,20 +8,7 @@ import ikube.action.Index;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
 import ikube.model.IndexContext;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import mockit.Cascading;
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockClass;
-import mockit.Mockit;
-
+import mockit.*;
 import org.apache.commons.jexl2.Expression;
 import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.jexl2.JexlEngine;
@@ -37,6 +19,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nfunk.jep.JEP;
 
+import java.util.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 /**
  * @author Michael Couck
  * @since 26.02.2011
@@ -44,6 +34,7 @@ import org.nfunk.jep.JEP;
  */
 public class RuleInterceptorTest extends AbstractTest {
 
+	@Deprecated
 	@MockClass(realClass = JEP.class)
 	public static class JEPMock {
 		@Mock()
@@ -82,7 +73,8 @@ public class RuleInterceptorTest extends AbstractTest {
 	@Before
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void before() throws Throwable {
-		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class, JEPMock.class);
+		// , JEPMock.class
+		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
 		actions = new HashMap<String, IAction>();
 
 		final List<IRule<IndexContext<?>>> rules = new ArrayList<IRule<IndexContext<?>>>();
@@ -134,7 +126,7 @@ public class RuleInterceptorTest extends AbstractTest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks();
+		Mockit.tearDownMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
 	}
 
 	@Test

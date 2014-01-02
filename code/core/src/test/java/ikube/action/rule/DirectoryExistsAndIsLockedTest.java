@@ -1,26 +1,24 @@
 package ikube.action.rule;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.action.index.IndexManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.UriUtilities;
-
-import java.io.File;
-
-import mockit.Mockit;
-
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.Lock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 /**
  * @author Michael Couck
- * @since 29.03.2011
  * @version 01.00
+ * @since 29.03.2011
  */
 public class DirectoryExistsAndIsLockedTest extends AbstractTest {
 
@@ -33,7 +31,7 @@ public class DirectoryExistsAndIsLockedTest extends AbstractTest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks();
+		// Mockit.tearDownMocks();
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
 	}
 

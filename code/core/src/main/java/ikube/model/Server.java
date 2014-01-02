@@ -75,7 +75,7 @@ public class Server extends Persistable implements Comparable<Server> {
 
 	public List<Action> getActions() {
 		if (actions == null) {
-			actions = new ArrayList<Action>();
+			actions = new ArrayList<>();
 		}
 		return actions;
 	}

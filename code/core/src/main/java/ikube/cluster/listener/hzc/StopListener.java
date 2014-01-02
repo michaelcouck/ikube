@@ -54,20 +54,22 @@ public class StopListener implements IListener<Message<Object>>, MessageListener
 				event.setConsumed(Boolean.TRUE);
 				final Object indexName = event.getObject();
 				if (indexName != null) {
-					logger.info("Terminating indexing : " + indexName);
 					ThreadUtilities.destroy(indexName.toString());
 					ThreadUtilities.cancellForkJoinPool(indexName.toString());
-					List<Action> actions = clusterManager.getServer().getActions();
-					Action action = (Action) CollectionUtils.find(actions, new Predicate() {
-						@Override
-						public boolean evaluate(final Object object) {
-							Action action = (Action) object;
-							return action.getIndexName().equals(indexName);
+					if (clusterManager != null && clusterManager.getServer() != null && clusterManager.getServer().getActions() != null) {
+						List<Action> actions = clusterManager.getServer().getActions();
+						Action action = (Action) CollectionUtils.find(actions, new Predicate() {
+							@Override
+							public boolean evaluate(final Object object) {
+								Action action = (Action) object;
+								return action.getIndexName().equals(indexName);
+							}
+						});
+						if (action != null) {
+							logger.info("Terminating indexing : " + indexName);
+							action.setEndTime(new Date());
+							dataBase.merge(action);
 						}
-					});
-					if (action != null) {
-						action.setEndTime(new Date());
-						dataBase.merge(action);
 					}
 				}
 			} else if (Event.TERMINATE_ALL.equals(event.getType())) {

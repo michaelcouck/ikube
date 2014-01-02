@@ -80,7 +80,7 @@ public class GeocoderTest extends AbstractTest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks();
+		Mockit.tearDownMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class, HttpClientMock.class, HttpMethodBaseMock.class);
 	}
 
 	@Test

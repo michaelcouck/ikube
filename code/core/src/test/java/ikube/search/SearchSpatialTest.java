@@ -4,10 +4,8 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
 import ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy;
-import ikube.mock.SpellingCheckerMock;
 import ikube.model.Coordinate;
 import ikube.toolkit.PerformanceTester;
-import mockit.Mockit;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -17,12 +15,13 @@ import org.apache.lucene.store.RAMDirectory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Michael Couck
@@ -45,7 +44,10 @@ public class SearchSpatialTest extends AbstractTest {
 
 	@Before
 	public void before() throws Exception {
-		Mockit.setUpMocks(SpellingCheckerMock.class);
+		Mockito.when(indexableColumn.isStored()).thenReturn(Boolean.TRUE);
+		Mockito.when(indexableColumn.isAnalyzed()).thenReturn(Boolean.TRUE);
+		Mockito.when(indexableColumn.isTokenized()).thenReturn(Boolean.TRUE);
+		Mockito.when(indexableColumn.isVectored()).thenReturn(Boolean.FALSE);
 
 		RAMDirectory ramDirectory = new RAMDirectory();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, ramDirectory, Boolean.TRUE);
@@ -69,7 +71,6 @@ public class SearchSpatialTest extends AbstractTest {
 	@After
 	public void after() throws Exception {
 		searcher.getIndexReader().close();
-		Mockit.tearDownMocks();
 	}
 
 	@Test
@@ -81,6 +82,9 @@ public class SearchSpatialTest extends AbstractTest {
 		searchSpatial.setFragment(Boolean.TRUE);
 		searchSpatial.setSearchStrings("Switzerland");
 		searchSpatial.setSearchFields(IConstants.CONTENTS);
+		searchSpatial.setOccurrenceFields(IConstants.SHOULD);
+		searchSpatial.setTypeFields(Search.TypeField.STRING.name());
+
 		searchSpatial.setCoordinate(zurich);
 
 		ArrayList<HashMap<String, String>> results = searchSpatial.execute();

@@ -9,37 +9,23 @@ import ikube.model.Snapshot;
 import ikube.scheduling.schedule.Event;
 import ikube.toolkit.ObjectToolkit;
 import ikube.toolkit.SerializationUtilities;
-
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.*;
 
 /**
  * @author Michael couck
@@ -117,7 +103,7 @@ public class Monitor extends Resource {
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response indexContexts(@QueryParam(value = IConstants.SORT_FIELD) final String sortField,
 			@QueryParam(value = IConstants.DESCENDING) final boolean descending) {
-		List<IndexContext> indexContexts = new ArrayList<IndexContext>();
+		List<IndexContext> indexContexts = new ArrayList<>();
 		for (final IndexContext indexContext : monitorService.getIndexContexts().values()) {
 			IndexContext cloneIndexContext = cloneIndexContext(indexContext);
 			indexContexts.add(cloneIndexContext);
@@ -149,7 +135,7 @@ public class Monitor extends Resource {
 	@Path(Monitor.SERVERS)
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response servers() {
-		List<Server> result = new ArrayList<Server>();
+		List<Server> result = new ArrayList<>();
 		Map<String, Server> servers = clusterManager.getServers();
 		for (Map.Entry<String, Server> mapEntry : servers.entrySet()) {
 			Server server = mapEntry.getValue();
@@ -245,7 +231,7 @@ public class Monitor extends Resource {
 	@Path(Monitor.ACTIONS)
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response actions() {
-		List<Action> clonedActions = new ArrayList<Action>();
+		List<Action> clonedActions = new ArrayList<>();
 		Map<String, Server> servers = clusterManager.getServers();
 		for (final Server server : servers.values()) {
 			List<Action> actions = server.getActions();

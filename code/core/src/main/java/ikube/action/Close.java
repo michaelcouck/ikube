@@ -1,6 +1,7 @@
 package ikube.action;
 
 import ikube.model.IndexContext;
+import org.apache.lucene.search.IndexSearcher;
 
 import java.io.IOException;
 
@@ -18,9 +19,10 @@ public class Close extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	public boolean internalExecute(final IndexContext<?> indexContext) {
-		if (indexContext.getMultiSearcher() != null) {
+		IndexSearcher indexSearcher =  indexContext.getMultiSearcher();
+		if (indexSearcher != null && indexSearcher.getIndexReader() != null) {
 			try {
-				indexContext.getMultiSearcher().getIndexReader().close();
+				indexSearcher.getIndexReader().close();
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}

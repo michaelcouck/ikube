@@ -32,8 +32,7 @@
 		<class>ikube.model.Coordinate</class>
 		<class>ikube.model.Snapshot</class>
 		<class>ikube.model.IndexableDataSource</class>
-		<class>ikube.model.IndexableDictionary</class>
-		
+
 		<class>ikube.model.geospatial.Composite</class>
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.GeoAltName</class>
@@ -92,8 +91,7 @@
 		<class>ikube.model.Coordinate</class>
 		<class>ikube.model.Snapshot</class>
 		<class>ikube.model.IndexableDataSource</class>
-		<class>ikube.model.IndexableDictionary</class>
-		
+
 		<class>ikube.model.geospatial.Composite</class>
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.GeoAltName</class>
@@ -136,8 +134,7 @@
 		<class>ikube.model.Coordinate</class>
 		<class>ikube.model.Snapshot</class>
 		<class>ikube.model.IndexableDataSource</class>
-		<class>ikube.model.IndexableDictionary</class>
-		
+
 		<class>ikube.model.geospatial.Composite</class>
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.GeoAltName</class>
@@ -180,8 +177,7 @@
 		<class>ikube.model.Coordinate</class>
 		<class>ikube.model.Snapshot</class>
 		<class>ikube.model.IndexableDataSource</class>
-		<class>ikube.model.IndexableDictionary</class>
-		
+
 		<class>ikube.model.geospatial.Composite</class>
 		<class>ikube.model.geospatial.GeoName</class>
 		<class>ikube.model.geospatial.GeoAltName</class>

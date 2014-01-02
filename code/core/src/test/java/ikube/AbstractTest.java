@@ -8,13 +8,11 @@ import ikube.cluster.IMonitorService;
 import ikube.database.IDataBase;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.IndexManagerMock;
+import ikube.mock.SpellingCheckerMock;
 import ikube.model.*;
 import ikube.search.Search;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.Logging;
-import ikube.toolkit.ThreadUtilities;
-import ikube.toolkit.UriUtilities;
-import org.apache.commons.lang.StringUtils;
+import ikube.toolkit.*;
+import mockit.Mockit;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -43,7 +41,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * This is the base test for all mocked tests. There are several useful mocks in this class that can be re-used like the index context and the index reader etc.
+ * This is the base test for all mocked tests. There are several useful mocks in this class that can be re-used like
+ * the index context and the index reader etc.
  * There are also helpful methods for creating Lucene indexes.
  *
  * @author Michael Couck
@@ -60,6 +59,7 @@ public abstract class AbstractTest {
 			new MimeTypes(IConstants.MIME_TYPES);
 			new MimeMapper(IConstants.MIME_MAPPING);
 			ThreadUtilities.initialize();
+			Mockit.setUpMocks(SpellingCheckerMock.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -133,7 +133,8 @@ public abstract class AbstractTest {
 		when(indexSearcher.search(any(Query.class), anyInt())).thenReturn(topDocs);
 
 		when(multiSearcher.search(any(Query.class), anyInt())).thenReturn(topDocs);
-		when(multiSearcher.search(any(Query.class), any(Filter.class), anyInt(), any(Sort.class))).thenReturn(topFieldDocs);
+		when(multiSearcher.search(any(Query.class), any(Filter.class), anyInt(),
+			any(Sort.class))).thenReturn(topFieldDocs);
 
 		topDocs.totalHits = 0;
 		topDocs.scoreDocs = scoreDocs;
@@ -233,7 +234,8 @@ public abstract class AbstractTest {
 		return indexWriter.getDirectory();
 	}
 
-	protected File createIndexFileSystem(final IndexContext<?> indexContext, final long time, final String ip, final String... strings) throws Exception {
+	protected File createIndexFileSystem(final IndexContext<?> indexContext, final long time, final String ip,
+										 final String... strings) throws Exception {
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, time, ip);
 		addDocuments(indexWriter, IConstants.CONTENTS, strings);
 		File indexDirectory = ((FSDirectory) indexWriter.getDirectory()).getDirectory();
@@ -241,7 +243,8 @@ public abstract class AbstractTest {
 		return indexDirectory;
 	}
 
-	protected List<File> createIndexesFileSystem(final IndexContext<?> indexContext, final long time, final String[] ips, final String... strings) {
+	protected List<File> createIndexesFileSystem(final IndexContext<?> indexContext, final long time,
+												 final String[] ips, final String... strings) {
 		try {
 			List<File> serverIndexDirectories = new ArrayList<File>();
 			for (String ip : ips) {
@@ -254,11 +257,13 @@ public abstract class AbstractTest {
 		}
 	}
 
-	protected <T extends Search> T createIndexRamAndSearch(final Class<T> searchClass, final Analyzer analyzer, final String field, final String... strings)
+	protected <T extends Search> T createIndexRamAndSearch(final Class<T> searchClass, final Analyzer analyzer,
+														   final String field, final String... strings)
 		throws Exception {
 		IndexWriter indexWriter = getRamIndexWriter(analyzer);
 		addDocuments(indexWriter, field, strings);
 		IndexReader indexReader = IndexReader.open(indexWriter.getDirectory());
+		// printIndex(indexReader, Integer.MAX_VALUE);
 		IndexSearcher searcher = new IndexSearcher(indexReader);
 		return searchClass.getConstructor(IndexSearcher.class, Analyzer.class).newInstance(searcher, analyzer);
 	}
@@ -269,16 +274,18 @@ public abstract class AbstractTest {
 		return new IndexWriter(directory, conf);
 	}
 
-	protected <T extends Search> T createIndexRamAndSearch(final Class<T> searchClass, final Analyzer analyzer, final String[] fields,
+	protected <T extends Search> T createIndexRamAndSearch(final Class<T> searchClass, final Analyzer analyzer,
+														   final String[] fields,
 														   final String[]... strings) throws Exception {
 		IndexWriter indexWriter = getRamIndexWriter(analyzer);
-		Indexable<?> indexable = new IndexableColumn();
+		Indexable<?> indexable = getIndexable();
+
 		for (final String[] row : strings) {
 			Document document = new Document();
 			for (int i = 0; i < row.length; i++) {
 				final String column = row[i];
 				String field = fields[i];
-				if (StringUtils.isNumeric(column.trim())) {
+				if (StringUtilities.isNumeric(column.trim())) {
 					IndexManager.addNumericField(field, column.trim(), document, Boolean.TRUE);
 				} else {
 					IndexManager.addStringField(field, column, indexable, document);
@@ -287,13 +294,13 @@ public abstract class AbstractTest {
 			indexWriter.addDocument(document);
 		}
 
-		Directory directory = indexWriter.getDirectory();
 
 		indexWriter.commit();
 		indexWriter.maybeMerge();
 		indexWriter.forceMerge(5);
-		indexWriter.close(Boolean.TRUE);
+		// indexWriter.close(Boolean.TRUE);
 
+		Directory directory = indexWriter.getDirectory();
 		IndexReader indexReader = IndexReader.open(directory);
 		IndexSearcher searcher = new IndexSearcher(indexReader);
 
@@ -302,7 +309,8 @@ public abstract class AbstractTest {
 		return searchClass.getConstructor(IndexSearcher.class, Analyzer.class).newInstance(searcher, analyzer);
 	}
 
-	protected void addDocuments(final IndexWriter indexWriter, final String field, final String... strings) throws Exception {
+	protected void addDocuments(final IndexWriter indexWriter, final String field, final String... strings) throws
+		Exception {
 		for (final String string : strings) {
 			String id = Long.toString(System.currentTimeMillis());
 			Document document = getDocument(id, string, field);
@@ -318,17 +326,27 @@ public abstract class AbstractTest {
 
 	protected Document getDocument(final String id, final String string, final String field) {
 		Document document = new Document();
-		Indexable<?> indexable = new Indexable<Object>() {
-		};
+		Indexable<?> indexable = getIndexable();
 		IndexManager.addStringField(IConstants.ID, id, indexable, document);
 		IndexManager.addStringField(IConstants.NAME, string, indexable, document);
-		if (StringUtils.isNumeric(string.trim())) {
-			logger.debug("Adding numeric field : " + string);
+		if (StringUtilities.isNumeric(string.trim())) {
+			// logger.info("Adding numeric field : " + string);
 			IndexManager.addNumericField(field, string.trim(), document, Boolean.TRUE);
 		} else {
 			IndexManager.addStringField(field, string, indexable, document);
 		}
 		return document;
+	}
+
+	private Indexable<?> getIndexable() {
+		Indexable<?> indexable = new Indexable<Object>() {
+		};
+		indexable.setAnalyzed(Boolean.TRUE);
+		indexable.setOmitNorms(Boolean.TRUE);
+		indexable.setStored(Boolean.TRUE);
+		indexable.setVectored(Boolean.FALSE);
+		indexable.setTokenized(Boolean.TRUE);
+		return indexable;
 	}
 
 	protected Lock getLock(Directory directory, File serverIndexDirectory) throws IOException {
@@ -337,7 +355,8 @@ public abstract class AbstractTest {
 		boolean gotLock = lock.obtain(Lock.LOCK_OBTAIN_WAIT_FOREVER);
 		logger.debug("Got lock : " + gotLock + ", is locked : " + lock.isLocked());
 		if (!gotLock) {
-			FileUtilities.getFile(new File(serverIndexDirectory, IndexWriter.WRITE_LOCK_NAME).getAbsolutePath(), Boolean.FALSE);
+			FileUtilities.getFile(new File(serverIndexDirectory, IndexWriter.WRITE_LOCK_NAME).getAbsolutePath(),
+				Boolean.FALSE);
 		} else {
 			assertTrue(IndexWriter.isLocked(directory));
 		}
@@ -365,10 +384,21 @@ public abstract class AbstractTest {
 		for (IndexableField indexableField : fields) {
 			String fieldName = indexableField.name();
 			String fieldValue = indexableField.stringValue();
+			String fieldType = indexableField.fieldType().toString();
 			int fieldLength = fieldValue != null ? fieldValue.length() : 0;
 			Number number = indexableField.numericValue();
-			logger.info("        : field name : " + fieldName + ", field length : " + fieldLength + ", field value : " +
-				fieldValue + ", numeric value : " + number);
+			logger.info("        : field name : " + fieldName + ", field length : " + fieldLength + ", " +
+				"field value : " +
+				fieldValue + ", numeric value : " + number + ", " + fieldType);
+		}
+	}
+
+	protected void printResults(final ArrayList<HashMap<String, String>> results) {
+		for (final HashMap<String, String> result : results) {
+			logger.info("Result : ");
+			for (final Map.Entry<String, String> mapEntry : result.entrySet()) {
+				logger.info("       : " + mapEntry.getKey() + "-" + mapEntry.getValue());
+			}
 		}
 	}
 

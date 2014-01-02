@@ -94,7 +94,7 @@ public class AnalTest extends BaseTest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks();
+		Mockit.tearDownMocks(SerializationUtilitiesMock.class);
 	}
 
 	@Test

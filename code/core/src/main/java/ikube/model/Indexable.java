@@ -2,35 +2,26 @@ package ikube.model;
 
 import ikube.action.index.handler.IStrategy;
 
+import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.Transient;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-
 /**
  * @author Michael Couck
- * @since 21.11.10
  * @version 01.00
+ * @since 21.11.10
  */
 @Entity
 @SuppressWarnings("serial")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Indexable<E> extends Persistable {
 
-	/** This is the content of the indexable, it is therefore only valid while indexing and for the current resource. */
+	/**
+	 * This is the content of the indexable, it is therefore only valid while indexing and for the current resource.
+	 */
 	@Transient
 	private transient volatile Object content;
 	@Transient
@@ -39,7 +30,9 @@ public class Indexable<E> extends Persistable {
 	private transient volatile String addressContent;
 	@Transient
 	private AtomicInteger exceptions = new AtomicInteger(0);
-	/** These strategies will be processed before processing the indexable. */
+	/**
+	 * These strategies will be processed before processing the indexable.
+	 */
 	@Transient
 	private transient List<IStrategy> strategies;
 
@@ -47,9 +40,9 @@ public class Indexable<E> extends Persistable {
 	@Attribute(field = false, description = "The name of this indexable")
 	private String name;
 	@PrimaryKeyJoinColumn
-	@ManyToOne(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
+	@ManyToOne(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
 	private Indexable<?> parent;
-	@OneToMany(cascade = { CascadeType.ALL }, mappedBy = "parent", fetch = FetchType.EAGER)
+	@OneToMany(cascade = {CascadeType.ALL}, mappedBy = "parent", fetch = FetchType.EAGER)
 	private List<Indexable<?>> children;
 	@Column
 	@Attribute(field = false, description = "Whether this is a geospatial address field")
@@ -65,13 +58,18 @@ public class Indexable<E> extends Persistable {
 	@Attribute(field = false, description = "Whether this field should be vectored in the index")
 	private boolean vectored = Boolean.TRUE;
 	@Column
-	@Attribute(field = false, description = "Whether this field should have the normalization opitted, i.e. the tf-idf omitted, meaning that longer documents will score higher")
+	@Attribute(field = false, description = "Whether this field should have the normalization opitted, " +
+		"i.e. the tf-idf omitted, meaning that longer documents will score higher")
 	private boolean omitNorms = Boolean.FALSE;
+	@Column
+	@Attribute(field = false, description = "Whether this field should have the terms tokenized")
+	private boolean tokenized = Boolean.FALSE;
 
 	@Column
 	@Min(value = 1)
 	@Max(value = 1000000)
-	@Attribute(field = false, description = "This is the maximum exceptions during indexing before the indexing is stopped")
+	@Attribute(field = false, description = "This is the maximum exceptions during indexing before the indexing is " +
+		"stopped")
 	private long maxExceptions = 1000;
 
 	@Column
@@ -151,6 +149,14 @@ public class Indexable<E> extends Persistable {
 
 	public boolean isOmitNorms() {
 		return omitNorms;
+	}
+
+	public void setTokenized(final boolean tokenized) {
+		this.tokenized = tokenized;
+	}
+
+	public boolean isTokenized() {
+		return tokenized;
 	}
 
 	public void setOmitNorms(boolean omitNorms) {

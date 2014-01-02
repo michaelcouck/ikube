@@ -1,17 +1,10 @@
 package ikube.action;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.toolkit.FileUtilities;
-
-import java.io.File;
-
 import mockit.Deencapsulation;
 import mockit.Mockit;
-
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -19,6 +12,10 @@ import org.apache.lucene.store.Lock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.File;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Michael Couck
@@ -40,7 +37,7 @@ public class DeleteTest extends AbstractTest {
 
 	@After
 	public void after() throws Exception {
-		Mockit.tearDownMocks();
+		Mockit.tearDownMocks(ApplicationContextManagerMock.class);
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 

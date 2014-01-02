@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import ikube.AbstractTest;
 import ikube.IConstants;
+import ikube.search.Search;
 import ikube.search.SearchComplex;
 
 import java.io.Reader;
@@ -28,6 +29,7 @@ public class NgramAnalyzerTest extends AbstractTest {
 	public void before() {
 		ngramAnalyzer = new NgramAnalyzer();
 		ngramAnalyzer.setMinGram(3);
+		ngramAnalyzer.setMaxGram(21);
 	}
 
 	@Test
@@ -45,10 +47,13 @@ public class NgramAnalyzerTest extends AbstractTest {
 		searchSingle.setMaxResults(10);
 		searchSingle.setSearchFields(IConstants.CONTENT);
 		searchSingle.setSearchStrings("hae ouc");
-		searchSingle.setSortField(IConstants.CONTENT);
+		searchSingle.setOccurrenceFields(IConstants.SHOULD);
+		searchSingle.setTypeFields(Search.TypeField.STRING.name());
+		// searchSingle.setSortFields(IConstants.CONTENT);
 
 		ArrayList<HashMap<String, String>> results = searchSingle.execute();
-		assertEquals("This is the highlighted hit : ", "Mic<B>hae</B>l C<B>ouc</B>k ", results.get(0).get(IConstants.FRAGMENT));
+		printResults(results);
+		assertEquals("This is the highlighted hit : ", "<B>Michael</B> <B>Couck</B>", results.get(0).get(IConstants.FRAGMENT));
 
 		searchSingle.setSearchStrings("poo");
 		results = searchSingle.execute();

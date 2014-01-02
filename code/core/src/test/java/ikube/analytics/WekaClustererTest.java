@@ -67,7 +67,7 @@ public class WekaClustererTest extends AbstractTest {
 					greatest = distribution;
 				}
 			}
-			System.out.println("[" + analysis.getClazz() + ", " + greatest + "],");
+			// System.out.println("[" + analysis.getClazz() + ", " + greatest + "],");
 			assertNotNull(result.getClazz());
 		}
 	}
@@ -96,7 +96,7 @@ public class WekaClustererTest extends AbstractTest {
 		for (final double[] correlationCoEfficient : correlationCoEfficients) {
 			System.out.println("");
 			for (final double instance : correlationCoEfficient) {
-				System.out.print("\t" + instance);
+				// System.out.print("\t" + instance);
 				assertTrue(instance >= -1 && instance <= 1);
 			}
 		}
@@ -107,7 +107,7 @@ public class WekaClustererTest extends AbstractTest {
 		Instances instances = Deencapsulation.getField(wekaclusterer, "instances");
 		double[][] distributionForInstances = wekaclusterer.getDistributionForInstances(instances);
 		for (final double[] distribution : distributionForInstances) {
-			logger.info("Dist : " + distribution[0] + ", " + distribution[1]);
+			// logger.info("Dist : " + distribution[0] + ", " + distribution[1]);
 			assertTrue(distribution[0] >= 0 && distribution[0] <= 10);
 			assertTrue(distribution[1] >= 0 && distribution[1] <= 1);
 		}
@@ -128,8 +128,8 @@ public class WekaClustererTest extends AbstractTest {
 		analysis.setCorrelation(Boolean.TRUE);
 		analysis.setDistribution(Boolean.TRUE);
 		Analysis<String, double[]> result = wekaclusterer.analyze(analysis);
-		logger.info("Result : " + result.getAlgorithmOutput());
-		logger.info("Result : " + result.getClazz());
+		// logger.info("Result : " + result.getAlgorithmOutput());
+		// logger.info("Result : " + result.getClazz());
 		for (final double[] correlation : result.getCorrelationCoefficients()) {
 			for (final double cor : correlation) {
 				logger.info("        : " + cor);

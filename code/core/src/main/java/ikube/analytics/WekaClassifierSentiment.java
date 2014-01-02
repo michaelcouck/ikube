@@ -149,7 +149,7 @@ public class WekaClassifierSentiment implements IAnalyzer<String, String> {
 			Evaluation evaluation = new Evaluation(filteredData);
 			evaluation.evaluateModel(classifier, filteredData);
 			String evaluationReport = evaluation.toSummaryString();
-			LOGGER.info("Classifier evaluation : " + evaluationReport);
+			LOGGER.debug("Classifier evaluation : " + evaluationReport);
 
 			filteredData.setRelationName("filtered_data");
 			trainingInstances.setRelationName("training_data");

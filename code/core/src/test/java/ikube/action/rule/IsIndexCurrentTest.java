@@ -1,36 +1,37 @@
 package ikube.action.rule;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.mock.IndexManagerMock;
-
-import java.io.File;
-
 import mockit.Mockit;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 /**
  * @author Michael Couck
- * @since 29.03.2011
  * @version 01.00
+ * @since 29.03.2011
  */
 public class IsIndexCurrentTest extends AbstractTest {
 
-	/** Class under test. */
+	/**
+	 * Class under test.
+	 */
 	private IsIndexCurrent isIndexCurrentRule = new IsIndexCurrent();
 
 	@Before
-	public void beforeClass() {
+	public void before() {
 		Mockit.setUpMock(IndexManagerMock.class);
 	}
 
 	@After
-	public void afterClass() {
-		Mockit.tearDownMocks();
+	public void after() {
+		Mockit.tearDownMocks(IndexManagerMock.class);
 	}
 
 	@Test

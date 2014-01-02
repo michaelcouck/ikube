@@ -5,6 +5,7 @@ import ikube.model.IndexContext;
 
 import java.io.File;
 
+import org.apache.lucene.index.IndexReaderContext;
 import org.apache.lucene.search.IndexSearcher;
 
 /**
@@ -25,10 +26,14 @@ public class IsNewIndexCreated extends ARule<IndexContext<?>> {
 		if (indexSearcher != null) {
 			String baseIndexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(baseIndexDirectoryPath);
-			int readers = indexSearcher.getTopReaderContext().children().size();
-			int directories = latestIndexDirectory.listFiles().length;
-			logger.info("Readers : " + readers + ", directories : " + directories + ", directory : " + latestIndexDirectory);
-			return indexSearcher.getTopReaderContext().children().size() != latestIndexDirectory.listFiles().length;
+			logger.info("Latest index directory : " + latestIndexDirectory);
+			IndexReaderContext indexReaderContext = indexSearcher.getTopReaderContext();
+			if (indexReaderContext != null && latestIndexDirectory != null) {
+				int readers = indexSearcher.getTopReaderContext().children().size();
+				int directories = latestIndexDirectory.listFiles().length;
+				logger.info("Readers : " + readers + ", directories : " + directories + ", directory : " + latestIndexDirectory);
+				return indexReaderContext.children().size() != latestIndexDirectory.listFiles().length;
+			}
 		}
 		return new AreIndexesCreated().evaluate(indexContext);
 	}

@@ -4,9 +4,8 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
 import ikube.action.index.analyzer.StemmingAnalyzer;
-import ikube.mock.SpellingCheckerMock;
+import ikube.search.Search;
 import ikube.search.SearchComplex;
-import mockit.Mockit;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.*;
@@ -88,7 +87,6 @@ public class LuceneTest extends AbstractTest {
 	@Before
 	public void before() {
 		ThreadUtilities.initialize();
-		Mockit.setUpMock(SpellingCheckerMock.class);
 	}
 
 	@After
@@ -209,7 +207,9 @@ public class LuceneTest extends AbstractTest {
 						searchSingle.setMaxResults(Integer.MAX_VALUE);
 						searchSingle.setSearchFields(IConstants.CONTENTS);
 						searchSingle.setSearchStrings("détermine");
-						searchSingle.setSortField(IConstants.CONTENTS);
+						searchSingle.setOccurrenceFields(IConstants.SHOULD);
+						searchSingle.setTypeFields(Search.TypeField.STRING.name());
+						searchSingle.setSortFields(IConstants.CONTENTS);
 						ArrayList<HashMap<String, String>> results = searchSingle.execute();
 						int size = results.size();
 						logger.debug("Results size : " + size);
@@ -255,7 +255,9 @@ public class LuceneTest extends AbstractTest {
 						searchSingle.setMaxResults(Integer.MAX_VALUE);
 						searchSingle.setSearchFields(IConstants.CONTENTS);
 						searchSingle.setSearchStrings("détermine");
-						searchSingle.setSortField(IConstants.CONTENTS);
+						searchSingle.setOccurrenceFields(IConstants.SHOULD);
+						searchSingle.setTypeFields(Search.TypeField.STRING.name());
+						searchSingle.setSortFields(IConstants.CONTENTS);
 						ArrayList<HashMap<String, String>> results = searchSingle.execute();
 						int size = results.size();
 						searcherManager.release(indexSearcher);

@@ -16,8 +16,8 @@
 		<ikube.war>ikube.war</ikube.war>
 		<final.name>${project.build.finalName}.${project.packaging}</final.name>
 		<maven.build.timestamp.format>dd-MM-yyyy HH:mm:ss</maven.build.timestamp.format>
-		<axis.version>1.4</axis.version>
-		<jaxrpc.api.version>1.1</jaxrpc.api.version>
+		<!-- axis.version>1.4</axis.version -->
+		<!-- jaxrpc.api.version>1.1</jaxrpc.api.version -->
 		<jersey.version>1.9.1</jersey.version>
 		<jaxb-api.version>2.2.1</jaxb-api.version>
 	</properties>
@@ -97,7 +97,7 @@
 				<executions>
 					<execution>
 						<id>start-jetty</id>
-						<phase>test</phase>
+						<phase>pre-integration-test</phase>
 						<goals>
 							<goal>run</goal>
 						</goals>
@@ -107,7 +107,7 @@
 					</execution>
 					<execution>
 						<id>stop-jetty</id>
-						<phase>install</phase>
+						<phase>post-integration-test</phase>
 						<goals>
 							<goal>stop</goal>
 						</goals>

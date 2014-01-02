@@ -65,7 +65,7 @@ public class DeltaIndexableFilesystemStrategyTest extends AbstractTest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks();
+		Mockit.tearDownMocks(IndexReaderMock.class);
 	}
 
 	@Test

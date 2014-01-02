@@ -66,7 +66,7 @@ public class TwitterHandlerTest extends AbstractTest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks();
+		Mockit.tearDownMocks(TwitterResourceProviderMock.class);
 	}
 
 	@Test

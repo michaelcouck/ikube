@@ -4,7 +4,10 @@ import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
 
 import java.io.File;
+import java.util.List;
 
+import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.CompositeReaderContext;
 import org.apache.lucene.index.MultiReader;
 import org.apache.lucene.search.IndexSearcher;
 
@@ -29,11 +32,14 @@ public class AreUnopenedIndexes extends ARule<IndexContext<?>> {
 		}
 		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
-		if (latestIndexDirectory == null || (latestIndexDirectory.listFiles() != null && latestIndexDirectory.listFiles().length == 0)) {
+		if (latestIndexDirectory == null || latestIndexDirectory.listFiles() == null || latestIndexDirectory.listFiles().length == 0) {
 			return Boolean.FALSE;
 		}
 		MultiReader multiReader = (MultiReader) searchers.getIndexReader();
-		return multiReader.getContext().leaves().size() != latestIndexDirectory.listFiles().length;
+		CompositeReaderContext compositeReaderContext = multiReader.getContext();
+		List<AtomicReaderContext> atomicReaderContexts = compositeReaderContext.leaves();
+		logger.info("Checking latest index directory for new indexes : " + latestIndexDirectory);
+		return atomicReaderContexts.size() != latestIndexDirectory.listFiles().length;
 	}
 
 }

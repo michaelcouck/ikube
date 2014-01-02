@@ -1,10 +1,8 @@
-package ikube.mock;
+package ikube.ikube.mock;
 
 import ikube.search.spelling.SpellingChecker;
 import mockit.Mock;
 import mockit.MockClass;
-
-import org.mockito.Mockito;
 
 @MockClass(realClass = SpellingChecker.class)
 public class SpellingCheckerMock {

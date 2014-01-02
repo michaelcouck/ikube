@@ -40,7 +40,7 @@ public class IndexableFilesystemCsvHandlerTest extends AbstractTest {
 
 	@Before
 	public void before() throws Exception {
-		Mockit.tearDownMocks();
+		// Mockit.tearDownMocks();
 		indexableFileSystem = new IndexableFileSystemCsv();
 		filesystemCsvHandler = new IndexableFilesystemCsvHandler();
 	}

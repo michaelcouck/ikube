@@ -120,12 +120,12 @@ public class WekaClusterer extends Analyzer {
 		ClusterEvaluation clusterEvaluation = new ClusterEvaluation();
 		clusterEvaluation.setClusterer(clusterer);
 		clusterEvaluation.evaluateClusterer(instances);
-		logger.info("Num clusters : " + clusterEvaluation.clusterResultsToString());
+		logger.debug("Num clusters : " + clusterEvaluation.clusterResultsToString());
 		for (int i = 0; i < instances.numAttributes(); i++) {
 			Attribute attribute = instances.attribute(i);
-			logger.info("Attribute : " + attribute.name() + ", " + attribute.type());
+			logger.debug("Attribute : " + attribute.name() + ", " + attribute.type());
 			for (int j = 0; j < attribute.numValues(); j++) {
-				logger.info("          : " + attribute.value(j));
+				logger.debug("          : " + attribute.value(j));
 			}
 		}
 	}

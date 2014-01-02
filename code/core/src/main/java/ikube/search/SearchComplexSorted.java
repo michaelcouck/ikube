@@ -1,20 +1,18 @@
 package ikube.search;
 
-import java.io.IOException;
-
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
 
+import java.io.IOException;
+
 /**
- * @see Search
  * @author Michael Couck
- * @since 02.07.2013
  * @version 01.00
+ * @see Search
+ * @since 02.07.2013
  */
 public class SearchComplexSorted extends SearchComplex {
 
@@ -31,12 +29,12 @@ public class SearchComplexSorted extends SearchComplex {
 	 */
 	@Override
 	protected TopDocs search(final Query query) throws IOException {
-		Sort sort = getSort(query);
-		Filter filter = new QueryWrapperFilter(query);
+		Sort sort = getSort();
+		// Filter filter = new QueryWrapperFilter(query);
 		if (sort == null) {
-			return searcher.search(query, filter, firstResult + maxResults);
+			return searcher.search(query, /* filter,  */ firstResult + maxResults);
 		}
-		return searcher.search(query, filter, firstResult + maxResults, sort);
+		return searcher.search(query, /* filter,  */  firstResult + maxResults, sort);
 	}
 
 }

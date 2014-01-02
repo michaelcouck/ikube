@@ -57,6 +57,9 @@ public class ClassifierTrainingStrategyTest extends AbstractTest {
 	public void aroundProcess() throws Exception {
 		Document document = new Document();
 		final IndexableTweets indexableTweets = Mockito.mock(IndexableTweets.class);
+		Mockito.when(indexableTweets.isStored()).thenReturn(Boolean.TRUE);
+		Mockito.when(indexableTweets.isAnalyzed()).thenReturn(Boolean.TRUE);
+
 		IndexManager.addStringField(IConstants.LANGUAGE, Locale.ENGLISH.getLanguage(), indexableTweets, document);
 		IndexManager.addStringField(IConstants.CLASSIFICATION, IConstants.POSITIVE, indexableTweets, document);
 		final Tweet tweet = ObjectToolkit.populateFields(new Tweet(0, null, null, null, null, null, 0, null, null), Boolean.TRUE, 10);

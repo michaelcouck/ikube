@@ -60,7 +60,7 @@ public class ActionInterceptorTest extends ATest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks();
+		Mockit.tearDownMocks(IndexReaderMock.class);
 	}
 
 	@Test

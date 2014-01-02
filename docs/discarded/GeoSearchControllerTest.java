@@ -59,7 +59,7 @@ public class GeoSearchControllerTest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks();
+		Mockit.tearDownMocks(ApplicationContextManagerMock.class);
 	}
 
 	@Test

@@ -2,6 +2,7 @@ package ikube.action.index.analyzer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.search.SearchComplex;
@@ -17,8 +18,8 @@ import org.junit.Test;
 
 /**
  * @author Michael Couck
- * @since 29.10.12
  * @version 01.00
+ * @since 29.10.12
  */
 public class StemmingAnalyzerTest extends AbstractTest {
 
@@ -39,20 +40,21 @@ public class StemmingAnalyzerTest extends AbstractTest {
 
 	@Test
 	public void endToEnd() throws Exception {
-		SearchComplex searchSingle = createIndexRamAndSearch(SearchComplex.class, stemmingAnalyzer, IConstants.CONTENT, "duck", "ducks", "peoples", "peopled",
-				"oranges", "orange");
+		SearchComplex searchSingle = createIndexRamAndSearch(SearchComplex.class, stemmingAnalyzer,
+			IConstants.CONTENT, "duck", "ducks", "peoples", "peopled",
+			"oranges", "orange");
 		searchSingle.setFirstResult(0);
 		searchSingle.setFragment(true);
 		searchSingle.setMaxResults(10);
 		searchSingle.setSearchFields(IConstants.CONTENT);
 		searchSingle.setSearchStrings("duck peoples orange");
-		searchSingle.setSortField(IConstants.CONTENT);
+		searchSingle.setSortFields(IConstants.CONTENT);
 
 		ArrayList<HashMap<String, String>> results = searchSingle.execute();
 		logger.info("Results : " + results);
 
 		assertEquals("All the documents should be hit : ", 7, results.size());
-		assertEquals("This is the highlighted hit : ", "<B>ducks</B> ", results.get(1).get(IConstants.FRAGMENT));
+		assertEquals("This is the highlighted hit : ", "<B>ducks</B>", results.get(1).get(IConstants.FRAGMENT));
 	}
 
 }

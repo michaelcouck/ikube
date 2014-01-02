@@ -1,7 +1,6 @@
 package ikube.web.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import com.google.gson.Gson;
 import ikube.BaseTest;
 import ikube.IConstants;
 import ikube.cluster.IClusterManager;
@@ -10,80 +9,47 @@ import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.model.Snapshot;
-import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ObjectToolkit;
 import ikube.web.toolkit.PerformanceTester;
-
-import java.io.File;
-import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
-import javax.ws.rs.core.Response;
-
-import mockit.Cascading;
 import mockit.Deencapsulation;
-import mockit.Mock;
-import mockit.MockClass;
-import mockit.Mockit;
-
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.google.gson.Gson;
+import javax.ws.rs.core.Response;
+import java.sql.Timestamp;
+import java.util.*;
+
+import static org.junit.Assert.*;
 
 public class MonitorTest extends BaseTest {
-	
-	@MockClass(realClass = Server.class)
-	public static class ServerMock {
-		@Mock
-		public boolean isWorking() {
-			return Boolean.TRUE;
-		}
-	}
 
 	private Monitor monitor;
 	private IMonitorService monitorService;
 	private IClusterManager clusterManager;
 	@SuppressWarnings("rawtypes")
 	private IndexContext indexContext;
-	@Cascading
-	private Server server;
 	private Random random;
 
 	@Before
 	public void before() {
-		monitor = new Monitor();
 		random = new Random();
+		monitor = new Monitor();
 		indexContext = getIndexContext(Integer.toString(random.nextInt()));
 
 		monitorService = Mockito.mock(IMonitorService.class);
 		clusterManager = Mockito.mock(IClusterManager.class);
 		Deencapsulation.setField(monitor, monitorService);
 		Deencapsulation.setField(monitor, clusterManager);
-
-		Mockit.setUpMocks();
-	}
-
-	@After
-	public void after() throws IOException {
-		Mockit.tearDownMocks();
-		FileUtilities.deleteFile(new File(".", "indexDirectoryPath"), 1);
 	}
 
 	@Test
 	public void fields() throws Exception {
-		Mockito.when(monitorService.getIndexFieldNames(Mockito.anyString())).thenReturn(new String[] { "one", "two", "three" });
+		Mockito.when(monitorService.getIndexFieldNames(Mockito.anyString())).thenReturn(new String[]{"one", "two",
+			"three"});
 		Response fields = monitor.fields("indexName");
-		assertEquals("The string should be a concatenation of the fields : ", "[\"one\",\"two\",\"three\"]", fields.getEntity());
+		assertEquals("The string should be a concatenation of the fields : ", "[\"one\",\"two\",\"three\"]",
+			fields.getEntity());
 	}
 
 	@Test
@@ -95,9 +61,9 @@ public class MonitorTest extends BaseTest {
 	}
 
 	@Test
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public void indexContexts() {
-		Map<String, IndexContext> indexContexts = new HashMap<String, IndexContext>();
+		Map<String, IndexContext> indexContexts = new HashMap<>();
 		IndexContext indexContextOne = getIndexContext("aaa");
 		IndexContext indexContextTwo = getIndexContext("bbb");
 		indexContexts.put(IConstants.GEOSPATIAL, indexContextOne);
@@ -136,7 +102,8 @@ public class MonitorTest extends BaseTest {
 
 	@Test
 	public void servers() {
-		Map<String, Server> servers = new HashMap<String, Server>();
+		Server server = getServer("127.0.0.1");
+		Map<String, Server> servers = new HashMap<>();
 		servers.put(IConstants.IKUBE, server);
 
 		Mockito.when(clusterManager.getServers()).thenReturn(servers);
@@ -147,18 +114,15 @@ public class MonitorTest extends BaseTest {
 
 	@Test
 	public void indexingStatistics() {
-		Mockit.tearDownMocks();
-		Mockit.setUpMocks(ServerMock.class);
-
 		Map<String, Server> servers = getServers();
-
 		Mockito.when(clusterManager.getServers()).thenReturn(servers);
 		Response response = monitor.indexingStatistics();
 		Object entity = response.getEntity();
 		assertEquals(
-				"[[\"Times\", \"127.0.0.1-8002\", \"127.0.0.1-8003\", \"127.0.0.1-8000\", \"127.0.0.1-8001\"], [\"1.1\", 3, 3, 3, 3], "
-						+ "[\"1.2\", 6, 6, 6, 6], [\"1.3\", 9, 9, 9, 9]]", entity);
-
+			"[[\"Times\", \"127.0.0.1-8002\", \"127.0.0.1-8003\", \"127.0.0.1-8000\", \"127.0.0.1-8001\"], " +
+				"[\"1.1\", " +
+				"3, 3, 3, 3], "
+				+ "[\"1.2\", 6, 6, 6, 6], [\"1.3\", 9, 9, 9, 9]]", entity);
 		double perSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			@Override
 			public void execute() throws Throwable {
@@ -170,18 +134,16 @@ public class MonitorTest extends BaseTest {
 
 	@Test
 	public void searchingStatistics() {
-		Mockit.tearDownMocks();
-		Mockit.setUpMocks(ServerMock.class);
-
 		Map<String, Server> servers = getServers();
-
 		Mockito.when(clusterManager.getServers()).thenReturn(servers);
 		Response response = monitor.searchingStatistics();
 		Object entity = response.getEntity();
 		assertEquals(
-				"[[\"Times\", \"127.0.0.1-8002\", \"127.0.0.1-8003\", \"127.0.0.1-8000\", \"127.0.0.1-8001\"], [\"1.1\", 300, 300, 300, 300], "
-						+ "[\"1.2\", 600, 600, 600, 600], [\"1.3\", 900, 900, 900, 900]]", entity);
-
+			"[[\"Times\", \"127.0.0.1-8002\", \"127.0.0.1-8003\", \"127.0.0.1-8000\", \"127.0.0.1-8001\"], " +
+				"[\"1.1\"," +
+				" " +
+				"300, 300, 300, 300], "
+				+ "[\"1.2\", 600, 600, 600, 600], [\"1.3\", 900, 900, 900, 900]]", entity);
 		double perSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			@Override
 			public void execute() throws Throwable {
@@ -193,22 +155,15 @@ public class MonitorTest extends BaseTest {
 
 	@Test
 	public void actions() {
-		Mockit.tearDownMocks();
-		Mockit.setUpMocks(ServerMock.class);
-		Map<String, Server> servers = getServers();
-		Mockito.when(clusterManager.getServers()).thenReturn(servers);
 		Response response = monitor.actions();
 		Object entity = response.getEntity();
-		assertTrue(entity.toString().contains(Integer.toString(Integer.MAX_VALUE)));
-		
-		Server server = ObjectToolkit.populateFields(Server.class, new Server(), Boolean.TRUE, 20);
-		servers = new HashMap<String, Server>();
-		servers.put(server.getAddress(), server);
+		assertFalse(entity.toString().contains(Integer.toString(Integer.MAX_VALUE)));
+
+		Map<String, Server> servers = getServers();
 		Mockito.when(clusterManager.getServers()).thenReturn(servers);
-		monitor.actions();
 		response = monitor.actions();
 		entity = response.getEntity();
-		logger.info("Entity : " + entity);
+		assertTrue(entity.toString().contains(Integer.toString(Integer.MAX_VALUE)));
 	}
 
 	private Map<String, Server> getServers() {
@@ -217,12 +172,12 @@ public class MonitorTest extends BaseTest {
 		Server serverThree = getServer("127.0.0.1-8002");
 		Server serverFour = getServer("127.0.0.1-8003");
 
-		serverOne.getActions().add(getAction(serverOne));
-		serverTwo.getActions().add(getAction(serverTwo));
-		serverThree.getActions().add(getAction(serverThree));
-		serverFour.getActions().add(getAction(serverFour));
+		addAction(serverOne);
+		addAction(serverTwo);
+		addAction(serverThree);
+		addAction(serverFour);
 
-		Map<String, Server> servers = new HashMap<String, Server>();
+		Map<String, Server> servers = new HashMap<>();
 		servers.put(serverOne.getAddress(), serverOne);
 		servers.put(serverTwo.getAddress(), serverTwo);
 		servers.put(serverThree.getAddress(), serverThree);
@@ -231,7 +186,7 @@ public class MonitorTest extends BaseTest {
 		return servers;
 	}
 
-	private Action getAction(final Server server) {
+	private Action addAction(final Server server) {
 		Action action = new Action();
 		action.setServer(server);
 		action.setActionName("action");
@@ -243,15 +198,17 @@ public class MonitorTest extends BaseTest {
 		action.setResult(Boolean.TRUE);
 		action.setStartTime(new Date());
 		action.setTimestamp(new Timestamp(System.currentTimeMillis()));
+		server.getActions().add(action);
 		return action;
 	}
 
 	@SuppressWarnings("rawtypes")
 	private Server getServer(final String address) {
 		Server server = new Server();
+		server.setActions(new ArrayList<Action>());
 		server.setAddress(address);
 
-		List<IndexContext> indexContexts = new ArrayList<IndexContext>();
+		List<IndexContext> indexContexts = new ArrayList<>();
 		indexContexts.add(getIndexContext(Integer.toString(random.nextInt())));
 		indexContexts.add(getIndexContext(Integer.toString(random.nextInt())));
 		indexContexts.add(getIndexContext(Integer.toString(random.nextInt())));
@@ -261,12 +218,13 @@ public class MonitorTest extends BaseTest {
 		return server;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	private IndexContext getIndexContext(final String indexName) {
-		IndexContext indexContext = ObjectToolkit.populateFields(IndexContext.class, new IndexContext(), Boolean.TRUE, 0, 5, "strategies");
+		IndexContext indexContext = ObjectToolkit.populateFields(IndexContext.class, new IndexContext(), Boolean.TRUE,
+			0, 5, "strategies");
 		indexContext.setIndexName(indexName);
 		indexContext.setIndexDirectoryPath("indexDirectoryPath");
-		List<Snapshot> snapshots = new ArrayList<Snapshot>();
+		List<Snapshot> snapshots = new ArrayList<>();
 
 		snapshots.add(getSnapshot(1, 100, 60000));
 		snapshots.add(getSnapshot(2, 200, 120000));

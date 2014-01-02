@@ -1,27 +1,24 @@
 package ikube.action.index.handler.strategy;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
 import ikube.model.Indexable;
 import ikube.toolkit.PerformanceTester;
+import org.apache.lucene.document.Document;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import mockit.Mockit;
-
-import org.apache.lucene.document.Document;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Michael Couck
- * @since 03.12.13
  * @version 01.00
+ * @since 03.12.13
  */
 public class LanguageFilterStrategyTest extends AbstractTest {
 
@@ -32,10 +29,10 @@ public class LanguageFilterStrategyTest extends AbstractTest {
 		languageFilterStrategy = new LanguageFilterStrategy();
 	}
 
-	@After
-	public void after() {
-		Mockit.tearDownMocks();
-	}
+//	@After
+//	public void after() {
+//		Mockit.tearDownMocks();
+//	}
 
 	@Test
 	public void aroundProcess() throws Exception {
@@ -45,7 +42,7 @@ public class LanguageFilterStrategyTest extends AbstractTest {
 	}
 
 	@Test
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void aroundProcessPerformance() {
 		when(indexableColumn.getContent()).thenReturn("some english text");
 		List<Indexable<?>> children = new ArrayList(Arrays.asList(indexableColumn));

@@ -1,43 +1,34 @@
 package ikube.toolkit;
 
-import ikube.model.Attribute;
-import ikube.model.Indexable;
-import ikube.model.IndexableColumn;
-import ikube.model.IndexableDataSource;
-import ikube.model.IndexableDictionary;
-import ikube.model.IndexableEmail;
-import ikube.model.IndexableFileSystem;
-import ikube.model.IndexableFileSystemCsv;
-import ikube.model.IndexableFileSystemLog;
-import ikube.model.IndexableFileSystemWiki;
-import ikube.model.IndexableInternet;
-import ikube.model.IndexableTable;
-
-import java.lang.reflect.Field;
-
+import ikube.model.*;
 import org.dom4j.Document;
 import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
 import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Field;
+
 /**
- * This class will just look through the entities for the annotation {@link Attribute} then extract the information from each fieldin the
+ * This class will just look through the entities for the annotation {@link Attribute} then extract the information
+ * from each field in the
  * entity and produce an html table of the indexables, the fields, and the description of the fields.
- * 
+ *
  * @author Michael Couck
- * @since 19.02.13
  * @version 01.00
+ * @since 19.02.13
  */
 public class GenerateModelDocumentation {
 
-	private static final Class<?>[] CLASSES = new Class<?>[] { Indexable.class, IndexableFileSystemLog.class, IndexableEmail.class,
-			IndexableFileSystem.class, IndexableFileSystemCsv.class, IndexableInternet.class, IndexableTable.class, IndexableColumn.class,
-			IndexableDataSource.class, IndexableFileSystemWiki.class, IndexableDictionary.class };
-	
+	private static final Class<?>[] CLASSES = new Class<?>[]{Indexable.class, IndexableFileSystemLog.class,
+		IndexableEmail.class,
+		IndexableFileSystem.class, IndexableFileSystemCsv.class, IndexableInternet.class, IndexableTable.class,
+		IndexableColumn.class,
+		IndexableDataSource.class, IndexableFileSystemWiki.class};
+
 	public static void main(String[] args) {
 		new GenerateModelDocumentation().createEntityFieldTable();
 	}
-	
+
 	public String createEntityFieldTable() {
 		Document document = DocumentFactory.getInstance().createDocument();
 		Element tableElement = document.addElement("table");
@@ -55,9 +46,9 @@ public class GenerateModelDocumentation {
 	private void createEntityTableRow(final Class<?> klass, final Element tableElement) {
 		final Element rowElement = tableElement.addElement("tr");
 		XmlUtilities.addElement(rowElement, "td", klass.getSimpleName());
-		final StringBuilder propertyBuilder = new  StringBuilder();
-		final StringBuilder luceneFieldBuilder = new  StringBuilder();
-		final StringBuilder descriptionBuilder = new  StringBuilder();
+		final StringBuilder propertyBuilder = new StringBuilder();
+		final StringBuilder luceneFieldBuilder = new StringBuilder();
+		final StringBuilder descriptionBuilder = new StringBuilder();
 		class ModelAttributeFieldCallback implements ReflectionUtils.FieldCallback {
 			@Override
 			public void doWith(final Field field) throws IllegalArgumentException, IllegalAccessException {

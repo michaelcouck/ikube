@@ -64,7 +64,6 @@ public class AopTest extends ATest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks();
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 

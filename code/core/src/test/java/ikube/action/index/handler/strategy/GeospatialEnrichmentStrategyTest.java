@@ -45,8 +45,7 @@ public class GeospatialEnrichmentStrategyTest extends AbstractTest {
 	@Before
 	public void before() {
 		geospatialEnrichmentStrategy = new GeospatialEnrichmentStrategy();
-		Deencapsulation.setField(geospatialEnrichmentStrategy, "startTierParam", Integer.valueOf(10));
-		Deencapsulation.setField(geospatialEnrichmentStrategy, "endTierParam", Integer.valueOf(20));
+		Deencapsulation.setField(geospatialEnrichmentStrategy, "maxGeohashLevels", Integer.valueOf(10));
 		geospatialEnrichmentStrategy.initialize();
 		when(indexableTable.isAddress()).thenReturn(Boolean.TRUE);
 		when(indexableColumn.isAddress()).thenReturn(Boolean.TRUE);
@@ -54,7 +53,7 @@ public class GeospatialEnrichmentStrategyTest extends AbstractTest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks();
+		// Mockit.tearDownMocks();
 	}
 
 	@Test
@@ -76,9 +75,7 @@ public class GeospatialEnrichmentStrategyTest extends AbstractTest {
 		boolean result = geospatialEnrichmentStrategy.aroundProcess(indexContext, indexableTable, document, null);
 		printDocument(document);
 		assertTrue(result);
-		assertTrue(document.get(IConstants.LAT) != null);
-		assertTrue(document.get(IConstants.LNG) != null);
-		assertTrue(document.get("_tier_15") != null);
+		assertTrue(document.get(IConstants.POSITION_FIELD_NAME) != null);
 	}
 
 	@Test

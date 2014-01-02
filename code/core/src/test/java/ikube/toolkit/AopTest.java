@@ -52,7 +52,7 @@ public class AopTest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks();
+		Mockit.tearDownMocks(IndexManagerMock.class);
 		ApplicationContextManager.closeApplicationContext();
 	}
 

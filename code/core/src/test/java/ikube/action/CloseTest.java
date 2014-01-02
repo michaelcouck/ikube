@@ -34,7 +34,7 @@ public class CloseTest extends AbstractTest {
 
     @After
     public void after() {
-        Mockit.tearDownMocks();
+        Mockit.tearDownMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
     }
 
     @Test

@@ -41,7 +41,7 @@ public class GoogleGeocoderTest extends AbstractTest {
 			assertEquals("We know that this address exists and where it is : ", -33.9693580, lat, 1.0);
 			assertEquals("We know that this address exists and where it is : ", 18.4622110, lon, 1.0);
 		} finally {
-			Mockit.tearDownMocks();
+			Mockit.tearDownMocks(URLMock.class, FileUtilitiesMock.class);
 		}
 	}
 

@@ -92,6 +92,17 @@ public class IndexManagerTest extends AbstractTest {
 	}
 
 	@Test
+	public void addNumericField() {
+		String floatFieldValue = "123.456";
+		IndexManager.addNumericField(fieldName, floatFieldValue, document, Boolean.TRUE);
+
+		IndexableField field = document.getField(fieldName);
+		assertNotNull(field);
+		// Verify that the value is the same as the field value string
+		assertEquals(floatFieldValue, field.stringValue());
+	}
+
+	@Test
 	public void addReaderField() throws Exception {
 		// We want to add a reader field to the document
 		Reader reader = getReader(Reader.class);
@@ -198,7 +209,7 @@ public class IndexManagerTest extends AbstractTest {
 			logger.info("Num docs : " + numDocs);
 			assertEquals(0, numDocs);
 		} finally {
-			Mockit.tearDownMocks();
+			Mockit.tearDownMocks(IndexWriterMock.class);
 		}
 	}
 
@@ -207,7 +218,7 @@ public class IndexManagerTest extends AbstractTest {
 		logger.info("Index writer test : " + indexWriter);
 		when(indexContext.getMultiSearcher()).thenReturn(multiSearcher);
 		when(indexContext.getIndexWriters()).thenReturn(null);
-		// when(multiSearcher.getSearchables()).thenReturn(searchables);
+		when(multiSearcher.getIndexReader()).thenReturn(indexReader);
 		when(indexSearcher.getIndexReader()).thenReturn(indexReader);
 		when(indexReader.numDocs()).thenReturn(Integer.MAX_VALUE);
 		long numDocs = IndexManager.getNumDocsForIndexSearchers(indexContext);

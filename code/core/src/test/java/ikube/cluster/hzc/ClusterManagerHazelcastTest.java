@@ -87,28 +87,25 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 	@Cascading
 	private Snapshot snapshot;
 
-	private static ClusterManagerHazelcast clusterManagerHazelcast;
+	private ClusterManagerHazelcast clusterManagerHazelcast;
 
-	@BeforeClass
-	public static void beforeClass() {
+	@Before
+	@SuppressWarnings("unchecked")
+	public void before() {
 		clusterManagerHazelcast = new ClusterManagerHazelcast();
 
 		StartListener startListener = new StartListener();
 		StopListener stopListener = new StopListener();
 		List<MessageListener<Object>> listeners = new ArrayList<MessageListener<Object>>(Arrays.asList(startListener, stopListener));
 		clusterManagerHazelcast.setListeners(listeners);
-	}
 
-	@Before
-	@SuppressWarnings("unchecked")
-	public void before() {
 		dataBase = Mockito.mock(IDataBase.class);
 		monitorService = Mockito.mock(IMonitorService.class);
 		Mockit.setUpMocks(HazelcastMock.class);
 
 		server = new Server();
 		serverEntry = mock(Map.Entry.class);
-		serverEntrySet = new HashSet<Map.Entry<String, Server>>();
+		serverEntrySet = new HashSet<>();
 
 		when(serverEntry.getValue()).thenReturn(server);
 		when(HazelcastMock.servers.entrySet()).thenReturn(serverEntrySet);
@@ -121,7 +118,7 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks();
+		Mockit.tearDownMocks(HazelcastMock.class);
 	}
 
 	@AfterClass
@@ -178,7 +175,7 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 
 		Action action = new Action();
 		server.setActions(Arrays.asList(action));
-		// clusterManagerHazelcast.put(server.getIp(), server);
+		clusterManagerHazelcast.put(server.getIp(), server);
 		HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance();
 		hazelcastInstance.getMap(IConstants.IKUBE).put(server.getAddress(), server);
 
@@ -217,7 +214,7 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 		action.setActionName("actinName");
 		action.setIndexableName("indexableName");
 		action.setTimestamp(new Timestamp(System.currentTimeMillis()));
-		server.setActions(new ArrayList<Action>(Arrays.asList(action)));
+		server.setActions(new ArrayList<>(Arrays.asList(action)));
 
 		clusterManagerHazelcast.stopWorking(action);
 
@@ -239,17 +236,28 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 	@Test
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void sendMessage() {
+		Action action = new Action();
+		action.setIndexName(indexName);
+		server.getActions().add(action);
+
 		MessageListener messageListener = Mockito.mock(MessageListener.class);
 		HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance();
 		hazelcastInstance.getTopic(IConstants.TOPIC).addMessageListener(messageListener);
-		clusterManagerHazelcast.sendMessage(new Event());
+		Deencapsulation.setField(clusterManagerHazelcast, hazelcastInstance);
+		Event event = new Event();
+		event.setObject(indexName);
+		event.setType(Event.TERMINATE);
+		clusterManagerHazelcast.sendMessage(event);
 		ThreadUtilities.sleep(1000);
+
+		server.getActions().remove(action);
+
 		Mockito.verify(messageListener, Mockito.atLeastOnce()).onMessage(Mockito.any(Message.class));
 	}
 
 	@Test
 	public void submitDestroy() {
-		Mockit.tearDownMocks();
+		// Mockit.tearDownMocks();
 		Runnable runnable = new Runnable() {
 			@Override
 			public void run() {
@@ -274,7 +282,7 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 		final int iterations = 100;
 		final double sleep = 100;
 		final Boolean[] locks = new Boolean[threads];
-		List<Future<?>> futures = new ArrayList<Future<?>>();
+		List<Future<?>> futures = new ArrayList<>();
 		for (int i = 0; i < threads; i++) {
 			final int thread = i;
 

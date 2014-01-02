@@ -45,7 +45,7 @@ public class EnrichmentTest extends AbstractTest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks();
+		// Mockit.tearDownMocks();
 	}
 
 	@Test

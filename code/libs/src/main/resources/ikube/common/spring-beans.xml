@@ -307,10 +307,6 @@
 		property:indexableClass="ikube.model.IndexableTable" />
 	<bean
 		parent="ikube.action.index.handler.IndexableHandler"
-		class="ikube.action.index.handler.filesystem.IndexableDictionaryHandler"
-		property:indexableClass="ikube.model.IndexableDictionary" />
-	<bean
-		parent="ikube.action.index.handler.IndexableHandler"
 		class="ikube.action.index.handler.filesystem.IndexableFilesystemLogHandler"
 		property:indexableClass="ikube.model.IndexableFileSystemLog" />
 	<bean

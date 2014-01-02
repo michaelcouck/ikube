@@ -2,6 +2,7 @@ package ikube.action.index.handler.strategy;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static org.mockito.Mockito.*;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Indexable;
@@ -25,6 +26,8 @@ public class EmoticonClassificationStrategyTest extends AbstractTest {
 	@Test
 	public void aroundProcess() throws Exception {
 		final Indexable<?> indexable = Mockito.mock(Indexable.class);
+		when(indexable.isStored()).thenReturn(Boolean.TRUE);
+		when(indexable.isAnalyzed()).thenReturn(Boolean.TRUE);
 		final Object resource = new Object();
 
 		Document document = new Document();

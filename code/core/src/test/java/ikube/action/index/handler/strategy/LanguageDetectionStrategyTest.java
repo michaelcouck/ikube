@@ -1,53 +1,53 @@
 package ikube.action.index.handler.strategy;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Indexable;
 import ikube.toolkit.PerformanceTester;
+import org.apache.lucene.document.Document;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import mockit.Mockit;
-
-import org.apache.lucene.document.Document;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Michael Couck
- * @since 05.04.13
  * @version 01.00
+ * @since 05.04.13
  */
 public class LanguageDetectionStrategyTest extends AbstractTest {
 
 	private LanguageDetectionStrategy languageDetectionStrategy;
 
 	@Before
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void before() {
 		languageDetectionStrategy = new LanguageDetectionStrategy();
 		languageDetectionStrategy.initialize();
 		List<Indexable<?>> children = new ArrayList(Arrays.asList(indexableColumn));
 		when(indexableTable.getChildren()).thenReturn(children);
+		when(indexableTable.isStored()).thenReturn(Boolean.TRUE);
+		when(indexableTable.isAnalyzed()).thenReturn(Boolean.TRUE);
 	}
 
-	@After
-	public void after() {
-		Mockit.tearDownMocks();
-	}
+//	@After
+//	public void after() {
+//		Mockit.tearDownMocks();
+//	}
 
 	@Test
 	public void aroundProcess() throws Exception {
 		Document document = new Document();
 		// English
-		when(indexableColumn.getContent()).thenReturn("some english text that can not be confused with swedish for God's sake");
+		when(indexableColumn.getContent()).thenReturn("some english text that can not be confused with swedish for " +
+			"God's sake");
 		languageDetectionStrategy.aroundProcess(indexContext, indexableTable, document, null);
 		String english = Locale.ENGLISH.getDisplayLanguage(Locale.ENGLISH);
 		String language = document.get(IConstants.LANGUAGE);

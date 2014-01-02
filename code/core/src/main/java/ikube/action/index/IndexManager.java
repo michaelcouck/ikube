@@ -27,10 +27,7 @@ import java.util.TreeSet;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.DoubleField;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.FieldType;
+import org.apache.lucene.document.*;
 import org.apache.lucene.document.FieldType.NumericType;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.CorruptIndexException;
@@ -73,7 +70,7 @@ public final class IndexManager {
 		String indexDirectoryPath = getIndexDirectoryPath(indexContext);
 		// Find all the indexes in the latest index directory and open a writer on each one
 		File latestIndexDirectory = getLatestIndexDirectory(indexDirectoryPath);
-		IndexWriter[] indexWriters = null;
+		IndexWriter[] indexWriters;
 		if (latestIndexDirectory == null || latestIndexDirectory.listFiles() == null || latestIndexDirectory.listFiles().length == 0) {
 			// This means that we tried to do a delta index but there was no index, i.e. we still have to index from the start
 			IndexWriter indexWriter = openIndexWriter(indexContext, System.currentTimeMillis(), ip);
@@ -465,7 +462,12 @@ public final class IndexManager {
 			FieldType fieldType = new FieldType();
 			fieldType.setIndexed(indexable.isAnalyzed());
 			fieldType.setStored(indexable.isStored());
+			// If the term vectors are enabled the field cannot be searched
 			fieldType.setStoreTermVectors(indexable.isVectored());
+			// Must be tokenized to search correctly
+			fieldType.setTokenized(indexable.isTokenized());
+			// For normalization of the length, i.e. longer strings are scored higher
+			fieldType.setOmitNorms(indexable.isOmitNorms());
 
 			Field oldField = (Field) document.getField(fieldName);
 			if (oldField == null) {
@@ -481,20 +483,20 @@ public final class IndexManager {
 				field = new Field(fieldName, builder.toString(), fieldType);
 			}
 			document.add(field);
-			// Add this for the autocomplete
-			// field.setOmitNorms(omitNorms);
 		}
 		return document;
 	}
 
 	public static Document addNumericField(final String fieldName, final String fieldContent, final Document document, final boolean store) {
-		FieldType doubleFieldType = new FieldType();
-		doubleFieldType.setStored(store);
-		doubleFieldType.setIndexed(Boolean.TRUE);
-		doubleFieldType.setTokenized(Boolean.TRUE);
-		doubleFieldType.setNumericType(FieldType.NumericType.DOUBLE);
-		Field doubleField = new DoubleField(fieldName, Double.parseDouble(fieldContent), doubleFieldType);
-		document.add(doubleField);
+		FieldType floatFieldType = new FieldType();
+		floatFieldType.setStored(store);
+		floatFieldType.setIndexed(Boolean.TRUE);
+		// To sort on these fields they must not be tokenized for some reason
+		floatFieldType.setTokenized(Boolean.FALSE);
+		floatFieldType.setNumericType(NumericType.FLOAT);
+
+		Field floatField = new FloatField(fieldName, Float.parseFloat(fieldContent), floatFieldType);
+		document.add(floatField);
 		return document;
 	}
 

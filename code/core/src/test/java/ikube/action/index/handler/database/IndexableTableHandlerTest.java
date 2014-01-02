@@ -49,7 +49,7 @@ public class IndexableTableHandlerTest extends AbstractTest {
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks();
+		Mockit.tearDownMocks(DatabaseUtilitiesMock.class);
 	}
 
 	@Test
