@@ -45,7 +45,7 @@ public class GeospatialEnrichmentStrategyTest extends AbstractTest {
 	@Before
 	public void before() {
 		geospatialEnrichmentStrategy = new GeospatialEnrichmentStrategy();
-		Deencapsulation.setField(geospatialEnrichmentStrategy, "maxGeohashLevels", Integer.valueOf(10));
+		Deencapsulation.setField(geospatialEnrichmentStrategy, "maxGeohashLevels", Integer.valueOf(11));
 		geospatialEnrichmentStrategy.initialize();
 		when(indexableTable.isAddress()).thenReturn(Boolean.TRUE);
 		when(indexableColumn.isAddress()).thenReturn(Boolean.TRUE);
@@ -60,22 +60,23 @@ public class GeospatialEnrichmentStrategyTest extends AbstractTest {
 	public void aroundProcess() throws Exception {
 		Document document = getDocument(RandomStringUtils.random(16), "Some string to index", IConstants.CONTENTS);
 		Deencapsulation.setField(geospatialEnrichmentStrategy, "geocoder", geocoder);
+		printDocument(document);
 
 		IndexableTable indexableTable = new IndexableTable();
 		IndexableColumn latitudeColumn = new IndexableColumn();
 		latitudeColumn.setFieldName(IConstants.LATITUDE);
-		latitudeColumn.setContent("1");
+		latitudeColumn.setContent("19000");
 
 		IndexableColumn longitudeColumn = new IndexableColumn();
 		longitudeColumn.setFieldName(IConstants.LONGITUDE);
-		longitudeColumn.setContent("1");
+		longitudeColumn.setContent("19000");
 
 		List<Indexable<?>> indexableColumns = new ArrayList<Indexable<?>>(Arrays.asList(latitudeColumn, longitudeColumn));
 		indexableTable.setChildren(indexableColumns);
 		boolean result = geospatialEnrichmentStrategy.aroundProcess(indexContext, indexableTable, document, null);
 		printDocument(document);
 		assertTrue(result);
-		assertTrue(document.get(IConstants.POSITION_FIELD_NAME) != null);
+		assertTrue(document.get(IConstants.GEOSPATIAL) != null);
 	}
 
 	@Test

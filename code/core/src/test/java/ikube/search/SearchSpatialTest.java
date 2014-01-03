@@ -131,6 +131,7 @@ public class SearchSpatialTest extends AbstractTest {
 				continue;
 			}
 			double distance = Double.parseDouble(string);
+			logger.info("Prev : " + previousDistance + ", dist : " + distance);
 			assertTrue(distance >= previousDistance);
 			previousDistance = distance;
 		}

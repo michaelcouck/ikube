@@ -50,7 +50,7 @@
 		class="ikube.model.IndexableTable"
 		property:name="geoname"
 		property:address="true"
-		property:maxExceptions="10"
+		property:maxExceptions="1000000"
 		property:threads="4"
 		property:allColumns="true"
 		property:stored="${stored}"

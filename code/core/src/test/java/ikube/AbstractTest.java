@@ -25,6 +25,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.Lock;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.BytesRef;
 import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -385,11 +386,12 @@ public abstract class AbstractTest {
 			String fieldName = indexableField.name();
 			String fieldValue = indexableField.stringValue();
 			String fieldType = indexableField.fieldType().toString();
+			BytesRef bytesRef = indexableField.binaryValue();
 			int fieldLength = fieldValue != null ? fieldValue.length() : 0;
 			Number number = indexableField.numericValue();
 			logger.info("        : field name : " + fieldName + ", field length : " + fieldLength + ", " +
 				"field value : " +
-				fieldValue + ", numeric value : " + number + ", " + fieldType);
+				fieldValue + ", numeric value : " + number + ", byte value : " + bytesRef + ", " + fieldType);
 		}
 	}
 

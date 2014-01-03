@@ -1,6 +1,8 @@
 package ikube.action.index.handler.strategy.geocode;
 
 import ikube.model.Coordinate;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 
 /**
@@ -11,6 +13,8 @@ import ikube.model.Coordinate;
  * @since 06.03.11
  * @version 01.00
  */
+@Service
+@Component
 public interface IGeocoder {
 
 	/**

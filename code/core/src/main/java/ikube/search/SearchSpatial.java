@@ -91,11 +91,15 @@ public class SearchSpatial extends SearchComplex {
 		Filter filter = spatialStrategy.makeFilter(spatialArgs);
 
 		// Reduce the results by the search string
-		Query baseQuery;
+		Query baseQuery = null;
 		try {
 			baseQuery = super.getQuery();
 		} catch (ParseException e) {
-			baseQuery = new MatchAllDocsQuery();
+			logger.error(null, e);
+		} finally {
+			if (baseQuery == null) {
+				baseQuery = new MatchAllDocsQuery();
+			}
 		}
 
 		// And hup...
@@ -114,7 +118,7 @@ public class SearchSpatial extends SearchComplex {
 			// Apparently we can get the distance from the {@link CachingDoubleValueSource} somehow...
 			double latitude = Double.parseDouble(result.get(IConstants.LATITUDE));
 			double longitude = Double.parseDouble(result.get(IConstants.LONGITUDE));
-			double distanceDegrees = spatialContext.getDistCalc().distance(point, latitude, longitude);
+			double distanceDegrees = spatialContext.getDistCalc().distance(point, longitude, latitude);
 			double distanceKilometres = DistanceUtils.degrees2Dist(distanceDegrees, DistanceUtils.EARTH_MEAN_RADIUS_KM);
 			result.put(DISTANCE, Double.toString(distanceKilometres));
 		}
@@ -125,7 +129,9 @@ public class SearchSpatial extends SearchComplex {
 	private Point getOrigin() {
 		double latitude = coordinate.getLatitude();
 		double longitude = coordinate.getLongitude();
-		return spatialContext.makePoint(latitude, longitude);
+		// Note to self: This takes an x and y co-ordinate so the
+		// order must be longitude(x) and latitude(y), not the other way
+		return spatialContext.makePoint(longitude, latitude);
 	}
 
 	public void setDistance(final int distance) {

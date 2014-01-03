@@ -1119,13 +1119,13 @@
             <type>jar</type>
             <scope>compile</scope>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-spatial</artifactId>
             <version>${lucene.version}</version>
             <type>jar</type>
             <scope>compile</scope>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-queries</artifactId>

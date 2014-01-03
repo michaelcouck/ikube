@@ -38,7 +38,7 @@ public class AreUnopenedIndexes extends ARule<IndexContext<?>> {
 		MultiReader multiReader = (MultiReader) searchers.getIndexReader();
 		CompositeReaderContext compositeReaderContext = multiReader.getContext();
 		List<AtomicReaderContext> atomicReaderContexts = compositeReaderContext.leaves();
-		logger.info("Checking latest index directory for new indexes : " + latestIndexDirectory);
+		logger.debug("Checking latest index directory for new indexes : {} ", latestIndexDirectory);
 		return atomicReaderContexts.size() != latestIndexDirectory.listFiles().length;
 	}
 

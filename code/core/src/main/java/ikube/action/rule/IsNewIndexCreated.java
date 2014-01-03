@@ -26,12 +26,14 @@ public class IsNewIndexCreated extends ARule<IndexContext<?>> {
 		if (indexSearcher != null) {
 			String baseIndexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(baseIndexDirectoryPath);
-			logger.info("Latest index directory : " + latestIndexDirectory);
+			logger.debug("Latest index directory : {} ", latestIndexDirectory);
 			IndexReaderContext indexReaderContext = indexSearcher.getTopReaderContext();
 			if (indexReaderContext != null && latestIndexDirectory != null) {
 				int readers = indexSearcher.getTopReaderContext().children().size();
 				int directories = latestIndexDirectory.listFiles().length;
-				logger.info("Readers : " + readers + ", directories : " + directories + ", directory : " + latestIndexDirectory);
+				if (logger.isDebugEnabled()) {
+					logger.debug("Readers : {} ", readers + ", directories : " + directories + ", directory : " + latestIndexDirectory);
+				}
 				return indexReaderContext.children().size() != latestIndexDirectory.listFiles().length;
 			}
 		}
