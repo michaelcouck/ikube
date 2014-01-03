@@ -140,7 +140,7 @@ public class MonitorService implements IMonitorService {
 	public Map<String, String> getProperties() {
 		String ikubeConfiguration = System.getProperty(IConstants.IKUBE_CONFIGURATION);
 		if (ikubeConfiguration == null) {
-			ikubeConfiguration = ".";
+			ikubeConfiguration = IConstants.IKUBE_DIRECTORY;
 			System.setProperty(IConstants.IKUBE_CONFIGURATION, ikubeConfiguration);
 		}
 		Map<String, String> filesAndProperties = new HashMap<String, String>();

@@ -1,6 +1,7 @@
 package ikube.cluster;
 
 import ikube.AbstractTest;
+import ikube.IConstants;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
@@ -92,7 +93,9 @@ public class MonitorServiceTest extends AbstractTest {
 			String[] fieldNames = monitorService.getIndexFieldNames(indexContext.getIndexName());
 			assertTrue(fieldNames.length > 0);
 		} finally {
-			multiSearcher.getIndexReader().close();
+			if (multiSearcher != null && multiSearcher.getIndexReader() != null) {
+				multiSearcher.getIndexReader().close();
+			}
 		}
 	}
 
@@ -103,7 +106,7 @@ public class MonitorServiceTest extends AbstractTest {
 			File file = FileUtilities.findFileRecursively(new File("."), "spring.properties");
 			String contents = FileUtilities.getContents(file, Integer.MAX_VALUE).toString();
 
-			propertiesFile = FileUtilities.getOrCreateFile("./properties/spring.properties");
+			propertiesFile = FileUtilities.getOrCreateFile(IConstants.IKUBE_DIRECTORY + "/properties/spring.properties");
 			FileUtilities.setContents(propertiesFile, contents.getBytes());
 
 			Map<String, String> filesAndProperties = monitorService.getProperties();
@@ -122,7 +125,7 @@ public class MonitorServiceTest extends AbstractTest {
 				propertiesFileContentsRead);
 		} finally {
 			if (propertiesFile != null) {
-				FileUtilities.deleteFile(propertiesFile.getParentFile(), 1);
+				FileUtilities.deleteFile(propertiesFile.getParentFile());
 			}
 		}
 	}
