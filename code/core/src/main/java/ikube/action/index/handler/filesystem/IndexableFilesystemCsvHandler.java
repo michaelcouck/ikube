@@ -1,7 +1,10 @@
 package ikube.action.index.handler.filesystem;
 
 import ikube.IConstants;
+import ikube.action.index.handler.IResourceProvider;
+import ikube.action.index.handler.IStrategy;
 import ikube.action.index.handler.IndexableHandler;
+import ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
@@ -33,12 +36,15 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFileSystemCsv> {
 
+	/** TODO : Remove after testing. */
+	private IStrategy strategy;
 	@Autowired
 	private RowResourceHandler rowResourceHandler;
 
 	@Override
 	public ForkJoinTask<?> handleIndexableForked(final IndexContext<?> indexContext, final IndexableFileSystemCsv indexableFileSystem) throws Exception {
-		return getRecursiveAction(indexContext, indexableFileSystem, new FileSystemCsvResourceProvider(indexableFileSystem.getPath()));
+		IResourceProvider<File> resourceProvider = new FileSystemCsvResourceProvider(indexableFileSystem.getPath());
+		return getRecursiveAction(indexContext, indexableFileSystem, resourceProvider);
 	}
 
 	@Override
@@ -55,8 +61,7 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
 	/**
 	 * {@inheritDoc}
 	 */
-	void handleFile(final IndexContext<?> indexContext, final IndexableFileSystemCsv indexableFileSystem, final File file) throws Exception {
-		IndexableFileSystemCsv indexableFileSystemCsv = (IndexableFileSystemCsv) indexableFileSystem;
+	void handleFile(final IndexContext<?> indexContext, final IndexableFileSystemCsv indexableFileSystemCsv, final File file) throws Exception {
 		String encoding = indexableFileSystemCsv.getEncoding() != null ? indexableFileSystemCsv.getEncoding() : IConstants.ENCODING;
 		logger.info("Using encoding for file : " + encoding + ", " + file);
 		LineIterator lineIterator = FileUtils.lineIterator(file, encoding);
@@ -64,7 +69,7 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
 			// The first line is the header, i.e. the columns of the file
 			String separator = indexableFileSystemCsv.getSeparator();
 			String headerLine = lineIterator.nextLine();
-			String[] columns = StringUtils.split(headerLine, separator);
+			String[] columns = StringUtils.splitPreserveAllTokens(headerLine, separator);
 			// Trim any space on the column headers
 			for (int i = 0; i < columns.length; i++) {
 				columns[i] = columns[i].trim();
@@ -72,15 +77,16 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
 
 			List<Indexable<?>> indexableColumns = getIndexableColumns(indexableFileSystemCsv, columns);
 			indexableFileSystemCsv.setChildren(indexableColumns);
+			logger.info("Doing columns : " + indexableColumns.size());
 
 			int lineNumber = 0;
 			indexableFileSystemCsv.setFile(file);
-			Map<Integer, String> differentLines = new HashMap<Integer, String>();
-			while (lineIterator.hasNext() && ThreadUtilities.isInitialized()) {
+			Map<Integer, String> differentLines = new HashMap<>();
+			while (lineIterator.hasNext() && ThreadUtilities.isInitialized() && lineNumber < indexableFileSystemCsv.getMaxLines()) {
 				indexableFileSystemCsv.setLineNumber(lineNumber);
 				try {
 					String line = lineIterator.nextLine();
-					String[] values = StringUtils.split(line, separator);
+					String[] values = StringUtils.splitPreserveAllTokens(line, separator);
 					if (indexableColumns.size() != values.length) {
 						differentLines.put(lineNumber, Arrays.deepToString(values));
 					}
@@ -88,7 +94,10 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
 						IndexableColumn indexableColumn = (IndexableColumn) indexableColumns.get(i);
 						indexableColumn.setContent(values[i]);
 					}
-					rowResourceHandler.handleResource(indexContext, indexableFileSystemCsv, new Document(), file);
+					Document document = new Document();
+					// TODO : Remove this, this is done in the configuration, just for test here
+					// strategy.aroundProcess(indexContext, indexableFileSystemCsv, document, file);
+					rowResourceHandler.handleResource(indexContext, indexableFileSystemCsv, document, file);
 					ThreadUtilities.sleep(indexContext.getThrottle());
 				} catch (Exception e) {
 					logger.error("Exception processing file : " + file, e);
@@ -113,13 +122,16 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
 		}
 	}
 
-	protected List<Indexable<?>> getIndexableColumns(final Indexable<?> indexable, final String[] columns) {
+	protected List<Indexable<?>> getIndexableColumns(final IndexableFileSystemCsv indexable, final String[] columns) {
 		List<Indexable<?>> indexableColumns = indexable.getChildren();
 		if (indexableColumns == null) {
-			indexableColumns = new ArrayList<Indexable<?>>();
+			indexableColumns = new ArrayList<>();
 			indexable.setChildren(indexableColumns);
 		}
-		List<Indexable<?>> sortedIndexableColumns = new ArrayList<Indexable<?>>();
+		if (!indexable.isAllColumns()) {
+			return indexable.getChildren();
+		}
+		List<Indexable<?>> sortedIndexableColumns = new ArrayList<>();
 		// Add all the columns that are not present in the configuration
 		for (final String columnName : columns) {
 			IndexableColumn indexableColumn = null;
@@ -136,7 +148,6 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
 				indexableColumn.setFieldName(columnName);
 				indexableColumn.setAddress(Boolean.FALSE);
 				indexableColumn.setAnalyzed(Boolean.TRUE);
-				indexableColumn.setFieldName(columnName);
 				indexableColumn.setIdColumn(Boolean.FALSE);
 				indexableColumn.setNumeric(Boolean.FALSE);
 				indexableColumn.setParent(indexable);

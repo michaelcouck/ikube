@@ -84,16 +84,15 @@ public final class GeospatialEnrichmentStrategy extends AGeospatialEnrichmentStr
 				}
 			}
 		}
-		Coordinate coordinate;
+		Coordinate coordinate = null;
 		if (latitude != null && longitude != null) {
 			coordinate = new Coordinate(latitude, longitude);
 		} else {
 			String address = buildAddress(indexable, new StringBuilder()).toString();
 			// The GeoCoder is a last resort in fact, this will hurt!
-			coordinate = geocoder.getCoordinate(address);
-		}
-		if (coordinate != null && coordinate.getLatitude() > 90) {
-			logger.warn(coordinate.toString() + ", " + indexable);
+			if (geocoder != null) {
+				coordinate = geocoder.getCoordinate(address);
+			}
 		}
 		return coordinate;
 	}

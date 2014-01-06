@@ -50,20 +50,20 @@ public class Indexable<E> extends Persistable {
 
 	@Column
 	@Attribute(field = false, description = "Whether this value should be stored in the index")
-	private boolean stored = Boolean.TRUE;
+	private boolean stored = Boolean.FALSE;
 	@Column
 	@Attribute(field = false, description = "Whether this field should be analyzed for stemming and so on")
 	private boolean analyzed = Boolean.TRUE;
 	@Column
 	@Attribute(field = false, description = "Whether this field should be vectored in the index")
-	private boolean vectored = Boolean.TRUE;
+	private boolean vectored = Boolean.FALSE;
 	@Column
 	@Attribute(field = false, description = "Whether this field should have the normalization opitted, " +
 		"i.e. the tf-idf omitted, meaning that longer documents will score higher")
 	private boolean omitNorms = Boolean.FALSE;
 	@Column
 	@Attribute(field = false, description = "Whether this field should have the terms tokenized")
-	private boolean tokenized = Boolean.FALSE;
+	private boolean tokenized = Boolean.TRUE;
 
 	@Column
 	@Min(value = 1)

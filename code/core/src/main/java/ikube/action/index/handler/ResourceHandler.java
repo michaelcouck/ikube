@@ -2,7 +2,6 @@ package ikube.action.index.handler;
 
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.slf4j.Logger;

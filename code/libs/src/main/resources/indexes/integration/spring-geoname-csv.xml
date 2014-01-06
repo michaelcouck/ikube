@@ -36,63 +36,74 @@
     
 	<bean 
 		id="geoname-csv-analyzer" 
-		class="ikube.action.index.analyzer.NgramAnalyzer" />
+		class="ikube.action.index.analyzer.EdgeNgramAnalyzer" />
 
     <util:list id="geoname-csv-indexables" >
-        <ref local="geoname-csv-csv-files" />
+        <ref local="geoname-csv-files" />
     </util:list>
     
     <bean
-		id="geoname-csv-csv-files"
+		id="geoname-csv-files"
 		class="ikube.model.IndexableFileSystemCsv"
-		property:name="geoname-csv-csv-files"
+		property:name="geoname-csv-files"
 		property:path="${index.root}/data/geoname"
 		property:pathFieldName="path"
 		property:nameFieldName="name"
 		property:lengthFieldName="length"
 		property:contentFieldName="contents"
-		property:unpackZips="false"
+
+        property:unpackZips="true"
+
 		property:stored="true"
 		property:analyzed="true"
-		property:vectored="true"
-		property:excludedPattern="none"
-		property:lastModifiedFieldName="lastmodified"
-		property:batchSize="1000"
-		property:maxReadLength="1000000"  
-		property:separator=";" 
-		property:maxExceptions="10000"
-		property:encoding="UTF-8"
-		property:address="true"
-		property:children-ref="geoname-csv-csv-files-columns"
-		property:strategies-ref="geoname-csv-csv-files-strategies" />
-	<util:list id="geoname-csv-csv-files-columns">
-		<ref local="geoname-csv-csv-latitude" />
-		<ref local="geoname-csv-csv-longitude" />
+        property:vectored="false"
+        property:address="true"
+        property:omitNorms="true"
+        property:tokenized="true"
+        property:threads="1"
+        property:allColumns="true"
+
+        property:excludedPattern="none"
+        property:lastModifiedFieldName="lastmodified"
+        property:batchSize="1000"
+        property:maxReadLength="1000000"
+        property:separator=";"
+        property:maxExceptions="10000"
+        property:encoding="UTF-8"
+        property:maxLines="10000000"
+
+        property:children-ref="geoname-csv-files-columns"
+
+		property:strategies-ref="geoname-csv-files-strategies" />
+    <util:list id="geoname-csv-files-columns">
+		<ref local="geoname-csv-latitude" />
+		<ref local="geoname-csv-longitude" />
 	</util:list>
 	
-	<util:list id="geoname-csv-csv-files-strategies">
+	<util:list id="geoname-csv-files-strategies">
+		<bean class="ikube.action.index.handler.strategy.LanguageDetectionStrategy" init-method="initialize" />
 		<bean class="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy" />
 	</util:list>
 	
 	<bean
-		id="geoname-csv-csv-latitude"
+		id="geoname-csv-latitude"
 		class="ikube.model.IndexableColumn"
 		property:name="latitude"
 		property:fieldName="latitude"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}"
-		property:numeric="false"
-		property:address="true" />
+        property:address="false"
+		property:analyzed="true"
+        property:numeric="false"
+        property:stored="true"
+        property:vectored="true" />
 	<bean
-		id="geoname-csv-csv-longitude"
+		id="geoname-csv-longitude"
 		class="ikube.model.IndexableColumn"
 		property:name="longitude"
 		property:fieldName="longitude"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}"
-		property:numeric="false"
-		property:address="true" />
+        property:address="false"
+        property:analyzed="true"
+        property:numeric="false"
+        property:stored="true"
+        property:vectored="true" />
 		
 </beans>

@@ -1,7 +1,9 @@
 package ikube;
 
+import ikube.ikube.mock.SpellingCheckerMock;
 import ikube.search.spelling.SpellingChecker;
 import ikube.toolkit.Logging;
+import mockit.Mockit;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.lucene.document.Document;
@@ -37,14 +39,7 @@ public abstract class BaseTest {
 
     static {
         Logging.configure();
-        SpellingChecker checkerExt = new SpellingChecker();
-        // Deencapsulation.setField(checkerExt, "languageWordListsDirectory", "languages");
-        // Deencapsulation.setField(checkerExt, "spellingIndexDirectoryPath", "./spellingIndex");
-        try {
-            checkerExt.initialize();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+		Mockit.setUpMocks(SpellingCheckerMock.class);
     }
 
     /**
@@ -65,8 +60,7 @@ public abstract class BaseTest {
     }
 
     protected void printIndex(final IndexSearcher multiSearcher) throws Exception {
-        IndexReader indexReader = multiSearcher.getIndexReader();
-        printIndex(indexReader);
+        printIndex(multiSearcher.getIndexReader());
     }
 
     /**
@@ -76,7 +70,7 @@ public abstract class BaseTest {
      * @throws Exception
      */
     protected void printIndex(final IndexReader indexReader) throws Exception {
-        printIndex(indexReader, indexReader.numDocs());
+        printIndex(indexReader, 10);
     }
 
     /**

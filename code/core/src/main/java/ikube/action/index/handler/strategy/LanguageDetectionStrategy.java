@@ -93,7 +93,7 @@ public final class LanguageDetectionStrategy extends AStrategy {
 	 */
 	@Override
 	public void initialize() {
-		languageLocale = new HashMap<String, Locale>();
+		languageLocale = new HashMap<>();
 		Locale[] locales = Locale.getAvailableLocales();
 		for (final Locale locale : locales) {
 			String language = locale.getLanguage();

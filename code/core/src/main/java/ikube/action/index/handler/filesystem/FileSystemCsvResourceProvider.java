@@ -36,7 +36,7 @@ public class FileSystemCsvResourceProvider implements IResourceProvider<File> {
 			}
 		});
 		if (files != null) {
-			setResources(new ArrayList<File>(Arrays.asList(files)));
+			setResources(new ArrayList<>(Arrays.asList(files)));
 		}
 	}
 

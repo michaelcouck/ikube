@@ -54,7 +54,7 @@ public abstract class AGeospatialEnrichmentStrategy extends AStrategy {
 			document.add(indexableField);
 		}
 		// Store this field any way
-		document.add(new StoredField(IConstants.GEOSPATIAL, spatialContext.toString(shape)));
+		document.add(new StoredField(spatialStrategy.getFieldName(), spatialContext.toString(shape)));
 	}
 
 	public void initialize() {

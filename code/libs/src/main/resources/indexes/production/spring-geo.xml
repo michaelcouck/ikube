@@ -38,11 +38,10 @@
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
 		property:children-ref="geospatialIndexables"
-		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer"
+		property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer"
 		property:strategies-ref="geoname-strategies" />
 	<util:list id="geospatialIndexables">
 		<ref local="geoname" />
-		<!-- <ref local="alternatename" /> -->
 	</util:list>
 	
 	<bean
@@ -50,38 +49,29 @@
 		class="ikube.model.IndexableTable"
 		property:name="geoname"
 		property:address="true"
-		property:maxExceptions="1000000"
-		property:threads="4"
-		property:allColumns="true"
-		property:stored="${stored}"
-		property:analyzed="${analyzed}"
-		property:vectored="${vectored}"
+		property:maxExceptions="1000"
+		property:threads="8"
+		property:allColumns="false"
+
+        property:stored="true"
+        property:analyzed="true"
+        property:vectored="false"
+        property:omitNorms="true"
+
 		property:children-ref="geonameColumns"
 		property:dataSource-ref="nonXaDataSourceDb2"
 		property:strategies-ref="geoname-strategies" />
 	<util:list id="geonameColumns">
 		<ref local="geospatialId" />
 		<ref local="geospatialName" />
-		<ref local="geospatialCity" />
-		<ref local="geospatialCountry" />
 		<ref local="geospatialAsciiname" />
 		<ref local="geospatialAlternatenames" />
 		<ref local="geospatialLatitude" />
 		<ref local="geospatialLongitude" />
-		<ref local="geospatialFeatureClass" />
-		<ref local="geospatialFeatureCode" />
-		<ref local="geospatialCountryCode" />
 		<ref local="geospatialTimezone" />
-		<ref local="geospatialCc2" />
 		<ref local="geospatialGeonameid" />
-		<ref local="geospatialAdmin1Code" />
-		<ref local="geospatialAdmin2Code" />
-		<ref local="geospatialAdmin3Code" />
-		<ref local="geospatialAdmin4Code" />
-		<ref local="geospatialModification" />
 		<ref local="geospatialPopulation" />
 		<ref local="geospatialElevation" />
-		<ref local="geospatialGtopo30" />
 	</util:list>
 	<util:list id="geoname-strategies">
 	    <ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
@@ -89,228 +79,89 @@
 	    	class="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy"
 	    	init-method="initialize" />
 	</util:list>
-	
+
+    <bean
+        id="ikube.model.Indexable"
+        class="ikube.model.Indexable"
+        abstract="true"
+        property:stored="true"
+        property:analyzed="true"
+        property:vectored="false"
+        property:omitNorms="true" />
+
 	<bean
 		id="geospatialId"
-		class="ikube.model.IndexableColumn"
+        parent="ikube.model.Indexable"
+        class="ikube.model.IndexableColumn"
 		property:name="id"
-		property:idColumn="true"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
+		property:idColumn="true" />
 	<bean
 		id="geospatialName"
-		class="ikube.model.IndexableColumn"
+        parent="ikube.model.Indexable"
+        class="ikube.model.IndexableColumn"
 		property:name="name"
 		property:fieldName="name"
-		property:address="true"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
+		property:address="true" />
 	<bean
 		id="geospatialGeonameid"
+        parent="ikube.model.Indexable"
 		class="ikube.model.IndexableColumn"
 		property:name="geonameid"
 		property:fieldName="geonameid"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}"
 		property:numeric="false" />
 	<bean
-		id="geospatialCity"
-		class="ikube.model.IndexableColumn"
-		property:name="city"
-		property:fieldName="city"
-		property:address="true"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="geospatialCountry"
-		class="ikube.model.IndexableColumn"
-		property:name="country"
-		property:fieldName="country"
-		property:address="true"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
 		id="geospatialAsciiname"
+        parent="ikube.model.Indexable"
 		class="ikube.model.IndexableColumn"
 		property:name="asciiname"
 		property:fieldName="asciiname"
-		property:address="true"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
+		property:address="true" />
 	<bean
 		id="geospatialAlternatenames"
+        parent="ikube.model.Indexable"
 		class="ikube.model.IndexableColumn"
 		property:name="alternatenames"
 		property:fieldName="alternatenames"
-		property:address="true"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
+		property:address="true" />
 	<bean
 		id="geospatialLatitude"
+        parent="ikube.model.Indexable"
 		class="ikube.model.IndexableColumn"
 		property:name="latitude"
 		property:fieldName="latitude"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}"
 		property:numeric="false" />
 	<bean
 		id="geospatialLongitude"
+        parent="ikube.model.Indexable"
 		class="ikube.model.IndexableColumn"
 		property:name="longitude"
 		property:fieldName="longitude"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}"
 		property:numeric="false" />
 	<bean
-		id="geospatialFeatureClass"
-		class="ikube.model.IndexableColumn"
-		property:name="featureclass"
-		property:fieldName="featureclass"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="geospatialFeatureCode"
-		class="ikube.model.IndexableColumn"
-		property:name="featurecode"
-		property:fieldName="featurecode"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="geospatialCountryCode"
-		class="ikube.model.IndexableColumn"
-		property:name="countrycode"
-		property:fieldName="countrycode"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="geospatialCc2"
-		class="ikube.model.IndexableColumn"
-		property:name="cc2"
-		property:fieldName="cc2"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="geospatialAdmin1Code"
-		class="ikube.model.IndexableColumn"
-		property:name="admin1code"
-		property:fieldName="admin1code"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="geospatialAdmin2Code"
-		class="ikube.model.IndexableColumn"
-		property:name="admin2code"
-		property:fieldName="admin2code"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="geospatialAdmin3Code"
-		class="ikube.model.IndexableColumn"
-		property:name="admin3code"
-		property:fieldName="admin3code"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
-		id="geospatialAdmin4Code"
-		class="ikube.model.IndexableColumn"
-		property:name="admin4code"
-		property:fieldName="admin4code"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	<bean
 		id="geospatialPopulation"
+        parent="ikube.model.Indexable"
 		class="ikube.model.IndexableColumn"
 		property:name="population"
 		property:fieldName="population"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}"
 		property:numeric="false" />
 	<bean
 		id="geospatialElevation"
-		class="ikube.model.IndexableColumn"
+        parent="ikube.model.Indexable"
+        class="ikube.model.IndexableColumn"
 		property:name="elevation"
 		property:fieldName="elevation"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}"
 		property:numeric="false" />
-	<bean
-		id="geospatialGtopo30"
-		class="ikube.model.IndexableColumn"
-		property:name="gtopo30"
-		property:fieldName="gtopo30"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
 	<bean
 		id="geospatialTimezone"
-		class="ikube.model.IndexableColumn"
+        parent="ikube.model.Indexable"
+        class="ikube.model.IndexableColumn"
 		property:name="timezone"
-		property:fieldName="timezone"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
+		property:fieldName="timezone" />
 	<bean
 		id="geospatialModification"
+        parent="ikube.model.Indexable"
 		class="ikube.model.IndexableColumn"
 		property:name="modification"
-		property:fieldName="modification"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}" />
-	
-	<!-- property:dataSource-ref="nonXaDataSourceGeo" -->
-	<bean
-		id="alternatename"
-		class="ikube.model.IndexableTable"
-		property:name="alternatename"
-		property:address="false"
-		property:children-ref="alternatenameColumns" 
-		property:maxExceptions="10"
-		property:allColumns="true" 
-		property:stored="${stored}"
-		property:analyzed="${analyzed}"
-		property:vectored="${vectored}" />
-	<util:list id="alternatenameColumns">
-		<ref local="alternatenameId" />
-		<ref local="alternatenameGeonameid" />
-	</util:list>
-	
-	<bean
-		id="alternatenameId"
-		class="ikube.model.IndexableColumn"
-		property:name="id"
-		property:idColumn="true"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}"
-		property:numeric="true" />
-	<bean
-		id="alternatenameGeonameid"
-		class="ikube.model.IndexableColumn"
-		property:name="geonameid"
-		property:fieldName="alternatenamegeonameid"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}"
-		property:numeric="false" />
-	
+		property:fieldName="modification" />
+
 </beans>

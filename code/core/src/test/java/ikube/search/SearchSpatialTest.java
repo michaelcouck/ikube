@@ -66,6 +66,8 @@ public class SearchSpatialTest extends AbstractTest {
 		indexWriter.forceMerge(5);
 		IndexReader indexReader = DirectoryReader.open(ramDirectory);
 		searcher = new IndexSearcher(indexReader);
+
+		printIndex(indexReader, indexReader.numDocs());
 	}
 
 	@After

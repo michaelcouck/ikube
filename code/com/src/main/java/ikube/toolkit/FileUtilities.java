@@ -269,6 +269,13 @@ public final class FileUtilities {
 	 * @param stringPatterns the patterns to look for in the file paths
 	 */
 	public static void deleteFiles(final File file, final String... stringPatterns) {
+		// If this is the 'dot' folder then there is probably something wrong, just return, not
+		// doing this will result in all the files from the working directory being deleted, which is
+		// almost 99.99999% of the time the desired result
+		if (FileUtilities.cleanFilePath(file.getPath()).equals(FileUtilities.cleanFilePath(new File(".").getAbsolutePath()))) {
+			LOGGER.warn("Not deleting dot folder : " + file.getAbsolutePath());
+			return;
+		}
 		if (file.isDirectory()) {
 			File[] childFiles = file.listFiles();
 			if (childFiles != null && childFiles.length > 0) {

@@ -29,9 +29,9 @@ public final class Timer {
 	 * @return the time taken for the logic to execute in milliseconds
 	 */
 	public static long execute(final Timed timed) {
-		long start = System.currentTimeMillis();
+		long start = System.nanoTime();
 		timed.execute();
-		return System.currentTimeMillis() - start;
+		return System.nanoTime() - start;
 	}
 
 }

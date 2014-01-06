@@ -4,6 +4,11 @@ import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.ThreadUtilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,11 +16,6 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.Future;
 import java.util.concurrent.RecursiveAction;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * Base class for the handlers that contains access to common functionality like the threads etc. This class also
@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * @see IIndexableHandler
  * @since 29.11.10
  */
+@Component
 public abstract class IndexableHandler<T extends Indexable<?>> implements IIndexableHandler<T> {
 
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -87,8 +88,8 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 					// Sleep for the required time
 					ThreadUtilities.sleep(indexContext.getThrottle());
 				} while (true);
-				logger.info("Thread finished : " + this.hashCode() + ", thread count : " + RecursiveAction.getPool()
-					.getRunningThreadCount());
+				Object[] parameters = {this.hashCode(), RecursiveAction.getPool().getRunningThreadCount()};
+				logger.info("Thread finished : {}, thread count : {} ", parameters);
 			}
 		}
 		// And hup
@@ -163,7 +164,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 	 *
 	 * @param indexable the indexable that is currently being indexed
 	 * @param exception the exception thrown, if this is an interrupted exception or a cancellation exception then we
-	 *                     re-throw it immediately. Having said that
+	 *                  re-throw it immediately. Having said that
 	 *                  there are times when such exceptions are not thrown by ikube internally,
 	 *                  but by Hazelcast and even Lucene, and these also halt the execution
 	 * @param messages  any strings that sill be printed along with the exceptions

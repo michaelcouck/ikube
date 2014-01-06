@@ -23,6 +23,8 @@ public class IndexableFileSystemCsv extends IndexableFileSystem {
 	private String separator;
 	private String encoding;
 	private String lineNumberFieldName;
+	private boolean allColumns;
+	private int maxLines;
 
 	public String getSeparator() {
 		return separator;
@@ -64,4 +66,19 @@ public class IndexableFileSystemCsv extends IndexableFileSystem {
 		this.lineNumber = lineNumber;
 	}
 
+	public boolean isAllColumns() {
+		return allColumns;
+	}
+
+	public void setAllColumns(boolean allColumns) {
+		this.allColumns = allColumns;
+	}
+
+	public int getMaxLines() {
+		return maxLines;
+	}
+
+	public void setMaxLines(int maxLines) {
+		this.maxLines = maxLines;
+	}
 }

@@ -103,7 +103,7 @@ public final class IndexManager {
 	 */
 	public static synchronized IndexWriter openIndexWriter(final IndexContext<?> indexContext, final long time, final String ip) {
 		boolean delete = Boolean.FALSE;
-		boolean success = Boolean.FALSE;
+		boolean success = Boolean.TRUE;
 		File indexDirectory = null;
 		IndexWriter indexWriter = null;
 		try {
@@ -113,18 +113,21 @@ public final class IndexManager {
 			indexDirectory.setWritable(true, false);
 			LOGGER.info("Index directory time : " + time + ", date : " + new Date(time) + ", writing index to directory " + indexDirectoryPath);
 			indexWriter = openIndexWriter(indexContext, indexDirectory, Boolean.TRUE);
-			success = Boolean.TRUE;
 		} catch (CorruptIndexException e) {
 			LOGGER.error("We expected a new index and got a corrupt one.", e);
 			LOGGER.warn("Didn't initialise the index writer. Will try to delete the index directory.");
+			success = Boolean.FALSE;
 			delete = Boolean.TRUE;
 		} catch (LockObtainFailedException e) {
 			LOGGER.error("Failed to obtain the lock on the directory. Check the file system permissions or failed indexing jobs, "
 					+ "there will be a lock file in one of the index directories.", e);
+			success = Boolean.FALSE;
 		} catch (IOException e) {
 			LOGGER.error("IO exception detected opening the writer", e);
+			success = Boolean.FALSE;
 		} catch (Exception e) {
 			LOGGER.error("Unexpected exception detected while initializing the IndexWriter", e);
+			success = Boolean.FALSE;
 		} finally {
 			if (!success) {
 				closeIndexWriter(indexWriter);
@@ -173,15 +176,14 @@ public final class IndexManager {
 		indexWriterConfig.setMaxBufferedDocs(indexContext.getBufferedDocs());
 		LogByteSizeMergePolicy mergePolicy = new LogByteSizeMergePolicy() {
 			{
-				this.maxMergeDocs = indexContext.getMergeFactor();
+				this.maxMergeDocs = indexContext.getBufferedDocs();
 				this.maxMergeSize = (long) indexContext.getBufferSize();
 				// this.useCompoundFile = indexContext.isCompoundFile();
 				this.mergeFactor = indexContext.getMergeFactor();
 			}
 		};
 		indexWriterConfig.setMergePolicy(mergePolicy);
-		IndexWriter indexWriter = new IndexWriter(directory, indexWriterConfig);
-		return indexWriter;
+		return new IndexWriter(directory, indexWriterConfig);
 	}
 
 	/**
@@ -218,13 +220,15 @@ public final class IndexManager {
 		try {
 			// We'll sleep a few seconds to give the other threads a chance
 			// to release themselves from work and more importantly the index files
+			// specially over the network...
 			ThreadUtilities.sleep(3000);
 			directory = indexWriter.getDirectory();
+			indexWriter.prepareCommit();
 			indexWriter.commit();
 			indexWriter.maybeMerge();
 			indexWriter.forceMerge(10, Boolean.TRUE);
+			indexWriter.waitForMerges();
 			indexWriter.deleteUnusedFiles();
-			// indexWriter.optimize(10);
 		} catch (NullPointerException e) {
 			LOGGER.error("Null pointer, in the index writer : " + indexWriter);
 			LOGGER.debug(null, e);
@@ -462,12 +466,12 @@ public final class IndexManager {
 			FieldType fieldType = new FieldType();
 			fieldType.setIndexed(indexable.isAnalyzed());
 			fieldType.setStored(indexable.isStored());
-			// If the term vectors are enabled the field cannot be searched
-			fieldType.setStoreTermVectors(indexable.isVectored());
-			// Must be tokenized to search correctly
+			// NOTE: Must be tokenized to search correctly, not tokenized? no results!!!
 			fieldType.setTokenized(indexable.isTokenized());
 			// For normalization of the length, i.e. longer strings are scored higher
 			fieldType.setOmitNorms(indexable.isOmitNorms());
+			// NOTE: If the term vectors are enabled the field cannot be searched, i.e. no results!!!
+			fieldType.setStoreTermVectors(indexable.isVectored());
 
 			Field oldField = (Field) document.getField(fieldName);
 			if (oldField == null) {
