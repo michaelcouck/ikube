@@ -1,16 +1,16 @@
 package ikube.web.service;
 
+import com.sun.jersey.api.spring.Autowire;
 import ikube.IConstants;
 import ikube.analytics.IAnalyticsService;
 import ikube.model.Search;
 import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.Timer;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.Future;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -22,20 +22,18 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
-import com.sun.jersey.api.spring.Autowire;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.Future;
 
 /**
- * Strangely enough, if this class name is changed to 'Twitter', Spring and Jersey do not inject the services. Hmmm... what's in a name huh?
- * 
+ * Strangely enough, if this class name is changed to 'Twitter', Spring and Jersey do not inject the services. Hmmm..
+ * . what's in a name huh?
+ *
  * @author Michael couck
- * @since 17.12.13
  * @version 01.00
+ * @since 17.12.13
  */
 @Provider
 @Autowire
@@ -74,7 +72,7 @@ public class Anal extends Resource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response twitter(@Context final HttpServletRequest request, @Context final UriInfo uriInfo) {
 		final TwitterSearch search = unmarshall(TwitterSearch.class, request);
-		long duration = Timer.execute(new Timer.Timed() {
+		double duration = Timer.execute(new Timer.Timed() {
 			@Override
 			public void execute() {
 				// First do the primary search for the term, language, etc...
@@ -87,7 +85,8 @@ public class Anal extends Resource {
 			}
 		});
 
-		search.getSearchResults().get(search.getSearchResults().size() - 1).put(IConstants.DURATION, Long.toString(duration));
+		search.getSearchResults().get(search.getSearchResults().size() - 1).put(IConstants.DURATION,
+			Double.toString(duration));
 		return buildJsonResponse(search);
 	}
 
@@ -104,32 +103,17 @@ public class Anal extends Resource {
 		int hour = 0;
 
 		List<Future<?>> futures = new ArrayList<>();
-
 		do {
-
-			final long periodTime_ = periodTime;
-			final long endTime_ = endTime;
-			final int periods_ = periods;
-			final int hour_ = hour;
-
-			Future<?> future = ThreadUtilities.submit(this.getClass().getSimpleName(), new Runnable() {
-				public void run() {
-					int positiveCount = count(search, periodTime_, endTime_, IConstants.POSITIVE);
-					int negativeCount = count(search, periodTime_, endTime_, IConstants.NEGATIVE);
-					timeLineSentiment[0][periods_] = Integer.valueOf(positiveCount);
-					timeLineSentiment[1][periods_] = Integer.valueOf(negativeCount);
-					timeLineSentiment[2][periods_] = Integer.valueOf(hour_);
-				}
-			});
+			Future<?> future = search(search, periods, periodTime, endTime, hour, timeLineSentiment);
 			futures.add(future);
-
 			// Plus an hour
 			hour--;
 			periods--;
 			endTime = periodTime;
 			periodTime -= 1000 * 60 * 60;
 		} while (startTime < endTime);
-		ThreadUtilities.waitForFutures(futures, 180);
+		ThreadUtilities.waitForFutures(futures, 300);
+
 		// Invert the matrix
 		Object[][] invertedTimeLineSentiment = invertMatrix(timeLineSentiment);
 		// Set the headers
@@ -139,12 +123,26 @@ public class Anal extends Resource {
 		return invertedTimeLineSentiment;
 	}
 
+	Future<?> search(final Search search, final int periods, final long periodTime, final long endTime,
+					 final int hour, final Object[][] timeLineSentiment) {
+		Future<?> future = ThreadUtilities.submit(this.getClass().getSimpleName(), new Runnable() {
+			public void run() {
+				int positiveCount = count(search, periodTime, endTime, IConstants.POSITIVE);
+				int negativeCount = count(search, periodTime, endTime, IConstants.NEGATIVE);
+				timeLineSentiment[0][periods] = Integer.valueOf(positiveCount);
+				timeLineSentiment[1][periods] = Integer.valueOf(negativeCount);
+				timeLineSentiment[2][periods] = Integer.valueOf(hour);
+			}
+		});
+		return future;
+	}
+
 	long[] range(final Search search) {
 		List<String> searchFields = search.getSearchFields();
 		int createdAtIndex = searchFields.indexOf(CREATED_AT);
 		String timeRange = search.getSearchStrings().get(createdAtIndex);
 		String[] timeRangeArray = StringUtils.split(timeRange, '-');
-		return new long[] { Long.parseLong(timeRangeArray[0]), Long.parseLong(timeRangeArray[1]) };
+		return new long[]{Long.parseLong(timeRangeArray[0]), Long.parseLong(timeRangeArray[1])};
 	}
 
 	int count(final Search search, final long startTime, final long endTime, final String classification) {

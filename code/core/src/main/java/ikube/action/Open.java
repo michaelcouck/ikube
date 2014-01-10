@@ -51,9 +51,9 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 			return Boolean.FALSE;
 		}
 		List<IndexReader> indexReaders = new ArrayList<>();
-		logger.info("Opening searcher on : " + indexContext.getName());
 		File[] serverIndexDirectories = latestIndexDirectory.listFiles();
 		if (serverIndexDirectories != null) {
+			logger.info("Opening searcher on : " + indexContext.getName());
 			for (final File serverIndexDirectory : serverIndexDirectories) {
 				logger.info("Index directory : " + serverIndexDirectory);
 				Directory directory = null;

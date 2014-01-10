@@ -39,7 +39,7 @@ public class WekaClassifierSentimentTest extends AbstractTest {
 		wekaClassifier.build(null);
 		classify(wekaClassifier);
 		final int maxFiles = 50;
-		long duration = Timer.execute(new Timer.Timed() {
+		double duration = Timer.execute(new Timer.Timed() {
 			@Override
 			public void execute() {
 				try {

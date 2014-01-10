@@ -4,19 +4,21 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * General utilities for strings that are not available in the general string classes from Apache or Spring.
- * 
+ *
  * @author Michael Couck
- * @since 10.01.2012
  * @version 01.00
+ * @since 10.01.2012
  */
 public final class StringUtilities {
 
 	private static final char SPACE = ' ';
 
 	/**
-	 * This method will check to see if a string can be parsed into a number of sorts, like a double for example. If there is a separator like a '.' or a ','
-	 * then this will still qualify as a number, but more than one dot foe example then dis-qualifies the string as a number.
-	 * 
+	 * This method will check to see if a string can be parsed into a number of sorts,
+	 * like a double for example. If there is a separator like a '.' or a ','
+	 * then this will still qualify as a number, but more than one dot foe example then dis-qualifies the string as a
+	 * number.
+	 * <p/>
 	 * <pre>
 	 * 1) 123 - true
 	 * 2) 123.456 - true
@@ -26,9 +28,9 @@ public final class StringUtilities {
 	 * 6) 1. - false
 	 * 7) .1 - false
 	 * </pre>
-	 * 
+	 * <p/>
 	 * This method is faster that the string utilities from Apache, as a matter of interest.
-	 * 
+	 *
 	 * @param string the string to check whether it qualifies to be parsed into a number, could be a double
 	 * @return whether the string has only numbers and potentially one separator a comma or a dot, but no spaces
 	 */
@@ -47,7 +49,6 @@ public final class StringUtilities {
 				} else {
 					after = Boolean.TRUE;
 				}
-				continue;
 			} else if ('.' == c || ',' == c) {
 				if (dot) {
 					// If we find more than one dot or number separator
@@ -56,7 +57,6 @@ public final class StringUtilities {
 					return Boolean.FALSE;
 				}
 				dot = Boolean.TRUE;
-				continue;
 			} else {
 				return Boolean.FALSE;
 			}
@@ -71,8 +71,7 @@ public final class StringUtilities {
 		char[] strippedChars = new char[chars.length];
 		char[] stripChars = strip.toCharArray();
 		int j = 0;
-		for (int i = 0; i < chars.length; i++) {
-			final char c = chars[i];
+		for (final char c : chars) {
 			boolean equals = Boolean.FALSE;
 			for (char stripChar : stripChars) {
 				if (c == stripChar) {
@@ -95,16 +94,20 @@ public final class StringUtilities {
 		return new String(strippedChars, 0, j);
 	}
 
+	/**
+	 * Remove single characters and numbers and anything that isn't human
+	 * and strips the whitespace to one character if there are more than one
+	 * or a character is removed
+	 *
+	 * @param content the string to strip non-human readable characters from
+	 * @return the cleaned string, all alpha numeric characters
+	 */
 	public static final String stripToAlphaNumeric(final String content) {
 		if (!StringUtils.isEmpty(content)) {
 			StringBuilder b = new StringBuilder();
-			// Remove single characters and numbers and anything that isn't human
-			// and strips the whitespace to one character if there are more than one
-			// or a character is removed
 			char p = SPACE;
 			char[] cs = content.toCharArray();
-			for (int i = 0; i < cs.length; i++) {
-				char c = cs[i];
+			for (final char c : cs) {
 				boolean a = Boolean.FALSE;
 				if (Character.isWhitespace(c)) {
 					if (p != SPACE) {

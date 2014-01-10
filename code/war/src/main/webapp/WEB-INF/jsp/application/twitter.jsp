@@ -89,15 +89,6 @@
 	</div>
 	
 	<div class="row-fluid">
-		<div class="span12">
-			<div class="box tex">
-				<div class="tab-header">Geo tweets</div>
-					<div id="geo_chart_div" style="width: 100%; height: 250px;"></div>
-			</div>
-		</div>
-	</div>
-	
-	<div class="row-fluid">
 		<div class="span4">
 			<div class="box">
 				<div class="tab-header">Filters</div>

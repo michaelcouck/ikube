@@ -109,7 +109,7 @@ public final class ThreadUtilities {
 	 * This method will wait for all the futures to finish their logic.
 	 * 
 	 * @param futures the futures to wait for in seconds
-	 * @param maxWait and the maximum amount of time to wait
+	 * @param maxWait and the maximum amount of time to wait in seconds
 	 */
 	public static void waitForFutures(final List<Future<?>> futures, final long maxWait) {
 		for (final Future<?> future : futures) {
@@ -123,7 +123,7 @@ public final class ThreadUtilities {
 	 * immediately.
 	 * 
 	 * @param future the future to wait for in seconds
-	 * @param maxWait the maximum amount of time to wait
+	 * @param maxWait the maximum amount of time to wait in seconds
 	 */
 	public static void waitForFuture(final Future<?> future, final long maxWait) {
 		if (future == null) {

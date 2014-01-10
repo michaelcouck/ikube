@@ -48,7 +48,7 @@ public class StrategyInterceptor implements IStrategyInterceptor {
 		// method is to be executed or not
 		final Object[] args = proceedingJoinPoint.getArgs();
 		final AtomicBoolean mustProcess = new AtomicBoolean(Boolean.TRUE);
-		long duration = Timer.execute(new Timer.Timed() {
+		double duration = Timer.execute(new Timer.Timed() {
 			@Override
 			public void execute() {
 
@@ -84,7 +84,7 @@ public class StrategyInterceptor implements IStrategyInterceptor {
 		// strategies. These strategies will be executed and the accumulated category will be used to verify if the
 		// method is to be executed or not
 		final Object[] args = proceedingJoinPoint.getArgs();
-		long duration = Timer.execute(new Timer.Timed() {
+		double duration = Timer.execute(new Timer.Timed() {
 			@Override
 			public void execute() {
 

@@ -1,5 +1,7 @@
 package ikube.toolkit;
 
+import ikube.IConstants;
+
 /**
  * This is just a utility that will return t he time taken for a particular piece of logic.
  * 
@@ -28,10 +30,11 @@ public final class Timer {
 	 * @param timed the wrapper for the logic that is to be timed
 	 * @return the time taken for the logic to execute in milliseconds
 	 */
-	public static long execute(final Timed timed) {
+	public static double execute(final Timed timed) {
 		long start = System.nanoTime();
 		timed.execute();
-		return System.nanoTime() - start;
+		double duration = System.nanoTime() - start;
+		return duration / (double) (IConstants.MILLION);
 	}
 
 }

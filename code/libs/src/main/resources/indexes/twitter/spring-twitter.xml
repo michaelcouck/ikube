@@ -15,11 +15,6 @@
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util.xsd">
 	
-	<description>
-		This file is not to be modified by users generally. This is the configuration for the geospatial index which is an index 
-		of the geonames table on the Ikube server. 
-	</description>
-	
 	<bean
 		id="twitter"
 		class="ikube.model.IndexContext"

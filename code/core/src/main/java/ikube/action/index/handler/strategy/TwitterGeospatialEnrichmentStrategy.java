@@ -12,23 +12,24 @@ import ikube.model.geospatial.GeoCity;
 import ikube.model.geospatial.GeoCountry;
 import ikube.search.ISearcherService;
 import ikube.toolkit.StringUtilities;
+import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.document.Document;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.social.twitter.api.Tweet;
+import org.springframework.social.twitter.api.TwitterProfile;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.document.Document;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.social.twitter.api.Tweet;
-import org.springframework.social.twitter.api.TwitterProfile;
-
 /**
  * @author Michael Couck
- * @since 11.12.13
  * @version 01.00
+ * @since 11.12.13
  */
+@Component
 public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrichmentStrategy {
 
 	@Autowired
@@ -48,20 +49,22 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean aroundProcess(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document, final Object resource)
-			throws Exception {
-		boolean mustProceed = Boolean.TRUE;
-		if (IndexableTweets.class.isAssignableFrom(indexable.getClass()) && resource != null && Tweet.class.isAssignableFrom(resource.getClass())) {
+	public boolean aroundProcess(final IndexContext<?> indexContext, final Indexable<?> indexable,
+								 final Document document, final Object resource)
+		throws Exception {
+		if (IndexableTweets.class.isAssignableFrom(indexable.getClass()) && resource != null && Tweet.class
+			.isAssignableFrom(resource.getClass())) {
 			IndexableTweets indexableTweets = (IndexableTweets) indexable;
 			TwitterProfile twitterProfile = ((Tweet) resource).getUser();
 			// Get the location from the geo tag : "geo":{"coordinates":[-33.9769,18.5080],"type":"Point"}
 			// This needs to be added to the Spring Twitter API, I asked Craig Wells on Twitter to add the field
 			setCoordinate(indexableTweets, twitterProfile, document);
 		}
-		return mustProceed && super.aroundProcess(indexContext, indexable, document, resource);
+		return super.aroundProcess(indexContext, indexable, document, resource);
 	}
 
-	void setCoordinate(final IndexableTweets indexableTweets, final TwitterProfile twitterProfile, final Document document) {
+	void setCoordinate(final IndexableTweets indexableTweets, final TwitterProfile twitterProfile,
+					   final Document document) {
 		String locationField = indexableTweets.getLocationField();
 		Coordinate userProfileLocation = getLocationFromUserProfile(twitterProfile);
 		Coordinate tweetLocation = null;
@@ -84,17 +87,21 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
 		}
 		if (tweetLocation != null) {
 			IndexManager.addStringField(locationField, tweetLocation.getName(), indexableTweets, document);
-			IndexManager.addNumericField(IConstants.LATITUDE, Double.toString(tweetLocation.getLatitude()), document, Boolean.TRUE);
-			IndexManager.addNumericField(IConstants.LONGITUDE, Double.toString(tweetLocation.getLongitude()), document, Boolean.TRUE);
+			IndexManager.addNumericField(IConstants.LATITUDE, Double.toString(tweetLocation.getLatitude()), document,
+				Boolean.TRUE);
+			IndexManager.addNumericField(IConstants.LONGITUDE, Double.toString(tweetLocation.getLongitude()),
+				document, Boolean.TRUE);
 			addSpatialLocationFields(tweetLocation, document);
 		}
 	}
 
 	/**
-	 * This method will get the location of the tweet from the time zone of the user profile. Typically this is accurate as the wite selects an appropriate time
-	 * zone for the user based on the ip. This also contains the city, and generally this is the best choice for the tweet. When the 'geo-tag' is added in
+	 * This method will get the location of the tweet from the time zone of the user profile. Typically this is
+	 * accurate as the wite selects an appropriate time
+	 * zone for the user based on the ip. This also contains the city, and generally this is the best choice for the
+	 * tweet. When the 'geo-tag' is added in
 	 * Spring Social, then the 'real' co-ordinate for the tweet will be available and this can check the tweet first.
-	 * 
+	 *
 	 * @param twitterProfile the profile of the user, cannot be null
 	 * @return the co-ordinate of the tweet based on the time zone of the user, or null if not time zone can be found
 	 */
@@ -109,7 +116,7 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
 			// This seems to be the most accurate
 			String city = getCityFromTimeZone(timeZone);
 
-			GeoCity geoCity = dataBase.findCriteria(GeoCity.class, new String[] { IConstants.NAME }, new Object[] { city });
+			GeoCity geoCity = dataBase.findCriteria(GeoCity.class, new String[]{IConstants.NAME}, new Object[]{city});
 			if (geoCity != null) {
 				timeZoneCoordinate = geoCity.getCoordinate();
 			}
@@ -135,10 +142,13 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
 	}
 
 	/**
-	 * This method matches that UTC time offset of the user(which should be correct) with the language of the countries in the time zone. Of course the GMT+3
-	 * time zone has many countries that have the Arabic as a primary language, so this is pretty useless except for the longitude.
-	 * 
-	 * @param document the document that will be added to the index, we get possibly the language of the tweet from there
+	 * This method matches that UTC time offset of the user(which should be correct) with the language of the
+	 * countries in the time zone. Of course the GMT+3
+	 * time zone has many countries that have the Arabic as a primary language, so this is pretty useless except for
+	 * the longitude.
+	 *
+	 * @param document       the document that will be added to the index, we get possibly the language of the tweet
+	 *                          from there
 	 * @param twitterProfile the twitter profile for the user, this can not be null
 	 * @return the co-ordinate of the time zone and language, but could be null, and only accurate to the longitude
 	 */
@@ -163,13 +173,15 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
 		for (final String utcTimeZone : utcTimeZones) {
 			String city = getCityFromTimeZone(utcTimeZone);
 			// Find the country where this city is so we can find the language and match it against the user language
-			GeoCity geoCity = dataBase.findCriteria(GeoCity.class, new String[] { IConstants.NAME }, new Object[] { city });
+			GeoCity geoCity = dataBase.findCriteria(GeoCity.class, new String[]{IConstants.NAME}, new Object[]{city});
 			if (geoCity != null) {
 				// Try to find the location based on the time zone and matched to the language to get the latitude
-				GeoCountry geoCountry = (GeoCountry) geoCity.getParent();
+				GeoCountry geoCountry = geoCity.getParent();
 				String timeZoneLanguage = geoCountry.getLanguage();
-				boolean profileLanguageMatch = profileLanguage != null ? timeZoneLanguage.contains(profileLanguage) : Boolean.FALSE;
-				boolean tweetLanguageMatch = tweetLanguage != null ? timeZoneLanguage.contains(tweetLanguage) : Boolean.FALSE;
+				boolean profileLanguageMatch = profileLanguage != null ? timeZoneLanguage.contains(profileLanguage) :
+					Boolean.FALSE;
+				boolean tweetLanguageMatch = tweetLanguage != null ? timeZoneLanguage.contains(tweetLanguage) :
+					Boolean.FALSE;
 				if (profileLanguageMatch || tweetLanguageMatch) {
 					logger.debug("Taking the country location from the time zone : {} ", geoCountry);
 					coordinate = geoCity.getCoordinate();
@@ -184,9 +196,10 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
 	Coordinate findLocationCoordinates(final String location, final String searchField) {
 		// We need to clean the text for Lucene
 		String searchString = StringUtilities.stripToAlphaNumeric(location);
-		String[] searchStrings = new String[] { searchString };
-		String[] searchFields = new String[] { searchField };
-		ArrayList<HashMap<String, String>> results = searcherService.search(IConstants.GEOSPATIAL, searchStrings, searchFields, Boolean.FALSE, 0, 10);
+		String[] searchStrings = new String[]{searchString};
+		String[] searchFields = new String[]{searchField};
+		ArrayList<HashMap<String, String>> results = searcherService.search(IConstants.GEOSPATIAL, searchStrings,
+			searchFields, Boolean.FALSE, 0, 10);
 
 		if (results != null && results.size() > 1) {
 			HashMap<String, String> timeZoneLocationResult = results.get(0);

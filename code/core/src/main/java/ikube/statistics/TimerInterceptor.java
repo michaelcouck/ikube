@@ -1,17 +1,16 @@
 package ikube.statistics;
 
 import ikube.toolkit.Timer;
-
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
  * @author Michael Couck
- * @since 07.07.13
  * @version 01.00
+ * @since 07.07.13
  */
 public class TimerInterceptor implements ITimerInterceptor {
 
@@ -42,7 +41,6 @@ public class TimerInterceptor implements ITimerInterceptor {
 
 	private TimedImpl timedImpl;
 	private AtomicLong everyNInvocations;
-	private long printEveryNInvocations = 1000;
 
 	public TimerInterceptor() {
 		timedImpl = new TimedImpl();
@@ -53,9 +51,10 @@ public class TimerInterceptor implements ITimerInterceptor {
 	 * {@inheritDoc}
 	 */
 	public Object aroundProcess(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+		long printEveryNInvocations = 1000;
 		if (everyNInvocations.getAndIncrement() % printEveryNInvocations == 0) {
 			timedImpl.setProceedingJoinPoint(proceedingJoinPoint);
-			long duration = Timer.execute(timedImpl);
+			double duration = Timer.execute(timedImpl);
 			LOGGER.info("Signature : " + proceedingJoinPoint.getSignature() + ", executed in : " + duration + " ms");
 			return timedImpl.getResult();
 		}

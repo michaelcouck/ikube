@@ -5,8 +5,8 @@
 module.controller('TwitterController', function($scope, $http, $injector, $timeout, $log, $controller) {
 	
 	$scope.analyzing = false;
-	$scope.map;
-	$scope.config;
+	$scope.map = undefined;
+	$scope.config = undefined;
 	
 	$scope.status = 200;
 	// The running zoom in the map
@@ -47,7 +47,7 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 		sortDirection : ['true']
 	};
 	
-	$scope.searchClone;
+	$scope.searchClone = undefined;
 	
 	$scope.searchUrl = '/ikube/service/twitter/analyze';
 	
@@ -128,7 +128,6 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 		var modulo = $scope.statistics.total % $scope.search.maxResults;
 		$scope.search.endResult = $scope.search.firstResult + modulo == $scope.statistics.total ? $scope.statistics.total
 				: $scope.search.firstResult + parseInt($scope.search.maxResults, 10);
-		return;
 	}
 	
 	$scope.doPagedSearch = function(firstResult) {
@@ -258,7 +257,7 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 					var distance = key['distance'];
 					if (!!latitude && !!longitude) {
 						$log.log('       marker : ' + latitude + '-' + longitude);
-						pointMarker = new google.maps.Marker({
+						new google.maps.Marker({
 							map : $scope.map,
 							icon: getServiceUrl('/ikube/assets/images/icons/person_obj.gif'),
 							position : new google.maps.LatLng(latitude, longitude),

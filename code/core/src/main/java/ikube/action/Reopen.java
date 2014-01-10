@@ -20,9 +20,11 @@ public class Reopen extends Action<IndexContext<?>, Boolean> {
 	public boolean internalExecute(final IndexContext<?> indexContext) {
 		logger.info("Opening searcher on index : " + indexContext.getName());
 		IndexSearcher oldIndexSearcher = indexContext.getMultiSearcher();
-		if (oldIndexSearcher != null && oldIndexSearcher.getIndexReader() != null) {
-			boolean mustReopen = Boolean.FALSE;
-			try {
+		boolean mustReopen = Boolean.FALSE;
+		try {
+			if (oldIndexSearcher == null || oldIndexSearcher.getIndexReader() == null) {
+				mustReopen = Boolean.TRUE;
+			} else {
 				MultiReader oldMultiReader = (MultiReader) oldIndexSearcher.getIndexReader();
 				CompositeReaderContext compositeReaderContext = oldMultiReader.getContext();
 				for (final IndexReaderContext indexReaderContext : compositeReaderContext.children()) {
@@ -33,12 +35,12 @@ public class Reopen extends Action<IndexContext<?>, Boolean> {
 						break;
 					}
 				}
-				if (mustReopen) {
-					new Open().execute(indexContext);
-				}
-			} catch (Exception e) {
-				throw new RuntimeException(e);
 			}
+			if (mustReopen) {
+				new Open().execute(indexContext);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 		return Boolean.TRUE;
 	}
