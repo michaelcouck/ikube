@@ -62,7 +62,7 @@ public class Auto extends Resource {
 			@Context final UriInfo uriInfo) {
 		final Search search = unmarshall(Search.class, request);
 		final ArrayList<HashMap<String, String>> autoResults = new ArrayList<HashMap<String, String>>();
-		long duration = Timer.execute(new Timer.Timed() {
+		double duration = Timer.execute(new Timer.Timed() {
 			@Override
 			public void execute() {
 				List<String> searchStrings = search.getSearchStrings();
@@ -79,7 +79,7 @@ public class Auto extends Resource {
 		// Add the statistics
 		HashMap<String, String> statistics = new HashMap<String, String>();
 		statistics.put(IConstants.TOTAL, Long.toString(autoResults.size()));
-		statistics.put(IConstants.DURATION, Long.toString(duration));
+		statistics.put(IConstants.DURATION, Double.toString(duration));
 		statistics.put(IConstants.SEARCH_STRINGS, search.getSearchStrings().toString());
 		autoResults.add(statistics);
 		search.setSearchResults(autoResults);
