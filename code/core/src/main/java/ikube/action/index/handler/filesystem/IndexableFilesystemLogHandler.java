@@ -40,7 +40,7 @@ public class IndexableFilesystemLogHandler extends IndexableHandler<IndexableFil
 			{
 				String directoryPath = indexable.getPath();
 				File directory = FileUtilities.getFile(directoryPath, Boolean.TRUE);
-				resources = new ArrayList<File>();
+				resources = new ArrayList<>();
 				getLogFiles(directory);
 			}
 

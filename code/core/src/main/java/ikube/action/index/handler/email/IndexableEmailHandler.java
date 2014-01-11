@@ -37,12 +37,13 @@ import org.apache.lucene.document.Document;
 import com.sun.mail.pop3.POP3SSLStore;
 
 /**
- * This class reads and indexes a mail account. At the time of writing it was not multi-threaded but could be made multi, however this would only be needed with
+ * This class reads and indexes a mail account. At the time of writing it was not multi-threaded but could be made
+ * multi, however this would only be needed with
  * very large accounts indeed.
- * 
+ *
  * @author Bruno Barin
- * @since 29.11.10
  * @version 01.00
+ * @since 29.11.10
  */
 public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 
@@ -53,7 +54,8 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ForkJoinTask<?> handleIndexableForked(final IndexContext<?> indexContext, final IndexableEmail indexableEmail) throws Exception {
+	public ForkJoinTask<?> handleIndexableForked(final IndexContext<?> indexContext,
+												 final IndexableEmail indexableEmail) throws Exception {
 		IResourceProvider<IndexableEmail> emailResourceProvider = new IResourceProvider<IndexableEmail>() {
 
 			List<IndexableEmail> indexableEmails;
@@ -76,7 +78,8 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	}
 
 	@Override
-	protected List<?> handleResource(final IndexContext<?> indexContext, final IndexableEmail indexableEmail, final Object resource) {
+	protected List<?> handleResource(final IndexContext<?> indexContext, final IndexableEmail indexableEmail,
+									 final Object resource) {
 		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
 		handleEmail(indexContext, indexableEmail);
 		return null;
@@ -84,8 +87,8 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 
 	/**
 	 * This method actually goes to the account and indexes the data.
-	 * 
-	 * @param indexContext the context for the index
+	 *
+	 * @param indexContext  the context for the index
 	 * @param indexableMail the indexable to index
 	 */
 	protected void handleEmail(final IndexContext<?> indexContext, final IndexableEmail indexableMail) {
@@ -130,13 +133,14 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 
 	/**
 	 * Handles one folder in the mail account, reading the messages and indexing the content.
-	 * 
-	 * @param indexContext the index context
-	 * @param indexableMail
-	 * @param folder
+	 *
+	 * @param indexContext  the index context
+	 * @param indexableMail the indexable to index
+	 * @param folder        the email folder that will be 'crawled'
 	 * @throws Exception
 	 */
-	protected void handleFolder(final IndexContext<?> indexContext, final IndexableEmail indexableMail, final Folder folder) throws Exception {
+	protected void handleFolder(final IndexContext<?> indexContext, final IndexableEmail indexableMail,
+								final Folder folder) throws Exception {
 		folder.open(Folder.READ_ONLY);
 
 		// For each message found in the server, index it.
@@ -148,7 +152,8 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 		folder.close(true);
 	}
 
-	Document handleResource(IndexContext<?> indexContext, IndexableEmail indexableMail, Document document, Object resource) throws Exception {
+	Document handleResource(IndexContext<?> indexContext, IndexableEmail indexableMail, Document document,
+							Object resource) throws Exception {
 		Message message = (Message) resource;
 		Date recievedDate = message.getReceivedDate();
 		Date sentDate = message.getSentDate();
@@ -195,7 +200,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 
 	/**
 	 * Closes the connection to the mail server
-	 * 
+	 *
 	 * @param store The Store object that holds the connection to the mail server.
 	 */
 	private void closeMailServerConnection(final javax.mail.Store store) {
@@ -208,10 +213,10 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 
 	/**
 	 * Returns a message content given a SynchronizationMessage object
-	 * 
+	 *
 	 * @param message The SynchronizationMessage object representing a message in the mail server
 	 * @return The message content.
-	 * @throws IOException If some problem occurs when trying to access the message content.
+	 * @throws IOException        If some problem occurs when trying to access the message content.
 	 * @throws MessagingException If some problem occurs when trying to access the message content.
 	 */
 	private String getMessageContent(final Message message) throws IOException, MessagingException {
@@ -226,7 +231,8 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 					byte[] bytes = content.toString().getBytes();
 					IParser parser = ParserProvider.getParser(null, bytes);
 					try {
-						String parsedContent = parser.parse(new ByteArrayInputStream(bytes), new ByteArrayOutputStream()).toString();
+						String parsedContent = parser.parse(new ByteArrayInputStream(bytes),
+							new ByteArrayOutputStream()).toString();
 						messageContent.append(parsedContent);
 						messageContent.append(" ");
 					} catch (Exception e) {
@@ -243,7 +249,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 
 	/**
 	 * Returns a connection to the mail server given a Mail visitable
-	 * 
+	 *
 	 * @param indexableMail The {@link IndexableEmail} indexable object
 	 * @return The {@link Store} object that holds a connection to the mail server.
 	 * @throws NoSuchProviderException If the mail provider wasn't correct specified.
@@ -252,7 +258,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 		String host = indexableMail.getMailHost();
 		final String username = indexableMail.getUsername();
 		final String password = indexableMail.getPassword();
-		int port = Integer.valueOf(indexableMail.getPort()).intValue();
+		int port = Integer.valueOf(indexableMail.getPort());
 		String protocol = indexableMail.getProtocol() != null ? indexableMail.getProtocol() : MAIL_PROTOCOL;
 
 		Properties pop3Props = new Properties();

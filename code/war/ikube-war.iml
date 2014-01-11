@@ -55,7 +55,7 @@
     <orderEntry type="library" name="Maven: sevenzip:jbinding:4.65.1" level="project" />
     <orderEntry type="library" name="Maven: sevenzip:jbinding-linux:4.65.1" level="project" />
     <orderEntry type="library" name="Maven: canyon:canyon:0.9.8" level="project" />
-    <orderEntry type="library" name="Maven: com.jcraft:jsch:0.1.48" level="project" />
+    <orderEntry type="library" name="Maven: com.jcraft:jsch:0.1.41" level="project" />
     <orderEntry type="library" name="Maven: org.apache.ant:ant:1.7.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.ant:ant-launcher:1.7.0" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-beans:3.0.5.RELEASE" level="project" />

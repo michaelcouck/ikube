@@ -4,13 +4,10 @@ import ikube.action.index.handler.email.IndexableEmailHandler;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableEmail;
+import org.apache.lucene.index.IndexWriter;
 
 import java.net.URL;
-import java.util.List;
 import java.util.concurrent.ForkJoinTask;
-import java.util.concurrent.Future;
-
-import org.apache.lucene.index.IndexWriter;
 
 /**
  * This is the interface for handlers. Handlers handle indexables. Indexables are essentially sources of data, like an {@link URL} object for example. Any type
@@ -38,17 +35,6 @@ public interface IIndexableHandler<T extends Indexable<?>> {
 	 * @param indexableClass the class that this handler can handle
 	 */
 	void setIndexableClass(final Class<T> indexableClass);
-
-	/**
-	 * This method executes the handler logic. The method returns a list of threads(if it is multi-threaded) that the caller must wait for. Once all the threads
-	 * are dead then the handler's logic is complete.
-	 * 
-	 * @param indexContext the index context for the index
-	 * @param indexable the indexable that the handler must handle
-	 * @return the list of threads that the caller must wait for
-	 * @throws Exception
-	 */
-	List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final T indexable) throws Exception;
 
 	/**
 	 * This method takes advantage of the fork/join logic from the concurrent package. Implementations must return a single fork join task that may or may not

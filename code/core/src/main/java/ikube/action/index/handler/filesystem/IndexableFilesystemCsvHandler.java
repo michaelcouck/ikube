@@ -2,28 +2,21 @@ package ikube.action.index.handler.filesystem;
 
 import ikube.IConstants;
 import ikube.action.index.handler.IResourceProvider;
-import ikube.action.index.handler.IStrategy;
 import ikube.action.index.handler.IndexableHandler;
-import ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableFileSystemCsv;
 import ikube.toolkit.ThreadUtilities;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ForkJoinTask;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.File;
+import java.util.*;
+import java.util.concurrent.ForkJoinTask;
 
 /**
  * This handler is a custom handler for the CSV files. Rather than inserting the data into the database, meaning creating tables and the like, and the painful
@@ -36,8 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFileSystemCsv> {
 
-	/** TODO : Remove after testing. */
-	private IStrategy strategy;
 	@Autowired
 	private RowResourceHandler rowResourceHandler;
 
@@ -95,8 +86,6 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
 						indexableColumn.setContent(values[i]);
 					}
 					Document document = new Document();
-					// TODO : Remove this, this is done in the configuration, just for test here
-					// strategy.aroundProcess(indexContext, indexableFileSystemCsv, document, file);
 					rowResourceHandler.handleResource(indexContext, indexableFileSystemCsv, document, file);
 					ThreadUtilities.sleep(indexContext.getThrottle());
 				} catch (Exception e) {

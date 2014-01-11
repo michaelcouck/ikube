@@ -104,7 +104,7 @@ public class IndexableFileSystemHandler extends IndexableHandler<IndexableFileSy
 	private boolean handleGZip(final String filePath) throws ArchiveException, IOException {
 		InputStream is = new FileInputStream(filePath);
 		ArchiveInputStream input = new ArchiveStreamFactory().createArchiveInputStream("tar", new GZIPInputStream(is));
-		ArchiveEntry entry = null;
+		ArchiveEntry entry;
 		while ((entry = input.getNextEntry()) != null) {
 			// TODO implement this logic for tar on Linux
 			logger.info("G-zip entry : " + entry);

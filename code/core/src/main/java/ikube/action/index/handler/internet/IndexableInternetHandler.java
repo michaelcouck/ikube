@@ -111,7 +111,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 				String parsedContent = getParsedContent(url, byteOutputStream);
 				if (parsedContent != null) {
 					Long hash = HashUtilities.hash(parsedContent);
-					url.setHash(hash.longValue());
+					url.setHash(hash);
 					// Add the document to the index
 					internetResourceHandler.handleResource(indexContext, indexable, new Document(), url);
 				}
@@ -214,7 +214,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 	}
 
 	protected List<Url> extractLinksFromContent(final IndexableInternet indexableInternet, final InputStream inputStream) {
-		List<Url> urls = new ArrayList<Url>();
+		List<Url> urls = new ArrayList<>();
 		try {
 			Reader reader = new InputStreamReader(inputStream, IConstants.ENCODING);
 			Source source = new Source(reader);
@@ -255,8 +255,6 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 					}
 				}
 			}
-		} catch (UnsupportedEncodingException e) {
-			handleException(indexableInternet, e);
 		} catch (IOException e) {
 			handleException(indexableInternet, e);
 		}

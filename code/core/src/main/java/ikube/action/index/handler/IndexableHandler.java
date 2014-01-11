@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ForkJoinTask;
-import java.util.concurrent.Future;
 import java.util.concurrent.RecursiveAction;
 
 /**
@@ -88,8 +87,8 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 					// Sleep for the required time
 					ThreadUtilities.sleep(indexContext.getThrottle());
 				} while (true);
-				Object[] parameters = {this.hashCode(), RecursiveAction.getPool().getRunningThreadCount()};
-				logger.info("Thread finished : {}, thread count : {} ", parameters);
+				int threadCount = RecursiveAction.getPool().getRunningThreadCount();
+				logger.info("Thread finished : " + this.hashCode() + ", thread count : " + threadCount);
 			}
 		}
 		// And hup
@@ -124,15 +123,6 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 		ForkJoinTask<?> leftRecursiveAction = getRecursiveAction(indexContext, leftIndexable, resourceProvider);
 		ForkJoinTask<?> rightRecursiveAction = getRecursiveAction(indexContext, rightIndexable, resourceProvider);
 		ForkJoinTask.invokeAll(leftRecursiveAction, rightRecursiveAction);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@Deprecated
-	public List<Future<?>> handleIndexable(final IndexContext<?> indexContext, final T indexable) throws Exception {
-		return null;
 	}
 
 	/**
@@ -179,7 +169,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 			.isAssignableFrom(exception.getClass())) {
 			throw new RuntimeException("Worker thread interrupted : " + Arrays.deepToString(messages), exception);
 		}
-		logger.error("Exception handling resource : {} ", Arrays.deepToString(messages) + ", " +
+		logger.error("Exception handling resource : ", Arrays.deepToString(messages) + ", " +
 			"" + exception.getLocalizedMessage() + ", " + exception);
 		logger.debug(null, exception);
 	}

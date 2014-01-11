@@ -18,7 +18,6 @@ public class Reopen extends Action<IndexContext<?>, Boolean> {
 	 */
 	@Override
 	public boolean internalExecute(final IndexContext<?> indexContext) {
-		logger.info("Opening searcher on index : " + indexContext.getName());
 		IndexSearcher oldIndexSearcher = indexContext.getMultiSearcher();
 		boolean mustReopen = Boolean.FALSE;
 		try {
@@ -37,6 +36,7 @@ public class Reopen extends Action<IndexContext<?>, Boolean> {
 				}
 			}
 			if (mustReopen) {
+				logger.info("Opening searcher on index : " + indexContext.getName());
 				new Open().execute(indexContext);
 			}
 		} catch (Exception e) {

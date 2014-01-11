@@ -32,7 +32,7 @@ public class IndexableDataSourceHandler extends IndexableHandler<IndexableDataSo
 	 */
 	@Override
 	public ForkJoinTask<?> handleIndexableForked(final IndexContext<?> indexContext, final IndexableDataSource indexableDataSource) throws Exception {
-		ForkJoinTask<Object> forkJoinTask = new RecursiveTask<Object>() {
+		return new RecursiveTask<Object>() {
 			@Override
 			protected Object compute() {
 				try {
@@ -43,7 +43,6 @@ public class IndexableDataSourceHandler extends IndexableHandler<IndexableDataSo
 				return null;
 			}
 		};
-		return forkJoinTask;
 	}
 
 	private void addAllTables(final IndexContext<?> indexContext, final IndexableDataSource indexableDataSource) throws SQLException {
