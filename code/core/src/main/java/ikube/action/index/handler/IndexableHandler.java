@@ -169,8 +169,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 			.isAssignableFrom(exception.getClass())) {
 			throw new RuntimeException("Worker thread interrupted : " + Arrays.deepToString(messages), exception);
 		}
-		logger.error("Exception handling resource : ", Arrays.deepToString(messages) + ", " +
-			"" + exception.getLocalizedMessage() + ", " + exception);
+		logger.error("Exception handling resource : " + Arrays.deepToString(messages) + ", " + exception.getLocalizedMessage());
 		logger.debug(null, exception);
 	}
 
