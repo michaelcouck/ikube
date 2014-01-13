@@ -61,7 +61,7 @@ public class SpellingChecker {
 	 * @throws Exception
 	 */
 	public void initialize() throws Exception {
-		LOGGER.info("Opened spelling index on : ");
+		LOGGER.info("Opened spelling index : ");
 	}
 
 	/**

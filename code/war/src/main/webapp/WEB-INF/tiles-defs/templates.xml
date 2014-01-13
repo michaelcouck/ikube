@@ -80,6 +80,15 @@
 	</definition>
 	
 	<!-- Application templates, Twitter and Happy Planet -->
+	<definition name="application/happy" extends=".mainTemplate">
+		<put-attribute name="title" value="Ikube Geo Tweets" type="string" />
+		<put-attribute name="menu">
+			<definition template="/WEB-INF/templates/menu.jsp">
+				<put-attribute name="sub-menu" value="/WEB-INF/jsp/menu/twitter.jsp" />
+			</definition>
+		</put-attribute>
+		<put-attribute name="content" value="/WEB-INF/jsp/application/happy.jsp" />
+	</definition>
 	<definition name="application/twitter" extends=".mainTemplate">
 		<put-attribute name="title" value="Ikube Twitter App" type="string" />
 		<put-attribute name="menu">
@@ -89,5 +98,5 @@
 		</put-attribute>
 		<put-attribute name="content" value="/WEB-INF/jsp/application/twitter.jsp" />
 	</definition>
-	
+
 </tiles-definitions>

@@ -1,5 +1,7 @@
 package ikube.web.service;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import ikube.action.index.parse.HtmlParser;
 import ikube.analytics.IAnalyticsService;
 import ikube.cluster.IClusterManager;
@@ -7,15 +9,6 @@ import ikube.cluster.IMonitorService;
 import ikube.search.ISearcherService;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.SerializationUtilities;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tools.ant.filters.StringInputStream;
@@ -23,8 +16,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * This is the base class for all web services, common logic and properties.
@@ -41,24 +38,21 @@ public abstract class Resource {
 
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	protected Gson gson;
 	@Autowired
 	protected IMonitorService monitorService;
-	@Autowired
+    @Autowired
 	protected ISearcherService searcherService;
-	@Autowired
+    @Autowired
 	protected IClusterManager clusterManager;
-	@Autowired
+    @Autowired
 	protected IAnalyticsService analyticsService;
-
-	{
-		gson = new GsonBuilder().disableHtmlEscaping().create();
-	}
+    /** The Gson marshaller to and from the front end. */
+    protected Gson gson= new GsonBuilder().disableHtmlEscaping().create();
 
 	/**
 	 * This method will create the response builder, then convert the results to Json and add them the the response payload, then build the response object from
 	 * the builder.
-	 * 
+	 *
 	 * @param result the data to convert to Json
 	 * @return the Json response object to send to the caller/client
 	 */
@@ -94,29 +88,26 @@ public abstract class Resource {
 	}
 
 	<T> T unmarshall(final Class<T> clazz, final HttpServletRequest request) {
-		String json = null;
 		try {
-			json = FileUtilities.getContents(request.getInputStream(), Integer.MAX_VALUE).toString();
+			String json = FileUtilities.getContents(request.getInputStream(), Integer.MAX_VALUE).toString();
 			T t = gson.fromJson(json, clazz);
 			if (t == null) {
-				t = newInstance(clazz, json);
+				t = newInstance(clazz);
 			}
 			return t;
 		} catch (IOException e) {
-			return newInstance(clazz, json);
+			return newInstance(clazz);
 		}
 	}
 
-	private <T> T newInstance(final Class<T> clazz, final String json) {
+	private <T> T newInstance(final Class<T> clazz) {
 		try {
 			// If we don't have the class in the input stream then create one for the caller
 			return clazz.newInstance();
-		} catch (InstantiationException e) {
-			throw new RuntimeException("Couldn't unmarshall : " + json + ", to : " + clazz, e);
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException("Couldn't unmarshall : " + json + ", to : " + clazz, e);
+		} catch (InstantiationException | IllegalAccessException e) {
+			throw new RuntimeException("Couldn't unmarshall to : " + clazz, e);
 		}
-	}
+    }
 	
 	String[] split(final String string) {
 		String cleaned = string;

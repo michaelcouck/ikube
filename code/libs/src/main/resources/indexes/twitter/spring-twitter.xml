@@ -33,8 +33,7 @@
 		property:delta="true"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
-		property:children-ref="twitter-indexables"
-		property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer" />
+		property:children-ref="twitter-indexables" />
 	<util:list id="twitter-indexables">
 		<ref local="twitter-index" />
 	</util:list>
@@ -57,7 +56,7 @@
 		property:stored="true"
 		property:analyzed="true"
 		property:vectored="true"
-		property:threads="12"
+		property:threads="4"
 		
 		property:consumerKey="Sohh43DylUwaXr7smSojBA"
 		property:consumerSecret="90xubtexbSwhHBbKXM62pF4QfJnz1NWVkpevwde3Qxo"

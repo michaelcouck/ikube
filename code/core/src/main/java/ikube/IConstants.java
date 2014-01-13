@@ -218,4 +218,5 @@ public interface IConstants {
 	String SHOULD = "should";
 	String STRING = "string";
 	String WORD = "word";
+	String RANGE = "range";
 }

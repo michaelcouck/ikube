@@ -60,7 +60,8 @@
 				<ul class="nav nav-list">
 					<li class="active"><a href="#">
 						<i class="icon-random"></i>
-						Cluster/class/result <span class="pull-right badge blue" ng-bind-html-unsafe="analysis.clazz">{{analysis.clazz}}</span> </a></li>
+						Cluster/class/result <span class="pull-right badge blue" ng-bind-html-unsafe="analysis.clazz">{{analysis.clazz}}</span></a>
+                    </li>
 					<li>
 						<a href="#" ng-click="showCorrelationCoefficients = !showCorrelationCoefficients">
 							<i class="icon-book"></i>

@@ -124,10 +124,9 @@
 		id="ikube.action.Open" 
 		class="ikube.action.Open" 
 		property:ruleExpression="
-			(!AnyServersWorkingThisIndex &#38;&#38; IsNewIndexCreated) || 
-			(!AnyServersWorkingThisIndex &#38;&#38; 
-			  (!IsMultiSearcherInitialised || !AreSearchablesInitialised) &#38;&#38;
-			  (AreIndexesCreated || AreUnopenedIndexes))"
+			IsNewIndexCreated ||
+			    (!IsMultiSearcherInitialised || !AreSearchablesInitialised) &#38;&#38;
+			    (AreIndexesCreated || AreUnopenedIndexes)"
 		property:requiresClusterLock="false">
 		<property name="rules">
 			<util:list>
@@ -136,7 +135,7 @@
 				<ref local="ikube.action.rule.AreUnopenedIndexes" />
 				<ref local="ikube.action.rule.IsMultiSearcherInitialised" />
 				<ref local="ikube.action.rule.AreSearchablesInitialised" />
-				<ref local="ikube.action.rule.AnyServersWorkingThisIndex" />
+				<!--<ref local="ikube.action.rule.AnyServersWorkingThisIndex" />-->
 			</util:list>
 		</property>
 	</bean>
@@ -144,11 +143,11 @@
 		id="ikube.action.Reopen" 
 		class="ikube.action.Reopen" 
 		property:ruleExpression="
-			IsIndexDelta &#38;&#38; IsThisIndexCreated"
+			IsThisIndexCreated"
 		property:requiresClusterLock="false">
 		<property name="rules">
 			<util:list>
-				<ref local="ikube.action.rule.IsIndexDelta" />
+				<!--<ref local="ikube.action.rule.IsIndexDelta" />-->
 				<ref local="ikube.action.rule.IsThisIndexCreated" />
 			</util:list>
 		</property>
