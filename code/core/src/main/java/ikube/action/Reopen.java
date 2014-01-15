@@ -13,36 +13,42 @@ import org.apache.lucene.search.IndexSearcher;
  */
 public class Reopen extends Action<IndexContext<?>, Boolean> {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean internalExecute(final IndexContext<?> indexContext) {
-		IndexSearcher oldIndexSearcher = indexContext.getMultiSearcher();
-		boolean mustReopen = Boolean.FALSE;
-		try {
-			if (oldIndexSearcher == null || oldIndexSearcher.getIndexReader() == null) {
-				mustReopen = Boolean.TRUE;
-			} else {
-				MultiReader oldMultiReader = (MultiReader) oldIndexSearcher.getIndexReader();
-				CompositeReaderContext compositeReaderContext = oldMultiReader.getContext();
-				for (final IndexReaderContext indexReaderContext : compositeReaderContext.children()) {
-					IndexReader oldIndexReader = indexReaderContext.reader();
-					IndexReader newIndexReader = DirectoryReader.openIfChanged((DirectoryReader) oldIndexReader);
-					if (newIndexReader != null) {
-						mustReopen = Boolean.TRUE;
-						break;
-					}
-				}
-			}
-			if (mustReopen) {
-				logger.info("Opening searcher on index : " + indexContext.getName());
-				new Open().execute(indexContext);
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		return Boolean.TRUE;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean internalExecute(final IndexContext<?> indexContext) {
+        IndexSearcher oldIndexSearcher = indexContext.getMultiSearcher();
+        boolean mustReopen = Boolean.FALSE;
+        try {
+            if (oldIndexSearcher == null || oldIndexSearcher.getIndexReader() == null) {
+                mustReopen = Boolean.TRUE;
+            } else {
+                MultiReader oldMultiReader = (MultiReader) oldIndexSearcher.getIndexReader();
+                CompositeReaderContext compositeReaderContext = oldMultiReader.getContext();
+                for (final IndexReaderContext indexReaderContext : compositeReaderContext.children()) {
+                    IndexReader oldIndexReader = indexReaderContext.reader();
+                    IndexReader newIndexReader = null;
+                    try {
+                        newIndexReader = DirectoryReader.openIfChanged((DirectoryReader) oldIndexReader);
+                    } catch (Exception e) {
+                        logger.error("Exception checking directory for changes : ", e);
+                    } finally {
+                        if (newIndexReader != null) {
+                            newIndexReader.close();
+                            mustReopen = Boolean.TRUE;
+                        }
+                    }
+                }
+            }
+            if (mustReopen) {
+                logger.info("Opening searcher on index : " + indexContext.getName());
+                new Open().execute(indexContext);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return Boolean.TRUE;
+    }
 
 }

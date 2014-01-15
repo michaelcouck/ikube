@@ -110,16 +110,16 @@
 							<a class="button green mini" ng-click="doClearCoordinate();"><i class="icon-remove-circle"></i>&nbsp;Clear</a>
 						</div>
 
-						<div class="input" style="margin-top: 10px; margin-bottom: 10px;" ng-show="showMap">
+						<div class="input" style="margin-top: 10px; margin-bottom: 10px; width: 100%; height: 200px;" ng-show="showMap">
 							<input type="text" ng-model="search.coordinate.latitude" value="{{search.coordinate.latitude}}" style="width: 100%;">
 							<input type="text" ng-model="search.coordinate.longitude" value="{{search.coordinate.longitude}}" style="width: 100%;">
-							<div id="map_canvas" google-map style="margin-top: 10px; margin-bottom: 10px;"></div>
+							<div id="map_canvas" google-map style="margin-top: 10px; margin-bottom: 1000px;"></div>
 						</div>
 
-						<span class="note pull-right" style="margin-top: 22px;">
+						<span class="note pull-right" style="margin-top: 100px;">
 							<b>By language...(optional)</b>
 						</span><br>
-						<div class="input" style="margin-top: 30px;">
+						<div class="input" style="margin-top: 100px;">
 							<a class="button blue mini" ng-click="showLanguages = !showLanguages"><i class="icon-globe"></i>&nbsp;Languages</a>
 						</div>
 

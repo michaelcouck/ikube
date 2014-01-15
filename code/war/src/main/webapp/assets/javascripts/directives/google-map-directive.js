@@ -9,35 +9,41 @@ module.directive('googleMap', function($window, $log) {
 	return {
 		restrict : 'ECMA',
 		compile : function($scope, $element, $attributes, $transclude) {
-			
 			return function($scope, $element, $attributes) {
 				$scope.doMap = function() {
 					var parent = angular.element($element).parent();
 					$scope.styleMap = function() {
-						// We need this because none of the parents might have
+                        var style = {};
+                        var width = 0;
+                        var height = 0;
+                        // We need this because none of the parents might have
 						// no size which creates an infinite iteration
 						var count = 100;
 						do {
-							if (parent.width() <= 0) {
-								parent = parent.parent();
-							}
-						} while (!!parent && count-- > 0);
-						if (parent.width() > 0) {
-							style.width = parent.width() + 'px';
-						} else {
-							style.width = 150 + 'px';
-						}
+							if (parent.width() > 0 && width == 0) {
+                                width = parent.width();
+                            }
+							if (parent.height() > 0 && height == 0) {
+                                height = parent.height();
+                            }
+                            parent = parent.parent();
+                        } while (!!parent && count-- > 0);
+
+                        style.width = width + 'px';
+                        style.height = height + 'px';
+
 						$element.css(style);
-						// $log.log('Do map : ' + style.width + ', element : ' + $element.width() + ', parent : ' + parent.width());
+						// $log.log('Width : ' + style.width + ', element : ' + $element.width());
+						// $log.log('Height : ' + style.height + ', element : ' + $element.height());
 						return style;
 					};
-					
+
 					// The initial coordinates are for Cape Town
 					var mapElement = document.getElementById('map_canvas');
-					var latitude = -33.9693580;
-					var longitude = 18.4622110;
+					var latitude = 0.0;
+					var longitude = 0.0;
 					var options = {
-						zoom: 13,
+						zoom: 2,
 						center: new google.maps.LatLng(latitude, longitude),
 						mapTypeId: google.maps.MapTypeId.ROADMAP
 					};

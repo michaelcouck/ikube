@@ -200,6 +200,7 @@
     <orderEntry type="library" name="Maven: javax.xml.bind:jaxb-api:2.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.tiles:tiles-jsp:2.2.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.tiles:tiles-template:2.2.0" level="project" />
+    <orderEntry type="library" name="Maven: tomgibara:cluster-gvm:1.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.8.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.mockito:mockito-all:1.8.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: mockit:jmockit:0.999" level="project" />

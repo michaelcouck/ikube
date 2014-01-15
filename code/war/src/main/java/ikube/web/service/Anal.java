@@ -1,12 +1,16 @@
 package ikube.web.service;
 
 import com.sun.jersey.api.spring.Autowire;
+import com.tomgibara.cluster.gvm.dbl.DblClusters;
+import com.tomgibara.cluster.gvm.dbl.DblListKeyer;
+import com.tomgibara.cluster.gvm.dbl.DblResult;
 import ikube.IConstants;
 import ikube.analytics.IAnalyticsService;
 import ikube.model.Search;
 import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.Timer;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -47,53 +51,60 @@ public class Anal extends Resource {
      */
     public static class TwitterSearch extends Search {
 
+        int clusters;
         long startHour;
-        long minutsOfHistory;
+        long minutesOfHistory;
+        String classification;
+        Object[][] heatMapData;
         Object[][] timeLineSentiment;
-        Object[][] positiveHeatMapData;
-
-        public long getStartHour() {
-            return startHour;
-        }
-
-        public void setStartHour(final long startHour) {
-            this.startHour = startHour;
-        }
-
-        public long getMinutsOfHistory() {
-            return minutsOfHistory;
-        }
-
-        public void setMinutsOfHistory(final long minutsOfHistory) {
-            this.minutsOfHistory = minutsOfHistory;
-        }
-
-        public Object[][] getNegativeHeatMapData() {
-            return negativeHeatMapData;
-        }
-
-        public void setNegativeHeatMapData(final Object[][] negativeHeatMapData) {
-            this.negativeHeatMapData = negativeHeatMapData;
-        }
-
-        Object[][] negativeHeatMapData;
-
-        public Object[][] getPositiveHeatMapData() {
-            return positiveHeatMapData;
-        }
-
-        public void setPositiveHeatMapData(final Object[][] positiveHeatMapData) {
-            this.positiveHeatMapData = positiveHeatMapData;
-        }
 
         public Object[][] getTimeLineSentiment() {
             return timeLineSentiment;
         }
 
-        public void setTimeLineSentiment(final Object[][] timeLineSentiment) {
+        public void setTimeLineSentiment(Object[][] timeLineSentiment) {
             this.timeLineSentiment = timeLineSentiment;
         }
 
+        public Object[][] getHeatMapData() {
+            return heatMapData;
+        }
+
+        public void setHeatMapData(Object[][] heatMapData) {
+            this.heatMapData = heatMapData;
+        }
+
+        public String getClassification() {
+            return classification;
+        }
+
+        public void setClassification(String classification) {
+            this.classification = classification;
+        }
+
+        public long getMinutesOfHistory() {
+            return minutesOfHistory;
+        }
+
+        public void setMinutesOfHistory(long minutesOfHistory) {
+            this.minutesOfHistory = minutesOfHistory;
+        }
+
+        public long getStartHour() {
+            return startHour;
+        }
+
+        public void setStartHour(long startHour) {
+            this.startHour = startHour;
+        }
+
+        public int getClusters() {
+            return clusters;
+        }
+
+        public void setClusters(int clusters) {
+            this.clusters = clusters;
+        }
     }
 
     /**
@@ -118,26 +129,52 @@ public class Anal extends Resource {
         // Google Maps API heat map data format is {lat, lng, weight} eg. {42, 1.8, 3}
         final TwitterSearch twitterSearch = unmarshall(TwitterSearch.class, request);
         final long endTime = System.currentTimeMillis();
-        final long minutesOfHistory = twitterSearch.getMinutsOfHistory();
+        final long minutesOfHistory = twitterSearch.getMinutesOfHistory();
         final long startTime = endTime - (minutesOfHistory * MINUTE_MILLIS);
-
         double duration = Timer.execute(new Timer.Timed() {
             @Override
             public void execute() {
-                search(twitterSearch, startTime, endTime, "posi");
-                twitterSearch.getSearchResults();
-
-                search(twitterSearch, startTime, endTime, "nega");
+                search(twitterSearch, startTime, endTime, twitterSearch.getClassification());
+                Object[][] heatMapData = heatMapData(twitterSearch.getSearchResults(), twitterSearch.getClusters());
+                logger.info("Heat map data size : " + heatMapData.length);
+                twitterSearch.setHeatMapData(heatMapData);
             }
         });
         logger.info("Duration for heat map data : " + duration);
         return buildJsonResponse(twitterSearch);
     }
 
-    private Object[][] heatMapData(final ArrayList<HashMap<String, String>> results) {
-        Object[][] heatMapData = new Object[0][];
+    /**
+     * This method takes all the geospatial points and clusters them into a maximum of clusters so they can be put on a map.
+     *
+     * @param results the results to cluster the points for
+     * @return the clustered geo points in the form [[lat, lng, weight], []...]
+     */
+    Object[][] heatMapData(final ArrayList<HashMap<String, String>> results, final int capacity) {
+        DblClusters<List<double[]>> clusters = new DblClusters<>(2, capacity);
+        clusters.setKeyer(new DblListKeyer<double[]>());
         for (final HashMap<String, String> result : results) {
-
+            String latString = result.get(IConstants.LATITUDE);
+            String longString = result.get(IConstants.LONGITUDE);
+            if (StringUtils.isEmpty(latString) || StringUtils.isEmpty(longString)) {
+                continue;
+            }
+            double latitude = Double.parseDouble(latString);
+            double longitude = Double.parseDouble(longString);
+            double[] coordinate = {latitude, longitude};
+            List<double[]> key = new ArrayList<>();
+            key.add(coordinate);
+            clusters.add(1.0, coordinate, key);
+        }
+        List<DblResult<List<double[]>>> clustered = clusters.results();
+        logger.info("Clusters : " + clustered.size());
+        Object[][] heatMapData = new Object[clustered.size()][3];
+        for (int i = 0; i < clustered.size(); i++) {
+            final DblResult<List<double[]>> cluster = clustered.get(i);
+            int count = cluster.getCount();
+            double[] coordinate = cluster.getCoords();
+            Object[] heatMapDatum = {coordinate[0], coordinate[1], count};
+            heatMapData[i] = heatMapDatum;
         }
         return heatMapData;
     }
@@ -225,7 +262,9 @@ public class Anal extends Resource {
     int search(final Search search, final long startTime, final long endTime, final String classification) {
         Search searchClone = SerializationUtilities.clone(Search.class, search);
 
-        searchClone.getSearchStrings().add(startTime + "-" + endTime);
+        String timeRange = new StringBuilder(Long.toString(startTime)).append("-").append(endTime).toString();
+        logger.info("Search range : " + timeRange);
+        searchClone.getSearchStrings().add(timeRange);
         searchClone.getSearchFields().add(CREATED_AT);
         searchClone.getOccurrenceFields().add(OCCURRENCE);
         searchClone.getTypeFields().add(IConstants.RANGE);
@@ -235,6 +274,7 @@ public class Anal extends Resource {
         searchClone.getOccurrenceFields().add(OCCURRENCE);
         searchClone.getTypeFields().add(IConstants.STRING);
 
+        // This is not necessary
         // searchClone.setSortFields(Arrays.asList(CREATED_AT));
         // searchClone.setSortDirections(Arrays.asList(Boolean.TRUE.toString()));
 
@@ -243,6 +283,7 @@ public class Anal extends Resource {
         HashMap<String, String> statistics = searchResults.remove(searchResults.size() - 1);
         String total = statistics.get(IConstants.TOTAL);
         search.setSearchResults(searchResults);
+        logger.info("Total : " + total);
         return Integer.valueOf(total);
     }
 

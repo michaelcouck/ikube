@@ -115,11 +115,11 @@
 		<div class="span8">
 			<div class="black-box tex">
 				<div class="tab-header">Search results</div>
-				
+
 				<ul class="recent-comments" ng-show="!!search.coordinate">
 					<li class="separator">
 						<div class="article-post">
-							<div class="user-content" style="width: 90%;">
+							<div class="user-content" style="width: 90%; height: 250px">
 								<div id="map_canvas" google-map></div>
 							</div>
 						</div>

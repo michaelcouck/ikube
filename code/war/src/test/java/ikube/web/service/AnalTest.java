@@ -6,6 +6,7 @@ import ikube.BaseTest;
 import ikube.IConstants;
 import ikube.model.Search;
 import ikube.search.ISearcherService;
+import ikube.toolkit.FileUtilities;
 import ikube.toolkit.SerializationUtilities;
 import ikube.web.service.Anal.TwitterSearch;
 import mockit.Deencapsulation;
@@ -20,12 +21,12 @@ import org.mockito.Mockito;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -54,23 +55,23 @@ public class AnalTest extends BaseTest {
     private Anal anal;
     private Gson gson;
     private ISearcherService searcherService;
+    private ArrayList<HashMap<String, String>> results;
 
     @Before
     @SuppressWarnings("unchecked")
     public void before() throws Exception {
         gson = new GsonBuilder().disableHtmlEscaping().create();
 
-        HashMap<String, String> statistics = new HashMap<>();
-        statistics.put(IConstants.TOTAL, "100");
-        ArrayList<HashMap<String, String>> searchResults = new ArrayList<>();
+        File file = FileUtilities.findFileRecursively(new File("."), "geospatial.results.xml");
+        String xml = FileUtilities.getContent(file);
+        results = (ArrayList<HashMap<String, String>>) SerializationUtilities.deserialize(xml);
 
         search = new TwitterSearch();
         search.setSearchStrings(new ArrayList<>(Arrays.asList("hello world")));
         search.setSearchFields(new ArrayList<>(Arrays.asList(IConstants.CONTENTS)));
         search.setOccurrenceFields(new ArrayList<>(Arrays.asList(Anal.OCCURRENCE)));
         search.setTypeFields(new ArrayList<>(Arrays.asList(IConstants.STRING)));
-        searchResults.add(statistics);
-        search.setSearchResults(searchResults);
+        search.setSearchResults(results);
 
         anal = mock(Anal.class);
         searcherService = mock(ISearcherService.class);
@@ -96,7 +97,33 @@ public class AnalTest extends BaseTest {
     }
 
     @Test
-    public void analyze() {
+    public void happy() {
+        when(anal.happy(any(HttpServletRequest.class), any(UriInfo.class))).thenCallRealMethod();
+        when(anal.heatMapData(any(ArrayList.class), anyInt())).thenReturn(new Object[0][]);
+        Response response = anal.happy(null, null);
+        String string = (String) response.getEntity();
+        TwitterSearch twitterSearch = gson.fromJson(string, TwitterSearch.class);
+        assertNotNull(twitterSearch);
+    }
+
+    @Test
+    public void heatMapData() {
+        when(anal.heatMapData(any(ArrayList.class), anyInt())).thenCallRealMethod();
+        // Remove the statistics
+        results.remove(results.size() - 1);
+        // Add a lot more from this set to see the memory and performance
+        ArrayList<HashMap<String, String>> moreResults = new ArrayList<>();
+        for (int i = 0; i < 10000; i++) {
+            moreResults.addAll(results);
+        }
+        search.setClusters(100);
+        Object[][] heatMapData = anal.heatMapData(moreResults, search.getClusters());
+        assertTrue("Must be less than the total results : ", heatMapData.length < moreResults.size());
+        assertTrue("Must be less than the clustered capacity too : ", heatMapData.length <= search.getClusters());
+    }
+
+    @Test
+    public void twitter() {
         Response response = anal.twitter(null, null);
         String string = (String) response.getEntity();
         TwitterSearch twitterSearch = gson.fromJson(string, TwitterSearch.class);
@@ -109,9 +136,6 @@ public class AnalTest extends BaseTest {
         when(anal.timeLineSentiment(any(TwitterSearch.class))).thenCallRealMethod();
         when(anal.search(any(Search.class), anyInt(), anyLong(), anyLong(), anyInt(), any(Object[][].class))).thenCallRealMethod();
         Object[][] data = anal.timeLineSentiment(search);
-        for (final Object[] row : data) {
-            logger.info(Arrays.deepToString(row));
-        }
         assertNotNull(data);
         assertEquals(7, data.length);
         assertEquals(3, data[0].length);
