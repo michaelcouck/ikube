@@ -22,7 +22,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -43,38 +42,71 @@ import java.util.concurrent.Future;
 @Produces(MediaType.APPLICATION_JSON)
 public class Anal extends Resource {
 
+    /**
+     * Custom search transfer object for the Twitter application.
+     */
     public static class TwitterSearch extends Search {
 
-        String startHour;
+        long startHour;
+        long minutsOfHistory;
         Object[][] timeLineSentiment;
+        Object[][] positiveHeatMapData;
 
-        public String getStartHour() {
+        public long getStartHour() {
             return startHour;
         }
 
-        public void setStartHour(String startHour) {
+        public void setStartHour(final long startHour) {
             this.startHour = startHour;
+        }
+
+        public long getMinutsOfHistory() {
+            return minutsOfHistory;
+        }
+
+        public void setMinutsOfHistory(final long minutsOfHistory) {
+            this.minutsOfHistory = minutsOfHistory;
+        }
+
+        public Object[][] getNegativeHeatMapData() {
+            return negativeHeatMapData;
+        }
+
+        public void setNegativeHeatMapData(final Object[][] negativeHeatMapData) {
+            this.negativeHeatMapData = negativeHeatMapData;
+        }
+
+        Object[][] negativeHeatMapData;
+
+        public Object[][] getPositiveHeatMapData() {
+            return positiveHeatMapData;
+        }
+
+        public void setPositiveHeatMapData(final Object[][] positiveHeatMapData) {
+            this.positiveHeatMapData = positiveHeatMapData;
         }
 
         public Object[][] getTimeLineSentiment() {
             return timeLineSentiment;
         }
 
-        public void setTimeLineSentiment(Object[][] timeLineSentiment) {
+        public void setTimeLineSentiment(final Object[][] timeLineSentiment) {
             this.timeLineSentiment = timeLineSentiment;
         }
 
     }
 
+    /**
+     * Web service paths.
+     */
     public static final String TWITTER = "/twitter";
     public static final String HAPPY = "/happy";
     public static final String ANALYZE = "/analyze";
 
-    static final String CREATED_AT = "created-at";
-    static final String CLASSIFICATION = "classification";
     static final String OCCURRENCE = "must";
-
-    static final long HOUR_MILLIS = 60 * 60 * 1000;
+    static final String CREATED_AT = "created-at";
+    static final long MINUTE_MILLIS = 60 * 1000;
+    static final long HOUR_MILLIS = 60 * MINUTE_MILLIS;
 
     @Autowired
     protected IAnalyticsService analyticsService;
@@ -83,15 +115,31 @@ public class Anal extends Resource {
     @Path(Anal.HAPPY)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response happy(@Context final HttpServletRequest request, @Context final UriInfo uriInfo) {
-        final TwitterSearch search = unmarshall(TwitterSearch.class, request);
+        // Google Maps API heat map data format is {lat, lng, weight} eg. {42, 1.8, 3}
+        final TwitterSearch twitterSearch = unmarshall(TwitterSearch.class, request);
+        final long endTime = System.currentTimeMillis();
+        final long minutesOfHistory = twitterSearch.getMinutsOfHistory();
+        final long startTime = endTime - (minutesOfHistory * MINUTE_MILLIS);
+
         double duration = Timer.execute(new Timer.Timed() {
             @Override
             public void execute() {
-                // Now we have to search based on country and language and aggregate
-                // the results for display on the map i.e. the global break down for positive and negative
+                search(twitterSearch, startTime, endTime, "posi");
+                twitterSearch.getSearchResults();
+
+                search(twitterSearch, startTime, endTime, "nega");
             }
         });
-        return buildJsonResponse(null);
+        logger.info("Duration for heat map data : " + duration);
+        return buildJsonResponse(twitterSearch);
+    }
+
+    private Object[][] heatMapData(final ArrayList<HashMap<String, String>> results) {
+        Object[][] heatMapData = new Object[0][];
+        for (final HashMap<String, String> result : results) {
+
+        }
+        return heatMapData;
     }
 
     @POST
@@ -120,7 +168,7 @@ public class Anal extends Resource {
         // going back as far as the user specified, aggregate the results in an
         // array for the chart
         int hour = 0;
-        int period = Math.abs(Integer.parseInt(search.getStartHour()));
+        int period = (int) Math.abs(search.getStartHour());
         long startTime = System.currentTimeMillis() - (((long) (period)) * HOUR_MILLIS);
         long endTime = System.currentTimeMillis();
         logger.info("Start : " + startTime + ", end : " + endTime);
@@ -164,8 +212,8 @@ public class Anal extends Resource {
     Future<?> search(final Search search, final int periods, final long periodTime, final long endTime, final int hour, final Object[][] timeLineSentiment) {
         return ThreadUtilities.submit(this.getClass().getSimpleName(), new Runnable() {
             public void run() {
-                int positiveCount = count(search, periodTime, endTime, IConstants.POSITIVE);
-                int negativeCount = count(search, periodTime, endTime, IConstants.NEGATIVE);
+                int positiveCount = search(search, periodTime, endTime, "posi");
+                int negativeCount = search(search, periodTime, endTime, "nega");
                 logger.info("Positive/negative : " + hour + "-" + positiveCount + "-" + negativeCount);
                 timeLineSentiment[0][periods] = positiveCount;
                 timeLineSentiment[1][periods] = negativeCount;
@@ -174,7 +222,7 @@ public class Anal extends Resource {
         });
     }
 
-    int count(final Search search, final long startTime, final long endTime, final String classification) {
+    int search(final Search search, final long startTime, final long endTime, final String classification) {
         Search searchClone = SerializationUtilities.clone(Search.class, search);
 
         searchClone.getSearchStrings().add(startTime + "-" + endTime);
@@ -183,17 +231,19 @@ public class Anal extends Resource {
         searchClone.getTypeFields().add(IConstants.RANGE);
 
         searchClone.getSearchStrings().add(classification);
-        searchClone.getSearchFields().add(CLASSIFICATION);
+        searchClone.getSearchFields().add(IConstants.CLASSIFICATION);
         searchClone.getOccurrenceFields().add(OCCURRENCE);
         searchClone.getTypeFields().add(IConstants.STRING);
 
-        searchClone.setSortFields(Arrays.asList(CREATED_AT));
-        searchClone.setSortDirections(Arrays.asList(Boolean.TRUE.toString()));
+        // searchClone.setSortFields(Arrays.asList(CREATED_AT));
+        // searchClone.setSortDirections(Arrays.asList(Boolean.TRUE.toString()));
 
         searchClone = searcherService.search(searchClone);
         ArrayList<HashMap<String, String>> searchResults = searchClone.getSearchResults();
-        HashMap<String, String> statistics = searchResults.get(searchResults.size() - 1);
-        return Integer.valueOf(statistics.get(IConstants.TOTAL));
+        HashMap<String, String> statistics = searchResults.remove(searchResults.size() - 1);
+        String total = statistics.get(IConstants.TOTAL);
+        search.setSearchResults(searchResults);
+        return Integer.valueOf(total);
     }
 
 }

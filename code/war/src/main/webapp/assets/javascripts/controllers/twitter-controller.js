@@ -28,7 +28,7 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 	$scope.search = {
 		fragment : true,
 		firstResult : 0,
-		maxResults : 0,
+		maxResults : 10,
 		distance : 20,
 		startHour : -6,
         coordinate : angular.copy($scope.coordinate),

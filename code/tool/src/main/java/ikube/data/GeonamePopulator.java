@@ -42,7 +42,7 @@ public final class GeonamePopulator extends ADatabase {
 		String sessionName = "geoname";
 		Session session = SessionFactory.getSession(sessionName);
 		ADataBaseJpa dataBase = getDataBase(DataBaseJpaH2.class, IConstants.PERSISTENCE_UNIT_H2);
-		List<Object> geoNames = new ArrayList<Object>();
+		List<Object> geoNames = new ArrayList<>();
 		skipTo(clazz, session, start);
 		while (session.hasNext(clazz)) {
 			count++;
@@ -91,7 +91,6 @@ public final class GeonamePopulator extends ADatabase {
 			entityManager.flush();
 			entityManager.clear();
 			entityManager.getTransaction().commit();
-
 		}
 	}
 

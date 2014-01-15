@@ -10,7 +10,9 @@
             <div class="row-fluid">
                 <div style="margin-bottom: 20px;">
                     <div class="big-button-bar">
-                        <a class="button large" href="#" ng-click="doTwitterSearch();"><i class="icon-search"></i><span>Search T..</span></a>
+                        <a class="button large" href="#" ng-click="doTwitterSearch();"><i class="icon-search"></i><span>Analysis</span></a>
+                        <a class="button large" href="#" onClick="modal('#results-modal');"><i class="icon-zoom-in"></i><span>Results</span></a>
+                        <%--<a class="button large" href="#" onClick="modal('#results-modal');"><i class="icon-zoom-in"></i>Results</a>--%>
                     </div>
                 </div>
             </div>
@@ -41,40 +43,29 @@
 						</span>
                     </div>
 
-                    <%--ng-show="!!statistics && statistics.total > 0"--%>
                     <div>
                         <div>
-                            <div class="padded">
-                                <div
-                                    class="user-content">
-                                    <b>Found :</b> '{{statistics.positive}}' positive and '{{statistics.negative}}' negative results
-                                    in '{{statistics.duration}}' milliseconds
+                            <div class="padded" ng-hide="!!statistics && !!statistics.positive && !!statistics.negative">
+                                <i class="icon-arrow-left">&nbsp;</i> <b>Click the button on the far left... :)</b>
+                            </div>
+                            <div class="padded" ng-show="!!statistics && !!statistics.positive && !!statistics.negative">
+                                <div class="user-content">
+                                    <b>Duration : </b>'{{statistics.duration}}' milliseconds
+                                    <b>Results :</b> '{{statistics.positive}}' positive and '{{statistics.negative}}' negative
                                 </div>
-                                <div class="user-content"
-                                     ng-show="!!search.searchStrings && search.searchStrings.length != 0 && !!search.searchStrings.join('')">
-                                    <b>Terms :</b> <span
-                                        ng-repeat="searchString in search.searchStrings track by $index">
-										<span ng-show="!!searchString">'{{searchString}}'&nbsp;</span>
-									</span>
-                                </div>
-                                <div class="user-content"
-                                     ng-show="!!search.searchFields && search.searchFields.length > 0">
-                                    <b>Fields : </b> <span
-                                        ng-repeat="searchField in search.searchFields track by $index">
-										<span ng-show="!!searchField">'{{searchField}}'&nbsp;</span>
-									</span>
-                                </div>
-                                <div class="user-content"
-                                     ng-show="!!search.typeFields && search.typeFields.length > 0 && !!search.typeFields.join('')">
-                                    <b>Types : </b> <span
-                                        ng-repeat="typeField in search.typeFields track by $index">
-										<span ng-show="!!typeField">'{{typeField}}'&nbsp;</span>
+                                <div class="user-content">
+                                    <span ng-repeat="searchString in search.searchStrings track by $index">
+										<span ng-show="!!searchString">
+                                            <b>Term : </b>'{{searchString}}',
+                                            <b>field : </b>{{search.searchFields[$index]}},
+                                            <b>type : </b>{{search.typeFields[$index]}},
+                                            <b>occurrence : </b>must
+                                        </span>
 									</span>
                                 </div>
                                 <div class="user-content"
                                      ng-show="!!search.coordinate && search.coordinate.latitude != coordinate.latitude">
-                                    <b>Coordinate : </b> [{{search.coordinate.latitude}},
-                                    {{search.coordinate.longitude}}]
+                                    <b>Coordinate : </b> [{{search.coordinate.latitude}}, {{search.coordinate.longitude}}]
                                 </div>
                             </div>
                         </div>
@@ -90,7 +81,7 @@
 				<div class="tab-header">Filters</div>
 				<div class="row-fluid">
 					<div class="padded">
-                        <%--style="width: 45%; margin-top: 10px; margin-left: 10px;"--%>
+                        <span class="note pull-right"><b>Filter sentiment results by this term(s)</b></span>
                         <div
                             ng-controller="TypeaheadController"
                             ng-init="doConfig('searchTwitterFormConfig');">
@@ -150,7 +141,7 @@
 
 		<div class="span8">
 			<div class="box tex">
-				<div class="tab-header">Timeline</div>
+				<div class="tab-header">Sentiment timeline</div>
 				<div id="chart_div" style="width: 100%; height: 250px;"></div>
 			</div>
 		</div>

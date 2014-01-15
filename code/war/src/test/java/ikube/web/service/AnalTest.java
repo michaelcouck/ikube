@@ -12,7 +12,6 @@ import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mockit;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -78,7 +77,7 @@ public class AnalTest extends BaseTest {
 
         when(anal.buildResponse()).thenCallRealMethod();
         when(anal.invertMatrix(any(Object[][].class))).thenCallRealMethod();
-        when(anal.count(any(Search.class), anyInt(), anyInt(), anyString())).thenCallRealMethod();
+        when(anal.search(any(Search.class), anyInt(), anyInt(), anyString())).thenCallRealMethod();
         when(anal.buildJsonResponse(any(Object.class))).thenCallRealMethod();
         when(anal.twitter(any(HttpServletRequest.class), any(UriInfo.class))).thenCallRealMethod();
         when(anal.unmarshall(any(Class.class), any(HttpServletRequest.class))).thenReturn(search);
@@ -106,7 +105,7 @@ public class AnalTest extends BaseTest {
 
     @Test
     public void timeLineSentiment() {
-        search.setStartHour("-6");
+        search.setStartHour(-6);
         when(anal.timeLineSentiment(any(TwitterSearch.class))).thenCallRealMethod();
         when(anal.search(any(Search.class), anyInt(), anyLong(), anyLong(), anyInt(), any(Object[][].class))).thenCallRealMethod();
         Object[][] data = anal.timeLineSentiment(search);
@@ -122,7 +121,7 @@ public class AnalTest extends BaseTest {
     public void count() {
         long startTime = 0;
         long endTime = 10;
-        anal.count(search, startTime, endTime, IConstants.POSITIVE);
+        anal.search(search, startTime, endTime, IConstants.POSITIVE);
         assertEquals(3, search.getSearchStrings().size());
         assertEquals(3, search.getSearchFields().size());
         assertEquals(3, search.getOccurrenceFields().size());

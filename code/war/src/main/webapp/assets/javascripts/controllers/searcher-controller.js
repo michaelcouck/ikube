@@ -16,16 +16,16 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 
 	$scope.path = '/ikube/assets/images/icons/file-types/';
 	$scope.icon = getServiceUrl($scope.path + 'txt.png');
-	$scope.images = new Array();
-	$scope.testedImages = new Array();
+	$scope.images = [];
+	$scope.testedImages = [];
 
 	$scope.status = 200;
 	$scope.search = null;
 	$scope.statistics = null;
 	$scope.pagination = null;
 
-	$scope.indexes;
-	$scope.indexName;
+	$scope.indexes = undefined;
+	$scope.indexName = undefined;
 	
 	// Go to the web service for the results
 	$scope.doSearch = function() {
@@ -89,9 +89,10 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 		$scope.statistics = null;
 		$scope.search.coordinate = null;
 
-		var searchStrings = new Array();
-		var searchFields = new Array();
-		var typeFields = new Array();
+		var searchStrings = [];
+		var searchFields = [];
+		var typeFields = [];
+		var occurrenceFields = [];
 
 		for ( var i = 0; i < search.searchStrings.length; i++) {
 			var searchString = search.searchStrings[i];
@@ -114,16 +115,18 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 						typeFields.push('string');
 					}
 				}
+                occurrenceFields.push('must');
 			}
 		}
 
-		var search = angular.copy(search);
+		var cloneSearch = angular.copy(search);
 
-		search.searchStrings = searchStrings;
-		search.searchFields = searchFields;
-		search.typeFields = typeFields;
+        cloneSearch.searchStrings = searchStrings;
+        cloneSearch.searchFields = searchFields;
+        cloneSearch.typeFields = typeFields;
+        cloneSearch.occurrenceFields = occurrenceFields;
 
-		return search;
+		return cloneSearch;
 	};
 
 	$scope.doCoordinate = function(search, property, value) {
@@ -267,7 +270,7 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 			$scope.log('Status', status);
 			// alert('Data : ' + data + ', status : ' + status);
 		});
-	}
+	};
 	$scope.doIndexes();
 
 	// Get the fields for the index
@@ -314,12 +317,11 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 				page : i,
 				firstResult : firstResult
 			};
-		};
+		}
 		// Find the 'to' result being displayed
 		var modulo = $scope.statistics.total % $scope.search.maxResults;
 		$scope.search.endResult = $scope.search.firstResult + modulo == $scope.statistics.total ? $scope.statistics.total
 				: $scope.search.firstResult + parseInt($scope.search.maxResults, 10);
-		return;
 	}
 
 	// This function will put the markers on the map
@@ -333,9 +335,9 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 			center : new google.maps.LatLng(latitude, longitude),
 			mapTypeId : google.maps.MapTypeId.ROADMAP
 		};
-		map = new google.maps.Map(mapElement, options);
+		var map = new google.maps.Map(mapElement, options);
 		// Add the point or origin marker
-		var marker = new google.maps.Marker({
+		new google.maps.Marker({
 			map : map,
 			position : origin,
 			title : 'You are here :) => [' + latitude + ', ' + longitude + ']',

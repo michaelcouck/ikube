@@ -18,6 +18,9 @@
 	<!-- 
 		This configuration is to index the local file system. Please feel free to delete this 
 		index context from the configuration if not needed.
+
+		Extra 'fuzzy search' property, makes the index much larger
+		property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer"
 	-->
 	<bean
 		id="desktop"
@@ -37,7 +40,6 @@
 		property:delta="false"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path}"
-		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer"
 		property:children-ref="desktopFolders" />
 	<util:list id="desktopFolders">
 		<ref local="desktopFolder" />
@@ -65,7 +67,7 @@
 		property:batchSize="${file.batch.size}"
 		property:maxReadLength="${max.read.length}" 
 		property:maxExceptions="1000"
-		property:threads="3"
+		property:threads="1"
 		property:strategies-ref="desktop-strategies" />
 
 	<util:list id="desktop-strategies">

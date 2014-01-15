@@ -33,6 +33,7 @@
 		property:delta="true"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
+        property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer"
 		property:children-ref="twitter-indexables" />
 	<util:list id="twitter-indexables">
 		<ref local="twitter-index" />

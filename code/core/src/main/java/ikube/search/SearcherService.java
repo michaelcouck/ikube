@@ -29,6 +29,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * @see ISearcherService
@@ -36,11 +37,12 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 21.11.10
  * @version 02.00
  */
+@Component
 public class SearcherService implements ISearcherService {
 
 	static final Logger LOGGER = LoggerFactory.getLogger(SearcherService.class);
 
-	private static final ArrayList<HashMap<String, String>> EMPTY_RESULTS = new ArrayList<HashMap<String, String>>();
+	private static final ArrayList<HashMap<String, String>> EMPTY_RESULTS = new ArrayList<>();
 
 	/** The database that we persist the searches to. */
 	@Autowired
@@ -242,8 +244,8 @@ public class SearcherService implements ISearcherService {
 		LOGGER.debug("Search all");
 		try {
 			String[] indexNames = monitorService.getIndexNames();
-			List<Future<?>> futures = new ArrayList<Future<?>>();
-			List<Search> searches = new ArrayList<Search>();
+			List<Future<?>> futures = new ArrayList<>();
+			List<Search> searches = new ArrayList<>();
 			for (final String indexName : indexNames) {
 				final Search clonedSearch = cloneSearch(search, indexName);
 				if (clonedSearch == null) {
@@ -276,7 +278,7 @@ public class SearcherService implements ISearcherService {
 		float highScore = 0;
 		long duration = 0;
 
-		ArrayList<HashMap<String, String>> searchResults = new ArrayList<HashMap<String, String>>();
+		ArrayList<HashMap<String, String>> searchResults = new ArrayList<>();
 
 		for (final Search clonedSearch : searches) {
 			// Consolidate the results, i.e. merge them
@@ -291,10 +293,10 @@ public class SearcherService implements ISearcherService {
 			}
 		}
 
-		HashMap<String, String> statistics = new HashMap<String, String>();
-		statistics.put(IConstants.TOTAL, Long.toString(totalHits));
-		statistics.put(IConstants.DURATION, Long.toString(duration));
-		statistics.put(IConstants.SCORE, Float.toString(highScore));
+		// HashMap<String, String> statistics = new HashMap<>();
+		// statistics.put(IConstants.TOTAL, Long.toString(totalHits));
+		// statistics.put(IConstants.DURATION, Long.toString(duration));
+		// statistics.put(IConstants.SCORE, Float.toString(highScore));
 		// Sort all the results according to the score
 		Collections.sort(searchResults, new Comparator<HashMap<String, String>>() {
 			@Override
@@ -306,7 +308,7 @@ public class SearcherService implements ISearcherService {
 				return scoreOne.compareTo(scoreTwo);
 			}
 		});
-		ArrayList<HashMap<String, String>> topResults = new ArrayList<HashMap<String, String>>();
+		ArrayList<HashMap<String, String>> topResults = new ArrayList<>();
 		topResults.addAll(searchResults.subList(0, Math.min(search.getMaxResults(), searchResults.size())));
 
 		String[] searchStrings = search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]);

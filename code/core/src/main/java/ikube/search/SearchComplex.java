@@ -45,15 +45,15 @@ public class SearchComplex extends Search {
 		}
 		BooleanQuery booleanQuery = new BooleanQuery();
 		for (int i = 0; i < searchStrings.length; i++) {
-			final String typeField = typeFields[i];
-			final String searchField = searchFields[i];
-			final String searchString = searchStrings[i];
-			final String occurrenceField = occurrenceFields[i];
-			if (StringUtils.isEmpty(searchString)) {
-				// Just ignore the empty strings
-				continue;
-			}
-			Query query = null;
+            final String searchString = searchStrings[i];
+            if (StringUtils.isEmpty(searchString)) {
+                // Just ignore the empty strings
+                continue;
+            }
+            final String typeField = typeFields[i];
+            final String searchField = searchFields[i];
+            final String occurrenceField = occurrenceFields[i];
+			Query query;
 			if (TypeField.STRING.fieldType().equalsIgnoreCase(typeField)) {
 				if (searchString.contains("~") || searchString.contains("*")) {
 					query = new FuzzyQuery(new Term(searchField, searchString));
