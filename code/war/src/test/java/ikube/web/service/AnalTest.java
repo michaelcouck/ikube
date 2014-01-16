@@ -133,9 +133,9 @@ public class AnalTest extends BaseTest {
     @Test
     public void timeLineSentiment() {
         search.setStartHour(-6);
-        when(anal.timeLineSentiment(any(TwitterSearch.class))).thenCallRealMethod();
+        when(anal.setTimeLineSentiment(any(TwitterSearch.class))).thenCallRealMethod();
         when(anal.search(any(Search.class), anyInt(), anyLong(), anyLong(), anyInt(), any(Object[][].class))).thenCallRealMethod();
-        Object[][] data = anal.timeLineSentiment(search);
+        Object[][] data = anal.setTimeLineSentiment(search);
         assertNotNull(data);
         assertEquals(7, data.length);
         assertEquals(3, data[0].length);

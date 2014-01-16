@@ -3,9 +3,9 @@
  * @since 14-12-2013
  */
 module.controller('TwitterController', function($scope, $http, $injector, $timeout, $log) {
-	
-	$scope.analyzing = false;
-	$scope.map = undefined;
+
+    $scope.map = undefined;
+    $scope.analyzing = false;
 	$scope.config = undefined;
 	
 	$scope.status = 200;
@@ -15,11 +15,7 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 	$scope.languages.sort();
 	// Ths original co-ordinate, if it is exactly this then
 	// the search will not take the co-ordinate into account
-	$scope.coordinate = {
-		latitude : -33.9,
-		longitude : 18.4
-	};
-	
+    $scope.coordinate = {latitude: -33.9, longitude: 18.4};
 	$scope.showMap = false;
 	$scope.showLanguages = false;
 	$scope.statistics = undefined;

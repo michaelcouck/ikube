@@ -135,7 +135,11 @@ public class Anal extends Resource {
             @Override
             public void execute() {
                 search(twitterSearch, startTime, endTime, twitterSearch.getClassification());
-                Object[][] heatMapData = heatMapData(twitterSearch.getSearchResults(), twitterSearch.getClusters());
+                ArrayList<HashMap<String, String>> searchResults = twitterSearch.getSearchResults();
+                // Remove the statistics for the heat map calculation
+                HashMap<String, String> statistics = searchResults.remove(searchResults.size() - 1);
+                Object[][] heatMapData = heatMapData(searchResults, twitterSearch.getClusters());
+                searchResults.add(statistics);
                 logger.info("Heat map data size : " + heatMapData.length);
                 twitterSearch.setHeatMapData(heatMapData);
             }
@@ -190,17 +194,18 @@ public class Anal extends Resource {
                 // First do the primary search for the term, language, etc...
                 searcherService.search(search);
                 // Get the time line for both positive and negative
-                Object[][] invertedTimeLineSentiment = timeLineSentiment(search);
-                search.setTimeLineSentiment(invertedTimeLineSentiment);
+                setTimeLineSentiment(search);
             }
         });
 
-        HashMap<String, String> statistics = search.getSearchResults().get(search.getSearchResults().size() - 1);
-        statistics.put(IConstants.DURATION, Double.toString(duration));
+        if (search.getSearchResults() != null && search.getSearchResults().size() > 0) {
+            HashMap<String, String> statistics = search.getSearchResults().get(search.getSearchResults().size() - 1);
+            statistics.put(IConstants.DURATION, Double.toString(duration));
+        }
         return buildJsonResponse(search);
     }
 
-    Object[][] timeLineSentiment(final TwitterSearch search) {
+    Object[][] setTimeLineSentiment(final TwitterSearch search) {
         // Now we have to search for positive and negative for each hour
         // going back as far as the user specified, aggregate the results in an
         // array for the chart
@@ -223,10 +228,12 @@ public class Anal extends Resource {
         } while (startTime < endTime);
         ThreadUtilities.waitForFutures(futures, 300);
 
-        HashMap<String, String> statistics = new HashMap<>();
+        // new HashMap<>();
+        ArrayList<HashMap<String, String>> searchResults = search.getSearchResults();
+        HashMap<String, String> statistics = searchResults.get(searchResults.size() - 1);
         addCount(timeLineSentiment[0], IConstants.POSITIVE, statistics);
         addCount(timeLineSentiment[1], IConstants.NEGATIVE, statistics);
-        search.getSearchResults().add(statistics);
+        // search.getSearchResults().add(statistics);
 
         // Invert the matrix
         Object[][] invertedTimeLineSentiment = invertMatrix(timeLineSentiment);
@@ -234,6 +241,8 @@ public class Anal extends Resource {
         invertedTimeLineSentiment[0][0] = "Hour";
         invertedTimeLineSentiment[0][1] = "Negative";
         invertedTimeLineSentiment[0][2] = "Positive";
+
+        search.setTimeLineSentiment(invertedTimeLineSentiment);
 
         return invertedTimeLineSentiment;
     }
@@ -249,8 +258,8 @@ public class Anal extends Resource {
     Future<?> search(final Search search, final int periods, final long periodTime, final long endTime, final int hour, final Object[][] timeLineSentiment) {
         return ThreadUtilities.submit(this.getClass().getSimpleName(), new Runnable() {
             public void run() {
-                int positiveCount = search(search, periodTime, endTime, "posi");
-                int negativeCount = search(search, periodTime, endTime, "nega");
+                int positiveCount = search(search, periodTime, endTime, IConstants.POSITIVE);
+                int negativeCount = search(search, periodTime, endTime, IConstants.NEGATIVE);
                 logger.info("Positive/negative : " + hour + "-" + positiveCount + "-" + negativeCount);
                 timeLineSentiment[0][periods] = positiveCount;
                 timeLineSentiment[1][periods] = negativeCount;
@@ -279,10 +288,10 @@ public class Anal extends Resource {
         // searchClone.setSortDirections(Arrays.asList(Boolean.TRUE.toString()));
 
         searchClone = searcherService.search(searchClone);
-        ArrayList<HashMap<String, String>> searchResults = searchClone.getSearchResults();
-        HashMap<String, String> statistics = searchResults.remove(searchResults.size() - 1);
+        ArrayList<HashMap<String, String>> searchCloneResults = searchClone.getSearchResults();
+        HashMap<String, String> statistics = searchCloneResults.get(searchCloneResults.size() - 1);
         String total = statistics.get(IConstants.TOTAL);
-        search.setSearchResults(searchResults);
+        search.setSearchResults(searchCloneResults);
         logger.info("Total : " + total);
         return Integer.valueOf(total);
     }

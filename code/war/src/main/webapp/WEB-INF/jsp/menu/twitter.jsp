@@ -12,10 +12,10 @@
 			<i class="icon-random"></i>Search & Analyze
 		</a>
 	</li>
-	<li href="tweets">
+	<%--<li href="tweets">
 		<a href="#">
 			Running tweets here...
 		</a>
-	</li>
+	</li>--%>
 	
 </ul>

@@ -1,5 +1,5 @@
 /** This controller will get the server data from the grid. */
-module.controller('ServersController', function($http, $scope, databaseService) {
+module.controller('ServersController', function($http, $scope, $timeout, databaseService) {
 	$scope.servers = [];
 	$scope.entities = undefined;
 	$scope.terminateThreads = false;
@@ -33,6 +33,9 @@ module.controller('ServersController', function($http, $scope, databaseService) 
 	$scope.refreshServers();
 	setInterval(function() {
 		$scope.refreshServers();
+        $timeout(function() {
+            $scope.$apply();
+        }, 1000);
 	}, refreshInterval);
 	
 	$scope.startupAll = function() {
