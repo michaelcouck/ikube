@@ -69,7 +69,7 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 				if (!!$scope.search.searchResults) {
 					$scope.statistics = $scope.search.searchResults.pop();
 					$scope.drawChart();
-					$scope.doMarkers();
+					$scope.drawMarkers();
 				}
 			});
 			promise.error(function(data, status) {
@@ -77,7 +77,7 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 				$scope.status = status;
 				$log.log('Error in doTwitterSearch : ' + status);
 			});
-		}, 1000);
+		}, 100);
 	};
 	
 	$scope.$watch('search.coordinate.latitude', function() {
@@ -151,7 +151,7 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
     };
 
 	// This function will put the markers on the map
-	$scope.doMarkers = function() {
+	$scope.drawMarkers = function() {
 		// This resets the markers, i.e. removes them
 		$scope.doShowMap($scope.showMap);
 		return $timeout(function() {

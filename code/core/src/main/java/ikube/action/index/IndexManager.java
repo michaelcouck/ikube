@@ -7,43 +7,24 @@ import ikube.model.Indexable;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.UriUtilities;
-
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.document.*;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.FieldType.NumericType;
-import org.apache.lucene.index.AtomicReaderContext;
-import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.index.FieldInfo;
-import org.apache.lucene.index.FieldInfo.IndexOptions;
-import org.apache.lucene.index.FieldInfos;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.document.FloatField;
+import org.apache.lucene.index.*;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
-import org.apache.lucene.index.LogByteSizeMergePolicy;
-import org.apache.lucene.index.MultiReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.AlreadyClosedException;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.store.NIOFSDirectory;
+
+import java.io.*;
+import java.util.*;
 
 /**
  * This class opens and closes the Lucene index writer. There are also methods that get the path to the index directory based on the path in the index context.
@@ -71,8 +52,9 @@ public final class IndexManager {
 		// Find all the indexes in the latest index directory and open a writer on each one
 		File latestIndexDirectory = getLatestIndexDirectory(indexDirectoryPath);
 		IndexWriter[] indexWriters;
-		if (latestIndexDirectory == null || latestIndexDirectory.listFiles() == null || latestIndexDirectory.listFiles().length == 0) {
-			// This means that we tried to do a delta index but there was no index, i.e. we still have to index from the start
+        if (latestIndexDirectory == null || latestIndexDirectory.listFiles() == null || latestIndexDirectory.listFiles() == null ||
+                latestIndexDirectory.listFiles().length == 0) {
+            // This means that we tried to do a delta index but there was no index, i.e. we still have to index from the start
 			IndexWriter indexWriter = openIndexWriter(indexContext, System.currentTimeMillis(), ip);
 			indexWriters = new IndexWriter[] { indexWriter };
 			LOGGER.info("Opened index writer new : " + indexWriter);
@@ -103,36 +85,30 @@ public final class IndexManager {
 	 */
 	public static synchronized IndexWriter openIndexWriter(final IndexContext<?> indexContext, final long time, final String ip) {
 		boolean delete = Boolean.FALSE;
-		boolean success = Boolean.TRUE;
 		File indexDirectory = null;
 		IndexWriter indexWriter = null;
 		try {
 			String indexDirectoryPath = getIndexDirectory(indexContext, time, ip);
 			indexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
-			indexDirectory.setReadable(true);
-			indexDirectory.setWritable(true, false);
-			LOGGER.info("Index directory time : " + time + ", date : " + new Date(time) + ", writing index to directory " + indexDirectoryPath);
+			boolean readable = indexDirectory.setReadable(true);
+			boolean writable = indexDirectory.setWritable(true, false);
+            if (!readable || !writable) {
+                LOGGER.warn("Directory not readable or writable : read : " + readable + ", write : " + writable);
+            }
+            LOGGER.info("Index directory time : " + time + ", date : " + new Date(time) + ", writing index to directory " + indexDirectoryPath);
 			indexWriter = openIndexWriter(indexContext, indexDirectory, Boolean.TRUE);
 		} catch (CorruptIndexException e) {
 			LOGGER.error("We expected a new index and got a corrupt one.", e);
 			LOGGER.warn("Didn't initialise the index writer. Will try to delete the index directory.");
-			success = Boolean.FALSE;
 			delete = Boolean.TRUE;
 		} catch (LockObtainFailedException e) {
 			LOGGER.error("Failed to obtain the lock on the directory. Check the file system permissions or failed indexing jobs, "
 					+ "there will be a lock file in one of the index directories.", e);
-			success = Boolean.FALSE;
 		} catch (IOException e) {
 			LOGGER.error("IO exception detected opening the writer", e);
-			success = Boolean.FALSE;
 		} catch (Exception e) {
 			LOGGER.error("Unexpected exception detected while initializing the IndexWriter", e);
-			success = Boolean.FALSE;
 		} finally {
-			if (!success) {
-				closeIndexWriter(indexWriter);
-				indexWriter = null;
-			}
 			if (delete && indexDirectory != null && indexDirectory.exists()) {
 				FileUtilities.deleteFile(indexDirectory, 1);
 			}
@@ -153,7 +129,6 @@ public final class IndexManager {
 	public static synchronized IndexWriter openIndexWriter(final IndexContext<?> indexContext, final File indexDirectory, final boolean create)
 			throws Exception {
 		Directory directory = NIOFSDirectory.open(indexDirectory);
-		// Directory directory = FSDirectory.open(indexDirectory);
 		return openIndexWriter(indexContext, directory, create);
 	}
 
@@ -199,7 +174,7 @@ public final class IndexManager {
 					closeIndexWriter(indexWriter);
 					LOGGER.info("Index optimized and closed : " + indexContext.getIndexName() + ", " + indexWriter);
 				}
-				indexContext.setIndexWriters(new IndexWriter[0]);
+				indexContext.setIndexWriters();
 			}
 		} finally {
 			IndexManager.class.notifyAll();
@@ -233,11 +208,11 @@ public final class IndexManager {
 			LOGGER.error("Null pointer, in the index writer : " + indexWriter);
 			LOGGER.debug(null, e);
 		} catch (CorruptIndexException e) {
-			LOGGER.error("Corrput index : " + indexWriter, e);
+			LOGGER.error("Corrupt index : " + indexWriter, e);
 		} catch (IOException e) {
 			LOGGER.error("IO optimising the index : " + indexWriter, e);
 		} catch (Exception e) {
-			LOGGER.error("General exception comitting the index : " + indexWriter, e);
+			LOGGER.error("General exception committing the index : " + indexWriter, e);
 		}
 		try {
 			indexWriter.close();
@@ -311,18 +286,20 @@ public final class IndexManager {
 		File latest = latestSoFar;
 		if (file.isDirectory()) {
 			File[] children = file.listFiles();
-			for (File child : children) {
-				if (IndexManager.isDigits(child.getName())) {
-					if (latest == null) {
-						latest = child;
-					}
-					long oneTime = Long.parseLong(child.getName());
-					long twoTime = Long.parseLong(latest.getName());
-					latest = oneTime > twoTime ? child : latest;
-				} else {
-					latest = getLatestIndexDirectory(child, latest);
-				}
-			}
+            if (children != null) {
+                for (final File child : children) {
+                    if (IndexManager.isDigits(child.getName())) {
+                        if (latest == null) {
+                            latest = child;
+                        }
+                        long oneTime = Long.parseLong(child.getName());
+                        long twoTime = Long.parseLong(latest.getName());
+                        latest = oneTime > twoTime ? child : latest;
+                    } else {
+                        latest = getLatestIndexDirectory(child, latest);
+                    }
+                }
+            }
 		}
 		return latest;
 	}
@@ -357,19 +334,25 @@ public final class IndexManager {
 			if (latestIndexDirectory == null || !latestIndexDirectory.exists() || !latestIndexDirectory.isDirectory()) {
 				return indexSize;
 			}
-			List<File> files = new ArrayList<File>(Arrays.asList(latestIndexDirectory.listFiles()));
-			do {
-				for (final File file : files.toArray(new File[files.size()])) {
-					if (file.exists() && file.canRead()) {
-						if (file.isDirectory()) {
-							files.addAll(Arrays.asList(file.listFiles()));
-						} else {
-							indexSize += file.length();
-						}
-					}
-					files.remove(file);
-				}
-			} while (files.size() > 0);
+            File[] latestIndexDirectories = latestIndexDirectory.listFiles();
+            if (latestIndexDirectories != null) {
+                List<File> files = new ArrayList<>(Arrays.asList(latestIndexDirectories));
+                do {
+                    for (final File file : files.toArray(new File[files.size()])) {
+                        if (file.exists() && file.canRead()) {
+                            if (file.isDirectory()) {
+                                File[] subFiles = file.listFiles();
+                                if (subFiles != null) {
+                                    files.addAll(Arrays.asList(subFiles));
+                                }
+                            } else {
+                                indexSize += file.length();
+                            }
+                        }
+                        files.remove(file);
+                    }
+                } while (files.size() > 0);
+            }
 		} catch (Exception e) {
 			LOGGER.error("Exception getting the size of the index : ", e);
 		}
@@ -469,6 +452,10 @@ public final class IndexManager {
 			// NOTE: Must be tokenized to search correctly, not tokenized? no results!!!
 			fieldType.setTokenized(indexable.isTokenized());
 			// For normalization of the length, i.e. longer strings are scored higher
+            // normally, but consider that a book with the word 3 times but 10 000 words, will
+            // get a lower score than a sentence of two exact words. Omitting the norms will force the book
+            // to get a higher score because it has the word three times, although the 'natural' relevance
+            // would be the sentence with two words because of the length and matches
 			fieldType.setOmitNorms(indexable.isOmitNorms());
 			// NOTE: If the term vectors are enabled the field cannot be searched, i.e. no results!!!
 			fieldType.setStoreTermVectors(indexable.isVectored());
@@ -550,14 +537,13 @@ public final class IndexManager {
 		return document;
 	}
 
-	public static final Collection<String> getFieldNames(final IndexSearcher indexSearcher) {
-		Set<String> fields = new TreeSet<String>();
+	public static Collection<String> getFieldNames(final IndexSearcher indexSearcher) {
+		Set<String> fields = new TreeSet<>();
 		MultiReader multiReader = (MultiReader) indexSearcher.getIndexReader();
 		List<AtomicReaderContext> atomicReaderContexts = multiReader.leaves();
 		for (final AtomicReaderContext atomicReaderContext : atomicReaderContexts) {
-			FieldInfos fieldInfos = null;
 			try {
-				fieldInfos = atomicReaderContext.reader().getFieldInfos();
+                FieldInfos fieldInfos = atomicReaderContext.reader().getFieldInfos();
 				Iterator<FieldInfo> iterator = fieldInfos.iterator();
 				while (iterator.hasNext()) {
 					FieldInfo fieldInfo = iterator.next();

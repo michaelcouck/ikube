@@ -1,7 +1,6 @@
 package ikube.search;
 
 import ikube.IConstants;
-import ikube.action.index.IndexManager;
 import ikube.action.index.analyzer.StemmingAnalyzer;
 import ikube.search.spelling.SpellingChecker;
 import org.apache.commons.lang.StringUtils;
@@ -19,7 +18,6 @@ import org.apache.lucene.search.highlight.Scorer;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 
 /**
@@ -145,7 +143,7 @@ public abstract class Search {
             String content = document.get(fieldName);
             // If the content is not stored in the index then there is no fragment
             if (content == null) {
-                return fragment;
+                return null;
             }
             StringReader stringReader = new StringReader(content);
             TokenStream tokenStream = analyzer.tokenStream(fieldName, stringReader);
@@ -323,14 +321,14 @@ public abstract class Search {
      */
     protected ArrayList<HashMap<String, String>> getResults(final TopDocs topDocs,
                                                             final Query query) throws IOException {
-        ArrayList<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
+        ArrayList<HashMap<String, String>> results = new ArrayList<>();
         long totalHits = topDocs.totalHits;
         long scoreHits = topDocs.scoreDocs.length;
         for (int i = 0; i < totalHits && i < scoreHits; i++) {
             if (i < firstResult) {
                 continue;
             }
-            HashMap<String, String> result = new HashMap<String, String>();
+            HashMap<String, String> result = new HashMap<>();
             Document document = searcher.doc(topDocs.scoreDocs[i].doc);
             float score = topDocs.scoreDocs[i].score;
             String index = Integer.toString(topDocs.scoreDocs[i].doc);
@@ -394,7 +392,7 @@ public abstract class Search {
             return;
         }
         // Add the search results size as a last category
-        HashMap<String, String> statistics = new HashMap<String, String>();
+        HashMap<String, String> statistics = new HashMap<>();
         String[] correctedSearchStrings = getCorrections(searchStrings);
         String searchString = StringUtils.strip(Arrays.deepToString(searchStrings), IConstants.STRIP_CHARACTERS);
         String correctedSearchString = StringUtils.strip(Arrays.deepToString(correctedSearchStrings),
@@ -456,18 +454,6 @@ public abstract class Search {
             return correctedSearchStrings;
         }
         return new String[0];
-    }
-
-    /**
-     * This method will get all the fields in the index from the readers in the searcher and return them as a string
-     * array.
-     *
-     * @param searcher the searcher to get all the fields for
-     * @return all the fields in the searcher that are searchable
-     */
-    protected String[] getFields(final IndexSearcher searcher) {
-        Collection<String> searchFieldNames = IndexManager.getFieldNames(searcher);
-        return searchFieldNames.toArray(new String[searchFieldNames.size()]);
     }
 
     /**

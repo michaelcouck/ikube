@@ -46,18 +46,18 @@ public final class LanguageDetectionStrategy extends AStrategy {
 			throws Exception {
 		// Concatenate the data in the indexable
 		if (StringUtils.isEmpty(document.get(IConstants.LANGUAGE))) {
-			String content = getContent(indexable, new StringBuilder()).toString();
+			String content = getContent(indexable, new StringBuilder());
 			detectLanguage(indexable, document, content);
 		}
 		return super.aroundProcess(indexContext, indexable, document, resource);
 	}
 
-	public String detectLanguage(final Indexable<?> indexable, final Document document, final String content) {
+	void detectLanguage(final Indexable<?> indexable, final Document document, final String content) {
 		if (!StringUtils.isEmpty(content)) {
 			try {
-				String language = null;
+				String language;
 				Detector detector = DetectorFactory.create();
-				detector.append(content.toString());
+				detector.append(content);
 				String languageCode = detector.detect();
 				Locale locale = languageLocale.get(languageCode);
 				if (locale == null) {
@@ -68,15 +68,13 @@ public final class LanguageDetectionStrategy extends AStrategy {
 					IndexManager.addStringField(IConstants.LANGUAGE_ORIGINAL, languageOriginal, indexable, document);
 				}
 				IndexManager.addStringField(IConstants.LANGUAGE, language, indexable, document);
-				return language;
 			} catch (LangDetectException e) {
 				logger.debug("Language processing error : {} ", e.getMessage());
 			}
 		}
-		return null;
 	}
 
-	final StringBuilder getContent(final Indexable<?> indexable, final StringBuilder builder) {
+	final String getContent(final Indexable<?> indexable, final StringBuilder builder) {
 		if (indexable.getContent() != null) {
 			builder.append(indexable.getContent());
 		}
@@ -85,7 +83,7 @@ public final class LanguageDetectionStrategy extends AStrategy {
 				getContent(child, builder);
 			}
 		}
-		return builder;
+		return builder.toString();
 	}
 
 	/**

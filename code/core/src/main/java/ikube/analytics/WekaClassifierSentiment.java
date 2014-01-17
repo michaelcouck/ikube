@@ -85,12 +85,10 @@ public class WekaClassifierSentiment implements IAnalyzer<String, String> {
 
 			// Get the more 'likely' class for the vector distribution
 			double classification = classifier.classifyInstance(filteredInstance);
-			String classificationClass = classificationInstances.classAttribute().value((int) classification);
-
+			return classificationInstances.classAttribute().value((int) classification);
 			// This is not really necessary because we get the classification and not a distribution
 			// double[] result = classifier.distributionForInstance(filteredInstance);
 			// LOGGER.info("Result : " + classificationClass + ", " + classification + ", " + Arrays.toString(result));
-			return classificationClass;
 		} catch (Exception e) {
 			LOGGER.error("Exception classifying content : " + input, e);
 		} finally {

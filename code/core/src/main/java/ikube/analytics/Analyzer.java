@@ -71,7 +71,7 @@ abstract class Analyzer implements IAnalyzer<Analysis<String, double[]>, Analysi
 		InputStream inputStream = null;
 		try {
 			File file = new File(filePath);
-			if (file == null || !file.exists() || !file.canRead()) {
+			if (!file.exists() || !file.canRead()) {
 				logger.warn("Can't find data file : " + filePath + ", will search for it...");
 				String fileName = FilenameUtils.getName(filePath);
 				file = FileUtilities.findFileRecursively(new File("."), fileName);
@@ -104,7 +104,7 @@ abstract class Analyzer implements IAnalyzer<Analysis<String, double[]>, Analysi
 	}
 
 	Instances filter(final Instances instances, final Filter filter) throws Exception {
-		Instances filteredData = null;
+		Instances filteredData;
 		if (filter == null) {
 			filteredData = instances;
 		} else {

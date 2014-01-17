@@ -122,7 +122,7 @@ public class WekaClassifier extends Analyzer {
 			if (!StringUtils.isEmpty(content) && content.length() > 128) {
 				content = content.substring(0, 128);
 			}
-			logger.error("Exception classifying content : " + analysis.getInput(), e);
+			logger.error("Exception classifying content : " + content, e);
 			throw new RuntimeException(e);
 		} finally {
 			// Clear the instances every so often to avoid an out of memory

@@ -38,15 +38,21 @@
 	<util:list id="twitter-indexables">
 		<ref local="twitter-index" />
 	</util:list>
-	
-	<!-- Request token url : https://api.twitter.com/oauth/request_token
-	Authorize url : https://api.twitter.com/oauth/authorize
-	Access token url : https://api.twitter.com/oauth/access_token
-	
-	property:consumerKey="WSQs59mLxb9mGFcPKtJMyw"
-	property:consumerSecret="lHfsHqI8IrdpRINHTsZwH7cnqz8pgN7uNt9Jz8bE66Q"
-	property:token="2257682162-Z4HFFXnmucyRS3TuCTPE3dOpr2qEYuaE5WiExOp"
-	property:tokenSecret="6YdLo8Udm5SVMO3WGX1753xnKdGp5eBalQBtcKTb19CpI" -->
+
+    <!-- Request token url : https://api.twitter.com/oauth/request_token
+    Authorize url : https://api.twitter.com/oauth/authorize
+    Access token url : https://api.twitter.com/oauth/access_token
+
+    property:consumerKey="WSQs59mLxb9mGFcPKtJMyw"
+    property:consumerSecret="lHfsHqI8IrdpRINHTsZwH7cnqz8pgN7uNt9Jz8bE66Q"
+    property:token="2257682162-Z4HFFXnmucyRS3TuCTPE3dOpr2qEYuaE5WiExOp"
+    property:tokenSecret="6YdLo8Udm5SVMO3WGX1753xnKdGp5eBalQBtcKTb19CpI"
+    -->
+
+    <!--property:consumerKey="Sohh43DylUwaXr7smSojBA"
+    property:consumerSecret="90xubtexbSwhHBbKXM62pF4QfJnz1NWVkpevwde3Qxo"
+    property:token="380355068-JIMLrQyZglGs4WLXo2UShCmXMAMjWeaiZ15ZJkrp"
+    property:tokenSecret="OyhI9UyioglNWrhJnQQWY2ULmNtt9Azfl70z0l8jOPM"-->
 	
 	<bean
 		id="twitter-index"

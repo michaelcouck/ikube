@@ -61,15 +61,15 @@ public class Auto extends Resource {
 			@Context final HttpServletRequest request, //
 			@Context final UriInfo uriInfo) {
 		final Search search = unmarshall(Search.class, request);
-		final ArrayList<HashMap<String, String>> autoResults = new ArrayList<HashMap<String, String>>();
+		final ArrayList<HashMap<String, String>> autoResults = new ArrayList<>();
 		double duration = Timer.execute(new Timer.Timed() {
 			@Override
 			public void execute() {
 				List<String> searchStrings = search.getSearchStrings();
 				for (final String searchString : searchStrings) {
-					StringBuilder[] autocompleteSuggestions = buildString(searchString, search);
+					StringBuilder[] autocompleteSuggestions = suggestions(searchString, search);
 					for (final StringBuilder autocompleteSuggestion : autocompleteSuggestions) {
-						HashMap<String, String> result = new HashMap<String, String>();
+						HashMap<String, String> result = new HashMap<>();
 						result.put(IConstants.FRAGMENT, autocompleteSuggestion.toString().trim());
 						autoResults.add(result);
 					}
@@ -77,7 +77,7 @@ public class Auto extends Resource {
 			}
 		});
 		// Add the statistics
-		HashMap<String, String> statistics = new HashMap<String, String>();
+		HashMap<String, String> statistics = new HashMap<>();
 		statistics.put(IConstants.TOTAL, Long.toString(autoResults.size()));
 		statistics.put(IConstants.DURATION, Double.toString(duration));
 		statistics.put(IConstants.SEARCH_STRINGS, search.getSearchStrings().toString());
@@ -86,17 +86,14 @@ public class Auto extends Resource {
 		return buildJsonResponse(search);
 	}
 
-	private StringBuilder[] buildString(final String searchString, final Search search) {
+	private StringBuilder[] suggestions(final String searchString, final Search search) {
 		StringBuilder[] autocompleteSuggestions = new StringBuilder[search.getMaxResults()];
-		for (int i = 0; i < autocompleteSuggestions.length; i++) {
-			autocompleteSuggestions[i] = new StringBuilder();
-		}
 		String[] words = StringUtils.split(searchString, ' ');
 		Search cloneSearch = (Search) SerializationUtilities.clone(search);
 		for (final String word : words) {
-			ArrayList<HashMap<String, String>> results = null;
+			ArrayList<HashMap<String, String>> results;
 			if (CONJUNCTIONS.matcher(word).matches()) {
-				results = new ArrayList<HashMap<String, String>>();
+				results = new ArrayList<>();
 			} else {
 				cloneSearch.setSearchStrings(Arrays.asList(word));
 				cloneSearch = searcherService.search(cloneSearch);
@@ -105,6 +102,7 @@ public class Auto extends Resource {
 				results.remove(results.size() - 1);
 			}
 			for (int i = 0; i < autocompleteSuggestions.length; i++) {
+                autocompleteSuggestions[i] = new StringBuilder();
 				if (results.size() > i) {
 					String fragment = results.get(i).get(IConstants.FRAGMENT);
 					autocompleteSuggestions[i].append(fragment);
@@ -124,9 +122,9 @@ public class Auto extends Resource {
 	 * three based on a thesaurus perhaps, i.e. similar words to the search phrase, could be anything. And finally suggestions based on similar searches, that
 	 * will have to be classified with a k-means or similar algorithm.
 	 * 
-	 * @param request
-	 * @param uriInfo
-	 * @return
+	 * @param request the request from the gui
+	 * @param uriInfo the uri info if necessary
+	 * @return the suggestions based on the thesaurus of words for the language
 	 */
 	@POST
 	@Path(Auto.SUGGEST)

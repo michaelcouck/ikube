@@ -1,6 +1,7 @@
 package ikube.action.index.handler.strategy;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 import ikube.AbstractTest;
@@ -39,6 +40,11 @@ public class EmoticonClassificationStrategyTest extends AbstractTest {
 		Mockito.when(indexable.getContent()).thenReturn("I am having a terrible time :( D:<");
 		emoticonClassificationStrategy.aroundProcess(indexContext, indexable, document, resource);
 		assertEquals(IConstants.NEGATIVE, document.get(IConstants.CLASSIFICATION));
+
+		document = new Document();
+		Mockito.when(indexable.getContent()).thenReturn("The bigger the better");
+		emoticonClassificationStrategy.aroundProcess(indexContext, indexable, document, resource);
+		assertNull(document.get(IConstants.CLASSIFICATION));
 
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			public void execute() throws Throwable {

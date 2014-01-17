@@ -88,7 +88,7 @@ public class IndexableFilesystemCsvHandlerTest extends AbstractTest {
     public void getIndexableColumns() {
         String[] columns = new String[]{"NAME", "ADDRESS", "CD_LATITUDE", "CD_LONGITUDE"};
         // IndexableFileSystemCsv indexableFileSystem = new IndexableFileSystemCsv();
-        List<Indexable<?>> children = new ArrayList<Indexable<?>>();
+        List<Indexable<?>> children = new ArrayList<>();
         IndexableColumn indexableColumn = new IndexableColumn();
         indexableColumn.setFieldName(columns[3]);
         children.add(indexableColumn);

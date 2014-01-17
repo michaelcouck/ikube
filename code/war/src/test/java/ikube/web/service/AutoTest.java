@@ -96,7 +96,7 @@ public class AutoTest extends BaseTest {
 
 	private Search getSearch(final String... fragments) {
 		Search search = new Search();
-		ArrayList<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
+		ArrayList<HashMap<String, String>> results = new ArrayList<>();
 		for (final String fragment : fragments) {
 			results.add(getResult(fragment));
 		}
@@ -107,7 +107,7 @@ public class AutoTest extends BaseTest {
 	}
 
 	private HashMap<String, String> getResult(final String fragment) {
-		HashMap<String, String> result = new HashMap<String, String>();
+		HashMap<String, String> result = new HashMap<>();
 		result.put(IConstants.FRAGMENT, fragment);
 		return result;
 	}

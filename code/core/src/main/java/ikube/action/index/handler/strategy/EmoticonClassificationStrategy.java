@@ -66,10 +66,11 @@ public final class EmoticonClassificationStrategy extends AStrategy {
 						negative++;
 					}
 				}
-				if (positive > 1 && negative == 0) {
+
+				if (positive > 0 && negative == 0) {
 					// Positive sentiment
 					IndexManager.addStringField(IConstants.CLASSIFICATION, IConstants.POSITIVE, indexable, document);
-				} else if (negative > 1 && positive == 0) {
+				} else if (negative > 0 && positive == 0) {
 					// Negative sentiment
 					IndexManager.addStringField(IConstants.CLASSIFICATION, IConstants.NEGATIVE, indexable, document);
 				}
@@ -84,8 +85,8 @@ public final class EmoticonClassificationStrategy extends AStrategy {
 	@Override
 	public void initialize() {
 		try {
-			emoticonHashesPos = new HashSet<Long>();
-			emoticonHashesNeg = new HashSet<Long>();
+			emoticonHashesPos = new HashSet<>();
+			emoticonHashesNeg = new HashSet<>();
 			loadEmoticonHashes("emoticons-pos\\.txt", emoticonHashesPos);
 			loadEmoticonHashes("emoticons-neg\\.txt", emoticonHashesNeg);
 		} catch (IOException e) {

@@ -446,7 +446,7 @@ public class SearcherService implements ISearcherService {
 		} catch (final Exception e) {
 			String message = "Exception setting search in database : ";
 			LOGGER.info(message, e.getMessage());
-			LOGGER.debug(message, e.getMessage());
+			LOGGER.debug(null, e);
 		}
 	}
 

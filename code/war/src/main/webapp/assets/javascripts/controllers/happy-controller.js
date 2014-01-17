@@ -1,4 +1,7 @@
 /**
+ * This controller is for displaying the heat map for positive tweets. Please read method
+ * documentation for more implementation details.
+ *
  * @author Michael Couck
  * @since 13-01-2014
  */
@@ -14,7 +17,7 @@ module.controller('HappyController', function ($scope, $http, $timeout, $log) {
         firstResult: 0,
         maxResults: 100000,
         indexName: 'twitter',
-        minutesOfHistory: 600,
+        minutesOfHistory: 60,
         classification: 'positive',
         clusters: 1000,
         heatMapData: [],
@@ -24,6 +27,11 @@ module.controller('HappyController', function ($scope, $http, $timeout, $log) {
         typeFields: []
     };
 
+    /**
+     * This function will call the twitter rest web service, then display the heat map
+     * clustered data, and additionally put all the tweets on the map one by one with a small
+     * interval and then remove them.
+     */
     $scope.doHappySearch = function () {
         if ($scope.analyzing) {
             return;
@@ -44,6 +52,13 @@ module.controller('HappyController', function ($scope, $http, $timeout, $log) {
         });
     };
 
+    /**
+     * This function will convert the clustered heat map data from
+     * an array of arrays to an array of location-lat/lng for display on the
+     * map.
+     *
+     * @param search the search object that contains the heat map data clustered
+     */
     $scope.drawHeatMap = function (search) {
         // Construct the lat/long from the heat map data
         var zoom;
@@ -65,12 +80,10 @@ module.controller('HappyController', function ($scope, $http, $timeout, $log) {
         $scope.map = new google.maps.Map(mapElement, options);
 
         var heatMapData = [];
-        // $log.log('Heat map data : ' + search.heatMapData);
         angular.forEach(search.heatMapData, function (value) {
             var latitude = value[0];
             var longitude = value[1];
             var weight = value[2];
-            // $log.log('Lat : ' + latitude + ', long : ' + longitude + ', weight : ' + weight);
             heatMapData.push({location: new google.maps.LatLng(latitude, longitude), weight: weight});
         });
         var pointArray = new google.maps.MVCArray(heatMapData);
@@ -84,23 +97,12 @@ module.controller('HappyController', function ($scope, $http, $timeout, $log) {
         heatmap.setMap($scope.map);
     };
 
+    /**
+     * This function sets the colour and gradient of the heat map.
+     *
+     * @param heatmap the map to set the gradient for
+     */
     $scope.setGradient = function (heatmap) {
-        /*var gradient = [
-         'rgba(15, 240, 27, 0)',
-         'rgba(32, 239, 32, 1)',
-         'rgba(49, 239, 37, 1)',
-         'rgba(72, 239, 32, 1)',
-         'rgba(84, 239, 47, 1)',
-         'rgba(101, 239, 52, 1)',
-         'rgba(118, 239, 57, 1)',
-         'rgba(136, 239, 62, 1)',
-         'rgba(153, 239, 67, 1)',
-         'rgba(170, 239, 72, 1)',
-         'rgba(188, 239, 77, 1)',
-         'rgba(205, 239, 82, 1)',
-         'rgba(222, 239, 87, 1)',
-         'rgba(240, 239, 92, 1)'
-         ];*/
         var gradient = [
             'rgba(0, 255, 255, 0)',
             'rgba(0, 255, 255, 1)',
@@ -114,13 +116,17 @@ module.controller('HappyController', function ($scope, $http, $timeout, $log) {
             'rgba(0, 0, 127, 1)',
             'rgba(63, 0, 91, 1)',
             'rgba(63, 0, 141, 1)'
-            // 'rgba(191, 0, 31, 1)'
-            // 'rgba(255, 0, 0, 1)'
         ];
         heatmap.set('gradient', gradient);
     }
 
-    // This function will put the markers on the map
+    /**
+     * This function will put the markers on the map one by one, with an interval oof a few
+     * milliseconds. It will then remove the markers after a second to give the feeling that the
+     * tweets are populating the map live.
+     *
+     * @param search the search object that contains the results and the tweets' positions
+     */
     $scope.drawMarkers = function (search) {
         var onScreen = 1000;
         var incrementSleep = 10;
@@ -133,8 +139,7 @@ module.controller('HappyController', function ($scope, $http, $timeout, $log) {
             sleep += incrementSleep;
             var latitude = key['latitude'];
             var longitude = key['longitude'];
-            if (!!latitude || !!longitude) {
-                // var distance = key['distance'];
+            if (!!latitude && !!longitude) {
                 $timeout(function () {
                     var marker = new google.maps.Marker({
                         map: $scope.map,
@@ -142,9 +147,7 @@ module.controller('HappyController', function ($scope, $http, $timeout, $log) {
                         position: new google.maps.LatLng(latitude, longitude),
                         title: 'Bla...'
                     });
-                    // $log.log('Drawing marker : ' + latitude + '-' + longitude);
                     $timeout(function () {
-                        // $log.log('Removing marker : ' + marker);
                         marker.setMap(null);
                     }, onScreen);
                 }, sleep);
@@ -152,11 +155,12 @@ module.controller('HappyController', function ($scope, $http, $timeout, $log) {
         });
     };
 
+    // This acts like jQuery $(document).ready() i.e. when AngularJs is done
+    // most of the work to initialize the page and the parsing etc.
     google.setOnLoadCallback($scope.drawGeoMap);
     setInterval(function () {
         $scope.doHappySearch();
     }, 60000);
     $scope.doHappySearch();
-    // google.setOnLoadCallback($scope.drawGeoChart);
 
 });

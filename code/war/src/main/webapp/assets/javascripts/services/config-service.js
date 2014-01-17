@@ -18,6 +18,8 @@ ikubeServices.service('configService', function($rootScope) {
 		resultsBuilder : 'autocompleteResultsBuilderService',
 		indexName : 'autocomplete',
 		searchFields : ['word'],
+        typeFields : ['string'],
+        occurrenceFields : ['must'],
 		emitHierarchyFunction : 'doSearch'
 	};
 	
@@ -28,6 +30,8 @@ ikubeServices.service('configService', function($rootScope) {
 		resultsBuilder : 'autocompleteResultsBuilderService',
 		indexName : 'autocomplete',
 		searchFields : ['word'],
+        typeFields : ['string'],
+        occurrenceFields : ['must'],
 		emitHierarchyFunction : 'setSearchStrings'
 	};
 	

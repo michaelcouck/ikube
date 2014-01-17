@@ -16,14 +16,14 @@
 function TypeaheadController($scope, $http, $injector, $timeout, $log) {
 	
 	// The configuration object with the uri and other parameters
-	$scope.config;
+	$scope.config = undefined;
 	// We don't want too many results, looks bad
 	$scope.search = { 
-		maxResults : 6,
+		maxResults : 7,
 		fragment : true
 	};
 	// The results that will be created from the response from the server
-	$scope.results = new Array();
+	$scope.results = [];
 	// The search string that we will send for searching against
 	$scope.searchString = null;
 	
@@ -116,6 +116,7 @@ function TypeaheadController($scope, $http, $injector, $timeout, $log) {
 		$scope.search.searchFields = $scope.config.searchFields;
 		$scope.search.typeFields = $scope.config.typeFields;
 		$scope.search.sortFields = $scope.config.sortFields;
+		$scope.search.occurrenceFields = $scope.config.occurrenceFields;
 	};
 	
 	/**
@@ -123,8 +124,8 @@ function TypeaheadController($scope, $http, $injector, $timeout, $log) {
 	 * that will then perform further logic on the selection, like doing the actual search for the selected 
 	 * search string. The service must have a single function called 'execute' that takes a single parameter.
 	 * 
-	 * @param the name of the service to call
-	 * @param the parameter to pass to the function call of the service
+	 * @param name of the service to call
+	 * @param parameter to pass to the function call of the service
 	 */
 	$scope.callService = function(name, parameter) {
 		var service = $injector.get(name);

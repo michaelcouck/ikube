@@ -58,6 +58,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 				logger.info("Index directory : " + serverIndexDirectory);
 				Directory directory = null;
 				IndexReader reader = null;
+                boolean open = Boolean.FALSE;
 				try {
 					directory = NIOFSDirectory.open(serverIndexDirectory);
 					if (!DirectoryReader.indexExists(directory)) {
@@ -70,17 +71,24 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 					}
 					reader = DirectoryReader.open(directory);
 					indexReaders.add(reader);
+                    open = Boolean.TRUE;
 					logger.info("Opened index on : " + serverIndexDirectory);
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					logger.error("Exception opening directory : " + serverIndexDirectory, e);
-					close(directory, reader);
-				}
+				} finally {
+                    if (!open) {
+                        indexReaders.remove(reader);
+                        close(directory, reader);
+                    }
+                }
 			}
 		}
 
-		IndexReader indexReader = new MultiReader(indexReaders.toArray(new IndexReader[indexReaders.size()]), Boolean.TRUE);
-		IndexSearcher indexSearcher = new IndexSearcher(indexReader);
-		indexContext.setMultiSearcher(indexSearcher);
+        if (indexReaders.size() > 0) {
+            IndexReader indexReader = new MultiReader(indexReaders.toArray(new IndexReader[indexReaders.size()]), Boolean.TRUE);
+            IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+            indexContext.setMultiSearcher(indexSearcher);
+        }
 
 		// Make sure that the old searchables are closed,
 		// but give them some time for the actions on them to finish
@@ -88,7 +96,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
 			ThreadUtilities.submit(this.getClass().getSimpleName(), new Runnable() {
 				public void run() {
 					try {
-						ThreadUtilities.sleep(60000);
+						ThreadUtilities.sleep(300000);
 						oldIndexSearcher.getIndexReader().close();
 					} catch (IOException e) {
 						throw new RuntimeException(e);

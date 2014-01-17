@@ -22,7 +22,7 @@ import org.apache.lucene.document.Document;
 public class ClassifierTrainingStrategy extends AStrategy {
 
 	/** The number of instances in training before rebuilding the classifier. */
-	static final int REBUILD_COUNT = 1000;
+	static final int REBUILD_COUNT = 100;
 
 	/** The maximum number of positive training folds */
 	private int positive;
