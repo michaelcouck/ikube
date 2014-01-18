@@ -18,7 +18,7 @@ import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
 /**
- * This class is a classifier for sentiment essentially, i.e. positive/negative. This classifier is based on the {@link SMO} classification algorithm from
+ * This class is a classifier for sentiment essentially, i.e. positive/negative. This classifier is based on the {@link weka.classifiers.functions.SMO} classification algorithm from
  * mWeka, which is a support vector classifier.
  * 
  * @author Michael Couck

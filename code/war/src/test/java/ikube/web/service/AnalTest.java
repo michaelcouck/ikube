@@ -9,6 +9,7 @@ import ikube.search.ISearcherService;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.SerializationUtilities;
 import ikube.web.service.Anal.TwitterSearch;
+import ikube.web.toolkit.PerformanceTester;
 import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockClass;
@@ -112,7 +113,7 @@ public class AnalTest extends BaseTest {
         // Remove the statistics
         results.remove(results.size() - 1);
         // Add a lot more from this set to see the memory and performance
-        ArrayList<HashMap<String, String>> moreResults = new ArrayList<>();
+        final ArrayList<HashMap<String, String>> moreResults = new ArrayList<>();
         for (int i = 0; i < 10000; i++) {
             moreResults.addAll(results);
         }
@@ -120,6 +121,13 @@ public class AnalTest extends BaseTest {
         Object[][] heatMapData = anal.heatMapData(moreResults, search.getClusters());
         assertTrue("Must be less than the total results : ", heatMapData.length < moreResults.size());
         assertTrue("Must be less than the clustered capacity too : ", heatMapData.length <= search.getClusters());
+
+        PerformanceTester.execute(new PerformanceTester.APerform() {
+            @Override
+            public void execute() throws Throwable {
+                anal.heatMapData(moreResults, search.getClusters());
+            }
+        }, "Heat map data : ", 10);
     }
 
     @Test

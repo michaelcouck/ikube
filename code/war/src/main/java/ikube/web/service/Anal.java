@@ -157,6 +157,7 @@ public class Anal extends Resource {
     Object[][] heatMapData(final ArrayList<HashMap<String, String>> results, final int capacity) {
         DblClusters<List<double[]>> clusters = new DblClusters<>(2, capacity);
         clusters.setKeyer(new DblListKeyer<double[]>());
+        double[] coordinate = new double[2];
         for (final HashMap<String, String> result : results) {
             String latString = result.get(IConstants.LATITUDE);
             String longString = result.get(IConstants.LONGITUDE);
@@ -165,7 +166,8 @@ public class Anal extends Resource {
             }
             double latitude = Double.parseDouble(latString);
             double longitude = Double.parseDouble(longString);
-            double[] coordinate = {latitude, longitude};
+            coordinate[0] = latitude;
+            coordinate[1] = longitude;
             List<double[]> key = new ArrayList<>();
             key.add(coordinate);
             clusters.add(1.0, coordinate, key);
@@ -176,7 +178,7 @@ public class Anal extends Resource {
         for (int i = 0; i < clustered.size(); i++) {
             final DblResult<List<double[]>> cluster = clustered.get(i);
             int count = cluster.getCount();
-            double[] coordinate = cluster.getCoords();
+            coordinate = cluster.getCoords();
             Object[] heatMapDatum = {coordinate[0], coordinate[1], count};
             heatMapData[i] = heatMapDatum;
         }

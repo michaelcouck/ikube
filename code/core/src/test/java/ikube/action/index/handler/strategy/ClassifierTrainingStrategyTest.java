@@ -66,7 +66,7 @@ public class ClassifierTrainingStrategyTest extends AbstractTest {
 		classifierTrainingStrategy.aroundProcess(indexContext, indexableTweets, document, tweet);
 		Mockito.verify(analyzer).train(Mockito.any(Object[].class));
 
-		int iterations = ClassifierTrainingStrategy.REBUILD_COUNT + 1;
+		int iterations = 11;
 		PerformanceTester.execute(new PerformanceTester.APerform() {
 			@Override
 			public void execute() {

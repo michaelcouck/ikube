@@ -224,8 +224,8 @@
 		id="ikube.scheduling.schedule.IndexCommitSchedule"
 		name="ikube.scheduling.schedule.IndexCommitSchedule" 
 		class="ikube.scheduling.schedule.IndexCommitSchedule" 
-		property:delay="60000"
-		property:period="60000" />
+		property:delay="180000"
+		property:period="180000" />
 	
 	<!-- 
 		This is the mailer that will send mail to targets when things go right, and wrong in fact. This 

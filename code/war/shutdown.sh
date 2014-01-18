@@ -1,1 +1,0 @@
-mvn jetty:stop -DskipTests=true -DskipITs=true -o
