@@ -148,7 +148,7 @@ public abstract class Search {
             StringReader stringReader = new StringReader(content);
             TokenStream tokenStream = analyzer.tokenStream(fieldName, stringReader);
             fragment = highlighter.getBestFragments(tokenStream, content, IConstants.MAX_FRAGMENTS,
-                    IConstants.FRAGMENT_SEPERATOR);
+                    IConstants.FRAGMENT_SEPARATOR);
         } catch (Exception t) {
             logger.error("Exception getting the best fragments for the search results", t);
         }

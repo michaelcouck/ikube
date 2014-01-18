@@ -1,7 +1,6 @@
 package ikube;
 
 import ikube.ikube.mock.SpellingCheckerMock;
-import ikube.search.spelling.SpellingChecker;
 import ikube.toolkit.Logging;
 import mockit.Mockit;
 import org.apache.commons.httpclient.HttpClient;
@@ -39,7 +38,7 @@ public abstract class BaseTest {
 
     static {
         Logging.configure();
-		Mockit.setUpMocks(SpellingCheckerMock.class);
+        Mockit.setUpMocks(SpellingCheckerMock.class);
     }
 
     /**
@@ -90,7 +89,7 @@ public abstract class BaseTest {
                 String fieldName = fieldable.name();
                 String fieldValue = fieldable.stringValue();
                 int fieldLength = fieldValue != null ? fieldValue.length() : 0;
-                logger.info("        : " + fieldName + ", " + fieldLength + ", " + fieldValue);
+                logger.info("        : " + fieldName + ", " + fieldLength + ", " + fieldValue + ", " + fieldable);
             }
         }
     }

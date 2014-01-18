@@ -2,6 +2,7 @@ package ikube.action.index.analyzer;
 
 import ikube.IConstants;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.br.BrazilianAnalyzer;
 import org.apache.lucene.analysis.core.LowerCaseTokenizer;
 import org.apache.lucene.analysis.core.StopAnalyzer;
@@ -28,43 +29,44 @@ import java.io.Reader;
  */
 public final class StemmingAnalyzer extends Analyzer {
 
-	@Value("${stemming.analyzer.stop.words}")
-	private boolean useStopWords = Boolean.TRUE;
-	private CharArraySet stopWords;
+    @Value("${stemming.analyzer.stop.words}")
+    private boolean useStopWords = Boolean.TRUE;
+    private CharArraySet stopWords;
 
-	public StemmingAnalyzer() {
-		initialize();
-	}
+    public void initialize() {
+        if (useStopWords) {
+            stopWords = getStopWords();
+        }
+    }
 
-	public void initialize() {
-		if (useStopWords) {
-			stopWords = getStopWords();
-		}
-	}
+    protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
+        LowerCaseTokenizer lowerCaseTokenizer = new LowerCaseTokenizer(IConstants.LUCENE_VERSION, reader);
+        PorterStemFilter porterStemFilter = new PorterStemFilter(lowerCaseTokenizer);
+        TokenFilter tokenFilter;
+        if (stopWords == null || stopWords.size() == 0) {
+            tokenFilter = porterStemFilter;
+        } else {
+            tokenFilter = new StopFilter(IConstants.LUCENE_VERSION, porterStemFilter, stopWords);
+        }
+        return new TokenStreamComponents(lowerCaseTokenizer, tokenFilter);
+    }
 
-	protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
-		LowerCaseTokenizer lowerCaseTokenizer = new LowerCaseTokenizer(IConstants.LUCENE_VERSION, reader);
-		PorterStemFilter porterStemFilter = new PorterStemFilter(lowerCaseTokenizer);
-		StopFilter stopFilter = new StopFilter(IConstants.LUCENE_VERSION, porterStemFilter, stopWords);
-		return new TokenStreamComponents(lowerCaseTokenizer, stopFilter);
-	}
+    @SuppressWarnings({"unchecked"})
+    private final CharArraySet getStopWords() {
+        CharArraySet stopWords = new CharArraySet(IConstants.LUCENE_VERSION, 10, Boolean.TRUE);
+        stopWords.addAll(GreekAnalyzer.getDefaultStopSet());
+        stopWords.addAll(CzechAnalyzer.getDefaultStopSet());
+        stopWords.addAll(DutchAnalyzer.getDefaultStopSet());
+        stopWords.addAll(FrenchAnalyzer.getDefaultStopSet());
+        stopWords.addAll(GermanAnalyzer.getDefaultStopSet());
+        stopWords.addAll(BrazilianAnalyzer.getDefaultStopSet());
+        stopWords.addAll(RussianAnalyzer.getDefaultStopSet());
+        stopWords.addAll(StopAnalyzer.ENGLISH_STOP_WORDS_SET);
+        return stopWords;
+    }
 
-	@SuppressWarnings({"unchecked"})
-	private final CharArraySet getStopWords() {
-		CharArraySet stopWords = new CharArraySet(IConstants.LUCENE_VERSION, 10, Boolean.TRUE);
-		stopWords.addAll(GreekAnalyzer.getDefaultStopSet());
-		stopWords.addAll(CzechAnalyzer.getDefaultStopSet());
-		stopWords.addAll(DutchAnalyzer.getDefaultStopSet());
-		stopWords.addAll(FrenchAnalyzer.getDefaultStopSet());
-		stopWords.addAll(GermanAnalyzer.getDefaultStopSet());
-		stopWords.addAll(BrazilianAnalyzer.getDefaultStopSet());
-		stopWords.addAll(RussianAnalyzer.getDefaultStopSet());
-		stopWords.addAll(StopAnalyzer.ENGLISH_STOP_WORDS_SET);
-		return stopWords;
-	}
-
-	public void setUseStopWords(boolean useStopWords) {
-		this.useStopWords = useStopWords;
-	}
+    public void setUseStopWords(boolean useStopWords) {
+        this.useStopWords = useStopWords;
+    }
 
 }

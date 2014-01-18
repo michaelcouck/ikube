@@ -12,20 +12,20 @@
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util.xsd">
 
-    <!--property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer"-->
     <bean
         id="twitter"
         class="ikube.model.IndexContext"
         property:name="twitter"
         property:maxAge="0"
         property:compoundFile="true"
-        property:bufferedDocs="100"
+        property:bufferedDocs="1000"
         property:bufferSize="128"
-        property:mergeFactor="100"
+        property:mergeFactor="1000"
         property:batchSize="${jdbc.batch.size}"
         property:internetBatchSize="${internet.batch.size}"
         property:maxFieldLength="${max.field.length}"
         property:maxReadLength="${max.read.length}"
+        property:analyzer-ref="twitter-analyzer"
         property:address="false"
         property:throttle="0"
         property:delta="true"
@@ -35,6 +35,12 @@
     <util:list id="twitter-indexables">
         <ref local="twitter-index"/>
     </util:list>
+
+    <bean
+        id="twitter-analyzer"
+        class="ikube.action.index.analyzer.StemmingAnalyzer"
+        property:useStopWords="false"
+        init-method="initialize"/>
 
     <!-- Request token url : https://api.twitter.com/oauth/request_token
     Authorize url : https://api.twitter.com/oauth/authorize
@@ -56,10 +62,10 @@
         class="ikube.model.IndexableTweets"
         property:name="twitter-index"
         property:address="false"
-        property:maxExceptions="100"
+        property:maxExceptions="1000"
         property:stored="true"
         property:analyzed="true"
-        property:vectored="true"
+        property:vectored="false"
         property:threads="4"
 
         property:consumerKey="Sohh43DylUwaXr7smSojBA"
@@ -126,7 +132,7 @@
         property:language="English"
         property:positive="1000"
         property:negative="1000"
-        property:neutral="1000"
+        property:neutral="0"
         property:rebuildingCount="10"
         property:classifier-ref="wekaClassifier.smo.en"/>
     <bean
@@ -135,7 +141,7 @@
         property:language="Spanish"
         property:positive="1000"
         property:negative="1000"
-        property:neutral="1000"
+        property:neutral="0"
         property:rebuildingCount="10"
         property:classifier-ref="wekaClassifier.smo.es"/>
     <bean
@@ -144,7 +150,7 @@
         property:language="Japanese"
         property:positive="1000"
         property:negative="1000"
-        property:neutral="1000"
+        property:neutral="0"
         property:rebuildingCount="10"
         property:classifier-ref="wekaClassifier.smo.jp"/>
     <bean
@@ -153,7 +159,7 @@
         property:language="Chinese"
         property:positive="1000"
         property:negative="1000"
-        property:neutral="1000"
+        property:neutral="0"
         property:rebuildingCount="10"
         property:classifier-ref="wekaClassifier.smo.cn"/>
     <bean
@@ -162,7 +168,7 @@
         property:language="Dutch"
         property:positive="1000"
         property:negative="1000"
-        property:neutral="1000"
+        property:neutral="0"
         property:rebuildingCount="10"
         property:classifier-ref="wekaClassifier.smo.nl"/>
     <bean
@@ -171,7 +177,7 @@
         property:language="French"
         property:positive="1000"
         property:negative="1000"
-        property:neutral="1000"
+        property:neutral="0"
         property:rebuildingCount="10"
         property:classifier-ref="wekaClassifier.smo.fr"/>
     <bean
@@ -180,7 +186,7 @@
         property:language="German"
         property:positive="1000"
         property:negative="1000"
-        property:neutral="1000"
+        property:neutral="0"
         property:rebuildingCount="10"
         property:classifier-ref="wekaClassifier.smo.de"/>
     <bean
@@ -189,7 +195,7 @@
         property:language="Swedish"
         property:positive="1000"
         property:negative="1000"
-        property:neutral="1000"
+        property:neutral="0"
         property:rebuildingCount="10"
         property:classifier-ref="wekaClassifier.smo.sv"/>
     <bean
@@ -198,7 +204,7 @@
         property:language="Thai"
         property:positive="1000"
         property:negative="1000"
-        property:neutral="1000"
+        property:neutral="0"
         property:rebuildingCount="10"
         property:classifier-ref="wekaClassifier.smo.th"/>
     <bean
@@ -207,7 +213,7 @@
         property:language="Arabic"
         property:positive="1000"
         property:negative="1000"
-        property:neutral="1000"
+        property:neutral="0"
         property:rebuildingCount="10"
         property:classifier-ref="wekaClassifier.smo.ar"/>
     <bean
@@ -216,7 +222,7 @@
         property:language="Turkish"
         property:positive="1000"
         property:negative="1000"
-        property:neutral="1000"
+        property:neutral="0"
         property:rebuildingCount="10"
         property:classifier-ref="wekaClassifier.smo.tr"/>
     <bean
@@ -225,7 +231,7 @@
         property:language="Russian"
         property:positive="1000"
         property:negative="1000"
-        property:neutral="1000"
+        property:neutral="0"
         property:rebuildingCount="10"
         property:classifier-ref="wekaClassifier.smo.ru"/>
 

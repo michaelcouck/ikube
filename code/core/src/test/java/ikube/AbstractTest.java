@@ -124,9 +124,9 @@ public abstract class AbstractTest {
 		indexableColumn = mock(IndexableColumn.class);
 
 		scoreDocs = new ScoreDoc[0];
-		indexables = new ArrayList<Indexable<?>>();
-		servers = new HashMap<String, Server>();
-		indexContexts = new HashMap<String, IndexContext>();
+		indexables = new ArrayList<>();
+		servers = new HashMap<>();
+		indexContexts = new HashMap<>();
 
 		ip = UriUtilities.getIp();
 
@@ -229,12 +229,6 @@ public abstract class AbstractTest {
 		}
 	}
 
-	protected Directory createIndexRam(final IndexContext<?> indexContext, final String... strings) throws Exception {
-		IndexWriter indexWriter = getRamIndexWriter(new StandardAnalyzer(IConstants.LUCENE_VERSION));
-		addDocuments(indexWriter, IConstants.CONTENTS, strings);
-		return indexWriter.getDirectory();
-	}
-
 	protected File createIndexFileSystem(final IndexContext<?> indexContext, final long time, final String ip,
 										 final String... strings) throws Exception {
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, time, ip);
@@ -247,7 +241,7 @@ public abstract class AbstractTest {
 	protected List<File> createIndexesFileSystem(final IndexContext<?> indexContext, final long time,
 												 final String[] ips, final String... strings) {
 		try {
-			List<File> serverIndexDirectories = new ArrayList<File>();
+			List<File> serverIndexDirectories = new ArrayList<>();
 			for (String ip : ips) {
 				File serverIndexDirectory = createIndexFileSystem(indexContext, time, ip, strings);
 				serverIndexDirectories.add(serverIndexDirectory);

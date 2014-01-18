@@ -32,6 +32,7 @@
           <file>file://$MODULE_DIR$/ikube/common/spring-h2-jdbc.xml</file>
           <file>file://$MODULE_DIR$/ikube/common/spring-users.xml</file>
           <file>file://$MODULE_DIR$/ikube/common/spring-beans.xml</file>
+          <file>file://$MODULE_DIR$/ikube/twitter/spring-twitter.xml</file>
         </fileset>
       </configuration>
     </facet>

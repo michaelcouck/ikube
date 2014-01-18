@@ -8,7 +8,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -103,8 +102,8 @@ public class SearchTest extends AbstractTest {
 		searchMultiSorted.setSearchFields(CONTENTS);
 		searchMultiSorted.setSearchStrings("123.0-123456.0");
 		searchMultiSorted.setTypeFields(TypeField.RANGE.name());
-		searchMultiSorted.setOccurrenceFields(SHOULD);
-		searchMultiSorted.setSortFields(CONTENTS);
+		searchMultiSorted.setOccurrenceFields(MUST);
+		searchMultiSorted.setSortFields(ID);
 		searchMultiSorted.setSortDirections(Boolean.TRUE.toString());
 
 		ArrayList<HashMap<String, String>> results = searchMultiSorted.execute();
@@ -117,8 +116,8 @@ public class SearchTest extends AbstractTest {
 		// Verify that all the results are in ascending order according to the id
 		String previousId = "0.0";
 		for (Map<String, String> result : results) {
-			String id = result.get(CONTENTS);
-			// assertTrue(Double.parseDouble(previousId) < Double.parseDouble(id));
+			String id = result.get(ID);
+			assertTrue(Double.parseDouble(previousId) <= Double.parseDouble(id));
 			previousId = id;
 		}
 	}
@@ -171,7 +170,7 @@ public class SearchTest extends AbstractTest {
 		SearchComplex search = createIndexRamAndSearch(SearchComplex.class, analyzer, CONTENTS, strings);
 		search.setSearchStrings(searchString);
 
-		ArrayList<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
+		ArrayList<HashMap<String, String>> results = new ArrayList<>();
 		search.addStatistics(new String[]{searchString}, results, 79, 0.0f, 23, null);
 		Map<String, String> statistics = results.get(results.size() - 1);
 		logger.info("Search strings : " + statistics.get(SEARCH_STRINGS));

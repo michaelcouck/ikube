@@ -36,6 +36,7 @@ public class WekaClassifier extends Analyzer {
     public void init(final Buildable buildable) throws Exception {
         instances = instances(buildable);
         instances.setClassIndex(0);
+        instances.setRelationName("training_data");
         if (!StringUtils.isEmpty(buildable.getFilterType())) {
             filter = (Filter) Class.forName(buildable.getFilterType()).newInstance();
         }
@@ -53,15 +54,15 @@ public class WekaClassifier extends Analyzer {
             log(instances);
 
             Instances filteredData = filter(instances, filter);
+            filteredData.setRelationName("filtered_data");
             classifier.buildClassifier(filteredData);
-            instances = instances.stringFreeStructure();
+            // instances = instances.stringFreeStructure();
             log(filteredData);
             evaluate(filteredData);
 
-            instances.setRelationName("training_data");
-            filteredData.setRelationName("filtered_data");
+            // instances.setRelationName("training_data");
         } catch (Exception e) {
-            logger.info("Exception building classifier : ", e);
+            logger.error("Exception building classifier : ", e);
             instances.delete();
             throw new RuntimeException(e);
         } finally {
@@ -100,16 +101,23 @@ public class WekaClassifier extends Analyzer {
             reentrantLock.lock();
             if (!StringUtils.isEmpty(analysis.getInput())) {
                 // Create the instance from the data
-                Instance instance = instance(analysis.getInput(), instances);
+                String input = analysis.getInput();
+                Instance instance = instance(input, instances);
                 Instance filteredInstance = filter(instance, filter);
                 // Classify the instance
                 double classification = classifier.classifyInstance(filteredInstance);
                 // Set the output for the client
                 String clazz = instances.classAttribute().value((int) classification);
                 double[] output = classifier.distributionForInstance(filteredInstance);
+
                 analysis.setClazz(clazz);
                 analysis.setOutput(output);
                 analysis.setAlgorithmOutput(classifier.toString());
+
+                if (logger.isDebugEnabled()) {
+                    log(clazz, input, output);
+                }
+
                 // analysis.setCorrelationCoefficients(getCorrelationCoefficients(instances));
                 if (analysis.isDistribution()) {
                     analysis.setDistributionForInstances(getDistributionForInstances(instances));
@@ -124,12 +132,16 @@ public class WekaClassifier extends Analyzer {
             logger.error("Exception classifying content : " + content, e);
             throw new RuntimeException(e);
         } finally {
-            // Clear the instances every so often to avoid an out of memory
-            if (instances.numInstances() > 1000) {
-                instances.delete();
-            }
             reentrantLock.unlock();
         }
+    }
+
+    private void log(final String clazz, final String input, final double[] output) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (final double out : output) {
+            stringBuilder.append(out);
+        }
+        logger.info("Class : " + clazz + ", " + input + ", " + stringBuilder);
     }
 
     @Override
