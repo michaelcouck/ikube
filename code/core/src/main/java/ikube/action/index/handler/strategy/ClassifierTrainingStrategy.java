@@ -118,11 +118,12 @@ public class ClassifierTrainingStrategy extends AStrategy {
             analysis.setClazz(clazz);
             analysis.setInput(content);
             classifier.train(analysis);
-            if (trainingCount++ % rebuildingCount == 0) {
+            trainingCount++;
+            if (trainingCount % rebuildingCount == 0) {
                 classifier.build(null);
             }
         } catch (Exception e) {
-            logger.error(null, e);
+            logger.error("Exception building classifier : ", e);
         } finally {
             reentrantLock.unlock();
         }
@@ -144,7 +145,7 @@ public class ClassifierTrainingStrategy extends AStrategy {
         this.language = language;
     }
 
-    public void setRebuildingCount(int rebuildingCount) {
+    public void setRebuildingCount(final int rebuildingCount) {
         this.rebuildingCount = rebuildingCount;
     }
 

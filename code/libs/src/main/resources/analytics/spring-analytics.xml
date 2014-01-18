@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:property="http://www.springframework.org/schema/p" xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:property="http://www.springframework.org/schema/p" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
 				http://www.springframework.org/schema/beans
 				http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 				http://www.springframework.org/schema/context
@@ -9,178 +10,202 @@
 				http://www.springframework.org/schema/util
 				http://www.springframework.org/schema/util/spring-util.xsd">
 
-	<bean
-		id="buildable-em"
-		class="ikube.model.Buildable"
-		property:log="true"
-		property:algorithmType="weka.clusterers.EM"
-		property:trainingFilePath="./ikube/analytics/bank-data.arff" />
-	<bean
-		id="buildable-smo"
-		class="ikube.model.Buildable"
-		property:log="true"
-		property:filterType="weka.filters.unsupervised.attribute.StringToWordVector"
-		property:algorithmType="weka.classifiers.functions.SMO"
-		property:trainingFilePath="./ikube/analytics/sentiment.arff" />
-	<bean 
-		id="analyzer-em" 
-		class="ikube.analytics.WekaClusterer" />
-	<bean 
-		id="analyzer-smo" 
-		class="ikube.analytics.WekaClassifier" />
-		
-	<bean 
-		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-		property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
-		<property name="arguments">
-			<array>
-				<ref local="buildable-em" />
-				<ref local="analyzer-em" />
-			</array>
-		</property>
-	</bean>
-	<bean 
-		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-		property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
-		<property name="arguments">
-			<array>
-				<ref local="buildable-smo" />
-				<ref local="analyzer-smo" />
-			</array>
-		</property>
-	</bean>
-	
-	<bean
-		id="ikube.analytics.IAnalyticsService"
-		class="ikube.analytics.AnalyticsService"
-		property:analyzers-ref="analyzers" />
-		
-	<bean id="wekaClassifier.smo.en" class="ikube.analytics.WekaClassifier" />
-	<bean id="wekaClassifier.smo.es" class="ikube.analytics.WekaClassifier" />
-	<bean id="wekaClassifier.smo.jp" class="ikube.analytics.WekaClassifier" />
-	<bean id="wekaClassifier.smo.cn" class="ikube.analytics.WekaClassifier" />
-	<bean id="wekaClassifier.smo.nl" class="ikube.analytics.WekaClassifier" />
-	<bean id="wekaClassifier.smo.fr" class="ikube.analytics.WekaClassifier" />
-	<bean id="wekaClassifier.smo.de" class="ikube.analytics.WekaClassifier" />
-	<bean id="wekaClassifier.smo.sv" class="ikube.analytics.WekaClassifier" />
-	<bean id="wekaClassifier.smo.th" class="ikube.analytics.WekaClassifier" />
-	<bean id="wekaClassifier.smo.ar" class="ikube.analytics.WekaClassifier" />
-	<bean id="wekaClassifier.smo.tr" class="ikube.analytics.WekaClassifier" />
-	<bean id="wekaClassifier.smo.ru" class="ikube.analytics.WekaClassifier" />
-	
-		<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
-		<property name="arguments">
-			<array>
-				<ref bean="buildable-smo" />
-				<ref bean="wekaClassifier.smo.en" />
-			</array>
-		</property>
-	</bean>
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
-		<property name="arguments">
-			<array>
-				<ref bean="buildable-smo" />
-				<ref bean="wekaClassifier.smo.es" />
-			</array>
-		</property>
-	</bean>
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
-		<property name="arguments">
-			<array>
-				<ref bean="buildable-smo" />
-				<ref bean="wekaClassifier.smo.jp" />
-			</array>
-		</property>
-	</bean>
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
-		<property name="arguments">
-			<array>
-				<ref bean="buildable-smo" />
-				<ref bean="wekaClassifier.smo.cn" />
-			</array>
-		</property>
-	</bean>
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
-		<property name="arguments">
-			<array>
-				<ref bean="buildable-smo" />
-				<ref bean="wekaClassifier.smo.nl" />
-			</array>
-		</property>
-	</bean>
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
-		<property name="arguments">
-			<array>
-				<ref bean="buildable-smo" />
-				<ref bean="wekaClassifier.smo.fr" />
-			</array>
-		</property>
-	</bean>
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
-		<property name="arguments">
-			<array>
-				<ref bean="buildable-smo" />
-				<ref bean="wekaClassifier.smo.de" />
-			</array>
-		</property>
-	</bean>
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
-		<property name="arguments">
-			<array>
-				<ref bean="buildable-smo" />
-				<ref bean="wekaClassifier.smo.sv" />
-			</array>
-		</property>
-	</bean>
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
-		<property name="arguments">
-			<array>
-				<ref bean="buildable-smo" />
-				<ref bean="wekaClassifier.smo.th" />
-			</array>
-		</property>
-	</bean>
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
-		<property name="arguments">
-			<array>
-				<ref bean="buildable-smo" />
-				<ref bean="wekaClassifier.smo.ar" />
-			</array>
-		</property>
-	</bean>
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
-		<property name="arguments">
-			<array>
-				<ref bean="buildable-smo" />
-				<ref bean="wekaClassifier.smo.tr" />
-			</array>
-		</property>
-	</bean>
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
-		<property name="arguments">
-			<array>
-				<ref bean="buildable-smo" />
-				<ref bean="wekaClassifier.smo.ru" />
-			</array>
-		</property>
-	</bean>
-	 
-	 <util:map id="analyzers">
-		<entry key="analyzer-em" value-ref="analyzer-em" />
-		<entry key="analyzer-smo" value-ref="analyzer-smo" />
-		
-		<entry key="wekaClassifier.smo.en" value-ref="wekaClassifier.smo.en" />
-		<entry key="wekaClassifier.smo.es" value-ref="wekaClassifier.smo.es" />
-		<entry key="wekaClassifier.smo.jp" value-ref="wekaClassifier.smo.jp" />
-		<entry key="wekaClassifier.smo.cn" value-ref="wekaClassifier.smo.cn" />
-		<entry key="wekaClassifier.smo.nl" value-ref="wekaClassifier.smo.nl" />
-		<entry key="wekaClassifier.smo.fr" value-ref="wekaClassifier.smo.fr" />
-		<entry key="wekaClassifier.smo.de" value-ref="wekaClassifier.smo.de" />
-		<entry key="wekaClassifier.smo.sv" value-ref="wekaClassifier.smo.sv" />
-		<entry key="wekaClassifier.smo.th" value-ref="wekaClassifier.smo.th" />
-		<entry key="wekaClassifier.smo.ar" value-ref="wekaClassifier.smo.ar" />
-		<entry key="wekaClassifier.smo.tr" value-ref="wekaClassifier.smo.tr" />
-		<entry key="wekaClassifier.smo.ru" value-ref="wekaClassifier.smo.ru" />
-	 </util:map>
+    <bean
+        id="buildable-em"
+        class="ikube.model.Buildable"
+        property:log="true"
+        property:algorithmType="weka.clusterers.EM"
+        property:trainingFilePath="./ikube/analytics/bank-data.arff"/>
+    <bean
+        id="buildable-smo"
+        class="ikube.model.Buildable"
+        property:log="true"
+        property:filterType="weka.filters.unsupervised.attribute.StringToWordVector"
+        property:algorithmType="weka.classifiers.functions.SMO"
+        property:trainingFilePath="./ikube/analytics/sentiment.arff"/>
+    <bean
+        id="analyzer-em"
+        class="ikube.analytics.WekaClusterer"/>
+    <bean
+        id="analyzer-smo"
+        class="ikube.analytics.WekaClassifier"/>
+
+    <bean
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+        property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
+        <property name="arguments">
+            <array>
+                <ref local="buildable-em"/>
+                <ref local="analyzer-em"/>
+            </array>
+        </property>
+    </bean>
+    <bean
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+        property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
+        <property name="arguments">
+            <array>
+                <ref local="buildable-smo"/>
+                <ref local="analyzer-smo"/>
+            </array>
+        </property>
+    </bean>
+
+    <bean
+        id="ikube.analytics.IAnalyticsService"
+        class="ikube.analytics.AnalyticsService"
+        property:analyzers-ref="analyzers"/>
+
+    <bean id="wekaClassifier.smo.en" class="ikube.analytics.WekaClassifier"/>
+    <bean id="wekaClassifier.smo.es" class="ikube.analytics.WekaClassifier"/>
+    <bean id="wekaClassifier.smo.jp" class="ikube.analytics.WekaClassifier"/>
+    <bean id="wekaClassifier.smo.cn" class="ikube.analytics.WekaClassifier"/>
+    <bean id="wekaClassifier.smo.nl" class="ikube.analytics.WekaClassifier"/>
+    <bean id="wekaClassifier.smo.fr" class="ikube.analytics.WekaClassifier"/>
+    <bean id="wekaClassifier.smo.de" class="ikube.analytics.WekaClassifier"/>
+    <bean id="wekaClassifier.smo.sv" class="ikube.analytics.WekaClassifier"/>
+    <bean id="wekaClassifier.smo.th" class="ikube.analytics.WekaClassifier"/>
+    <bean id="wekaClassifier.smo.ar" class="ikube.analytics.WekaClassifier"/>
+    <bean id="wekaClassifier.smo.tr" class="ikube.analytics.WekaClassifier"/>
+    <bean id="wekaClassifier.smo.ru" class="ikube.analytics.WekaClassifier"/>
+
+    <bean
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+        property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
+        <property name="arguments">
+            <array>
+                <ref bean="buildable-smo"/>
+                <ref bean="wekaClassifier.smo.en"/>
+            </array>
+        </property>
+    </bean>
+    <bean
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+        property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
+        <property name="arguments">
+            <array>
+                <ref bean="buildable-smo"/>
+                <ref bean="wekaClassifier.smo.es"/>
+            </array>
+        </property>
+    </bean>
+    <bean
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+        property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
+        <property name="arguments">
+            <array>
+                <ref bean="buildable-smo"/>
+                <ref bean="wekaClassifier.smo.jp"/>
+            </array>
+        </property>
+    </bean>
+    <bean
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+        property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
+        <property name="arguments">
+            <array>
+                <ref bean="buildable-smo"/>
+                <ref bean="wekaClassifier.smo.cn"/>
+            </array>
+        </property>
+    </bean>
+    <bean
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+        property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
+        <property name="arguments">
+            <array>
+                <ref bean="buildable-smo"/>
+                <ref bean="wekaClassifier.smo.nl"/>
+            </array>
+        </property>
+    </bean>
+    <bean
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+        property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
+        <property name="arguments">
+            <array>
+                <ref bean="buildable-smo"/>
+                <ref bean="wekaClassifier.smo.fr"/>
+            </array>
+        </property>
+    </bean>
+    <bean
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+        property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
+        <property name="arguments">
+            <array>
+                <ref bean="buildable-smo"/>
+                <ref bean="wekaClassifier.smo.de"/>
+            </array>
+        </property>
+    </bean>
+    <bean
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+        property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
+        <property name="arguments">
+            <array>
+                <ref bean="buildable-smo"/>
+                <ref bean="wekaClassifier.smo.sv"/>
+            </array>
+        </property>
+    </bean>
+    <bean
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+        property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
+        <property name="arguments">
+            <array>
+                <ref bean="buildable-smo"/>
+                <ref bean="wekaClassifier.smo.th"/>
+            </array>
+        </property>
+    </bean>
+    <bean
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+        property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
+        <property name="arguments">
+            <array>
+                <ref bean="buildable-smo"/>
+                <ref bean="wekaClassifier.smo.ar"/>
+            </array>
+        </property>
+    </bean>
+    <bean
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+        property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
+        <property name="arguments">
+            <array>
+                <ref bean="buildable-smo"/>
+                <ref bean="wekaClassifier.smo.tr"/>
+            </array>
+        </property>
+    </bean>
+    <bean
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+        property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
+        <property name="arguments">
+            <array>
+                <ref bean="buildable-smo"/>
+                <ref bean="wekaClassifier.smo.ru"/>
+            </array>
+        </property>
+    </bean>
+
+    <util:map id="analyzers">
+        <entry key="analyzer-em" value-ref="analyzer-em"/>
+        <entry key="analyzer-smo" value-ref="analyzer-smo"/>
+
+        <entry key="wekaClassifier.smo.en" value-ref="wekaClassifier.smo.en"/>
+        <entry key="wekaClassifier.smo.es" value-ref="wekaClassifier.smo.es"/>
+        <entry key="wekaClassifier.smo.jp" value-ref="wekaClassifier.smo.jp"/>
+        <entry key="wekaClassifier.smo.cn" value-ref="wekaClassifier.smo.cn"/>
+        <entry key="wekaClassifier.smo.nl" value-ref="wekaClassifier.smo.nl"/>
+        <entry key="wekaClassifier.smo.fr" value-ref="wekaClassifier.smo.fr"/>
+        <entry key="wekaClassifier.smo.de" value-ref="wekaClassifier.smo.de"/>
+        <entry key="wekaClassifier.smo.sv" value-ref="wekaClassifier.smo.sv"/>
+        <entry key="wekaClassifier.smo.th" value-ref="wekaClassifier.smo.th"/>
+        <entry key="wekaClassifier.smo.ar" value-ref="wekaClassifier.smo.ar"/>
+        <entry key="wekaClassifier.smo.tr" value-ref="wekaClassifier.smo.tr"/>
+        <entry key="wekaClassifier.smo.ru" value-ref="wekaClassifier.smo.ru"/>
+    </util:map>
 
 </beans>

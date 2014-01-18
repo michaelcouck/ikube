@@ -4,17 +4,15 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="http://www.springframework.org/schema/beans"
     xmlns:property="http://www.springframework.org/schema/p"
-    xmlns:context="http://www.springframework.org/schema/context"
     xmlns:util="http://www.springframework.org/schema/util"
 
     xsi:schemaLocation="
-			http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans
             http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-            http://www.springframework.org/schema/context
-            http://www.springframework.org/schema/context/spring-context-3.0.xsd
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util.xsd">
 
+    <!--property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer"-->
     <bean
         id="twitter"
         class="ikube.model.IndexContext"
@@ -33,7 +31,6 @@
         property:delta="true"
         property:indexDirectoryPath="${index.directory.path}"
         property:indexDirectoryPathBackup="${index.directory.path.backup}"
-        property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer"
         property:children-ref="twitter-indexables"/>
     <util:list id="twitter-indexables">
         <ref local="twitter-index"/>
@@ -127,108 +124,108 @@
         id="wekaTwitterTrainingStrategy.en"
         class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
         property:language="English"
-        property:positive="10000"
-        property:negative="10000"
-        property:neutral="10000"
+        property:positive="1000"
+        property:negative="1000"
+        property:neutral="1000"
         property:rebuildingCount="10"
         property:classifier-ref="wekaClassifier.smo.en"/>
     <bean
         id="wekaTwitterTrainingStrategy.es"
         class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
         property:language="Spanish"
-        property:positive="10000"
-        property:negative="10000"
-        property:neutral="10000"
+        property:positive="1000"
+        property:negative="1000"
+        property:neutral="1000"
         property:rebuildingCount="10"
         property:classifier-ref="wekaClassifier.smo.es"/>
     <bean
         id="wekaTwitterTrainingStrategy.jp"
         class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
         property:language="Japanese"
-        property:positive="10000"
-        property:negative="10000"
-        property:neutral="10000"
+        property:positive="1000"
+        property:negative="1000"
+        property:neutral="1000"
         property:rebuildingCount="10"
         property:classifier-ref="wekaClassifier.smo.jp"/>
     <bean
         id="wekaTwitterTrainingStrategy.cn"
         class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
         property:language="Chinese"
-        property:positive="10000"
-        property:negative="10000"
-        property:neutral="10000"
+        property:positive="1000"
+        property:negative="1000"
+        property:neutral="1000"
         property:rebuildingCount="10"
         property:classifier-ref="wekaClassifier.smo.cn"/>
     <bean
         id="wekaTwitterTrainingStrategy.nl"
         class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
         property:language="Dutch"
-        property:positive="10000"
-        property:negative="10000"
-        property:neutral="10000"
+        property:positive="1000"
+        property:negative="1000"
+        property:neutral="1000"
         property:rebuildingCount="10"
         property:classifier-ref="wekaClassifier.smo.nl"/>
     <bean
         id="wekaTwitterTrainingStrategy.fr"
         class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
         property:language="French"
-        property:positive="10000"
-        property:negative="10000"
-        property:neutral="10000"
+        property:positive="1000"
+        property:negative="1000"
+        property:neutral="1000"
         property:rebuildingCount="10"
         property:classifier-ref="wekaClassifier.smo.fr"/>
     <bean
         id="wekaTwitterTrainingStrategy.de"
         class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
         property:language="German"
-        property:positive="10000"
-        property:negative="10000"
-        property:neutral="10000"
+        property:positive="1000"
+        property:negative="1000"
+        property:neutral="1000"
         property:rebuildingCount="10"
         property:classifier-ref="wekaClassifier.smo.de"/>
     <bean
         id="wekaTwitterTrainingStrategy.sv"
         class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
         property:language="Swedish"
-        property:positive="10000"
-        property:negative="10000"
-        property:neutral="10000"
+        property:positive="1000"
+        property:negative="1000"
+        property:neutral="1000"
         property:rebuildingCount="10"
         property:classifier-ref="wekaClassifier.smo.sv"/>
     <bean
         id="wekaTwitterTrainingStrategy.th"
         class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
         property:language="Thai"
-        property:positive="10000"
-        property:negative="10000"
-        property:neutral="10000"
+        property:positive="1000"
+        property:negative="1000"
+        property:neutral="1000"
         property:rebuildingCount="10"
         property:classifier-ref="wekaClassifier.smo.th"/>
     <bean
         id="wekaTwitterTrainingStrategy.ar"
         class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
         property:language="Arabic"
-        property:positive="10000"
-        property:negative="10000"
-        property:neutral="10000"
+        property:positive="1000"
+        property:negative="1000"
+        property:neutral="1000"
         property:rebuildingCount="10"
         property:classifier-ref="wekaClassifier.smo.ar"/>
     <bean
         id="wekaTwitterTrainingStrategy.tr"
         class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
         property:language="Turkish"
-        property:positive="10000"
-        property:negative="10000"
-        property:neutral="10000"
+        property:positive="1000"
+        property:negative="1000"
+        property:neutral="1000"
         property:rebuildingCount="10"
         property:classifier-ref="wekaClassifier.smo.tr"/>
     <bean
         id="wekaTwitterTrainingStrategy.ru"
         class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
         property:language="Russian"
-        property:positive="10000"
-        property:negative="10000"
-        property:neutral="10000"
+        property:positive="1000"
+        property:negative="1000"
+        property:neutral="1000"
         property:rebuildingCount="10"
         property:classifier-ref="wekaClassifier.smo.ru"/>
 

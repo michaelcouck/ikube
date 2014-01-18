@@ -1,150 +1,160 @@
 package ikube.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.*;
 
 import weka.classifiers.functions.SMO;
 
 /**
  * This class represents data that is to be analyzed as well as the results from the analysis if any.
- * 
+ *
  * @author Michael Couck
- * @since 10.04.13
  * @version 01.00
+ * @since 10.04.13
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Analysis<Input, Output> extends Persistable {
 
-	/** The name of the analyzer in the system, for example clusterer-em. */
-	private String analyzer;
+    /**
+     * The name of the analyzer in the system, for example clusterer-em.
+     */
+    private String analyzer;
 
-	/** The class/cluster for the instance. */
-	private Object clazz;
-	/** The input data, for training too. */
-	private Input input;
-	/** The output data, could be a string or a double array for distribution. */
-	private Output output;
-	/** An algorithm specific output, could be toString from the {@link SMO} function. */
-	private Object algorithmOutput;
-	/** The correlation co-efficients for the data set. */
-	private double[][] correlationCoefficients;
-	private double[][] distributionForInstances;
-	private double duration;
-	private Exception exception;
-	private boolean correlation;
-	private boolean compressed;
-	private boolean distribution;
+    /**
+     * The class/cluster for the instance.
+     */
+    private String clazz;
+    /**
+     * The input data, for training too.
+     */
+    private Input input;
+    /**
+     * The output data, could be a string or a double array for distribution.
+     */
+    private Output output;
+    /**
+     * An algorithm specific output, could be toString from the {@link SMO} function.
+     */
+    private String algorithmOutput;
+    /**
+     * The correlation co-efficients for the data set.
+     */
+    @Transient
+    private double[][] correlationCoefficients;
+    @Transient
+    private double[][] distributionForInstances;
 
-	@OneToOne
-	@PrimaryKeyJoinColumn
-	private Buildable buildable;
+    private double duration;
+    private Exception exception;
+    private boolean correlation;
+    private boolean compressed;
+    private boolean distribution;
 
-	public String getAnalyzer() {
-		return analyzer;
-	}
+    @OneToOne
+    @PrimaryKeyJoinColumn
+    private Buildable buildable;
 
-	public void setAnalyzer(String analyzer) {
-		this.analyzer = analyzer;
-	}
+    public String getAnalyzer() {
+        return analyzer;
+    }
 
-	public Object getClazz() {
-		return clazz;
-	}
+    public void setAnalyzer(String analyzer) {
+        this.analyzer = analyzer;
+    }
 
-	public void setClazz(Object clazz) {
-		this.clazz = clazz;
-	}
+    public String getClazz() {
+        return clazz;
+    }
 
-	public Input getInput() {
-		return input;
-	}
+    public void setClazz(String clazz) {
+        this.clazz = clazz;
+    }
 
-	public void setInput(Input input) {
-		this.input = input;
-	}
+    public Input getInput() {
+        return input;
+    }
 
-	public Output getOutput() {
-		return output;
-	}
+    public void setInput(Input input) {
+        this.input = input;
+    }
 
-	public void setOutput(Output output) {
-		this.output = output;
-	}
+    public Output getOutput() {
+        return output;
+    }
 
-	public Object getAlgorithmOutput() {
-		return algorithmOutput;
-	}
+    public void setOutput(Output output) {
+        this.output = output;
+    }
 
-	public void setAlgorithmOutput(Object algorithmOutput) {
-		this.algorithmOutput = algorithmOutput;
-	}
+    public String getAlgorithmOutput() {
+        return algorithmOutput;
+    }
 
-	public double[][] getCorrelationCoefficients() {
-		return correlationCoefficients;
-	}
+    public void setAlgorithmOutput(String algorithmOutput) {
+        this.algorithmOutput = algorithmOutput;
+    }
 
-	public void setCorrelationCoefficients(double[][] correlationCoefficients) {
-		this.correlationCoefficients = correlationCoefficients;
-	}
+    public double[][] getCorrelationCoefficients() {
+        return correlationCoefficients;
+    }
 
-	public double[][] getDistributionForInstances() {
-		return distributionForInstances;
-	}
+    public void setCorrelationCoefficients(double[][] correlationCoefficients) {
+        this.correlationCoefficients = correlationCoefficients;
+    }
 
-	public void setDistributionForInstances(double[][] distributionForInstances) {
-		this.distributionForInstances = distributionForInstances;
-	}
+    public double[][] getDistributionForInstances() {
+        return distributionForInstances;
+    }
 
-	public double getDuration() {
-		return duration;
-	}
+    public void setDistributionForInstances(double[][] distributionForInstances) {
+        this.distributionForInstances = distributionForInstances;
+    }
 
-	public void setDuration(double duration) {
-		this.duration = duration;
-	}
+    public double getDuration() {
+        return duration;
+    }
 
-	public Exception getException() {
-		return exception;
-	}
+    public void setDuration(double duration) {
+        this.duration = duration;
+    }
 
-	public void setException(Exception exception) {
-		this.exception = exception;
-	}
+    public Exception getException() {
+        return exception;
+    }
 
-	public boolean isCorrelation() {
-		return correlation;
-	}
+    public void setException(Exception exception) {
+        this.exception = exception;
+    }
 
-	public void setCorrelation(boolean correlation) {
-		this.correlation = correlation;
-	}
+    public boolean isCorrelation() {
+        return correlation;
+    }
 
-	public boolean isCompressed() {
-		return compressed;
-	}
+    public void setCorrelation(boolean correlation) {
+        this.correlation = correlation;
+    }
 
-	public void setCompressed(boolean compressed) {
-		this.compressed = compressed;
-	}
+    public boolean isCompressed() {
+        return compressed;
+    }
 
-	public boolean isDistribution() {
-		return distribution;
-	}
+    public void setCompressed(boolean compressed) {
+        this.compressed = compressed;
+    }
 
-	public void setDistribution(boolean distribution) {
-		this.distribution = distribution;
-	}
+    public boolean isDistribution() {
+        return distribution;
+    }
 
-	public Buildable getBuildable() {
-		return buildable;
-	}
+    public void setDistribution(boolean distribution) {
+        this.distribution = distribution;
+    }
 
-	public void setBuildable(Buildable buildable) {
-		this.buildable = buildable;
-	}
+    public Buildable getBuildable() {
+        return buildable;
+    }
 
+    public void setBuildable(Buildable buildable) {
+        this.buildable = buildable;
+    }
 }

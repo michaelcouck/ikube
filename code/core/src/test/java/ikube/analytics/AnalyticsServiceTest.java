@@ -59,7 +59,7 @@ public class AnalyticsServiceTest extends AbstractTest {
 	@Test
 	public void analyze() {
 		analyticsService.analyze(analysis);
-		Integer clazz = (Integer) analysis.getClazz();
+		Integer clazz = Integer.parseInt(analysis.getClazz());
 		assertTrue(clazz == 0 || clazz == 1);
 	}
 
