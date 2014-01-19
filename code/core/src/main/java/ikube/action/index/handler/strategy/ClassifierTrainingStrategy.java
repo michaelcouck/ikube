@@ -118,7 +118,6 @@ public class ClassifierTrainingStrategy extends AStrategy {
             analysis.setClazz(clazz);
             analysis.setInput(content);
             classifier.train(analysis);
-            logger.info("Training : " + clazz + ", " + content);
             trainingCount++;
             if (trainingCount % rebuildingCount == 0) {
                 classifier.build(null);

@@ -29,6 +29,7 @@ public class FileResourceHandlerTest extends AbstractTest {
 		indexableFileSystem.setStored(Boolean.TRUE);
 		indexableFileSystem.setAnalyzed(Boolean.TRUE);
 		indexableFileSystem.setVectored(Boolean.TRUE);
+        indexableFileSystem.setTokenized(Boolean.FALSE);
 		indexableFileSystem.setPathFieldName("pathFieldName");
 		indexableFileSystem.setNameFieldName("nameFieldName");
 		indexableFileSystem.setLastModifiedFieldName("lastModifiedFieldName");

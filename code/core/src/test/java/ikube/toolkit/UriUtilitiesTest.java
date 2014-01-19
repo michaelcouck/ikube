@@ -49,8 +49,7 @@ public class UriUtilitiesTest extends AbstractTest {
 
 		reference = "http://www.ikokoon.eu/ikokoon/info/about.html;jsessionid=96069DDCEF2D6525AA946B529817214E?language=russian";
 		resolved = UriUtilities.resolve(baseUri, reference);
-		String resolvedString = resolved.toString();
-		logger.info("Resolved : " + resolvedString);
+		logger.info("Resolved : " + resolved);
 
 		// ;jsessionid=(.*)
 		// (.*);jsessionid=(.*)$

@@ -44,6 +44,7 @@ public class IndexableFilesystemCsvHandlerTest extends AbstractTest {
         indexableFileSystem = new IndexableFileSystemCsv();
         indexableFileSystem.setEncoding(IConstants.ENCODING);
         indexableFileSystem.setSeparator(",");
+        indexableFileSystem.setMaxLines(Integer.MAX_VALUE);
         rowResourceHandler = Mockito.mock(RowResourceHandler.class);
 
         filesystemCsvHandler = new IndexableFilesystemCsvHandler();

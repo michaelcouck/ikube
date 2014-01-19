@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Value;
 public abstract class AGeospatialEnrichmentStrategy extends AStrategy {
 
 	@Value("${max.geohash.levels}")
-	transient int maxGeohashLevels = IConstants.MAX_GEOHASH_LEVELS;
+	int maxGeohashLevels = IConstants.MAX_GEOHASH_LEVELS;
 
 	/**
 	 * The geocoder to get the co-ordinates for the indexable.
@@ -48,9 +48,9 @@ public abstract class AGeospatialEnrichmentStrategy extends AStrategy {
 		// order must be longitude(x) and latitude(y), not the other way
 		Shape shape = spatialContext.makePoint(coordinate.getLongitude(), coordinate.getLatitude());
 		for (IndexableField indexableField : spatialStrategy.createIndexableFields(shape)) {
-			if (logger.isDebugEnabled()) {
-				logger.info("Adding spatial field : {} ", indexableField);
-			}
+            if (logger.isDebugEnabled()) {
+                logger.info("Adding spatial field : {} ", indexableField);
+            }
 			document.add(indexableField);
 		}
 		// Store this field any way

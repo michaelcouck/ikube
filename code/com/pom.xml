@@ -42,7 +42,7 @@
 						<phase>compile</phase>
 						<configuration>
 							<target>
-								<!--<echo message="Base directory : ${basedir}, ">Base directory : ${basedir}</echo>
+								<echo message="Base directory : ${basedir}, ">Base directory : ${basedir}</echo>
 								<copy todir="ikube" failonerror="true" verbose="false">
 									<fileset dir="../libs/src/main/resources/ikube" />
 								</copy>
@@ -97,7 +97,7 @@
 								
 								 <copy todir="ikube/twitter" failonerror="true">
 									<fileset dir="../libs/src/main/resources/indexes/twitter" />
-								</copy>-->
+								</copy>
 							</target>
 						</configuration>
 						<goals>

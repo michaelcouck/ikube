@@ -1,23 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <beans
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://www.springframework.org/schema/beans"
-	xmlns:aop="http://www.springframework.org/schema/aop"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xmlns:property="http://www.springframework.org/schema/p"
-	xmlns:transaction="http://www.springframework.org/schema/tx"
-	xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:property="http://www.springframework.org/schema/p"
 
-	xsi:schemaLocation="
-			http://www.springframework.org/schema/beans
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
             http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-			http://www.springframework.org/schema/aop
-            http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
             http://www.springframework.org/schema/util
-            http://www.springframework.org/schema/util/spring-util.xsd
-            http://www.springframework.org/schema/context
-            http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+            http://www.springframework.org/schema/util/spring-util.xsd">
             
 	<description>
 		This file is not to be modified by users generally.
@@ -126,7 +118,8 @@
 		property:ruleExpression="
 			IsNewIndexCreated ||
 			    (!IsMultiSearcherInitialised || !AreSearchablesInitialised) &#38;&#38;
-			    (AreIndexesCreated || AreUnopenedIndexes)"
+			    (AreIndexesCreated || AreUnopenedIndexes)
+			        || IsIndexChanged"
 		property:requiresClusterLock="false">
 		<property name="rules">
 			<util:list>
@@ -135,7 +128,7 @@
 				<ref local="ikube.action.rule.AreUnopenedIndexes" />
 				<ref local="ikube.action.rule.IsMultiSearcherInitialised" />
 				<ref local="ikube.action.rule.AreSearchablesInitialised" />
-				<!--<ref local="ikube.action.rule.AnyServersWorkingThisIndex" />-->
+                <ref local="ikube.action.rule.IsIndexChanged" />
 			</util:list>
 		</property>
 	</bean>
@@ -143,12 +136,18 @@
 		id="ikube.action.Reopen" 
 		class="ikube.action.Reopen" 
 		property:ruleExpression="
-			IsThisIndexCreated"
+		    IsIndexDelta &#38;&#38;
+		    ((!IsMultiSearcherInitialised &#38;&#38; IsThisIndexCreated)
+		        || AreUnopenedIndexes
+		        || IsIndexChanged)"
 		property:requiresClusterLock="false">
 		<property name="rules">
 			<util:list>
-				<!--<ref local="ikube.action.rule.IsIndexDelta" />-->
-				<ref local="ikube.action.rule.IsThisIndexCreated" />
+                <ref local="ikube.action.rule.IsIndexDelta" />
+                <ref local="ikube.action.rule.IsThisIndexCreated" />
+                <ref local="ikube.action.rule.IsIndexChanged" />
+                <ref local="ikube.action.rule.IsMultiSearcherInitialised" />
+                <ref local="ikube.action.rule.AreUnopenedIndexes" />
 			</util:list>
 		</property>
 	</bean>
@@ -263,5 +262,6 @@
 	<bean id="ikube.action.rule.AnyServersIdle" class="ikube.action.rule.AnyServersIdle" />
 	<bean id="ikube.action.rule.IsIndexDelta" class="ikube.action.rule.IsIndexDelta" />
 	<bean id="ikube.action.rule.IsThisIndexCreated" class="ikube.action.rule.IsThisIndexCreated" />
-	
+	<bean id="ikube.action.rule.IsIndexChanged" class="ikube.action.rule.IsIndexChanged" />
+
 </beans>

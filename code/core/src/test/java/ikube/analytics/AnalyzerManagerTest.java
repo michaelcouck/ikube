@@ -5,6 +5,7 @@ import ikube.AbstractTest;
 import ikube.model.Analysis;
 import ikube.toolkit.ApplicationContextManager;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -12,6 +13,7 @@ import org.junit.Test;
  * @since 20.11.13
  * @version 01.00
  */
+@Ignore
 public class AnalyzerManagerTest extends AbstractTest {
 
 	@Test

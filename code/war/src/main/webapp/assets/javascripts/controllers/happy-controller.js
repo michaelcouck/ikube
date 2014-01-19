@@ -135,7 +135,6 @@ module.controller('HappyController', function ($scope, $http, $timeout, $log) {
             if ($scope.analyzing) {
                 return false;
             }
-            ;
             sleep += incrementSleep;
             var latitude = key['latitude'];
             var longitude = key['longitude'];

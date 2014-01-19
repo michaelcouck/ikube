@@ -148,12 +148,19 @@ public final class UriUtilities {
 					outputSegments.pop();
 				}
 			} else {
-				outputSegments.push(inputSegment);
+                if (!".".equals(inputSegment)) {
+                    outputSegments.push(inputSegment);
+                }
 			}
 		}
 		StringBuilder outputBuffer = new StringBuilder();
-		for (String outputSegment : outputSegments) {
-			outputBuffer.append('/').append(outputSegment);
+        boolean first = Boolean.TRUE;
+		for (final String outputSegment : outputSegments) {
+            if (!first) {
+                outputBuffer.append('/');
+            }
+            first = Boolean.FALSE;
+			outputBuffer.append(outputSegment);
 		}
 		return outputBuffer;
 	}

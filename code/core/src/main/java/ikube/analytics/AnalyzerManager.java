@@ -14,7 +14,7 @@ import ikube.toolkit.ApplicationContextManager;
  */
 public class AnalyzerManager {
 
-	public static final IAnalyzer<?, ?>[] buildAnalyzer(final Analysis<?, ?>... analyses) throws Exception {
+	public static IAnalyzer<?, ?>[] buildAnalyzer(final Analysis<?, ?>... analyses) throws Exception {
 		int index = 0;
 		IAnalyzer<?, ?>[] analyzers = new IAnalyzer<?, ?>[analyses.length];
 		for (final Analysis<?, ?> analysis : analyses) {
@@ -28,7 +28,7 @@ public class AnalyzerManager {
 		return analyzers;
 	}
 
-	public static final IAnalyzer<?, ?>[] buildAnalyzer(final Buildable... buildables) throws Exception {
+	public static IAnalyzer<?, ?>[] buildAnalyzer(final Buildable... buildables) throws Exception {
 		int index = 0;
 		IAnalyzer<?, ?>[] analyzers = new IAnalyzer<?, ?>[buildables.length];
 		for (final Buildable buildable : buildables) {
@@ -39,7 +39,7 @@ public class AnalyzerManager {
 		return analyzers;
 	}
 
-	public static final IAnalyzer<?, ?> buildAnalyzer(final Buildable buildable, final IAnalyzer<?, ?> analyzer) throws Exception {
+	public static IAnalyzer<?, ?> buildAnalyzer(final Buildable buildable, final IAnalyzer<?, ?> analyzer) throws Exception {
 		analyzer.init(buildable);
 		analyzer.build(buildable);
 		return analyzer;

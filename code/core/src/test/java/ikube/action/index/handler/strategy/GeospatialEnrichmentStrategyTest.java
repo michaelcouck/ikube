@@ -1,9 +1,5 @@
 package ikube.action.index.handler.strategy;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.handler.strategy.geocode.IGeocoder;
@@ -11,21 +7,19 @@ import ikube.model.Coordinate;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
+import mockit.Cascading;
+import mockit.Deencapsulation;
+import org.apache.commons.lang.RandomStringUtils;
+import org.apache.lucene.document.Document;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import mockit.Cascading;
-import mockit.Deencapsulation;
-import mockit.Mockit;
-
-import org.apache.commons.lang.RandomStringUtils;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Index;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Michael Couck
@@ -45,22 +39,17 @@ public class GeospatialEnrichmentStrategyTest extends AbstractTest {
 	@Before
 	public void before() {
 		geospatialEnrichmentStrategy = new GeospatialEnrichmentStrategy();
-		Deencapsulation.setField(geospatialEnrichmentStrategy, "maxGeohashLevels", Integer.valueOf(11));
+		Deencapsulation.setField(geospatialEnrichmentStrategy, "maxGeohashLevels", 11);
 		geospatialEnrichmentStrategy.initialize();
 		when(indexableTable.isAddress()).thenReturn(Boolean.TRUE);
 		when(indexableColumn.isAddress()).thenReturn(Boolean.TRUE);
-	}
-
-	@After
-	public void after() {
-		// Mockit.tearDownMocks();
 	}
 
 	@Test
 	public void aroundProcess() throws Exception {
 		Document document = getDocument(RandomStringUtils.random(16), "Some string to index", IConstants.CONTENTS);
 		Deencapsulation.setField(geospatialEnrichmentStrategy, "geocoder", geocoder);
-		printDocument(document);
+		// printDocument(document);
 
 		IndexableTable indexableTable = new IndexableTable();
 		IndexableColumn latitudeColumn = new IndexableColumn();
@@ -76,7 +65,7 @@ public class GeospatialEnrichmentStrategyTest extends AbstractTest {
 		boolean result = geospatialEnrichmentStrategy.aroundProcess(indexContext, indexableTable, document, null);
 		printDocument(document);
 		assertTrue(result);
-		assertTrue(document.get(IConstants.GEOSPATIAL) != null);
+		assertTrue(document.get(IConstants.POSITION_FIELD_NAME) != null);
 	}
 
 	@Test
