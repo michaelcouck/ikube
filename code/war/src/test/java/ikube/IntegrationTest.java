@@ -10,89 +10,80 @@ import ikube.security.WebServiceAuthentication;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ObjectToolkit;
+import org.apache.log4j.Logger;
+import org.junit.Ignore;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-
 /**
  * This base class for the integration tests will load some snapshots into the database as well as initialize the application context.
- * 
+ *
  * @author Michael Couck
- * @since 12.10.2010
  * @version 01.00
+ * @since 12.10.2010
  */
 @Ignore
 public abstract class IntegrationTest extends BaseTest {
 
-	private static final Logger LOGGER = Logger.getLogger(IntegrationTest.class);
+    private static final Logger LOGGER = Logger.getLogger(IntegrationTest.class);
+    private static final File DOT_DIRECTORY = new File(".");
 
-	private static boolean INITIALIZED = Boolean.FALSE;
-	private static final File DOT_DIRECTORY = new File(".");
+    static {
+        try {
+            FileUtilities.deleteFiles(DOT_DIRECTORY, "ikube.h2.db", "ikube.lobs.db", "ikube.log", "openjpa.log");
 
-	@BeforeClass
-	public static void beforeClass() throws Exception {
-		if (INITIALIZED) {
-			return;
-		}
-		INITIALIZED = Boolean.TRUE;
-		FileUtilities.deleteFiles(DOT_DIRECTORY, "btm1.tlog", "btm2.tlog", "ikube.h2.db", "ikube.lobs.db", "ikube.log", "openjpa.log");
+            new MimeTypes(IConstants.MIME_TYPES);
+            new MimeMapper(IConstants.MIME_MAPPING);
 
-		new MimeTypes(IConstants.MIME_TYPES);
-		new MimeMapper(IConstants.MIME_MAPPING);
+            ApplicationContextManager.getBean(Scheduler.class).shutdown();
+            insertData(Snapshot.class, 11000);
+            new WebServiceAuthentication().authenticate(HTTP_CLIENT, LOCALHOST, Integer.toString(SERVER_PORT), REST_USER_NAME, REST_PASSWORD);
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-		// We'll sleep for a full minute to allow Jett to start
-		Thread.sleep(60000);
-		ApplicationContextManager.getBean(Scheduler.class).shutdown();
-		Thread.sleep(3000);
-		insertData(Snapshot.class, 11000);
-		Thread.sleep(3000);
-		new WebServiceAuthentication().authenticate(HTTP_CLIENT, LOCALHOST, Integer.toString(SERVER_PORT), REST_USER_NAME, REST_PASSWORD);
-	}
+    public static <T> void insertData(final Class<T> klass, final int entities) {
+        IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
+        List<T> tees = new ArrayList<>();
+        for (int i = 0; i < entities; i++) {
+            try {
+                T tee = ObjectToolkit.populateFields(klass, klass.newInstance(), true, 0, 1, "id", "indexContext");
+                tees.add(tee);
+                if (i % 10000 == 0) {
+                    dataBase.persistBatch(tees);
+                    tees.clear();
+                }
+            } catch (Exception e) {
+                LOGGER.error(null, e);
+            }
+        }
+        dataBase.persistBatch(tees);
+    }
 
-	public static <T> void insertData(final Class<T> klass, final int entities) {
-		IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
-		List<T> tees = new ArrayList<T>();
-		for (int i = 0; i < entities; i++) {
-			try {
-				T tee = ObjectToolkit.populateFields(klass, klass.newInstance(), true, 0, 1, "id", "indexContext");
-				tees.add(tee);
-				if (i % 10000 == 0) {
-					dataBase.persistBatch(tees);
-					tees.clear();
-				}
-			} catch (Exception e) {
-				LOGGER.error(null, e);
-			}
-		}
-		dataBase.persistBatch(tees);
-	}
+    /**
+     * This method will delete all the specified classes from the database.
+     *
+     * @param dataBase the database to use for deleting the data
+     * @param klasses  the classes to delete from the database
+     */
+    public static void delete(final IDataBase dataBase, final Class<?>... klasses) {
+        int batchSize = 1000;
+        for (final Class<?> klass : klasses) {
+            try {
+                List<?> list = dataBase.find(klass, 0, batchSize);
+                do {
+                    dataBase.removeBatch(list);
+                    list = dataBase.find(klass, 0, batchSize);
+                } while (list.size() > 0);
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage(), e);
+            }
+        }
+    }
 
-	/**
-	 * This method will delete all the specified classes from the database.
-	 * 
-	 * @param dataBase the database to use for deleting the data
-	 * @param klasses the classes to delete from the database
-	 */
-	public static void delete(final IDataBase dataBase, final Class<?>... klasses) {
-		int batchSize = 1000;
-		for (final Class<?> klass : klasses) {
-			try {
-				List<?> list = dataBase.find(klass, 0, batchSize);
-				do {
-					dataBase.removeBatch(list);
-					list = dataBase.find(klass, 0, batchSize);
-				} while (list.size() > 0);
-			} catch (Exception e) {
-				LOGGER.error(e.getMessage(), e);
-			}
-		}
-	}
-
-	protected IMonitorService monitorService = ApplicationContextManager.getBean(IMonitorService.class);
+    protected IMonitorService monitorService = ApplicationContextManager.getBean(IMonitorService.class);
 
 }

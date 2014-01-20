@@ -1,122 +1,92 @@
 package ikube.web.service;
 
-import static junit.framework.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import ikube.BaseTest;
 import ikube.IConstants;
 import ikube.model.Search;
 import ikube.search.ISearcherService;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Response;
-
 import mockit.Deencapsulation;
-
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import static junit.framework.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class AutoTest extends BaseTest {
 
-	/** Class under test */
-	private Auto auto;
-	private Search search;
-	private ISearcherService searcherService;
+    /**
+     * Class under test
+     */
+    private Auto auto;
+    private ISearcherService searcherService;
 
-	@Before
-	public void before() throws Exception {
-		searcherService = mock(ISearcherService.class);
-		search = new Search();
-		search.setMaxResults(6);
-		search.setSearchStrings(Arrays.asList("hello java world", "michael couck the omnipotent", "pearls before swine"));
-		auto = new Auto() {
-			@SuppressWarnings("unchecked")
-			<T> T unmarshall(final Class<T> clazz, final HttpServletRequest request) {
-				return (T) search;
-			}
-		};
-		Deencapsulation.setField(auto, searcherService);
-	}
+    @Before
+    public void before() throws Exception {
+        auto = new Auto();
+        searcherService = mock(ISearcherService.class);
+        Deencapsulation.setField(auto, searcherService);
+    }
 
-	@Test
-	public void auto() {
-		Search search = getSearch("hello", "hellos", "helloed", "helloes", "hellova", "chello");
-		Search[] searches = {//
-		getSearch("java", "javan", "javas", "javali", "javari", "javary"), //
-				getSearch("world", "worlds", "worldy", "worlded", "worldly", "worldful"), //
-				getSearch("michael"), //
-				getSearch("couch", "coucal", "coucha", "couchy", "couchä", "scouch"), //
-				getSearch("the", "thea", "theb", "thed", "thee", "them"), //
-				getSearch("omnipotent", "omnipotently", "omnipotents", "omnipotentces", "omnipotentcies"), //
-				getSearch("pearls", "pearls", "pearlspar", "pearla", "pearle", "pearly"), //
-				getSearch("before", "beforehand", "beforeness", "beforesaid", "beforested", "beforetime"), //
-				getSearch("swine", "swines", "swiney", "swinely") //
-		};
-		when(searcherService.search(any(Search.class))).thenReturn(search, searches);
+    @Test
+    public void auto() {
+        // TODO Redo...
+    }
 
-		Response response = auto.auto(null, null);
-		Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-		String string = (String) response.getEntity();
-		Search resultSearch = gson.fromJson(string, Search.class);
-		ArrayList<HashMap<String, String>> results = resultSearch.getSearchResults();
-		String[] fragments = {//
-		"hello java world", //
-				"hellos javan worlds", //
-				"helloed javas worldy", //
-				"helloes javali worlded", //
-				"hellova javari worldly", //
-				"chello javary worldful", //
-				"michael couch the omnipotent", //
-				"<b>michael</b> coucal thea omnipotently", //
-				"<b>michael</b> coucha theb omnipotents", //
-				"<b>michael</b> couchy thed omnipotentces", //
-				"<b>michael</b> couchä thee omnipotentcies", //
-				"<b>michael</b> scouch them <b>omnipotent</b>", //
-				"pearls before swine", //
-				"pearls beforehand swines", //
-				"pearlspar beforeness swiney", //
-				"pearla beforesaid swinely", //
-				"pearle beforested <b>swine</b>", //
-				"pearly beforetime <b>swine</b>" };
-		for (int i = 0; i < results.size() && i < fragments.length; i++) {
-			HashMap<String, String> result = results.get(i);
-			logger.info("" + result);
-			assertEquals(result.get(IConstants.FRAGMENT), fragments[i]);
-		}
-	}
+    @Test
+    public void suggestions() throws Exception {
+        String string = "hello AND world";
+        Search search = new Search();
+        search.setMaxResults(7);
 
-	private Search getSearch(final String... fragments) {
-		Search search = new Search();
-		ArrayList<HashMap<String, String>> results = new ArrayList<>();
-		for (final String fragment : fragments) {
-			results.add(getResult(fragment));
-		}
-		// Add one for the statistics
-		results.add(new HashMap<String, String>());
-		search.setSearchResults(results);
-		return search;
-	}
+        Search helloSearch = getSearch(new Search(), 2, "hello", "helloed");
+        Search worldSearch = getSearch(new Search(), 2, "world", "worldly");
+        when(searcherService.search(any(Search.class))).thenReturn(helloSearch, worldSearch);
+        StringBuilder[] suggestions = auto.suggestions(string, search);
+        assertEquals(2, suggestions.length);
 
-	private HashMap<String, String> getResult(final String fragment) {
-		HashMap<String, String> result = new HashMap<>();
-		result.put(IConstants.FRAGMENT, fragment);
-		return result;
-	}
+        helloSearch = getSearch(new Search(), 3, "hello", "helloed", "helloes");
+        worldSearch = getSearch(new Search(), 3, "world", "worldly", "worldliness");
+        when(searcherService.search(any(Search.class))).thenReturn(helloSearch, worldSearch);
+        suggestions = auto.suggestions(string, search);
+        assertEquals(3, suggestions.length);
 
-	@Test
-	@Ignore
-	public void suggestions() throws Exception {
-		@SuppressWarnings("unused")
-		Response suggestions = auto.suggestions(null, null);
-	}
+        helloSearch = getSearch(new Search(), 0);
+        worldSearch = getSearch(new Search(), 0);
+        when(searcherService.search(any(Search.class))).thenReturn(helloSearch, worldSearch);
+        suggestions = auto.suggestions(string, search);
+        assertEquals(0, suggestions.length);
+
+        helloSearch = getSearch(new Search(), 8, "hello", "helloed", "helloes");
+        worldSearch = getSearch(new Search(), 8, "world", "worldly", "worldliness");
+        when(searcherService.search(any(Search.class))).thenReturn(helloSearch, worldSearch);
+        suggestions = auto.suggestions(string, search);
+        printSuggestions(suggestions);
+        assertEquals(7, suggestions.length);
+    }
+
+    private Search getSearch(final Search search, final int total, final String... fragments) {
+        ArrayList<HashMap<String, String>> results = new ArrayList<>();
+        for (final String fragment : fragments) {
+            HashMap<String, String> result = new HashMap<>();
+            result.put(IConstants.FRAGMENT, "<b>" + fragment + "</b>");
+            results.add(result);
+        }
+        HashMap<String, String> statistics = new HashMap<>();
+        statistics.put(IConstants.TOTAL, Integer.toString(total));
+        results.add(statistics);
+        search.setSearchResults(results);
+        return search;
+    }
+
+    @SuppressWarnings("unused")
+    void printSuggestions(final StringBuilder[] suggestions) {
+        for (final StringBuilder suggestion : suggestions) {
+            logger.info("Suggestion : " + suggestion);
+        }
+    }
 
 }

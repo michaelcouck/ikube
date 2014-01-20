@@ -27,6 +27,7 @@ public class AnalyzerTest extends BaseTest {
 		Analysis<?, ?> analysis = mock(Analysis.class);
 		analyzer = mock(Analyzer.class);
 
+        when(analysis.getAlgorithmOutput()).thenReturn("output");
 		when(analyzer.analyze(any(HttpServletRequest.class), any(UriInfo.class))).thenCallRealMethod();
 		when(analyzer.unmarshall(any(Class.class), any(HttpServletRequest.class))).thenReturn(analysis);
 
