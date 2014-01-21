@@ -3,6 +3,7 @@ package ikube.action.index.handler.internet;
 import com.google.gson.Gson;
 import ikube.IConstants;
 import ikube.action.index.handler.IResourceProvider;
+import ikube.model.IndexContext;
 import ikube.model.IndexableTweets;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.SerializationUtilities;
@@ -15,6 +16,7 @@ import org.springframework.social.twitter.api.impl.TwitterTemplate;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
@@ -44,9 +46,10 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
      * @throws IOException
      */
     TwitterResourceProvider(final IndexableTweets indexableTweets) throws IOException {
+        IndexContext indexContext = (IndexContext) indexableTweets.getParent();
         clones = indexableTweets.getClones();
         tweets = new Stack<>();
-        tweetsDirectory = FileUtilities.getOrCreateDirectory(new File(IConstants.ANALYTICS_DIRECTORY, "tweets"));
+        tweetsDirectory = FileUtilities.getOrCreateDirectory(new File(indexContext.getIndexDirectoryPath(), "tweets"));
         TwitterTemplate twitterTemplate = new TwitterTemplate( //
             indexableTweets.getConsumerKey(), //
             indexableTweets.getConsumerSecret(), //
@@ -130,9 +133,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
     Stack<Tweet> stack = new Stack<>();
 
     void persistResources(final Tweet... tweets) {
-        for (final Tweet tweet : tweets) {
-            stack.add(tweet);
-        }
+        Collections.addAll(stack, tweets);
         if (stack.size() > 10000) {
             try {
                 File latestDirectory = FileUtilities.getOrCreateDirectory(new File(tweetsDirectory, Long.toString(System.currentTimeMillis())));
