@@ -2,10 +2,7 @@ package ikube.action.rule;
 
 import ikube.IConstants;
 import ikube.action.IAction;
-import ikube.action.Index;
-import ikube.action.Open;
 import ikube.cluster.IClusterManager;
-import ikube.database.IDataBase;
 import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.toolkit.ThreadUtilities;
@@ -17,6 +14,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +22,7 @@ import java.util.Map;
 
 /**
  * This class is implemented as an interceptor, and typically configured in Spring. The interceptor will intercept the execution of the actions, like
- * {@link Index} and {@link Open}. Each action has associated with it rules, like whether any other servers are currently working on this index or if the index
+ * {@link ikube.action.Index} and {@link ikube.action.Open}. Each action has associated with it rules, like whether any other servers are currently working on this index or if the index
  * is current and already open. The rules for the action will then be executed, and based on the category of the boolean predicate parametrized with the
  * results of each rule, the action will either be executed or not. {@link org.apache.commons.jexl2.JexlEngine} is the expression parser for the rules.
  *
@@ -38,8 +36,7 @@ public class RuleInterceptor implements IRuleInterceptor {
     private static final Logger LOGGER = LoggerFactory.getLogger(RuleInterceptor.class);
 
     @Autowired
-    private IDataBase dataBase;
-    @Autowired
+    @Qualifier("ikube.cluster.IClusterManager")
     private IClusterManager clusterManager;
 
     /**
@@ -147,7 +144,9 @@ public class RuleInterceptor implements IRuleInterceptor {
             Expression expression = jexlEngine.createExpression(predicate);
             Object result = expression.evaluate(jexlContext);
             finalResult = result != null && (result.equals(1.0d) || result.equals(Boolean.TRUE));
-            log(indexContext, action, predicate, results);
+            if (LOGGER.isDebugEnabled()) {
+                log(indexContext, action, predicate, finalResult, results);
+            }
         }
         return finalResult;
     }
@@ -171,10 +170,10 @@ public class RuleInterceptor implements IRuleInterceptor {
     }
 
     @SuppressWarnings("rawtypes")
-    void log(final IndexContext indexContext, final IAction action, final String predicate, final Map<String, Object> results) {
+    void log(final IndexContext indexContext, final IAction action, final String predicate, final boolean result, final Map<String, Object> results) {
         Object[] parameters = {indexContext.getName(), action.getClass().getSimpleName(), predicate};
         LOGGER.info("Rule evaluation of index : {}, action : {}, predicate : {}", parameters);
-        LOGGER.info("Rules evaluation results : {}", results);
+        LOGGER.info("Rules evaluation result : {}, results : {}", new Object[]{result, results});
     }
 
 }

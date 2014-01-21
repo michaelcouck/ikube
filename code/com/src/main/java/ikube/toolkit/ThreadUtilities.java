@@ -31,8 +31,8 @@ public final class ThreadUtilities {
 	private static final Logger LOGGER = Logger.getLogger(ThreadUtilities.class);
 
 	/** Executes the 'threads' and returns a future. */
-	private static ExecutorService EXECUTER_SERVICE;
-	private static ExecutorService EXECUTER_SERVICE_SYSTEM;
+	private static ExecutorService EXECUTOR_SERVICE;
+	private static ExecutorService EXECUTOR_SERVICE_SYSTEM;
 	/** The number of times to try to cancel the future(s). */
 	private static int MAX_RETRY_COUNT = 3;
 	/**
@@ -50,11 +50,11 @@ public final class ThreadUtilities {
 	 * @return the future that is being submitted to execute
 	 */
 	public static Future<?> submit(final String name, final Runnable runnable) {
-		if (EXECUTER_SERVICE == null || EXECUTER_SERVICE.isShutdown()) {
+		if (EXECUTOR_SERVICE == null || EXECUTOR_SERVICE.isShutdown()) {
 			LOGGER.debug("Executer service is shutdown : " + runnable);
 			return null;
 		}
-		Future<?> future = EXECUTER_SERVICE.submit(runnable);
+		Future<?> future = EXECUTOR_SERVICE.submit(runnable);
 		if (name != null) {
 			getFutures(name).add(future);
 		} else {
@@ -70,7 +70,7 @@ public final class ThreadUtilities {
 	 * @return the future bound to the runnable
 	 */
 	public static Future<?> submitSystem(final Runnable runnable) {
-		return EXECUTER_SERVICE_SYSTEM.submit(runnable);
+		return EXECUTOR_SERVICE_SYSTEM.submit(runnable);
 	}
 
 	/**
@@ -138,8 +138,7 @@ public final class ThreadUtilities {
 		} catch (TimeoutException e) {
 			LOGGER.debug("Timed out waiting for future : " + e.getMessage());
 		} catch (CancellationException e) {
-			LOGGER.debug("Future cancelled : " + e.getMessage());
-			LOGGER.debug(null, e);
+			LOGGER.debug("Future cancelled : ", e);
 		} catch (Exception e) {
 			LOGGER.error("Exception waiting for future : ", e);
 		}
@@ -189,17 +188,17 @@ public final class ThreadUtilities {
 	 * This method initializes the executer service, and the thread pool that will execute runnables.
 	 */
 	public static void initialize() {
-		if (EXECUTER_SERVICE != null && !EXECUTER_SERVICE.isShutdown() && FUTURES != null && FORK_JOIN_POOLS != null) {
-			LOGGER.info("Executer service already initialized : ");
+		if (EXECUTOR_SERVICE != null && !EXECUTOR_SERVICE.isShutdown() && FUTURES != null && FORK_JOIN_POOLS != null) {
+			LOGGER.info("Executor service already initialized : ");
 			return;
 		}
-		EXECUTER_SERVICE = Executors.newCachedThreadPool();
-		EXECUTER_SERVICE_SYSTEM = Executors.newCachedThreadPool();
+		EXECUTOR_SERVICE = Executors.newCachedThreadPool();
+		EXECUTOR_SERVICE_SYSTEM = Executors.newCachedThreadPool();
 		FUTURES = Collections.synchronizedMap(new HashMap<String, List<Future<?>>>());
 		FORK_JOIN_POOLS = Collections.synchronizedMap(new HashMap<String, ForkJoinPool>());
 	}
 
-	public static final synchronized ForkJoinPool cancellForkJoinPool(final String name) {
+	public static synchronized ForkJoinPool cancellForkJoinPool(final String name) {
 		ForkJoinPool forkJoinPool = FORK_JOIN_POOLS.remove(name);
 		if (forkJoinPool != null) {
 			try {
@@ -211,16 +210,14 @@ public final class ThreadUtilities {
 		return forkJoinPool;
 	}
 
-	public static final void cancellAllForkJoinPools() {
+	public static void cancellAllForkJoinPools() {
 		Set<String> names = FORK_JOIN_POOLS.keySet();
-		if (names != null) {
-			for (final String name : names) {
-				cancellForkJoinPool(name);
-			}
-		}
+        for (final String name : names) {
+            cancellForkJoinPool(name);
+        }
 	}
 
-	public static final synchronized ForkJoinPool getForkJoinPool(final String name, final int threads) {
+	public static synchronized ForkJoinPool getForkJoinPool(final String name, final int threads) {
 		ForkJoinPool forkJoinPool = FORK_JOIN_POOLS.get(name);
 		if (forkJoinPool == null) {
 			forkJoinPool = new ForkJoinPool(threads);
@@ -229,7 +226,7 @@ public final class ThreadUtilities {
 		return forkJoinPool;
 	}
 
-	public static final ForkJoinPool executeForkJoinTasks(final String name, final int threads, final ForkJoinTask<?>... forkJoinTasks) {
+	public static ForkJoinPool executeForkJoinTasks(final String name, final int threads, final ForkJoinTask<?>... forkJoinTasks) {
 		ForkJoinPool forkJoinPool = ThreadUtilities.getForkJoinPool(name, threads);
 		for (final ForkJoinTask<?> forkJoinTask : forkJoinTasks) {
 			// forkJoinPool.invoke(forkJoinTask);
@@ -243,45 +240,45 @@ public final class ThreadUtilities {
 	 * method.
 	 */
 	public static void destroy() {
-		if (EXECUTER_SERVICE == null || EXECUTER_SERVICE.isShutdown() || FUTURES == null || FORK_JOIN_POOLS == null) {
-			LOGGER.debug("Executer service already shutdown : ");
+		if (EXECUTOR_SERVICE == null || EXECUTOR_SERVICE.isShutdown() || FUTURES == null || FORK_JOIN_POOLS == null) {
+			LOGGER.debug("Executor service already shutdown : ");
 			return;
 		}
-		Collection<String> futureNames = new ArrayList<String>(FUTURES.keySet());
+		Collection<String> futureNames = new ArrayList<>(FUTURES.keySet());
 		for (String futureName : futureNames) {
 			destroy(futureName);
 		}
-		EXECUTER_SERVICE.shutdown();
+		EXECUTOR_SERVICE.shutdown();
 		try {
 			int maxRetryCount = MAX_RETRY_COUNT;
-			while (!EXECUTER_SERVICE.awaitTermination(10, TimeUnit.SECONDS) && maxRetryCount-- > 0) {
-				List<Runnable> runnables = EXECUTER_SERVICE.shutdownNow();
+			while (!EXECUTOR_SERVICE.awaitTermination(10, TimeUnit.SECONDS) && maxRetryCount-- > 0) {
+				List<Runnable> runnables = EXECUTOR_SERVICE.shutdownNow();
 				LOGGER.info("Still waiting to shutdown : " + runnables);
-				EXECUTER_SERVICE.shutdown();
+				EXECUTOR_SERVICE.shutdown();
 			}
 		} catch (InterruptedException e) {
-			LOGGER.error("Executer service thread interrupted : ", e);
+			LOGGER.error("Executor service thread interrupted : ", e);
 			// Preserve interrupt status
 			Thread.currentThread().interrupt();
 		}
 		ThreadUtilities.cancellAllForkJoinPools();
-		List<Runnable> runnables = EXECUTER_SERVICE.shutdownNow();
+		List<Runnable> runnables = EXECUTOR_SERVICE.shutdownNow();
 		LOGGER.info("Runnables shutdown : " + runnables);
 
 		FUTURES.clear();
 		FORK_JOIN_POOLS.clear();
 
-		EXECUTER_SERVICE = null;
+		EXECUTOR_SERVICE = null;
 		FUTURES = null;
 		FORK_JOIN_POOLS = null;
 	}
 
-	public static final boolean isInitialized() {
-		return EXECUTER_SERVICE != null && FUTURES != null && FORK_JOIN_POOLS != null;
+	public static boolean isInitialized() {
+		return EXECUTOR_SERVICE != null && FUTURES != null && FORK_JOIN_POOLS != null;
 	}
 
 	protected static List<Future<?>> getFutures(final String name) {
-		List<Future<?>> futures = null;
+		List<Future<?>> futures;
 		if (FUTURES != null) {
 			futures = FUTURES.get(name);
 			if (futures == null) {
