@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Stack;
 
 /**
- * This class will use the Spring social module to get stack from Twitter, at a rate of around 1% of the stack.
+ * This class will use the Spring social module to get tweets from Twitter, at a rate of around 1% of the tweets.
  *
  * @author Michael Couck
  * @version 01.00
