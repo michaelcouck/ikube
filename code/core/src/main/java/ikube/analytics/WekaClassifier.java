@@ -166,8 +166,16 @@ public class WekaClassifier extends Analyzer {
             int numClasses = instances.numClasses();
             int numAttributes = instances.numAttributes();
             int numInstances = instances.numInstances();
-            Object[] parameters = {numClasses, numAttributes, numInstances, classifier.hashCode()};
-            logger.info("Building classifier, classes : {}, attributes : {}, instances : {}, classifier : {} ", parameters);
+            String expression = //
+                "Building classifier, classes : " + //
+                    numClasses + //
+                    ", attributes : " + //
+                    numAttributes + //
+                    ", instances : " + //
+                    numInstances + //
+                    ", classifier :  " + //
+                    classifier.hashCode();
+            logger.info(expression);
         }
     }
 
