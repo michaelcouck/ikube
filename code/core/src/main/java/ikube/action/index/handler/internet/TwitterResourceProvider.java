@@ -92,6 +92,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
      */
     @Override
     public void onTweet(final Tweet tweet) {
+        persistResources(tweet);
         if (tweets.size() < IConstants.MILLION) {
             tweets.push(tweet);
             if (this.clones > 0) {
@@ -127,7 +128,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
         logger.info("Tweet warning : " + warnEvent.getCode());
     }
 
-    void persistResources(final List<Tweet> tweets) {
+    void persistResources(final Tweet... tweets) {
         try {
             File latestDirectory = IndexManager.getLatestIndexDirectory(tweetsDirectory, null);
             if (latestDirectory == null) {

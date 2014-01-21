@@ -56,7 +56,7 @@ public class TwitterResourceProviderTest extends AbstractTest {
 	@Test
 	public void persistResources() {
 		Tweet tweet = mock(Tweet.class);
-		twitterResourceProvider.persistResources(Arrays.asList(tweet));
+		twitterResourceProvider.persistResources(tweet);
 		File tweetFile = FileUtilities.findFileRecursively(new File(IConstants.ANALYTICS_DIRECTORY), ".json");
 		assertNotNull(tweetFile);
 	}
