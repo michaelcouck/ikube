@@ -32,7 +32,9 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private int clones;
+    private Stack<Tweet> stack;
     private Stack<Tweet> tweets;
+    private boolean persistTweets;
 
     /**
      * The directories where the stack will be persisted to the file system.
@@ -48,7 +50,9 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
     TwitterResourceProvider(final IndexableTweets indexableTweets) throws IOException {
         IndexContext indexContext = (IndexContext) indexableTweets.getParent();
         clones = indexableTweets.getClones();
+        stack = new Stack<>();
         tweets = new Stack<>();
+        persistTweets = indexableTweets.isPersistTweets();
         tweetsDirectory = FileUtilities.getOrCreateDirectory(new File(indexContext.getIndexDirectoryPath(), "tweets"));
         TwitterTemplate twitterTemplate = new TwitterTemplate( //
             indexableTweets.getConsumerKey(), //
@@ -130,9 +134,10 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
         logger.info("Tweet warning : " + warnEvent.getCode());
     }
 
-    Stack<Tweet> stack = new Stack<>();
-
     void persistResources(final Tweet... tweets) {
+        if (!persistTweets) {
+            return;
+        }
         Collections.addAll(stack, tweets);
         if (stack.size() > 10000) {
             try {
