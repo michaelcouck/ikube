@@ -2,7 +2,6 @@ package ikube.action.index.handler.internet;
 
 import com.google.gson.Gson;
 import ikube.IConstants;
-import ikube.action.index.IndexManager;
 import ikube.action.index.handler.IResourceProvider;
 import ikube.model.IndexableTweets;
 import ikube.toolkit.FileUtilities;
@@ -67,9 +66,9 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
         while (tweets.isEmpty()) {
             try {
                 wait(1000);
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 logger.error(null, e);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 logger.error(null, e);
                 return null;
             }
@@ -128,27 +127,27 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
         logger.info("Tweet warning : " + warnEvent.getCode());
     }
 
+    Stack<Tweet> stack = new Stack<>();
+
     void persistResources(final Tweet... tweets) {
-        try {
-            File latestDirectory = IndexManager.getLatestIndexDirectory(tweetsDirectory, null);
-            if (latestDirectory == null) {
-                latestDirectory = FileUtilities.getOrCreateDirectory(new File(tweetsDirectory, Long.toString(System.currentTimeMillis())));
-            } else {
-                String[] files = latestDirectory.list();
-                if (files != null && files.length > 10000) {
-                    latestDirectory = FileUtilities.getOrCreateDirectory(new File(tweetsDirectory, Long.toString(System.currentTimeMillis())));
+        for (final Tweet tweet : tweets) {
+            stack.add(tweet);
+        }
+        if (stack.size() > 10000) {
+            try {
+                File latestDirectory = FileUtilities.getOrCreateDirectory(new File(tweetsDirectory, Long.toString(System.currentTimeMillis())));
+                Gson gson = new Gson();
+                for (final Tweet tweet : stack) {
+                    String string = gson.toJson(tweet);
+                    File output = new File(latestDirectory, Long.toString(System.currentTimeMillis()) + ".json");
+                    File outputFile = FileUtilities.getOrCreateFile(output);
+                    FileUtilities.setContents(outputFile, string.getBytes());
+                    ThreadUtilities.sleep(1);
                 }
+            } catch (Exception e) {
+                logger.error(null, e);
             }
-            Gson gson = new Gson();
-            for (final Tweet tweet : tweets) {
-                String string = gson.toJson(tweet);
-                File output = new File(latestDirectory, Long.toString(System.currentTimeMillis()) + ".json");
-                File outputFile = FileUtilities.getOrCreateFile(output);
-                FileUtilities.setContents(outputFile, string.getBytes());
-                ThreadUtilities.sleep(1);
-            }
-        } catch (Exception e) {
-            logger.error(null, e);
+            stack.clear();
         }
     }
 
