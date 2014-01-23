@@ -1,4 +1,4 @@
-package ikube.analytics;
+package ikube.analytics.toolkit;
 
 import org.apache.commons.math3.linear.BlockRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;

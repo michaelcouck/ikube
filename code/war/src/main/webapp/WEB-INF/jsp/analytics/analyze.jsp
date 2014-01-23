@@ -31,7 +31,7 @@
 							<div class="note large">
 								<i class="icon-pencil"></i> Note: The first attribute is the
 								class attribute, which you then omit in the case of a
-								classifier. With clusterers there is no class attribute.
+								analyzer. With clusterers there is no class attribute.
 							</div>
 							<div class="input">
 								<textarea

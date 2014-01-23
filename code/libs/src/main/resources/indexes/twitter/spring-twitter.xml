@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--suppress ALL -->
 <beans
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="http://www.springframework.org/schema/beans"
@@ -94,31 +95,31 @@
         <ref bean="ikube.action.index.handler.strategy.TwitterGeospatialEnrichmentStrategy"/>
 
         <!-- Train the language specific classifiers -->
-        <ref bean="wekaTwitterTrainingStrategy.en"/>
-        <ref bean="wekaTwitterTrainingStrategy.es"/>
-        <ref bean="wekaTwitterTrainingStrategy.jp"/>
-        <ref bean="wekaTwitterTrainingStrategy.cn"/>
-        <ref bean="wekaTwitterTrainingStrategy.nl"/>
-        <ref bean="wekaTwitterTrainingStrategy.fr"/>
-        <ref bean="wekaTwitterTrainingStrategy.de"/>
-        <ref bean="wekaTwitterTrainingStrategy.sv"/>
-        <ref bean="wekaTwitterTrainingStrategy.th"/>
-        <ref bean="wekaTwitterTrainingStrategy.ar"/>
-        <ref bean="wekaTwitterTrainingStrategy.tr"/>
-        <ref bean="wekaTwitterTrainingStrategy.ru"/>
+        <ref bean="twitter-training-strategy-en"/>
+        <ref bean="twitter-training-strategy-es"/>
+        <ref bean="twitter-training-strategy-jp"/>
+        <ref bean="twitter-training-strategy-cn"/>
+        <ref bean="twitter-training-strategy-nl"/>
+        <ref bean="twitter-training-strategy-fr"/>
+        <ref bean="twitter-training-strategy-de"/>
+        <ref bean="twitter-training-strategy-sv"/>
+        <ref bean="twitter-training-strategy-th"/>
+        <ref bean="twitter-training-strategy-ar"/>
+        <ref bean="twitter-training-strategy-tr"/>
+        <ref bean="twitter-training-strategy-ru"/>
         <!-- Use the trained language specific classifiers -->
-        <ref bean="wekaClassificationStrategy.en"/>
-        <ref bean="wekaClassificationStrategy.es"/>
-        <ref bean="wekaClassificationStrategy.jp"/>
-        <ref bean="wekaClassificationStrategy.cn"/>
-        <ref bean="wekaClassificationStrategy.nl"/>
-        <ref bean="wekaClassificationStrategy.fr"/>
-        <ref bean="wekaClassificationStrategy.de"/>
-        <ref bean="wekaClassificationStrategy.sv"/>
-        <ref bean="wekaClassificationStrategy.th"/>
-        <ref bean="wekaClassificationStrategy.ar"/>
-        <ref bean="wekaClassificationStrategy.tr"/>
-        <ref bean="wekaClassificationStrategy.ru"/>
+        <ref bean="twitter-classification-strategy-en"/>
+        <ref bean="twitter-classification-strategy-es"/>
+        <ref bean="twitter-classification-strategy-jp"/>
+        <ref bean="twitter-classification-strategy-cn"/>
+        <ref bean="twitter-classification-strategy-nl"/>
+        <ref bean="twitter-classification-strategy-fr"/>
+        <ref bean="twitter-classification-strategy-de"/>
+        <ref bean="twitter-classification-strategy-sv"/>
+        <ref bean="twitter-classification-strategy-th"/>
+        <ref bean="twitter-classification-strategy-ar"/>
+        <ref bean="twitter-classification-strategy-tr"/>
+        <ref bean="twitter-classification-strategy-ru"/>
     </util:list>
 
     <bean
@@ -128,173 +129,135 @@
         init-method="initialize"/>
 
     <bean
-        id="wekaTwitterTrainingStrategy.en"
+        id="twitter-training-strategy-en"
         class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
+        property:context-ref="context-smo-en"
+        property:language="English"/>
+    <bean
+        id="twitter-classification-strategy-en"
+        class="ikube.action.index.handler.strategy.AnalysisStrategy"
         property:language="English"
-        property:positive="1000"
-        property:negative="1000"
-        property:neutral="0"
-        property:rebuildingCount="10"
-        property:classifier-ref="wekaClassifier.smo.en"/>
-    <bean
-        id="wekaTwitterTrainingStrategy.es"
-        class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
-        property:language="Spanish"
-        property:positive="1000"
-        property:negative="1000"
-        property:neutral="0"
-        property:rebuildingCount="10"
-        property:classifier-ref="wekaClassifier.smo.es"/>
-    <bean
-        id="wekaTwitterTrainingStrategy.jp"
-        class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
-        property:language="Japanese"
-        property:positive="1000"
-        property:negative="1000"
-        property:neutral="0"
-        property:rebuildingCount="10"
-        property:classifier-ref="wekaClassifier.smo.jp"/>
-    <bean
-        id="wekaTwitterTrainingStrategy.cn"
-        class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
-        property:language="Chinese"
-        property:positive="1000"
-        property:negative="1000"
-        property:neutral="0"
-        property:rebuildingCount="10"
-        property:classifier-ref="wekaClassifier.smo.cn"/>
-    <bean
-        id="wekaTwitterTrainingStrategy.nl"
-        class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
-        property:language="Dutch"
-        property:positive="1000"
-        property:negative="1000"
-        property:neutral="0"
-        property:rebuildingCount="10"
-        property:classifier-ref="wekaClassifier.smo.nl"/>
-    <bean
-        id="wekaTwitterTrainingStrategy.fr"
-        class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
-        property:language="French"
-        property:positive="1000"
-        property:negative="1000"
-        property:neutral="0"
-        property:rebuildingCount="10"
-        property:classifier-ref="wekaClassifier.smo.fr"/>
-    <bean
-        id="wekaTwitterTrainingStrategy.de"
-        class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
-        property:language="German"
-        property:positive="1000"
-        property:negative="1000"
-        property:neutral="0"
-        property:rebuildingCount="10"
-        property:classifier-ref="wekaClassifier.smo.de"/>
-    <bean
-        id="wekaTwitterTrainingStrategy.sv"
-        class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
-        property:language="Swedish"
-        property:positive="1000"
-        property:negative="1000"
-        property:neutral="0"
-        property:rebuildingCount="10"
-        property:classifier-ref="wekaClassifier.smo.sv"/>
-    <bean
-        id="wekaTwitterTrainingStrategy.th"
-        class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
-        property:language="Thai"
-        property:positive="1000"
-        property:negative="1000"
-        property:neutral="0"
-        property:rebuildingCount="10"
-        property:classifier-ref="wekaClassifier.smo.th"/>
-    <bean
-        id="wekaTwitterTrainingStrategy.ar"
-        class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
-        property:language="Arabic"
-        property:positive="1000"
-        property:negative="1000"
-        property:neutral="0"
-        property:rebuildingCount="10"
-        property:classifier-ref="wekaClassifier.smo.ar"/>
-    <bean
-        id="wekaTwitterTrainingStrategy.tr"
-        class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
-        property:language="Turkish"
-        property:positive="1000"
-        property:negative="1000"
-        property:neutral="0"
-        property:rebuildingCount="10"
-        property:classifier-ref="wekaClassifier.smo.tr"/>
-    <bean
-        id="wekaTwitterTrainingStrategy.ru"
-        class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
-        property:language="Russian"
-        property:positive="1000"
-        property:negative="1000"
-        property:neutral="0"
-        property:rebuildingCount="10"
-        property:classifier-ref="wekaClassifier.smo.ru"/>
+        property:context-ref="context-smo-en"/>
 
     <bean
-        id="wekaClassificationStrategy.en"
-        class="ikube.action.index.handler.strategy.AnalysisStrategy"
-        property:language="English"
-        property:classifier-ref="wekaClassifier.smo.en"/>
+        id="twitter-training-strategy-es"
+        class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
+        property:context-ref="context-smo-es"
+        property:language="Spanish"/>
     <bean
-        id="wekaClassificationStrategy.es"
+        id="twitter-classification-strategy-es"
         class="ikube.action.index.handler.strategy.AnalysisStrategy"
         property:language="Spanish"
-        property:classifier-ref="wekaClassifier.smo.es"/>
+        property:context-ref="context-smo-es"/>
+
     <bean
-        id="wekaClassificationStrategy.jp"
+        id="twitter-training-strategy-jp"
+        class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
+        property:context-ref="context-smo-jp"
+        property:language="Japanese"/>
+    <bean
+        id="twitter-classification-strategy-jp"
         class="ikube.action.index.handler.strategy.AnalysisStrategy"
         property:language="Japanese"
-        property:classifier-ref="wekaClassifier.smo.jp"/>
+        property:context-ref="context-smo-jp"/>
+
     <bean
-        id="wekaClassificationStrategy.cn"
+        id="twitter-training-strategy-cn"
+        class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
+        property:context-ref="context-smo-cn"
+        property:language="Chinese"/>
+    <bean
+        id="twitter-classification-strategy-cn"
         class="ikube.action.index.handler.strategy.AnalysisStrategy"
         property:language="Chinese"
-        property:classifier-ref="wekaClassifier.smo.cn"/>
+        property:context-ref="context-smo-cn"/>
+
     <bean
-        id="wekaClassificationStrategy.nl"
+        id="twitter-training-strategy-nl"
+        class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
+        property:context-ref="context-smo-nl"
+        property:language="Dutch"/>
+    <bean
+        id="twitter-classification-strategy-nl"
         class="ikube.action.index.handler.strategy.AnalysisStrategy"
         property:language="Dutch"
-        property:classifier-ref="wekaClassifier.smo.nl"/>
+        property:context-ref="context-smo-nl"/>
+
     <bean
-        id="wekaClassificationStrategy.fr"
+        id="twitter-training-strategy-fr"
+        class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
+        property:context-ref="context-smo-fr"
+        property:language="French"/>
+    <bean
+        id="twitter-classification-strategy-fr"
         class="ikube.action.index.handler.strategy.AnalysisStrategy"
         property:language="French"
-        property:classifier-ref="wekaClassifier.smo.fr"/>
+        property:context-ref="context-smo-fr"/>
+
     <bean
-        id="wekaClassificationStrategy.de"
+        id="twitter-training-strategy-de"
+        class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
+        property:context-ref="context-smo-de"
+        property:language="German"/>
+    <bean
+        id="twitter-classification-strategy-de"
         class="ikube.action.index.handler.strategy.AnalysisStrategy"
         property:language="German"
-        property:classifier-ref="wekaClassifier.smo.de"/>
+        property:context-ref="context-smo-de"/>
+
     <bean
-        id="wekaClassificationStrategy.sv"
+        id="twitter-training-strategy-sv"
+        class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
+        property:context-ref="context-smo-sv"
+        property:language="Swedish"/>
+    <bean
+        id="twitter-classification-strategy-sv"
         class="ikube.action.index.handler.strategy.AnalysisStrategy"
         property:language="Swedish"
-        property:classifier-ref="wekaClassifier.smo.sv"/>
+        property:context-ref="context-smo-sv"/>
+
     <bean
-        id="wekaClassificationStrategy.th"
+        id="twitter-training-strategy-th"
+        class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
+        property:context-ref="context-smo-th"
+        property:language="Thai"/>
+    <bean
+        id="twitter-classification-strategy-th"
         class="ikube.action.index.handler.strategy.AnalysisStrategy"
         property:language="Thai"
-        property:classifier-ref="wekaClassifier.smo.th"/>
+        property:context-ref="context-smo-th"/>
+
     <bean
-        id="wekaClassificationStrategy.ar"
+        id="twitter-training-strategy-ar"
+        class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
+        property:context-ref="context-smo-ar"
+        property:language="Arabic"/>
+    <bean
+        id="twitter-classification-strategy-ar"
         class="ikube.action.index.handler.strategy.AnalysisStrategy"
         property:language="Arabic"
-        property:classifier-ref="wekaClassifier.smo.ar"/>
+        property:context-ref="context-smo-ar"/>
+
     <bean
-        id="wekaClassificationStrategy.tr"
+        id="twitter-training-strategy-tr"
+        class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
+        property:context-ref="context-smo-tr"
+        property:language="Turkish"/>
+    <bean
+        id="twitter-classification-strategy-tr"
         class="ikube.action.index.handler.strategy.AnalysisStrategy"
         property:language="Turkish"
-        property:classifier-ref="wekaClassifier.smo.tr"/>
+        property:context-ref="context-smo-tr"/>
+
     <bean
-        id="wekaClassificationStrategy.ru"
+        id="twitter-training-strategy-ru"
+        class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
+        property:context-ref="context-smo-ru"
+        property:language="Russian"/>
+    <bean
+        id="twitter-classification-strategy-ru"
         class="ikube.action.index.handler.strategy.AnalysisStrategy"
         property:language="Russian"
-        property:classifier-ref="wekaClassifier.smo.ru"/>
+        property:context-ref="context-smo-ru"/>
 
 </beans>

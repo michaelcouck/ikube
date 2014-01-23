@@ -1,35 +1,26 @@
 package ikube.analytics;
 
-import static junit.framework.Assert.assertEquals;
 import ikube.AbstractTest;
-import ikube.model.Analysis;
-import ikube.toolkit.ApplicationContextManager;
-
-import org.junit.Ignore;
 import org.junit.Test;
+
+import static junit.framework.Assert.assertEquals;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Michael Couck
- * @since 20.11.13
  * @version 01.00
+ * @since 20.11.13
  */
-@Ignore
 public class AnalyzerManagerTest extends AbstractTest {
 
-	@Test
-	public void buildAnalyzer() throws Exception {
-		try {
-			ApplicationContextManager.closeApplicationContext();
-			ApplicationContextManager.getApplicationContextFilesystem("src/test/resources/spring/spring-analytics.xml");
-			IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>> analyzer = ApplicationContextManager.getBean("analyzer-em");
-			Analysis<String, double[]> analysis = getAnalysis(null, "35_51,FEMALE,INNER_CITY,0_24386,NO,1,NO,NO,NO,NO,YES");
-			Analysis<String, double[]> cluster = analyzer.analyze(analysis);
-			// Verify that the manager had initialized the analyzer, that Spring configuration
-			// is fine and that indeed the analyzer is correctly clustering at least one instance
-			assertEquals(1, cluster.getClazz());
-		} finally {
-			ApplicationContextManager.closeApplicationContext();
-		}
-	}
+    @Test
+    public void buildAnalyzers() throws Exception {
+        IAnalyzer analyzer = mock(IAnalyzer.class);
+        IAnalyzer.IContext context = mock(IAnalyzer.IContext.class);
+        when(context.getAnalyzer()).thenReturn(analyzer);
+        IAnalyzer[] analyzers = AnalyzerManager.buildAnalyzers(new IAnalyzer.IContext[] { context, context, context });
+        verify(analyzer, atLeastOnce()).build(context);
+        assertEquals("There should be all the analyzers built : ", 3, analyzers.length);
+    }
 
 }

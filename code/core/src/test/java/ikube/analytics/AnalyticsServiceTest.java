@@ -1,83 +1,83 @@
 package ikube.analytics;
 
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import ikube.AbstractTest;
 import ikube.IConstants;
+import ikube.analytics.weka.WekaClusterer;
 import ikube.model.Analysis;
-import ikube.model.Buildable;
+import ikube.model.Context;
 import ikube.toolkit.FileUtilities;
+import org.junit.Before;
+import org.junit.Test;
+import weka.clusterers.EM;
 
 import java.io.File;
 import java.util.HashMap;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import weka.clusterers.EM;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * @author Michael Couck
- * @since 20.11.13
  * @version 01.00
+ * @since 20.11.13
  */
 public class AnalyticsServiceTest extends AbstractTest {
 
-	private Buildable buildable;
-	private IAnalyzer<?, ?> analyzer;
-	private AnalyticsService analyticsService;
-	private Analysis<String, double[]> analysis;
-	private String line = "35_51,FEMALE,INNER_CITY,0_24386,NO,1,NO,NO,NO,NO,YES";
+    private Context context;
+    private IAnalyzer<?, ?> analyzer;
+    private AnalyticsService analyticsService;
+    private Analysis<String, double[]> analysis;
 
-	@Before
-	public void before() throws Exception {
-		analysis = new Analysis<String, double[]>();
-		analysis.setAnalyzer("analyzer-em");
-		analysis.setInput(line);
+    @Before
+    public void before() throws Exception {
+        String line = "35_51,FEMALE,INNER_CITY,0_24386,NO,1,NO,NO,NO,NO,YES";
 
-		buildable = new Buildable();
-		buildable.setTrainingFilePath("bank-data.arff");
-		buildable.setAlgorithmType(EM.class.getName());
-		analyzer = new WekaClusterer();
-		analyzer.init(buildable);
-		analyzer.build(buildable);
-		analyticsService = new AnalyticsService();
-		analyticsService.setAnalyzers(new HashMap<String, IAnalyzer<?, ?>>() {
-			{
-				put(analysis.getAnalyzer(), analyzer);
-			}
-		});
+        analysis = new Analysis<>();
+        analysis.setAnalyzer("analyzer-em");
+        analysis.setInput(line);
 
-		Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-		String string = gson.toJson(analysis);
-		logger.info(string);
-	}
+        context = new Context();
+        context.setName("bank-data");
+        context.setAlgorithm(EM.class.newInstance());
+        analyzer = new WekaClusterer();
+        analyzer.init(context);
+        analyzer.build(context);
+        analyticsService = new AnalyticsService();
+        analyticsService.setAnalyzers(new HashMap<String, IAnalyzer<?, ?>>() {
+            {
+                put(analysis.getAnalyzer(), analyzer);
+            }
+        });
 
-	@Test
-	public void analyze() {
-		analyticsService.analyze(analysis);
-		Integer clazz = Integer.parseInt(analysis.getClazz());
-		assertTrue(clazz == 0 || clazz == 1);
-	}
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+        String string = gson.toJson(analysis);
+        logger.info(string);
+    }
 
-	@Test
-	public void getAnalyzer() {
-		File externalConfig = FileUtilities.findDirectoryRecursively(new File("."), "external");
-		File springConfig = FileUtilities.findFileRecursively(externalConfig, "spring\\.xml");
-		String springConfigPath = FileUtilities.cleanFilePath(springConfig.getAbsolutePath());
-		System.setProperty(IConstants.IKUBE_CONFIGURATION, springConfigPath);
+    @Test
+    public void analyze() {
+        analyticsService.analyze(analysis);
+        Integer clazz = Integer.parseInt(analysis.getClazz());
+        assertTrue(clazz == 0 || clazz == 1);
+    }
 
-		analysis.setAnalyzer("analyzer-em-different");
-		analysis.setBuildable(buildable);
+    @Test
+    public void getAnalyzer() throws Exception {
+        File externalConfig = FileUtilities.findDirectoryRecursively(new File("."), "external");
+        File springConfig = FileUtilities.findFileRecursively(externalConfig, "spring\\.xml");
+        String springConfigPath = FileUtilities.cleanFilePath(springConfig.getAbsolutePath());
+        System.setProperty(IConstants.IKUBE_CONFIGURATION, springConfigPath);
 
-		buildable.setAlgorithmType(EM.class.getName());
-		buildable.setAnalyzerType(WekaClusterer.class.getName());
+        analysis.setAnalyzer("analyzer-em-different");
+        // analysis.setBuildable(context);
 
-		IAnalyzer<?, ?> analyzer = analyticsService.getAnalyzer(analysis);
-		assertNotNull(analyzer);
-	}
+        context.setAlgorithm(EM.class.newInstance());
+        context.setAnalyzer(WekaClusterer.class.newInstance());
+
+        IAnalyzer<?, ?> analyzer = analyticsService.getAnalyzer(analysis);
+        assertNotNull(analyzer);
+    }
 
 }

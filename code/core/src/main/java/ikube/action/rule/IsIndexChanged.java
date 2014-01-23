@@ -26,6 +26,8 @@ public class IsIndexChanged extends ARule<IndexContext<?>> {
                         newIndexReader = DirectoryReader.openIfChanged((DirectoryReader) oldIndexReader);
                     } catch (Exception e) {
                         logger.error("Exception checking directory for changes : ", e);
+                        // We'll assume that it is changed, could even have been deleted
+                        indexChanged = Boolean.TRUE;
                     } finally {
                         if (newIndexReader != null) {
                             newIndexReader.close();

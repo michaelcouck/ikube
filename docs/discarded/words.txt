@@ -6140,7 +6140,7 @@ classics
 classifiable
 classification
 classified
-classifier
+analyzer
 classify
 classiness
 classless

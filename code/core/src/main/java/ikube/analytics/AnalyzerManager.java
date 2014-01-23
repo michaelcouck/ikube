@@ -1,48 +1,33 @@
 package ikube.analytics;
 
-import ikube.model.Analysis;
-import ikube.model.Buildable;
-import ikube.toolkit.ApplicationContextManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
- * This factory for analyzers is implemented as builder. Typically taking multiple simple objects and building a complex one, all the time shielding the complex
- * object from the complexity of it's construction.
- * 
+ * This factory for analyzers is implemented as builder. Typically taking multiple simple objects and building a complex one, all the time
+ * shielding the complex object from the complexity of it's construction.
+ *
  * @author Michael Couck
- * @since 10.04.13
  * @version 01.00
+ * @since 10.04.13
  */
-public class AnalyzerManager {
+public final class AnalyzerManager {
 
-	public static IAnalyzer<?, ?>[] buildAnalyzer(final Analysis<?, ?>... analyses) throws Exception {
-		int index = 0;
-		IAnalyzer<?, ?>[] analyzers = new IAnalyzer<?, ?>[analyses.length];
-		for (final Analysis<?, ?> analysis : analyses) {
-			Buildable buildable = analysis.getBuildable();
-			String name = analysis.getAnalyzer();
-			String type = buildable.getAnalyzerType();
-			IAnalyzer<?, ?> analyzer = ApplicationContextManager.setBean(name, type);
-			AnalyzerManager.buildAnalyzer(buildable, analyzer);
-			analyzers[index] = analyzer;
-		}
-		return analyzers;
-	}
+    private static final Logger LOGGER = LoggerFactory.getLogger(AnalyzerManager.class);
 
-	public static IAnalyzer<?, ?>[] buildAnalyzer(final Buildable... buildables) throws Exception {
-		int index = 0;
-		IAnalyzer<?, ?>[] analyzers = new IAnalyzer<?, ?>[buildables.length];
-		for (final Buildable buildable : buildables) {
-			IAnalyzer<?, ?> analyzer = (IAnalyzer<?, ?>) Class.forName(buildable.getAlgorithmType()).newInstance();
-			buildAnalyzer(buildable, analyzer);
-			analyzers[index] = analyzer;
-		}
-		return analyzers;
-	}
-
-	public static IAnalyzer<?, ?> buildAnalyzer(final Buildable buildable, final IAnalyzer<?, ?> analyzer) throws Exception {
-		analyzer.init(buildable);
-		analyzer.build(buildable);
-		return analyzer;
-	}
+    public static IAnalyzer<?, ?>[] buildAnalyzers(final IAnalyzer.IContext[] contexts) throws Exception {
+        Collection<IAnalyzer<?, ?>> analyzers = new ArrayList<>();
+        for (final IAnalyzer.IContext context : contexts) {
+            IAnalyzer<?, ?> analyzer = (IAnalyzer<?, ?>) context.getAnalyzer();
+            LOGGER.info("Building analyzer : " + context + ", " + analyzer);
+            analyzer.init(context);
+            analyzer.build(context);
+            analyzers.add(analyzer);
+        }
+        return analyzers.toArray(new IAnalyzer<?, ?>[analyzers.size()]);
+    }
 
 }

@@ -1,7 +1,6 @@
-package ikube.analytics;
+package ikube.analytics.toolkit;
 
 import ikube.AbstractTest;
-
 import org.junit.Before;
 import org.junit.Test;
 

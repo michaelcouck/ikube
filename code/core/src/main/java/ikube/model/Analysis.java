@@ -1,8 +1,11 @@
 package ikube.model;
 
-import javax.persistence.*;
-
 import weka.classifiers.functions.SMO;
+
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Transient;
 
 /**
  * This class represents data that is to be analyzed as well as the results from the analysis if any.
@@ -19,13 +22,13 @@ public class Analysis<Input, Output> extends Persistable {
      * The name of the analyzer in the system, for example clusterer-em.
      */
     private String analyzer;
-
     /**
-     * The class/cluster for the instance.
+     * The class/cluster for the instance, this is the result of the analysis.
      */
     private String clazz;
     /**
-     * The input data, for training too.
+     * The input data to be analyzed, string text, or an array of dates and numbers, whatever, but typically in the underlying
+     * function format. In the case of Weka it is the Weka format of course.
      */
     private Input input;
     /**
@@ -45,14 +48,10 @@ public class Analysis<Input, Output> extends Persistable {
     private double[][] distributionForInstances;
 
     private double duration;
-    private Exception exception;
     private boolean correlation;
-    private boolean compressed;
     private boolean distribution;
 
-    @OneToOne
-    @PrimaryKeyJoinColumn
-    private Buildable buildable;
+    private Exception exception;
 
     public String getAnalyzer() {
         return analyzer;
@@ -118,28 +117,12 @@ public class Analysis<Input, Output> extends Persistable {
         this.duration = duration;
     }
 
-    public Exception getException() {
-        return exception;
-    }
-
-    public void setException(Exception exception) {
-        this.exception = exception;
-    }
-
     public boolean isCorrelation() {
         return correlation;
     }
 
     public void setCorrelation(boolean correlation) {
         this.correlation = correlation;
-    }
-
-    public boolean isCompressed() {
-        return compressed;
-    }
-
-    public void setCompressed(boolean compressed) {
-        this.compressed = compressed;
     }
 
     public boolean isDistribution() {
@@ -150,11 +133,11 @@ public class Analysis<Input, Output> extends Persistable {
         this.distribution = distribution;
     }
 
-    public Buildable getBuildable() {
-        return buildable;
+    public Exception getException() {
+        return exception;
     }
 
-    public void setBuildable(Buildable buildable) {
-        this.buildable = buildable;
+    public void setException(Exception exception) {
+        this.exception = exception;
     }
 }

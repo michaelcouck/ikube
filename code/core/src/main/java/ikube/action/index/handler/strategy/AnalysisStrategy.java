@@ -4,6 +4,7 @@ import ikube.IConstants;
 import ikube.action.index.handler.IStrategy;
 import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
+import ikube.model.Context;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import org.apache.commons.lang.StringUtils;
@@ -20,14 +21,8 @@ import static ikube.action.index.IndexManager.addStringField;
  */
 public class AnalysisStrategy extends AStrategy {
 
-    /**
-     * In the event this should analyzer is language specific.
-     */
     private String language;
-    /**
-     * The wrapper for the 'real' analyzer, probably Weka
-     */
-    private IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>> classifier;
+    private Context<IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>>, ?, ?> context;
 
     public AnalysisStrategy() {
         this(null);
@@ -60,7 +55,7 @@ public class AnalysisStrategy extends AStrategy {
             if (process) {
                 Analysis<String, double[]> analysis = new Analysis<>();
                 analysis.setInput(content);
-                String currentClassification = classifier.analyze(analysis).getClazz();
+                String currentClassification = context.getAnalyzer().analyze(analysis).getClazz();
                 if (currentClassification != null && !StringUtils.isEmpty(currentClassification)) {
                     String previousClassification = document.get(IConstants.CLASSIFICATION);
                     if (previousClassification == null) {
@@ -76,12 +71,11 @@ public class AnalysisStrategy extends AStrategy {
         return super.aroundProcess(indexContext, indexable, document, resource);
     }
 
-    public void setLanguage(final String language) {
+    public void setLanguage(String language) {
         this.language = language;
     }
 
-    public void setClassifier(final IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>> classifier) {
-        this.classifier = classifier;
+    public void setContext(Context<IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>>, ?, ?> context) {
+        this.context = context;
     }
-
 }

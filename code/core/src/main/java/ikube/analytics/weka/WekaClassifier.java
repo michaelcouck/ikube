@@ -1,7 +1,7 @@
-package ikube.analytics;
+package ikube.analytics.weka;
 
+import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
-import ikube.model.Buildable;
 import org.apache.commons.lang.StringUtils;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
@@ -10,45 +10,42 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.filters.Filter;
 
-import java.io.IOException;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * This class is a classifier for sentiment essentially, i.e. positive/negative. This classifier is based on the {@link SMO} classification algorithm from
- * mWeka, which is a support vector classifier.
+ * mWeka, which is a support vector classifier. This class is thread safe.
  *
  * @author Michael Couck
  * @version 01.00
  * @since 14.08.13
  */
-public class WekaClassifier extends Analyzer {
+public class WekaClassifier extends WekaAnalyzer {
 
     private Filter filter;
-    private ReentrantLock reentrantLock;
     private volatile Instances instances;
     private volatile Classifier classifier;
 
+    private ReentrantLock reentrantLock;
+
     /**
      * {@inheritDoc}
-     *
-     * @throws IOException
      */
-    public void init(final Buildable buildable) throws Exception {
-        instances = instances(buildable);
+    @Override
+    public void init(final IAnalyzer.IContext context) throws Exception {
+        filter = (Filter) context.getFilter();
+        instances = instances(context);
         instances.setClassIndex(0);
         instances.setRelationName("training_data");
-        if (!StringUtils.isEmpty(buildable.getFilterType())) {
-            filter = (Filter) Class.forName(buildable.getFilterType()).newInstance();
-        }
-        String type = buildable.getAlgorithmType();
-        classifier = (Classifier) Class.forName(type).newInstance();
+        classifier = (Classifier) context.getAlgorithm();
         reentrantLock = new ReentrantLock(Boolean.TRUE);
     }
 
     /**
      * {@inheritDoc}
      */
-    public void build(final Buildable buildable) {
+    @Override
+    public void build(final IAnalyzer.IContext context) {
         try {
             reentrantLock.lock();
             log(instances);
@@ -56,16 +53,17 @@ public class WekaClassifier extends Analyzer {
             Instances filteredData = filter(instances, filter);
             filteredData.setRelationName("filtered_data");
             classifier.buildClassifier(filteredData);
-            // instances = instances.stringFreeStructure();
             log(filteredData);
             evaluate(filteredData);
-
-            // instances.setRelationName("training_data");
-        } catch (Exception e) {
-            logger.error("Exception building classifier : ", e);
+        } catch (final Exception e) {
             instances.delete();
             throw new RuntimeException(e);
         } finally {
+            // As soon as we are finished training with the data, we can
+            // release the memory of all the training instances
+            if (instances.numInstances() >= context.getMaxTraining()) {
+                instances.delete();
+            }
             reentrantLock.unlock();
         }
     }
@@ -84,8 +82,7 @@ public class WekaClassifier extends Analyzer {
                 instances.add(instance);
             }
             return Boolean.TRUE;
-        } catch (Exception e) {
-            logger.error("Exception creating a training instance : ", e);
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         } finally {
             reentrantLock.unlock();
@@ -124,7 +121,7 @@ public class WekaClassifier extends Analyzer {
                 }
             }
             return analysis;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             String content = analysis.getInput();
             if (!StringUtils.isEmpty(content) && content.length() > 128) {
                 content = content.substring(0, 128);
@@ -134,14 +131,6 @@ public class WekaClassifier extends Analyzer {
         } finally {
             reentrantLock.unlock();
         }
-    }
-
-    private void log(final String clazz, final String input, final double[] output) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (final double out : output) {
-            stringBuilder.append(out);
-        }
-        logger.info("Class : " + clazz + ", " + input + ", " + stringBuilder);
     }
 
     @Override
@@ -158,7 +147,15 @@ public class WekaClassifier extends Analyzer {
         Evaluation evaluation = new Evaluation(instances);
         evaluation.evaluateModel(classifier, instances);
         String evaluationReport = evaluation.toSummaryString();
-        logger.info("Classifier evaluation : " + evaluationReport);
+        logger.debug("Classifier evaluation : " + evaluationReport);
+    }
+
+    private void log(final String clazz, final String input, final double[] output) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (final double out : output) {
+            stringBuilder.append(out);
+        }
+        logger.debug("Class : " + clazz + ", " + input + ", " + stringBuilder);
     }
 
     private void log(final Instances instances) throws Exception {
@@ -175,7 +172,7 @@ public class WekaClassifier extends Analyzer {
                     numInstances + //
                     ", classifier :  " + //
                     classifier.hashCode();
-            logger.info(expression);
+            logger.debug(expression);
         }
     }
 

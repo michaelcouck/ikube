@@ -47,7 +47,7 @@ public class AnalyticsService implements IAnalyticsService {
 		IAnalyzer<?, ?> analyzer = analyzers.get(analysis.getAnalyzer());
 		if (analyzer == null) {
 			try {
-				analyzer = AnalyzerManager.buildAnalyzer(analysis)[0];
+				// analyzer = AnalyzerManager.buildAnalyzer(analysis)[0];
 				analyzers.put(analysis.getAnalyzer(), analyzer);
 			} catch (Exception e) {
 				LOGGER.error(null, e);

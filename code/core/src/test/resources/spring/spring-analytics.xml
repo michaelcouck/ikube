@@ -10,14 +10,14 @@
 				http://www.springframework.org/schema/util/spring-util.xsd">
 
 	<bean
-		id="buildable-em"
-		class="ikube.model.Buildable"
+		id="context-em"
+		class="ikube.model.Context"
 		property:log="true"
 		property:algorithmType="weka.clusterers.EM"
 		property:trainingFilePath="./ikube/analytics/bank-data.arff" />
 	<bean
-		id="buildable-smo"
-		class="ikube.model.Buildable"
+		id="context-smo"
+		class="ikube.model.Context"
 		property:log="true"
 		property:filterType="weka.filters.unsupervised.attribute.StringToWordVector"
 		property:algorithmType="weka.classifiers.functions.SMO"
@@ -34,7 +34,7 @@
 		property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
 		<property name="arguments">
 			<array>
-				<ref local="buildable-em" />
+				<ref local="context-em" />
 				<ref local="analyzer-em" />
 			</array>
 		</property>
@@ -44,7 +44,7 @@
 		property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzer">
 		<property name="arguments">
 			<array>
-				<ref local="buildable-smo" />
+				<ref local="context-smo" />
 				<ref local="analyzer-smo" />
 			</array>
 		</property>

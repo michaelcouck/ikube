@@ -81,7 +81,7 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 				if (configFile == null || !configFile.isFile()) {
 					configFile = new File(EXTERNAL_SPRING_CONFIGURATION_FILE);
 				}
-				if (configFile != null && configFile.isFile()) {
+				if (configFile.isFile()) {
 					// From the file system
 					String configFilePath = FileUtilities.cleanFilePath(configFile.getAbsolutePath());
 					configFilePath = "file:" + configFilePath;
@@ -167,7 +167,7 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 	/**
 	 * Instantiates the application context using all the configuration files in the parameter list.
 	 * 
-	 * @param configFiles the locations of the configuration files
+	 * @param configLocations the locations of the configuration files
 	 * @return the merged application context for all the configuration files
 	 */
 	public static synchronized ApplicationContext getApplicationContextFilesystem(final String... configLocations) {
@@ -187,7 +187,7 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 	/**
 	 * Instantiates the application context using all the configuration files in the parameter list.
 	 * 
-	 * @param configLocation the locations of the configuration files
+	 * @param configLocations the locations of the configuration files
 	 * @return the merged application context for all the configuration files
 	 */
 	public static synchronized ApplicationContext getApplicationContext(final String... configLocations) {

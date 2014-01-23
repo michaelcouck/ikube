@@ -40,10 +40,6 @@ public class ClassifierTrainingStrategyTest extends AbstractTest {
 		analyzer = Mockito.mock(IAnalyzer.class);
 
 		classifierTrainingStrategy = new ClassifierTrainingStrategy();
-		classifierTrainingStrategy.setClassifier(analyzer);
-		classifierTrainingStrategy.setLanguage(Locale.ENGLISH.getLanguage());
-		classifierTrainingStrategy.setNegative(1000);
-		classifierTrainingStrategy.setPositive(1000);
 	}
 
 	@After

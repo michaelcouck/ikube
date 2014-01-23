@@ -59,7 +59,7 @@ public class RuleInterceptor implements IRuleInterceptor {
                         proceedWithLocked = clusterManager.lock(IConstants.IKUBE);
                     }
                     if (!proceedWithLocked) {
-                        LOGGER.info("Couldn't get cluster lock : " + proceedingJoinPoint.getTarget());
+                        LOGGER.debug("Couldn't get cluster lock : ", proceedingJoinPoint.getTarget());
                         proceed = Boolean.FALSE;
                     } else {
                         // Find the index context
@@ -102,7 +102,7 @@ public class RuleInterceptor implements IRuleInterceptor {
                         action = clusterManager.startWorking(actionName, indexContext.getIndexName(), null);
                         // Execute the action logic
                         proceedingJoinPoint.proceed();
-                    } catch (Throwable e) {
+                    } catch (final Throwable e) {
                         LOGGER.error("Exception proceeding on join point : " + proceedingJoinPoint, e);
                     } finally {
                         // Remove the action in the cluster

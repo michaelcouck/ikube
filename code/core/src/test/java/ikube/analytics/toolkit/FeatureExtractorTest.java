@@ -1,4 +1,4 @@
-package ikube.analytics;
+package ikube.analytics.toolkit;
 
 import static junit.framework.Assert.assertEquals;
 import ikube.AbstractTest;

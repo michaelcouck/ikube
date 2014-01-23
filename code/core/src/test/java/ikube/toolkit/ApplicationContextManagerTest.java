@@ -1,52 +1,48 @@
 package ikube.toolkit;
 
-import static junit.framework.Assert.assertNotNull;
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.analytics.WekaClusterer;
-
-import java.io.File;
-
+import ikube.analytics.weka.WekaClusterer;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
+import java.io.File;
+
+import static junit.framework.Assert.assertNotNull;
+
 /**
  * @author Michael Couck
- * @since 01.12.12
  * @version 01.00
+ * @since 01.12.12
  */
 public class ApplicationContextManagerTest extends AbstractTest {
 
-	private File springConfig;
-	private File externalConfig;
-	private String springConfigPath;
+    @Before
+    public void before() {
+        File externalConfig = FileUtilities.findDirectoryRecursively(new File("."), "external");
+        File springConfig = FileUtilities.findFileRecursively(externalConfig, "spring\\.xml");
+        String springConfigPath = FileUtilities.cleanFilePath(springConfig.getAbsolutePath());
+        System.setProperty(IConstants.IKUBE_CONFIGURATION, springConfigPath);
+    }
 
-	@Before
-	public void before() {
-		externalConfig = FileUtilities.findDirectoryRecursively(new File("."), "external");
-		springConfig = FileUtilities.findFileRecursively(externalConfig, "spring\\.xml");
-		springConfigPath = FileUtilities.cleanFilePath(springConfig.getAbsolutePath());
-		System.setProperty(IConstants.IKUBE_CONFIGURATION, springConfigPath);
-	}
+    @Test
+    public void getApplicationContext() {
+        ApplicationContext applicationContext = ApplicationContextManager.getApplicationContext();
+        assertNotNull(applicationContext);
+    }
 
-	@Test
-	public void getApplicationContext() {
-		ApplicationContext applicationContext = ApplicationContextManager.getApplicationContext();
-		assertNotNull(applicationContext);
-	}
+    @Test
+    public void setBean() {
+        String name = "weka-analyzer";
+        ApplicationContextManager.setBean(name, WekaClusterer.class.getName());
+        Object wekaAnalyzer = ApplicationContextManager.getBean(name);
+        assertNotNull(wekaAnalyzer);
+    }
 
-	@Test
-	public void setBean() {
-		String name = "weka-analyzer";
-		ApplicationContextManager.setBean(name, WekaClusterer.class.getName());
-		Object wekaAnalyzer = ApplicationContextManager.getBean(name);
-		assertNotNull(wekaAnalyzer);
-	}
-	
-	@Test
-	public void write() {
-		System.out.printf("%03d", 2);
-	}
+    @Test
+    public void write() {
+        System.out.printf("%03d", 2);
+    }
 
 }

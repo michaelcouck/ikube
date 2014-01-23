@@ -1,4 +1,4 @@
-package ikube.analytics;
+package ikube.analytics.toolkit;
 
 import java.io.IOException;
 import java.io.StringReader;

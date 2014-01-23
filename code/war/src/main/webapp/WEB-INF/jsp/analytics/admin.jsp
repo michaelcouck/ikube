@@ -45,7 +45,7 @@
 									<div class="note large">
 										<i class="icon-pencil"></i> Note: The first attribute is the
 										class attribute, which you then omit in the case of a
-										classifier. With clusterers there is no class attribute.
+										analyzer. With clusterers there is no class attribute.
 									</div>
 									<div class="input">
 										<textarea
@@ -82,7 +82,7 @@ datum,datum,datum..."></textarea>
 											focus-me="true"
 											placeholder="Analyzer unique identifier...">
 										<div class="input search pull-right" ng-show="true">
-											Identifier already in use : <a href="#" ng-click="">classifier-em</a>
+											Identifier already in use : <a href="#" ng-click="">analyzer-em</a>
 										</div>
 									</div>
 									<br>
