@@ -135,7 +135,7 @@ public final class ObjectToolkit {
                         if (Class.class.isAssignableFrom(type.getClass())) {
                             Class<?> collectionKlass = (Class<?>) type;
                             if (!collectionKlass.isInterface()) {
-                                Object collectionEntity = collectionKlass.newInstance();
+                                Object collectionEntity = getObject(collectionKlass); // collectionKlass.newInstance();
                                 populateFields(collectionKlass, collectionEntity, collections, depth + 1, maxDepth, excludedFields);
                                 if (List.class.isAssignableFrom(field.getType())) {
                                     fieldValue = new ArrayList();
@@ -218,35 +218,51 @@ public final class ObjectToolkit {
      */
     public static Object getObject(final Class<?> klass) {
         Constructor<?>[] constructors = klass.getConstructors();
-        // First try with parameters in the constructor
-        for (Constructor<?> constructor : constructors) {
-            Class<?>[] parameterTypes = constructor.getParameterTypes();
-            if (parameterTypes.length == 1) {
-                for (Class<?> parameterType : parameterTypes) {
-                    try {
-                        if (Boolean.class.equals(parameterType)) {
-                            return constructor.newInstance(Boolean.TRUE);
-                        }
-                        return constructor.newInstance(RandomStringUtils.randomNumeric(5));
-                    } catch (Exception e) {
-                        // LOGGER.debug("Constructor error : " + klass + ", " + parameterType + ", " + defaultConstructorArgument);
-                    }
-                }
+        // Sort the constructors from the least parameters to the most
+        Arrays.sort(constructors, new Comparator<Constructor<?>>() {
+            @Override
+            public int compare(Constructor<?> o1, Constructor<?> o2) {
+                int paramsOne = o1.getTypeParameters().length;
+                int paramsTwo = o2.getTypeParameters().length;
+                return paramsOne < paramsTwo ? -1 : paramsOne == paramsTwo ? 0 : 1;
             }
-        }
-        // Finally try with zero parameter constructors
-        for (Constructor<?> constructor : constructors) {
+        });
+        // First try with zero parameter constructors
+        for (final Constructor<?> constructor : constructors) {
             Class<?>[] parameterTypes = constructor.getParameterTypes();
             if (parameterTypes == null || parameterTypes.length == 0 && !Modifier.isAbstract(constructor.getModifiers())
                 && !Modifier.isAbstract(klass.getModifiers())) {
                 try {
                     // Excellent no parameters just create one
                     return constructor.newInstance();
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     LOGGER.error("Error while instantiating " + constructor, e);
                 }
             }
         }
+        // Now try with parameters in the constructor
+        for (final Constructor<?> constructor : constructors) {
+            constructor.setAccessible(Boolean.TRUE);
+            Class<?>[] parameterTypes = constructor.getParameterTypes();
+            Object[] parameters = new Object[parameterTypes.length];
+            for (int i = 0; i < parameterTypes.length; i++) {
+                if (parameterTypes[i].isPrimitive()) {
+                    parameters[i] = getPrimitive(parameterTypes[i]);
+                } else if (String.class.isAssignableFrom(parameterTypes[i])) {
+                    parameters[i] = RandomStringUtils.randomNumeric(2);
+                } else if (Boolean.class.isAssignableFrom(parameterTypes[i])) {
+                    parameters[i] = Boolean.TRUE;
+                } else {
+                    parameters[i] = getObject(parameterTypes[i]);
+                }
+            }
+            try {
+                return constructor.newInstance(parameters);
+            } catch (final Exception e) {
+                LOGGER.debug("Error, oh oh... :(", e);
+            }
+        }
+
         return null;
     }
 

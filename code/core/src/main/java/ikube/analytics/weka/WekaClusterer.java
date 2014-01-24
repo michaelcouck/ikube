@@ -1,6 +1,7 @@
 package ikube.analytics.weka;
 
 import ikube.model.Analysis;
+import ikube.toolkit.Timer;
 import weka.clusterers.ClusterEvaluation;
 import weka.clusterers.Clusterer;
 import weka.core.Attribute;
@@ -40,33 +41,45 @@ public class WekaClusterer extends WekaAnalyzer {
      */
     @Override
     public void build(final IContext context) throws Exception {
-        try {
-            reentrantLock.lock();
-            Instances filteredData = filter(instances, filter);
-            filteredData.setRelationName("filtered_data");
-            clusterer.buildClusterer(filteredData);
-            log();
-        } finally {
-            reentrantLock.unlock();
-        }
+        double duration = Timer.execute(new Timer.Timed() {
+            @Override
+            public void execute() {
+                try {
+                    reentrantLock.lock();
+                    persist(context, instances);
+                    logger.info("Building clusterer : " + instances.numInstances());
+                    Instances filteredData = filter(instances, filter);
+                    filteredData.setRelationName("filtered_data");
+                    clusterer.buildClusterer(filteredData);
+                    log();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                } finally {
+                    // As soon as we are finished training with the data, we can
+                    // release the memory of all the training instances
+                    if (instances.numInstances() >= context.getMaxTraining()) {
+                        instances.delete();
+                    }
+                    reentrantLock.unlock();
+                }
+            }
+        });
+        logger.info("Built clusterer in : " + duration);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
-    public boolean train(final Analysis<String, double[]>... analyses) throws Exception {
+    public boolean train(final Analysis<String, double[]> analysis) throws Exception {
         try {
             reentrantLock.lock();
-            for (final Analysis<String, double[]> analysis : analyses) {
-                Instance instance = instance(analysis.getInput(), instances);
-                instances.add(instance);
-            }
+            Instance instance = instance(analysis.getInput(), instances);
+            instances.add(instance);
+            return Boolean.TRUE;
         } finally {
             reentrantLock.unlock();
         }
-        return true;
     }
 
     /**

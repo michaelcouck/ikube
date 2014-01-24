@@ -57,8 +57,7 @@ public interface IAnalyzer<I, O> {
 
     void init(final IContext context) throws Exception;
 
-    @SuppressWarnings({"unchecked"})
-    boolean train(final I... input) throws Exception;
+    boolean train(final I input) throws Exception;
 
     void build(final IContext context) throws Exception;
 

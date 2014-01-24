@@ -4,6 +4,7 @@ import ikube.IConstants;
 import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.Timer;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -61,21 +62,9 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<String, double[
      * @throws IOException
      */
     Instances instances(final IContext context) throws IOException {
-        String name = context.getName();
-        File directory = FileUtilities.findDirectoryRecursively(new File(IConstants.ANALYTICS_DIRECTORY), name);
         InputStream inputStream = null;
         try {
-            File file = new File(directory, name + ".arff");
-            if (!file.exists() || !file.canRead()) {
-                logger.warn("Can't find data file : " + file + ", will search for it...");
-                String fileName = FilenameUtils.getName(file.getName());
-                file = FileUtilities.findFileRecursively(new File("."), fileName);
-                if (file == null || !file.exists() || !file.canRead()) {
-                    throw new RuntimeException("Couldn't find file for analyzer or can't read file : " + file);
-                } else {
-                    logger.info("Found data file : " + file.getAbsolutePath());
-                }
-            }
+            File file = getDataFile(context);
             inputStream = new FileInputStream(file);
             Reader reader = new InputStreamReader(inputStream);
             return new Instances(reader);
@@ -84,6 +73,42 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<String, double[
                 IOUtils.closeQuietly(inputStream);
             }
         }
+    }
+
+    /**
+     * This method persists the instances data to the Weka format file. This file can then be used to
+     * train the classifier in the future, or for inspection.
+     *
+     * @param context   the analyzer context for holding the configuration details
+     * @param instances the instances to persist to a file
+     */
+    void persist(final IContext context, final Instances instances) {
+        double duration = Timer.execute(new Timer.Timed() {
+            @Override
+            public void execute() {
+                File file = getDataFile(context);
+                logger.info("Persisting data : " + file);
+                String filePath = FileUtilities.cleanFilePath(file.getAbsolutePath());
+                WekaToolkit.writeToArff(instances, filePath);
+            }
+        });
+        logger.info("Persisted data in : " + duration);
+    }
+
+    File getDataFile(final IContext context) {
+        String name = context.getName();
+        File directory = FileUtilities.findDirectoryRecursively(new File(IConstants.ANALYTICS_DIRECTORY), name);
+        File file = new File(directory, name + ".arff");
+        if (!file.exists() || !file.canRead()) {
+            logger.warn("Can't find data file : " + file + ", will search for it...");
+            String fileName = FilenameUtils.getName(file.getName());
+            file = FileUtilities.findFileRecursively(new File("."), fileName);
+            if (file == null || !file.exists() || !file.canRead()) {
+                throw new RuntimeException("Couldn't find file for analyzer or can't read file : " + file);
+            }
+            logger.info("Found data file : " + file.getAbsolutePath());
+        }
+        return file;
     }
 
     Instance filter(final Instance instance, final Filter filter) throws Exception {

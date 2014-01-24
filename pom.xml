@@ -217,7 +217,7 @@
 				<configuration>
 					<forkMode>once</forkMode>
 					<!-- Equivalent to -fae on the command line aparently. -->
-					<testFailureIgnore>true</testFailureIgnore>
+					<testFailureIgnore>false</testFailureIgnore>
 					<excludes>
 						<exclude>**/*Integration*.java</exclude>
 					</excludes>

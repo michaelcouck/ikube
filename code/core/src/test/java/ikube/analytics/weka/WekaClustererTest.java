@@ -1,19 +1,17 @@
 package ikube.analytics.weka;
 
 import ikube.AbstractTest;
-import ikube.analytics.AnalyzerManager;
-import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.FileUtilities;
 import mockit.Deencapsulation;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import weka.clusterers.*;
 import weka.core.Instances;
-import weka.filters.unsupervised.attribute.StringToWordVector;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,7 +37,8 @@ public class WekaClustererTest extends AbstractTest {
 
         context = new Context();
         context.setAlgorithm(EM.class.newInstance());
-        context.setName(FileUtilities.cleanFilePath(dataFile.getAbsolutePath()));
+        context.setName(FilenameUtils.getBaseName(dataFile.getName()));
+        context.setMaxTraining(Integer.MAX_VALUE);
 
         wekaclusterer = new WekaClusterer();
         wekaclusterer.init(context);
@@ -88,9 +87,7 @@ public class WekaClustererTest extends AbstractTest {
         Instances instances = Deencapsulation.getField(wekaclusterer, "instances");
         double[][] correlationCoEfficients = wekaclusterer.getCorrelationCoefficients(instances);
         for (final double[] correlationCoEfficient : correlationCoEfficients) {
-            System.out.println("");
             for (final double instance : correlationCoEfficient) {
-                // System.out.print("\t" + instance);
                 assertTrue(instance >= -1 && instance <= 1);
             }
         }
@@ -101,44 +98,8 @@ public class WekaClustererTest extends AbstractTest {
         Instances instances = Deencapsulation.getField(wekaclusterer, "instances");
         double[][] distributionForInstances = wekaclusterer.getDistributionForInstances(instances);
         for (final double[] distribution : distributionForInstances) {
-            // logger.info("Dist : " + distribution[0] + ", " + distribution[1]);
             assertTrue(distribution[0] >= 0 && distribution[0] <= 10);
             assertTrue(distribution[1] >= 0 && distribution[1] <= 1);
-        }
-    }
-
-    @Test
-    public void clusterText() throws Exception {
-        File dataFile = FileUtilities.findFileRecursively(new File("."), "clustering.arff");
-
-        Context context = new Context();
-        context.setAlgorithm(EM.class.newInstance());
-        context.setFilter(StringToWordVector.class.newInstance());
-        context.setName(FileUtilities.cleanFilePath(dataFile.getAbsolutePath()));
-
-        IAnalyzer<?, ?>[] wekaclusterers = AnalyzerManager.buildAnalyzers(new IAnalyzer.IContext[] { context });
-
-        Analysis<String, double[]> analysis = getAnalysis(null, "Some arbitrary text to cluster into whatever");
-        analysis.setCorrelation(Boolean.TRUE);
-        analysis.setDistribution(Boolean.TRUE);
-
-        Analysis<String, double[]> result = wekaclusterer.analyze(analysis);
-        // logger.info("Result : " + result.getAlgorithmOutput());
-        // logger.info("Result : " + result.getClazz());
-        for (final double[] correlation : result.getCorrelationCoefficients()) {
-            for (final double cor : correlation) {
-                logger.info("        : " + cor);
-            }
-        }
-        if (result.getDistributionForInstances() != null) {
-            for (final double[] distribution : result.getDistributionForInstances()) {
-                for (final double dis : distribution) {
-                    logger.info("        : " + dis);
-                }
-            }
-        }
-        for (final double output : result.getOutput()) {
-            logger.info("        : " + output);
         }
     }
 

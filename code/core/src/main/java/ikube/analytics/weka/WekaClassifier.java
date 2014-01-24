@@ -2,6 +2,7 @@ package ikube.analytics.weka;
 
 import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
+import ikube.toolkit.Timer;
 import org.apache.commons.lang.StringUtils;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
@@ -46,41 +47,46 @@ public class WekaClassifier extends WekaAnalyzer {
      */
     @Override
     public void build(final IAnalyzer.IContext context) {
-        try {
-            reentrantLock.lock();
-            log(instances);
+        double duration = Timer.execute(new Timer.Timed() {
+            @Override
+            public void execute() {
+                try {
+                    reentrantLock.lock();
+                    log(instances);
+                    persist(context, instances);
+                    logger.info("Building classifier : " + instances.numInstances());
 
-            Instances filteredData = filter(instances, filter);
-            filteredData.setRelationName("filtered_data");
-            classifier.buildClassifier(filteredData);
-            log(filteredData);
-            evaluate(filteredData);
-        } catch (final Exception e) {
-            instances.delete();
-            throw new RuntimeException(e);
-        } finally {
-            // As soon as we are finished training with the data, we can
-            // release the memory of all the training instances
-            if (instances.numInstances() >= context.getMaxTraining()) {
-                instances.delete();
+                    Instances filteredData = filter(instances, filter);
+                    filteredData.setRelationName("filtered_data");
+                    classifier.buildClassifier(filteredData);
+                    log(filteredData);
+                    evaluate(filteredData);
+                } catch (final Exception e) {
+                    instances.delete();
+                    throw new RuntimeException(e);
+                } finally {
+                    // As soon as we are finished training with the data, we can
+                    // release the memory of all the training instances
+                    if (instances.numInstances() >= context.getMaxTraining()) {
+                        instances.delete();
+                    }
+                    reentrantLock.unlock();
+                }
             }
-            reentrantLock.unlock();
-        }
+        });
+        logger.info("Built classifier in : " + duration);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
-    public boolean train(final Analysis<String, double[]>... analyses) throws Exception {
+    public boolean train(final Analysis<String, double[]> analysis) throws Exception {
         try {
             reentrantLock.lock();
-            for (final Analysis<String, double[]> analysis : analyses) {
-                Instance instance = instance(analysis.getInput(), instances);
-                instance.setClassValue(analysis.getClazz());
-                instances.add(instance);
-            }
+            Instance instance = instance(analysis.getInput(), instances);
+            instance.setClassValue(analysis.getClazz());
+            instances.add(instance);
             return Boolean.TRUE;
         } catch (final Exception e) {
             throw new RuntimeException(e);
@@ -110,10 +116,7 @@ public class WekaClassifier extends WekaAnalyzer {
                 analysis.setClazz(clazz);
                 analysis.setOutput(output);
                 analysis.setAlgorithmOutput(classifier.toString());
-
-                if (logger.isDebugEnabled()) {
-                    log(clazz, input, output);
-                }
+                log(clazz, input, output);
 
                 // analysis.setCorrelationCoefficients(getCorrelationCoefficients(instances));
                 if (analysis.isDistribution()) {
@@ -159,6 +162,9 @@ public class WekaClassifier extends WekaAnalyzer {
     }
 
     private void log(final Instances instances) throws Exception {
+        if (!logger.isDebugEnabled()) {
+            return;
+        }
         if (instances != null && instances.numInstances() > 0 && instances.numClasses() > 0 && instances.numAttributes() > 0) {
             int numClasses = instances.numClasses();
             int numAttributes = instances.numAttributes();

@@ -180,7 +180,7 @@ public class SearcherService implements ISearcherService {
 			}
 
 			if (searchAction == null) {
-				LOGGER.warn("Searcher null for index : " + search.getIndexName());
+				LOGGER.debug("Searcher null for index : " + search.getIndexName());
 				return search;
 			}
 			String[] searchStrings = search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]);

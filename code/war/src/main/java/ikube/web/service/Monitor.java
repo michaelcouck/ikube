@@ -1,6 +1,7 @@
 package ikube.web.service;
 
 import ikube.IConstants;
+import ikube.analytics.IAnalyzer;
 import ikube.cluster.listener.IListener;
 import ikube.model.Action;
 import ikube.model.IndexContext;
@@ -319,8 +320,9 @@ public class Monitor extends Resource {
 	@Path(Monitor.ANALYZERS)
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response analyzers() {
-		String[] analyzers = analyticsService.getAnalyzers().keySet().toArray(new String[analyticsService.getAnalyzers().keySet().size()]);
-		return buildJsonResponse(analyzers);
+        Map<String, IAnalyzer> analyzers = analyticsService.getAnalyzers();
+		String[] names = analyzers.keySet().toArray(new String[analyticsService.getAnalyzers().keySet().size()]);
+		return buildJsonResponse(names);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unused" })

@@ -97,6 +97,7 @@
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.5.10" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: commons-collections:commons-collections:3.2.1" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:integration:1.5.7" level="project" />
+    <orderEntry type="library" name="Maven: ant:ant-junit:1.6.5" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-log4j12:1.5.10" level="project" />
     <orderEntry type="library" name="Maven: simple-jndi:simple-jndi:0.11.4.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.geronimo.specs:geronimo-ejb_3.0_spec:1.0.1" level="project" />
@@ -142,9 +143,10 @@
     <orderEntry type="library" name="Maven: org.apache.tiles:tiles-el:2.2.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.mortbay.jetty:jetty-embedded:6.1.11" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.mortbay.jetty:jetty:6.1.11" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.mortbay.jetty:jetty-util:6.1.11" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.mortbay.jetty:servlet-api-2.5:6.1.11" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: javax.servlet.jsp:jsp-api:2.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.mortbay.jetty:start:6.1.11" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.mortbay.jetty:jetty-util:6.1.11" level="project" />
     <orderEntry type="library" name="Maven: commons-fileupload:commons-fileupload:1.2.2" level="project" />
     <orderEntry type="library" name="Maven: com.hazelcast:hazelcast-all:3.1.1" level="project" />
     <orderEntry type="library" name="Maven: javax.validation:validation-api:1.1.0.Alpha1" level="project" />

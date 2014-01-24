@@ -6,15 +6,13 @@ import java.util.Map;
 
 /**
  * @author Michael Couck
- * @since 10.04.13
  * @version 01.00
+ * @since 10.04.13
  */
-public interface IAnalyticsService {
+public interface IAnalyticsService<I, O> {
 
-	<I, O> Analysis<I, O> analyze(final Analysis<I, O> analysis);
+    Map<String, IAnalyzer> getAnalyzers();
 
-	Map<String, IAnalyzer<?, ?>> getAnalyzers();
-
-	void setAnalyzers(final Map<String, IAnalyzer<?, ?>> analyzers);
+    Analysis<I, O> analyze(final Analysis<I, O> analysis);
 
 }

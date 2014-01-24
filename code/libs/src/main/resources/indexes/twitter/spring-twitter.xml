@@ -84,7 +84,7 @@
         property:userTimeZoneField="userTimeZone"
         property:userUtcOffsetField="userUtcOffset"
         property:userLanguageField="userLanguage"
-        property:clones="100"
+        property:clones="0"
 
         property:strategies-ref="twitter-strategies"/>
     <util:list id="twitter-strategies">

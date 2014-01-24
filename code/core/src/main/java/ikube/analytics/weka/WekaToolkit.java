@@ -14,9 +14,8 @@ import java.io.File;
  * @version 01.00
  * @since 10.04.13
  */
+@SuppressWarnings("ALL")
 public final class WekaToolkit {
-
-    private static final Logger LOGGER = Logger.getLogger(WekaToolkit.class);
 
     public static void writeToArff(final Instances instances, final String filePath) {
         try {
@@ -26,7 +25,7 @@ public final class WekaToolkit {
             arffSaverInstance.setFile(file);
             arffSaverInstance.writeBatch();
         } catch (Exception e) {
-            LOGGER.error("Exception writing the data set to a file : ", e);
+            throw new RuntimeException(e);
         }
     }
 

@@ -139,7 +139,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
             return;
         }
         Collections.addAll(stack, tweets);
-        if (stack.size() > 10000) {
+        if (stack.size() > 1000) {
             try {
                 File latestDirectory = FileUtilities.getOrCreateDirectory(new File(tweetsDirectory, Long.toString(System.currentTimeMillis())));
                 Gson gson = new Gson();
@@ -148,7 +148,6 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
                     File output = new File(latestDirectory, Long.toString(System.currentTimeMillis()) + ".json");
                     File outputFile = FileUtilities.getOrCreateFile(output);
                     FileUtilities.setContents(outputFile, string.getBytes());
-                    ThreadUtilities.sleep(1);
                 }
             } catch (Exception e) {
                 logger.error(null, e);

@@ -4,75 +4,74 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
 import ikube.analytics.IAnalyzer;
+import ikube.model.Context;
 import ikube.model.IndexableTweets;
 import ikube.toolkit.ObjectToolkit;
 import ikube.toolkit.PerformanceTester;
-
-import java.util.Locale;
-
 import org.apache.lucene.document.Document;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.social.twitter.api.Tweet;
 
+import java.util.Locale;
+
 /**
  * @author Michael Couck
- * @since 05.12.13
  * @version 01.00
+ * @since 05.12.13
  */
 public class ClassifierTrainingStrategyTest extends AbstractTest {
 
-	@SuppressWarnings("rawtypes")
-	private IAnalyzer analyzer;
-	/** Class under test. */
-	private ClassifierTrainingStrategy classifierTrainingStrategy;
+    @SuppressWarnings("rawtypes")
+    private IAnalyzer analyzer;
+    /**
+     * Class under test.
+     */
+    private ClassifierTrainingStrategy classifierTrainingStrategy;
 
-	@Before
-	@SuppressWarnings("unchecked")
-	public void before() throws Exception {
-		// This is for an ad hoc test with a real analyzer, but we'll mock it rather
-		// ApplicationContextManager.closeApplicationContext();
-		// ApplicationContextManager.getApplicationContextFilesystem("src/test/resources/spring/spring-analytics.xml");
-		// IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>> analyzer = ApplicationContextManager.getBean("analyzer-smo");
+    @Before
+    @SuppressWarnings("unchecked")
+    public void before() throws Exception {
+        analyzer = Mockito.mock(IAnalyzer.class);
+        Context context = Mockito.mock(Context.class);
+        Mockito.when(context.getAnalyzer()).thenReturn(analyzer);
+        Mockito.when(context.getMaxTraining()).thenReturn(100);
 
-		analyzer = Mockito.mock(IAnalyzer.class);
+        classifierTrainingStrategy = new ClassifierTrainingStrategy();
+        classifierTrainingStrategy.setContext(context);
+    }
 
-		classifierTrainingStrategy = new ClassifierTrainingStrategy();
-	}
+    @Test
+    @SuppressWarnings("unchecked")
+    public void aroundProcess() throws Exception {
+        Document document = new Document();
+        final IndexableTweets indexableTweets = Mockito.mock(IndexableTweets.class);
+        Mockito.when(indexableTweets.isStored()).thenReturn(Boolean.TRUE);
+        Mockito.when(indexableTweets.isAnalyzed()).thenReturn(Boolean.TRUE);
+        Mockito.when(indexableTweets.getContent()).thenReturn(IConstants.CONTENT);
 
-	@After
-	public void after() {
-		// To be uncommented with the 'real' analyzer test
-		// ApplicationContextManager.closeApplicationContext();
-	}
+        IndexManager.addStringField(IConstants.LANGUAGE, Locale.ENGLISH.getLanguage(), indexableTweets, document);
+        IndexManager.addStringField(IConstants.CLASSIFICATION, IConstants.POSITIVE, indexableTweets, document);
 
-	@Test
-	@SuppressWarnings("unchecked")
-	public void aroundProcess() throws Exception {
-		Document document = new Document();
-		final IndexableTweets indexableTweets = Mockito.mock(IndexableTweets.class);
-		Mockito.when(indexableTweets.isStored()).thenReturn(Boolean.TRUE);
-		Mockito.when(indexableTweets.isAnalyzed()).thenReturn(Boolean.TRUE);
+        final Tweet tweet = (Tweet) ObjectToolkit.getObject(Tweet.class);
+        ObjectToolkit.populateFields(tweet, Boolean.TRUE, 10);
 
-		IndexManager.addStringField(IConstants.LANGUAGE, Locale.ENGLISH.getLanguage(), indexableTweets, document);
-		IndexManager.addStringField(IConstants.CLASSIFICATION, IConstants.POSITIVE, indexableTweets, document);
-		final Tweet tweet = ObjectToolkit.populateFields(new Tweet(0, null, null, null, null, null, 0, null, null), Boolean.TRUE, 10);
-		classifierTrainingStrategy.aroundProcess(indexContext, indexableTweets, document, tweet);
-		Mockito.verify(analyzer).train(Mockito.any(Object[].class));
+        classifierTrainingStrategy.setLanguage(Locale.ENGLISH.getLanguage());
+        classifierTrainingStrategy.aroundProcess(indexContext, indexableTweets, document, tweet);
+        Mockito.verify(analyzer).train(Mockito.any(Object[].class));
 
-		int iterations = 11;
-		PerformanceTester.execute(new PerformanceTester.APerform() {
-			@Override
-			public void execute() {
-				try {
-					classifierTrainingStrategy.aroundProcess(indexContext, indexableTweets, new Document(), tweet);
-				} catch (Exception e) {
-					logger.error(null, e);
-				}
-			}
-		}, "Classifier training performance : ", iterations, Boolean.TRUE);
-	}
+        int iterations = 11;
+        PerformanceTester.execute(new PerformanceTester.APerform() {
+            @Override
+            public void execute() {
+                try {
+                    classifierTrainingStrategy.aroundProcess(indexContext, indexableTweets, new Document(), tweet);
+                } catch (Exception e) {
+                    logger.error(null, e);
+                }
+            }
+        }, "Classifier training performance : ", iterations, Boolean.TRUE);
+    }
 
 }
