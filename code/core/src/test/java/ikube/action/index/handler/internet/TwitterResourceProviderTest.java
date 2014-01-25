@@ -6,6 +6,7 @@ import ikube.model.IndexableTweets;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ObjectToolkit;
 import ikube.toolkit.PerformanceTester;
+import mockit.Deencapsulation;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,7 +59,9 @@ public class TwitterResourceProviderTest extends AbstractTest {
 
     @Test
     public void persistResources() {
-        Tweet[] tweets = new Tweet[1001];
+        int stackSize = 100;
+        Deencapsulation.setField(TwitterResourceProvider.class, "STACK_SIZE", stackSize);
+        Tweet[] tweets = new Tweet[stackSize + 1];
         for (int i = 0; i < tweets.length; i++) {
             Tweet tweet = (Tweet) ObjectToolkit.getObject(Tweet.class);
             ObjectToolkit.populateFields(tweet, Boolean.TRUE, 10);

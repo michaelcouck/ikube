@@ -31,6 +31,8 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    private static int STACK_SIZE = 10000;
+
     private int clones;
     private Stack<Tweet> stack;
     private Stack<Tweet> tweets;
@@ -134,12 +136,12 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
         logger.info("Tweet warning : " + warnEvent.getCode());
     }
 
-    void persistResources(final Tweet... tweets) {
+    synchronized void persistResources(final Tweet... tweets) {
         if (!persistTweets) {
             return;
         }
         Collections.addAll(stack, tweets);
-        if (stack.size() > 10000) {
+        if (stack.size() > STACK_SIZE) {
             try {
                 File latestDirectory = FileUtilities.getOrCreateDirectory(new File(tweetsDirectory, Long.toString(System.currentTimeMillis())));
                 Gson gson = new Gson();

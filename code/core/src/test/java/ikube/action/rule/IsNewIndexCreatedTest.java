@@ -27,9 +27,14 @@ import static org.mockito.Mockito.when;
  */
 public class IsNewIndexCreatedTest extends AbstractTest {
 
+    @Before
+    public void before() {
+        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+    }
+
 	@After
 	public void after() {
-		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
 	}
 
 	@Test
