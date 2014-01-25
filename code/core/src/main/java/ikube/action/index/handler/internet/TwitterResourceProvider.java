@@ -97,7 +97,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
      * {@inheritDoc}
      */
     @Override
-    public void onTweet(final Tweet tweet) {
+    public synchronized void onTweet(final Tweet tweet) {
         persistResources(tweet);
         if (tweets.size() < IConstants.MILLION) {
             tweets.push(tweet);
@@ -139,7 +139,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
             return;
         }
         Collections.addAll(stack, tweets);
-        if (stack.size() > 1000) {
+        if (stack.size() > 10000) {
             try {
                 File latestDirectory = FileUtilities.getOrCreateDirectory(new File(tweetsDirectory, Long.toString(System.currentTimeMillis())));
                 Gson gson = new Gson();
