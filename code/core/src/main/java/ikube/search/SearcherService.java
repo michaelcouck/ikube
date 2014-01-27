@@ -12,14 +12,7 @@ import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.ThreadUtilities;
 
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Future;
 
 import org.apache.commons.lang.StringUtils;
@@ -405,7 +398,8 @@ public class SearcherService implements ISearcherService {
         return search;
     }
 
-    private List<Search> mergeBatch = new ArrayList<>();
+    private long merged = System.currentTimeMillis();
+    private Map<Long, Search> mergeBatch = new HashMap<>();
     private List<Search> persistBatch = new ArrayList<>();
 
     protected synchronized void persistSearch(final Search search) {
@@ -439,11 +433,17 @@ public class SearcherService implements ISearcherService {
         try {
             Search dbSearch = dataBase.findCriteria(Search.class, new String[]{"hash"}, new Object[]{hash});
             if (dbSearch != null) {
-                Integer count = dbSearch.getCount();
-                dbSearch.setCount(++count);
-                mergeBatch.add(dbSearch);
-                if (mergeBatch.size() > MAX_MERGE_SIZE) {
-                    dataBase.mergeBatch(mergeBatch);
+                Search mergeSearch = mergeBatch.get(hash);
+                if (mergeSearch != null) {
+                    mergeSearch.setCount(mergeSearch.getCount() + 1);
+                } else {
+                    dbSearch.setCount(dbSearch.getCount() + 1);
+                    mergeBatch.put(hash, dbSearch);
+                }
+                if (mergeBatch.size() > MAX_MERGE_SIZE || System.currentTimeMillis() - merged > 1000 * 60) {
+                    LOGGER.info("Merging searches : " + mergeBatch.size());
+                    merged = System.currentTimeMillis();
+                    dataBase.mergeBatch(new ArrayList<>(mergeBatch.values()));
                     mergeBatch.clear();
                 }
                 // dataBase.merge(dbSearch);
@@ -455,6 +455,7 @@ public class SearcherService implements ISearcherService {
                 search.setHighScore(Double.parseDouble(statistics.get(IConstants.SCORE)));
                 persistBatch.add(search);
                 if (persistBatch.size() > MAX_PERSIST_SIZE) {
+                    LOGGER.info("Persisting searches : " + persistBatch.size());
                     dataBase.persistBatch(persistBatch);
                     persistBatch.clear();
                 }
