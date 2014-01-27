@@ -230,7 +230,7 @@ public class SearcherService implements ISearcherService {
             }
             search.setCorrections(searchStringsCorrected != null && searchStringsCorrected.length > 0);
             search.setSearchResults(results);
-            persistSearch(search);
+            // persistSearch(search);
         } catch (final Exception e) {
             handleException(search.getIndexName(), e);
         }
@@ -440,7 +440,7 @@ public class SearcherService implements ISearcherService {
                     dbSearch.setCount(dbSearch.getCount() + 1);
                     mergeBatch.put(hash, dbSearch);
                 }
-                if (mergeBatch.size() > MAX_MERGE_SIZE || System.currentTimeMillis() - merged > 1000 * 60) {
+                if (mergeBatch.size() > MAX_MERGE_SIZE || System.currentTimeMillis() - merged > 1000 * 60 * 5) {
                     LOGGER.info("Merging searches : " + mergeBatch.size());
                     merged = System.currentTimeMillis();
                     dataBase.mergeBatch(new ArrayList<>(mergeBatch.values()));
