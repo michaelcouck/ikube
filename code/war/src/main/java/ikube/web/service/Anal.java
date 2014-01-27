@@ -262,7 +262,9 @@ public class Anal extends Resource {
             public void run() {
                 int positiveCount = search(search, periodTime, endTime, IConstants.POSITIVE);
                 int negativeCount = search(search, periodTime, endTime, IConstants.NEGATIVE);
-                logger.info("Positive/negative : " + hour + "-" + positiveCount + "-" + negativeCount);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Positive/negative : " + hour + "-" + positiveCount + "-" + negativeCount);
+                }
                 timeLineSentiment[0][periods] = positiveCount;
                 timeLineSentiment[1][periods] = negativeCount;
                 timeLineSentiment[2][periods] = hour;
@@ -272,9 +274,7 @@ public class Anal extends Resource {
 
     int search(final Search search, final long startTime, final long endTime, final String classification) {
         Search searchClone = SerializationUtilities.clone(Search.class, search);
-
         String timeRange = new StringBuilder(Long.toString(startTime)).append("-").append(endTime).toString();
-        logger.info("Search range : " + timeRange);
         searchClone.getSearchStrings().add(timeRange);
         searchClone.getSearchFields().add(CREATED_AT);
         searchClone.getOccurrenceFields().add(OCCURRENCE);
@@ -288,6 +288,10 @@ public class Anal extends Resource {
         // This is not necessary
         // searchClone.setSortFields(Arrays.asList(CREATED_AT));
         // searchClone.setSortDirections(Arrays.asList(Boolean.TRUE.toString()));
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Search range : " + timeRange);
+        }
 
         searchClone = searcherService.search(searchClone);
         ArrayList<HashMap<String, String>> searchCloneResults = searchClone.getSearchResults();

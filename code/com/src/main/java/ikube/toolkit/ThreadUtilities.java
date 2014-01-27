@@ -19,7 +19,7 @@ import java.util.concurrent.TimeoutException;
 import org.apache.log4j.Logger;
 
 /**
- * This class just has a method that will wait for a list of threads to finish and an executer service that will execute 'threads' and return futures that can
+ * This class just has a method that will wait for a list of threads to finish and an executor service that will execute 'threads' and return futures that can
  * be waited for by the callers.
  * 
  * @author Michael Couck
@@ -51,7 +51,7 @@ public final class ThreadUtilities {
 	 */
 	public static Future<?> submit(final String name, final Runnable runnable) {
 		if (EXECUTOR_SERVICE == null || EXECUTOR_SERVICE.isShutdown()) {
-			LOGGER.debug("Executer service is shutdown : " + runnable);
+			LOGGER.debug("Executor service is shutdown : " + runnable);
 			return null;
 		}
 		Future<?> future = EXECUTOR_SERVICE.submit(runnable);
@@ -64,7 +64,7 @@ public final class ThreadUtilities {
 	}
 
 	/**
-	 * This method will submit a runnable, the executer never gets shut down.
+	 * This method will submit a runnable, the executor never gets shut down.
 	 * 
 	 * @param runnable the runnable to submit for execution, must self terminate
 	 * @return the future bound to the runnable
@@ -118,7 +118,7 @@ public final class ThreadUtilities {
 	}
 
 	/**
-	 * This method will wait for the future to finish doing it's work. In the event the future is interrupted, for example by the executer service closing down
+	 * This method will wait for the future to finish doing it's work. In the event the future is interrupted, for example by the executor service closing down
 	 * and interrupting all it's threads, it will return immediately. If the future takes too long and passes the maximum wait time, then the method will return
 	 * immediately.
 	 * 
@@ -185,7 +185,7 @@ public final class ThreadUtilities {
 	}
 
 	/**
-	 * This method initializes the executer service, and the thread pool that will execute runnables.
+	 * This method initializes the executor service, and the thread pool that will execute runnables.
 	 */
 	public static void initialize() {
 		if (EXECUTOR_SERVICE != null && !EXECUTOR_SERVICE.isShutdown() && FUTURES != null && FORK_JOIN_POOLS != null) {

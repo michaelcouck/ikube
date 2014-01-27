@@ -13,11 +13,14 @@ import org.apache.lucene.search.IndexSearcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import static org.mockito.Mockito.*;
+
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -56,15 +59,13 @@ public class SearcherServiceTest extends AbstractTest {
 		@Mock
 		@SuppressWarnings("unchecked")
 		protected <T> T getSearch(final Class<?> klass, final String indexName) throws Exception {
-			Search search = (Search) Mockito.mock(klass);
+			Search search = (Search) mock(klass);
 			searches.add(search);
 			return (T) search;
 		}
 
 		@Mock
-		protected void persistSearch(final String indexName, final String[] searchStrings,
-									 final String[] searchStringsCorrected,
-									 final ArrayList<HashMap<String, String>> results) {
+		protected void persistSearch(final ikube.model.Search search) {
 			// Nothing
 		}
 	}
@@ -159,9 +160,9 @@ public class SearcherServiceTest extends AbstractTest {
 			}
 		};
 
-		Mockito.when(monitorService.getIndexNames()).thenReturn(new String[]{"index-one", "index-two", "index-three",
+		when(monitorService.getIndexNames()).thenReturn(new String[]{"index-one", "index-two", "index-three",
 			"index-four"});
-		Mockito.when(monitorService.getIndexFieldNames(Mockito.anyString())).thenReturn(new String[]{"field-one",
+		when(monitorService.getIndexFieldNames(anyString())).thenReturn(new String[]{"field-one",
 			"field-two", "field-three", "field-four"});
 
 		search.setCoordinate(null);
@@ -179,8 +180,9 @@ public class SearcherServiceTest extends AbstractTest {
 		try {
 			// IT must be tear down all
 			Mockit.tearDownMocks();
+            search.setIndexName(IConstants.GEOSPATIAL);
 
-			IDataBase dataBase = Mockito.mock(IDataBase.class);
+			IDataBase dataBase = mock(IDataBase.class);
 			SearcherService searcherService = new SearcherService();
 			Deencapsulation.setField(searcherService, dataBase);
 			ArrayList<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
@@ -196,8 +198,20 @@ public class SearcherServiceTest extends AbstractTest {
 			results.add(result);
 			results.add(statistics);
 
-			searcherService.persistSearch(indexName, searchStrings, searchStrings, results);
-			Mockito.verify(dataBase, Mockito.atLeast(1)).persist(Mockito.any(Search.class));
+            search.setSearchStrings(Arrays.asList(searchStrings));
+            search.setSearchResults(results);
+
+            // indexName, searchStrings, searchStrings, results
+            for (int i = 0; i < SearcherService.MAX_PERSIST_SIZE + 100;  i++) {
+                searcherService.persistSearch(search);
+            }
+			Mockito.verify(dataBase, atLeastOnce()).persistBatch(any(List.class));
+
+            when(dataBase.findCriteria(any(Class.class), any(String[].class), any(Object[].class))).thenReturn(search);
+            for (int i = 0; i < SearcherService.MAX_MERGE_SIZE + 100;  i++) {
+                searcherService.persistSearch(search);
+            }
+            Mockito.verify(dataBase, atLeastOnce()).mergeBatch(any(List.class));
 		} finally {
 			// Set up the spelling mock for the next tests
 			Mockit.setUpMocks(SpellingCheckerMock.class);

@@ -86,7 +86,7 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
         Url url = new Url();
         url.setHash(hash);
         dataBase.persist(url);
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put(IConstants.HASH, hash);
         List<Url> urls = dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_HASH, parameters, 0, 100);
         assertEquals("There should be one url in the database : ", 1, urls.size());
@@ -236,7 +236,7 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
         Long total = dataBase.count(Url.class);
         assertEquals(inserted, total.intValue());
 
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("urlId", 5l);
         total = dataBase.count(Url.class, parameters);
         assertEquals(1, total.intValue());
@@ -288,7 +288,7 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
     }
 
     protected List<Url> getUrls(int batchSize) throws Exception {
-        List<Url> urls = new ArrayList<Url>();
+        List<Url> urls = new ArrayList<>();
         long hash = System.currentTimeMillis();
         for (int i = 0; i < batchSize; i++) {
             Url url = new Url();

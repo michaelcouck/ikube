@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
  * @version 01.00
  * @since 18.12.2013
  */
+@SuppressWarnings("SpringJavaAutowiringInspection")
 public abstract class AGeospatialEnrichmentStrategy extends AStrategy {
 
 	@Value("${max.geohash.levels}")
@@ -43,7 +44,8 @@ public abstract class AGeospatialEnrichmentStrategy extends AStrategy {
 		super(nextStrategy);
 	}
 
-	public final void addSpatialLocationFields(final Coordinate coordinate, final Document document) {
+	@SuppressWarnings("deprecation")
+    public final void addSpatialLocationFields(final Coordinate coordinate, final Document document) {
 		// Note to self: This takes an x and y co-ordinate so the
 		// order must be longitude(x) and latitude(y), not the other way
 		Shape shape = spatialContext.makePoint(coordinate.getLongitude(), coordinate.getLatitude());

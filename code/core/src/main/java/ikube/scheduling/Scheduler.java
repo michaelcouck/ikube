@@ -62,7 +62,7 @@ public class Scheduler {
 
 	public void setSchedule(final Schedule schedule) {
 		if (this.schedules == null) {
-			this.schedules = new ArrayList<Schedule>();
+			this.schedules = new ArrayList<>();
 		}
 		this.schedules.add(schedule);
 	}

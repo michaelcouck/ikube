@@ -32,7 +32,7 @@ public abstract class AStrategy implements IStrategy {
 	/**
 	 * Constructor takes the next strategy, could be null.
 	 * 
-	 * @param next the chained strategy to execute
+	 * @param nextStrategy the chained strategy to execute
 	 */
 	public AStrategy(final IStrategy nextStrategy) {
 		this.nextStrategy = nextStrategy;

@@ -50,10 +50,12 @@ public class TwitterResourceHandler extends ResourceHandler<IndexableTweets> {
 		loadCountries(file);
 	}
 
+    /**
+     * TODO Move all the loading logic to a central class for the whole application
+     * @param file
+     */
 	private void loadCountries(final File file) {
-		int removed = dataBase.remove(GeoCity.DELETE_ALL);
-		logger.info("Removed cities : " + removed);
-		removed = dataBase.remove(GeoCountry.DELETE_ALL);
+		int removed = dataBase.remove(GeoCountry.DELETE_ALL);
 		logger.info("Removed countries : " + removed);
 		Reader reader = null;
 		CSVReader csvReader = null;

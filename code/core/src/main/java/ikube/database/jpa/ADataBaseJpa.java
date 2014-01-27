@@ -37,8 +37,9 @@ public abstract class ADataBaseJpa implements IDataBase {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public <T> Long count(final Class<T> klass) {
+    @Override
+    @SuppressWarnings("StringBufferReplaceableByString")
+    public <T> Long count(final Class<T> klass) {
 		StringBuilder query = new StringBuilder("select count(c) from ");
 		query.append(klass.getSimpleName());
 		query.append(" as c ");
@@ -48,7 +49,8 @@ public abstract class ADataBaseJpa implements IDataBase {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+    @Override
+    @SuppressWarnings("ConstantConditions")
 	public <T> Long count(final Class<T> klass, final Map<String, Object> parameters) {
 		StringBuilder stringBuilder = new StringBuilder("select count(c) from ");
 		stringBuilder.append(klass.getSimpleName());
@@ -190,7 +192,7 @@ public abstract class ADataBaseJpa implements IDataBase {
 		CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(klass);
 		Root<T> root = criteriaQuery.from(klass);
 		criteriaQuery = criteriaQuery.select(root);
-		List<Order> orderByOrders = new ArrayList<Order>();
+		List<Order> orderByOrders = new ArrayList<>();
 		if (fieldsToSortOn.length > 0) {
 			for (int i = 0; i < fieldsToSortOn.length; i++) {
 				String fieldToSortOn = fieldsToSortOn[i];
@@ -231,7 +233,7 @@ public abstract class ADataBaseJpa implements IDataBase {
 		Root<T> root = criteriaQuery.from(klass);
 		criteriaQuery = criteriaQuery.select(root);
 
-		List<Predicate> predicates = new ArrayList<Predicate>();
+		List<Predicate> predicates = new ArrayList<>();
 		for (int i = 0; i < fieldsToFilterOn.length; i++) {
 			Path<?> path = root.get(fieldsToFilterOn[i]);
 			Predicate predicate = criteriaBuilder.equal(path, valuesToFilterOn[i]);
