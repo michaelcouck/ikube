@@ -1,7 +1,7 @@
 package ikube.analytics.weka;
 
-import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
+import ikube.model.Context;
 import ikube.toolkit.Timer;
 import org.apache.commons.lang.StringUtils;
 import weka.classifiers.Classifier;
@@ -33,7 +33,7 @@ public class WekaClassifier extends WekaAnalyzer {
      * {@inheritDoc}
      */
     @Override
-    public void init(final IAnalyzer.IContext context) throws Exception {
+    public void init(final Context context) throws Exception {
         filter = (Filter) context.getFilter();
         instances = instances(context);
         instances.setClassIndex(0);
@@ -46,7 +46,7 @@ public class WekaClassifier extends WekaAnalyzer {
      * {@inheritDoc}
      */
     @Override
-    public void build(final IAnalyzer.IContext context) {
+    public void build(final Context context) {
         double duration = Timer.execute(new Timer.Timed() {
             @Override
             public void execute() {
@@ -134,6 +134,11 @@ public class WekaClassifier extends WekaAnalyzer {
         } finally {
             reentrantLock.unlock();
         }
+    }
+
+    @Override
+    public void destroy(final Context context) throws Exception {
+        instances.delete();
     }
 
     @Override

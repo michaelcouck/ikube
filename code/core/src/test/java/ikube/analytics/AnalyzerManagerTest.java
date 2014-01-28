@@ -1,7 +1,11 @@
 package ikube.analytics;
 
 import ikube.AbstractTest;
+import ikube.model.Context;
 import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -16,11 +20,11 @@ public class AnalyzerManagerTest extends AbstractTest {
     @Test
     public void buildAnalyzers() throws Exception {
         IAnalyzer analyzer = mock(IAnalyzer.class);
-        IAnalyzer.IContext context = mock(IAnalyzer.IContext.class);
+        Context context = mock(Context.class);
         when(context.getAnalyzer()).thenReturn(analyzer);
-        IAnalyzer[] analyzers = AnalyzerManager.buildAnalyzers(new IAnalyzer.IContext[] { context, context, context });
+        Collection<IAnalyzer<?, ?>> analyzers = AnalyzerManager.buildAnalyzers(Arrays.asList(context, context, context));
         verify(analyzer, atLeastOnce()).build(context);
-        assertEquals("There should be all the analyzers built : ", 3, analyzers.length);
+        assertEquals("There should be all the analyzers built : ", 3, analyzers.size());
     }
 
 }

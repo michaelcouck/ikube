@@ -1,5 +1,6 @@
 package ikube.analytics;
 
+import ikube.model.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,16 +19,25 @@ public final class AnalyzerManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AnalyzerManager.class);
 
-    public static IAnalyzer<?, ?>[] buildAnalyzers(final IAnalyzer.IContext[] contexts) throws Exception {
+    public static Collection<IAnalyzer<?, ?>> buildAnalyzers(final Collection<Context> contexts) throws Exception {
         Collection<IAnalyzer<?, ?>> analyzers = new ArrayList<>();
-        for (final IAnalyzer.IContext context : contexts) {
-            IAnalyzer<?, ?> analyzer = (IAnalyzer<?, ?>) context.getAnalyzer();
-            LOGGER.info("Building analyzer : " + context + ", " + analyzer);
-            analyzer.init(context);
-            analyzer.build(context);
+        LOGGER.info("Building analyzer : " + contexts.size());
+        for (final Context context : contexts) {
+            IAnalyzer<?, ?> analyzer = buildAnalyzer(context);
+            LOGGER.info("Building analyzer : " + context.getName());
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.info("Analyzer output : " + analyzer);
+            }
             analyzers.add(analyzer);
         }
-        return analyzers.toArray(new IAnalyzer<?, ?>[analyzers.size()]);
+        return analyzers;
+    }
+
+    public static IAnalyzer<?, ?> buildAnalyzer(final Context context) throws Exception {
+        IAnalyzer<?, ?> analyzer = (IAnalyzer<?, ?>) context.getAnalyzer();
+        analyzer.init(context);
+        analyzer.build(context);
+        return analyzer;
     }
 
 }

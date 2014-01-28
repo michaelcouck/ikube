@@ -21,7 +21,6 @@ import org.mockito.Mockito;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,7 +41,7 @@ public class AnalTest extends BaseTest {
     @MockClass(realClass = SerializationUtilities.class)
     public static class SerializationUtilitiesMock {
         @Mock
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({"unchecked", "UnusedParameters"})
         public static <T> T clone(final Class<T> klass, T t) {
             return (T) search;
         }
@@ -81,7 +80,7 @@ public class AnalTest extends BaseTest {
         when(anal.invertMatrix(any(Object[][].class))).thenCallRealMethod();
         when(anal.search(any(Search.class), anyInt(), anyInt(), anyString())).thenCallRealMethod();
         when(anal.buildJsonResponse(any(Object.class))).thenCallRealMethod();
-        when(anal.twitter(any(HttpServletRequest.class), any(UriInfo.class))).thenCallRealMethod();
+        when(anal.twitter(any(HttpServletRequest.class))).thenCallRealMethod();
         when(anal.unmarshall(any(Class.class), any(HttpServletRequest.class))).thenReturn(search);
         when(searcherService.search(any(Search.class))).thenReturn(search);
 
@@ -98,16 +97,18 @@ public class AnalTest extends BaseTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void happy() {
-        when(anal.happy(any(HttpServletRequest.class), any(UriInfo.class))).thenCallRealMethod();
+        when(anal.happy(any(HttpServletRequest.class))).thenCallRealMethod();
         when(anal.heatMapData(any(ArrayList.class), anyInt())).thenReturn(new Object[0][]);
-        Response response = anal.happy(null, null);
+        Response response = anal.happy(null);
         String string = (String) response.getEntity();
         TwitterSearch twitterSearch = gson.fromJson(string, TwitterSearch.class);
         assertNotNull(twitterSearch);
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void heatMapData() {
         when(anal.heatMapData(any(ArrayList.class), anyInt())).thenCallRealMethod();
         // Remove the statistics
@@ -132,7 +133,7 @@ public class AnalTest extends BaseTest {
 
     @Test
     public void twitter() {
-        Response response = anal.twitter(null, null);
+        Response response = anal.twitter(null);
         String string = (String) response.getEntity();
         TwitterSearch twitterSearch = gson.fromJson(string, TwitterSearch.class);
         assertNotNull(twitterSearch);

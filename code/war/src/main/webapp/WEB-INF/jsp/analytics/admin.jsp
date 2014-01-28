@@ -1,3 +1,4 @@
+<%--suppress ALL --%>
 <%@ page errorPage="/WEB-INF/jsp/error.jsp"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles"%>
@@ -11,9 +12,9 @@
 			<div class="span12">
 				<div class="box">
 					<div class="tab-header">
-						<b>Analyzer administration<b>
+						<b>Analyzer administration</b>
 						<img 
-							ng-show="!!status"
+							ng-show="!status"
 							alt="Loading spinner"
 							src="<c:url value="/assets/images/loading.gif" />" 
 							height="16px"
@@ -24,99 +25,90 @@
 						</span>
 					</div>
 
-					<!-- ng-submit="doAnalysis()" -->
 					<form class="fill-up">
 						<div class="row-fluid">
-							<div class="span6">
-								<div class="padded">
-									Analysis
-									<div class="note pull-right">
-										<b>Select an analyzer</b>
-									</div>
-									<div class="input search">
-										<select 
-											ng-model="analysis.analyzer" 
-											ng-model="analyzers"
-											ng-options="analyzer for analyzer in analyzers"
-											class="fill-up">
-											<option style="display: none" value="">Analyzer...</option>
-										</select>
-									</div>
-									<div class="note large">
-										<i class="icon-pencil"></i> Note: The first attribute is the
-										class attribute, which you then omit in the case of a
-										analyzer. With clusterers there is no class attribute.
-									</div>
-									<div class="input">
-										<textarea
-											placeholder="Input data in Weka format...(essentially csv format)"
-											rows="5" 
-											ng-model="analysis.input"
-											title="datum,datum,datum...
-datum,datum,datum..."></textarea>
-									</div>
-									<div style="position: relative;">
-										<a class="button blue" href="#"> Choose File... <input
-											type="file"
-											style="position: absolute; z-index: 2; top: 0; left: 0; filter: alpha(opacity =   0); opacity: 0; background-color: transparent; color: transparent;"
-											file-upload multiple
-											onchange="$('#upload-file-info').html($(this).val());" />
-										</a>
-										<span id="upload-file-info"></span>
-									</div>
-									<button type="submit" class="button blue" style="margin-top: 5px;" ng-click="doAnalysis()">Go</button>
-								</div>
-							</div>
+							<div class="padded">
 
-							<div class="span6">
-								<div class="padded">
-									<b>Analyzer training</b>
-									<div class="note pull-right">
-										<b>Specify analyzer unique identifier</b>
-									</div>
-									<div class="input">
-										<input 
-											id="analyzer-identifier" 
-											name="analyzer-identifier"
-											type="text" 
-											focus-me="true"
-											placeholder="Analyzer unique identifier...">
-										<div class="input search pull-right" ng-show="true">
-											Identifier already in use : <a href="#" ng-click="">analyzer-em</a>
-										</div>
-									</div>
-									<br>
-									<div class="note large">
-										<i class="icon-warning-sign"></i> Warning: This is the
-										training text area!
-									</div>
-									<div class="input">
-										<textarea 
-											placeholder="Training data in Weka format..."
-											rows="5" 
-											ng-model="analysis.input"
-											title="@relation sentiment
+                                <div class="note">
+                                    <b>Specify the unique identifier for your analyzer...</b>
+                                </div>
+                                <div class="input">
+                                    <input
+                                        id="name"
+                                        name="name"
+                                        class="input"
+                                        type="text"
+                                        focus-me="true"
+                                        ng-model="context.name"
+                                        placeholder="Identifier...">
+                                </div>
+                                <div class="input">
+                                    <input
+                                        id="analyzer"
+                                        name="analyzer"
+                                        class="input"
+                                        type="text"
+                                        ng-model="context.analyzer"
+                                        placeholder="Analyzer class...">
+                                </div>
+                                <div class="input">
+                                    <input
+                                        id="filter"
+                                        name="filter"
+                                        class="input"
+                                        type="text"
+                                        ng-model="context.filter"
+                                        placeholder="Filter class...">
+                                </div>
+                                <div class="input">
+                                    <input
+                                        id="algorithm"
+                                        name="algorithm"
+                                        class="input"
+                                        type="text"
+                                        ng-model="context.algorithm"
+                                        placeholder="Algorithm class...">
+                                </div>
+
+                                <div class="note">
+                                    <b>Or select an analyzer to re-train</b>
+                                </div>
+                                <div class="input search">
+                                    <select
+                                        ng-model="analysis.analyzer"
+                                        ng-model="analyzers"
+                                        ng-options="analyzer for analyzer in analyzers" class="fill-up">
+                                        <option style="display: none" value="">Analyzer...</option>
+                                    </select>
+                                </div>
+
+								<div class="note">
+									<i class="icon-warning-sign"></i> Warning: This is the training text area! You overwrite the original training model when you use this.
+								</div>
+								<div class="input">
+									<textarea
+										placeholder="Training data in Weka format..."
+										rows="5"
+										ng-model="context.trainingData"
+										title="@relation sentiment
 @attribute class {positive,negative}
 @attribute text String
 @data
 positive,'Fantastic holiday'
 negative,'Terrible weather'
-positive,'positive'
-negative,'negative'
 positive,'my beautiful little girl'
 negative,'you selfish stupid woman'"></textarea>
-									</div>
-									<div style="position: relative;">
-										<a class="button blue" href="#"> Choose File... <input
-											type="file"
-											style="position: absolute; z-index: 2; top: 0; left: 0; filter: alpha(opacity =   0); opacity: 0; background-color: transparent; color: transparent;"
-											file-upload multiple
-											onchange="$('#upload-training-file-info').html($(this).val());" />
-										</a>
-										<span id="upload-training-file-info"></span>
-									</div>
-									<button type="submit" class="button blue" style="margin-top: 5px;" ng-click="doTrain()">Go</button>
 								</div>
+								<div style="position: relative;">
+									<a class="button blue" href="#">Choose File...<input
+										type="file"
+										style="position: absolute; z-index: 2; top: 0; left: 0; opacity: 0; background-color: transparent; color: transparent;"
+										file-upload multiple
+										onchange="$('#upload-training-file-info').html($(this).val());" />
+									</a>
+									<span id="upload-training-file-info"></span>
+								</div>
+								<button type="submit" class="button blue" style="margin-top: 5px;" ng-click="doCreate()">Create</button>
 							</div>
 						</div>
 					</form>
@@ -125,8 +117,7 @@ negative,'you selfish stupid woman'"></textarea>
 		</div>
 	</div>
 
-	<div class="container-fluid">
-
+	<%--<div class="container-fluid">
 		<div class="row-fluid">
 			<div class="span6">
 				<div class="box">
@@ -154,6 +145,5 @@ negative,'you selfish stupid woman'"></textarea>
 				</div>
 			</div>
 		</div>
-
-	</div>
+	</div>--%>
 </div>

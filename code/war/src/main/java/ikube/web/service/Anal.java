@@ -23,7 +23,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,6 +48,7 @@ public class Anal extends Resource {
     /**
      * Custom search transfer object for the Twitter application.
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static class TwitterSearch extends Search {
 
         int clusters;
@@ -125,7 +125,7 @@ public class Anal extends Resource {
     @POST
     @Path(Anal.HAPPY)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response happy(@Context final HttpServletRequest request, @Context final UriInfo uriInfo) {
+    public Response happy(@Context final HttpServletRequest request) {
         // Google Maps API heat map data format is {lat, lng, weight} eg. {42, 1.8, 3}
         final TwitterSearch twitterSearch = unmarshall(TwitterSearch.class, request);
         final long endTime = System.currentTimeMillis();
@@ -142,6 +142,13 @@ public class Anal extends Resource {
                 searchResults.add(statistics);
                 logger.info("Heat map data size : " + heatMapData.length);
                 twitterSearch.setHeatMapData(heatMapData);
+                // Reduce the search results to something reasonable, so we always have some tweets, but don't send 10 meg to the front
+                int maxResults = 10000;
+                if (searchResults.size() > maxResults) {
+                    List<HashMap<String, String>> subList = searchResults.subList(maxResults, searchResults.size());
+                    searchResults = new ArrayList<>(subList);
+                    twitterSearch.setSearchResults(searchResults);
+                }
             }
         });
         logger.info("Duration for heat map data : " + duration);
@@ -188,7 +195,7 @@ public class Anal extends Resource {
     @POST
     @Path(Anal.ANALYZE)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response twitter(@Context final HttpServletRequest request, @Context final UriInfo uriInfo) {
+    public Response twitter(@Context final HttpServletRequest request) {
         final TwitterSearch search = unmarshall(TwitterSearch.class, request);
         double duration = Timer.execute(new Timer.Timed() {
             @Override
@@ -215,7 +222,7 @@ public class Anal extends Resource {
         int period = (int) Math.abs(search.getStartHour());
         long startTime = System.currentTimeMillis() - (((long) (period)) * HOUR_MILLIS);
         long endTime = System.currentTimeMillis();
-        logger.info("Start : " + startTime + ", end : " + endTime);
+        // logger.info("Start : " + startTime + ", end : " + endTime);
         // Periods plus one for the headers
         final Object[][] timeLineSentiment = new Object[3][period + 1];
 
@@ -262,9 +269,9 @@ public class Anal extends Resource {
             public void run() {
                 int positiveCount = search(search, periodTime, endTime, IConstants.POSITIVE);
                 int negativeCount = search(search, periodTime, endTime, IConstants.NEGATIVE);
-                if (logger.isDebugEnabled()) {
+                /*if (logger.isDebugEnabled()) {
                     logger.debug("Positive/negative : " + hour + "-" + positiveCount + "-" + negativeCount);
-                }
+                }*/
                 timeLineSentiment[0][periods] = positiveCount;
                 timeLineSentiment[1][periods] = negativeCount;
                 timeLineSentiment[2][periods] = hour;
@@ -272,6 +279,7 @@ public class Anal extends Resource {
         });
     }
 
+    @SuppressWarnings("StringBufferReplaceableByString")
     int search(final Search search, final long startTime, final long endTime, final String classification) {
         Search searchClone = SerializationUtilities.clone(Search.class, search);
         String timeRange = new StringBuilder(Long.toString(startTime)).append("-").append(endTime).toString();
@@ -289,16 +297,16 @@ public class Anal extends Resource {
         // searchClone.setSortFields(Arrays.asList(CREATED_AT));
         // searchClone.setSortDirections(Arrays.asList(Boolean.TRUE.toString()));
 
-        if (logger.isDebugEnabled()) {
+        /*if (logger.isDebugEnabled()) {
             logger.debug("Search range : " + timeRange);
-        }
+        }*/
 
         searchClone = searcherService.search(searchClone);
         ArrayList<HashMap<String, String>> searchCloneResults = searchClone.getSearchResults();
         HashMap<String, String> statistics = searchCloneResults.get(searchCloneResults.size() - 1);
         String total = statistics.get(IConstants.TOTAL);
         search.setSearchResults(searchCloneResults);
-        logger.info("Total : " + total);
+        // logger.info("Total : " + total);
         return Integer.valueOf(total);
     }
 

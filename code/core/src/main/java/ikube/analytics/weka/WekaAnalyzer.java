@@ -3,6 +3,7 @@ package ikube.analytics.weka;
 import ikube.IConstants;
 import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
+import ikube.model.Context;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Timer;
 import org.apache.commons.io.FilenameUtils;
@@ -61,11 +62,10 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<String, double[
      * @return the instances object built from the arff training and structure file
      * @throws IOException
      */
-    Instances instances(final IContext context) throws IOException {
+    Instances instances(final Context context) throws IOException {
         InputStream inputStream = null;
         try {
-            File file = getDataFile(context);
-            inputStream = new FileInputStream(file);
+            inputStream = getInputStream(context);
             Reader reader = new InputStreamReader(inputStream);
             return new Instances(reader);
         } finally {
@@ -82,31 +82,43 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<String, double[
      * @param context   the analyzer context for holding the configuration details
      * @param instances the instances to persist to a file
      */
-    void persist(final IContext context, final Instances instances) {
+    void persist(final Context context, final Instances instances) {
         double duration = Timer.execute(new Timer.Timed() {
             @Override
             public void execute() {
                 File file = getDataFile(context);
-                logger.info("Persisting data : " + file);
-                String filePath = FileUtilities.cleanFilePath(file.getAbsolutePath());
-                WekaToolkit.writeToArff(instances, filePath);
+                if (file != null) {
+                    logger.info("Persisting data : " + file);
+                    String filePath = FileUtilities.cleanFilePath(file.getAbsolutePath());
+                    WekaToolkit.writeToArff(instances, filePath);
+                }
             }
         });
         logger.info("Persisted data in : " + duration);
     }
 
-    File getDataFile(final IContext context) {
+    InputStream getInputStream(final Context context) throws FileNotFoundException {
+        if (context.getTrainingData() != null) {
+            return new ByteArrayInputStream(context.getTrainingData().getBytes());
+        }
+        return new FileInputStream(getDataFile(context));
+    }
+
+    File getDataFile(final Context context) {
         String name = context.getName();
         File directory = FileUtilities.findDirectoryRecursively(new File(IConstants.ANALYTICS_DIRECTORY), name);
         File file = new File(directory, name + ".arff");
         if (!file.exists() || !file.canRead()) {
-            logger.warn("Can't find data file : " + file + ", will search for it...");
+            logger.info("Can't find data file : " + file + ", will search for it...");
             String fileName = FilenameUtils.getName(file.getName());
-            file = FileUtilities.findFileRecursively(new File("."), fileName);
-            if (file == null || !file.exists() || !file.canRead()) {
-                throw new RuntimeException("Couldn't find file for analyzer or can't read file : " + file);
+            File dataFile = FileUtilities.findFileRecursively(new File("."), fileName);
+            if (dataFile == null || !dataFile.exists() || !dataFile.canRead()) {
+                logger.info("Couldn't find file for analyzer or can't read file, will create it : " + fileName);
+                file = FileUtilities.getOrCreateFile(file);
+                if (file != null) {
+                    logger.info("Found data file : " + file.getAbsolutePath());
+                }
             }
-            logger.info("Found data file : " + file.getAbsolutePath());
         }
         return file;
     }

@@ -1,7 +1,5 @@
 package ikube.model;
 
-import ikube.analytics.IAnalyzer;
-
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -11,32 +9,49 @@ import javax.persistence.InheritanceType;
  * input in the form of files, then this class will hold the properties that are necessary for the analyzer to be instanciated, initialized and
  * trained.
  *
+ * @param <T> the type of analyzer in Ikube system
+ * @param <F> the type of the filter to convert the data to the input format
+ * @param <A> the logical implementation or algorithm for the analyzer
  * @author Michael Couck
  * @version 01.00
  * @since 10.04.13
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class Context<T, F, A> extends Persistable implements IAnalyzer.IContext<T, F, A> {
+public class Context<T, F, A> extends Persistable {
 
     /**
-     * @see ikube.analytics.IAnalyzer.IContext
+     * The name of this specific analyzer. The name will also be used to find the initial training file,
+     * and indeed persist the instances that were used to train this analyzer for further investigation and modification.
      */
     private String name;
+
     /**
-     * @see ikube.analytics.IAnalyzer.IContext
+     * Ths internal type, i.e. the {@link ikube.analytics.IAnalyzer} type. Could be for instance
+     * a {@link ikube.analytics.weka.WekaClassifier}. This class then holds a reference to the logical implementation,
+     * and in the case of a classifier this could be a {@link weka.classifiers.functions.SMO} function.
+     * <p/>
+     * This typically is only defined using the interface, if the analyzers are defined in Spring,then we know immediately
+     * what the type will be of course.
      */
     private T analyzer;
     /**
-     * @see ikube.analytics.IAnalyzer.IContext
+     * The filter type to convert the data into for example feature vectors.
      */
     private F filter;
+
     /**
-     * @see ikube.analytics.IAnalyzer.IContext
+     * The underlying algorithm for the analyzer, for example KMeans or J48 for example.
      */
     private A algorithm;
+
     /**
-     * @see ikube.analytics.IAnalyzer.IContext
+     * This is the string training data, typically set from the front end.
+     */
+    private String trainingData;
+
+    /**
+     * Ths maximum number of instances that can be used to train this analyzer.
      */
     private int maxTraining;
 
@@ -44,7 +59,7 @@ public class Context<T, F, A> extends Persistable implements IAnalyzer.IContext<
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -52,7 +67,7 @@ public class Context<T, F, A> extends Persistable implements IAnalyzer.IContext<
         return filter;
     }
 
-    public void setFilter(F filter) {
+    public void setFilter(final F filter) {
         this.filter = filter;
     }
 
@@ -60,7 +75,7 @@ public class Context<T, F, A> extends Persistable implements IAnalyzer.IContext<
         return analyzer;
     }
 
-    public void setAnalyzer(T analyzer) {
+    public void setAnalyzer(final T analyzer) {
         this.analyzer = analyzer;
     }
 
@@ -68,15 +83,27 @@ public class Context<T, F, A> extends Persistable implements IAnalyzer.IContext<
         return algorithm;
     }
 
-    public void setAlgorithm(A algorithm) {
+    public void setAlgorithm(final A algorithm) {
         this.algorithm = algorithm;
+    }
+
+    public String getTrainingData() {
+        return trainingData;
+    }
+
+    public void setTrainingData(final String trainingData) {
+        this.trainingData = trainingData;
     }
 
     public int getMaxTraining() {
         return maxTraining;
     }
 
-    public void setMaxTraining(int maxTraining) {
+    public void setMaxTraining(final int maxTraining) {
         this.maxTraining = maxTraining;
+    }
+
+    public String toString() {
+        return "Name : " + name + ", analyzer : " + analyzer + ", filter : " + filter + ", algorithm : " + algorithm;
     }
 }

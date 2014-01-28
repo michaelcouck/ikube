@@ -184,26 +184,28 @@ public final class FileUtilities {
 	 * @param file the file that is requested
 	 * @return the found or newly created {@link File} or <code>null</code> if something went wrong.
 	 */
-	public static final synchronized File getOrCreateFile(final File file) {
+	public static synchronized File getOrCreateFile(final File file) {
 		try {
 			if (file.exists() && file.isFile()) {
 				return file;
 			}
 			File parent = file.getParentFile();
-			parent = getOrCreateDirectory(parent.getAbsolutePath());
-			boolean created = Boolean.FALSE;
-			if (parent != null) {
-				try {
-					LOGGER.debug("Creating file : " + file.getAbsolutePath());
-					created = file.createNewFile();
-				} catch (IOException e) {
-					LOGGER.error("Exception creating file : " + file, e);
-				}
-			}
-			if (created && file != null && file.exists()) {
-				return file;
-			}
-			LOGGER.debug("Couldn't create file : " + file.getAbsolutePath());
+            if (parent != null) {
+                parent = getOrCreateDirectory(parent.getAbsolutePath());
+                boolean created = Boolean.FALSE;
+                if (parent != null) {
+                    try {
+                        LOGGER.debug("Creating file : " + file.getAbsolutePath());
+                        created = file.createNewFile();
+                    } catch (IOException e) {
+                        LOGGER.error("Exception creating file : " + file, e);
+                    }
+                }
+                if (created && file != null && file.exists()) {
+                    return file;
+                }
+            }
+			LOGGER.debug("Couldn't create file : " + file);
 			return null;
 		} finally {
 			FileUtilities.class.notifyAll();

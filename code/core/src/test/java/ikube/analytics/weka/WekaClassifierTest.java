@@ -1,19 +1,17 @@
 package ikube.analytics.weka;
 
-import static org.mockito.Mockito.*;
-import static junit.framework.Assert.*;
-
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import weka.classifiers.functions.SMO;
 import weka.filters.unsupervised.attribute.StringToWordVector;
+
+import static junit.framework.Assert.assertEquals;
+import static org.mockito.Mockito.*;
 
 
 /**
@@ -43,7 +41,7 @@ public class WekaClassifierTest extends AbstractTest {
 
     @Test
     public void init() throws Exception {
-        IAnalyzer.IContext context = mock(IAnalyzer.IContext.class);
+        Context context = mock(Context.class);
         when(context.getName()).thenReturn("sentiment");
         wekaClassifier.init(context);
         verify(context, atLeastOnce()).getAlgorithm();

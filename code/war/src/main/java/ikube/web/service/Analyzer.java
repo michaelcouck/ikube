@@ -1,6 +1,7 @@
 package ikube.web.service;
 
 import ikube.analytics.IAnalyticsService;
+import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,14 +9,11 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import java.util.Map;
 
 /**
  * TODO Implement this and the architecture of course...
@@ -27,36 +25,77 @@ import javax.ws.rs.core.UriInfo;
 @Component
 @Path(Analyzer.ANALYZER)
 @Scope(Resource.REQUEST)
+@Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class Analyzer extends Resource {
 
     public static final String ANALYZER = "/analyzer";
+    public static final String CREATE = "/create";
+    public static final String TRAIN = "/train";
     public static final String ANALYZE = "/analyze";
+    public static final String DESTROY = "/destroy";
+    public static final String ANALYZERS = "/analyzers";
 
     @Autowired
     protected IAnalyticsService analyticsService;
 
-    /**
-     * This method will take an analysis object, classify it using the classifier that is defined in the analysis object and, add the classification results to
-     * the analysis object and serialize it for the caller.
-     */
     @POST
-    @Path(Analyzer.ANALYZE)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response analyze(@Context final HttpServletRequest request, @Context final UriInfo uriInfo) {
+    @Path(Analyzer.CREATE)
+    @SuppressWarnings("unchecked")
+    public Response create(@Context final HttpServletRequest request) {
+        ikube.model.Context context = unmarshall(ikube.model.Context.class, request);
+        analyticsService.create(context);
+        return buildJsonResponse(context.getName());
+    }
+
+    @POST
+    @Path(Analyzer.TRAIN)
+    @SuppressWarnings("unchecked")
+    public Response train(@Context final HttpServletRequest request) {
         Analysis<?, ?> analysis = unmarshall(Analysis.class, request);
-        analyticsService.analyze(analysis);
-        analysis.setAlgorithmOutput(newLineToLineBreak(analysis.getAlgorithmOutput()).toString());
+        analyticsService.train(analysis);
         return buildJsonResponse(analysis);
     }
 
-    private Object newLineToLineBreak(final Object object) {
+    /**
+     * This method will take an analysis object, classify it using the classifier that is defined in the analysis object and, add the
+     * classification results to the analysis object and serialize it for the caller.
+     */
+    @POST
+    @Path(Analyzer.ANALYZE)
+    @SuppressWarnings("unchecked")
+    public Response analyze(@Context final HttpServletRequest request) {
+        Analysis<?, ?> analysis = unmarshall(Analysis.class, request);
+        analysis = analyticsService.analyze(analysis);
+        String algorithmOutput = newLineToLineBreak(analysis.getAlgorithmOutput());
+        analysis.setAlgorithmOutput(algorithmOutput);
+        return buildJsonResponse(analysis);
+    }
+
+    @POST
+    @Path(Analyzer.DESTROY)
+    @SuppressWarnings("unchecked")
+    public Response destroy(@Context final HttpServletRequest request) {
+        ikube.model.Context context = unmarshall(ikube.model.Context.class, request);
+        analyticsService.destroy(context);
+        return buildJsonResponse(context);
+    }
+
+    @GET
+    @Path(Analyzer.ANALYZERS)
+    @SuppressWarnings("unchecked")
+    public Response analyzers() {
+        Map<String, IAnalyzer> analyzers = analyticsService.getAnalyzers();
+        String[] names = analyzers.keySet().toArray(new String[analyzers.size()]);
+        return buildJsonResponse(names);
+    }
+
+    private String newLineToLineBreak(final Object object) {
         if (object != null && String.class.isAssignableFrom(object.getClass())) {
-            Object result = StringUtils.replace(object.toString(), "\n", "<br>");
-            result = StringUtils.replace(result.toString(), "\r", "<br>");
-            return result;
+            String result = StringUtils.replace(object.toString(), "\n", "<br>");
+            return StringUtils.replace(result, "\r", "<br>");
         }
-        return object;
+        return null;
     }
 
 }

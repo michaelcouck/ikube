@@ -1,3 +1,4 @@
+//noinspection JSUnusedLocalSymbols
 /**
  * @author Michael Couck
  * @since 24-11-2013
@@ -18,18 +19,39 @@ module.controller('AnalyticsController', function($http, $scope, $injector, $tim
 	$scope.headers = ["Cluster", "Cluster probability"];
 	$scope.origin = [0, 0];
 	$scope.analysis = {
-		correlation : true,
-		distribution : true,
+		correlation : false,
+		distribution : false,
 		distributionForInstances : [$scope.headers, $scope.origin]
 	};
-	$scope.analyzer;
-	$scope.analyzers;
+	$scope.analyzer = undefined;
+	$scope.analyzers = undefined;
+
+    $scope.context = {
+        name : undefined,
+        analyzer : undefined,
+        filter : undefined,
+        algorithm : undefined,
+        trainingData : undefined,
+        maxTraining : 10000
+    };
+
+    $scope.doCreate = function() {
+        var url = getServiceUrl('/ikube/service/analyzer/create');
+        var promise = $http.post(url, $scope.context);
+        promise.success(function(data, status) {
+            $scope.status = status;
+            $scope.doAnalyzers();
+        });
+        promise.error(function(data, status) {
+            $scope.status = status;
+        });
+    };
 	
 	$scope.doAnalysis = function() {
 		var url = getServiceUrl('/ikube/service/analyzer/analyze');
-		var analysis = angular.copy($scope.analysis);
-		analysis.distributionForInstances.splice(0, 1);
-		
+		//noinspection JSUnresolvedVariable
+        var analysis = angular.copy($scope.analysis);
+
 		analysis.clazz = null;
 		analysis.output = null;
 		analysis.exception = null;
@@ -53,7 +75,8 @@ module.controller('AnalyticsController', function($http, $scope, $injector, $tim
 	};
 	
 	$scope.doChart = function(distributionForInstances) {
-		var chart = {
+        //noinspection JSUnresolvedVariable,JSUnresolvedFunction
+        return {
 			type : "ScatterChart",
 			cssStyle : "height:300px; width:100%;",
 			data : google.visualization.arrayToDataTable(distributionForInstances),
@@ -66,7 +89,6 @@ module.controller('AnalyticsController', function($http, $scope, $injector, $tim
 				backgroundColor: { fill : 'transparent' }
 			}
 		};
-		return chart;
 	};
 	
 	$scope.chart = $scope.doChart($scope.analysis.distributionForInstances);
@@ -83,7 +105,7 @@ module.controller('AnalyticsController', function($http, $scope, $injector, $tim
 	};
 	
 	$scope.doAnalyzers = function() {
-		var url = getServiceUrl('/ikube/service/monitor/analyzers');
+		var url = getServiceUrl('/ikube/service/analyzer/analyzers');
 		var promise = $http.get(url);
 		promise.success(function(data, status) {
 			$scope.status = status;
@@ -105,8 +127,10 @@ module.controller('AnalyticsController', function($http, $scope, $injector, $tim
 	$scope.files = [];
 	
 	// listen for the file selected event
-	$scope.$on("fileSelected", function(event, args) {
-		$scope.$apply(function() {
+	//noinspection JSUnresolvedFunction
+    $scope.$on("fileSelected", function(event, args) {
+		//noinspection JSUnresolvedFunction
+        $scope.$apply(function() {
 			// add the file object to the scope's files collection
 			$scope.files.push(args.file);
 		});
@@ -116,7 +140,8 @@ module.controller('AnalyticsController', function($http, $scope, $injector, $tim
 	$scope.save = function() {
 		// "/Api/PostStuff"
 		var url = getServiceUrl('/ikube/service/analyzer/analyze');
-		$http({
+        //noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
+        $http({
 			method : 'POST',
 			url : url,
 			// IMPORTANT!!! You might think this should be set to
@@ -136,7 +161,8 @@ module.controller('AnalyticsController', function($http, $scope, $injector, $tim
 				// need to convert our json object to a string version of json
 				// otherwise the browser will do a 'toString()' on the object which will
 				// result in the value '[Object object]' on the server.
-				formData.append("model", angular.toJson(data.model));
+                //noinspection JSUnresolvedVariable,JSUnresolvedFunction
+                formData.append("model", angular.toJson(data.model));
 				// now add all of the assigned files
 				for ( var i = 0; i < data.files; i++) {
 					// add each file to the form data and iteratively name them

@@ -1,27 +1,59 @@
 package ikube.analytics;
 
 import ikube.model.Analysis;
-import ikube.toolkit.ApplicationContextManager;
+import ikube.model.Context;
 import ikube.toolkit.Timer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This class is implemented as a state pattern. The user specifies the type of analyzer, and the service 'connects' to the correct implementation and executes
- * the analysis logic.
+ * This class is implemented as a state pattern. The user specifies the type of analyzer, and the service 'connects' to the correct
+ * implementation and executes the analysis logic.
  *
  * @author Michael Couck
  * @version 01.00
  * @since 10.04.13
  */
-public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
+public class AnalyticsService<I, O> implements IAnalyticsService<I, O>, BeanPostProcessor {
 
-    private Map<String, IAnalyzer> analyzers;
+    private static final Logger LOGGER = LoggerFactory.getLogger(AnalyticsService.class);
 
-    @Override
-    public Map<String, IAnalyzer> getAnalyzers() {
-        return analyzers;
+    private Map<String, IAnalyzer> analyzers = new HashMap<>();
+
+    @SuppressWarnings("unchecked")
+    public IAnalyzer<I, O> create(final Context context) {
+        try {
+            // Instantiate the classifier, the algorithm and the filter
+            Object algorithmName = context.getAlgorithm();
+            context.setAlgorithm(Class.forName(String.valueOf(algorithmName)).newInstance());
+            Object analyzerName = context.getAnalyzer();
+            context.setAnalyzer(Class.forName(String.valueOf(analyzerName)).newInstance());
+            Object filterName = context.getFilter();
+            context.setFilter(Class.forName(String.valueOf(filterName)).newInstance());
+
+            IAnalyzer<I, O> analyzer = (IAnalyzer<I, O>) AnalyzerManager.buildAnalyzer(context);
+            analyzers.put(context.getName(), analyzer);
+            return analyzer;
+        } catch (final Exception e) {
+            LOGGER.error("Exception creating analyzer : " + context.getName(), e);
+            throw new RuntimeException("Exception creating analyzer : " + context.getName(), e);
+        }
+    }
+
+    public IAnalyzer<I, O> train(final Analysis<I, O> analysis) {
+        final IAnalyzer<I, O> analyzer = getAnalyzer(analysis);
+        try {
+            analyzer.train(analysis.getInput());
+        } catch (final Exception e) {
+            throw new RuntimeException("Exception training analyzer : " + analysis, e);
+        }
+        return analyzer;
     }
 
     @Override
@@ -32,9 +64,9 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
             @SuppressWarnings("unchecked")
             public void execute() {
                 try {
-                    O output = analyzer.analyze((I) analysis);
-                    analysis.setOutput(output);
+                    analyzer.analyze((I) analysis);
                 } catch (final Exception e) {
+                    LOGGER.error("Exception analyzing : " + analyzer, e);
                     analysis.setException(e);
                 }
             }
@@ -44,6 +76,34 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
         return analysis;
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public IAnalyzer<I, O> destroy(final Context context) {
+        IAnalyzer<I, O> analyzer = analyzers.remove(context.getName());
+        if (analyzer != null) {
+            try {
+                analyzer.destroy(context);
+            } catch (Exception e) {
+                throw new RuntimeException("Exception destroying analyzer : " + context, e);
+            }
+        }
+        return analyzer;
+    }
+
+    @Override
+    public Object postProcessBeforeInitialization(final Object bean, final String beanName) throws BeansException {
+        return bean;
+    }
+
+    @Override
+    public Object postProcessAfterInitialization(final Object bean, final String beanName) throws BeansException {
+        // We collect all the analyzers that have been defined in the configuration here
+        if (IAnalyzer.class.isAssignableFrom(bean.getClass())) {
+            analyzers.put(beanName, (IAnalyzer) bean);
+        }
+        return bean;
+    }
+
     @SuppressWarnings("unchecked")
     IAnalyzer<I, O> getAnalyzer(final Analysis<I, O> analysis) {
         Map<String, IAnalyzer> analyzers = getAnalyzers();
@@ -51,8 +111,8 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
         return (IAnalyzer<I, O>) analyzer;
     }
 
-    public void setAnalyzers(final Map<String, IAnalyzer> analyzers) {
-        this.analyzers = analyzers;
+    @Override
+    public Map<String, IAnalyzer> getAnalyzers() {
+        return analyzers;
     }
-
 }

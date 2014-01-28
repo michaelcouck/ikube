@@ -402,6 +402,10 @@ public class SearcherService implements ISearcherService {
     private Map<Long, Search> mergeBatch = new HashMap<>();
     private List<Search> persistBatch = new ArrayList<>();
 
+    /**
+     * TODO This needs to be re-implemented for optimization and performance. Two possibilities, either create
+     * an index on the hash column in the search table or keep everything in memory some how.
+     */
     protected synchronized void persistSearch(final Search search) {
         final String indexName = search.getIndexName();
         final String[] searchStrings = search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]);

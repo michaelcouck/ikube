@@ -1,6 +1,7 @@
 package ikube.analytics.weka;
 
 import ikube.model.Analysis;
+import ikube.model.Context;
 import ikube.toolkit.Timer;
 import weka.clusterers.ClusterEvaluation;
 import weka.clusterers.Clusterer;
@@ -28,7 +29,7 @@ public class WekaClusterer extends WekaAnalyzer {
      * {@inheritDoc}
      */
     @Override
-    public void init(final IContext context) throws Exception {
+    public void init(final Context context) throws Exception {
         filter = (Filter) context.getFilter();
         instances = instances(context);
         instances.setRelationName("training_data");
@@ -40,7 +41,7 @@ public class WekaClusterer extends WekaAnalyzer {
      * {@inheritDoc}
      */
     @Override
-    public void build(final IContext context) throws Exception {
+    public void build(final Context context) throws Exception {
         double duration = Timer.execute(new Timer.Timed() {
             @Override
             public void execute() {
@@ -109,6 +110,11 @@ public class WekaClusterer extends WekaAnalyzer {
         } finally {
             reentrantLock.unlock();
         }
+    }
+
+    @Override
+    public void destroy(final Context context) throws Exception {
+        instances.delete();
     }
 
     @Override

@@ -1,7 +1,6 @@
 package ikube.web.service;
 
 import ikube.IConstants;
-import ikube.analytics.IAnalyzer;
 import ikube.cluster.listener.IListener;
 import ikube.model.Action;
 import ikube.model.IndexContext;
@@ -22,7 +21,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -33,6 +31,7 @@ import java.util.*;
  * @since 16.10.12
  * @version 01.00
  */
+@SuppressWarnings("UnnecessaryBoxing")
 @Component
 @Path(Monitor.MONITOR)
 @Scope(Monitor.REQUEST)
@@ -40,7 +39,6 @@ import java.util.*;
 public class Monitor extends Resource {
 
 	/** Constants for the paths to the web services. */
-	public static final String SERVICE = "/service";
 	public static final String MONITOR = "/monitor";
 
 	public static final String FIELDS = "/fields";
@@ -62,7 +60,6 @@ public class Monitor extends Resource {
 
 	public static final String DELETE_INDEX = "/delete-index";
 	public static final String CPU_THROTTLING = "/cpu-throttling";
-	public static final String ANALYZERS = "/analyzers";
 
 	@GET
 	@Path(Monitor.FIELDS)
@@ -159,7 +156,7 @@ public class Monitor extends Resource {
 	@GET
 	@Path(Monitor.INDEXING)
 	@Consumes(MediaType.APPLICATION_XML)
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({"rawtypes", "unchecked", "UnnecessaryBoxing"})
 	public Response indexingStatistics() {
 		Map<String, Server> servers = clusterManager.getServers();
 		Object[] times = getTimes(servers, new ArrayList<Object>(Arrays.asList(addQuotes("Times"))));
@@ -275,7 +272,7 @@ public class Monitor extends Resource {
 	@SuppressWarnings("unchecked")
 	@Path(Monitor.SET_PROPERTIES)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response setProperties(@Context final HttpServletRequest request, @Context final UriInfo uriInfo) throws IOException {
+	public Response setProperties(@Context final HttpServletRequest request) throws IOException {
 		Map<String, String> filesAndProperties = unmarshall(Map.class, request);
 		monitorService.setProperties(filesAndProperties);
 		return buildResponse().build();
@@ -316,15 +313,6 @@ public class Monitor extends Resource {
 		return buildResponse().build();
 	}
 
-	@GET
-	@Path(Monitor.ANALYZERS)
-	@Consumes(MediaType.APPLICATION_XML)
-	public Response analyzers() {
-        Map<String, IAnalyzer> analyzers = analyticsService.getAnalyzers();
-		String[] names = analyzers.keySet().toArray(new String[analyticsService.getAnalyzers().keySet().size()]);
-		return buildJsonResponse(names);
-	}
-
 	@SuppressWarnings({ "rawtypes", "unused" })
 	private IndexContext getIndexContextFromServer(final String indexName, final Server server) {
 		List<IndexContext> indexContexts = server.getIndexContexts();
@@ -356,7 +344,7 @@ public class Monitor extends Resource {
 		});
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked", "LoopStatementThatDoesntLoop"})
 	private Object[] getTimes(final Map<String, Server> servers, final ArrayList<Object> times) {
 		GregorianCalendar gregorianCalendar = new GregorianCalendar();
 		outer: for (final Map.Entry<String, Server> mapEntry : servers.entrySet()) {

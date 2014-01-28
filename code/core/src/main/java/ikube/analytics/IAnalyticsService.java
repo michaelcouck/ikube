@@ -1,6 +1,7 @@
 package ikube.analytics;
 
 import ikube.model.Analysis;
+import ikube.model.Context;
 
 import java.util.Map;
 
@@ -11,8 +12,14 @@ import java.util.Map;
  */
 public interface IAnalyticsService<I, O> {
 
-    Map<String, IAnalyzer> getAnalyzers();
+    IAnalyzer<I, O> create(final Context context);
+
+    IAnalyzer<I, O> train(final Analysis<I, O> analysis);
 
     Analysis<I, O> analyze(final Analysis<I, O> analysis);
+
+    IAnalyzer<I, O> destroy(final Context context);
+
+    Map<String, IAnalyzer> getAnalyzers();
 
 }

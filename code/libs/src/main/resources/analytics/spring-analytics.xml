@@ -9,13 +9,8 @@
 
     <bean id="ikube.analytics.IAnalyticsService" class="ikube.analytics.AnalyticsService"/>
 
-    <bean id="weka-clusterer" class="ikube.analytics.weka.WekaClusterer" scope="prototype"/>
-    <bean id="weka-clusterer-em" class="weka.clusterers.EM" scope="prototype"/>
-
-    <bean id="weka-classifier" class="ikube.analytics.weka.WekaClassifier" scope="prototype"/>
-    <bean id="string-to-word-vector" class="weka.filters.unsupervised.attribute.StringToWordVector" scope="prototype"/>
-    <bean id="weka-classifier-smo" class="weka.classifiers.functions.SMO" scope="prototype"/>
-
+    <bean id="weka-clusterer" class="ikube.analytics.weka.WekaClusterer"/>
+    <bean id="weka-clusterer-em" class="weka.clusterers.EM"/>
     <bean
         id="context-em"
         class="ikube.model.Context"
@@ -24,10 +19,13 @@
         property:algorithm-ref="weka-clusterer-em"
         property:maxTraining="1000"/>
 
+    <bean id="weka-classifier" class="ikube.analytics.weka.WekaClassifier"/>
+    <bean id="string-to-word-vector" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
+    <bean id="weka-classifier-smo" class="weka.classifiers.functions.SMO"/>
     <bean
         id="context-smo"
         class="ikube.model.Context"
-        property:name="sentiment"
+        property:name="sentiment-smo"
         property:analyzer-ref="weka-classifier"
         property:filter-ref="string-to-word-vector"
         property:algorithm-ref="weka-classifier-smo"
@@ -170,7 +168,7 @@
         class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
         property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzers">
         <property name="arguments">
-            <array>
+            <list>
                 <ref local="context-em"/>
                 <ref local="context-smo"/>
                 <ref local="context-smo-en"/>
@@ -185,7 +183,7 @@
                 <ref local="context-smo-ar"/>
                 <ref local="context-smo-tr"/>
                 <ref local="context-smo-ru"/>
-            </array>
+            </list>
         </property>
     </bean>
 

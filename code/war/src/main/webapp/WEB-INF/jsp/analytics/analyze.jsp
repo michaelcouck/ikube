@@ -1,3 +1,4 @@
+<%--suppress ALL --%>
 <%@ page errorPage="/WEB-INF/jsp/error.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
@@ -11,14 +12,13 @@
 			<div class="box">
 				<div class="tab-header">
 					Analytics 
-					<img ng-show="!!status" alt="Loading spinner" src="<c:url value="/assets/images/loading.gif" />" height="16px" width="16px">
-					<span class="pull-right"><span class="options"><a href="#"><i class="icon-cog"></i></span></span>
+					<img ng-show="!status" alt="Loading spinner" src="<c:url value="/assets/images/loading.gif" />" height="16px" width="16px">
+					<span class="pull-right"><span class="options"><a href="#"><i class="icon-cog"></i></a></span></span>
 				</div>
 
 				<form class="fill-up">
 					<div class="row-fluid">
 						<div class="padded">
-							<i class=" icon-random"></i> Analysis
 							<div class="note pull-right">
 								<b>Select an analyzer</b>
 							</div>
@@ -37,12 +37,12 @@
 								<textarea
 									placeholder="Input data in Weka format...(essentially csv format)"
 									rows="5" ng-model="analysis.input"
-									title="datum,datum,datum... \n\rdatum,datum,datum..."></textarea>
+									title="datum,datum,datum..."></textarea>
 							</div>
 							<div style="position: relative;">
 								<a class="button blue icon-file" href="#"> Choose File... <input
 									type="file"
-									style="position: absolute; z-index: 2; top: 0; left: 0; filter: alpha(opacity =     0); opacity: 0; background-color: transparent; color: transparent;"
+									style="position: absolute; z-index: 2; top: 0; left: 0; opacity: 0; background-color: transparent; color: transparent;"
 									file-upload multiple
 									onchange="$('#upload-file-info').html($(this).val());" />
 								</a> <span id="upload-file-info"></span>
