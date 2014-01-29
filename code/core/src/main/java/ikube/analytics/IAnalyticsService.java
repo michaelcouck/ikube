@@ -16,6 +16,8 @@ public interface IAnalyticsService<I, O> {
 
     IAnalyzer<I, O> train(final Analysis<I, O> analysis);
 
+    IAnalyzer<I, O> build(final Context context);
+
     Analysis<I, O> analyze(final Analysis<I, O> analysis);
 
     IAnalyzer<I, O> destroy(final Context context);

@@ -143,7 +143,7 @@ public class Anal extends Resource {
                 logger.info("Heat map data size : " + heatMapData.length);
                 twitterSearch.setHeatMapData(heatMapData);
                 // Reduce the search results to something reasonable, so we always have some tweets, but don't send 10 meg to the front
-                int maxResults = 10000;
+                int maxResults = 6000;
                 if (searchResults.size() > maxResults) {
                     List<HashMap<String, String>> subList = searchResults.subList(maxResults, searchResults.size());
                     searchResults = new ArrayList<>(subList);

@@ -21,9 +21,9 @@
 	Available disk space(if disk full running) : {{indexContext.availableDiskSpace}}<br>
 	Delta index : {{indexContext.delta}}<br>
 </div>
-<div class="btn-group">
+<div class="btn-group" ng-controller="NotificationController">
 	<button class="button black mini" ng-click="startIndexing(indexContext.name);"><i class="icon-pencil"></i>Start</button>
 	<button class="button black mini" ng-click="deleteIndex(indexContext.name);"><i class="icon-remove"></i>Delete</button>
-	<button class="button black mini" onClick="enterpriseNotification();"><i class="icon-ok"></i>Edit</button>
+	<button class="button black mini" ng-click="enterpriseNotification();"><i class="icon-ok"></i>Edit</button>
 	<button class="button black mini" ng-click="cancel();"><i class="icon-stop"></i>Cancel</button>
 </div>

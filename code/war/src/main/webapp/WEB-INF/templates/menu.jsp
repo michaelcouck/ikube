@@ -11,7 +11,9 @@
 		<li href="search" active-link="active"><a href="<c:url value="/search/search.html" />"><i class="icon-list-alt"></i>Search</a></li>
 		<li href="analytics" active-link="active"><a href="<c:url value="/analytics/analyze.html" />"><i class="icon-beaker"></i>Analytics</a></li>
 		<li href="application" active-link="active"><a href="<c:url value="/application/happy.html" />"><i class="icon-twitter-sign"></i>Twitter</a></li>
-		<li href="grid" active-link="active"><a href="#" onClick="enterpriseNotification();"><i class="icon-th"></i>Grid</a></li>
+		<li href="grid" active-link="active" ng-controller="NotificationController">
+            <a href="#" ng-click="enterpriseNotification();"><i class="icon-th"></i>Grid</a>
+        </li>
 		<li class="dropdown">
 			<a class="dropdown-toggle" data-toggle="dropdown">
 				<i class="icon-share-alt"></i>More<span class="caret"></span>

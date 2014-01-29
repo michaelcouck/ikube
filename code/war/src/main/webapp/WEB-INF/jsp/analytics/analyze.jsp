@@ -39,16 +39,7 @@
 									rows="5" ng-model="analysis.input"
 									title="datum,datum,datum..."></textarea>
 							</div>
-							<div style="position: relative;">
-								<a class="button blue icon-file" href="#"> Choose File... <input
-									type="file"
-									style="position: absolute; z-index: 2; top: 0; left: 0; opacity: 0; background-color: transparent; color: transparent;"
-									file-upload multiple
-									onchange="$('#upload-file-info').html($(this).val());" />
-								</a> <span id="upload-file-info"></span>
-							</div>
-							<button type="submit" class="button blue icon-random"
-								style="margin-top: 5px;" ng-click="doAnalysis()">Go</button>
+							<button type="submit" class="button blue" style="margin-top: 5px;" ng-click="doAnalysis()">&nbsp;Go</button>
 						</div>
 					</div>
 				</form>
@@ -110,4 +101,14 @@
 			</div>
 		</div>
 	</div>
+
+    <%--<div style="position: relative;">
+        <a class="button blue icon-file" href="#"> Choose File... <input
+                type="file"
+                style="position: absolute; z-index: 2; top: 0; left: 0; opacity: 0; background-color: transparent; color: transparent;"
+                file-upload multiple
+                onchange="$('#upload-file-info').html($(this).val());" />
+        </a> <span id="upload-file-info"></span>
+    </div>--%>
+
 </div>

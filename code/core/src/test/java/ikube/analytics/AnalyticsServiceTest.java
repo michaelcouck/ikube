@@ -80,10 +80,10 @@ public class AnalyticsServiceTest extends AbstractTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void analyze() {
+    public void analyze() throws Exception {
         Analysis analysis = analyticsService.analyze(this.analysis);
         assertEquals(this.analysis, analysis);
-        verify(analysis, atLeastOnce()).setOutput(any());
+        verify(analyzer, atLeastOnce()).analyze(any());
     }
 
     @Test
@@ -99,7 +99,7 @@ public class AnalyticsServiceTest extends AbstractTest {
     @Test
     @SuppressWarnings("unchecked")
     public void getAnalyzer() throws Exception {
-        IAnalyzer analyzer = analyticsService.getAnalyzer(analysis);
+        IAnalyzer analyzer = analyticsService.getAnalyzer(analysis.getAnalyzer());
         assertEquals(this.analyzer, analyzer);
     }
 

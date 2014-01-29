@@ -176,9 +176,9 @@
 							<div class="user-info" ng-show="!!result.longitude">Longitude : {{result.longitude}}</div>
 							<div class="user-info" ng-show="!!result.lastmodified">Last modified : {{result.lastmodified}}</div> -->
 							<div class="user-content" ng-show="!!result.fragment" ng-bind-html-unsafe="'Fragment : ' + result.fragment">Fragment :</div>
-							<div class="btn-group">
-								<button class="button black mini" onClick="enterpriseNotification();"><i class="icon-pencil"></i>Edit</button>
-								<button class="button black mini" onClick="enterpriseNotification();"><i class="icon-remove"></i>Delete</button>
+							<div class="btn-group" ng-controller="NotificationController">
+								<button class="button black mini" ng-click="enterpriseNotification();"><i class="icon-pencil"></i>Edit</button>
+								<button class="button black mini" ng-click="enterpriseNotification();"><i class="icon-remove"></i>Delete</button>
 								<button class="button black mini" ng-click="search.searchResults.splice($index, 1)"><i class="icon-stop"></i>Hide</button>
 							</div>
 						</div>

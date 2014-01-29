@@ -26,6 +26,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O>, BeanPost
 
     private Map<String, IAnalyzer> analyzers = new HashMap<>();
 
+    @Override
     @SuppressWarnings("unchecked")
     public IAnalyzer<I, O> create(final Context context) {
         try {
@@ -46,19 +47,35 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O>, BeanPost
         }
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
     public IAnalyzer<I, O> train(final Analysis<I, O> analysis) {
-        final IAnalyzer<I, O> analyzer = getAnalyzer(analysis);
+        final IAnalyzer<I, O> analyzer = getAnalyzer(analysis.getAnalyzer());
         try {
-            analyzer.train(analysis.getInput());
+            analyzer.train((I) analysis);
         } catch (final Exception e) {
+            LOGGER.error(null, e);
             throw new RuntimeException("Exception training analyzer : " + analysis, e);
         }
         return analyzer;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    public IAnalyzer<I, O> build(final Context context) {
+        final IAnalyzer<I, O> analyzer = getAnalyzer(context.getName());
+        try {
+            analyzer.build(context);
+        } catch (final Exception e) {
+            LOGGER.error(null, e);
+            throw new RuntimeException("Exception building analyzer : " + context.getName(), e);
+        }
+        return analyzer;
+    }
+
+    @Override
     public Analysis<I, O> analyze(final Analysis<I, O> analysis) {
-        final IAnalyzer<I, O> analyzer = getAnalyzer(analysis);
+        final IAnalyzer<I, O> analyzer = getAnalyzer(analysis.getAnalyzer());
         double duration = Timer.execute(new Timer.Timed() {
             @Override
             @SuppressWarnings("unchecked")
@@ -105,9 +122,9 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O>, BeanPost
     }
 
     @SuppressWarnings("unchecked")
-    IAnalyzer<I, O> getAnalyzer(final Analysis<I, O> analysis) {
+    IAnalyzer<I, O> getAnalyzer(final String name) {
         Map<String, IAnalyzer> analyzers = getAnalyzers();
-        IAnalyzer<?, ?> analyzer = analyzers.get(analysis.getAnalyzer());
+        IAnalyzer<?, ?> analyzer = analyzers.get(name);
         return (IAnalyzer<I, O>) analyzer;
     }
 

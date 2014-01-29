@@ -7,8 +7,8 @@
 			<i class="icon-search"></i>Search
 		</a>
 	</li>
-	<li href="navigate" active-link="active">
-		<a href="#" onClick="enterpriseNotification();">
+	<li href="navigate" active-link="active" ng-controller="NotificationController">
+		<a href="#" ng-click="enterpriseNotification();">
 			<i class="icon-list"></i>Edit index
 		</a>
 	</li>

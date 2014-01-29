@@ -3,6 +3,7 @@ package ikube.web.service;
 import ikube.analytics.IAnalyticsService;
 import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
+import ikube.toolkit.SerializationUtilities;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -32,6 +33,7 @@ public class Analyzer extends Resource {
     public static final String ANALYZER = "/analyzer";
     public static final String CREATE = "/create";
     public static final String TRAIN = "/train";
+    public static final String BUILD = "/build";
     public static final String ANALYZE = "/analyze";
     public static final String DESTROY = "/destroy";
     public static final String ANALYZERS = "/analyzers";
@@ -50,11 +52,26 @@ public class Analyzer extends Resource {
 
     @POST
     @Path(Analyzer.TRAIN)
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked"})
     public Response train(@Context final HttpServletRequest request) {
-        Analysis<?, ?> analysis = unmarshall(Analysis.class, request);
-        analyticsService.train(analysis);
+        Analysis<String, String> analysis = unmarshall(Analysis.class, request);
+        String data = analysis.getInput();
+        String[] inputs = StringUtils.split(data, "\n\r\t");
+        for (final String input : inputs) {
+            Analysis<String, String> clone = SerializationUtilities.clone(Analysis.class, analysis);
+            clone.setInput(input);
+            analyticsService.train(clone);
+        }
         return buildJsonResponse(analysis);
+    }
+
+    @POST
+    @Path(Analyzer.BUILD)
+    @SuppressWarnings("unchecked")
+    public Response build(@Context final HttpServletRequest request) {
+        ikube.model.Context context = unmarshall(ikube.model.Context.class, request);
+        analyticsService.build(context);
+        return buildJsonResponse(context.getName());
     }
 
     /**

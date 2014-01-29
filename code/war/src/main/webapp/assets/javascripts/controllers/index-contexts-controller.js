@@ -12,7 +12,6 @@ module.controller('IndexContextsController', function($http, $scope, $injector, 
 	$scope.sortField = 'name';
 	$scope.descending = true;
 	$scope.viewAll = false;
-	// $scope.notificationService;
 
 	$scope.refreshIndexContexts = function() {
 		$scope.url = getServiceUrl('/ikube/service/monitor/index-contexts');
