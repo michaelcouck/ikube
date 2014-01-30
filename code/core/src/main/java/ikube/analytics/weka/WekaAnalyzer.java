@@ -6,7 +6,6 @@ import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Timer;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -106,17 +105,19 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<String, double[
 
     File getDataFile(final Context context) {
         String name = context.getName();
-        File directory = FileUtilities.findDirectoryRecursively(new File(IConstants.ANALYTICS_DIRECTORY), name);
-        File file = new File(directory, name + ".arff");
-        if (!file.exists() || !file.canRead()) {
-            logger.info("Can't find data file : " + file + ", will search for it...");
-            String fileName = FilenameUtils.getName(file.getName());
+        String fileName = name + ".arff";
+        File file = FileUtilities.findFileRecursively(new File(IConstants.ANALYTICS_DIRECTORY), fileName);
+        if (file == null || !file.exists() || !file.canRead()) {
+            logger.info("Can't find data file : " + fileName + ", will search for it...");
             File dataFile = FileUtilities.findFileRecursively(new File("."), fileName);
             if (dataFile == null || !dataFile.exists() || !dataFile.canRead()) {
                 logger.info("Couldn't find file for analyzer or can't read file, will create it : " + fileName);
-                file = FileUtilities.getOrCreateFile(file);
+                FileUtilities.getOrCreateDirectory(new File(IConstants.ANALYTICS_DIRECTORY));
+                file = FileUtilities.getOrCreateFile(new File(IConstants.ANALYTICS_DIRECTORY, fileName));
                 if (file != null) {
-                    logger.info("Found data file : " + file.getAbsolutePath());
+                    logger.info("Created data file : " + file.getAbsolutePath());
+                } else {
+                    logger.info("Couldn't create data file : " + fileName);
                 }
             }
         }

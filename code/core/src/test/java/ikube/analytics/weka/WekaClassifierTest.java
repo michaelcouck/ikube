@@ -5,14 +5,16 @@ import ikube.IConstants;
 import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
+import mockit.Deencapsulation;
 import org.junit.Before;
 import org.junit.Test;
 import weka.classifiers.functions.SMO;
+import weka.core.Instances;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.*;
-
 
 /**
  * @author Michael Couck
@@ -21,20 +23,20 @@ import static org.mockito.Mockito.*;
  */
 public class WekaClassifierTest extends AbstractTest {
 
+    private String positive = "my beautiful little girl";
+    private Context<WekaClassifier, StringToWordVector, SMO> context;
     /**
      * Class under test
      */
     private IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>> wekaClassifier;
-
-    private Context<WekaClassifier, StringToWordVector, SMO> context;
-    private String positive = "my beautiful little girl";
 
     @Before
     public void before() throws Exception {
         context = new Context<>();
         context.setAlgorithm(SMO.class.newInstance());
         context.setFilter(StringToWordVector.class.newInstance());
-        context.setName(IConstants.CLASSIFICATION);
+        context.setName("sentiment-en");
+        context.setMaxTraining(1000);
 
         wekaClassifier = new WekaClassifier();
     }
@@ -42,7 +44,7 @@ public class WekaClassifierTest extends AbstractTest {
     @Test
     public void init() throws Exception {
         Context context = mock(Context.class);
-        when(context.getName()).thenReturn("sentiment");
+        when(context.getName()).thenReturn("sentiment-en");
         wekaClassifier.init(context);
         verify(context, atLeastOnce()).getAlgorithm();
     }
@@ -51,32 +53,51 @@ public class WekaClassifierTest extends AbstractTest {
     @SuppressWarnings("unchecked")
     public void train() throws Exception {
         wekaClassifier.init(context);
-        int iterations = context.getMaxTraining() + 1;
+        Instances instances = Deencapsulation.getField(wekaClassifier, "instances");
+        int initial = instances.numInstances();
+        int iterations = context.getMaxTraining();
         do {
             Analysis<String, double[]> analysis = getAnalysis(IConstants.POSITIVE, positive);
-            wekaClassifier.train(analysis);
-        } while (iterations-- >= 0);
+            boolean trained = wekaClassifier.train(analysis);
+            assertTrue(trained);
+        } while (--iterations >= 0);
+        assertEquals(context.getMaxTraining() + initial + 1, instances.numInstances());
     }
 
     @Test
     public void build() throws Exception {
         wekaClassifier.init(context);
+        Instances instances = Deencapsulation.getField(wekaClassifier, "instances");
+        context.setMaxTraining(instances.numInstances());
         wekaClassifier.build(context);
+        assertEquals(0, instances.numInstances());
     }
 
     @Test
     public void analyze() throws Exception {
         wekaClassifier.init(context);
+        // String negative = "you selfish stupid woman";
+        String negative = "narryontop harry styles hello harry";
+        Analysis<String, double[]> analysis = getAnalysis(IConstants.NEGATIVE, negative);
+        wekaClassifier.train(analysis);
         wekaClassifier.build(context);
 
-        Analysis<String, double[]> analysis = getAnalysis(null, positive);
+        analysis = getAnalysis(null, positive);
         Analysis<String, double[]> result = wekaClassifier.analyze(analysis);
         assertEquals(IConstants.POSITIVE, result.getClazz());
 
-        String negative = "you selfish stupid woman";
         analysis = getAnalysis(null, negative);
         result = wekaClassifier.analyze(analysis);
         assertEquals(IConstants.NEGATIVE, result.getClazz());
+
+        /*System.gc();
+        long before = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / IConstants.MILLION;
+        for (int i = 0; i < IConstants.HUNDRED_THOUSAND; i++) {
+            wekaClassifier.analyze(analysis);
+        }
+        System.gc();
+        long after = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / IConstants.MILLION;
+        logger.info("Before : " + before + ", " + after + ", " + (after - before));*/
     }
 
 }
