@@ -1,7 +1,8 @@
 <project name="Deploy Ikube Cluster" default="go">
 
 	<property file="build.properties" />
-	<property file="local-build.properties" />
+	<!--suppress AntResolveInspection -->
+    <property file="local-build.properties" />
 
 	<!-- The default profile to deploy. -->
 	<property name="profile" value="production" />

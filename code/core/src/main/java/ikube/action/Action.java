@@ -7,7 +7,6 @@ import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.IMailer;
 import ikube.toolkit.UriUtilities;
 import org.apache.commons.jexl2.JexlEngine;
@@ -16,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Closeable;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This is the base class for actions. Actions execute logic on index contexts. Actions may include opening the searcher on a new index, indexing or deleting
@@ -27,6 +25,7 @@ import java.util.Map;
  * @version 01.00
  * @since 21.11.10
  */
+@SuppressWarnings({"SpringJavaAutowiringInspection", "UnusedDeclaration"})
 public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> {
 
     protected transient Logger logger = Logger.getLogger(this.getClass());
@@ -62,6 +61,12 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
     private List<IRule<IndexContext<?>>> rules;
 
     /**
+     * This is the list of handlers for all the sources of data. One such handler would be the {@link ikube.action.index.handler.database.IndexableTableHandler}
+     * for example, {@link ikube.action.index.handler.filesystem.IndexableFileSystemHandler} would be another.
+     */
+    private List<IIndexableHandler> indexableHandlers;
+
+    /**
      * This is the predicate that will be evaluated. The predicate consists of a boolean expression that contains the individual results of the rules. For
      * example '!IsThisServerWorking && !AnyServersWorking'. The rules' results will be inserted into the parameter place holders and the expression evaluated
      * by {@link JexlEngine}.
@@ -78,6 +83,7 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
      */
     @Override
     public boolean preExecute(final IndexContext<?> indexContext) throws Exception {
+        // To be over ridden by sub classes
         return Boolean.TRUE;
     }
 
@@ -90,7 +96,7 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
             preExecute(indexContext);
             boolean result = internalExecute(indexContext);
             if (result && dependent != null) {
-                result &= dependent.execute(indexContext);
+                result = dependent.execute(indexContext);
             }
             return result;
         } finally {
@@ -132,6 +138,7 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
      */
     @Override
     public boolean postExecute(final IndexContext<?> indexContext) throws Exception {
+        // To be over ridden by sub classes
         return Boolean.TRUE;
     }
 
@@ -194,10 +201,9 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
      * @return the handler for the indexable or null if there is no handler for the indexable. This will fail with a warning if there is no handler for the
      * indexable
      */
-    protected IIndexableHandler<Indexable<?>> getHandler(final Indexable<?> indexable) {
-        @SuppressWarnings("rawtypes")
-        Map<String, IIndexableHandler> indexableHandlers = ApplicationContextManager.getBeans(IIndexableHandler.class);
-        for (final IIndexableHandler<Indexable<?>> handler : indexableHandlers.values()) {
+    protected IIndexableHandler getHandler(final Indexable<?> indexable) {
+        // Map<String, IIndexableHandler> indexableHandlers = ApplicationContextManager.getBeans(IIndexableHandler.class);
+        for (final IIndexableHandler handler : indexableHandlers) {
             if (handler.getIndexableClass().equals(indexable.getClass())) {
                 return handler;
             }
@@ -219,10 +225,10 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
                 if (closeable != null) {
                     closeable.close();
                 }
-            } catch (NullPointerException e) {
+            } catch (final NullPointerException e) {
                 logger.error("Already closed perhaps?");
                 logger.debug(null, e);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 logger.error("Exception closing the directory : ", e);
             }
         }
@@ -238,7 +244,7 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
         try {
             String ip = UriUtilities.getIp();
             mailer.sendMail(subject + ":" + ip, body);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.error("Exception sending mail : " + subject + ", " + e.getMessage());
             logger.debug(null, e);
         }
@@ -252,6 +258,10 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
      */
     public void setDependent(final IAction<IndexContext<?>, Boolean> dependent) {
         this.dependent = dependent;
+    }
+
+    public void setIndexableHandlers(final List<IIndexableHandler> indexableHandlers) {
+        this.indexableHandlers = indexableHandlers;
     }
 
 }

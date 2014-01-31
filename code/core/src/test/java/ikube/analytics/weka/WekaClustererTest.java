@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import weka.clusterers.*;
 import weka.core.Instances;
+import weka.filters.Filter;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,6 +33,7 @@ public class WekaClustererTest extends AbstractTest {
     private WekaClusterer wekaclusterer;
 
     @Before
+    @SuppressWarnings("unchecked")
     public void before() throws Exception {
         dataFile = FileUtilities.findFileRecursively(new File("."), "bank-data.arff");
 
@@ -85,24 +87,26 @@ public class WekaClustererTest extends AbstractTest {
     @Test
     public void getCorrelationCoEfficients() throws Exception {
         Instances instances = Deencapsulation.getField(wekaclusterer, "instances");
-        double[][] correlationCoEfficients = wekaclusterer.getCorrelationCoefficients(instances);
-        for (final double[] correlationCoEfficient : correlationCoEfficients) {
-            for (final double instance : correlationCoEfficient) {
-                assertTrue(instance >= -1 && instance <= 1);
-            }
+        Filter filter = (Filter) context.getFilter();
+        double[] correlationCoEfficients = wekaclusterer.getCorrelationCoefficients(instances, filter);
+        for (final double correlationCoEfficient : correlationCoEfficients) {
+            assertTrue(correlationCoEfficient >= -1 && correlationCoEfficient <= 1);
         }
     }
 
     @Test
     public void getDistributionForInstances() throws Exception {
         Instances instances = Deencapsulation.getField(wekaclusterer, "instances");
-        double[][] distributionForInstances = wekaclusterer.getDistributionForInstances(instances);
+        Filter filter = (Filter) context.getFilter();
+        double[][] distributionForInstances = wekaclusterer.getDistributionForInstances(instances, filter);
         for (final double[] distribution : distributionForInstances) {
-            assertTrue(distribution[0] >= 0 && distribution[0] <= 10);
-            assertTrue(distribution[1] >= 0 && distribution[1] <= 1);
+            for (final double probability : distribution) {
+                assertTrue(probability >= 0 && probability <= 1.0);
+            }
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void buildAndAnalyze(final String type) throws Exception {
         context.setAlgorithm(Class.forName(type).newInstance());
         wekaclusterer.init(context);

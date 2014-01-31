@@ -94,6 +94,8 @@ public interface IConstants {
     String DESCENDING = "descending";
 
     String ENCODING = "UTF-8";
+    String APPLICATION_JSON = "application/json";
+    String CONTENT_TYPE = "Content-Type";
 
     String INDEX_NAME = "indexName";
     String MAX_RESULTS = "maxResults";

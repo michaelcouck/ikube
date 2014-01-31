@@ -118,8 +118,7 @@
 		property:ruleExpression="
 			IsNewIndexCreated ||
 			    (!IsMultiSearcherInitialised || !AreSearchablesInitialised) &#38;&#38;
-			    (AreIndexesCreated || AreUnopenedIndexes)
-			        || IsIndexChanged"
+			    (AreIndexesCreated || AreUnopenedIndexes)"
 		property:requiresClusterLock="false">
 		<property name="rules">
 			<util:list>

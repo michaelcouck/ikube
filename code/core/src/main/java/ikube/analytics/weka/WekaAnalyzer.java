@@ -17,7 +17,7 @@ import weka.core.Utils;
 import weka.filters.Filter;
 
 import java.io.*;
-import java.util.Enumeration;
+import java.util.Arrays;
 
 /**
  * TODO Document me...
@@ -96,6 +96,14 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<String, double[
         logger.info("Persisted data in : " + duration);
     }
 
+    /**
+     * This method gets the input stream to the data file or alternatively creates an input stream from the input in
+     * the context. Typically when the latter is the case the analyzer is being trained via the rest API.
+     *
+     * @param context the context for the analyzer
+     * @return the input stream either to the data file for training or a stream from the input in the context
+     * @throws FileNotFoundException
+     */
     InputStream getInputStream(final Context context) throws FileNotFoundException {
         if (context.getTrainingData() != null) {
             return new ByteArrayInputStream(context.getTrainingData().getBytes());
@@ -103,27 +111,57 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<String, double[
         return new FileInputStream(getDataFile(context));
     }
 
+    /**
+     * This method returns the data file for the analyzer. The data file contains the relational attribute set that can be
+     * used to train the analyzer. As with all configuration, we expect this file to reside in the {@link IConstants#IKUBE_DIRECTORY}
+     * some where.
+     *
+     * @param context the context for the analyzer that we want the input training file for
+     * @return the data file for the analyzer, or null if no such file exists. Typically if the file is
+     * not present then there is a serious problem and the analyzers will not work properly or at all, i.e.
+     * the results are undefined
+     */
     File getDataFile(final Context context) {
         String name = context.getName();
         String fileName = name + ".arff";
-        File file = FileUtilities.findFileRecursively(new File(IConstants.ANALYTICS_DIRECTORY), fileName);
+        Object ikubeConfigurationPathProperty = System.getProperty(IConstants.IKUBE_CONFIGURATION);
+        File directory;
+        if (ikubeConfigurationPathProperty == null) {
+            directory = new File(IConstants.ANALYTICS_DIRECTORY);
+        } else {
+            directory = new File(ikubeConfigurationPathProperty.toString(), IConstants.ANALYTICS_DIRECTORY);
+        }
+        File file = FileUtilities.findFileRecursively(directory, fileName);
+        logger.info("Looking for data file in directory : " + directory.getAbsolutePath());
         if (file == null || !file.exists() || !file.canRead()) {
             logger.info("Can't find data file : " + fileName + ", will search for it...");
             File dataFile = FileUtilities.findFileRecursively(new File("."), fileName);
             if (dataFile == null || !dataFile.exists() || !dataFile.canRead()) {
-                logger.info("Couldn't find file for analyzer or can't read file, will create it : " + fileName);
+                logger.warn("Couldn't find file for analyzer or can't read file, will create it : " + fileName);
                 FileUtilities.getOrCreateDirectory(new File(IConstants.ANALYTICS_DIRECTORY));
                 file = FileUtilities.getOrCreateFile(new File(IConstants.ANALYTICS_DIRECTORY, fileName));
                 if (file != null) {
                     logger.info("Created data file : " + file.getAbsolutePath());
                 } else {
-                    logger.info("Couldn't create data file : " + fileName);
+                    logger.warn("Couldn't create data file : " + fileName);
                 }
             }
         }
         return file;
     }
 
+    /**
+     * This method will filter the instance using the filter defined. Ultimately the filter changes the input
+     * instance into an instance that is useful for the analyzer. For example in the case of a SVM classifier, the
+     * support vectors are exactly that, vectors of doubles. If we are trying to classify text, we need to change(filter)
+     * the text from words to feature vectors, most likely using the tf-idf logic. The filter essentially does that
+     * for us in this method.
+     *
+     * @param instance the instance to filter into the correct form for the analyser
+     * @param filter   the filter to use for the transformation
+     * @return the filtered instance that is usable in the analyzer
+     * @throws Exception
+     */
     Instance filter(final Instance instance, final Filter filter) throws Exception {
         // Filter from string to inverse vector if necessary
         Instance filteredData;
@@ -136,6 +174,16 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<String, double[
         return filteredData;
     }
 
+    /**
+     * As with the {@link ikube.analytics.weka.WekaAnalyzer#filter(weka.core.Instance, weka.filters.Filter)} method, this method filters
+     * the entire data set into something that is usable. Typically this is used in the training faze of the logic when the 'raw' data set
+     * needs to be transformed into a matrix that can be used for training the analyzer.
+     *
+     * @param instances the instances that are to be transformed using the filter
+     * @param filter    the filter to use for the transformation
+     * @return the transformed instances object, ready to be used in training the classifier
+     * @throws Exception
+     */
     Instances filter(final Instances instances, final Filter filter) throws Exception {
         Instances filteredData;
         if (filter == null) {
@@ -147,48 +195,78 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<String, double[
         return filteredData;
     }
 
-    double[][] getCorrelationCoefficients(final Instances instances) {
-        int numAttributes = instances.numAttributes();
-        double[][] correlationCoefficients = new double[numAttributes][numAttributes];
-        for (int i = 0; i < numAttributes; i++) {
-            double[] attributeValuesArrayI = instances.attributeToDoubleArray(i);
-            for (int j = 0; j < i; j++) {
-                double[] attributeValuesArrayJ = instances.attributeToDoubleArray(j);
-                double correlationCoefficient = Utils.correlation(attributeValuesArrayI, attributeValuesArrayJ, numAttributes);
-                correlationCoefficients[i][j] = correlationCoefficient;
+    /**
+     * This method returns the correlation co-efficients for each instance compared to the next instance. The correlation is
+     * typically the Pearson's product moment correlation, which is the linear relationship between two variables, in this case
+     * the variables are in fact feature vectors for the instances.
+     *
+     * @param instances the instances data set
+     * @return the correlation co-efficients for each instance relative to the following instance
+     * @throws Exception
+     */
+    double[] getCorrelationCoefficients(final Instances instances, final Filter filter) throws Exception {
+        Instances filteredInstances = filter(instances, filter);
+        double[] correlationCoefficients = new double[filteredInstances.numInstances()];
+        Instance one = null;
+        for (int i = 0; i < filteredInstances.numInstances(); i++) {
+            Instance two = filteredInstances.instance(i);
+            if (one != null) {
+                double[] d1 = distributionForInstance(one);
+                double[] d2 = distributionForInstance(two);
+                double correlationCoefficient = Utils.correlation(d1, d2, d1.length);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Vector one : " + Arrays.toString(d1));
+                    logger.debug("Vector two : " + Arrays.toString(d2));
+                    logger.debug("Correlation : " + correlationCoefficient);
+                }
+                correlationCoefficients[i] = correlationCoefficient;
+            } else {
+                correlationCoefficients[i] = 1.0;
             }
+            one = two;
         }
         return correlationCoefficients;
     }
 
+    /**
+     * This method will return the distribution for the entire data set. The distribution is the probability of the
+     * variable being in the specific class or cluster in the data set.
+     *
+     * @param instances the data set of instances to get the distribution for, of the individual instances of course
+     * @return the total distribution for all the instances in the data set
+     * @throws Exception
+     */
     @SuppressWarnings("unchecked")
-    double[][] getDistributionForInstances(final Instances instances) throws Exception {
-        double[][] distributionForInstances = new double[instances.numInstances()][];
-        if (instances.numInstances() > 0) {
-            Enumeration<Instance> enumeration = instances.enumerateInstances();
-            int index = 0;
-            do {
-                Instance instance = enumeration.nextElement();
-                double cluster = classOrCluster(instance);
-                double greatest = 0;
-                double[] distribution = distributionForInstance(instance);
-                for (final double probability : distribution) {
-                    if (Math.abs(probability) > Math.abs(greatest)) {
-                        greatest = probability;
-                    }
-                }
-                double[] distributionForInstance = new double[2];
-                distributionForInstance[0] = cluster;
-                distributionForInstance[1] = greatest;
-                distributionForInstances[index] = distributionForInstance;
-                index++;
-            } while (enumeration.hasMoreElements());
+    double[][] getDistributionForInstances(final Instances instances, final Filter filter) throws Exception {
+        Instances filteredInstances = filter(instances, filter);
+        double[][] distributionForInstances = new double[filteredInstances.numInstances()][];
+        for (int i = 0; i < filteredInstances.numInstances(); i++) {
+            Instance instance = filteredInstances.instance(i);
+            double[] distributionForInstance = distributionForInstance(instance);
+            distributionForInstances[i] = distributionForInstance;
         }
         return distributionForInstances;
     }
 
+    /**
+     * This returns the class or the number of the cluster number. In the case of a classifier it is the
+     * index of the class attribute that this instance falls into, in the case of a clusterer it is the index
+     * of the cluster.
+     *
+     * @param instance the instance to get the classification attribute index or cluster number for
+     * @return the classification index or the cluster number for the instance
+     * @throws Exception
+     */
     abstract double classOrCluster(final Instance instance) throws Exception;
 
+    /**
+     * This method returns the distribution for the instance. The distribution is the probability that the instance
+     * falls into either the classification or cluster category, and suggests the classification or cluster of the instance.
+     *
+     * @param instance the instance to get the distribution for
+     * @return the probability distribution for the instance over the classes or clusters
+     * @throws Exception
+     */
     abstract double[] distributionForInstance(final Instance instance) throws Exception;
 
 }

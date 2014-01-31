@@ -42,62 +42,80 @@
 						<phase>compile</phase>
 						<configuration>
 							<target>
-								<!--<echo message="Base directory : ${basedir}, ">Base directory : ${basedir}</echo>
+								<echo message="Base directory : ${basedir}, ">Base directory : ${basedir}</echo>
+                                <delete dir="ikube" />
 								<copy todir="ikube" failonerror="true" verbose="false">
 									<fileset dir="../libs/src/main/resources/ikube" />
 								</copy>
+                                <delete dir="../core/ikube" />
 								<copy todir="../core/ikube" failonerror="true" verbose="false">
 									<fileset dir="../libs/src/main/resources/ikube" />
 								</copy>
+                                <delete dir="../war/ikube" />
 								<copy todir="../war/ikube" failonerror="true" verbose="false">
 									<fileset dir="../libs/src/main/resources/ikube" />
 								</copy>
+                                <delete dir="../../ikube" />
 								<copy todir="../../ikube" failonerror="true" verbose="false">
 									<fileset dir="../libs/src/main/resources/ikube" />
 								</copy>
-								
+
+                                <delete dir="ikube/production" />
 								<copy todir="ikube/production" failonerror="true" verbose="false">
+                                    <fileset dir="../libs/src/main/resources/indexes/production" />
+                                </copy>
+
+                                <delete dir="../core/ikube/production" />
+                                <copy todir="../core/ikube/production" failonerror="true" verbose="false">
 									<fileset dir="../libs/src/main/resources/indexes/production" />
 								</copy>
-								<copy todir="../core/ikube/production" failonerror="true" verbose="false">
-									<fileset dir="../libs/src/main/resources/indexes/production" />
-								</copy>
+                                <delete dir="../war/ikube/production" />
 								<copy todir="../war/ikube/production" failonerror="true" verbose="false">
 									<fileset dir="../libs/src/main/resources/indexes/production" />
 								</copy>
+                                <delete dir="../../ikube/production" />
 								<copy todir="../../ikube/production" failonerror="true" verbose="false">
 									<fileset dir="../libs/src/main/resources/indexes/production" />
 								</copy>
-								
+
+                                <delete dir="ikube/integration" />
 								<copy todir="ikube/integration" failonerror="true" verbose="false">
 									<fileset dir="../libs/src/main/resources/indexes/integration" />
 								</copy>
+                                <delete dir="../core/ikube/integration" />
 								<copy todir="../core/ikube/integration" failonerror="true" verbose="false">
 									<fileset dir="../libs/src/main/resources/indexes/integration" />
 								</copy>
+                                <delete dir="../war/ikube/integration" />
 								<copy todir="../war/ikube/integration" failonerror="true" verbose="false">
 									<fileset dir="../libs/src/main/resources/indexes/integration" />
 								</copy>
+                                <delete dir="../../ikube/integration" />
 								<copy todir="../../ikube/integration" failonerror="true" verbose="false">
 									<fileset dir="../libs/src/main/resources/indexes/integration" />
 								</copy>
-								
+
+                                <delete dir="ikube/analytics" />
 								<copy todir="ikube/analytics" failonerror="true" verbose="false">
 									<fileset dir="../libs/src/main/resources/analytics" />
 								</copy>
+                                <delete dir="../core/ikube/analytics" />
 								<copy todir="../core/ikube/analytics" failonerror="true" verbose="false">
 									<fileset dir="../libs/src/main/resources/analytics" />
 								</copy>
+                                <delete dir="../war/ikube/analytics" />
 								<copy todir="../war/ikube/analytics" failonerror="true" verbose="false">
 									<fileset dir="../libs/src/main/resources/analytics" />
 								</copy>
+                                <delete dir="../../ikube/analytics" />
 								<copy todir="../../ikube/analytics" failonerror="true" verbose="false">
 									<fileset dir="../libs/src/main/resources/analytics" />
 								</copy>
-								
-								 <copy todir="../war/ikube/twitter" failonerror="true" verbose="true">
+
+                                <delete dir="../war/ikube/twitter" />
+								<copy todir="../war/ikube/twitter" failonerror="true" verbose="true">
 									<fileset dir="../libs/src/main/resources/indexes/twitter" />
-								</copy>-->
+								</copy>
 							</target>
 						</configuration>
 						<goals>

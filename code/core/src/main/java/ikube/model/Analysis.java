@@ -43,7 +43,7 @@ public class Analysis<Input, Output> extends Persistable {
      * The correlation co-efficients for the data set.
      */
     @Transient
-    private double[][] correlationCoefficients;
+    private double[] correlationCoefficients;
     @Transient
     private double[][] distributionForInstances;
 
@@ -93,11 +93,11 @@ public class Analysis<Input, Output> extends Persistable {
         this.algorithmOutput = algorithmOutput;
     }
 
-    public double[][] getCorrelationCoefficients() {
+    public double[] getCorrelationCoefficients() {
         return correlationCoefficients;
     }
 
-    public void setCorrelationCoefficients(double[][] correlationCoefficients) {
+    public void setCorrelationCoefficients(double[] correlationCoefficients) {
         this.correlationCoefficients = correlationCoefficients;
     }
 

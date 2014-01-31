@@ -3,6 +3,7 @@ package ikube.analytics.weka;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.Timer;
+import org.apache.commons.lang.StringUtils;
 import weka.clusterers.ClusterEvaluation;
 import weka.clusterers.Clusterer;
 import weka.core.Attribute;
@@ -91,22 +92,30 @@ public class WekaClusterer extends WekaAnalyzer {
         try {
             reentrantLock.lock();
             // Create the instance from the data
-            Instance instance = instance(analysis.getInput(), instances);
+            String input = analysis.getInput();
+            Instance instance = instance(input, instances);
             Instance filteredInstance = filter(instance, filter);
             // Set the output for the client
-            int cluster = clusterer.clusterInstance(filteredInstance);
-            double[] distributionForInstance = clusterer.distributionForInstance(filteredInstance);
+            int cluster = (int) classOrCluster(filteredInstance);
+            double[] distributionForInstance = distributionForInstance(filteredInstance);
+
             analysis.setClazz(Integer.toString(cluster));
             analysis.setOutput(distributionForInstance);
             analysis.setAlgorithmOutput(clusterer.toString());
             if (analysis.isCorrelation()) {
-                analysis.setCorrelationCoefficients(getCorrelationCoefficients(instances));
+                analysis.setCorrelationCoefficients(getCorrelationCoefficients(instances, filter));
             }
             if (analysis.isDistribution()) {
-                Instances filteredData = filter(instances, filter);
-                analysis.setDistributionForInstances(getDistributionForInstances(filteredData));
+                analysis.setDistributionForInstances(getDistributionForInstances(instances, filter));
             }
             return analysis;
+        } catch (final Exception e) {
+            String content = analysis.getInput();
+            if (!StringUtils.isEmpty(content) && content.length() > 128) {
+                content = content.substring(0, 128);
+            }
+            logger.error("Exception clustering content : " + content, e);
+            throw new RuntimeException(e);
         } finally {
             reentrantLock.unlock();
         }

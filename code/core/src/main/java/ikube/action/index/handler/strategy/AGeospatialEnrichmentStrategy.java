@@ -16,6 +16,8 @@ import org.apache.lucene.spatial.SpatialStrategy;
 import org.apache.lucene.spatial.prefix.RecursivePrefixTreeStrategy;
 import org.apache.lucene.spatial.prefix.tree.GeohashPrefixTree;
 import org.apache.lucene.spatial.prefix.tree.SpatialPrefixTree;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -30,6 +32,8 @@ import java.util.Map;
  */
 @SuppressWarnings("SpringJavaAutowiringInspection")
 public abstract class AGeospatialEnrichmentStrategy extends AStrategy {
+
+    Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Value("${max.geohash.levels}")
     int maxGeohashLevels = IConstants.MAX_GEOHASH_LEVELS;
@@ -80,6 +84,7 @@ public abstract class AGeospatialEnrichmentStrategy extends AStrategy {
             Long hash = HashUtilities.hash(geoCity.getName());
             geoCityMap.put(hash, geoCity);
         }
+        logger.info("Loaded cities : " + geoCityMap.size());
     }
 
 }

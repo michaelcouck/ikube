@@ -45,7 +45,8 @@ public final class IndexManager {
 	 * @return the array of index writers opened on all the index directories for the context
 	 * @throws Exception
 	 */
-	public static synchronized IndexWriter[] openIndexWriterDelta(final IndexContext<?> indexContext) throws Exception {
+	@SuppressWarnings("ConstantConditions")
+    public static synchronized IndexWriter[] openIndexWriterDelta(final IndexContext<?> indexContext) throws Exception {
 		LOGGER.info("Opening delta writers on index context : " + indexContext);
 		String ip = UriUtilities.getIp();
 		String indexDirectoryPath = getIndexDirectoryPath(indexContext);
@@ -97,16 +98,16 @@ public final class IndexManager {
             }
             LOGGER.info("Index directory time : " + time + ", date : " + new Date(time) + ", writing index to directory " + indexDirectoryPath);
 			indexWriter = openIndexWriter(indexContext, indexDirectory, Boolean.TRUE);
-		} catch (CorruptIndexException e) {
+		} catch (final CorruptIndexException e) {
 			LOGGER.error("We expected a new index and got a corrupt one.", e);
 			LOGGER.warn("Didn't initialise the index writer. Will try to delete the index directory.");
 			delete = Boolean.TRUE;
-		} catch (LockObtainFailedException e) {
+		} catch (final LockObtainFailedException e) {
 			LOGGER.error("Failed to obtain the lock on the directory. Check the file system permissions or failed indexing jobs, "
 					+ "there will be a lock file in one of the index directories.", e);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			LOGGER.error("IO exception detected opening the writer", e);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			LOGGER.error("Unexpected exception detected while initializing the IndexWriter", e);
 		} finally {
 			if (delete && indexDirectory != null && indexDirectory.exists()) {
@@ -204,27 +205,26 @@ public final class IndexManager {
 			indexWriter.forceMerge(10, Boolean.TRUE);
 			indexWriter.waitForMerges();
 			indexWriter.deleteUnusedFiles();
-		} catch (NullPointerException e) {
+		} catch (final NullPointerException e) {
 			LOGGER.error("Null pointer, in the index writer : " + indexWriter);
 			LOGGER.debug(null, e);
-		} catch (CorruptIndexException e) {
+		} catch (final CorruptIndexException e) {
 			LOGGER.error("Corrupt index : " + indexWriter, e);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			LOGGER.error("IO optimising the index : " + indexWriter, e);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			LOGGER.error("General exception committing the index : " + indexWriter, e);
 		}
 		try {
 			indexWriter.close();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			LOGGER.error("Exception closing the index writer : " + indexWriter, e);
 		}
 		try {
 			if (directory != null) {
-				int retry = 0;
-				int maxRetry = 10;
+				int retry = 10;
 				// We have to wait for the merges and the close
-				while (IndexWriter.isLocked(directory) && retry++ < maxRetry) {
+				while (IndexWriter.isLocked(directory) && --retry > 0) {
 					IndexWriter.unlock(directory);
 					if (IndexWriter.isLocked(directory)) {
 						LOGGER.warn("Index still locked : " + directory);
@@ -246,7 +246,8 @@ public final class IndexManager {
 	 * @param ip the ip for the index directory name
 	 * @return the full path to the
 	 */
-	public static String getIndexDirectory(final IndexContext<?> indexContext, final long time, final String ip) {
+	@SuppressWarnings("StringBufferReplaceableByString")
+    public static String getIndexDirectory(final IndexContext<?> indexContext, final long time, final String ip) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(IndexManager.getIndexDirectoryPath(indexContext));
 		builder.append(IConstants.SEP);
@@ -323,7 +324,8 @@ public final class IndexManager {
 		return true;
 	}
 
-	public static long getIndexSize(final IndexContext<?> indexContext) {
+	@SuppressWarnings("StringBufferReplaceableByString")
+    public static long getIndexSize(final IndexContext<?> indexContext) {
 		long indexSize = 0;
 		try {
 			StringBuilder stringBuilder = new StringBuilder();
@@ -353,7 +355,7 @@ public final class IndexManager {
                     }
                 } while (files.size() > 0);
             }
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			LOGGER.error("Exception getting the size of the index : ", e);
 		}
 		return indexSize;
@@ -385,9 +387,9 @@ public final class IndexManager {
 			for (final IndexWriter indexWriter : indexWriters) {
 				try {
 					numDocs += indexWriter.numDocs();
-				} catch (AlreadyClosedException e) {
+				} catch (final AlreadyClosedException e) {
 					LOGGER.warn("Index writer is closed : " + e.getMessage());
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					LOGGER.error("Exception reading the number of documents from the writer", e);
 				}
 			}
@@ -525,7 +527,7 @@ public final class IndexManager {
 					document.removeField(fieldName);
 					field = new Field(fieldName, finalReader, fieldType);
 					document.add(field);
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					LOGGER.error("Exception writing the field value with the file writer : ", e);
 				} finally {
 					FileUtilities.close(writer);
@@ -544,11 +546,9 @@ public final class IndexManager {
 		for (final AtomicReaderContext atomicReaderContext : atomicReaderContexts) {
 			try {
                 FieldInfos fieldInfos = atomicReaderContext.reader().getFieldInfos();
-				Iterator<FieldInfo> iterator = fieldInfos.iterator();
-				while (iterator.hasNext()) {
-					FieldInfo fieldInfo = iterator.next();
-					fields.add(fieldInfo.name);
-				}
+                for (final FieldInfo fieldInfo : fieldInfos) {
+                    fields.add(fieldInfo.name);
+                }
 			} catch (NullPointerException e) {
 				LOGGER.warn("Null pointer : ");
 				LOGGER.debug(null, e);
@@ -558,7 +558,7 @@ public final class IndexManager {
 	}
 
 	/**
-	 * Singularity.
+	 * There can be only one...
 	 */
 	private IndexManager() {
 		// Documented

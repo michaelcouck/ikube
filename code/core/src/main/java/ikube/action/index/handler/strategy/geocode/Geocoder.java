@@ -1,156 +1,155 @@
 package ikube.action.index.handler.strategy.geocode;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import ikube.IConstants;
 import ikube.model.Coordinate;
+import ikube.model.Search;
 import ikube.security.WebServiceAuthentication;
-import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.ThreadUtilities;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-
 /**
- * @see IGeocoder
  * @author Michael Couck
- * @since 06.03.11
  * @version 01.00
+ * @see IGeocoder
+ * @since 06.03.11
  */
 public class Geocoder implements IGeocoder, InitializingBean {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(Geocoder.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Geocoder.class);
 
-	private boolean disabled;
-	private String userid;
-	private String password;
-	private String searchUrl;
-	private HttpClient httpClient;
-	private String[] searchStrings;
-	private String[] searchFields;
-	private NameValuePair searchFieldsPair;
-	private NameValuePair firstResultPair;
-	private NameValuePair maxResultsPair;
-	private NameValuePair fragmentPair;
-	private NameValuePair indexNamePair;
+    private boolean disabled;
+    private String userid;
+    private String password;
+    private String searchUrl;
+    private String searchField;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public synchronized Coordinate getCoordinate(String address) {
-		if (disabled) {
-			return null;
-		}
-		GetMethod getMethod = null;
-		try {
-			// Trim the address for strange characters to get a better category
-			String trimmedAddress = StringUtils.trim(address);
-			Arrays.fill(this.searchStrings, trimmedAddress);
+    private HttpClient httpClient;
 
-			// Get the GeoSpatial search service
-			NameValuePair searchStringsPair = new NameValuePair(IConstants.SEARCH_STRINGS, StringUtils.join(this.searchStrings, IConstants.SEMI_COLON));
+    private Gson gson = new GsonBuilder().disableHtmlEscaping().create();
 
-			getMethod = new GetMethod(searchUrl);
-			NameValuePair[] params = new NameValuePair[] { indexNamePair, searchStringsPair, searchFieldsPair, fragmentPair, firstResultPair, maxResultsPair };
-			getMethod.setQueryString(params);
-			int result = httpClient.executeMethod(getMethod);
-			String xml = getMethod.getResponseBodyAsString();
-			LOGGER.info("Result from web service : " + result + ", " + xml);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public synchronized Coordinate getCoordinate(final String searchString) {
+        if (disabled) {
+            return null;
+        }
+        PostMethod postMethod = null;
+        try {
+            // Trim the address for strange characters to get a better category
+            String trimmedAddress = StringUtils.trim(searchString);
+            Search search = new Search();
+            search.setFirstResult(0);
+            search.setFragment(Boolean.TRUE);
+            search.setIndexName(IConstants.GEOSPATIAL);
+            search.setMaxResults(10);
+            search.setOccurrenceFields(Arrays.asList(IConstants.MUST));
+            search.setSearchFields(Arrays.asList(searchField));
+            search.setSearchStrings(Arrays.asList(searchString));
+            search.setTypeFields(Arrays.asList(IConstants.STRING));
 
-			ArrayList<HashMap<String, String>> results = (ArrayList<HashMap<String, String>>) SerializationUtilities.deserialize(xml);
-			if (results.size() >= 2) {
-				Map<String, String> firstResult = results.get(0);
-				// We got a category, so we'll rely on Lucene to provide the best match for
-				// the address according to the data from GeoNames
-				String latitude = firstResult.get(IConstants.LATITUDE);
-				String longitude = firstResult.get(IConstants.LONGITUDE);
-				if (latitude != null && longitude != null) {
-					double lat = Double.parseDouble(latitude);
-					double lng = Double.parseDouble(longitude);
-					return new Coordinate(lat, lng, trimmedAddress);
-				}
-				LOGGER.info("Result from geoname search : " + firstResult);
-			}
-		} catch (Exception e) {
-			// We'll disable this geocoder for a while
-			ThreadUtilities.submit(this.getClass().getSimpleName(), new Runnable() {
-				public void run() {
-					try {
-						disabled = true;
-						ThreadUtilities.sleep(600000);
-						disabled = false;
-					} finally {
-						ThreadUtilities.destroy(this.getClass().getSimpleName());
-					}
-				}
-			});
-			LOGGER.error("Address and geocoder : ", address, toString());
-			LOGGER.error("Exception accessing the spatial search service : ", e);
-		} finally {
-			if (getMethod != null) {
-				getMethod.releaseConnection();
-			}
-		}
-		return null;
-	}
+            StringRequestEntity requestEntity = new StringRequestEntity(gson.toJson(search), IConstants.APPLICATION_JSON, IConstants.ENCODING);
+            postMethod = new PostMethod(searchUrl);
+            postMethod.addRequestHeader(IConstants.CONTENT_TYPE, IConstants.APPLICATION_JSON);
+            postMethod.setRequestEntity(requestEntity);
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		firstResultPair = new NameValuePair(IConstants.FIRST_RESULT, "0");
-		maxResultsPair = new NameValuePair(IConstants.MAX_RESULTS, "10");
-		fragmentPair = new NameValuePair(IConstants.FRAGMENT, Boolean.TRUE.toString());
-		indexNamePair = new NameValuePair(IConstants.INDEX_NAME, IConstants.GEOSPATIAL);
-		searchFieldsPair = new NameValuePair(IConstants.SEARCH_FIELDS, StringUtils.join(this.searchFields, IConstants.SEMI_COLON));
-		httpClient = new HttpClient();
-		URL url;
-		try {
-			url = new URL(searchUrl);
-			new WebServiceAuthentication().authenticate(httpClient, url.getHost(), Integer.toString(url.getPort()), userid, password);
-		} catch (MalformedURLException e) {
-			LOGGER.error(null, e);
-		}
-	}
+            int result = httpClient.executeMethod(postMethod);
+            String json = postMethod.getResponseBodyAsString();
+            LOGGER.info("Result from web service : " + result + ", " + json);
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setSearchUrl(String searchUrl) {
-		this.searchUrl = searchUrl;
-	}
+            Search response = gson.fromJson(json, Search.class);
+            ArrayList<HashMap<String, String>> results = response.getSearchResults();
+            if (results.size() > 1) {
+                Map<String, String> firstResult = results.get(0);
+                // We got a category, so we'll rely on Lucene to provide the best match for
+                // the address according to the data from GeoNames
+                String latitude = firstResult.get(IConstants.LATITUDE);
+                String longitude = firstResult.get(IConstants.LONGITUDE);
+                if (latitude != null && longitude != null) {
+                    double lat = Double.parseDouble(latitude);
+                    double lng = Double.parseDouble(longitude);
+                    return new Coordinate(lat, lng, trimmedAddress);
+                }
+                LOGGER.info("Result from geoname search : " + firstResult);
+            }
+        } catch (final Exception e) {
+            // We'll disable this geocoder for a while
+            ThreadUtilities.submit(this.getClass().getSimpleName(), new Runnable() {
+                public void run() {
+                    try {
+                        disabled = true;
+                        ThreadUtilities.sleep(600000);
+                        disabled = false;
+                    } finally {
+                        ThreadUtilities.destroy(this.getClass().getSimpleName());
+                    }
+                }
+            });
+            LOGGER.error("Address and geocoder : ", searchString, toString());
+            LOGGER.error("Exception accessing the spatial search service : ", e);
+        } finally {
+            if (postMethod != null) {
+                postMethod.releaseConnection();
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * This sets the search fields. At the time of writing the fields that were indexed in the GeoNames data was 'name', 'city' and 'country'. The city and
-	 * country fields are in fact the enriched data. Essentially all three of these fields will be searched, in order and the best match for them aggregated
-	 * will be used for the results.
-	 * 
-	 * @param searchFields the search fields to search in the GeoSpatial index, typically this will be the name field because this is an aggregation of the name
-	 *            of the feature in the GeoNames data and the enriched fields for the city and the country
-	 */
-	public void setSearchFields(List<String> searchFields) {
-		this.searchFields = searchFields.toArray(new String[searchFields.size()]);
-		this.searchStrings = new String[searchFields.size()];
-	}
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        httpClient = new HttpClient();
+        URL url;
+        try {
+            url = new URL(searchUrl);
+            new WebServiceAuthentication().authenticate(httpClient, url.getHost(), Integer.toString(url.getPort()), userid, password);
+        } catch (MalformedURLException e) {
+            LOGGER.error(null, e);
+        }
+    }
 
-	public void setUserid(String userid) {
-		this.userid = userid;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setSearchUrl(final String searchUrl) {
+        this.searchUrl = searchUrl;
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    /**
+     * This sets the search fields. At the time of writing the fields that were indexed in the GeoNames data was 'name', 'city' and 'country'. The city and
+     * country fields are in fact the enriched data. Essentially all three of these fields will be searched, in order and the best match for them aggregated
+     * will be used for the results.
+     *
+     * @param searchField the search field to search in the GeoSpatial index, typically this will be the name field because this is an aggregation of the name
+     *                    of the feature in the GeoNames data and the enriched fields for the city and the country
+     */
+    public void setSearchField(final String searchField) {
+        this.searchField = searchField;
+    }
+
+    public void setUserid(final String userid) {
+        this.userid = userid;
+    }
+
+    public void setPassword(final String password) {
+        this.password = password;
+    }
 
 }

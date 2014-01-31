@@ -22,13 +22,17 @@ public class Close extends Action<IndexContext<?>, Boolean> {
     public boolean internalExecute(final IndexContext<?> indexContext) {
         final IndexSearcher indexSearcher = indexContext.getMultiSearcher();
         if (indexSearcher != null && indexSearcher.getIndexReader() != null) {
-            ThreadUtilities.submit(this.getClass().getSimpleName(), new Runnable() {
+            final String name = Long.toHexString(System.currentTimeMillis());
+            ThreadUtilities.submit(name, new Runnable() {
                 public void run() {
                     try {
-                        ThreadUtilities.sleep(300000);
+                        ThreadUtilities.sleep(60000);
+                        logger.info("Closing searcher : " + indexContext.getName() + ", " + indexSearcher.hashCode());
                         indexSearcher.getIndexReader().close();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
+                    } finally {
+                        ThreadUtilities.destroy(name);
                     }
                 }
             });

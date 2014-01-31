@@ -12,8 +12,7 @@ import weka.classifiers.functions.SMO;
 import weka.core.Instances;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -98,6 +97,16 @@ public class WekaClassifierTest extends AbstractTest {
         System.gc();
         long after = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / IConstants.MILLION;
         logger.info("Before : " + before + ", " + after + ", " + (after - before));*/
+    }
+
+    @Test
+    public void classOrCluster() throws Exception {
+        fail();
+    }
+
+    @Test
+    public void distributionForInstance() throws Exception {
+        fail();
     }
 
 }

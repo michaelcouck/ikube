@@ -108,19 +108,21 @@ public class WekaClassifier extends WekaAnalyzer {
                 Instance instance = instance(input, instances);
                 Instance filteredInstance = filter(instance, filter);
                 // Classify the instance
-                double classification = classifier.classifyInstance(filteredInstance);
+                double classification = classOrCluster(filteredInstance);
                 // Set the output for the client
                 String clazz = instances.classAttribute().value((int) classification);
-                double[] output = classifier.distributionForInstance(filteredInstance);
+                double[] output = distributionForInstance(filteredInstance);
 
                 analysis.setClazz(clazz);
                 analysis.setOutput(output);
                 analysis.setAlgorithmOutput(classifier.toString());
                 log(clazz, input, output);
 
-                // analysis.setCorrelationCoefficients(getCorrelationCoefficients(instances));
+                if (analysis.isCorrelation()) {
+                    analysis.setCorrelationCoefficients(getCorrelationCoefficients(instances, filter));
+                }
                 if (analysis.isDistribution()) {
-                    analysis.setDistributionForInstances(getDistributionForInstances(instances));
+                    analysis.setDistributionForInstances(getDistributionForInstances(instances, filter));
                 }
             }
             return analysis;

@@ -86,7 +86,7 @@ public class Open extends Action<IndexContext<?>, Boolean> {
             // but give them some time for the actions on them to finish
             new Close().execute(indexContext);
 
-            IndexReader indexReader = new MultiReader(indexReaders.toArray(new IndexReader[indexReaders.size()]), Boolean.TRUE);
+            IndexReader indexReader = new MultiReader(indexReaders.toArray(new IndexReader[indexReaders.size()]), Boolean.FALSE);
             IndexSearcher indexSearcher = new IndexSearcher(indexReader);
             indexContext.setMultiSearcher(indexSearcher);
         }
