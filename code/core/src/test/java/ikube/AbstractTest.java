@@ -99,7 +99,7 @@ public abstract class AbstractTest {
     {
         try {
             initialize();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.error(null, e);
         }
     }
@@ -133,8 +133,7 @@ public abstract class AbstractTest {
         when(indexSearcher.search(any(Query.class), anyInt())).thenReturn(topDocs);
 
         when(multiSearcher.search(any(Query.class), anyInt())).thenReturn(topDocs);
-        when(multiSearcher.search(any(Query.class), any(Filter.class), anyInt(),
-            any(Sort.class))).thenReturn(topFieldDocs);
+        when(multiSearcher.search(any(Query.class), any(Filter.class), anyInt(), any(Sort.class))).thenReturn(topFieldDocs);
 
         topDocs.totalHits = 0;
         topDocs.scoreDocs = scoreDocs;
@@ -203,7 +202,7 @@ public abstract class AbstractTest {
 
     protected static <T> void insert(final Class<T> klass, final int entities) {
         IDataBase dataBase = getBean(IDataBase.class);
-        List<T> tees = new ArrayList<T>();
+        List<T> tees = new ArrayList<>();
         for (int i = 0; i < entities; i++) {
             T tee;
             try {
@@ -213,7 +212,7 @@ public abstract class AbstractTest {
                     dataBase.persistBatch(tees);
                     tees.clear();
                 }
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 throw new RuntimeException(e);
             }
         }
@@ -223,7 +222,7 @@ public abstract class AbstractTest {
     protected File createIndexFileSystem(final IndexContext<?> indexContext, final String... strings) {
         try {
             return createIndexFileSystem(indexContext, System.currentTimeMillis(), ip, strings);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -246,7 +245,7 @@ public abstract class AbstractTest {
                 serverIndexDirectories.add(serverIndexDirectory);
             }
             return serverIndexDirectories;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -257,7 +256,6 @@ public abstract class AbstractTest {
         IndexWriter indexWriter = getRamIndexWriter(analyzer);
         addDocuments(indexWriter, field, strings);
         IndexReader indexReader = IndexReader.open(indexWriter.getDirectory());
-        // printIndex(indexReader, Integer.MAX_VALUE);
         IndexSearcher searcher = new IndexSearcher(indexReader);
         return searchClass.getConstructor(IndexSearcher.class, Analyzer.class).newInstance(searcher, analyzer);
     }
@@ -291,13 +289,10 @@ public abstract class AbstractTest {
         indexWriter.commit();
         indexWriter.maybeMerge();
         indexWriter.forceMerge(5);
-        // indexWriter.close(Boolean.TRUE);
 
         Directory directory = indexWriter.getDirectory();
         IndexReader indexReader = IndexReader.open(directory);
         IndexSearcher searcher = new IndexSearcher(indexReader);
-
-        // printIndex(searcher.getIndexReader(), Integer.MAX_VALUE);
 
         return searchClass.getConstructor(IndexSearcher.class, Analyzer.class).newInstance(searcher, analyzer);
     }
@@ -312,7 +307,7 @@ public abstract class AbstractTest {
         try {
             indexWriter.commit();
             indexWriter.maybeMerge();
-        } catch (NullPointerException e) {
+        } catch (final NullPointerException e) {
             logger.error("Null pointer, mock? : " + e.getMessage());
         }
     }
@@ -323,7 +318,6 @@ public abstract class AbstractTest {
         IndexManager.addStringField(IConstants.ID, id, indexable, document);
         IndexManager.addStringField(IConstants.NAME, string, indexable, document);
         if (StringUtilities.isNumeric(string.trim())) {
-            // logger.info("Adding numeric field : " + string);
             IndexManager.addNumericField(field, string.trim(), document, Boolean.TRUE);
         } else {
             IndexManager.addStringField(field, string, indexable, document);

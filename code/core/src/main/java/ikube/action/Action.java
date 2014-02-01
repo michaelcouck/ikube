@@ -1,12 +1,10 @@
 package ikube.action;
 
-import ikube.action.index.handler.IIndexableHandler;
 import ikube.action.rule.IRule;
 import ikube.action.rule.RuleInterceptor;
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.model.IndexContext;
-import ikube.model.Indexable;
 import ikube.toolkit.IMailer;
 import ikube.toolkit.UriUtilities;
 import org.apache.commons.jexl2.JexlEngine;
@@ -59,12 +57,6 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
      * on the category of the rules.
      */
     private List<IRule<IndexContext<?>>> rules;
-
-    /**
-     * This is the list of handlers for all the sources of data. One such handler would be the {@link ikube.action.index.handler.database.IndexableTableHandler}
-     * for example, {@link ikube.action.index.handler.filesystem.IndexableFileSystemHandler} would be another.
-     */
-    private List<IIndexableHandler> indexableHandlers;
 
     /**
      * This is the predicate that will be evaluated. The predicate consists of a boolean expression that contains the individual results of the rules. For
@@ -195,23 +187,6 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
     }
 
     /**
-     * This method finds the correct handler for the indexable.
-     *
-     * @param indexable the indexable to find the handler for
-     * @return the handler for the indexable or null if there is no handler for the indexable. This will fail with a warning if there is no handler for the
-     * indexable
-     */
-    protected IIndexableHandler getHandler(final Indexable<?> indexable) {
-        // Map<String, IIndexableHandler> indexableHandlers = ApplicationContextManager.getBeans(IIndexableHandler.class);
-        for (final IIndexableHandler handler : indexableHandlers) {
-            if (handler.getIndexableClass().equals(indexable.getClass())) {
-                return handler;
-            }
-        }
-        throw new RuntimeException("No handler defined for indexable : " + indexable);
-    }
-
-    /**
      * This method sill close the directory, the reader and or the searchable depending on whether they are still open.
      *
      * @param closeables the items to close
@@ -258,10 +233,6 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
      */
     public void setDependent(final IAction<IndexContext<?>, Boolean> dependent) {
         this.dependent = dependent;
-    }
-
-    public void setIndexableHandlers(final List<IIndexableHandler> indexableHandlers) {
-        this.indexableHandlers = indexableHandlers;
     }
 
 }

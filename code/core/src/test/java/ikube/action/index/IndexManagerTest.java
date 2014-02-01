@@ -39,25 +39,21 @@ public class IndexManagerTest extends AbstractTest {
     private Document document = new Document();
     private Indexable<?> indexable;
 
-    private File indexFolderOne;
     private File indexFolderTwo;
-    private File indexFolderThree;
 
     @Before
     public void before() {
         indexable = new Indexable<Object>() {
         };
         FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
-        FileUtilities.deleteFile(new File("./" + this.getClass().getSimpleName()));
-        indexFolderOne = FileUtilities.getFile("./" + IndexManagerTest.class.getSimpleName() + "/1234567889/127.0.0.1", Boolean.TRUE);
-        indexFolderTwo = FileUtilities.getFile("./" + IndexManagerTest.class.getSimpleName() + "/1234567891/127.0.0.2", Boolean.TRUE);
-        indexFolderThree = FileUtilities.getFile("./" + IndexManagerTest.class.getSimpleName() + "/1234567890/127.0.0.3", Boolean.TRUE);
+        FileUtilities.getFile(indexContext.getIndexDirectoryPath() + "/1234567889/127.0.0.1", Boolean.TRUE);
+        indexFolderTwo = FileUtilities.getFile(indexContext.getIndexDirectoryPath() + "/1234567891/127.0.0.2", Boolean.TRUE);
+        FileUtilities.getFile(indexContext.getIndexDirectoryPath() + "/1234567890/127.0.0.3", Boolean.TRUE);
     }
 
     @After
     public void after() {
         FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
-        FileUtilities.deleteFile(new File("./" + this.getClass().getSimpleName()));
     }
 
     @Test
@@ -133,14 +129,12 @@ public class IndexManagerTest extends AbstractTest {
     @Test
     public void getIndexDirectory() {
         String indexDirectoryPath = IndexManager.getIndexDirectory(indexContext, System.currentTimeMillis(), ip);
-        logger.info("Index directory : " + new File(indexDirectoryPath).getAbsolutePath());
         assertNotNull(indexDirectoryPath);
     }
 
     @Test
     public void getIndexDirectoryPathBackup() {
         String indexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
-        logger.info("Index directory path backup : " + indexDirectoryPathBackup);
 
         when(indexContext.getIndexDirectoryPathBackup()).thenReturn("./indexes/./backup");
         String newIndexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
@@ -155,23 +149,19 @@ public class IndexManagerTest extends AbstractTest {
     }
 
     @Test
-    public void getLatestIndexDirectoryFileFile() throws Exception {
-        File latest = IndexManager.getLatestIndexDirectory(indexFolderOne.getParentFile().getParentFile(), null);
-        logger.info("Latest index directory : " + latest);
-        assertEquals(indexFolderTwo.getParentFile(), latest);
-        latest = IndexManager.getLatestIndexDirectory(indexFolderTwo.getParentFile().getParentFile(), null);
-        assertEquals(indexFolderTwo.getParentFile(), latest);
-        latest = IndexManager.getLatestIndexDirectory(indexFolderThree.getParentFile().getParentFile(), null);
+    public void getLatestIndexDirectory() throws Exception {
+        File latest = IndexManager.getLatestIndexDirectory(new File(indexContext.getIndexDirectoryPath()), null);
         assertEquals(indexFolderTwo.getParentFile(), latest);
 
         createIndexFileSystem(indexContext, "The data in the index");
         latest = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
         assertTrue(latest != null && latest.exists());
+        assertNotSame(indexFolderTwo.getParentFile(), latest);
     }
 
     @Test
     public void getLatestIndexDirectoryString() {
-        File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexFolderOne.getParentFile().getParentFile().getAbsolutePath());
+        File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
         assertEquals(indexFolderTwo.getParentFile().getName(), latestIndexDirectory.getName());
     }
 
@@ -179,7 +169,6 @@ public class IndexManagerTest extends AbstractTest {
     public void getLatestIndexDirectoryDate() throws Exception {
         File latestIndexDirectory = createIndexFileSystem(indexContext, "Any kind of data for the index");
         Date latestIndexDirectoryDate = IndexManager.getLatestIndexDirectoryDate(indexContext);
-        logger.info("Latest index directory date : " + latestIndexDirectoryDate.getTime());
         assertTrue(latestIndexDirectoryDate.getTime() == Long.parseLong(latestIndexDirectory.getParentFile().getName()));
     }
 
@@ -193,17 +182,14 @@ public class IndexManagerTest extends AbstractTest {
             when(indexWriter.numDocs()).thenReturn(Integer.MAX_VALUE);
             when(indexWriter.getDirectory()).thenReturn(fsDirectory);
             when(indexContext.getIndexWriters()).thenReturn(new IndexWriter[]{indexWriter});
-            logger.info("Index writer test : " + indexWriter);
 
             long numDocs = IndexManager.getNumDocsForIndexWriters(indexContext);
-            logger.info("Num docs : " + numDocs);
             assertEquals(Integer.MAX_VALUE, numDocs);
 
             IndexWriterMock.setIsLocked(Boolean.FALSE);
             when(indexContext.getIndexWriters()).thenReturn(null);
             when(indexReader.numDocs()).thenReturn(Integer.MIN_VALUE);
             numDocs = IndexManager.getNumDocsForIndexWriters(indexContext);
-            logger.info("Num docs : " + numDocs);
             assertEquals(0, numDocs);
         } finally {
             Mockit.tearDownMocks(IndexWriterMock.class);
@@ -212,14 +198,12 @@ public class IndexManagerTest extends AbstractTest {
 
     @Test
     public void getNumDocs() throws Exception {
-        logger.info("Index writer test : " + indexWriter);
         when(indexContext.getMultiSearcher()).thenReturn(multiSearcher);
         when(indexContext.getIndexWriters()).thenReturn(null);
         when(multiSearcher.getIndexReader()).thenReturn(indexReader);
         when(indexSearcher.getIndexReader()).thenReturn(indexReader);
         when(indexReader.numDocs()).thenReturn(Integer.MAX_VALUE);
         long numDocs = IndexManager.getNumDocsForIndexSearchers(indexContext);
-        logger.info("Num docs : " + numDocs);
         assertEquals(Integer.MAX_VALUE, numDocs);
     }
 
@@ -238,12 +222,10 @@ public class IndexManagerTest extends AbstractTest {
         createIndexFileSystem(indexContext, "the ", "string ", "to add", "bigger");
 
         long indexSize = IndexManager.getIndexSize(indexContext);
-        logger.info("Index size : " + indexSize);
         assertTrue("There must be some size in the index : ", indexSize > 0);
 
         new Open().execute(indexContext);
         long numDocs = IndexManager.getNumDocsForIndexSearchers(indexContext);
-        logger.info("Num docs : " + numDocs);
         assertEquals(4, numDocs);
         new Close().execute(indexContext);
 
@@ -252,7 +234,6 @@ public class IndexManagerTest extends AbstractTest {
         addDocuments(indexWriter, IConstants.CONTENTS, "some", "index", "documents");
 
         numDocs = IndexManager.getNumDocsForIndexWriters(indexContext);
-        logger.info("Num docs : " + numDocs);
         assertEquals(3, numDocs);
     }
 

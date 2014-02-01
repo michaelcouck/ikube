@@ -33,14 +33,14 @@ public class DirectoryExistsAndNotLocked extends ARule<File> {
 			if (exists && !locked) {
 				existsAndNotLocked = Boolean.TRUE;
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			logger.error("Exception checking the directories : ", e);
 		} finally {
 			try {
 				if (directory != null) {
 					directory.close();
 				}
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				logger.error("Exception closing the directory : " + directory, e);
 			}
 		}

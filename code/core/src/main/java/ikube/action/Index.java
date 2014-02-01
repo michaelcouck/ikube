@@ -16,38 +16,44 @@ import java.util.concurrent.ForkJoinTask;
 /**
  * This class executes the handlers on the indexables, effectively creating the index. Each indexable has a handler that is implemented to handle it. Each
  * handler will return a list of threads that will do the indexing. The caller(in this case, this class) must then wait for the threads to finish.
- * 
+ *
  * @author Michael Couck
- * @since 21.11.10
  * @version 01.00
+ * @since 21.11.10
  */
 public class Index extends Action<IndexContext<?>, Boolean> {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean preExecute(final IndexContext<?> indexContext) throws Exception {
-		logger.debug("Pre process action : " + this.getClass() + ", " + indexContext.getName());
-		Server server = clusterManager.getServer();
-		IndexWriter[] indexWriters;
-		if (indexContext.isDelta()) {
-			indexWriters = IndexManager.openIndexWriterDelta(indexContext);
-		} else {
-			IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), server.getAddress());
-			indexWriters = new IndexWriter[] { indexWriter };
-		}
-		indexContext.setIndexWriters(indexWriters);
-		return Boolean.TRUE;
-	}
+    /**
+     * This is the list of handlers for all the sources of data. One such handler would be the {@link ikube.action.index.handler.database.IndexableTableHandler}
+     * for example, {@link ikube.action.index.handler.filesystem.IndexableFileSystemHandler} would be another.
+     */
+    private List<IIndexableHandler> indexableHandlers;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected boolean internalExecute(final IndexContext<?> indexContext) throws Exception {
-		List<Indexable<?>> indexables = indexContext.getChildren();
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean preExecute(final IndexContext<?> indexContext) throws Exception {
+        logger.debug("Pre process action : " + this.getClass() + ", " + indexContext.getName());
+        Server server = clusterManager.getServer();
+        IndexWriter[] indexWriters;
+        if (indexContext.isDelta()) {
+            indexWriters = IndexManager.openIndexWriterDelta(indexContext);
+        } else {
+            IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), server.getAddress());
+            indexWriters = new IndexWriter[]{indexWriter};
+        }
+        indexContext.setIndexWriters(indexWriters);
+        return Boolean.TRUE;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    protected boolean internalExecute(final IndexContext<?> indexContext) throws Exception {
+        List<Indexable<?>> indexables = indexContext.getChildren();
         for (Indexable<?> indexable : (Iterable<Indexable<?>>) new ArrayList(indexables)) {
             // This is the current indexable name
             // Update the action with the new indexable
@@ -67,39 +73,59 @@ public class Index extends Action<IndexContext<?>, Boolean> {
             ThreadUtilities.waitForFuture(forkJoinTask, Integer.MAX_VALUE);
             logger.info("Continuing : " + forkJoinTask);
         }
-		return Boolean.TRUE;
-	}
+        return Boolean.TRUE;
+    }
 
-	ikube.model.Action getAction(final Server server, final IndexContext<?> indexContext, final String indexableName) {
-		for (final ikube.model.Action action : server.getActions()) {
-			if (action.getActionName().equals(this.getClass().getSimpleName())) {
-				if (!action.getIndexName().equals(indexContext.getName())) {
-					continue;
-				}
-				if (StringUtils.isEmpty(indexableName)) {
-					// We return the first action in the case the indexable name has not been set
-					return action;
-				} else {
-					// Else we look for the action that has the current indexable name
-					if (indexableName.equals(action.getIndexableName())) {
-						return action;
-					}
-				}
-			}
-		}
-		throw new RuntimeException("Action not found for class : " + this.getClass().getSimpleName());
-	}
+    ikube.model.Action getAction(final Server server, final IndexContext<?> indexContext, final String indexableName) {
+        for (final ikube.model.Action action : server.getActions()) {
+            if (action.getActionName().equals(this.getClass().getSimpleName())) {
+                if (!action.getIndexName().equals(indexContext.getName())) {
+                    continue;
+                }
+                if (StringUtils.isEmpty(indexableName)) {
+                    // We return the first action in the case the indexable name has not been set
+                    return action;
+                } else {
+                    // Else we look for the action that has the current indexable name
+                    if (indexableName.equals(action.getIndexableName())) {
+                        return action;
+                    }
+                }
+            }
+        }
+        throw new RuntimeException("Action not found for class : " + this.getClass().getSimpleName());
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean postExecute(final IndexContext<?> indexContext) throws Exception {
-		logger.debug("Post process action : " + this.getClass() + ", " + indexContext.getName());
-		IndexManager.closeIndexWriters(indexContext);
-		indexContext.setIndexWriters();
-		// Optimizer.optimize(indexContext);
-		return Boolean.TRUE;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean postExecute(final IndexContext<?> indexContext) throws Exception {
+        logger.debug("Post process action : " + this.getClass() + ", " + indexContext.getName());
+        IndexManager.closeIndexWriters(indexContext);
+        indexContext.setIndexWriters();
+        // Optimizer.optimize(indexContext);
+        return Boolean.TRUE;
+    }
+
+    /**
+     * This method finds the correct handler for the indexable.
+     *
+     * @param indexable the indexable to find the handler for
+     * @return the handler for the indexable or null if there is no handler for the indexable. This will fail with a warning if there is no handler for the
+     * indexable
+     */
+    protected IIndexableHandler getHandler(final Indexable<?> indexable) {
+        for (final IIndexableHandler handler : indexableHandlers) {
+            if (handler.getIndexableClass().equals(indexable.getClass())) {
+                return handler;
+            }
+        }
+        throw new RuntimeException("No handler defined for indexable : " + indexable);
+    }
+
+    public void setIndexableHandlers(final List<IIndexableHandler> indexableHandlers) {
+        this.indexableHandlers = indexableHandlers;
+    }
 
 }
