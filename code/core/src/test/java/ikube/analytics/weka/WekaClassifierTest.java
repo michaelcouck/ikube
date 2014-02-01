@@ -2,17 +2,18 @@ package ikube.analytics.weka;
 
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import mockit.Deencapsulation;
 import org.junit.Before;
 import org.junit.Test;
 import weka.classifiers.functions.SMO;
+import weka.core.Instance;
 import weka.core.Instances;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**
@@ -27,7 +28,7 @@ public class WekaClassifierTest extends AbstractTest {
     /**
      * Class under test
      */
-    private IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>> wekaClassifier;
+    private WekaClassifier wekaClassifier;
 
     @Before
     public void before() throws Exception {
@@ -101,12 +102,32 @@ public class WekaClassifierTest extends AbstractTest {
 
     @Test
     public void classOrCluster() throws Exception {
-        fail();
+        wekaClassifier.init(context);
+        wekaClassifier.build(context);
+
+        Instances instances = Deencapsulation.getField(wekaClassifier, "instances");
+        Instance instance = instances.firstInstance();
+
+        double classOrCluster = wekaClassifier.classOrCluster(instance);
+        assertEquals(0.0, classOrCluster);
+
+        instance = instances.instance(2);
+        classOrCluster = wekaClassifier.classOrCluster(instance);
+        assertEquals(1.0, classOrCluster);
     }
 
     @Test
     public void distributionForInstance() throws Exception {
-        fail();
+        wekaClassifier.init(context);
+        wekaClassifier.build(context);
+
+        Instances instances = Deencapsulation.getField(wekaClassifier, "instances");
+        Instance instance = instances.firstInstance();
+
+        double[] distributionForInstance = wekaClassifier.distributionForInstance(instance);
+        assertEquals(0.6666666666666666, distributionForInstance[0]);
+        assertEquals(0.3333333333333333, distributionForInstance[1]);
+        assertEquals(0.0, distributionForInstance[2]);
     }
 
 }

@@ -6,6 +6,7 @@ import ikube.action.index.IndexManager;
 import ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy;
 import ikube.model.Coordinate;
 import ikube.toolkit.PerformanceTester;
+import mockit.Deencapsulation;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -52,6 +53,7 @@ public class SearchSpatialTest extends AbstractTest {
 		RAMDirectory ramDirectory = new RAMDirectory();
 		IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, ramDirectory, Boolean.TRUE);
 		GeospatialEnrichmentStrategy enrichmentStrategy = new GeospatialEnrichmentStrategy();
+        Deencapsulation.setField(enrichmentStrategy, "dataBase", dataBase);
 		enrichmentStrategy.initialize();
 		for (final Coordinate coordinate : coordinates) {
 			Document document = new Document();
@@ -72,7 +74,9 @@ public class SearchSpatialTest extends AbstractTest {
 
 	@After
 	public void after() throws Exception {
-		searcher.getIndexReader().close();
+        if (searcher != null && searcher.getIndexReader() != null) {
+            searcher.getIndexReader().close();
+        }
 	}
 
 	@Test

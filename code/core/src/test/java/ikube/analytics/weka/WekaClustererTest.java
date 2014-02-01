@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 import weka.clusterers.*;
 import weka.core.Instances;
-import weka.filters.Filter;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -62,7 +61,6 @@ public class WekaClustererTest extends AbstractTest {
                     greatest = distribution;
                 }
             }
-            // System.out.println("[" + analysis.getClazz() + ", " + greatest + "],");
             assertNotNull(result.getClazz());
         }
     }
@@ -87,8 +85,7 @@ public class WekaClustererTest extends AbstractTest {
     @Test
     public void getCorrelationCoEfficients() throws Exception {
         Instances instances = Deencapsulation.getField(wekaclusterer, "instances");
-        Filter filter = (Filter) context.getFilter();
-        double[] correlationCoEfficients = wekaclusterer.getCorrelationCoefficients(instances, filter);
+        double[] correlationCoEfficients = wekaclusterer.getCorrelationCoefficients(instances);
         for (final double correlationCoEfficient : correlationCoEfficients) {
             assertTrue(correlationCoEfficient >= -1 && correlationCoEfficient <= 1);
         }
@@ -97,8 +94,7 @@ public class WekaClustererTest extends AbstractTest {
     @Test
     public void getDistributionForInstances() throws Exception {
         Instances instances = Deencapsulation.getField(wekaclusterer, "instances");
-        Filter filter = (Filter) context.getFilter();
-        double[][] distributionForInstances = wekaclusterer.getDistributionForInstances(instances, filter);
+        double[][] distributionForInstances = wekaclusterer.getDistributionForInstances(instances);
         for (final double[] distribution : distributionForInstances) {
             for (final double probability : distribution) {
                 assertTrue(probability >= 0 && probability <= 1.0);

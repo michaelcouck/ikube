@@ -39,7 +39,8 @@ public class GeospatialEnrichmentStrategyTest extends AbstractTest {
 	@Before
 	public void before() {
 		geospatialEnrichmentStrategy = new GeospatialEnrichmentStrategy();
-		Deencapsulation.setField(geospatialEnrichmentStrategy, "maxGeohashLevels", 11);
+        Deencapsulation.setField(geospatialEnrichmentStrategy, "dataBase", dataBase);
+        Deencapsulation.setField(geospatialEnrichmentStrategy, "maxGeohashLevels", 11);
 		geospatialEnrichmentStrategy.initialize();
 		when(indexableTable.isAddress()).thenReturn(Boolean.TRUE);
 		when(indexableColumn.isAddress()).thenReturn(Boolean.TRUE);

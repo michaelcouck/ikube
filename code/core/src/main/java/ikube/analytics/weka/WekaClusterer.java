@@ -94,19 +94,18 @@ public class WekaClusterer extends WekaAnalyzer {
             // Create the instance from the data
             String input = analysis.getInput();
             Instance instance = instance(input, instances);
-            Instance filteredInstance = filter(instance, filter);
             // Set the output for the client
-            int cluster = (int) classOrCluster(filteredInstance);
-            double[] distributionForInstance = distributionForInstance(filteredInstance);
+            int cluster = (int) classOrCluster(instance);
+            double[] distributionForInstance = distributionForInstance(instance);
 
             analysis.setClazz(Integer.toString(cluster));
             analysis.setOutput(distributionForInstance);
             analysis.setAlgorithmOutput(clusterer.toString());
             if (analysis.isCorrelation()) {
-                analysis.setCorrelationCoefficients(getCorrelationCoefficients(instances, filter));
+                analysis.setCorrelationCoefficients(getCorrelationCoefficients(instances));
             }
             if (analysis.isDistribution()) {
-                analysis.setDistributionForInstances(getDistributionForInstances(instances, filter));
+                analysis.setDistributionForInstances(getDistributionForInstances(instances));
             }
             return analysis;
         } catch (final Exception e) {
@@ -128,12 +127,14 @@ public class WekaClusterer extends WekaAnalyzer {
 
     @Override
     double classOrCluster(final Instance instance) throws Exception {
-        return clusterer.clusterInstance(instance);
+        Instance filteredInstance = filter(instance, filter);
+        return clusterer.clusterInstance(filteredInstance);
     }
 
     @Override
     double[] distributionForInstance(final Instance instance) throws Exception {
-        return clusterer.distributionForInstance(instance);
+        Instance filteredInstance = filter(instance, filter);
+        return clusterer.distributionForInstance(filteredInstance);
     }
 
     private void log() throws Exception {

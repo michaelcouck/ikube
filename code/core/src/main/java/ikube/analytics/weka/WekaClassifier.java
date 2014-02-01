@@ -106,12 +106,11 @@ public class WekaClassifier extends WekaAnalyzer {
                 // Create the instance from the data
                 String input = analysis.getInput();
                 Instance instance = instance(input, instances);
-                Instance filteredInstance = filter(instance, filter);
                 // Classify the instance
-                double classification = classOrCluster(filteredInstance);
+                double classification = classOrCluster(instance);
                 // Set the output for the client
                 String clazz = instances.classAttribute().value((int) classification);
-                double[] output = distributionForInstance(filteredInstance);
+                double[] output = distributionForInstance(instance);
 
                 analysis.setClazz(clazz);
                 analysis.setOutput(output);
@@ -119,10 +118,10 @@ public class WekaClassifier extends WekaAnalyzer {
                 log(clazz, input, output);
 
                 if (analysis.isCorrelation()) {
-                    analysis.setCorrelationCoefficients(getCorrelationCoefficients(instances, filter));
+                    analysis.setCorrelationCoefficients(getCorrelationCoefficients(instances));
                 }
                 if (analysis.isDistribution()) {
-                    analysis.setDistributionForInstances(getDistributionForInstances(instances, filter));
+                    analysis.setDistributionForInstances(getDistributionForInstances(instances));
                 }
             }
             return analysis;
@@ -145,12 +144,14 @@ public class WekaClassifier extends WekaAnalyzer {
 
     @Override
     double classOrCluster(final Instance instance) throws Exception {
-        return classifier.classifyInstance(instance);
+        Instance filteredInstance = filter(instance, filter);
+        return classifier.classifyInstance(filteredInstance);
     }
 
     @Override
     double[] distributionForInstance(final Instance instance) throws Exception {
-        return classifier.distributionForInstance(instance);
+        Instance filteredInstance = filter(instance, filter);
+        return classifier.distributionForInstance(filteredInstance);
     }
 
     private void evaluate(final Instances instances) throws Exception {

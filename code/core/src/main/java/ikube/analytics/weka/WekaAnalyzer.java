@@ -135,11 +135,11 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<String, double[
         logger.info("Looking for data file in directory : " + directory.getAbsolutePath());
         if (file == null || !file.exists() || !file.canRead()) {
             logger.info("Can't find data file : " + fileName + ", will search for it...");
-            File dataFile = FileUtilities.findFileRecursively(new File("."), fileName);
-            if (dataFile == null || !dataFile.exists() || !dataFile.canRead()) {
+            file = FileUtilities.findFileRecursively(new File("."), fileName);
+            if (file == null || !file.exists() || !file.canRead()) {
                 logger.warn("Couldn't find file for analyzer or can't read file, will create it : " + fileName);
-                FileUtilities.getOrCreateDirectory(new File(IConstants.ANALYTICS_DIRECTORY));
-                file = FileUtilities.getOrCreateFile(new File(IConstants.ANALYTICS_DIRECTORY, fileName));
+                directory = FileUtilities.getOrCreateDirectory(new File(IConstants.ANALYTICS_DIRECTORY));
+                file = FileUtilities.getOrCreateFile(new File(directory, fileName));
                 if (file != null) {
                     logger.info("Created data file : " + file.getAbsolutePath());
                 } else {
@@ -204,12 +204,11 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<String, double[
      * @return the correlation co-efficients for each instance relative to the following instance
      * @throws Exception
      */
-    double[] getCorrelationCoefficients(final Instances instances, final Filter filter) throws Exception {
-        Instances filteredInstances = filter(instances, filter);
-        double[] correlationCoefficients = new double[filteredInstances.numInstances()];
+    double[] getCorrelationCoefficients(final Instances instances) throws Exception {
+        double[] correlationCoefficients = new double[instances.numInstances()];
         Instance one = null;
-        for (int i = 0; i < filteredInstances.numInstances(); i++) {
-            Instance two = filteredInstances.instance(i);
+        for (int i = 0; i < instances.numInstances(); i++) {
+            Instance two = instances.instance(i);
             if (one != null) {
                 double[] d1 = distributionForInstance(one);
                 double[] d2 = distributionForInstance(two);
@@ -237,11 +236,10 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<String, double[
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    double[][] getDistributionForInstances(final Instances instances, final Filter filter) throws Exception {
-        Instances filteredInstances = filter(instances, filter);
-        double[][] distributionForInstances = new double[filteredInstances.numInstances()][];
-        for (int i = 0; i < filteredInstances.numInstances(); i++) {
-            Instance instance = filteredInstances.instance(i);
+    double[][] getDistributionForInstances(final Instances instances) throws Exception {
+        double[][] distributionForInstances = new double[instances.numInstances()][];
+        for (int i = 0; i < instances.numInstances(); i++) {
+            Instance instance = instances.instance(i);
             double[] distributionForInstance = distributionForInstance(instance);
             distributionForInstances[i] = distributionForInstance;
         }

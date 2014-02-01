@@ -30,6 +30,7 @@ import org.springframework.util.ReflectionUtils;
  * @since 28.12.10
  * @version 01.00
  */
+@SuppressWarnings("SpringJavaAutowiringInspection")
 public class MonitorService implements IMonitorService {
 
 	private static final Logger LOGGER = Logger.getLogger(MonitorService.class);
@@ -44,7 +45,7 @@ public class MonitorService implements IMonitorService {
 	public String[] getIndexNames() {
 		@SuppressWarnings("rawtypes")
 		Map<String, IndexContext> indexContexts = getIndexContexts();
-		List<String> indexNames = new ArrayList<String>();
+		List<String> indexNames = new ArrayList<>();
 		for (final IndexContext<?> indexContext : indexContexts.values()) {
 			indexNames.add(indexContext.getIndexName());
 		}
@@ -70,7 +71,7 @@ public class MonitorService implements IMonitorService {
 	 */
 	@SuppressWarnings("rawtypes")
 	public Map<String, IndexContext> getIndexContexts() {
-		Map<String, IndexContext> indexContexts = new HashMap<String, IndexContext>();
+		Map<String, IndexContext> indexContexts = new HashMap<>();
 		indexContexts.putAll(ApplicationContextManager.getBeans(IndexContext.class));
 		return indexContexts;
 	}
@@ -80,7 +81,7 @@ public class MonitorService implements IMonitorService {
 	 */
 	@Override
 	public String[] getFieldNames(final Class<?> indexableClass) {
-		final List<String> fieldNames = new ArrayList<String>();
+		final List<String> fieldNames = new ArrayList<>();
 		ReflectionUtils.doWithFields(indexableClass, new ReflectionUtils.FieldCallback() {
 			@Override
 			public void doWith(final Field field) throws IllegalArgumentException, IllegalAccessException {
@@ -100,7 +101,7 @@ public class MonitorService implements IMonitorService {
 	 */
 	@Override
 	public String[] getFieldDescriptions(final Class<?> indexableClass) {
-		final List<String> fieldDescriptions = new ArrayList<String>();
+		final List<String> fieldDescriptions = new ArrayList<>();
 		ReflectionUtils.doWithFields(indexableClass, new ReflectionUtils.FieldCallback() {
 			@Override
 			public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
@@ -143,7 +144,7 @@ public class MonitorService implements IMonitorService {
 			ikubeConfiguration = IConstants.IKUBE_DIRECTORY;
 			System.setProperty(IConstants.IKUBE_CONFIGURATION, ikubeConfiguration);
 		}
-		Map<String, String> filesAndProperties = new HashMap<String, String>();
+		Map<String, String> filesAndProperties = new HashMap<>();
 		File dotFolder = new File(ikubeConfiguration);
 		List<File> propertyFiles = FileUtilities.findFilesRecursively(dotFolder, new ArrayList<File>(), "spring.properties");
 		for (final File propertyFile : propertyFiles) {

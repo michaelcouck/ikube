@@ -25,10 +25,6 @@ public class Reopen extends Action<IndexContext<?>, Boolean> {
      */
     @Override
     public boolean internalExecute(final IndexContext<?> indexContext) {
-        IndexSearcher oldIndexSearcher = indexContext.getMultiSearcher();
-        if (oldIndexSearcher == null || oldIndexSearcher.getIndexReader() == null) {
-            return Boolean.FALSE;
-        }
         try {
             openOnIndexWriters(indexContext);
         } catch (final Exception e) {
@@ -38,10 +34,10 @@ public class Reopen extends Action<IndexContext<?>, Boolean> {
     }
 
     void openOnIndexWriters(final IndexContext<?> indexContext) throws IOException {
-        IndexSearcher oldIndexSearcher = indexContext.getMultiSearcher();
         if (indexContext.getIndexWriters() == null) {
             return;
         }
+        IndexSearcher oldIndexSearcher = indexContext.getMultiSearcher();
         List<IndexReader> newIndexReaders = new ArrayList<>();
         for (final IndexWriter indexWriter : indexContext.getIndexWriters()) {
             Directory directory = indexWriter.getDirectory();
@@ -55,7 +51,9 @@ public class Reopen extends Action<IndexContext<?>, Boolean> {
         IndexSearcher indexSearcher = new IndexSearcher(indexReader);
         indexContext.setMultiSearcher(indexSearcher);
         logger.info("Opening new searcher : " + indexContext.getMultiSearcher().hashCode());
-        oldIndexSearcher.getIndexReader().close();
+        if (oldIndexSearcher != null && oldIndexSearcher.getIndexReader() != null) {
+            oldIndexSearcher.getIndexReader().close();
+        }
     }
 
     void open(final IndexContext<?> indexContext) throws Exception {

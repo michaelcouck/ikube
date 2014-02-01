@@ -3,6 +3,7 @@ package ikube.toolkit;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.analytics.weka.WekaClusterer;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
@@ -24,6 +25,11 @@ public class ApplicationContextManagerTest extends AbstractTest {
         File springConfig = FileUtilities.findFileRecursively(externalConfig, "spring\\.xml");
         String springConfigPath = FileUtilities.cleanFilePath(springConfig.getAbsolutePath());
         System.setProperty(IConstants.IKUBE_CONFIGURATION, springConfigPath);
+    }
+
+    @After
+    public void after() {
+        System.getProperties().remove(IConstants.IKUBE_CONFIGURATION);
     }
 
     @Test

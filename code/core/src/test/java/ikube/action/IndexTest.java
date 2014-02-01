@@ -4,15 +4,20 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
+import ikube.action.index.IndexManager;
+import ikube.action.index.handler.IIndexableHandler;
 import ikube.action.index.handler.database.IndexableTableHandler;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.IndexManagerMock;
+import ikube.mock.ThreadUtilitiesMock;
 import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableTable;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 
 import java.io.File;
@@ -23,6 +28,7 @@ import java.util.List;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 
+import ikube.toolkit.ThreadUtilities;
 import mockit.Deencapsulation;
 import mockit.Mockit;
 
@@ -46,14 +52,17 @@ public class IndexTest extends AbstractTest {
 	public void before() throws Exception {
 		index = new Index();
 		indexableTable = new IndexableTable();
+        IndexableTableHandler indexableTableHandler = mock(IndexableTableHandler.class);
+        when(indexableTableHandler.getIndexableClass()).thenReturn(IndexableTable.class);
 		indexableTable.setName("indexableName");
+        List<IIndexableHandler> indexableHandlers = new ArrayList<>();
+        indexableHandlers.add(indexableTableHandler);
 		List<Indexable<?>> indexables = new ArrayList<Indexable<?>>(Arrays.asList(indexableTable));
 
-		Mockit.setUpMocks(IndexManagerMock.class, ApplicationContextManagerMock.class);
+		Mockit.setUpMocks(IndexManagerMock.class, ApplicationContextManagerMock.class, ThreadUtilitiesMock.class);
 		ForkJoinTask forkJoinTask = new RecursiveAction() {
 			@Override
 			protected void compute() {
-				return;
 			}
 		};
 
@@ -71,12 +80,13 @@ public class IndexTest extends AbstractTest {
 		Deencapsulation.setField(index, logger);
 		Deencapsulation.setField(index, dataBase);
 		Deencapsulation.setField(index, clusterManager);
+		Deencapsulation.setField(index, "indexableHandlers", indexableHandlers);
 	}
 
 	@After
 	public void after() {
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
-		Mockit.tearDownMocks(IndexManagerMock.class, ApplicationContextManagerMock.class);
+		Mockit.tearDownMocks(IndexManager.class, ApplicationContextManager.class, ThreadUtilities.class);
 	}
 
 	@Test
@@ -105,7 +115,7 @@ public class IndexTest extends AbstractTest {
 	@Test
 	public void getHandler() {
 		IndexableTable indexableTable = new IndexableTable();
-		Object handler = Deencapsulation.invoke(new Index(), "getHandler", indexableTable);
+		Object handler = Deencapsulation.invoke(index, "getHandler", indexableTable);
 		assertTrue("The handler for the Arabic data should be the wiki handler : ",
 				handler.getClass().getName().contains(IndexableTableHandler.class.getSimpleName()));
 	}

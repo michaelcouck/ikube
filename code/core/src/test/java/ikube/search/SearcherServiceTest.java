@@ -37,16 +37,16 @@ public class SearcherServiceTest extends AbstractTest {
 	public static class SearchComplexSortedMock {
 		@Mock
 		public ArrayList<HashMap<String, String>> execute() {
-			HashMap<String, String> result = new HashMap<String, String>();
+			HashMap<String, String> result = new HashMap<>();
 			result.put(IConstants.CONTENTS, IConstants.CONTENTS);
 			result.put(IConstants.SCORE, Float.toString((float) Math.random()));
 
-			HashMap<String, String> statistics = new HashMap<String, String>();
+			HashMap<String, String> statistics = new HashMap<>();
 			statistics.put(IConstants.TOTAL, Long.toString(526));
 			statistics.put(IConstants.DURATION, Long.toString(652));
 			statistics.put(IConstants.SCORE, Float.toString(0.236f));
 
-			ArrayList<HashMap<String, String>> searchResults = new ArrayList<HashMap<String, String>>();
+			ArrayList<HashMap<String, String>> searchResults = new ArrayList<>();
 			searchResults.add(result);
 			searchResults.add(statistics);
 
@@ -54,10 +54,11 @@ public class SearcherServiceTest extends AbstractTest {
 		}
 	}
 
-	@MockClass(realClass = SearcherService.class)
+	@SuppressWarnings("UnusedDeclaration")
+    @MockClass(realClass = SearcherService.class)
 	public static class SearcherServiceMock {
 		@Mock
-		@SuppressWarnings("unchecked")
+        @SuppressWarnings({"unchecked", "UnusedParameters"})
 		protected <T> T getSearch(final Class<?> klass, final String indexName) throws Exception {
 			Search search = (Search) mock(klass);
 			searches.add(search);
@@ -83,10 +84,7 @@ public class SearcherServiceTest extends AbstractTest {
 	private boolean fragment = true;
 	private int firstResult = 0;
 	private int maxResults = 10;
-	private int distance = 10;
-	private double latitude = 0.0;
-	private double longitude = 0.0;
-	private ikube.model.Search search;
+    private ikube.model.Search search;
 
 	private static List<Search> searches = new ArrayList<>();
 
@@ -120,8 +118,11 @@ public class SearcherServiceTest extends AbstractTest {
 
 	@Test
 	public void searchMultiSpacial() {
-		searcherService.search(indexName, searchStrings, searchFields, typeFields, fragment, firstResult, maxResults,
-			distance, latitude, longitude);
+        int distance = 10;
+        double latitude = 0.0;
+        double longitude = 0.0;
+        searcherService.search(indexName, searchStrings, searchFields, typeFields, fragment, firstResult, maxResults,
+            distance, latitude, longitude);
 		verify();
 	}
 
@@ -185,10 +186,10 @@ public class SearcherServiceTest extends AbstractTest {
 			IDataBase dataBase = mock(IDataBase.class);
 			SearcherService searcherService = new SearcherService();
 			Deencapsulation.setField(searcherService, dataBase);
-			ArrayList<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
-			HashMap<String, String> result = new HashMap<String, String>();
+			ArrayList<HashMap<String, String>> results = new ArrayList<>();
+			HashMap<String, String> result = new HashMap<>();
 
-			HashMap<String, String> statistics = new HashMap<String, String>();
+			HashMap<String, String> statistics = new HashMap<>();
 			statistics.put(IConstants.TOTAL, "100");
 			statistics.put(IConstants.DURATION, "100");
 			statistics.put(IConstants.SCORE, "100");
@@ -211,7 +212,7 @@ public class SearcherServiceTest extends AbstractTest {
             for (int i = 0; i < SearcherService.MAX_MERGE_SIZE + 100;  i++) {
                 searcherService.persistSearch(search);
             }
-            Mockito.verify(dataBase, atLeastOnce()).mergeBatch(any(List.class));
+            Mockito.verify(dataBase, atLeastOnce()).persistBatch(any(List.class));
 		} finally {
 			// Set up the spelling mock for the next tests
 			Mockit.setUpMocks(SpellingCheckerMock.class);

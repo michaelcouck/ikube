@@ -65,7 +65,7 @@ public class ThreadUtilitiesTest extends AbstractTest {
 
 	@Test
 	public void waitForThreads() {
-		List<Thread> threads = new ArrayList<Thread>();
+		List<Thread> threads = new ArrayList<>();
 		for (int i = 0; i < 3; i++) {
 			Thread thread = new Thread(new Sleepy());
 			thread.start();
@@ -119,7 +119,7 @@ public class ThreadUtilitiesTest extends AbstractTest {
 	@Test
 	public void multiThreaded() {
 		final int iterations = 100;
-		List<Thread> threads = new ArrayList<Thread>();
+		List<Thread> threads = new ArrayList<>();
 		for (int i = 0; i < 10; i++) {
 			Thread thread = new Thread(new Runnable() {
 				public void run() {

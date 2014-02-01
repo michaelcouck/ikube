@@ -6,14 +6,12 @@ import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.Server;
 import ikube.toolkit.ThreadUtilities;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.ForkJoinTask;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.index.IndexWriter;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ForkJoinTask;
 
 /**
  * This class executes the handlers on the indexables, effectively creating the index. Each indexable has a handler that is implemented to handle it. Each
@@ -32,7 +30,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 	public boolean preExecute(final IndexContext<?> indexContext) throws Exception {
 		logger.debug("Pre process action : " + this.getClass() + ", " + indexContext.getName());
 		Server server = clusterManager.getServer();
-		IndexWriter[] indexWriters = null;
+		IndexWriter[] indexWriters;
 		if (indexContext.isDelta()) {
 			indexWriters = IndexManager.openIndexWriterDelta(indexContext);
 		} else {
@@ -50,28 +48,25 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected boolean internalExecute(final IndexContext<?> indexContext) throws Exception {
 		List<Indexable<?>> indexables = indexContext.getChildren();
-		Iterator<Indexable<?>> iterator = new ArrayList(indexables).iterator();
-		while (iterator.hasNext()) {
-			// This is the current indexable name
-			String indexableName = null;
-			Indexable<?> indexable = iterator.next();
-			// Update the action with the new indexable
-			Server server = clusterManager.getServer();
-			ikube.model.Action action = getAction(server, indexContext, indexableName);
-			// Now we set the current indexable name in the action
-			indexableName = indexable.getName();
-			action.setIndexableName(indexableName);
-			dataBase.merge(action);
-			clusterManager.put(server.getAddress(), server);
-			// Get the right handler for this indexable
-			IIndexableHandler<Indexable<?>> handler = getHandler(indexable);
-			// Execute the handler and wait for the threads to finish
-			logger.info("Indexable : " + indexable.getName());
-			ForkJoinTask<?> forkJoinTask = handler.handleIndexableForked(indexContext, indexable);
-			ThreadUtilities.executeForkJoinTasks(indexContext.getName(), indexable.getThreads(), forkJoinTask);
-			ThreadUtilities.waitForFuture(forkJoinTask, Integer.MAX_VALUE);
-			logger.info("Continuing : " + forkJoinTask);
-		}
+        for (Indexable<?> indexable : (Iterable<Indexable<?>>) new ArrayList(indexables)) {
+            // This is the current indexable name
+            // Update the action with the new indexable
+            Server server = clusterManager.getServer();
+            ikube.model.Action action = getAction(server, indexContext, null);
+            // Now we set the current indexable name in the action
+            String indexableName = indexable.getName();
+            action.setIndexableName(indexableName);
+            dataBase.merge(action);
+            clusterManager.put(server.getAddress(), server);
+            // Get the right handler for this indexable
+            IIndexableHandler<Indexable<?>> handler = getHandler(indexable);
+            // Execute the handler and wait for the threads to finish
+            logger.info("Indexable : " + indexable.getName());
+            ForkJoinTask<?> forkJoinTask = handler.handleIndexableForked(indexContext, indexable);
+            ThreadUtilities.executeForkJoinTasks(indexContext.getName(), indexable.getThreads(), forkJoinTask);
+            ThreadUtilities.waitForFuture(forkJoinTask, Integer.MAX_VALUE);
+            logger.info("Continuing : " + forkJoinTask);
+        }
 		return Boolean.TRUE;
 	}
 
@@ -102,7 +97,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
 	public boolean postExecute(final IndexContext<?> indexContext) throws Exception {
 		logger.debug("Post process action : " + this.getClass() + ", " + indexContext.getName());
 		IndexManager.closeIndexWriters(indexContext);
-		indexContext.setIndexWriters(new IndexWriter[0]);
+		indexContext.setIndexWriters();
 		// Optimizer.optimize(indexContext);
 		return Boolean.TRUE;
 	}

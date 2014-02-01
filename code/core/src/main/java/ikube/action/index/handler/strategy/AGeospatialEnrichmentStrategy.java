@@ -75,16 +75,18 @@ public abstract class AGeospatialEnrichmentStrategy extends AStrategy {
     }
 
     public void initialize() {
+        geoCityMap = new HashMap<>();
         spatialContext = SpatialContext.GEO;
         SpatialPrefixTree spatialPrefixTree = new GeohashPrefixTree(spatialContext, maxGeohashLevels);
         this.spatialStrategy = new RecursivePrefixTreeStrategy(spatialPrefixTree, IConstants.POSITION_FIELD_NAME);
         Collection<GeoCity> geoCities = dataBase.find(GeoCity.class, 0, Integer.MAX_VALUE);
-        geoCityMap = new HashMap<>();
-        for (final GeoCity geoCity : geoCities) {
-            Long hash = HashUtilities.hash(geoCity.getName());
-            geoCityMap.put(hash, geoCity);
+        if (geoCities != null) {
+            for (final GeoCity geoCity : geoCities) {
+                Long hash = HashUtilities.hash(geoCity.getName());
+                geoCityMap.put(hash, geoCity);
+            }
+            logger.info("Loaded cities : " + geoCityMap.size());
         }
-        logger.info("Loaded cities : " + geoCityMap.size());
     }
 
 }

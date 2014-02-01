@@ -28,7 +28,6 @@
 		<ref bean="ikube.action.Open"  />
 		<ref bean="ikube.action.Reopen"  />
 		<ref bean="ikube.action.Delete" />
-		<ref bean="ikube.action.Clean" />
 		<ref bean="ikube.action.Backup" />
 		<!-- <ref bean="ikube.action.DiskFull" /> -->
 		<ref bean="ikube.action.Validator" />
@@ -51,11 +50,11 @@
 		id="ikube.action.Prune" 
 		class="ikube.action.Prune" 
 		property:ruleExpression="
-			!IsThisServerWorking"
+			!IsIndexDelta || IsIndexDelta"
 		property:requiresClusterLock="false">
 		<property name="rules">
 			<util:list>
-				<ref local="ikube.action.rule.IsThisServerWorking" />
+				<ref local="ikube.action.rule.IsIndexDelta" />
 			</util:list>
 		</property>
 	</bean>
@@ -135,18 +134,11 @@
 		id="ikube.action.Reopen" 
 		class="ikube.action.Reopen" 
 		property:ruleExpression="
-		    IsIndexDelta &#38;&#38;
-		    ((!IsMultiSearcherInitialised &#38;&#38; IsThisIndexCreated)
-		        || AreUnopenedIndexes
-		        || IsIndexChanged)"
+		    IsIndexDelta"
 		property:requiresClusterLock="false">
 		<property name="rules">
 			<util:list>
                 <ref local="ikube.action.rule.IsIndexDelta" />
-                <ref local="ikube.action.rule.IsThisIndexCreated" />
-                <ref local="ikube.action.rule.IsIndexChanged" />
-                <ref local="ikube.action.rule.IsMultiSearcherInitialised" />
-                <ref local="ikube.action.rule.AreUnopenedIndexes" />
 			</util:list>
 		</property>
 	</bean>
@@ -157,7 +149,7 @@
 			!IsIndexCurrent &#38;&#38; 
 			!AnyServersWorkingThisIndex &#38;&#38; 
 			!TooManyActionsRule &#38;&#38; 
-			!(IsThisServerWorking &#38;&#38; AreOtherServers &#38;&#38; AnyServersIdle)"
+			    !(IsThisServerWorking &#38;&#38; AreOtherServers &#38;&#38; AnyServersIdle)"
 		property:requiresClusterLock="true">
 		<property name="rules">
 			<util:list>
@@ -174,41 +166,23 @@
 		id="ikube.action.Delete" 
 		class="ikube.action.Delete" 
 		property:ruleExpression="
-			!IsThisServerWorking &#38;&#38; !AnyServersWorking"
+			!IsIndexDelta &#38;&#38; IsThisIndexCreated"
 		property:requiresClusterLock="false">
 		<property name="rules">
 			<util:list>
-				<ref local="ikube.action.rule.IsThisServerWorking" />
-				<ref local="ikube.action.rule.AnyServersWorking" />
+				<ref local="ikube.action.rule.IsIndexDelta" />
+				<ref local="ikube.action.rule.IsThisIndexCreated" />
 			</util:list>
 		</property>
 	</bean>
-	<bean 
-		id="ikube.action.Clean" 
-		class="ikube.action.Clean" 
-		property:ruleExpression="
-			!IsThisServerWorking &#38;&#38; 
-			!AnyServersWorking"
-		property:requiresClusterLock="true">
-		<property name="rules">
-			<util:list>
-				<ref local="ikube.action.rule.IsThisServerWorking" />
-				<ref local="ikube.action.rule.AnyServersWorking" />
-			</util:list>
-		</property>
-	</bean>
-	<bean 
+	<bean
 		id="ikube.action.Backup" 		
 		class="ikube.action.Backup" 
 		property:ruleExpression="
-			!IsThisServerWorking &#38;&#38; 
-			!AnyServersWorking &#38;&#38;  
 			!IsIndexBackedUp"
 		property:requiresClusterLock="true">
 		<property name="rules">
 			<util:list>
-				<ref local="ikube.action.rule.IsThisServerWorking" />
-				<ref local="ikube.action.rule.AnyServersWorking" />
 				<ref local="ikube.action.rule.IsIndexBackedUp" />
 			</util:list>
 		</property>
@@ -229,13 +203,11 @@
 		id="ikube.action.Validator" 
 		class="ikube.action.Validator" 
 		property:ruleExpression="
-			!IsThisServerWorking &#38;&#38; 
-			!AnyServersWorking"
+			!IsIndexDelta || IsIndexDelta"
 		property:requiresClusterLock="false">
 		<property name="rules">
 			<util:list>
-				<ref local="ikube.action.rule.IsThisServerWorking" />
-				<ref local="ikube.action.rule.AnyServersWorking" />
+				<ref local="ikube.action.rule.IsIndexDelta" />
 			</util:list>
 		</property>
 	</bean>

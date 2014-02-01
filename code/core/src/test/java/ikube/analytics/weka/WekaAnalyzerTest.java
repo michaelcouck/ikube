@@ -137,8 +137,7 @@ public class WekaAnalyzerTest extends AbstractTest {
         wekaAnalyzer.init(context);
         wekaAnalyzer.build(context);
         Instances instances = wekaAnalyzer.instances(context);
-        Filter filter = (Filter) context.getFilter();
-        double[] correlationCoefficients = wekaAnalyzer.getCorrelationCoefficients(instances, filter);
+        double[] correlationCoefficients = wekaAnalyzer.getCorrelationCoefficients(instances);
         for (final double correlationCoefficient : correlationCoefficients) {
             assertTrue(correlationCoefficient >= 0.5 && correlationCoefficient <= 1.0);
         }
@@ -149,8 +148,7 @@ public class WekaAnalyzerTest extends AbstractTest {
         wekaAnalyzer.init(context);
         wekaAnalyzer.build(context);
         Instances instances = wekaAnalyzer.instances(context);
-        Filter filter = (Filter) context.getFilter();
-        double[][] distributionForInstances = wekaAnalyzer.getDistributionForInstances(instances, filter);
+        double[][] distributionForInstances = wekaAnalyzer.getDistributionForInstances(instances);
         for (final double[] distributionForInstance : distributionForInstances) {
             for (final double probability : distributionForInstance) {
                 assertTrue(probability == 0 || probability == 0.3333333333333333 || probability == 0.6666666666666666);

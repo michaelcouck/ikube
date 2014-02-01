@@ -18,12 +18,12 @@ public class MailerTest extends AbstractTest {
 		IMailer mailer = new Mailer();
 		mailer.setAuth("true");
 		mailer.setMailHost("smtp.gmail.com");
-		mailer.setPassword("Caherl2ne");
+		mailer.setPassword("1kubenotifications");
 		mailer.setPort("465");
 		mailer.setProtocol("pop3");
-		mailer.setRecipients("ikube.ikube@gmail.com");
-		mailer.setSender("ikube.ikube@gmail.com");
-		mailer.setUser("ikube.ikube");
+		mailer.setRecipients("ikube.notifications@gmail.com");
+		mailer.setSender("ikube.notifications@gmail.com");
+		mailer.setUser("ikube.notifications");
 
 		boolean sent = mailer.sendMail("MailerTest : subject", "MailerTest : message");
 		assertTrue("This mail should be sent : ", sent);

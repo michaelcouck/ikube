@@ -24,12 +24,13 @@ public class AnalyzerTest extends BaseTest {
 	public void before() throws Exception {
 		Analysis<?, ?> analysis = mock(Analysis.class);
 		analyzer = mock(Analyzer.class);
+        IAnalyticsService analyticsService = Mockito.mock(IAnalyticsService.class);
 
         when(analysis.getAlgorithmOutput()).thenReturn("output");
-		when(analyzer.analyze(any(HttpServletRequest.class))).thenCallRealMethod();
-		when(analyzer.unmarshall(any(Class.class), any(HttpServletRequest.class))).thenReturn(analysis);
+        when(analyzer.analyze(any(HttpServletRequest.class))).thenCallRealMethod();
+        when(analyzer.unmarshall(any(Class.class), any(HttpServletRequest.class))).thenReturn(analysis);
+        when(analyticsService.analyze(any(Analysis.class))).thenReturn(analysis);
 
-		IAnalyticsService analyticsService = Mockito.mock(IAnalyticsService.class);
 		Deencapsulation.setField(analyzer, analyticsService);
 	}
 
