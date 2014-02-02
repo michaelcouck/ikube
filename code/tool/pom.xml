@@ -51,9 +51,8 @@
                 <version>1.2.1</version>
                 <executions>
                     <execution>
-                        <phase>install</phase>
+                        <phase>deploy</phase>
                         <configuration>
-                            <!--<executable>java</executable>-->
                             <mainClass>ikube.deploy.Deployer</mainClass>
                             <arguments>
                                 <argument>.</argument>

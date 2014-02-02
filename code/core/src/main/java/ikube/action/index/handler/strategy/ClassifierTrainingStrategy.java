@@ -67,7 +67,8 @@ public class ClassifierTrainingStrategy extends AStrategy {
             analysis.setClazz(clazz);
             analysis.setInput(content);
             classifier.train(analysis);
-            if (trained % (context.getMaxTraining() / 10) == 0) {
+            logger.debug("Training : {} ", clazz);
+            if (trained % 1000 == 0) {
                 classifier.build(context);
             }
         } catch (final Exception e) {
