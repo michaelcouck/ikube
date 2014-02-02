@@ -126,7 +126,6 @@
 				<ref local="ikube.action.rule.AreUnopenedIndexes" />
 				<ref local="ikube.action.rule.IsMultiSearcherInitialised" />
 				<ref local="ikube.action.rule.AreSearchablesInitialised" />
-                <ref local="ikube.action.rule.IsIndexChanged" />
 			</util:list>
 		</property>
 	</bean>
@@ -234,6 +233,5 @@
 	<bean id="ikube.action.rule.AnyServersIdle" class="ikube.action.rule.AnyServersIdle" />
 	<bean id="ikube.action.rule.IsIndexDelta" class="ikube.action.rule.IsIndexDelta" />
 	<bean id="ikube.action.rule.IsThisIndexCreated" class="ikube.action.rule.IsThisIndexCreated" />
-	<bean id="ikube.action.rule.IsIndexChanged" class="ikube.action.rule.IsIndexChanged" />
 
 </beans>

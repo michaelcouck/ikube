@@ -42,7 +42,7 @@ public class SearcherClient {
 	}
 
 	public static void authenticate(final HttpClient httpClient, final String domain, final int port, final String userid, final String password) {
-		List<String> authPrefs = new ArrayList<String>(2);
+		List<String> authPrefs = new ArrayList<>(2);
 		authPrefs.add(AuthPolicy.BASIC);
 		authPrefs.add(AuthPolicy.DIGEST);
 		httpClient.getParams().setParameter(AuthPolicy.AUTH_SCHEME_PRIORITY, authPrefs);
@@ -53,7 +53,7 @@ public class SearcherClient {
 	}
 
 	private static NameValuePair[] getNameValuePairs(String[] names, String[] values) {
-		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+		List<NameValuePair> nameValuePairs = new ArrayList<>();
 		for (int i = 0; i < names.length && i < values.length; i++) {
 			NameValuePair nameValuePair = new NameValuePair(names[i], values[i]);
 			nameValuePairs.add(nameValuePair);
