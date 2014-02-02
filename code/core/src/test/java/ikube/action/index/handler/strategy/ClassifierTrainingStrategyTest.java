@@ -40,6 +40,7 @@ public class ClassifierTrainingStrategyTest extends AbstractTest {
 
         classifierTrainingStrategy = new ClassifierTrainingStrategy();
         classifierTrainingStrategy.setContext(context);
+        classifierTrainingStrategy.initialize();
     }
 
     @Test

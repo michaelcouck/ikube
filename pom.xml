@@ -1211,7 +1211,7 @@
         <module>code/core</module>
         <module>code/war</module>
         <module>code/libs</module>
-        <!-- <module>code/tool</module>-->
+        <module>code/tool</module>
         <!-- <module>code/site</module> -->
     </modules>
 

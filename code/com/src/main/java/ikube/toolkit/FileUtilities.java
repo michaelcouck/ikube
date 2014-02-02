@@ -79,7 +79,7 @@ public final class FileUtilities {
         return findDirectoryRecursively(upFolder, stringPatterns);
     }
 
-    private static File moveUpDirectories(final File folder, final int upDirectories) {
+    public static File moveUpDirectories(final File folder, final int upDirectories) {
         int directories = upDirectories;
         String upFolderPath = FileUtilities.cleanFilePath(folder.getAbsolutePath());
         File upFolder = new File(upFolderPath);
@@ -87,6 +87,25 @@ public final class FileUtilities {
             upFolder = upFolder.getParentFile();
         } while (--directories > 0 && upFolder != null);
         return upFolder;
+    }
+
+    /**
+     * This method returns the relative file/folder, parent or grandparent folder of the file specified.
+     *
+     * @param file the file to get the relative parent from
+     * @param path the path relative to the current file. This typically contains ../../ segments, and for each segment that
+     *             is encountered we will move one directory higher
+     * @return the relative path
+     */
+    public static File relative(final File file, final String path) {
+        int upDirectories = 0;
+        String strippedPath = path;
+        while (strippedPath.contains("../")) {
+            strippedPath = strippedPath.replaceFirst("../", "");
+            upDirectories++;
+        }
+        File baseFolder = moveUpDirectories(file, upDirectories);
+        return new File(baseFolder, strippedPath);
     }
 
     /**

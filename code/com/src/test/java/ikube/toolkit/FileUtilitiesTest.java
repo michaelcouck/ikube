@@ -153,7 +153,19 @@ public class FileUtilitiesTest extends AbstractTest {
             // We ignore this exception as the machine could be offline
             logger.error("Machine offline?", e);
         }
+    }
 
+    @Test
+    public void relativeParent() {
+        String dotFolderPath = FileUtilities.cleanFilePath(new File(".").getAbsolutePath());
+        File dotFolder = new File(dotFolderPath);
+        File relative = FileUtilities.relative(dotFolder, "../../");
+        assertEquals(dotFolder.getParentFile().getParentFile(), relative);
+
+        File allData = FileUtilities.findFileRecursively(new File("."), 1, "weka.jar");
+        File allDataRelative = FileUtilities.relative(new File("."), "../libs/tools/analytics/weka.jar");
+        logger.info("All : " + allData + ", " + allDataRelative);
+        assertEquals(allData, allDataRelative);
     }
 
     private HttpClient getHttpClient() {

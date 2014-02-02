@@ -8,10 +8,12 @@ import ikube.toolkit.ThreadUtilities;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -31,14 +33,26 @@ public final class Deployer {
 
 	private static ApplicationContext APPLICATION_CONTEXT;
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		File configurationDirectory = new File(DOT_DIRECTORY);
 		String configurationFile = CONFIGURATION_FILE;
 		boolean execute = Boolean.TRUE;
 		if (args != null) {
 			if (args.length > 1) {
+                int upDirectories = 0;
+                while (args[0].contains("../")) {
+                    args[0] = args[0].replace("../", "");
+                    upDirectories++;
+                }
+                if (StringUtils.isEmpty(args[0])) {
+                    args[0] = ".";
+                }
+                LOGGER.info("Args : " + upDirectories + ", " + Arrays.deepToString(args));
 				configurationDirectory = new File(args[0]);
-				configurationFile = args[1];
+                LOGGER.info("Conf dir before : " + configurationDirectory);
+                configurationDirectory = FileUtilities.moveUpDirectories(configurationDirectory, upDirectories);
+                LOGGER.info("Conf dir after moving : " + configurationDirectory);
+                configurationFile = args[1];
 			}
 			if (args.length >= 3) {
 				execute = Boolean.valueOf(args[2]);
@@ -47,7 +61,7 @@ public final class Deployer {
 		String configurationDirectoryPath = FileUtilities.cleanFilePath(configurationDirectory.getAbsolutePath());
 		LOGGER.info("Directory : " + configurationDirectoryPath + ", file : " + configurationFile);
 		ThreadUtilities.initialize();
-		List<Future<?>> futures = new ArrayList<Future<?>>();
+		List<Future<?>> futures = new ArrayList<>();
 		// Find the configuration file
 		File deployerConfiguration = FileUtilities.findFileRecursively(new File(configurationDirectoryPath), configurationFile);
 		LOGGER.info("Configuration file : " + deployerConfiguration);

@@ -170,7 +170,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 			throw new RuntimeException("Worker thread interrupted : " + Arrays.deepToString(messages), exception);
 		}
 		logger.error("Exception handling resource : " + Arrays.deepToString(messages) + ", " + exception.getLocalizedMessage());
-		logger.debug(null, exception);
+		logger.info(null, exception);
 	}
 
 	/**
