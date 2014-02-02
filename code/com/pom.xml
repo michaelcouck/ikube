@@ -47,7 +47,7 @@
                             <target>
                                 <echo message="Base directory : ${basedir}, ">Base directory : ${basedir}</echo>
 
-                                <!--<delete dir="ikube" />
+                                <delete dir="ikube" />
                                 <delete dir="../core/ikube" />
                                 <delete dir="../war/ikube" />
                                 <delete dir="../../ikube" />
@@ -63,9 +63,9 @@
                                 <delete dir="../core/ikube/analytics" />
                                 <delete dir="../war/ikube/analytics" />
                                 <delete dir="../../ikube/analytics" />
-                                <delete dir="../war/ikube/twitter" />-->
+                                <delete dir="../war/ikube/twitter" />
 
-                                <!--<copy todir="ikube" failonerror="true" verbose="false">
+                                <copy todir="ikube" failonerror="true" verbose="false">
                                     <fileset dir="../libs/src/main/resources/ikube"/>
                                 </copy>
                                 <copy todir="../core/ikube" failonerror="true" verbose="false">
@@ -120,7 +120,7 @@
 
                                 <copy todir="../war/ikube/twitter" failonerror="true" verbose="true">
                                     <fileset dir="../libs/src/main/resources/indexes/twitter"/>
-                                </copy>-->
+                                </copy>
                             </target>
                         </configuration>
                         <goals>
