@@ -220,8 +220,7 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
             String ip = UriUtilities.getIp();
             mailer.sendMail(subject + ":" + ip, body);
         } catch (final Exception e) {
-            logger.error("Exception sending mail : " + subject + ", " + e.getMessage());
-            logger.debug(null, e);
+            logger.error("Exception sending mail : " + subject + ", " + e.getMessage(), e);
         }
     }
 

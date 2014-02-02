@@ -22,8 +22,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.log4j.Logger;
 
 /**
- * This class actually does the sending of the mail to the recipients when the license agreement maximum documents is exceeded. The
- * recipients are in an encrypted file in the application, and the {@link License} object holds the decrypted data from the file.
+ * For sending mail to various accounts.
  * 
  * @author Michael Couck
  * @since 16.08.10
@@ -46,13 +45,13 @@ public class Mailer implements IMailer {
 	private transient String port;
 	/** "smtp.gmail.com" */
 	private transient String mailHost;
-	/** ikybe.ikube */
+	/** ikube.notifications */
 	private transient String user;
 	/** '*********' */
 	private transient String password;
-	/** ikube.ikube@gmail.com */
+	/** ikube.notifications@gmail.com */
 	private transient String sender;
-	/** ikube.ikube@gmail.com */
+	/** ikube.notifications@gmail.com */
 	private transient String recipients;
 
 	/**
@@ -75,7 +74,9 @@ public class Mailer implements IMailer {
 				return new PasswordAuthentication(user, password);
 			}
 		});
-		// session.setDebug(Boolean.TRUE);
+        if (logger.isDebugEnabled()) {
+            session.setDebug(Boolean.TRUE);
+        }
 
 		MimeMessage message = new MimeMessage(session);
 		message.setSender(new InternetAddress(sender));
@@ -110,15 +111,14 @@ public class Mailer implements IMailer {
 			transport = session.getTransport("smtps");
 			transport.connect(mailHost, Integer.parseInt(port), user, password);
 			transport.sendMessage(message, message.getAllRecipients());
-		} catch (Exception e) {
-			logger.error("Exception sending mail to : " + ToStringBuilder.reflectionToString(this));
-			logger.debug(null, e);
-			return Boolean.FALSE;
+		} catch (final Exception e) {
+			logger.error("Exception sending mail to : " + recipients + ", " + subject + ", " + body, e);
+			throw new RuntimeException(e);
 		} finally {
 			if (transport != null) {
 				try {
 					transport.close();
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					logger.error("Exception closing the mail transport : " + transport, e);
 				}
 			}

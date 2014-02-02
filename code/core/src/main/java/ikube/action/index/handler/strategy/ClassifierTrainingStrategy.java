@@ -32,7 +32,6 @@ public class ClassifierTrainingStrategy extends AStrategy {
 
     public ClassifierTrainingStrategy(final IStrategy nextStrategy) {
         super(nextStrategy);
-        training = new HashMap<>();
     }
 
     /**
@@ -51,6 +50,7 @@ public class ClassifierTrainingStrategy extends AStrategy {
         return super.aroundProcess(indexContext, indexable, document, resource);
     }
 
+    @SuppressWarnings("unchecked")
     void train(final String clazz, final String content) {
         Integer trained = training.get(clazz);
         if (trained == null) {
@@ -70,9 +70,14 @@ public class ClassifierTrainingStrategy extends AStrategy {
             if (trained % (context.getMaxTraining() / 10) == 0) {
                 classifier.build(context);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.error("Exception building classifier : ", e);
         }
+    }
+
+    @Override
+    public void initialize() {
+        training = new HashMap<>();
     }
 
     public void setLanguage(String language) {

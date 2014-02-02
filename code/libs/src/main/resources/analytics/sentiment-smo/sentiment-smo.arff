@@ -1,15 +1,12 @@
 @relation sentiment
 
-@attribute @class@ {positive,negative,neutral}
-@attribute @text@ String
+@attribute @class@ {positive,negative}
+@attribute @text@ string
 
 @data
-positive,'Fantastic holiday'
-negative,'Terrible weather'
-neutral,'Hello world'
 positive,'positive'
 negative,'negative'
-neutral,'The brown fox jumped over the lazy dog'
+positive,'Fantastic holiday'
+negative,'Terrible weather'
 positive,'my beautiful little girl'
 negative,'you selfish stupid woman'
-neutral,'In the middle of no where'

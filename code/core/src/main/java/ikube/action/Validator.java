@@ -41,7 +41,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 			if (latestIndexDirectory == null || !latestIndexDirectory.exists()) {
 				String subject = "No index : " + indexContext.getIndexName();
 				String body = "No index : " + indexContext.toString();
-				everythingInitialized &= Boolean.FALSE;
+				everythingInitialized = Boolean.FALSE;
 				sendNotification(subject, body);
 			}
 		}
@@ -66,16 +66,18 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
 		if (latestIndexDirectory != null) {
 			DirectoryExistsAndIsLocked directoryExistsAndIsLocked = new DirectoryExistsAndIsLocked();
 			File[] serverIndexDirectories = latestIndexDirectory.listFiles();
-			for (File serverIndexDirectory : serverIndexDirectories) {
-				if (directoryExistsAndIsLocked.evaluate(serverIndexDirectory)) {
-					String subject = "Index being generated : " + indexContext.getIndexName();
-					String body = "The index is being generated for index context " + indexContext.getName()
-							+ ". This message is just for informational purposes, no action is required.";
-					everythingInitialized &= Boolean.FALSE;
-					sendNotification(subject, body);
-					break;
-				}
-			}
+            if (serverIndexDirectories != null) {
+                for (File serverIndexDirectory : serverIndexDirectories) {
+                    if (directoryExistsAndIsLocked.evaluate(serverIndexDirectory)) {
+                        String subject = "Index being generated : " + indexContext.getIndexName();
+                        String body = "The index is being generated for index context " + indexContext.getName()
+                            + ". This message is just for informational purposes, no action is required.";
+                        everythingInitialized &= Boolean.FALSE;
+                        sendNotification(subject, body);
+                        break;
+                    }
+                }
+            }
 		}
 		// Is the index open, and if not why not
 		if (indexContext.getMultiSearcher() == null) {

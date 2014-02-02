@@ -67,7 +67,7 @@
         property:stored="true"
         property:analyzed="true"
         property:vectored="false"
-        property:threads="4"
+        property:threads="12"
 
         property:consumerKey="Sohh43DylUwaXr7smSojBA"
         property:consumerSecret="90xubtexbSwhHBbKXM62pF4QfJnz1NWVkpevwde3Qxo"
@@ -132,132 +132,156 @@
         id="twitter-training-strategy-en"
         class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
         property:context-ref="context-smo-en"
-        property:language="English"/>
+        property:language="English"
+        init-method="initialize"/>
     <bean
         id="twitter-classification-strategy-en"
         class="ikube.action.index.handler.strategy.AnalysisStrategy"
         property:language="English"
-        property:context-ref="context-smo-en"/>
+        property:context-ref="context-smo-en"
+        init-method="initialize"/>
 
     <bean
         id="twitter-training-strategy-es"
         class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
         property:context-ref="context-smo-es"
-        property:language="Spanish"/>
+        property:language="Spanish"
+        init-method="initialize"/>
     <bean
         id="twitter-classification-strategy-es"
         class="ikube.action.index.handler.strategy.AnalysisStrategy"
         property:language="Spanish"
-        property:context-ref="context-smo-es"/>
+        property:context-ref="context-smo-es"
+        init-method="initialize"/>
 
     <bean
         id="twitter-training-strategy-jp"
         class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
         property:context-ref="context-smo-jp"
-        property:language="Japanese"/>
+        property:language="Japanese"
+        init-method="initialize"/>
     <bean
         id="twitter-classification-strategy-jp"
         class="ikube.action.index.handler.strategy.AnalysisStrategy"
         property:language="Japanese"
-        property:context-ref="context-smo-jp"/>
+        property:context-ref="context-smo-jp"
+        init-method="initialize"/>
 
     <bean
         id="twitter-training-strategy-cn"
         class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
         property:context-ref="context-smo-cn"
-        property:language="Chinese"/>
+        property:language="Chinese"
+        init-method="initialize"/>
     <bean
         id="twitter-classification-strategy-cn"
         class="ikube.action.index.handler.strategy.AnalysisStrategy"
         property:language="Chinese"
-        property:context-ref="context-smo-cn"/>
+        property:context-ref="context-smo-cn"
+        init-method="initialize"/>
 
     <bean
         id="twitter-training-strategy-nl"
         class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
         property:context-ref="context-smo-nl"
-        property:language="Dutch"/>
+        property:language="Dutch"
+        init-method="initialize"/>
     <bean
         id="twitter-classification-strategy-nl"
         class="ikube.action.index.handler.strategy.AnalysisStrategy"
         property:language="Dutch"
-        property:context-ref="context-smo-nl"/>
+        property:context-ref="context-smo-nl"
+        init-method="initialize"/>
 
     <bean
         id="twitter-training-strategy-fr"
         class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
         property:context-ref="context-smo-fr"
-        property:language="French"/>
+        property:language="French"
+        init-method="initialize"/>
     <bean
         id="twitter-classification-strategy-fr"
         class="ikube.action.index.handler.strategy.AnalysisStrategy"
         property:language="French"
-        property:context-ref="context-smo-fr"/>
+        property:context-ref="context-smo-fr"
+        init-method="initialize"/>
 
     <bean
         id="twitter-training-strategy-de"
         class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
         property:context-ref="context-smo-de"
-        property:language="German"/>
+        property:language="German"
+        init-method="initialize"/>
     <bean
         id="twitter-classification-strategy-de"
         class="ikube.action.index.handler.strategy.AnalysisStrategy"
         property:language="German"
-        property:context-ref="context-smo-de"/>
+        property:context-ref="context-smo-de"
+        init-method="initialize"/>
 
     <bean
         id="twitter-training-strategy-sv"
         class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
         property:context-ref="context-smo-sv"
-        property:language="Swedish"/>
+        property:language="Swedish"
+        init-method="initialize"/>
     <bean
         id="twitter-classification-strategy-sv"
         class="ikube.action.index.handler.strategy.AnalysisStrategy"
         property:language="Swedish"
-        property:context-ref="context-smo-sv"/>
+        property:context-ref="context-smo-sv"
+        init-method="initialize"/>
 
     <bean
         id="twitter-training-strategy-th"
         class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
         property:context-ref="context-smo-th"
-        property:language="Thai"/>
+        property:language="Thai"
+        init-method="initialize"/>
     <bean
         id="twitter-classification-strategy-th"
         class="ikube.action.index.handler.strategy.AnalysisStrategy"
         property:language="Thai"
-        property:context-ref="context-smo-th"/>
+        property:context-ref="context-smo-th"
+        init-method="initialize"/>
 
     <bean
         id="twitter-training-strategy-ar"
         class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
         property:context-ref="context-smo-ar"
-        property:language="Arabic"/>
+        property:language="Arabic"
+        init-method="initialize"/>
     <bean
         id="twitter-classification-strategy-ar"
         class="ikube.action.index.handler.strategy.AnalysisStrategy"
         property:language="Arabic"
-        property:context-ref="context-smo-ar"/>
+        property:context-ref="context-smo-ar"
+        init-method="initialize"/>
 
     <bean
         id="twitter-training-strategy-tr"
         class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
         property:context-ref="context-smo-tr"
-        property:language="Turkish"/>
+        property:language="Turkish"
+        init-method="initialize"/>
     <bean
         id="twitter-classification-strategy-tr"
         class="ikube.action.index.handler.strategy.AnalysisStrategy"
         property:language="Turkish"
-        property:context-ref="context-smo-tr"/>
+        property:context-ref="context-smo-tr"
+        init-method="initialize"/>
 
     <bean
         id="twitter-training-strategy-ru"
         class="ikube.action.index.handler.strategy.ClassifierTrainingStrategy"
         property:context-ref="context-smo-ru"
-        property:language="Russian"/>
+        property:language="Russian"
+        init-method="initialize"/>
     <bean
         id="twitter-classification-strategy-ru"
         class="ikube.action.index.handler.strategy.AnalysisStrategy"
         property:language="Russian"
-        property:context-ref="context-smo-ru"/>
+        property:context-ref="context-smo-ru"
+        init-method="initialize"/>
 
 </beans>

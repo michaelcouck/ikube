@@ -30,7 +30,7 @@
 		<ref bean="ikube.action.Delete" />
 		<ref bean="ikube.action.Backup" />
 		<!-- <ref bean="ikube.action.DiskFull" /> -->
-		<ref bean="ikube.action.Validator" />
+		<!--<ref bean="ikube.action.Validator" />-->
 		<ref bean="ikube.action.Prune" />
 	</util:list>
 
@@ -199,7 +199,7 @@
 			</util:list>
 		</property>
 	</bean> -->
-	<bean 
+	<!--<bean
 		id="ikube.action.Validator" 
 		class="ikube.action.Validator" 
 		property:ruleExpression="
@@ -210,7 +210,7 @@
 				<ref local="ikube.action.rule.IsIndexDelta" />
 			</util:list>
 		</property>
-	</bean>
+	</bean>-->
 	
 	<bean id="ikube.action.rule.AnyServersWorking" class="ikube.action.rule.AnyServersWorking" />
 	<bean id="ikube.action.rule.AreDirectoriesEqual" class="ikube.action.rule.AreDirectoriesEqual" />

@@ -17,7 +17,7 @@
         property:name="bank-data"
         property:analyzer-ref="weka-clusterer"
         property:algorithm-ref="weka-clusterer-em"
-        property:maxTraining="1000"/>
+        property:maxTraining="${max-training}"/>
 
     <bean id="weka-classifier" class="ikube.analytics.weka.WekaClassifier"/>
     <bean id="string-to-word-vector" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
@@ -29,7 +29,7 @@
         property:analyzer-ref="weka-classifier"
         property:filter-ref="string-to-word-vector"
         property:algorithm-ref="weka-classifier-smo"
-        property:maxTraining="1000"/>
+        property:maxTraining="${max-training}"/>
 
     <bean id="weka-classifier-en" class="ikube.analytics.weka.WekaClassifier"/>
     <bean id="string-to-word-vector-en" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
@@ -41,7 +41,7 @@
         property:analyzer-ref="weka-classifier-en"
         property:filter-ref="string-to-word-vector-en"
         property:algorithm-ref="weka-classifier-smo-en"
-        property:maxTraining="1000"/>
+        property:maxTraining="${max-training}"/>
     <bean id="weka-classifier-es" class="ikube.analytics.weka.WekaClassifier"/>
     <bean id="string-to-word-vector-es" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
     <bean id="weka-classifier-smo-es" class="weka.classifiers.functions.SMO"/>
@@ -52,7 +52,7 @@
         property:analyzer-ref="weka-classifier-es"
         property:filter-ref="string-to-word-vector-es"
         property:algorithm-ref="weka-classifier-smo-es"
-        property:maxTraining="1000"/>
+        property:maxTraining="${max-training}"/>
     <bean id="weka-classifier-jp" class="ikube.analytics.weka.WekaClassifier"/>
     <bean id="string-to-word-vector-jp" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
     <bean id="weka-classifier-smo-jp" class="weka.classifiers.functions.SMO"/>
@@ -63,7 +63,7 @@
         property:analyzer-ref="weka-classifier-jp"
         property:filter-ref="string-to-word-vector-jp"
         property:algorithm-ref="weka-classifier-smo-jp"
-        property:maxTraining="1000"/>
+        property:maxTraining="${max-training}"/>
     <bean id="weka-classifier-cn" class="ikube.analytics.weka.WekaClassifier"/>
     <bean id="string-to-word-vector-cn" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
     <bean id="weka-classifier-smo-cn" class="weka.classifiers.functions.SMO"/>
@@ -74,7 +74,7 @@
         property:analyzer-ref="weka-classifier-cn"
         property:filter-ref="string-to-word-vector-cn"
         property:algorithm-ref="weka-classifier-smo-cn"
-        property:maxTraining="1000"/>
+        property:maxTraining="${max-training}"/>
     <bean id="weka-classifier-nl" class="ikube.analytics.weka.WekaClassifier"/>
     <bean id="string-to-word-vector-nl" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
     <bean id="weka-classifier-smo-nl" class="weka.classifiers.functions.SMO"/>
@@ -85,7 +85,7 @@
         property:analyzer-ref="weka-classifier-nl"
         property:filter-ref="string-to-word-vector-nl"
         property:algorithm-ref="weka-classifier-smo-nl"
-        property:maxTraining="1000"/>
+        property:maxTraining="${max-training}"/>
     <bean id="weka-classifier-fr" class="ikube.analytics.weka.WekaClassifier"/>
     <bean id="string-to-word-vector-fr" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
     <bean id="weka-classifier-smo-fr" class="weka.classifiers.functions.SMO"/>
@@ -96,7 +96,7 @@
         property:analyzer-ref="weka-classifier-fr"
         property:filter-ref="string-to-word-vector-fr"
         property:algorithm-ref="weka-classifier-smo-fr"
-        property:maxTraining="1000"/>
+        property:maxTraining="${max-training}"/>
     <bean id="weka-classifier-de" class="ikube.analytics.weka.WekaClassifier"/>
     <bean id="string-to-word-vector-de" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
     <bean id="weka-classifier-smo-de" class="weka.classifiers.functions.SMO"/>
@@ -107,7 +107,7 @@
         property:analyzer-ref="weka-classifier-de"
         property:filter-ref="string-to-word-vector-de"
         property:algorithm-ref="weka-classifier-smo-de"
-        property:maxTraining="1000"/>
+        property:maxTraining="${max-training}"/>
     <bean id="weka-classifier-sv" class="ikube.analytics.weka.WekaClassifier"/>
     <bean id="string-to-word-vector-sv" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
     <bean id="weka-classifier-smo-sv" class="weka.classifiers.functions.SMO"/>
@@ -118,7 +118,7 @@
         property:analyzer-ref="weka-classifier-sv"
         property:filter-ref="string-to-word-vector-sv"
         property:algorithm-ref="weka-classifier-smo-sv"
-        property:maxTraining="1000"/>
+        property:maxTraining="${max-training}"/>
     <bean id="weka-classifier-th" class="ikube.analytics.weka.WekaClassifier"/>
     <bean id="string-to-word-vector-th" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
     <bean id="weka-classifier-smo-th" class="weka.classifiers.functions.SMO"/>
@@ -129,7 +129,7 @@
         property:analyzer-ref="weka-classifier-th"
         property:filter-ref="string-to-word-vector-th"
         property:algorithm-ref="weka-classifier-smo-th"
-        property:maxTraining="1000"/>
+        property:maxTraining="${max-training}"/>
     <bean id="weka-classifier-ar" class="ikube.analytics.weka.WekaClassifier"/>
     <bean id="string-to-word-vector-ar" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
     <bean id="weka-classifier-smo-ar" class="weka.classifiers.functions.SMO"/>
@@ -140,7 +140,7 @@
         property:analyzer-ref="weka-classifier-ar"
         property:filter-ref="string-to-word-vector-ar"
         property:algorithm-ref="weka-classifier-smo-ar"
-        property:maxTraining="1000"/>
+        property:maxTraining="${max-training}"/>
     <bean id="weka-classifier-tr" class="ikube.analytics.weka.WekaClassifier"/>
     <bean id="string-to-word-vector-tr" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
     <bean id="weka-classifier-smo-tr" class="weka.classifiers.functions.SMO"/>
@@ -151,7 +151,7 @@
         property:analyzer-ref="weka-classifier-tr"
         property:filter-ref="string-to-word-vector-tr"
         property:algorithm-ref="weka-classifier-smo-tr"
-        property:maxTraining="1000"/>
+        property:maxTraining="${max-training}"/>
     <bean id="weka-classifier-ru" class="ikube.analytics.weka.WekaClassifier"/>
     <bean id="string-to-word-vector-ru" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
     <bean id="weka-classifier-smo-ru" class="weka.classifiers.functions.SMO"/>
@@ -162,7 +162,7 @@
         property:analyzer-ref="weka-classifier-ru"
         property:filter-ref="string-to-word-vector-ru"
         property:algorithm-ref="weka-classifier-smo-ru"
-        property:maxTraining="1000"/>
+        property:maxTraining="${max-training}"/>
 
     <bean
         class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
