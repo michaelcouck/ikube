@@ -125,9 +125,8 @@ public class WekaClassifierTest extends AbstractTest {
         Instance instance = instances.firstInstance();
 
         double[] distributionForInstance = wekaClassifier.distributionForInstance(instance);
-        assertEquals(0.6666666666666666, distributionForInstance[0]);
-        assertEquals(0.3333333333333333, distributionForInstance[1]);
-        assertEquals(0.0, distributionForInstance[2]);
+        assertEquals(1.0, distributionForInstance[0]);
+        assertEquals(0.0, distributionForInstance[1]);
     }
 
 }

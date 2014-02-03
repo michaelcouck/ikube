@@ -29,6 +29,7 @@ public class DirectoryExistsAndNotLockedTest extends AbstractTest {
     public void before() {
         existsAndNotLocked = new DirectoryExistsAndNotLocked();
         FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        ThreadUtilities.sleep(5000);
     }
 
     @After
@@ -39,23 +40,23 @@ public class DirectoryExistsAndNotLockedTest extends AbstractTest {
     @Test
     public void evaluate() throws Exception {
         File indexDirectory = new File(indexContext.getIndexDirectoryPath());
-        boolean existsAndNotLockedResult = existsAndNotLocked.evaluate(indexDirectory);
-        assertFalse(existsAndNotLockedResult);
+        boolean existsAndNotLocked = this.existsAndNotLocked.evaluate(indexDirectory);
+        assertFalse(existsAndNotLocked);
 
         createIndexFileSystem(indexContext, "Hello world");
         ThreadUtilities.sleep(3000);
 
         File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
         indexDirectory = new File(latestIndexDirectory, UriUtilities.getIp());
-        existsAndNotLockedResult = existsAndNotLocked.evaluate(indexDirectory);
-        assertTrue(existsAndNotLockedResult);
+        existsAndNotLocked = this.existsAndNotLocked.evaluate(indexDirectory);
+        assertTrue(existsAndNotLocked);
 
         Lock lock = null;
         try {
             lock = getLock(FSDirectory.open(indexDirectory), indexDirectory);
             ThreadUtilities.sleep(3000);
-            existsAndNotLockedResult = existsAndNotLocked.evaluate(indexDirectory);
-            assertFalse(existsAndNotLockedResult);
+            existsAndNotLocked = this.existsAndNotLocked.evaluate(indexDirectory);
+            assertFalse(existsAndNotLocked);
         } finally {
             if (lock != null) {
                 lock.release();

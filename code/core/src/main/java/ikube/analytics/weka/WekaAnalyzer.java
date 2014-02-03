@@ -214,9 +214,9 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<String, double[
                 double[] d2 = distributionForInstance(two);
                 double correlationCoefficient = Utils.correlation(d1, d2, d1.length);
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Vector one : " + Arrays.toString(d1));
-                    logger.debug("Vector two : " + Arrays.toString(d2));
-                    logger.debug("Correlation : " + correlationCoefficient);
+                    logger.info("Vector one : " + Arrays.toString(d1));
+                    logger.info("Vector two : " + Arrays.toString(d2));
+                    logger.info("Correlation : " + correlationCoefficient);
                 }
                 correlationCoefficients[i] = correlationCoefficient;
             } else {

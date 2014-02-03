@@ -8,6 +8,7 @@ import ikube.mock.IndexWriterMock;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.ThreadUtilities;
 import mockit.Mockit;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -35,11 +36,11 @@ import static org.mockito.Mockito.when;
 @SuppressWarnings("deprecation")
 public class IndexManagerTest extends AbstractTest {
 
-    private String fieldName = "fieldName";
-    private Document document = new Document();
-    private Indexable<?> indexable;
-
     private File indexFolderTwo;
+    private Indexable<?> indexable;
+    private String fieldName = "fieldName";
+
+    private Document document = new Document();
 
     @Before
     public void before() {
@@ -49,6 +50,7 @@ public class IndexManagerTest extends AbstractTest {
         FileUtilities.getFile(indexContext.getIndexDirectoryPath() + "/1234567889/127.0.0.1", Boolean.TRUE);
         indexFolderTwo = FileUtilities.getFile(indexContext.getIndexDirectoryPath() + "/1234567891/127.0.0.2", Boolean.TRUE);
         FileUtilities.getFile(indexContext.getIndexDirectoryPath() + "/1234567890/127.0.0.3", Boolean.TRUE);
+        ThreadUtilities.sleep(3000);
     }
 
     @After
@@ -153,23 +155,13 @@ public class IndexManagerTest extends AbstractTest {
         File latest = IndexManager.getLatestIndexDirectory(new File(indexContext.getIndexDirectoryPath()), null);
         assertEquals(indexFolderTwo.getParentFile(), latest);
 
+        Date latestIndexDirectoryDate = IndexManager.getLatestIndexDirectoryDate(indexContext);
+        assertTrue(latestIndexDirectoryDate.getTime() == Long.parseLong(latest.getName()));
+
         createIndexFileSystem(indexContext, "The data in the index");
         latest = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
         assertTrue(latest != null && latest.exists());
         assertNotSame(indexFolderTwo.getParentFile(), latest);
-    }
-
-    @Test
-    public void getLatestIndexDirectoryString() {
-        File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
-        assertEquals(indexFolderTwo.getParentFile().getName(), latestIndexDirectory.getName());
-    }
-
-    @Test
-    public void getLatestIndexDirectoryDate() throws Exception {
-        File latestIndexDirectory = createIndexFileSystem(indexContext, "Any kind of data for the index");
-        Date latestIndexDirectoryDate = IndexManager.getLatestIndexDirectoryDate(indexContext);
-        assertTrue(latestIndexDirectoryDate.getTime() == Long.parseLong(latestIndexDirectory.getParentFile().getName()));
     }
 
     @Test

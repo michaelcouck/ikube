@@ -87,6 +87,7 @@ public class WekaClustererTest extends AbstractTest {
         Instances instances = Deencapsulation.getField(wekaclusterer, "instances");
         double[] correlationCoEfficients = wekaclusterer.getCorrelationCoefficients(instances);
         for (final double correlationCoEfficient : correlationCoEfficients) {
+            logger.info("Correlation : " + correlationCoEfficient);
             assertTrue(correlationCoEfficient >= -1 && correlationCoEfficient <= 1);
         }
     }
@@ -97,6 +98,7 @@ public class WekaClustererTest extends AbstractTest {
         double[][] distributionForInstances = wekaclusterer.getDistributionForInstances(instances);
         for (final double[] distribution : distributionForInstances) {
             for (final double probability : distribution) {
+                logger.info("Probability : " + probability);
                 assertTrue(probability >= 0 && probability <= 1.0);
             }
         }
