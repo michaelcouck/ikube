@@ -145,7 +145,6 @@ public class WekaClassifierTest extends AbstractTest {
             public void run() {
                 int i = iterations;
                 while (--i > 0) {
-                    // logger.info("Iterate : " + i);
                     wekaClassifier.build(context);
                     ThreadUtilities.sleep(3000);
                 }
@@ -174,7 +173,6 @@ public class WekaClassifierTest extends AbstractTest {
                     try {
                         Analysis<String, double[]> analysis = getAnalysis(IConstants.POSITIVE, positive);
                         wekaClassifier.analyze(analysis);
-                        logger.info("Analysis : " + analysis.getClazz());
                     } catch (Exception e) {
                         logger.error(null, e);
                     }
@@ -183,7 +181,7 @@ public class WekaClassifierTest extends AbstractTest {
         });
         futures.add(future);
 
-        ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
+        ThreadUtilities.waitForFutures(futures, 60);
     }
 
 }
