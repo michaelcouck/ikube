@@ -67,7 +67,7 @@ public class ClassifierTrainingStrategy extends AStrategy {
             analysis.setClazz(clazz);
             analysis.setInput(content);
             classifier.train(analysis);
-            logger.debug("Training : {} ", clazz);
+            logger.info("Training : " + clazz);
             if (trained % 100 == 0) {
                 classifier.build(context);
             }

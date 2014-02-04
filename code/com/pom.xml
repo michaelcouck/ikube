@@ -30,9 +30,7 @@
                 <version>2.7.1</version>
                 <configuration>
                     <forkMode>once</forkMode>
-                    <argLine>-javaagent:../../serenity/serenity.jar ${memory.parameters} ${serenity.parameters}
-                        -XX:-UseSplitVerifier
-                    </argLine>
+                    <argLine>-javaagent:../../serenity/serenity.jar ${memory.parameters} ${serenity.parameters} -XX:-UseSplitVerifier</argLine>
                 </configuration>
             </plugin>
             <plugin>
@@ -42,7 +40,7 @@
                 <executions>
                     <execution>
                         <id>copy-configuration</id>
-                        <phase>compile</phase>
+                        <phase>deploy</phase>
                         <configuration>
                             <target>
                                 <echo message="Base directory : ${basedir}, ">Base directory : ${basedir}</echo>

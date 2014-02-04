@@ -4,6 +4,7 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Analysis;
 import ikube.model.Context;
+import ikube.toolkit.ThreadUtilities;
 import mockit.Deencapsulation;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,8 +13,11 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Future;
+
+import static junit.framework.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -66,17 +70,18 @@ public class WekaClassifierTest extends AbstractTest {
 
     @Test
     public void build() throws Exception {
+        Object algorithm = context.getAnalyzer();
         wekaClassifier.init(context);
         Instances instances = Deencapsulation.getField(wekaClassifier, "instances");
         context.setMaxTraining(instances.numInstances());
         wekaClassifier.build(context);
-        assertEquals(0, instances.numInstances());
+        assertEquals("The instances are cleaned after the build : ", 0, instances.numInstances());
+        assertNotSame("The classifier algorithm must be replaced with the built one : ", algorithm, context.getAlgorithm());
     }
 
     @Test
     public void analyze() throws Exception {
         wekaClassifier.init(context);
-        // String negative = "you selfish stupid woman";
         String negative = "narryontop harry styles hello harry";
         Analysis<String, double[]> analysis = getAnalysis(IConstants.NEGATIVE, negative);
         wekaClassifier.train(analysis);
@@ -127,6 +132,58 @@ public class WekaClassifierTest extends AbstractTest {
         double[] distributionForInstance = wekaClassifier.distributionForInstance(instance);
         assertEquals(1.0, distributionForInstance[0]);
         assertEquals(0.0, distributionForInstance[1]);
+    }
+
+    @Test
+    public void multiThreaded() throws Exception {
+        ThreadUtilities.initialize();
+        wekaClassifier.init(context);
+        final int iterations = 10;
+        List<Future<?>> futures = new ArrayList<>();
+
+        Future<?> future = ThreadUtilities.submitSystem(new Runnable() {
+            public void run() {
+                int i = iterations;
+                while (--i > 0) {
+                    // logger.info("Iterate : " + i);
+                    wekaClassifier.build(context);
+                    ThreadUtilities.sleep(3000);
+                }
+            }
+        });
+        futures.add(future);
+        future = ThreadUtilities.submitSystem(new Runnable() {
+            public void run() {
+                int i = iterations * 100;
+                while (--i > 0) {
+                    try {
+                        Analysis<String, double[]> analysis = getAnalysis(IConstants.POSITIVE, positive);
+                        wekaClassifier.train(analysis);
+                        ThreadUtilities.sleep(1000);
+                    } catch (Exception e) {
+                        logger.error(null, e);
+                    }
+                }
+            }
+        });
+        futures.add(future);
+        future = ThreadUtilities.submitSystem(new Runnable() {
+            public void run() {
+                int i = iterations * 1000;
+                while (--i > 0) {
+                    try {
+                        Analysis<String, double[]> analysis = getAnalysis(IConstants.POSITIVE, positive);
+                        wekaClassifier.analyze(analysis);
+                        logger.info("Analysis : " + analysis.getClazz());
+                    } catch (Exception e) {
+                        logger.error(null, e);
+                    }
+                }
+            }
+        });
+        futures.add(future);
+
+        ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
     }
 
 }

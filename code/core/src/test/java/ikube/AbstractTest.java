@@ -146,6 +146,7 @@ public abstract class AbstractTest {
 
         when(indexContext.getIndexDirectoryPath()).thenReturn(indexDirectoryPath);
         when(indexContext.getIndexDirectoryPathBackup()).thenReturn(indexDirectoryPathBackup);
+        when(indexContext.getName()).thenReturn("index");
         when(indexContext.getIndexName()).thenReturn("index");
         when(indexContext.getChildren()).thenReturn(indexables);
 
@@ -162,6 +163,7 @@ public abstract class AbstractTest {
         when(clusterManager.lock(anyString())).thenReturn(Boolean.TRUE);
 
         indexContexts.put(indexContext.getName(), indexContext);
+        indexContexts.put(indexContext.getIndexName(), indexContext);
         when(monitorService.getIndexContexts()).thenReturn(indexContexts);
 
         when(action.getIndexName()).thenReturn("index");

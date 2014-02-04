@@ -47,10 +47,16 @@ public class IndexManagerTest extends AbstractTest {
         indexable = new Indexable<Object>() {
         };
         FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
-        FileUtilities.getFile(indexContext.getIndexDirectoryPath() + "/1234567889/127.0.0.1", Boolean.TRUE);
-        indexFolderTwo = FileUtilities.getFile(indexContext.getIndexDirectoryPath() + "/1234567891/127.0.0.2", Boolean.TRUE);
-        FileUtilities.getFile(indexContext.getIndexDirectoryPath() + "/1234567890/127.0.0.3", Boolean.TRUE);
-        ThreadUtilities.sleep(3000);
+        getFile(indexContext.getIndexDirectoryPath(), indexContext.getName(), "/1234567889/127.0.0.1");
+        indexFolderTwo = getFile(indexContext.getIndexDirectoryPath(), indexContext.getName(), "/1234567891/127.0.0.2");
+        getFile(indexContext.getIndexDirectoryPath(), indexContext.getName(), "/1234567890/127.0.0.3");
+        ThreadUtilities.sleep(1000);
+    }
+
+    private File getFile(final String base, final String folder, final String name) {
+        File file = new File(base, folder + IConstants.SEP + name);
+        String folderPath = FileUtilities.cleanFilePath(file.getAbsolutePath());
+        return FileUtilities.getFile(folderPath, Boolean.TRUE);
     }
 
     @After
@@ -152,14 +158,18 @@ public class IndexManagerTest extends AbstractTest {
 
     @Test
     public void getLatestIndexDirectory() throws Exception {
-        File latest = IndexManager.getLatestIndexDirectory(new File(indexContext.getIndexDirectoryPath()), null);
-        assertEquals(indexFolderTwo.getParentFile(), latest);
+        File base = new File(indexContext.getIndexDirectoryPath(), indexContext.getName());
+        File latest = IndexManager.getLatestIndexDirectory(base, null);
+        logger.info("Latest : " + latest.getAbsolutePath());
+        assertEquals(indexFolderTwo.getParentFile().getAbsolutePath(), FileUtilities.cleanFilePath(latest.getAbsolutePath()));
 
         Date latestIndexDirectoryDate = IndexManager.getLatestIndexDirectoryDate(indexContext);
+        logger.info("Latest date : " + latestIndexDirectoryDate.getTime() + ", " + latest.getName());
         assertTrue(latestIndexDirectoryDate.getTime() == Long.parseLong(latest.getName()));
 
         createIndexFileSystem(indexContext, "The data in the index");
         latest = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+        logger.info("Latest : " + latest.getAbsolutePath());
         assertTrue(latest != null && latest.exists());
         assertNotSame(indexFolderTwo.getParentFile(), latest);
     }

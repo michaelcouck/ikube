@@ -24,6 +24,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O>, BeanPost
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AnalyticsService.class);
 
+    private Map<String, Context> contexts = new HashMap<>();
     private Map<String, IAnalyzer> analyzers = new HashMap<>();
 
     @Override
@@ -117,6 +118,8 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O>, BeanPost
         // We collect all the analyzers that have been defined in the configuration here
         if (IAnalyzer.class.isAssignableFrom(bean.getClass())) {
             analyzers.put(beanName, (IAnalyzer) bean);
+        } else if (Context.class.isAssignableFrom(bean.getClass())) {
+            contexts.put(beanName, (Context) bean);
         }
         return bean;
     }
@@ -131,5 +134,10 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O>, BeanPost
     @Override
     public Map<String, IAnalyzer> getAnalyzers() {
         return analyzers;
+    }
+
+    @Override
+    public Context getContext(final String name) {
+        return contexts.get(name);
     }
 }

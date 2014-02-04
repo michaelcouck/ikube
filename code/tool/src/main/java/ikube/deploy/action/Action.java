@@ -22,7 +22,7 @@ public abstract class Action implements IAction {
 
 	protected SSHExec getSshExec(final String ip, final String username, final String password) {
 		SSHExec sshExec = null;
-		ConnBean connBean = null;
+		ConnBean connBean;
 		try {
 			logger.info("Connecting to : " + ip + " as " + username);
 			// Initialize a ConnBean object, parameter list is ip, username, password

@@ -21,7 +21,7 @@
 	
 	<util:list id="ikube.scheduling.schedule.IndexSchedule.actions">
 		<ref bean="ikube.action.Close"  />
-		<ref bean="ikube.action.Optimizer"  />
+		<!--<ref bean="ikube.action.Optimizer"  />-->
 		<ref bean="ikube.action.Reset" />
 		<ref bean="ikube.action.Restore" />
 		<ref bean="ikube.action.Index"  />
@@ -91,7 +91,7 @@
 			</util:list>
 		</property>
 	</bean>
-	<bean 
+	<!--<bean
 		id="ikube.action.Optimizer" 
 		class="ikube.action.Optimizer" 
 		property:ruleExpression="
@@ -110,7 +110,7 @@
 				<ref local="ikube.action.rule.AnyServersWorkingThisIndex" />
 			</util:list>
 		</property>
-	</bean>
+	</bean>-->
 	<bean 
 		id="ikube.action.Open" 
 		class="ikube.action.Open" 
@@ -145,10 +145,11 @@
 		id="ikube.action.Index" 
 		class="ikube.action.Index" 
 		property:ruleExpression="
-			!IsIndexCurrent &#38;&#38; 
+            (IsIndexDelta &#38;&#38; !IsThisServerWorkingThisIndex) ||
+			(!IsIndexCurrent &#38;&#38;
 			!AnyServersWorkingThisIndex &#38;&#38; 
 			!TooManyActionsRule &#38;&#38; 
-			    !(IsThisServerWorking &#38;&#38; AreOtherServers &#38;&#38; AnyServersIdle)"
+			    !(IsThisServerWorking &#38;&#38; AreOtherServers &#38;&#38; AnyServersIdle))"
         property:indexableHandlers-ref="indexable-handlers"
 		property:requiresClusterLock="true">
 		<property name="rules">
@@ -159,6 +160,8 @@
 				<ref local="ikube.action.rule.AreOtherServers" />
 				<ref local="ikube.action.rule.TooManyActionsRule" />
 				<ref local="ikube.action.rule.AnyServersIdle" />
+                <ref local="ikube.action.rule.IsIndexDelta" />
+                <ref local="ikube.action.rule.IsThisServerWorkingThisIndex" />
 			</util:list>
 		</property>
 	</bean>
@@ -233,5 +236,6 @@
 	<bean id="ikube.action.rule.AnyServersIdle" class="ikube.action.rule.AnyServersIdle" />
 	<bean id="ikube.action.rule.IsIndexDelta" class="ikube.action.rule.IsIndexDelta" />
 	<bean id="ikube.action.rule.IsThisIndexCreated" class="ikube.action.rule.IsThisIndexCreated" />
+	<bean id="ikube.action.rule.IsThisServerWorkingThisIndex" class="ikube.action.rule.IsThisServerWorkingThisIndex" />
 
 </beans>

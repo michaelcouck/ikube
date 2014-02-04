@@ -1,11 +1,11 @@
 package ikube.action.rule;
 
-import java.io.File;
-
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.NIOFSDirectory;
+
+import java.io.File;
 
 /**
  * This rule checks whether the index has been created and is not locked by the index writer. Generally this rule will be used to see if the index searcher can
@@ -25,13 +25,12 @@ public class DirectoryExistsAndNotLocked extends ARule<File> {
         boolean existsAndNotLocked = Boolean.FALSE;
         Directory directory = null;
         try {
-            logger.info("Index directory : " + indexDirectory);
             directory = NIOFSDirectory.open(indexDirectory);
             // directory = FSDirectory.open(indexDirectory);
             // boolean exists = IndexReader.indexExists(directory);
             boolean exists = DirectoryReader.indexExists(directory);
             boolean locked = IndexWriter.isLocked(directory);
-            logger.info("Exists : {}, locked : {}", new Object[]{exists, locked});
+            logger.debug("Index exists : " + exists + ", locked : " + locked + ", index directory : " + indexDirectory);
             if (exists && !locked) {
                 existsAndNotLocked = Boolean.TRUE;
             }

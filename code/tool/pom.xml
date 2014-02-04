@@ -50,8 +50,8 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.2.1</version>
                 <executions>
-                    <!--<execution>
-                        <phase>deploy</phase>
+                    <execution>
+                        <phase>install</phase>
                         <configuration>
                             <mainClass>ikube.deploy.Deployer</mainClass>
                             <arguments>
@@ -67,7 +67,7 @@
                         <goals>
                             <goal>java</goal>
                         </goals>
-                    </execution>-->
+                    </execution>
                 </executions>
             </plugin>
 

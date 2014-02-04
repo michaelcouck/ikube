@@ -75,14 +75,17 @@
         <value>ps -ef | grep ${tomcat-one} | grep -v grep | awk '{print $2}' | xargs kill -9;</value>
         <value>chmod 777 -R ${tomcat-one};</value>
 
+        <!--<value>rm -rf ${tomcat-one-bin}/ikube;</value>-->
+        <value>rm -rf ${tomcat-one}/webapps/ikube*;</value>
+
         <value>rm -rf ${tomcat-one}/logs;</value>
         <value>rm -rf ${tomcat-one}/temp;</value>
-        <value>rm -rf ${tomcat-one-bin}/ikube;</value>
         <value>rm -rf ${tomcat-one}/work/Catalina/localhost;</value>
+
+        <!--<value>mkdir -p ${tomcat-one-bin}/ikube;</value>-->
 
         <value>mkdir -p ${tomcat-one}/logs;</value>
         <value>mkdir -p ${tomcat-one}/temp;</value>
-        <value>mkdir -p ${tomcat-one-bin}/ikube;</value>
         <value>mkdir -p ${tomcat-one}/work/Catalina/localhost;</value>
 
         <value>chmod 777 -R ${tomcat-one};</value>
@@ -99,10 +102,10 @@
         <entry key="war/target/${ikube-war}" value="${tomcat-one-webapps}"/>
     </util:map>
     <util:map id="directories">
-        <entry key="${resources-directory}/ikube" value="${tomcat-one-bin}"/>
+        <!--<entry key="${resources-directory}/ikube" value="${tomcat-one-bin}"/>
         <entry key="${resources-directory}/analytics" value="${tomcat-one-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/production" value="${tomcat-one-bin}/ikube"/>
-        <entry key="${resources-directory}/indexes/twitter" value="${tomcat-one-bin}/ikube"/>
+        <entry key="${resources-directory}/indexes/twitter" value="${tomcat-one-bin}/ikube"/>-->
     </util:map>
 
     <bean

@@ -1,5 +1,6 @@
 package ikube.action.index.handler.internet;
 
+import au.com.bytecode.opencsv.CSVReader;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
 import ikube.action.index.handler.ResourceHandler;
@@ -9,8 +10,12 @@ import ikube.model.IndexContext;
 import ikube.model.IndexableTweets;
 import ikube.model.geospatial.GeoCity;
 import ikube.model.geospatial.GeoCountry;
-import ikube.search.ISearcherService;
 import ikube.toolkit.FileUtilities;
+import org.apache.commons.io.IOUtils;
+import org.apache.lucene.document.Document;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.social.twitter.api.Tweet;
+import org.springframework.social.twitter.api.TwitterProfile;
 
 import java.io.File;
 import java.io.FileReader;
@@ -19,14 +24,6 @@ import java.io.Reader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.lucene.document.Document;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.social.twitter.api.Tweet;
-import org.springframework.social.twitter.api.TwitterProfile;
-
-import au.com.bytecode.opencsv.CSVReader;
 
 /**
  * This class simply takes the specific data from Twitter and adds it to the index.
@@ -41,18 +38,18 @@ public class TwitterResourceHandler extends ResourceHandler<IndexableTweets> {
 
 	@Autowired
 	private IDataBase dataBase;
-	@Autowired
-	private ISearcherService searcherService;
 
 	public void init() {
 		counter = new AtomicLong(0);
 		File file = FileUtilities.findFileRecursively(new File(IConstants.IKUBE_DIRECTORY), "country-city-language-coordinate.properties");
-		loadCountries(file);
+        if (dataBase != null && file != null) {
+            loadCountries(file);
+        }
 	}
 
     /**
      * TODO Move all the loading logic to a central class for the whole application
-     * @param file
+     * @param file the file to load the countries from, and cities
      */
 	private void loadCountries(final File file) {
 		int removed = dataBase.remove(GeoCountry.DELETE_ALL);

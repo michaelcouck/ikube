@@ -26,8 +26,10 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
     $scope.analysis = {
         clazz: undefined,
         input: undefined,
-        correlation: false,
-        distribution: false
+        output: undefined,
+        algorithmOutput: undefined,
+        correlation: true,
+        distribution: true
     };
 
     $scope.context = {
@@ -75,6 +77,8 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
         var context = angular.copy($scope.context);
         context.name = $scope.analysis.analyzer;
         var promise = $http.post(url, context);
+
+        $scope.status = undefined;
         promise.success(function (data, status) {
             $scope.status = status;
             var text = ['Built analyzer : ', $scope.context.name, ', status : ', $scope.status];
@@ -90,16 +94,16 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
     $scope.doAnalysis = function () {
         var url = getServiceUrl('/ikube/service/analyzer/analyze');
         //noinspection JSUnresolvedVariable
-        var analysis = angular.copy($scope.analysis);
 
-        analysis.clazz = null;
-        analysis.output = null;
-        analysis.exception = null;
-        analysis.algorithmOutput = null;
-        analysis.correlationCoefficients = null;
-        analysis.distributionForInstances = null;
+        $scope.analysis.clazz = null;
+        $scope.analysis.output = null;
+        $scope.analysis.exception = null;
+        $scope.analysis.algorithmOutput = null;
+        $scope.analysis.correlationCoefficients = null;
+        $scope.analysis.distributionForInstances = null;
 
-        var promise = $http.post(url, analysis);
+        $scope.status = undefined;
+        var promise = $http.post(url, $scope.analysis);
         promise.success(function (data, status) {
             $scope.status = status;
             $scope.analysis = data;
@@ -112,6 +116,8 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
     $scope.doAnalyzers = function () {
         var url = getServiceUrl('/ikube/service/analyzer/analyzers');
         var promise = $http.get(url);
+
+        $scope.status = undefined;
         promise.success(function (data, status) {
             $scope.status = status;
             $scope.analyzers = data;

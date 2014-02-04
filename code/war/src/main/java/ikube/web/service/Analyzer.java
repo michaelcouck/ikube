@@ -84,7 +84,7 @@ public class Analyzer extends Resource {
     public Response analyze(@Context final HttpServletRequest request) {
         Analysis<?, ?> analysis = unmarshall(Analysis.class, request);
         analysis = analyticsService.analyze(analysis);
-        String algorithmOutput = newLineToLineBreak(analysis.getAlgorithmOutput());
+        String algorithmOutput = analysis.getAlgorithmOutput(); // newLineToLineBreak(analysis.getAlgorithmOutput());
         analysis.setAlgorithmOutput(algorithmOutput);
         return buildJsonResponse(analysis);
     }
@@ -107,6 +107,7 @@ public class Analyzer extends Resource {
         return buildJsonResponse(names);
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     private String newLineToLineBreak(final Object object) {
         if (object != null && String.class.isAssignableFrom(object.getClass())) {
             String result = StringUtils.replace(object.toString(), "\n", "<br>");

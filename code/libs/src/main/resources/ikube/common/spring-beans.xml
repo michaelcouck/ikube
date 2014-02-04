@@ -363,6 +363,7 @@
     <bean
         id="ikube.action.index.handler.internet.TwitterResourceHandler"
         class="ikube.action.index.handler.internet.TwitterResourceHandler"
+        depends-on="ikube.database.IDataBase"
         init-method="init"/>
 
     <bean

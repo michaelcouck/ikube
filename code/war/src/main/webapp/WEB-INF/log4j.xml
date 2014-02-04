@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+    <appender class="org.apache.log4j.ConsoleAppender" name="console">
+        <param value="true" name="ImmediateFlush"/>
+        <param value="DEBUG" name="Threshold"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d{HH:mm:ss,SSS} %-5p %C{1}.%M(%L) - %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="file">
+        <param value="false" name="Append"/>
+        <param value="ikube/ikube.log" name="File"/>
+        <param value="true" name="ImmediateFlush"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="250MB" name="MaxFileSize"/>
+        <param value="DEBUG" name="Threshold"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d{HH:mm:ss,SSS} %-5p %C{1}.%M(%L) - %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <logger name="com">
+        <level value="warn"/>
+    </logger>
+    <logger name="ikube">
+        <level value="info"/>
+    </logger>
+    <logger name="ikube.action.index.handler.strategy">
+        <level value="debug"/>
+    </logger>
+    <logger name="ikube.analytics">
+        <level value="info"/>
+    </logger>
+    <logger name="ikube.analytics.weka">
+        <level value="debug"/>
+    </logger>
+    <logger name="net">
+        <level value="warn"/>
+    </logger>
+    <logger name="org">
+        <level value="warn"/>
+    </logger>
+    <root>
+        <level value="info"/>
+        <appender-ref ref="console"/>
+        <appender-ref ref="file"/>
+    </root>
+</log4j:configuration>

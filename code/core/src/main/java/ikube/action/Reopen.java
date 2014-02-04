@@ -41,6 +41,10 @@ public class Reopen extends Action<IndexContext<?>, Boolean> {
         List<IndexReader> newIndexReaders = new ArrayList<>();
         for (final IndexWriter indexWriter : indexContext.getIndexWriters()) {
             Directory directory = indexWriter.getDirectory();
+            if (!DirectoryReader.indexExists(directory)) {
+                logger.warn("Directory for writer does not exist : " + directory);
+                continue;
+            }
             IndexReader newIndexReader = DirectoryReader.open(directory);
             newIndexReaders.add(newIndexReader);
         }

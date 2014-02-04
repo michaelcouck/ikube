@@ -36,7 +36,8 @@
 							<div class="input">
 								<textarea
 									placeholder="Input data in Weka format...(essentially csv format)"
-									rows="5" ng-model="analysis.input"
+									rows="5"
+                                    ng-model="analysis.input"
 									title="datum,datum,datum..."></textarea>
 							</div>
 							<button type="submit" class="button blue" style="margin-top: 5px;" ng-click="doAnalysis()">&nbsp;Go</button>
@@ -46,7 +47,89 @@
 			</div>
 		</div>
 
+
+
 		<div class="span6">
+            <div class="box">
+                <div class="tab-header">
+                    <b>Analysis output</b>
+                    <img
+                        ng-show="!status"
+                        alt="Loading spinner"
+                        src="<c:url value="/assets/images/loading.gif" />"
+                        height="16px"
+                        width="16px">
+						<span class="pull-right">
+							<span class="options"><a href="#"><i class="icon-cog"></i></a>
+						</span>
+					</span>
+                </div>
+                <form class="fill-up">
+                    <div class="row-fluid">
+                        <div class="padded">
+                            <div class="note">
+                                <b>The name for the analysis object in the system</b>
+                            </div>
+                            <div class="input">
+                                <input
+                                    id="name"
+                                    name="name"
+                                    class="input"
+                                    type="text"
+                                    focus-me="true"
+                                    ng-model="context.name"
+                                    placeholder="Identifier..."
+                                    readonly>
+                            </div>
+                            <div class="input">
+                                <input
+                                    id="analyzer"
+                                    name="analyzer"
+                                    class="input"
+                                    type="text"
+                                    ng-model="analysis.analyzer"
+                                    placeholder="Analyzer identifier..."
+                                    readonly>
+                            </div>
+                            <div class="input">
+                                <input
+                                    id="filter"
+                                    name="filter"
+                                    class="input"
+                                    type="text"
+                                    ng-model="context.filter"
+                                    placeholder="Filter class..."
+                                    readonly>
+                            </div>
+                            <div class="input">
+                                <input
+                                    id="algorithm"
+                                    name="algorithm"
+                                    class="input"
+                                    type="text"
+                                    ng-model="context.algorithm"
+                                    placeholder="Algorithm class..."
+                                    readonly>
+                            </div>
+
+                            <div class="note">
+                                <i class="icon-warning-sign"></i> Warning: This is the training text area! You overwrite the original training model when you use this.
+                            </div>
+                            <div class="input">
+                                <textarea
+                                    placeholder="Training data in Weka format..."
+                                    rows="5"
+                                    ng-model="analysis.algorithmOutput"
+                                    title="The output from the analysis algorithm"
+                                    readonly></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+		<%--<div class="span6">
 			<div class="nav-menu box">
 				<ul class="nav nav-list">
 					<li class="active"><a href="#">
@@ -90,17 +173,17 @@
 					<li><a href="#"><i class="icon-wrench"></i>...</a></li>
 				</ul>
 			</div>
-		</div>
+		</div>--%>
 	</div>
 
-	<div class="row-fluid">
+	<%--<div class="row-fluid">
 		<div class="span12">
 			<div class="box">
 				<div class="tab-header">Cluster distribution</div>
 				<div google-chart chart="chart" style="{{chart.cssStyle}}" />
 			</div>
 		</div>
-	</div>
+	</div>--%>
 
     <%--<div style="position: relative;">
         <a class="button blue icon-file" href="#"> Choose File... <input

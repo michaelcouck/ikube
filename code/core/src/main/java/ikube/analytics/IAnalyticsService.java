@@ -24,4 +24,6 @@ public interface IAnalyticsService<I, O> {
 
     Map<String, IAnalyzer> getAnalyzers();
 
+    Context getContext(final String name);
+
 }

@@ -2,6 +2,7 @@ package ikube.analytics.weka;
 
 import ikube.model.Analysis;
 import ikube.model.Context;
+import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.Timer;
 import org.apache.commons.lang.StringUtils;
 import weka.classifiers.Classifier;
@@ -24,10 +25,10 @@ import java.util.concurrent.locks.ReentrantLock;
 public class WekaClassifier extends WekaAnalyzer {
 
     private Filter filter;
-    private volatile Instances instances;
-    private volatile Classifier classifier;
+    private Instances instances;
+    private ReentrantLock analyzeLock;
 
-    private ReentrantLock reentrantLock;
+    private volatile Classifier classifier;
 
     /**
      * {@inheritDoc}
@@ -39,7 +40,7 @@ public class WekaClassifier extends WekaAnalyzer {
         instances.setClassIndex(0);
         instances.setRelationName("training_data");
         classifier = (Classifier) context.getAlgorithm();
-        reentrantLock = new ReentrantLock(Boolean.TRUE);
+        analyzeLock = new ReentrantLock(Boolean.TRUE);
     }
 
     /**
@@ -49,9 +50,10 @@ public class WekaClassifier extends WekaAnalyzer {
     public void build(final Context context) {
         double duration = Timer.execute(new Timer.Timed() {
             @Override
+            @SuppressWarnings("unchecked")
             public void execute() {
                 try {
-                    reentrantLock.lock();
+                    analyzeLock.lock();
                     log(instances);
                     persist(context, instances);
                     logger.info("Building classifier : " + instances.numInstances());
@@ -59,6 +61,7 @@ public class WekaClassifier extends WekaAnalyzer {
                     Instances filteredData = filter(instances, filter);
                     filteredData.setRelationName("filtered_data");
                     classifier.buildClassifier(filteredData);
+
                     log(filteredData);
                     evaluate(filteredData);
                 } catch (final Exception e) {
@@ -70,7 +73,7 @@ public class WekaClassifier extends WekaAnalyzer {
                     if (instances.numInstances() >= context.getMaxTraining()) {
                         instances.delete();
                     }
-                    reentrantLock.unlock();
+                    analyzeLock.unlock();
                 }
             }
         });
@@ -83,7 +86,7 @@ public class WekaClassifier extends WekaAnalyzer {
     @Override
     public boolean train(final Analysis<String, double[]> analysis) throws Exception {
         try {
-            reentrantLock.lock();
+            analyzeLock.lock();
             Instance instance = instance(analysis.getInput(), instances);
             instance.setClassValue(analysis.getClazz());
             instances.add(instance);
@@ -91,7 +94,7 @@ public class WekaClassifier extends WekaAnalyzer {
         } catch (final Exception e) {
             throw new RuntimeException(e);
         } finally {
-            reentrantLock.unlock();
+            analyzeLock.unlock();
         }
     }
 
@@ -101,7 +104,7 @@ public class WekaClassifier extends WekaAnalyzer {
     @Override
     public Analysis<String, double[]> analyze(final Analysis<String, double[]> analysis) throws Exception {
         try {
-            reentrantLock.lock();
+            analyzeLock.lock();
             if (!StringUtils.isEmpty(analysis.getInput())) {
                 // Create the instance from the data
                 String input = analysis.getInput();
@@ -133,7 +136,7 @@ public class WekaClassifier extends WekaAnalyzer {
             logger.error("Exception classifying content : " + content, e);
             throw new RuntimeException(e);
         } finally {
-            reentrantLock.unlock();
+            analyzeLock.unlock();
         }
     }
 

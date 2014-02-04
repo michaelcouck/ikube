@@ -33,7 +33,8 @@ public class IsIndexCorrupt extends ARule<IndexContext<?>> {
 		if (serverIndexDirectories == null) {
 			return Boolean.FALSE;
 		}
-		for (File serverIndexDirectory : serverIndexDirectories) {
+        boolean corrupt = Boolean.FALSE;
+		for (final File serverIndexDirectory : serverIndexDirectories) {
 			Directory directory = null;
 			try {
 				// directory = FSDirectory.open(serverIndexDirectory);
@@ -44,24 +45,25 @@ public class IsIndexCorrupt extends ARule<IndexContext<?>> {
 				// If we get here then the directory is the latest, and it is not locked
 				// so if it doesn't exist then one of the segment files are deleted or corrupt
 				if (!DirectoryReader.indexExists(directory)) {
-					return Boolean.TRUE;
+					corrupt = Boolean.TRUE;
 				}
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				logger.error("Index possibly corrupt, will try to restore from backup : " + serverIndexDirectory, e);
 				// If we have an exception then there is something
 				// wrong with one of the server indexes
-				return Boolean.TRUE;
+				corrupt = Boolean.TRUE;
+                break;
 			} finally {
 				if (directory != null) {
 					try {
 						directory.close();
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						logger.error("Exception closing a possibly corrupt index directory : " + serverIndexDirectory, e);
 					}
 				}
 			}
 		}
-		return Boolean.FALSE;
+		return corrupt;
 	}
 
 }

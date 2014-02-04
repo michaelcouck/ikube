@@ -21,10 +21,10 @@ import java.util.concurrent.locks.ReentrantLock;
 public class WekaClusterer extends WekaAnalyzer {
 
     private Filter filter;
-    private volatile Instances instances;
-    private volatile Clusterer clusterer;
+    private Instances instances;
+    private ReentrantLock analyzeLock;
 
-    private ReentrantLock reentrantLock;
+    private volatile Clusterer clusterer;
 
     /**
      * {@inheritDoc}
@@ -35,7 +35,7 @@ public class WekaClusterer extends WekaAnalyzer {
         instances = instances(context);
         instances.setRelationName("training_data");
         clusterer = (Clusterer) context.getAlgorithm();
-        reentrantLock = new ReentrantLock(Boolean.TRUE);
+        analyzeLock = new ReentrantLock(Boolean.TRUE);
     }
 
     /**
@@ -45,16 +45,19 @@ public class WekaClusterer extends WekaAnalyzer {
     public void build(final Context context) throws Exception {
         double duration = Timer.execute(new Timer.Timed() {
             @Override
+            @SuppressWarnings("unchecked")
             public void execute() {
                 try {
-                    reentrantLock.lock();
+                    analyzeLock.lock();
                     persist(context, instances);
                     logger.info("Building clusterer : " + instances.numInstances());
+
                     Instances filteredData = filter(instances, filter);
                     filteredData.setRelationName("filtered_data");
                     clusterer.buildClusterer(filteredData);
+
                     log();
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     throw new RuntimeException(e);
                 } finally {
                     // As soon as we are finished training with the data, we can
@@ -62,7 +65,7 @@ public class WekaClusterer extends WekaAnalyzer {
                     if (instances.numInstances() >= context.getMaxTraining()) {
                         instances.delete();
                     }
-                    reentrantLock.unlock();
+                    analyzeLock.unlock();
                 }
             }
         });
@@ -75,12 +78,12 @@ public class WekaClusterer extends WekaAnalyzer {
     @Override
     public boolean train(final Analysis<String, double[]> analysis) throws Exception {
         try {
-            reentrantLock.lock();
+            analyzeLock.lock();
             Instance instance = instance(analysis.getInput(), instances);
             instances.add(instance);
             return Boolean.TRUE;
         } finally {
-            reentrantLock.unlock();
+            analyzeLock.unlock();
         }
     }
 
@@ -90,7 +93,7 @@ public class WekaClusterer extends WekaAnalyzer {
     @Override
     public Analysis<String, double[]> analyze(final Analysis<String, double[]> analysis) throws Exception {
         try {
-            reentrantLock.lock();
+            analyzeLock.lock();
             // Create the instance from the data
             String input = analysis.getInput();
             Instance instance = instance(input, instances);
@@ -116,7 +119,7 @@ public class WekaClusterer extends WekaAnalyzer {
             logger.error("Exception clustering content : " + content, e);
             throw new RuntimeException(e);
         } finally {
-            reentrantLock.unlock();
+            analyzeLock.unlock();
         }
     }
 
