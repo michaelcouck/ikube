@@ -3,7 +3,6 @@ package ikube.action.rule;
 import ikube.AbstractTest;
 import ikube.action.index.IndexManager;
 import ikube.toolkit.FileUtilities;
-import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.UriUtilities;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.Lock;
@@ -15,6 +14,7 @@ import java.io.File;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Michael Couck
@@ -28,8 +28,8 @@ public class DirectoryExistsAndNotLockedTest extends AbstractTest {
     @Before
     public void before() {
         existsAndNotLocked = new DirectoryExistsAndNotLocked();
+        when(indexContext.getIndexDirectoryPath()).thenReturn(this.getClass().getSimpleName());
         FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
-        ThreadUtilities.sleep(5000);
     }
 
     @After
@@ -44,7 +44,6 @@ public class DirectoryExistsAndNotLockedTest extends AbstractTest {
         assertFalse(existsAndNotLocked);
 
         createIndexFileSystem(indexContext, "Hello world");
-        ThreadUtilities.sleep(3000);
 
         File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
         indexDirectory = new File(latestIndexDirectory, UriUtilities.getIp());
@@ -54,7 +53,6 @@ public class DirectoryExistsAndNotLockedTest extends AbstractTest {
         Lock lock = null;
         try {
             lock = getLock(FSDirectory.open(indexDirectory), indexDirectory);
-            ThreadUtilities.sleep(3000);
             existsAndNotLocked = this.existsAndNotLocked.evaluate(indexDirectory);
             assertFalse(existsAndNotLocked);
         } finally {

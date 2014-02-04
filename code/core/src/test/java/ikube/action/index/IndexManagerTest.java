@@ -44,6 +44,7 @@ public class IndexManagerTest extends AbstractTest {
 
     @Before
     public void before() {
+        when(indexContext.getIndexDirectoryPath()).thenReturn(this.getClass().getSimpleName());
         indexable = new Indexable<Object>() {
         };
         FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
