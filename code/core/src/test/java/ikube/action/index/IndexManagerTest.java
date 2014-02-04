@@ -241,19 +241,26 @@ public class IndexManagerTest extends AbstractTest {
 
     @Test
     public void openIndexWriterDelta() throws Exception {
-        IndexWriter[] indexWriters = IndexManager.openIndexWriterDelta(indexContext);
-        assertEquals("There should be one new writers open : ", 1, indexWriters.length);
+        IndexWriter[] indexWriters = null;
+        try {
+            FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+            indexWriters = IndexManager.openIndexWriterDelta(indexContext);
+            assertEquals("There should be one new writers open : ", 1, indexWriters.length);
 
-        // First create several indexes in the same directory
-        long time = System.currentTimeMillis();
-        String[] ips = {"127.0.0.1", "127.0.0.2", "127.0.0.3"};
-        String[] strings = {"The ", "quick ", "brown ", "fox ", "jumped"};
-        createIndexesFileSystem(indexContext, time, ips, strings);
-        indexWriters = IndexManager.openIndexWriterDelta(indexContext);
-        for (final IndexWriter indexWriter : indexWriters) {
-            IndexManager.closeIndexWriter(indexWriter);
+            // First create several indexes in the same directory
+            long time = System.currentTimeMillis();
+            String[] ips = {"127.0.0.1", "127.0.0.2", "127.0.0.3"};
+            String[] strings = {"The ", "quick ", "brown ", "fox ", "jumped"};
+            createIndexesFileSystem(indexContext, time, ips, strings);
+            indexWriters = IndexManager.openIndexWriterDelta(indexContext);
+            assertEquals("There should be three writers open on the indexes : ", 3, indexWriters.length);
+        } finally {
+            if (indexWriters != null) {
+                for (final IndexWriter indexWriter : indexWriters) {
+                    IndexManager.closeIndexWriter(indexWriter);
+                }
+            }
         }
-        assertEquals("There should be three writers open on the indexes : ", 3, indexWriters.length);
     }
 
     private <T extends Reader> T getReader(Class<T> t) throws Exception {

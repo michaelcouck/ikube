@@ -51,7 +51,7 @@ public class AnalyticsServiceTest extends AbstractTest {
 
         Map<String, IAnalyzer> analyzers = new HashMap<>();
         analyzers.put(analysis.getAnalyzer(), analyzer);
-        Deencapsulation.setField(analyticsService, analyzers);
+        Deencapsulation.setField(analyticsService, "analyzers", analyzers);
         Mockit.setUpMocks(AnalyzerManagerMock.class);
     }
 
