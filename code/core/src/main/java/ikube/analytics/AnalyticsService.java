@@ -36,10 +36,13 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O>, BeanPost
             context.setAlgorithm(Class.forName(String.valueOf(algorithmName)).newInstance());
             Object analyzerName = context.getAnalyzer();
             context.setAnalyzer(Class.forName(String.valueOf(analyzerName)).newInstance());
-            Object filterName = context.getFilter();
-            context.setFilter(Class.forName(String.valueOf(filterName)).newInstance());
+            if (context.getFilter() != null) {
+                Object filterName = context.getFilter();
+                context.setFilter(Class.forName(String.valueOf(filterName)).newInstance());
+            }
 
             IAnalyzer<I, O> analyzer = (IAnalyzer<I, O>) AnalyzerManager.buildAnalyzer(context);
+            contexts.put(context.getName(), context);
             analyzers.put(context.getName(), analyzer);
             return analyzer;
         } catch (final Exception e) {
@@ -84,8 +87,8 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O>, BeanPost
                 try {
                     analyzer.analyze((I) analysis);
                 } catch (final Exception e) {
-                    LOGGER.error("Exception analyzing : " + analyzer, e);
                     analysis.setException(e);
+                    throw new RuntimeException("Exception analyzing data : " + analyzer, e);
                 }
             }
         });
@@ -132,12 +135,22 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O>, BeanPost
     }
 
     @Override
+    public Context getContext(final String analyzerName) {
+        IAnalyzer analyzer = getAnalyzer(analyzerName);
+        for (final Map.Entry<String, Context> mapEntry : contexts.entrySet()) {
+            if (mapEntry.getValue().getAnalyzer().equals(analyzer)) {
+                return mapEntry.getValue();
+            }
+        }
+        throw new RuntimeException("Couldn't find context for analyzer : " + analyzerName + ", " + analyzer);
+    }
+
+    @Override
     public Map<String, IAnalyzer> getAnalyzers() {
         return analyzers;
     }
 
-    @Override
-    public Context getContext(final String name) {
-        return contexts.get(name);
+    public Map<String, Context> getContexts() {
+        return contexts;
     }
 }

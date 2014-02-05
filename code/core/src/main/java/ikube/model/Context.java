@@ -6,19 +6,20 @@ import javax.persistence.InheritanceType;
 
 /**
  * This class represents configuration and properties, and potentially logic that can build another object. For example the analyzers may need
- * input in the form of files, then this class will hold the properties that are necessary for the analyzer to be instanciated, initialized and
+ * input in the form of files, then this class will hold the properties that are necessary for the analyzer to be instantiated, initialized and
  * trained.
  *
  * @param <T> the type of analyzer in Ikube system
  * @param <F> the type of the filter to convert the data to the input format
  * @param <A> the logical implementation or algorithm for the analyzer
+ * @param <O> the possible options passed to the algorithm logic
  * @author Michael Couck
  * @version 01.00
  * @since 10.04.13
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class Context<T, F, A> extends Persistable {
+public class Context<T, F, A, O> extends Persistable {
 
     /**
      * The name of this specific analyzer. The name will also be used to find the initial training file,
@@ -35,6 +36,7 @@ public class Context<T, F, A> extends Persistable {
      * what the type will be of course.
      */
     private T analyzer;
+
     /**
      * The filter type to convert the data into for example feature vectors.
      */
@@ -46,6 +48,11 @@ public class Context<T, F, A> extends Persistable {
     private A algorithm;
 
     /**
+     * Any options or even classes that modify the algorithm in some way. Could be an array, something like a command line args.
+     */
+    private O options;
+
+    /**
      * This is the string training data, typically set from the front end.
      */
     private String trainingData;
@@ -54,6 +61,9 @@ public class Context<T, F, A> extends Persistable {
      * Ths maximum number of instances that can be used to train this analyzer.
      */
     private int maxTraining;
+
+    public Context() {
+    }
 
     public String getName() {
         return name;
@@ -87,10 +97,19 @@ public class Context<T, F, A> extends Persistable {
         this.algorithm = algorithm;
     }
 
+    public O getOptions() {
+        return options;
+    }
+
+    public void setOptions(O options) {
+        this.options = options;
+    }
+
     public String getTrainingData() {
         return trainingData;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public void setTrainingData(final String trainingData) {
         this.trainingData = trainingData;
     }

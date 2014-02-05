@@ -15,6 +15,7 @@ import weka.core.Instances;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Arrays;
 import java.util.List;
 
 import static junit.framework.Assert.assertNotNull;
@@ -56,7 +57,9 @@ public class WekaClustererTest extends AbstractTest {
             double greatest = 0;
             Analysis<String, double[]> analysis = getAnalysis(null, line);
             Analysis<String, double[]> result = wekaclusterer.analyze(analysis);
+            logger.info("Result : " + result.getClazz() + ", " + result);
             for (final double distribution : result.getOutput()) {
+                logger.info("Distribution : " + distribution);
                 if (Math.abs(distribution) > Math.abs(greatest)) {
                     greatest = distribution;
                 }
@@ -102,6 +105,26 @@ public class WekaClustererTest extends AbstractTest {
                 assertTrue(probability >= 0 && probability <= 1.0);
             }
         }
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void cluster() throws Exception {
+        dataFile = FileUtilities.findFileRecursively(new File("."), "bmw-browsers.arff");
+
+        context = new Context();
+        context.setAlgorithm(EM.class.newInstance());
+        context.setName(FilenameUtils.getBaseName(dataFile.getName()));
+        context.setMaxTraining(Integer.MAX_VALUE);
+
+        wekaclusterer = new WekaClusterer();
+        wekaclusterer.init(context);
+        wekaclusterer.build(context);
+
+        String line = "0,1,0,0,1,1,1,1";
+        Analysis<String, double[]> analysis = getAnalysis(null, line);
+        Analysis<String, double[]> result = wekaclusterer.analyze(analysis);
+        logger.info("Result : " + result.getClazz() + ", " + Arrays.toString(result.getOutput()));
     }
 
     @SuppressWarnings("unchecked")

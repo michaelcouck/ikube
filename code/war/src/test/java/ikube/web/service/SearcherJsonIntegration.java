@@ -7,7 +7,8 @@ import java.net.URL;
 
 public class SearcherJsonIntegration extends SearcherIntegration {
 
-	protected String getUrl(String path) throws MalformedURLException {
+	@SuppressWarnings("StringBufferReplaceableByString")
+    protected String getUrl(String path) throws MalformedURLException {
 		StringBuilder builder = new StringBuilder();
 		builder.append(IConstants.SEP);
 		builder.append(IConstants.IKUBE);

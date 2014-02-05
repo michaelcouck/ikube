@@ -44,10 +44,12 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<String, double[
         for (int i = instances.numAttributes() - 1, j = values.length - 1; i >= 1 && j >= 0; i--, j--) {
             String value = values[j];
             Attribute attribute = instances.attribute(i);
-            if (!attribute.isString()) {
-                instance.setValue(attribute, value);
-            } else {
+            if (attribute.isNumeric()) {
+                instance.setValue(attribute, Double.parseDouble(value));
+            } else if (attribute.isString()) {
                 instance.setValue(attribute, attribute.addStringValue(value));
+            } else {
+                instance.setValue(attribute, value);
             }
         }
         instance.setDataset(instances);

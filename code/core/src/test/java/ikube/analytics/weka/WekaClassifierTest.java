@@ -28,7 +28,7 @@ import static org.mockito.Mockito.*;
 public class WekaClassifierTest extends AbstractTest {
 
     private String positive = "my beautiful little girl";
-    private Context<WekaClassifier, StringToWordVector, SMO> context;
+    private Context<WekaClassifier, StringToWordVector, SMO, ?> context;
     /**
      * Class under test
      */

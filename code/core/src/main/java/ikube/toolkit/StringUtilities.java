@@ -34,7 +34,8 @@ public final class StringUtilities {
 	 * @param string the string to check whether it qualifies to be parsed into a number, could be a double
 	 * @return whether the string has only numbers and potentially one separator a comma or a dot, but no spaces
 	 */
-	public static final boolean isNumeric(final String string) {
+	@SuppressWarnings("ConstantConditions")
+    public static boolean isNumeric(final String string) {
 		if (string == null) {
 			return Boolean.FALSE;
 		}
@@ -66,7 +67,7 @@ public final class StringUtilities {
 		return (before && !dot) || (before && dot && after);
 	}
 
-	public static final String strip(final String string, final String strip) {
+	public static String strip(final String string, final String strip) {
 		char[] chars = string.toCharArray();
 		char[] strippedChars = new char[chars.length];
 		char[] stripChars = strip.toCharArray();
@@ -102,7 +103,7 @@ public final class StringUtilities {
 	 * @param content the string to strip non-human readable characters from
 	 * @return the cleaned string, all alpha numeric characters
 	 */
-	public static final String stripToAlphaNumeric(final String content) {
+	public static String stripToAlphaNumeric(final String content) {
 		if (!StringUtils.isEmpty(content)) {
 			StringBuilder b = new StringBuilder();
 			char p = SPACE;

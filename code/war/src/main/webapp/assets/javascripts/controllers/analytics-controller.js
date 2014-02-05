@@ -22,8 +22,10 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
 
     $scope.analyzer = undefined;
     $scope.analyzers = undefined;
+    $scope.contexts = undefined;
 
     $scope.analysis = {
+        analyzer: undefined,
         clazz: undefined,
         input: undefined,
         output: undefined,
@@ -43,6 +45,8 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
 
     $scope.doCreate = function () {
         var url = getServiceUrl('/ikube/service/analyzer/create');
+
+        $scope.status = undefined;
         var promise = $http.post(url, $scope.context);
         promise.success(function (data, status) {
             $scope.status = status;
@@ -59,6 +63,8 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
 
     $scope.doTrain = function () {
         var url = getServiceUrl('/ikube/service/analyzer/train');
+
+        $scope.status = undefined;
         var promise = $http.post(url, $scope.analysis);
         promise.success(function (data, status) {
             $scope.status = status;
@@ -76,9 +82,9 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
         var url = getServiceUrl('/ikube/service/analyzer/build');
         var context = angular.copy($scope.context);
         context.name = $scope.analysis.analyzer;
-        var promise = $http.post(url, context);
 
         $scope.status = undefined;
+        var promise = $http.post(url, context);
         promise.success(function (data, status) {
             $scope.status = status;
             var text = ['Built analyzer : ', $scope.context.name, ', status : ', $scope.status];
@@ -127,6 +133,39 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
         });
     };
 
+    $scope.doContexts = function () {
+        var url = getServiceUrl('/ikube/service/analyzer/contexts');
+        var promise = $http.get(url);
+
+        $scope.status = undefined;
+        promise.success(function (data, status) {
+            $scope.status = status;
+            $scope.contexts = data;
+        });
+        promise.error(function (data, status) {
+            $scope.status = status;
+        });
+    };
+
+    $scope.doContext = function() {
+        var url = getServiceUrl('/ikube/service/analyzer/context');
+
+        $scope.status = undefined;
+        var promise = $http.post(url, $scope.analysis);
+        promise.success(function (data, status) {
+            $scope.status = status;
+            $scope.context = data;
+        });
+        promise.error(function (data, status) {
+            $scope.status = status;
+            var text = ['Couldn\'t get context for analyzer : ', $scope.context.name, ', status : ', $scope.status];
+            notificationService.notify(text, '/ikube/assets/images/icons/red_cross.png', 15);
+        });
+    };
+
+    $scope.doAnalyzers();
+    $scope.doContexts();
+
     $scope.doChart = function (distributionForInstances) {
         //noinspection JSUnresolvedVariable,JSUnresolvedFunction
         return {
@@ -144,7 +183,6 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
         };
     };
 
-    $scope.doAnalyzers();
     // $scope.chart = $scope.doChart($scope.analysis.distributionForInstances);
 
 });

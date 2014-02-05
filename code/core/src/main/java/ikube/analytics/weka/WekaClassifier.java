@@ -2,7 +2,6 @@ package ikube.analytics.weka;
 
 import ikube.model.Analysis;
 import ikube.model.Context;
-import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.Timer;
 import org.apache.commons.lang.StringUtils;
 import weka.classifiers.Classifier;
@@ -10,6 +9,7 @@ import weka.classifiers.Evaluation;
 import weka.classifiers.functions.SMO;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.OptionHandler;
 import weka.filters.Filter;
 
 import java.util.concurrent.locks.ReentrantLock;
@@ -41,6 +41,11 @@ public class WekaClassifier extends WekaAnalyzer {
         instances.setRelationName("training_data");
         classifier = (Classifier) context.getAlgorithm();
         analyzeLock = new ReentrantLock(Boolean.TRUE);
+        if (OptionHandler.class.isAssignableFrom(classifier.getClass())) {
+            if (context.getOptions() != null) {
+                classifier.setOptions((String[]) context.getOptions());
+            }
+        }
     }
 
     /**

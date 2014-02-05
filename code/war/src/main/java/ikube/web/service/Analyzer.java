@@ -4,6 +4,9 @@ import ikube.analytics.IAnalyticsService;
 import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
 import ikube.toolkit.SerializationUtilities;
+import org.apache.commons.beanutils.BeanUtilsBean;
+import org.apache.commons.beanutils.BeanUtilsBean2;
+import org.apache.commons.beanutils.Converter;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -14,6 +17,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.Timestamp;
 import java.util.Map;
 
 /**
@@ -37,6 +42,8 @@ public class Analyzer extends Resource {
     public static final String ANALYZE = "/analyze";
     public static final String DESTROY = "/destroy";
     public static final String ANALYZERS = "/analyzers";
+    public static final String CONTEXT = "/context";
+    public static final String CONTEXTS = "/contexts";
 
     @Autowired
     protected IAnalyticsService analyticsService;
@@ -104,6 +111,47 @@ public class Analyzer extends Resource {
     public Response analyzers() {
         Map<String, IAnalyzer> analyzers = analyticsService.getAnalyzers();
         String[] names = analyzers.keySet().toArray(new String[analyzers.size()]);
+        return buildJsonResponse(names);
+    }
+
+    @POST
+    @Path(Analyzer.CONTEXT)
+    @SuppressWarnings("unchecked")
+    public Response context(@Context final HttpServletRequest request) {
+        Analysis<?, ?> analysis = unmarshall(Analysis.class, request);
+        ikube.model.Context context = new ikube.model.Context();
+        ikube.model.Context contextSystem = analyticsService.getContext(analysis.getAnalyzer());
+        try {
+            BeanUtilsBean beanUtilsBean = BeanUtilsBean2.getInstance();
+            beanUtilsBean.getConvertUtils().register(new Converter() {
+                @Override
+                public Object convert(final Class type, final Object value) {
+                    if (Timestamp.class.isAssignableFrom(type) && value != null) {
+                        return value;
+                    }
+                    return null;
+                }
+            }, Timestamp.class);
+            beanUtilsBean.copyProperties(context, contextSystem);
+            // We must replace the live objects with the names before sending to the gui
+            context.setAlgorithm(context.getAlgorithm().getClass().getName());
+            context.setAnalyzer(context.getAnalyzer().getClass().getName());
+            // Filters can  be null of course, specially for clusterers
+            if (context.getFilter() != null) {
+                context.setFilter(context.getFilter().getClass().getName());
+            }
+            return buildJsonResponse(context);
+        } catch (final IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @GET
+    @Path(Analyzer.CONTEXTS)
+    @SuppressWarnings("unchecked")
+    public Response contexts() {
+        Map<String, Context> contexts = analyticsService.getContexts();
+        String[] names = contexts.keySet().toArray(new String[contexts.size()]);
         return buildJsonResponse(names);
     }
 

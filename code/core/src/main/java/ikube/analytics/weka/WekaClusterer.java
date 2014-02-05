@@ -9,6 +9,7 @@ import weka.clusterers.Clusterer;
 import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.OptionHandler;
 import weka.filters.Filter;
 
 import java.util.concurrent.locks.ReentrantLock;
@@ -36,6 +37,11 @@ public class WekaClusterer extends WekaAnalyzer {
         instances.setRelationName("training_data");
         clusterer = (Clusterer) context.getAlgorithm();
         analyzeLock = new ReentrantLock(Boolean.TRUE);
+        if (OptionHandler.class.isAssignableFrom(clusterer.getClass())) {
+            if (context.getOptions() != null && String[].class.isAssignableFrom(context.getOptions().getClass())) {
+                ((OptionHandler) clusterer).setOptions((String[]) context.getOptions());
+            }
+        }
     }
 
     /**
@@ -56,7 +62,9 @@ public class WekaClusterer extends WekaAnalyzer {
                     filteredData.setRelationName("filtered_data");
                     clusterer.buildClusterer(filteredData);
 
-                    log();
+                    if (logger.isDebugEnabled()) {
+                        log();
+                    }
                 } catch (final Exception e) {
                     throw new RuntimeException(e);
                 } finally {
@@ -144,10 +152,11 @@ public class WekaClusterer extends WekaAnalyzer {
         ClusterEvaluation clusterEvaluation = new ClusterEvaluation();
         clusterEvaluation.setClusterer(clusterer);
         clusterEvaluation.evaluateClusterer(instances);
-        logger.debug("Num clusters : " + clusterEvaluation.clusterResultsToString());
+        logger.info("Num clusters : " + clusterer.numberOfClusters());
+        logger.info("Cluster results : " + clusterEvaluation.clusterResultsToString());
         for (int i = 0; i < instances.numAttributes(); i++) {
             Attribute attribute = instances.attribute(i);
-            logger.debug("Attribute : " + attribute.name() + ", " + attribute.type());
+            logger.info("Attribute : " + attribute.name() + ", " + attribute.type());
             for (int j = 0; j < attribute.numValues(); j++) {
                 logger.debug("          : " + attribute.value(j));
             }

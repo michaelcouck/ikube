@@ -1,9 +1,6 @@
 <%--suppress ALL --%>
 <%@ page errorPage="/WEB-INF/jsp/error.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <div class="container-fluid" ng-controller="AnalyticsController">
@@ -11,7 +8,7 @@
 		<div class="span6">
 			<div class="box">
 				<div class="tab-header">
-					Analytics 
+					Analyze
 					<img ng-show="!status" alt="Loading spinner" src="<c:url value="/assets/images/loading.gif" />" height="16px" width="16px">
 					<span class="pull-right"><span class="options"><a href="#"><i class="icon-cog"></i></a></span></span>
 				</div>
@@ -23,8 +20,12 @@
 								<b>Select an analyzer</b>
 							</div>
 							<div class="input search">
-								<select ng-model="analysis.analyzer" ng-model="analyzers"
-									ng-options="analyzer for analyzer in analyzers" class="fill-up">
+								<select
+                                    ng-model="analysis.analyzer"
+                                    ng-model="analyzers"
+									ng-options="analyzer for analyzer in analyzers"
+                                    ng-change="doContext()"
+                                    class="fill-up">
 									<option style="display: none" value="">Analyzer...</option>
 								</select>
 							</div>
@@ -35,12 +36,50 @@
 							</div>
 							<div class="input">
 								<textarea
+                                    rows="5"
 									placeholder="Input data in Weka format...(essentially csv format)"
-									rows="5"
                                     ng-model="analysis.input"
 									title="datum,datum,datum..."></textarea>
 							</div>
-							<button type="submit" class="button blue" style="margin-top: 5px;" ng-click="doAnalysis()">&nbsp;Go</button>
+							<button type="submit" class="button blue" style="margin-top: 5px; margin-bottom: 10px;" ng-click="doAnalysis()">&nbsp;Go</button>
+
+                            <div class="note"><b>The context name for the analyzer in the system</b></div>
+                            <div class="input">
+                                <input
+                                        class="input"
+                                        type="text"
+                                        focus-me="true"
+                                        ng-model="context.name"
+                                        placeholder="Identifier..."
+                                        readonly>
+                            </div>
+                            <div class="note"><b>The analyzer wrapper class</b></div>
+                            <div class="input">
+                                <input
+                                        class="input"
+                                        type="text"
+                                        ng-model="context.analyzer"
+                                        placeholder="Analyzer identifier..."
+                                        readonly>
+                            </div>
+                            <div class="note"><b>The filter class for the data</b></div>
+                            <div class="input">
+                                <input
+                                        class="input"
+                                        type="text"
+                                        ng-model="context.filter"
+                                        placeholder="Filter class..."
+                                        readonly>
+                            </div>
+                            <div class="note"><b>The algorithm/logic for the analyzer</b></div>
+                            <div class="input">
+                                <input
+                                        class="input"
+                                        type="text"
+                                        ng-model="context.algorithm"
+                                        placeholder="Algorithm class..."
+                                        readonly>
+                            </div>
 						</div>
 					</div>
 				</form>
@@ -67,57 +106,30 @@
                 <form class="fill-up">
                     <div class="row-fluid">
                         <div class="padded">
-                            <div class="note">
-                                <b>The name for the analysis object in the system</b>
-                            </div>
+
+                            <div class="note">The result of the analysis</div>
                             <div class="input">
                                 <input
-                                    id="name"
-                                    name="name"
                                     class="input"
                                     type="text"
-                                    focus-me="true"
-                                    ng-model="context.name"
-                                    placeholder="Identifier..."
+                                    ng-model="analysis.clazz"
+                                    placeholder="Analysis result..."
                                     readonly>
                             </div>
+                            <div class="note">The output(if any) of the analyzer</div>
                             <div class="input">
                                 <input
-                                    id="analyzer"
-                                    name="analyzer"
                                     class="input"
                                     type="text"
-                                    ng-model="analysis.analyzer"
-                                    placeholder="Analyzer identifier..."
-                                    readonly>
-                            </div>
-                            <div class="input">
-                                <input
-                                    id="filter"
-                                    name="filter"
-                                    class="input"
-                                    type="text"
-                                    ng-model="context.filter"
-                                    placeholder="Filter class..."
-                                    readonly>
-                            </div>
-                            <div class="input">
-                                <input
-                                    id="algorithm"
-                                    name="algorithm"
-                                    class="input"
-                                    type="text"
-                                    ng-model="context.algorithm"
-                                    placeholder="Algorithm class..."
+                                    ng-model="analysis.output"
+                                    placeholder="Analysis output..."
                                     readonly>
                             </div>
 
-                            <div class="note">
-                                <i class="icon-warning-sign"></i> Warning: This is the training text area! You overwrite the original training model when you use this.
-                            </div>
+                            <div class="note">This area is the analyzer algorithm output for the analysis</div>
                             <div class="input">
                                 <textarea
-                                    placeholder="Training data in Weka format..."
+                                    placeholder="Analyzer algorithm output..."
                                     rows="5"
                                     ng-model="analysis.algorithmOutput"
                                     title="The output from the analysis algorithm"

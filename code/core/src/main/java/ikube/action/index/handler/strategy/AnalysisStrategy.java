@@ -22,7 +22,7 @@ import static ikube.action.index.IndexManager.addStringField;
 public class AnalysisStrategy extends AStrategy {
 
     private String language;
-    private Context<IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>>, ?, ?> context;
+    private Context<IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>>, ?, ?, ?> context;
 
     public AnalysisStrategy() {
         this(null);
@@ -75,7 +75,7 @@ public class AnalysisStrategy extends AStrategy {
         this.language = language;
     }
 
-    public void setContext(Context<IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>>, ?, ?> context) {
+    public void setContext(Context<IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>>, ?, ?, ?> context) {
         this.context = context;
     }
 }

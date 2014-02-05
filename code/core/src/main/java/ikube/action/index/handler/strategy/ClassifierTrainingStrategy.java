@@ -23,7 +23,7 @@ import static ikube.IConstants.CLASSIFICATION;
 public class ClassifierTrainingStrategy extends AStrategy {
 
     private String language;
-    private Context<?, ?, ?> context;
+    private Context<?, ?, ?, ?> context;
     private Map<String, Integer> training;
 
     public ClassifierTrainingStrategy() {
@@ -85,7 +85,7 @@ public class ClassifierTrainingStrategy extends AStrategy {
         this.language = language;
     }
 
-    public void setContext(Context<?, ?, ?> context) {
+    public void setContext(Context<?, ?, ?, ?> context) {
         this.context = context;
     }
 }
