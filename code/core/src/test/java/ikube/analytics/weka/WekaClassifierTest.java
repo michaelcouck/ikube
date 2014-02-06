@@ -47,8 +47,11 @@ public class WekaClassifierTest extends AbstractTest {
 
     @Test
     public void init() throws Exception {
+        SMO smo = mock(SMO.class);
         Context context = mock(Context.class);
         when(context.getName()).thenReturn("sentiment-en");
+        when(context.getAlgorithm()).thenReturn(smo);
+        when(context.getOptions()).thenReturn(new String[]{"-R", "8"});
         wekaClassifier.init(context);
         verify(context, atLeastOnce()).getAlgorithm();
     }
