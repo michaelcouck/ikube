@@ -33,6 +33,7 @@ import java.util.Map;
 @Scope(Resource.REQUEST)
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
+@SuppressWarnings("SpringJavaAutowiringInspection")
 public class Analyzer extends Resource {
 
     public static final String ANALYZER = "/analyzer";
@@ -54,7 +55,7 @@ public class Analyzer extends Resource {
     public Response create(@Context final HttpServletRequest request) {
         ikube.model.Context context = unmarshall(ikube.model.Context.class, request);
         analyticsService.create(context);
-        return buildJsonResponse(context.getName());
+        return buildJsonResponse(context(context));
     }
 
     @POST
@@ -78,7 +79,7 @@ public class Analyzer extends Resource {
     public Response build(@Context final HttpServletRequest request) {
         ikube.model.Context context = unmarshall(ikube.model.Context.class, request);
         analyticsService.build(context);
-        return buildJsonResponse(context.getName());
+        return buildJsonResponse(context(context));
     }
 
     /**
@@ -119,8 +120,24 @@ public class Analyzer extends Resource {
     @SuppressWarnings("unchecked")
     public Response context(@Context final HttpServletRequest request) {
         Analysis<?, ?> analysis = unmarshall(Analysis.class, request);
+        return buildJsonResponse(context(analysis.getAnalyzer()));
+    }
+
+    /**
+     * This method will just create a new context and null out the analyzer because it is too big to send to the front end.
+     *
+     * @param name the name of the analyzer in the system, that is associated with the target context
+     * @return the context that was/is used to create the analyzer
+     */
+    @SuppressWarnings("unchecked")
+    private ikube.model.Context context(final String name) {
+        ikube.model.Context contextSystem = analyticsService.getContext(name);
+        return context(contextSystem);
+    }
+
+    @SuppressWarnings("unchecked")
+    private ikube.model.Context context(final ikube.model.Context contextSystem) {
         ikube.model.Context context = new ikube.model.Context();
-        ikube.model.Context contextSystem = analyticsService.getContext(analysis.getAnalyzer());
         try {
             BeanUtilsBean beanUtilsBean = BeanUtilsBean2.getInstance();
             beanUtilsBean.getConvertUtils().register(new Converter() {
@@ -138,9 +155,11 @@ public class Analyzer extends Resource {
             context.setAnalyzer(context.getAnalyzer().getClass().getName());
             // Filters can  be null of course, specially for clusterers
             if (context.getFilter() != null) {
+                // Set the filter name
                 context.setFilter(context.getFilter().getClass().getName());
             }
-            return buildJsonResponse(context);
+            context.setTrainingData(null);
+            return context;
         } catch (final IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }

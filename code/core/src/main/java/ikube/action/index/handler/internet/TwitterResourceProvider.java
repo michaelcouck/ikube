@@ -7,7 +7,6 @@ import ikube.model.IndexContext;
 import ikube.model.IndexableTweets;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.SerializationUtilities;
-import ikube.toolkit.ThreadUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.social.twitter.api.*;
@@ -31,7 +30,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private static int STACK_SIZE = 10000;
+    private static int STACK_SIZE = IConstants.TEN_THOUSAND;
 
     private int clones;
     private Stack<Tweet> stack;
@@ -101,7 +100,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
     @Override
     public synchronized void onTweet(final Tweet tweet) {
         persistResources(tweet);
-        if (tweets.size() < IConstants.MILLION) {
+        if (tweets.size() < STACK_SIZE) {
             tweets.push(tweet);
             if (this.clones > 0) {
                 int clones = this.clones;
@@ -136,6 +135,13 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
         logger.info("Tweet warning : " + warnEvent.getCode());
     }
 
+    /**
+     * This method persists all the tweets to the file system that are in the stack. The stack is 'emptied' onto
+     * the file system, and then cleaned. All the tweets on the current stack are persisted to one directory, so typically
+     * each directory will have 'STACK_SIZE' tweets in it.
+     *
+     * @param tweets the tweets to persist to the file system in Json format
+     */
     synchronized void persistResources(final Tweet... tweets) {
         if (!persistTweets) {
             return;
@@ -151,8 +157,8 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
                     File outputFile = FileUtilities.getOrCreateFile(output);
                     FileUtilities.setContents(outputFile, string.getBytes());
                 }
-            } catch (Exception e) {
-                logger.error(null, e);
+            } catch (final Exception e) {
+                logger.error("Exception persisting the tweets to the file system : ", e);
             }
             stack.clear();
         }

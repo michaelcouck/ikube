@@ -35,16 +35,21 @@ public class WekaClassifier extends WekaAnalyzer {
      */
     @Override
     public void init(final Context context) throws Exception {
-        filter = (Filter) context.getFilter();
-        instances = instances(context);
-        instances.setClassIndex(0);
-        instances.setRelationName("training_data");
-        classifier = (Classifier) context.getAlgorithm();
         analyzeLock = new ReentrantLock(Boolean.TRUE);
-        if (OptionHandler.class.isAssignableFrom(classifier.getClass())) {
-            if (context.getOptions() != null) {
-                classifier.setOptions((String[]) context.getOptions());
+        try {
+            analyzeLock.lock();
+            filter = (Filter) context.getFilter();
+            instances = instances(context);
+            instances.setClassIndex(0);
+            instances.setRelationName("training_data");
+            classifier = (Classifier) context.getAlgorithm();
+            if (OptionHandler.class.isAssignableFrom(classifier.getClass())) {
+                if (context.getOptions() != null) {
+                    classifier.setOptions((String[]) context.getOptions());
+                }
             }
+        } finally {
+            analyzeLock.unlock();
         }
     }
 
@@ -108,6 +113,9 @@ public class WekaClassifier extends WekaAnalyzer {
      */
     @Override
     public Analysis<String, double[]> analyze(final Analysis<String, double[]> analysis) throws Exception {
+        if (analyzeLock.isLocked()) {
+            return analysis;
+        }
         try {
             analyzeLock.lock();
             if (!StringUtils.isEmpty(analysis.getInput())) {

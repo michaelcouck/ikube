@@ -39,6 +39,7 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
         analyzer: undefined, // 'ikube.analytics.weka.WekaClassifier',
         filter: undefined, // 'weka.filters.unsupervised.attribute.StringToWordVector',
         algorithm: undefined, // 'weka.classifiers.functions.SMO',
+        options: undefined, // -N 6 (six clusters for example)
         trainingData: undefined,
         maxTraining: 10000
     };
@@ -46,8 +47,12 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
     $scope.doCreate = function () {
         var url = getServiceUrl('/ikube/service/analyzer/create');
 
+        var context = angular.copy($scope.context);
+        if (!!context.options) {
+            context.options = context.options.split(',');
+        }
         $scope.status = undefined;
-        var promise = $http.post(url, $scope.context);
+        var promise = $http.post(url, context);
         promise.success(function (data, status) {
             $scope.status = status;
             $scope.doAnalyzers();

@@ -46,47 +46,54 @@
                             <div class="note"><b>The context name for the analyzer in the system</b></div>
                             <div class="input">
                                 <input
-                                        class="input"
-                                        type="text"
-                                        focus-me="true"
-                                        ng-model="context.name"
-                                        placeholder="Identifier..."
-                                        readonly>
+                                    class="input"
+                                    type="text"
+                                    focus-me="true"
+                                    ng-model="context.name"
+                                    placeholder="Identifier..."
+                                    readonly>
                             </div>
                             <div class="note"><b>The analyzer wrapper class</b></div>
                             <div class="input">
                                 <input
-                                        class="input"
-                                        type="text"
-                                        ng-model="context.analyzer"
-                                        placeholder="Analyzer identifier..."
-                                        readonly>
+                                    class="input"
+                                    type="text"
+                                    ng-model="context.analyzer"
+                                    placeholder="Analyzer identifier..."
+                                    readonly>
                             </div>
                             <div class="note"><b>The filter class for the data</b></div>
                             <div class="input">
                                 <input
-                                        class="input"
-                                        type="text"
-                                        ng-model="context.filter"
-                                        placeholder="Filter class..."
-                                        readonly>
+                                    class="input"
+                                    type="text"
+                                    ng-model="context.filter"
+                                    placeholder="Filter class..."
+                                    readonly>
                             </div>
                             <div class="note"><b>The algorithm/logic for the analyzer</b></div>
                             <div class="input">
                                 <input
-                                        class="input"
-                                        type="text"
-                                        ng-model="context.algorithm"
-                                        placeholder="Algorithm class..."
-                                        readonly>
+                                    class="input"
+                                    type="text"
+                                    ng-model="context.algorithm"
+                                    placeholder="Algorithm class..."
+                                    readonly>
+                            </div>
+                            <div class="note"><b>The initialization options for the algorithm</b></div>
+                            <div class="input">
+                                <input
+                                    class="input"
+                                    type="text"
+                                    ng-model="context.options"
+                                    placeholder="The options, if any..."
+                                    readonly>
                             </div>
 						</div>
 					</div>
 				</form>
 			</div>
 		</div>
-
-
 
 		<div class="span6">
             <div class="box">
@@ -106,7 +113,6 @@
                 <form class="fill-up">
                     <div class="row-fluid">
                         <div class="padded">
-
                             <div class="note">The result of the analysis</div>
                             <div class="input">
                                 <input
@@ -125,12 +131,11 @@
                                     placeholder="Analysis output..."
                                     readonly>
                             </div>
-
                             <div class="note">This area is the analyzer algorithm output for the analysis</div>
                             <div class="input">
                                 <textarea
                                     placeholder="Analyzer algorithm output..."
-                                    rows="5"
+                                    rows="21"
                                     ng-model="analysis.algorithmOutput"
                                     title="The output from the analysis algorithm"
                                     readonly></textarea>

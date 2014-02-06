@@ -1,11 +1,13 @@
 package ikube.analytics;
 
 import ikube.model.Context;
+import ikube.toolkit.ThreadUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.Future;
 
 /**
  * This factory for analyzers is implemented as builder. Typically taking multiple simple objects and building a complex one, all the time
@@ -23,8 +25,8 @@ public final class AnalyzerManager {
         Collection<IAnalyzer<?, ?>> analyzers = new ArrayList<>();
         LOGGER.info("Building analyzer : " + contexts.size());
         for (final Context context : contexts) {
-            IAnalyzer<?, ?> analyzer = buildAnalyzer(context);
             LOGGER.info("Building analyzer : " + context.getName());
+            IAnalyzer<?, ?> analyzer = buildAnalyzer(context);
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.info("Analyzer output : " + analyzer);
             }
@@ -34,9 +36,31 @@ public final class AnalyzerManager {
     }
 
     public static IAnalyzer<?, ?> buildAnalyzer(final Context context) throws Exception {
-        IAnalyzer<?, ?> analyzer = (IAnalyzer<?, ?>) context.getAnalyzer();
-        analyzer.init(context);
-        analyzer.build(context);
+        final IAnalyzer<?, ?> analyzer = (IAnalyzer<?, ?>) context.getAnalyzer();
+        class Builder implements Runnable {
+            public void run() {
+                try {
+                    LOGGER.info("Initializing analyzer : " + context.getName());
+                    analyzer.init(context);
+                    LOGGER.info("Building analyzer : " + context.getName());
+                    analyzer.build(context);
+                    LOGGER.info("Analyzer built and ready : " + context.getName());
+                } catch (final Exception e) {
+                    LOGGER.error("Exception building analyzer : " + analyzer, e);
+                } finally {
+                    ThreadUtilities.destroy(this.toString());
+                }
+            }
+        }
+        Builder builder = new Builder();
+        if (!ThreadUtilities.isInitialized()) {
+            ThreadUtilities.initialize();
+        }
+        Future future = ThreadUtilities.submit(builder.toString(), builder);
+        // We'll wait a bit for the future to end, but potentially
+        // this process can take hours, to build a large classifier of a million
+        // vectors for example, so we return
+        ThreadUtilities.waitForFuture(future, 3000);
         return analyzer;
     }
 

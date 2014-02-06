@@ -122,23 +122,23 @@ public abstract class AbstractTest {
         indexableTable = mock(IndexableTable.class);
         indexableColumn = mock(IndexableColumn.class);
 
+        servers = new HashMap<>();
         scoreDocs = new ScoreDoc[0];
         indexables = new ArrayList<>();
-        servers = new HashMap<>();
         indexContexts = new HashMap<>();
 
         ip = UriUtilities.getIp();
+
+        topDocs.totalHits = 0;
+        topDocs.scoreDocs = scoreDocs;
+        topFieldDocs.totalHits = 0;
+        topFieldDocs.scoreDocs = scoreDocs;
 
         when(indexSearcher.getIndexReader()).thenReturn(indexReader);
         when(indexSearcher.search(any(Query.class), anyInt())).thenReturn(topDocs);
 
         when(multiSearcher.search(any(Query.class), anyInt())).thenReturn(topDocs);
         when(multiSearcher.search(any(Query.class), any(Filter.class), anyInt(), any(Sort.class))).thenReturn(topFieldDocs);
-
-        topDocs.totalHits = 0;
-        topDocs.scoreDocs = scoreDocs;
-        topFieldDocs.totalHits = 0;
-        topFieldDocs.scoreDocs = scoreDocs;
 
         when(fsDirectory.makeLock(anyString())).thenReturn(lock);
 
@@ -157,13 +157,13 @@ public abstract class AbstractTest {
         when(indexContext.getMaxFieldLength()).thenReturn(10);
         when(indexContext.getMaxReadLength()).thenReturn(10000l);
         when(indexContext.getMergeFactor()).thenReturn(10);
-        when(indexContext.getMaxAge()).thenReturn((long) (60));
+        when(indexContext.getMaxAge()).thenReturn(60l);
+        when(indexContext.getIndexWriters()).thenReturn(new IndexWriter[]{indexWriter});
+
         when(clusterManager.getServer()).thenReturn(server);
         when(clusterManager.getServers()).thenReturn(servers);
         when(clusterManager.lock(anyString())).thenReturn(Boolean.TRUE);
 
-        indexContexts.put(indexContext.getName(), indexContext);
-        indexContexts.put(indexContext.getIndexName(), indexContext);
         when(monitorService.getIndexContexts()).thenReturn(indexContexts);
 
         when(action.getIndexName()).thenReturn("index");
@@ -172,8 +172,9 @@ public abstract class AbstractTest {
         when(server.getAddress()).thenReturn(ip);
         when(server.getIp()).thenReturn(ip);
         when(server.getActions()).thenReturn(Arrays.asList(action));
-        when(indexContext.getIndexWriters()).thenReturn(new IndexWriter[]{indexWriter});
+
         when(indexableTable.getName()).thenReturn("indexableTable");
+
         when(indexableColumn.getContent()).thenReturn("9a avenue road, cape town, south africa");
         when(indexableColumn.isAddress()).thenReturn(Boolean.TRUE);
         when(indexableColumn.getName()).thenReturn("indexableName");
@@ -184,9 +185,12 @@ public abstract class AbstractTest {
 
         when(ApplicationContextManagerMock.HANDLER.getIndexableClass()).thenReturn(IndexableTable.class);
 
+        servers.put(ip, server);
         indexables.add(indexableTable);
         indexables.add(indexableColumn);
-        servers.put(ip, server);
+        indexContexts.put(indexContext.getName(), indexContext);
+        indexContexts.put(indexContext.getIndexName(), indexContext);
+
         IndexManagerMock.setIndexWriter(indexWriter);
         ApplicationContextManagerMock.setIndexContext(indexContext);
         ApplicationContextManagerMock.setClusterManager(clusterManager);

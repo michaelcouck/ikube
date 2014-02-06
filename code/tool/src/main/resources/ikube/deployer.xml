@@ -18,7 +18,7 @@
     <description>TODO</description>
 
     <context:property-placeholder
-        location="classpath:*/**/spring.properties"
+        location="classpath:*/**/spring.properties,*/**/spring-local.properties"
         properties-ref="ikube.toolkit.PropertyConfigurer"/>
 
     <bean
@@ -59,6 +59,7 @@
 
     <util:list id="actions">
         <ref local="stop-action"/>
+        <ref local="clean-action"/>
         <ref local="copy-action"/>
         <ref local="start-action"/>
     </util:list>
@@ -73,6 +74,15 @@
         <value>. /etc/profile;</value>
         <value>cd ${tomcat-one-bin};./catalina.sh stop;</value>
         <value>ps -ef | grep ${tomcat-one} | grep -v grep | awk '{print $2}' | xargs kill -9;</value>
+    </util:list>
+
+    <bean
+        id="clean-action"
+        name="clean-action"
+        class="ikube.deploy.action.CommandAction"
+        property:breakOnError="true"
+        property:commands-ref="clean-commands"/>
+    <util:list id="clean-commands">
         <value>chmod 777 -R ${tomcat-one};</value>
 
         <!--<value>rm -rf ${tomcat-one-bin}/ikube;</value>-->
@@ -90,6 +100,7 @@
 
         <value>chmod 777 -R ${tomcat-one};</value>
     </util:list>
+
 
     <bean
         id="copy-action"

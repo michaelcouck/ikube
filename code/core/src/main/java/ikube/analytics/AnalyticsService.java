@@ -3,6 +3,7 @@ package ikube.analytics;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.Timer;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -36,8 +37,8 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O>, BeanPost
             context.setAlgorithm(Class.forName(String.valueOf(algorithmName)).newInstance());
             Object analyzerName = context.getAnalyzer();
             context.setAnalyzer(Class.forName(String.valueOf(analyzerName)).newInstance());
-            if (context.getFilter() != null) {
-                Object filterName = context.getFilter();
+            Object filterName = context.getFilter();
+            if (filterName != null && !StringUtils.isEmpty(String.valueOf(filterName))) {
                 context.setFilter(Class.forName(String.valueOf(filterName)).newInstance());
             }
 

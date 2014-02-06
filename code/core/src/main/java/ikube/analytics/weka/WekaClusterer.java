@@ -12,6 +12,7 @@ import weka.core.Instances;
 import weka.core.OptionHandler;
 import weka.filters.Filter;
 
+import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -32,15 +33,29 @@ public class WekaClusterer extends WekaAnalyzer {
      */
     @Override
     public void init(final Context context) throws Exception {
-        filter = (Filter) context.getFilter();
-        instances = instances(context);
-        instances.setRelationName("training_data");
-        clusterer = (Clusterer) context.getAlgorithm();
         analyzeLock = new ReentrantLock(Boolean.TRUE);
-        if (OptionHandler.class.isAssignableFrom(clusterer.getClass())) {
-            if (context.getOptions() != null && String[].class.isAssignableFrom(context.getOptions().getClass())) {
-                ((OptionHandler) clusterer).setOptions((String[]) context.getOptions());
+        try {
+            analyzeLock.lock();
+            filter = (Filter) context.getFilter();
+            instances = instances(context);
+            instances.setRelationName("training_data");
+            clusterer = (Clusterer) context.getAlgorithm();
+            if (OptionHandler.class.isAssignableFrom(clusterer.getClass())) {
+                if (context.getOptions() != null) {
+                    String[] options;
+                    if (String[].class.isAssignableFrom(context.getOptions().getClass())) {
+                        options = (String[]) context.getOptions();
+                    } else if (List.class.isAssignableFrom(context.getOptions().getClass())) {
+                        List list = (List) context.getOptions();
+                        options = (String[]) list.toArray(new String[list.size()]);
+                    } else {
+                        throw new RuntimeException("Options must be of type string array : " + context.getOptions());
+                    }
+                    ((OptionHandler) clusterer).setOptions(options);
+                }
             }
+        } finally {
+            analyzeLock.unlock();
         }
     }
 
@@ -100,6 +115,9 @@ public class WekaClusterer extends WekaAnalyzer {
      */
     @Override
     public Analysis<String, double[]> analyze(final Analysis<String, double[]> analysis) throws Exception {
+        if (analyzeLock.isLocked()) {
+            return analysis;
+        }
         try {
             analyzeLock.lock();
             // Create the instance from the data

@@ -27,13 +27,9 @@
 					<form class="fill-up">
 						<div class="row-fluid">
 							<div class="padded">
-                                <div class="note">
-                                    <b>Specify the unique identifier for your analyzer...</b>
-                                </div>
+                                <div class="note"><b>Specify the unique identifier for your analyzer...</b></div>
                                 <div class="input">
                                     <input
-                                        id="name"
-                                        name="name"
                                         class="input"
                                         type="text"
                                         focus-me="true"
@@ -42,8 +38,6 @@
                                 </div>
                                 <div class="input">
                                     <input
-                                        id="analyzer"
-                                        name="analyzer"
                                         class="input"
                                         type="text"
                                         ng-model="context.analyzer"
@@ -51,8 +45,6 @@
                                 </div>
                                 <div class="input">
                                     <input
-                                        id="filter"
-                                        name="filter"
                                         class="input"
                                         type="text"
                                         ng-model="context.filter"
@@ -60,12 +52,18 @@
                                 </div>
                                 <div class="input">
                                     <input
-                                        id="algorithm"
-                                        name="algorithm"
                                         class="input"
                                         type="text"
                                         ng-model="context.algorithm"
                                         placeholder="Algorithm class...">
+                                </div>
+                                <div class="note"><b>Specify the options, string[] for Weka format, please refer to the Weka documentation</b></div>
+                                <div class="input">
+                                    <input
+                                        class="input"
+                                        type="text"
+                                        ng-model="context.options"
+                                        placeholder="Options... (eg. '-N, 6', means six clusters for the clusterer">
                                 </div>
 
 								<div class="note">
@@ -130,8 +128,6 @@ negative,'you selfish stupid woman'"></textarea>
                                 </div>
                                 <div class="input">
                                     <input
-                                        id="clazz"
-                                        name="clazz"
                                         type="text"
                                         ng-model="analysis.clazz"
                                         placeholder="Instance class...">

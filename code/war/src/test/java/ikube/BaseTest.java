@@ -27,6 +27,8 @@ public abstract class BaseTest {
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    public static final String SERVICE = "/service";
+
     protected static int SERVER_PORT = 8080;
     protected static String LOCALHOST = "localhost";
     protected static String REST_PASSWORD = "user";
