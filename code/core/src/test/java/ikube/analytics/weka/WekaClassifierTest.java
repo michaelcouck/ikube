@@ -187,4 +187,14 @@ public class WekaClassifierTest extends AbstractTest {
         ThreadUtilities.waitForFutures(futures, 60);
     }
 
+    @Test
+    @SuppressWarnings("unchecked")
+    public void size() throws Exception {
+        Analysis analysis = getAnalysis(IConstants.POSITIVE, null);
+        wekaClassifier.init(context);
+        wekaClassifier.build(context);
+        int sizeForClazz = wekaClassifier.size(analysis);
+        assertEquals(529, sizeForClazz);
+    }
+
 }

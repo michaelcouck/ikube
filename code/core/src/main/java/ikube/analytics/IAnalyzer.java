@@ -7,11 +7,14 @@ import ikube.model.Context;
  *
  * @param <I> the input type
  * @param <O> the output type
+ * @param <C> the clazz input variable, in the case of the {@link ikube.analytics.weka.WekaClassifier} it is an
+ *            {@link ikube.model.Analysis} object, with the {@link ikube.model.Analysis#clazz} attribute set to the
+ *            required class count, for example 'positive'
  * @author Michael Couck
  * @version 01.00
  * @since 14.08.13
  */
-public interface IAnalyzer<I, O> {
+public interface IAnalyzer<I, O, C> {
 
     void init(final Context context) throws Exception;
 
@@ -22,5 +25,7 @@ public interface IAnalyzer<I, O> {
     O analyze(final I input) throws Exception;
 
     void destroy(final Context context) throws Exception;
+
+    int size(final C clazz);
 
 }

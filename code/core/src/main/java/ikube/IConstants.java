@@ -122,7 +122,7 @@ public interface IConstants {
     /**
      * The maximum age that the server can get to before it is deleted from the cluster.
      */
-    int MAX_AGE = 1800000;
+    int MAX_AGE = 180000;
 
     String STRIP_CHARACTERS = "|!,[]{};:/\\.-_";
 
@@ -141,8 +141,8 @@ public interface IConstants {
     int THREAD_POOL_SIZE = 100;
 
     String EXCEPTION = "exception";
-    String EXCEPTION_STACK = "exceptionStack";
-    String EXCEPTION_MESSAGE = "exceptionMessage";
+    String EXCEPTION_STACK = "exception-stack";
+    String EXCEPTION_MESSAGE = "exception-message";
 
     String SEMI_COLON = ";";
 

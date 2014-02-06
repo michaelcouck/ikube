@@ -21,7 +21,7 @@ import java.util.Map;
  * @version 01.00
  * @since 10.04.13
  */
-public class AnalyticsService<I, O> implements IAnalyticsService<I, O>, BeanPostProcessor {
+public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, BeanPostProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AnalyticsService.class);
 
@@ -30,7 +30,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O>, BeanPost
 
     @Override
     @SuppressWarnings("unchecked")
-    public IAnalyzer<I, O> create(final Context context) {
+    public IAnalyzer<I, O, C> create(final Context context) {
         try {
             // Instantiate the classifier, the algorithm and the filter
             Object algorithmName = context.getAlgorithm();
@@ -42,7 +42,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O>, BeanPost
                 context.setFilter(Class.forName(String.valueOf(filterName)).newInstance());
             }
 
-            IAnalyzer<I, O> analyzer = (IAnalyzer<I, O>) AnalyzerManager.buildAnalyzer(context);
+            IAnalyzer<I, O, C> analyzer = (IAnalyzer<I, O, C>) AnalyzerManager.buildAnalyzer(context);
             contexts.put(context.getName(), context);
             analyzers.put(context.getName(), analyzer);
             return analyzer;
@@ -54,8 +54,8 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O>, BeanPost
 
     @Override
     @SuppressWarnings("unchecked")
-    public IAnalyzer<I, O> train(final Analysis<I, O> analysis) {
-        final IAnalyzer<I, O> analyzer = getAnalyzer(analysis.getAnalyzer());
+    public IAnalyzer<I, O, C> train(final Analysis<I, O> analysis) {
+        final IAnalyzer<I, O, C> analyzer = getAnalyzer(analysis.getAnalyzer());
         try {
             analyzer.train((I) analysis);
         } catch (final Exception e) {
@@ -67,8 +67,8 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O>, BeanPost
 
     @Override
     @SuppressWarnings("unchecked")
-    public IAnalyzer<I, O> build(final Context context) {
-        final IAnalyzer<I, O> analyzer = getAnalyzer(context.getName());
+    public IAnalyzer<I, O, C> build(final Context context) {
+        final IAnalyzer<I, O, C> analyzer = getAnalyzer(context.getName());
         try {
             analyzer.build(context);
         } catch (final Exception e) {
@@ -80,7 +80,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O>, BeanPost
 
     @Override
     public Analysis<I, O> analyze(final Analysis<I, O> analysis) {
-        final IAnalyzer<I, O> analyzer = getAnalyzer(analysis.getAnalyzer());
+        final IAnalyzer<I, O, C> analyzer = getAnalyzer(analysis.getAnalyzer());
         double duration = Timer.execute(new Timer.Timed() {
             @Override
             @SuppressWarnings("unchecked")
@@ -100,8 +100,8 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O>, BeanPost
 
     @Override
     @SuppressWarnings("unchecked")
-    public IAnalyzer<I, O> destroy(final Context context) {
-        IAnalyzer<I, O> analyzer = analyzers.remove(context.getName());
+    public IAnalyzer<I, O, C> destroy(final Context context) {
+        IAnalyzer<I, O, C> analyzer = analyzers.remove(context.getName());
         if (analyzer != null) {
             try {
                 analyzer.destroy(context);
@@ -129,10 +129,10 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O>, BeanPost
     }
 
     @SuppressWarnings("unchecked")
-    IAnalyzer<I, O> getAnalyzer(final String name) {
+    IAnalyzer<I, O, C> getAnalyzer(final String name) {
         Map<String, IAnalyzer> analyzers = getAnalyzers();
-        IAnalyzer<?, ?> analyzer = analyzers.get(name);
-        return (IAnalyzer<I, O>) analyzer;
+        IAnalyzer<?, ?, ?> analyzer = analyzers.get(name);
+        return (IAnalyzer<I, O, C>) analyzer;
     }
 
     @Override

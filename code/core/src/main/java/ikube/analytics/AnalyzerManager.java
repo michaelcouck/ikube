@@ -21,12 +21,10 @@ public final class AnalyzerManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AnalyzerManager.class);
 
-    public static Collection<IAnalyzer<?, ?>> buildAnalyzers(final Collection<Context> contexts) throws Exception {
-        Collection<IAnalyzer<?, ?>> analyzers = new ArrayList<>();
-        LOGGER.info("Building analyzer : " + contexts.size());
+    public static Collection<IAnalyzer<?, ?, ?>> buildAnalyzers(final Collection<Context> contexts) throws Exception {
+        Collection<IAnalyzer<?, ?, ?>> analyzers = new ArrayList<>();
         for (final Context context : contexts) {
-            LOGGER.info("Building analyzer : " + context.getName());
-            IAnalyzer<?, ?> analyzer = buildAnalyzer(context);
+            IAnalyzer<?, ?, ?> analyzer = buildAnalyzer(context);
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.info("Analyzer output : " + analyzer);
             }
@@ -35,8 +33,8 @@ public final class AnalyzerManager {
         return analyzers;
     }
 
-    public static IAnalyzer<?, ?> buildAnalyzer(final Context context) throws Exception {
-        final IAnalyzer<?, ?> analyzer = (IAnalyzer<?, ?>) context.getAnalyzer();
+    public static IAnalyzer<?, ?, ?> buildAnalyzer(final Context context) throws Exception {
+        final IAnalyzer<?, ?, ?> analyzer = (IAnalyzer<?, ?, ?>) context.getAnalyzer();
         class Builder implements Runnable {
             public void run() {
                 try {
@@ -61,6 +59,9 @@ public final class AnalyzerManager {
         // this process can take hours, to build a large classifier of a million
         // vectors for example, so we return
         ThreadUtilities.waitForFuture(future, 3000);
+        if (future.isDone()) {
+            LOGGER.info("Analyzer finished building in time : ");
+        }
         return analyzer;
     }
 

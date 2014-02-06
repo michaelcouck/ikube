@@ -9,11 +9,6 @@ import weka.clusterers.Clusterer;
 import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.core.OptionHandler;
-import weka.filters.Filter;
-
-import java.util.List;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author Michael Couck
@@ -22,10 +17,6 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class WekaClusterer extends WekaAnalyzer {
 
-    private Filter filter;
-    private Instances instances;
-    private ReentrantLock analyzeLock;
-
     private volatile Clusterer clusterer;
 
     /**
@@ -33,30 +24,8 @@ public class WekaClusterer extends WekaAnalyzer {
      */
     @Override
     public void init(final Context context) throws Exception {
-        analyzeLock = new ReentrantLock(Boolean.TRUE);
-        try {
-            analyzeLock.lock();
-            filter = (Filter) context.getFilter();
-            instances = instances(context);
-            instances.setRelationName("training_data");
-            clusterer = (Clusterer) context.getAlgorithm();
-            if (OptionHandler.class.isAssignableFrom(clusterer.getClass())) {
-                if (context.getOptions() != null) {
-                    String[] options;
-                    if (String[].class.isAssignableFrom(context.getOptions().getClass())) {
-                        options = (String[]) context.getOptions();
-                    } else if (List.class.isAssignableFrom(context.getOptions().getClass())) {
-                        List list = (List) context.getOptions();
-                        options = (String[]) list.toArray(new String[list.size()]);
-                    } else {
-                        throw new RuntimeException("Options must be of type string array : " + context.getOptions());
-                    }
-                    ((OptionHandler) clusterer).setOptions(options);
-                }
-            }
-        } finally {
-            analyzeLock.unlock();
-        }
+        super.init(context);
+        clusterer = (Clusterer) context.getAlgorithm();
     }
 
     /**
@@ -147,11 +116,6 @@ public class WekaClusterer extends WekaAnalyzer {
         } finally {
             analyzeLock.unlock();
         }
-    }
-
-    @Override
-    public void destroy(final Context context) throws Exception {
-        instances.delete();
     }
 
     @Override

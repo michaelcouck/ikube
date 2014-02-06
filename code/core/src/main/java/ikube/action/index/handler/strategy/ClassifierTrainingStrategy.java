@@ -10,9 +10,6 @@ import ikube.model.Indexable;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static ikube.IConstants.CLASSIFICATION;
 
 /**
@@ -24,7 +21,6 @@ public class ClassifierTrainingStrategy extends AStrategy {
 
     private String language;
     private Context<?, ?, ?, ?> context;
-    private Map<String, Integer> training;
 
     public ClassifierTrainingStrategy() {
         this(null);
@@ -38,8 +34,8 @@ public class ClassifierTrainingStrategy extends AStrategy {
      * {@inheritDoc}
      */
     @Override
-    public boolean aroundProcess(final IndexContext<?> indexContext, final Indexable<?> indexable, final Document document, final Object resource)
-        throws Exception {
+    public boolean aroundProcess(final IndexContext<?> indexContext, final Indexable<?> indexable,
+                                 final Document document, final Object resource) throws Exception {
         String language = document.get(IConstants.LANGUAGE);
         String classification = document.get(CLASSIFICATION);
         String content = indexable.getContent() != null ? indexable.getContent().toString() : resource != null ? resource.toString() : null;
@@ -52,33 +48,23 @@ public class ClassifierTrainingStrategy extends AStrategy {
 
     @SuppressWarnings("unchecked")
     void train(final String clazz, final String content) {
-        Integer trained = training.get(clazz);
-        if (trained == null) {
-            trained = 1;
-        } else if (trained < context.getMaxTraining()) {
-            trained++;
-        } else {
+        IAnalyzer classifier = (IAnalyzer) context.getAnalyzer();
+        Analysis<String, double[]> analysis = new Analysis<>();
+        analysis.setClazz(clazz);
+        analysis.setInput(content);
+        int classSize = classifier.size(analysis);
+        if (classSize == 0 || classSize >= context.getMaxTraining()) {
             return;
         }
-        training.put(clazz, trained);
         try {
-            IAnalyzer classifier = (IAnalyzer) context.getAnalyzer();
-            Analysis<String, double[]> analysis = new Analysis<>();
-            analysis.setClazz(clazz);
-            analysis.setInput(content);
             classifier.train(analysis);
             logger.info("Training : " + clazz);
-            if (trained % 100 == 0) {
+            if (classSize % 100 == 0) {
                 classifier.build(context);
             }
         } catch (final Exception e) {
             logger.error("Exception building classifier : ", e);
         }
-    }
-
-    @Override
-    public void initialize() {
-        training = new HashMap<>();
     }
 
     public void setLanguage(String language) {

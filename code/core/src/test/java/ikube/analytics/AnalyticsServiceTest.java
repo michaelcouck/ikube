@@ -33,7 +33,7 @@ public class AnalyticsServiceTest extends AbstractTest {
     static class AnalyzerManagerMock {
         @Mock
         @SuppressWarnings("UnusedDeclaration")
-        public static IAnalyzer<?, ?> buildAnalyzer(final Context context) throws Exception {
+        public static IAnalyzer<?, ?, ?> buildAnalyzer(final Context context) throws Exception {
             return null;
         }
     }

@@ -10,14 +10,14 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import weka.core.Attribute;
-import weka.core.Instance;
-import weka.core.Instances;
-import weka.core.Utils;
+import weka.core.*;
 import weka.filters.Filter;
 
 import java.io.*;
 import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * TODO Document me...
@@ -26,9 +26,96 @@ import java.util.Arrays;
  * @version 01.00
  * @since 18.11.13
  */
-public abstract class WekaAnalyzer implements IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>> {
+public abstract class WekaAnalyzer implements IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>, Analysis<String, double[]>> {
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    Filter filter;
+    Instances instances;
+    ReentrantLock analyzeLock;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void init(final Context context) throws Exception {
+        analyzeLock = new ReentrantLock(Boolean.TRUE);
+        try {
+            analyzeLock.lock();
+            filter = (Filter) context.getFilter();
+            instances = instances(context);
+            instances.setRelationName("training_data");
+            Object algorithm = context.getAlgorithm();
+            if (OptionHandler.class.isAssignableFrom(algorithm.getClass())) {
+                if (context.getOptions() != null) {
+                    String[] options;
+                    if (String[].class.isAssignableFrom(context.getOptions().getClass())) {
+                        options = (String[]) context.getOptions();
+                    } else if (List.class.isAssignableFrom(context.getOptions().getClass())) {
+                        List list = (List) context.getOptions();
+                        options = (String[]) list.toArray(new String[list.size()]);
+                    } else {
+                        throw new RuntimeException("Options must be of type string array : " + context.getOptions());
+                    }
+                    ((OptionHandler) algorithm).setOptions(options);
+                }
+            }
+        } finally {
+            analyzeLock.unlock();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public int size(final Analysis<String, double[]> analysis) {
+        int sizeForClazz = 0;
+        Enumeration<Instance> enumeration = instances.enumerateInstances();
+        while (enumeration.hasMoreElements()) {
+            Instance instance = enumeration.nextElement();
+            double classValue = instance.classValue();
+            Attribute classAttribute = instance.classAttribute();
+            String classAttributeValue = classAttribute.value((int) classValue);
+            if (logger.isDebugEnabled()) {
+                logger.info("Class value : " + classValue + ", " + classAttributeValue);
+            }
+            if (analysis.getClazz().equals(classAttributeValue)) {
+                sizeForClazz++;
+            }
+        }
+        return sizeForClazz;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void destroy(final Context context) throws Exception {
+        instances.delete();
+    }
+
+    /**
+     * This returns the class or the number of the cluster number. In the case of a classifier it is the
+     * index of the class attribute that this instance falls into, in the case of a clusterer it is the index
+     * of the cluster.
+     *
+     * @param instance the instance to get the classification attribute index or cluster number for
+     * @return the classification index or the cluster number for the instance
+     * @throws Exception
+     */
+    abstract double classOrCluster(final Instance instance) throws Exception;
+
+    /**
+     * This method returns the distribution for the instance. The distribution is the probability that the instance
+     * falls into either the classification or cluster category, and suggests the classification or cluster of the instance.
+     *
+     * @param instance the instance to get the distribution for
+     * @return the probability distribution for the instance over the classes or clusters
+     * @throws Exception
+     */
+    abstract double[] distributionForInstance(final Instance instance) throws Exception;
 
     /**
      * This method will create an instance from the input string. The string is assumed to be a comma separated list of values, with the same dimensions as the
@@ -247,26 +334,5 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<String, double[
         }
         return distributionForInstances;
     }
-
-    /**
-     * This returns the class or the number of the cluster number. In the case of a classifier it is the
-     * index of the class attribute that this instance falls into, in the case of a clusterer it is the index
-     * of the cluster.
-     *
-     * @param instance the instance to get the classification attribute index or cluster number for
-     * @return the classification index or the cluster number for the instance
-     * @throws Exception
-     */
-    abstract double classOrCluster(final Instance instance) throws Exception;
-
-    /**
-     * This method returns the distribution for the instance. The distribution is the probability that the instance
-     * falls into either the classification or cluster category, and suggests the classification or cluster of the instance.
-     *
-     * @param instance the instance to get the distribution for
-     * @return the probability distribution for the instance over the classes or clusters
-     * @throws Exception
-     */
-    abstract double[] distributionForInstance(final Instance instance) throws Exception;
 
 }

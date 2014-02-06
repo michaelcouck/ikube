@@ -9,10 +9,6 @@ import weka.classifiers.Evaluation;
 import weka.classifiers.functions.SMO;
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.core.OptionHandler;
-import weka.filters.Filter;
-
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * This class is a classifier for sentiment essentially, i.e. positive/negative. This classifier is based on the {@link SMO} classification algorithm from
@@ -24,10 +20,6 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class WekaClassifier extends WekaAnalyzer {
 
-    private Filter filter;
-    private Instances instances;
-    private ReentrantLock analyzeLock;
-
     private volatile Classifier classifier;
 
     /**
@@ -35,22 +27,8 @@ public class WekaClassifier extends WekaAnalyzer {
      */
     @Override
     public void init(final Context context) throws Exception {
-        analyzeLock = new ReentrantLock(Boolean.TRUE);
-        try {
-            analyzeLock.lock();
-            filter = (Filter) context.getFilter();
-            instances = instances(context);
-            instances.setClassIndex(0);
-            instances.setRelationName("training_data");
-            classifier = (Classifier) context.getAlgorithm();
-            if (OptionHandler.class.isAssignableFrom(classifier.getClass())) {
-                if (context.getOptions() != null) {
-                    classifier.setOptions((String[]) context.getOptions());
-                }
-            }
-        } finally {
-            analyzeLock.unlock();
-        }
+        super.init(context);
+        classifier = (Classifier) context.getAlgorithm();
     }
 
     /**
@@ -151,11 +129,6 @@ public class WekaClassifier extends WekaAnalyzer {
         } finally {
             analyzeLock.unlock();
         }
-    }
-
-    @Override
-    public void destroy(final Context context) throws Exception {
-        instances.delete();
     }
 
     @Override

@@ -3,13 +3,17 @@
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://www.springframework.org/schema/beans"
        xmlns:property="http://www.springframework.org/schema/p"
+       xmlns:util="http://www.springframework.org/schema/util"
 
        xsi:schemaLocation="
             http://www.springframework.org/schema/beans
-			http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+			http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+			http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd">
 
     <bean id="ikube.analytics.IAnalyticsService" class="ikube.analytics.AnalyticsService"/>
 
+    <!-- A dummy clusterer based on some test data as an example. -->
     <bean id="weka-clusterer" class="ikube.analytics.weka.WekaClusterer"/>
     <bean id="weka-clusterer-em" class="weka.clusterers.EM"/>
     <bean
@@ -18,9 +22,14 @@
         property:name="bank-data"
         property:analyzer-ref="weka-clusterer"
         property:algorithm-ref="weka-clusterer-em"
-        property:options="-N,6"
+        property:options-ref="cluster-options"
         property:maxTraining="${max-training}"/>
+    <util:list id="cluster-options">
+        <value type="java.lang.String">-R</value>
+        <value type="java.lang.String">6</value>
+    </util:list>
 
+    <!-- A dummy classifier based on some test data as an example. -->
     <bean id="weka-classifier" class="ikube.analytics.weka.WekaClassifier"/>
     <bean id="string-to-word-vector" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
     <bean id="weka-classifier-smo" class="weka.classifiers.functions.SMO"/>
