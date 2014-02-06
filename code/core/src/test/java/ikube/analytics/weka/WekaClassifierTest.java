@@ -16,6 +16,7 @@ import weka.filters.unsupervised.attribute.StringToWordVector;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static junit.framework.Assert.*;
 import static org.mockito.Mockito.*;
@@ -143,13 +144,18 @@ public class WekaClassifierTest extends AbstractTest {
         wekaClassifier.init(context);
         final int iterations = 10;
         List<Future<?>> futures = new ArrayList<>();
+        final AtomicInteger exceptions = new AtomicInteger(0);
 
         Future<?> future = ThreadUtilities.submitSystem(new Runnable() {
             public void run() {
                 int i = iterations;
                 while (--i > 0) {
-                    wekaClassifier.build(context);
-                    ThreadUtilities.sleep(3000);
+                    try {
+                        wekaClassifier.build(context);
+                        ThreadUtilities.sleep(3000);
+                    } catch (final Exception e) {
+                        exceptions.incrementAndGet();
+                    }
                 }
             }
         });
@@ -163,7 +169,7 @@ public class WekaClassifierTest extends AbstractTest {
                         wekaClassifier.train(analysis);
                         ThreadUtilities.sleep(1000);
                     } catch (Exception e) {
-                        logger.error(null, e);
+                        exceptions.incrementAndGet();
                     }
                 }
             }
@@ -177,14 +183,15 @@ public class WekaClassifierTest extends AbstractTest {
                         Analysis<String, double[]> analysis = getAnalysis(IConstants.POSITIVE, positive);
                         wekaClassifier.analyze(analysis);
                     } catch (Exception e) {
-                        logger.error(null, e);
+                        exceptions.incrementAndGet();
                     }
                 }
             }
         });
         futures.add(future);
 
-        ThreadUtilities.waitForFutures(futures, 60);
+        ThreadUtilities.waitForFutures(futures, 30);
+        assertEquals(0, exceptions.intValue());
     }
 
     @Test

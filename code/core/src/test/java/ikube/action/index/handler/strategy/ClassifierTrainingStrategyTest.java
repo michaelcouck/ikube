@@ -11,7 +11,7 @@ import ikube.toolkit.PerformanceTester;
 import org.apache.lucene.document.Document;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
+import static org.mockito.Mockito.*;
 import org.springframework.social.twitter.api.Tweet;
 
 import java.util.Locale;
@@ -33,10 +33,10 @@ public class ClassifierTrainingStrategyTest extends AbstractTest {
     @Before
     @SuppressWarnings("unchecked")
     public void before() throws Exception {
-        analyzer = Mockito.mock(IAnalyzer.class);
-        Context context = Mockito.mock(Context.class);
-        Mockito.when(context.getAnalyzer()).thenReturn(analyzer);
-        Mockito.when(context.getMaxTraining()).thenReturn(100);
+        analyzer = mock(IAnalyzer.class);
+        Context context = mock(Context.class);
+        when(context.getAnalyzer()).thenReturn(analyzer);
+        when(context.getMaxTraining()).thenReturn(100);
 
         classifierTrainingStrategy = new ClassifierTrainingStrategy();
         classifierTrainingStrategy.setContext(context);
@@ -47,10 +47,11 @@ public class ClassifierTrainingStrategyTest extends AbstractTest {
     @SuppressWarnings("unchecked")
     public void aroundProcess() throws Exception {
         Document document = new Document();
-        final IndexableTweets indexableTweets = Mockito.mock(IndexableTweets.class);
-        Mockito.when(indexableTweets.isStored()).thenReturn(Boolean.TRUE);
-        Mockito.when(indexableTweets.isAnalyzed()).thenReturn(Boolean.TRUE);
-        Mockito.when(indexableTweets.getContent()).thenReturn(IConstants.CONTENT);
+        final IndexableTweets indexableTweets = mock(IndexableTweets.class);
+        when(indexableTweets.isStored()).thenReturn(Boolean.TRUE);
+        when(indexableTweets.isAnalyzed()).thenReturn(Boolean.TRUE);
+        when(indexableTweets.getContent()).thenReturn(IConstants.CONTENT);
+        when(analyzer.size(any())).thenReturn(1);
 
         IndexManager.addStringField(IConstants.LANGUAGE, Locale.ENGLISH.getLanguage(), indexableTweets, document);
         IndexManager.addStringField(IConstants.CLASSIFICATION, IConstants.POSITIVE, indexableTweets, document);
@@ -60,7 +61,7 @@ public class ClassifierTrainingStrategyTest extends AbstractTest {
 
         classifierTrainingStrategy.setLanguage(Locale.ENGLISH.getLanguage());
         classifierTrainingStrategy.aroundProcess(indexContext, indexableTweets, document, tweet);
-        Mockito.verify(analyzer).train(Mockito.any(Object[].class));
+        verify(analyzer).train(any(Object[].class));
 
         int iterations = 11;
         PerformanceTester.execute(new PerformanceTester.APerform() {

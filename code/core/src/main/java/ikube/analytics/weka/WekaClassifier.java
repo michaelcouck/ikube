@@ -28,6 +28,7 @@ public class WekaClassifier extends WekaAnalyzer {
     @Override
     public void init(final Context context) throws Exception {
         super.init(context);
+        instances.setClassIndex(0);
         classifier = (Classifier) context.getAlgorithm();
     }
 
