@@ -101,6 +101,7 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Be
     @Override
     @SuppressWarnings("unchecked")
     public IAnalyzer<I, O, C> destroy(final Context context) {
+        contexts.remove(context.getName());
         IAnalyzer<I, O, C> analyzer = analyzers.remove(context.getName());
         if (analyzer != null) {
             try {

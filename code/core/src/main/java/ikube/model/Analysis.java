@@ -40,12 +40,25 @@ public class Analysis<Input, Output> extends Persistable {
      */
     private String algorithmOutput;
     /**
-     * The correlation co-efficients for the data set.
+     * The correlation co-efficients for the data set, matching the first instance against the next.
      */
     @Transient
     private double[] correlationCoefficients;
+    /**
+     * The distribution probabilities of the instance in the clusters/class categories.
+     */
     @Transient
     private double[][] distributionForInstances;
+    /**
+     * The classes or clusters available for the classifier or clusterer.
+     */
+    @Transient
+    private Object[] classesOrClusters;
+    /**
+     * The size of each class or cluster in the classifier or clusterer.
+     */
+    @Transient
+    private int[] sizeForClassesOrClusters;
 
     private double duration;
     private boolean correlation;
@@ -107,6 +120,22 @@ public class Analysis<Input, Output> extends Persistable {
 
     public void setDistributionForInstances(double[][] distributionForInstances) {
         this.distributionForInstances = distributionForInstances;
+    }
+
+    public Object[] getClassesOrClusters() {
+        return classesOrClusters;
+    }
+
+    public void setClassesOrClusters(Object[] classesOrClusters) {
+        this.classesOrClusters = classesOrClusters;
+    }
+
+    public int[] getSizeForClassesOrClusters() {
+        return sizeForClassesOrClusters;
+    }
+
+    public void setSizeForClassesOrClusters(int[] sizeForClassesOrClusters) {
+        this.sizeForClassesOrClusters = sizeForClassesOrClusters;
     }
 
     public double getDuration() {

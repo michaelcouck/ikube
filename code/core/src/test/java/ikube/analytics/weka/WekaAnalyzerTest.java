@@ -2,7 +2,6 @@ package ikube.analytics.weka;
 
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.model.Analysis;
 import ikube.model.Context;
 import mockit.Mock;
 import mockit.MockClass;
@@ -160,9 +159,11 @@ public class WekaAnalyzerTest extends AbstractTest {
     @Test
     @SuppressWarnings("unchecked")
     public void size() throws Exception {
-        Analysis analysis = getAnalysis(IConstants.POSITIVE, null);
-        int sizeForClazz = wekaAnalyzer.sizeForClassOrCluster(analysis);
-        assertEquals(529, sizeForClazz);
+        int positive = wekaAnalyzer.sizeForClassOrCluster(getAnalysis(IConstants.POSITIVE, null));
+        int negative = wekaAnalyzer.sizeForClassOrCluster(getAnalysis(IConstants.NEGATIVE, null));
+        int total = positive + negative;
+        assertEquals(total - negative, positive);
+        assertEquals(total - positive, negative);
     }
 
 }
