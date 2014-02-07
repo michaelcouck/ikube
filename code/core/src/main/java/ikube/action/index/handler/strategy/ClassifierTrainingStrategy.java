@@ -47,12 +47,12 @@ public class ClassifierTrainingStrategy extends AStrategy {
     }
 
     @SuppressWarnings("unchecked")
-    void train(final String clazz, final String content) {
+    void train(final String clazz, final String content) throws Exception {
         IAnalyzer classifier = (IAnalyzer) context.getAnalyzer();
         Analysis<String, double[]> analysis = new Analysis<>();
         analysis.setClazz(clazz);
         analysis.setInput(content);
-        int classSize = classifier.size(analysis);
+        int classSize = classifier.sizeForClassOrCluster(analysis);
         if (classSize == 0 || classSize >= context.getMaxTraining()) {
             return;
         }

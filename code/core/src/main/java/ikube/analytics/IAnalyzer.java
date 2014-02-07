@@ -26,6 +26,8 @@ public interface IAnalyzer<I, O, C> {
 
     void destroy(final Context context) throws Exception;
 
-    int size(final C clazz);
+    int sizeForClassOrCluster(final C clazz) throws Exception;
+
+    Object[] classesOrClusters() throws Exception;
 
 }

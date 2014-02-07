@@ -1,6 +1,8 @@
 package ikube.analytics.weka;
 
 import ikube.AbstractTest;
+import ikube.IConstants;
+import ikube.model.Analysis;
 import ikube.model.Context;
 import mockit.Mock;
 import mockit.MockClass;
@@ -51,8 +53,11 @@ public class WekaAnalyzerTest extends AbstractTest {
         context.setName("sentiment-en");
         context.setFilter(StringToWordVector.class.newInstance());
         context.setAlgorithm(SMO.class.newInstance());
+        context.setMaxTraining(1000);
 
         wekaAnalyzer = new WekaClassifier();
+        wekaAnalyzer.init(context);
+        wekaAnalyzer.build(context);
         Mockit.setUpMocks(WekaToolkitMock.class);
     }
 
@@ -134,8 +139,6 @@ public class WekaAnalyzerTest extends AbstractTest {
     @Test
     @SuppressWarnings("MismatchedReadAndWriteOfArray")
     public void getCorrelationCoefficients() throws Exception {
-        wekaAnalyzer.init(context);
-        wekaAnalyzer.build(context);
         Instances instances = wekaAnalyzer.instances(context);
         double[] correlationCoefficients = wekaAnalyzer.getCorrelationCoefficients(instances);
         for (final double correlationCoefficient : correlationCoefficients) {
@@ -145,8 +148,6 @@ public class WekaAnalyzerTest extends AbstractTest {
 
     @Test
     public void getDistributionForInstances() throws Exception {
-        wekaAnalyzer.init(context);
-        wekaAnalyzer.build(context);
         Instances instances = wekaAnalyzer.instances(context);
         double[][] distributionForInstances = wekaAnalyzer.getDistributionForInstances(instances);
         for (final double[] distributionForInstance : distributionForInstances) {
@@ -154,6 +155,14 @@ public class WekaAnalyzerTest extends AbstractTest {
                 assertTrue(probability >= 0.0 || probability <= 1.0);
             }
         }
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void size() throws Exception {
+        Analysis analysis = getAnalysis(IConstants.POSITIVE, null);
+        int sizeForClazz = wekaAnalyzer.sizeForClassOrCluster(analysis);
+        assertEquals(529, sizeForClazz);
     }
 
 }

@@ -44,6 +44,8 @@ public class WekaClassifierTest extends AbstractTest {
         context.setMaxTraining(1000);
 
         wekaClassifier = new WekaClassifier();
+        wekaClassifier.init(context);
+        wekaClassifier.build(context);
     }
 
     @Test
@@ -60,7 +62,6 @@ public class WekaClassifierTest extends AbstractTest {
     @Test
     @SuppressWarnings("unchecked")
     public void train() throws Exception {
-        wekaClassifier.init(context);
         Instances instances = Deencapsulation.getField(wekaClassifier, "instances");
         int initial = instances.numInstances();
         int iterations = context.getMaxTraining();
@@ -111,9 +112,6 @@ public class WekaClassifierTest extends AbstractTest {
 
     @Test
     public void classOrCluster() throws Exception {
-        wekaClassifier.init(context);
-        wekaClassifier.build(context);
-
         Instances instances = Deencapsulation.getField(wekaClassifier, "instances");
         Instance instance = instances.firstInstance();
 
@@ -127,9 +125,6 @@ public class WekaClassifierTest extends AbstractTest {
 
     @Test
     public void distributionForInstance() throws Exception {
-        wekaClassifier.init(context);
-        wekaClassifier.build(context);
-
         Instances instances = Deencapsulation.getField(wekaClassifier, "instances");
         Instance instance = instances.firstInstance();
 
@@ -141,7 +136,6 @@ public class WekaClassifierTest extends AbstractTest {
     @Test
     public void multiThreaded() throws Exception {
         ThreadUtilities.initialize();
-        wekaClassifier.init(context);
         final int iterations = 10;
         List<Future<?>> futures = new ArrayList<>();
         final AtomicInteger exceptions = new AtomicInteger(0);
@@ -190,18 +184,23 @@ public class WekaClassifierTest extends AbstractTest {
         });
         futures.add(future);
 
-        ThreadUtilities.waitForFutures(futures, 30);
+        ThreadUtilities.waitForFutures(futures, 15);
         assertEquals(0, exceptions.intValue());
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void size() throws Exception {
-        Analysis analysis = getAnalysis(IConstants.POSITIVE, null);
-        wekaClassifier.init(context);
-        wekaClassifier.build(context);
-        int sizeForClazz = wekaClassifier.size(analysis);
-        assertEquals(529, sizeForClazz);
+        Analysis<String, double[]> analysis = getAnalysis(IConstants.POSITIVE, null);
+        int sizeForClass = wekaClassifier.sizeForClassOrCluster(analysis);
+        assertTrue(sizeForClass > 500);
+    }
+
+    @Test
+    public void classes() throws Exception {
+        Object[] classes = wekaClassifier.classesOrClusters();
+        assertEquals(2, classes.length);
+        assertEquals(IConstants.POSITIVE, classes[0]);
+        assertEquals(IConstants.NEGATIVE, classes[1]);
     }
 
 }

@@ -98,6 +98,7 @@ public class WekaClusterer extends WekaAnalyzer {
 
             analysis.setClazz(Integer.toString(cluster));
             analysis.setOutput(distributionForInstance);
+            // TODO This must be optional as it is expensive
             analysis.setAlgorithmOutput(clusterer.toString());
             if (analysis.isCorrelation()) {
                 analysis.setCorrelationCoefficients(getCorrelationCoefficients(instances));
@@ -116,6 +117,18 @@ public class WekaClusterer extends WekaAnalyzer {
         } finally {
             analyzeLock.unlock();
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object[] classesOrClusters() throws Exception {
+        Object[] clusters = new Object[clusterer.numberOfClusters()];
+        for (double i = 0F; i < clusters.length; i++) {
+            clusters[(int) i] = i;
+        }
+        return clusters;
     }
 
     @Override

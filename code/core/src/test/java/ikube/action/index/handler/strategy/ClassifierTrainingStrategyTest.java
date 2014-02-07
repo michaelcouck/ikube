@@ -51,7 +51,7 @@ public class ClassifierTrainingStrategyTest extends AbstractTest {
         when(indexableTweets.isStored()).thenReturn(Boolean.TRUE);
         when(indexableTweets.isAnalyzed()).thenReturn(Boolean.TRUE);
         when(indexableTweets.getContent()).thenReturn(IConstants.CONTENT);
-        when(analyzer.size(any())).thenReturn(1);
+        when(analyzer.sizeForClassOrCluster(any())).thenReturn(1);
 
         IndexManager.addStringField(IConstants.LANGUAGE, Locale.ENGLISH.getLanguage(), indexableTweets, document);
         IndexManager.addStringField(IConstants.CLASSIFICATION, IConstants.POSITIVE, indexableTweets, document);

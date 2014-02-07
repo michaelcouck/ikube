@@ -221,7 +221,7 @@ public abstract class ADataGenerator implements IDataGenerator {
 	 * Default empty implementation.
 	 */
 	public void after() {
-		// Sub classes to implement 
+		// Sub classes to implement
 	}
 
 }

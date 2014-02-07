@@ -26,7 +26,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * @version 01.00
  * @since 18.11.13
  */
-public abstract class WekaAnalyzer implements IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>, Analysis<String, double[]>> {
+public abstract class WekaAnalyzer implements
+    IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>, Analysis<String, double[]>> {
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -70,18 +71,28 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<String, double[
      */
     @Override
     @SuppressWarnings("unchecked")
-    public int size(final Analysis<String, double[]> analysis) {
+    public int sizeForClassOrCluster(final Analysis<String, double[]> analysis) throws Exception {
         int sizeForClazz = 0;
         Enumeration<Instance> enumeration = instances.enumerateInstances();
         while (enumeration.hasMoreElements()) {
             Instance instance = enumeration.nextElement();
-            double classValue = instance.classValue();
-            Attribute classAttribute = instance.classAttribute();
-            String classAttributeValue = classAttribute.value((int) classValue);
-            if (logger.isDebugEnabled()) {
-                logger.info("Class value : " + classValue + ", " + classAttributeValue);
+            double classOrCluster = classOrCluster(instance);
+            // logger.info("Class or cluster : " + classOrCluster);
+            // In the case of a classifier, the class index is in fact the index of the attribute value,
+            // the attribute being the class attribute, for example the set {positive, negative}, the index 1
+            // would then be 'negative'. In the case of a clusterer the cluster index is in fact the number
+            // of the cluster that the instance is in, so if we have 6 clusters and the index is 4, then the
+            // instance is in cluster 4
+            String classOrClusterValue;
+            // If the class index is not set then it is a clusterer not a classifier
+            if (instance.classIndex() >= 0) {
+                double classValue = instance.classValue();
+                Attribute classAttribute = instance.classAttribute();
+                classOrClusterValue = classAttribute.value((int) classValue);
+            } else {
+                classOrClusterValue = Double.toString(classOrCluster);
             }
-            if (analysis.getClazz().equals(classAttributeValue)) {
+            if (analysis.getClazz().equals(classOrClusterValue)) {
                 sizeForClazz++;
             }
         }
@@ -112,7 +123,7 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<String, double[
      * falls into either the classification or cluster category, and suggests the classification or cluster of the instance.
      *
      * @param instance the instance to get the distribution for
-     * @return the probability distribution for the instance over the classes or clusters
+     * @return the probability distribution for the instance over the classesOrClusters or clusters
      * @throws Exception
      */
     abstract double[] distributionForInstance(final Instance instance) throws Exception;

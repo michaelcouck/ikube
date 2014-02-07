@@ -86,7 +86,8 @@
         <value>chmod 777 -R ${tomcat-one};</value>
 
         <!--<value>rm -rf ${tomcat-one-bin}/ikube;</value>-->
-        <value>rm -rf ${tomcat-one}/webapps/ikube*;</value>
+        <value>rm -rf ${tomcat-one}/webapps/ikube;</value>
+        <value>rm -rf ${tomcat-one}/webapps/ikube.war;</value>
 
         <value>rm -rf ${tomcat-one}/logs;</value>
         <value>rm -rf ${tomcat-one}/temp;</value>

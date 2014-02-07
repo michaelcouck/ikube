@@ -7,8 +7,11 @@ import org.apache.commons.lang.StringUtils;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.functions.SMO;
+import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
+
+import java.util.Enumeration;
 
 /**
  * This class is a classifier for sentiment essentially, i.e. positive/negative. This classifier is based on the {@link SMO} classification algorithm from
@@ -132,6 +135,21 @@ public class WekaClassifier extends WekaAnalyzer {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object[] classesOrClusters() {
+        Object[] classes = new Object[instances.numClasses()];
+        Attribute attribute = instances.classAttribute();
+        Enumeration enumeration = attribute.enumerateValues();
+        for (int i = 0; enumeration.hasMoreElements(); i++) {
+            Object value = enumeration.nextElement();
+            classes[i] = value;
+        }
+        return classes;
+    }
+
     @Override
     double classOrCluster(final Instance instance) throws Exception {
         Instance filteredInstance = filter(instance, filter);
@@ -168,7 +186,7 @@ public class WekaClassifier extends WekaAnalyzer {
             int numAttributes = instances.numAttributes();
             int numInstances = instances.numInstances();
             String expression = //
-                "Building classifier, classes : " + //
+                "Building classifier, classesOrClusters : " + //
                     numClasses + //
                     ", attributes : " + //
                     numAttributes + //
