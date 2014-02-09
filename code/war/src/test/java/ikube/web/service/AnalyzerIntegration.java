@@ -22,6 +22,13 @@ import java.net.URL;
 
 import static junit.framework.Assert.*;
 
+/**
+ * This is the base test class for the unit tests.
+ *
+ * @author Michael Couck
+ * @version 01.00
+ * @since 05-02-2014
+ */
 public class AnalyzerIntegration extends BaseTest {
 
     private Gson gson;
@@ -61,8 +68,9 @@ public class AnalyzerIntegration extends BaseTest {
     @Test
     public void build() throws Exception {
         train();
-        Context context = getContext();
-        String content = gson.toJson(context);
+
+        Analysis analysis = getAnalysis("bmw-browsers", null);
+        String content = gson.toJson(analysis);
         String url = getUrl(Analyzer.BUILD);
         execute(url, content, Analysis.class);
     }
@@ -100,10 +108,6 @@ public class AnalyzerIntegration extends BaseTest {
 
     @Test
     public void contexts() {
-    }
-
-    @Test
-    public void newLineToLineBreak() {
     }
 
     private <T> T execute(final String url, final String content, final Class<T> type) throws Exception {

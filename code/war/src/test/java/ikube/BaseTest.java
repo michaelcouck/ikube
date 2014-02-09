@@ -20,7 +20,7 @@ import java.util.List;
  *
  * @author Michael Couck
  * @version 01.00
- * @since 21.11.12
+ * @since 21-11-2012
  */
 @SuppressWarnings("deprecation")
 public abstract class BaseTest {
@@ -29,8 +29,8 @@ public abstract class BaseTest {
 
     public static final String SERVICE = "/service";
 
-    protected static int SERVER_PORT = 8080;
-    protected static String LOCALHOST = "localhost";
+    protected static int SERVER_PORT = 80;
+    protected static String LOCALHOST = "ikube.be";
     protected static String REST_PASSWORD = "user";
     protected static String REST_USER_NAME = "user";
     /**

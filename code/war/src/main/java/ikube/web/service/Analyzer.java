@@ -26,7 +26,7 @@ import java.util.Map;
  *
  * @author Michael couck
  * @version 01.00
- * @since 02.07.13
+ * @since 02-07-2013
  */
 @Component
 @Path(Analyzer.ANALYZER)
@@ -176,15 +176,6 @@ public class Analyzer extends Resource {
         Map<String, Context> contexts = analyticsService.getContexts();
         String[] names = contexts.keySet().toArray(new String[contexts.size()]);
         return buildJsonResponse(names);
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    private String newLineToLineBreak(final Object object) {
-        if (object != null && String.class.isAssignableFrom(object.getClass())) {
-            String result = StringUtils.replace(object.toString(), "\n", "<br>");
-            return StringUtils.replace(result, "\r", "<br>");
-        }
-        return null;
     }
 
 }

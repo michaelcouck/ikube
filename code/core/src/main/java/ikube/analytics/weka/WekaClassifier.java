@@ -63,6 +63,7 @@ public class WekaClassifier extends WekaAnalyzer {
                     // As soon as we are finished training with the data, we can
                     // release the memory of all the training instances
                     if (instances.numInstances() >= context.getMaxTraining()) {
+                        logger.info("Deleting instances : " + instances.numInstances());
                         instances.delete();
                     }
                     analyzeLock.unlock();

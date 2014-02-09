@@ -14,16 +14,23 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/**
+ * @author Michael couck
+ * @version 01.00
+ * @since 02-07-2013
+ */
 public class AnalyzerTest extends BaseTest {
 
-	/** Class under test */
-	private Analyzer analyzer;
+    /**
+     * Class under test
+     */
+    private Analyzer analyzer;
 
-	@Before
-	@SuppressWarnings("unchecked")
-	public void before() throws Exception {
-		Analysis<?, ?> analysis = mock(Analysis.class);
-		analyzer = mock(Analyzer.class);
+    @Before
+    @SuppressWarnings("unchecked")
+    public void before() throws Exception {
+        Analysis<?, ?> analysis = mock(Analysis.class);
+        analyzer = mock(Analyzer.class);
         IAnalyticsService analyticsService = Mockito.mock(IAnalyticsService.class);
 
         when(analysis.getAlgorithmOutput()).thenReturn("output");
@@ -31,13 +38,12 @@ public class AnalyzerTest extends BaseTest {
         when(analyzer.unmarshall(any(Class.class), any(HttpServletRequest.class))).thenReturn(analysis);
         when(analyticsService.analyze(any(Analysis.class))).thenReturn(analysis);
 
-		Deencapsulation.setField(analyzer, analyticsService);
-	}
+        Deencapsulation.setField(analyzer, analyticsService);
+    }
 
-	@Test
-	public void analyze() {
-		analyzer.analyze(null);
-		Mockito.verify(analyzer, Mockito.atLeastOnce()).buildJsonResponse(any());
-	}
-
+    @Test
+    public void analyze() {
+        analyzer.analyze(null);
+        Mockito.verify(analyzer, Mockito.atLeastOnce()).buildJsonResponse(any());
+    }
 }

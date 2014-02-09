@@ -65,7 +65,9 @@ public class ClassifierTrainingStrategy extends AStrategy {
         this.trained.put(clazz, trained);
         try {
             classifier.train(analysis);
-            logger.info("Training : " + clazz + ", language : " + this.language + ", class size : " + classSize);
+            if (classSize % 10 == 0) {
+                logger.info("Training : " + clazz + ", language : " + this.language + ", class size : " + classSize);
+            }
             if (classSize % 100 == 0) {
                 classifier.build(context);
             }

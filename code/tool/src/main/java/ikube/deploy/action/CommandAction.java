@@ -29,10 +29,12 @@ public class CommandAction extends Action {
 					try {
 						CustomTask sampleTask = new ExecCommand(command);
 						Result result = sshExec.exec(sampleTask);
-                        success = result.isSuccess;
-                        message = result.sysout;
-                        error = result.error_msg;
-                        returnCode = result.rc;
+                        if (result != null) {
+                            success = result.isSuccess;
+                            message = result.sysout;
+                            error = result.error_msg;
+                            returnCode = result.rc;
+                        }
 					} catch (final Exception e) {
 						handleException("Exception executing command on server : " + command + ", server : " + server.getIp(), e);
 					} finally {

@@ -30,13 +30,13 @@ public final class Ikube {
 
     public static void main(final String[] args) {
         if (args[0].equals("start")) {
-            startServer();
+            startServer(Integer.parseInt(args[1]));
         } else if (args[0].equals("stop")) {
             stopServer();
         }
     }
 
-    private static void startServer() {
+    private static void startServer(final int port) {
         try {
             if (SERVER.isRunning() || SERVER.isStarted() || SERVER.isStarting()) {
                 LOGGER.info("Server running : " + SERVER.isRunning() + ", " + SERVER.isStarted() + ", " + SERVER.isStarting());
@@ -44,7 +44,7 @@ public final class Ikube {
             }
             String ip = InetAddress.getLocalHost().getHostAddress();
             Connector connector = new SelectChannelConnector();
-            connector.setPort(8080);
+            connector.setPort(port);
             connector.setHost(ip);
             SERVER.addConnector(connector);
             LOGGER.info("Got connector : " + connector);

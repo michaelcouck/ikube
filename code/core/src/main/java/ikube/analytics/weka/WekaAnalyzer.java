@@ -192,7 +192,7 @@ public abstract class WekaAnalyzer implements
      * @param instances the instances to persist to a file
      */
     void persist(final Context context, final Instances instances) {
-        if (instances.numInstances() == 0) {
+        if (instances.numInstances() < 10) {
             return;
         }
         double duration = Timer.execute(new Timer.Timed() {
@@ -200,8 +200,8 @@ public abstract class WekaAnalyzer implements
             public void execute() {
                 File file = getDataFile(context);
                 if (file != null) {
-                    logger.info("Persisting data : " + file);
                     String filePath = FileUtilities.cleanFilePath(file.getAbsolutePath());
+                    logger.info("Persisting data : " + instances.numInstances() + ", to file : " + filePath);
                     WekaToolkit.writeToArff(instances, filePath);
                 }
             }
