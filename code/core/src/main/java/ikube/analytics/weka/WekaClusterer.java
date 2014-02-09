@@ -84,9 +84,6 @@ public class WekaClusterer extends WekaAnalyzer {
      */
     @Override
     public Analysis<String, double[]> analyze(final Analysis<String, double[]> analysis) throws Exception {
-        if (analyzeLock.isLocked()) {
-            return analysis;
-        }
         try {
             analyzeLock.lock();
             // Create the instance from the data
@@ -124,23 +121,38 @@ public class WekaClusterer extends WekaAnalyzer {
      */
     @Override
     public Object[] classesOrClusters() throws Exception {
-        Object[] clusters = new Object[clusterer.numberOfClusters()];
-        for (double i = 0F; i < clusters.length; i++) {
-            clusters[(int) i] = i;
+        try {
+            analyzeLock.lock();
+            Object[] clusters = new Object[clusterer.numberOfClusters()];
+            for (double i = 0F; i < clusters.length; i++) {
+                clusters[(int) i] = i;
+            }
+            return clusters;
+        } finally {
+            analyzeLock.unlock();
         }
-        return clusters;
     }
 
     @Override
     double classOrCluster(final Instance instance) throws Exception {
-        Instance filteredInstance = filter(instance, filter);
-        return clusterer.clusterInstance(filteredInstance);
+        try {
+            analyzeLock.lock();
+            Instance filteredInstance = filter(instance, filter);
+            return clusterer.clusterInstance(filteredInstance);
+        } finally {
+            analyzeLock.unlock();
+        }
     }
 
     @Override
     double[] distributionForInstance(final Instance instance) throws Exception {
-        Instance filteredInstance = filter(instance, filter);
-        return clusterer.distributionForInstance(filteredInstance);
+        try {
+            analyzeLock.lock();
+            Instance filteredInstance = filter(instance, filter);
+            return clusterer.distributionForInstance(filteredInstance);
+        } finally {
+            analyzeLock.unlock();
+        }
     }
 
     private void log() throws Exception {

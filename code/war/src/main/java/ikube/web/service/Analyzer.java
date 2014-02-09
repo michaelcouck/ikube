@@ -77,9 +77,9 @@ public class Analyzer extends Resource {
     @Path(Analyzer.BUILD)
     @SuppressWarnings("unchecked")
     public Response build(@Context final HttpServletRequest request) {
-        ikube.model.Context context = unmarshall(ikube.model.Context.class, request);
-        analyticsService.build(context);
-        return buildJsonResponse(context(context));
+        Analysis<?, ?> analysis = unmarshall(Analysis.class, request);
+        analyticsService.build(analysis);
+        return buildJsonResponse(context(analysis.getAnalyzer()));
     }
 
     /**
@@ -92,8 +92,12 @@ public class Analyzer extends Resource {
     public Response analyze(@Context final HttpServletRequest request) {
         Analysis<?, ?> analysis = unmarshall(Analysis.class, request);
         analysis = analyticsService.analyze(analysis);
-        String algorithmOutput = analysis.getAlgorithmOutput(); // newLineToLineBreak(analysis.getAlgorithmOutput());
-        analysis.setAlgorithmOutput(algorithmOutput);
+        if (analysis.isClassesAndClusters()) {
+            analyticsService.classesOrClusters(analysis);
+        }
+        if (analysis.isSizesForClassesAndClusters()) {
+            analyticsService.sizesForClassesOrClusters(analysis);
+        }
         return buildJsonResponse(analysis);
     }
 
@@ -126,12 +130,12 @@ public class Analyzer extends Resource {
     /**
      * This method will just create a new context and null out the analyzer because it is too big to send to the front end.
      *
-     * @param name the name of the analyzer in the system, that is associated with the target context
+     * @param analyzerName the name of the analyzer in the system, that is associated with the target context
      * @return the context that was/is used to create the analyzer
      */
     @SuppressWarnings("unchecked")
-    private ikube.model.Context context(final String name) {
-        ikube.model.Context contextSystem = analyticsService.getContext(name);
+    private ikube.model.Context context(final String analyzerName) {
+        ikube.model.Context contextSystem = analyticsService.getContext(analyzerName);
         return context(contextSystem);
     }
 

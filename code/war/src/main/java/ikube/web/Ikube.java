@@ -2,10 +2,6 @@ package ikube.web;
 
 import ikube.IConstants;
 import ikube.toolkit.FileUtilities;
-
-import java.io.File;
-import java.net.InetAddress;
-
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.nio.SelectChannelConnector;
@@ -13,45 +9,70 @@ import org.mortbay.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.net.InetAddress;
+
 // import org.mortbay.jetty.Server;
 
 /**
  * This is the bootstrap class for stand alone. The libraries that are required are defined in the manifest of the core jar, and the
  * manifest points to the {@code /lib} folder directly under the jar file.
- * 
+ *
  * @author Michael Couck
- * @since 23.01.11
  * @version 01.00
+ * @since 23-01-2011
  */
 public final class Ikube {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(Ikube.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Ikube.class);
 
-	public static void main(final String[] args) {
-		startServer();
-	}
+    static Server SERVER = new Server();
 
-	private static final void startServer() {
-		try {
-			String ip = InetAddress.getLocalHost().getHostAddress();
-			Server server = new Server();
-			Connector connector = new SelectChannelConnector();
-			connector.setPort(8080);
-			connector.setHost(ip);
-			server.addConnector(connector);
+    public static void main(final String[] args) {
+        if (args[0].equals("start")) {
+            startServer();
+        } else if (args[0].equals("stop")) {
+            stopServer();
+        }
+    }
 
-			WebAppContext webAppContext = new WebAppContext();
-			webAppContext.setContextPath(IConstants.SEP + IConstants.IKUBE);
-			// This is path to .war OR TO expanded, existing webapp; WILL FIND web.xml and parse it
-			File warFile = FileUtilities.findFileRecursively(new File("."), "ikube.war");
-			webAppContext.setWar(warFile.getAbsolutePath());
-			server.setHandler(webAppContext);
-			server.setStopAtShutdown(true);
+    private static void startServer() {
+        try {
+            if (SERVER.isRunning() || SERVER.isStarted() || SERVER.isStarting()) {
+                LOGGER.info("Server running : " + SERVER.isRunning() + ", " + SERVER.isStarted() + ", " + SERVER.isStarting());
+                return;
+            }
+            String ip = InetAddress.getLocalHost().getHostAddress();
+            Connector connector = new SelectChannelConnector();
+            connector.setPort(8080);
+            connector.setHost(ip);
+            SERVER.addConnector(connector);
+            LOGGER.info("Got connector : " + connector);
 
-			server.start();
-		} catch (Exception e) {
-			LOGGER.error("Exception starting embedded server : ", e);
-		}
-	}
+            WebAppContext webAppContext = new WebAppContext();
+            webAppContext.setContextPath(IConstants.SEP + IConstants.IKUBE);
+            // This is path to .war OR TO expanded, existing webapp; WILL FIND web.xml and parse it
+            File warFile = FileUtilities.findFileRecursively(new File("."), "ikube\\.war");
+            LOGGER.info("War file : " + warFile + ", " + webAppContext);
+            webAppContext.setWar(warFile.getAbsolutePath());
+            SERVER.setHandler(webAppContext);
+            SERVER.setStopAtShutdown(true);
+
+            SERVER.start();
+            LOGGER.info("Started server : " + SERVER);
+        } catch (final Exception e) {
+            LOGGER.error("Exception starting embedded server : ", e);
+        }
+    }
+
+    private static void stopServer() {
+        try {
+            SERVER.stop();
+            SERVER.destroy();
+            LOGGER.info("Stopped server : ");
+        } catch (final Exception e) {
+            LOGGER.error("Exception stopping embedded server : ", e);
+        }
+    }
 
 }

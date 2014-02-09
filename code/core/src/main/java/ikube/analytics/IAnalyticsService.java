@@ -16,7 +16,7 @@ public interface IAnalyticsService<I, O, C> {
 
     IAnalyzer<I, O, C> train(final Analysis<I, O> analysis);
 
-    IAnalyzer<I, O, C> build(final Context context);
+    IAnalyzer<I, O, C> build(final Analysis<I, O> analysis);
 
     Analysis<I, O> analyze(final Analysis<I, O> analysis);
 
@@ -27,5 +27,9 @@ public interface IAnalyticsService<I, O, C> {
     Context getContext(final String analyzerName);
 
     Map<String, Context> getContexts();
+
+    Analysis classesOrClusters(final Analysis<I, O> analysis);
+
+    Analysis<I, O> sizesForClassesOrClusters(final Analysis<I, O> analysis);
 
 }

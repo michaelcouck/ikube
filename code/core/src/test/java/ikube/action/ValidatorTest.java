@@ -109,7 +109,7 @@ public class ValidatorTest extends AbstractTest {
 		invocations += 2;
 		verify(validator, Mockito.times(invocations)).sendNotification(anyString(), anyString());
 
-		result = validator.execute(indexContext);
+		validator.execute(indexContext);
 		// There should be another mail sent
 		invocations += 2;
 		verify(validator, Mockito.times(invocations)).sendNotification(anyString(), anyString());

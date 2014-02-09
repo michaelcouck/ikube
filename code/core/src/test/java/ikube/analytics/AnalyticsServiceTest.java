@@ -38,7 +38,7 @@ public class AnalyticsServiceTest extends AbstractTest {
         }
     }
 
-    private Analysis analysis;
+    private Analysis<?, ?> analysis;
     private IAnalyzer analyzer;
     private AnalyticsService analyticsService;
 
@@ -107,6 +107,21 @@ public class AnalyticsServiceTest extends AbstractTest {
     public void getAnalyzers() throws Exception {
         Map analyzers = analyticsService.getAnalyzers();
         assertNotNull(analyzers);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void classesOrClusters() throws Exception {
+        analyticsService.classesOrClusters(analysis);
+        verify(analysis, atLeastOnce()).setClassesOrClusters(any(Object[].class));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void sizesForClassesOrClusters() {
+        when(analysis.getClassesOrClusters()).thenReturn(new Object[]{IConstants.POSITIVE, IConstants.NEGATIVE});
+        analyticsService.sizesForClassesOrClusters(analysis);
+        verify(analysis, atLeastOnce()).setSizesForClassesOrClusters(any(int[].class));
     }
 
 }

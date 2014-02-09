@@ -4,8 +4,6 @@ import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.Timer;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 
@@ -22,8 +20,6 @@ import java.util.Map;
  * @since 10.04.13
  */
 public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, BeanPostProcessor {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AnalyticsService.class);
 
     private Map<String, Context> contexts = new HashMap<>();
     private Map<String, IAnalyzer> analyzers = new HashMap<>();
@@ -47,7 +43,6 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Be
             analyzers.put(context.getName(), analyzer);
             return analyzer;
         } catch (final Exception e) {
-            LOGGER.error("Exception creating analyzer : " + context.getName(), e);
             throw new RuntimeException("Exception creating analyzer : " + context.getName(), e);
         }
     }
@@ -59,7 +54,6 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Be
         try {
             analyzer.train((I) analysis);
         } catch (final Exception e) {
-            LOGGER.error(null, e);
             throw new RuntimeException("Exception training analyzer : " + analysis, e);
         }
         return analyzer;
@@ -67,12 +61,12 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Be
 
     @Override
     @SuppressWarnings("unchecked")
-    public IAnalyzer<I, O, C> build(final Context context) {
-        final IAnalyzer<I, O, C> analyzer = getAnalyzer(context.getName());
+    public IAnalyzer<I, O, C> build(final Analysis<I, O> analysis) {
+        Context context = getContext(analysis.getAnalyzer());
+        IAnalyzer<I, O, C> analyzer = getAnalyzer(analysis.getAnalyzer());
         try {
             analyzer.build(context);
         } catch (final Exception e) {
-            LOGGER.error(null, e);
             throw new RuntimeException("Exception building analyzer : " + context.getName(), e);
         }
         return analyzer;
@@ -96,6 +90,38 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Be
         analysis.setDuration(duration);
         analysis.setTimestamp(new Timestamp(System.currentTimeMillis()));
         return analysis;
+    }
+
+    public Analysis classesOrClusters(final Analysis<I, O> analysis) {
+        try {
+            IAnalyzer analyzer = getAnalyzer(analysis.getAnalyzer());
+            Object[] classesOrClusters = analyzer.classesOrClusters();
+            analysis.setClassesOrClusters(classesOrClusters);
+            return analysis;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public Analysis<I, O> sizesForClassesOrClusters(final Analysis<I, O> analysis) {
+        try {
+            String clazz = analysis.getClazz();
+            classesOrClusters(analysis);
+            Object[] classesOrClusters = analysis.getClassesOrClusters();
+            int[] sizesForClassesOrClusters = new int[analysis.getClassesOrClusters().length];
+            IAnalyzer analyzer = getAnalyzer(analysis.getAnalyzer());
+            for (int i = 0; i < classesOrClusters.length; i++) {
+                analysis.setClazz(classesOrClusters[i].toString());
+                int sizeForClass = analyzer.sizeForClassOrCluster(analysis);
+                sizesForClassesOrClusters[i] = sizeForClass;
+            }
+            analysis.setSizesForClassesOrClusters(sizesForClassesOrClusters);
+            analysis.setClazz(clazz);
+            return analysis;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -130,9 +156,9 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Be
     }
 
     @SuppressWarnings("unchecked")
-    IAnalyzer<I, O, C> getAnalyzer(final String name) {
+    IAnalyzer<I, O, C> getAnalyzer(final String analyzerName) {
         Map<String, IAnalyzer> analyzers = getAnalyzers();
-        IAnalyzer<?, ?, ?> analyzer = analyzers.get(name);
+        IAnalyzer<?, ?, ?> analyzer = analyzers.get(analyzerName);
         return (IAnalyzer<I, O, C>) analyzer;
     }
 

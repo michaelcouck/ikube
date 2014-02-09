@@ -45,7 +45,7 @@ public abstract class WekaAnalyzer implements
             analyzeLock.lock();
             filter = (Filter) context.getFilter();
             instances = instances(context);
-            instances.setRelationName("training_data");
+            instances.setRelationName("instances");
             Object algorithm = context.getAlgorithm();
             if (OptionHandler.class.isAssignableFrom(algorithm.getClass())) {
                 if (context.getOptions() != null) {
@@ -72,31 +72,36 @@ public abstract class WekaAnalyzer implements
     @Override
     @SuppressWarnings("unchecked")
     public int sizeForClassOrCluster(final Analysis<String, double[]> analysis) throws Exception {
-        int sizeForClazz = 0;
-        Enumeration<Instance> enumeration = instances.enumerateInstances();
-        while (enumeration.hasMoreElements()) {
-            Instance instance = enumeration.nextElement();
-            double classOrCluster = classOrCluster(instance);
-            // logger.info("Class or cluster : " + classOrCluster);
-            // In the case of a classifier, the class index is in fact the index of the attribute value,
-            // the attribute being the class attribute, for example the set {positive, negative}, the index 1
-            // would then be 'negative'. In the case of a clusterer the cluster index is in fact the number
-            // of the cluster that the instance is in, so if we have 6 clusters and the index is 4, then the
-            // instance is in cluster 4
-            String classOrClusterValue;
-            // If the class index is not set then it is a clusterer not a classifier
-            if (instance.classIndex() >= 0) {
-                double classValue = instance.classValue();
-                Attribute classAttribute = instance.classAttribute();
-                classOrClusterValue = classAttribute.value((int) classValue);
-            } else {
-                classOrClusterValue = Double.toString(classOrCluster);
+        try {
+            analyzeLock.lock();
+            int sizeForClazz = 0;
+            Enumeration<Instance> enumeration = instances.enumerateInstances();
+            while (enumeration.hasMoreElements()) {
+                Instance instance = enumeration.nextElement();
+                double classOrCluster = classOrCluster(instance);
+                // logger.info("Class or cluster : " + classOrCluster);
+                // In the case of a classifier, the class index is in fact the index of the attribute value,
+                // the attribute being the class attribute, for example the set {positive, negative}, the index 1
+                // would then be 'negative'. In the case of a clusterer the cluster index is in fact the number
+                // of the cluster that the instance is in, so if we have 6 clusters and the index is 4, then the
+                // instance is in cluster 4
+                String classOrClusterValue;
+                // If the class index is not set then it is a clusterer not a classifier
+                if (instance.classIndex() >= 0) {
+                    double classValue = instance.classValue();
+                    Attribute classAttribute = instance.classAttribute();
+                    classOrClusterValue = classAttribute.value((int) classValue);
+                } else {
+                    classOrClusterValue = Double.toString(classOrCluster);
+                }
+                if (analysis.getClazz().equals(classOrClusterValue)) {
+                    sizeForClazz++;
+                }
             }
-            if (analysis.getClazz().equals(classOrClusterValue)) {
-                sizeForClazz++;
-            }
+            return sizeForClazz;
+        } finally {
+            analyzeLock.unlock();
         }
-        return sizeForClazz;
     }
 
     /**
@@ -104,7 +109,12 @@ public abstract class WekaAnalyzer implements
      */
     @Override
     public void destroy(final Context context) throws Exception {
-        instances.delete();
+        try {
+            analyzeLock.lock();
+            instances.delete();
+        } finally {
+            analyzeLock.unlock();
+        }
     }
 
     /**
@@ -182,6 +192,9 @@ public abstract class WekaAnalyzer implements
      * @param instances the instances to persist to a file
      */
     void persist(final Context context, final Instances instances) {
+        if (instances.numInstances() == 0) {
+            return;
+        }
         double duration = Timer.execute(new Timer.Timed() {
             @Override
             public void execute() {
@@ -305,26 +318,31 @@ public abstract class WekaAnalyzer implements
      * @throws Exception
      */
     double[] getCorrelationCoefficients(final Instances instances) throws Exception {
-        double[] correlationCoefficients = new double[instances.numInstances()];
-        Instance one = null;
-        for (int i = 0; i < instances.numInstances(); i++) {
-            Instance two = instances.instance(i);
-            if (one != null) {
-                double[] d1 = distributionForInstance(one);
-                double[] d2 = distributionForInstance(two);
-                double correlationCoefficient = Utils.correlation(d1, d2, d1.length);
-                if (logger.isDebugEnabled()) {
-                    logger.info("Vector one : " + Arrays.toString(d1));
-                    logger.info("Vector two : " + Arrays.toString(d2));
-                    logger.info("Correlation : " + correlationCoefficient);
+        try {
+            analyzeLock.lock();
+            double[] correlationCoefficients = new double[instances.numInstances()];
+            Instance one = null;
+            for (int i = 0; i < instances.numInstances(); i++) {
+                Instance two = instances.instance(i);
+                if (one != null) {
+                    double[] d1 = distributionForInstance(one);
+                    double[] d2 = distributionForInstance(two);
+                    double correlationCoefficient = Utils.correlation(d1, d2, d1.length);
+                    if (logger.isDebugEnabled()) {
+                        logger.info("Vector one : " + Arrays.toString(d1));
+                        logger.info("Vector two : " + Arrays.toString(d2));
+                        logger.info("Correlation : " + correlationCoefficient);
+                    }
+                    correlationCoefficients[i] = correlationCoefficient;
+                } else {
+                    correlationCoefficients[i] = 1.0;
                 }
-                correlationCoefficients[i] = correlationCoefficient;
-            } else {
-                correlationCoefficients[i] = 1.0;
+                one = two;
             }
-            one = two;
+            return correlationCoefficients;
+        } finally {
+            analyzeLock.unlock();
         }
-        return correlationCoefficients;
     }
 
     /**
@@ -337,13 +355,18 @@ public abstract class WekaAnalyzer implements
      */
     @SuppressWarnings("unchecked")
     double[][] getDistributionForInstances(final Instances instances) throws Exception {
-        double[][] distributionForInstances = new double[instances.numInstances()][];
-        for (int i = 0; i < instances.numInstances(); i++) {
-            Instance instance = instances.instance(i);
-            double[] distributionForInstance = distributionForInstance(instance);
-            distributionForInstances[i] = distributionForInstance;
+        try {
+            analyzeLock.lock();
+            double[][] distributionForInstances = new double[instances.numInstances()][];
+            for (int i = 0; i < instances.numInstances(); i++) {
+                Instance instance = instances.instance(i);
+                double[] distributionForInstance = distributionForInstance(instance);
+                distributionForInstances[i] = distributionForInstance;
+            }
+            return distributionForInstances;
+        } finally {
+            analyzeLock.unlock();
         }
-        return distributionForInstances;
     }
 
 }

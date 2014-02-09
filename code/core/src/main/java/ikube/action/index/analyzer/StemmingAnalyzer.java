@@ -25,7 +25,7 @@ import java.io.Reader;
  *
  * @author Michael Couck
  * @version 01.00
- * @since 29.10.12
+ * @since 29-10-2012
  */
 public final class StemmingAnalyzer extends Analyzer {
 
@@ -52,7 +52,7 @@ public final class StemmingAnalyzer extends Analyzer {
     }
 
     @SuppressWarnings({"unchecked"})
-    private final CharArraySet getStopWords() {
+    private CharArraySet getStopWords() {
         CharArraySet stopWords = new CharArraySet(IConstants.LUCENE_VERSION, 10, Boolean.TRUE);
         stopWords.addAll(GreekAnalyzer.getDefaultStopSet());
         stopWords.addAll(CzechAnalyzer.getDefaultStopSet());

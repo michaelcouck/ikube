@@ -58,11 +58,13 @@ public class Analysis<Input, Output> extends Persistable {
      * The size of each class or cluster in the classifier or clusterer.
      */
     @Transient
-    private int[] sizeForClassesOrClusters;
+    private int[] sizesForClassesOrClusters;
 
     private double duration;
     private boolean correlation;
     private boolean distribution;
+    private boolean classesAndClusters;
+    private boolean sizesForClassesAndClusters;
 
     private Exception exception;
 
@@ -130,12 +132,12 @@ public class Analysis<Input, Output> extends Persistable {
         this.classesOrClusters = classesOrClusters;
     }
 
-    public int[] getSizeForClassesOrClusters() {
-        return sizeForClassesOrClusters;
+    public int[] getSizesForClassesOrClusters() {
+        return sizesForClassesOrClusters;
     }
 
-    public void setSizeForClassesOrClusters(int[] sizeForClassesOrClusters) {
-        this.sizeForClassesOrClusters = sizeForClassesOrClusters;
+    public void setSizesForClassesOrClusters(int[] sizesForClassesOrClusters) {
+        this.sizesForClassesOrClusters = sizesForClassesOrClusters;
     }
 
     public double getDuration() {
@@ -160,6 +162,22 @@ public class Analysis<Input, Output> extends Persistable {
 
     public void setDistribution(boolean distribution) {
         this.distribution = distribution;
+    }
+
+    public boolean isClassesAndClusters() {
+        return classesAndClusters;
+    }
+
+    public void setClassesAndClusters(boolean classesAndClusters) {
+        this.classesAndClusters = classesAndClusters;
+    }
+
+    public boolean isSizesForClassesAndClusters() {
+        return sizesForClassesAndClusters;
+    }
+
+    public void setSizesForClassesAndClusters(boolean sizesForClassesAndClusters) {
+        this.sizesForClassesAndClusters = sizesForClassesAndClusters;
     }
 
     public Exception getException() {

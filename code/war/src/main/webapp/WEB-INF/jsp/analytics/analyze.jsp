@@ -131,11 +131,29 @@
                                     placeholder="Analysis output..."
                                     readonly>
                             </div>
+                            <div class="note">Classes or clusters</div>
+                            <div class="input">
+                                <input
+                                    class="input"
+                                    type="text"
+                                    ng-model="analysis.classesOrClusters"
+                                    placeholder="Classes or clusters..."
+                                    readonly>
+                            </div>
+                            <div class="note">Sizes for classes or clusters</div>
+                            <div class="input">
+                                <input
+                                    class="input"
+                                    type="text"
+                                    ng-model="analysis.sizesForClassesOrClusters"
+                                    placeholder="Sizes for classes or clusters..."
+                                    readonly>
+                            </div>
                             <div class="note">This area is the analyzer algorithm output for the analysis</div>
                             <div class="input">
                                 <textarea
                                     placeholder="Analyzer algorithm output..."
-                                    rows="21"
+                                    rows="15"
                                     ng-model="analysis.algorithmOutput"
                                     title="The output from the analysis algorithm"
                                     readonly></textarea>

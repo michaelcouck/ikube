@@ -1,7 +1,10 @@
 package ikube.action;
 
 import ikube.model.IndexContext;
-import org.apache.lucene.index.*;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.MultiReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 
@@ -60,12 +63,12 @@ public class Reopen extends Action<IndexContext<?>, Boolean> {
         }
     }
 
-    void open(final IndexContext<?> indexContext) throws Exception {
+    /*void open(final IndexContext<?> indexContext) throws Exception {
         // This has a memory leak too, somewhere...
         new Open().execute(indexContext);
-    }
+    }*/
 
-    @SuppressWarnings("UnusedDeclaration")
+    /*@SuppressWarnings("UnusedDeclaration")
     void openNewReaders(final IndexContext<?> indexContext, final IndexSearcher oldIndexSearcher) throws IOException {
         // This has a memory leak n the FST class
         boolean hasNewReader = Boolean.FALSE;
@@ -93,6 +96,6 @@ public class Reopen extends Action<IndexContext<?>, Boolean> {
             indexContext.setMultiSearcher(indexSearcher);
             logger.info("Opening new searcher : " + indexContext.getMultiSearcher());
         }
-    }
+    }*/
 
 }

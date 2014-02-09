@@ -30,8 +30,12 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
         input: undefined,
         output: undefined,
         algorithmOutput: undefined,
+        classesOrClusters: undefined,
+        sizesForClassesOrClusters: undefined,
         correlation: true,
-        distribution: true
+        distribution: true,
+        classesAndClusters: true,
+        sizesForClassesAndClusters: true
     };
 
     $scope.context = {
@@ -73,31 +77,30 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
         var promise = $http.post(url, $scope.analysis);
         promise.success(function (data, status) {
             $scope.status = status;
-            var text = ['Trained analyzer : ', $scope.context.name, ', status : ', $scope.status];
+            var text = ['Trained analyzer : ', $scope.analysis.analyzer, ', status : ', $scope.status];
             notificationService.notify(text, '/ikube/assets/images/icons/green_tick.png', 5);
         });
         promise.error(function (data, status) {
             $scope.status = status;
-            var text = ['Failed to train analyzer : ', $scope.context.name, ', status : ', $scope.status];
+            var text = ['Failed to train analyzer : ', $scope.analysis.analyzer, ', status : ', $scope.status];
             notificationService.notify(text, '/ikube/assets/images/icons/red_cross.png', 15);
         });
     };
 
     $scope.doBuild = function () {
         var url = getServiceUrl('/ikube/service/analyzer/build');
-        var context = angular.copy($scope.context);
-        context.name = $scope.analysis.analyzer;
 
         $scope.status = undefined;
-        var promise = $http.post(url, context);
+        var promise = $http.post(url, $scope.analysis);
         promise.success(function (data, status) {
             $scope.status = status;
-            var text = ['Built analyzer : ', $scope.context.name, ', status : ', $scope.status];
+            $scope.context = data;
+            var text = ['Built analyzer : ', $scope.analysis.analyzer, ', status : ', $scope.status];
             notificationService.notify(text, '/ikube/assets/images/icons/green_tick.png', 5);
         });
         promise.error(function (data, status) {
             $scope.status = status;
-            var text = ['Failed to build analyzer : ', $scope.context.name, ', status : ', $scope.status];
+            var text = ['Failed to build analyzer : ', $scope.analysis.analyzer, ', status : ', $scope.status];
             notificationService.notify(text, '/ikube/assets/images/icons/red_cross.png', 15);
         });
     };

@@ -51,7 +51,7 @@ public class WekaClassifier extends WekaAnalyzer {
                     logger.info("Building classifier : " + instances.numInstances());
 
                     Instances filteredData = filter(instances, filter);
-                    filteredData.setRelationName("filtered_data");
+                    filteredData.setRelationName("filtered-instances");
                     classifier.buildClassifier(filteredData);
 
                     log(filteredData);
@@ -95,9 +95,6 @@ public class WekaClassifier extends WekaAnalyzer {
      */
     @Override
     public Analysis<String, double[]> analyze(final Analysis<String, double[]> analysis) throws Exception {
-        if (analyzeLock.isLocked()) {
-            return analysis;
-        }
         try {
             analyzeLock.lock();
             if (!StringUtils.isEmpty(analysis.getInput())) {
@@ -140,26 +137,47 @@ public class WekaClassifier extends WekaAnalyzer {
      */
     @Override
     public Object[] classesOrClusters() {
-        Object[] classes = new Object[instances.numClasses()];
-        Attribute attribute = instances.classAttribute();
-        Enumeration enumeration = attribute.enumerateValues();
-        for (int i = 0; enumeration.hasMoreElements(); i++) {
-            Object value = enumeration.nextElement();
-            classes[i] = value;
+        try {
+            analyzeLock.lock();
+            Object[] classes = new Object[instances.numClasses()];
+            Attribute attribute = instances.classAttribute();
+            Enumeration enumeration = attribute.enumerateValues();
+            for (int i = 0; enumeration.hasMoreElements(); i++) {
+                Object value = enumeration.nextElement();
+                classes[i] = value;
+            }
+            return classes;
+        } finally {
+            analyzeLock.unlock();
         }
-        return classes;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     double classOrCluster(final Instance instance) throws Exception {
-        Instance filteredInstance = filter(instance, filter);
-        return classifier.classifyInstance(filteredInstance);
+        try {
+            analyzeLock.lock();
+            Instance filteredInstance = filter(instance, filter);
+            return classifier.classifyInstance(filteredInstance);
+        } finally {
+            analyzeLock.unlock();
+        }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     double[] distributionForInstance(final Instance instance) throws Exception {
-        Instance filteredInstance = filter(instance, filter);
-        return classifier.distributionForInstance(filteredInstance);
+        try {
+            analyzeLock.lock();
+            Instance filteredInstance = filter(instance, filter);
+            return classifier.distributionForInstance(filteredInstance);
+        } finally {
+            analyzeLock.unlock();
+        }
     }
 
     private void evaluate(final Instances instances) throws Exception {

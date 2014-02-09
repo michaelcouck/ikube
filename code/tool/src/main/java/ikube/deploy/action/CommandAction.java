@@ -22,14 +22,22 @@ public class CommandAction extends Action {
 		try {
 			if (commands != null) {
 				for (final String command : commands) {
+                    boolean success = Boolean.FALSE;
+                    String message = null;
+                    String error = null;
+                    int returnCode = 0;
 					try {
-						logger.info("Executing command : " + command + ", on server : " + server.getIp());
 						CustomTask sampleTask = new ExecCommand(command);
 						Result result = sshExec.exec(sampleTask);
-						logger.info("Result of command : " + ToStringBuilder.reflectionToString(result));
-					} catch (Exception e) {
+                        success = result.isSuccess;
+                        message = result.sysout;
+                        error = result.error_msg;
+                        returnCode = result.rc;
+					} catch (final Exception e) {
 						handleException("Exception executing command on server : " + command + ", server : " + server.getIp(), e);
-					}
+					} finally {
+                        logger.info("Result of command : " + success + ", " + message + ", " + error + ", " + returnCode);
+                    }
 				}
 			}
 		} finally {

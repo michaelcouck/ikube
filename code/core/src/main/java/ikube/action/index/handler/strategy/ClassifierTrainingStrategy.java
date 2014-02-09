@@ -10,6 +10,9 @@ import ikube.model.Indexable;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static ikube.IConstants.CLASSIFICATION;
 
 /**
@@ -21,6 +24,7 @@ public class ClassifierTrainingStrategy extends AStrategy {
 
     private String language;
     private Context<?, ?, ?, ?> context;
+    private Map<String, Boolean> trained;
 
     public ClassifierTrainingStrategy() {
         this(null);
@@ -48,23 +52,30 @@ public class ClassifierTrainingStrategy extends AStrategy {
 
     @SuppressWarnings("unchecked")
     void train(final String clazz, final String content) throws Exception {
+        Boolean trained = this.trained.get(clazz);
+        if (trained != null && trained) {
+            return;
+        }
         IAnalyzer classifier = (IAnalyzer) context.getAnalyzer();
         Analysis<String, double[]> analysis = new Analysis<>();
         analysis.setClazz(clazz);
         analysis.setInput(content);
         int classSize = classifier.sizeForClassOrCluster(analysis);
-        if (classSize == 0 || classSize >= context.getMaxTraining()) {
-            return;
-        }
+        trained = classSize == 0 || classSize >= context.getMaxTraining();
+        this.trained.put(clazz, trained);
         try {
             classifier.train(analysis);
-            logger.info("Training : " + clazz);
+            logger.info("Training : " + clazz + ", language : " + this.language + ", class size : " + classSize);
             if (classSize % 100 == 0) {
                 classifier.build(context);
             }
         } catch (final Exception e) {
             logger.error("Exception building classifier : ", e);
         }
+    }
+
+    public void initialize() {
+        trained = new HashMap<>();
     }
 
     public void setLanguage(String language) {
