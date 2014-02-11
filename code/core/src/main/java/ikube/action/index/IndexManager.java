@@ -34,6 +34,7 @@ import java.util.*;
  * @since 21.11.10
  * @version 01.00
  */
+@SuppressWarnings("StringBufferReplaceableByString")
 public final class IndexManager {
 
 	private static final Logger LOGGER = Logger.getLogger(IndexManager.class);

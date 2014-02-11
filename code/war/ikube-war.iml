@@ -18,27 +18,8 @@
     <facet type="Spring" name="Spring">
       <configuration>
         <fileset id="fileset" name="Spring Application Context" removed="false">
-          <file>file://$MODULE_DIR$/ikube/common/spring-actions.xml</file>
-          <file>file://$MODULE_DIR$/ikube/analytics/spring-analytics.xml</file>
-          <file>file://$MODULE_DIR$/ikube/common/spring-aop.xml</file>
-          <file>file://$MODULE_DIR$/ikube/production/spring-auto.xml</file>
-          <file>file://$MODULE_DIR$/ikube/common/spring-beans.xml</file>
-          <file>file://$MODULE_DIR$/ikube/integration/spring-client.xml</file>
-          <file>file://$MODULE_DIR$/ikube/integration/spring-custom.xml</file>
-          <file>file://$MODULE_DIR$/ikube/production/spring-db2-jdbc.xml</file>
-          <file>file://$MODULE_DIR$/ikube/production/spring-desktop.xml</file>
-          <file>file://$MODULE_DIR$/ikube/production/spring-geo.xml</file>
-          <file>file://$MODULE_DIR$/ikube/integration/spring-geoname-csv.xml</file>
-          <file>file://$MODULE_DIR$/ikube/common/spring-h2-jdbc.xml</file>
-          <file>file://$MODULE_DIR$/ikube/production/spring-ikube.xml</file>
           <file>file://$MODULE_DIR$/src/main/webapp/WEB-INF/spring/spring-security.xml</file>
-          <file>file://$MODULE_DIR$/ikube/integration/spring-sites.xml</file>
-          <file>file://$MODULE_DIR$/ikube/production/spring-system.xml</file>
-          <file>file://$MODULE_DIR$/ikube/twitter/spring-twitter.xml</file>
-          <file>file://$MODULE_DIR$/ikube/common/spring-users.xml</file>
           <file>file://$MODULE_DIR$/src/main/webapp/WEB-INF/spring/spring-web.xml</file>
-          <file>file://$MODULE_DIR$/ikube/integration/spring-wiki.xml</file>
-          <file>file://$MODULE_DIR$/ikube/spring.xml</file>
         </fileset>
       </configuration>
     </facet>
@@ -51,6 +32,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />

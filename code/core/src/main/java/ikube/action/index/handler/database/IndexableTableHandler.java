@@ -9,7 +9,6 @@ import ikube.action.index.handler.IResourceProvider;
 import ikube.action.index.handler.IndexableHandler;
 import ikube.action.index.parse.IParser;
 import ikube.action.index.parse.ParserProvider;
-import ikube.cluster.IClusterManager;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
@@ -30,24 +29,21 @@ import java.util.List;
 import java.util.concurrent.ForkJoinTask;
 
 /**
- * This class performs the indexing of tables. It is the primary focus of Ikube. This class is essentially a database crawler, and is multi threaded. Because
- * Ikube is clusterable it means that there are two levels of threading, within this Jvm and within the cluster. The cluster synchronization is done using the
- * {@link IClusterManager}.
+ * This class performs the indexing of tables. It is the primary focus of Ikube. This class is essentially a database crawler, and is multi threaded.
  * <p/>
- * Tables are hierarchical, as such the configuration is also and the table handler will recursively call it's self to navigate the hierarchy. The operation is
- * as follows:
+ * Tables are hierarchical, as such the configuration is also. The operation is as follows:
  * <p/>
- * 1) Sql will be generated to select the top level table and sub tables with an inner join(to be changed to left outer perhaps)<br>
- * 2) Move to the first row<br>
- * 3) Set all the data from the sql query in the columns in the table objects<br>
- * 4) Add all the column data to the Lucene document for the current row in the category set<br>
+ * 1) Sql will be generated to select tables and sub tables with an inner join(to be changed to left outer perhaps)<br>
+ * 2) Move to the first row of the joined result set<br>
+ * 3) Set all the data from the sql query in the columns in the table objects for all tables including the sub tables<br>
+ * 4) Add all the column data to the Lucene document for the current row in the result set<br>
  * 5) Repeat until all records are exhausted<br>
  * <p/>
  * This allows arbitrarily complex data structures in databases to be indexed.
  *
  * @author Michael Couck
  * @version 01.00
- * @since 29.11.10
+ * @since 29-11-2010
  */
 public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
 
@@ -55,7 +51,10 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
      * {@inheritDoc}
      */
     @Override
-    public ForkJoinTask<?> handleIndexableForked(final IndexContext<?> indexContext, final IndexableTable indexableTable) throws Exception {
+    public ForkJoinTask<?> handleIndexableForked(
+            final IndexContext<?> indexContext,
+            final IndexableTable indexableTable)
+            throws Exception {
         IResourceProvider<ResultSet> resourceProvider = new TableResourceProvider(indexContext, indexableTable);
         return getRecursiveAction(indexContext, indexableTable, resourceProvider);
     }
@@ -64,7 +63,10 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
      * {@inheritDoc}
      */
     @Override
-    protected List<?> handleResource(final IndexContext<?> indexContext, final IndexableTable indexableTable, final Object resource) {
+    protected List<?> handleResource(
+            final IndexContext<?> indexContext,
+            final IndexableTable indexableTable,
+            final Object resource) {
         ResultSet resultSet = (ResultSet) resource;
         IContentProvider<IndexableColumn> contentProvider = new ColumnContentProvider();
         try {
@@ -76,13 +78,13 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
                     // Add the document to the index
                     resourceHandler.handleResource(indexContext, indexableTable, document, null);
                     ThreadUtilities.sleep(indexContext.getThrottle());
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     throw new RuntimeException("Indexing terminated : ", e);
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     handleException(indexableTable, e, "Exception indexing table : " + indexableTable.getName());
                 }
             } while (resultSet.next());
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             handleException(indexableTable, e, "Exception indexing table : " + indexableTable.getName());
         }
         DatabaseUtilities.closeAll(resultSet);
@@ -90,9 +92,13 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
     }
 
     @SuppressWarnings("rawtypes")
-    protected void handleRow(final IndexableTable indexableTable, final ResultSet resultSet, final Document currentDocument,
-                             final IContentProvider<IndexableColumn> contentProvider) throws Exception {
-        // We have results from the table and we are already on the first category
+    protected void handleRow(
+            final IndexableTable indexableTable,
+            final ResultSet resultSet,
+            final Document currentDocument,
+            final IContentProvider<IndexableColumn> contentProvider)
+            throws Exception {
+        // We have results from the table and we are already on the first result
         List<Indexable<?>> children = indexableTable.getChildren();
         // Set the column types and the data from the table in the column objects
         setColumnTypesAndData(children, resultSet);
@@ -122,8 +128,10 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
      * @param document  the document to add the data to using the field name specified in the column definition
      * @throws Exception
      */
-    protected void handleColumn(final IContentProvider<IndexableColumn> contentProvider, final IndexableColumn indexable, final Document document)
-        throws Exception {
+    protected void handleColumn(
+            final IContentProvider<IndexableColumn> contentProvider,
+            final IndexableColumn indexable, final Document document)
+            throws Exception {
         InputStream inputStream = null;
         OutputStream parsedOutputStream = null;
         ByteOutputStream byteOutputStream = null;
@@ -192,33 +200,30 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
         builder.append(idColumn.getContent());
 
         String id = builder.toString();
-        IndexManager.addStringField(IConstants.ID, id, indexableTable, document);
+        IndexManager.addStringField(IConstants.ID, id, idColumn, document);
     }
 
     /**
-     * This method sets the data from the table columns in the column objects as well as the type which is gotten from the category set emta data.
+     * This method sets the data from the table columns in the column objects as well as the type which is gotten from the result set meta data.
      *
      * @param children  the children indexables of the table object
-     * @param resultSet the category set for the table
+     * @param resultSet the result set for the table
      */
     protected void setColumnTypesAndData(final List<Indexable<?>> children, final ResultSet resultSet) {
         try {
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-            for (int i = 1, j = 0; i < resultSetMetaData.getColumnCount() && j < children.size(); i++) {
-                String columnName = resultSetMetaData.getColumnName(i);
-                Indexable<?> indexable = children.get(j);
-                if (columnName.equalsIgnoreCase(indexable.getName())) {
-                    if (IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
-                        IndexableColumn indexableColumn = (IndexableColumn) indexable;
-                        Object object = resultSet.getObject(i);
-                        int columnType = resultSetMetaData.getColumnType(i);
-                        indexableColumn.setColumnType(columnType);
-                        indexableColumn.setContent(object);
-                    }
-                    j++;
+            for (int i = 0; i < children.size(); i++) {
+                Indexable<?> indexable = children.get(i);
+                if (IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
+                    IndexableColumn indexableColumn = (IndexableColumn) indexable;
+                    String columnName = indexableColumn.getName();
+                    Object object = resultSet.getObject(columnName);
+                    int columnType = resultSetMetaData.getColumnType(i);
+                    indexableColumn.setContent(object);
+                    indexableColumn.setColumnType(columnType);
                 }
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }

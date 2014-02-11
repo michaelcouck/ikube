@@ -2,13 +2,12 @@ package ikube.action.index.handler.database;
 
 import ikube.AbstractTest;
 import ikube.mock.DatabaseUtilitiesMock;
+import ikube.mock.QueryBuilderMock;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
 import ikube.toolkit.DatabaseUtilities;
 import mockit.Deencapsulation;
-import mockit.Mock;
-import mockit.MockClass;
 import mockit.Mockit;
 import org.junit.After;
 import org.junit.Before;
@@ -21,7 +20,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
@@ -32,15 +30,6 @@ import static org.mockito.Mockito.*;
  * @since 03-02-2014
  */
 public class TableResourceProviderTest extends AbstractTest {
-
-    @SuppressWarnings("UnusedDeclaration")
-    @MockClass(realClass = QueryBuilder.class)
-    public static class QueryBuilderMock {
-        @Mock
-        protected static IndexableColumn getIdColumn(final List<Indexable<?>> indexableColumns) {
-            return (IndexableColumn) indexableColumns.get(0);
-        }
-    }
 
     @Before
     public void before() throws Exception {
