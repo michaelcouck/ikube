@@ -24,3 +24,12 @@ a:hover {
 /* line 24, base.css.scss */
 .container-fluid {
   overflow-x: hidden; }
+
+.trim-info {
+    max-width: 200px;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    position: relative;
+}

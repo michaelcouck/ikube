@@ -18,7 +18,9 @@
     <description>TODO</description>
 
     <context:property-placeholder
-        location="classpath:*/**/spring.properties,*/**/spring-local.properties"
+        location="
+            classpath:*/**/spring.properties,
+            */**/spring-local.properties"
         properties-ref="ikube.toolkit.PropertyConfigurer"/>
 
     <bean
@@ -85,7 +87,7 @@
     <util:list id="clean-commands">
         <value>chmod 777 -R ${tomcat-one};</value>
 
-        <!--<value>rm -rf ${tomcat-one-bin}/ikube;</value>-->
+        <value>rm -rf ${tomcat-one-bin}/ikube/common;</value>
         <value>rm -rf ${tomcat-one}/webapps/ikube;</value>
         <value>rm -rf ${tomcat-one}/webapps/ikube.war;</value>
 
@@ -93,7 +95,7 @@
         <value>rm -rf ${tomcat-one}/temp;</value>
         <value>rm -rf ${tomcat-one}/work/Catalina/localhost;</value>
 
-        <!--<value>mkdir -p ${tomcat-one-bin}/ikube;</value>-->
+        <value>mkdir -p ${tomcat-one-bin}/ikube/common;</value>
 
         <value>mkdir -p ${tomcat-one}/logs;</value>
         <value>mkdir -p ${tomcat-one}/temp;</value>
@@ -114,7 +116,7 @@
         <entry key="war/target/${ikube-war}" value="${tomcat-one-webapps}"/>
     </util:map>
     <util:map id="directories">
-        <!--<entry key="${resources-directory}/ikube" value="${tomcat-one-bin}"/>-->
+        <entry key="${resources-directory}/ikube/common" value="${tomcat-one-bin}/ikube"/>
         <!--<entry key="${resources-directory}/analytics" value="${tomcat-one-bin}/ikube"/>-->
         <!--<entry key="${resources-directory}/indexes/production" value="${tomcat-one-bin}/ikube"/>-->
         <!--<entry key="${resources-directory}/indexes/twitter" value="${tomcat-one-bin}/ikube"/>-->

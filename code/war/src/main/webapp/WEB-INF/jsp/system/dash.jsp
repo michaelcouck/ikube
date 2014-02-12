@@ -53,16 +53,17 @@
 					<li class="active">
 						<a href="#"><i class="icon-briefcase"></i>Jobs</a>
 					</li>
-					<li ng-repeat="action in actions">
-						<a href="#" title="Action, index, indexable being executed" ng-click="action.show = !action.show">
-							<i class="icon-play-circle"></i>
-							{{action.actionName}} : {{action.indexName}} : {{action.indexableName}} : {{action.server.address}}
-							<span 
-								class="pull-right badge" 
-								title="Documents per minute" 
-								ng-show="!!action.snapshot.docsPerMinute">{{action.snapshot.docsPerMinute}}</span>
-						</a>
-						<ul class="nav nav-list" style="margin-left: 10px; padding: 5px;" ng-show="action.show">
+					<li ng-repeat="action in actions" style="overflow-wrap: normal; flex-wrap: nowrap; text-wrap: none; word-wrap: normal; ">
+                        <a href="#" title="Action, index, indexable being executed" ng-click="action.show = !action.show">
+                            <i class="icon-play-circle"></i>
+                            <span class="trim-info">{{action.actionName}} : {{action.indexName}} : {{action.indexableName}} : {{action.server.ip}}</span>
+                            <span
+                                class="pull-right badge"
+                                title="Documents per minute"
+                                ng-show="!!action.snapshot.docsPerMinute">{{action.snapshot.docsPerMinute}}</span>
+                        </a>
+
+                        <ul class="nav nav-list" style="margin-left: 10px; padding: 5px;" ng-show="action.show">
 							<li><i class="icon-globe"></i>Server : {{action.server.address}}</li>
 							<li><i class="icon-time"></i>Start timestamp : {{action.startTime}}</li>
 							<li><i class="icon-th-list"></i>Index writer documents : {{action.snapshot.numDocsForIndexWriters}}</li>
@@ -86,19 +87,19 @@
 					<div class="tabbable black-box" style="margin-bottom: 18px;">
 						
 						<div class="tab-header">
-							Cluster statistics 
-							<span class="pull-right">
-								<span class="options" ng-controller="ServersController">
-									<div class="btn-group">
-										<a class="dropdown-toggle" data-toggle="dropdown">
-											<i class="icon-cog"></i>
-										</a>
-										<ul class="dropdown dropdown-menu black-box-dropdown dropdown-left" style="font-size: small;">
-											<li><a href="#" ng-click="refreshServers();"><i class="icon-refresh">&nbsp;</i>Refresh</a></li>
-										</ul>
-									</div>
+							Cluster statistics
+                            <div class="btn-group options pull-right" ng-controller="ServersController">
+                                <a class="dropdown-toggle" data-toggle="dropdown">
+                                    <i class="icon-cog"></i>
+                                </a>
+                                <ul class="dropdown dropdown-menu black-box-dropdown dropdown-left" style="font-size: small;">
+                                    <li><a href="#" ng-click="refreshServers();"><i class="icon-refresh">&nbsp;</i>Refresh</a></li>
+                                </ul>
+                            </div>
+							<!-- span class="pull-right">
+								<span class="options" >
 								</span>
-							</span>
+							</span -->
 						</div>
 						<ul class="nav nav-tabs">
 							<li class="active"><a href="#tab1" data-toggle="tab"><i class="icon-globe"></i>Indexing</a></li>
@@ -128,7 +129,7 @@
 												<div class="pull-left">
 													<label 
 														for="gtnDu" 
-														href="#" 
+														href="#"
 														class="button red" 
 														ng-click="
 															terminateThreads = false;

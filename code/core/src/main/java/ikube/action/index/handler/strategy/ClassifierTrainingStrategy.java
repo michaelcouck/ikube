@@ -12,19 +12,21 @@ import org.apache.lucene.document.Document;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static ikube.IConstants.CLASSIFICATION;
 
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 02.12.13
+ * @since 02-12-2013
  */
 public class ClassifierTrainingStrategy extends AStrategy {
 
     private String language;
     private Context<?, ?, ?, ?> context;
     private Map<String, Boolean> trained;
+    private ReentrantLock reentrantLock;
 
     public ClassifierTrainingStrategy() {
         this(null);
@@ -44,7 +46,7 @@ public class ClassifierTrainingStrategy extends AStrategy {
         String classification = document.get(CLASSIFICATION);
         String content = indexable.getContent() != null ? indexable.getContent().toString() : resource != null ? resource.toString() : null;
         if (language != null && this.language.equals(language) &&
-            !StringUtils.isEmpty(classification) && !StringUtils.isEmpty(StringUtils.stripToEmpty(content))) {
+                !StringUtils.isEmpty(classification) && !StringUtils.isEmpty(StringUtils.stripToEmpty(content))) {
             train(classification, content);
         }
         return super.aroundProcess(indexContext, indexable, document, resource);
@@ -56,28 +58,34 @@ public class ClassifierTrainingStrategy extends AStrategy {
         if (trained != null && trained) {
             return;
         }
-        IAnalyzer classifier = (IAnalyzer) context.getAnalyzer();
-        Analysis<String, double[]> analysis = new Analysis<>();
-        analysis.setClazz(clazz);
-        analysis.setInput(content);
-        int classSize = classifier.sizeForClassOrCluster(analysis);
-        trained = classSize == 0 || classSize >= context.getMaxTraining();
-        this.trained.put(clazz, trained);
         try {
-            classifier.train(analysis);
-            if (classSize % 10 == 0) {
-                logger.info("Training : " + clazz + ", language : " + this.language + ", class size : " + classSize);
+            reentrantLock.lock();
+            IAnalyzer classifier = (IAnalyzer) context.getAnalyzer();
+            Analysis<String, double[]> analysis = new Analysis<>();
+            analysis.setClazz(clazz);
+            analysis.setInput(content);
+            int classSize = classifier.sizeForClassOrCluster(analysis);
+            trained = classSize == 0 || classSize >= context.getMaxTraining();
+            this.trained.put(clazz, trained);
+            try {
+                classifier.train(analysis);
+                if (classSize % 10 == 0) {
+                    logger.info("Training : " + clazz + ", language : " + this.language + ", class size : " + classSize);
+                }
+                if (classSize % 250 == 0) {
+                    classifier.build(context);
+                }
+            } catch (final Exception e) {
+                logger.error("Exception building classifier : ", e);
             }
-            if (classSize % 100 == 0) {
-                classifier.build(context);
-            }
-        } catch (final Exception e) {
-            logger.error("Exception building classifier : ", e);
+        } finally {
+            reentrantLock.unlock();
         }
     }
 
     public void initialize() {
         trained = new HashMap<>();
+        reentrantLock = new ReentrantLock(Boolean.TRUE);
     }
 
     public void setLanguage(String language) {

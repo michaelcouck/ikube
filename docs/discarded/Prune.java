@@ -14,6 +14,7 @@ import java.util.List;
  * @version 01.00
  * @since 29.09.2011
  */
+@Deprecated
 public class Prune extends Action<IndexContext<?>, Boolean> {
 
     /**
@@ -21,7 +22,7 @@ public class Prune extends Action<IndexContext<?>, Boolean> {
      */
     @Override
     boolean internalExecute(final IndexContext<?> indexContext) {
-        String[] fieldsToSortOn = new String[]{"id"};
+        String[] fieldsToSortOn = new String[]{IConstants.ID};
         Boolean[] directionOfSort = new Boolean[]{true};
         delete(dataBase, ikube.model.Action.class, fieldsToSortOn, directionOfSort, IConstants.MAX_ACTIONS);
         delete(dataBase, ikube.model.Snapshot.class, fieldsToSortOn, directionOfSort, IConstants.MAX_SNAPSHOTS);
@@ -38,7 +39,7 @@ public class Prune extends Action<IndexContext<?>, Boolean> {
         int batchSize = (int) toRemain / 4;
         int count = dataBase.count(klass).intValue();
         while (count > toRemain) {
-            logger.debug("Count : " + count + ", " + toRemain + ", " + batchSize);
+            logger.info("Count : " + count + ", to remain : " + toRemain + ", batch size : " + batchSize);
             List<Persistable> entities = (List<Persistable>) dataBase.find(klass, fieldsToSortOn, directionOfSort, 0, batchSize);
             for (final Persistable persistable : entities) {
                 if (ikube.model.Action.class.isAssignableFrom(persistable.getClass())) {

@@ -12,14 +12,15 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 import java.util.Enumeration;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class is a classifier for sentiment essentially, i.e. positive/negative. This classifier is based on the {@link SMO} classification algorithm from
- * mWeka, which is a support vector classifier. This class is thread safe.
+ * Weka, which is a support vector classifier. This class is thread safe.
  *
  * @author Michael Couck
  * @version 01.00
- * @since 14.08.13
+ * @since 14-08-2013
  */
 public class WekaClassifier extends WekaAnalyzer {
 
@@ -97,7 +98,9 @@ public class WekaClassifier extends WekaAnalyzer {
     @Override
     public Analysis<String, double[]> analyze(final Analysis<String, double[]> analysis) throws Exception {
         try {
-            analyzeLock.lock();
+            if (!analyzeLock.tryLock(10, TimeUnit.MILLISECONDS)) {
+                return analysis;
+            }
             if (!StringUtils.isEmpty(analysis.getInput())) {
                 // Create the instance from the data
                 String input = analysis.getInput();
@@ -129,7 +132,9 @@ public class WekaClassifier extends WekaAnalyzer {
             logger.error("Exception classifying content : " + content, e);
             throw new RuntimeException(e);
         } finally {
-            analyzeLock.unlock();
+            if (analyzeLock.isHeldByCurrentThread()) {
+                analyzeLock.unlock();
+            }
         }
     }
 
@@ -205,14 +210,14 @@ public class WekaClassifier extends WekaAnalyzer {
             int numAttributes = instances.numAttributes();
             int numInstances = instances.numInstances();
             String expression = //
-                "Building classifier, classesOrClusters : " + //
-                    numClasses + //
-                    ", attributes : " + //
-                    numAttributes + //
-                    ", instances : " + //
-                    numInstances + //
-                    ", classifier :  " + //
-                    classifier.hashCode();
+                    "Building classifier, classesOrClusters : " + //
+                            numClasses + //
+                            ", attributes : " + //
+                            numAttributes + //
+                            ", instances : " + //
+                            numInstances + //
+                            ", classifier :  " + //
+                            classifier.hashCode();
             logger.debug(expression);
         }
     }

@@ -31,7 +31,7 @@
 		<ref bean="ikube.action.Backup" />
 		<!-- <ref bean="ikube.action.DiskFull" /> -->
 		<!--<ref bean="ikube.action.Validator" />-->
-		<ref bean="ikube.action.Prune" />
+		<!--<ref bean="ikube.action.Prune" />-->
 	</util:list>
 
 	<bean 
@@ -46,7 +46,7 @@
 			</util:list>
 		</property>
 	</bean>
-	<bean 
+	<!--<bean
 		id="ikube.action.Prune" 
 		class="ikube.action.Prune" 
 		property:ruleExpression="
@@ -57,7 +57,7 @@
 				<ref local="ikube.action.rule.IsIndexDelta" />
 			</util:list>
 		</property>
-	</bean>
+	</bean>-->
 	<bean 
 		id="ikube.action.Restore" 
 		class="ikube.action.Restore" 

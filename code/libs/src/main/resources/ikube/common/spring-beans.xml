@@ -227,6 +227,12 @@
         class="ikube.scheduling.schedule.IndexCommitSchedule"
         property:delay="180000"
         property:period="180000"/>
+    <bean
+        id="ikube.scheduling.schedule.PruneSchedule"
+        name="ikube.scheduling.schedule.PruneSchedule"
+        class="ikube.scheduling.schedule.PruneSchedule"
+        property:delay="300000"
+        property:period="300000"/>
 
     <!--
         This is the mailer that will send mail to targets when things go right, and wrong in fact. This

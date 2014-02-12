@@ -212,15 +212,18 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
     protected void setColumnTypesAndData(final List<Indexable<?>> children, final ResultSet resultSet) {
         try {
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-            for (int i = 0; i < children.size(); i++) {
+            for (int i = 0, j = 1; i < children.size(); i++) {
                 Indexable<?> indexable = children.get(i);
                 if (IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
                     IndexableColumn indexableColumn = (IndexableColumn) indexable;
                     String columnName = indexableColumn.getName();
-                    Object object = resultSet.getObject(columnName);
-                    int columnType = resultSetMetaData.getColumnType(i);
-                    indexableColumn.setContent(object);
-                    indexableColumn.setColumnType(columnType);
+                    if (columnName.equalsIgnoreCase(resultSetMetaData.getColumnName(j))) {
+                        Object object = resultSet.getObject(j);
+                        int columnType = resultSetMetaData.getColumnType(j);
+                        indexableColumn.setContent(object);
+                        indexableColumn.setColumnType(columnType);
+                        j++;
+                    }
                 }
             }
         } catch (final SQLException e) {
