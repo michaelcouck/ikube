@@ -166,7 +166,7 @@
 		</pluginManagement>
 		<plugins>
 			<!--
-				This plugin reads the properties from the buid.properties file and makes them all available
+				This plugin reads the properties from the build.properties file and makes them all available
 				to the rest of the Maven build process.
 			-->
 			<plugin>
@@ -216,7 +216,7 @@
 				<version>2.7.1</version>
 				<configuration>
 					<forkMode>once</forkMode>
-					<!-- Equivalent to -fae on the command line aparently. -->
+					<!-- Equivalent to -fae on the command line apparently. -->
 					<testFailureIgnore>true</testFailureIgnore>
 					<excludes>
 						<exclude>**/*Integration*.java</exclude>

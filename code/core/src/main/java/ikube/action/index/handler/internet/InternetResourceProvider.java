@@ -92,7 +92,9 @@ public class InternetResourceProvider extends WebCrawler implements IResourcePro
         boolean excluded = PATTERN.get().matcher(href).matches();
         boolean sameDomain = href.startsWith(INDEXABLE_INTERNET.get().getBaseUrl());
         boolean shouldVisit = !excluded && sameDomain;
-        logger.info("Visiting : " + shouldVisit + ", " + href);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Visiting : " + shouldVisit + ", " + href);
+        }
         return shouldVisit;
     }
 
