@@ -13,6 +13,7 @@ import java.io.OutputStream;
  * @version 01.00
  * @since 23-11-10
  */
+@Deprecated
 public class InternetContentProvider implements IContentProvider<IndexableInternet> {
 
     /**

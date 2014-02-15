@@ -22,7 +22,7 @@ import org.apache.lucene.document.Document;
 
 /**
  * @author Michael Couck
- * @since 21.06.13
+ * @since 21-06-2013
  * @version 01.00
  */
 public class InternetResourceHandler extends ResourceHandler<IndexableInternet> {
@@ -31,7 +31,11 @@ public class InternetResourceHandler extends ResourceHandler<IndexableInternet> 
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Document handleResource(final IndexContext<?> indexContext, final IndexableInternet indexable, final Document document, final Object resource)
+	public Document handleResource(
+            final IndexContext<?> indexContext,
+            final IndexableInternet indexable,
+            final Document document,
+            final Object resource)
 			throws Exception {
 		Url url = (Url) resource;
 		// Add the id field, which is the url in this case

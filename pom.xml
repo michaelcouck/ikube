@@ -1131,6 +1131,13 @@
             <type>jar</type>
             <scope>compile</scope>
 		</dependency>
+        <dependency>
+            <groupId>edu.uci.ics</groupId>
+            <artifactId>crawler4j</artifactId>
+            <version>3.5</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
 	</dependencies>
 
 	<repositories>

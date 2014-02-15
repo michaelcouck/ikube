@@ -182,6 +182,17 @@
     <orderEntry type="library" name="Maven: org.apache.lucene:lucene-queryparser:4.6.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.lucene:lucene-sandbox:4.6.0" level="project" />
     <orderEntry type="library" name="Maven: jakarta-regexp:jakarta-regexp:1.4" level="project" />
+    <orderEntry type="library" name="Maven: edu.uci.ics:crawler4j:3.5" level="project" />
+    <orderEntry type="library" name="Maven: com.sleepycat:je:4.0.92" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.tika:tika-parsers:1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.tika:tika-core:1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.james:apache-mime4j-core:0.7" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.james:apache-mime4j-dom:0.7" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.geronimo.specs:geronimo-stax-api_1.0_spec:1.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.ccil.cowan.tagsoup:tagsoup:1.2.1" level="project" />
+    <orderEntry type="library" name="Maven: asm:asm:3.1" level="project" />
+    <orderEntry type="library" name="Maven: com.drewnoakes:metadata-extractor:2.4.0-beta-1" level="project" />
+    <orderEntry type="library" name="Maven: de.l3s.boilerpipe:boilerpipe:1.1.0" level="project" />
   </component>
 </module>
 

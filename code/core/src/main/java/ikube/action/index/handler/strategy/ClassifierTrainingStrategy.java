@@ -24,6 +24,7 @@ import static ikube.IConstants.CLASSIFICATION;
 public class ClassifierTrainingStrategy extends AStrategy {
 
     private String language;
+    private int buildThreshold = 100;
     private Context<?, ?, ?, ?> context;
     private Map<String, Boolean> trained;
     private ReentrantLock reentrantLock;
@@ -72,8 +73,13 @@ public class ClassifierTrainingStrategy extends AStrategy {
                 if (classSize % 10 == 0) {
                     logger.info("Training : " + clazz + ", language : " + this.language + ", class size : " + classSize);
                 }
-                if (classSize % 250 == 0) {
+                if (buildThreshold == 0) {
+                    buildThreshold = 100;
+                }
+                if (classSize % buildThreshold == 0) {
+                    logger.info("Building : " + clazz + ", language : " + this.language + ", class size : " + classSize + ", build threshold : " + buildThreshold);
                     classifier.build(context);
+                    buildThreshold = classSize / 10;
                 }
             } catch (final Exception e) {
                 logger.error("Exception building classifier : ", e);
@@ -90,6 +96,10 @@ public class ClassifierTrainingStrategy extends AStrategy {
 
     public void setLanguage(String language) {
         this.language = language;
+    }
+
+    public void setBuildThreshold(int buildThreshold) {
+        this.buildThreshold = buildThreshold;
     }
 
     public void setContext(Context<?, ?, ?, ?> context) {

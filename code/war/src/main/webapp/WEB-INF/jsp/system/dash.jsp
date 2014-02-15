@@ -56,7 +56,8 @@
 					<li ng-repeat="action in actions" style="overflow-wrap: normal; flex-wrap: nowrap; text-wrap: none; word-wrap: normal; ">
                         <a href="#" title="Action, index, indexable being executed" ng-click="action.show = !action.show">
                             <i class="icon-play-circle"></i>
-                            <span class="trim-info">{{action.actionName}} : {{action.indexName}} : {{action.indexableName}} : {{action.server.ip}}</span>
+                            <%--class="trim-info"--%>
+                            <span>{{action.actionName}} : {{action.indexName}} : {{action.indexableName}} : {{action.server.ip}}</span>
                             <span
                                 class="pull-right badge"
                                 title="Documents per minute"
