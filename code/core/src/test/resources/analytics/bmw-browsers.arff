@@ -1,4 +1,4 @@
-@relation car-browsers
+@relation instances
 
 @attribute Dealership numeric
 @attribute Showroom numeric
@@ -10,7 +10,6 @@
 @attribute Purchase numeric
 
 @data
-
 1,0,0,0,0,0,0,0
 1,1,1,0,0,0,1,0
 1,0,0,0,0,0,0,0
