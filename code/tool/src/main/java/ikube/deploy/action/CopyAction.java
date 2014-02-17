@@ -14,6 +14,7 @@ public class CopyAction extends Action {
 
     @Override
     public boolean execute(final Server server) {
+        logger.info("Dot folder : " + FileUtilities.cleanFilePath(new File(".").getAbsolutePath()));
         SSHExec sshExec = getSshExec(server.getIp(), server.getUsername(), server.getPassword());
         try {
             if (files != null) {
