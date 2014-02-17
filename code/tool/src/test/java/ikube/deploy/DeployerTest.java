@@ -46,6 +46,8 @@ public class DeployerTest extends AbstractTest {
 
     @Before
     public void before() {
+        System.setProperty("username", "username");
+        System.setProperty("password", "password");
         Mockit.setUpMocks(CommandActionMock.class, CopyActionMock.class);
     }
 

@@ -104,6 +104,8 @@
     <orderEntry type="library" name="Maven: bouncycastle:bcprov-jdk16:140" level="project" />
     <orderEntry type="library" name="Maven: commons-httpclient:commons-httpclient:3.1" level="project" />
     <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpclient:4.2.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpcore:4.2.1" level="project" />
     <orderEntry type="library" name="Maven: org.nfunk:jep:2.4.1" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.0.1" level="project" />
     <orderEntry type="library" name="Maven: aspose:aspose.words:7.0.0" level="project" />
@@ -139,8 +141,6 @@
     <orderEntry type="library" name="Maven: org.bouncycastle:bcprov-jdk16:1.46" level="project" />
     <orderEntry type="library" name="Maven: de.schlichtherle.truezip:truezip-driver-tzp:7.7.1" level="project" />
     <orderEntry type="library" name="Maven: de.schlichtherle.truezip:truezip-driver-http:7.7.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpclient:4.2.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpcore:4.2.1" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jgit:org.eclipse.jgit:0.9.3" level="project" />
     <orderEntry type="library" name="Maven: cybozu:langdetect:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: jsonic:jsonic:1.2.4" level="project" />
