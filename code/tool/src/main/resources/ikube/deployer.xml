@@ -88,6 +88,7 @@
         <value>chmod 777 -R ${tomcat-one};</value>
 
         <value>rm -rf ${tomcat-one-bin}/ikube/common;</value>
+        <value>rm -rf ${tomcat-one-bin}/ikube/integration;</value>
         <value>rm -rf ${tomcat-one}/webapps/ikube;</value>
         <value>rm -rf ${tomcat-one}/webapps/ikube.war;</value>
 
@@ -96,6 +97,7 @@
         <value>rm -rf ${tomcat-one}/work/Catalina/localhost;</value>
 
         <value>mkdir -p ${tomcat-one-bin}/ikube/common;</value>
+        <value>mkdir -p ${tomcat-one-bin}/ikube/integration;</value>
 
         <value>mkdir -p ${tomcat-one}/logs;</value>
         <value>mkdir -p ${tomcat-one}/temp;</value>
@@ -117,6 +119,7 @@
     </util:map>
     <util:map id="directories">
         <entry key="${resources-directory}/ikube/common" value="${tomcat-one-bin}/ikube"/>
+        <entry key="${resources-directory}/indexes/integration" value="${tomcat-one-bin}/ikube"/>
         <!--<entry key="${resources-directory}/analytics" value="${tomcat-one-bin}/ikube"/>-->
         <!--<entry key="${resources-directory}/indexes/production" value="${tomcat-one-bin}/ikube"/>-->
         <!--<entry key="${resources-directory}/indexes/twitter" value="${tomcat-one-bin}/ikube"/>-->

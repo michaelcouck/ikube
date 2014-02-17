@@ -30,9 +30,8 @@
 		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer"
 		property:children-ref="sites-indexables" />
 	<util:list id="sites-indexables">
-		<!--<ref local="ibm" />
-		<ref local="oki" />-->
-		<ref local="eacbs" />
+		<ref local="ibm" />
+		<ref local="oki" />
 	</util:list>
 	
 	<bean
@@ -65,21 +64,6 @@
 		property:excludedPattern="${internet.excluded.pattern}"
 		property:strategies-ref="sites-strategies" />
 
-    <bean
-        id="eacbs"
-        class="ikube.model.IndexableInternet"
-        property:name="eacbs"
-        property:url="http://www.eacbs.com/"
-        property:idFieldName="id"
-        property:titleFieldName="title"
-        property:contentFieldName="content"
-        property:analyzed="true"
-        property:stored="true"
-        property:vectored="true"
-        property:internetBatchSize="1000"
-        property:threads="50"
-        property:excludedPattern="${internet.excluded.pattern}" />
-	
 	<util:list id="sites-strategies">
 	    <ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
 	</util:list>
