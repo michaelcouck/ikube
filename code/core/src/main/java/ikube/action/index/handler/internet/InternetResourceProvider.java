@@ -62,12 +62,14 @@ public class InternetResourceProvider extends WebCrawler implements IResourcePro
             }
         }
         File file = new File("./" + folderName);
-        logger.info("Deleting folder for crawl : " + file.getAbsolutePath());
-        FileUtilities.deleteFile(file);
+        // This is a sanity check that we don't delete the dor folder!
+        if (StringUtils.isNotEmpty(folderName)) {
+            logger.info("Deleting folder for crawl : " + file.getAbsolutePath());
+            FileUtilities.deleteFile(file);
+        }
         FileUtilities.getOrCreateDirectory(file);
         String crawlStorageFolder = FileUtilities.cleanFilePath(file.getAbsolutePath());
 
-        int numberOfCrawlers = indexableInternet.getThreads();
         CrawlConfig config = new CrawlConfig();
         config.setCrawlStorageFolder(crawlStorageFolder);
         config.setMaxDepthOfCrawling(Short.MAX_VALUE);
@@ -78,9 +80,10 @@ public class InternetResourceProvider extends WebCrawler implements IResourcePro
         RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
         RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher);
         try {
-            CrawlController controller = new CrawlController(config, pageFetcher, robotstxtServer);
+            final CrawlController controller = new CrawlController(config, pageFetcher, robotstxtServer);
             controller.addSeed(indexableInternet.getUrl());
-            controller.start(InternetResourceProvider.class, numberOfCrawlers);
+            controller.start(InternetResourceProvider.class, indexableInternet.getThreads());
+            logger.info("Returning from starting crawl : " + Thread.currentThread().hashCode());
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
@@ -93,7 +96,7 @@ public class InternetResourceProvider extends WebCrawler implements IResourcePro
         boolean sameDomain = href.startsWith(INDEXABLE_INTERNET.get().getBaseUrl());
         boolean shouldVisit = !excluded && sameDomain;
         if (logger.isDebugEnabled()) {
-            logger.debug("Visiting : " + shouldVisit + ", " + href);
+            logger.info("Visiting : " + shouldVisit + ", " + href);
         }
         return shouldVisit;
     }

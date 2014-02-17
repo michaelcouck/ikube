@@ -33,14 +33,21 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
      * {@inheritDoc}
      */
     @Override
-    public ForkJoinTask<?> handleIndexableForked(final IndexContext<?> indexContext, final IndexableInternet indexableInternet) throws Exception {
-        IResourceProvider<Url> internetResourceProvider = new InternetResourceProvider(indexableInternet);
-        return getRecursiveAction(indexContext, indexableInternet, internetResourceProvider);
+    public ForkJoinTask<?> handleIndexableForked(
+            final IndexContext<?> indexContext,
+            final IndexableInternet indexableInternet)
+            throws Exception {
+
+        IResourceProvider resourceProvider = new InternetResourceProvider(indexableInternet);
+        return getRecursiveAction(indexContext, indexableInternet, resourceProvider);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    protected List<Url> handleResource(final IndexContext<?> indexContext, final IndexableInternet indexableInternet, final Object resource) {
+    protected List<Url> handleResource(
+            final IndexContext<?> indexContext,
+            final IndexableInternet indexableInternet,
+            final Object resource) {
         try {
             Url url = (Url) resource;
             handle(indexContext, indexableInternet, url);
@@ -58,7 +65,10 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
      * @param indexable    the internet base url configuration object
      * @param url          the url that will be indexed in this call
      */
-    protected void handle(final IndexContext<?> indexContext, final IndexableInternet indexable, final Url url) {
+    protected void handle(
+            final IndexContext<?> indexContext,
+            final IndexableInternet indexable,
+            final Url url) {
         try {
             // Parse the content from the url
             String parsedContent = getParsedContent(url, url.getRawContent());
@@ -82,7 +92,9 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
      * @param buffer the output stream of data from the url
      * @return the parsed content
      */
-    protected String getParsedContent(final Url url, final byte[] buffer) {
+    protected String getParsedContent(
+            final Url url,
+            final byte[] buffer) {
         try {
             String contentType = url.getContentType(); // URI.create(url.getUrl()).toURL().getFile();
             // The first few bytes so we can guess the content type

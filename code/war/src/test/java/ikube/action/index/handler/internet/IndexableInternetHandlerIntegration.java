@@ -9,11 +9,15 @@ import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.index.IndexWriter;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.util.concurrent.ForkJoinTask;
 
@@ -32,9 +36,10 @@ public class IndexableInternetHandlerIntegration extends IntegrationTest {
 
     @Before
     public void before() {
-        String url = "http://www.hazelcast.com";
-        indexContext = monitorService.getIndexContext("indexContext");
-        indexableInternet = ApplicationContextManager.getBean("ikubeGoogleCode");
+        String url = "http://www.eacbs.com";
+        indexContext = ApplicationContextManager.getBean("indexContext");
+        indexableInternet = new IndexableInternet();
+        indexableInternet.setName("eacbs");
         indexableInternet.setUrl(url);
         indexableInternet.setBaseUrl(url);
         indexableInternet.setThreads(10);
@@ -44,6 +49,13 @@ public class IndexableInternetHandlerIntegration extends IntegrationTest {
 
         clusterManager.startWorking(Index.class.getSimpleName(), indexContext.getName(), indexableInternet.getName());
         delete(ApplicationContextManager.getBean(IDataBase.class), Url.class);
+    }
+
+    @After
+    public void after() {
+        if (StringUtils.isNotEmpty(indexableInternet.getName())) {
+            FileUtilities.deleteFile(new File("./" + indexableInternet.getName()));
+        }
     }
 
     @Test

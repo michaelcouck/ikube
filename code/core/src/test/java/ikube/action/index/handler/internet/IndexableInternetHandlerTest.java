@@ -5,12 +5,16 @@ import ikube.IConstants;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
+import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
 import mockit.Deencapsulation;
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.util.concurrent.ForkJoinTask;
 
 import static org.junit.Assert.assertNotNull;
@@ -32,6 +36,7 @@ public class IndexableInternetHandlerTest extends AbstractTest {
         ThreadUtilities.initialize();
 
         indexableInternet = new IndexableInternet();
+        indexableInternet.setName("indexable-internet");
         indexableInternet.setIdFieldName(IConstants.ID);
         indexableInternet.setTitleFieldName(IConstants.TITLE);
         indexableInternet.setContentFieldName(IConstants.CONTENT);
@@ -56,6 +61,13 @@ public class IndexableInternetHandlerTest extends AbstractTest {
             }
         };
         Deencapsulation.setField(indexableInternetHandler, resourceHandler);
+    }
+
+    @After
+    public void after() {
+        if (StringUtils.isNotEmpty(indexableInternet.getName())) {
+            FileUtilities.deleteFile(new File("./" + indexableInternet.getName()));
+        }
     }
 
     @Test

@@ -6,10 +6,14 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
+import ikube.toolkit.FileUtilities;
 import mockit.Deencapsulation;
+import org.apache.commons.lang.StringUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Stack;
 import java.util.regex.Pattern;
@@ -41,6 +45,13 @@ public class InternetResourceProviderTest extends AbstractTest {
 
         urls = new InheritableThreadLocal<>();
         urls.set(new Stack<Url>());
+    }
+
+    @After
+    public void after() {
+        if (StringUtils.isNotEmpty(indexableInternet.getName())) {
+            FileUtilities.deleteFile(new File("./" + indexableInternet.getName()));
+        }
     }
 
     @Test
