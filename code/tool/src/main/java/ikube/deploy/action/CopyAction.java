@@ -9,8 +9,8 @@ import java.util.Map;
 
 /**
  * @author Michael Couck
- * @since 18-06-13
  * @version 01.00
+ * @since 18-06-13
  */
 public class CopyAction extends Action {
 
@@ -19,12 +19,13 @@ public class CopyAction extends Action {
 
     @Override
     public boolean execute(final Server server) {
-        logger.info("Dot folder : " + FileUtilities.cleanFilePath(new File(".").getAbsolutePath()));
+        String dotFolder = FileUtilities.cleanFilePath(new File(".").getAbsolutePath());
+        logger.info("Dot folder : " + dotFolder);
         SSHExec sshExec = getSshExec(server.getIp(), server.getUsername(), server.getPassword());
         try {
             if (files != null) {
                 for (final Map.Entry<String, String> filePair : files.entrySet()) {
-                    String source = getAbsoluteFile(filePair.getKey());
+                    String source = getAbsoluteFile(dotFolder, filePair.getKey());
                     String target = filePair.getValue();
                     try {
                         logger.info("Copying file : " + source + ", to : " + target + ", on server : " + server.getIp());
@@ -36,7 +37,7 @@ public class CopyAction extends Action {
             }
             if (directories != null) {
                 for (final Map.Entry<String, String> filePair : directories.entrySet()) {
-                    String source = getAbsoluteFile(filePair.getKey());
+                    String source = getAbsoluteFile(dotFolder, filePair.getKey());
                     String target = filePair.getValue();
                     try {
                         logger.info("Copying directory : " + source + ", to : " + target + ", on server : " + server.getIp());
@@ -52,8 +53,12 @@ public class CopyAction extends Action {
         return Boolean.TRUE;
     }
 
-    private String getAbsoluteFile(final String path) {
-        File relative = FileUtilities.relative(new File("."), path);
+    private String getAbsoluteFile(final String dotFolder, final String path) {
+        File relative = new File(dotFolder, path);
+        if (!relative.exists()) {
+            relative = FileUtilities.findFileRecursively(new File(dotFolder), relative.getName());
+            logger.info("Found file : " + relative);
+        }
         return FileUtilities.cleanFilePath(relative.getAbsolutePath());
     }
 

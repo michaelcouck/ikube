@@ -39,7 +39,7 @@ public abstract class Action implements IAction {
 			if (!connected) {
 				logger.error("Couldn't connect to server : " + ip);
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			disconnect(sshExec);
 			handleException("Exception connecting to : " + ip, e);
 		}
@@ -54,7 +54,7 @@ public abstract class Action implements IAction {
 					logger.warn("Couldn't disconnect from : " + sshExec);
 				}
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			handleException("Exception closing connection : " + sshExec, e);
 		}
 	}
