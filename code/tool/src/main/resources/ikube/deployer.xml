@@ -115,7 +115,7 @@
         property:files-ref="files"
         property:directories-ref="directories"/>
     <util:map id="files">
-        <entry key="ikube/code/war/target/${ikube-war}" value="${tomcat-one-webapps}"/>
+        <entry key="code/war/target/${ikube-war}" value="${tomcat-one-webapps}"/>
     </util:map>
     <util:map id="directories">
         <entry key="${resources-directory}/ikube/common" value="${tomcat-one-bin}/ikube"/>

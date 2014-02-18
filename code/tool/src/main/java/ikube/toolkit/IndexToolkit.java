@@ -13,6 +13,11 @@ import org.apache.lucene.store.NIOFSDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Michael Couck
+ * @version 01.00
+ * @since 30-07-2012
+ */
 public final class IndexToolkit {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(IndexToolkit.class);

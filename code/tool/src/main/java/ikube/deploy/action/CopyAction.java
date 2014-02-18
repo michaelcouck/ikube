@@ -7,6 +7,11 @@ import net.neoremind.sshxcute.core.SSHExec;
 import java.io.File;
 import java.util.Map;
 
+/**
+ * @author Michael Couck
+ * @since 18-06-13
+ * @version 01.00
+ */
 public class CopyAction extends Action {
 
     private Map<String, String> files;

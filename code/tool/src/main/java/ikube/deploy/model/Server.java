@@ -4,6 +4,11 @@ import ikube.deploy.action.IAction;
 
 import java.util.Collection;
 
+/**
+ * @author Michael Couck
+ * @since 18-06-13
+ * @version 01.00
+ */
 public class Server {
 
 	private String ip;

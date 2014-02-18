@@ -19,6 +19,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
+/**
+ * @author Michael Couck
+ * @since 18-06-13
+ * @version 01.00
+ */
 public final class Deployer {
 
 	private static final Logger LOGGER;

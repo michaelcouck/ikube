@@ -11,6 +11,11 @@ import net.neoremind.sshxcute.task.impl.ExecCommand;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+/**
+ * @author Michael Couck
+ * @since 18-06-13
+ * @version 01.00
+ */
 public class CommandAction extends Action {
 
 	private Collection<String> commands;
