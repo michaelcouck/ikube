@@ -66,7 +66,7 @@ public class IndexableInternetHandlerIntegration extends IntegrationTest {
 
         ForkJoinTask<?> forkJoinTask = indexableInternetHandler.handleIndexableForked(indexContext, indexableInternet);
         ThreadUtilities.executeForkJoinTasks(indexContext.getName(), indexableInternet.getThreads(), forkJoinTask);
-        ThreadUtilities.sleep(5000);
+        ThreadUtilities.sleep(30000);
         ThreadUtilities.cancellForkJoinPool(indexContext.getName());
         assertTrue("There must be some documents in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);
     }

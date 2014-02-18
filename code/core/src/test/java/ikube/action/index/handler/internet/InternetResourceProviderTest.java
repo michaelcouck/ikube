@@ -4,6 +4,7 @@ import ikube.AbstractTest;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.ThreadUtilities;
 import mockit.Deencapsulation;
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
@@ -77,6 +78,7 @@ public class InternetResourceProviderTest extends AbstractTest {
     @Test
     public void initialize() {
         internetResourceProvider.initialize(indexableInternet);
+        ThreadUtilities.sleep(15000);
         verify(indexableInternet, atLeastOnce()).getUrl();
     }
 
