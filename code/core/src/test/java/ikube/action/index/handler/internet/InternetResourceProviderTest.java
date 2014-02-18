@@ -1,9 +1,6 @@
 package ikube.action.index.handler.internet;
 
-import edu.uci.ics.crawler4j.crawler.Page;
-import edu.uci.ics.crawler4j.url.WebURL;
 import ikube.AbstractTest;
-import ikube.IConstants;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
 import ikube.toolkit.FileUtilities;
@@ -16,7 +13,6 @@ import org.junit.Test;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Stack;
-import java.util.regex.Pattern;
 
 import static junit.framework.Assert.*;
 import static org.mockito.Mockito.*;
@@ -28,23 +24,22 @@ import static org.mockito.Mockito.*;
  */
 public class InternetResourceProviderTest extends AbstractTest {
 
+    private Stack<Url> urls;
     private IndexableInternet indexableInternet;
-    private InheritableThreadLocal<Stack<Url>> urls;
     private InternetResourceProvider internetResourceProvider;
 
     @Before
     public void before() {
-        internetResourceProvider = new InternetResourceProvider();
-
         indexableInternet = mock(IndexableInternet.class);
+
         when(indexableInternet.getThreads()).thenReturn(10);
         when(indexableInternet.getName()).thenReturn("indexable-internet");
         when(indexableInternet.getUrl()).thenReturn("http://www.eacbs.com/");
         when(indexableInternet.getBaseUrl()).thenReturn("http://www.eacbs.com/");
         when(indexableInternet.getExcludedPattern()).thenReturn("zip");
 
-        urls = new InheritableThreadLocal<>();
-        urls.set(new Stack<Url>());
+        internetResourceProvider = new InternetResourceProvider(indexableInternet);
+        urls = new Stack<>();
     }
 
     @After
@@ -56,12 +51,16 @@ public class InternetResourceProviderTest extends AbstractTest {
 
     @Test
     public void getResource() {
-        urls.get().add(new Url());
-        Deencapsulation.setField(internetResourceProvider, "URLS", urls);
+        urls.add(new Url());
+        Deencapsulation.setField(internetResourceProvider, "urls", urls);
 
         Url resourceUrl = internetResourceProvider.getResource();
         assertNotNull(resourceUrl);
 
+        Url url;
+        do {
+            url = internetResourceProvider.getResource();
+        } while (url != null);
         resourceUrl = internetResourceProvider.getResource();
         assertNull(resourceUrl);
     }
@@ -69,10 +68,10 @@ public class InternetResourceProviderTest extends AbstractTest {
     @Test
     @SuppressWarnings("StatementWithEmptyBody")
     public void setResources() {
-        Deencapsulation.setField(internetResourceProvider, "URLS", urls);
+        Deencapsulation.setField(internetResourceProvider, "urls", urls);
 
         internetResourceProvider.setResources(Arrays.asList(new Url()));
-        assertTrue(urls.get().size() > 0);
+        assertTrue(urls.size() > 0);
     }
 
     @Test
@@ -81,53 +80,5 @@ public class InternetResourceProviderTest extends AbstractTest {
         verify(indexableInternet, atLeastOnce()).getUrl();
     }
 
-
-    @Test
-    public void shouldVisit() {
-        WebURL webUrl = mock(WebURL.class);
-        when(webUrl.getURL()).thenReturn("http://www.eacbs.com/");
-        InheritableThreadLocal<Pattern> pattern = new InheritableThreadLocal<>();
-        pattern.set(Pattern.compile("some-pattern"));
-        Deencapsulation.setField(internetResourceProvider, "PATTERN", pattern);
-
-        InheritableThreadLocal<IndexableInternet> indexableInternet = new InheritableThreadLocal<>();
-        indexableInternet.set(this.indexableInternet);
-        Deencapsulation.setField(internetResourceProvider, "INDEXABLE_INTERNET", indexableInternet);
-
-        boolean shouldVisit = internetResourceProvider.shouldVisit(webUrl);
-        assertTrue(shouldVisit);
-
-        pattern.set(Pattern.compile(".*(eacbs).*"));
-        shouldVisit = internetResourceProvider.shouldVisit(webUrl);
-        assertFalse(shouldVisit);
-
-        pattern.set(Pattern.compile("some-pattern"));
-        shouldVisit = internetResourceProvider.shouldVisit(webUrl);
-        assertTrue(shouldVisit);
-
-        when(webUrl.getURL()).thenReturn("http://www.google.com/");
-        shouldVisit = internetResourceProvider.shouldVisit(webUrl);
-        assertFalse(shouldVisit);
-    }
-
-    @Test
-    public void visit() {
-        when(indexableInternet.getMaxReadLength()).thenReturn(100l);
-        InheritableThreadLocal<IndexableInternet> indexableInternet = new InheritableThreadLocal<>();
-        indexableInternet.set(this.indexableInternet);
-
-        Page page = mock(Page.class);
-        byte[] bytes = new byte[1024];
-        Arrays.fill(bytes, (byte) 1);
-        when(page.getContentData()).thenReturn(bytes);
-        when(page.getContentType()).thenReturn(IConstants.ENCODING);
-
-        Deencapsulation.setField(internetResourceProvider, "URLS", urls);
-        Deencapsulation.setField(internetResourceProvider, "INDEXABLE_INTERNET", indexableInternet);
-
-        internetResourceProvider.visit(page);
-        Url url = urls.get().get(0);
-        assertEquals(indexableInternet.get().getMaxReadLength(), url.getRawContent().length);
-    }
 
 }

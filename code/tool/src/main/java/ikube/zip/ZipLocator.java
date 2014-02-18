@@ -32,7 +32,7 @@ public class ZipLocator {
 
 	static final AtomicInteger ATOMIC_INTEGER = new AtomicInteger(0);
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		if (args == null || args.length < 3) {
 			System.out.println("Usage : java -jar ikube-xxx....jar [path/to/folder] [zip-patterns] [file pattern] [contents pattern]");
 			System.out
@@ -47,7 +47,7 @@ public class ZipLocator {
 			Files.walkFileTree(new File(path).toPath(), new SimpleFileVisitor<Path>() {
 
 				@Override
-				public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
+				public FileVisitResult visitFile(final Path path, final BasicFileAttributes attrs) throws IOException {
 					File file = path.toFile();
 					if (fileType.matcher(file.getName()).matches()) {
 						findInFile(file, fileEntry, fileContent);
@@ -56,12 +56,12 @@ public class ZipLocator {
 				}
 
 				@Override
-				public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+				public FileVisitResult visitFileFailed(final Path file, final IOException exc) throws IOException {
 					return FileVisitResult.SKIP_SUBTREE;
 				}
 
 			});
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			LOGGER.error(null, e);
 		}
 		LOGGER.info("Found : " + ATOMIC_INTEGER.get() + " instances.");
@@ -75,58 +75,55 @@ public class ZipLocator {
 		try {
 			try {
 				zip = new ZipFile(file);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				// LOGGER.error(e.getMessage() + ", " + file);
 			}
-			if (zip != null) {
-				Enumeration<? extends ZipEntry> zipFileEntries = zip.entries();
-				while (zipFileEntries.hasMoreElements()) {
-					// Grab a zip file entry
-					ZipEntry entry = zipFileEntries.nextElement();
-					if (fileEntry.matcher(entry.getName()).matches()) {
-						if (fileContent == null) {
-							LOGGER.info("In file : " + file + ", " + fileEntry + ", " + entry.getName() + ", " + entry);
-						} else {
-							InputStream inputStream = zip.getInputStream(entry);
-							String contents = FileUtilities.getContents(inputStream, Integer.MAX_VALUE).toString();
-							contents = stripToAlphaNumeric(contents);
-							if (fileContent.matcher(contents).matches()) {
-								LOGGER.info("In file : " + file + ", " + fileEntry + ", " + entry.getName() + ", " + entry);
-								LOGGER.info("Contents : " + contents);
-								ATOMIC_INTEGER.incrementAndGet();
-							}
-						}
-					}
-				}
-			}
-		} catch (Exception e) {
+            Enumeration<? extends ZipEntry> zipFileEntries = zip.entries();
+            while (zipFileEntries.hasMoreElements()) {
+                // Grab a zip file entry
+                ZipEntry entry = zipFileEntries.nextElement();
+                if (fileEntry.matcher(entry.getName()).matches()) {
+                    if (fileContent == null) {
+                        LOGGER.info("In file : " + file + ", " + fileEntry + ", " + entry.getName() + ", " + entry);
+                    } else {
+                        InputStream inputStream = zip.getInputStream(entry);
+                        String contents = FileUtilities.getContents(inputStream, Integer.MAX_VALUE).toString();
+                        contents = stripToAlphaNumeric(contents);
+                        if (fileContent.matcher(contents).matches()) {
+                            LOGGER.info("In file : " + file + ", " + fileEntry + ", " + entry.getName() + ", " + entry);
+                            LOGGER.info("Contents : " + contents);
+                            ATOMIC_INTEGER.incrementAndGet();
+                        }
+                    }
+                }
+            }
+		} catch (final Exception e) {
 			LOGGER.error(null, e);
 		} finally {
 			try {
 				if (zip != null) {
 					zip.close();
 				}
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				LOGGER.error(null, e);
 			}
 		}
 	}
 
-	public static final String stripToAlphaNumeric(final String string) {
+	public static String stripToAlphaNumeric(final String string) {
 		char[] chars = string.toCharArray();
 		char[] strippedChars = new char[chars.length];
 		int j = 0;
-		for (int i = 0; i < chars.length; i++) {
-			final char c = chars[i];
-			if (!Character.isLetterOrDigit(c)) {
-				if (j != 0 && strippedChars[j - 1] != ' ') {
-					strippedChars[j] = ' ';
-				}
-				continue;
-			}
-			strippedChars[j] = c;
-			j++;
-		}
+        for (final char c : chars) {
+            if (!Character.isLetterOrDigit(c)) {
+                if (j != 0 && strippedChars[j - 1] != ' ') {
+                    strippedChars[j] = ' ';
+                }
+                continue;
+            }
+            strippedChars[j] = c;
+            j++;
+        }
 		return new String(strippedChars, 0, j);
 	}
 
