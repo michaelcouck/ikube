@@ -54,8 +54,8 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
         }
     }
 
-    private static final int RETRY = 5;
-    private static final long SLEEP = 6000;
+    private static int RETRY = 5;
+    private static long SLEEP = 6000;
     private static final String[] FIELDS = new String[]{IConstants.NAME, IConstants.URL};
 
     private Logger logger = LoggerFactory.getLogger(InternetResourceProvider.class);
@@ -82,7 +82,7 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
             crawler.setUserAgent("firefox 3.0");
             crawler.setTimeout(indexableInternet.getTimeout());
             crawler.setAllowCompression(Boolean.FALSE);
-            crawler.setVerbose();
+            // crawler.setVerbose();
 
             Url seedUrl = getUrl(indexableInternet.getUrl());
             dataBase.persist(seedUrl);
@@ -141,7 +141,7 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
             logger.debug("Urls size : " + urls.size() + ", " + urls.isEmpty());
         }
         Url url = urls.first();
-        logger.debug("Popping : " + url + ", " + url.getRawContent().length);
+        logger.debug("Popping : " + url);
         urls.remove(url);
         return url;
     }

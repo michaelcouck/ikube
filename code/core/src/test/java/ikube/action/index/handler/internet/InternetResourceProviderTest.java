@@ -1,6 +1,7 @@
 package ikube.action.index.handler.internet;
 
 import ikube.AbstractTest;
+import ikube.model.Indexable;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
 import ikube.toolkit.FileUtilities;
@@ -32,6 +33,7 @@ public class InternetResourceProviderTest extends AbstractTest {
     private InternetResourceProvider internetResourceProvider;
 
     @Before
+    @SuppressWarnings("unchecked")
     public void before() {
         indexableInternet = mock(IndexableInternet.class);
 
@@ -40,6 +42,8 @@ public class InternetResourceProviderTest extends AbstractTest {
         when(indexableInternet.getUrl()).thenReturn("http://www.eacbs.com/");
         // when(indexableInternet.getBaseUrl()).thenReturn("http://www.eacbs.com/");
         when(indexableInternet.getExcludedPattern()).thenReturn("zip");
+        Indexable indexable = indexContext;
+        when(indexableInternet.getParent()).thenReturn(indexable);
 
         internetResourceProvider = new InternetResourceProvider(indexableInternet, dataBase);
         Deencapsulation.setField(internetResourceProvider, "RETRY", 1);
@@ -65,8 +69,7 @@ public class InternetResourceProviderTest extends AbstractTest {
         Url url = new Url();
         url.setUrl("www.google.com");
         internetResourceProvider.setResources(Arrays.asList(url));
-        TreeSet<Url> urls = Deencapsulation.getField(internetResourceProvider, "urls");
-        assertEquals(1, urls.size());
+        verify(dataBase, atLeastOnce()).persist(any(Url.class));
     }
 
     @Test

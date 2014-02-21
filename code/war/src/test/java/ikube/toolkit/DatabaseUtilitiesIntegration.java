@@ -28,12 +28,13 @@ public class DatabaseUtilitiesIntegration extends IntegrationTest {
 	@Test
 	public void getAllColumns() throws Exception {
 		Connection connection = null;
-		List<String> allColumns = null;
+		List<String> allColumns;
 		try {
 			connection = getConnection(nonXaDataSourceH2);
 			String allColumnsString = "[id, timestamp, admin1code, admin2code, admin3code, admin4code, alternatenames, asciiname, cc2, city, country, "
 					+ "countrycode, elevation, featureclass, featurecode, geonameid, gtopo30, latitude, longitude, modification, name, population, timezone]";
 			allColumns = DatabaseUtilities.getAllColumns(connection, "geoname");
+            logger.info("All columns : " + allColumns);
 			assertEquals("All the columns from the geoname table : ", allColumnsString, allColumns.toString().toLowerCase());
 		} finally {
 			DatabaseUtilities.close(connection);

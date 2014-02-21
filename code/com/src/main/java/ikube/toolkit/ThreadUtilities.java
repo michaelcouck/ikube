@@ -64,6 +64,7 @@ public final class ThreadUtilities {
         List<Future<?>> futures = getFutures(name);
         for (final Future<?> future : futures) {
             if (future == null) {
+                LOGGER.info("Future null : WTF?");
                 continue;
             }
             if (future.isDone() || future.isCancelled()) {
