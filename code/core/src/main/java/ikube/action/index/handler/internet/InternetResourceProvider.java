@@ -46,7 +46,7 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
 
             byte[] rawContent = FileUtilities.getContents(file, indexableInternet.getMaxReadLength()).toByteArray();
             FileUtilities.deleteFile(file);
-            logger.info("Setting content length : " + rawContent.length);
+            logger.debug("Setting content length : " + rawContent.length);
             Url url = findUrl(stringUrl);
             url.setContentType(contentType);
             url.setRawContent(rawContent);
@@ -141,7 +141,7 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
             logger.debug("Urls size : " + urls.size() + ", " + urls.isEmpty());
         }
         Url url = urls.first();
-        logger.info("Popping : " + url + ", " + url.getRawContent().length);
+        logger.debug("Popping : " + url + ", " + url.getRawContent().length);
         urls.remove(url);
         return url;
     }
@@ -159,7 +159,7 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
             if (dbUrl != null) {
                 continue;
             }
-            logger.info("Persisting : " + url);
+            logger.debug("Persisting : " + url);
             dataBase.persist(url);
         }
     }
@@ -168,7 +168,7 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
     public boolean hasNextQuery() {
         Url resource = waitForUrl();
         boolean hasNext = resource != null;
-        logger.info("Has next : " + hasNext);
+        logger.debug("Has next : " + hasNext);
         return hasNext;
     }
 
@@ -186,13 +186,13 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
                 logger.error("Mal formed url : " + url, e);
             }
         }
-        logger.info("Next query : " + query);
+        logger.debug("Next query : " + query);
         return query;
     }
 
     @Override
     public void setProcessed(final Query query) {
-        logger.info("Processed : " + query);
+        logger.debug("Processed : " + query);
     }
 
     private Url waitForUrl() {
@@ -201,7 +201,7 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
         Object[] values = new Object[]{indexableInternet.getName(), Boolean.FALSE};
         Url url = dataBase.find(Url.class, fields, values);
         while (url == null && retry-- > 0) {
-            dbStats();
+            // dbStats();
             logger.debug("Url null, sleeping for a while : ");
             ThreadUtilities.sleep(SLEEP);
             url = dataBase.find(Url.class, fields, values);
