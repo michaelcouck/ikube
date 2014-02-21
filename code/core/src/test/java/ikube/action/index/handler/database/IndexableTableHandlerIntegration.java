@@ -79,7 +79,7 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
         close(connection);
         IClusterManager clusterManager = getBean(IClusterManager.class);
         clusterManager.getServer().getActions().clear();
-        ThreadUtilities.cancellAllForkJoinPools();
+        ThreadUtilities.cancelAllForkJoinPools();
     }
 
     @Test
@@ -96,7 +96,7 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
             assertTrue("There must be more than one document in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);
         } finally {
             snapshotTable.setPredicate(predicate);
-            ThreadUtilities.cancellForkJoinPool(indexContext.getName());
+            ThreadUtilities.cancelForkJoinPool(indexContext.getName());
         }
     }
 
@@ -157,7 +157,7 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
             ThreadUtilities.sleep(5000);
             assertTrue("There must be some data in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);
         } finally {
-            ThreadUtilities.cancellForkJoinPool(indexContext.getName());
+            ThreadUtilities.cancelForkJoinPool(indexContext.getName());
         }
     }
 
@@ -190,7 +190,7 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
             Thread thread = new Thread(new Runnable() {
                 public void run() {
                     ThreadUtilities.sleep(10000);
-                    ThreadUtilities.cancellForkJoinPool(indexContext.getName());
+                    ThreadUtilities.cancelForkJoinPool(indexContext.getName());
                 }
             });
             thread.setDaemon(Boolean.TRUE);

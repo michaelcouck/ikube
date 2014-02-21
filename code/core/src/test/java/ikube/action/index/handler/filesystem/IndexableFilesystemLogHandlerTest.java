@@ -51,7 +51,7 @@ public class IndexableFilesystemLogHandlerTest extends AbstractTest {
 		ForkJoinTask<?> forkJoinTask = indexableFilesystemLogHandler.handleIndexableForked(indexContext, indexableFileSystemLog);
 		ThreadUtilities.executeForkJoinTasks(this.getClass().getSimpleName(), 3, forkJoinTask);
 		ThreadUtilities.sleep(3000);
-		ThreadUtilities.cancellForkJoinPool(this.getClass().getSimpleName());
+		ThreadUtilities.cancelForkJoinPool(this.getClass().getSimpleName());
 		verify(resourceBaseHandler, atLeastOnce()).handleResource(any(IndexContext.class), any(IndexableFileSystemLog.class), any(Document.class),
 				any(Object.class));
 	}

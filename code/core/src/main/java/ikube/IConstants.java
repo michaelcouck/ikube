@@ -81,6 +81,7 @@ public interface IConstants {
     String DURATION = "duration";
     String TITLE = "title";
     String NAME = "name";
+    String INDEXED = "indexed";
     String URL = "url";
     String HASH = "hash";
     String END = "end";

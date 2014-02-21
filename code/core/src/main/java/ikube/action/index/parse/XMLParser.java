@@ -64,11 +64,10 @@ public class XMLParser implements IParser {
 	 * Visits each tag up and down the tree recursively getting the text content from the tag.
 	 * 
 	 * @param parent the parent tag to start recursing
-	 * @param content the content buffer to accumulate the text in
 	 * @throws IOException
 	 */
 	@SuppressWarnings("unchecked")
-	private final void visit(final Element parent, final Writer writer) throws IOException {
+	private void visit(final Element parent, final Writer writer) throws IOException {
 		writer.append(' ').append(parent.getName());
 		String text = parent.getTextTrim();
 		if (text != null && !text.equals("")) {

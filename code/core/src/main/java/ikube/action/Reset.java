@@ -4,6 +4,7 @@ import ikube.IConstants;
 import ikube.database.IDataBase;
 import ikube.model.File;
 import ikube.model.IndexContext;
+import ikube.model.Indexable;
 import ikube.model.Url;
 
 import java.util.HashMap;
@@ -25,19 +26,28 @@ public class Reset extends Action<IndexContext<?>, Boolean> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	synchronized boolean internalExecute(final IndexContext<?> indexContext) {
+	synchronized boolean internalExecute(
+            final IndexContext<?> indexContext) {
 		try {
-			Map<String, Object> parameters = new HashMap<String, Object>();
+			Map<String, Object> parameters = new HashMap<>();
 			parameters.put(IConstants.NAME, indexContext.getName());
 			delete(dataBase, Url.class, Url.SELECT_FROM_URL_BY_NAME, parameters);
-			delete(dataBase, File.class, File.SELECT_FROM_FILE_BY_NAME, parameters);
+            delete(dataBase, File.class, File.SELECT_FROM_FILE_BY_NAME, parameters);
+            for (final Indexable child : indexContext.getChildren()) {
+                parameters.put(IConstants.NAME, child.getName());
+                delete(dataBase, Url.class, Url.SELECT_FROM_URL_BY_NAME, parameters);
+                delete(dataBase, File.class, File.SELECT_FROM_FILE_BY_NAME, parameters);
+            }
 			return Boolean.TRUE;
 		} finally {
 			notifyAll();
 		}
 	}
 
-	protected synchronized void delete(final IDataBase dataBase, final Class<?> klass, final String sql,
+	protected synchronized void delete(
+            final IDataBase dataBase,
+            final Class<?> klass,
+            final String sql,
 			final Map<String, Object> parameters) {
 		do {
 			List<?> list = dataBase.find(klass, sql, parameters, 0, IConstants.RESET_DELETE_BATCH_SIZE);

@@ -445,7 +445,7 @@ public final class FileUtilities {
      * @param file the file to read the contents from
      * @return the file contents in a byte array output stream
      */
-    public static ByteArrayOutputStream getContents(final File file, final int maxReadLength) {
+    public static ByteArrayOutputStream getContents(final File file, final long maxReadLength) {
         InputStream inputStream = null;
         try {
             inputStream = new FileInputStream(file);

@@ -58,7 +58,7 @@ public class IndexableFileSystemHandlerTest extends AbstractTest {
 		ForkJoinTask<?> forkJoinTask = indexableFileSystemHandler.handleIndexableForked(indexContext, indexableFileSystem);
 		ThreadUtilities.executeForkJoinTasks(this.getClass().getSimpleName(), 3, forkJoinTask);
 		ThreadUtilities.sleep(5000);
-		ThreadUtilities.cancellForkJoinPool(this.getClass().getSimpleName());
+		ThreadUtilities.cancelForkJoinPool(this.getClass().getSimpleName());
 		verify(resourceHandler, atLeastOnce()).handleResource(any(IndexContext.class), any(IndexableFileSystem.class), any(Document.class), any(File.class));
 	}
 
@@ -120,7 +120,7 @@ public class IndexableFileSystemHandlerTest extends AbstractTest {
 		ThreadUtilities.sleep(1000);
 		ThreadUtilities.submit("interrupt-test", new Runnable() {
 			public void run() {
-				ThreadUtilities.cancellForkJoinPool(indexContext.getName());
+				ThreadUtilities.cancelForkJoinPool(indexContext.getName());
 			}
 		});
 		ThreadUtilities.sleep(1000);

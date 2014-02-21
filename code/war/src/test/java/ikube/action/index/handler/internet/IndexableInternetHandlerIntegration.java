@@ -36,14 +36,10 @@ public class IndexableInternetHandlerIntegration extends IntegrationTest {
 
     @Before
     public void before() {
-        String url = "http://www.eacbs.com";
-        indexContext = ApplicationContextManager.getBean("indexContext");
-        indexableInternet = new IndexableInternet();
-        indexableInternet.setName("eacbs");
-        indexableInternet.setUrl(url);
-        indexableInternet.setBaseUrl(url);
-        indexableInternet.setThreads(10);
-        indexableInternet.setExcludedPattern("some-pattern");
+        // ikube-google-code, ikube-internet
+        indexContext = ApplicationContextManager.getBean("ikube");
+        indexableInternet = ApplicationContextManager.getBean("ikube-google-code");
+
         indexableInternetHandler = ApplicationContextManager.getBean(IndexableInternetHandler.class);
         IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
 
@@ -56,19 +52,20 @@ public class IndexableInternetHandlerIntegration extends IntegrationTest {
         if (StringUtils.isNotEmpty(indexableInternet.getName())) {
             FileUtilities.deleteFile(new File("./" + indexableInternet.getName()));
         }
+        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 
     @Test
-    public void handle() throws Exception {
+    public void handleIndexableForked() throws Exception {
         String ip = InetAddress.getLocalHost().getHostAddress();
         IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
         indexContext.setIndexWriters(indexWriter);
 
         ForkJoinTask<?> forkJoinTask = indexableInternetHandler.handleIndexableForked(indexContext, indexableInternet);
         ThreadUtilities.executeForkJoinTasks(indexContext.getName(), indexableInternet.getThreads(), forkJoinTask);
-        ThreadUtilities.sleep(30000);
-        ThreadUtilities.cancellForkJoinPool(indexContext.getName());
-        assertTrue("There must be some documents in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);
+        ThreadUtilities.waitForFuture(forkJoinTask, Integer.MAX_VALUE);
+        logger.info("Documents : " + indexContext.getIndexWriters()[0].numDocs());
+        assertTrue("There must be some documents in the index : ", indexContext.getIndexWriters()[0].numDocs() > 10);
     }
 
 }

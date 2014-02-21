@@ -435,7 +435,7 @@ public class SearcherService implements ISearcherService {
         }
         long hash = HashUtilities.hash(cleanedSearchStrings.toString());
         try {
-            Search dbSearch = dataBase.findCriteria(Search.class, new String[]{"hash"}, new Object[]{hash});
+            Search dbSearch = dataBase.find(Search.class, new String[]{"hash"}, new Object[]{hash});
             if (dbSearch != null) {
                 Search mergeSearch = mergeBatch.get(hash);
                 if (mergeSearch != null) {

@@ -1,5 +1,6 @@
 package ikube.action.index.handler.internet;
 
+import ikube.IConstants;
 import ikube.action.index.handler.IResourceProvider;
 import ikube.action.index.handler.IndexableHandler;
 import ikube.action.index.parse.IParser;
@@ -8,13 +9,15 @@ import ikube.action.index.parse.XMLParser;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
-import ikube.toolkit.HashUtilities;
+import ikube.toolkit.UriUtilities;
+import net.htmlparser.jericho.*;
 import org.apache.lucene.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
+import javax.swing.text.html.HTML;
+import java.io.*;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ForkJoinTask;
@@ -37,8 +40,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
             final IndexContext<?> indexContext,
             final IndexableInternet indexableInternet)
             throws Exception {
-
-        IResourceProvider resourceProvider = new InternetResourceProvider(indexableInternet);
+        IResourceProvider resourceProvider = new InternetResourceProvider(indexableInternet, dataBase);
         return getRecursiveAction(indexContext, indexableInternet, resourceProvider);
     }
 
@@ -48,37 +50,14 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
             final IndexContext<?> indexContext,
             final IndexableInternet indexableInternet,
             final Object resource) {
-        try {
-            Url url = (Url) resource;
-            handle(indexContext, indexableInternet, url);
-            return Collections.EMPTY_LIST;
-        } catch (final Exception e) {
-            handleException(indexableInternet, e, "Exception crawling url : " + resource);
-        }
-        return null;
-    }
-
-    /**
-     * This method will do the actions that visit the url, parse the data and add it to the index.
-     *
-     * @param indexContext the index context for this index
-     * @param indexable    the internet base url configuration object
-     * @param url          the url that will be indexed in this call
-     */
-    protected void handle(
-            final IndexContext<?> indexContext,
-            final IndexableInternet indexable,
-            final Url url) {
+        Url url = (Url) resource;
         try {
             // Parse the content from the url
-            String parsedContent = getParsedContent(url, url.getRawContent());
-            if (parsedContent != null) {
-                url.setHash(HashUtilities.hash(parsedContent));
-                // Add the document to the index
-                internetResourceHandler.handleResource(indexContext, indexable, new Document(), url);
-            }
+            parseContent(url);
+            internetResourceHandler.handleResource(indexContext, indexableInternet, new Document(), url);
+            return extractLinksFromContent(indexableInternet, url);
         } catch (final Exception e) {
-            handleException(indexable, e);
+            throw new RuntimeException(e);
         } finally {
             url.setRawContent(null);
             url.setParsedContent(null);
@@ -88,15 +67,19 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
     /**
      * Parses the content from the input stream into a string. The content can be anything, rich text, xml, etc.
      *
-     * @param url    the url where the data is
-     * @param buffer the output stream of data from the url
-     * @return the parsed content
+     * @param url the url where the data is
      */
-    protected String getParsedContent(
-            final Url url,
-            final byte[] buffer) {
+    protected void parseContent(final Url url) {
         try {
-            String contentType = url.getContentType(); // URI.create(url.getUrl()).toURL().getFile();
+            byte[] buffer = url.getRawContent();
+            logger.debug("Buffer length : " + buffer.length);
+            String contentType;
+            if (url.getContentType() != null) {
+                contentType = url.getContentType();
+            } else {
+                contentType = URI.create(url.getUrl()).toURL().getFile();
+                url.setContentType(contentType);
+            }
             // The first few bytes so we can guess the content type
             byte[] bytes = new byte[Math.min(buffer.length, 1024)];
             System.arraycopy(buffer, 0, bytes, 0, bytes.length);
@@ -117,16 +100,74 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
                     handleException(null, e, message);
                 }
             }
-            url.setContentType(contentType);
             if (outputStream != null) {
-                url.setParsedContent(outputStream.toString());
-                return outputStream.toString();
+                String parsedContent = outputStream.toString();
+                logger.info("Parsed content length : " + parsedContent.length());
+                url.setParsedContent(parsedContent);
             }
         } catch (final Exception e) {
-            handleException(null, e);
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
+    @SuppressWarnings("unchecked")
+    protected List<Url> extractLinksFromContent(
+            final IndexableInternet indexableInternet,
+            final Url url)
+            throws IOException {
+        if (url.getRawContent() == null) {
+            return Collections.EMPTY_LIST;
+        }
+        List<Url> urls = new ArrayList<>();
+        InputStream inputStream = new ByteArrayInputStream(url.getRawContent());
+        Reader reader = new InputStreamReader(inputStream, IConstants.ENCODING);
+        Source source = new Source(reader);
+        List<Tag> tags = source.getAllTags();
+        String baseUrlStripped = indexableInternet.getBaseUrl();
+        for (final Tag tag : tags) {
+            if (tag.getName().equals(HTMLElementName.A) && StartTag.class.isAssignableFrom(tag.getClass())) {
+                Attribute attribute = ((StartTag) tag).getAttributes().get(HTML.Attribute.HREF.toString());
+                if (attribute == null) {
+                    continue;
+                }
+                try {
+                    String link = attribute.getValue();
+                    if (link == null) {
+                        continue;
+                    }
+                    if (UriUtilities.isExcluded(link.trim().toLowerCase())) {
+                        continue;
+                    }
+                    String resolvedLink = UriUtilities.resolve(indexableInternet.getUri(), link);
+                    String replacement = resolvedLink.contains("?") ? "?" : "";
+                    String strippedSessionLink = UriUtilities.stripJSessionId(resolvedLink, replacement);
+                    String strippedAnchorLink = UriUtilities.stripAnchor(strippedSessionLink, "");
+                    if (!UriUtilities.isInternetProtocol(strippedAnchorLink)) {
+                        continue;
+                    }
+                    if (!strippedAnchorLink.startsWith(baseUrlStripped)) {
+                        continue;
+                    }
+                    if (indexableInternet.isExcluded(strippedAnchorLink)) {
+                        continue;
+                    }
+                    logger.info("Link : " + link);
+                    Url newUrl = getUrl(indexableInternet.getName(), strippedAnchorLink);
+                    urls.add(newUrl);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return urls;
+    }
+
+    private Url getUrl(final String name, final String stringUrl) {
+        Url url = new Url();
+        url.setName(name);
+        url.setUrl(stringUrl);
+        url.setIndexed(Boolean.FALSE);
+        return url;
+    }
 
 }

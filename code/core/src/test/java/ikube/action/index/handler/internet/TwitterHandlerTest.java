@@ -73,7 +73,7 @@ public class TwitterHandlerTest extends AbstractTest {
         new Thread(new Runnable() {
             public void run() {
                 ThreadUtilities.sleep(1000);
-                ThreadUtilities.cancellForkJoinPool(forkJoinPoolName);
+                ThreadUtilities.cancelForkJoinPool(forkJoinPoolName);
             }
         }).start();
 

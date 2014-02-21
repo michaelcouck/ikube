@@ -43,7 +43,7 @@ public class IndexableEmailHandlerIntegration extends IntegrationTest {
         ForkJoinTask<?> forkJoinTask = indexableEmailHandler.handleIndexableForked(indexContext, indexableEmail);
         ThreadUtilities.executeForkJoinTasks(indexContext.getName(), indexContext.getThreads(), forkJoinTask);
         ThreadUtilities.sleep(15000);
-        ThreadUtilities.cancellForkJoinPool(indexContext.getName());
+        ThreadUtilities.cancelForkJoinPool(indexContext.getName());
 
         assertNotNull("The index writer should still be available : ", indexContext.getIndexWriters());
         assertEquals("There should only be one index writer : ", 1, indexContext.getIndexWriters().length);

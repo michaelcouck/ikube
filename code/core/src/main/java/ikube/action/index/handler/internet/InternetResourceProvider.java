@@ -1,87 +1,123 @@
 package ikube.action.index.handler.internet;
 
-import edu.uci.ics.crawler4j.CrawlControllerExt;
-import edu.uci.ics.crawler4j.crawler.CrawlConfig;
-import edu.uci.ics.crawler4j.crawler.CrawlController;
-import edu.uci.ics.crawler4j.fetcher.PageFetcher;
-import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
-import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 import ikube.IConstants;
 import ikube.action.index.handler.IResourceProvider;
+import ikube.database.IDataBase;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
-import org.apache.commons.lang.StringUtils;
+import ikube.toolkit.UriUtilities;
+import org.niocchi.core.*;
+import org.niocchi.gc.GenericResource;
+import org.niocchi.gc.GenericResourceFactory;
+import org.niocchi.gc.GenericWorker;
+import org.niocchi.urlpools.TimeoutURLPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Stack;
-import java.util.regex.Pattern;
+import java.util.TreeSet;
 
 /**
  * @author Michael Couck
  * @version 02.00
  * @since 21-06-2013
  */
-public class InternetResourceProvider implements IResourceProvider<Url> {
+public class InternetResourceProvider implements IResourceProvider<Url>, URLPool {
 
-    Logger logger = LoggerFactory.getLogger(InternetResourceProvider.class);
+    public class WorkerImpl extends GenericWorker {
 
-    Stack<Url> urls;
+        public WorkerImpl(final Crawler crawler) {
+            super(crawler, indexableInternet.getName());
+        }
 
-    public InternetResourceProvider(final IndexableInternet indexableInternet) {
+        @Override
+        public void processResource(final Query query) {
+            GenericResource genericResource = (GenericResource) query.getResource();
+            String stringUrl = query.getOriginalURL().toExternalForm();
+            String contentType = query.getResource().getContentType();
+            String filePath = FileUtilities.cleanFilePath(genericResource.getTmpFileAbsolutePath());
+            File file = new File(filePath);
+
+            byte[] rawContent = FileUtilities.getContents(file, indexableInternet.getMaxReadLength()).toByteArray();
+            FileUtilities.deleteFile(file);
+            logger.info("Setting content length : " + rawContent.length);
+            Url url = findUrl(stringUrl);
+            url.setContentType(contentType);
+            url.setRawContent(rawContent);
+            urls.add(url);
+        }
+    }
+
+    private static final int RETRY = 5;
+    private static final long SLEEP = 6000;
+    private static final String[] FIELDS = new String[]{IConstants.NAME, IConstants.URL};
+
+    private Logger logger = LoggerFactory.getLogger(InternetResourceProvider.class);
+    private TreeSet<Url> urls;
+    private IndexableInternet indexableInternet;
+    private IDataBase dataBase;
+
+    public InternetResourceProvider(final IndexableInternet indexableInternet, final IDataBase dataBase) {
+        this.indexableInternet = indexableInternet;
+        this.dataBase = dataBase;
         initialize(indexableInternet);
     }
 
     void initialize(final IndexableInternet indexableInternet) {
-        urls = new Stack<>();
-        final Pattern pattern = Pattern.compile(indexableInternet.getExcludedPattern());
-
-        String folderName = indexableInternet.getName();
-        if (StringUtils.isEmpty(folderName)) {
-            folderName = indexableInternet.getParent().getName();
-            if (StringUtils.isEmpty(folderName)) {
-                folderName = Integer.toString(this.hashCode());
-                logger.warn("Couldn't get folder for output, delete this folder after the crawl : " + folderName);
-            }
-        }
-        File file = new File("./" + folderName);
-        // This is a sanity check that we don't delete the dor folder!
-        if (StringUtils.isNotEmpty(folderName)) {
-            logger.info("Deleting folder for crawl : " + file.getAbsolutePath());
-            FileUtilities.deleteFile(file);
-        }
-        FileUtilities.getOrCreateDirectory(file);
-        String crawlStorageFolder = FileUtilities.cleanFilePath(file.getAbsolutePath());
-
-        final CrawlConfig config = new CrawlConfig();
-        config.setCrawlStorageFolder(crawlStorageFolder);
-        config.setMaxDepthOfCrawling(Short.MAX_VALUE);
-        config.setMaxPagesToFetch(Integer.MAX_VALUE);
-        config.setResumableCrawling(false);
-
-        final PageFetcher pageFetcher = new PageFetcher(config);
-        final RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
-        final RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher);
-
-        ThreadUtilities.submit(indexableInternet.getName(), new Runnable() {
-            public void run() {
-                final CrawlController controller;
-                try {
-                    controller = new CrawlControllerExt(config, pageFetcher, robotstxtServer, indexableInternet, pattern, urls);
-                    controller.addSeed(indexableInternet.getUrl());
-                    controller.start(InternetWebCrawler.class, indexableInternet.getThreads());
-                    logger.info("Returning from starting crawl : " + Thread.currentThread().hashCode());
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                } finally {
-                    ThreadUtilities.destroy(indexableInternet.getName());
+        try {
+            urls = new TreeSet<>(new Comparator<Url>() {
+                @Override
+                public int compare(final Url o1, final Url o2) {
+                    return o1.getUrl().compareTo(o2.getUrl());
                 }
+            });
+
+            final Crawler crawler = new Crawler(new GenericResourceFactory(), 100);
+            crawler.setUserAgent("firefox 3.0");
+            crawler.setTimeout(indexableInternet.getTimeout());
+            crawler.setAllowCompression(Boolean.FALSE);
+            crawler.setVerbose();
+
+            Url seedUrl = getUrl(indexableInternet.getUrl());
+            dataBase.persist(seedUrl);
+
+            final URLPool urlPool = new TimeoutURLPool(this);
+            for (int i = 0; i < indexableInternet.getThreads(); i++) {
+                Worker worker = new WorkerImpl(crawler);
+                ThreadUtilities.submit(indexableInternet.getParent().getName(), worker);
             }
-        });
+            ThreadUtilities.submit(indexableInternet.getParent().getName(), new Runnable() {
+                public void run() {
+                    try {
+                        crawler.run(urlPool);
+                    } catch (final IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Url getUrl(final String stringUrl) {
+        Url url = new Url();
+        url.setIndexed(Boolean.FALSE);
+        url.setName(indexableInternet.getName());
+        url.setUrl(stringUrl);
+        return url;
+    }
+
+
+    private Url findUrl(final String stringUrl) {
+        Object[] values = new Object[]{indexableInternet.getName(), stringUrl};
+        return dataBase.find(Url.class, FIELDS, values);
     }
 
     /**
@@ -89,17 +125,25 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
      */
     @Override
     public synchronized Url getResource() {
-        if (urls.isEmpty()) {
-            // We'll wait a few seconds to see if any other thread will add some URLS to the stack
-            ThreadUtilities.sleep(10000);
-            if (urls.isEmpty()) {
-                return null;
-            } else {
-                return getResource();
+        int retry = RETRY;
+        while (urls.isEmpty() && retry-- >= 0) {
+            try {
+                wait(SLEEP);
+            } catch (final InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
             }
         }
-        // logger.info("Popping : " + urls.peek());
-        return urls.pop();
+        if (urls.isEmpty()) {
+            return null;
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("Urls size : " + urls.size() + ", " + urls.isEmpty());
+        }
+        Url url = urls.first();
+        logger.info("Popping : " + url + ", " + url.getRawContent().length);
+        urls.remove(url);
+        return url;
     }
 
     /**
@@ -111,10 +155,85 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
             return;
         }
         for (final Url url : resources) {
-            if (urls.size() < IConstants.MILLION) {
-                urls.push(url);
+            Url dbUrl = findUrl(url.getUrl());
+            if (dbUrl != null) {
+                continue;
             }
+            logger.info("Persisting : " + url);
+            dataBase.persist(url);
+        }
+    }
+
+    @Override
+    public boolean hasNextQuery() {
+        Url resource = waitForUrl();
+        boolean hasNext = resource != null;
+        logger.info("Has next : " + hasNext);
+        return hasNext;
+    }
+
+    @Override
+    public Query getNextQuery() throws URLPoolException {
+        Url url = waitForUrl();
+        Query query = null;
+        if (url != null) {
+            String absUrl = UriUtilities.stripAnchor(url.getUrl(), "");
+            url.setIndexed(Boolean.TRUE);
+            dataBase.merge(url);
+            try {
+                query = new Query(absUrl);
+            } catch (final MalformedURLException e) {
+                logger.error("Mal formed url : " + url, e);
+            }
+        }
+        logger.info("Next query : " + query);
+        return query;
+    }
+
+    @Override
+    public void setProcessed(final Query query) {
+        logger.info("Processed : " + query);
+    }
+
+    private Url waitForUrl() {
+        int retry = RETRY;
+        String[] fields = new String[]{IConstants.NAME, IConstants.INDEXED};
+        Object[] values = new Object[]{indexableInternet.getName(), Boolean.FALSE};
+        Url url = dataBase.find(Url.class, fields, values);
+        while (url == null && retry-- > 0) {
+            dbStats();
+            logger.debug("Url null, sleeping for a while : ");
+            ThreadUtilities.sleep(SLEEP);
+            url = dataBase.find(Url.class, fields, values);
+        }
+        logger.debug("Got url : " + url);
+        return url;
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    private void dbStats() {
+        long count = dataBase.count(Url.class);
+        logger.info("Urls : " + count);
+        List<Url> dbUrls = dataBase.find(Url.class, 0, Integer.MAX_VALUE);
+        for (final Url dbUrl : dbUrls) {
+            logger.info("Url : " + dbUrl);
         }
     }
 
 }
+
+// Monitor monitor = new Monitor(8100);
+// monitor.addMonitored(new MonitorImpl());
+// monitor.start();
+
+/*
+public class MonitorImpl implements Monitorable {
+
+    @Override
+    public void printMonitoredState(final PrintStream printStream) {
+    }
+
+    @Override
+    public void dump() {
+    }
+}*/

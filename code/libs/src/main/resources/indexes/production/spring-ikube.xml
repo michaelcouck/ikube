@@ -35,16 +35,16 @@
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
 		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer" 
-		property:children-ref="ikubeIndexables" />
-	<util:list id="ikubeIndexables">
-		<ref local="ikubeInternet" />
-		<ref local="ikubeGoogleCode" />
+		property:children-ref="ikube-indexables" />
+	<util:list id="ikube-indexables">
+		<ref local="ikube-internet" />
+		<ref local="ikube-google-code" />
 	</util:list>
 	
 	<bean
-		id="ikubeInternet"
+		id="ikube-internet"
 		class="ikube.model.IndexableInternet"
-		property:name="internet"
+		property:name="ikube-internet"
 		property:url="http://www.ikube.be/site/" 
 		property:idFieldName="id"
 		property:titleFieldName="title"
@@ -52,24 +52,38 @@
 		property:analyzed="true"
 		property:stored="true"
 		property:vectored="true"
+        property:address="false"
+        property:excludedPattern="nothing"
+        property:maxExceptions="1000"
+        property:maxReadLength="10000000"
+        property:tokenized="true"
+        property:timeout="60000"
+        property:omitNorms="false"
 		property:threads="5"
 		property:internetBatchSize="${internet.batch.size}" 
 		property:strategies-ref="internet-strategies" />
 		
 	<bean
-		id="ikubeGoogleCode"
+		id="ikube-google-code"
 		class="ikube.model.IndexableInternet"
-		property:name="ikubeGoogleCode"
-		property:url="http://code.google.com/p/ikube/" 
-		property:idFieldName="id"
-		property:titleFieldName="title"
-		property:contentFieldName="contents"
-		property:analyzed="${analyzed}"
-		property:stored="${stored}"
-		property:vectored="${vectored}"
-		property:threads="25"
-		property:internetBatchSize="${internet.batch.size}" 
-		property:strategies-ref="internet-strategies" />
+		property:name="ikube-google-code"
+		property:url="http://code.google.com/p/ikube/"
+        property:idFieldName="id"
+        property:titleFieldName="title"
+        property:contentFieldName="contents"
+        property:analyzed="true"
+        property:stored="true"
+        property:vectored="true"
+        property:address="false"
+        property:excludedPattern="nothing"
+        property:maxExceptions="1000"
+        property:maxReadLength="10000000"
+        property:tokenized="true"
+        property:timeout="60000"
+        property:omitNorms="false"
+        property:threads="5"
+        property:internetBatchSize="${internet.batch.size}"
+        property:strategies-ref="internet-strategies" />
 	
 	<util:list id="internet-strategies">
 		<ref bean="ikube.action.index.handler.strategy.ContentTypeStrategy" />

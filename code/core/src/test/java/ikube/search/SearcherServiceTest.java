@@ -208,7 +208,7 @@ public class SearcherServiceTest extends AbstractTest {
             }
 			Mockito.verify(dataBase, atLeastOnce()).persistBatch(any(List.class));
 
-            when(dataBase.findCriteria(any(Class.class), any(String[].class), any(Object[].class))).thenReturn(search);
+            when(dataBase.find(any(Class.class), any(String[].class), any(Object[].class))).thenReturn(search);
             for (int i = 0; i < SearcherService.MAX_MERGE_SIZE + 100;  i++) {
                 searcherService.persistSearch(search);
             }

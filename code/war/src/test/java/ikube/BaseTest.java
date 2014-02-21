@@ -29,8 +29,8 @@ public abstract class BaseTest {
 
     public static final String SERVICE = "/service";
 
-    protected static int SERVER_PORT = 80;
-    protected static String LOCALHOST = "ikube.be";
+    protected static int SERVER_PORT = 8080;
+    protected static String LOCALHOST = "localhost";
     protected static String REST_PASSWORD = "user";
     protected static String REST_USER_NAME = "user";
     /**
@@ -60,6 +60,7 @@ public abstract class BaseTest {
         return nameValuePairs.toArray(new NameValuePair[nameValuePairs.size()]);
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     protected void printIndex(final IndexSearcher multiSearcher) throws Exception {
         printIndex(multiSearcher.getIndexReader());
     }
@@ -87,7 +88,7 @@ public abstract class BaseTest {
             Document document = indexReader.document(i);
             logger.info("Document : " + i);
             List<IndexableField> fields = document.getFields();
-            for (IndexableField fieldable : fields) {
+            for (final IndexableField fieldable : fields) {
                 String fieldName = fieldable.name();
                 String fieldValue = fieldable.stringValue();
                 int fieldLength = fieldValue != null ? fieldValue.length() : 0;

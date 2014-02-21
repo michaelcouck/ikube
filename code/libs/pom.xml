@@ -24,7 +24,7 @@
     </parent>
 
     <properties>
-        <phase>release</phase>
+        <phase>site</phase>
         <packaging>jar</packaging>
         <generate-pom>true</generate-pom>
         <repository-id>ikube</repository-id>
@@ -408,6 +408,23 @@
                             <artifactId>cluster-gvm</artifactId>
                             <version>1.0</version>
                             <file>tools/cluster-gvm-1.0.jar</file>
+                            <packaging>${packaging}</packaging>
+                            <generatePom>${generate-pom}</generatePom>
+                            <repositoryId>${repository-id}</repositoryId>
+                            <url>${artifactory}</url>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-niocchi</id>
+                        <goals>
+                            <goal>deploy-file</goal>
+                        </goals>
+                        <phase>${phase}</phase>
+                        <configuration>
+                            <groupId>niocchi</groupId>
+                            <artifactId>niocchi</artifactId>
+                            <version>1.1</version>
+                            <file>tools/niocchi-1.1.jar</file>
                             <packaging>${packaging}</packaging>
                             <generatePom>${generate-pom}</generatePom>
                             <repositoryId>${repository-id}</repositoryId>

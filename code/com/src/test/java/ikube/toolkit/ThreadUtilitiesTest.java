@@ -144,7 +144,7 @@ public class ThreadUtilitiesTest extends AbstractTest {
     @Test
     public void cancellForkJoinPool() {
         ForkJoinPool forkJoinPool = ThreadUtilities.getForkJoinPool(this.getClass().getSimpleName(), 3);
-        ForkJoinPool cancelledForkJoinPool = ThreadUtilities.cancellForkJoinPool(this.getClass().getSimpleName());
+        ForkJoinPool cancelledForkJoinPool = ThreadUtilities.cancelForkJoinPool(this.getClass().getSimpleName());
         assertEquals(forkJoinPool, cancelledForkJoinPool);
         assertTrue(cancelledForkJoinPool.isShutdown());
         assertTrue(cancelledForkJoinPool.isTerminated());
@@ -153,7 +153,7 @@ public class ThreadUtilitiesTest extends AbstractTest {
     @Test
     public void cancellAllForkJoinPools() {
         ForkJoinPool forkJoinPool = ThreadUtilities.getForkJoinPool(this.getClass().getSimpleName(), 3);
-        ThreadUtilities.cancellAllForkJoinPools();
+        ThreadUtilities.cancelAllForkJoinPools();
         assertTrue(forkJoinPool.isShutdown());
         assertTrue(forkJoinPool.isTerminated());
     }
@@ -171,7 +171,7 @@ public class ThreadUtilitiesTest extends AbstractTest {
         new Thread(new Runnable() {
             public void run() {
                 ThreadUtilities.sleep(3000);
-                ThreadUtilities.cancellForkJoinPool(forkJoinPoolName);
+                ThreadUtilities.cancelForkJoinPool(forkJoinPoolName);
             }
         }).start();
         try {

@@ -259,7 +259,7 @@ public interface IDataBase {
 	 * @param valuesToFilterOn the values in the target entity to use in the selection/filtering
 	 * @return the first entity that satisfies the query parameters ornull ifnosuch entity exists
 	 */
-	<T> T findCriteria(final Class<T> klass, final String[] fieldsToFilterOn, final Object[] valuesToFilterOn);
+	<T> T find(final Class<T> klass, final String[] fieldsToFilterOn, final Object[] valuesToFilterOn);
 
 	/**
 	 * This method will create a dynamic criteria query based on the field names and the values passed to the query. Note that this query is not type safe and
@@ -273,7 +273,7 @@ public interface IDataBase {
 	 * @param maxResults the maximum results to return in the collection
 	 * @return the resultant collection, can be empty, based on the fields and values specified for the selection
 	 */
-	<T> List<T> findCriteria(final Class<T> klass, final String[] fieldsToFilterOn, final Object[] valuesToFilterOn, final int firstResult, final int maxResults);
+	<T> List<T> find(final Class<T> klass, final String[] fieldsToFilterOn, final Object[] valuesToFilterOn, final int firstResult, final int maxResults);
 
 	/**
 	 * This method will refresh the entity from the dtabase, essentially getting the changes in the case where it was updated out side of the transaction, i.e.

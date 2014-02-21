@@ -1,25 +1,18 @@
 package ikube.database.jpa;
 
 import ikube.database.IDataBase;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import org.apache.log4j.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import javax.persistence.metamodel.EntityType;
-
-import org.apache.log4j.Logger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class is the API to the database, specifically the JPA implementation. This class will typically be wired for transactions either using a transaction
@@ -214,9 +207,9 @@ public abstract class ADataBaseJpa implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T> T findCriteria(final Class<T> klass, final String[] fieldsToFilterOn, final Object[] valuesToFilterOn) {
-		List<T> entities = findCriteria(klass, fieldsToFilterOn, valuesToFilterOn, 0, 10);
-		if (entities.size() != 1) {
+	public <T> T find(final Class<T> klass, final String[] fieldsToFilterOn, final Object[] valuesToFilterOn) {
+		List<T> entities = find(klass, fieldsToFilterOn, valuesToFilterOn, 0, 10);
+		if (entities.size() == 0) {
 			return null;
 		}
 		return entities.get(0);
@@ -226,8 +219,7 @@ public abstract class ADataBaseJpa implements IDataBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T> List<T> findCriteria(final Class<T> klass, final String[] fieldsToFilterOn, final Object[] valuesToFilterOn, final int firstResult,
-			final int maxResults) {
+	public <T> List<T> find(final Class<T> klass, final String[] fieldsToFilterOn, final Object[] valuesToFilterOn, final int firstResult, final int maxResults) {
 		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
 		CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(klass);
 		Root<T> root = criteriaQuery.from(klass);

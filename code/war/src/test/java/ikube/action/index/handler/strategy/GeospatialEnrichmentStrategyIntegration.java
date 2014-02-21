@@ -51,7 +51,7 @@ public class GeospatialEnrichmentStrategyIntegration extends IntegrationTest {
 
         ThreadUtilities.executeForkJoinTasks(indexContext.getName(), indexableFileSystemCsv.getThreads(), forkJoinTask);
         ThreadUtilities.sleep(15000);
-        ThreadUtilities.cancellForkJoinPool(indexContext.getName());
+        ThreadUtilities.cancelForkJoinPool(indexContext.getName());
 
         IndexManager.closeIndexWriter(indexWriter);
         String indexPath = IndexManager.getIndexDirectoryPath(indexContext);

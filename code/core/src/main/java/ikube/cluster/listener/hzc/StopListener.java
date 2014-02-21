@@ -55,7 +55,7 @@ public class StopListener implements IListener<Message<Object>>, MessageListener
 				final Object indexName = event.getObject();
 				if (indexName != null) {
 					ThreadUtilities.destroy(indexName.toString());
-					ThreadUtilities.cancellForkJoinPool(indexName.toString());
+					ThreadUtilities.cancelForkJoinPool(indexName.toString());
 					if (clusterManager != null && clusterManager.getServer() != null && clusterManager.getServer().getActions() != null) {
 						List<Action> actions = clusterManager.getServer().getActions();
 						Action action = (Action) CollectionUtils.find(actions, new Predicate() {
@@ -76,7 +76,7 @@ public class StopListener implements IListener<Message<Object>>, MessageListener
 				event.setConsumed(Boolean.TRUE);
 				logger.info("Terminating all indexing : ");
 				ThreadUtilities.destroy();
-				ThreadUtilities.cancellAllForkJoinPools();
+				ThreadUtilities.cancelAllForkJoinPools();
 			}
 		}
 	}

@@ -76,7 +76,8 @@ public final class Deployer {
 		if (execute) {
 			Deployer deployer = APPLICATION_CONTEXT.getBean(Deployer.class);
 			for (final Server server : deployer.getServers()) {
-				Future<?> future = ThreadUtilities.submitSystem(new Runnable() {
+                String name = Long.toString(System.currentTimeMillis());
+				Future<?> future = ThreadUtilities.submit(name, new Runnable() {
 					public void run() {
 						for (final IAction action : server.getActions()) {
 							action.execute(server);

@@ -38,6 +38,11 @@ public class InternetResourceHandler extends ResourceHandler<IndexableInternet> 
             final Object resource)
 			throws Exception {
 		Url url = (Url) resource;
+        String parsedContent = url.getParsedContent();
+        // logger.info("Parsed content : " + parsedContent);
+        if (parsedContent == null) {
+            return document;
+        }
 		// Add the id field, which is the url in this case
 		IndexManager.addStringField(indexable.getIdFieldName(), url.getUrl(), indexable, document);
 		// Add the title field
@@ -59,6 +64,7 @@ public class InternetResourceHandler extends ResourceHandler<IndexableInternet> 
 		// Add the contents field
 		IndexManager.addStringField(indexable.getContentFieldName(), url.getParsedContent(), indexable, document);
 		super.addDocument(indexContext, indexable, document);
+        // logger.debug("Document : " + document);
 		return document;
 	}
 

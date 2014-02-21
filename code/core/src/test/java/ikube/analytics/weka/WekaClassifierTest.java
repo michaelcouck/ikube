@@ -140,7 +140,7 @@ public class WekaClassifierTest extends AbstractTest {
         List<Future<?>> futures = new ArrayList<>();
         final AtomicInteger exceptions = new AtomicInteger(0);
 
-        Future<?> future = ThreadUtilities.submitSystem(new Runnable() {
+        Future<?> future = ThreadUtilities.submit(Long.toString(System.currentTimeMillis()), new Runnable() {
             public void run() {
                 int i = iterations;
                 while (--i > 0) {
@@ -154,7 +154,7 @@ public class WekaClassifierTest extends AbstractTest {
             }
         });
         futures.add(future);
-        future = ThreadUtilities.submitSystem(new Runnable() {
+        future = ThreadUtilities.submit(Long.toString(System.currentTimeMillis()), new Runnable() {
             public void run() {
                 int i = iterations * 100;
                 while (--i > 0) {
@@ -169,7 +169,7 @@ public class WekaClassifierTest extends AbstractTest {
             }
         });
         futures.add(future);
-        future = ThreadUtilities.submitSystem(new Runnable() {
+        future = ThreadUtilities.submit(Long.toString(System.currentTimeMillis()), new Runnable() {
             public void run() {
                 int i = iterations * 1000;
                 while (--i > 0) {

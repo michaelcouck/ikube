@@ -39,7 +39,9 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
     @Test
     public void allOperations() {
         // Persist
-        Url url = dataBase.persist(new Url());
+        Url seed = new Url();
+        seed.setIndexed(Boolean.FALSE);
+        Url url = dataBase.persist(seed);
         // Find long
         Object object = dataBase.find(Url.class, url.getId());
         assertNotNull("The url should have been persisted : ", object);
@@ -58,6 +60,10 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
         // Find int int
         List<Url> urls = dataBase.find(Url.class, 0, 100);
         assertEquals("There should be one url in the database : ", 1, urls.size());
+
+        // Find boolean
+        url = dataBase.find(Url.class, new String[] {"indexed"}, new Object[] {Boolean.FALSE});
+        assertNotNull("The url should be found : ", url);
 
         // Remove
         dataBase.remove(Url.class, url.getId());
@@ -223,7 +229,7 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
         url.setHash(hash);
         dataBase.persist(url);
 
-        List<Url> urls = dataBase.findCriteria(Url.class, new String[]{"hash"}, new Object[]{hash}, 0, 10);
+        List<Url> urls = dataBase.find(Url.class, new String[]{"hash"}, new Object[]{hash}, 0, 10);
         assertEquals("There should be one url in the database, and one category based ont he hash : ", 1, urls.size());
     }
 
