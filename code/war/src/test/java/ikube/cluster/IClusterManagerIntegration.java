@@ -1,7 +1,7 @@
-package ikube;
+package ikube.cluster;
 
 import com.hazelcast.core.Hazelcast;
-import ikube.cluster.IClusterManager;
+import ikube.IntegrationTest;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.ThreadUtilities;
 import org.junit.Before;
@@ -13,6 +13,15 @@ import java.util.concurrent.Future;
 
 import static org.junit.Assert.*;
 
+/**
+ * This test will check the grid scheduling of tasks. Typically there will be a server
+ * started, and along with this instance of ikube, there should be at least two nodes in the cluster
+ * which affords a suitable test environment.
+ *
+ * @author Michael Couck
+ * @version 01.00
+ * @since 25-02-2014
+ */
 public class IClusterManagerIntegration extends IntegrationTest {
 
     public static class CallableImpl implements Callable {
@@ -39,12 +48,7 @@ public class IClusterManagerIntegration extends IntegrationTest {
     @Test
     @SuppressWarnings("unchecked")
     public void sendTaskToAll() throws Exception {
-        List<Future<?>> futures = clusterManager.sendTaskToAll(new CallableImpl() {
-            @Override
-            public Object call() throws Exception {
-                return Boolean.TRUE;
-            }
-        });
+        List<Future<?>> futures = clusterManager.sendTaskToAll(new CallableImpl());
         ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
         for (final Future<?> future : futures) {
             assertTrue((Boolean) future.get());
