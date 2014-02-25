@@ -3,6 +3,8 @@ package ikube.analytics;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.analytics.weka.WekaClassifier;
+import ikube.cluster.IClusterManager;
+import ikube.cluster.hzc.ClusterManagerHazelcast;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import mockit.Deencapsulation;
@@ -11,10 +13,12 @@ import mockit.MockClass;
 import mockit.Mockit;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import weka.classifiers.functions.SMO;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,20 +42,31 @@ public class AnalyticsServiceTest extends AbstractTest {
         }
     }
 
-    private Analysis<?, ?> analysis;
+    private static IClusterManager CLUSTER_MANAGER;
+
+    @BeforeClass
+    public static void beforeClass() {
+        CLUSTER_MANAGER = new ClusterManagerHazelcast();
+        ((ClusterManagerHazelcast) CLUSTER_MANAGER).setListeners(Collections.EMPTY_LIST);
+    }
+
     private IAnalyzer analyzer;
+    private Analysis<?, ?> analysis;
     private AnalyticsService analyticsService;
 
     @Before
+    @SuppressWarnings("unchecked")
     public void before() throws Exception {
         analyticsService = new AnalyticsService();
-        analysis = mock(Analysis.class);
         analyzer = mock(IAnalyzer.class);
+        analysis = mock(Analysis.class);
+
         when(analysis.getAnalyzer()).thenReturn(IConstants.ANALYZER);
 
         Map<String, IAnalyzer> analyzers = new HashMap<>();
         analyzers.put(analysis.getAnalyzer(), analyzer);
         Deencapsulation.setField(analyticsService, "analyzers", analyzers);
+        Deencapsulation.setField(analyticsService, "clusterManager", CLUSTER_MANAGER);
         Mockit.setUpMocks(AnalyzerManagerMock.class);
     }
 
@@ -83,7 +98,12 @@ public class AnalyticsServiceTest extends AbstractTest {
     public void analyze() throws Exception {
         Analysis analysis = analyticsService.analyze(this.analysis);
         assertEquals(this.analysis, analysis);
-        verify(analyzer, atLeastOnce()).analyze(any());
+        verify(analyzer, atLeast(1)).analyze(any());
+
+        when(this.analysis.isDistributed()).thenReturn(Boolean.TRUE);
+        analysis = analyticsService.analyze(this.analysis);
+        assertEquals(this.analysis, analysis);
+        verify(analyzer, atLeast(2)).analyze(any());
     }
 
     @Test
@@ -113,7 +133,11 @@ public class AnalyticsServiceTest extends AbstractTest {
     @SuppressWarnings("unchecked")
     public void classesOrClusters() throws Exception {
         analyticsService.classesOrClusters(analysis);
-        verify(analysis, atLeastOnce()).setClassesOrClusters(any(Object[].class));
+        verify(analysis, atLeast(1)).setClassesOrClusters(any(Object[].class));
+
+        when(this.analysis.isDistributed()).thenReturn(Boolean.TRUE);
+        analyticsService.classesOrClusters(analysis);
+        verify(analysis, atLeast(2)).setClassesOrClusters(any(Object[].class));
     }
 
     @Test
@@ -121,7 +145,11 @@ public class AnalyticsServiceTest extends AbstractTest {
     public void sizesForClassesOrClusters() {
         when(analysis.getClassesOrClusters()).thenReturn(new Object[]{IConstants.POSITIVE, IConstants.NEGATIVE});
         analyticsService.sizesForClassesOrClusters(analysis);
-        verify(analysis, atLeastOnce()).setSizesForClassesOrClusters(any(int[].class));
+        verify(analysis, atLeast(1)).setSizesForClassesOrClusters(any(int[].class));
+
+        when(this.analysis.isDistributed()).thenReturn(Boolean.TRUE);
+        analyticsService.sizesForClassesOrClusters(analysis);
+        verify(analysis, atLeast(2)).setSizesForClassesOrClusters(any(int[].class));
     }
 
 }

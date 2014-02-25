@@ -109,12 +109,15 @@ public class WekaClassifier extends WekaAnalyzer {
                 double classification = classOrCluster(instance);
                 // Set the output for the client
                 String clazz = instances.classAttribute().value((int) classification);
-                double[] output = distributionForInstance(instance);
+                double[] distributionForInstance = distributionForInstance(instance);
 
                 analysis.setClazz(clazz);
-                analysis.setOutput(output);
-                analysis.setAlgorithmOutput(classifier.toString());
-                log(clazz, input, output);
+                analysis.setOutput(distributionForInstance);
+
+                if (analysis.isAlgorithm()) {
+                    analysis.setAlgorithmOutput(classifier.toString());
+                }
+                log(clazz, input, distributionForInstance);
 
                 if (analysis.isCorrelation()) {
                     analysis.setCorrelationCoefficients(getCorrelationCoefficients(instances));
@@ -202,9 +205,6 @@ public class WekaClassifier extends WekaAnalyzer {
     }
 
     private void log(final Instances instances) throws Exception {
-        if (!logger.isDebugEnabled()) {
-            return;
-        }
         if (instances != null && instances.numInstances() > 0 && instances.numClasses() > 0 && instances.numAttributes() > 0) {
             int numClasses = instances.numClasses();
             int numAttributes = instances.numAttributes();
@@ -218,7 +218,7 @@ public class WekaClassifier extends WekaAnalyzer {
                             numInstances + //
                             ", classifier :  " + //
                             classifier.hashCode();
-            logger.debug(expression);
+            logger.info(expression);
         }
     }
 

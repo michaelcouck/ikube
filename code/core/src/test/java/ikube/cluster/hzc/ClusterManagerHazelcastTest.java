@@ -24,7 +24,9 @@ import org.mockito.Mockito;
 
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
@@ -63,7 +65,9 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
     private IDataBase dataBase;
     @Cascading
     private IMonitorService monitorService;
+
     @Cascading
+    @SuppressWarnings("UnusedDeclaration")
     private Snapshot snapshot;
 
     private ClusterManagerHazelcast clusterManagerHazelcast;
@@ -238,6 +242,7 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
     public void submitDestroy() {
         Runnable runnable = new Runnable() {
             @Override
+            @SuppressWarnings("InfiniteLoopStatement")
             public void run() {
                 while (true) {
                     ThreadUtilities.sleep(10000);
@@ -289,6 +294,39 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
             futures.add(future);
         }
         ThreadUtilities.waitForFutures(futures, Long.MAX_VALUE);
+    }
+
+    public static class CallableImpl implements Callable {
+        @Override
+        public Object call() throws Exception {
+            return null;
+        }
+    }
+
+    @Test
+    public void sendTask() {
+        final AtomicBoolean atomicBoolean = new AtomicBoolean(Boolean.FALSE);
+        clusterManagerHazelcast.sendTask(new CallableImpl() {
+            @Override
+            public Object call() throws Exception {
+                atomicBoolean.set(Boolean.TRUE);
+                return null;
+            }
+        });
+        assertTrue(atomicBoolean.get());
+    }
+
+    @Test
+    public void sendTaskToAll() {
+        final AtomicBoolean atomicBoolean = new AtomicBoolean(Boolean.FALSE);
+        clusterManagerHazelcast.sendTaskToAll(new CallableImpl() {
+            @Override
+            public Object call() throws Exception {
+                atomicBoolean.set(Boolean.TRUE);
+                return null;
+            }
+        });
+        assertTrue(atomicBoolean.get());
     }
 
     /**

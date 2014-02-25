@@ -46,9 +46,7 @@ public class WekaClusterer extends WekaAnalyzer {
                     filteredData.setRelationName("filtered_data");
                     clusterer.buildClusterer(filteredData);
 
-                    if (logger.isDebugEnabled()) {
-                        log();
-                    }
+                    log();
                 } catch (final Exception e) {
                     throw new RuntimeException(e);
                 } finally {
@@ -96,8 +94,10 @@ public class WekaClusterer extends WekaAnalyzer {
 
             analysis.setClazz(Integer.toString(cluster));
             analysis.setOutput(distributionForInstance);
-            // TODO This must be optional as it is expensive
-            analysis.setAlgorithmOutput(clusterer.toString());
+
+            if (analysis.isAlgorithm()) {
+                analysis.setAlgorithmOutput(clusterer.toString());
+            }
             if (analysis.isCorrelation()) {
                 analysis.setCorrelationCoefficients(getCorrelationCoefficients(instances));
             }

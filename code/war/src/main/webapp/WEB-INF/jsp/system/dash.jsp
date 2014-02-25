@@ -67,6 +67,7 @@
                         <ul class="nav nav-list" style="margin-left: 10px; padding: 5px;" ng-show="action.show">
 							<li><i class="icon-globe"></i>Server : {{action.server.address}}</li>
 							<li><i class="icon-time"></i>Start timestamp : {{action.startTime}}</li>
+                            <li><i class="icon-time"></i>End timestamp : {{action.endTime}}</li>
 							<li><i class="icon-th-list"></i>Index writer documents : {{action.snapshot.numDocsForIndexWriters}}</li>
 							<li>
 								<ul>

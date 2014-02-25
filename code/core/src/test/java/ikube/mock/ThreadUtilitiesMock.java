@@ -1,13 +1,9 @@
 package ikube.mock;
 
-import ikube.action.index.IndexManager;
-import ikube.model.IndexContext;
 import ikube.toolkit.ThreadUtilities;
 import mockit.Mock;
 import mockit.MockClass;
-import org.apache.lucene.index.IndexWriter;
 
-import java.io.File;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.Future;
@@ -15,7 +11,7 @@ import java.util.concurrent.Future;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 30.01.14
+ * @since 30-01-2014
  */
 @SuppressWarnings("UnusedParameters")
 @MockClass(realClass = ThreadUtilities.class)

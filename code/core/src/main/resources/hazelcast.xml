@@ -1,7 +1,7 @@
 <hazelcast>
 	<group>
-		<name>ikube</name>
-		<password>ikube</password>
+		<name>ikube-dev</name>
+		<password>ikube-dev</password>
 	</group>
 	<network>
 		<port auto-increment="true">8020</port>

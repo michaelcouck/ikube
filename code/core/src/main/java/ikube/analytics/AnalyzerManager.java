@@ -34,6 +34,10 @@ public final class AnalyzerManager {
     }
 
     public static IAnalyzer<?, ?, ?> buildAnalyzer(final Context context) throws Exception {
+        return buildAnalyzer(context, Boolean.FALSE);
+    }
+
+    public static IAnalyzer<?, ?, ?> buildAnalyzer(final Context context, final boolean waitForBuild) throws Exception {
         final IAnalyzer<?, ?, ?> analyzer = (IAnalyzer<?, ?, ?>) context.getAnalyzer();
         class Builder implements Runnable {
             public void run() {
@@ -55,10 +59,15 @@ public final class AnalyzerManager {
             ThreadUtilities.initialize();
         }
         Future future = ThreadUtilities.submit(builder.toString(), builder);
-        // We'll wait a bit for the future to end, but potentially
-        // this process can take hours, to build a large classifier of a million
-        // vectors for example, so we return
-        ThreadUtilities.waitForFuture(future, 3);
+        if (waitForBuild) {
+            // We'll wait until the analyzer is built completely
+            ThreadUtilities.waitForFuture(future, Integer.MAX_VALUE);
+        } else {
+            // We'll wait a bit for the future to end, but potentially
+            // this process can take hours, to build a large classifier of a million
+            // vectors for example, so we return
+            ThreadUtilities.waitForFuture(future, 3);
+        }
         LOGGER.info("Analyzer finished building : " + future.isDone());
         return analyzer;
     }

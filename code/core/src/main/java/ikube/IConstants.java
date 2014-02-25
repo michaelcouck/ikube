@@ -148,6 +148,7 @@ public interface IConstants {
     String SEMI_COLON = ";";
 
     String TOPIC = "topic";
+    String EXECUTOR_SERVICE = "executor-service";
 
     int TEN_THOUSAND = 10000;
     int HUNDRED_THOUSAND = TEN_THOUSAND * 10;

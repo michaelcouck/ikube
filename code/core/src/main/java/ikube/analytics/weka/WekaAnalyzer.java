@@ -20,14 +20,15 @@ import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * This is the base class for the Weka implementation of the analytics API. It has base methods for creating {@link weka.core.Instances}
- * objects, loading data from files in 'arff' format, getting the class or cluster for an instance, creating {@link weka.core.Instance} objects
- * and filtering them for processing. There are also methods for getting the correlation co-efficients and distributions for instances.
- * {@link ikube.analytics.IAnalyzer} implementations that wrap Weka should use this class as a base.
+ * This is the base class for the Weka implementation of the analytics API. It has base methods for creating
+ * {@link weka.core.Instances} objects, loading data from files in 'arff' format, getting the class or cluster for an
+ * instance, creating {@link weka.core.Instance} objects and filtering them for processing. There are also methods for
+ * getting the correlation co-efficients and distributions for instances. {@link ikube.analytics.IAnalyzer} implementations
+ * that wrap Weka should use this class as a base.
  *
  * @author Michael Couck
  * @version 01.00
- * @since 18.11.13
+ * @since 18-11-2013
  */
 public abstract class WekaAnalyzer implements IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>, Analysis<String, double[]>> {
 
