@@ -26,7 +26,6 @@ import java.sql.Timestamp;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
@@ -50,6 +49,13 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
         @SuppressWarnings("unchecked")
         public static <K, V> IMap<K, V> getMap(String name) {
             return (IMap<K, V>) servers;
+        }
+    }
+
+    public static class CallableImpl implements Callable {
+        @Override
+        public Object call() throws Exception {
+            return Boolean.TRUE;
         }
     }
 
@@ -296,37 +302,21 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
         ThreadUtilities.waitForFutures(futures, Long.MAX_VALUE);
     }
 
-    public static class CallableImpl implements Callable {
-        @Override
-        public Object call() throws Exception {
-            return null;
+    @Test
+    @SuppressWarnings("unchecked")
+    public void sendTask() throws Exception {
+        Future<Boolean> future = clusterManagerHazelcast.sendTask(new CallableImpl());
+        assertTrue(future.get());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void sendTaskToAll() throws Exception {
+        List<Future<?>> futures = clusterManagerHazelcast.sendTaskToAll(new CallableImpl());
+        ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
+        for (final Future<?> future : futures) {
+            assertTrue((Boolean) future.get());
         }
-    }
-
-    @Test
-    public void sendTask() {
-        final AtomicBoolean atomicBoolean = new AtomicBoolean(Boolean.FALSE);
-        clusterManagerHazelcast.sendTask(new CallableImpl() {
-            @Override
-            public Object call() throws Exception {
-                atomicBoolean.set(Boolean.TRUE);
-                return null;
-            }
-        });
-        assertTrue(atomicBoolean.get());
-    }
-
-    @Test
-    public void sendTaskToAll() {
-        final AtomicBoolean atomicBoolean = new AtomicBoolean(Boolean.FALSE);
-        clusterManagerHazelcast.sendTaskToAll(new CallableImpl() {
-            @Override
-            public Object call() throws Exception {
-                atomicBoolean.set(Boolean.TRUE);
-                return null;
-            }
-        });
-        assertTrue(atomicBoolean.get());
     }
 
     /**

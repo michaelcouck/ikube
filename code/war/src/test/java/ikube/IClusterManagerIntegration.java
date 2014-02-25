@@ -1,24 +1,24 @@
 package ikube;
 
+import com.hazelcast.core.Hazelcast;
 import ikube.cluster.IClusterManager;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.ThreadUtilities;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class IClusterManagerIntegration extends IntegrationTest {
 
     public static class CallableImpl implements Callable {
         @Override
         public Object call() throws Exception {
-            return null;
+            return Boolean.TRUE;
         }
     }
 
@@ -31,24 +31,14 @@ public class IClusterManagerIntegration extends IntegrationTest {
 
     @Test
     public void sendTask() {
-        final List<Boolean> executions = new ArrayList<>();
-        Future<?> future = clusterManager.sendTask(new CallableImpl() {
-            @Override
-            public Object call() throws Exception {
-                executions.add(Boolean.TRUE);
-                return null;
-            }
-        });
+        Future<?> future = clusterManager.sendTask(new CallableImpl());
         ThreadUtilities.waitForFuture(future, Integer.MAX_VALUE);
-        logger.info("Executions : " + executions.size());
-        assertEquals("There should be one execution only : ", 1, executions.size());
+        assertNotNull("There should be one execution only : ", future);
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void sendTaskToAll() throws Exception {
-        int sizeOfCluster = clusterManager.getServers().size();
-        final List<Boolean> executions = new ArrayList<>();
         List<Future<?>> futures = clusterManager.sendTaskToAll(new CallableImpl() {
             @Override
             public Object call() throws Exception {
@@ -57,10 +47,11 @@ public class IClusterManagerIntegration extends IntegrationTest {
         });
         ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
         for (final Future<?> future : futures) {
-            executions.add((Boolean) future.get());
+            assertTrue((Boolean) future.get());
         }
-        logger.info("Executions : " + executions.size());
-        assertEquals("There should be one execution per node in the cluster : ", sizeOfCluster, executions.size());
+        int sizeOfCluster = Hazelcast.getAllHazelcastInstances().iterator().next().getCluster().getMembers().size();
+        logger.info("Executions : " + futures.size() + ", cluster size : " + sizeOfCluster);
+        assertEquals("There should be one execution per node in the cluster : ", sizeOfCluster, futures.size());
     }
 
 }
