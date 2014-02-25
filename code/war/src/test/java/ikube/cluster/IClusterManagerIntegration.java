@@ -2,13 +2,13 @@ package ikube.cluster;
 
 import com.hazelcast.core.Hazelcast;
 import ikube.IntegrationTest;
+import ikube.model.Task;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.ThreadUtilities;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 import static org.junit.Assert.*;
@@ -24,13 +24,6 @@ import static org.junit.Assert.*;
  */
 public class IClusterManagerIntegration extends IntegrationTest {
 
-    public static class CallableImpl implements Callable {
-        @Override
-        public Object call() throws Exception {
-            return Boolean.TRUE;
-        }
-    }
-
     private IClusterManager clusterManager;
 
     @Before
@@ -40,7 +33,7 @@ public class IClusterManagerIntegration extends IntegrationTest {
 
     @Test
     public void sendTask() {
-        Future<?> future = clusterManager.sendTask(new CallableImpl());
+        Future<?> future = clusterManager.sendTask(new Task());
         ThreadUtilities.waitForFuture(future, Integer.MAX_VALUE);
         assertNotNull("There should be one execution only : ", future);
     }
@@ -48,7 +41,7 @@ public class IClusterManagerIntegration extends IntegrationTest {
     @Test
     @SuppressWarnings("unchecked")
     public void sendTaskToAll() throws Exception {
-        List<Future<?>> futures = clusterManager.sendTaskToAll(new CallableImpl());
+        List<Future<?>> futures = clusterManager.sendTaskToAll(new Task());
         ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
         for (final Future<?> future : futures) {
             assertTrue((Boolean) future.get());
