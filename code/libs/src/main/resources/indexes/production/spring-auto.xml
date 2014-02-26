@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--suppress ALL -->
 <beans
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns="http://www.springframework.org/schema/beans"
@@ -31,7 +32,7 @@
 		property:maxFieldLength="${max.field.length}"
 		property:maxReadLength="${max.read.length}"
 		property:address="false"
-		property:throttle="10"
+		property:throttle="0"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path}"
 		property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer"
@@ -81,7 +82,7 @@
 		property:analyzed="true"
 		property:stored="true"
 		property:vectored="true"
-		property:omitNorms="true" />
+		property:omitNorms="false" />
 		<!-- Do not normalize for length -->
 	<bean
 		id="autocomplete-word-lists-synonym"
@@ -91,7 +92,7 @@
 		property:analyzed="true"
 		property:stored="true"
 		property:vectored="true"
-		property:omitNorms="true" />
+		property:omitNorms="false" />
 		<!-- Do not normalize for length -->
 	
 </beans>

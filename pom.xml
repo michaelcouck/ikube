@@ -1159,6 +1159,13 @@
             <type>jar</type>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>net.sf.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>2.3</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
 	</dependencies>
 
 	<repositories>
@@ -1238,8 +1245,8 @@
         <module>code/com</module>
         <module>code/core</module>
         <module>code/war</module>
-        <module>code/libs</module>
         <module>code/tool</module>
+        <!--<module>code/libs</module>-->
         <!--<module>code/site</module>-->
     </modules>
 

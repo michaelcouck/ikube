@@ -16,6 +16,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * This class provides resources to the table handler. In this case a resource is a result set. Each
+ * thread will request a result set, which will be all the records between two identifiers. That result
+ * set will then be consumed by the caller.
+ *
+ * @author Michael Couck
+ * @version 01.00
+ * @since 29-11-2010
+ */
 class TableResourceProvider implements IResourceProvider<ResultSet> {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -68,17 +77,21 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
     }
 
     void setMinAndMaxId(final IndexableTable indexableTable, final DataSource dataSource) {
+        logger.info("Set min and max id : " + indexableTable.getName());
         Connection connection = getConnection(dataSource);
         long minimumId = indexableTable.getMinimumId();
+        logger.info("Min id : " + minimumId);
         if (minimumId <= 0) {
             minimumId = getIdFunction(indexableTable, connection, "min");
             indexableTable.setMinimumId(minimumId);
         }
         long maximumId = indexableTable.getMaximumId();
+        logger.info("Max id : " + minimumId);
         if (maximumId <= 0) {
             maximumId = getIdFunction(indexableTable, connection, "max");
             indexableTable.setMaximumId(maximumId);
         }
+        logger.info("Closing connection, i.e. back to the pool, with a cocktail :) " + minimumId);
         DatabaseUtilities.close(connection);
     }
 
@@ -107,7 +120,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
      * @throws SQLException
      */
     synchronized ResultSet getResultSet(final IndexContext<?> indexContext, final IndexableTable indexableTable, final AtomicLong currentId)
-        throws SQLException {
+            throws SQLException {
         Connection connection = dataSource.getConnection();
         ResultSet resultSet;
         PreparedStatement statement;
@@ -135,7 +148,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
             logger.info("Query : " + sql);
             currentId.set(currentId.get() + indexContext.getBatchSize());
             PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY,
-                ResultSet.CLOSE_CURSORS_AT_COMMIT);
+                    ResultSet.CLOSE_CURSORS_AT_COMMIT);
             // Set the parameters if this is a sub table, this typically means that the
             // id from the primary table is set in the prepared statement
             setParameters(indexableTable, preparedStatement);

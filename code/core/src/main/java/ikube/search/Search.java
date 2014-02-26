@@ -21,26 +21,34 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 /**
- * This action does the actual search on the index. The searcher that is current in the Instance is passed to this
- * action. The search is done on the index. The
- * results are then processed for use in the front end. A list of maps is generated from the results. There are three
- * standard fields in each map. Each map then
- * represents one record or category from the search. The three standard items in the map are the index in the lucene
- * category set, id of the record and the
+ * <p>
+ * This action does the actual search on the index. The searcher that is current in the instance is passed to this
+ * action. The search is done on the index. The results are then processed for use in the front end. A list of maps is
+ * generated from the results. There are three standard fields in each map. Each map then represents one record or result
+ * from the search. The three standard items in the map are the index in the lucene category set, id of the record and the
  * score that the category got. Optionally the fragment generated from the category if this is specified.
  * <p/>
+ * <p>
+ * Additionally there will be statistical information added as a map at the end of the results, namely the total results,
+ * the duration of the search, the highest scoring document, the original search strings as a concatenated string of the
+ * original array of strings, the spelling corrections to the words if any. If there is an exception during the search,
+ * then the stack trace and the message will be added to the statistics map at the end of the result list.
+ * <p/>
+ * <p>
  * The id of the record generated using the name of the object indexed and the primary field in the database.
  * <p/>
+ * <p>
  * For paging functionality the search method can be called specifying the start and end parameters which will give
- * logical paging. Although the search will be
- * done for each page forward the search is so fast that this is not relevant.
+ * logical paging. Although the search will be done for each page forward the search is so fast that this is not relevant.
+ * </p>
  *
  * @author Michael Couck
  * @version 01.00
- * @since 22.08.08
+ * @since 22-08-2008
  */
 public abstract class Search {
 
+    /** These are the types of fields currently supported in Lucene. */
     public enum TypeField {
 
         STRING("string"), //
@@ -319,8 +327,10 @@ public abstract class Search {
      * @return the list of results from the search
      * @throws IOException
      */
-    protected ArrayList<HashMap<String, String>> getResults(final TopDocs topDocs,
-                                                            final Query query) throws IOException {
+    protected ArrayList<HashMap<String, String>> getResults(
+            final TopDocs topDocs,
+            final Query query)
+            throws IOException {
         ArrayList<HashMap<String, String>> results = new ArrayList<>();
         long totalHits = topDocs.totalHits;
         long scoreHits = topDocs.scoreDocs.length;
@@ -385,9 +395,13 @@ public abstract class Search {
      * @param totalHits the total hits
      * @param duration  how long the search took in milliseconds
      */
-    protected void addStatistics(final String[] searchStrings, final ArrayList<HashMap<String, String>> results,
-                                 final long totalHits, final float highScore,
-                                 final long duration, final Exception exception) {
+    protected void addStatistics(
+            final String[] searchStrings,
+            final ArrayList<HashMap<String, String>> results,
+            final long totalHits,
+            final float highScore,
+            final long duration,
+            final Exception exception) {
         if (results == null) {
             return;
         }
@@ -395,8 +409,7 @@ public abstract class Search {
         HashMap<String, String> statistics = new HashMap<>();
         String[] correctedSearchStrings = getCorrections(searchStrings);
         String searchString = StringUtils.strip(Arrays.deepToString(searchStrings), IConstants.STRIP_CHARACTERS);
-        String correctedSearchString = StringUtils.strip(Arrays.deepToString(correctedSearchStrings),
-                IConstants.STRIP_CHARACTERS);
+        String correctedSearchString = StringUtils.strip(Arrays.deepToString(correctedSearchStrings), IConstants.STRIP_CHARACTERS);
 
         statistics.put(IConstants.TOTAL, Long.toString(totalHits));
         statistics.put(IConstants.DURATION, Long.toString(duration));
@@ -437,14 +450,17 @@ public abstract class Search {
             String[] searchStringTokens = StringUtils.split(searchString, " ");
             for (final String searchStringToken : searchStringTokens) {
                 String searchStringTokenLower = searchStringToken.toLowerCase();
-                if ("and".equals(searchStringTokenLower) || "or".equals(searchStringTokenLower) || "with".equals
-                        (searchStringTokenLower)) {
+                if ("and".equals(searchStringTokenLower) ||
+                        "or".equals(searchStringTokenLower) ||
+                        "with".equals(searchStringTokenLower)) {
                     continue;
                 }
                 String correctedSearchStringToken = spellingChecker.checkWord(searchStringTokenLower);
                 if (correctedSearchStringToken != null) {
                     // Replace the incorrect token in the original string
-                    correctedSearchStrings[i] = StringUtils.replace(correctedSearchStrings[i], searchStringToken,
+                    correctedSearchStrings[i] = StringUtils.replace(
+                            correctedSearchStrings[i],
+                            searchStringToken,
                             correctedSearchStringToken);
                     corrections = Boolean.TRUE;
                 }

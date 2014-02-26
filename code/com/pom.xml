@@ -40,7 +40,7 @@
                 <executions>
                     <execution>
                         <id>copy-configuration</id>
-                        <phase>install</phase>
+                        <phase>deploy</phase>
                         <configuration>
                             <target>
                                 <echo message="Base directory : ${basedir}, ">Base directory : ${basedir}</echo>
@@ -130,7 +130,7 @@
         </plugins>
     </build>
 
-    <dependencies>
+    <!--<dependencies>
         <dependency>
             <groupId>jdom</groupId>
             <artifactId>jdom</artifactId>
@@ -158,22 +158,12 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>canyon</groupId>
-            <artifactId>canyon</artifactId>
-            <version>0.9.8</version>
+            <groupId>mockit</groupId>
+            <artifactId>jmockit</artifactId>
+            <version>0.999</version>
             <type>jar</type>
-            <scope>compile</scope>
+            <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.jcraft</groupId>
-            <artifactId>jsch</artifactId>
-            <version>0.1.48</version>
-        </dependency>
-        <dependency>
-            <groupId>ant</groupId>
-            <artifactId>ant</artifactId>
-            <version>1.7.0</version>
-        </dependency>
-    </dependencies>
+    </dependencies>-->
 
 </project>

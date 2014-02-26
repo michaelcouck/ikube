@@ -205,13 +205,19 @@ public class SearcherService implements ISearcherService {
                 }
             };
             Future<?> future = clusterManager.sendTask(callable);
-            ThreadUtilities.waitForFuture(future, 60);
+            ThreadUtilities.waitForFuture(future, 10);
             Search result = null;
             try {
                 result = (Search) future.get();
                 BeanUtilsBean2.getInstance().copyProperties(search, result);
             } catch (final Exception e) {
                 handleException("Exception doing remote search : " + search + ", " + result, e);
+            }
+            // If the result is null or there are no results then
+            // there probably was an issue with the target server so we'll
+            // try to do this search locally
+            if (result == null || result.getCount() == 0) {
+                return doSearch(search);
             }
         } else {
             return doSearch(search);
@@ -277,11 +283,13 @@ public class SearcherService implements ISearcherService {
             searchAction.setOccurrenceFields(occurrenceFields);
 
             ArrayList<HashMap<String, String>> results = searchAction.execute();
-            String[] searchStringsCorrected = searchAction.getCorrections(search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]));
-            if (searchStringsCorrected != null) {
+            String[] searchStringsCorrected = searchAction.getCorrections(searchStrings);
+            if (searchStringsCorrected != null && searchStringsCorrected.length > 0) {
+                search.setCorrections(Boolean.TRUE);
                 search.setCorrectedSearchStrings(Arrays.asList(searchStringsCorrected));
+            } else {
+                search.setCorrections(Boolean.FALSE);
             }
-            search.setCorrections(searchStringsCorrected != null && searchStringsCorrected.length > 0);
             search.setSearchResults(results);
             persistSearch(search);
         } catch (final Exception e) {

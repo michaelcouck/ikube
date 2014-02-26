@@ -11,7 +11,6 @@ import ikube.toolkit.FileUtilities;
 import ikube.toolkit.SerializationUtilities;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.tools.ant.filters.StringInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -28,8 +28,9 @@ import java.io.OutputStream;
  *
  * @author Michael couck
  * @version 01.00
- * @since 20.11.12
+ * @since 20-11-2012
  */
+@SuppressWarnings("SpringJavaAutowiringInspection")
 public abstract class Resource {
 
     /**
@@ -92,8 +93,8 @@ public abstract class Resource {
      */
     protected ResponseBuilder buildResponse() {
         return Response.status(Response.Status.OK)//
-            .header("Access-Control-Allow-Origin", "*") //
-            .header("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
+                .header("Access-Control-Allow-Origin", "*") //
+                .header("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
     }
 
     <T> T unmarshall(final Class<T> clazz, final HttpServletRequest request) {
@@ -123,7 +124,8 @@ public abstract class Resource {
         HtmlParser htmlParser = new HtmlParser();
         OutputStream outputStream = new ByteArrayOutputStream();
         try {
-            htmlParser.parse(new StringInputStream(string), outputStream);
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(string.getBytes());
+            htmlParser.parse(inputStream, outputStream);
             cleaned = outputStream.toString();
         } catch (Exception e) {
             logger.error("Exception cleaning the search string of html : " + string, e);

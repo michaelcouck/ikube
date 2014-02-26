@@ -260,7 +260,7 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Be
     @SuppressWarnings("unchecked")
     public IAnalyzer<I, O, C> destroy(final Context context) {
         // Create the callable that will be executed on the remote node
-        Callable callable = new Callable<Object>() {
+        Callable callable =     new Callable<Object>() {
             @Override
             @SuppressWarnings("unchecked")
             public Object call() throws Exception {

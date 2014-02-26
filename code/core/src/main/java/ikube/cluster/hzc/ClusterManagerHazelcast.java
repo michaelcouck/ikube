@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
  * @since 15-07-2012
  */
 @SuppressWarnings("SpringJavaAutowiringInspection")
-public final class ClusterManagerHazelcast extends AClusterManager {
+public class ClusterManagerHazelcast extends AClusterManager {
 
     /**
      * The instance of this server.

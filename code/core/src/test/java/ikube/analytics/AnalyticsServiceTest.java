@@ -3,7 +3,6 @@ package ikube.analytics;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.analytics.weka.WekaClassifier;
-import ikube.cluster.IClusterManager;
 import ikube.cluster.hzc.ClusterManagerHazelcast;
 import ikube.model.Analysis;
 import ikube.model.Context;
@@ -13,14 +12,15 @@ import mockit.MockClass;
 import mockit.Mockit;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import weka.classifiers.functions.SMO;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.*;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 20.11.13
+ * @since 20-11-2013
  */
 public class AnalyticsServiceTest extends AbstractTest {
 
@@ -40,15 +40,6 @@ public class AnalyticsServiceTest extends AbstractTest {
         public static IAnalyzer<?, ?, ?> buildAnalyzer(final Context context) throws Exception {
             return null;
         }
-    }
-
-    private static IClusterManager CLUSTER_MANAGER;
-
-    @BeforeClass
-    public static void beforeClass() {
-        CLUSTER_MANAGER = new ClusterManagerHazelcast();
-        // ((ClusterManagerHazelcast) CLUSTER_MANAGER).setListeners(Collections.EMPTY_LIST);
-        Deencapsulation.setField(CLUSTER_MANAGER, "listeners", Collections.EMPTY_LIST);
     }
 
     private IAnalyzer analyzer;
@@ -62,12 +53,21 @@ public class AnalyticsServiceTest extends AbstractTest {
         analyzer = mock(IAnalyzer.class);
         analysis = mock(Analysis.class);
 
+        ClusterManagerHazelcast clusterManager = mock(ClusterManagerHazelcast.class);
+
         when(analysis.getAnalyzer()).thenReturn(IConstants.ANALYZER);
+        when(clusterManager.sendTask(any(Callable.class))).thenAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(final InvocationOnMock invocation) throws Throwable {
+                return null;
+            }
+        });
 
         Map<String, IAnalyzer> analyzers = new HashMap<>();
         analyzers.put(analysis.getAnalyzer(), analyzer);
         Deencapsulation.setField(analyticsService, "analyzers", analyzers);
-        Deencapsulation.setField(analyticsService, "clusterManager", CLUSTER_MANAGER);
+        Deencapsulation.setField(analyticsService, "clusterManager", clusterManager);
+
         Mockit.setUpMocks(AnalyzerManagerMock.class);
     }
 

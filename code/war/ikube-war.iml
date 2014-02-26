@@ -39,14 +39,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="ikube-core" />
     <orderEntry type="module" module-name="ikube-com" />
-    <orderEntry type="library" name="Maven: org.jdom:jdom:1.1" level="project" />
-    <orderEntry type="library" name="Maven: net.sf.opencsv:opencsv:2.3" level="project" />
-    <orderEntry type="library" name="Maven: sevenzip:jbinding:4.65.1" level="project" />
-    <orderEntry type="library" name="Maven: sevenzip:jbinding-linux:4.65.1" level="project" />
-    <orderEntry type="library" name="Maven: canyon:canyon:0.9.8" level="project" />
-    <orderEntry type="library" name="Maven: com.jcraft:jsch:0.1.41" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.ant:ant:1.7.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.ant:ant-launcher:1.7.0" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-beans:3.0.5.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-core:3.0.5.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-asm:3.0.5.RELEASE" level="project" />
@@ -152,6 +144,7 @@
     <orderEntry type="library" name="Maven: de.schlichtherle.truezip:truezip-driver-tzp:7.7.1" level="project" />
     <orderEntry type="library" name="Maven: de.schlichtherle.truezip:truezip-driver-http:7.7.1" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jgit:org.eclipse.jgit:0.9.3" level="project" />
+    <orderEntry type="library" name="Maven: com.jcraft:jsch:0.1.41" level="project" />
     <orderEntry type="library" name="Maven: cybozu:langdetect:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: jsonic:jsonic:1.2.4" level="project" />
     <orderEntry type="library" name="Maven: edu.cmu.sphinx:sphinx4:1.0-beta6" level="project" />
@@ -175,6 +168,7 @@
     <orderEntry type="library" name="Maven: org.apache.lucene:lucene-sandbox:4.6.0" level="project" />
     <orderEntry type="library" name="Maven: jakarta-regexp:jakarta-regexp:1.4" level="project" />
     <orderEntry type="library" name="Maven: niocchi:niocchi:1.1" level="project" />
+    <orderEntry type="library" name="Maven: net.sf.opencsv:opencsv:2.3" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax.servlet:servlet-api:2.5" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax.servlet:jsp-api:2.0" level="project" />
     <orderEntry type="library" name="Maven: taglibs:standard:1.1.2" level="project" />
