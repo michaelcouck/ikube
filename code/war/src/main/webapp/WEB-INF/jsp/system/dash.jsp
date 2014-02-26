@@ -115,7 +115,8 @@
 									<div class="inner-well clearfix">
 										<div class="pull-left"><b>Jobs running : </b>{{servers[0].threadsRunning}}</div>
 										<div class="pull-right">
-											<a class="button mini rounded inset light-gray" ng-click="terminateThreads = !terminateThreads">Stop</a>
+											<a class="button mini rounded inset light-gray" ng-click="terminateThreads = !terminateThreads" ng-show="server.threadsRunning">Stop</a>
+											<a class="button mini rounded inset light-gray" ng-click="terminateThreads = !terminateThreads" ng-show="!server.threadsRunning">Start</a>
 										</div>
 									</div>
 									<div class="inner-well clearfix" ng-show="terminateThreads">
@@ -134,9 +135,19 @@
 														href="#"
 														class="button red" 
 														ng-click="
-															terminateThreads = false;
-															terminateThreadsConfirmed = false;
-															toggleThreadsRunning();">Toggle jobs</label>
+														    terminateThreads = !terminateThreads;
+														    terminateThreadsConfirmed = !terminateThreadsConfirmed;
+														    toggleThreadsRunning();"
+                                                        ng-show="server.threadsRunning">Terminate jobs</label>
+													<label
+														for="gtnDu"
+														href="#"
+														class="button red"
+														ng-click="
+														    terminateThreads = !terminateThreads;
+														    terminateThreadsConfirmed = !terminateThreadsConfirmed;
+														    toggleThreadsRunning();"
+                                                        ng-show="!server.threadsRunning">Start jobs</label>
 												</div>
 												<div class="pull-right">
 													<label for="gtnDu" href="#" class="button gray" ng-click="terminateThreads = false;terminateThreadsConfirmed = false;">Cancel</label>
@@ -148,7 +159,8 @@
 									<div class="inner-well clearfix">
 										<div class="pull-left"><b>Cpu throttling : </b>{{servers[0].cpuThrottling}}</div>
 										<div class="pull-right">
-											<a class="button mini rounded inset light-gray" ng-click="terminateThrottling = !terminateThrottling">Stop</a>
+											<a class="button mini rounded inset light-gray" ng-click="terminateThrottling = !terminateThrottling" ng-show="server.cpuThrottling">Stop</a>
+											<a class="button mini rounded inset light-gray" ng-click="terminateThrottling = !terminateThrottling" ng-show="!server.cpuThrottling">Start</a>
 										</div>
 									</div>
 									<div class="inner-well clearfix" ng-show="terminateThrottling">
@@ -165,11 +177,21 @@
 													<label 
 														for="gtnCpu" 
 														href="#" 
-														class="button red" 
+														class="button red"
+                                                        ng-show="server.cpuThrottling"
 														ng-click="
 															terminateThrottling = false;
 															terminateThrottlingConfirmed = false;
-															toggleCpuThrottling();">Toggle throttling</label>
+															toggleCpuThrottling();">Stop throttling</label>
+													<label
+														for="gtnCpu"
+														href="#"
+														class="button red"
+                                                        ng-show="!server.cpuThrottling"
+														ng-click="
+															terminateThrottling = false;
+															terminateThrottlingConfirmed = false;
+															toggleCpuThrottling();">Start throttling</label>
 												</div>
 												<div class="pull-right">
 													<label for="gtnCpu" href="#" class="button gray" ng-click="terminateThrottling = false;terminateThrottlingConfirmed = false;">Cancel</label>

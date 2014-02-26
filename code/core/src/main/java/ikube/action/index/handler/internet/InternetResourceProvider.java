@@ -16,6 +16,7 @@ import org.niocchi.urlpools.TimeoutURLPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -44,12 +45,19 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
             String filePath = FileUtilities.cleanFilePath(genericResource.getTmpFileAbsolutePath());
             File file = new File(filePath);
 
-            byte[] rawContent = FileUtilities.getContents(file, indexableInternet.getMaxReadLength()).toByteArray();
-            FileUtilities.deleteFile(file);
-            logger.debug("Setting content length : " + rawContent.length);
             Url url = findUrl(stringUrl);
             url.setContentType(contentType);
-            url.setRawContent(rawContent);
+            if (file.exists() && file.canRead()) {
+                ByteArrayOutputStream byteArrayOutputStream = FileUtilities.getContents(file, indexableInternet.getMaxReadLength());
+                if (byteArrayOutputStream != null) {
+                    byte[] rawContent = byteArrayOutputStream.toByteArray();
+                    logger.debug("Setting content length : {} ", rawContent.length);
+                    if (rawContent != null && rawContent.length > 0) {
+                        url.setRawContent(rawContent);
+                    }
+                }
+            }
+            FileUtilities.deleteFile(file);
             urls.add(url);
         }
     }

@@ -5,14 +5,12 @@ import ikube.action.index.IndexManager;
 import ikube.cluster.IClusterManager;
 import ikube.cluster.IMonitorService;
 import ikube.database.IDataBase;
-import ikube.model.Action;
-import ikube.model.IndexContext;
-import ikube.model.Search;
-import ikube.model.Server;
-import ikube.model.Snapshot;
+import ikube.model.*;
 import ikube.scheduling.Schedule;
 import ikube.toolkit.Logging;
 import ikube.toolkit.ThreadUtilities;
+import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,23 +18,17 @@ import java.io.RandomAccessFile;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.*;
 
 /**
- * This schedule will take a snapshot of various system states periodically, including the cpu, how many searches there have been on all the indexes etc.
- * Snapshots are then persisted to the database, and cleaned from time to time in the {@link ikube.action.Prune} action so the database doesn't fill up. Typically we only
- * need a few snapshots and not two weeks worth. This schedule should run every minute.
+ * This schedule will take a snapshot of various system states periodically, including the cpu, how many searches
+ * there have been on all the indexes etc. Snapshots are then persisted to the database, and cleaned from time to time
+ * in the {@link ikube.action.Reset} action so the database doesn't fill up. Typically we only need a few snapshots
+ * and not two weeks worth. This schedule should run every minute.
  *
  * @author Michael Couck
  * @version 01.00
- * @since 22.07.12
+ * @since 22-07-2012
  */
 public class SnapshotSchedule extends Schedule {
 
@@ -85,7 +77,7 @@ public class SnapshotSchedule extends Schedule {
                 String[] names = new String[]{IConstants.INDEX_CONTEXT};
                 Object[] values = new Object[]{indexContext.getName()};
                 List<Snapshot> snapshots = dataBase.find(Snapshot.class, Snapshot.SELECT_SNAPSHOTS_ORDER_BY_TIMESTAMP_DESC, names, values, 0,
-                    MAX_SNAPSHOTS_CONTEXT);
+                        MAX_SNAPSHOTS_CONTEXT);
                 List<Snapshot> sortedSnapshots = sortSnapshots(snapshots);
                 indexContext.setSnapshots(sortedSnapshots);
 

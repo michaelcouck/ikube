@@ -135,26 +135,6 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
     }
 
     /**
-     * This is a convenience method for the implementing classes to call to announce to the cluster that the action is started.
-     *
-     * @param indexName     the name of the index that the actions is starting on
-     * @param indexableName the name of the indexable that the action is performing on
-     * @return the action that is returned by the cluster manager
-     */
-    protected ikube.model.Action start(final String indexName, final String indexableName) {
-        return clusterManager.startWorking(getClass().getSimpleName(), indexName, indexableName);
-    }
-
-    /**
-     * This is a convenience method for the implementing classes to call to announce to the cluster that the action has ended.
-     *
-     * @param action the action to announce to the cluster that is ended
-     */
-    protected void stop(final ikube.model.Action action) {
-        clusterManager.stopWorking(action);
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override

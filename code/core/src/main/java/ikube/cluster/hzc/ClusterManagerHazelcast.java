@@ -1,5 +1,6 @@
 package ikube.cluster.hzc;
 
+import com.hazelcast.config.Config;
 import com.hazelcast.core.*;
 import ikube.IConstants;
 import ikube.cluster.AClusterManager;
@@ -10,6 +11,7 @@ import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.toolkit.UriUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -24,6 +26,7 @@ import java.util.concurrent.TimeUnit;
  * @see IClusterManager
  * @since 15-07-2012
  */
+@SuppressWarnings("SpringJavaAutowiringInspection")
 public final class ClusterManagerHazelcast extends AClusterManager {
 
     /**
@@ -32,25 +35,30 @@ public final class ClusterManagerHazelcast extends AClusterManager {
     private Server server;
     @Autowired
     private IMonitorService monitorService;
+    @Autowired
+    @Qualifier("ikube-hazelcast")
     private HazelcastInstance hazelcastInstance;
+    // private List<MessageListener<Object>> listeners;
 
-    public void setListeners(final List<MessageListener<Object>> listeners) {
+    public void initialize() {
         ip = UriUtilities.getIp();
-        hazelcastInstance = Hazelcast.getHazelcastInstanceByName(IConstants.IKUBE);
+        // hazelcastInstance = Hazelcast.getHazelcastInstanceByName(IConstants.IKUBE);
         if (hazelcastInstance == null) {
             hazelcastInstance = Hazelcast.newHazelcastInstance();
             logger.info("New Hazelcast instance : " + hazelcastInstance);
         }
-        address = ip + "-" + hazelcastInstance.getCluster().getLocalMember().getInetSocketAddress().getPort();
-        hazelcastInstance.getConfig().getNetworkConfig().getInterfaces().setInterfaces(Arrays.asList(ip));
-        if (listeners != null) {
+        int port = hazelcastInstance.getCluster().getLocalMember().getInetSocketAddress().getPort();
+        address = ip + "-" + port;
+        Config config = hazelcastInstance.getConfig();
+        config.getNetworkConfig().getInterfaces().setInterfaces(Arrays.asList(ip));
+        /*if (listeners != null) {
             for (final MessageListener<Object> listener : listeners) {
                 if (listener == null) {
                     continue;
                 }
                 hazelcastInstance.getTopic(IConstants.TOPIC).addMessageListener(listener);
             }
-        }
+        }*/
     }
 
     /**
@@ -237,7 +245,7 @@ public final class ClusterManagerHazelcast extends AClusterManager {
      */
     @Override
     public Object get(final Object key) {
-        return hazelcastInstance.getMap(IConstants.IKUBE).get(key);
+        return get(IConstants.IKUBE, key);
     }
 
     /**
@@ -245,7 +253,7 @@ public final class ClusterManagerHazelcast extends AClusterManager {
      */
     @Override
     public void put(final Object key, final Serializable value) {
-        hazelcastInstance.getMap(IConstants.IKUBE).put(key, value);
+        put(IConstants.IKUBE, key, value);
     }
 
     /**
@@ -253,7 +261,32 @@ public final class ClusterManagerHazelcast extends AClusterManager {
      */
     @Override
     public void remove(final Object key) {
-        hazelcastInstance.getMap(IConstants.IKUBE).remove(key);
+        remove(IConstants.IKUBE, key);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T get(final String map, final Object key) {
+        return (T) hazelcastInstance.getMap(map).get(key);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void put(final String map, final Object key, final Serializable value) {
+        hazelcastInstance.getMap(map).put(key, value);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void remove(final String map, final Object key) {
+        hazelcastInstance.getMap(map).remove(key);
     }
 
     /**
@@ -263,5 +296,9 @@ public final class ClusterManagerHazelcast extends AClusterManager {
     public void destroy() {
         Hazelcast.shutdownAll();
     }
+
+    /*public void setListeners(List<MessageListener<Object>> listeners) {
+        this.listeners = listeners;
+    }*/
 
 }

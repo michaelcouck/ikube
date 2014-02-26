@@ -47,7 +47,8 @@ public class AnalyticsServiceTest extends AbstractTest {
     @BeforeClass
     public static void beforeClass() {
         CLUSTER_MANAGER = new ClusterManagerHazelcast();
-        ((ClusterManagerHazelcast) CLUSTER_MANAGER).setListeners(Collections.EMPTY_LIST);
+        // ((ClusterManagerHazelcast) CLUSTER_MANAGER).setListeners(Collections.EMPTY_LIST);
+        Deencapsulation.setField(CLUSTER_MANAGER, "listeners", Collections.EMPTY_LIST);
     }
 
     private IAnalyzer analyzer;

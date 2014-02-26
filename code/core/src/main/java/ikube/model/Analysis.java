@@ -12,11 +12,11 @@ import javax.persistence.Transient;
  *
  * @author Michael Couck
  * @version 01.00
- * @since 10.04.13
+ * @since 10-04-2013
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class Analysis<Input, Output> extends Persistable {
+public class Analysis<Input, Output> extends Distributed {
 
     /**
      * The name of the analyzer in the system, for example clusterer-em.
@@ -43,10 +43,6 @@ public class Analysis<Input, Output> extends Persistable {
      * Whether to get the algorithm output with the results.
      */
     private boolean algorithm;
-    /**
-     * Whether this analysis will be distributed into the cluster.
-     */
-    private boolean distributed;
     /**
      * The correlation co-efficients for the data set, matching the first instance against the next.
      */
@@ -114,14 +110,6 @@ public class Analysis<Input, Output> extends Persistable {
 
     public void setAlgorithmOutput(String algorithmOutput) {
         this.algorithmOutput = algorithmOutput;
-    }
-
-    public boolean isDistributed() {
-        return distributed;
-    }
-
-    public void setDistributed(boolean distributed) {
-        this.distributed = distributed;
     }
 
     public boolean isAlgorithm() {
@@ -200,6 +188,7 @@ public class Analysis<Input, Output> extends Persistable {
         return sizesForClassesAndClusters;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public void setSizesForClassesAndClusters(boolean sizesForClassesAndClusters) {
         this.sizesForClassesAndClusters = sizesForClassesAndClusters;
     }

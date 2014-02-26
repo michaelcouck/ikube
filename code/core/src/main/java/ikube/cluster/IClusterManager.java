@@ -93,7 +93,7 @@ public interface IClusterManager {
      * This method will post a callable to the a member in the cluster. The result can be gotten from
      * the future that is returned, and or the callable. Keep in mind that on the other node, there is no
      * dependency injection, so you have to get everything on that side when you get there.
-     *
+     * <p/>
      * This method will randomly select a node to execute the task on. Over time this distribution should be
      * evenly distributed over the nodes in the cluster, essentially load balancing the stress over the cluster.
      *
@@ -105,7 +105,6 @@ public interface IClusterManager {
     /**
      * Similar to the above this method will execute a task on a target member of the cluster, except that
      * this method will execute the same task on all nodes in the cluster. This can be useful when, for example,
-     *
      *
      * @param callable the callable that will be executed on the all nodes of the cluster
      * @return the futures from all the members that the callable is be executed on
@@ -121,7 +120,7 @@ public interface IClusterManager {
     Object get(final Object key);
 
     /**
-     * Puts an object in the distributed mep, using the key specified, the key need to be universally unique of course.
+     * Puts an object in the distributed map, using the key specified, the key need to be universally unique of course.
      *
      * @param key    the key to associate with the object
      * @param object the object to put in the map, also needs to be serializable
@@ -134,6 +133,33 @@ public interface IClusterManager {
      * @param key the key of the object to remove
      */
     void remove(final Object key);
+
+    /**
+     * Returns the object in the specified map with the specified key.
+     *
+     * @param key the key for the object int he distributed map
+     * @param map the name of the cache where the object is stored
+     * @return the object corresponding to the key, could be null
+     */
+    <T> T get(final String map, final Object key);
+
+    /**
+     * Puts an object in the specified distributed map, using the key specified, the key need to be universally unique of course.
+     *
+     * @param map    the name of the cache where the object is stored
+     * @param key    the key to associate with the object
+     * @param object the object to put in the map, also needs to be serializable
+     */
+    void put(final String map, final Object key, final Serializable object);
+
+    /**
+     * This method will remove an object from the grid.
+     *
+     * @param map the name of the cache where the object is stored
+     * @param key the key of the object to remove
+     */
+    void remove(final String map, final Object key);
+
 
     /**
      * This method will release any resources and close down the cluster manager gracefully.

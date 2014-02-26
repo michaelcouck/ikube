@@ -1,45 +1,51 @@
 package ikube.cluster.hzc;
 
+import com.hazelcast.core.MapStore;
+import ikube.model.Persistable;
+
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-import com.hazelcast.core.MapLoader;
-
 /**
- * This is a dummy implementation because Hazelcast expects it.
- * 
+ * This is the implementation for Hazelcast to access the database on startup. We don't
+ * populate the cache on startup, as we don't know where this instance will be in the life
+ * cycle of the cluster.
+ *
  * @author Michael Couck
- * @since 15.07.12
  * @version 01.00
+ * @since 15-07-2012
  */
-public class ClusterManagerCache implements MapLoader<String, Object> {
+public class ClusterManagerCache implements MapStore<Integer, Persistable> {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Object load(String key) {
-		return null;
-	}
+    @Override
+    public void store(final Integer key, final Persistable value) {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public Map<String, Object> loadAll(Collection<String> keys) {
-		return Collections.EMPTY_MAP;
-	}
+    @Override
+    public void storeAll(final Map<Integer, Persistable> map) {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public Set<String> loadAllKeys() {
-		return Collections.EMPTY_SET;
-	}
+    @Override
+    public void delete(final Integer key) {
+    }
 
+    @Override
+    public void deleteAll(final Collection<Integer> keys) {
+    }
+
+    @Override
+    public Persistable load(final Integer key) {
+        return null;
+    }
+
+    @Override
+    public Map<Integer, Persistable> loadAll(final Collection<Integer> keys) {
+        return null;
+    }
+
+    @Override
+    public Set<Integer> loadAllKeys() {
+        return null;
+    }
 }

@@ -8,14 +8,15 @@
     xmlns:property="http://www.springframework.org/schema/p"
     xmlns:context="http://www.springframework.org/schema/context"
 
-    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
 		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 		http://www.springframework.org/schema/util
 		http://www.springframework.org/schema/util/spring-util.xsd
 		http://www.springframework.org/schema/context
 		http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-    <description>TODO</description>
+    <description>This file is for deploying ikube into a cluster using ssh and scp.</description>
 
     <context:property-placeholder
         location="
@@ -47,12 +48,16 @@
         property:servers-ref="servers"/>
 
     <util:list id="servers">
+        <ref local="server"/>
         <ref local="server-one"/>
+        <ref local="server-two"/>
+        <ref local="server-three"/>
     </util:list>
 
+    <!-- This is the base server. -->
     <bean
-        id="server-one"
-        name="server-one"
+        id="server"
+        name="server"
         class="ikube.deploy.model.Server"
         property:ip="192.168.1.10"
         property:username="${username}"
@@ -74,8 +79,8 @@
         property:commands-ref="stop-commands"/>
     <util:list id="stop-commands">
         <value>. /etc/profile;</value>
-        <value>cd ${tomcat-one-bin};./catalina.sh stop;</value>
-        <value>ps -ef | grep ${tomcat-one} | grep -v grep | awk '{print $2}' | xargs kill -9;</value>
+        <value>cd ${tomcat-bin};./catalina.sh stop;</value>
+        <value>ps -ef | grep ${tomcat} | grep -v grep | awk '{print $2}' | xargs kill -9;</value>
     </util:list>
 
     <bean
@@ -85,27 +90,26 @@
         property:breakOnError="true"
         property:commands-ref="clean-commands"/>
     <util:list id="clean-commands">
-        <value>chmod 777 -R ${tomcat-one};</value>
+        <value>chmod 777 -R ${tomcat};</value>
 
-        <value>rm -rf ${tomcat-one-bin}/ikube/common;</value>
-        <value>rm -rf ${tomcat-one-bin}/ikube/integration;</value>
-        <value>rm -rf ${tomcat-one}/webapps/ikube;</value>
-        <value>rm -rf ${tomcat-one}/webapps/ikube.war;</value>
+        <value>rm -rf ${tomcat-bin}/ikube/common;</value>
+        <value>rm -rf ${tomcat-bin}/ikube/integration;</value>
+        <value>rm -rf ${tomcat}/webapps/ikube;</value>
+        <value>rm -rf ${tomcat}/webapps/ikube.war;</value>
 
-        <value>rm -rf ${tomcat-one}/logs;</value>
-        <value>rm -rf ${tomcat-one}/temp;</value>
-        <value>rm -rf ${tomcat-one}/work/Catalina/localhost;</value>
+        <value>rm -rf ${tomcat}/logs;</value>
+        <value>rm -rf ${tomcat}/temp;</value>
+        <value>rm -rf ${tomcat}/work/Catalina/localhost;</value>
 
-        <value>mkdir -p ${tomcat-one-bin}/ikube/common;</value>
-        <value>mkdir -p ${tomcat-one-bin}/ikube/integration;</value>
+        <value>mkdir -p ${tomcat-bin}/ikube/common;</value>
+        <value>mkdir -p ${tomcat-bin}/ikube/integration;</value>
 
-        <value>mkdir -p ${tomcat-one}/logs;</value>
-        <value>mkdir -p ${tomcat-one}/temp;</value>
-        <value>mkdir -p ${tomcat-one}/work/Catalina/localhost;</value>
+        <value>mkdir -p ${tomcat}/logs;</value>
+        <value>mkdir -p ${tomcat}/temp;</value>
+        <value>mkdir -p ${tomcat}/work/Catalina/localhost;</value>
 
-        <value>chmod 777 -R ${tomcat-one};</value>
+        <value>chmod 777 -R ${tomcat};</value>
     </util:list>
-
 
     <bean
         id="copy-action"
@@ -115,14 +119,14 @@
         property:files-ref="files"
         property:directories-ref="directories"/>
     <util:map id="files">
-        <entry key="code/war/target/${ikube-war}" value="${tomcat-one-webapps}"/>
+        <entry key="code/war/target/${ikube-war}" value="${tomcat-webapps}"/>
     </util:map>
     <util:map id="directories">
-        <entry key="${resources-directory}/ikube/common" value="${tomcat-one-bin}/ikube"/>
-        <entry key="${resources-directory}/indexes/integration" value="${tomcat-one-bin}/ikube"/>
-        <!--<entry key="${resources-directory}/analytics" value="${tomcat-one-bin}/ikube"/>-->
-        <!--<entry key="${resources-directory}/indexes/production" value="${tomcat-one-bin}/ikube"/>-->
-        <!--<entry key="${resources-directory}/indexes/twitter" value="${tomcat-one-bin}/ikube"/>-->
+        <entry key="${resources-directory}/ikube/common" value="${tomcat-bin}/ikube"/>
+        <entry key="${resources-directory}/indexes/integration" value="${tomcat-bin}/ikube"/>
+        <!--<entry key="${resources-directory}/analytics" value="${tomcat-bin}/ikube"/>-->
+        <!--<entry key="${resources-directory}/indexes/production" value="${tomcat-bin}/ikube"/>-->
+        <!--<entry key="${resources-directory}/indexes/twitter" value="${tomcat-bin}/ikube"/>-->
     </util:map>
 
     <bean
@@ -133,8 +137,268 @@
         property:commands-ref="start-commands"/>
     <util:list id="start-commands">
         <value>. /etc/profile;</value>
+        <value>chmod 777 -R ${tomcat};</value>
+        <value>cd ${tomcat-bin};./catalina.sh start;</value>
+    </util:list>
+
+    <!-- Cluster servers one, two and three -->
+
+    <!-- One -->
+    <bean
+        id="server-one"
+        name="server-one"
+        class="ikube.deploy.model.Server"
+        property:ip="192.168.1.10"
+        property:username="${username}"
+        property:password="${password}"
+        property:actions-ref="actions-one"/>
+
+    <util:list id="actions-one">
+        <ref local="stop-action-one"/>
+        <ref local="clean-action-one"/>
+        <ref local="copy-action-one"/>
+        <ref local="start-action-one"/>
+    </util:list>
+
+    <bean
+        id="stop-action-one"
+        name="stop-action-one"
+        class="ikube.deploy.action.CommandAction"
+        property:breakOnError="true"
+        property:commands-ref="stop-commands-one"/>
+    <util:list id="stop-commands-one">
+        <value>. /etc/profile;</value>
+        <value>cd ${tomcat-one-bin};./catalina.sh stop;</value>
+        <value>ps -ef | grep ${tomcat-one} | grep -v grep | awk '{print $2}' | xargs kill -9;</value>
+    </util:list>
+
+    <bean
+        id="clean-action-one"
+        name="clean-action-one"
+        class="ikube.deploy.action.CommandAction"
+        property:breakOnError="true"
+        property:commands-ref="clean-commands-one"/>
+    <util:list id="clean-commands-one">
+        <value>chmod 777 -R ${tomcat-one};</value>
+
+        <value>rm -rf ${tomcat-one-bin}/ikube;</value>
+        <value>rm -rf ${tomcat-one}/webapps/ikube;</value>
+        <value>rm -rf ${tomcat-one}/webapps/ikube.war;</value>
+
+        <value>rm -rf ${tomcat-one}/logs;</value>
+        <value>rm -rf ${tomcat-one}/temp;</value>
+        <value>rm -rf ${tomcat-one}/work/Catalina/localhost;</value>
+
+        <value>mkdir -p ${tomcat-one-bin}/ikube;</value>
+
+        <value>mkdir -p ${tomcat-one}/logs;</value>
+        <value>mkdir -p ${tomcat-one}/temp;</value>
+        <value>mkdir -p ${tomcat-one}/work/Catalina/localhost;</value>
+
+        <value>chmod 777 -R ${tomcat-one};</value>
+    </util:list>
+
+    <bean
+        id="copy-action-one"
+        name="copy-action-one"
+        class="ikube.deploy.action.CopyAction"
+        property:breakOnError="true"
+        property:files-ref="files-one"
+        property:directories-ref="directories-one"/>
+    <util:map id="files-one">
+        <entry key="code/war/target/${ikube-war}" value="${tomcat-webapps}"/>
+    </util:map>
+    <util:map id="directories-one">
+        <entry key="${resources-directory}/ikube" value="${tomcat-one-bin}/ikube"/>
+        <entry key="${resources-directory}/analytics" value="${tomcat-one-bin}/ikube"/>
+        <entry key="${resources-directory}/indexes/integration" value="${tomcat-one-bin}/ikube"/>
+        <entry key="${resources-directory}/indexes/production" value="${tomcat-one-bin}/ikube"/>
+        <entry key="${resources-directory}/indexes/twitter" value="${tomcat-one-bin}/ikube"/>
+    </util:map>
+
+    <bean
+        id="start-action-one"
+        name="start-action-one"
+        class="ikube.deploy.action.CommandAction"
+        property:breakOnError="true"
+        property:commands-ref="start-commands-one"/>
+    <util:list id="start-commands-one">
+        <value>. /etc/profile;</value>
         <value>chmod 777 -R ${tomcat-one};</value>
         <value>cd ${tomcat-one-bin};./catalina.sh start;</value>
     </util:list>
+    <!-- End one -->
+
+    <!-- Two -->
+    <bean
+        id="server-two"
+        name="server-two"
+        class="ikube.deploy.model.Server"
+        property:ip="192.168.1.10"
+        property:username="${username}"
+        property:password="${password}"
+        property:actions-ref="actions-two"/>
+
+    <util:list id="actions-two">
+        <ref local="stop-action-two"/>
+        <ref local="clean-action-two"/>
+        <ref local="copy-action-two"/>
+        <ref local="start-action-two"/>
+    </util:list>
+
+    <bean
+        id="stop-action-two"
+        name="stop-action-two"
+        class="ikube.deploy.action.CommandAction"
+        property:breakOnError="true"
+        property:commands-ref="stop-commands-two"/>
+    <util:list id="stop-commands-two">
+        <value>. /etc/profile;</value>
+        <value>cd ${tomcat-two-bin};./catalina.sh stop;</value>
+        <value>ps -ef | grep ${tomcat-two} | grep -v grep | awk '{print $2}' | xargs kill -9;</value>
+    </util:list>
+
+    <bean
+        id="clean-action-two"
+        name="clean-action-two"
+        class="ikube.deploy.action.CommandAction"
+        property:breakOnError="true"
+        property:commands-ref="clean-commands-two"/>
+    <util:list id="clean-commands-two">
+        <value>chmod 777 -R ${tomcat-two};</value>
+
+        <value>rm -rf ${tomcat-two-bin}/ikube;</value>
+        <value>rm -rf ${tomcat-two}/webapps/ikube;</value>
+        <value>rm -rf ${tomcat-two}/webapps/ikube.war;</value>
+
+        <value>rm -rf ${tomcat-two}/logs;</value>
+        <value>rm -rf ${tomcat-two}/temp;</value>
+        <value>rm -rf ${tomcat-two}/work/Catalina/localhost;</value>
+
+        <value>mkdir -p ${tomcat-two-bin}/ikube;</value>
+
+        <value>mkdir -p ${tomcat-two}/logs;</value>
+        <value>mkdir -p ${tomcat-two}/temp;</value>
+        <value>mkdir -p ${tomcat-two}/work/Catalina/localhost;</value>
+
+        <value>chmod 777 -R ${tomcat-two};</value>
+    </util:list>
+
+    <bean
+        id="copy-action-two"
+        name="copy-action-two"
+        class="ikube.deploy.action.CopyAction"
+        property:breakOnError="true"
+        property:files-ref="files-two"
+        property:directories-ref="directories-two"/>
+    <util:map id="files-two">
+        <entry key="code/war/target/${ikube-war}" value="${tomcat-webapps}"/>
+    </util:map>
+    <util:map id="directories-two">
+        <entry key="${resources-directory}/ikube" value="${tomcat-two-bin}/ikube"/>
+        <entry key="${resources-directory}/analytics" value="${tomcat-two-bin}/ikube"/>
+        <entry key="${resources-directory}/indexes/integration" value="${tomcat-two-bin}/ikube"/>
+        <entry key="${resources-directory}/indexes/production" value="${tomcat-two-bin}/ikube"/>
+        <entry key="${resources-directory}/indexes/twitter" value="${tomcat-two-bin}/ikube"/>
+    </util:map>
+
+    <bean
+        id="start-action-two"
+        name="start-action-two"
+        class="ikube.deploy.action.CommandAction"
+        property:breakOnError="true"
+        property:commands-ref="start-commands-two"/>
+    <util:list id="start-commands-two">
+        <value>. /etc/profile;</value>
+        <value>chmod 777 -R ${tomcat-two};</value>
+        <value>cd ${tomcat-two-bin};./catalina.sh start;</value>
+    </util:list>
+    <!-- End two -->
+
+    <!-- Three -->
+    <bean
+        id="server-three"
+        name="server-three"
+        class="ikube.deploy.model.Server"
+        property:ip="192.168.1.10"
+        property:username="${username}"
+        property:password="${password}"
+        property:actions-ref="actions-three"/>
+
+    <util:list id="actions-three">
+        <ref local="stop-action-three"/>
+        <ref local="clean-action-three"/>
+        <ref local="copy-action-three"/>
+        <ref local="start-action-three"/>
+    </util:list>
+
+    <bean
+        id="stop-action-three"
+        name="stop-action-three"
+        class="ikube.deploy.action.CommandAction"
+        property:breakOnError="true"
+        property:commands-ref="stop-commands-three"/>
+    <util:list id="stop-commands-three">
+        <value>. /etc/profile;</value>
+        <value>cd ${tomcat-three-bin};./catalina.sh stop;</value>
+        <value>ps -ef | grep ${tomcat-three} | grep -v grep | awk '{print $2}' | xargs kill -9;</value>
+    </util:list>
+
+    <bean
+        id="clean-action-three"
+        name="clean-action-three"
+        class="ikube.deploy.action.CommandAction"
+        property:breakOnError="true"
+        property:commands-ref="clean-commands-three"/>
+    <util:list id="clean-commands-three">
+        <value>chmod 777 -R ${tomcat-three};</value>
+
+        <value>rm -rf ${tomcat-three-bin}/ikube;</value>
+        <value>rm -rf ${tomcat-three}/webapps/ikube;</value>
+        <value>rm -rf ${tomcat-three}/webapps/ikube.war;</value>
+
+        <value>rm -rf ${tomcat-three}/logs;</value>
+        <value>rm -rf ${tomcat-three}/temp;</value>
+        <value>rm -rf ${tomcat-three}/work/Catalina/localhost;</value>
+
+        <value>mkdir -p ${tomcat-three-bin}/ikube;</value>
+
+        <value>mkdir -p ${tomcat-three}/logs;</value>
+        <value>mkdir -p ${tomcat-three}/temp;</value>
+        <value>mkdir -p ${tomcat-three}/work/Catalina/localhost;</value>
+
+        <value>chmod 777 -R ${tomcat-three};</value>
+    </util:list>
+
+    <bean
+        id="copy-action-three"
+        name="copy-action-three"
+        class="ikube.deploy.action.CopyAction"
+        property:breakOnError="true"
+        property:files-ref="files-three"
+        property:directories-ref="directories-three"/>
+    <util:map id="files-three">
+        <entry key="code/war/target/${ikube-war}" value="${tomcat-webapps}"/>
+    </util:map>
+    <util:map id="directories-three">
+        <entry key="${resources-directory}/ikube" value="${tomcat-three-bin}/ikube"/>
+        <entry key="${resources-directory}/analytics" value="${tomcat-three-bin}/ikube"/>
+        <entry key="${resources-directory}/indexes/integration" value="${tomcat-three-bin}/ikube"/>
+        <entry key="${resources-directory}/indexes/production" value="${tomcat-three-bin}/ikube"/>
+        <entry key="${resources-directory}/indexes/twitter" value="${tomcat-three-bin}/ikube"/>
+    </util:map>
+
+    <bean
+        id="start-action-three"
+        name="start-action-three"
+        class="ikube.deploy.action.CommandAction"
+        property:breakOnError="true"
+        property:commands-ref="start-commands-three"/>
+    <util:list id="start-commands-three">
+        <value>. /etc/profile;</value>
+        <value>chmod 777 -R ${tomcat-three};</value>
+        <value>cd ${tomcat-three-bin};./catalina.sh start;</value>
+    </util:list>
+    <!-- End three -->
 
 </beans>

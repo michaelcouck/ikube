@@ -205,6 +205,28 @@ public final class ClusterManagerLocal extends AClusterManager {
      * {@inheritDoc}
      */
     @Override
+    public Object get(String map, Object key) {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void put(String map, Object key, Serializable object) {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void remove(String map, Object key) {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void destroy() {
         Hazelcast.shutdownAll();
     }

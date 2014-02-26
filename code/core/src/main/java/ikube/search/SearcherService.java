@@ -1,8 +1,8 @@
 package ikube.search;
 
 import ikube.IConstants;
+import ikube.cluster.IClusterManager;
 import ikube.cluster.IMonitorService;
-import ikube.database.IDataBase;
 import ikube.model.Coordinate;
 import ikube.model.IndexContext;
 import ikube.model.Search;
@@ -10,11 +10,7 @@ import ikube.search.Search.TypeField;
 import ikube.toolkit.HashUtilities;
 import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.ThreadUtilities;
-
-import java.lang.reflect.Constructor;
-import java.util.*;
-import java.util.concurrent.Future;
-
+import org.apache.commons.beanutils.BeanUtilsBean2;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.search.BooleanClause;
@@ -23,6 +19,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.lang.reflect.Constructor;
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 /**
  * @author Michael Couck
@@ -41,10 +42,10 @@ public class SearcherService implements ISearcherService {
     private static final ArrayList<HashMap<String, String>> EMPTY_RESULTS = new ArrayList<>();
 
     /**
-     * The database that we persist the searches to.
+     * The service to distribute the searches in the cluster.
      */
     @Autowired
-    private IDataBase dataBase;
+    private IClusterManager clusterManager;
     /**
      * The service to get system contexts and other bric-a-brac.
      */
@@ -56,8 +57,13 @@ public class SearcherService implements ISearcherService {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public ArrayList<HashMap<String, String>> search(final String indexName, final String[] searchStrings, final String[] searchFields, final boolean fragment,
-                                                     final int firstResult, final int maxResults) {
+    public ArrayList<HashMap<String, String>> search(
+            final String indexName,
+            final String[] searchStrings,
+            final String[] searchFields,
+            final boolean fragment,
+            final int firstResult,
+            final int maxResults) {
         try {
             Search search = new Search();
             search.setIndexName(indexName);
@@ -84,8 +90,14 @@ public class SearcherService implements ISearcherService {
      * {@inheritDoc}
      */
     @Override
-    public ArrayList<HashMap<String, String>> search(final String indexName, final String[] searchStrings, final String[] searchFields,
-                                                     final String[] sortFields, final boolean fragment, final int firstResult, final int maxResults) {
+    public ArrayList<HashMap<String, String>> search(
+            final String indexName,
+            final String[] searchStrings,
+            final String[] searchFields,
+            final String[] sortFields,
+            final boolean fragment,
+            final int firstResult,
+            final int maxResults) {
         try {
             Search search = new Search();
             search.setIndexName(indexName);
@@ -112,8 +124,15 @@ public class SearcherService implements ISearcherService {
      * {@inheritDoc}
      */
     @Override
-    public ArrayList<HashMap<String, String>> search(final String indexName, final String[] searchStrings, final String[] searchFields,
-                                                     final String[] typeFields, final String[] sortFields, final boolean fragment, final int firstResult, final int maxResults) {
+    public ArrayList<HashMap<String, String>> search(
+            final String indexName,
+            final String[] searchStrings,
+            final String[] searchFields,
+            final String[] typeFields,
+            final String[] sortFields,
+            final boolean fragment,
+            final int firstResult,
+            final int maxResults) {
         try {
             Search search = new Search();
             search.setIndexName(indexName);
@@ -138,9 +157,17 @@ public class SearcherService implements ISearcherService {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public ArrayList<HashMap<String, String>> search(final String indexName, final String[] searchStrings, final String[] searchFields,
-                                                     final String[] typeFields, final boolean fragment, final int firstResult, final int maxResults, final int distance, final double latitude,
-                                                     final double longitude) {
+    public ArrayList<HashMap<String, String>> search(
+            final String indexName,
+            final String[] searchStrings,
+            final String[] searchFields,
+            final String[] typeFields,
+            final boolean fragment,
+            final int firstResult,
+            final int maxResults,
+            final int distance,
+            final double latitude,
+            final double longitude) {
         try {
             Search search = new Search();
             search.setIndexName(indexName);
@@ -167,6 +194,32 @@ public class SearcherService implements ISearcherService {
      */
     @Override
     public Search search(final Search search) {
+        if (search.isDistributed()) {
+            // Set the flag so we don't get infinite recursion
+            search.setDistributed(Boolean.FALSE);
+            // Create the callable that will be executed on the nodes
+            Callable callable = new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    return doSearch(search);
+                }
+            };
+            Future<?> future = clusterManager.sendTask(callable);
+            ThreadUtilities.waitForFuture(future, 60);
+            Search result = null;
+            try {
+                result = (Search) future.get();
+                BeanUtilsBean2.getInstance().copyProperties(search, result);
+            } catch (final Exception e) {
+                handleException("Exception doing remote search : " + search + ", " + result, e);
+            }
+        } else {
+            return doSearch(search);
+        }
+        return search;
+    }
+
+    private Search doSearch(final Search search) {
         try {
             ikube.search.Search searchAction;
             if (search.getCoordinate() != null && search.getDistance() != 0) {
@@ -230,7 +283,7 @@ public class SearcherService implements ISearcherService {
             }
             search.setCorrections(searchStringsCorrected != null && searchStringsCorrected.length > 0);
             search.setSearchResults(results);
-            // persistSearch(search);
+            persistSearch(search);
         } catch (final Exception e) {
             handleException(search.getIndexName(), e);
         }
@@ -338,9 +391,9 @@ public class SearcherService implements ISearcherService {
 
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Searching index : " + indexName + ", " + //
-                Arrays.deepToString(searchStrings) + ", " + //
-                Arrays.deepToString(searchFields) + ", " + //
-                Arrays.deepToString(typeFields));
+                    Arrays.deepToString(searchStrings) + ", " + //
+                    Arrays.deepToString(searchFields) + ", " + //
+                    Arrays.deepToString(typeFields));
         }
 
         clonedSearch.setSearchStrings(Arrays.asList(searchStrings));
@@ -398,12 +451,9 @@ public class SearcherService implements ISearcherService {
         return search;
     }
 
-    private long merged = System.currentTimeMillis();
-    private Map<Long, Search> mergeBatch = new HashMap<>();
-    private List<Search> persistBatch = new ArrayList<>();
-
     /**
-     * TODO This needs to be re-implemented for optimization and performance. Two possibilities, either create
+     * TODO This needs to be re-implemented:
+     * For optimization and performance. Two possibilities, either create
      * an index on the hash column in the search table or keep everything in memory some how.
      */
     protected synchronized void persistSearch(final Search search) {
@@ -435,39 +485,15 @@ public class SearcherService implements ISearcherService {
         }
         long hash = HashUtilities.hash(cleanedSearchStrings.toString());
         try {
-            Search dbSearch = dataBase.find(Search.class, new String[]{"hash"}, new Object[]{hash});
-            if (dbSearch != null) {
-                Search mergeSearch = mergeBatch.get(hash);
-                if (mergeSearch != null) {
-                    mergeSearch.setCount(mergeSearch.getCount() + 1);
-                } else {
-                    dbSearch.setCount(dbSearch.getCount() + 1);
-                    mergeBatch.put(hash, dbSearch);
-                }
-                if (mergeBatch.size() > MAX_MERGE_SIZE || System.currentTimeMillis() - merged > 1000 * 60 * 5) {
-                    LOGGER.info("Merging searches : " + mergeBatch.size());
-                    merged = System.currentTimeMillis();
-                    dataBase.mergeBatch(new ArrayList<>(mergeBatch.values()));
-                    mergeBatch.clear();
-                }
-                // dataBase.merge(dbSearch);
-                // dataBase.executeUpdate(Search.UPDATE_SEARCH_COUNT_SEARCHES, new String[]{"count", "indexName"}, new Object[]{count, indexName});
+            Search cacheSearch = clusterManager.get(IConstants.SEARCH, hash);
+            if (cacheSearch == null) {
+                clusterManager.put(search.getHash(), search);
             } else {
-                search.setCount(1);
-                search.setHash(hash);
-                search.setTotalResults(Integer.parseInt(statistics.get(IConstants.TOTAL)));
-                search.setHighScore(Double.parseDouble(statistics.get(IConstants.SCORE)));
-                persistBatch.add(search);
-                if (persistBatch.size() > MAX_PERSIST_SIZE) {
-                    LOGGER.info("Persisting searches : " + persistBatch.size());
-                    dataBase.persistBatch(persistBatch);
-                    persistBatch.clear();
-                }
-                // dataBase.persist(search);
+                cacheSearch.setCount(cacheSearch.getCount() + 1);
+                clusterManager.put(cacheSearch.getHash(), cacheSearch);
             }
         } catch (final Exception e) {
-            LOGGER.debug(null, e);
-            LOGGER.info("Exception setting search in database : ", e.getMessage());
+            LOGGER.error("Exception setting search in database : ", e);
         }
     }
 

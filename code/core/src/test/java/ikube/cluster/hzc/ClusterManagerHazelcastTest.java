@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 17.04.11
+ * @since 17-04-2011
  */
 public class ClusterManagerHazelcastTest extends AbstractTest {
 
@@ -83,10 +83,11 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
     public void before() {
         clusterManagerHazelcast = new ClusterManagerHazelcast();
 
-        StartListener startListener = new StartListener();
+        /*StartListener startListener = new StartListener();
         StopListener stopListener = new StopListener();
         List<MessageListener<Object>> listeners = new ArrayList<MessageListener<Object>>(Arrays.asList(startListener, stopListener));
-        clusterManagerHazelcast.setListeners(listeners);
+        // clusterManagerHazelcast.setListeners(listeners);
+        Deencapsulation.setField(clusterManagerHazelcast, "listeners", listeners);*/
 
         dataBase = Mockito.mock(IDataBase.class);
         monitorService = Mockito.mock(IMonitorService.class);
@@ -280,7 +281,8 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 
                 ClusterRunnable() {
                     clusterManagerHazelcast = new ClusterManagerHazelcast();
-                    clusterManagerHazelcast.setListeners(Collections.EMPTY_LIST);
+                    // clusterManagerHazelcast.setListeners(Collections.EMPTY_LIST);
+                    // Deencapsulation.setField(clusterManagerHazelcast, "listeners", Collections.EMPTY_LIST);
                 }
 
                 public void run() {

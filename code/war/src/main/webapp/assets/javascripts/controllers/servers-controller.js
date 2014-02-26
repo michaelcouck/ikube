@@ -1,12 +1,33 @@
-/** This controller will get the server data from the grid. */
+/**
+ * This controller will get the server data from the grid. Also this controller
+ * has functions to start the thread pools and jobs and to stop them if necessary
+ * also, for the whole cluster.
+ */
 module.controller('ServersController', function($http, $scope, $timeout, databaseService) {
+
+    $scope.server = undefined;
 	$scope.servers = [];
 	$scope.entities = undefined;
-	$scope.terminateThreads = false;
-	$scope.terminateThreadsConfirmed = false;
-	$scope.terminateThrottling = false;
-	$scope.terminateThrottlingConfirmed = false;
-	
+
+    /** Start initialization */
+
+    /**
+     * Gets the latest server from the grid.
+     */
+	$scope.refreshServer = function() {
+		$scope.url = getServiceUrl('/ikube/service/monitor/server');
+		var promise = $http.get($scope.url);
+		promise.success(function(data, status) {
+			$scope.server = data;
+			$scope.status = status;
+		});
+		promise.error(function(data, status) {
+			$scope.status = status;
+		});
+	};
+    /**
+     * Gets all the server objects from the grid.
+     */
 	$scope.refreshServers = function() {
 		$scope.url = getServiceUrl('/ikube/service/monitor/servers');
 		var promise = $http.get($scope.url);
@@ -19,9 +40,13 @@ module.controller('ServersController', function($http, $scope, $timeout, databas
 			$scope.status = status;
 		});
 	};
-	$scope.doShow = function(scopeServers, resultServers) {
-		if (!!scopeServers && !!resultServers) {
-			angular.forEach(scopeServers, function(scopeServer, index) {
+    /**
+     * This function allows the list to stay opened if the user opened it
+     * previously and the data was then refreshed from the server again.
+     */
+    $scope.doShow = function(scopeServers, resultServers) {
+        if (!!scopeServers && !!resultServers) {
+            angular.forEach(scopeServers, function(scopeServer, index) {
 				angular.forEach(resultServers, function(resultServer, index) {
 					if (scopeServer.address === resultServer.address) {
 						resultServer.show = scopeServer.show;
@@ -30,14 +55,22 @@ module.controller('ServersController', function($http, $scope, $timeout, databas
 			});
 		}
 	};
+	$scope.refreshServer();
 	$scope.refreshServers();
 	setInterval(function() {
+        $scope.refreshServer();
 		$scope.refreshServers();
         $timeout(function() {
             $scope.$apply();
         }, 1000);
 	}, refreshInterval);
-	
+    /** End initialization. */
+
+    /**
+     * This function starts all the thread pools in the server, and the
+     * pools for fork join objects. Typically this will have no effect if the
+     * thread pools are still active.
+     */
 	$scope.startupAll = function() {
 		$scope.url = getServiceUrl('/ikube/service/monitor/startup-all');
 		$scope.parameters = {};
@@ -52,7 +85,11 @@ module.controller('ServersController', function($http, $scope, $timeout, databas
 			$scope.status = status;
 		});
 	};
-	
+
+    /**
+     * This function will terminate all the thread pools in the server, effectively
+     * destroying and stoppint all the jobs that are currently being executed.
+     */
 	$scope.terminateAll = function() {
 		$scope.url = getServiceUrl('/ikube/service/monitor/terminate-all');
 		$scope.parameters = {};
@@ -67,26 +104,28 @@ module.controller('ServersController', function($http, $scope, $timeout, databas
 			$scope.status = status;
 		});
 	};
-	
-	$scope.date = function(millis) {
-		return new Date(millis).toLocaleTimeString();
-	};
-	
+
+    /**
+     * This function decides to start or stop the thread pools.
+     */
 	$scope.toggleThreadsRunning = function() {
-		if ($scope.server.threadsRunning) {
-			$scope.terminateAll();
-		} else {
-			$scope.startupAll();
+        // alert('Threads running : ' + $scope.server.threadsRunning);
+		if (!$scope.server.threadsRunning) {
+            $scope.startupAll();
+        } else {
+            $scope.terminateAll();
 		}
-		$scope.servers[0].threadsRunning = !$scope.server[0].threadsRunning;
+        $scope.refreshServer();
+        $scope.refreshServers();
 	};
-	
+
+    /**
+     * This function goggles the cpu throttling functionality.
+     */
 	$scope.toggleCpuThrottling = function() {
 		$scope.url = getServiceUrl('/ikube/service/monitor/cpu-throttling');
 		$scope.parameters = {};
-		// The configuration for the request to the server
 		$scope.config = { params : $scope.parameters };
-		// And terminate the schedules in the cluster
 		var promise = $http.get($scope.url, $scope.config);
 		promise.success(function(data, status) {
 			$scope.status = status;
@@ -94,13 +133,16 @@ module.controller('ServersController', function($http, $scope, $timeout, databas
 		promise.error(function(data, status) {
 			$scope.status = status;
 		});
-		$scope.servers[0].cpuThrottling = !$scope.servers[0].cpuThrottling;
 	};
 	
 	$scope.cpuLoadTooHigh = function(server) {
 		return server.averageCpuLoad / server.processors > 0.9;
 	};
+
+    $scope.date = function(millis) {
+        return new Date(millis).toLocaleTimeString();
+    };
 	
 	$scope.entities = databaseService.getEntities('ikube.model.Search', '0', '10');
-	
+
 });

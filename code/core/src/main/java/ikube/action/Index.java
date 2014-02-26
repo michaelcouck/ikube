@@ -14,18 +14,20 @@ import java.util.List;
 import java.util.concurrent.ForkJoinTask;
 
 /**
- * This class executes the handlers on the indexables, effectively creating the index. Each indexable has a handler that is implemented to handle it. Each
- * handler will return a list of threads that will do the indexing. The caller(in this case, this class) must then wait for the threads to finish.
+ * This class executes the handlers on the indexables, effectively creating the index. Each indexable has a handler
+ * that is implemented to handle it. Each handler will return a list of threads that will do the indexing. The caller(in
+ * this case, this class) must then wait for the threads to finish.
  *
  * @author Michael Couck
  * @version 01.00
- * @since 21.11.10
+ * @since 21-11-2010
  */
 public class Index extends Action<IndexContext<?>, Boolean> {
 
     /**
-     * This is the list of handlers for all the sources of data. One such handler would be the {@link ikube.action.index.handler.database.IndexableTableHandler}
-     * for example, {@link ikube.action.index.handler.filesystem.IndexableFileSystemHandler} would be another.
+     * This is the list of handlers for all the sources of data. One such handler would be the
+     * {@link ikube.action.index.handler.database.IndexableTableHandler} for example,
+     * {@link ikube.action.index.handler.filesystem.IndexableFileSystemHandler} would be another.
      */
     private List<IIndexableHandler> indexableHandlers;
 

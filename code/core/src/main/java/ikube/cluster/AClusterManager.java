@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 17.07.12
  * @version 01.00
  */
+@SuppressWarnings("SpringJavaAutowiringInspection")
 public abstract class AClusterManager implements IClusterManager {
 
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
