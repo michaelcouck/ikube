@@ -9,7 +9,7 @@ import java.util.concurrent.Callable;
  * @version 01.00
  * @since 25-02-2014
  */
-public class Task implements Callable {
+public class Task extends Persistable implements Callable {
 
     /**
      * {@inheritDoc}
