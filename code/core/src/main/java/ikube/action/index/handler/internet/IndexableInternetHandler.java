@@ -53,9 +53,12 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
         Url url = (Url) resource;
         try {
             // Parse the content from the url
-            parseContent(url);
-            internetResourceHandler.handleResource(indexContext, indexableInternet, new Document(), url);
-            return extractLinksFromContent(indexableInternet, url);
+            if (url.getRawContent() != null) {
+                parseContent(url);
+                internetResourceHandler.handleResource(indexContext, indexableInternet, new Document(), url);
+                return extractLinksFromContent(indexableInternet, url);
+            }
+            return Collections.EMPTY_LIST;
         } catch (final Exception e) {
             throw new RuntimeException(e);
         } finally {
