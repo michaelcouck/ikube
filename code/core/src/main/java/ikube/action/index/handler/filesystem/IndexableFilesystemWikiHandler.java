@@ -23,8 +23,9 @@ import java.util.concurrent.ForkJoinTask;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 20.04.2012
+ * @since 20-04-2012
  */
+@Deprecated
 public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFileSystemWiki> {
 
 	/**

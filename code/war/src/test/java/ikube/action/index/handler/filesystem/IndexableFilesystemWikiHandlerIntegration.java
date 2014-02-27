@@ -13,6 +13,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -20,6 +21,13 @@ import java.net.InetAddress;
 
 import static org.junit.Assert.assertTrue;
 
+/**
+ * @author Michael Couck
+ * @version 01.00
+ * @since 20-04-2012
+ */
+@Ignore
+@Deprecated
 public class IndexableFilesystemWikiHandlerIntegration extends IntegrationTest {
 
     private IndexContext<?> wikiHistoryArabic;

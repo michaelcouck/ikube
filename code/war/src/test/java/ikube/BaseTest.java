@@ -29,8 +29,8 @@ public abstract class BaseTest {
 
     public static final String SERVICE = "/service";
 
-    protected static int SERVER_PORT = 80;
-    protected static String LOCALHOST = "ikube.be";
+    protected static int SERVER_PORT = 8080;
+    protected static String LOCALHOST = "localhost";
     protected static String REST_PASSWORD = "user";
     protected static String REST_USER_NAME = "user";
     /**
