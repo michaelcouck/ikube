@@ -9,6 +9,7 @@ import ikube.cluster.IMonitorService;
 import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Server;
+import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.UriUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -38,27 +39,37 @@ public class ClusterManagerHazelcast extends AClusterManager {
     @Autowired
     @Qualifier("ikube-hazelcast")
     private HazelcastInstance hazelcastInstance;
-    // private List<MessageListener<Object>> listeners;
 
     public void initialize() {
         ip = UriUtilities.getIp();
-        // hazelcastInstance = Hazelcast.getHazelcastInstanceByName(IConstants.IKUBE);
         if (hazelcastInstance == null) {
             hazelcastInstance = Hazelcast.newHazelcastInstance();
             logger.info("New Hazelcast instance : " + hazelcastInstance);
         }
         int port = hazelcastInstance.getCluster().getLocalMember().getInetSocketAddress().getPort();
         address = ip + "-" + port;
-        Config config = hazelcastInstance.getConfig();
+        final Config config = hazelcastInstance.getConfig();
         config.getNetworkConfig().getInterfaces().setInterfaces(Arrays.asList(ip));
-        /*if (listeners != null) {
-            for (final MessageListener<Object> listener : listeners) {
-                if (listener == null) {
-                    continue;
-                }
-                hazelcastInstance.getTopic(IConstants.TOPIC).addMessageListener(listener);
+        // Start a thread that will keep an eye on Hazelcast
+        ThreadUtilities.submit(IConstants.HAZELCAST_WATCHER, new Runnable() {
+            @SuppressWarnings("InfiniteLoopStatement")
+            public void run() {
+                do {
+                    boolean reinitialize = Boolean.FALSE;
+                    try {
+                        hazelcastInstance.getClientService().getConnectedClients();
+                    } catch (final Exception e) {
+                        reinitialize = Boolean.TRUE;
+                        logger.error("Error...", e);
+                    } finally {
+                        if (reinitialize) {
+                            logger.info("TODO: Restart the grid!!!");
+                        }
+                    }
+                    ThreadUtilities.sleep(IConstants.ONE_THOUSAND);
+                } while (true);
             }
-        }*/
+        });
     }
 
     /**
@@ -296,9 +307,5 @@ public class ClusterManagerHazelcast extends AClusterManager {
     public void destroy() {
         Hazelcast.shutdownAll();
     }
-
-    /*public void setListeners(List<MessageListener<Object>> listeners) {
-        this.listeners = listeners;
-    }*/
 
 }

@@ -7,12 +7,12 @@ import ikube.IConstants;
 import ikube.cluster.IMonitorService;
 import ikube.cluster.MonitorService;
 import ikube.cluster.listener.IListener;
-import ikube.cluster.listener.hzc.StartListener;
 import ikube.cluster.listener.hzc.StopListener;
 import ikube.database.IDataBase;
 import ikube.model.Action;
 import ikube.model.Server;
 import ikube.model.Snapshot;
+import ikube.model.Task;
 import ikube.scheduling.schedule.Event;
 import ikube.toolkit.ThreadUtilities;
 import mockit.*;
@@ -24,7 +24,6 @@ import org.mockito.Mockito;
 
 import java.sql.Timestamp;
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 import static org.junit.Assert.*;
@@ -52,13 +51,6 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
         }
     }
 
-    public static class CallableImpl implements Callable {
-        @Override
-        public Object call() throws Exception {
-            return Boolean.TRUE;
-        }
-    }
-
     private Server server;
     private Map.Entry<String, Server> serverEntry;
     private Set<Map.Entry<String, Server>> serverEntrySet;
@@ -67,9 +59,7 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
     private String indexName = "indexName";
     private String indexableName = "indexableName";
 
-    @Cascading
     private IDataBase dataBase;
-    @Cascading
     private IMonitorService monitorService;
 
     @Cascading
@@ -82,12 +72,7 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
     @SuppressWarnings("unchecked")
     public void before() {
         clusterManagerHazelcast = new ClusterManagerHazelcast();
-
-        /*StartListener startListener = new StartListener();
-        StopListener stopListener = new StopListener();
-        List<MessageListener<Object>> listeners = new ArrayList<MessageListener<Object>>(Arrays.asList(startListener, stopListener));
-        // clusterManagerHazelcast.setListeners(listeners);
-        Deencapsulation.setField(clusterManagerHazelcast, "listeners", listeners);*/
+        HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance();
 
         dataBase = Mockito.mock(IDataBase.class);
         monitorService = Mockito.mock(IMonitorService.class);
@@ -104,6 +89,7 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
         Deencapsulation.setField(clusterManagerHazelcast, server);
         Deencapsulation.setField(clusterManagerHazelcast, dataBase);
         Deencapsulation.setField(clusterManagerHazelcast, monitorService);
+        Deencapsulation.setField(clusterManagerHazelcast, "hazelcastInstance", hazelcastInstance);
     }
 
     @After
@@ -167,7 +153,7 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
         Action action = new Action();
         server.setActions(Arrays.asList(action));
         clusterManagerHazelcast.put(server.getIp(), server);
-        HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance();
+        HazelcastInstance hazelcastInstance = Deencapsulation.getField(clusterManagerHazelcast, "hazelcastInstance");
         hazelcastInstance.getMap(IConstants.IKUBE).put(server.getAddress(), server);
 
         anyworking = clusterManagerHazelcast.anyWorking();
@@ -231,7 +217,7 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
         server.getActions().add(action);
 
         MessageListener messageListener = Mockito.mock(MessageListener.class);
-        HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance();
+        HazelcastInstance hazelcastInstance = Deencapsulation.getField(clusterManagerHazelcast, "hazelcastInstance");
         hazelcastInstance.getTopic(IConstants.TOPIC).addMessageListener(messageListener);
         Deencapsulation.setField(clusterManagerHazelcast, hazelcastInstance);
         Event event = new Event();
@@ -260,6 +246,12 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
         Future<?> future = ThreadUtilities.submit(name, runnable);
         logger.info("Future : " + future.isCancelled() + ", " + future.isDone() + ", " + future);
         Event event = IListener.EventGenerator.getEvent(Event.TERMINATE, System.currentTimeMillis(), name, Boolean.FALSE);
+        StopListener stopListener = new StopListener();
+
+        HazelcastInstance hazelcastInstance = Deencapsulation.getField(clusterManagerHazelcast, "hazelcastInstance");
+        hazelcastInstance.getTopic(IConstants.TOPIC).addMessageListener(stopListener);
+        Deencapsulation.setField(clusterManagerHazelcast, hazelcastInstance);
+
         clusterManagerHazelcast.sendMessage(event);
         ThreadUtilities.sleep(5000);
         assertTrue(future.isCancelled());
@@ -281,8 +273,6 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 
                 ClusterRunnable() {
                     clusterManagerHazelcast = new ClusterManagerHazelcast();
-                    // clusterManagerHazelcast.setListeners(Collections.EMPTY_LIST);
-                    // Deencapsulation.setField(clusterManagerHazelcast, "listeners", Collections.EMPTY_LIST);
                 }
 
                 public void run() {
@@ -307,14 +297,14 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
     @Test
     @SuppressWarnings("unchecked")
     public void sendTask() throws Exception {
-        Future<Boolean> future = clusterManagerHazelcast.sendTask(new CallableImpl());
+        Future<Boolean> future = clusterManagerHazelcast.sendTask(new Task());
         assertTrue(future.get());
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void sendTaskToAll() throws Exception {
-        List<Future<?>> futures = clusterManagerHazelcast.sendTaskToAll(new CallableImpl());
+        List<Future<?>> futures = clusterManagerHazelcast.sendTaskToAll(new Task());
         ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
         for (final Future<?> future : futures) {
             assertTrue((Boolean) future.get());

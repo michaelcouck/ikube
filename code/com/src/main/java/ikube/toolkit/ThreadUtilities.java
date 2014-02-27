@@ -6,12 +6,13 @@ import java.util.*;
 import java.util.concurrent.*;
 
 /**
- * This class just has a method that will wait for a list of threads to finish and an executor service that will execute 'threads' and return futures that can
- * be waited for by the callers.
+ * This class just has a method that will wait for a list of threads to finish and
+ * an executor service that will execute 'threads' and return futures that can be waited for
+ * by the callers.
  *
  * @author Michael Couck
  * @version 01.00
- * @since 12.02.2011
+ * @since 12-02-2011
  */
 public final class ThreadUtilities {
 
@@ -26,8 +27,9 @@ public final class ThreadUtilities {
      */
     private static int MAX_RETRY_COUNT = 3;
     /**
-     * A list of futures by name so we can kill them. The map contains the name of the caller, which must be unique, and the futures that were spawned by the
-     * caller. In this way the caller or an observer of the futures can cancel them using the name.
+     * A list of futures by name so we can kill them. The map contains the name of the caller,
+     * which must be unique, and the futures that were spawned by the caller. In this way the caller
+     * or an observer of the futures can cancel them using the name.
      */
     private static Map<String, List<Future<?>>> FUTURES;
     private static Map<String, ForkJoinPool> FORK_JOIN_POOLS;
@@ -54,9 +56,10 @@ public final class ThreadUtilities {
     }
 
     /**
-     * This method will terminate the future(s) with the specified name, essentially interrupting it and remove it from the list. In the case where this future
-     * is running an action the action will terminate abruptly. Note that futures typically run in groups of three or four, and are keyed by the name, so all
-     * the futures in the group need to be cancelled.
+     * This method will terminate the future(s) with the specified name, essentially interrupting it and remove
+     * it from the list. In the case where this future is running an action the action will terminate abruptly. Note
+     * that futures typically run in groups of three or four, and are keyed by the name, so all the futures in
+     * the group need to be cancelled.
      *
      * @param name the name that was assigned to the future when it was submitted for execution
      */
@@ -99,9 +102,9 @@ public final class ThreadUtilities {
     }
 
     /**
-     * This method will wait for the future to finish doing it's work. In the event the future is interrupted, for example by the executor service closing down
-     * and interrupting all it's threads, it will return immediately. If the future takes too long and passes the maximum wait time, then the method will return
-     * immediately.
+     * This method will wait for the future to finish doing it's work. In the event the future is interrupted,
+     * for example by the executor service closing down and interrupting all it's threads, it will return immediately.
+     * If the future takes too long and passes the maximum wait time, then the method will return immediately.
      *
      * @param future  the future to wait for in seconds
      * @param maxWait the maximum amount of time to wait in seconds
@@ -126,8 +129,9 @@ public final class ThreadUtilities {
     }
 
     /**
-     * This method iterates through the list of threads looking for one that is still alive and joins it. Once all the threads have finished then this method
-     * will return to the caller indicating that all the threads have finished.
+     * This method iterates through the list of threads looking for one that is still alive and joins it. Once
+     * all the threads have finished then this method will return to the caller indicating that all the threads
+     * have finished.
      *
      * @param threads the threads to wait for
      */
@@ -172,6 +176,7 @@ public final class ThreadUtilities {
      *
      * @param sleep the time for the current thread to sleep in milli seconds
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static void waitABit(final long sleep) {
         try {
             Thread.currentThread().wait(sleep);
@@ -232,8 +237,8 @@ public final class ThreadUtilities {
     }
 
     /**
-     * This method will destroy the thread pool. All threads that are currently running will be interrupted,and should catch this exception and exit the run
-     * method.
+     * This method will destroy the thread pool. All threads that are currently running will be interrupted,
+     * and should catch this exception and exit the run method.
      */
     public static void destroy() {
         if (EXECUTOR_SERVICE == null || EXECUTOR_SERVICE.isShutdown() || FUTURES == null || FORK_JOIN_POOLS == null) {

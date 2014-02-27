@@ -150,7 +150,8 @@ public interface IConstants {
     String TOPIC = "topic";
     String EXECUTOR_SERVICE = "executor-service";
 
-    int TEN_THOUSAND = 10000;
+    int ONE_THOUSAND = 1000;
+    int TEN_THOUSAND = ONE_THOUSAND * 10;
     int HUNDRED_THOUSAND = TEN_THOUSAND * 10;
     int MILLION = HUNDRED_THOUSAND * 10;
 
@@ -177,4 +178,5 @@ public interface IConstants {
     String STRING = "string";
     String WORD = "word";
     String RANGE = "range";
+    String HAZELCAST_WATCHER = "hazelcast-watcher";
 }

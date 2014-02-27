@@ -42,8 +42,7 @@ public final class DatabaseCopy extends ADatabase {
      * Usage:
      * <p/>
      * <pre>
-     * 	  java -jar ikube.jar ikube.data.DatabaseCopy 0 10000
-     * 	      IkubePersistenceUnitOracle IkubePersistenceUnitDb2 IkubePersistenceUnitPostgres IkubePersistenceUnitOracle...
+     * 	  java -jar ikube.jar ikube.data.DatabaseCopy 0 10000 IkubePersistenceUnitPostgres IkubePersistenceUnitOracle IkubePersistenceUnitDb2 ...
      * </pre>
      * <p/>
      * => java -jar [ikube-tool.jar] [first identifier] [maximum records] [source persistence unit] [target persistence units...]
