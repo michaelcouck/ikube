@@ -38,7 +38,7 @@ public class IndexableInternetHandlerIntegration extends IntegrationTest {
     public void before() {
         // ikube-google-code, ikube-internet
         indexContext = ApplicationContextManager.getBean("ikube");
-        indexableInternet = ApplicationContextManager.getBean("ikube-google-code");
+        indexableInternet = ApplicationContextManager.getBean("ikube-internet");
 
         indexableInternetHandler = ApplicationContextManager.getBean(IndexableInternetHandler.class);
         IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);

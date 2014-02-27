@@ -240,7 +240,7 @@ public final class ThreadUtilities {
      * This method will destroy the thread pool. All threads that are currently running will be interrupted,
      * and should catch this exception and exit the run method.
      */
-    public static void destroy() {
+    public static synchronized void destroy() {
         if (EXECUTOR_SERVICE == null || EXECUTOR_SERVICE.isShutdown() || FUTURES == null || FORK_JOIN_POOLS == null) {
             LOGGER.debug("Executor service already shutdown : ");
             return;
@@ -266,12 +266,16 @@ public final class ThreadUtilities {
         List<Runnable> runnables = EXECUTOR_SERVICE.shutdownNow();
         LOGGER.info("Runnables shutdown : " + runnables);
 
-        FUTURES.clear();
-        FORK_JOIN_POOLS.clear();
+        if (FUTURES != null) {
+            FUTURES.clear();
+        }
+        if (FORK_JOIN_POOLS != null) {
+            FORK_JOIN_POOLS.clear();
+        }
 
-        EXECUTOR_SERVICE = null;
         FUTURES = null;
         FORK_JOIN_POOLS = null;
+        EXECUTOR_SERVICE = null;
     }
 
     public static boolean isInitialized() {
