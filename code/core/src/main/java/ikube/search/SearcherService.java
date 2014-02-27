@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
@@ -29,7 +30,7 @@ import java.util.concurrent.Future;
  * @author Michael Couck
  * @version 02.00
  * @see ISearcherService
- * @since 21.11.10
+ * @since 21-11-2010
  */
 @Component
 @SuppressWarnings("SpringJavaAutowiringInspection")
@@ -201,15 +202,20 @@ public class SearcherService implements ISearcherService {
             Callable callable = new Callable<Object>() {
                 @Override
                 public Object call() throws Exception {
-                    return doSearch(search);
+                    try {
+                        return doSearch(search);
+                    } catch (final Exception e) {
+                        LOGGER.error("Exception doing remote search : ", e);
+                    }
+                    return null;
                 }
             };
+            // LOGGER.info("Cluster manager : " + clusterManager);
             Future<?> future = clusterManager.sendTask(callable);
             ThreadUtilities.waitForFuture(future, 10);
             Search result = null;
             try {
                 result = (Search) future.get();
-                BeanUtilsBean2.getInstance().copyProperties(search, result);
             } catch (final Exception e) {
                 handleException("Exception doing remote search : " + search + ", " + result, e);
             }
@@ -218,6 +224,19 @@ public class SearcherService implements ISearcherService {
             // try to do this search locally
             if (result == null || result.getCount() == 0) {
                 return doSearch(search);
+            } else {
+                boolean success = Boolean.TRUE;
+                try {
+                    BeanUtilsBean2.getInstance().copyProperties(search, result);
+                } catch (final Exception e) {
+                    success = Boolean.FALSE;
+                    LOGGER.error("Exception copying properties from remote search : ", e);
+                } finally {
+                    if (!success) {
+                        LOGGER.info("Doing local search after failed remote search : ");
+                        doSearch(search);
+                    }
+                }
             }
         } else {
             return doSearch(search);
@@ -315,8 +334,12 @@ public class SearcherService implements ISearcherService {
                 searches.add(clonedSearch);
                 Runnable searchRunnable = new Runnable() {
                     public void run() {
-                        // Search each index separately
-                        search(clonedSearch);
+                        try {
+                            // Search each index separately
+                            search(clonedSearch);
+                        } catch (final Exception e) {
+                            LOGGER.error(null, e);
+                        }
                     }
                 };
                 String name = Integer.toString(clonedSearch.hashCode());
@@ -423,7 +446,7 @@ public class SearcherService implements ISearcherService {
 
     private ArrayList<HashMap<String, String>> handleException(final String indexName, final Exception e) {
         LOGGER.error("Exception doing search on : " + indexName + ", " + e.getLocalizedMessage());
-        LOGGER.debug(null, e);
+        LOGGER.error(null, e);
         return EMPTY_RESULTS;
     }
 

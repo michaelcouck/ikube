@@ -6,6 +6,7 @@ import ikube.analytics.weka.WekaClassifier;
 import ikube.cluster.hzc.ClusterManagerHazelcast;
 import ikube.model.Analysis;
 import ikube.model.Context;
+import ikube.toolkit.ThreadUtilities;
 import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockClass;
@@ -18,9 +19,11 @@ import org.mockito.stubbing.Answer;
 import weka.classifiers.functions.SMO;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -56,12 +59,37 @@ public class AnalyticsServiceTest extends AbstractTest {
         ClusterManagerHazelcast clusterManager = mock(ClusterManagerHazelcast.class);
 
         when(analysis.getAnalyzer()).thenReturn(IConstants.ANALYZER);
-        when(clusterManager.sendTask(any(Callable.class))).thenAnswer(new Answer<Object>() {
+        doAnswer(new Answer() {
             @Override
             public Object answer(final InvocationOnMock invocation) throws Throwable {
-                return null;
+                final Callable callable = (Callable) invocation.getArguments()[0];
+                Future<?> future = ThreadUtilities.submit(IConstants.IKUBE, new Runnable() {
+                    public void run() {
+                        try {
+                            callable.call();
+                        } catch (Exception e) {
+                            logger.error("Error : ", e);
+                        }
+                    }
+                });
+                return Arrays.asList(future);
             }
-        });
+        }).when(clusterManager).sendTaskToAll(any(Callable.class));
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(final InvocationOnMock invocation) throws Throwable {
+                final Callable callable = (Callable) invocation.getArguments()[0];
+                return ThreadUtilities.submit(IConstants.IKUBE, new Runnable() {
+                    public void run() {
+                        try {
+                            callable.call();
+                        } catch (Exception e) {
+                            logger.error("Error : ", e);
+                        }
+                    }
+                });
+            }
+        }).when(clusterManager).sendTask(any(Callable.class));
 
         Map<String, IAnalyzer> analyzers = new HashMap<>();
         analyzers.put(analysis.getAnalyzer(), analyzer);

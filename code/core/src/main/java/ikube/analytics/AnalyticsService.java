@@ -127,11 +127,24 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Be
             };
             Future<?> future = clusterManager.sendTask(callable);
             ThreadUtilities.waitForFuture(future, 60);
+            Analysis<I, O> result;
+            boolean remoteSuccess = Boolean.TRUE;
             try {
-                Analysis<I, O> result = (Analysis<I, O>) future.get();
-                BeanUtilsBean2.getInstance().copyProperties(analysis, result);
+                result = (Analysis<I, O>) future.get();
+                if (result != null) {
+                    BeanUtilsBean2.getInstance().copyProperties(analysis, result);
+                }
             } catch (final Exception e) {
                 LOGGER.error("Exception getting the result from the distributed task : ", e);
+                remoteSuccess = Boolean.FALSE;
+            } finally {
+                // If we don't have a happy ending from the remote server
+                // then we'll try locally, but log a message for interested parties
+                if (!remoteSuccess) {
+                    LOGGER.info("Remote analysis not sucessful, doing local : " + analysis);
+                    analysis.setDistributed(Boolean.FALSE);
+                    analyze(analysis);
+                }
             }
         } else {
             Timer.Timed timed = new Timer.Timed() {
@@ -170,11 +183,23 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Be
             };
             Future<?> future = clusterManager.sendTask(callable);
             ThreadUtilities.waitForFuture(future, 60);
+            boolean remoteSuccess = Boolean.TRUE;
             try {
                 Analysis<I, O> result = (Analysis<I, O>) future.get();
-                BeanUtilsBean2.getInstance().copyProperties(analysis, result);
+                if (result != null) {
+                    BeanUtilsBean2.getInstance().copyProperties(analysis, result);
+                }
             } catch (final Exception e) {
+                remoteSuccess = Boolean.FALSE;
                 LOGGER.error("Exception getting the result from the distributed task : ", e);
+            } finally {
+                // If we don't have a happy ending from the remote server
+                // then we'll try locally, but log a message for interested parties
+                if (!remoteSuccess) {
+                    LOGGER.info("Remote analysis not sucessful, doing local : " + analysis);
+                    analysis.setDistributed(Boolean.FALSE);
+                    classesOrClusters(analysis);
+                }
             }
         } else {
             Timer.Timed timed = new Timer.Timed() {
@@ -222,11 +247,23 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Be
             };
             Future<?> future = clusterManager.sendTask(callable);
             ThreadUtilities.waitForFuture(future, 60);
+            boolean remoteSuccess = Boolean.TRUE;
             try {
                 Analysis<I, O> result = (Analysis<I, O>) future.get();
-                BeanUtilsBean2.getInstance().copyProperties(analysis, result);
+                if (result != null) {
+                    BeanUtilsBean2.getInstance().copyProperties(analysis, result);
+                }
             } catch (final Exception e) {
+                remoteSuccess = Boolean.FALSE;
                 LOGGER.error("Exception getting the result from the distributed task : ", e);
+            } finally {
+                // If we don't have a happy ending from the remote server
+                // then we'll try locally, but log a message for interested parties
+                if (!remoteSuccess) {
+                    LOGGER.info("Remote analysis not sucessful, doing local : " + analysis);
+                    analysis.setDistributed(Boolean.FALSE);
+                    sizesForClassesOrClusters(analysis);
+                }
             }
         } else {
             Timer.Timed timed = new Timer.Timed() {
@@ -260,7 +297,7 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Be
     @SuppressWarnings("unchecked")
     public IAnalyzer<I, O, C> destroy(final Context context) {
         // Create the callable that will be executed on the remote node
-        Callable callable =     new Callable<Object>() {
+        Callable callable = new Callable<Object>() {
             @Override
             @SuppressWarnings("unchecked")
             public Object call() throws Exception {

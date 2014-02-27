@@ -24,7 +24,7 @@ import static org.junit.Assert.*;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 21.11.10
+ * @since 21-11-2010
  */
 public class FileUtilitiesTest extends AbstractTest {
 
@@ -80,6 +80,12 @@ public class FileUtilitiesTest extends AbstractTest {
         files = FileUtilities.findFilesRecursively(dotFolder, files, ".xml");
         initialLength = files.size();
         assertTrue(initialLength >= 1);
+
+        List<File> properties = FileUtilities.findFilesRecursively(dotFolder, new ArrayList<File>(), "spring\\.properties");
+        List<File> configuration = FileUtilities.findFilesRecursively(dotFolder, new ArrayList<File>(), "spring.*\\.xml");
+
+        logger.info("Properties : " + properties.size() + ", " + properties);
+        logger.info("Configuration : " + configuration.size() + ", " + configuration);
     }
 
     @Test

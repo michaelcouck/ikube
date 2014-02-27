@@ -179,4 +179,7 @@ public interface IConstants {
     String WORD = "word";
     String RANGE = "range";
     String HAZELCAST_WATCHER = "hazelcast-watcher";
+    String APPLICATION_CONTEXT_REFRESHER = "application-context-refresher";
+
+    long SIXTY_SECONDS = 1000 * 60;
 }
