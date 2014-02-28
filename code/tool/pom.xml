@@ -55,9 +55,13 @@
                         <configuration>
                             <mainClass>ikube.deploy.Deployer</mainClass>
                             <arguments>
+                                <!-- The number of directories to go up for the dot folder -->
                                 <argument>.</argument>
+                                <!-- The name of the configuration file for the deployment servers -->
                                 <argument>deployer.xml</argument>
+                                <!-- Whether to execute the main class, i.e. do the deployment -->
                                 <argument>true</argument>
+                                <!-- Don't know -->
                                 <argument>-classpath</argument>
                             </arguments>
                             <workingDirectory>../</workingDirectory>

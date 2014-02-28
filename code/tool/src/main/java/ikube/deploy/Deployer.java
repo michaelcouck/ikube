@@ -74,14 +74,9 @@ public final class Deployer {
             for (final Server server : deployer.getServers()) {
                 String name = Long.toString(System.currentTimeMillis());
                 if (deployer.isParallel()) {
-                    Future<?> future = ThreadUtilities.submit(name, new Runnable() {
-                        public void run() {
-                            for (final IAction action : server.getActions()) {
-                                action.execute(server);
-                            }
-                        }
-                    });
-                    ThreadUtilities.waitForFuture(future, deployer.getMaxWaitTime());
+                    for (final IAction action : server.getActions()) {
+                        action.execute(server);
+                    }
                 } else {
                     for (final IAction action : server.getActions()) {
                         Future<?> future = ThreadUtilities.submit(name, new Runnable() {
