@@ -63,6 +63,10 @@
                             <workingDirectory>../</workingDirectory>
                             <includePluginDependencies>true</includePluginDependencies>
                             <includeProjectDependencies>true</includeProjectDependencies>
+                            <keepAlive>false</keepAlive>
+                            <cleanupDaemonThreads>true</cleanupDaemonThreads>
+                            <daemonThreadJoinTimeout>60000</daemonThreadJoinTimeout>
+                            <stopUnresponsiveDaemonThreads>true</stopUnresponsiveDaemonThreads>
                         </configuration>
                         <goals>
                             <goal>java</goal>
