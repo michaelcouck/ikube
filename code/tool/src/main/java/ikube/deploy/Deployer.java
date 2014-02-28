@@ -93,6 +93,7 @@ public final class Deployer {
                     }
                 }
             }
+            ThreadUtilities.destroy();
         }
     }
 
