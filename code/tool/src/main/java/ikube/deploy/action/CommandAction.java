@@ -35,9 +35,8 @@ public class CommandAction extends Action {
                         String errorMessage = sessionCommand.getExitErrorMessage();
                         // boolean coreDump = sessionCommand.getExitWasCoreDumped();
 
-                        Object[] parameters = {errorMessage, error, exitStatus/* , coreDump */};
-                        logger.info("Message : {} ", message);
-                        logger.info("Error message : {}, error : {}, exit status : {}", parameters);
+                        Object[] parameters = {message, errorMessage, error, exitStatus/* , coreDump */};
+                        logger.info("Message : {}, error message : {}, error : {}, exit status : {}", parameters);
                     } catch (final Exception e) {
                         handleException("Exception executing command on server : " + command + ", server : " + server.getIp(), e);
                     }
