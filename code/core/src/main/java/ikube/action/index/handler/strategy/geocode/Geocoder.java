@@ -26,7 +26,7 @@ import java.util.Map;
  * @author Michael Couck
  * @version 01.00
  * @see IGeocoder
- * @since 06.03.11
+ * @since 06-03-2011
  */
 public class Geocoder implements IGeocoder, InitializingBean {
 
@@ -96,8 +96,8 @@ public class Geocoder implements IGeocoder, InitializingBean {
                     try {
                         disabled = true;
                         ThreadUtilities.sleep(600000);
-                        disabled = false;
                     } finally {
+                        disabled = false;
                         ThreadUtilities.destroy(this.getClass().getSimpleName());
                     }
                 }
@@ -133,12 +133,13 @@ public class Geocoder implements IGeocoder, InitializingBean {
     }
 
     /**
-     * This sets the search fields. At the time of writing the fields that were indexed in the GeoNames data was 'name', 'city' and 'country'. The city and
-     * country fields are in fact the enriched data. Essentially all three of these fields will be searched, in order and the best match for them aggregated
-     * will be used for the results.
+     * This sets the search fields. At the time of writing the fields that were indexed in the GeoNames data
+     * was 'name', 'city' and 'country'. The city and country fields are in fact the enriched data. Essentially
+     * all three of these fields will be searched, in order and the best match for them aggregated will be used for the results.
      *
-     * @param searchField the search field to search in the GeoSpatial index, typically this will be the name field because this is an aggregation of the name
-     *                    of the feature in the GeoNames data and the enriched fields for the city and the country
+     * @param searchField the search field to search in the GeoSpatial index, typically this will be the name field
+     *                    because this is an aggregation of the name of the feature in the GeoNames data and the enriched
+     *                    fields for the city and the country
      */
     public void setSearchField(final String searchField) {
         this.searchField = searchField;

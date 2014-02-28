@@ -206,10 +206,10 @@
         property:files-ref="files-one"
         property:directories-ref="directories-one"/>
     <util:map id="files-one">
-        <entry key="code/war/target/${ikube-war}" value="${tomcat-webapps}"/>
+        <entry key="code/war/target/${ikube-war}" value="${tomcat-one-webapps}"/>
     </util:map>
     <util:map id="directories-one">
-        <entry key="${resources-directory}/ikube" value="${tomcat-one-bin}/ikube"/>
+        <entry key="${resources-directory}/ikube" value="${tomcat-one-bin}"/>
         <entry key="${resources-directory}/analytics" value="${tomcat-one-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/integration" value="${tomcat-one-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/production" value="${tomcat-one-bin}/ikube"/>
@@ -292,10 +292,10 @@
         property:files-ref="files-two"
         property:directories-ref="directories-two"/>
     <util:map id="files-two">
-        <entry key="code/war/target/${ikube-war}" value="${tomcat-webapps}"/>
+        <entry key="code/war/target/${ikube-war}" value="${tomcat-two-webapps}"/>
     </util:map>
     <util:map id="directories-two">
-        <entry key="${resources-directory}/ikube" value="${tomcat-two-bin}/ikube"/>
+        <entry key="${resources-directory}/ikube" value="${tomcat-two-bin}"/>
         <entry key="${resources-directory}/analytics" value="${tomcat-two-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/integration" value="${tomcat-two-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/production" value="${tomcat-two-bin}/ikube"/>
@@ -378,10 +378,10 @@
         property:files-ref="files-three"
         property:directories-ref="directories-three"/>
     <util:map id="files-three">
-        <entry key="code/war/target/${ikube-war}" value="${tomcat-webapps}"/>
+        <entry key="code/war/target/${ikube-war}" value="${tomcat-three-webapps}"/>
     </util:map>
     <util:map id="directories-three">
-        <entry key="${resources-directory}/ikube" value="${tomcat-three-bin}/ikube"/>
+        <entry key="${resources-directory}/ikube" value="${tomcat-three-bin}"/>
         <entry key="${resources-directory}/analytics" value="${tomcat-three-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/integration" value="${tomcat-three-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/production" value="${tomcat-three-bin}/ikube"/>
