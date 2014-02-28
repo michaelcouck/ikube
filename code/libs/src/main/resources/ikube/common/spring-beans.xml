@@ -244,7 +244,7 @@
         property:auth="true"
         property:protocol="pop3"
         property:user="ikube.notifications"
-        property:password="1kubenotifications"
+        property:password="caherline"
         property:mailHost="smtp.gmail.com"
         property:sender="ikube.notifications@gmail.com"
         property:recipients="ikube.notifications@gmail.com"/>
