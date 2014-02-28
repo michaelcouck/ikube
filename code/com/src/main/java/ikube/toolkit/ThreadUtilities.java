@@ -111,18 +111,17 @@ public final class ThreadUtilities {
      */
     public static void waitForFuture(final Future<?> future, final long maxWait) {
         if (future == null) {
-            LOGGER.debug("Future null returning : ");
+            LOGGER.info("Future null returning : ");
             return;
         }
         try {
             future.get(maxWait, TimeUnit.SECONDS);
         } catch (final InterruptedException e) {
-            LOGGER.warn("Coitus interruptus... : " + e.getMessage());
-            LOGGER.debug(null, e);
+            LOGGER.error("Coitus interruptus... : " + e.getMessage(), e);
         } catch (final TimeoutException e) {
-            LOGGER.debug("Timed out waiting for future : " + e.getMessage());
+            LOGGER.error("Timed out waiting for future : " + e.getMessage());
         } catch (final CancellationException e) {
-            LOGGER.debug("Future cancelled : ", e);
+            LOGGER.error("Future cancelled : ", e);
         } catch (final Exception e) {
             LOGGER.error("Exception waiting for future : ", e);
         }

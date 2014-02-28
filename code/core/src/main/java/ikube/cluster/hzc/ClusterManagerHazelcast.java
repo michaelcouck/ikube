@@ -51,7 +51,8 @@ public class ClusterManagerHazelcast extends AClusterManager {
         final Config config = hazelcastInstance.getConfig();
         config.getNetworkConfig().getInterfaces().setInterfaces(Arrays.asList(ip));
         // Start a thread that will keep an eye on Hazelcast
-        ThreadUtilities.submit(IConstants.HAZELCAST_WATCHER, new Runnable() {
+
+        class HazelcastWatcher implements Runnable {
             @SuppressWarnings("InfiniteLoopStatement")
             public void run() {
                 do {
@@ -63,13 +64,16 @@ public class ClusterManagerHazelcast extends AClusterManager {
                         logger.error("Error...", e);
                     } finally {
                         if (reinitialize) {
-                            logger.info("TODO: Restart the grid!!!");
+                            logger.info("Restarting the grid!!!");
+                            Hazelcast.shutdownAll();
+                            hazelcastInstance = Hazelcast.newHazelcastInstance(config);
                         }
                     }
                     ThreadUtilities.sleep(IConstants.ONE_THOUSAND);
                 } while (true);
             }
-        });
+        }
+        ThreadUtilities.submit(IConstants.HAZELCAST_WATCHER, new HazelcastWatcher());
     }
 
     /**
@@ -82,8 +86,8 @@ public class ClusterManagerHazelcast extends AClusterManager {
             boolean gotLock = false;
             try {
                 gotLock = lock.tryLock(250, TimeUnit.MILLISECONDS);
-                logger.debug("Got lock : " + gotLock + ", thread : " + Thread.currentThread().hashCode());
-            } catch (InterruptedException e) {
+                logger.debug("Got lock : {} , thread : {} ", gotLock, Thread.currentThread().hashCode());
+            } catch (final InterruptedException e) {
                 logger.error("Exception trying for the lock : ", e);
             }
             return gotLock;
@@ -101,7 +105,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
             ILock lock = hazelcastInstance.getLock(name);
             if (lock.isLocked()) {
                 if (lock.isLockedByCurrentThread()) {
-                    logger.debug("Unlocking : " + Thread.currentThread().hashCode());
+                    logger.debug("Unlocking : {} ", Thread.currentThread().hashCode());
                     lock.unlock();
                 }
             }
@@ -157,7 +161,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
             action = getAction(actionName, indexName, indexableName);
             server.getActions().add(action);
             hazelcastInstance.getMap(IConstants.IKUBE).put(server.getAddress(), server);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.error("Exception starting action : " + actionName + ", " + indexName + ", " + indexableName, e);
         } finally {
             notifyAll();
@@ -183,7 +187,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
                 Action gridAction = actionIterator.next();
                 if (gridAction.getId() == action.getId()) {
                     actionIterator.remove();
-                    logger.debug("Removed grid action : " + gridAction.getId() + ", " + actions.size());
+                    logger.debug("Removed grid action : {} , ", gridAction.getId(), actions.size());
                 }
             }
             hazelcastInstance.getMap(IConstants.IKUBE).put(server.getAddress(), server);
@@ -211,7 +215,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
             server.setIp(ip);
             server.setAddress(address);
             server.setAge(System.currentTimeMillis());
-            logger.debug("Server null, creating new one : " + server);
+            logger.debug("Server null, creating new one : {} ", server);
 
             Collection<IndexContext> collection = monitorService.getIndexContexts().values();
             List<IndexContext> indexContexts = new ArrayList<>(collection);

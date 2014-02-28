@@ -1,28 +1,18 @@
 package ikube.ant;
 
-import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import net.neoremind.sshxcute.core.ConnBean;
-import net.neoremind.sshxcute.core.Result;
-import net.neoremind.sshxcute.core.SSHExec;
-import net.neoremind.sshxcute.task.CustomTask;
-import net.neoremind.sshxcute.task.impl.ExecCommand;
-
 import org.apache.tools.ant.Task;
 
 /**
  * This task just executes ssh commands on remote linux machines.
- * 
+ *
  * @author Michael Couck
- * @since 26.05.2013
  * @version 01.00
+ * @since 26.05.2013
  */
 @Deprecated
 public class SshXcuteTask extends Task {
 
-	static final Logger LOGGER = Logger.getLogger(SshXcuteTask.class.getName());
+/*	static final Logger LOGGER = Logger.getLogger(SshXcuteTask.class.getName());
 
 	static final String PIPE = "\\|";
 	static final String DELIMITERS = ";";
@@ -44,10 +34,10 @@ public class SshXcuteTask extends Task {
 		sshXcuteTask.execute();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
+	*//**
+     * {@inheritDoc}
+     *//*
+    @Override
 	public void execute() {
 		for (int i = 0; ips != null && i < ips.length; i++) {
 			SSHExec sshExec = null;
@@ -196,6 +186,6 @@ public class SshXcuteTask extends Task {
 			index++;
 		}
 		return sourceTargetPairArray;
-	}
+	}*/
 
 }

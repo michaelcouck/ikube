@@ -1,22 +1,16 @@
 package ikube.ant;
 
-import static org.junit.Assert.assertEquals;
-import ikube.toolkit.FileUtilities;
-
-import java.io.File;
-
-import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Test;
 
 /**
  * @author Michael Couck
- * @since 26.05.2013
  * @version 01.00
+ * @since 26-05-2013
  */
+@Ignore
 public class SshXcuteTaskTest {
 
-	private SshXcuteTask sshXcuteTask;
+	/*private SshXcuteTask sshXcuteTask;
 
 	@Before
 	public void before() {
@@ -77,6 +71,6 @@ public class SshXcuteTaskTest {
 		sshXcuteTask.setDirectoriesToCopy(wikiPath + "|/tmp;");
 		sshXcuteTask.setFilesToCopy(bzip2Path + "|/tmp/" + bzip2.getName());
 		sshXcuteTask.execute();
-	}
+	}*/
 
 }

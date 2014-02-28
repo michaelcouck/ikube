@@ -9,7 +9,6 @@ import mockit.MockClass;
 import mockit.Mockit;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +17,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static junit.framework.Assert.assertTrue;
 
+/**
+ * @author Michael Couck
+ * @version 01.00
+ * @since 18-06-2013
+ */
 public class DeployerTest extends AbstractTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeployerTest.class);
@@ -48,12 +52,13 @@ public class DeployerTest extends AbstractTest {
     public void before() {
         System.setProperty("username", "username");
         System.setProperty("password", "password");
+        Mockit.setUpMocks();
         Mockit.setUpMocks(CommandActionMock.class, CopyActionMock.class);
     }
 
     @After
     public void after() {
-        Mockit.tearDownMocks(CommandActionMock.class, CopyActionMock.class);
+        Mockit.tearDownMocks();
     }
 
     @Test

@@ -24,7 +24,7 @@
     </parent>
 
     <properties>
-        <phase>site</phase>
+        <phase>deploy</phase>
         <packaging>jar</packaging>
         <generate-pom>true</generate-pom>
         <repository-id>ikube</repository-id>
@@ -425,6 +425,40 @@
                             <artifactId>niocchi</artifactId>
                             <version>1.1</version>
                             <file>tools/niocchi-1.1.jar</file>
+                            <packaging>${packaging}</packaging>
+                            <generatePom>${generate-pom}</generatePom>
+                            <repositoryId>${repository-id}</repositoryId>
+                            <url>${artifactory}</url>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-sshj</id>
+                        <goals>
+                            <goal>deploy-file</goal>
+                        </goals>
+                        <phase>${phase}</phase>
+                        <configuration>
+                            <groupId>net.schmizz</groupId>
+                            <artifactId>sshj</artifactId>
+                            <version>0.8.1</version>
+                            <file>tools/sshj-0.8.1.jar</file>
+                            <packaging>${packaging}</packaging>
+                            <generatePom>${generate-pom}</generatePom>
+                            <repositoryId>${repository-id}</repositoryId>
+                            <url>${artifactory}</url>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-sshj-sources</id>
+                        <goals>
+                            <goal>deploy-file</goal>
+                        </goals>
+                        <phase>${phase}</phase>
+                        <configuration>
+                            <groupId>net.schmizz</groupId>
+                            <artifactId>sshj</artifactId>
+                            <version>0.8.1</version>
+                            <file>tools/sshj-0.8.1-sources.jar</file>
                             <packaging>${packaging}</packaging>
                             <generatePom>${generate-pom}</generatePom>
                             <repositoryId>${repository-id}</repositoryId>

@@ -2,7 +2,10 @@ package ikube.deploy.action;
 
 import ikube.deploy.model.Server;
 import ikube.toolkit.FileUtilities;
-import net.neoremind.sshxcute.core.SSHExec;
+import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.xfer.FileSystemFile;
+import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
+import net.schmizz.sshj.xfer.scp.SCPUploadClient;
 
 import java.io.File;
 import java.util.Map;
@@ -21,34 +24,35 @@ public class CopyAction extends Action {
     public boolean execute(final Server server) {
         String dotFolder = FileUtilities.cleanFilePath(new File(".").getAbsolutePath());
         logger.info("Dot folder : " + dotFolder);
-        SSHExec sshExec = getSshExec(server.getIp(), server.getUsername(), server.getPassword());
-        try {
-            if (files != null) {
-                for (final Map.Entry<String, String> filePair : files.entrySet()) {
-                    String source = getAbsoluteFile(dotFolder, filePair.getKey());
-                    String target = filePair.getValue();
-                    try {
-                        logger.info("Copying file : " + source + ", to : " + target + ", on server : " + server.getIp());
-                        sshExec.uploadSingleDataToServer(source, target);
-                    } catch (final Exception e) {
-                        handleException("Exception copying file to server, from : " + source + ", to : " + target + ", server : " + server.getIp(), e);
-                    }
+        SSHClient sshExec = getSshExec(server.getIp(), server.getUsername(), server.getPassword());
+        // sshExec.useCompression();
+        if (files != null) {
+            for (final Map.Entry<String, String> filePair : files.entrySet()) {
+                String source = getAbsoluteFile(dotFolder, filePair.getKey());
+                String target = filePair.getValue();
+                try {
+                    logger.info("Copying file : " + source + ", to : " + target + ", on server : " + server.getIp());
+                    SCPFileTransfer scpFileTransfer = sshExec.newSCPFileTransfer();
+                    SCPUploadClient scpUploadClient = scpFileTransfer.newSCPUploadClient();
+                    scpUploadClient.copy(new FileSystemFile(source), target);
+                } catch (final Exception e) {
+                    handleException("Exception copying file to server, from : " + source + ", to : " + target + ", server : " + server.getIp(), e);
                 }
             }
-            if (directories != null) {
-                for (final Map.Entry<String, String> filePair : directories.entrySet()) {
-                    String source = getAbsoluteFile(dotFolder, filePair.getKey());
-                    String target = filePair.getValue();
-                    try {
-                        logger.info("Copying directory : " + source + ", to : " + target + ", on server : " + server.getIp());
-                        sshExec.uploadAllDataToServer(source, target);
-                    } catch (final Exception e) {
-                        handleException("Exception copying directory to server, from : " + source + ", to : " + target + ", server : " + server.getIp(), e);
-                    }
+        }
+        if (directories != null) {
+            for (final Map.Entry<String, String> filePair : directories.entrySet()) {
+                String source = getAbsoluteFile(dotFolder, filePair.getKey());
+                String target = filePair.getValue();
+                try {
+                    logger.info("Copying directory : " + source + ", to : " + target + ", on server : " + server.getIp());
+                    SCPFileTransfer scpFileTransfer = sshExec.newSCPFileTransfer();
+                    SCPUploadClient scpUploadClient = scpFileTransfer.newSCPUploadClient();
+                    scpUploadClient.copy(new FileSystemFile(source), target);
+                } catch (final Exception e) {
+                    handleException("Exception copying directory to server, from : " + source + ", to : " + target + ", server : " + server.getIp(), e);
                 }
             }
-        } finally {
-            disconnect(sshExec);
         }
         return Boolean.TRUE;
     }

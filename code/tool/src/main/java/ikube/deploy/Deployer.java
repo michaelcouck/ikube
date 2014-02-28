@@ -39,6 +39,7 @@ public final class Deployer {
 	private static ApplicationContext APPLICATION_CONTEXT;
 
 	public static void main(final String[] args) {
+        ThreadUtilities.initialize();
 		File configurationDirectory = new File(DOT_DIRECTORY);
 		String configurationFile = CONFIGURATION_FILE;
 		boolean execute = Boolean.TRUE;
@@ -65,7 +66,6 @@ public final class Deployer {
 		}
 		String configurationDirectoryPath = FileUtilities.cleanFilePath(configurationDirectory.getAbsolutePath());
 		LOGGER.info("Directory : " + configurationDirectoryPath + ", file : " + configurationFile);
-		ThreadUtilities.initialize();
 		List<Future<?>> futures = new ArrayList<>();
 		// Find the configuration file
 		File deployerConfiguration = FileUtilities.findFileRecursively(new File(configurationDirectoryPath), configurationFile);

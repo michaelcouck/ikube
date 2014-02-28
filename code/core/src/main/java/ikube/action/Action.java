@@ -8,25 +8,27 @@ import ikube.model.IndexContext;
 import ikube.toolkit.IMailer;
 import ikube.toolkit.UriUtilities;
 import org.apache.commons.jexl2.JexlEngine;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Closeable;
 import java.util.List;
 
 /**
- * This is the base class for actions. Actions execute logic on index contexts. Actions may include opening the searcher on a new index, indexing or deleting
- * the old indexes. This class is intended to be sub-classed. Common methods in this base class is checking that the index is current, i.e. has not expired and
- * whether the searcher should be re-opened on the new index.
+ * This is the base class for actions. Actions execute logic on index contexts. Actions may include opening the
+ * searcher on a new index, indexing or deleting the old indexes. This class is intended to be sub-classed. Common
+ * methods in this base class is checking that the index is current, i.e. has not expired and whether the searcher
+ * should be re-opened on the new index.
  *
  * @author Michael Couck
  * @version 01.00
- * @since 21.11.10
+ * @since 21-11-2010
  */
 @SuppressWarnings({"SpringJavaAutowiringInspection", "UnusedDeclaration"})
 public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> {
 
-    protected transient Logger logger = Logger.getLogger(this.getClass());
+    protected transient Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * This class sends mails to the configured recipient from the configured sender.
@@ -47,21 +49,22 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
     protected IClusterManager clusterManager;
 
     /**
-     * This is an optional action that the action depends on. For example the index action requires that the reset action is run completely first for this index
-     * context
+     * This is an optional action that the action depends on. For example the index action requires
+     * that the reset action is run completely first for this index context.
      */
     private IAction<IndexContext<?>, Boolean> dependent;
 
     /**
-     * These are the rules defined for this action. They will be evaluated collectively by the {@link RuleInterceptor} and the action will be executed depending
-     * on the category of the rules.
+     * These are the rules defined for this action. They will be evaluated collectively by the
+     * {@link RuleInterceptor} and the action will be executed depending on the category of the rules.
      */
     private List<IRule<IndexContext<?>>> rules;
 
     /**
-     * This is the predicate that will be evaluated. The predicate consists of a boolean expression that contains the individual results of the rules. For
-     * example '!IsThisServerWorking && !AnyServersWorking'. The rules' results will be inserted into the parameter place holders and the expression evaluated
-     * by {@link JexlEngine}.
+     * This is the predicate that will be evaluated. The predicate consists of a boolean expression that
+     * contains the individual results of the rules. For example '!IsThisServerWorking && !AnyServersWorking'.
+     * The rules' results will be inserted into the parameter place holders and the expression evaluated by
+     * {@link JexlEngine}.
      */
     private String predicate;
 
@@ -105,9 +108,10 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
     }
 
     /**
-     * This method will return whether the action requires a cluster lock. In many cases, like the {@link Reset} action, that only works on this server, it is
-     * not necessary to have the cluster lock, and because getting the lock in a cluster of 100 machines is very network expensive, we try to avoid this if we
-     * can.
+     * This method will return whether the action requires a cluster lock. In many cases, like the
+     * {@link Reset} action, that only works on this server, it is not necessary to have the cluster
+     * lock, and because getting the lock in a cluster of 100 machines is very network expensive, we
+     * try to avoid this if we can.
      *
      * @param requiresClusterLock whether the action rewuires cluster atomicity and a lock before the logic is executed
      */
@@ -116,8 +120,9 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
     }
 
     /**
-     * This method is called by the super class, i.e. this class on the implementations, which allows the super class to execute any actions that need to be
-     * executed, that the implementing classes rely on, like the reset action which may not have executed between indexes.
+     * This method is called by the super class, i.e. this class on the implementations, which allows the
+     * super class to execute any actions that need to be executed, that the implementing classes rely on,
+     * like the reset action which may not have executed between indexes.
      *
      * @param indexContext the index context to execute the action on
      * @return whether the execution was successful
@@ -205,8 +210,9 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
     }
 
     /**
-     * Sets the action that this action is dependent on. For example the the index action requires that the reset action is executed first. In this way the
-     * actions can be chained and the results from the previous action used to determine whether the action is then executed.
+     * Sets the action that this action is dependent on. For example the the index action requires that
+     * the reset action is executed first. In this way the actions can be chained and the results from the
+     * previous action used to determine whether the action is then executed.
      *
      * @param dependent the action that this action is dependent on
      */
