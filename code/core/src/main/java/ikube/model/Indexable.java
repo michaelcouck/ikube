@@ -65,6 +65,9 @@ public class Indexable<E> extends Persistable {
     @Column
     @Attribute(field = false, description = "Whether this field should have the terms tokenized")
     private boolean tokenized = Boolean.TRUE;
+    @Column
+    @Attribute(field = false, description = "The boost to give the field at index time")
+    private float boost;
 
     @Column
     @Min(value = 1)
@@ -158,6 +161,14 @@ public class Indexable<E> extends Persistable {
 
     public boolean isTokenized() {
         return tokenized;
+    }
+
+    public float getBoost() {
+        return boost;
+    }
+
+    public void setBoost(float boost) {
+        this.boost = boost;
     }
 
     public void setOmitNorms(boolean omitNorms) {

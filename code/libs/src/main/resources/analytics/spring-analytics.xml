@@ -50,7 +50,7 @@
     <bean
         id="context-smo-en"
         class="ikube.model.Context"
-        property:name="sentiment-en"
+        property:name="sentiment-smo-en"
         property:analyzer-ref="weka-classifier-en"
         property:filter-ref="string-to-word-vector-en"
         property:algorithm-ref="weka-classifier-smo-en"
@@ -62,7 +62,7 @@
     <bean
         id="context-smo-es"
         class="ikube.model.Context"
-        property:name="sentiment-es"
+        property:name="sentiment-smo-es"
         property:analyzer-ref="weka-classifier-es"
         property:filter-ref="string-to-word-vector-es"
         property:algorithm-ref="weka-classifier-smo-es"
@@ -74,7 +74,7 @@
     <bean
         id="context-smo-jp"
         class="ikube.model.Context"
-        property:name="sentiment-jp"
+        property:name="sentiment-smo-jp"
         property:analyzer-ref="weka-classifier-jp"
         property:filter-ref="string-to-word-vector-jp"
         property:algorithm-ref="weka-classifier-smo-jp"
@@ -86,7 +86,7 @@
     <bean
         id="context-smo-cn"
         class="ikube.model.Context"
-        property:name="sentiment-cn"
+        property:name="sentiment-smo-cn"
         property:analyzer-ref="weka-classifier-cn"
         property:filter-ref="string-to-word-vector-cn"
         property:algorithm-ref="weka-classifier-smo-cn"
@@ -98,7 +98,7 @@
     <bean
         id="context-smo-nl"
         class="ikube.model.Context"
-        property:name="sentiment-nl"
+        property:name="sentiment-smo-nl"
         property:analyzer-ref="weka-classifier-nl"
         property:filter-ref="string-to-word-vector-nl"
         property:algorithm-ref="weka-classifier-smo-nl"
@@ -110,7 +110,7 @@
     <bean
         id="context-smo-fr"
         class="ikube.model.Context"
-        property:name="sentiment-fr"
+        property:name="sentiment-smo-fr"
         property:analyzer-ref="weka-classifier-fr"
         property:filter-ref="string-to-word-vector-fr"
         property:algorithm-ref="weka-classifier-smo-fr"
@@ -122,7 +122,7 @@
     <bean
         id="context-smo-de"
         class="ikube.model.Context"
-        property:name="sentiment-de"
+        property:name="sentiment-smo-de"
         property:analyzer-ref="weka-classifier-de"
         property:filter-ref="string-to-word-vector-de"
         property:algorithm-ref="weka-classifier-smo-de"
@@ -134,7 +134,7 @@
     <bean
         id="context-smo-sv"
         class="ikube.model.Context"
-        property:name="sentiment-sv"
+        property:name="sentiment-smo-sv"
         property:analyzer-ref="weka-classifier-sv"
         property:filter-ref="string-to-word-vector-sv"
         property:algorithm-ref="weka-classifier-smo-sv"
@@ -146,7 +146,7 @@
     <bean
         id="context-smo-th"
         class="ikube.model.Context"
-        property:name="sentiment-th"
+        property:name="sentiment-smo-th"
         property:analyzer-ref="weka-classifier-th"
         property:filter-ref="string-to-word-vector-th"
         property:algorithm-ref="weka-classifier-smo-th"
@@ -158,7 +158,7 @@
     <bean
         id="context-smo-ar"
         class="ikube.model.Context"
-        property:name="sentiment-ar"
+        property:name="sentiment-smo-ar"
         property:analyzer-ref="weka-classifier-ar"
         property:filter-ref="string-to-word-vector-ar"
         property:algorithm-ref="weka-classifier-smo-ar"
@@ -170,7 +170,7 @@
     <bean
         id="context-smo-tr"
         class="ikube.model.Context"
-        property:name="sentiment-tr"
+        property:name="sentiment-smo-tr"
         property:analyzer-ref="weka-classifier-tr"
         property:filter-ref="string-to-word-vector-tr"
         property:algorithm-ref="weka-classifier-smo-tr"
@@ -182,7 +182,7 @@
     <bean
         id="context-smo-ru"
         class="ikube.model.Context"
-        property:name="sentiment-ru"
+        property:name="sentiment-smo-ru"
         property:analyzer-ref="weka-classifier-ru"
         property:filter-ref="string-to-word-vector-ru"
         property:algorithm-ref="weka-classifier-smo-ru"

@@ -117,11 +117,11 @@ public final class ThreadUtilities {
         try {
             future.get(maxWait, TimeUnit.SECONDS);
         } catch (final InterruptedException e) {
-            LOGGER.error("Coitus interruptus... : " + e.getMessage(), e);
+            LOGGER.info("Coitus interruptus... : " + e.getMessage());
         } catch (final TimeoutException e) {
-            LOGGER.error("Timed out waiting for future : " + e.getMessage());
+            LOGGER.info("Timed out waiting for future : " + e.getMessage());
         } catch (final CancellationException e) {
-            LOGGER.error("Future cancelled : ", e);
+            LOGGER.debug("Future cancelled : " + e.getMessage());
         } catch (final Exception e) {
             LOGGER.error("Exception waiting for future : ", e);
         }

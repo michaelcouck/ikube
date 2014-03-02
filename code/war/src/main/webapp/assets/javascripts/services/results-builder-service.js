@@ -1,6 +1,6 @@
 ikubeServices.service('resultsBuilderService', function($rootScope) {
 	this.buildResults = function(searchResults) {
-		var results = new Array();
+		var results = [];
 		// Iterate through the results from the Json data
 		angular.forEach(searchResults, function(key, value) {
 			var id = key['id'];
@@ -24,11 +24,12 @@ ikubeServices.service('resultsBuilderService', function($rootScope) {
 
 ikubeServices.service('autocompleteResultsBuilderService', function($rootScope) {
 	this.buildResults = function(searchResults) {
-		var results = new Array();
+		var results = [];
 		angular.forEach(searchResults, function(key, value) {
 			var fragment = key['fragment'];
 			if (!!fragment) {
 				results.push(fragment);
+                results.push(' ');
 			}
 		});
 		return results;

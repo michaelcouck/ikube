@@ -19,7 +19,10 @@ import javax.persistence.Transient;
 public class Analysis<Input, Output> extends Distributed {
 
     /**
-     * The name of the analyzer in the system, for example clusterer-em.
+     * The name of the analyzer in the system, for example clusterer-em. This corresponds to
+     * the {@link ikube.model.Context} name, so if the context name in the Spring configuration is
+     * sentiment-smo-en then the analysis analyzer field name must be the same. Note also that this field
+     * and the context field must be the same as the Spring bean id/name too.
      */
     private String analyzer;
     /**
@@ -27,8 +30,8 @@ public class Analysis<Input, Output> extends Distributed {
      */
     private String clazz;
     /**
-     * The input data to be analyzed, string text, or an array of dates and numbers, whatever, but typically in the underlying
-     * function format. In the case of Weka it is the Weka format of course.
+     * The input data to be analyzed, string text, or an array of dates and numbers, whatever, but typically
+     * in the underlying function format. In the case of Weka it is the Weka format of course.
      */
     private Input input;
     /**

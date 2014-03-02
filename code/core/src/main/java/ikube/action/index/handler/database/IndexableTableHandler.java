@@ -166,7 +166,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
                 if (indexable.isHashed()) {
                     fieldContent = HashUtilities.hash(fieldContent).toString();
                 }
-                IndexManager.addNumericField(fieldName, fieldContent, document, indexable.isStored());
+                IndexManager.addNumericField(fieldName, fieldContent, document, indexable.isStored(), indexable.getBoost());
             } else {
                 IndexManager.addStringField(fieldName, fieldContent, indexable, document);
             }

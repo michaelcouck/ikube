@@ -13,9 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
  * This class constantly publishes it's index contexts to the other servers that may be new to the cluster.
  * 
  * @author Michael Couck
- * @since 10.09.12
+ * @since 10-09-2012
  * @version 01.00
  */
+@SuppressWarnings("SpringJavaAutowiringInspection")
 public class IndexContextSchedule extends Schedule {
 
 	@Autowired

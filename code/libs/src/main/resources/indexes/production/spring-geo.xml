@@ -36,8 +36,8 @@
         property:indexDirectoryPath="${index.directory.path}"
         property:indexDirectoryPathBackup="${index.directory.path.backup}"
         property:children-ref="geospatialIndexables"
-        property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer"
         property:strategies-ref="geoname-strategies"/>
+    <!-- property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer" -->
     <util:list id="geospatialIndexables">
         <ref local="geoname"/>
     </util:list>
@@ -72,7 +72,8 @@
         <ref local="geospatialElevation"/>
     </util:list>
     <util:list id="geoname-strategies">
-        <ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy"/>
+        <!-- We don't need language detection on these fields, takes up too much space. -->
+        <!--<ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy"/>-->
         <bean
             class="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy"
             init-method="initialize"/>

@@ -19,6 +19,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 /**
  * <p>
@@ -48,7 +49,9 @@ import java.util.HashMap;
  */
 public abstract class Search {
 
-    /** These are the types of fields currently supported in Lucene. */
+    /**
+     * These are the types of fields currently supported in Lucene.
+     */
     public enum TypeField {
 
         STRING("string"), //
@@ -70,6 +73,10 @@ public abstract class Search {
      * The default analyzer.
      */
     protected static final Analyzer ANALYZER = new StemmingAnalyzer();
+    /**
+     * The conjunctions matcher to not replace these key words.
+     */
+    private static final Pattern CONJUNCTIONS = Pattern.compile("and|or|not");
 
     protected Logger logger;
     /**
@@ -101,6 +108,10 @@ public abstract class Search {
      * The types of fields for the search queries, like numeric etc.
      */
     protected transient String[] occurrenceFields;
+    /**
+     * The search runtime boosting for the query.
+     */
+    protected transient float[] boosts;
 
     /**
      * Whether to generate fragments for the search string or not.
@@ -309,6 +320,15 @@ public abstract class Search {
     }
 
     /**
+     * Sets for the runtime boosts for each field.
+     *
+     * @param boosts the boosts for the fields
+     */
+    public void setBoosts(final float[] boosts) {
+        this.boosts = boosts;
+    }
+
+    /**
      * Access to the query parsers for a particular field in the documents.
      *
      * @param searchField the name of the field that needs to be searched
@@ -450,9 +470,7 @@ public abstract class Search {
             String[] searchStringTokens = StringUtils.split(searchString, " ");
             for (final String searchStringToken : searchStringTokens) {
                 String searchStringTokenLower = searchStringToken.toLowerCase();
-                if ("and".equals(searchStringTokenLower) ||
-                        "or".equals(searchStringTokenLower) ||
-                        "with".equals(searchStringTokenLower)) {
+                if (CONJUNCTIONS.matcher(searchStringTokenLower).matches()) {
                     continue;
                 }
                 String correctedSearchStringToken = spellingChecker.checkWord(searchStringTokenLower);
@@ -487,9 +505,13 @@ public abstract class Search {
         for (int i = 0; i < this.sortFields.length; i++) {
             SortField sortField;
             if (sortDirections == null || sortDirections.length <= i) {
-                sortField = new SortField(this.sortFields[i], SortField.Type.STRING);
+                sortField = new SortField(
+                        this.sortFields[i],
+                        SortField.Type.STRING);
             } else {
-                sortField = new SortField(this.sortFields[i], SortField.Type.STRING,
+                sortField = new SortField(
+                        this.sortFields[i],
+                        SortField.Type.STRING,
                         Boolean.parseBoolean(sortDirections[i]));
             }
             sortFields[i] = sortField;

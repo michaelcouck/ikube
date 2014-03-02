@@ -103,8 +103,8 @@ public class TwitterResourceHandler extends ResourceHandler<IndexableTweets> {
 
 		// NOTE to self: To be able to delete using the index writer the identifier field must be non analyzed and non tokenized/vectored!
 		// IndexManager.addStringField(IConstants.ID, tweetId, document, Store.YES, Index.NOT_ANALYZED, TermVector.NO);
-		IndexManager.addNumericField(IConstants.ID, tweetId, document, Boolean.TRUE);
-		IndexManager.addNumericField(createdAtField, Long.toString(tweet.getCreatedAt().getTime()), document, Boolean.TRUE);
+		IndexManager.addNumericField(IConstants.ID, tweetId, document, Boolean.TRUE, 0);
+		IndexManager.addNumericField(createdAtField, Long.toString(tweet.getCreatedAt().getTime()), document, Boolean.TRUE, 0);
 		IndexManager.addStringField(fromUserField, tweet.getFromUser(), indexableTweets, document);
 		IndexManager.addStringField(textField, indexableTweets.getContent().toString(), indexableTweets, document);
 
@@ -139,7 +139,7 @@ public class TwitterResourceHandler extends ResourceHandler<IndexableTweets> {
 			IndexManager.addStringField(userScreenNameField, userScreenName, indexableTweets, document);
 			IndexManager.addStringField(userLocationField, userLocation, indexableTweets, document);
 			IndexManager.addStringField(userTimeZoneField, userTimeZone, indexableTweets, document);
-			IndexManager.addNumericField(userUtcOffsetField, Integer.toString(userUtcOffset), document, Boolean.TRUE);
+			IndexManager.addNumericField(userUtcOffsetField, Integer.toString(userUtcOffset), document, Boolean.TRUE, 0);
 			IndexManager.addStringField(userLanguageField, userLanguage, indexableTweets, document);
 		}
 	}

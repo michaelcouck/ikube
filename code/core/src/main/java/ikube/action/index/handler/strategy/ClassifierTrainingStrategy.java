@@ -2,14 +2,16 @@ package ikube.action.index.handler.strategy;
 
 import ikube.IConstants;
 import ikube.action.index.handler.IStrategy;
-import ikube.analytics.IAnalyzer;
+import ikube.analytics.IAnalyticsService;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
@@ -17,6 +19,12 @@ import java.util.concurrent.locks.ReentrantLock;
 import static ikube.IConstants.CLASSIFICATION;
 
 /**
+ * This strategy as the name suggests, will train a classifier. The assumption is that a previous strategy will
+ * have somehow already classified the resource, perhaps with the emoticons as the Twitter emoticon strategy does,
+ * and will then feed the resource to the classifier to train, including the class/category.
+ *
+ * Note that the analysis training is distributed in the cluster, so all the servers must have identical analyzers.
+ *
  * @author Michael Couck
  * @version 01.00
  * @since 02-12-2013
@@ -28,6 +36,9 @@ public class ClassifierTrainingStrategy extends AStrategy {
     private Context<?, ?, ?, ?> context;
     private Map<String, Boolean> trained;
     private ReentrantLock reentrantLock;
+
+    @Autowired
+    private IAnalyticsService analyticsService;
 
     public ClassifierTrainingStrategy() {
         this(null);
@@ -41,13 +52,21 @@ public class ClassifierTrainingStrategy extends AStrategy {
      * {@inheritDoc}
      */
     @Override
-    public boolean aroundProcess(final IndexContext<?> indexContext, final Indexable<?> indexable,
-                                 final Document document, final Object resource) throws Exception {
+    public boolean aroundProcess(
+            final IndexContext<?> indexContext,
+            final Indexable<?> indexable,
+            final Document document,
+            final Object resource)
+            throws Exception {
         String language = document.get(IConstants.LANGUAGE);
         String classification = document.get(CLASSIFICATION);
-        String content = indexable.getContent() != null ? indexable.getContent().toString() : resource != null ? resource.toString() : null;
-        if (language != null && this.language.equals(language) &&
-                !StringUtils.isEmpty(classification) && !StringUtils.isEmpty(StringUtils.stripToEmpty(content))) {
+        String content = indexable.getContent() != null ?
+                indexable.getContent().toString() : resource != null ?
+                resource.toString() : null;
+        if (language != null &&
+                this.language.equals(language) &&
+                !StringUtils.isEmpty(classification) &&
+                !StringUtils.isEmpty(StringUtils.stripToEmpty(content))) {
             train(classification, content);
         }
         return super.aroundProcess(indexContext, indexable, document, resource);
@@ -61,24 +80,34 @@ public class ClassifierTrainingStrategy extends AStrategy {
         }
         try {
             reentrantLock.lock();
-            IAnalyzer classifier = (IAnalyzer) context.getAnalyzer();
+            // IAnalyzer classifier = (IAnalyzer) context.getAnalyzer();
             Analysis<String, double[]> analysis = new Analysis<>();
             analysis.setClazz(clazz);
             analysis.setInput(content);
-            int classSize = classifier.sizeForClassOrCluster(analysis);
+            analysis.setAnalyzer(context.getName());
+            analysis = analyticsService.sizesForClassesOrClusters(analysis);
+
+            int indexOfClass = (int) Arrays.asList(analysis.getClassesOrClusters()).get(0);
+            int classSize = analysis.getSizesForClassesOrClusters()[indexOfClass];
+
+            // int classSize = classifier.sizeForClassOrCluster(analysis);
             trained = classSize == 0 || classSize >= context.getMaxTraining();
             this.trained.put(clazz, trained);
             try {
-                classifier.train(analysis);
+                analyticsService.train(analysis);
+                // classifier.train(analysis);
                 if (classSize % 10 == 0) {
-                    logger.info("Training : " + clazz + ", language : " + this.language + ", class size : " + classSize);
+                    Object[] parameters = {clazz, this.language, classSize};
+                    logger.info("Training : , language : , class size : ", parameters);
                 }
                 if (buildThreshold == 0) {
                     buildThreshold = 100;
                 }
                 if (classSize % buildThreshold == 0) {
-                    logger.info("Building : " + clazz + ", language : " + this.language + ", class size : " + classSize + ", build threshold : " + buildThreshold);
-                    classifier.build(context);
+                    Object[] parameters = {clazz, this.language, classSize, buildThreshold};
+                    logger.info("Building : {}, language : {}, class size : {}, , build threshold : {}", parameters);
+                    analyticsService.build(analysis);
+                    // classifier.build(context);
                     buildThreshold = classSize / 10;
                 }
             } catch (final Exception e) {

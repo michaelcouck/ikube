@@ -5,17 +5,17 @@ import javax.persistence.PreUpdate;
 
 /**
  * @author Michael Couck
- * @since 29.09.12
  * @version 01.00
+ * @since 29-09-2012
  */
 public class SearchIncrementListener {
 
-	@PrePersist
-	@PreUpdate
-	public void prePersist(final Search search) {
-		int count = search.getCount();
-		count++;
-		search.setCount(count);
-	}
+    @PreUpdate
+    @PrePersist
+    public void prePersist(final Search search) {
+        int count = search.getCount();
+        count++;
+        search.setCount(count);
+    }
 
 }

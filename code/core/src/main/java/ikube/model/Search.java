@@ -6,14 +6,15 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * This entity represents a search that was done by the user. As searches are done they can be inserted into the database and the data can then be used for all
- * sorts of things like statistical calculations and auto complete.
+ * This entity represents a search that was done by the user. As searches are done they can be inserted
+ * into the database and the data can then be used for all sorts of things like statistical calculations and
+ * auto complete.
  *
  * @author Michael Couck
  * @version 01.00
- * @since 01.03.12
+ * @since 01-03-2012
  */
-@Entity()
+@Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @EntityListeners(value = {SearchIncrementListener.class})
 @NamedQueries(value = {
@@ -66,6 +67,8 @@ public class Search extends Distributed {
     private List<String> typeFields;
     @ElementCollection
     private List<String> occurrenceFields;
+    @ElementCollection
+    private List<String> boosts;
 
     @Embedded
     private Coordinate coordinate;
@@ -113,6 +116,14 @@ public class Search extends Distributed {
 
     public void setDistance(int distance) {
         this.distance = distance;
+    }
+
+    public List<String> getBoosts() {
+        return boosts;
+    }
+
+    public void setBoosts(List<String> boosts) {
+        this.boosts = boosts;
     }
 
     public int getCount() {

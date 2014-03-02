@@ -12,8 +12,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.Future;
 
 /**
@@ -70,26 +72,37 @@ public final class Deployer {
         LOGGER.info("Configuration file path : " + deployerConfigurationPath);
         APPLICATION_CONTEXT = new FileSystemXmlApplicationContext(deployerConfigurationPath);
         if (execute) {
+            List<Future<?>> futures = new ArrayList<>();
             Deployer deployer = APPLICATION_CONTEXT.getBean(Deployer.class);
             for (final Server server : deployer.getServers()) {
-                String name = Long.toString(System.currentTimeMillis());
-                if (deployer.isParallel()) {
+                final String name = Long.toString(System.currentTimeMillis());
+                if (!deployer.isParallel()) {
+                    // Execute one action at a time
                     for (final IAction action : server.getActions()) {
                         action.execute(server);
                     }
                 } else {
-                    for (final IAction action : server.getActions()) {
-                        Future<?> future = ThreadUtilities.submit(name, new Runnable() {
-                            public void run() {
-                                action.execute(server);
+                    // Execute on action at a time, in order for each server,
+                    // but execute all the servers at the same time. So we get the
+                    // order of the actions correct, and parallel to the servers
+                    Future<?> future = ThreadUtilities.submit(name, new Runnable() {
+                        public void run() {
+                            try {
+                                for (final IAction action : server.getActions()) {
+                                    action.execute(server);
+                                }
+                            } finally {
+                                ThreadUtilities.destroy(name);
                             }
-                        });
-                        ThreadUtilities.waitForFuture(future, deployer.getMaxWaitTime());
-                    }
+                        }
+                    });
+                    futures.add(future);
                 }
             }
-            ThreadUtilities.destroy();
+            ThreadUtilities.waitForFutures(futures, 600);
         }
+        ThreadUtilities.destroy();
+        // System.exit(0);
     }
 
     public static ApplicationContext getApplicationContext() {

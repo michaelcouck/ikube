@@ -96,7 +96,7 @@ public class IndexManagerTest extends AbstractTest {
     @Test
     public void addNumericField() {
         String floatFieldValue = "123.456";
-        IndexManager.addNumericField(fieldName, floatFieldValue, document, Boolean.TRUE);
+        IndexManager.addNumericField(fieldName, floatFieldValue, document, Boolean.TRUE, 1.0f);
 
         IndexableField field = document.getField(fieldName);
         assertNotNull(field);
@@ -108,7 +108,7 @@ public class IndexManagerTest extends AbstractTest {
     public void addReaderField() throws Exception {
         // We want to add a reader field to the document
         Reader reader = getReader(Reader.class);
-        IndexManager.addReaderField(fieldName, document, reader, Boolean.TRUE);
+        IndexManager.addReaderField(fieldName, document, reader, Boolean.TRUE, 1.0f);
 
         // Verify that it not null
         Field field = (Field) document.getField(fieldName);
@@ -121,7 +121,7 @@ public class IndexManagerTest extends AbstractTest {
         Reader fieldReader = getReader(Reader.class);
         field = new Field(fieldName, fieldReader);
         document.add(field);
-        IndexManager.addReaderField(fieldName, document, fieldReader, Boolean.TRUE);
+        IndexManager.addReaderField(fieldName, document, fieldReader, Boolean.TRUE, 1.0f);
 
         // Verify that it is not null
         Reader finalFieldReader = field.readerValue();

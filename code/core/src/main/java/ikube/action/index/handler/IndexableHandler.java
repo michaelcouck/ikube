@@ -1,6 +1,5 @@
 package ikube.action.index.handler;
 
-import ikube.database.IDataBase;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.toolkit.SerializationUtilities;
@@ -42,12 +41,6 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
     @Autowired
     @Qualifier("ikube.action.index.handler.ResourceHandler")
     protected ResourceHandler<T> resourceHandler;
-
-    /**
-     * The database access for sub classes to persist working objects if necessary.
-     */
-    @Autowired
-    protected IDataBase dataBase;
 
     /**
      * This method will return the recursive action. A {@link RecursiveAction} is one that will potentially spawn off

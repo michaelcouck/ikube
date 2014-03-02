@@ -10,12 +10,13 @@ import java.util.Collection;
 import java.util.concurrent.Future;
 
 /**
- * This factory for analyzers is implemented as builder. Typically taking multiple simple objects and building a complex one, all the time
- * shielding the complex object from the complexity of it's construction.
+ * This factory for analyzers is implemented as builder. Typically taking multiple simple objects
+ * and building a complex one, all the time shielding the complex object from the complexity of it's
+ * construction.
  *
  * @author Michael Couck
  * @version 01.00
- * @since 10.04.13
+ * @since 10-04-2013
  */
 public final class AnalyzerManager {
 

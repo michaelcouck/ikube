@@ -43,7 +43,7 @@
 
     <bean
         class="ikube.deploy.Deployer"
-        property:parallel="false"
+        property:parallel="true"
         property:maxWaitTime="60"
         property:servers-ref="servers"/>
 
@@ -74,7 +74,7 @@
     <bean
         id="stop-action"
         name="stop-action"
-        class="ikube.deploy.action.CommandAction"
+        class="ikube.deploy.action.CmdAction"
         property:breakOnError="true"
         property:commands-ref="stop-commands"/>
     <util:list id="stop-commands">
@@ -86,7 +86,7 @@
     <bean
         id="clean-action"
         name="clean-action"
-        class="ikube.deploy.action.CommandAction"
+        class="ikube.deploy.action.CmdAction"
         property:breakOnError="true"
         property:commands-ref="clean-commands"/>
     <util:list id="clean-commands">
@@ -132,7 +132,7 @@
     <bean
         id="start-action"
         name="start-action"
-        class="ikube.deploy.action.CommandAction"
+        class="ikube.deploy.action.CmdAction"
         property:breakOnError="true"
         property:commands-ref="start-commands"/>
     <util:list id="start-commands">
@@ -163,7 +163,7 @@
     <bean
         id="stop-action-one"
         name="stop-action-one"
-        class="ikube.deploy.action.CommandAction"
+        class="ikube.deploy.action.CmdAction"
         property:breakOnError="true"
         property:commands-ref="stop-commands-one"/>
     <util:list id="stop-commands-one">
@@ -175,7 +175,7 @@
     <bean
         id="clean-action-one"
         name="clean-action-one"
-        class="ikube.deploy.action.CommandAction"
+        class="ikube.deploy.action.CmdAction"
         property:breakOnError="true"
         property:commands-ref="clean-commands-one"/>
     <util:list id="clean-commands-one">
@@ -219,7 +219,7 @@
     <bean
         id="start-action-one"
         name="start-action-one"
-        class="ikube.deploy.action.CommandAction"
+        class="ikube.deploy.action.CmdAction"
         property:breakOnError="true"
         property:commands-ref="start-commands-one"/>
     <util:list id="start-commands-one">
@@ -249,7 +249,7 @@
     <bean
         id="stop-action-two"
         name="stop-action-two"
-        class="ikube.deploy.action.CommandAction"
+        class="ikube.deploy.action.CmdAction"
         property:breakOnError="true"
         property:commands-ref="stop-commands-two"/>
     <util:list id="stop-commands-two">
@@ -261,7 +261,7 @@
     <bean
         id="clean-action-two"
         name="clean-action-two"
-        class="ikube.deploy.action.CommandAction"
+        class="ikube.deploy.action.CmdAction"
         property:breakOnError="true"
         property:commands-ref="clean-commands-two"/>
     <util:list id="clean-commands-two">
@@ -305,7 +305,7 @@
     <bean
         id="start-action-two"
         name="start-action-two"
-        class="ikube.deploy.action.CommandAction"
+        class="ikube.deploy.action.CmdAction"
         property:breakOnError="true"
         property:commands-ref="start-commands-two"/>
     <util:list id="start-commands-two">
@@ -335,7 +335,7 @@
     <bean
         id="stop-action-three"
         name="stop-action-three"
-        class="ikube.deploy.action.CommandAction"
+        class="ikube.deploy.action.CmdAction"
         property:breakOnError="true"
         property:commands-ref="stop-commands-three"/>
     <util:list id="stop-commands-three">
@@ -347,7 +347,7 @@
     <bean
         id="clean-action-three"
         name="clean-action-three"
-        class="ikube.deploy.action.CommandAction"
+        class="ikube.deploy.action.CmdAction"
         property:breakOnError="true"
         property:commands-ref="clean-commands-three"/>
     <util:list id="clean-commands-three">
@@ -391,7 +391,7 @@
     <bean
         id="start-action-three"
         name="start-action-three"
-        class="ikube.deploy.action.CommandAction"
+        class="ikube.deploy.action.CmdAction"
         property:breakOnError="true"
         property:commands-ref="start-commands-three"/>
     <util:list id="start-commands-three">

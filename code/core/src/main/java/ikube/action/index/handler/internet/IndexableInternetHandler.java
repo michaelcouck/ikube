@@ -6,9 +6,11 @@ import ikube.action.index.handler.IndexableHandler;
 import ikube.action.index.parse.IParser;
 import ikube.action.index.parse.ParserProvider;
 import ikube.action.index.parse.XMLParser;
+import ikube.database.IDataBase;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
+import ikube.toolkit.HashUtilities;
 import ikube.toolkit.UriUtilities;
 import net.htmlparser.jericho.*;
 import org.apache.lucene.document.Document;
@@ -29,6 +31,11 @@ import java.util.concurrent.ForkJoinTask;
  */
 public class IndexableInternetHandler extends IndexableHandler<IndexableInternet> {
 
+    /**
+     * The database access for sub classes to persist working objects if necessary.
+     */
+    @Autowired
+    private IDataBase dataBase;
     @Autowired
     private InternetResourceHandler internetResourceHandler;
 
@@ -55,13 +62,21 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
             // Parse the content from the url
             if (url.getRawContent() != null) {
                 parseContent(url);
-                internetResourceHandler.handleResource(indexContext, indexableInternet, new Document(), url);
+                // Check that this isn't a duplicate
+                if (dataBase.find(Url.class, new String[]{}, new Object[]{}) == null) {
+                    internetResourceHandler.handleResource(indexContext, indexableInternet, new Document(), url);
+                } else {
+                    // Duplicate content, not interesting
+                    logger.info("Duplicate : " + url.getUrl());
+                }
                 return extractLinksFromContent(indexableInternet, url);
             }
             return Collections.EMPTY_LIST;
         } catch (final Exception e) {
             throw new RuntimeException(e);
         } finally {
+            url.setHash(HashUtilities.hash(url.getParsedContent()));
+            dataBase.merge(url);
             url.setRawContent(null);
             url.setParsedContent(null);
         }

@@ -2,97 +2,97 @@
 
 <!--suppress ALL -->
 <beans
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns="http://www.springframework.org/schema/beans"
-        xmlns:property="http://www.springframework.org/schema/p"
-        xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:property="http://www.springframework.org/schema/p"
+    xmlns:util="http://www.springframework.org/schema/util"
 
-        xsi:schemaLocation="http://www.springframework.org/schema/beans
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
             http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util.xsd">
 
-	<description>
-		This file is not to be modified by users generally.
-		This is the configuration for the AutoComplete index which is an index 
-		of the search table on the Ikube server.
-	</description>
-	
-	<bean
-		id="autocomplete"
-		class="ikube.model.IndexContext"
-		property:name="autocomplete"
-		property:maxAge="180"
-		property:compoundFile="${compound.file}"
-		property:bufferedDocs="${buffered.docs}"
-		property:bufferSize="${buffer.size}"
-		property:batchSize="${jdbc.batch.size}"
-		property:internetBatchSize="${internet.batch.size}"
-		property:mergeFactor="${merge.factor}"
-		property:maxFieldLength="${max.field.length}"
-		property:maxReadLength="${max.read.length}"
-		property:address="false"
-		property:throttle="0"
-		property:indexDirectoryPath="${index.directory.path}"
-		property:indexDirectoryPathBackup="${index.directory.path}"
-		property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer"
-		property:children-ref="autocompleteIndexables" />
-	<util:list id="autocompleteIndexables">
-		<ref local="autocomplete-word-lists" />
-	</util:list>
-	
-	<bean
-		id="autocomplete-word-lists"
-		class="ikube.model.IndexableFileSystemCsv"
-		property:name="autocomplete-word-lists"
-		property:path="./ikube/common/languages"
-		
-		property:separator=","
-		property:encoding="UTF-8"
-		property:lineNumberFieldName="line-number"
-		
-		property:pathFieldName="path"
-		property:nameFieldName="name"
-		property:lengthFieldName="length"
-		property:contentFieldName="contents"
-		property:lastModifiedFieldName="lastmodified"
-		
-		property:unpackZips="${unpack.zips}"
-		property:stored="${stored}"
-		property:analyzed="${analyzed}"
-		property:vectored="${vectored}"
-		property:excludedPattern="${files.excluded.pattern}"
-		property:batchSize="${file.batch.size}"
-		property:maxReadLength="${max.read.length}" 
-		property:maxExceptions="1000"
+    <description>
+        This file is not to be modified by users generally.
+        This is the configuration for the AutoComplete index which is an index
+        of the search table on the Ikube server.
+    </description>
+
+    <bean
+        id="autocomplete"
+        class="ikube.model.IndexContext"
+        property:name="autocomplete"
+        property:maxAge="180"
+        property:compoundFile="${compound.file}"
+        property:bufferedDocs="${buffered.docs}"
+        property:bufferSize="${buffer.size}"
+        property:batchSize="${jdbc.batch.size}"
+        property:internetBatchSize="${internet.batch.size}"
+        property:mergeFactor="${merge.factor}"
+        property:maxFieldLength="${max.field.length}"
+        property:maxReadLength="${max.read.length}"
+        property:address="false"
+        property:throttle="0"
+        property:indexDirectoryPath="${index.directory.path}"
+        property:indexDirectoryPathBackup="${index.directory.path}"
+        property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer"
+        property:children-ref="autocompleteIndexables" />
+    <util:list id="autocompleteIndexables">
+        <ref local="autocomplete-word-lists" />
+    </util:list>
+
+    <bean
+        id="autocomplete-word-lists"
+        class="ikube.model.IndexableFileSystemCsv"
+        property:name="autocomplete-word-lists"
+        property:path="./ikube/common/languages"
+
+        property:separator=","
+        property:encoding="UTF-8"
+        property:lineNumberFieldName="line-number"
+
+        property:pathFieldName="path"
+        property:nameFieldName="name"
+        property:lengthFieldName="length"
+        property:contentFieldName="contents"
+        property:lastModifiedFieldName="lastmodified"
+
+        property:unpackZips="${unpack.zips}"
+        property:stored="${stored}"
+        property:analyzed="${analyzed}"
+        property:vectored="${vectored}"
+        property:excludedPattern="${files.excluded.pattern}"
+        property:batchSize="${file.batch.size}"
+        property:maxReadLength="${max.read.length}"
+        property:maxExceptions="1000"
         property:maxLines="1000000"
-		property:threads="1"
-		property:children-ref="autocomplete-word-lists-columns" />
-	
-	<util:list id="autocomplete-word-lists-columns">
-		<ref local="autocomplete-word-lists-word" />
-		<ref local="autocomplete-word-lists-synonym" />
-	</util:list>
-	
-	<bean
-		id="autocomplete-word-lists-word"
-		class="ikube.model.IndexableColumn"
-		property:name="word"
-		property:fieldName="word"
-		property:analyzed="true"
-		property:stored="true"
-		property:vectored="true"
-		property:omitNorms="false" />
-		<!-- Do not normalize for length -->
-	<bean
-		id="autocomplete-word-lists-synonym"
-		class="ikube.model.IndexableColumn"
-		property:name="synonym"
-		property:fieldName="synonym"
-		property:analyzed="true"
-		property:stored="true"
-		property:vectored="true"
-		property:omitNorms="false" />
-		<!-- Do not normalize for length -->
-	
+        property:threads="1"
+        property:children-ref="autocomplete-word-lists-columns" />
+
+    <util:list id="autocomplete-word-lists-columns">
+        <ref local="autocomplete-word-lists-word" />
+        <ref local="autocomplete-word-lists-synonym" />
+    </util:list>
+
+    <bean
+        id="autocomplete-word-lists-word"
+        class="ikube.model.IndexableColumn"
+        property:name="word"
+        property:fieldName="word"
+        property:analyzed="true"
+        property:stored="true"
+        property:vectored="true"
+        property:omitNorms="true" />
+    <!-- Do not normalize for length -->
+    <bean
+        id="autocomplete-word-lists-synonym"
+        class="ikube.model.IndexableColumn"
+        property:name="synonym"
+        property:fieldName="synonym"
+        property:analyzed="true"
+        property:stored="true"
+        property:vectored="true"
+        property:omitNorms="true" />
+    <!-- Do not normalize for length -->
+
 </beans>

@@ -40,7 +40,7 @@ function TypeaheadController($scope, $http, $injector, $timeout, $log) {
 			}
 		}
 		return $scope.results;
-	}
+	};
 	
 	// We add a watch so that when a selection is made from the drop down,
 	// which is a fragment, and has html tags in it, we can remove the html before
@@ -88,7 +88,8 @@ function TypeaheadController($scope, $http, $injector, $timeout, $log) {
 	
 	var maxRetries = 100;
 	$scope.emit = function() {
-		return $timeout(function() {
+		//noinspection FunctionWithInconsistentReturnsJS
+        return $timeout(function() {
 			// Check that we have some results and that the search strings that were searched
 			// for are the same ones that the user typed last, i.e. the last search that was done
 			if (!!$scope.results) {

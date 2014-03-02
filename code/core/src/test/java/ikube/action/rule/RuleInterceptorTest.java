@@ -46,7 +46,6 @@ public class RuleInterceptorTest extends AbstractTest {
     private RuleInterceptor ruleInterceptor;
 
     private IsMultiSearcherInitialised isMultiSearcherInitialised;
-    private AreSearchablesInitialised areSearchablesInitialised;
     private IsIndexCurrent isIndexCurrent;
     private AreIndexesCreated areIndexesCreated;
     private AreUnopenedIndexes areUnopenedIndexes;
@@ -73,7 +72,6 @@ public class RuleInterceptorTest extends AbstractTest {
         final List<IRule<IndexContext<?>>> rules = new ArrayList<>();
 
         isMultiSearcherInitialised = mock(IsMultiSearcherInitialised.class);
-        areSearchablesInitialised = mock(AreSearchablesInitialised.class);
         isIndexCurrent = mock(IsIndexCurrent.class);
         areIndexesCreated = mock(AreIndexesCreated.class);
         areUnopenedIndexes = mock(AreUnopenedIndexes.class);
@@ -82,7 +80,6 @@ public class RuleInterceptorTest extends AbstractTest {
         Close close = mock(Close.class);
 
         rules.add(isMultiSearcherInitialised);
-        rules.add(areSearchablesInitialised);
         rules.add(isIndexCurrent);
         rules.add(areIndexesCreated);
         rules.add(areUnopenedIndexes);
@@ -125,7 +122,6 @@ public class RuleInterceptorTest extends AbstractTest {
     @Test
     public void decide() throws Throwable {
         when(isMultiSearcherInitialised.evaluate(indexContext)).thenReturn(Boolean.TRUE);
-        when(areSearchablesInitialised.evaluate(indexContext)).thenReturn(Boolean.FALSE);
         when(isIndexCurrent.evaluate(indexContext)).thenReturn(Boolean.TRUE);
         when(areIndexesCreated.evaluate(indexContext)).thenReturn(Boolean.FALSE);
         when(areUnopenedIndexes.evaluate(indexContext)).thenReturn(Boolean.TRUE);
@@ -158,16 +154,16 @@ public class RuleInterceptorTest extends AbstractTest {
 
         Action action = new Index();
         action.setRuleExpression("!IsIndexCurrent && " +
-            "!AnyServersWorkingThisIndex && " +
-            "!TooManyActionsRule && " +
-            "!(IsThisServerWorking && AreOtherServers && AnyServersIdle)");
+                "!AnyServersWorkingThisIndex && " +
+                "!TooManyActionsRule && " +
+                "!(IsThisServerWorking && AreOtherServers && AnyServersIdle)");
         action.setRequiresClusterLock(false);
         action.setRules(Arrays.asList(isIndexCurrentBug,
-            anyServersWorkingThisIndexBug,
-            tooManyActionsRuleBug,
-            isThisServerWorkingBug,
-            areOtherServersBug,
-            anyServersIdleBug));
+                anyServersWorkingThisIndexBug,
+                tooManyActionsRuleBug,
+                isThisServerWorkingBug,
+                areOtherServersBug,
+                anyServersIdleBug));
         boolean result = ruleInterceptor.evaluateRules(indexContext, action);
         assertFalse(result);
     }

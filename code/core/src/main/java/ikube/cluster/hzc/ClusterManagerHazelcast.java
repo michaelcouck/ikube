@@ -58,18 +58,20 @@ public class ClusterManagerHazelcast extends AClusterManager {
                 do {
                     boolean reinitialize = Boolean.FALSE;
                     try {
-                        hazelcastInstance.getClientService().getConnectedClients();
+                        boolean locked = lock(IConstants.HAZELCAST_WATCHER);
+                        logger.debug("Hazelcast watcher lock : ", locked);
                     } catch (final Exception e) {
                         reinitialize = Boolean.TRUE;
                         logger.error("Error...", e);
                     } finally {
+                        unlock(IConstants.HAZELCAST_WATCHER);
                         if (reinitialize) {
                             logger.info("Restarting the grid!!!");
                             Hazelcast.shutdownAll();
                             hazelcastInstance = Hazelcast.newHazelcastInstance(config);
                         }
                     }
-                    ThreadUtilities.sleep(IConstants.ONE_THOUSAND);
+                    ThreadUtilities.sleep(IConstants.HUNDRED_THOUSAND);
                 } while (true);
             }
         }
@@ -160,7 +162,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
             Server server = getServer();
             action = getAction(actionName, indexName, indexableName);
             server.getActions().add(action);
-            hazelcastInstance.getMap(IConstants.IKUBE).put(server.getAddress(), server);
+            hazelcastInstance.getMap(IConstants.SERVER).put(server.getAddress(), server);
         } catch (final Exception e) {
             logger.error("Exception starting action : " + actionName + ", " + indexName + ", " + indexableName, e);
         } finally {
@@ -190,7 +192,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
                     logger.debug("Removed grid action : {} , ", gridAction.getId(), actions.size());
                 }
             }
-            hazelcastInstance.getMap(IConstants.IKUBE).put(server.getAddress(), server);
+            hazelcastInstance.getMap(IConstants.SERVER).put(server.getAddress(), server);
         } finally {
             notifyAll();
         }
@@ -201,7 +203,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
      */
     @Override
     public Map<String, Server> getServers() {
-        return hazelcastInstance.getMap(IConstants.IKUBE);
+        return hazelcastInstance.getMap(IConstants.SERVER);
     }
 
     /**

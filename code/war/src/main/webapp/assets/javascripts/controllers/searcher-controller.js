@@ -1,4 +1,9 @@
 /**
+ * The search controller, note that the default is to distribute the
+ * search in the cluster. This functionality picks a server at random and
+ * executes the code on that server. The cluster needs to be hetrogenus of
+ * course.
+ *
  * @author Michael Couck
  * @since 10-11-2013
  */
@@ -114,8 +119,8 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 					} else {
 						typeFields.push('string');
 					}
+                    occurrenceFields.push('must');
 				}
-                occurrenceFields.push('must');
 			}
 		}
 
@@ -125,6 +130,7 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
         cloneSearch.searchFields = searchFields;
         cloneSearch.typeFields = typeFields;
         cloneSearch.occurrenceFields = occurrenceFields;
+        cloneSearch.distributed = true;
 
 		return cloneSearch;
 	};

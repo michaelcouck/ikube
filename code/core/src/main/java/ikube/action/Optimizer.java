@@ -59,8 +59,7 @@ public class Optimizer extends Action<IndexContext<?>, Boolean> {
                     }
                 };
                 double timeTaken = Timer.execute(timed) / 1000000000 / 60;
-                Object[] parameters = {indexDirectory, indexDirectory, timeTaken};
-                logger.info("Finished optimizing index : {} , {} , in : {}", parameters);
+                logger.info("Finished optimizing index : " + timeTaken + ", directory :" + indexDirectory);
             } finally {
                 if (directory != null) {
                     directory.close();

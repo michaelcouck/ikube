@@ -98,14 +98,18 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
             final URLPool urlPool = new TimeoutURLPool(this);
             for (int i = 0; i < indexableInternet.getThreads(); i++) {
                 Worker worker = new WorkerImpl(crawler);
-                ThreadUtilities.submit(indexableInternet.getParent().getName(), worker);
+                ThreadUtilities.submit(indexableInternet.getName(), worker);
             }
-            ThreadUtilities.submit(indexableInternet.getParent().getName(), new Runnable() {
+            ThreadUtilities.submit(indexableInternet.getName(), new Runnable() {
                 public void run() {
                     try {
+                        logger.info("Starting crawl : ");
                         crawler.run(urlPool);
+                        logger.info("Finishing crawl : ");
                     } catch (final IOException e) {
                         throw new RuntimeException(e);
+                    } finally {
+                        ThreadUtilities.destroy(indexableInternet.getName());
                     }
                 }
             });
@@ -134,23 +138,16 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
     @Override
     public synchronized Url getResource() {
         int retry = RETRY;
-        while (urls.isEmpty() && retry-- >= 0) {
-            try {
-                wait(SLEEP);
-            } catch (final InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException(e);
-            }
+        Url url = urls.pollFirst();
+        while (url == null && retry-- >= 0) {
+            ThreadUtilities.sleep(SLEEP);
+            url = urls.pollFirst();
         }
-        if (urls.isEmpty()) {
-            return null;
+        boolean contains = urls.contains(url);
+        logger.info("Doing url : " + url + ", " + contains + ", " + urls.size());
+        if (url != null && contains) {
+            urls.remove(url);
         }
-        if (logger.isDebugEnabled()) {
-            logger.debug("Urls size : " + urls.size() + ", " + urls.isEmpty());
-        }
-        Url url = urls.first();
-        logger.debug("Popping : " + url);
-        urls.remove(url);
         return url;
     }
 
@@ -158,7 +155,7 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
      * {@inheritDoc}
      */
     @Override
-    public void setResources(final List<Url> resources) {
+    public synchronized void setResources(final List<Url> resources) {
         if (resources == null) {
             return;
         }

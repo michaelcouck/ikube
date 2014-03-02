@@ -5,9 +5,9 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 
 /**
- * This class represents configuration and properties, and potentially logic that can build another object. For example the analyzers may need
- * input in the form of files, then this class will hold the properties that are necessary for the analyzer to be instantiated, initialized and
- * trained.
+ * This class represents configuration and properties, and potentially logic that can build another object. For
+ * example the analyzers may need input in the form of files, then this class will hold the properties that are
+ * necessary for the analyzer to be instantiated, initialized and trained.
  *
  * @param <T> the type of analyzer in Ikube system
  * @param <F> the type of the filter to convert the data to the input format
@@ -15,7 +15,7 @@ import javax.persistence.InheritanceType;
  * @param <O> the possible options passed to the algorithm logic
  * @author Michael Couck
  * @version 01.00
- * @since 10.04.13
+ * @since 10-04-2013
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
@@ -23,7 +23,9 @@ public class Context<T, F, A, O> extends Persistable {
 
     /**
      * The name of this specific analyzer. The name will also be used to find the initial training file,
-     * and indeed persist the instances that were used to train this analyzer for further investigation and modification.
+     * and indeed persist the instances that were used to train this analyzer for further investigation and
+     * modification. This field is correlated to the {@link ikube.model.Analysis} 'analyzer' field. Note that
+     * this field and the analysis object field must be the same as the Spring id/name of the bean.
      */
     private String name;
 

@@ -27,7 +27,7 @@ import java.util.TimeZone;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 11.12.13
+ * @since 11-12-2013
  */
 @Component
 public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrichmentStrategy {
@@ -47,11 +47,14 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
      * {@inheritDoc}
      */
     @Override
-    public boolean aroundProcess(final IndexContext<?> indexContext, final Indexable<?> indexable,
-                                 final Document document, final Object resource)
-        throws Exception {
-        if (IndexableTweets.class.isAssignableFrom(indexable.getClass()) && resource != null && Tweet.class
-            .isAssignableFrom(resource.getClass())) {
+    public boolean aroundProcess(
+            final IndexContext<?> indexContext,
+            final Indexable<?> indexable,
+            final Document document,
+            final Object resource)
+            throws Exception {
+        if (IndexableTweets.class.isAssignableFrom(indexable.getClass()) &&
+                resource != null && Tweet.class.isAssignableFrom(resource.getClass())) {
             IndexableTweets indexableTweets = (IndexableTweets) indexable;
             TwitterProfile twitterProfile = ((Tweet) resource).getUser();
             // Get the location from the geo tag : "geo":{"coordinates":[-33.9769,18.5080],"type":"Point"}
@@ -61,8 +64,10 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
         return super.aroundProcess(indexContext, indexable, document, resource);
     }
 
-    void setCoordinate(final IndexableTweets indexableTweets, final TwitterProfile twitterProfile,
-                       final Document document) {
+    void setCoordinate(
+            final IndexableTweets indexableTweets,
+            final TwitterProfile twitterProfile,
+            final Document document) {
         String locationField = indexableTweets.getLocationField();
         Coordinate userProfileLocation = getLocationFromUserProfile(twitterProfile);
         Coordinate tweetLocation = null;
@@ -85,10 +90,8 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
         }
         if (tweetLocation != null) {
             IndexManager.addStringField(locationField, tweetLocation.getName(), indexableTweets, document);
-            IndexManager.addNumericField(IConstants.LATITUDE, Double.toString(tweetLocation.getLatitude()), document,
-                Boolean.TRUE);
-            IndexManager.addNumericField(IConstants.LONGITUDE, Double.toString(tweetLocation.getLongitude()),
-                document, Boolean.TRUE);
+            IndexManager.addNumericField(IConstants.LATITUDE, Double.toString(tweetLocation.getLatitude()), document, Boolean.TRUE, indexableTweets.getBoost());
+            IndexManager.addNumericField(IConstants.LONGITUDE, Double.toString(tweetLocation.getLongitude()), document, Boolean.TRUE, indexableTweets.getBoost());
             addSpatialLocationFields(tweetLocation, document);
         }
     }
@@ -197,7 +200,7 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
         String[] searchStrings = new String[]{searchString};
         String[] searchFields = new String[]{searchField};
         ArrayList<HashMap<String, String>> results = searcherService.search(IConstants.GEOSPATIAL, searchStrings,
-            searchFields, Boolean.FALSE, 0, 10);
+                searchFields, Boolean.FALSE, 0, 10);
 
         if (results != null && results.size() > 1) {
             HashMap<String, String> timeZoneLocationResult = results.get(0);

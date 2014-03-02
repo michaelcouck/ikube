@@ -35,7 +35,7 @@ public class Url extends Persistable {
 	@Transient
 	private transient byte[] rawContent;
 	@Transient
-	private String parsedContent;
+	private transient String parsedContent;
 
 	@Column
 	@Index(name = "urlId_index", enabled = true)

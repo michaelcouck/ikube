@@ -5,15 +5,12 @@ import ikube.IConstants;
 import ikube.model.IndexContext;
 import ikube.search.Search;
 import ikube.search.SearchComplex;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
 
 /**
  * TODO Document me again...
@@ -23,8 +20,6 @@ import java.util.Map;
  * @since 05-03-2010
  */
 public class SpellingChecker {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SpellingChecker.class);
 
     private static SpellingChecker INSTANCE;
     @Autowired
@@ -36,6 +31,7 @@ public class SpellingChecker {
      *
      * @return the spelling checker
      */
+    @SuppressWarnings("deprecation")
     public static SpellingChecker getSpellingChecker() {
         if (SpellingChecker.INSTANCE == null) {
             SpellingChecker.INSTANCE = new SpellingChecker();
@@ -55,13 +51,8 @@ public class SpellingChecker {
         SpellingChecker.INSTANCE = this;
     }
 
-    /**
-     * Initializes the spelling checker, by indexing all the language files on each start.
-     *
-     * @throws Exception
-     */
+    @Deprecated
     public void initialize() throws Exception {
-        LOGGER.info("Opened spelling index : ");
     }
 
     /**
@@ -85,7 +76,7 @@ public class SpellingChecker {
                     }
                 };
                 search.setFirstResult(0);
-                search.setMaxResults(3);
+                search.setMaxResults(1);
                 search.setSearchStrings(word);
                 search.setFragment(Boolean.FALSE);
                 search.setTypeFields(IConstants.STRING);

@@ -45,7 +45,7 @@ public class AutoTest extends BaseTest {
         Search helloSearch = getSearch(new Search(), 2, "hello", "helloed");
         Search worldSearch = getSearch(new Search(), 2, "world", "worldly");
         when(searcherService.search(any(Search.class))).thenReturn(helloSearch, worldSearch);
-        StringBuilder[] suggestions = auto.suggestions(string, search);
+        String[] suggestions = auto.suggestions(string, search);
         assertEquals(2, suggestions.length);
 
         helloSearch = getSearch(new Search(), 3, "hello", "helloed", "helloes");
@@ -64,15 +64,36 @@ public class AutoTest extends BaseTest {
         worldSearch = getSearch(new Search(), 8, "world", "worldly", "worldliness");
         when(searcherService.search(any(Search.class))).thenReturn(helloSearch, worldSearch);
         suggestions = auto.suggestions(string, search);
+        assertEquals(3, suggestions.length);
+    }
+
+    @Test
+    public void multiSuggestions() {
+        String[] expectedSuggestions = {
+                "<b>hello</b> AND <b>world</b>",
+                "<b>helloed</b> AND <b>worldly</b>",
+                "<b>helloes</b> AND <b>worldliness</b>"};
+
+        String string = "hello AND world";
+        Search search = new Search();
+        search.setMaxResults(7);
+
+        Search helloSearch = getSearch(new Search(), 8, "hello", "helloed", "helloes");
+        Search worldSearch = getSearch(new Search(), 8, "world", "worldly", "worldliness");
+        when(searcherService.search(any(Search.class))).thenReturn(helloSearch, worldSearch);
+        String[] suggestions = auto.suggestions(string, search);
         printSuggestions(suggestions);
-        assertEquals(7, suggestions.length);
+        assertEquals(3, suggestions.length);
+        for (int i = 0; i < suggestions.length; i++) {
+            assertEquals(expectedSuggestions[i], suggestions[i]);
+        }
     }
 
     private Search getSearch(final Search search, final int total, final String... fragments) {
         ArrayList<HashMap<String, String>> results = new ArrayList<>();
         for (final String fragment : fragments) {
             HashMap<String, String> result = new HashMap<>();
-            result.put(IConstants.FRAGMENT, "<b>" + fragment + "</b>");
+            result.put(IConstants.WORD, "<b>" + fragment + "</b>");
             results.add(result);
         }
         HashMap<String, String> statistics = new HashMap<>();
@@ -83,8 +104,8 @@ public class AutoTest extends BaseTest {
     }
 
     @SuppressWarnings("unused")
-    void printSuggestions(final StringBuilder[] suggestions) {
-        for (final StringBuilder suggestion : suggestions) {
+    void printSuggestions(final String[] suggestions) {
+        for (final String suggestion : suggestions) {
             logger.info("Suggestion : " + suggestion);
         }
     }

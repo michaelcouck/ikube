@@ -55,8 +55,9 @@
 	<%--<script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>--%>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=visualization"></script>
 	<script src="http://www.google-analytics.com/ga.js" type="text/javascript"></script>
-	
-	<script src="<c:url value="/assets/javascripts/ui-bootstrap-tpls-0.6.0.js" />" type='text/javascript'></script>
+
+	<script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls.js" type='text/javascript'></script>
+	<%--<script src="<c:url value="/assets/javascripts/ui-bootstrap-tpls-0.6.0.js" />" type='text/javascript'></script>--%>
 	<%-- <script src="<c:url value="/assets/javascripts/ui-bootstrap-tpls-0.4.0.js" />" type='text/javascript'></script> --%>
 	<script type="text/javascript" src="http://angular-ui.github.io/ui-slider/src/slider.js"></script>
 	

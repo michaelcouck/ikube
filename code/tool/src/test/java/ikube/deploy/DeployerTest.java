@@ -1,7 +1,7 @@
 package ikube.deploy;
 
 import ikube.AbstractTest;
-import ikube.deploy.action.CommandAction;
+import ikube.deploy.action.CmdAction;
 import ikube.deploy.action.CopyAction;
 import ikube.deploy.model.Server;
 import mockit.Mock;
@@ -38,7 +38,7 @@ public class DeployerTest extends AbstractTest {
         }
     }
 
-    @MockClass(realClass = CommandAction.class)
+    @MockClass(realClass = CmdAction.class)
     public static class CommandActionMock {
         @Mock
         public boolean execute(final Server server) {

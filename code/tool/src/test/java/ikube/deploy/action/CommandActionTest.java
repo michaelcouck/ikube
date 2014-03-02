@@ -45,7 +45,7 @@ public class CommandActionTest extends AbstractTest {
         when(command.getInputStream()).thenReturn(inputStream);
         when(command.getErrorStream()).thenReturn(inputStream);
 
-        CommandAction commandAction = new CommandAction() {
+        CmdAction commandAction = new CmdAction() {
             protected SSHClient getSshExec(final String ip, final String username, final String password) {
                 System.out.println("Ssh : " + sshExec);
                 return sshExec;

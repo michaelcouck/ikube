@@ -17,16 +17,13 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
  * @author Michael couck
  * @version 01.00
- * @since 01.03.12
+ * @since 01-03-2012
  */
 @Component
 @Path(Auto.AUTO)
@@ -40,27 +37,28 @@ public class Auto extends Resource {
      */
     public static final String AUTO = "/auto";
     public static final String SUGGEST = "/suggest";
-    private static final Pattern CONJUNCTIONS = Pattern.compile(".*(AND).*|.*(OR).*|.*(NOT).*");
+    private static final Pattern CONJUNCTIONS = Pattern.compile("AND|OR|NOT|and|or|not");
 
     /**
-     * This method will return suggestions based on the closest match of the word in the index. The index can be a word list, which is probably the best choice,
-     * but doesn't have to be. If there are three words the, there will be suggestions for each word, and combinations of those suggestions, sorted by the score
-     * for the words.
+     * This method will return suggestions based on the closest match of the word in the index. The index can be a word list,
+     * which is probably the best choice, but doesn't have to be. If there are three words the, there will be suggestions for
+     * each word, and combinations of those suggestions, sorted by the score for the words.
      * <p/>
      * <pre>
      * 		Input: [disaster on island honshu again]
-     * 		Output: [disease in islanddia honalulu again], [dissapation ...] * the number of results expected, typically 6 or 8
+     * 		Output: [disease in islanddia honalulu again], [dissapation ...] // the number of results expected, typically 6 or 8
      * </pre>
      *
      * @param request the Json request, with the {@link Search} object in it
      * @param uriInfo information about the uri if any, currently not used
-     * @return the search result, or all the suggested strings in the {@link Search} object as search results, and the suggestions in the fragments
+     * @return the search result, or all the suggested strings in the {@link Search} object as search results, and the suggestions
+     * in the fragments
      */
     @POST
     @SuppressWarnings("unused")
-    public Response auto(//
-                         @Context final HttpServletRequest request, //
-                         @Context final UriInfo uriInfo) {
+    public Response auto(
+            @Context final HttpServletRequest request,
+            @Context final UriInfo uriInfo) {
         final Search search = unmarshall(Search.class, request);
         final ArrayList<HashMap<String, String>> autoResults = new ArrayList<>();
         double duration = Timer.execute(new Timer.Timed() {
@@ -68,13 +66,14 @@ public class Auto extends Resource {
             public void execute() {
                 List<String> searchStrings = search.getSearchStrings();
                 for (final String searchString : searchStrings) {
-                    StringBuilder[] autocompleteSuggestions = suggestions(searchString, search);
-                    for (final StringBuilder autocompleteSuggestion : autocompleteSuggestions) {
+                    String[] autocompleteSuggestions = suggestions(searchString, search);
+                    for (final String autocompleteSuggestion : autocompleteSuggestions) {
                         HashMap<String, String> result = new HashMap<>();
-                        result.put(IConstants.FRAGMENT, autocompleteSuggestion.toString().trim());
+                        result.put(IConstants.FRAGMENT, autocompleteSuggestion);
                         autoResults.add(result);
                     }
                 }
+                search.setSearchStrings(searchStrings);
             }
         });
         // Add the statistics
@@ -99,55 +98,65 @@ public class Auto extends Resource {
      * @param search       the search object for adding the results to
      * @return the array of strings that are a concatenation of the suggestions for each word
      */
-    StringBuilder[] suggestions(final String searchString, final Search search) {
+    @SuppressWarnings("MismatchedQueryAndUpdateOfStringBuilder")
+    String[] suggestions(
+            final String searchString,
+            final Search search) {
+        Search clone = (Search) SerializationUtilities.clone(search);
+        int rows = clone.getMaxResults();
         String[] words = StringUtils.split(searchString, ' ');
-        // Search for all the words and get the results
-        List<Search> searches = new ArrayList<>();
-        int maxSuggestions = 0;
-        for (final String word : words) {
+        String[][] matrix = new String[rows][words.length];
+        for (int i = 0; i < words.length; i++) {
+            String word = words[i];
             if (CONJUNCTIONS.matcher(word).matches()) {
-                continue;
-            }
-            Search cloneSearch = (Search) SerializationUtilities.clone(search);
-            cloneSearch.setSearchStrings(Arrays.asList(word));
-            cloneSearch = searcherService.search(cloneSearch);
-            searches.add(cloneSearch);
-            ArrayList<HashMap<String, String>> results = cloneSearch.getSearchResults();
-            HashMap<String, String> statistics = results.remove(results.size() - 1);
-            int total = Integer.parseInt(statistics.get(IConstants.TOTAL));
-            maxSuggestions = Math.max(maxSuggestions, total);
-        }
-        maxSuggestions = Math.min(maxSuggestions, search.getMaxResults());
-        // Iterate over the words and if the results for the words run out then use the word it's self
-        StringBuilder[] autocompleteSuggestions = new StringBuilder[maxSuggestions];
-        for (int i = 0; i < autocompleteSuggestions.length; i++) {
-            autocompleteSuggestions[i] = new StringBuilder();
-            for (int j = 0, k = 0; j < words.length; j++) {
-                String word = words[j];
-                if (CONJUNCTIONS.matcher(word).matches()) {
-                    autocompleteSuggestions[i].append(' ');
-                    autocompleteSuggestions[i].append(word);
-                    autocompleteSuggestions[i].append(' ');
-                    continue;
+                for (int j = 0; j < rows; j++) {
+                    setWord(word, j, i, matrix);
                 }
-                String suggestion;
-                Search cloneSearch = searches.get(k);
-                ArrayList<HashMap<String, String>> results = cloneSearch.getSearchResults();
-                if (results.size() > i) {
-                    suggestion = results.get(i).get(IConstants.FRAGMENT);
-                } else {
-                    suggestion = "<b>" + word + "</b>";
+            } else {
+                clone.setSearchStrings(Arrays.asList(word));
+                clone = searcherService.search(clone);
+                ArrayList<HashMap<String, String>> results = clone.getSearchResults();
+                Map<String, String> statistics = results.remove(clone.getSearchResults().size() - 1);
+                int total = Integer.parseInt(statistics.get(IConstants.TOTAL));
+                // The j < total is redundent
+                for (int j = 0; j < rows && j < results.size() && j < total; j++) {
+                    Map<String, String> result = results.get(j);
+                    String similar = "<b>" + result.get(IConstants.WORD) + "</b>";
+                    setWord(similar, j, i, matrix);
                 }
-                autocompleteSuggestions[i].append(suggestion);
-                k++;
             }
         }
-        return autocompleteSuggestions;
+        logger.info("Matrix : " + Arrays.deepToString(matrix));
+        // Concatenate all the rows into strings
+        List<String> suggestions = new ArrayList<>();
+        skipRow:
+        for (final String[] row : matrix) {
+            StringBuilder builder = new StringBuilder();
+            for (final String column : row) {
+                // If any of the suggested words are null, which could be
+                // because of any number of reasons, we skip this row completely
+                if (column == null) {
+                    continue skipRow;
+                }
+                builder.append(column);
+                builder.append(' ');
+            }
+            String suggestion = builder.toString().trim();
+            if (!suggestions.contains(suggestion)) {
+                suggestions.add(suggestion);
+            }
+        }
+        return suggestions.toArray(new String[suggestions.size()]);
+    }
+
+    private void setWord(final String word, final int i, final int j, final String[][] matrix) {
+        matrix[i][j] = word;
     }
 
     /**
-     * TODO Implement this method, with the top three results based on the words, as in the {@link Auto#auto(HttpServletRequest, UriInfo)} method, then the next
-     * three based on a thesaurus perhaps, i.e. similar words to the search phrase, could be anything. And finally suggestions based on similar searches, that
+     * TODO Implement this method, with the top three results based on the words, as in the
+     * {@link Auto#auto(HttpServletRequest, UriInfo)} method, then the next three based on a thesaurus perhaps, i.e.
+     * similar words to the search phrase, could be anything. And finally suggestions based on similar searches, that
      * will have to be classified with a k-means or similar algorithm.
      *
      * @param request the request from the gui
@@ -157,9 +166,9 @@ public class Auto extends Resource {
     @POST
     @Path(Auto.SUGGEST)
     @SuppressWarnings("unused")
-    public Response suggestions(//
-                                @Context final HttpServletRequest request, //
-                                @Context final UriInfo uriInfo) {
+    public Response suggestions(
+            @Context final HttpServletRequest request,
+            @Context final UriInfo uriInfo) {
         Search search = unmarshall(Search.class, request);
         Object results = searcherService.search(search);
         return buildJsonResponse(results);

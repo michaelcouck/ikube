@@ -21,13 +21,16 @@ import java.util.*;
 @Component
 @SuppressWarnings("ALL")
 @SpringAware(beanName = "ikube.cluster.hzc.ClusterManagerCacheSearch")
-public class ClusterManagerCacheSearch implements MapStore<Integer, Search> {
+public class ClusterManagerCacheSearch implements MapStore<Long, Search> {
 
     @Autowired
     private IDataBase dataBase;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void store(final Integer hash, final Search search) {
+    public void store(final Long hash, final Search search) {
         search.setHash(hash);
         if (search.getId() > 0) {
             dataBase.merge(search);
@@ -36,37 +39,52 @@ public class ClusterManagerCacheSearch implements MapStore<Integer, Search> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void storeAll(final Map<Integer, Search> searches) {
-        for (final Map.Entry<Integer, Search> mapEntry : searches.entrySet()) {
+    public void storeAll(final Map<Long, Search> searches) {
+        for (final Map.Entry<Long, Search> mapEntry : searches.entrySet()) {
             store(mapEntry.getKey(), mapEntry.getValue());
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void delete(final Integer hash) {
+    public void delete(final Long hash) {
         Search search = dataBase.find(Search.class, new String[]{"hash"}, new Object[]{hash});
         if (search != null) {
             dataBase.remove(search);
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void deleteAll(final Collection<Integer> hashes) {
-        for (final Integer hash : hashes) {
+    public void deleteAll(final Collection<Long> hashes) {
+        for (final Long hash : hashes) {
             delete(hash);
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Search load(final Integer hash) {
+    public Search load(final Long hash) {
         return dataBase.find(Search.class, new String[]{"hash"}, new Object[]{hash});
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Map<Integer, Search> loadAll(final Collection<Integer> hashes) {
-        Map<Integer, Search> searches = new HashMap<>();
-        for (final Integer hash : hashes) {
+    public Map<Long, Search> loadAll(final Collection<Long> hashes) {
+        Map<Long, Search> searches = new HashMap<>();
+        for (final Long hash : hashes) {
             Search search = load(hash);
             if (search != null) {
                 searches.put(hash, search);
@@ -75,12 +93,15 @@ public class ClusterManagerCacheSearch implements MapStore<Integer, Search> {
         return searches;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Set<Integer> loadAllKeys() {
-        Set<Integer> hashes = new TreeSet<>();
+    public Set<Long> loadAllKeys() {
+        Set<Long> hashes = new TreeSet<>();
         List<Search> searches = dataBase.find(Search.class, 0, 1000);
         for (final Search search : searches) {
-            hashes.add((int) search.getHash());
+            hashes.add(search.getHash());
         }
         return hashes;
     }

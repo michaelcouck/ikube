@@ -12,7 +12,7 @@ import java.util.Collection;
  * @version 01.00
  * @since 18-06-13
  */
-public class CommandAction extends Action {
+public class CmdAction extends Action {
 
     private Collection<String> commands;
 

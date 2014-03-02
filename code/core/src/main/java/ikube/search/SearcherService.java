@@ -6,6 +6,7 @@ import ikube.cluster.IMonitorService;
 import ikube.model.Coordinate;
 import ikube.model.IndexContext;
 import ikube.model.Search;
+import ikube.model.Server;
 import ikube.search.Search.TypeField;
 import ikube.toolkit.HashUtilities;
 import ikube.toolkit.SerializationUtilities;
@@ -21,10 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Michael Couck
@@ -38,7 +39,6 @@ public class SearcherService implements ISearcherService {
 
     static final Logger LOGGER = LoggerFactory.getLogger(SearcherService.class);
 
-    static final int MAX_MERGE_SIZE = 1000;
     static final int MAX_PERSIST_SIZE = 1000;
     private static final ArrayList<HashMap<String, String>> EMPTY_RESULTS = new ArrayList<>();
 
@@ -199,30 +199,39 @@ public class SearcherService implements ISearcherService {
             // Set the flag so we don't get infinite recursion
             search.setDistributed(Boolean.FALSE);
             // Create the callable that will be executed on the nodes
+            Server local = clusterManager.getServer();
+            final String localAddress = local.getAddress();
             Callable callable = new Callable<Object>() {
                 @Override
                 public Object call() throws Exception {
                     try {
-                        return doSearch(search);
+                        Server remote = getClusterManager().getServer();
+                        String remoteAddress = remote.getAddress();
+                        LOGGER.info("Executing remote search : " + localAddress + ", " + remoteAddress);
+                        Search remoteSearch = doSearch(search);
+                        LOGGER.info("Finished remote search : " + remoteSearch);
+                        return remoteSearch;
                     } catch (final Exception e) {
                         LOGGER.error("Exception doing remote search : ", e);
                     }
+                    LOGGER.info("Error doing remote search, returning null : ");
                     return null;
                 }
             };
             // LOGGER.info("Cluster manager : " + clusterManager);
             Future<?> future = clusterManager.sendTask(callable);
-            ThreadUtilities.waitForFuture(future, 10);
+            // ThreadUtilities.waitForFuture(future, 60);
             Search result = null;
             try {
-                result = (Search) future.get();
+                result = (Search) future.get(60, TimeUnit.SECONDS);
             } catch (final Exception e) {
-                handleException("Exception doing remote search : " + search + ", " + result, e);
+                handleException("Exception doing remote search : " + search, e);
             }
             // If the result is null or there are no results then
             // there probably was an issue with the target server so we'll
             // try to do this search locally
             if (result == null || result.getCount() == 0) {
+                LOGGER.info("Results null for distributed search, doing local : " + future.isDone() + ", " + result);
                 return doSearch(search);
             } else {
                 boolean success = Boolean.TRUE;
@@ -244,6 +253,10 @@ public class SearcherService implements ISearcherService {
         return search;
     }
 
+    private IClusterManager getClusterManager() {
+        return clusterManager;
+    }
+
     private Search doSearch(final Search search) {
         try {
             ikube.search.Search searchAction;
@@ -258,7 +271,7 @@ public class SearcherService implements ISearcherService {
             }
 
             if (searchAction == null) {
-                LOGGER.debug("Searcher null for index : " + search.getIndexName());
+                LOGGER.debug("Searcher null for index : {} ", search.getIndexName());
                 return search;
             }
             String[] searchStrings = search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]);
@@ -290,6 +303,14 @@ public class SearcherService implements ISearcherService {
             } else {
                 occurrenceFields = search.getOccurrenceFields().toArray(new String[search.getOccurrenceFields().size()]);
             }
+            float[] boosts = null;
+            if (search.getBoosts() != null) {
+                int i = 0;
+                boosts = new float[search.getBoosts().size()];
+                for (final String boost : search.getBoosts()) {
+                    boosts[i++] = Float.parseFloat(boost);
+                }
+            }
 
             searchAction.setFirstResult(search.getFirstResult());
             searchAction.setFragment(search.isFragment());
@@ -300,6 +321,7 @@ public class SearcherService implements ISearcherService {
             searchAction.setSortFields(sortFields);
             searchAction.setSortDirections(sortDirections);
             searchAction.setOccurrenceFields(occurrenceFields);
+            searchAction.setBoosts(boosts);
 
             ArrayList<HashMap<String, String>> results = searchAction.execute();
             String[] searchStringsCorrected = searchAction.getCorrections(searchStrings);
@@ -520,7 +542,8 @@ public class SearcherService implements ISearcherService {
             if (cacheSearch == null) {
                 clusterManager.put(search.getHash(), search);
             } else {
-                cacheSearch.setCount(cacheSearch.getCount() + 1);
+                // Don't need this, there is a update listener
+                // cacheSearch.setCount(cacheSearch.getCount() + 1);
                 clusterManager.put(cacheSearch.getHash(), cacheSearch);
             }
         } catch (final Exception e) {

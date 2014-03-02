@@ -9,14 +9,18 @@ import java.util.regex.Pattern;
  *
  * @author Michael Couck
  * @version 01.00
- * @since 21.11.10
+ * @since 21-11-2010
  */
 public interface IConstants {
 
     /**
-     * Application name.
+     * Application name and other bits and pieces use this constant, like the generic grid map.
      */
     String IKUBE = "ikube";
+    /**
+     * This constant is for the server map on the grid.
+     */
+    String SERVER = "server";
     /**
      * The property for the configuration location.
      */

@@ -284,7 +284,7 @@ public abstract class AbstractTest {
                 final String column = row[i];
                 String field = fields[i];
                 if (StringUtilities.isNumeric(column.trim())) {
-                    IndexManager.addNumericField(field, column.trim(), document, Boolean.TRUE);
+                    IndexManager.addNumericField(field, column.trim(), document, Boolean.TRUE, indexable.getBoost());
                 } else {
                     IndexManager.addStringField(field, column, indexable, document);
                 }
@@ -324,7 +324,7 @@ public abstract class AbstractTest {
         IndexManager.addStringField(IConstants.ID, id, indexable, document);
         IndexManager.addStringField(IConstants.NAME, string, indexable, document);
         if (StringUtilities.isNumeric(string.trim())) {
-            IndexManager.addNumericField(field, string.trim(), document, Boolean.TRUE);
+            IndexManager.addNumericField(field, string.trim(), document, Boolean.TRUE, indexable.getBoost());
         } else {
             IndexManager.addStringField(field, string, indexable, document);
         }
