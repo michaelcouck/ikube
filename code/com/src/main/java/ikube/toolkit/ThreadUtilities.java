@@ -283,7 +283,8 @@ public final class ThreadUtilities {
         boolean futuresNull = FUTURES == null;
         boolean poolsNull = FORK_JOIN_POOLS == null;
         Object[] parameters = {serviceNull, futuresNull, poolsNull};
-        LOGGER.info("Executor service : {}, futures : {}, fork pools : {}", parameters);
+        // LOGGER.info("Executor service : {}, futures : {}, fork pools : {}", parameters);
+        LOGGER.info("Service : " + parameters[0] + ", " + parameters[1] + ", " + parameters[2]);
         return serviceNull && futuresNull && poolsNull;
     }
 
