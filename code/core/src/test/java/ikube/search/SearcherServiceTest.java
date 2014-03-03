@@ -28,7 +28,6 @@ import java.util.concurrent.Callable;
 
 import static ikube.toolkit.ObjectToolkit.populateFields;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**
@@ -119,10 +118,12 @@ public class SearcherServiceTest extends AbstractTest {
                 });
             }
         }).when(clusterManager).sendTask(any(Callable.class));
+        when(clusterManager.getServer()).thenReturn(server);
 
         search = new ikube.model.Search();
         search = populateFields(new ikube.model.Search(), Boolean.TRUE, 10);
         search.setDistributed(Boolean.TRUE);
+        search.setBoosts(Arrays.<String>asList("1.0"));
 
         searcherService = new SearcherService();
         indexName = indexContext.getIndexName();
@@ -231,7 +232,6 @@ public class SearcherServiceTest extends AbstractTest {
                 searcherService.persistSearch(search);
             }
 
-            assertTrue(search.getCount() > 0);
             Mockito.verify(clusterManager, atLeastOnce()).put(any(), any(Serializable.class));
         } finally {
             // Set up the spelling mock for the next tests

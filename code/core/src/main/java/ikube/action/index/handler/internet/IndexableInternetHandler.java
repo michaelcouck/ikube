@@ -31,9 +31,6 @@ import java.util.concurrent.ForkJoinTask;
  */
 public class IndexableInternetHandler extends IndexableHandler<IndexableInternet> {
 
-    /**
-     * The database access for sub classes to persist working objects if necessary.
-     */
     @Autowired
     private IDataBase dataBase;
     @Autowired
@@ -62,8 +59,9 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
             // Parse the content from the url
             if (url.getRawContent() != null) {
                 parseContent(url);
+                url.setHash(HashUtilities.hash(url.getParsedContent()));
                 // Check that this isn't a duplicate
-                if (dataBase.find(Url.class, new String[]{}, new Object[]{}) == null) {
+                if (dataBase.find(Url.class, new String[]{IConstants.HASH}, new Object[]{url.getHash()}) == null) {
                     internetResourceHandler.handleResource(indexContext, indexableInternet, new Document(), url);
                 } else {
                     // Duplicate content, not interesting
@@ -120,7 +118,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
             }
             if (outputStream != null) {
                 String parsedContent = outputStream.toString();
-                logger.debug("Parsed content length : " + parsedContent.length());
+                logger.info("Parsed content length : {}", parsedContent.length());
                 url.setParsedContent(parsedContent);
             }
         } catch (final Exception e) {
@@ -169,7 +167,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
                     if (indexableInternet.isExcluded(strippedAnchorLink)) {
                         continue;
                     }
-                    logger.debug("Link : " + link);
+                    logger.debug("Link : {}", link);
                     Url newUrl = getUrl(indexableInternet.getName(), strippedAnchorLink);
                     urls.add(newUrl);
                 } catch (Exception e) {

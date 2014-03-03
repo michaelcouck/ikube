@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 08.09.13
+ * @since 08-09-2013
  */
 public class WekaClassifierTest extends AbstractTest {
 
@@ -40,7 +40,7 @@ public class WekaClassifierTest extends AbstractTest {
         context = new Context<>();
         context.setAlgorithm(SMO.class.newInstance());
         context.setFilter(StringToWordVector.class.newInstance());
-        context.setName("sentiment-en");
+        context.setName("sentiment-smo-en");
         context.setMaxTraining(1000);
 
         wekaClassifier = new WekaClassifier();
@@ -52,7 +52,7 @@ public class WekaClassifierTest extends AbstractTest {
     public void init() throws Exception {
         SMO smo = mock(SMO.class);
         Context context = mock(Context.class);
-        when(context.getName()).thenReturn("sentiment-en");
+        when(context.getName()).thenReturn("sentiment-smo-en");
         when(context.getAlgorithm()).thenReturn(smo);
         when(context.getOptions()).thenReturn(new String[]{"-R", "8"});
         wekaClassifier.init(context);

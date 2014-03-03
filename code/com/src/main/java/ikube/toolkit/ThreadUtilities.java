@@ -1,6 +1,7 @@
 package ikube.toolkit;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -16,7 +17,7 @@ import java.util.concurrent.*;
  */
 public final class ThreadUtilities {
 
-    private static final Logger LOGGER = Logger.getLogger(ThreadUtilities.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ThreadUtilities.class);
 
     /**
      * Executes the 'threads' and returns a future.
@@ -278,7 +279,12 @@ public final class ThreadUtilities {
     }
 
     public static boolean isInitialized() {
-        return EXECUTOR_SERVICE != null && FUTURES != null && FORK_JOIN_POOLS != null;
+        boolean serviceNull = EXECUTOR_SERVICE == null;
+        boolean futuresNull = FUTURES == null;
+        boolean poolsNull = FORK_JOIN_POOLS == null;
+        Object[] parameters = {serviceNull, futuresNull, poolsNull};
+        LOGGER.info("Executor service : {}, futures : {}, fork pools : {}", parameters);
+        return serviceNull && futuresNull && poolsNull;
     }
 
     protected static List<Future<?>> getFutures(final String name) {

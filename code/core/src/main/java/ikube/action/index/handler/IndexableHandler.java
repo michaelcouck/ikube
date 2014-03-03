@@ -70,11 +70,14 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
             protected void compute() {
                 // Lets see if we should split off some threads
                 computeRecursive(indexContext, indexable, resourceProvider);
-                logger.info("Thread starting : " + this.hashCode());
                 do {
+                    logger.info("Thread starting : " + this.hashCode());
                     // When there are no more resources we exit this task
                     Object resource = resourceProvider.getResource();
-                    if (resource == null || isCancelled() || isDone() || isCompletedNormally() ||
+                    if (resource == null ||
+                            isDone() ||
+                            isCancelled() ||
+                            isCompletedNormally() ||
                             isCompletedAbnormally()) {
                         break;
                     }

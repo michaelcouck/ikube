@@ -21,15 +21,17 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class is implemented as an interceptor, and typically configured in Spring. The interceptor will intercept the execution of the actions, like
- * {@link ikube.action.Index} and {@link ikube.action.Open}. Each action has associated with it rules, like whether any other servers are currently working on this index or if the index
- * is current and already open. The rules for the action will then be executed, and based on the category of the boolean predicate parametrized with the
- * results of each rule, the action will either be executed or not. {@link org.apache.commons.jexl2.JexlEngine} is the expression parser for the rules.
+ * This class is implemented as an interceptor, and typically configured in Spring. The interceptor will intercept the
+ * execution of the actions, like {@link ikube.action.Index} and {@link ikube.action.Open}. Each action has associated with
+ * it rules, like whether any other servers are currently working on this index or if the index is current and already open.
+ * The rules for the action will then be executed, and based on the category of the boolean predicate parametrized with the
+ * results of each rule, the action will either be executed or not. {@link org.apache.commons.jexl2.JexlEngine} is the
+ * expression parser for the rules.
  *
  * @author Michael Couck
  * @version 01.00
  * @see IRuleInterceptor
- * @since 12.02.2011
+ * @since 12-02-2011
  */
 public class RuleInterceptor implements IRuleInterceptor {
 
@@ -84,9 +86,10 @@ public class RuleInterceptor implements IRuleInterceptor {
     }
 
     /**
-     * Proceeds on the join point. A scheduled task will be started by the scheduler. The task is the action that has been given the green light to start. The
-     * current thread will wait for the action to complete, but will only wait for a few seconds then continue. The action is started in a separate thread
-     * because we don't want a queue of actions building up.
+     * Proceeds on the join point. A scheduled task will be started by the scheduler. The task is the action that
+     * has been given the green light to start. The current thread will wait for the action to complete, but will only
+     * wait for a few seconds then continue. The action is started in a separate thread because we don't want a
+     * queue of actions building up.
      *
      * @param proceedingJoinPoint the intercepted action join point
      */
@@ -144,7 +147,7 @@ public class RuleInterceptor implements IRuleInterceptor {
             Expression expression = jexlEngine.createExpression(predicate);
             Object result = expression.evaluate(jexlContext);
             finalResult = result != null && (result.equals(1.0d) || result.equals(Boolean.TRUE));
-            if (LOGGER.isInfoEnabled()) {
+            if (LOGGER.isDebugEnabled()) {
                 log(indexContext, action, predicate, finalResult, results);
             }
         }
@@ -170,7 +173,12 @@ public class RuleInterceptor implements IRuleInterceptor {
     }
 
     @SuppressWarnings("rawtypes")
-    void log(final IndexContext indexContext, final IAction action, final String predicate, final boolean result, final Map<String, Object> results) {
+    void log(
+            final IndexContext indexContext,
+            final IAction action,
+            final String predicate,
+            final boolean result,
+            final Map<String, Object> results) {
         Object[] parameters = {indexContext.getName(), action.getClass().getSimpleName(), predicate};
         LOGGER.info("Rule evaluation of index : {}, action : {}, predicate : {}", parameters);
         LOGGER.info("Rules evaluation result : {}, results : {}", new Object[]{result, results});

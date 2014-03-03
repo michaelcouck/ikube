@@ -27,6 +27,8 @@ public class CmdAction extends Action {
                         logger.info("Running command : {} on machine : {}", new Object[]{command, server.getIp()});
 
                         Session session = sshExec.startSession();
+                        // Allows sudo apparently
+                        session.allocateDefaultPTY();
                         Session.Command sessionCommand = session.exec(command);
                         String message = IOUtils.readFully(sessionCommand.getInputStream()).toString();
                         String error = IOUtils.readFully(sessionCommand.getErrorStream()).toString();

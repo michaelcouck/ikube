@@ -76,13 +76,17 @@ public class SnapshotSchedule extends Schedule {
                 dataBase.persist(snapshot);
                 String[] names = new String[]{IConstants.INDEX_CONTEXT};
                 Object[] values = new Object[]{indexContext.getName()};
-                List<Snapshot> snapshots = dataBase.find(Snapshot.class, Snapshot.SELECT_SNAPSHOTS_ORDER_BY_TIMESTAMP_DESC, names, values, 0,
+                List<Snapshot> snapshots = dataBase.find(
+                        Snapshot.class,
+                        Snapshot.SELECT_SNAPSHOTS_ORDER_BY_TIMESTAMP_DESC,
+                        names,
+                        values,
+                        0,
                         MAX_SNAPSHOTS_CONTEXT);
                 List<Snapshot> sortedSnapshots = sortSnapshots(snapshots);
                 indexContext.setSnapshots(sortedSnapshots);
 
-                // Find the last snapshot and put it in the action if there is one
-                // executing on the index context
+                // Find the last snapshot and put it in the action if there is one executing on the index context
                 for (final Action action : server.getActions()) {
                     if (action.getIndexName().equals(indexContext.getIndexName())) {
                         action.setSnapshot(snapshot);
@@ -126,6 +130,7 @@ public class SnapshotSchedule extends Schedule {
         } catch (Exception e) {
             logger.error("Exception accessing the disk space : ", e);
         }*/
+        logger.info("Threads running : " + server.isThreadsRunning() + ", " + ThreadUtilities.isInitialized());
         setLogTail(server);
     }
 

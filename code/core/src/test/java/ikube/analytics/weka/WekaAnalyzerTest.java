@@ -49,7 +49,7 @@ public class WekaAnalyzerTest extends AbstractTest {
     @SuppressWarnings("unchecked")
     public void before() throws Exception {
         context = new Context();
-        context.setName("sentiment-en");
+        context.setName("sentiment-smo-en");
         context.setFilter(StringToWordVector.class.newInstance());
         context.setAlgorithm(SMO.class.newInstance());
         context.setMaxTraining(1000);

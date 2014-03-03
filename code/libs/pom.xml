@@ -24,7 +24,7 @@
     </parent>
 
     <properties>
-        <phase>deploy</phase>
+        <phase>site</phase>
         <packaging>jar</packaging>
         <generate-pom>true</generate-pom>
         <repository-id>ikube</repository-id>

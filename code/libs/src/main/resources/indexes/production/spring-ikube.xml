@@ -59,7 +59,7 @@
         property:tokenized="true"
         property:timeout="60000"
         property:omitNorms="false"
-		property:threads="5"
+		property:threads="1"
 		property:internetBatchSize="${internet.batch.size}" 
 		property:strategies-ref="internet-strategies" />
 		
@@ -81,7 +81,7 @@
         property:tokenized="true"
         property:timeout="60000"
         property:omitNorms="false"
-        property:threads="5"
+        property:threads="1"
         property:internetBatchSize="${internet.batch.size}"
         property:strategies-ref="internet-strategies" />
 	

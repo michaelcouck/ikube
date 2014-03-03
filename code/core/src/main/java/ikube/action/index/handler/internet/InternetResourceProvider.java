@@ -67,9 +67,10 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
     private static final String[] FIELDS = new String[]{IConstants.NAME, IConstants.URL};
 
     private Logger logger = LoggerFactory.getLogger(InternetResourceProvider.class);
+
     private TreeSet<Url> urls;
-    private IndexableInternet indexableInternet;
     private IDataBase dataBase;
+    private IndexableInternet indexableInternet;
 
     public InternetResourceProvider(final IndexableInternet indexableInternet, final IDataBase dataBase) {
         this.indexableInternet = indexableInternet;
@@ -164,7 +165,7 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
             if (dbUrl != null) {
                 continue;
             }
-            logger.debug("Persisting : " + url);
+            logger.info("Persisting : " + url);
             dataBase.persist(url);
         }
     }
@@ -173,7 +174,7 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
     public boolean hasNextQuery() {
         Url resource = waitForUrl();
         boolean hasNext = resource != null;
-        logger.debug("Has next : " + hasNext);
+        logger.debug("Has next : {}", hasNext);
         return hasNext;
     }
 
@@ -191,7 +192,7 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
                 logger.error("Mal formed url : " + url, e);
             }
         }
-        logger.debug("Next query : " + query);
+        logger.debug("next query : ", query);
         return query;
     }
 
@@ -207,7 +208,7 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
         Url url = dataBase.find(Url.class, fields, values);
         while (url == null && retry-- > 0) {
             // dbStats();
-            logger.debug("Url null, sleeping for a while : ");
+            logger.info("Url null, sleeping for a while : ");
             ThreadUtilities.sleep(SLEEP);
             url = dataBase.find(Url.class, fields, values);
         }

@@ -19,9 +19,9 @@ import static org.mockito.Mockito.*;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 18-06-13
+ * @since 18-06-2013
  */
-public class CommandActionTest extends AbstractTest {
+public class CmdActionTest extends AbstractTest {
 
     @Before
     public void before() {
@@ -54,7 +54,7 @@ public class CommandActionTest extends AbstractTest {
         commandAction.setCommands(Arrays.asList("ls -l"));
         commandAction.execute(server);
         verify(session, atLeastOnce()).exec(any(String.class));
-        verify(command, atLeastOnce()).getExitWasCoreDumped();
+        verify(command, atLeastOnce()).getExitErrorMessage();
     }
 
 }

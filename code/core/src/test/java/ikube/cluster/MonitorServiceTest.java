@@ -32,6 +32,11 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * @author Michael Couck
+ * @version 01.00
+ * @since 21-11-2012
+ */
 @SuppressWarnings("deprecation")
 public class MonitorServiceTest extends AbstractTest {
 
@@ -64,9 +69,10 @@ public class MonitorServiceTest extends AbstractTest {
         String[] fieldNames = monitorService.getFieldNames(IndexableEmail.class);
         logger.info("Field names : " + Arrays.deepToString(fieldNames));
         assertEquals(
-            "[idField, titleField, contentField, mailHost, username, password, port, protocol, secureSocketLayer, " +
-                "name, address, stored, analyzed, vectored, omitNorms, tokenized, maxExceptions, threads, id]",
-            Arrays.deepToString(fieldNames));
+                "[idField, titleField, contentField, mailHost, username, password, " +
+                        "port, protocol, secureSocketLayer, name, address, stored, analyzed, " +
+                        "vectored, omitNorms, tokenized, boost, maxExceptions, threads, id]",
+                Arrays.deepToString(fieldNames));
         fieldNames = monitorService.getFieldNames(IndexContext.class);
         logger.info("Field names : " + Arrays.deepToString(fieldNames));
     }
@@ -76,7 +82,7 @@ public class MonitorServiceTest extends AbstractTest {
         String[] descriptions = monitorService.getFieldDescriptions(IndexContext.class);
         logger.info("Descriptions : " + Arrays.deepToString(descriptions));
         assertTrue(Arrays.deepToString(descriptions).contains("This is the throttle in mili seconds that will slow " +
-            "down the indexing"));
+                "down the indexing"));
     }
 
     @Test
@@ -121,9 +127,9 @@ public class MonitorServiceTest extends AbstractTest {
             monitorService.setProperties(filesAndProperties);
 
             String propertiesFileContentsRead = FileUtilities.getContents(propertiesFile,
-                Integer.MAX_VALUE).toString();
+                    Integer.MAX_VALUE).toString();
             assertEquals("The properties file should contain the contents in the map : ", propertiesFileContents,
-                propertiesFileContentsRead);
+                    propertiesFileContentsRead);
         } finally {
             if (propertiesFile != null) {
                 FileUtilities.deleteFile(propertiesFile.getParentFile());
