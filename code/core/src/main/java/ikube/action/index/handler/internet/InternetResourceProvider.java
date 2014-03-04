@@ -102,9 +102,9 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
             ThreadUtilities.submit(indexableInternet.getName(), new Runnable() {
                 public void run() {
                     try {
-                        logger.info("Starting crawl : ");
+                        logger.info("Starting crawl : " + indexableInternet.getName());
                         crawler.run(urlPool);
-                        logger.info("Finishing crawl : ");
+                        logger.info("Finishing crawl : " + indexableInternet.getName());
                     } catch (final IOException e) {
                         throw new RuntimeException(e);
                     } finally {
@@ -143,7 +143,7 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
             url = urls.pollFirst();
         }
         boolean contains = urls.contains(url);
-        logger.info("Doing url : " + url + ", " + contains + ", " + urls.size());
+        logger.debug("Doing url : " + url + ", " + contains + ", " + urls.size());
         if (url != null && contains) {
             urls.remove(url);
         }
@@ -161,10 +161,10 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
         for (final Url url : resources) {
             Url dbUrl = findUrl(indexableInternet.getName(), url.getUrl());
             if (dbUrl != null) {
-                logger.info("Not persisting : " + url);
+                logger.debug("Not persisting : " + url);
                 continue;
             }
-            logger.info("Persisting : " + url);
+            logger.debug("Persisting : " + url);
             dataBase.persist(url);
         }
     }
@@ -173,7 +173,7 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
     public boolean hasNextQuery() {
         Url resource = waitForUrl();
         boolean hasNext = resource != null;
-        logger.info("Has next : " + hasNext);
+        logger.debug("Has next : " + hasNext);
         return hasNext;
     }
 
@@ -206,8 +206,8 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
         Object[] values = new Object[]{indexableInternet.getName(), Boolean.FALSE};
         Url url = dataBase.find(Url.class, fields, values);
         while (url == null && retry-- > 0) {
-            dbStats();
-            logger.info("No url in database, sleeping for a while : ");
+            // dbStats();
+            logger.debug("No url in database, sleeping for a while : ");
             ThreadUtilities.sleep(SLEEP);
             url = dataBase.find(Url.class, fields, values);
         }
@@ -226,7 +226,7 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
         logger.info("Urls in database : " + count + ", not indexed : " + notIndexed);
         List<Url> dbUrls = dataBase.find(Url.class, 0, Integer.MAX_VALUE);
         for (final Url dbUrl : dbUrls) {
-            logger.info("        : url : " + dbUrl);
+            logger.info("        : url : " + dbUrl.getUrl());
         }
     }
 
