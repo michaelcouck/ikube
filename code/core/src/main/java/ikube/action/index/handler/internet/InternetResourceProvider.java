@@ -231,19 +231,3 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
     }
 
 }
-
-// Monitor monitor = new Monitor(8100);
-// monitor.addMonitored(new MonitorImpl());
-// monitor.start();
-
-/*
-public class MonitorImpl implements Monitorable {
-
-    @Override
-    public void printMonitoredState(final PrintStream printStream) {
-    }
-
-    @Override
-    public void dump() {
-    }
-}*/

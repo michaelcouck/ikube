@@ -62,7 +62,7 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
         assertEquals("There should be one url in the database : ", 1, urls.size());
 
         // Find boolean
-        url = dataBase.find(Url.class, new String[] {"indexed"}, new Object[] {Boolean.FALSE});
+        url = dataBase.find(Url.class, new String[]{"indexed"}, new Object[]{Boolean.FALSE});
         assertNotNull("The url should be found : ", url);
 
         // Remove
@@ -127,7 +127,7 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
             double insertsPerSecond = (perSecond * batchSize);
             logger.info("Inserts per second : " + insertsPerSecond);
             assertTrue("We must have at least " + minimumInsertsPerSecond + " inserts per second : " + insertsPerSecond,
-                insertsPerSecond > minimumInsertsPerSecond);
+                    insertsPerSecond > minimumInsertsPerSecond);
             delete(dataBase, Url.class);
         }
     }
@@ -244,6 +244,7 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("urlId", 5l);
+        parameters.put(IConstants.INDEXED, Boolean.FALSE);
         total = dataBase.count(Url.class, parameters);
         assertEquals(1, total.intValue());
     }
@@ -287,7 +288,7 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
             dataBase.persist(search);
         }
         Number number = dataBase.execute(Search.SELECT_FROM_SEARCH_COUNT_SEARCHES, new String[]{"indexName"},
-            new Object[]{indexName});
+                new Object[]{indexName});
         logger.info("Count : " + number);
         assertNotNull(number);
         assertTrue(number.longValue() > 0);
