@@ -18,11 +18,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This base class for the integration tests will load some snapshots into the database as well as initialize the application context.
+ * This base class for the integration tests will load some snapshots
+ * into the database as well as initialize the application context.
  *
  * @author Michael Couck
  * @version 01.00
- * @since 12.10.2010
+ * @since 12-10-2010
  */
 @Ignore
 public abstract class IntegrationTest extends BaseTest {

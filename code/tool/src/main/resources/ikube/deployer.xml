@@ -48,12 +48,19 @@
         property:servers-ref="servers"/>
 
     <util:list id="servers">
-        <!--<ref local="server"/>
+        <ref local="server"/>
         <ref local="server-one"/>
         <ref local="server-two"/>
-        <ref local="server-three"/>-->
-        <!-- Note: Have to get sshj to execute as sudo! -->
-        <ref local="server-production"/>
+        <ref local="server-three"/>
+        <!-- 
+	  Note: Have to get sshj to execute as sudo!
+	  Update 04-03-2014: This seems to be impossible, so the solution was to run the 
+	    server on port 8080, and have the router point to this port. Not very convenient
+	    at all. But in fact, it seems that it could eb possible to run sudo, but every
+	    thing needs to be on one line, and the user must be configured to not need a 
+	    password to run sudo.
+	-->
+        <!-- ref local="server-production"/ -->
     </util:list>
 
     <!-- This is the base server. -->
@@ -61,7 +68,7 @@
         id="server"
         name="server"
         class="ikube.deploy.model.Server"
-        property:ip="192.168.1.10"
+        property:ip="${server-system-ip}"
         property:username="${username}"
         property:password="${password}"
         property:actions-ref="actions"/>
@@ -80,10 +87,9 @@
         property:breakOnError="true"
         property:commands-ref="stop-commands"/>
     <util:list id="stop-commands">
-        <value>. /etc/profile;</value>
-        <value>cd ${tomcat-bin};</value>
-        <value>./catalina.sh stop;</value>
-        <value>ps -ef | grep ${tomcat} | grep -v grep | awk '{print $2}' | xargs kill -9;</value>
+        <value>. /etc/profile;cd ${tomcat-bin};./catalina.sh stop;sleep 15;</value>
+        <!-- value>ps -ef | grep ${tomcat} | grep -v grep | awk '{print $2}' | xargs kill -9;</value -->
+	<value>kill -9 $(ps aux | grep ${tomcat} | grep -v grep | awk '{print $2}')</value>
     </util:list>
 
     <bean
@@ -139,10 +145,7 @@
         property:breakOnError="true"
         property:commands-ref="start-commands"/>
     <util:list id="start-commands">
-        <value>. /etc/profile;</value>
-        <value>chmod 777 -R ${tomcat};</value>
-        <value>cd ${tomcat-bin};</value>
-        <value>./catalina.sh start;</value>
+        <value>. /etc/profile;chmod 777 -R ${tomcat};cd ${tomcat-bin};./catalina.sh start;sleep 15;</value>
     </util:list>
 
     <!-- Cluster servers one, two and three -->
@@ -152,7 +155,7 @@
         id="server-one"
         name="server-one"
         class="ikube.deploy.model.Server"
-        property:ip="192.168.1.10"
+        property:ip="${server-system-ip}"
         property:username="${username}"
         property:password="${password}"
         property:actions-ref="actions-one"/>
@@ -171,10 +174,9 @@
         property:breakOnError="true"
         property:commands-ref="stop-commands-one"/>
     <util:list id="stop-commands-one">
-        <value>. /etc/profile;</value>
-        <value>cd ${tomcat-one-bin};</value>
-        <value>./catalina.sh stop;</value>
-        <value>ps -ef | grep ${tomcat-one} | grep -v grep | awk '{print $2}' | xargs kill -9;</value>
+        <value>. /etc/profile;cd ${tomcat-one-bin};./catalina.sh stop;sleep 15;</value>
+        <!-- value>ps -ef | grep ${tomcat-one} | grep -v grep | awk '{print $2}' | xargs kill -9;</value -->
+	<value>kill -9 $(ps aux | grep ${tomcat-one} | grep -v grep | awk '{print $2}')</value>
     </util:list>
 
     <bean
@@ -228,10 +230,7 @@
         property:breakOnError="true"
         property:commands-ref="start-commands-one"/>
     <util:list id="start-commands-one">
-        <value>. /etc/profile;</value>
-        <value>chmod 777 -R ${tomcat-one};</value>
-        <value>cd ${tomcat-one-bin};</value>
-        <value>./catalina.sh start;</value>
+        <value>. /etc/profile;chmod 777 -R ${tomcat-one};cd ${tomcat-one-bin};./catalina.sh start;sleep 15;</value>
     </util:list>
     <!-- End one -->
 
@@ -240,7 +239,7 @@
         id="server-two"
         name="server-two"
         class="ikube.deploy.model.Server"
-        property:ip="192.168.1.10"
+        property:ip="${server-system-ip}"
         property:username="${username}"
         property:password="${password}"
         property:actions-ref="actions-two"/>
@@ -259,10 +258,10 @@
         property:breakOnError="true"
         property:commands-ref="stop-commands-two"/>
     <util:list id="stop-commands-two">
-        <value>. /etc/profile;</value>
-        <value>cd ${tomcat-two-bin};</value>
-        <value>./catalina.sh stop;</value>
-        <value>ps -ef | grep ${tomcat-two} | grep -v grep | awk '{print $2}' | xargs kill -9;</value>
+        <value></value>
+        <value>. /etc/profile;cd ${tomcat-two-bin};./catalina.sh stop;sleep 15;</value>
+        <!-- value>ps -ef | grep ${tomcat-two} | grep -v grep | awk '{print $2}' | xargs kill -9;</value -->
+	<value>kill -9 $(ps aux | grep ${tomcat-two} | grep -v grep | awk '{print $2}')</value>
     </util:list>
 
     <bean
@@ -316,10 +315,7 @@
         property:breakOnError="true"
         property:commands-ref="start-commands-two"/>
     <util:list id="start-commands-two">
-        <value>. /etc/profile;</value>
-        <value>chmod 777 -R ${tomcat-two};</value>
-        <value>cd ${tomcat-two-bin};</value>
-        <value>./catalina.sh start;</value>
+        <value>. /etc/profile;chmod 777 -R ${tomcat-two};cd ${tomcat-two-bin};./catalina.sh start;sleep 15;</value>
     </util:list>
     <!-- End two -->
 
@@ -328,7 +324,7 @@
         id="server-three"
         name="server-three"
         class="ikube.deploy.model.Server"
-        property:ip="192.168.1.10"
+        property:ip="${server-system-ip}"
         property:username="${username}"
         property:password="${password}"
         property:actions-ref="actions-three"/>
@@ -347,10 +343,9 @@
         property:breakOnError="true"
         property:commands-ref="stop-commands-three"/>
     <util:list id="stop-commands-three">
-        <value>. /etc/profile;</value>
-        <value>cd ${tomcat-three-bin};</value>
-        <value>./catalina.sh stop;</value>
-        <value>ps -ef | grep ${tomcat-three} | grep -v grep | awk '{print $2}' | xargs kill -9;</value>
+        <value>. /etc/profile;cd ${tomcat-three-bin};./catalina.sh stop;sleep 15;</value>
+        <!-- value>ps -ef | grep ${tomcat-three} | grep -v grep | awk '{print $2}' | xargs kill -9;</value -->
+	<value>kill -9 $(ps aux | grep ${tomcat-three} | grep -v grep | awk '{print $2}')</value>
     </util:list>
 
     <bean
@@ -404,10 +399,7 @@
         property:breakOnError="true"
         property:commands-ref="start-commands-three"/>
     <util:list id="start-commands-three">
-        <value>. /etc/profile;</value>
-        <value>chmod 777 -R ${tomcat-three};</value>
-        <value>cd ${tomcat-three-bin};</value>
-        <value>./catalina.sh start;</value>
+        <value>. /etc/profile;chmod 777 -R ${tomcat-three};cd ${tomcat-three-bin};./catalina.sh start;sleep 15;</value>
     </util:list>
     <!-- End three -->
 
@@ -416,7 +408,7 @@
         id="server-production"
         name="server-production"
         class="ikube.deploy.model.Server"
-        property:ip="192.168.1.20"
+        property:ip="${server-production-ip}"
         property:username="${production-username}"
         property:password="${production-password}"
         property:actions-ref="actions-production"/>
@@ -435,9 +427,7 @@
         property:breakOnError="false"
         property:commands-ref="stop-commands-production"/>
     <util:list id="stop-commands-production">
-        <value>. /etc/profile;</value>
-        <value>cd ${tomcat-production-bin};</value>
-        <value>${tomcat-production-bin}/catalina.sh stop;</value>
+        <value>. /etc/profile;cd ${tomcat-production-bin};./catalina.sh stop; sleep 15;</value>
         <value>kill -9 $(ps aux | grep ${tomcat-production} | grep -v grep | awk '{print $2}')</value>
     </util:list>
 
@@ -490,10 +480,8 @@
         property:breakOnError="false"
         property:commands-ref="start-commands-production"/>
     <util:list id="start-commands-production">
-        <value>. /etc/profile;</value>
-        <value>chmod 777 -R ${tomcat-production};</value>
-        <value>cd ${tomcat-production-bin};</value>
-        <value>${tomcat-production-bin}/startup.sh;</value>
+        <!-- This must all be on line line to maintain the session, and MUST sleep for a bit afterwards too! -->
+        <value>. /etc/profile;chmod 777 -R ${tomcat-production};cd ${tomcat-production-bin};pwd;nohup ./startup.sh &amp; sleep 10;</value>
     </util:list>
     <!-- End production -->
 

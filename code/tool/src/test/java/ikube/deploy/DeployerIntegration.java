@@ -5,6 +5,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /**
+ * This is actually a manual execution test.
+ *
  * @author Michael Couck
  * @version 01.00
  * @since 18-06-2013

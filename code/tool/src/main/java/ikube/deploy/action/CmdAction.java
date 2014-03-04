@@ -35,6 +35,8 @@ public class CmdAction extends Action {
                         Session session = sshExec.startSession();
                         // Allows sudo apparently
                         session.allocateDefaultPTY();
+                        // Session.Shell shell = session.startShell();
+
                         Session.Command sessionCommand = session.exec(command);
                         sessionCommand.join(60, TimeUnit.SECONDS);
                         String message = IOUtils.readFully(sessionCommand.getInputStream()).toString();
