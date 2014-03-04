@@ -59,7 +59,7 @@ public class IndexableFilesystemHandlerIntegration extends IntegrationTest {
 			// Verify that there are some documents in the index
 			assertNotNull("The index writer should still be available : ", desktop.getIndexWriters());
 			assertEquals("There should only be one index writer : ", 1, desktop.getIndexWriters().length);
-			assertTrue(indexWriter.numDocs() > 0);
+			assertTrue(desktop.getIndexWriters()[0].numDocs() > 0);
 		} finally {
 			IndexManager.closeIndexWriters(desktop);
 		}

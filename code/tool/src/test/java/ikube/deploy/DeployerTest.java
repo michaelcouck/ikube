@@ -42,7 +42,6 @@ public class DeployerTest extends AbstractTest {
     public static class CommandActionMock {
         @Mock
         public boolean execute(final Server server) {
-            LOGGER.info("Command : " + server.getIp());
             ATOMIC_INTEGER.getAndIncrement();
             return Boolean.TRUE;
         }
@@ -52,13 +51,14 @@ public class DeployerTest extends AbstractTest {
     public void before() {
         System.setProperty("username", "username");
         System.setProperty("password", "password");
-        Mockit.setUpMocks();
+        System.setProperty("production-username", "username");
+        System.setProperty("production-password", "password");
         Mockit.setUpMocks(CommandActionMock.class, CopyActionMock.class);
     }
 
     @After
     public void after() {
-        Mockit.tearDownMocks();
+        Mockit.tearDownMocks(CommandActionMock.class, CopyActionMock.class);
     }
 
     @Test

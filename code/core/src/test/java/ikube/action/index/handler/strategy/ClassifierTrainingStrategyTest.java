@@ -3,15 +3,19 @@ package ikube.action.index.handler.strategy;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
+import ikube.analytics.IAnalyticsService;
 import ikube.analytics.IAnalyzer;
 import ikube.analytics.toolkit.Correlation;
+import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.model.IndexableTweets;
 import ikube.toolkit.ObjectToolkit;
 import ikube.toolkit.PerformanceTester;
 import ikube.toolkit.ThreadUtilities;
+import mockit.Deencapsulation;
 import org.apache.lucene.document.Document;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.social.twitter.api.Tweet;
 
@@ -27,7 +31,7 @@ import static org.mockito.Mockito.*;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 05.12.13
+ * @since 05-12-2013
  */
 public class ClassifierTrainingStrategyTest extends AbstractTest {
 
@@ -38,11 +42,14 @@ public class ClassifierTrainingStrategyTest extends AbstractTest {
      * Class under test.
      */
     private ClassifierTrainingStrategy classifierTrainingStrategy;
+    private IAnalyticsService analyticsService;
 
     @Before
     @SuppressWarnings("unchecked")
     public void before() throws Exception {
         analyzer = mock(IAnalyzer.class);
+        analyticsService = mock(IAnalyticsService.class);
+
         reentrantLock = new ReentrantLock(Boolean.TRUE);
         Context context = mock(Context.class);
         when(context.getAnalyzer()).thenReturn(analyzer);
@@ -51,17 +58,23 @@ public class ClassifierTrainingStrategyTest extends AbstractTest {
         classifierTrainingStrategy = new ClassifierTrainingStrategy();
         classifierTrainingStrategy.setContext(context);
         classifierTrainingStrategy.initialize();
+
+        Deencapsulation.setField(classifierTrainingStrategy, "analyticsService", analyticsService);
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void aroundProcess() throws Exception {
+        Analysis analysis = mock(Analysis.class);
         Document document = new Document();
         final IndexableTweets indexableTweets = mock(IndexableTweets.class);
         when(indexableTweets.isStored()).thenReturn(Boolean.TRUE);
         when(indexableTweets.isAnalyzed()).thenReturn(Boolean.TRUE);
         when(indexableTweets.getContent()).thenReturn(IConstants.CONTENT);
-        when(analyzer.sizeForClassOrCluster(any())).thenReturn(1);
+        when(analyzer.sizeForClassOrCluster(any())).thenReturn(0);
+        when(analysis.getClassesOrClusters()).thenReturn(new Object[]{1, 2, 3, 4, 5, 6});
+        when(analysis.getSizesForClassesOrClusters()).thenReturn(new int[]{100, 100, 3, 4, 5, 6});
+        when(analyticsService.sizesForClassesOrClusters(any(Analysis.class))).thenReturn(analysis);
 
         IndexManager.addStringField(IConstants.LANGUAGE, Locale.ENGLISH.getLanguage(), indexableTweets, document);
         IndexManager.addStringField(IConstants.CLASSIFICATION, IConstants.POSITIVE, indexableTweets, document);
@@ -71,7 +84,8 @@ public class ClassifierTrainingStrategyTest extends AbstractTest {
 
         classifierTrainingStrategy.setLanguage(Locale.ENGLISH.getLanguage());
         classifierTrainingStrategy.aroundProcess(indexContext, indexableTweets, document, tweet);
-        verify(analyzer).train(any(Object[].class));
+        verify(analyticsService).train(any(Analysis.class));
+        verify(analyticsService).build(any(Analysis.class));
 
         int iterations = 11;
         PerformanceTester.execute(new PerformanceTester.APerform() {
@@ -91,7 +105,11 @@ public class ClassifierTrainingStrategyTest extends AbstractTest {
     }
 
 
+    /**
+     * This test is for the performance of various synchronization mechanisms in Java.
+     */
     @Test
+    @Ignore
     public void performance() {
         ThreadUtilities.initialize();
         final int iterations = 10000;

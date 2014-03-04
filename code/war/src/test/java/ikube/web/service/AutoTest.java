@@ -16,6 +16,11 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/**
+ * @author Michael couck
+ * @version 01.00
+ * @since 01-03-2012
+ */
 public class AutoTest extends BaseTest {
 
     /**
@@ -93,7 +98,7 @@ public class AutoTest extends BaseTest {
         ArrayList<HashMap<String, String>> results = new ArrayList<>();
         for (final String fragment : fragments) {
             HashMap<String, String> result = new HashMap<>();
-            result.put(IConstants.WORD, "<b>" + fragment + "</b>");
+            result.put(IConstants.WORD, fragment);
             results.add(result);
         }
         HashMap<String, String> statistics = new HashMap<>();

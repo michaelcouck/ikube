@@ -72,7 +72,7 @@ public class AnalysisStrategy extends AStrategy {
                 analysis.setInput(content);
                 analysis.setAnalyzer(context.getName());
                 //noinspection unchecked
-                analyticsService.analyze(analysis);
+                analysis = analyticsService.analyze(analysis);
                 String currentClassification = analysis.getClazz();
                 // String currentClassification = context.getAnalyzer().analyze(analysis).getClazz();
                 if (currentClassification != null && !StringUtils.isEmpty(currentClassification)) {

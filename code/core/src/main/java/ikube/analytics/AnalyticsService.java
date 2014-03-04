@@ -13,10 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import java.sql.Timestamp;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
  * @version 01.00
  * @since 10-04-2013
  */
-public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, BeanPostProcessor {
+public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, ApplicationContextAware {
 
     static {
         // We register a converter for the Bean utils so it
@@ -48,8 +48,8 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Be
 
     @Autowired
     private IClusterManager clusterManager;
-    private Map<String, Context> contexts = new HashMap<>();
-    private Map<String, IAnalyzer> analyzers = new HashMap<>();
+    private Map<String, Context> contexts;
+    private Map<String, IAnalyzer> analyzers;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -128,7 +128,7 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Be
             };
             Future<?> future = clusterManager.sendTask(callable);
             ThreadUtilities.waitForFuture(future, 60);
-            Analysis<I, O> result = null;
+            Analysis<I, O> result;
             try {
                 result = (Analysis<I, O>) future.get(60, TimeUnit.SECONDS);
                 if (result != null) {
@@ -136,14 +136,6 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Be
                 }
             } catch (final Exception e) {
                 LOGGER.error("Exception getting the result from the distributed task : ", e);
-            } finally {
-                // If we don't have a happy ending from the remote server
-                // then we'll try locally, but log a message for interested parties
-                if (result == null) {
-                    LOGGER.info("Remote analysis not sucessful, doing local : " + analysis);
-                    analysis.setDistributed(Boolean.FALSE);
-                    analyze(analysis);
-                }
             }
         } else {
             Timer.Timed timed = new Timer.Timed() {
@@ -164,6 +156,7 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Be
         return analysis;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Analysis classesOrClusters(final Analysis<I, O> analysis) {
         if (analysis.isDistributed()) {
@@ -219,6 +212,7 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Be
         return analysis;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Analysis<I, O> sizesForClassesOrClusters(final Analysis<I, O> analysis) {
         if (analysis.isDistributed()) {
@@ -320,48 +314,6 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Be
         return getAnalyzer(context.getName());
     }
 
-    private void execute(final Timer.Timed timed, final Analysis analysis) {
-        double duration = Timer.execute(timed);
-        analysis.setDuration(duration);
-        analysis.setTimestamp(new Timestamp(System.currentTimeMillis()));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Object postProcessBeforeInitialization(final Object bean, final String beanName) throws BeansException {
-        return addAnalyzer(bean, beanName);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Object postProcessAfterInitialization(final Object bean, final String beanName) throws BeansException {
-        return addAnalyzer(bean, beanName);
-    }
-
-    private Object addAnalyzer(final Object bean, final String beanName) {
-        // We collect all the analyzers that have been defined in the configuration here
-        LOGGER.info("Bean : " + beanName + ", " + bean);
-        if (IAnalyzer.class.isAssignableFrom(bean.getClass())) {
-            LOGGER.info("Analyzer : " + beanName + ", " + bean);
-            analyzers.put(beanName, (IAnalyzer) bean);
-        } else if (Context.class.isAssignableFrom(bean.getClass())) {
-            LOGGER.info("Context : " + beanName + ", " + bean);
-            contexts.put(beanName, (Context) bean);
-        }
-        return bean;
-    }
-
-    @SuppressWarnings("unchecked")
-    IAnalyzer<I, O, C> getAnalyzer(final String analyzerName) {
-        Map<String, IAnalyzer> analyzers = getAnalyzers();
-        IAnalyzer<?, ?, ?> analyzer = analyzers.get(analyzerName);
-        return (IAnalyzer<I, O, C>) analyzer;
-    }
-
     @Override
     public Context getContext(final String analyzerName) {
         IAnalyzer analyzer = getAnalyzer(analyzerName);
@@ -373,6 +325,36 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Be
         throw new RuntimeException("Couldn't find context for analyzer : " + analyzerName + ", " + analyzer);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
+        contexts = applicationContext.getBeansOfType(Context.class);
+        analyzers = applicationContext.getBeansOfType(IAnalyzer.class);
+        LOGGER.info("Analyzers : " + analyzers);
+        for (final Map.Entry<String, Context> mapEntry : contexts.entrySet()) {
+            LOGGER.info("Context : " + mapEntry.getKey() + ", " + mapEntry.getValue().getName());
+        }
+        for (final Map.Entry<String, IAnalyzer> mapEntry : analyzers.entrySet()) {
+            LOGGER.info("Context : " + mapEntry.getKey() + ", " + mapEntry.getValue().getClass().getName());
+        }
+
+    }
+
+    private void execute(final Timer.Timed timed, final Analysis analysis) {
+        double duration = Timer.execute(timed);
+        analysis.setDuration(duration);
+        analysis.setTimestamp(new Timestamp(System.currentTimeMillis()));
+    }
+
+    @SuppressWarnings("unchecked")
+    IAnalyzer<I, O, C> getAnalyzer(final String analyzerName) {
+        Map<String, IAnalyzer> analyzers = getAnalyzers();
+        IAnalyzer<?, ?, ?> analyzer = analyzers.get(analyzerName);
+        return (IAnalyzer<I, O, C>) analyzer;
+    }
+
     @Override
     public Map<String, IAnalyzer> getAnalyzers() {
         return analyzers;
@@ -381,4 +363,5 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Be
     public Map<String, Context> getContexts() {
         return contexts;
     }
+
 }

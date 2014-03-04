@@ -20,6 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
@@ -45,7 +46,7 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
             String filePath = FileUtilities.cleanFilePath(genericResource.getTmpFileAbsolutePath());
             File file = new File(filePath);
 
-            Url url = findUrl(stringUrl);
+            Url url = findUrl(indexableInternet.getName(), stringUrl);
             url.setContentType(contentType);
             if (file.exists() && file.canRead()) {
                 ByteArrayOutputStream byteArrayOutputStream = FileUtilities.getContents(file, indexableInternet.getMaxReadLength());
@@ -94,7 +95,7 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
             // crawler.setVerbose();
 
             Url seedUrl = getUrl(indexableInternet.getUrl());
-            dataBase.persist(seedUrl);
+            setResources(Arrays.asList(seedUrl));
 
             final URLPool urlPool = new TimeoutURLPool(this);
             for (int i = 0; i < indexableInternet.getThreads(); i++) {
@@ -128,8 +129,8 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
     }
 
 
-    private Url findUrl(final String stringUrl) {
-        Object[] values = new Object[]{indexableInternet.getName(), stringUrl};
+    private Url findUrl(final String name, final String stringUrl) {
+        Object[] values = new Object[]{name, stringUrl};
         return dataBase.find(Url.class, FIELDS, values);
     }
 
@@ -161,8 +162,9 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
             return;
         }
         for (final Url url : resources) {
-            Url dbUrl = findUrl(url.getUrl());
+            Url dbUrl = findUrl(indexableInternet.getName(), url.getUrl());
             if (dbUrl != null) {
+                logger.info("Not persisting : " + url);
                 continue;
             }
             logger.info("Persisting : " + url);
@@ -192,7 +194,7 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
                 logger.error("Mal formed url : " + url, e);
             }
         }
-        logger.debug("next query : ", query);
+        logger.debug("Next query : ", query);
         return query;
     }
 
@@ -207,8 +209,8 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
         Object[] values = new Object[]{indexableInternet.getName(), Boolean.FALSE};
         Url url = dataBase.find(Url.class, fields, values);
         while (url == null && retry-- > 0) {
-            // dbStats();
-            logger.info("Url null, sleeping for a while : ");
+            dbStats();
+            logger.info("No url in database, sleeping for a while : ");
             ThreadUtilities.sleep(SLEEP);
             url = dataBase.find(Url.class, fields, values);
         }
