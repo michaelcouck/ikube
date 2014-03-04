@@ -80,7 +80,7 @@
 				<version>6.1.25</version>
 				<configuration>
 					<stopKey>stop</stopKey>
-					<stopPort>8180</stopPort>
+					<stopPort>9180</stopPort>
 					<scanIntervalSeconds>10000</scanIntervalSeconds>
 					<contextPath>/ikube</contextPath>
 					<scanTargets>
@@ -89,7 +89,7 @@
 					</scanTargets>
 					<connectors>
 						<connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-							<port>8080</port>
+							<port>9090</port>
 							<maxIdleTime>60000</maxIdleTime>
 						</connector>
 					</connectors>
