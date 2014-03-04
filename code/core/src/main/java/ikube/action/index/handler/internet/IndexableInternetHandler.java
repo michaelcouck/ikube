@@ -123,7 +123,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
             }
             if (outputStream != null) {
                 String parsedContent = outputStream.toString();
-                logger.info("Parsed content length : {}", parsedContent.length());
+                logger.info("Parsed content length : " + parsedContent.length());
                 url.setParsedContent(parsedContent);
             }
         } catch (final Exception e) {
@@ -172,7 +172,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
                     if (indexableInternet.isExcluded(strippedAnchorLink)) {
                         continue;
                     }
-                    logger.debug("Link : {}", link);
+                    logger.debug("Link : " + link);
                     Url newUrl = getUrl(indexableInternet.getName(), strippedAnchorLink);
                     urls.add(newUrl);
                 } catch (Exception e) {

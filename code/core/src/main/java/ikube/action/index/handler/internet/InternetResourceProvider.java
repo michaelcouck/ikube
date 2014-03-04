@@ -20,10 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * @author Michael Couck
@@ -52,7 +49,7 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
                 ByteArrayOutputStream byteArrayOutputStream = FileUtilities.getContents(file, indexableInternet.getMaxReadLength());
                 if (byteArrayOutputStream != null) {
                     byte[] rawContent = byteArrayOutputStream.toByteArray();
-                    logger.debug("Setting content length : {} ", rawContent.length);
+                    logger.debug("Setting content length : " + rawContent.length);
                     if (rawContent != null && rawContent.length > 0) {
                         url.setRawContent(rawContent);
                     }
@@ -176,7 +173,7 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
     public boolean hasNextQuery() {
         Url resource = waitForUrl();
         boolean hasNext = resource != null;
-        logger.debug("Has next : {}", hasNext);
+        logger.info("Has next : " + hasNext);
         return hasNext;
     }
 
@@ -194,7 +191,7 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
                 logger.error("Mal formed url : " + url, e);
             }
         }
-        logger.debug("Next query : ", query);
+        logger.debug("Next query : " + query);
         return query;
     }
 
@@ -220,11 +217,16 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
 
     @SuppressWarnings("UnusedDeclaration")
     private void dbStats() {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put(IConstants.NAME, indexableInternet.getName());
+        parameters.put(IConstants.INDEXED, Boolean.FALSE);
+
         long count = dataBase.count(Url.class);
-        logger.info("Urls : " + count);
+        long notIndexed = dataBase.count(Url.class, parameters);
+        logger.info("Urls in database : " + count + ", not indexed : " + notIndexed);
         List<Url> dbUrls = dataBase.find(Url.class, 0, Integer.MAX_VALUE);
         for (final Url dbUrl : dbUrls) {
-            logger.info("Url : " + dbUrl);
+            logger.info("        : url : " + dbUrl);
         }
     }
 
