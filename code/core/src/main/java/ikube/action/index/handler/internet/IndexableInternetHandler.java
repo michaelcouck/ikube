@@ -61,7 +61,10 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
                 parseContent(url);
                 url.setHash(HashUtilities.hash(url.getParsedContent()));
                 // Check that this isn't a duplicate
-                if (dataBase.find(Url.class, new String[]{IConstants.HASH}, new Object[]{url.getHash()}) == null) {
+                String[] fields = {IConstants.NAME, IConstants.HASH};
+                Object[] values = {indexableInternet.getName(), url.getHash()};
+                Url dbUrl = dataBase.find(Url.class, fields, values);
+                if (dbUrl == null) {
                     internetResourceHandler.handleResource(indexContext, indexableInternet, new Document(), url);
                 } else {
                     // Duplicate content, not interesting
@@ -73,10 +76,12 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
         } catch (final Exception e) {
             throw new RuntimeException(e);
         } finally {
-            url.setHash(HashUtilities.hash(url.getParsedContent()));
-            dataBase.merge(url);
+            if (url.getParsedContent() != null) {
+                url.setHash(HashUtilities.hash(url.getParsedContent()));
+            }
             url.setRawContent(null);
             url.setParsedContent(null);
+            dataBase.merge(url);
         }
     }
 

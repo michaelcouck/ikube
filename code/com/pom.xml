@@ -116,9 +116,9 @@
                                     <fileset dir="../libs/src/main/resources/analytics"/>
                                 </copy>
 
-                                <!--<copy todir="../war/ikube/twitter" failonerror="true" verbose="true">
+                                <copy todir="../war/ikube/twitter" failonerror="true" verbose="true">
                                     <fileset dir="../libs/src/main/resources/indexes/twitter"/>
-                                </copy>-->
+                                </copy>
                             </target>
                         </configuration>
                         <goals>

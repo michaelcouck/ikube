@@ -99,7 +99,7 @@ public final class Deployer {
                     futures.add(future);
                 }
             }
-            ThreadUtilities.waitForFutures(futures, 600);
+            ThreadUtilities.waitForFutures(futures, 6000);
         }
         ThreadUtilities.destroy();
         // System.exit(0);

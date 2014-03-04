@@ -35,7 +35,10 @@
             fail in raid configurations, use at own risk
         -->
         <!-- <ref bean="ikube.action.DiskFull" /> -->
-        <ref bean="ikube.action.Validator" />
+        <!--
+            This action needs a dedicated mail server!
+         -->
+        <!--<ref bean="ikube.action.Validator" />-->
     </util:list>
 
     <bean
@@ -194,7 +197,7 @@
             </util:list>
         </property>
     </bean> -->
-    <bean
+    <!--<bean
         id="ikube.action.Validator"
         class="ikube.action.Validator"
         property:ruleExpression="
@@ -205,7 +208,7 @@
                 <ref local="ikube.action.rule.IsIndexDelta" />
             </util:list>
         </property>
-    </bean>
+    </bean>-->
 
     <bean id="ikube.action.rule.AnyServersWorking" class="ikube.action.rule.AnyServersWorking" />
     <bean id="ikube.action.rule.AreDirectoriesEqual" class="ikube.action.rule.AreDirectoriesEqual" />

@@ -48,12 +48,12 @@
         property:servers-ref="servers"/>
 
     <util:list id="servers">
-        <ref local="server"/>
+        <!--<ref local="server"/>
         <ref local="server-one"/>
         <ref local="server-two"/>
-        <ref local="server-three"/>
+        <ref local="server-three"/>-->
         <!-- Note: Have to get sshj to execute as sudo! -->
-        <!--<ref local="server-production"/>-->
+        <ref local="server-production"/>
     </util:list>
 
     <!-- This is the base server. -->
@@ -417,8 +417,8 @@
         name="server-production"
         class="ikube.deploy.model.Server"
         property:ip="192.168.1.20"
-        property:username="${username}"
-        property:password="${password}"
+        property:username="${production-username}"
+        property:password="${production-password}"
         property:actions-ref="actions-production"/>
 
     <util:list id="actions-production">
@@ -432,24 +432,22 @@
         id="stop-action-production"
         name="stop-action-production"
         class="ikube.deploy.action.CmdAction"
-        property:breakOnError="true"
+        property:breakOnError="false"
         property:commands-ref="stop-commands-production"/>
     <util:list id="stop-commands-production">
-        <value>sudo su;</value>
         <value>. /etc/profile;</value>
         <value>cd ${tomcat-production-bin};</value>
-        <value>./catalina.sh stop;</value>
-        <value>ps -ef | grep ${tomcat-production} | grep -v grep | awk '{print $2}' | xargs kill -9;</value>
+        <value>${tomcat-production-bin}/catalina.sh stop;</value>
+        <value>kill -9 $(ps aux | grep ${tomcat-production} | grep -v grep | awk '{print $2}')</value>
     </util:list>
 
     <bean
         id="clean-action-production"
         name="clean-action-production"
         class="ikube.deploy.action.CmdAction"
-        property:breakOnError="true"
-        property:commands-ref="clean-commands-three"/>
+        property:breakOnError="false"
+        property:commands-ref="clean-commands-production"/>
     <util:list id="clean-commands-production">
-        <value>sudo su;</value>
         <value>chmod 777 -R ${tomcat-production};</value>
 
         <value>rm -rf ${tomcat-production-bin}/ikube;</value>
@@ -473,7 +471,7 @@
         id="copy-action-production"
         name="copy-action-production"
         class="ikube.deploy.action.CopyAction"
-        property:breakOnError="true"
+        property:breakOnError="false"
         property:files-ref="files-production"
         property:directories-ref="directories-production"/>
     <util:map id="files-production">
@@ -482,23 +480,20 @@
     <util:map id="directories-production">
         <entry key="${resources-directory}/ikube" value="${tomcat-production-bin}"/>
         <entry key="${resources-directory}/analytics" value="${tomcat-production-bin}/ikube"/>
-        <entry key="${resources-directory}/indexes/integration" value="${tomcat-production-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/production" value="${tomcat-production-bin}/ikube"/>
-        <entry key="${resources-directory}/indexes/twitter" value="${tomcat-production-bin}/ikube"/>
     </util:map>
 
     <bean
         id="start-action-production"
         name="start-action-production"
         class="ikube.deploy.action.CmdAction"
-        property:breakOnError="true"
+        property:breakOnError="false"
         property:commands-ref="start-commands-production"/>
     <util:list id="start-commands-production">
-        <value>sudo su;</value>
         <value>. /etc/profile;</value>
         <value>chmod 777 -R ${tomcat-production};</value>
         <value>cd ${tomcat-production-bin};</value>
-        <value>./catalina.sh start;</value>
+        <value>${tomcat-production-bin}/startup.sh;</value>
     </util:list>
     <!-- End production -->
 

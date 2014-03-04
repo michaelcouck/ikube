@@ -137,6 +137,15 @@ public class AnalyzerIntegration extends BaseTest {
         assertTrue(list.contains("bmw-browsers"));
     }
 
+    @Test
+    public void analyzers() throws Exception {
+        String analyzersUrl = getUrl(Analyzer.ANALYZERS);
+        String[] names = executeGet(analyzersUrl, String[].class);
+        List<String> list = new ArrayList<>(Arrays.asList(names));
+        logger.info("List : " + list);
+        assertTrue(list.contains("classifier-smo-en"));
+    }
+
     private <T> T executeGet(final String url, final Class<T> type) throws Exception {
         GetMethod postMethod = new GetMethod(url);
         // postMethod.setQueryString(null);

@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class is implemented as a state pattern. The user specifies the type of analyzer, and the
@@ -127,20 +128,18 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Be
             };
             Future<?> future = clusterManager.sendTask(callable);
             ThreadUtilities.waitForFuture(future, 60);
-            Analysis<I, O> result;
-            boolean remoteSuccess = Boolean.TRUE;
+            Analysis<I, O> result = null;
             try {
-                result = (Analysis<I, O>) future.get();
+                result = (Analysis<I, O>) future.get(60, TimeUnit.SECONDS);
                 if (result != null) {
                     BeanUtilsBean2.getInstance().copyProperties(analysis, result);
                 }
             } catch (final Exception e) {
                 LOGGER.error("Exception getting the result from the distributed task : ", e);
-                remoteSuccess = Boolean.FALSE;
             } finally {
                 // If we don't have a happy ending from the remote server
                 // then we'll try locally, but log a message for interested parties
-                if (!remoteSuccess) {
+                if (result == null) {
                     LOGGER.info("Remote analysis not sucessful, doing local : " + analysis);
                     analysis.setDistributed(Boolean.FALSE);
                     analyze(analysis);
@@ -156,7 +155,7 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Be
                         analyzer.analyze((I) analysis);
                     } catch (final Exception e) {
                         analysis.setException(e);
-                        throw new RuntimeException("Exception analyzing data : " + analyzer, e);
+                        throw new RuntimeException("Exception analyzing data : " + analysis + ", " + analyzer, e);
                     }
                 }
             };
@@ -327,17 +326,30 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Be
         analysis.setTimestamp(new Timestamp(System.currentTimeMillis()));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Object postProcessBeforeInitialization(final Object bean, final String beanName) throws BeansException {
-        return bean;
+        return addAnalyzer(bean, beanName);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Object postProcessAfterInitialization(final Object bean, final String beanName) throws BeansException {
+        return addAnalyzer(bean, beanName);
+    }
+
+    private Object addAnalyzer(final Object bean, final String beanName) {
         // We collect all the analyzers that have been defined in the configuration here
+        LOGGER.info("Bean : " + beanName + ", " + bean);
         if (IAnalyzer.class.isAssignableFrom(bean.getClass())) {
+            LOGGER.info("Analyzer : " + beanName + ", " + bean);
             analyzers.put(beanName, (IAnalyzer) bean);
         } else if (Context.class.isAssignableFrom(bean.getClass())) {
+            LOGGER.info("Context : " + beanName + ", " + bean);
             contexts.put(beanName, (Context) bean);
         }
         return bean;
