@@ -143,7 +143,7 @@ public class AnalyzerIntegration extends BaseTest {
         String[] names = executeGet(analyzersUrl, String[].class);
         List<String> list = new ArrayList<>(Arrays.asList(names));
         logger.info("List : " + list);
-        assertTrue(list.contains("classifier-smo-en"));
+        assertTrue(list.contains("sentiment-smo-en"));
     }
 
     private <T> T executeGet(final String url, final Class<T> type) throws Exception {

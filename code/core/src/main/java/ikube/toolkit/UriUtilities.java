@@ -210,14 +210,14 @@ public final class UriUtilities {
     }
 
     public static String stripJSessionId(final String string, final String replacement) {
-        if (StringUtils.isEmpty(string) || StringUtils.isEmpty(replacement)) {
+        if (StringUtils.isEmpty(string)) {
             return string;
         }
         return JSESSIONID_PATTERN.matcher(string).replaceAll(replacement);
     }
 
     public static String stripAnchor(final String string, final String replacement) {
-        if (StringUtils.isEmpty(string) || StringUtils.isEmpty(replacement)) {
+        if (StringUtils.isEmpty(string)) {
             return string;
         }
         return ANCHOR_PATTERN.matcher(string).replaceAll(replacement);
