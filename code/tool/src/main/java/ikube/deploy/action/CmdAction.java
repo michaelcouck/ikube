@@ -23,34 +23,43 @@ public class CmdAction extends Action {
     private Collection<String> commands;
 
     @Override
-    public boolean execute(final Server server) {
-        SSHClient sshExec = getSshExec(server.getIp(), server.getUsername(), server.getPassword());
+    @SuppressWarnings("EmptyFinallyBlock")
+    public boolean execute(final Server server) throws Exception {
+        final SSHClient sshExec = getSshExec(server.getIp(), server.getUsername(), server.getPassword());
         logger.debug("Ssh exec : " + sshExec + ", " + commands);
         try {
             if (commands != null) {
+                // Session session = sshExec.startSession();
+                // session.allocateDefaultPTY();
+                // Session.Shell shell = session.startShell();
+                // OutputStream outputStream = shell.getOutputStream();
                 for (final String command : commands) {
                     try {
                         logger.info("Running command : {} on machine : {}", new Object[]{command, server.getIp()});
+                        // Allows sudo apparently
+                        // session.allocateDefaultPTY();
+
+                        /*outputStream.write(command.getBytes());
+                        outputStream.write("\n".getBytes());*/
+                        // shell.join(10, TimeUnit.SECONDS);
 
                         Session session = sshExec.startSession();
-                        // Allows sudo apparently
-                        session.allocateDefaultPTY();
-                        // Session.Shell shell = session.startShell();
-
                         Session.Command sessionCommand = session.exec(command);
-                        sessionCommand.join(60, TimeUnit.SECONDS);
-                        String message = IOUtils.readFully(sessionCommand.getInputStream()).toString();
-                        String error = IOUtils.readFully(sessionCommand.getErrorStream()).toString();
+                        sessionCommand.join(10, TimeUnit.SECONDS);
 
                         Integer exitStatus = sessionCommand.getExitStatus();
                         String errorMessage = sessionCommand.getExitErrorMessage();
                         // boolean coreDump = sessionCommand.getExitWasCoreDumped();
 
                         if (exitStatus != null && exitStatus > 0) {
-                            Object[] parameters = {message, errorMessage, error, exitStatus/* , coreDump */};
+                            // NOTE TO SELF!!!: Do not consume the output, this acts like consuming the nohup
+                            // for example, and the script terminates when the shell exits, i.e. it doesn't start the
+                            // tomcat. We only read from the output if there is an error otherwise the process
+                            // started, perhaps by a shell script, terminates *****immediately***** !!!!!
+                            String message = IOUtils.readFully(sessionCommand.getInputStream()).toString();
+                            String error = IOUtils.readFully(sessionCommand.getErrorStream()).toString();
+                            Object[] parameters = {message, errorMessage, error, exitStatus};
                             logger.info("Message : {}, error message : {}, error : {}, exit status : {}", parameters);
-                        } else if (StringUtils.isNotEmpty(message)) {
-                            logger.info("Message : {}", message);
                         } else if (StringUtils.isNotEmpty(errorMessage)) {
                             logger.info("Error message : " + errorMessage);
                         }

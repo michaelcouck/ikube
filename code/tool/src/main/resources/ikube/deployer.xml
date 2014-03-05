@@ -43,7 +43,7 @@
 
     <bean
         class="ikube.deploy.Deployer"
-        property:parallel="false"
+        property:parallel="true"
         property:maxWaitTime="60"
         property:servers-ref="servers"/>
 
@@ -53,8 +53,8 @@
         <ref local="server-two"/>
         <ref local="server-three"/>
         <!-- 
-	  Note: Have to get sshj to execute as sudo!
-	  Update 04-03-2014: This seems to be impossible, so the solution was to run the 
+	  Note 04-03-2014: Have to get sshj to execute as sudo!
+	  Update later that day: This seems to be impossible, so the solution was to run the 
 	    server on port 8080, and have the router point to this port. Not very convenient
 	    at all. But in fact, it seems that it could eb possible to run sudo, but every
 	    thing needs to be on one line, and the user must be configured to not need a 
@@ -87,9 +87,8 @@
         property:breakOnError="true"
         property:commands-ref="stop-commands"/>
     <util:list id="stop-commands">
-        <value>. /etc/profile;cd ${tomcat-bin};./catalina.sh stop;sleep 15;</value>
         <!-- value>ps -ef | grep ${tomcat} | grep -v grep | awk '{print $2}' | xargs kill -9;</value -->
-	<value>kill -9 $(ps aux | grep ${tomcat} | grep -v grep | awk '{print $2}')</value>
+	<value>${tomcat-shutdown};${tomcat-kill};</value>
     </util:list>
 
     <bean
@@ -132,10 +131,9 @@
     </util:map>
     <util:map id="directories">
         <entry key="${resources-directory}/ikube/common" value="${tomcat-bin}/ikube"/>
-        <entry key="${resources-directory}/indexes/integration" value="${tomcat-bin}/ikube"/>
-        <!--<entry key="${resources-directory}/analytics" value="${tomcat-bin}/ikube"/>-->
-        <!--<entry key="${resources-directory}/indexes/production" value="${tomcat-bin}/ikube"/>-->
-        <!--<entry key="${resources-directory}/indexes/twitter" value="${tomcat-bin}/ikube"/>-->
+        <entry key="${resources-directory}/analytics" value="${tomcat-bin}/ikube"/>
+        <entry key="${resources-directory}/indexes/production" value="${tomcat-bin}/ikube"/>
+        <!-- entry key="${resources-directory}/indexes/twitter" value="${tomcat-bin}/ikube"/ -->
     </util:map>
 
     <bean
@@ -145,7 +143,7 @@
         property:breakOnError="true"
         property:commands-ref="start-commands"/>
     <util:list id="start-commands">
-        <value>. /etc/profile;chmod 777 -R ${tomcat};cd ${tomcat-bin};./catalina.sh start;sleep 15;</value>
+        <value>${tomcat-startup}</value>
     </util:list>
 
     <!-- Cluster servers one, two and three -->
@@ -174,9 +172,8 @@
         property:breakOnError="true"
         property:commands-ref="stop-commands-one"/>
     <util:list id="stop-commands-one">
-        <value>. /etc/profile;cd ${tomcat-one-bin};./catalina.sh stop;sleep 15;</value>
         <!-- value>ps -ef | grep ${tomcat-one} | grep -v grep | awk '{print $2}' | xargs kill -9;</value -->
-	<value>kill -9 $(ps aux | grep ${tomcat-one} | grep -v grep | awk '{print $2}')</value>
+	<value>${tomcat-one-shutdown};${tomcat-one-kill};</value>
     </util:list>
 
     <bean
@@ -259,9 +256,7 @@
         property:commands-ref="stop-commands-two"/>
     <util:list id="stop-commands-two">
         <value></value>
-        <value>. /etc/profile;cd ${tomcat-two-bin};./catalina.sh stop;sleep 15;</value>
-        <!-- value>ps -ef | grep ${tomcat-two} | grep -v grep | awk '{print $2}' | xargs kill -9;</value -->
-	<value>kill -9 $(ps aux | grep ${tomcat-two} | grep -v grep | awk '{print $2}')</value>
+        <value>${tomcat-two-shutdown};${tomcat-two-kill};</value>
     </util:list>
 
     <bean
@@ -343,9 +338,7 @@
         property:breakOnError="true"
         property:commands-ref="stop-commands-three"/>
     <util:list id="stop-commands-three">
-        <value>. /etc/profile;cd ${tomcat-three-bin};./catalina.sh stop;sleep 15;</value>
-        <!-- value>ps -ef | grep ${tomcat-three} | grep -v grep | awk '{print $2}' | xargs kill -9;</value -->
-	<value>kill -9 $(ps aux | grep ${tomcat-three} | grep -v grep | awk '{print $2}')</value>
+        <value>${tomcat-three-shutdown};${tomcat-three-kill};</value>
     </util:list>
 
     <bean
@@ -427,8 +420,7 @@
         property:breakOnError="false"
         property:commands-ref="stop-commands-production"/>
     <util:list id="stop-commands-production">
-        <value>. /etc/profile;cd ${tomcat-production-bin};./catalina.sh stop; sleep 15;</value>
-        <value>kill -9 $(ps aux | grep ${tomcat-production} | grep -v grep | awk '{print $2}')</value>
+        <value>${tomcat-production-shutdown};${tomcat-production-kill};</value>
     </util:list>
 
     <bean
@@ -438,7 +430,7 @@
         property:breakOnError="false"
         property:commands-ref="clean-commands-production"/>
     <util:list id="clean-commands-production">
-        <value>chmod 777 -R ${tomcat-production};</value>
+        <!-- value>chmod 777 -R ${tomcat-production};</value>
 
         <value>rm -rf ${tomcat-production-bin}/ikube;</value>
         <value>rm -rf ${tomcat-production}/webapps/ikube;</value>
@@ -454,7 +446,7 @@
         <value>mkdir -p ${tomcat-production}/temp;</value>
         <value>mkdir -p ${tomcat-production}/work/Catalina/localhost;</value>
 
-        <value>chmod 777 -R ${tomcat-production};</value>
+        <value>chmod 777 -R ${tomcat-production};</value -->
     </util:list>
 
     <bean
@@ -468,9 +460,9 @@
         <entry key="code/war/target/${ikube-war}" value="${tomcat-production-webapps}"/>
     </util:map>
     <util:map id="directories-production">
-        <entry key="${resources-directory}/ikube" value="${tomcat-production-bin}"/>
+        <!-- entry key="${resources-directory}/ikube" value="${tomcat-production-bin}"/>
         <entry key="${resources-directory}/analytics" value="${tomcat-production-bin}/ikube"/>
-        <entry key="${resources-directory}/indexes/production" value="${tomcat-production-bin}/ikube"/>
+        <entry key="${resources-directory}/indexes/production" value="${tomcat-production-bin}/ikube"/ -->
     </util:map>
 
     <bean
@@ -480,8 +472,7 @@
         property:breakOnError="false"
         property:commands-ref="start-commands-production"/>
     <util:list id="start-commands-production">
-        <!-- This must all be on line line to maintain the session, and MUST sleep for a bit afterwards too! -->
-        <value>. /etc/profile;chmod 777 -R ${tomcat-production};cd ${tomcat-production-bin};pwd;nohup ./startup.sh &amp; sleep 10;</value>
+        <value>${tomcat-production-startup}</value>
     </util:list>
     <!-- End production -->
 

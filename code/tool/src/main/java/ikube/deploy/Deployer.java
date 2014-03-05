@@ -79,7 +79,11 @@ public final class Deployer {
                 if (!deployer.isParallel()) {
                     // Execute one action at a time
                     for (final IAction action : server.getActions()) {
-                        action.execute(server);
+                        try {
+                            action.execute(server);
+                        } catch (final Exception e) {
+                            LOGGER.error(null, e);
+                        }
                     }
                 } else {
                     // Execute on action at a time, in order for each server,
@@ -89,7 +93,11 @@ public final class Deployer {
                         public void run() {
                             try {
                                 for (final IAction action : server.getActions()) {
-                                    action.execute(server);
+                                    try {
+                                        action.execute(server);
+                                    } catch (final Exception e) {
+                                        LOGGER.error(null, e);
+                                    }
                                 }
                             } finally {
                                 ThreadUtilities.destroy(name);
