@@ -66,11 +66,11 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
                 Url dbUrl = dataBase.find(Url.class, fields, values);
                 if (dbUrl == null) {
                     internetResourceHandler.handleResource(indexContext, indexableInternet, new Document(), url);
+                    return extractLinksFromContent(indexableInternet, url);
                 } else {
                     // Duplicate content, not interesting
                     logger.info("Duplicate : " + url.getUrl());
                 }
-                return extractLinksFromContent(indexableInternet, url);
             }
             return Collections.EMPTY_LIST;
         } catch (final Exception e) {

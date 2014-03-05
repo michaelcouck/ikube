@@ -23,12 +23,25 @@ import java.net.MalformedURLException;
 import java.util.*;
 
 /**
+ * This class provides urls for the {@link ikube.action.index.handler.internet.IndexableInternetHandler}. It
+ * acts as a crawler for web pages and other web resources. The underlying crawler is Niocchi. Several threads are
+ * started and feed the database with {@link ikube.model.Url}s, using the Niocchi library.
+ * <p/>
+ * Consumer threads are started by the handler, that request resources, i.e. {@link ikube.model.Url}s from this
+ * provider, that are in fact from the database. The actual data is persisted to the file system by Niocchi and the
+ * data is then read from disk as needed, i.e. when the consumers request resources.
+ *
  * @author Michael Couck
  * @version 02.00
  * @since 21-06-2013
  */
 public class InternetResourceProvider implements IResourceProvider<Url>, URLPool {
 
+    /**
+     * This class is the implementation of the crawler workers from the Niocchi
+     * library. They will persist the resources as they are provided by the Niocchi
+     * framework.
+     */
     public class WorkerImpl extends GenericWorker {
 
         public WorkerImpl(final Crawler crawler) {
@@ -55,7 +68,10 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
                     }
                 }
             }
-            FileUtilities.deleteFile(file);
+            boolean deleted = FileUtilities.deleteFile(file);
+            if (!deleted) {
+                logger.info("Not deleted : " + url.getUrl() + ", file : " + FileUtilities.cleanFilePath(file.getAbsolutePath()));
+            }
             urls.add(url);
         }
     }
@@ -143,8 +159,8 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
             url = urls.pollFirst();
         }
         boolean contains = urls.contains(url);
-        logger.debug("Doing url : " + url + ", " + contains + ", " + urls.size());
         if (url != null && contains) {
+            logger.info("Doing url : " + url.getUrl() + ", " + urls.size());
             urls.remove(url);
         }
         return url;
@@ -164,7 +180,7 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
                 logger.debug("Not persisting : " + url);
                 continue;
             }
-            logger.debug("Persisting : " + url);
+            logger.info("Persisting : " + url.getUrl());
             dataBase.persist(url);
         }
     }

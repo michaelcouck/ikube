@@ -10,6 +10,7 @@ import ikube.model.Server;
 import ikube.search.Search.TypeField;
 import ikube.toolkit.HashUtilities;
 import ikube.toolkit.SerializationUtilities;
+import ikube.toolkit.StringUtilities;
 import ikube.toolkit.ThreadUtilities;
 import org.apache.commons.beanutils.BeanUtilsBean2;
 import org.apache.commons.lang.StringUtils;
@@ -308,7 +309,11 @@ public class SearcherService implements ISearcherService {
                 int i = 0;
                 boosts = new float[search.getBoosts().size()];
                 for (final String boost : search.getBoosts()) {
-                    boosts[i++] = Float.parseFloat(boost);
+                    float f = 0.0f;
+                    if (StringUtilities.isNumeric(boost)) {
+                        f = Float.parseFloat(boost);
+                    }
+                    boosts[i++] = f;
                 }
             }
 
