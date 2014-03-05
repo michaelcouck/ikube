@@ -50,8 +50,8 @@
     <util:list id="servers">
         <!-- ref local="server"/ -->
         <ref local="server-one"/>
-        <ref local="server-two"/>
-        <ref local="server-three"/>
+        <!-- ref local="server-two"/>
+        <ref local="server-three"/ -->
         <!-- 
 	  Note: Have to get sshj to execute as sudo!
 	  Update 04-03-2014: This seems to be impossible, so the solution was to run the 
@@ -230,7 +230,7 @@
         property:breakOnError="true"
         property:commands-ref="start-commands-one"/>
     <util:list id="start-commands-one">
-        <value>. /etc/profile;chmod 777 -R ${tomcat-one};cd ${tomcat-one-bin};./catalina.sh start;sleep 15;</value>
+        <value>${tomcat-one-startup}</value>
     </util:list>
     <!-- End one -->
 
