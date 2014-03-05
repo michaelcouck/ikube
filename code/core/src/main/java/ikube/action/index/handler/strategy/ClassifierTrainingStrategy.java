@@ -87,7 +87,7 @@ public class ClassifierTrainingStrategy extends AStrategy {
             analysis.setAnalyzer(context.getName());
             analysis = analyticsService.sizesForClassesOrClusters(analysis);
 
-            int indexOfClass = (int) Arrays.asList(analysis.getClassesOrClusters()).get(0);
+            int indexOfClass = Integer.parseInt((String) Arrays.asList(analysis.getClassesOrClusters()).get(0));
             int classSize = analysis.getSizesForClassesOrClusters()[indexOfClass];
 
             // int classSize = classifier.sizeForClassOrCluster(analysis);

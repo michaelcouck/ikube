@@ -70,8 +70,8 @@ public class SnapshotSchedule extends Schedule {
                 snapshot.setLatestIndexTimestamp(IndexManager.getLatestIndexDirectoryDate(indexContext));
 
                 snapshot.setDocsPerMinute(getDocsPerMinute(indexContext, snapshot));
-                snapshot.setSearchesPerMinute(getSearchesPerMinute(indexContext, snapshot));
                 snapshot.setTotalSearches(getTotalSearchesForIndex(indexContext).longValue());
+                snapshot.setSearchesPerMinute(getSearchesPerMinute(indexContext, snapshot));
 
                 dataBase.persist(snapshot);
                 String[] names = new String[]{IConstants.INDEX_CONTEXT};
@@ -162,7 +162,9 @@ public class SnapshotSchedule extends Schedule {
 
     @SuppressWarnings("rawtypes")
     protected Number getTotalSearchesForIndex(final IndexContext indexContext) {
-        return dataBase.execute(Search.SELECT_FROM_SEARCH_COUNT_SEARCHES, new String[]{"indexName"}, new Object[]{indexContext.getIndexName()});
+        String[] fields = {"indexName"};
+        Object[] values = {indexContext.getIndexName()};
+        return dataBase.execute(Search.SELECT_FROM_SEARCH_COUNT_SEARCHES, fields, values);
     }
 
     protected long getSearchesPerMinute(final IndexContext<?> indexContext, final Snapshot snapshot) {

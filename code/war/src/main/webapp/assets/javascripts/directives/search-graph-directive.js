@@ -18,7 +18,7 @@ module.directive('searching', function($http) {
 				var promise = $http.get($scope.url);
 				promise.success(function(data, status) {
 					$scope.status = status;
-					var data = google.visualization.arrayToDataTable(data);
+					data = google.visualization.arrayToDataTable(data);
 					var searchingChart = new google.visualization.LineChart($elm[0]);
 					searchingChart.draw(data, $scope.options);
 				});
