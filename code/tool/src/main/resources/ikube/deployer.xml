@@ -77,7 +77,7 @@
         <ref local="stop-action"/>
         <ref local="clean-action"/>
         <ref local="copy-action"/>
-        <!--<ref local="start-action"/>-->
+        <ref local="start-action"/>
     </util:list>
 
     <bean
@@ -88,7 +88,8 @@
         property:commands-ref="stop-commands"/>
     <util:list id="stop-commands">
         <!-- value>ps -ef | grep ${tomcat} | grep -v grep | awk '{print $2}' | xargs kill -9;</value -->
-	<value>${tomcat-shutdown};${tomcat-kill};</value>
+	<value>${tomcat-shutdown};</value>
+	<value>${tomcat-kill};</value>
     </util:list>
 
     <bean
@@ -142,6 +143,7 @@
         property:breakOnError="true"
         property:commands-ref="start-commands"/>
     <util:list id="start-commands">
+	<value>${tomcat-chmod}</value>
         <value>${tomcat-startup}</value>
     </util:list>
 
@@ -171,7 +173,8 @@
         property:breakOnError="true"
         property:commands-ref="stop-commands-one"/>
     <util:list id="stop-commands-one">
-	<value>${tomcat-one-shutdown};${tomcat-one-kill};</value>
+	<value>${tomcat-one-shutdown};</value>
+	<value>${tomcat-one-kill};</value>
     </util:list>
 
     <bean
@@ -225,6 +228,7 @@
         property:breakOnError="true"
         property:commands-ref="start-commands-one"/>
     <util:list id="start-commands-one">
+	<value>${tomcat-one-chmod}</value>
         <value>${tomcat-one-startup}</value>
     </util:list>
     <!-- End one -->
@@ -254,7 +258,8 @@
         property:commands-ref="stop-commands-two"/>
     <util:list id="stop-commands-two">
         <value></value>
-        <value>${tomcat-two-shutdown};${tomcat-two-kill};</value>
+        <value>${tomcat-two-shutdown};</value>
+        <value>${tomcat-two-kill};</value>
     </util:list>
 
     <bean
@@ -308,6 +313,7 @@
         property:breakOnError="true"
         property:commands-ref="start-commands-two"/>
     <util:list id="start-commands-two">
+	<value>${tomcat-two-chmod}</value>
         <value>${tomcat-two-startup}</value>
     </util:list>
     <!-- End two -->
@@ -336,7 +342,8 @@
         property:breakOnError="true"
         property:commands-ref="stop-commands-three"/>
     <util:list id="stop-commands-three">
-        <value>${tomcat-three-shutdown};${tomcat-three-kill};</value>
+        <value>${tomcat-three-shutdown};</value>
+        <value>${tomcat-three-kill};</value>
     </util:list>
 
     <bean
@@ -390,6 +397,7 @@
         property:breakOnError="true"
         property:commands-ref="start-commands-three"/>
     <util:list id="start-commands-three">
+	<value>${tomcat-three-chmod}</value>
         <value>${tomcat-three-startup}</value>
     </util:list>
     <!-- End three -->
@@ -418,7 +426,8 @@
         property:breakOnError="false"
         property:commands-ref="stop-commands-production"/>
     <util:list id="stop-commands-production">
-        <value>${tomcat-production-shutdown};${tomcat-production-kill};</value>
+        <value>${tomcat-production-shutdown};</value>
+        <value>${tomcat-production-kill};</value>
     </util:list>
 
     <bean
@@ -470,6 +479,7 @@
         property:breakOnError="false"
         property:commands-ref="start-commands-production"/>
     <util:list id="start-commands-production">
+	<value>${tomcat-production-chmod}</value>
         <value>${tomcat-production-startup}</value>
     </util:list>
     <!-- End production -->
