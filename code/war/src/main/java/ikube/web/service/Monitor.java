@@ -83,13 +83,15 @@ public class Monitor extends Resource {
     @SuppressWarnings("rawtypes")
     @Path(Monitor.INDEX_CONTEXT)
     @Consumes(MediaType.APPLICATION_XML)
-    public Response indexContext(@QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
+    public Response indexContext(
+            @QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
         IndexContext indexContext = cloneIndexContext(monitorService.getIndexContext(indexName));
         return buildJsonResponse(indexContext);
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private IndexContext cloneIndexContext(final IndexContext indexContext) {
+    private IndexContext cloneIndexContext(
+            final IndexContext indexContext) {
         IndexContext cloneIndexContext = (IndexContext) SerializationUtilities.clone(indexContext);
         cloneIndexContext.setChildren(null);
         // cloneIndexContext.setSnapshots(null);
@@ -100,8 +102,9 @@ public class Monitor extends Resource {
     @SuppressWarnings({"rawtypes"})
     @Path(Monitor.INDEX_CONTEXTS)
     @Consumes(MediaType.APPLICATION_XML)
-    public Response indexContexts(@QueryParam(value = IConstants.SORT_FIELD) final String sortField,
-                                  @QueryParam(value = IConstants.DESCENDING) final boolean descending) {
+    public Response indexContexts(
+            @QueryParam(value = IConstants.SORT_FIELD) final String sortField,
+            @QueryParam(value = IConstants.DESCENDING) final boolean descending) {
         List<IndexContext> indexContexts = new ArrayList<>();
         for (final IndexContext indexContext : monitorService.getIndexContexts().values()) {
             IndexContext cloneIndexContext = cloneIndexContext(indexContext);
@@ -248,7 +251,8 @@ public class Monitor extends Resource {
     @GET
     @Path(Monitor.START)
     @Consumes(MediaType.APPLICATION_XML)
-    public Response start(@QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
+    public Response start(
+            @QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
         monitorService.start(indexName);
         return buildResponse().build();
     }
@@ -256,7 +260,8 @@ public class Monitor extends Resource {
     @GET
     @Path(Monitor.TERMINATE)
     @Consumes(MediaType.APPLICATION_XML)
-    public Response terminate(@QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
+    public Response terminate(
+            @QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
         monitorService.terminate(indexName);
         return buildResponse().build();
     }
@@ -273,7 +278,8 @@ public class Monitor extends Resource {
     @SuppressWarnings("unchecked")
     @Path(Monitor.SET_PROPERTIES)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response setProperties(@Context final HttpServletRequest request) throws IOException {
+    public Response setProperties(
+            @Context final HttpServletRequest request) throws IOException {
         Map<String, String> filesAndProperties = unmarshall(Map.class, request);
         monitorService.setProperties(filesAndProperties);
         return buildResponse().build();
@@ -298,7 +304,8 @@ public class Monitor extends Resource {
     @GET
     @Path(Monitor.DELETE_INDEX)
     @Consumes(MediaType.APPLICATION_XML)
-    public Response delete(@QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
+    public Response delete(
+            @QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
         long time = System.currentTimeMillis();
         Event startEvent = IListener.EventGenerator.getEvent(Event.DELETE_INDEX, time, indexName, Boolean.FALSE);
         logger.info("Sending delete event : " + ToStringBuilder.reflectionToString(startEvent));
