@@ -5,8 +5,6 @@ import ikube.database.IDataBase;
 import ikube.model.Action;
 import ikube.model.Server;
 import ikube.scheduling.Schedule;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Iterator;
@@ -24,8 +22,6 @@ import java.util.List;
  */
 public class ActionSchedule extends Schedule {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ActionSchedule.class);
-
     @Autowired
     private IDataBase dataBase;
     @Autowired
@@ -42,12 +38,12 @@ public class ActionSchedule extends Schedule {
         while (iterator.hasNext()) {
             Action gridAction = iterator.next();
             if (gridAction.getEndTime() != null) {
-                LOGGER.info("Removing expired action : {}", gridAction);
+                logger.info("Removing expired action : {}", gridAction);
                 iterator.remove();
             }
             Action dbAction = dataBase.find(Action.class, gridAction.getId());
             if (dbAction == null || dbAction.getEndTime() != null) {
-                LOGGER.info("Removing expired action : {}", gridAction);
+                logger.info("Removing expired action : {}", gridAction);
                 iterator.remove();
             }
         }

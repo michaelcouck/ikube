@@ -43,7 +43,7 @@
 
     <bean
         class="ikube.deploy.Deployer"
-        property:parallel="true"
+        property:parallel="false"
         property:maxWaitTime="60"
         property:servers-ref="servers"/>
 
@@ -133,7 +133,6 @@
         <entry key="${resources-directory}/ikube/common" value="${tomcat-bin}/ikube"/>
         <entry key="${resources-directory}/analytics" value="${tomcat-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/production" value="${tomcat-bin}/ikube"/>
-        <!-- entry key="${resources-directory}/indexes/twitter" value="${tomcat-bin}/ikube"/ -->
     </util:map>
 
     <bean
@@ -172,7 +171,6 @@
         property:breakOnError="true"
         property:commands-ref="stop-commands-one"/>
     <util:list id="stop-commands-one">
-        <!-- value>ps -ef | grep ${tomcat-one} | grep -v grep | awk '{print $2}' | xargs kill -9;</value -->
 	<value>${tomcat-one-shutdown};${tomcat-one-kill};</value>
     </util:list>
 

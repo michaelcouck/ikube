@@ -20,16 +20,16 @@
     </description>
 
     <util:list id="ikube.scheduling.schedule.IndexSchedule.actions">
-        <ref bean="ikube.action.Close"  />
+        <!--<ref bean="ikube.action.Close"  />-->
         <!-- Optimizer is not safe in a cluster. -->
         <!--<ref bean="ikube.action.Optimizer"  />-->
         <ref bean="ikube.action.Reset" />
-        <ref bean="ikube.action.Restore" />
+        <!--<ref bean="ikube.action.Restore" />-->
         <ref bean="ikube.action.Index"  />
         <ref bean="ikube.action.Open"  />
         <ref bean="ikube.action.Reopen"  />
         <ref bean="ikube.action.Delete" />
-        <ref bean="ikube.action.Backup" />
+        <!--<ref bean="ikube.action.Backup" />-->
         <!--
             This can be run but it can cause the disk to
             fail in raid configurations, use at own risk
@@ -53,7 +53,7 @@
             </util:list>
         </property>
     </bean>
-    <bean
+    <!--<bean
         id="ikube.action.Restore"
         class="ikube.action.Restore"
         property:ruleExpression="
@@ -73,8 +73,8 @@
                 <ref local="ikube.action.rule.IsIndexCorrupt" />
             </util:list>
         </property>
-    </bean>
-    <bean
+    </bean>-->
+    <!--<bean
         id="ikube.action.Close"
         class="ikube.action.Close"
         property:ruleExpression="
@@ -85,7 +85,7 @@
                 <ref local="ikube.action.rule.IsIndexCorrupt" />
             </util:list>
         </property>
-    </bean>
+    </bean>-->
     <!--<bean
         id="ikube.action.Optimizer"
         class="ikube.action.Optimizer"
@@ -173,7 +173,7 @@
             </util:list>
         </property>
     </bean>
-    <bean
+    <!--<bean
         id="ikube.action.Backup"
         class="ikube.action.Backup"
         property:ruleExpression="
@@ -184,7 +184,7 @@
                 <ref local="ikube.action.rule.IsIndexBackedUp" />
             </util:list>
         </property>
-    </bean>
+    </bean>-->
     <!-- <bean
         id="ikube.action.DiskFull"
         class="ikube.action.DiskFull"

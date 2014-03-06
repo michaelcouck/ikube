@@ -207,8 +207,8 @@
         id="ikube.scheduling.schedule.ActionSchedule"
         name="ikube.scheduling.schedule.ActionSchedule"
         class="ikube.scheduling.schedule.ActionSchedule"
-        property:delay="60000"
-        property:period="300000"/>
+        property:delay="600000"
+        property:period="600000"/>
     <bean
         id="ikube.scheduling.schedule.SnapshotSchedule"
         name="ikube.scheduling.schedule.SnapshotSchedule"
