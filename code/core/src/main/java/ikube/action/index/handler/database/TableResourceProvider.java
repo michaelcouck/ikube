@@ -77,21 +77,19 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
     }
 
     void setMinAndMaxId(final IndexableTable indexableTable, final DataSource dataSource) {
-        logger.info("Set min and max id : " + indexableTable.getName());
         Connection connection = getConnection(dataSource);
         long minimumId = indexableTable.getMinimumId();
-        logger.info("Min id : " + minimumId);
         if (minimumId <= 0) {
             minimumId = getIdFunction(indexableTable, connection, "min");
             indexableTable.setMinimumId(minimumId);
         }
         long maximumId = indexableTable.getMaximumId();
-        logger.info("Max id : " + minimumId);
         if (maximumId <= 0) {
             maximumId = getIdFunction(indexableTable, connection, "max");
             indexableTable.setMaximumId(maximumId);
         }
-        logger.info("Closing connection, i.e. back to the pool, with a cocktail :) " + minimumId);
+        logger.info("Min id : " + minimumId + ", max id : " + maximumId);
+        // logger.info("Closing connection, i.e. back to the pool, with a cocktail :)");
         DatabaseUtilities.close(connection);
     }
 
@@ -108,8 +106,9 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
     /**
      * This method gets the result set. There are two cases:
      * <p/>
-     * 1) When the indexable is a top level table the result set is based on the predicate that is defined for the table and the next row in the batch. We use
-     * the column indexables defined in the configuration to build the sql to access the table.<br>
+     * 1) When the indexable is a top level table the result set is based on the predicate that
+     * is defined for the table and the next row in the batch. We use the column indexables defined
+     * in the configuration to build the sql to access the table.<br>
      * 2) When the indexable is not a top level table then we use the id of the parent table in the sql generation.<br>
      * <p/>
      * More detail on how the sql gets generated is in the documentation for the buildSql method.
@@ -147,7 +146,10 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
             String sql = new QueryBuilder().buildQuery(indexableTable, currentId.get(), indexContext.getBatchSize());
             logger.info("Query : " + sql);
             currentId.set(currentId.get() + indexContext.getBatchSize());
-            PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY,
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    sql,
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_READ_ONLY,
                     ResultSet.CLOSE_CURSORS_AT_COMMIT);
             // Set the parameters if this is a sub table, this typically means that the
             // id from the primary table is set in the prepared statement
@@ -159,11 +161,13 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
     }
 
     /**
-     * This method sets the parameters in the statement. Typically the sub tables need the id from the parent. The sql generated would be something like:
+     * This method sets the parameters in the statement. Typically the sub tables need the id from the parent. The
+     * sql generated would be something like:
      * "...where foreignKey = parentId", so we have to get the parent id column and set the parameter.
      *
-     * @param indexableTable    the table that is being iterated over at the moment, this could be a top level table n which case there will be no foreign key
-     *                          references, but in the case of a sub table the parent id will be accessed
+     * @param indexableTable    the table that is being iterated over at the moment, this could be a top level
+     *                          table n which case there will be no foreign key references, but in the case of a sub
+     *                          table the parent id will be accessed
      * @param preparedStatement the statement to set the parameters in
      * @throws SQLException
      */
@@ -186,8 +190,8 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
     }
 
     /**
-     * This method selects from the specified table using a function, typically something like "max" or "min". In some cases we need to know if we have reached
-     * the end of the table, or what the first id is in the table.
+     * This method selects from the specified table using a function, typically something like "max" or "min". In some
+     * cases we need to know if we have reached the end of the table, or what the first id is in the table.
      *
      * @param indexableTable the table to execute the function on
      * @param connection     the database connection

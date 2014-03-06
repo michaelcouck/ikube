@@ -175,7 +175,7 @@ public interface IConstants {
     String CLASS = "class";
     String START_INDEX = "start-index";
     String END_INDEX = "end-index";
-    int MAX_GEOHASH_LEVELS = 11;
+    int MAX_GEOHASH_LEVELS = 7;
 
     String MUST = "must";
     String SHOULD = "should";

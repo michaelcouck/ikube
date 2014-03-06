@@ -11,6 +11,8 @@ import java.io.File;
 import java.util.Map;
 
 /**
+ * TODO: Document me...
+ *
  * @author Michael Couck
  * @version 01.00
  * @since 18-06-13
@@ -26,20 +28,6 @@ public class CopyAction extends Action {
         logger.info("Dot folder : " + dotFolder);
         SSHClient sshExec = getSshExec(server.getIp(), server.getUsername(), server.getPassword());
         // sshExec.useCompression();
-        if (files != null) {
-            for (final Map.Entry<String, String> filePair : files.entrySet()) {
-                String source = getAbsoluteFile(dotFolder, filePair.getKey());
-                String target = filePair.getValue();
-                try {
-                    logger.info("Copying file : " + source + ", to : " + target + ", on server : " + server.getIp());
-                    SCPFileTransfer scpFileTransfer = sshExec.newSCPFileTransfer();
-                    SCPUploadClient scpUploadClient = scpFileTransfer.newSCPUploadClient();
-                    scpUploadClient.copy(new FileSystemFile(source), target);
-                } catch (final Exception e) {
-                    handleException("Exception copying file to server, from : " + source + ", to : " + target + ", server : " + server.getIp(), e);
-                }
-            }
-        }
         if (directories != null) {
             for (final Map.Entry<String, String> filePair : directories.entrySet()) {
                 String source = getAbsoluteFile(dotFolder, filePair.getKey());
@@ -51,6 +39,20 @@ public class CopyAction extends Action {
                     scpUploadClient.copy(new FileSystemFile(source), target);
                 } catch (final Exception e) {
                     handleException("Exception copying directory to server, from : " + source + ", to : " + target + ", server : " + server.getIp(), e);
+                }
+            }
+        }
+        if (files != null) {
+            for (final Map.Entry<String, String> filePair : files.entrySet()) {
+                String source = getAbsoluteFile(dotFolder, filePair.getKey());
+                String target = filePair.getValue();
+                try {
+                    logger.info("Copying file : " + source + ", to : " + target + ", on server : " + server.getIp());
+                    SCPFileTransfer scpFileTransfer = sshExec.newSCPFileTransfer();
+                    SCPUploadClient scpUploadClient = scpFileTransfer.newSCPUploadClient();
+                    scpUploadClient.copy(new FileSystemFile(source), target);
+                } catch (final Exception e) {
+                    handleException("Exception copying file to server, from : " + source + ", to : " + target + ", server : " + server.getIp(), e);
                 }
             }
         }
@@ -66,11 +68,11 @@ public class CopyAction extends Action {
         return FileUtilities.cleanFilePath(relative.getAbsolutePath());
     }
 
-    public void setFiles(Map<String, String> files) {
+    public void setFiles(final Map<String, String> files) {
         this.files = files;
     }
 
-    public void setDirectories(Map<String, String> directories) {
+    public void setDirectories(final Map<String, String> directories) {
         this.directories = directories;
     }
 

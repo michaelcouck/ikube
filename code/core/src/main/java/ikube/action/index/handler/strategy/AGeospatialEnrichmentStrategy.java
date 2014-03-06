@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * This is the base class for strategies that add geospatial fields to the index.
+ *
  * @author Michael Couck
  * @version 01.00
  * @since 18.12.2013
@@ -66,7 +68,7 @@ public abstract class AGeospatialEnrichmentStrategy extends AStrategy {
         Shape shape = spatialContext.makePoint(coordinate.getLongitude(), coordinate.getLatitude());
         for (IndexableField indexableField : spatialStrategy.createIndexableFields(shape)) {
             if (logger.isDebugEnabled()) {
-                logger.info("Adding spatial field : {} ", indexableField);
+                logger.debug("Adding spatial field : " + indexableField);
             }
             document.add(indexableField);
         }
