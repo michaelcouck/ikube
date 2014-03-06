@@ -46,6 +46,7 @@ public class ActionSchedule extends Schedule {
                 logger.info("Removing expired action : {}", gridAction);
                 iterator.remove();
             }
+            logger.info("Grid action : {}, db action : {}", gridAction, dbAction);
         }
     }
 
