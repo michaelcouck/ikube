@@ -45,7 +45,7 @@ public class CmdAction extends Action {
 
                         Session session = sshExec.startSession();
                         Session.Command sessionCommand = session.exec(command);
-                        sessionCommand.join(10, TimeUnit.SECONDS);
+                        sessionCommand.join(60, TimeUnit.SECONDS);
 
                         Integer exitStatus = sessionCommand.getExitStatus();
                         String errorMessage = sessionCommand.getExitErrorMessage();
