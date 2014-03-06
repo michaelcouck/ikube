@@ -1,5 +1,6 @@
 package ikube.scheduling.schedule;
 
+import ikube.IConstants;
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.model.Action;
@@ -35,18 +36,25 @@ public class ActionSchedule extends Schedule {
         Server server = clusterManager.getServer();
         List<Action> actions = server.getActions();
         Iterator<Action> iterator = actions.iterator();
+        boolean changed = Boolean.FALSE;
         while (iterator.hasNext()) {
             Action gridAction = iterator.next();
             if (gridAction.getEndTime() != null) {
-                logger.info("Removing expired action : {}", gridAction);
                 iterator.remove();
+                changed = Boolean.TRUE;
+                logger.info("Removing expired action : " + gridAction);
             }
             Action dbAction = dataBase.find(Action.class, gridAction.getId());
             if (dbAction == null || dbAction.getEndTime() != null) {
-                logger.info("Removing expired action : {}", gridAction);
                 iterator.remove();
+                changed = Boolean.TRUE;
+                logger.info("Removing expired action : " + gridAction);
             }
-            logger.info("Grid action : {}, db action : {}", gridAction, dbAction);
+            logger.info("Grid action : " + gridAction + ", db action : " + dbAction);
+        }
+        // If the server has been changed the pop it back in the grid
+        if (changed) {
+            clusterManager.put(IConstants.SERVER, server.getAddress(), server);
         }
     }
 

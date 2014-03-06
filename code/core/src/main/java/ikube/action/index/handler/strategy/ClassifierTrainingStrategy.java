@@ -11,7 +11,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
@@ -22,7 +21,7 @@ import static ikube.IConstants.CLASSIFICATION;
  * This strategy as the name suggests, will train a classifier. The assumption is that a previous strategy will
  * have somehow already classified the resource, perhaps with the emoticons as the Twitter emoticon strategy does,
  * and will then feed the resource to the classifier to train, including the class/category.
- *
+ * <p/>
  * Note that the analysis training is distributed in the cluster, so all the servers must have identical analyzers.
  *
  * @author Michael Couck
@@ -87,7 +86,14 @@ public class ClassifierTrainingStrategy extends AStrategy {
             analysis.setAnalyzer(context.getName());
             analysis = analyticsService.sizesForClassesOrClusters(analysis);
 
-            int indexOfClass = Integer.parseInt((String) Arrays.asList(analysis.getClassesOrClusters()).get(0));
+            int indexOfClass = 0;
+            Object[] classesOrClusters = analysis.getClassesOrClusters();
+            for (int i = 0; i < classesOrClusters.length; i++) {
+                if (clazz.equals(classesOrClusters[i])) {
+                    indexOfClass = i;
+                    break;
+                }
+            }
             int classSize = analysis.getSizesForClassesOrClusters()[indexOfClass];
 
             // int classSize = classifier.sizeForClassOrCluster(analysis);
