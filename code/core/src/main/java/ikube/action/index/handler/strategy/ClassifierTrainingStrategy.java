@@ -103,15 +103,13 @@ public class ClassifierTrainingStrategy extends AStrategy {
                 analyticsService.train(analysis);
                 // classifier.train(analysis);
                 if (classSize % 10 == 0) {
-                    Object[] parameters = {clazz, this.language, classSize};
-                    logger.info("Training : , language : , class size : ", parameters);
+                    logger.info("Training : " + clazz + ", language : " + language + ", class size : " + classSize);
                 }
                 if (buildThreshold == 0) {
                     buildThreshold = 100;
                 }
                 if (classSize % buildThreshold == 0) {
-                    Object[] parameters = {clazz, this.language, classSize, buildThreshold};
-                    logger.info("Building : {}, language : {}, class size : {}, , build threshold : {}", parameters);
+                    logger.info("Building : " + clazz + ", language : " + language + ", class size : " + classSize + ", build threshold : " + buildThreshold);
                     analyticsService.build(analysis);
                     // classifier.build(context);
                     buildThreshold = classSize / 10;
