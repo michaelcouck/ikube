@@ -69,10 +69,10 @@
         property:vectored="false"
         property:threads="12"
 
-        property:consumerKey="Sohh43DylUwaXr7smSojBA"
-        property:consumerSecret="90xubtexbSwhHBbKXM62pF4QfJnz1NWVkpevwde3Qxo"
-        property:token="380355068-JIMLrQyZglGs4WLXo2UShCmXMAMjWeaiZ15ZJkrp"
-        property:tokenSecret="OyhI9UyioglNWrhJnQQWY2ULmNtt9Azfl70z0l8jOPM"
+        property:consumerKey="${consumer-key}"
+        property:consumerSecret="${consumer-secret}"
+        property:token="${token}"
+        property:tokenSecret="${token-secret}"
 
         property:textField="contents"
         property:createdAtField="created-at"

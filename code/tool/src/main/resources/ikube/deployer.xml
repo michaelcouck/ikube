@@ -48,10 +48,10 @@
         property:servers-ref="servers"/>
 
     <util:list id="servers">
-        <!-- ref local="server"/ -->
-        <!-- ref local="server-one"/>
+        <ref local="server"/>
+        <ref local="server-one"/>
         <ref local="server-two"/>
-        <ref local="server-three"/ -->
+        <ref local="server-three"/>
         <!-- 
 	  Note 04-03-2014: Have to get sshj to execute as sudo!
 	  Update later that day: This seems to be impossible, so the solution was to run the 
@@ -77,7 +77,7 @@
         <ref local="stop-action"/>
         <ref local="clean-action"/>
         <ref local="copy-action"/>
-        <ref local="start-action"/>
+        <!-- ref local="start-action"/ -->
     </util:list>
 
     <bean
@@ -473,12 +473,13 @@
     <util:map id="files-production">
         <entry key="code/war/target/${ikube-war}" value="${tomcat-production-webapps}"/>
 	<!-- This over writes the properties specific for the target environment -->
-	<entry key="${resources-directory}/environments/prod/spring.properties" value="${tomcat-prod-bin}/ikube/common"/>
+	<entry key="${resources-directory}/environments/prod/spring.properties" value="${tomcat-production-bin}/ikube/common"/>
     </util:map>
     <util:map id="directories-production">
         <entry key="${resources-directory}/ikube" value="${tomcat-production-bin}"/>
         <entry key="${resources-directory}/analytics" value="${tomcat-production-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/production" value="${tomcat-production-bin}/ikube"/>
+	<entry key="${resources-directory}/indexes/twitter" value="${tomcat-production-bin}/ikube"/>
     </util:map>
 
     <bean
