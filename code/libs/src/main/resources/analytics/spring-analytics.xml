@@ -42,152 +42,6 @@
         property:algorithm-ref="weka-classifier-smo"
         property:maxTraining="${max-training}"/>
 
-    <!-- These are the language classifiers, they are trained by the Twitter data -->
-    <!-- English -->
-    <bean id="sentiment-smo-en" name="sentiment-smo-en" class="ikube.analytics.weka.WekaClassifier"/>
-    <bean id="string-to-word-vector-en" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
-    <bean id="weka-classifier-smo-en" name="weka-classifier-smo-en" class="weka.classifiers.functions.SMO"/>
-    <bean
-        id="context-smo-en"
-        name="context-smo-en"
-        class="ikube.model.Context"
-        property:name="sentiment-smo-en"
-        property:analyzer-ref="sentiment-smo-en"
-        property:filter-ref="string-to-word-vector-en"
-        property:algorithm-ref="weka-classifier-smo-en"
-        property:maxTraining="${max-training}"/>
-    <!-- Spanish -->
-    <bean id="sentiment-smo-es" class="ikube.analytics.weka.WekaClassifier"/>
-    <bean id="string-to-word-vector-es" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
-    <bean id="weka-classifier-smo-es" class="weka.classifiers.functions.SMO"/>
-    <bean
-        id="context-smo-es"
-        class="ikube.model.Context"
-        property:name="sentiment-smo-es"
-        property:analyzer-ref="sentiment-smo-es"
-        property:filter-ref="string-to-word-vector-es"
-        property:algorithm-ref="weka-classifier-smo-es"
-        property:maxTraining="${max-training}"/>
-    <!-- Japanese -->
-    <bean id="sentiment-smo-jp" class="ikube.analytics.weka.WekaClassifier"/>
-    <bean id="string-to-word-vector-jp" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
-    <bean id="weka-classifier-smo-jp" class="weka.classifiers.functions.SMO"/>
-    <bean
-        id="context-smo-jp"
-        class="ikube.model.Context"
-        property:name="sentiment-smo-jp"
-        property:analyzer-ref="sentiment-smo-jp"
-        property:filter-ref="string-to-word-vector-jp"
-        property:algorithm-ref="weka-classifier-smo-jp"
-        property:maxTraining="${max-training}"/>
-    <!-- Chinese -->
-    <bean id="sentiment-smo-cn" class="ikube.analytics.weka.WekaClassifier"/>
-    <bean id="string-to-word-vector-cn" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
-    <bean id="weka-classifier-smo-cn" class="weka.classifiers.functions.SMO"/>
-    <bean
-        id="context-smo-cn"
-        class="ikube.model.Context"
-        property:name="sentiment-smo-cn"
-        property:analyzer-ref="sentiment-smo-cn"
-        property:filter-ref="string-to-word-vector-cn"
-        property:algorithm-ref="weka-classifier-smo-cn"
-        property:maxTraining="${max-training}"/>
-    <!-- Dutch -->
-    <bean id="sentiment-smo-nl" class="ikube.analytics.weka.WekaClassifier"/>
-    <bean id="string-to-word-vector-nl" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
-    <bean id="weka-classifier-smo-nl" class="weka.classifiers.functions.SMO"/>
-    <bean
-        id="context-smo-nl"
-        class="ikube.model.Context"
-        property:name="sentiment-smo-nl"
-        property:analyzer-ref="sentiment-smo-nl"
-        property:filter-ref="string-to-word-vector-nl"
-        property:algorithm-ref="weka-classifier-smo-nl"
-        property:maxTraining="${max-training}"/>
-    <!-- French -->
-    <bean id="sentiment-smo-fr" class="ikube.analytics.weka.WekaClassifier"/>
-    <bean id="string-to-word-vector-fr" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
-    <bean id="weka-classifier-smo-fr" class="weka.classifiers.functions.SMO"/>
-    <bean
-        id="context-smo-fr"
-        class="ikube.model.Context"
-        property:name="sentiment-smo-fr"
-        property:analyzer-ref="sentiment-smo-fr"
-        property:filter-ref="string-to-word-vector-fr"
-        property:algorithm-ref="weka-classifier-smo-fr"
-        property:maxTraining="${max-training}"/>
-    <!-- German -->
-    <bean id="sentiment-smo-de" class="ikube.analytics.weka.WekaClassifier"/>
-    <bean id="string-to-word-vector-de" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
-    <bean id="weka-classifier-smo-de" class="weka.classifiers.functions.SMO"/>
-    <bean
-        id="context-smo-de"
-        class="ikube.model.Context"
-        property:name="sentiment-smo-de"
-        property:analyzer-ref="sentiment-smo-de"
-        property:filter-ref="string-to-word-vector-de"
-        property:algorithm-ref="weka-classifier-smo-de"
-        property:maxTraining="${max-training}"/>
-    <!-- Swedish -->
-    <bean id="sentiment-smo-sv" class="ikube.analytics.weka.WekaClassifier"/>
-    <bean id="string-to-word-vector-sv" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
-    <bean id="weka-classifier-smo-sv" class="weka.classifiers.functions.SMO"/>
-    <bean
-        id="context-smo-sv"
-        class="ikube.model.Context"
-        property:name="sentiment-smo-sv"
-        property:analyzer-ref="sentiment-smo-sv"
-        property:filter-ref="string-to-word-vector-sv"
-        property:algorithm-ref="weka-classifier-smo-sv"
-        property:maxTraining="${max-training}"/>
-    <!-- Thai -->
-    <bean id="sentiment-smo-th" class="ikube.analytics.weka.WekaClassifier"/>
-    <bean id="string-to-word-vector-th" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
-    <bean id="weka-classifier-smo-th" class="weka.classifiers.functions.SMO"/>
-    <bean
-        id="context-smo-th"
-        class="ikube.model.Context"
-        property:name="sentiment-smo-th"
-        property:analyzer-ref="sentiment-smo-th"
-        property:filter-ref="string-to-word-vector-th"
-        property:algorithm-ref="weka-classifier-smo-th"
-        property:maxTraining="${max-training}"/>
-    <!-- Arabic -->
-    <bean id="sentiment-smo-ar" class="ikube.analytics.weka.WekaClassifier"/>
-    <bean id="string-to-word-vector-ar" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
-    <bean id="weka-classifier-smo-ar" class="weka.classifiers.functions.SMO"/>
-    <bean
-        id="context-smo-ar"
-        class="ikube.model.Context"
-        property:name="sentiment-smo-ar"
-        property:analyzer-ref="sentiment-smo-ar"
-        property:filter-ref="string-to-word-vector-ar"
-        property:algorithm-ref="weka-classifier-smo-ar"
-        property:maxTraining="${max-training}"/>
-    <!-- Turkish -->
-    <bean id="sentiment-smo-tr" class="ikube.analytics.weka.WekaClassifier"/>
-    <bean id="string-to-word-vector-tr" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
-    <bean id="weka-classifier-smo-tr" class="weka.classifiers.functions.SMO"/>
-    <bean
-        id="context-smo-tr"
-        class="ikube.model.Context"
-        property:name="sentiment-smo-tr"
-        property:analyzer-ref="sentiment-smo-tr"
-        property:filter-ref="string-to-word-vector-tr"
-        property:algorithm-ref="weka-classifier-smo-tr"
-        property:maxTraining="${max-training}"/>
-    <!-- Russian -->
-    <bean id="sentiment-smo-ru" class="ikube.analytics.weka.WekaClassifier"/>
-    <bean id="string-to-word-vector-ru" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
-    <bean id="weka-classifier-smo-ru" class="weka.classifiers.functions.SMO"/>
-    <bean
-        id="context-smo-ru"
-        class="ikube.model.Context"
-        property:name="sentiment-smo-ru"
-        property:analyzer-ref="sentiment-smo-ru"
-        property:filter-ref="string-to-word-vector-ru"
-        property:algorithm-ref="weka-classifier-smo-ru"
-        property:maxTraining="${max-training}"/>
     <!-- This will initialize all the analyzers and build them in parallel. -->
     <bean
         name="ikube.analytics.AnalyzerManager.buildAnalyzers"
@@ -198,7 +52,7 @@
             <list>
                 <ref local="context-em"/>
                 <ref local="context-smo"/>
-                <ref local="context-smo-en"/>
+                <!--<ref local="context-smo-en"/>
                 <ref local="context-smo-es"/>
                 <ref local="context-smo-jp"/>
                 <ref local="context-smo-cn"/>
@@ -209,7 +63,7 @@
                 <ref local="context-smo-th"/>
                 <ref local="context-smo-ar"/>
                 <ref local="context-smo-tr"/>
-                <ref local="context-smo-ru"/>
+                <ref local="context-smo-ru"/>-->
             </list>
         </property>
     </bean>

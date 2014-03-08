@@ -76,6 +76,7 @@ public abstract class AGeospatialEnrichmentStrategy extends AStrategy {
         document.add(new StoredField(spatialStrategy.getFieldName(), spatialContext.toString(shape)));
     }
 
+    @Override
     public void initialize() {
         geoCityMap = new HashMap<>();
         spatialContext = SpatialContext.GEO;

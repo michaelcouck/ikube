@@ -335,6 +335,11 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Ap
         LOGGER.info("Analyzers : " + analyzers);
         for (final Map.Entry<String, Context> mapEntry : contexts.entrySet()) {
             LOGGER.info("Context : " + mapEntry.getKey() + ", " + mapEntry.getValue().getName());
+            try {
+                AnalyzerManager.buildAnalyzer(mapEntry.getValue(), Boolean.TRUE);
+            } catch (final Exception e) {
+                LOGGER.error("Error building analyzer : ", e);
+            }
         }
         for (final Map.Entry<String, IAnalyzer> mapEntry : analyzers.entrySet()) {
             LOGGER.info("Context : " + mapEntry.getKey() + ", " + mapEntry.getValue().getClass().getName());

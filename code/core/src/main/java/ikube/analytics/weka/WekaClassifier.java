@@ -6,7 +6,6 @@ import ikube.toolkit.Timer;
 import org.apache.commons.lang.StringUtils;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
-import weka.classifiers.functions.SMO;
 import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -15,8 +14,9 @@ import java.util.Enumeration;
 import java.util.concurrent.TimeUnit;
 
 /**
- * This class is a classifier for sentiment essentially, i.e. positive/negative. This classifier is based on the {@link SMO} classification algorithm from
- * Weka, which is a support vector classifier. This class is thread safe.
+ * TODO: Document me more.
+ * <p/>
+ * This is a wrapper for the Weka classifiers.
  *
  * @author Michael Couck
  * @version 01.00

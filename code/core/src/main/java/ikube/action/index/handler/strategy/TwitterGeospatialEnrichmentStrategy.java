@@ -15,6 +15,7 @@ import ikube.toolkit.StringUtilities;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.TwitterProfile;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 /**
+ * TODO : Document me.
+ *
  * @author Michael Couck
  * @version 01.00
  * @since 11-12-2013
@@ -32,6 +35,8 @@ import java.util.TimeZone;
 @Component
 public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrichmentStrategy {
 
+    @Value("${max-geohash-levels-twitter}")
+    int maxGeohashLevels = IConstants.MAX_GEOHASH_LEVELS;
     @Autowired
     private ISearcherService searcherService;
 
