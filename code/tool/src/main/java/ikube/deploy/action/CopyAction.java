@@ -36,7 +36,8 @@ public class CopyAction extends Action {
                     logger.info("Copying directory : " + source + ", to : " + target + ", on server : " + server.getIp());
                     SCPFileTransfer scpFileTransfer = sshExec.newSCPFileTransfer();
                     SCPUploadClient scpUploadClient = scpFileTransfer.newSCPUploadClient();
-                    scpUploadClient.copy(new FileSystemFile(source), target);
+                    int returnCode = scpUploadClient.copy(new FileSystemFile(source), target);
+                    logger.info("return code : " + returnCode);
                 } catch (final Exception e) {
                     handleException("Exception copying directory to server, from : " + source + ", to : " + target + ", server : " + server.getIp(), e);
                 }
@@ -50,7 +51,8 @@ public class CopyAction extends Action {
                     logger.info("Copying file : " + source + ", to : " + target + ", on server : " + server.getIp());
                     SCPFileTransfer scpFileTransfer = sshExec.newSCPFileTransfer();
                     SCPUploadClient scpUploadClient = scpFileTransfer.newSCPUploadClient();
-                    scpUploadClient.copy(new FileSystemFile(source), target);
+                    int returnCode = scpUploadClient.copy(new FileSystemFile(source), target);
+                    logger.info("return code : " + returnCode);
                 } catch (final Exception e) {
                     handleException("Exception copying file to server, from : " + source + ", to : " + target + ", server : " + server.getIp(), e);
                 }

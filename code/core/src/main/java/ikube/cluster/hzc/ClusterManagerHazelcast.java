@@ -2,6 +2,7 @@ package ikube.cluster.hzc;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.core.*;
+import com.hazelcast.monitor.LocalMapStats;
 import ikube.IConstants;
 import ikube.cluster.AClusterManager;
 import ikube.cluster.IClusterManager;
@@ -13,8 +14,11 @@ import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.UriUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.util.ReflectionUtils;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -39,15 +43,15 @@ public class ClusterManagerHazelcast extends AClusterManager {
     @Autowired
     @Qualifier("ikube-hazelcast")
     private HazelcastInstance hazelcastInstance;
+    @Autowired
+    private OutOfMemoryHandler outOfMemoryHandler;
 
+    @SuppressWarnings("StringBufferReplaceableByString")
     public void initialize() {
         ip = UriUtilities.getIp();
-        if (hazelcastInstance == null) {
-            hazelcastInstance = Hazelcast.newHazelcastInstance();
-            logger.info("New Hazelcast instance : " + hazelcastInstance);
-        }
+        Hazelcast.setOutOfMemoryHandler(outOfMemoryHandler);
         int port = hazelcastInstance.getCluster().getLocalMember().getInetSocketAddress().getPort();
-        address = ip + "-" + port;
+        address = new StringBuilder(ip).append("-").append(port).toString();
         final Config config = hazelcastInstance.getConfig();
         config.getNetworkConfig().getInterfaces().setInterfaces(Arrays.asList(ip));
         // Start a thread that will keep an eye on Hazelcast
@@ -59,7 +63,10 @@ public class ClusterManagerHazelcast extends AClusterManager {
                     boolean reinitialize = Boolean.FALSE;
                     try {
                         boolean locked = lock(IConstants.HAZELCAST_WATCHER);
-                        logger.debug("Hazelcast watcher lock : ", locked);
+                        logger.info("Hazelcast watcher lock : " + locked);
+                        printStatistics(hazelcastInstance.getMap(IConstants.IKUBE));
+                        printStatistics(hazelcastInstance.getMap(IConstants.SEARCH));
+                        printStatistics(hazelcastInstance.getMap(IConstants.SERVER));
                     } catch (final Exception e) {
                         reinitialize = Boolean.TRUE;
                         logger.error("Error...", e);
@@ -71,8 +78,32 @@ public class ClusterManagerHazelcast extends AClusterManager {
                             hazelcastInstance = Hazelcast.newHazelcastInstance(config);
                         }
                     }
-                    ThreadUtilities.sleep(IConstants.HUNDRED_THOUSAND);
+                    ThreadUtilities.sleep(IConstants.HUNDRED_THOUSAND * 6);
                 } while (true);
+            }
+
+            private void printStatistics(final IMap map) {
+                logger.info("Stats for map : " + map.getName() + ", size : " + map.size());
+                final LocalMapStats localMapStats = map.getLocalMapStats();
+                class MethodCallback implements ReflectionUtils.MethodCallback {
+                    @Override
+                    public void doWith(final Method method) throws IllegalArgumentException, IllegalAccessException {
+                        try {
+                            String name = method.getName();
+                            Object result = method.invoke(localMapStats);
+                            logger.info("        : " + name.replace("get", "") + " : " + result);
+                        } catch (final InvocationTargetException e) {
+                            logger.error(null, e);
+                        }
+                    }
+                }
+                class MethodFilter implements ReflectionUtils.MethodFilter {
+                    @Override
+                    public boolean matches(final Method method) {
+                        return method.getName().startsWith("get") && method.getParameterTypes().length == 0;
+                    }
+                }
+                ReflectionUtils.doWithMethods(LocalMapStats.class, new MethodCallback(), new MethodFilter());
             }
         }
         ThreadUtilities.submit(IConstants.HAZELCAST_WATCHER, new HazelcastWatcher());

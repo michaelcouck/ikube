@@ -62,7 +62,7 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
                 ByteArrayOutputStream byteArrayOutputStream = FileUtilities.getContents(file, indexableInternet.getMaxReadLength());
                 if (byteArrayOutputStream != null) {
                     byte[] rawContent = byteArrayOutputStream.toByteArray();
-                    logger.debug("Setting content length : " + rawContent.length);
+                    logger.info("Setting content length : " + rawContent.length);
                     if (rawContent != null && rawContent.length > 0) {
                         url.setRawContent(rawContent);
                     }
@@ -72,6 +72,7 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
             if (!deleted) {
                 logger.info("Not deleted : " + url.getUrl() + ", file : " + FileUtilities.cleanFilePath(file.getAbsolutePath()));
             }
+            logger.info("Urls : " + urls.size());
             urls.add(url);
         }
     }

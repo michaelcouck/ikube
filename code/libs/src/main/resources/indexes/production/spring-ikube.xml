@@ -30,7 +30,7 @@
 		property:internetBatchSize="10"
 		property:mergeFactor="10"
 		property:maxFieldLength="1000"
-		property:maxReadLength="1000000"
+		property:maxReadLength="100000"
 		property:throttle="0"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path.backup}"
@@ -55,11 +55,11 @@
         property:address="false"
         property:excludedPattern="${internet.excluded.pattern}"
         property:maxExceptions="100"
-        property:maxReadLength="1000000"
+        property:maxReadLength="100000"
         property:tokenized="true"
         property:timeout="60000"
         property:omitNorms="false"
-		property:threads="10"
+		property:threads="3"
 		property:internetBatchSize="${internet.batch.size}" 
 		property:strategies-ref="internet-strategies" />
 		
@@ -77,11 +77,11 @@
         property:address="false"
         property:excludedPattern="${internet.excluded.pattern}"
         property:maxExceptions="100"
-        property:maxReadLength="1000000"
+        property:maxReadLength="100000"
         property:tokenized="true"
         property:timeout="60000"
         property:omitNorms="false"
-        property:threads="10"
+        property:threads="3"
         property:internetBatchSize="${internet.batch.size}"
         property:strategies-ref="internet-strategies" />
 	

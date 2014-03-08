@@ -48,7 +48,7 @@
         property:servers-ref="servers"/>
 
     <util:list id="servers">
-        <ref local="server"/>
+        <!-- ref local="server"/ -->
         <ref local="server-one"/>
         <ref local="server-two"/>
         <ref local="server-three"/>
@@ -479,7 +479,6 @@
         <entry key="${resources-directory}/ikube" value="${tomcat-production-bin}"/>
         <entry key="${resources-directory}/analytics" value="${tomcat-production-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/production" value="${tomcat-production-bin}/ikube"/>
-	<entry key="${resources-directory}/indexes/twitter" value="${tomcat-production-bin}/ikube"/>
     </util:map>
 
     <bean

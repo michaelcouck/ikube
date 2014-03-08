@@ -38,8 +38,7 @@
             <!-- Hazelcast Tcp based network configuration -->
             <hz:network port="${hz-network-port}" port-auto-increment="${hz-network-port-auto-increment}">
                 <hz:join>
-                    <hz:multicast enabled="${hz-multicast-enabled}" multicast-group="${hz-multicast-group}"
-                                  multicast-port="8050"/>
+                    <hz:multicast enabled="${hz-multicast-enabled}" multicast-group="${hz-multicast-group}" multicast-port="8050"/>
                     <hz:tcp-ip enabled="${hz-tcp-ip-enabled}">
                         <!--<hz:members>${hz-members}</hz:members>-->
                     </hz:tcp-ip>
@@ -100,6 +99,9 @@
         class="ikube.cluster.listener.hzc.SnapshotListener"/>
 
     <!-- depends-on="ikube-hazelcast" -->
+    <bean
+        id="ClusterManagerOutOfMemoryHandler"
+        class="ikube.cluster.hzc.ClusterManagerOutOfMemoryHandler"/>
     <bean
         id="ikube.cluster.IClusterManager"
         class="ikube.cluster.hzc.ClusterManagerHazelcast"
