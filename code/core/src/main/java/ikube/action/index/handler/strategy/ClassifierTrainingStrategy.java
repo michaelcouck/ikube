@@ -2,6 +2,7 @@ package ikube.action.index.handler.strategy;
 
 import ikube.IConstants;
 import ikube.action.index.handler.IStrategy;
+import ikube.analytics.IAnalyticsService;
 import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
@@ -9,6 +10,7 @@ import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,8 +37,8 @@ public class ClassifierTrainingStrategy extends AStrategy {
     private Map<String, Boolean> trained;
     private ReentrantLock reentrantLock;
 
-    // @Autowired
-    // private IAnalyticsService analyticsService;
+    @Autowired
+    private IAnalyticsService analyticsService;
 
     public ClassifierTrainingStrategy() {
         this(null);
@@ -78,13 +80,14 @@ public class ClassifierTrainingStrategy extends AStrategy {
         }
         try {
             reentrantLock.lock();
-            IAnalyzer classifier = (IAnalyzer) context.getAnalyzer();
+            // IAnalyzer classifier = (IAnalyzer) context.getAnalyzer();
             Analysis<String, double[]> analysis = new Analysis<>();
             analysis.setClazz(clazz);
             analysis.setInput(content);
             analysis.setAnalyzer(context.getName());
-            // analysis = analyticsService.sizesForClassesOrClusters(analysis);
-            classifier.sizeForClassOrCluster(analysis);
+            analysis.setDistributed(Boolean.FALSE);
+            analysis = analyticsService.sizesForClassesOrClusters(analysis);
+            // classifier.sizeForClassOrCluster(analysis);
 
             int indexOfClass = 0;
             Object[] classesOrClusters = analysis.getClassesOrClusters();
@@ -100,8 +103,8 @@ public class ClassifierTrainingStrategy extends AStrategy {
             trained = classSize == 0 || classSize >= context.getMaxTraining();
             this.trained.put(clazz, trained);
             try {
-                // analyticsService.train(analysis);
-                classifier.train(analysis);
+                analyticsService.train(analysis);
+                // classifier.train(analysis);
                 if (classSize % 10 == 0) {
                     logger.info("Training : " + clazz + ", language : " + language + ", class size : " + classSize);
                 }
@@ -110,8 +113,8 @@ public class ClassifierTrainingStrategy extends AStrategy {
                 }
                 if (classSize % buildThreshold == 0) {
                     logger.info("Building : " + clazz + ", language : " + language + ", class size : " + classSize + ", build threshold : " + buildThreshold);
-                    // analyticsService.build(analysis);
-                    classifier.build(context);
+                    analyticsService.build(analysis);
+                    // classifier.build(context);
                     buildThreshold = classSize / 10;
                 }
             } catch (final Exception e) {
