@@ -9,11 +9,15 @@ import junit.framework.Assert;
 import org.apache.lucene.document.Document;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import java.io.File;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.atLeastOnce;
 
 /**
  * @author Michael Couck
@@ -22,6 +26,7 @@ import static org.mockito.Mockito.when;
  */
 public class InternetResourceHandlerTest extends AbstractTest {
 
+    private String url = "http://www.ikube.be/ikube";
     private InternetResourceHandler internetResourceHandler;
 
     @Before
@@ -57,7 +62,25 @@ public class InternetResourceHandlerTest extends AbstractTest {
         Assert.assertEquals(uri, document.get(IConstants.ID));
         Assert.assertEquals("Ikokoon", document.get(IConstants.TITLE));
         Assert.assertTrue(document.get(IConstants.CONTENT).contains("What determines productivity, and how is it measured?"));
+    }
 
+    @Test
+    public void parseContent() {
+        File file = FileUtilities.findFileRecursively(new File("."), "html.html");
+        String contents = FileUtilities.getContents(file, Integer.MAX_VALUE).toString();
+        Url url = mock(Url.class);
+        when(url.getUrl()).thenReturn(this.url);
+        when(url.getRawContent()).thenReturn(contents.getBytes());
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(final InvocationOnMock invocation) throws Throwable {
+                int length = invocation.getArguments()[0].toString().length();
+                assertEquals(48695, length);
+                return null;
+            }
+        }).when(url).setParsedContent(any(String.class));
+        internetResourceHandler.parseContent(url);
+        verify(url, atLeastOnce()).setParsedContent(any(String.class));
     }
 
 }

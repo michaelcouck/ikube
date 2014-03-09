@@ -64,9 +64,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
                     try {
                         boolean locked = lock(IConstants.HAZELCAST_WATCHER);
                         logger.info("Hazelcast watcher lock : " + locked);
-                        printStatistics(hazelcastInstance.getMap(IConstants.IKUBE));
-                        printStatistics(hazelcastInstance.getMap(IConstants.SEARCH));
-                        printStatistics(hazelcastInstance.getMap(IConstants.SERVER));
+                        printStatistics(hazelcastInstance);
                     } catch (final Exception e) {
                         reinitialize = Boolean.TRUE;
                         logger.error("Error...", e);
@@ -81,32 +79,38 @@ public class ClusterManagerHazelcast extends AClusterManager {
                     ThreadUtilities.sleep(IConstants.HUNDRED_THOUSAND * 6);
                 } while (true);
             }
-
-            private void printStatistics(final IMap map) {
-                logger.info("Stats for map : " + map.getName() + ", size : " + map.size());
-                final LocalMapStats localMapStats = map.getLocalMapStats();
-                class MethodCallback implements ReflectionUtils.MethodCallback {
-                    @Override
-                    public void doWith(final Method method) throws IllegalArgumentException, IllegalAccessException {
-                        try {
-                            String name = method.getName();
-                            Object result = method.invoke(localMapStats);
-                            logger.info("        : " + name.replace("get", "") + " : " + result);
-                        } catch (final InvocationTargetException e) {
-                            logger.error(null, e);
-                        }
-                    }
-                }
-                class MethodFilter implements ReflectionUtils.MethodFilter {
-                    @Override
-                    public boolean matches(final Method method) {
-                        return method.getName().startsWith("get") && method.getParameterTypes().length == 0;
-                    }
-                }
-                ReflectionUtils.doWithMethods(LocalMapStats.class, new MethodCallback(), new MethodFilter());
-            }
         }
         ThreadUtilities.submit(IConstants.HAZELCAST_WATCHER, new HazelcastWatcher());
+    }
+
+    static void printStatistics(final HazelcastInstance hazelcastInstance) {
+        printStatistics(hazelcastInstance.getMap(IConstants.IKUBE));
+        printStatistics(hazelcastInstance.getMap(IConstants.SEARCH));
+        printStatistics(hazelcastInstance.getMap(IConstants.SERVER));
+    }
+
+    static void printStatistics(final IMap map) {
+        System.out.println("Stats for map : " + map.getName() + ", size : " + map.size());
+        final LocalMapStats localMapStats = map.getLocalMapStats();
+        class MethodCallback implements ReflectionUtils.MethodCallback {
+            @Override
+            public void doWith(final Method method) throws IllegalArgumentException, IllegalAccessException {
+                try {
+                    String name = method.getName();
+                    Object result = method.invoke(localMapStats);
+                    System.out.println("        : " + name.replace("get", "") + " : " + result);
+                } catch (final InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        class MethodFilter implements ReflectionUtils.MethodFilter {
+            @Override
+            public boolean matches(final Method method) {
+                return method.getName().startsWith("get") && method.getParameterTypes().length == 0;
+            }
+        }
+        ReflectionUtils.doWithMethods(LocalMapStats.class, new MethodCallback(), new MethodFilter());
     }
 
     /**

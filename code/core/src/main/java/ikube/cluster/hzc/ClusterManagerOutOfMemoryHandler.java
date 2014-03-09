@@ -17,6 +17,9 @@ public class ClusterManagerOutOfMemoryHandler extends OutOfMemoryHandler {
      */
     @Override
     public void onOutOfMemory(final OutOfMemoryError oom, final HazelcastInstance[] hazelcastInstances) {
+        for (final HazelcastInstance hazelcastInstance : hazelcastInstances) {
+            ClusterManagerHazelcast.printStatistics(hazelcastInstance);
+        }
         System.err.println("Out of memory, exiting jvm with extreme prejudice : ");
         System.exit(1);
     }

@@ -67,7 +67,7 @@ public final class AnalyzerManager {
             // We'll wait a bit for the future to end, but potentially
             // this process can take hours, to build a large classifier of a million
             // vectors for example, so we return
-            ThreadUtilities.waitForFuture(future, 15);
+            ThreadUtilities.waitForFuture(future, 3);
         }
         LOGGER.info("Analyzer finished building : " + future.isDone());
         return analyzer;

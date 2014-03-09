@@ -465,6 +465,58 @@
                             <url>${artifactory}</url>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>install-flax-crawler</id>
+                        <goals>
+                            <goal>deploy-file</goal>
+                        </goals>
+                        <phase>${phase}</phase>
+                        <configuration>
+                            <groupId>flaxcrawler</groupId>
+                            <artifactId>flaxcrawler</artifactId>
+                            <version>1.1.0</version>
+                            <file>tools/flaxcrawler-1.1.0.jar</file>
+                            <packaging>${packaging}</packaging>
+                            <generatePom>${generate-pom}</generatePom>
+                            <repositoryId>${repository-id}</repositoryId>
+                            <url>${artifactory}</url>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-dsiutils</id>
+                        <goals>
+                            <goal>deploy-file</goal>
+                        </goals>
+                        <phase>${phase}</phase>
+                        <configuration>
+                            <groupId>dsiutils</groupId>
+                            <artifactId>dsiutils</artifactId>
+                            <version>1.0.10</version>
+                            <file>tools/dsiutils-1.0.10.jar</file>
+                            <packaging>${packaging}</packaging>
+                            <generatePom>${generate-pom}</generatePom>
+                            <repositoryId>${repository-id}</repositoryId>
+                            <url>${artifactory}</url>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-fastutil</id>
+                        <goals>
+                            <goal>deploy-file</goal>
+                        </goals>
+                        <phase>${phase}</phase>
+                        <configuration>
+                            <groupId>fastutil</groupId>
+                            <artifactId>fastutil</artifactId>
+                            <version>5.1.5</version>
+                            <file>tools/fastutil-5.1.5.jar</file>
+                            <packaging>${packaging}</packaging>
+                            <generatePom>${generate-pom}</generatePom>
+                            <repositoryId>${repository-id}</repositoryId>
+                            <url>${artifactory}</url>
+                        </configuration>
+                    </execution>
+
                 </executions>
             </plugin>
         </plugins>

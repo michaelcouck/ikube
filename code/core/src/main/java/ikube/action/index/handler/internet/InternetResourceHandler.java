@@ -3,69 +3,116 @@ package ikube.action.index.handler.internet;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
 import ikube.action.index.handler.ResourceHandler;
+import ikube.action.index.parse.IParser;
+import ikube.action.index.parse.ParserProvider;
+import ikube.action.index.parse.XMLParser;
 import ikube.action.index.parse.mime.MimeType;
 import ikube.action.index.parse.mime.MimeTypes;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-
+import ikube.toolkit.HashUtilities;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
-
 import org.apache.lucene.document.Document;
+
+import java.io.*;
+import java.net.URI;
 
 /**
  * @author Michael Couck
- * @since 21-06-2013
  * @version 01.00
+ * @since 21-06-2013
  */
 public class InternetResourceHandler extends ResourceHandler<IndexableInternet> {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Document handleResource(
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Document handleResource(
             final IndexContext<?> indexContext,
             final IndexableInternet indexable,
             final Document document,
             final Object resource)
-			throws Exception {
-		Url url = (Url) resource;
+            throws Exception {
+        Url url = (Url) resource;
+        parseContent(url);
+        url.setHash(HashUtilities.hash(url.getParsedContent()));
         String parsedContent = url.getParsedContent();
         // logger.info("Parsed content : " + parsedContent);
         if (parsedContent == null) {
             return document;
         }
-		// Add the id field, which is the url in this case
-		IndexManager.addStringField(indexable.getIdFieldName(), url.getUrl(), indexable, document);
-		// Add the title field
-		MimeType mimeType = MimeTypes.getMimeType(url.getContentType(), url.getRawContent());
-		if (mimeType != null && mimeType.getSubType().toLowerCase().contains(HTMLElementName.HTML.toLowerCase())) {
-			InputStream inputStream = new ByteArrayInputStream(url.getRawContent());
-			Reader reader = new InputStreamReader(inputStream, IConstants.ENCODING);
-			Source source = new Source(reader);
-			Element titleElement = source.getNextElement(0, HTMLElementName.TITLE);
-			if (titleElement != null) {
-				String title = titleElement.getContent().toString();
-				url.setTitle(title);
-				IndexManager.addStringField(indexable.getTitleFieldName(), title, indexable, document);
-			}
-		} else {
-			// Add the url as the title
-			IndexManager.addStringField(indexable.getTitleFieldName(), url.getUrl(), indexable, document);
-		}
-		// Add the contents field
-		IndexManager.addStringField(indexable.getContentFieldName(), url.getParsedContent(), indexable, document);
-		super.addDocument(indexContext, indexable, document);
-        // logger.debug("Document : " + document);
-		return document;
-	}
+        // Add the id field, which is the url in this case
+        IndexManager.addStringField(indexable.getIdFieldName(), url.getUrl(), indexable, document);
+        // Add the title field
+        MimeType mimeType = MimeTypes.getMimeType(url.getContentType(), url.getRawContent());
+        if (mimeType != null && mimeType.getSubType().toLowerCase().contains(HTMLElementName.HTML.toLowerCase())) {
+            InputStream inputStream = new ByteArrayInputStream(url.getRawContent());
+            Reader reader = new InputStreamReader(inputStream, IConstants.ENCODING);
+            Source source = new Source(reader);
+            Element titleElement = source.getNextElement(0, HTMLElementName.TITLE);
+            if (titleElement != null) {
+                String title = titleElement.getContent().toString();
+                url.setTitle(title);
+                IndexManager.addStringField(indexable.getTitleFieldName(), title, indexable, document);
+            }
+        } else {
+            // Add the url as the title
+            IndexManager.addStringField(indexable.getTitleFieldName(), url.getUrl(), indexable, document);
+        }
+        // Add the contents field
+        IndexManager.addStringField(indexable.getContentFieldName(), url.getParsedContent(), indexable, document);
+        super.addDocument(indexContext, indexable, document);
+        logger.debug("Document : " + document);
+        return document;
+    }
+
+    /**
+     * Parses the content from the input stream into a string. The content can be anything, rich text, xml, etc.
+     *
+     * @param url the url where the data is
+     */
+    protected void parseContent(final Url url) {
+        try {
+            byte[] buffer = url.getRawContent();
+            logger.debug("Buffer length : " + buffer.length);
+            String contentType;
+            if (url.getContentType() != null) {
+                contentType = url.getContentType();
+            } else {
+                contentType = URI.create(url.getUrl()).toURL().getFile();
+                url.setContentType(contentType);
+            }
+            // The first few bytes so we can guess the content type
+            byte[] bytes = new byte[Math.min(buffer.length, 1024)];
+            System.arraycopy(buffer, 0, bytes, 0, bytes.length);
+            IParser parser = ParserProvider.getParser(contentType, bytes);
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buffer, 0, buffer.length);
+            OutputStream outputStream = null;
+            try {
+                outputStream = parser.parse(byteArrayInputStream, new ByteArrayOutputStream());
+            } catch (final Exception e) {
+                // If this is an XML exception then try the HTML parser
+                if (XMLParser.class.isAssignableFrom(parser.getClass())) {
+                    contentType = "text/html";
+                    parser = ParserProvider.getParser(contentType, bytes);
+                    outputStream = parser.parse(byteArrayInputStream, new ByteArrayOutputStream());
+                } else {
+                    String message = "Exception parsing content from url : " + url;
+                    logger.error(message, e);
+                }
+            }
+            if (outputStream != null) {
+                String parsedContent = outputStream.toString();
+                logger.debug("Parsed content length : " + parsedContent.length());
+                url.setParsedContent(parsedContent);
+            }
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

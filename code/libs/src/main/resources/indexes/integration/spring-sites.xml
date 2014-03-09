@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--suppress ALL -->
 <beans
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="http://www.springframework.org/schema/beans"
@@ -28,7 +29,8 @@
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path}"
 		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer"
-		property:children-ref="sites-indexables" />
+		property:children-ref="sites-indexables"
+        property:threads="20"/>
 	<util:list id="sites-indexables">
 		<ref local="ibm" />
 		<ref local="oki" />
@@ -38,7 +40,7 @@
 		id="ibm"
 		class="ikube.model.IndexableInternet"
 		property:name="ibm"
-		property:url="http://www.ibm.com" 
+		property:url="http://www.ibm.com/us/en"
 		property:idFieldName="id"
 		property:titleFieldName="title"
 		property:contentFieldName="contents"
@@ -47,7 +49,8 @@
 		property:vectored="true"
 		property:internetBatchSize="1000"
 		property:excludedPattern="${internet.excluded.pattern}"
-		property:strategies-ref="sites-strategies" />
+		property:strategies-ref="sites-strategies"
+        property:threads="20"/>
 		
 	<bean
 		id="oki"
@@ -62,7 +65,8 @@
 		property:vectored="true"
 		property:internetBatchSize="1000"
 		property:excludedPattern="${internet.excluded.pattern}"
-		property:strategies-ref="sites-strategies" />
+		property:strategies-ref="sites-strategies"
+        property:threads="20"/>
 
 	<util:list id="sites-strategies">
 	    <ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />

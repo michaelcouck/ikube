@@ -1,151 +1,133 @@
 package ikube.action.index.handler.internet;
 
+import com.googlecode.flaxcrawler.CrawlerConfiguration;
+import com.googlecode.flaxcrawler.CrawlerController;
+import com.googlecode.flaxcrawler.CrawlerException;
+import com.googlecode.flaxcrawler.DefaultCrawler;
+import com.googlecode.flaxcrawler.download.DefaultDownloaderController;
+import com.googlecode.flaxcrawler.model.CrawlerTask;
+import com.googlecode.flaxcrawler.model.Page;
+import com.googlecode.flaxcrawler.parse.DefaultParserController;
 import ikube.IConstants;
 import ikube.action.index.handler.IResourceProvider;
 import ikube.database.IDataBase;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
-import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
-import ikube.toolkit.UriUtilities;
-import org.niocchi.core.*;
-import org.niocchi.gc.GenericResource;
-import org.niocchi.gc.GenericResourceFactory;
-import org.niocchi.gc.GenericWorker;
-import org.niocchi.urlpools.TimeoutURLPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.util.*;
+import java.net.URL;
+import java.util.List;
+import java.util.Stack;
 
 /**
  * This class provides urls for the {@link ikube.action.index.handler.internet.IndexableInternetHandler}. It
- * acts as a crawler for web pages and other web resources. The underlying crawler is Niocchi. Several threads are
- * started and feed the database with {@link ikube.model.Url}s, using the Niocchi library.
+ * acts as a crawler for web pages and other web resources. The underlying crawler is FlaxCrawler. Several threads are
+ * started and feed the database with {@link ikube.model.Url}s.
  * <p/>
- * Consumer threads are started by the handler, that request resources, i.e. {@link ikube.model.Url}s from this
- * provider, that are in fact from the database. The actual data is persisted to the file system by Niocchi and the
- * data is then read from disk as needed, i.e. when the consumers request resources.
+ * Consumer threads are started by the handler, that request resources, i.e. {@link ikube.model.Url}s from this provider.
  *
  * @author Michael Couck
- * @version 02.00
+ * @version 03.00
  * @since 21-06-2013
  */
-public class InternetResourceProvider implements IResourceProvider<Url>, URLPool {
-
-    /**
-     * This class is the implementation of the crawler workers from the Niocchi
-     * library. They will persist the resources as they are provided by the Niocchi
-     * framework.
-     */
-    public class WorkerImpl extends GenericWorker {
-
-        public WorkerImpl(final Crawler crawler) {
-            super(crawler, indexableInternet.getName());
-        }
-
-        @Override
-        public void processResource(final Query query) {
-            GenericResource genericResource = (GenericResource) query.getResource();
-            String stringUrl = query.getOriginalURL().toExternalForm();
-            String contentType = query.getResource().getContentType();
-            String filePath = FileUtilities.cleanFilePath(genericResource.getTmpFileAbsolutePath());
-            File file = new File(filePath);
-
-            Url url = findUrl(indexableInternet.getName(), stringUrl);
-            url.setContentType(contentType);
-            if (file.exists() && file.canRead()) {
-                ByteArrayOutputStream byteArrayOutputStream = FileUtilities.getContents(file, indexableInternet.getMaxReadLength());
-                if (byteArrayOutputStream != null) {
-                    byte[] rawContent = byteArrayOutputStream.toByteArray();
-                    logger.info("Setting content length : " + rawContent.length);
-                    if (rawContent != null && rawContent.length > 0) {
-                        url.setRawContent(rawContent);
-                    }
-                }
-            }
-            boolean deleted = FileUtilities.deleteFile(file);
-            if (!deleted) {
-                logger.info("Not deleted : " + url.getUrl() + ", file : " + FileUtilities.cleanFilePath(file.getAbsolutePath()));
-            }
-            logger.info("Urls : " + urls.size());
-            urls.add(url);
-        }
-    }
+public class InternetResourceProvider implements IResourceProvider<Url> {
 
     private static int RETRY = 5;
     private static long SLEEP = 6000;
-    private static final String[] FIELDS = new String[]{IConstants.NAME, IConstants.URL};
 
     private Logger logger = LoggerFactory.getLogger(InternetResourceProvider.class);
 
-    private TreeSet<Url> urls;
+    private Stack<Url> urls;
     private IDataBase dataBase;
     private IndexableInternet indexableInternet;
 
     public InternetResourceProvider(final IndexableInternet indexableInternet, final IDataBase dataBase) {
+        initialize(indexableInternet);
         this.indexableInternet = indexableInternet;
         this.dataBase = dataBase;
-        initialize(indexableInternet);
     }
 
     void initialize(final IndexableInternet indexableInternet) {
-        try {
-            urls = new TreeSet<>(new Comparator<Url>() {
+        urls = new Stack<>();
+        DefaultDownloaderController downloaderController = new DefaultDownloaderController();
+        // Setting up parser controller
+        DefaultParserController parserController = new DefaultParserController();
+
+        // Creating crawler configuration object
+        CrawlerConfiguration configuration = new CrawlerConfiguration();
+
+        // Creating some crawlers. The fetching is much faster thatn the indexing
+        // so we create many more threads to index than to fetch so we don't build up
+        // urls on the stack
+        int crawlers = Math.max(1, indexableInternet.getThreads() / 10);
+        for (int i = 0; i < crawlers; i++) {
+            // Creating crawler and setting downloader and parser controllers
+            DefaultCrawler crawler = new DefaultCrawler() {
                 @Override
-                public int compare(final Url o1, final Url o2) {
-                    return o1.getUrl().compareTo(o2.getUrl());
-                }
-            });
-
-            final Crawler crawler = new Crawler(new GenericResourceFactory(), 100);
-            crawler.setUserAgent("firefox 3.0");
-            crawler.setTimeout(indexableInternet.getTimeout());
-            crawler.setAllowCompression(Boolean.FALSE);
-            // crawler.setVerbose();
-
-            Url seedUrl = getUrl(indexableInternet.getUrl());
-            setResources(Arrays.asList(seedUrl));
-
-            final URLPool urlPool = new TimeoutURLPool(this);
-            for (int i = 0; i < indexableInternet.getThreads(); i++) {
-                Worker worker = new WorkerImpl(crawler);
-                ThreadUtilities.submit(indexableInternet.getName(), worker);
-            }
-            ThreadUtilities.submit(indexableInternet.getName(), new Runnable() {
-                public void run() {
-                    try {
-                        logger.info("Starting crawl : " + indexableInternet.getName());
-                        crawler.run(urlPool);
-                        logger.info("Finishing crawl : " + indexableInternet.getName());
-                    } catch (final IOException e) {
-                        throw new RuntimeException(e);
-                    } finally {
-                        ThreadUtilities.destroy(indexableInternet.getName());
+                protected void afterCrawl(final CrawlerTask crawlerTask, final Page page) {
+                    super.afterCrawl(crawlerTask, page);
+                    logger.debug("After crawl : " + urls.size() + ", " + page);
+                    if (page != null) {
+                        Url url = getUrl(page.getUrl().toExternalForm(), indexableInternet);
+                        url.setRawContent(page.getContent());
+                        url.setContentType(page.getHeader("Content-Type"));
+                        if (urls.size() < IConstants.ONE_THOUSAND) {
+                            urls.push(url);
+                        } else {
+                            // If we go over the limit for the stack size then we need to
+                            // persist the url in the database to avoid running out of memory
+                            dataBase.persist(url);
+                        }
                     }
                 }
-            });
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
+            };
+            crawler.setDownloaderController(downloaderController);
+            crawler.setParserController(parserController);
+            // Adding crawler to the configuration object
+            configuration.addCrawler(crawler);
         }
-    }
 
-    private Url getUrl(final String stringUrl) {
-        Url url = new Url();
-        url.setIndexed(Boolean.FALSE);
-        url.setName(indexableInternet.getName());
-        url.setUrl(stringUrl);
-        return url;
-    }
+        // Setting maximum parallel requests to a single site limit
+        configuration.setMaxParallelRequests(crawlers);
+        // Setting http errors limits. If this limit violated for any
+        // site - crawler will stop this site processing
+        configuration.setMaxHttpErrors(HttpURLConnection.HTTP_CLIENT_TIMEOUT, (int) indexableInternet.getMaxExceptions());
+        configuration.setMaxHttpErrors(HttpURLConnection.HTTP_BAD_GATEWAY, (int) indexableInternet.getMaxExceptions());
+        // Setting period between two requests to a single site (in milliseconds)
+        configuration.setPolitenessPeriod(0);
 
-
-    private Url findUrl(final String name, final String stringUrl) {
-        Object[] values = new Object[]{name, stringUrl};
-        return dataBase.find(Url.class, FIELDS, values);
+        // Initializing crawler controller
+        final CrawlerController crawlerController = new CrawlerController(configuration);
+        ThreadUtilities.submit(indexableInternet.getName(), new Runnable() {
+            public void run() {
+                try {
+                    // Adding crawler seed
+                    crawlerController.addSeed(new URL(indexableInternet.getUrl()));
+                    logger.info("Starting crawl : ");
+                    crawlerController.start();
+                    // Join crawler controller and wait for finish
+                    crawlerController.join(Integer.MAX_VALUE);
+                    // Stopping crawler controller
+                    // crawlerController.stop();
+                    // TODO: Some termination code here...
+                } catch (final MalformedURLException e) {
+                    logger.error("Bad url : ", e);
+                } catch (final CrawlerException e) {
+                    logger.error("Crawler exception : ", e);
+                } finally {
+                    try {
+                        logger.info("Terminating crawler : " + indexableInternet.getName());
+                        crawlerController.stop();
+                    } catch (final CrawlerException e) {
+                        logger.error("Crawl terminated exception : ", e);
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -154,16 +136,27 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
     @Override
     public synchronized Url getResource() {
         int retry = RETRY;
-        Url url = urls.pollFirst();
+        Url url = !urls.isEmpty() ? urls.pop() : null;
         while (url == null && retry-- >= 0) {
+            logger.info("Sleeping : " + urls.size());
             ThreadUtilities.sleep(SLEEP);
-            url = urls.pollFirst();
+            if (urls.isEmpty()) {
+                continue;
+            }
+            url = urls.pop();
         }
-        boolean contains = urls.contains(url);
-        if (url != null && contains) {
-            logger.info("Doing url : " + url.getUrl() + ", " + urls.size());
-            urls.remove(url);
+        // If there are not urls on the stack try the database
+        if (url == null) {
+            logger.info("Going to database for resources : ");
+            String[] fields = {IConstants.NAME, IConstants.INDEXED};
+            Object[] values = {indexableInternet.getName(), Boolean.FALSE};
+            url = dataBase.find(Url.class, fields, values);
+            if (url != null) {
+                logger.info("Removing url : " + url);
+                dataBase.remove(url);
+            }
         }
+        logger.debug("Doing url : " + url + ", " + urls.size());
         return url;
     }
 
@@ -172,79 +165,15 @@ public class InternetResourceProvider implements IResourceProvider<Url>, URLPool
      */
     @Override
     public synchronized void setResources(final List<Url> resources) {
-        if (resources == null) {
-            return;
-        }
-        for (final Url url : resources) {
-            Url dbUrl = findUrl(indexableInternet.getName(), url.getUrl());
-            if (dbUrl != null) {
-                logger.debug("Not persisting : " + url);
-                continue;
-            }
-            logger.info("Persisting : " + url.getUrl());
-            dataBase.persist(url);
-        }
+        urls.addAll(resources);
     }
 
-    @Override
-    public boolean hasNextQuery() {
-        Url resource = waitForUrl();
-        boolean hasNext = resource != null;
-        logger.debug("Has next : " + hasNext);
-        return hasNext;
-    }
-
-    @Override
-    public Query getNextQuery() throws URLPoolException {
-        Url url = waitForUrl();
-        Query query = null;
-        if (url != null) {
-            String absUrl = UriUtilities.stripAnchor(url.getUrl(), "");
-            url.setIndexed(Boolean.TRUE);
-            dataBase.merge(url);
-            try {
-                query = new Query(absUrl);
-            } catch (final MalformedURLException e) {
-                logger.error("Mal formed url : " + url, e);
-            }
-        }
-        logger.debug("Next query : " + query);
-        return query;
-    }
-
-    @Override
-    public void setProcessed(final Query query) {
-        logger.debug("Processed : " + query);
-    }
-
-    private Url waitForUrl() {
-        int retry = RETRY;
-        String[] fields = new String[]{IConstants.NAME, IConstants.INDEXED};
-        Object[] values = new Object[]{indexableInternet.getName(), Boolean.FALSE};
-        Url url = dataBase.find(Url.class, fields, values);
-        while (url == null && retry-- > 0) {
-            // dbStats();
-            logger.debug("No url in database, sleeping for a while : ");
-            ThreadUtilities.sleep(SLEEP);
-            url = dataBase.find(Url.class, fields, values);
-        }
-        logger.debug("Got url : " + url);
+    private Url getUrl(final String stringUrl, final IndexableInternet indexableInternet) {
+        Url url = new Url();
+        url.setIndexed(Boolean.FALSE);
+        url.setName(indexableInternet.getName());
+        url.setUrl(stringUrl);
         return url;
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    private void dbStats() {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put(IConstants.NAME, indexableInternet.getName());
-        parameters.put(IConstants.INDEXED, Boolean.FALSE);
-
-        long count = dataBase.count(Url.class);
-        long notIndexed = dataBase.count(Url.class, parameters);
-        logger.info("Urls in database : " + count + ", not indexed : " + notIndexed);
-        List<Url> dbUrls = dataBase.find(Url.class, 0, Integer.MAX_VALUE);
-        for (final Url dbUrl : dbUrls) {
-            logger.info("        : url : " + dbUrl.getUrl());
-        }
     }
 
 }

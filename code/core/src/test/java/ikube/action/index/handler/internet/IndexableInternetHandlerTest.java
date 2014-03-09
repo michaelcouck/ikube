@@ -13,13 +13,10 @@ import org.apache.lucene.document.Document;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.io.File;
 import java.util.concurrent.ForkJoinTask;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
@@ -92,23 +89,5 @@ public class IndexableInternetHandlerTest extends AbstractTest {
         verify(url, atLeastOnce()).setParsedContent(anyString());
     }
 
-    @Test
-    public void parseContent() {
-        File file = FileUtilities.findFileRecursively(new File("."), "html.html");
-        String contents = FileUtilities.getContents(file, Integer.MAX_VALUE).toString();
-        Url url = mock(Url.class);
-        when(url.getUrl()).thenReturn(this.url);
-        when(url.getRawContent()).thenReturn(contents.getBytes());
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(final InvocationOnMock invocation) throws Throwable {
-                int length = invocation.getArguments()[0].toString().length();
-                assertEquals(48695, length);
-                return null;
-            }
-        }).when(url).setParsedContent(any(String.class));
-        indexableInternetHandler.parseContent(url);
-        verify(url, atLeastOnce()).setParsedContent(any(String.class));
-    }
 
 }

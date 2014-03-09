@@ -1,12 +1,6 @@
 package ikube.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -14,7 +8,7 @@ import org.apache.openjpa.persistence.jdbc.Index;
 
 /**
  * @author Michael Couck
- * @since 23.11.10
+ * @since 23-11-2010
  * @version 01.00
  */
 @Entity()
@@ -28,14 +22,12 @@ public class Url extends Persistable {
 	public static final String SELECT_FROM_URL_BY_HASH = "select u from Url as u where u.hash = :hash";
 	public static final String SELECT_FROM_URL_BY_NAME = "select u from Url as u where u.name = :name";
 
-	@Transient
+    @Transient
+    private String title;
+    @Transient
 	private String contentType;
 	@Transient
-	private String title;
-	@Transient
-	private transient byte[] rawContent;
-	@Transient
-	private transient String parsedContent;
+	private String parsedContent;
 
 	@Column
 	@Index(name = "urlId_index", enabled = true)
@@ -50,6 +42,9 @@ public class Url extends Persistable {
 	private String name;
 	@Column(length = 512)
 	private String url;
+    @Lob
+    @Column
+    private byte[] rawContent;
 
 	public long getUrlId() {
 		return urlId;

@@ -231,8 +231,8 @@ public class SearcherService implements ISearcherService {
             // If the result is null or there are no results then
             // there probably was an issue with the target server so we'll
             // try to do this search locally
-            if (result == null || result.getCount() == 0) {
-                LOGGER.info("Results null for distributed search, doing local : " + future.isDone() + ", " + result);
+            if (result == null) {
+                LOGGER.info("Results null for distributed search, doing local : " + future.isDone());
                 return doSearch(search);
             } else {
                 boolean success = Boolean.TRUE;

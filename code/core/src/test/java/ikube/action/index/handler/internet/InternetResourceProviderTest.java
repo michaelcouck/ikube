@@ -11,8 +11,6 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.niocchi.core.Query;
-import org.niocchi.core.URLPoolException;
 
 import java.io.File;
 import java.util.Arrays;
@@ -91,27 +89,6 @@ public class InternetResourceProviderTest extends AbstractTest {
         resourceUrl = internetResourceProvider.getResource();
         assertNull(resourceUrl);
         assertEquals(0, urls.size());
-    }
-
-    @Test
-    public void hasNextQuery() {
-        boolean hasNextQuery = internetResourceProvider.hasNextQuery();
-        assertFalse(hasNextQuery);
-        when(dataBase.find(any(Class.class), any(String[].class), any(Object[].class))).thenReturn(new Url());
-        hasNextQuery = internetResourceProvider.hasNextQuery();
-        assertTrue(hasNextQuery);
-    }
-
-    @Test
-    public void getNextQuery() throws Exception {
-        Query query = internetResourceProvider.getNextQuery();
-        assertNull(query);
-        Url url = new Url();
-        url.setUrl("http://ikube.be/ikube/login.html#anchor;jsessionid=C2940CFC3599CF62ACFFED627DAD6CD4");
-        when(dataBase.find(any(Class.class), any(String[].class), any(Object[].class))).thenReturn(url);
-        query = internetResourceProvider.getNextQuery();
-        assertNotNull(query);
-        assertEquals("http://ikube.be/ikube/login.html", query.getURL().toExternalForm());
     }
 
 }
