@@ -1,28 +1,14 @@
 package ikube.action.index.handler.internet;
 
-import au.com.bytecode.opencsv.CSVReader;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
 import ikube.action.index.handler.ResourceHandler;
-import ikube.database.IDataBase;
-import ikube.model.Coordinate;
 import ikube.model.IndexContext;
 import ikube.model.IndexableTweets;
-import ikube.model.geospatial.GeoCity;
-import ikube.model.geospatial.GeoCountry;
-import ikube.toolkit.FileUtilities;
-import org.apache.commons.io.IOUtils;
 import org.apache.lucene.document.Document;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.TwitterProfile;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -36,15 +22,9 @@ public class TwitterResourceHandler extends ResourceHandler<IndexableTweets> {
 
     private AtomicLong counter;
 
-    @Autowired
-    private IDataBase dataBase;
-
     public void init() {
         counter = new AtomicLong(0);
-
     }
-
-
 
     /**
      * {@inheritDoc}

@@ -11,7 +11,8 @@ import java.io.File;
 import java.util.Map;
 
 /**
- * TODO: Document me...
+ * This action will take files and folders from the machine that it is executing on, and
+ * copy them to the target machine using scp.
  *
  * @author Michael Couck
  * @version 01.00
@@ -30,35 +31,32 @@ public class CopyAction extends Action {
         // sshExec.useCompression();
         if (directories != null) {
             for (final Map.Entry<String, String> filePair : directories.entrySet()) {
-                String source = getAbsoluteFile(dotFolder, filePair.getKey());
-                String target = filePair.getValue();
-                try {
-                    logger.info("Copying directory : " + source + ", to : " + target + ", on server : " + server.getIp());
-                    SCPFileTransfer scpFileTransfer = sshExec.newSCPFileTransfer();
-                    SCPUploadClient scpUploadClient = scpFileTransfer.newSCPUploadClient();
-                    int returnCode = scpUploadClient.copy(new FileSystemFile(source), target);
-                    logger.info("return code : " + returnCode);
-                } catch (final Exception e) {
-                    handleException("Exception copying directory to server, from : " + source + ", to : " + target + ", server : " + server.getIp(), e);
-                }
+                execute(sshExec, dotFolder, server, filePair.getKey(), filePair.getValue());
             }
         }
         if (files != null) {
             for (final Map.Entry<String, String> filePair : files.entrySet()) {
-                String source = getAbsoluteFile(dotFolder, filePair.getKey());
-                String target = filePair.getValue();
-                try {
-                    logger.info("Copying file : " + source + ", to : " + target + ", on server : " + server.getIp());
-                    SCPFileTransfer scpFileTransfer = sshExec.newSCPFileTransfer();
-                    SCPUploadClient scpUploadClient = scpFileTransfer.newSCPUploadClient();
-                    int returnCode = scpUploadClient.copy(new FileSystemFile(source), target);
-                    logger.info("return code : " + returnCode);
-                } catch (final Exception e) {
-                    handleException("Exception copying file to server, from : " + source + ", to : " + target + ", server : " + server.getIp(), e);
-                }
+                execute(sshExec, dotFolder, server, filePair.getKey(), filePair.getValue());
             }
         }
         return Boolean.TRUE;
+    }
+
+    private void execute(final SSHClient sshExec, final String dotFolder, final Server server, final String srcFile, final String destFile) {
+        int retry = RETRY;
+        int returnCode = -1;
+        do {
+            String source = getAbsoluteFile(dotFolder, srcFile);
+            try {
+                logger.info("Copying directory : " + source + ", to : " + destFile + ", on server : " + server.getIp());
+                SCPFileTransfer scpFileTransfer = sshExec.newSCPFileTransfer();
+                SCPUploadClient scpUploadClient = scpFileTransfer.newSCPUploadClient();
+                returnCode = scpUploadClient.copy(new FileSystemFile(source), destFile);
+                logger.info("return code : " + returnCode);
+            } catch (final Exception e) {
+                handleException("Exception copying directory to server, from : " + source + ", to : " + destFile + ", server : " + server.getIp(), e);
+            }
+        } while (returnCode != 0 || retry-- >= 0);
     }
 
     private String getAbsoluteFile(final String dotFolder, final String path) {

@@ -12,31 +12,28 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class Action implements IAction {
 
+    protected static final int RETRY = 5;
+
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     protected boolean breakOnError;
 
-    public boolean isBreakOnError() {
-        return breakOnError;
-    }
-
-    public void setBreakOnError(boolean breakOnError) {
-        this.breakOnError = breakOnError;
-    }
-
     protected SSHClient getSshExec(final String ip, final String username, final String password) {
+        int retry = RETRY;
         SSHClient sshExec = null;
-        try {
-            sshExec = new SSHClient();
-            logger.info("Connecting to : " + ip + " as " + username);
-            sshExec.addHostKeyVerifier(new PromiscuousVerifier());
-            sshExec.connect(ip);
-            sshExec.authPassword(username, password.toCharArray());
-            // sshExec.loadKnownHosts();
-        } catch (final Exception e) {
-            disconnect(sshExec);
-            handleException("Exception connecting to : " + ip, e);
-        }
+        do {
+            try {
+                sshExec = new SSHClient();
+                logger.info("Connecting to : " + ip + " as " + username);
+                sshExec.addHostKeyVerifier(new PromiscuousVerifier());
+                sshExec.connect(ip);
+                sshExec.authPassword(username, password.toCharArray());
+                // sshExec.loadKnownHosts();
+            } catch (final Exception e) {
+                disconnect(sshExec);
+                handleException("Exception connecting to : " + ip, e);
+            }
+        } while (sshExec == null && retry-- >= 0);
         return sshExec;
     }
 
@@ -55,6 +52,14 @@ public abstract class Action implements IAction {
         if (isBreakOnError()) {
             throw new RuntimeException(exception);
         }
+    }
+
+    public boolean isBreakOnError() {
+        return breakOnError;
+    }
+
+    public void setBreakOnError(boolean breakOnError) {
+        this.breakOnError = breakOnError;
     }
 
 }
