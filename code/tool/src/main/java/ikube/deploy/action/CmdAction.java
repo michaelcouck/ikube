@@ -1,6 +1,7 @@
 package ikube.deploy.action;
 
 import ikube.deploy.model.Server;
+import ikube.toolkit.ThreadUtilities;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.IOUtils;
 import net.schmizz.sshj.connection.channel.direct.Session;
@@ -40,7 +41,7 @@ public class CmdAction extends Action {
 
     private void execute(final SSHClient sshExec, final Server server, final String command) {
         int retry = RETRY;
-        Integer exitStatus = null;
+        Integer exitStatus;
         do {
             try {
                 logger.info("Running command : {} on machine : {}", new Object[]{command, server.getIp()});
@@ -71,6 +72,7 @@ public class CmdAction extends Action {
             } catch (final Exception e) {
                 exitStatus = 1;
                 handleException("Exception executing command on server : " + command + ", server : " + server.getIp(), e);
+                ThreadUtilities.sleep(10);
             }
         } while ((exitStatus != null && exitStatus > 0) && retry-- >= 0);
     }

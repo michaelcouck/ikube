@@ -2,6 +2,7 @@ package ikube.deploy.action;
 
 import ikube.deploy.model.Server;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.ThreadUtilities;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.xfer.FileSystemFile;
 import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
@@ -56,6 +57,7 @@ public class CopyAction extends Action {
             } catch (final Exception e) {
                 returnCode = 1;
                 handleException("Exception copying directory to server, from : " + source + ", to : " + destFile + ", server : " + server.getIp(), e);
+                ThreadUtilities.sleep(10);
             }
         } while (returnCode > 0 && retry-- >= 0);
     }

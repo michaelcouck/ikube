@@ -19,6 +19,14 @@ import java.util.List;
 import java.util.concurrent.Future;
 
 /**
+ * This is the central class for executing actions on remote servers. At the time of writing there
+ * were two actions, a copy action that copies files and folders to the server, and a cammand action that
+ * executes shell commands on the remote server.
+ * <p/>
+ * All actions are defined in the configuration file using Spring. The file and the start folder can be
+ * specified. The actions can be executed in parallel or one at a time. Typically each action will try several
+ * times to execute the logic before giving up.
+ *
  * @author Michael Couck
  * @version 01.00
  * @since 18-06-2013
@@ -78,27 +86,15 @@ public final class Deployer {
                 final String name = Long.toString(System.currentTimeMillis());
                 if (!deployer.isParallel()) {
                     // Execute one action at a time
-                    for (final IAction action : server.getActions()) {
-                        try {
-                            action.execute(server);
-                        } catch (final Exception e) {
-                            LOGGER.error(null, e);
-                        }
-                    }
+                    execute(server);
                 } else {
-                    // Execute on action at a time, in order for each server,
+                    // Execute one action at a time, in order, for each server,
                     // but execute all the servers at the same time. So we get the
                     // order of the actions correct, and parallel to the servers
                     Future<?> future = ThreadUtilities.submit(name, new Runnable() {
                         public void run() {
                             try {
-                                for (final IAction action : server.getActions()) {
-                                    try {
-                                        action.execute(server);
-                                    } catch (final Exception e) {
-                                        LOGGER.error(null, e);
-                                    }
-                                }
+                                execute(server);
                             } finally {
                                 ThreadUtilities.destroy(name);
                             }
@@ -111,6 +107,20 @@ public final class Deployer {
         }
         ThreadUtilities.destroy();
         // System.exit(0);
+    }
+
+    private static void execute(final Server server) {
+        for (final IAction action : server.getActions()) {
+            execute(server, action);
+        }
+    }
+
+    private static void execute(final Server server, final IAction action) {
+        try {
+            action.execute(server);
+        } catch (final Exception e) {
+            LOGGER.error("Exception executing action : " + action + ", server : " + server, e);
+        }
     }
 
     public static ApplicationContext getApplicationContext() {
