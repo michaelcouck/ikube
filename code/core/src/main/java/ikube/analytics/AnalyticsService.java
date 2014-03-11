@@ -330,10 +330,11 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Ap
      */
     @Override
     public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
+        // This must be in a thread or there is a dead lock
         ThreadUtilities.submit("analytics-service", new Runnable() {
             @Override
             public void run() {
-                ThreadUtilities.sleep(30000);
+                // ThreadUtilities.sleep(30000);
                 contexts = applicationContext.getBeansOfType(Context.class);
                 analyzers = applicationContext.getBeansOfType(IAnalyzer.class);
                 LOGGER.info("Analyzers : " + analyzers);
