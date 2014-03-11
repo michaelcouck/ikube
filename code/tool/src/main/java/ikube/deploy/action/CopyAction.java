@@ -44,7 +44,7 @@ public class CopyAction extends Action {
 
     private void execute(final SSHClient sshExec, final String dotFolder, final Server server, final String srcFile, final String destFile) {
         int retry = RETRY;
-        int returnCode = -1;
+        int returnCode;
         do {
             String source = getAbsoluteFile(dotFolder, srcFile);
             try {
@@ -54,6 +54,7 @@ public class CopyAction extends Action {
                 returnCode = scpUploadClient.copy(new FileSystemFile(source), destFile);
                 logger.info("return code : " + returnCode);
             } catch (final Exception e) {
+                returnCode = 1;
                 handleException("Exception copying directory to server, from : " + source + ", to : " + destFile + ", server : " + server.getIp(), e);
             }
         } while (returnCode > 0 && retry-- >= 0);
