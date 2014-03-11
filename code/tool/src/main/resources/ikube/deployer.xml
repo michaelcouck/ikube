@@ -84,6 +84,7 @@
         id="stop-action"
         name="stop-action"
         class="ikube.deploy.action.CmdAction"
+	property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="stop-commands"/>
     <util:list id="stop-commands">
@@ -95,6 +96,7 @@
         id="clean-action"
         name="clean-action"
         class="ikube.deploy.action.CmdAction"
+	property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="clean-commands"/>
     <util:list id="clean-commands">
@@ -123,6 +125,7 @@
         id="copy-action"
         name="copy-action"
         class="ikube.deploy.action.CopyAction"
+	property:sleep="${sleep}"
         property:breakOnError="true"
         property:files-ref="files"
         property:directories-ref="directories"/>
@@ -143,6 +146,7 @@
         id="start-action"
         name="start-action"
         class="ikube.deploy.action.CmdAction"
+	property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="start-commands"/>
     <util:list id="start-commands">
@@ -173,6 +177,7 @@
         id="stop-action-one"
         name="stop-action-one"
         class="ikube.deploy.action.CmdAction"
+	property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="stop-commands-one"/>
     <util:list id="stop-commands-one">
@@ -184,6 +189,7 @@
         id="clean-action-one"
         name="clean-action-one"
         class="ikube.deploy.action.CmdAction"
+	property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="clean-commands-one"/>
     <util:list id="clean-commands-one">
@@ -210,6 +216,7 @@
         id="copy-action-one"
         name="copy-action-one"
         class="ikube.deploy.action.CopyAction"
+	property:sleep="${sleep}"
         property:breakOnError="true"
         property:files-ref="files-one"
         property:directories-ref="directories-one"/>
@@ -230,6 +237,7 @@
         id="start-action-one"
         name="start-action-one"
         class="ikube.deploy.action.CmdAction"
+	property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="start-commands-one"/>
     <util:list id="start-commands-one">
@@ -259,6 +267,7 @@
         id="stop-action-two"
         name="stop-action-two"
         class="ikube.deploy.action.CmdAction"
+	property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="stop-commands-two"/>
     <util:list id="stop-commands-two">
@@ -271,6 +280,7 @@
         id="clean-action-two"
         name="clean-action-two"
         class="ikube.deploy.action.CmdAction"
+	property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="clean-commands-two"/>
     <util:list id="clean-commands-two">
@@ -297,6 +307,7 @@
         id="copy-action-two"
         name="copy-action-two"
         class="ikube.deploy.action.CopyAction"
+	property:sleep="${sleep}"
         property:breakOnError="true"
         property:files-ref="files-two"
         property:directories-ref="directories-two"/>
@@ -317,6 +328,7 @@
         id="start-action-two"
         name="start-action-two"
         class="ikube.deploy.action.CmdAction"
+	property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="start-commands-two"/>
     <util:list id="start-commands-two">
@@ -346,6 +358,7 @@
         id="stop-action-three"
         name="stop-action-three"
         class="ikube.deploy.action.CmdAction"
+	property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="stop-commands-three"/>
     <util:list id="stop-commands-three">
@@ -357,6 +370,7 @@
         id="clean-action-three"
         name="clean-action-three"
         class="ikube.deploy.action.CmdAction"
+	property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="clean-commands-three"/>
     <util:list id="clean-commands-three">
@@ -383,6 +397,7 @@
         id="copy-action-three"
         name="copy-action-three"
         class="ikube.deploy.action.CopyAction"
+	property:sleep="${sleep}"
         property:breakOnError="true"
         property:files-ref="files-three"
         property:directories-ref="directories-three"/>
@@ -403,6 +418,7 @@
         id="start-action-three"
         name="start-action-three"
         class="ikube.deploy.action.CmdAction"
+	property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="start-commands-three"/>
     <util:list id="start-commands-three">
@@ -432,6 +448,7 @@
         id="stop-action-production"
         name="stop-action-production"
         class="ikube.deploy.action.CmdAction"
+	property:sleep="${sleep}"
         property:breakOnError="false"
         property:commands-ref="stop-commands-production"/>
     <util:list id="stop-commands-production">
@@ -443,6 +460,7 @@
         id="clean-action-production"
         name="clean-action-production"
         class="ikube.deploy.action.CmdAction"
+	property:sleep="${sleep}"
         property:breakOnError="false"
         property:commands-ref="clean-commands-production"/>
     <util:list id="clean-commands-production">
@@ -469,6 +487,7 @@
         id="copy-action-production"
         name="copy-action-production"
         class="ikube.deploy.action.CopyAction"
+	property:sleep="${sleep}"
         property:breakOnError="false"
         property:files-ref="files-production"
         property:directories-ref="directories-production"/>
@@ -487,6 +506,7 @@
         id="start-action-production"
         name="start-action-production"
         class="ikube.deploy.action.CmdAction"
+	property:sleep="${sleep}"
         property:breakOnError="false"
         property:commands-ref="start-commands-production"/>
     <util:list id="start-commands-production">

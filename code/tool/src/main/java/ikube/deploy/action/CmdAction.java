@@ -30,6 +30,7 @@ public class CmdAction extends Action {
         try {
             if (commands != null) {
                 for (final String command : commands) {
+                    ThreadUtilities.sleep(getSleep());
                     execute(sshExec, server, command);
                 }
             }

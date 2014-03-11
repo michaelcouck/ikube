@@ -21,6 +21,7 @@ public abstract class Action implements IAction {
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    protected long sleep;
     protected boolean breakOnError;
 
     protected SSHClient getSshExec(final String ip, final String username, final String password) {
@@ -58,6 +59,14 @@ public abstract class Action implements IAction {
         if (isBreakOnError()) {
             throw new RuntimeException(exception);
         }
+    }
+
+    public long getSleep() {
+        return sleep;
+    }
+
+    public void setSleep(long sleep) {
+        this.sleep = sleep;
     }
 
     public boolean isBreakOnError() {

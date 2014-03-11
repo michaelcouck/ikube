@@ -48,6 +48,7 @@ public class CopyAction extends Action {
         boolean mustRetry;
         int returnCode;
         do {
+            ThreadUtilities.sleep(getSleep());
             String source = getAbsoluteFile(dotFolder, srcFile);
             try {
                 logger.info("Copying directory : " + source + ", to : " + destFile + ", on server : " + server.getIp());
