@@ -48,10 +48,10 @@
         property:servers-ref="servers"/>
 
     <util:list id="servers">
-        <ref local="server"/>
+        <!-- ref local="server"/ -->
         <ref local="server-one"/>
-        <ref local="server-two"/>
-        <ref local="server-three"/>
+        <!-- ref local="server-two"/>
+        <ref local="server-three"/ -->
         <!-- 
 	  Note 04-03-2014: Have to get sshj to execute as sudo!
 	  Update later that day: This seems to be impossible, so the solution was to run the 
