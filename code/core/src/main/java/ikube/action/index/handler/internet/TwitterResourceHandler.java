@@ -41,50 +41,10 @@ public class TwitterResourceHandler extends ResourceHandler<IndexableTweets> {
 
     public void init() {
         counter = new AtomicLong(0);
-        File file = FileUtilities.findFileRecursively(new File(IConstants.IKUBE_DIRECTORY), "country-city-language-coordinate.properties");
-        if (dataBase != null && file != null) {
-            loadCountries(file);
-        }
+
     }
 
-    /**
-     * TODO Move all the loading logic to a central class for the whole application
-     *
-     * @param file the file to load the countries from, and cities
-     */
-    private void loadCountries(final File file) {
-        int removed = dataBase.remove(GeoCountry.DELETE_ALL);
-        logger.info("Removed countries : " + removed);
-        Reader reader = null;
-        CSVReader csvReader = null;
-        try {
-            reader = new FileReader(file);
-            csvReader = new CSVReader(reader, '|');
-            List<String[]> data = csvReader.readAll();
-            for (final String[] datum : data) {
-                GeoCity geoCity = new GeoCity();
-                GeoCountry geoCountry = new GeoCountry();
 
-                // Setting this here affects OpenJpa for some reason! WTF!?
-                // geoCity.setName(datum[1]);
-                geoCity.setCoordinate(new Coordinate(Double.parseDouble(datum[3]), Double.parseDouble(datum[4])));
-                geoCity.setParent(geoCountry);
-
-                geoCountry.setName(datum[0]);
-                geoCountry.setLanguage(datum[2]);
-                geoCountry.setChildren(Arrays.asList(geoCity));
-
-                dataBase.persist(geoCountry);
-                geoCity.setName(datum[1]);
-                dataBase.merge(geoCity);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            IOUtils.closeQuietly(reader);
-            IOUtils.closeQuietly(csvReader);
-        }
-    }
 
     /**
      * {@inheritDoc}

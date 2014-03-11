@@ -67,7 +67,6 @@ public class InternetResourceProviderTest extends AbstractTest {
         Url url = new Url();
         url.setUrl("www.google.com");
         internetResourceProvider.setResources(Arrays.asList(url));
-        verify(dataBase, atLeastOnce()).persist(any(Url.class));
     }
 
     @Test
@@ -81,8 +80,6 @@ public class InternetResourceProviderTest extends AbstractTest {
             }
         });
         urls.add(url);
-
-        Deencapsulation.setField(internetResourceProvider, "urls", urls);
 
         Url resourceUrl = internetResourceProvider.getResource();
         assertNotNull(resourceUrl);

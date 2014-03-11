@@ -123,7 +123,7 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
             String city = getCityFromTimeZone(timeZone);
 
             Long hash = HashUtilities.hash(city);
-            GeoCity geoCity = geoCityMap.get(hash);
+            GeoCity geoCity = GEO_CITY.get(hash);
             if (geoCity != null) {
                 timeZoneCoordinate = geoCity.getCoordinate();
             }
@@ -181,7 +181,7 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
             String city = getCityFromTimeZone(utcTimeZone);
             // Find the country where this city is so we can find the language and match it against the user language
             Long hash = HashUtilities.hash(city);
-            GeoCity geoCity = geoCityMap.get(hash);
+            GeoCity geoCity = GEO_CITY.get(hash);
             if (geoCity != null) {
                 // Try to find the location based on the time zone and matched to the language to get the latitude
                 GeoCountry geoCountry = geoCity.getParent();

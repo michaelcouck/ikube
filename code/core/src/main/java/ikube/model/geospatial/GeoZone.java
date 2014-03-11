@@ -6,6 +6,11 @@ import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 
+/**
+ * @author Michael Couck
+ * @version 01.00
+ * @since 08-12-2013
+ */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class GeoZone extends Persistable {

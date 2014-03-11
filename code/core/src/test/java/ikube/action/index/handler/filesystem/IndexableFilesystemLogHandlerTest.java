@@ -40,7 +40,7 @@ public class IndexableFilesystemLogHandlerTest extends AbstractTest {
 		IndexableFileSystemLog indexableFileSystemLog = new IndexableFileSystemLog();
 		File logDirectory = FileUtilities.findFileRecursively(new File("."), "logs");
 		indexableFileSystemLog.setPath(logDirectory.getAbsolutePath());
-		indexableFileSystemLog.setFileFieldName("fileName");
+		indexableFileSystemLog.setFileFieldName("countryCityFile");
 		indexableFileSystemLog.setPathFieldName("filePath");
 		indexableFileSystemLog.setLineFieldName("lineNumber");
 		indexableFileSystemLog.setContentFieldName("lineContents");

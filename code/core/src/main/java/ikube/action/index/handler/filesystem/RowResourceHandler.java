@@ -32,7 +32,7 @@ public class RowResourceHandler extends ResourceHandler<IndexableFileSystemCsv> 
             final Document document,
             final Object resource)
             throws Exception {
-        // fileName, lineNumber, lineNumberFieldName
+        // countryCityFile, lineNumber, lineNumberFieldName
         String fileName = indexableFileSystemCsv.getFile().getName();
         int lineNumber = indexableFileSystemCsv.getLineNumber();
         String lineNumberFieldName = indexableFileSystemCsv.getLineNumberFieldName();

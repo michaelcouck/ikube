@@ -140,6 +140,14 @@ public class AnalyticsServiceTest extends AbstractTest {
     public void destroy() throws Exception {
         Context context = mock(Context.class);
         when(context.getAnalyzer()).thenReturn(analyzer);
+        when(clusterManager.sendTask(any(Callable.class))).thenAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(final InvocationOnMock invocation) throws Throwable {
+                Callable callable = (Callable) invocation.getArguments()[0];
+                callable.call();
+                return callable;
+            }
+        });
         analyticsService.getAnalyzers().put(context.getName(), analyzer);
         analyticsService.destroy(context);
         verify(analyzer, atLeastOnce()).destroy(any(Context.class));

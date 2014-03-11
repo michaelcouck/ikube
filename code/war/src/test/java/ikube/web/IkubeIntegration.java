@@ -11,7 +11,7 @@ import static org.junit.Assert.assertTrue;
  * @version 01.00
  * @since 08-02-2014
  */
-public class IkubeTest extends BaseTest {
+public class IkubeIntegration extends BaseTest {
 
     @Test
     public void start() {
