@@ -54,7 +54,6 @@ public class CopyAction extends Action {
                 SCPFileTransfer scpFileTransfer = sshExec.newSCPFileTransfer();
                 SCPUploadClient scpUploadClient = scpFileTransfer.newSCPUploadClient();
                 returnCode = scpUploadClient.copy(new FileSystemFile(source), destFile);
-                logger.info("return code : " + returnCode);
             } catch (final Exception e) {
                 returnCode = 1;
                 handleException("Exception copying directory to server, from : " + source + ", to : " + destFile + ", server : " + server.getIp(), e);
