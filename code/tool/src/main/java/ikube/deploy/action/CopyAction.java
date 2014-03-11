@@ -45,6 +45,7 @@ public class CopyAction extends Action {
 
     private void execute(final SSHClient sshExec, final String dotFolder, final Server server, final String srcFile, final String destFile) {
         int retry = RETRY;
+        boolean mustRetry;
         int returnCode;
         do {
             String source = getAbsoluteFile(dotFolder, srcFile);
@@ -59,7 +60,9 @@ public class CopyAction extends Action {
                 handleException("Exception copying directory to server, from : " + source + ", to : " + destFile + ", server : " + server.getIp(), e);
                 ThreadUtilities.sleep(10);
             }
-        } while (returnCode > 0 && retry-- >= 0);
+            mustRetry = returnCode > 0 && retry-- >= 0;
+            logger.info("Retrying : " + mustRetry);
+        } while (mustRetry);
     }
 
     private String getAbsoluteFile(final String dotFolder, final String path) {

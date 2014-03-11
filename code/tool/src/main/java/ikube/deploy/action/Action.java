@@ -1,11 +1,16 @@
 package ikube.deploy.action;
 
+import ikube.toolkit.ThreadUtilities;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * This is the base action class for remote actions. It defines getting the shell executor
+ * class from the remote machine. It will try several times to get a remote connection before
+ * it gives up.
+ *
  * @author Michael Couck
  * @version 01.00
  * @since 18-06-2013
@@ -31,9 +36,10 @@ public abstract class Action implements IAction {
                 // sshExec.loadKnownHosts();
             } catch (final Exception e) {
                 disconnect(sshExec);
-                handleException("Exception connecting to : " + ip, e);
+                handleException("Exception connecting to : " + ip + ", retrying : " + (retry > 0), e);
+                ThreadUtilities.sleep(10);
             }
-        } while (sshExec == null && retry-- >= 0);
+        } while (sshExec == null || retry-- >= 0);
         return sshExec;
     }
 

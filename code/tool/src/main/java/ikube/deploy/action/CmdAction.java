@@ -41,6 +41,7 @@ public class CmdAction extends Action {
 
     private void execute(final SSHClient sshExec, final Server server, final String command) {
         int retry = RETRY;
+        boolean mustRetry;
         Integer exitStatus;
         do {
             try {
@@ -74,7 +75,9 @@ public class CmdAction extends Action {
                 handleException("Exception executing command on server : " + command + ", server : " + server.getIp(), e);
                 ThreadUtilities.sleep(10);
             }
-        } while ((exitStatus != null && exitStatus > 0) && retry-- >= 0);
+            mustRetry = (exitStatus != null && exitStatus > 0) && retry-- >= 0;
+            logger.info("Retrying : " + mustRetry);
+        } while (mustRetry);
     }
 
     public void setCommands(final Collection<String> commands) {
