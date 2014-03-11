@@ -330,21 +330,26 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Ap
      */
     @Override
     public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
-        contexts = applicationContext.getBeansOfType(Context.class);
-        analyzers = applicationContext.getBeansOfType(IAnalyzer.class);
-        LOGGER.info("Analyzers : " + analyzers);
-        for (final Map.Entry<String, Context> mapEntry : contexts.entrySet()) {
-            LOGGER.info("Context : " + mapEntry.getKey() + ", " + mapEntry.getValue().getName());
-            try {
-                AnalyzerManager.buildAnalyzer(mapEntry.getValue(), Boolean.FALSE);
-            } catch (final Exception e) {
-                LOGGER.error("Error building analyzer : ", e);
+        ThreadUtilities.submit("analytics-service", new Runnable() {
+            @Override
+            public void run() {
+                ThreadUtilities.sleep(30000);
+                contexts = applicationContext.getBeansOfType(Context.class);
+                analyzers = applicationContext.getBeansOfType(IAnalyzer.class);
+                LOGGER.info("Analyzers : " + analyzers);
+                for (final Map.Entry<String, Context> mapEntry : contexts.entrySet()) {
+                    LOGGER.info("Context : " + mapEntry.getKey() + ", " + mapEntry.getValue().getName());
+                    try {
+                        AnalyzerManager.buildAnalyzer(mapEntry.getValue(), Boolean.FALSE);
+                    } catch (final Exception e) {
+                        LOGGER.error("Error building analyzer : ", e);
+                    }
+                }
+                for (final Map.Entry<String, IAnalyzer> mapEntry : analyzers.entrySet()) {
+                    LOGGER.info("Context : " + mapEntry.getKey() + ", " + mapEntry.getValue().getClass().getName());
+                }
             }
-        }
-        for (final Map.Entry<String, IAnalyzer> mapEntry : analyzers.entrySet()) {
-            LOGGER.info("Context : " + mapEntry.getKey() + ", " + mapEntry.getValue().getClass().getName());
-        }
-
+        });
     }
 
     private void execute(final Timer.Timed timed, final Analysis analysis) {
