@@ -71,7 +71,7 @@ public class CmdAction extends Action {
             } catch (final Exception e) {
                 handleException("Exception executing command on server : " + command + ", server : " + server.getIp(), e);
             }
-        } while (exitStatus == null || exitStatus != 0 || retry-- >= 0);
+        } while ((exitStatus != null && exitStatus > 0) && retry-- >= 0);
     }
 
     public void setCommands(final Collection<String> commands) {

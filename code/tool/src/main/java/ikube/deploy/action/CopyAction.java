@@ -56,7 +56,7 @@ public class CopyAction extends Action {
             } catch (final Exception e) {
                 handleException("Exception copying directory to server, from : " + source + ", to : " + destFile + ", server : " + server.getIp(), e);
             }
-        } while (returnCode != 0 || retry-- >= 0);
+        } while (returnCode > 0 && retry-- >= 0);
     }
 
     private String getAbsoluteFile(final String dotFolder, final String path) {
