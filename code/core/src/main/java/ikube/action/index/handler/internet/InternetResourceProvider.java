@@ -11,6 +11,8 @@ import com.googlecode.flaxcrawler.parse.DefaultParserController;
 import ikube.IConstants;
 import ikube.action.index.handler.IResourceProvider;
 import ikube.database.IDataBase;
+import ikube.model.IndexContext;
+import ikube.model.Indexable;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
 import ikube.toolkit.ThreadUtilities;
@@ -20,8 +22,11 @@ import org.slf4j.LoggerFactory;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
+import java.util.concurrent.RecursiveAction;
+import java.util.regex.Pattern;
 
 /**
  * This class provides urls for the {@link ikube.action.index.handler.internet.IndexableInternetHandler}. It
@@ -36,8 +41,8 @@ import java.util.Stack;
  */
 public class InternetResourceProvider implements IResourceProvider<Url> {
 
-    private static int RETRY = 5;
-    private static long SLEEP = 6000;
+    private static int RETRY = 3;
+    private static long SLEEP = 10000;
 
     private Logger logger = LoggerFactory.getLogger(InternetResourceProvider.class);
 
@@ -53,18 +58,29 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
 
     void initialize(final IndexableInternet indexableInternet) {
         urls = new Stack<>();
-        DefaultDownloaderController downloaderController = new DefaultDownloaderController();
+        final Pattern pattern = Pattern.compile(indexableInternet.getExcludedPattern());
         // Setting up parser controller
+        /*DefaultDownloader downloader = new DefaultDownloader();
+        downloader.setAllowedContentTypes(null);
+        downloader.setMaxContentLength(indexableInternet.getMaxReadLength());
+        downloader.setConnectionTimeout(60000);
+        downloader.setDownloadRetryPeriod(60000);
+        downloader.setHeadRequest(Boolean.TRUE);
+        downloader.setKeepAlive(Boolean.TRUE);
+        downloader.setReadTimeout(60000);
+        downloader.setTriesCount(10);
+        downloader.setUserAgent("FlaxCrawler/1.1.0");*/
+
         DefaultParserController parserController = new DefaultParserController();
+        DefaultDownloaderController downloaderController = new DefaultDownloaderController();
+        // downloaderController.setGenericDownloader(downloader);
 
         // Creating crawler configuration object
         CrawlerConfiguration configuration = new CrawlerConfiguration();
-
-        // Creating some crawlers. The fetching is much faster thatn the indexing
+        // Creating some crawlers. The fetching is much faster than the indexing
         // so we create many more threads to index than to fetch so we don't build up
         // urls on the stack
-        int crawlers = Math.max(1, indexableInternet.getThreads() / 10);
-        for (int i = 0; i < crawlers; i++) {
+        for (int i = 0; i < indexableInternet.getThreads(); i++) {
             // Creating crawler and setting downloader and parser controllers
             DefaultCrawler crawler = new DefaultCrawler() {
                 @Override
@@ -75,45 +91,63 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
                         Url url = getUrl(page.getUrl().toExternalForm(), indexableInternet);
                         url.setRawContent(page.getContent());
                         url.setContentType(page.getHeader("Content-Type"));
-                        if (urls.size() < IConstants.ONE_THOUSAND) {
-                            urls.push(url);
-                        } else {
-                            // If we go over the limit for the stack size then we need to
-                            // persist the url in the database to avoid running out of memory
-                            dataBase.persist(url);
-                        }
+                        setResources(Arrays.asList(url));
                     }
                 }
+
+                @Override
+                public boolean shouldCrawl(CrawlerTask crawlerTask, CrawlerTask parent) {
+                    // Default implementation returns true if crawlerTask.getDomainName() == parent.getDomainName()
+                    boolean excluded = pattern.matcher(crawlerTask.getUrl()).matches();
+                    return super.shouldCrawl(crawlerTask, parent) && !excluded;
+                }
             };
-            crawler.setDownloaderController(downloaderController);
             crawler.setParserController(parserController);
+            crawler.setDownloaderController(downloaderController);
             // Adding crawler to the configuration object
             configuration.addCrawler(crawler);
         }
 
+        configuration.setMaxLevel(Integer.MAX_VALUE);
         // Setting maximum parallel requests to a single site limit
-        configuration.setMaxParallelRequests(crawlers);
+        configuration.setMaxParallelRequests(indexableInternet.getThreads());
         // Setting http errors limits. If this limit violated for any
         // site - crawler will stop this site processing
         configuration.setMaxHttpErrors(HttpURLConnection.HTTP_CLIENT_TIMEOUT, (int) indexableInternet.getMaxExceptions());
         configuration.setMaxHttpErrors(HttpURLConnection.HTTP_BAD_GATEWAY, (int) indexableInternet.getMaxExceptions());
         // Setting period between two requests to a single site (in milliseconds)
-        configuration.setPolitenessPeriod(0);
+        configuration.setPolitenessPeriod((int) getIndexContext(indexableInternet).getThrottle());
 
         // Initializing crawler controller
         final CrawlerController crawlerController = new CrawlerController(configuration);
-        ThreadUtilities.submit(indexableInternet.getName(), new Runnable() {
-            public void run() {
+
+        class CrawlerExecutor extends RecursiveAction {
+            @Override
+            protected void compute() {
                 try {
                     // Adding crawler seed
                     crawlerController.addSeed(new URL(indexableInternet.getUrl()));
                     logger.info("Starting crawl : ");
                     crawlerController.start();
-                    // Join crawler controller and wait for finish
-                    crawlerController.join(Integer.MAX_VALUE);
-                    // Stopping crawler controller
-                    // crawlerController.stop();
-                    // TODO: Some termination code here...
+                    // Wait for the crawler controller either to finish, and
+                    // have no more urls, or for the fork join pool to get cancelled
+                    do {
+                        if (isDone() ||
+                                isCancelled() ||
+                                isCompletedNormally() ||
+                                isCompletedAbnormally()) {
+                            int threadCount = RecursiveAction.getPool().getRunningThreadCount();
+                            logger.info("Thread finished : " +
+                                    ", done : " + isDone() +
+                                    ", cancelled : " + isCancelled() +
+                                    ", completed normally : " + isCompletedNormally() +
+                                    ", completed abnormally : " + isCompletedAbnormally() +
+                                    ", thread count : " + threadCount);
+                            break;
+                        }
+                        // Join crawler controller and wait for finish
+                        crawlerController.join(IConstants.ONE_THOUSAND);
+                    } while (true);
                 } catch (final MalformedURLException e) {
                     logger.error("Bad url : ", e);
                 } catch (final CrawlerException e) {
@@ -121,20 +155,37 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
                 } finally {
                     try {
                         logger.info("Terminating crawler : " + indexableInternet.getName());
+                        crawlerController.dispose();
                         crawlerController.stop();
                     } catch (final CrawlerException e) {
                         logger.error("Crawl terminated exception : ", e);
                     }
                 }
             }
-        });
+        }
+        CrawlerExecutor crawlerExecutor = new CrawlerExecutor();
+        IndexContext indexContext = getIndexContext(indexableInternet);
+        ThreadUtilities.executeForkJoinTasks(indexContext.getName(), indexableInternet.getThreads(), crawlerExecutor);
+    }
+
+    /**
+     * This method just walks up the parent hierarchy to find the index context.
+     *
+     * @param indexable the indexable to find the context for
+     * @return the super parent of the indexable, i.e. the index context
+     */
+    private IndexContext getIndexContext(final Indexable indexable) {
+        if (IndexContext.class.isAssignableFrom(indexable.getClass())) {
+            return (IndexContext) indexable;
+        }
+        return getIndexContext(indexable.getParent());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public synchronized Url getResource() {
+    public Url getResource() {
         int retry = RETRY;
         Url url = !urls.isEmpty() ? urls.pop() : null;
         while (url == null && retry-- >= 0) {
@@ -164,8 +215,18 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
      * {@inheritDoc}
      */
     @Override
-    public synchronized void setResources(final List<Url> resources) {
-        urls.addAll(resources);
+    public void setResources(final List<Url> resources) {
+        if (resources == null) {
+            return;
+        }
+        if (urls.size() + resources.size() < IConstants.ONE_THOUSAND) {
+            urls.addAll(resources);
+        } else {
+            // If we go over the limit for the stack size then we need to
+            // persist the url in the database to avoid running out of memory
+            logger.info("Persisting resources : " + resources.size());
+            dataBase.persistBatch(resources);
+        }
     }
 
     private Url getUrl(final String stringUrl, final IndexableInternet indexableInternet) {

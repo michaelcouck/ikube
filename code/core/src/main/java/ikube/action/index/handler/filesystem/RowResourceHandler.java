@@ -59,7 +59,7 @@ public class RowResourceHandler extends ResourceHandler<IndexableFileSystemCsv> 
             }
             indexableColumn.setContent(null);
         }
-        addDocument(indexContext, indexableFileSystemCsv, document);
+        addDocument(indexContext, document);
         return document;
     }
 

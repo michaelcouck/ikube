@@ -2,13 +2,12 @@ package ikube.scheduling.schedule;
 
 import ikube.IConstants;
 import ikube.cluster.IClusterManager;
-import ikube.database.IDataBase;
 import ikube.model.Action;
 import ikube.model.Server;
 import ikube.scheduling.Schedule;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,8 +23,6 @@ import java.util.List;
 public class ActionSchedule extends Schedule {
 
     @Autowired
-    private IDataBase dataBase;
-    @Autowired
     private IClusterManager clusterManager;
 
     /**
@@ -34,28 +31,15 @@ public class ActionSchedule extends Schedule {
     @Override
     public void run() {
         Server server = clusterManager.getServer();
-        List<Action> actions = server.getActions();
-        Iterator<Action> iterator = actions.iterator();
-        boolean changed = Boolean.FALSE;
-        while (iterator.hasNext()) {
-            Action gridAction = iterator.next();
-            if (gridAction.getEndTime() != null) {
-                iterator.remove();
-                changed = Boolean.TRUE;
-                logger.info("Removing expired action : " + gridAction);
+        List<Action> actions = new ArrayList<>();
+        for (final Action action : server.getActions()) {
+            if (action.getEndTime() == null) {
+                actions.add(action);
             }
-            Action dbAction = dataBase.find(Action.class, gridAction.getId());
-            if (dbAction == null || dbAction.getEndTime() != null) {
-                iterator.remove();
-                changed = Boolean.TRUE;
-                logger.info("Removing expired action : " + gridAction);
-            }
-            logger.info("Grid action : " + gridAction + ", db action : " + dbAction);
         }
+        server.setActions(actions);
         // If the server has been changed the pop it back in the grid
-        if (changed) {
-            clusterManager.put(IConstants.SERVER, server.getAddress(), server);
-        }
+        clusterManager.put(IConstants.SERVER, server.getAddress(), server);
     }
 
 }

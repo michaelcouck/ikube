@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
  *
  * @author Michael Couck
  * @version 01.00
- * @since 20.03.11
+ * @since 20-03-2011
  */
 public class ThreadUtilitiesTest extends AbstractTest {
 
@@ -25,12 +25,12 @@ public class ThreadUtilitiesTest extends AbstractTest {
 
         long sleep;
 
-        public Sleepy(long sleep) {
-            this.sleep = sleep;
-        }
-
         public Sleepy() {
             this(1000);
+        }
+
+        public Sleepy(long sleep) {
+            this.sleep = sleep;
         }
 
         public void run() {
@@ -66,7 +66,7 @@ public class ThreadUtilitiesTest extends AbstractTest {
         }
         ThreadUtilities.waitForThreads(threads);
         // Verify that all the threads are dead
-        for (Thread thread : threads) {
+        for (final Thread thread : threads) {
             assertFalse("All the threads should have died : ", thread.isAlive());
         }
         assertTrue("We just want to exit here after the threads die : ", true);
@@ -103,11 +103,9 @@ public class ThreadUtilitiesTest extends AbstractTest {
         ThreadUtilities.destroy(name);
         logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
 
-        if (logger.isDebugEnabled()) {
-            logger.info("Name of the OS: " + System.getProperty("os.name"));
-            logger.info("Version of the OS: " + System.getProperty("os.version"));
-            logger.info("Architecture of the OS: " + System.getProperty("os.arch"));
-        }
+        logger.info("Name of the OS: " + System.getProperty("os.name"));
+        logger.info("Version of the OS: " + System.getProperty("os.version"));
+        logger.info("Architecture of the OS: " + System.getProperty("os.arch"));
 
         // TODO This doesn't not work on CentOs!!!!!! WTFN? (Why the fuck not?)
         if ("3.11.0-12-generic".equals(System.getProperty("os.version"))) {
@@ -184,7 +182,6 @@ public class ThreadUtilitiesTest extends AbstractTest {
         } catch (CancellationException e) {
             // Ignore?
         }
-
         assertTrue(forkJoinTask.isCancelled());
     }
 

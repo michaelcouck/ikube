@@ -1,6 +1,7 @@
 package ikube.toolkit;
 
 import ikube.AbstractTest;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -10,6 +11,7 @@ import static org.junit.Assert.assertTrue;
  * @version 01.00
  * @since 21-11-2010
  */
+@Ignore
 public class MailerTest extends AbstractTest {
 
     @Test

@@ -58,7 +58,7 @@ public class CopyAction extends Action {
             } catch (final Exception e) {
                 returnCode = 1;
                 handleException("Exception copying directory to server, from : " + source + ", to : " + destFile + ", server : " + server.getIp(), e);
-                ThreadUtilities.sleep(10);
+                ThreadUtilities.sleep(getSleep());
             }
             mustRetry = returnCode > 0 && retry-- >= 0;
             logger.info("Retrying : " + mustRetry);

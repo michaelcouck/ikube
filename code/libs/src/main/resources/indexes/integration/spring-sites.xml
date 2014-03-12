@@ -28,9 +28,9 @@
 		property:throttle="0"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path}"
-		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer"
 		property:children-ref="sites-indexables"
         property:threads="20"/>
+    <!-- property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer" -->
 	<util:list id="sites-indexables">
 		<ref local="ibm" />
 		<ref local="oki" />
@@ -69,6 +69,7 @@
         property:threads="20"/>
 
 	<util:list id="sites-strategies">
+        <ref bean="ikube.action.index.handler.strategy.ContentTypeStrategy" />
 	    <ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
 	</util:list>
 	

@@ -38,6 +38,9 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
         return getRecursiveAction(indexContext, indexableInternet, resourceProvider);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     protected List<Url> handleResource(
@@ -49,9 +52,8 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
             if (url.getRawContent() != null) {
                 internetResourceHandler.handleResource(indexContext, indexableInternet, new Document(), url);
             }
-            return Collections.EMPTY_LIST;
         } catch (final Exception e) {
-            throw new RuntimeException(e);
+            handleException(indexableInternet, e, "Exception indexing site : " + indexableInternet.getName());
         } finally {
             if (url.getParsedContent() != null) {
                 url.setHash(HashUtilities.hash(url.getParsedContent()));
@@ -59,6 +61,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
             url.setRawContent(null);
             url.setParsedContent(null);
         }
+        return Collections.EMPTY_LIST;
     }
 
 

@@ -56,8 +56,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
     @SuppressWarnings({"unchecked", "rawtypes"})
     protected boolean internalExecute(final IndexContext<?> indexContext) throws Exception {
         List<Indexable<?>> indexables = indexContext.getChildren();
-        for (Indexable<?> indexable : (Iterable<Indexable<?>>) new ArrayList(indexables)) {
-            // This is the current indexable name
+        for (final Indexable<?> indexable : (Iterable<Indexable<?>>) new ArrayList(indexables)) {
             // Update the action with the new indexable
             Server server = clusterManager.getServer();
             ikube.model.Action action = getAction(server, indexContext, null);
@@ -70,14 +69,25 @@ public class Index extends Action<IndexContext<?>, Boolean> {
             IIndexableHandler<Indexable<?>> handler = getHandler(indexable);
             // Execute the handler and wait for the threads to finish
             logger.info("Indexable : " + indexable.getName());
+            // This task it potentially the grand parent of multiple sub
+            // tasks that have been split off recursively by the handler
             ForkJoinTask<?> forkJoinTask = handler.handleIndexableForked(indexContext, indexable);
             ThreadUtilities.executeForkJoinTasks(indexContext.getName(), indexable.getThreads(), forkJoinTask);
-            ThreadUtilities.waitForFuture(forkJoinTask, Integer.MAX_VALUE);
-            logger.info("Continuing : " + forkJoinTask);
+            ThreadUtilities.waitForFuture(forkJoinTask, Long.MAX_VALUE);
         }
         return Boolean.TRUE;
     }
 
+    /**
+     * This method will return the action from the server that represents this logical action. To co-ordinate
+     * the actions in the cluster, the server objects contain the actions that are being executed on the local
+     * machine. The server objects are then distributed in the cluster in the grid.
+     *
+     * @param server        the server, typically the local server object, to get the action for
+     * @param indexContext  the index context that is currently executing in this action
+     * @param indexableName the indexable that is currently being indexed by this instance
+     * @return the action from the server that is currently being executed, with
+     */
     ikube.model.Action getAction(final Server server, final IndexContext<?> indexContext, final String indexableName) {
         for (final ikube.model.Action action : server.getActions()) {
             if (action.getActionName().equals(this.getClass().getSimpleName())) {
@@ -85,7 +95,9 @@ public class Index extends Action<IndexContext<?>, Boolean> {
                     continue;
                 }
                 if (StringUtils.isEmpty(indexableName)) {
-                    // We return the first action in the case the indexable name has not been set
+                    // We return the first action in the case the indexable name has not been set. This
+                    // is quite common because when the action is started, the logic that executes the action
+                    // does not know which indexable will be indexed first
                     return action;
                 } else {
                     // Else we look for the action that has the current indexable name
@@ -95,6 +107,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
                 }
             }
         }
+        // This never gets thrown
         throw new RuntimeException("Action not found for class : " + this.getClass().getSimpleName());
     }
 
@@ -106,7 +119,6 @@ public class Index extends Action<IndexContext<?>, Boolean> {
         logger.debug("Post process action : " + this.getClass() + ", " + indexContext.getName());
         IndexManager.closeIndexWriters(indexContext);
         indexContext.setIndexWriters();
-        // Optimizer.optimize(indexContext);
         return Boolean.TRUE;
     }
 

@@ -74,7 +74,7 @@ public class CmdAction extends Action {
             } catch (final Exception e) {
                 exitStatus = 1;
                 handleException("Exception executing command on server : " + command + ", server : " + server.getIp(), e);
-                ThreadUtilities.sleep(10);
+                ThreadUtilities.sleep(getSleep());
             }
             mustRetry = (exitStatus != null && exitStatus > 0) && retry-- >= 0;
             logger.info("Retrying : " + mustRetry);

@@ -38,7 +38,7 @@ public abstract class Action implements IAction {
             } catch (final Exception e) {
                 disconnect(sshExec);
                 handleException("Exception connecting to : " + ip + ", retrying : " + (retry > 0), e);
-                ThreadUtilities.sleep(10);
+                ThreadUtilities.sleep(getSleep());
             }
         } while (sshExec == null && retry-- >= 0);
         return sshExec;

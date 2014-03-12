@@ -79,6 +79,14 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
                             isCancelled() ||
                             isCompletedNormally() ||
                             isCompletedAbnormally()) {
+                        int threadCount = RecursiveAction.getPool().getRunningThreadCount();
+                        logger.info("Thread finished, resource : " +
+                                resource +
+                                ", done : " + isDone() +
+                                ", cancelled : " + isCancelled() +
+                                ", completed normally : " + isCompletedNormally() +
+                                ", completed abnormally : " + isCompletedAbnormally() +
+                                ", thread count : " + threadCount);
                         break;
                     }
                     // Call the handle resource on the parent, which is the implementation specific handler method
@@ -88,8 +96,6 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
                     // Sleep for the required time
                     ThreadUtilities.sleep(indexContext.getThrottle());
                 } while (true);
-                int threadCount = RecursiveAction.getPool().getRunningThreadCount();
-                logger.info("Thread finished : " + this.hashCode() + ", thread count : " + threadCount);
             }
         }
         // And hup
@@ -97,11 +103,10 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
     }
 
     /**
-     * This method splits off left and right tasks that essentially break the problem into parts that can be handled
-     * concurrently. The parent will have two
-     * child tasks, and the children will each have two tasks until the 'threads' threshold defined for the indexable
-     * has been reached. Each task is not
-     * necessarily create a new thread for each task, but can.
+     * This method splits off left and right tasks that essentially break the problem into parts that can be
+     * handled concurrently. The parent will have two child tasks, and the children will each have two tasks until
+     * the 'threads' threshold defined for the indexable has been reached. Each task is not necessarily create a
+     * new thread for each task, but can.
      *
      * @param indexContext     the context to propagate to the next task
      * @param indexable        the indexable that is being processed
@@ -129,17 +134,6 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ForkJoinTask<?> handleIndexableForked(
-            final IndexContext<?> indexContext,
-            final T indexable)
-            throws Exception {
-        return null;
-    }
-
-    /**
      * This method is called from the fork join actions, individually processing a resource, thread by thread.
      *
      * @param indexContext the index context being processed
@@ -154,16 +148,14 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
 
     /**
      * This method will log any exceptions, and increment the number of exceptions experienced by the handler. If the
-     * maximum number of exceptions by the
-     * handler has been exceeded then the exception is re-thrown as a runtime exception. The calling code is then
-     * expected to bubble the exception up to the
-     * executing thread/task, that is then expected to terminate execution.
+     * maximum number of exceptions by the handler has been exceeded then the exception is re-thrown as a runtime exception.
+     * The calling code is then expected to bubble the exception up to the executing thread/task, that is then expected
+     * to terminate execution.
      *
      * @param indexable the indexable that is currently being indexed
      * @param exception the exception thrown, if this is an interrupted exception or a cancellation exception then we
-     *                  re-throw it immediately. Having said that
-     *                  there are times when such exceptions are not thrown by ikube internally,
-     *                  but by Hazelcast and even Lucene, and these also halt the execution
+     *                  re-throw it immediately. Having said that there are times when such exceptions are not thrown by
+     *                  ikube internally, but by Hazelcast and even Lucene, and these also halt the execution
      * @param messages  any strings that sill be printed along with the exceptions
      */
     protected void handleException(
@@ -171,15 +163,17 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
             final Exception exception,
             final String... messages) {
         int totalExceptions = indexable.incrementAndGetExceptions();
+        String message = messages != null ? Arrays.deepToString(messages) : "";
         if (totalExceptions > indexable.getMaxExceptions()) {
-            throw new RuntimeException("Maximum exceptions exceeded for resource : " + indexable.getName() + ", " +
-                    "" + Arrays.deepToString(messages), exception);
+            throw new RuntimeException(
+                    "Maximum exceptions exceeded for resource : " + indexable.getName() +
+                            ", " + message, exception);
         }
-        if (InterruptedException.class.isAssignableFrom(exception.getClass()) || CancellationException.class
-                .isAssignableFrom(exception.getClass())) {
-            throw new RuntimeException("Worker thread interrupted : " + Arrays.deepToString(messages), exception);
+        if (InterruptedException.class.isAssignableFrom(exception.getClass()) ||
+                CancellationException.class.isAssignableFrom(exception.getClass())) {
+            throw new RuntimeException("Worker thread interrupted : " + message, exception);
         }
-        logger.error("Exception handling resource : " + Arrays.deepToString(messages) + ", " + exception.getLocalizedMessage());
+        logger.error("Exception handling resource : " + message + ", " + exception.getLocalizedMessage());
         logger.info(null, exception);
     }
 

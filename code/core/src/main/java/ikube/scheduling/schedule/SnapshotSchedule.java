@@ -130,7 +130,7 @@ public class SnapshotSchedule extends Schedule {
         } catch (Exception e) {
             logger.error("Exception accessing the disk space : ", e);
         }*/
-        logger.info("Threads running : " + server.isThreadsRunning() + ", " + ThreadUtilities.isInitialized());
+        // logger.info("Threads running : " + server.isThreadsRunning() + ", " + ThreadUtilities.isInitialized());
         setLogTail(server);
     }
 

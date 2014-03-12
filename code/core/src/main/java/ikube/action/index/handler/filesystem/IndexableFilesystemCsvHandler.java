@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.RecursiveAction;
 
 /**
  * This handler is a custom handler for the CSV files. Rather than inserting the data into the database,
@@ -66,60 +67,83 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
             throws Exception {
         String encoding = indexableFileSystemCsv.getEncoding() != null ? indexableFileSystemCsv.getEncoding() : IConstants.ENCODING;
         logger.info("Using encoding for file : " + encoding + ", " + file);
-        LineIterator lineIterator = FileUtils.lineIterator(file, encoding);
-        try {
-            // The first line is the header, i.e. the columns of the file
-            String separator = indexableFileSystemCsv.getSeparator();
-            String headerLine = lineIterator.nextLine();
-            String[] columns = StringUtils.splitPreserveAllTokens(headerLine, separator);
-            // Trim any space on the column headers
-            for (int i = 0; i < columns.length; i++) {
-                columns[i] = columns[i].trim();
-            }
+        final LineIterator lineIterator = FileUtils.lineIterator(file, encoding);
 
-            List<Indexable<?>> indexableColumns = getIndexableColumns(indexableFileSystemCsv, columns);
-            indexableFileSystemCsv.setChildren(indexableColumns);
-            logger.info("Doing columns : " + indexableColumns.size());
-
-            int lineNumber = 0;
-            indexableFileSystemCsv.setFile(file);
-            Map<Integer, String> differentLines = new HashMap<>();
-            while (lineIterator.hasNext() && ThreadUtilities.isInitialized() && lineNumber < indexableFileSystemCsv.getMaxLines()) {
-                indexableFileSystemCsv.setLineNumber(lineNumber);
-                try {
-                    String line = lineIterator.nextLine();
-                    String[] values = StringUtils.splitPreserveAllTokens(line, separator);
-                    if (indexableColumns.size() != values.length) {
-                        differentLines.put(lineNumber, Arrays.deepToString(values));
-                    }
-                    for (int i = 0; i < values.length && i < indexableColumns.size(); i++) {
-                        IndexableColumn indexableColumn = (IndexableColumn) indexableColumns.get(i);
-                        indexableColumn.setContent(values[i]);
-                    }
-                    Document document = new Document();
-                    rowResourceHandler.handleResource(indexContext, indexableFileSystemCsv, document, file);
-                    ThreadUtilities.sleep(indexContext.getThrottle());
-                } catch (Exception e) {
-                    logger.error("Exception processing file : " + file, e);
-                    handleException(indexableFileSystemCsv, e);
-                }
-                ++lineNumber;
-                if (lineNumber % 10000 == 0) {
-                    logger.info("Lines done : " + lineNumber);
-                    for (final Map.Entry<Integer, String> mapEntry : differentLines.entrySet()) {
-                        logger.warn("Columns and values different on line : " + mapEntry.getKey() + ", columns : " + columns.length + ", values : "
-                                + mapEntry.getValue());
-                        if (!logger.isDebugEnabled()) {
-                            // Only print one line if it is not in debug
-                            break;
-                        }
-                    }
-                    differentLines.clear();
-                }
-            }
-        } finally {
-            LineIterator.closeQuietly(lineIterator);
+        // The first line is the header, i.e. the columns of the file
+        final String separator = indexableFileSystemCsv.getSeparator();
+        String headerLine = lineIterator.nextLine();
+        final String[] columns = StringUtils.splitPreserveAllTokens(headerLine, separator);
+        // Trim any space on the column headers
+        for (int i = 0; i < columns.length; i++) {
+            columns[i] = columns[i].trim();
         }
+
+        final List<Indexable<?>> indexableColumns = getIndexableColumns(indexableFileSystemCsv, columns);
+        indexableFileSystemCsv.setChildren(indexableColumns);
+        logger.info("Doing columns : " + indexableColumns.size());
+
+        indexableFileSystemCsv.setFile(file);
+
+        class IndexableFileSystemCsvHandlerExecutor extends RecursiveAction {
+            @Override
+            protected void compute() {
+                int lineNumber = 0;
+                Map<Integer, String> differentLines = new HashMap<>();
+                while (lineIterator.hasNext() &&
+                        ThreadUtilities.isInitialized() &&
+                        lineNumber < indexableFileSystemCsv.getMaxLines()) {
+                    indexableFileSystemCsv.setLineNumber(lineNumber);
+                    try {
+                        String line = lineIterator.nextLine();
+                        String[] values = StringUtils.splitPreserveAllTokens(line, separator);
+                        if (indexableColumns.size() != values.length) {
+                            differentLines.put(lineNumber, Arrays.deepToString(values));
+                        }
+                        for (int i = 0; i < values.length && i < indexableColumns.size(); i++) {
+                            IndexableColumn indexableColumn = (IndexableColumn) indexableColumns.get(i);
+                            indexableColumn.setContent(values[i]);
+                        }
+                        Document document = new Document();
+                        rowResourceHandler.handleResource(indexContext, indexableFileSystemCsv, document, file);
+                        ThreadUtilities.sleep(indexContext.getThrottle());
+                    } catch (final Exception e) {
+                        logger.error("Exception processing file : " + file, e);
+                        handleException(indexableFileSystemCsv, e);
+                    }
+                    if (isDone() ||
+                            isCancelled() ||
+                            isCompletedNormally() ||
+                            isCompletedAbnormally()) {
+                        int threadCount = RecursiveAction.getPool().getRunningThreadCount();
+                        logger.info("Thread finished : " +
+                                ", done : " + isDone() +
+                                ", cancelled : " + isCancelled() +
+                                ", completed normally : " + isCompletedNormally() +
+                                ", completed abnormally : " + isCompletedAbnormally() +
+                                ", thread count : " + threadCount);
+                        break;
+                    }
+                    ++lineNumber;
+                    if (lineNumber % 10000 == 0) {
+                        logger.info("Lines done : " + lineNumber);
+                        for (final Map.Entry<Integer, String> mapEntry : differentLines.entrySet()) {
+                            logger.warn("Columns and values different on line : " + mapEntry.getKey() +
+                                    ", columns : " + columns.length +
+                                    ", values : " + mapEntry.getValue());
+                            if (!logger.isDebugEnabled()) {
+                                // Only print one line if it is not in debug
+                                break;
+                            }
+                        }
+                        differentLines.clear();
+                    }
+                }
+            }
+        }
+        IndexableFileSystemCsvHandlerExecutor executor = new IndexableFileSystemCsvHandlerExecutor();
+        ThreadUtilities.executeForkJoinTasks(indexContext.getName(), indexableFileSystemCsv.getThreads(), executor);
+        ThreadUtilities.waitForFuture(executor, Long.MAX_VALUE);
+        LineIterator.closeQuietly(lineIterator);
     }
 
     protected List<Indexable<?>> getIndexableColumns(
@@ -146,16 +170,20 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
             if (indexableColumn == null) {
                 // Add the column to the list
                 indexableColumn = new IndexableColumn();
+                indexableColumn.setParent(indexable);
                 indexableColumn.setName(columnName);
                 indexableColumn.setFieldName(columnName);
-                indexableColumn.setAddress(Boolean.FALSE);
-                indexableColumn.setAnalyzed(Boolean.TRUE);
-                indexableColumn.setIdColumn(Boolean.FALSE);
-                indexableColumn.setNumeric(Boolean.FALSE);
-                indexableColumn.setParent(indexable);
+
                 indexableColumn.setStored(Boolean.TRUE);
+                indexableColumn.setAnalyzed(Boolean.TRUE);
+
+                indexableColumn.setAddress(Boolean.FALSE);
+                indexableColumn.setNumeric(Boolean.FALSE);
+                indexableColumn.setIdColumn(Boolean.FALSE);
+                indexableColumn.setVectored(Boolean.FALSE);
+                indexableColumn.setTokenized(Boolean.FALSE);
+
                 indexableColumn.setStrategies(indexable.getStrategies());
-                indexableColumn.setVectored(Boolean.TRUE);
             }
             sortedIndexableColumns.add(indexableColumn);
         }

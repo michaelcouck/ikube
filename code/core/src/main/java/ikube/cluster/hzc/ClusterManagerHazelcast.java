@@ -215,19 +215,20 @@ public class ClusterManagerHazelcast extends AClusterManager {
             // Persist the action with the end date
             action.setEndTime(new Timestamp(System.currentTimeMillis()));
             action.setDuration(action.getEndTime().getTime() - action.getStartTime().getTime());
-            dataBase.merge(action);
+            try {
+                dataBase.merge(action);
+            } catch (Exception e) {
+                logger.error("Exception merging the action : " + action, e);
+            }
             Server server = getServer();
-            List<Action> actions = server.getActions();
-            // Remove the action from the grid
-            Iterator<Action> actionIterator = actions.iterator();
-            while (actionIterator.hasNext()) {
-                Action gridAction = actionIterator.next();
-                if (gridAction.getId() == action.getId()) {
-                    actionIterator.remove();
-                    logger.debug("Removed grid action : {} , ", gridAction.getId(), actions.size());
+            List<Action> actions = new ArrayList<>();
+            for (final Action serverAction : server.getActions()) {
+                if (action.getId() != serverAction.getId()) {
+                    actions.add(serverAction);
                 }
             }
-            hazelcastInstance.getMap(IConstants.SERVER).put(server.getAddress(), server);
+            server.setActions(actions);
+            put(IConstants.SERVER, server.getAddress(), server);
         } finally {
             notifyAll();
         }

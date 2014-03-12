@@ -1,125 +1,114 @@
 package ikube.model;
 
-import javax.persistence.*;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.openjpa.persistence.jdbc.Index;
 
+import javax.persistence.*;
+
 /**
  * @author Michael Couck
- * @since 23-11-2010
  * @version 01.00
+ * @since 23-11-2010
  */
 @Entity()
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@NamedQueries(value = { @NamedQuery(name = Url.DELETE_ALL_URLS, query = Url.DELETE_ALL_URLS),
-		@NamedQuery(name = Url.SELECT_FROM_URL_BY_HASH, query = Url.SELECT_FROM_URL_BY_HASH),
-		@NamedQuery(name = Url.SELECT_FROM_URL_BY_NAME, query = Url.SELECT_FROM_URL_BY_NAME) })
+@NamedQueries(value = {@NamedQuery(name = Url.DELETE_ALL_URLS, query = Url.DELETE_ALL_URLS),
+        @NamedQuery(name = Url.SELECT_FROM_URL_BY_HASH, query = Url.SELECT_FROM_URL_BY_HASH),
+        @NamedQuery(name = Url.SELECT_FROM_URL_BY_NAME, query = Url.SELECT_FROM_URL_BY_NAME)})
 public class Url extends Persistable {
 
-	public static final String DELETE_ALL_URLS = "delete from Url u";
-	public static final String SELECT_FROM_URL_BY_HASH = "select u from Url as u where u.hash = :hash";
-	public static final String SELECT_FROM_URL_BY_NAME = "select u from Url as u where u.name = :name";
+    public static final String DELETE_ALL_URLS = "delete from Url u";
+    public static final String SELECT_FROM_URL_BY_HASH = "select u from Url as u where u.hash = :hash";
+    public static final String SELECT_FROM_URL_BY_NAME = "select u from Url as u where u.name = :name";
 
     @Transient
     private String title;
     @Transient
-	private String contentType;
-	@Transient
-	private String parsedContent;
+    private String contentType;
+    @Transient
+    private String parsedContent;
 
-	@Column
-	@Index(name = "urlId_index", enabled = true)
-	private long urlId;
-	@Column
-	private boolean indexed;
-	@Column
-	@Index(name = "hash_index", enabled = true)
-	private long hash;
-	@Column(length = 64)
-	@Index(name = "name_index", enabled = true)
-	private String name;
-	@Column(length = 512)
-	private String url;
+    @Column
+    private boolean indexed;
+    @Column
+    @Index(name = "hash_index", enabled = true)
+    private long hash;
+    @Column(length = 64)
+    @Index(name = "name_index", enabled = true)
+    private String name;
+    @Column(length = 512)
+    private String url;
     @Lob
     @Column
     private byte[] rawContent;
 
-	public long getUrlId() {
-		return urlId;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setUrlId(long urlId) {
-		this.urlId = urlId;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getUrl() {
+        return url;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setUrl(final String url) {
+        this.url = url;
+    }
 
-	public String getUrl() {
-		return url;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public void setUrl(final String url) {
-		this.url = url;
-	}
+    public void setTitle(final String title) {
+        this.title = title;
+    }
 
-	public String getTitle() {
-		return title;
-	}
+    public String getContentType() {
+        return contentType;
+    }
 
-	public void setTitle(final String title) {
-		this.title = title;
-	}
+    public void setContentType(final String contentType) {
+        this.contentType = contentType;
+    }
 
-	public String getContentType() {
-		return contentType;
-	}
+    public byte[] getRawContent() {
+        return rawContent;
+    }
 
-	public void setContentType(final String contentType) {
-		this.contentType = contentType;
-	}
+    public void setRawContent(final byte[] rawContent) {
+        this.rawContent = rawContent;
+    }
 
-	public byte[] getRawContent() {
-		return rawContent;
-	}
+    public String getParsedContent() {
+        return parsedContent;
+    }
 
-	public void setRawContent(final byte[] rawContent) {
-		this.rawContent = rawContent;
-	}
+    public void setParsedContent(final String parsedContent) {
+        this.parsedContent = parsedContent;
+    }
 
-	public String getParsedContent() {
-		return parsedContent;
-	}
+    public boolean isIndexed() {
+        return indexed;
+    }
 
-	public void setParsedContent(final String parsedContent) {
-		this.parsedContent = parsedContent;
-	}
+    public void setIndexed(final boolean indexed) {
+        this.indexed = indexed;
+    }
 
-	public boolean isIndexed() {
-		return indexed;
-	}
+    public long getHash() {
+        return hash;
+    }
 
-	public void setIndexed(final boolean indexed) {
-		this.indexed = indexed;
-	}
+    public void setHash(final long hash) {
+        this.hash = hash;
+    }
 
-	public long getHash() {
-		return hash;
-	}
-
-	public void setHash(final long hash) {
-		this.hash = hash;
-	}
-
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.DEFAULT_STYLE, false);
-	}
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.DEFAULT_STYLE, false);
+    }
 
 }

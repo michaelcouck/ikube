@@ -9,10 +9,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * This test just has to run without exception, the number of index files that are merged seems to be random, and Lucene decides, strangely enough.
+ * This test just has to run without exception, the number of index files that are
+ * merged seems to be random, and Lucene decides, strangely enough.
  * 
  * @author Michael Couck
- * @since 08.02.13
+ * @since 08-02-2013
  * @version 01.00
  */
 public class OptimizerTest extends AbstractTest {

@@ -11,7 +11,6 @@ import ikube.action.index.parse.mime.MimeTypes;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
-import ikube.toolkit.HashUtilities;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
@@ -21,32 +20,30 @@ import java.io.*;
 import java.net.URI;
 
 /**
+ * TODO: Document me...
+ *
  * @author Michael Couck
  * @version 01.00
  * @since 21-06-2013
  */
 public class InternetResourceHandler extends ResourceHandler<IndexableInternet> {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Document handleResource(
             final IndexContext<?> indexContext,
-            final IndexableInternet indexable,
+            final IndexableInternet indexableInternet,
             final Document document,
             final Object resource)
             throws Exception {
         Url url = (Url) resource;
         parseContent(url);
-        url.setHash(HashUtilities.hash(url.getParsedContent()));
         String parsedContent = url.getParsedContent();
-        // logger.info("Parsed content : " + parsedContent);
         if (parsedContent == null) {
             return document;
         }
+        // url.setHash(HashUtilities.hash(url.getParsedContent()));
         // Add the id field, which is the url in this case
-        IndexManager.addStringField(indexable.getIdFieldName(), url.getUrl(), indexable, document);
+        IndexManager.addStringField(indexableInternet.getIdFieldName(), url.getUrl(), indexableInternet, document);
         // Add the title field
         MimeType mimeType = MimeTypes.getMimeType(url.getContentType(), url.getRawContent());
         if (mimeType != null && mimeType.getSubType().toLowerCase().contains(HTMLElementName.HTML.toLowerCase())) {
@@ -57,16 +54,15 @@ public class InternetResourceHandler extends ResourceHandler<IndexableInternet> 
             if (titleElement != null) {
                 String title = titleElement.getContent().toString();
                 url.setTitle(title);
-                IndexManager.addStringField(indexable.getTitleFieldName(), title, indexable, document);
+                IndexManager.addStringField(indexableInternet.getTitleFieldName(), title, indexableInternet, document);
             }
         } else {
             // Add the url as the title
-            IndexManager.addStringField(indexable.getTitleFieldName(), url.getUrl(), indexable, document);
+            IndexManager.addStringField(indexableInternet.getTitleFieldName(), url.getUrl(), indexableInternet, document);
         }
         // Add the contents field
-        IndexManager.addStringField(indexable.getContentFieldName(), url.getParsedContent(), indexable, document);
-        super.addDocument(indexContext, indexable, document);
-        logger.debug("Document : " + document);
+        IndexManager.addStringField(indexableInternet.getContentFieldName(), url.getParsedContent(), indexableInternet, document);
+        super.addDocument(indexContext, document);
         return document;
     }
 
@@ -107,7 +103,7 @@ public class InternetResourceHandler extends ResourceHandler<IndexableInternet> 
             }
             if (outputStream != null) {
                 String parsedContent = outputStream.toString();
-                logger.debug("Parsed content length : " + parsedContent.length());
+                logger.info("Parsed content length : " + parsedContent.length() + ", content type : " + url.getContentType());
                 url.setParsedContent(parsedContent);
             }
         } catch (final Exception e) {

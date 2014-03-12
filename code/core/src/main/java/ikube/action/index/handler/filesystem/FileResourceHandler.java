@@ -96,7 +96,7 @@ public class FileResourceHandler extends ResourceHandler<IndexableFileSystem> {
             IndexManager.addNumericField(modifiedFieldName, Long.toString(file.lastModified()), document, Boolean.TRUE, indexableFileSystem.getBoost());
             IndexManager.addStringField(lengthFieldName, Long.toString(file.length()), indexableFileSystem, document);
             IndexManager.addStringField(contentFieldName, parsedContent, indexableFileSystem, document);
-            addDocument(indexContext, indexableFileSystem, document);
+            addDocument(indexContext, document);
 
             indexableFileSystem.setContent(parsedContent);
         } finally {

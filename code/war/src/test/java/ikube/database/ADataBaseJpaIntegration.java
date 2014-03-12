@@ -304,7 +304,6 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
             url.setRawContent(new byte[0]);
             url.setTitle("title");
             url.setUrl("url");
-            url.setUrlId(i);
             url.setHash(hash++);
             url.setIndexed(Boolean.FALSE);
             url.setContentType("content type");

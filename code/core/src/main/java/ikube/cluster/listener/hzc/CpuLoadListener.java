@@ -6,6 +6,8 @@ import ikube.cluster.IClusterManager;
 import ikube.cluster.listener.IListener;
 import ikube.model.Server;
 import ikube.scheduling.schedule.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class CpuLoadListener implements IListener<Message<Object>>, MessageListener<Object> {
 
+    private Logger logger = LoggerFactory.getLogger(CpuLoadListener.class);
     @Autowired
     private IClusterManager clusterManager;
 
@@ -36,6 +39,7 @@ public class CpuLoadListener implements IListener<Message<Object>>, MessageListe
             if (Event.CPU_LOAD_THROTTLING.equals(event.getType())) {
                 event.setConsumed(Boolean.TRUE);
                 Server server = clusterManager.getServer();
+                logger.info("Toggling cpu throttling : " + server.isCpuThrottling());
                 server.setCpuThrottling(!server.isCpuThrottling());
             }
         }

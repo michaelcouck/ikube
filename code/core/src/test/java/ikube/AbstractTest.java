@@ -47,7 +47,7 @@ import static org.mockito.Mockito.when;
  *
  * @author Michael Couck
  * @version 01.00
- * @since 21.11.10
+ * @since 21-11-2010
  */
 @Ignore
 @SuppressWarnings("deprecation")
@@ -258,7 +258,7 @@ public abstract class AbstractTest {
 
     protected <T extends Search> T createIndexRamAndSearch(final Class<T> searchClass, final Analyzer analyzer,
                                                            final String field, final String... strings)
-        throws Exception {
+            throws Exception {
         IndexWriter indexWriter = getRamIndexWriter(analyzer);
         addDocuments(indexWriter, field, strings);
         IndexReader indexReader = IndexReader.open(indexWriter.getDirectory());
@@ -304,7 +304,7 @@ public abstract class AbstractTest {
     }
 
     protected void addDocuments(final IndexWriter indexWriter, final String field, final String... strings) throws
-        Exception {
+            Exception {
         for (final String string : strings) {
             String id = Long.toString(System.currentTimeMillis());
             Document document = getDocument(id, string, field);
@@ -331,7 +331,7 @@ public abstract class AbstractTest {
         return document;
     }
 
-    private Indexable<?> getIndexable() {
+    protected Indexable<?> getIndexable() {
         Indexable<?> indexable = new Indexable<Object>() {
         };
         indexable.setAnalyzed(Boolean.TRUE);
@@ -349,7 +349,7 @@ public abstract class AbstractTest {
         logger.debug("Got lock : " + gotLock + ", is locked : " + lock.isLocked());
         if (!gotLock) {
             FileUtilities.getFile(new File(serverIndexDirectory, IndexWriter.WRITE_LOCK_NAME).getAbsolutePath(),
-                Boolean.FALSE);
+                    Boolean.FALSE);
         } else {
             assertTrue(IndexWriter.isLocked(directory));
         }
@@ -367,7 +367,7 @@ public abstract class AbstractTest {
         logger.info("Num docs : " + indexReader.numDocs());
         for (int i = 0; i < numDocs && i < indexReader.numDocs(); i++) {
             Document document = indexReader.document(i);
-            logger.info("Document : " + i);
+            logger.info("Document : " + i + ", " + document.toString().length());
             printDocument(document);
         }
     }
