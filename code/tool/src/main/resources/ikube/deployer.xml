@@ -50,8 +50,8 @@
     <util:list id="servers">
         <!-- ref local="server"/ -->
         <ref local="server-one"/>
-        <!-- ref local="server-two"/>
-        <ref local="server-three"/ -->
+        <ref local="server-two"/>
+        <ref local="server-three"/>
         <!-- 
 	  Note 04-03-2014: Have to get sshj to execute as sudo!
 	  Update later that day: This seems to be impossible, so the solution was to run the 
@@ -102,21 +102,18 @@
     <util:list id="clean-commands">
         <value>chmod 777 -R ${tomcat};</value>
 
-        <value>rm -rf ${tomcat-bin}/ikube/common;</value>
-        <value>rm -rf ${tomcat-bin}/ikube/integration;</value>
-        <value>rm -rf ${tomcat}/webapps/ikube;</value>
-        <value>rm -rf ${tomcat}/webapps/ikube.war;</value>
+        <value>rm -rf ${tomcat-bin}/ikube</value>
+        <value>rm -rf ${tomcat}/webapps/ikube*;</value>
 
         <value>rm -rf ${tomcat}/logs;</value>
         <value>rm -rf ${tomcat}/temp;</value>
-        <value>rm -rf ${tomcat}/work/Catalina/localhost;</value>
+        <value>rm -rf ${tomcat}/work;</value>
 
-        <value>mkdir -p ${tomcat-bin}/ikube/common;</value>
-        <value>mkdir -p ${tomcat-bin}/ikube/integration;</value>
+        <value>mkdir -p ${tomcat-bin}/ikube;</value>
 
         <value>mkdir -p ${tomcat}/logs;</value>
         <value>mkdir -p ${tomcat}/temp;</value>
-        <value>mkdir -p ${tomcat}/work/Catalina/localhost;</value>
+        <value>mkdir -p ${tomcat}/work;</value>
 
         <value>chmod 777 -R ${tomcat};</value>
     </util:list>
@@ -195,19 +192,19 @@
     <util:list id="clean-commands-one">
         <value>chmod 777 -R ${tomcat-one};</value>
 
-        <value>rm -rf ${tomcat-one-bin}/ikube;</value>
+        <!-- value>rm -rf ${tomcat-one-bin}/ikube;</value -->
         <value>rm -rf ${tomcat-one}/webapps/ikube;</value>
         <value>rm -rf ${tomcat-one}/webapps/ikube.war;</value>
 
         <value>rm -rf ${tomcat-one}/logs;</value>
         <value>rm -rf ${tomcat-one}/temp;</value>
-        <value>rm -rf ${tomcat-one}/work/Catalina/localhost;</value>
+        <value>rm -rf ${tomcat-one}/work;</value>
 
-        <value>mkdir -p ${tomcat-one-bin}/ikube;</value>
+        <!-- value>mkdir -p ${tomcat-one-bin}/ikube;</value -->
 
         <value>mkdir -p ${tomcat-one}/logs;</value>
         <value>mkdir -p ${tomcat-one}/temp;</value>
-        <value>mkdir -p ${tomcat-one}/work/Catalina/localhost;</value>
+        <value>mkdir -p ${tomcat-one}/work;</value>
 
         <value>chmod 777 -R ${tomcat-one};</value>
     </util:list>
@@ -227,7 +224,7 @@
     </util:map>
     <util:map id="directories-one">
         <entry key="${resources-directory}/ikube" value="${tomcat-one-bin}"/>
-        <entry key="${resources-directory}/analytics" value="${tomcat-one-bin}/ikube"/>
+        <!-- entry key="${resources-directory}/analytics" value="${tomcat-one-bin}/ikube"/ -->
         <entry key="${resources-directory}/indexes/integration" value="${tomcat-one-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/production" value="${tomcat-one-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/twitter" value="${tomcat-one-bin}/ikube"/>
@@ -292,13 +289,13 @@
 
         <value>rm -rf ${tomcat-two}/logs;</value>
         <value>rm -rf ${tomcat-two}/temp;</value>
-        <value>rm -rf ${tomcat-two}/work/Catalina/localhost;</value>
+        <value>rm -rf ${tomcat-two}/work;</value>
 
         <value>mkdir -p ${tomcat-two-bin}/ikube;</value>
 
         <value>mkdir -p ${tomcat-two}/logs;</value>
         <value>mkdir -p ${tomcat-two}/temp;</value>
-        <value>mkdir -p ${tomcat-two}/work/Catalina/localhost;</value>
+        <value>mkdir -p ${tomcat-two}/work;</value>
 
         <value>chmod 777 -R ${tomcat-two};</value>
     </util:list>
@@ -382,13 +379,13 @@
 
         <value>rm -rf ${tomcat-three}/logs;</value>
         <value>rm -rf ${tomcat-three}/temp;</value>
-        <value>rm -rf ${tomcat-three}/work/Catalina/localhost;</value>
+        <value>rm -rf ${tomcat-three}/work;</value>
 
         <value>mkdir -p ${tomcat-three-bin}/ikube;</value>
 
         <value>mkdir -p ${tomcat-three}/logs;</value>
         <value>mkdir -p ${tomcat-three}/temp;</value>
-        <value>mkdir -p ${tomcat-three}/work/Catalina/localhost;</value>
+        <value>mkdir -p ${tomcat-three}/work;</value>
 
         <value>chmod 777 -R ${tomcat-three};</value>
     </util:list>
@@ -472,13 +469,13 @@
 
         <value>rm -rf ${tomcat-production}/logs;</value>
         <value>rm -rf ${tomcat-production}/temp;</value>
-        <value>rm -rf ${tomcat-production}/work/Catalina/localhost;</value>
+        <value>rm -rf ${tomcat-production}/work;</value>
 
         <value>mkdir -p ${tomcat-production-bin}/ikube;</value>
 
         <value>mkdir -p ${tomcat-production}/logs;</value>
         <value>mkdir -p ${tomcat-production}/temp;</value>
-        <value>mkdir -p ${tomcat-production}/work/Catalina/localhost;</value>
+        <value>mkdir -p ${tomcat-production}/work;</value>
 
         <value>chmod 777 -R ${tomcat-production};</value>
     </util:list>

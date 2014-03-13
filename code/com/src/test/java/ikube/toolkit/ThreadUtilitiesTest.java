@@ -107,7 +107,7 @@ public class ThreadUtilitiesTest extends AbstractTest {
         logger.info("Version of the OS: " + System.getProperty("os.version"));
         logger.info("Architecture of the OS: " + System.getProperty("os.arch"));
 
-        // TODO This doesn't not work on CentOs!!!!!! WTFN? (Why the fuck not?)
+        // TODO: This does not work on CentOs!!!!!! WTFN? (Why the fuck not?)
         if ("3.11.0-12-generic".equals(System.getProperty("os.version"))) {
             assertTrue(future.isDone());
             assertTrue(future.isCancelled());

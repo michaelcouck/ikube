@@ -34,9 +34,9 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<String, double[
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    Filter filter;
-    Instances instances;
-    ReentrantLock analyzeLock;
+    transient Filter filter;
+    transient Instances instances;
+    transient ReentrantLock analyzeLock;
 
     /**
      * {@inheritDoc}

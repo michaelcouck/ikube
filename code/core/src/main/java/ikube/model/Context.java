@@ -37,27 +37,27 @@ public class Context<T, F, A, O> extends Persistable {
      * This typically is only defined using the interface, if the analyzers are defined in Spring,then we know immediately
      * what the type will be of course.
      */
-    private T analyzer;
+    private transient T analyzer;
 
     /**
      * The filter type to convert the data into for example feature vectors.
      */
-    private F filter;
+    private transient F filter;
 
     /**
      * The underlying algorithm for the analyzer, for example KMeans or J48 for example.
      */
-    private A algorithm;
+    private transient A algorithm;
 
     /**
      * Any options or even classes that modify the algorithm in some way. Could be an array, something like a command line args.
      */
-    private O options;
+    private transient O options;
 
     /**
      * This is the string training data, typically set from the front end.
      */
-    private String trainingData;
+    private transient String trainingData;
 
     /**
      * Ths maximum number of instances that can be used to train this analyzer.

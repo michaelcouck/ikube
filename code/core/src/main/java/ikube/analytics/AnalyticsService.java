@@ -336,7 +336,7 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Ap
             @Override
             public void run() {
                 try {
-                    ThreadUtilities.sleep(15000);
+                    ThreadUtilities.sleep(3000);
                     contexts = applicationContext.getBeansOfType(Context.class);
                     analyzers = applicationContext.getBeansOfType(IAnalyzer.class);
                     LOGGER.info("Analyzers : " + analyzers);
