@@ -62,7 +62,7 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
         assertEquals("There should be one url in the database : ", 1, urls.size());
 
         // Find boolean
-        url = dataBase.find(Url.class, new String[]{"indexed"}, new Object[]{Boolean.FALSE});
+        url = dataBase.find(Url.class, new String[]{IConstants.INDEXED}, new Object[]{Boolean.FALSE});
         assertNotNull("The url should be found : ", url);
 
         // Remove
@@ -179,7 +179,7 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
         List<Url> urls = getUrls(1);
         dataBase.persistBatch(urls);
         String[] names = new String[]{IConstants.NAME};
-        Object[] values = new Object[]{"index"};
+        Object[] values = new Object[]{IConstants.INDEX};
         Url url = dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_NAME, names, values);
         assertNotNull("There should be at least one url with this name : ", url);
     }
@@ -190,7 +190,7 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
         List<Url> urls = getUrls(inserted);
         dataBase.persistBatch(urls);
         String[] names = new String[]{IConstants.NAME};
-        Object[] values = new Object[]{"index"};
+        Object[] values = new Object[]{IConstants.INDEX};
         List<Url> dbUrls = dataBase.find(Url.class, Url.SELECT_FROM_URL_BY_NAME, names, values, 0, Integer.MAX_VALUE);
         assertNotNull(dbUrls);
         assertTrue(dbUrls.size() > 0);
@@ -233,7 +233,7 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
         url.setHash(hash);
         dataBase.persist(url);
 
-        List<Url> urls = dataBase.find(Url.class, new String[]{"hash"}, new Object[]{hash}, 0, 10);
+        List<Url> urls = dataBase.find(Url.class, new String[]{IConstants.HASH}, new Object[]{hash}, 0, 10);
         assertEquals("There should be one url in the database, and one category based ont he hash : ", 1, urls.size());
     }
 
@@ -270,7 +270,7 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
         Date creationTimestamp = dbIndexContext.getTimestamp();
         assertNotNull(creationTimestamp);
 
-        dbIndexContext.setIndexDirectoryPath("./indexes");
+        dbIndexContext.setIndexDirectoryPath(indexContext.getIndexDirectoryPath());
         dbIndexContext = dataBase.merge(dbIndexContext);
 
         Date updateTimestamp = dbIndexContext.getTimestamp();
@@ -286,14 +286,12 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
     public void execute() {
         String indexName = "indexName";
         for (int i = 0; i < 10; i++) {
-            Search search = ObjectToolkit.populateFields(Search.class, new Search(), Boolean.TRUE, 5, "id", "timestamp");
+            Search search = ObjectToolkit.populateFields(Search.class, new Search(), Boolean.TRUE, 5, IConstants.ID, IConstants.TIMESTAMP);
             search.setCount(i);
             search.setIndexName(indexName);
             dataBase.persist(search);
         }
-        Number number = dataBase.execute(Search.SELECT_FROM_SEARCH_COUNT_SEARCHES, new String[]{"indexName"},
-                new Object[]{indexName});
-        logger.info("Count : " + number);
+        Number number = dataBase.execute(Search.SELECT_FROM_SEARCH_COUNT_SEARCHES, new String[]{IConstants.INDEX_NAME}, new Object[]{indexName});
         assertNotNull(number);
         assertTrue(number.longValue() > 0);
     }

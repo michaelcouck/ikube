@@ -64,7 +64,7 @@
                                 <!-- Don't know -->
                                 <argument>-classpath</argument>
                             </arguments>
-                            <workingDirectory>../</workingDirectory>
+                            <!--<workingDirectory>../</workingDirectory>-->
                             <includePluginDependencies>true</includePluginDependencies>
                             <includeProjectDependencies>true</includeProjectDependencies>
                             <keepAlive>false</keepAlive>

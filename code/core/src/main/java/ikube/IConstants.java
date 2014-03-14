@@ -186,4 +186,5 @@ public interface IConstants {
     String APPLICATION_CONTEXT_REFRESHER = "application-context-refresher";
 
     long SIXTY_SECONDS = 1000 * 60;
+    String TIMESTAMP = "timestamp";
 }
