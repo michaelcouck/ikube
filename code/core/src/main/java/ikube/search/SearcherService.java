@@ -12,7 +12,6 @@ import ikube.toolkit.HashUtilities;
 import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.StringUtilities;
 import ikube.toolkit.ThreadUtilities;
-import org.apache.commons.beanutils.BeanUtilsBean2;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.search.BooleanClause;
@@ -69,6 +68,7 @@ public class SearcherService implements ISearcherService {
         try {
             Search search = new Search();
             search.setIndexName(indexName);
+            search.setDistributed(Boolean.TRUE);
 
             String[] typeFields = new String[searchFields.length];
             Arrays.fill(typeFields, TypeField.STRING.fieldType());
@@ -103,6 +103,7 @@ public class SearcherService implements ISearcherService {
         try {
             Search search = new Search();
             search.setIndexName(indexName);
+            search.setDistributed(Boolean.TRUE);
 
             String[] typeFields = new String[searchFields.length];
             Arrays.fill(typeFields, TypeField.STRING.fieldType());
@@ -138,6 +139,7 @@ public class SearcherService implements ISearcherService {
         try {
             Search search = new Search();
             search.setIndexName(indexName);
+            search.setDistributed(Boolean.TRUE);
 
             search.setSearchStrings(Arrays.asList(searchStrings));
             search.setSearchFields(Arrays.asList(searchFields));
@@ -173,6 +175,8 @@ public class SearcherService implements ISearcherService {
         try {
             Search search = new Search();
             search.setIndexName(indexName);
+            search.setDistributed(Boolean.TRUE);
+
             search.setSearchStrings(Arrays.asList(searchStrings));
             search.setSearchFields(Arrays.asList(searchFields));
             search.setTypeFields(Arrays.asList(typeFields));
@@ -191,6 +195,31 @@ public class SearcherService implements ISearcherService {
         }
     }
 
+    public class Searcher implements Callable<Search> {
+
+        private Search search;
+
+        public Searcher(final Search search) {
+            this.search = search;
+        }
+
+        @Override
+        public Search call() throws Exception {
+            try {
+                Server local = getClusterManager().getServer();
+                Server remote = getClusterManager().getServer();
+                String localAddress = local.getAddress();
+                String remoteAddress = remote.getAddress();
+                LOGGER.info("Executing remote search : " + localAddress + ", " + remoteAddress);
+                Search remoteSearch = doSearch(search);
+                LOGGER.info("Finished remote search : " + remoteSearch);
+                return remoteSearch;
+            } catch (final Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -200,58 +229,17 @@ public class SearcherService implements ISearcherService {
             // Set the flag so we don't get infinite recursion
             search.setDistributed(Boolean.FALSE);
             // Create the callable that will be executed on the nodes
-            Server local = clusterManager.getServer();
-            final String localAddress = local.getAddress();
-            Callable callable = new Callable<Object>() {
-                @Override
-                public Object call() throws Exception {
-                    try {
-                        Server remote = getClusterManager().getServer();
-                        String remoteAddress = remote.getAddress();
-                        LOGGER.info("Executing remote search : " + localAddress + ", " + remoteAddress);
-                        Search remoteSearch = doSearch(search);
-                        LOGGER.info("Finished remote search : " + remoteSearch);
-                        return remoteSearch;
-                    } catch (final Exception e) {
-                        LOGGER.error("Exception doing remote search : ", e);
-                    }
-                    LOGGER.info("Error doing remote search, returning null : ");
-                    return null;
-                }
-            };
-            // LOGGER.info("Cluster manager : " + clusterManager);
-            Future<?> future = clusterManager.sendTask(callable);
-            // ThreadUtilities.waitForFuture(future, 60);
-            Search result = null;
+            Searcher searcher = new Searcher(search);
+            Future<?> future = clusterManager.sendTask(searcher);
             try {
-                result = (Search) future.get(60, TimeUnit.SECONDS);
+                return (Search) future.get(60, TimeUnit.SECONDS);
             } catch (final Exception e) {
-                handleException("Exception doing remote search : " + search, e);
-            }
-            // If the result is null or there are no results then
-            // there probably was an issue with the target server so we'll
-            // try to do this search locally
-            if (result == null) {
-                LOGGER.info("Results null for distributed search, doing local : " + future.isDone());
+                // If we have a remote exception then try to do the search locally
                 return doSearch(search);
-            } else {
-                boolean success = Boolean.TRUE;
-                try {
-                    BeanUtilsBean2.getInstance().copyProperties(search, result);
-                } catch (final Exception e) {
-                    success = Boolean.FALSE;
-                    LOGGER.error("Exception copying properties from remote search : ", e);
-                } finally {
-                    if (!success) {
-                        LOGGER.info("Doing local search after failed remote search : ");
-                        doSearch(search);
-                    }
-                }
             }
         } else {
             return doSearch(search);
         }
-        return search;
     }
 
     private IClusterManager getClusterManager() {
@@ -511,9 +499,11 @@ public class SearcherService implements ISearcherService {
     }
 
     /**
-     * TODO This needs to be re-implemented:
-     * For optimization and performance. Two possibilities, either create
-     * an index on the hash column in the search table or keep everything in memory some how.
+     * This method will persist the search, using the write behind facility of the
+     * grid. The search object will also be distributed over the servers so that all the
+     * statistics are available for all the servers. The grid will eventually persist
+     * the search object, updating the count using the {@link ikube.database.IDataBase}
+     * JPA persistence manager.
      */
     protected synchronized void persistSearch(final Search search) {
         final String indexName = search.getIndexName();

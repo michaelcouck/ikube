@@ -32,21 +32,21 @@ public class AnalyzerManager implements ApplicationContextAware {
         return CONTEXTS;
     }
 
-    public static Collection<IAnalyzer<?, ?, ?>> buildAnalyzers(final Collection<Context> contexts) throws Exception {
-        Collection<IAnalyzer<?, ?, ?>> analyzers = new ArrayList<>();
+    public static Collection<IAnalyzer> buildAnalyzers(final Collection<Context> contexts) throws Exception {
+        Collection<IAnalyzer> analyzers = new ArrayList<>();
         for (final Context context : contexts) {
-            IAnalyzer<?, ?, ?> analyzer = buildAnalyzer(context);
+            IAnalyzer analyzer = buildAnalyzer(context);
             analyzers.add(analyzer);
         }
         return analyzers;
     }
 
-    public static IAnalyzer<?, ?, ?> buildAnalyzer(final Context context) throws Exception {
+    public static IAnalyzer buildAnalyzer(final Context context) throws Exception {
         return buildAnalyzer(context, Boolean.FALSE);
     }
 
-    public static IAnalyzer<?, ?, ?> buildAnalyzer(final Context context, final boolean waitForBuild) throws Exception {
-        final IAnalyzer<?, ?, ?> analyzer = (IAnalyzer<?, ?, ?>) context.getAnalyzer();
+    public static IAnalyzer buildAnalyzer(final Context context, final boolean waitForBuild) throws Exception {
+        final IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();
         class Builder implements Runnable {
             public void run() {
                 try {

@@ -7,17 +7,15 @@ import ikube.model.Url;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
 import mockit.Deencapsulation;
-import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.TreeSet;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static org.mockito.Mockito.*;
 
 /**
@@ -37,8 +35,7 @@ public class InternetResourceProviderTest extends AbstractTest {
 
         when(indexableInternet.getThreads()).thenReturn(10);
         when(indexableInternet.getName()).thenReturn("indexable-internet");
-        when(indexableInternet.getUrl()).thenReturn("http://www.eacbs.com/");
-        // when(indexableInternet.getBaseUrl()).thenReturn("http://www.eacbs.com/");
+        when(indexableInternet.getUrl()).thenReturn("http://www.ikube.be/site/");
         when(indexableInternet.getExcludedPattern()).thenReturn("zip");
         Indexable indexable = indexContext;
         when(indexableInternet.getParent()).thenReturn(indexable);
@@ -50,9 +47,7 @@ public class InternetResourceProviderTest extends AbstractTest {
 
     @After
     public void after() {
-        if (StringUtils.isNotEmpty(indexableInternet.getName())) {
-            FileUtilities.deleteFile(new File("./" + indexableInternet.getName()));
-        }
+        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 
     @Test
@@ -65,27 +60,19 @@ public class InternetResourceProviderTest extends AbstractTest {
     @Test
     public void setResources() {
         Url url = new Url();
-        url.setUrl("www.google.com");
+        url.setUrl("www.blablabla.com");
         internetResourceProvider.setResources(Arrays.asList(url));
     }
 
     @Test
     public void getResource() {
-        Url url = new Url();
-        url.setUrl("www.google.com");
-        TreeSet<Url> urls = new TreeSet<>(new Comparator<Url>() {
-            @Override
-            public int compare(final Url o1, final Url o2) {
-                return o1.getUrl().compareTo(o2.getUrl());
-            }
-        });
-        urls.add(url);
-
-        Url resourceUrl = internetResourceProvider.getResource();
-        assertNotNull(resourceUrl);
-        resourceUrl = internetResourceProvider.getResource();
-        assertNull(resourceUrl);
-        assertEquals(0, urls.size());
+        Url url = internetResourceProvider.getResource();
+        assertNotNull(url);
+        do {
+            // Deplete the urls
+            url = internetResourceProvider.getResource();
+        } while (url != null);
+        assertNull(internetResourceProvider.getResource());
     }
 
 }

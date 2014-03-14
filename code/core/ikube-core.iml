@@ -165,7 +165,7 @@
     <orderEntry type="library" name="Maven: net.schmizz:sshj:0.8.1" level="project" />
     <orderEntry type="library" name="Maven: com.jcraft:jzlib:1.1.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.mockito:mockito-all:1.8.2" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: mockit:jmockit:0.999" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: mockit:jmockit:0.999.4" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.dbunit:dbunit:2.4.8" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: commons-collections:commons-collections:3.2.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: net.sourceforge.htmlunit:htmlunit:2.9" level="project" />

@@ -680,7 +680,7 @@
 		<dependency>
 			<groupId>mockit</groupId>
 			<artifactId>jmockit</artifactId>
-			<version>0.999</version>
+			<version>0.999.4</version>
 			<type>jar</type>
 			<scope>test</scope>
 		</dependency>

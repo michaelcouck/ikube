@@ -194,7 +194,7 @@
     <orderEntry type="library" name="Maven: org.apache.tiles:tiles-template:2.2.0" level="project" />
     <orderEntry type="library" name="Maven: tomgibara:cluster-gvm:1.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.mockito:mockito-all:1.8.2" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: mockit:jmockit:0.999" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: mockit:jmockit:0.999.4" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.dbunit:dbunit:2.4.8" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: commons-collections:commons-collections:3.2.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: net.sourceforge.htmlunit:htmlunit:2.9" level="project" />

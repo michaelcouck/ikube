@@ -67,7 +67,7 @@
     <orderEntry type="library" name="Maven: c3p0:c3p0:0.9.1.2" level="project" />
     <orderEntry type="library" name="Maven: javax.mail:mail:1.4.3" level="project" />
     <orderEntry type="library" name="Maven: javax.activation:activation:1.1" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: mockit:jmockit:0.999" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: mockit:jmockit:0.999.4" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.dbunit:dbunit:2.4.8" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.5.10" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: commons-collections:commons-collections:3.2.1" level="project" />

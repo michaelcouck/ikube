@@ -340,7 +340,11 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
 
     @SuppressWarnings("unchecked")
     IAnalyzer<I, O, C> getAnalyzer(final String analyzerName) {
-        return (IAnalyzer<I, O, C>) getContext(analyzerName).getAnalyzer();
+        Context context = getContext(analyzerName);
+        if (context == null) {
+            return null;
+        }
+        return (IAnalyzer<I, O, C>) context.getAnalyzer();
     }
 
 }

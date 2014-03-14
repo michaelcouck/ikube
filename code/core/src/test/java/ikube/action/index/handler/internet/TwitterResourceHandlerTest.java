@@ -5,12 +5,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.database.IDataBase;
 import ikube.model.Coordinate;
 import ikube.model.IndexableTweets;
 import ikube.model.Search;
 import ikube.toolkit.FileUtilities;
-import mockit.Deencapsulation;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
@@ -35,6 +33,11 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/**
+ * @author Michael Couck
+ * @version 01.00
+ * @since 19-06-2013
+ */
 public class TwitterResourceHandlerTest extends AbstractTest {
 
     private TwitterResourceHandler twitterResourceHandler;
@@ -42,10 +45,8 @@ public class TwitterResourceHandlerTest extends AbstractTest {
     @Before
     @SuppressWarnings("unchecked")
     public void before() {
-        IDataBase dataBase = mock(IDataBase.class);
         twitterResourceHandler = new TwitterResourceHandler();
         twitterResourceHandler.init();
-        Deencapsulation.setField(twitterResourceHandler, "dataBase", dataBase);
     }
 
     @Test
@@ -122,6 +123,7 @@ public class TwitterResourceHandlerTest extends AbstractTest {
         return new Coordinate(Double.parseDouble(latitude), Double.parseDouble(longitude), firstResult.get(IConstants.NAME));
     }
 
+    @SuppressWarnings("StringBufferReplaceableByString")
     protected String getUrl(String path) throws MalformedURLException {
         StringBuilder builder = new StringBuilder();
         builder.append(IConstants.SEP);

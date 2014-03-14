@@ -150,10 +150,14 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
         int totalUrlInserted = 10;
         List<Url> urls = getUrls(totalUrlInserted);
         dataBase.persistBatch(urls);
-        List<Url> dbUrls = dataBase.find(Url.class, new String[]{"urlId"}, new Boolean[]{false}, 0, Integer.MAX_VALUE);
+
+        String[] fieldsToSortOn = {IConstants.ID};
+        Boolean[] directionOfSort = {Boolean.FALSE};
+
+        List<Url> dbUrls = dataBase.find(Url.class, fieldsToSortOn, directionOfSort, 0, Integer.MAX_VALUE);
         logger.info("Urls : " + dbUrls.size());
         long previousId = Long.MAX_VALUE;
-        for (Url url : dbUrls) {
+        for (final Url url : dbUrls) {
             logger.info("Url : " + url.getId() + ", " + url.getHash());
             assertTrue("The ids must be in descending order : ", previousId > url.getId());
             previousId = url.getId();
@@ -161,10 +165,10 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
 
         int firstResult = totalUrlInserted / 4;
         int maxResults = totalUrlInserted / 2;
-        dbUrls = dataBase.find(Url.class, new String[]{"urlId"}, new Boolean[]{false}, firstResult, maxResults);
+        dbUrls = dataBase.find(Url.class, fieldsToSortOn, directionOfSort, firstResult, maxResults);
         assertEquals("Max results should be half the total : ", maxResults, dbUrls.size());
         previousId = Long.MAX_VALUE;
-        for (Url url : dbUrls) {
+        for (final Url url : dbUrls) {
             logger.info("Url : " + url.getId() + ", " + url.getHash());
             assertTrue("The ids must be in descending order : ", previousId > url.getId());
         }
@@ -243,7 +247,7 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
         assertEquals(inserted, total.intValue());
 
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("urlId", 5l);
+        parameters.put(IConstants.HASH, 5l);
         parameters.put(IConstants.INDEXED, Boolean.FALSE);
         total = dataBase.count(Url.class, parameters);
         assertEquals(1, total.intValue());

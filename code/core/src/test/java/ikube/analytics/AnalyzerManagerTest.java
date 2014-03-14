@@ -22,7 +22,7 @@ public class AnalyzerManagerTest extends AbstractTest {
         IAnalyzer analyzer = mock(IAnalyzer.class);
         Context context = mock(Context.class);
         when(context.getAnalyzer()).thenReturn(analyzer);
-        Collection<IAnalyzer<?, ?, ?>> analyzers = AnalyzerManager.buildAnalyzers(Arrays.asList(context, context, context));
+        Collection<IAnalyzer> analyzers = AnalyzerManager.buildAnalyzers(Arrays.asList(context, context, context));
         verify(analyzer, atLeastOnce()).build(context);
         assertEquals("There should be all the analyzers built : ", 3, analyzers.size());
     }
