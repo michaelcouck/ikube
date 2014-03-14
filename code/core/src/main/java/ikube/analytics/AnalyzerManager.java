@@ -4,9 +4,14 @@ import ikube.model.Context;
 import ikube.toolkit.ThreadUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 /**
@@ -18,17 +23,19 @@ import java.util.concurrent.Future;
  * @version 01.00
  * @since 10-04-2013
  */
-public final class AnalyzerManager {
+public class AnalyzerManager implements ApplicationContextAware {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AnalyzerManager.class);
+    private static final Map<String, Context> CONTEXTS = new HashMap<>();
+
+    public static Map<String, Context> getContexts() {
+        return CONTEXTS;
+    }
 
     public static Collection<IAnalyzer<?, ?, ?>> buildAnalyzers(final Collection<Context> contexts) throws Exception {
         Collection<IAnalyzer<?, ?, ?>> analyzers = new ArrayList<>();
         for (final Context context : contexts) {
             IAnalyzer<?, ?, ?> analyzer = buildAnalyzer(context);
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.info("Analyzer output : " + analyzer);
-            }
             analyzers.add(analyzer);
         }
         return analyzers;
@@ -69,8 +76,25 @@ public final class AnalyzerManager {
             // vectors for example, so we return
             ThreadUtilities.waitForFuture(future, 3);
         }
+        CONTEXTS.put(context.getName(), context);
         LOGGER.info("Analyzer finished building : " + future.isDone());
         return analyzer;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
+        Map<String, Context> contexts = applicationContext.getBeansOfType(Context.class);
+        for (final Map.Entry<String, Context> mapEntry : contexts.entrySet()) {
+            try {
+                LOGGER.info("Context : " + mapEntry.getKey() + ", " + mapEntry.getValue().getName());
+                buildAnalyzer(mapEntry.getValue(), Boolean.FALSE);
+            } catch (final Exception e) {
+                throw new RuntimeException("Error building analyzer : " + mapEntry.getKey(), e);
+            }
+        }
     }
 
 }

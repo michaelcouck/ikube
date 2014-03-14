@@ -43,35 +43,23 @@
         property:maxTraining="${max-training}"/>
 
     <!-- This will initialize all the analyzers and build them in parallel. -->
+    <!-- property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzers" -->
     <bean
-        name="ikube.analytics.AnalyzerManager.buildAnalyzers"
-        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-        property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzers"
+        id="ikube.analytics.AnalyzerManager"
+        name="ikube.analytics.AnalyzerManager"
+        class="ikube.analytics.AnalyzerManager"
         depends-on="ikube.toolkit.ThreadUtilities">
-        <property name="arguments">
+        <!--<property name="arguments">
             <list>
                 <ref local="context-em"/>
                 <ref local="context-smo"/>
-                <!--<ref local="context-smo-en"/>
-                <ref local="context-smo-es"/>
-                <ref local="context-smo-jp"/>
-                <ref local="context-smo-cn"/>
-                <ref local="context-smo-nl"/>
-                <ref local="context-smo-fr"/>
-                <ref local="context-smo-de"/>
-                <ref local="context-smo-sv"/>
-                <ref local="context-smo-th"/>
-                <ref local="context-smo-ar"/>
-                <ref local="context-smo-tr"/>
-                <ref local="context-smo-ru"/>-->
             </list>
-        </property>
+        </property>-->
     </bean>
 
     <bean
         id="ikube.analytics.IAnalyticsService"
         name="ikube.analytics.IAnalyticsService"
-        class="ikube.analytics.AnalyticsService"
-        depends-on="ikube.analytics.AnalyzerManager.buildAnalyzers"/>
+        class="ikube.analytics.AnalyticsService"/>
 
 </beans>

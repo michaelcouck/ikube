@@ -1,5 +1,6 @@
 package ikube.model;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -64,6 +65,14 @@ public class Context<T, F, A, O> extends Persistable {
      */
     private int maxTraining;
 
+    /**
+     * The information to construct the analyzer.
+     *
+     * @see ikube.model.AnalyzerInfo
+     */
+    @Embedded
+    private AnalyzerInfo analyzerInfo;
+
     public Context() {
     }
 
@@ -122,6 +131,14 @@ public class Context<T, F, A, O> extends Persistable {
 
     public void setMaxTraining(final int maxTraining) {
         this.maxTraining = maxTraining;
+    }
+
+    public AnalyzerInfo getAnalyzerInfo() {
+        return analyzerInfo;
+    }
+
+    public void setAnalyzerInfo(AnalyzerInfo analyzerInfo) {
+        this.analyzerInfo = analyzerInfo;
     }
 
     public String toString() {

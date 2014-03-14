@@ -347,11 +347,12 @@ public class SearcherService implements ISearcherService {
     /**
      * This method is particularly expensive, it will do a search on every index in the system.
      */
+    @SuppressWarnings("unchecked")
     public Search searchAll(final Search search) {
         LOGGER.debug("Search all");
         try {
             String[] indexNames = monitorService.getIndexNames();
-            List<Future<?>> futures = new ArrayList<>();
+            List<Future<Object>> futures = new ArrayList<>();
             List<Search> searches = new ArrayList<>();
             for (final String indexName : indexNames) {
                 final Search clonedSearch = cloneSearch(search, indexName);
@@ -370,10 +371,10 @@ public class SearcherService implements ISearcherService {
                     }
                 };
                 String name = Integer.toString(clonedSearch.hashCode());
-                Future<?> future = ThreadUtilities.submit(name, searchRunnable);
+                Future<Object> future = (Future<Object>) ThreadUtilities.submit(name, searchRunnable);
                 futures.add(future);
             }
-            ThreadUtilities.waitForFutures(futures, 60000);
+            ThreadUtilities.waitForFutures(futures, 60);
             for (final Search clonedSearch : searches) {
                 ThreadUtilities.destroy(Integer.toString(clonedSearch.hashCode()));
             }

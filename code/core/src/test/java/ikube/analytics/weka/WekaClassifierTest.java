@@ -133,14 +133,15 @@ public class WekaClassifierTest extends AbstractTest {
         assertEquals(0.0, distributionForInstance[1]);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void multiThreaded() throws Exception {
         ThreadUtilities.initialize();
         final int iterations = 10;
-        List<Future<?>> futures = new ArrayList<>();
+        List<Future<Object>> futures = new ArrayList<>();
         final AtomicInteger exceptions = new AtomicInteger(0);
 
-        Future<?> future = ThreadUtilities.submit(Long.toString(System.currentTimeMillis()), new Runnable() {
+        Future<Object> future = (Future<Object>) ThreadUtilities.submit(Long.toString(System.currentTimeMillis()), new Runnable() {
             public void run() {
                 int i = iterations;
                 while (--i > 0) {
@@ -154,7 +155,7 @@ public class WekaClassifierTest extends AbstractTest {
             }
         });
         futures.add(future);
-        future = ThreadUtilities.submit(Long.toString(System.currentTimeMillis()), new Runnable() {
+        future = (Future<Object>) ThreadUtilities.submit(Long.toString(System.currentTimeMillis()), new Runnable() {
             public void run() {
                 int i = iterations * 100;
                 while (--i > 0) {
@@ -169,7 +170,7 @@ public class WekaClassifierTest extends AbstractTest {
             }
         });
         futures.add(future);
-        future = ThreadUtilities.submit(Long.toString(System.currentTimeMillis()), new Runnable() {
+        future = (Future<Object>) ThreadUtilities.submit(Long.toString(System.currentTimeMillis()), new Runnable() {
             public void run() {
                 int i = iterations * 1000;
                 while (--i > 0) {

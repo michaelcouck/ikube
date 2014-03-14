@@ -155,6 +155,7 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
                 } finally {
                     try {
                         logger.info("Terminating crawler : " + indexableInternet.getName());
+                        crawlerController.setQueue(null);
                         crawlerController.dispose();
                         crawlerController.stop();
                     } catch (final CrawlerException e) {

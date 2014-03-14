@@ -37,6 +37,7 @@ import java.util.concurrent.Future;
  * @version 01.00
  * @since 17.12.13
  */
+@SuppressWarnings("SpringJavaAutowiringInspection")
 @Provider
 @Autowire
 @Component
@@ -214,6 +215,7 @@ public class Anal extends Resource {
         return buildJsonResponse(search);
     }
 
+    @SuppressWarnings("unchecked")
     Object[][] setTimeLineSentiment(final TwitterSearch search) {
         // Now we have to search for positive and negative for each hour
         // going back as far as the user specified, aggregate the results in an
@@ -226,9 +228,9 @@ public class Anal extends Resource {
         // Periods plus one for the headers
         final Object[][] timeLineSentiment = new Object[3][period + 1];
 
-        List<Future<?>> futures = new ArrayList<>();
+        List<Future<Object>> futures = new ArrayList<>();
         do {
-            Future<?> future = search(search, period, endTime - HOUR_MILLIS, endTime, hour, timeLineSentiment);
+            Future<Object> future = (Future<Object>) search(search, period, endTime - HOUR_MILLIS, endTime, hour, timeLineSentiment);
             futures.add(future);
             // Plus an hour
             hour--;

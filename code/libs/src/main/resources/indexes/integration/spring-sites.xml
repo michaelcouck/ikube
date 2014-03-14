@@ -16,7 +16,7 @@
 		id="sites-context"
 		class="ikube.model.IndexContext"
 		property:name="sites-context"
-		property:maxAge="60"
+		property:maxAge="6000"
 		property:compoundFile="${compound.file}"
 		property:bufferedDocs="${buffered.docs}"
 		property:bufferSize="${buffer.size}"

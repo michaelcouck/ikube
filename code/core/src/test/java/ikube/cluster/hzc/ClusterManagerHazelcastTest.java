@@ -264,7 +264,7 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
         final int iterations = 100;
         final double sleep = 100;
         final Boolean[] locks = new Boolean[threads];
-        List<Future<?>> futures = new ArrayList<>();
+        List<Future<Object>> futures = new ArrayList<>();
         for (int i = 0; i < threads; i++) {
             final int thread = i;
 
@@ -288,7 +288,7 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
             }
 
             Runnable runnable = new ClusterRunnable();
-            Future<?> future = ThreadUtilities.submit(null, runnable);
+            Future<Object> future = (Future<Object>) ThreadUtilities.submit(null, runnable);
             futures.add(future);
         }
         ThreadUtilities.waitForFutures(futures, Long.MAX_VALUE);
@@ -304,7 +304,7 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
     @Test
     @SuppressWarnings("unchecked")
     public void sendTaskToAll() throws Exception {
-        List<Future<?>> futures = clusterManagerHazelcast.sendTaskToAll(new Task());
+        List<Future<Object>> futures = clusterManagerHazelcast.sendTaskToAll(new Task());
         ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
         for (final Future<?> future : futures) {
             assertTrue((Boolean) future.get());

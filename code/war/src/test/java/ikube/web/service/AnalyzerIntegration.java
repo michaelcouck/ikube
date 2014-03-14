@@ -5,6 +5,7 @@ import ikube.BaseTest;
 import ikube.IConstants;
 import ikube.analytics.weka.WekaClusterer;
 import ikube.model.Analysis;
+import ikube.model.AnalyzerInfo;
 import ikube.model.Context;
 import ikube.toolkit.FileUtilities;
 import org.apache.commons.httpclient.HttpMethod;
@@ -187,8 +188,13 @@ public class AnalyzerIntegration extends BaseTest {
 
         Context context = new Context();
         context.setName(name);
-        context.setAnalyzer(WekaClusterer.class.getName());
-        context.setAlgorithm(SimpleKMeans.class.getName());
+
+        AnalyzerInfo analyzerInfo = new AnalyzerInfo();
+        analyzerInfo.setAnalyzer(WekaClusterer.class.getName());
+        analyzerInfo.setAlgorithm(SimpleKMeans.class.getName());
+
+        context.setAnalyzerInfo(analyzerInfo);
+
         context.setOptions(new String[]{"-N", "6"});
         context.setMaxTraining(Integer.MAX_VALUE);
         context.setTrainingData(trainingData);

@@ -35,19 +35,20 @@ public class UdpBroadcaster {
     public static void main(String[] args) {
         try {
             GROUP = InetAddress.getByName(MCAST_ADDR);
-            List<Future<?>> futures = new UdpBroadcaster().initialize();
+            List<Future<Object>> futures = new UdpBroadcaster().initialize();
             ThreadUtilities.waitForFutures(futures, 60000);
         } catch (Exception e) {
             LOGGER.error("Usage : [group-ip] [port]");
         }
     }
 
-    public List<Future<?>> initialize() {
+    @SuppressWarnings("unchecked")
+    public List<Future<Object>> initialize() {
         ThreadUtilities.initialize();
 
-        Future<?> server = server();
+        Future<Object> server = (Future<Object>) server();
         ThreadUtilities.sleep(3000);
-        Future<?> client = client();
+        Future<Object> client = (Future<Object>) client();
 
         return Arrays.asList(server, client);
     }

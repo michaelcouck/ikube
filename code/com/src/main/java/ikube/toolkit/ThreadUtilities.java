@@ -96,7 +96,7 @@ public final class ThreadUtilities {
      * @param futures the futures to wait for in seconds
      * @param maxWait and the maximum amount of time to wait in seconds
      */
-    public static void waitForFutures(final List<Future<?>> futures, final long maxWait) {
+    public static <T> void waitForFutures(final List<Future<T>> futures, final long maxWait) {
         for (final Future<?> future : futures) {
             ThreadUtilities.waitForFuture(future, maxWait);
         }

@@ -4,24 +4,16 @@ import ikube.cluster.IClusterManager;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.ThreadUtilities;
-import ikube.toolkit.Timer;
-import org.apache.commons.beanutils.BeanUtilsBean2;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.Converter;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * This class is implemented as a state pattern. The user specifies the type of analyzer, and the
@@ -31,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  * @version 01.00
  * @since 10-04-2013
  */
-public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, ApplicationContextAware {
+public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
 
     static {
         // We register a converter for the Bean utils so it
@@ -44,38 +36,183 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Ap
         }, Timestamp.class);
     }
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AnalyticsService.class);
+    /**
+     * Remote class to call for creation.
+     */
+    public class Creator implements Callable<IAnalyzer> {
+
+        private Context context;
+
+        public Creator(final Context context) {
+            this.context = context;
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public IAnalyzer call() throws Exception {
+            // Instantiate the classifier, the algorithm and the filter
+            Object analyzerName = context.getAnalyzerInfo().getAnalyzer();
+            Object algorithmName = context.getAnalyzerInfo().getAlgorithm();
+            Object filterName = context.getAnalyzerInfo().getFilter();
+            context.setAnalyzer(Class.forName(String.valueOf(analyzerName)).newInstance());
+            context.setAlgorithm(Class.forName(String.valueOf(algorithmName)).newInstance());
+            if (filterName != null && !StringUtils.isEmpty(String.valueOf(filterName))) {
+                context.setFilter(Class.forName(String.valueOf(filterName)).newInstance());
+            }
+            return AnalyzerManager.buildAnalyzer(context);
+        }
+    }
+
+    /**
+     * Remote class to call for training.
+     */
+    public class Trainer implements Callable<IAnalyzer> {
+
+        private Analysis analysis;
+
+        public Trainer(final Analysis analysis) {
+            this.analysis = analysis;
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public IAnalyzer call() throws Exception {
+            IAnalyzer analyzer = getAnalyzer(analysis.getAnalyzer());
+            analyzer.train(analysis);
+            return analyzer;
+        }
+    }
+
+    /**
+     * Remote class to call for building.
+     */
+    public class Builder implements Callable<IAnalyzer> {
+
+        private Analysis analysis;
+
+        public Builder(final Analysis analysis) {
+            this.analysis = analysis;
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public IAnalyzer call() throws Exception {
+            Context context = getContext(analysis.getAnalyzer());
+            IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();
+            analyzer.build(context);
+            return analyzer;
+        }
+    }
+
+    /**
+     * Remote class to call for analyzing.
+     */
+    public class Analyzer implements Callable<Analysis> {
+
+        private Analysis analysis;
+
+        public Analyzer(final Analysis analysis) {
+            this.analysis = analysis;
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public Analysis call() throws Exception {
+            IAnalyzer<I, O, C> analyzer = getAnalyzer(analysis.getAnalyzer());
+            analyzer.analyze((I) analysis);
+            return analysis;
+        }
+    }
+
+    /**
+     * Remote class to call for classes or clusters.
+     */
+    public class ClassesOrClusters implements Callable<Analysis> {
+
+        private Analysis analysis;
+
+        public ClassesOrClusters(final Analysis analysis) {
+            this.analysis = analysis;
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public Analysis call() throws Exception {
+            IAnalyzer analyzer = getAnalyzer(analysis.getAnalyzer());
+            Object[] classesOrClusters = analyzer.classesOrClusters();
+            analysis.setClassesOrClusters(classesOrClusters);
+            return analysis;
+        }
+    }
+
+    /**
+     * Remote class to call for sizes of classes or clusters.
+     */
+    public class SizesForClassesOrClusters implements Callable<Analysis> {
+
+        private Analysis analysis;
+
+        public SizesForClassesOrClusters(final Analysis analysis) {
+            this.analysis = analysis;
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public Analysis call() throws Exception {
+            String clazz = analysis.getClazz();
+            classesOrClusters(analysis);
+            Object[] classesOrClusters = analysis.getClassesOrClusters();
+            int[] sizesForClassesOrClusters = new int[analysis.getClassesOrClusters().length];
+            IAnalyzer analyzer = getAnalyzer(analysis.getAnalyzer());
+            for (int i = 0; i < classesOrClusters.length; i++) {
+                analysis.setClazz(classesOrClusters[i].toString());
+                int sizeForClass = analyzer.sizeForClassOrCluster(analysis);
+                sizesForClassesOrClusters[i] = sizeForClass;
+            }
+            analysis.setClazz(clazz);
+            analysis.setSizesForClassesOrClusters(sizesForClassesOrClusters);
+            return analysis;
+        }
+    }
+
+    /**
+     * Remote class to call for destroying the analyzer.
+     */
+    public class Destroyer implements Callable {
+
+        private Context context;
+
+        public Destroyer(final Context context) {
+            this.context = context;
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public Object call() throws Exception {
+            Context context = getContexts().remove(this.context.getName());
+            if (context != null) {
+                IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();
+                if (analyzer != null) {
+                    try {
+                        analyzer.destroy(context);
+                    } catch (final Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    return analyzer;
+                }
+            }
+            return null;
+        }
+    }
 
     @Autowired
     private IClusterManager clusterManager;
-    private Map<String, Context> contexts;
-    private Map<String, IAnalyzer> analyzers;
 
     @Override
     @SuppressWarnings("unchecked")
     public IAnalyzer<I, O, C> create(final Context context) {
-        List<Future<?>> futures = clusterManager.sendTaskToAll(new Callable() {
-            @Override
-            public Object call() throws Exception {
-                Map<String, Context> contexts = getContexts();
-                Map<String, IAnalyzer> analyzers = getAnalyzers();
-
-                // Instantiate the classifier, the algorithm and the filter
-                Object algorithmName = context.getAlgorithm();
-                Object analyzerName = context.getAnalyzer();
-                Object filterName = context.getFilter();
-                context.setAlgorithm(Class.forName(String.valueOf(algorithmName)).newInstance());
-                context.setAnalyzer(Class.forName(String.valueOf(analyzerName)).newInstance());
-                if (filterName != null && !StringUtils.isEmpty(String.valueOf(filterName))) {
-                    context.setFilter(Class.forName(String.valueOf(filterName)).newInstance());
-                }
-
-                IAnalyzer<I, O, C> analyzer = (IAnalyzer<I, O, C>) AnalyzerManager.buildAnalyzer(context);
-                contexts.put(context.getName(), context);
-                analyzers.put(context.getName(), analyzer);
-                return analyzer;
-            }
-        });
+        Creator creator = new Creator(context);
+        List<Future<IAnalyzer>> futures = clusterManager.sendTaskToAll(creator);
         ThreadUtilities.waitForFutures(futures, 15);
         return getAnalyzer(context.getName());
     }
@@ -83,14 +220,8 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Ap
     @Override
     @SuppressWarnings("unchecked")
     public IAnalyzer<I, O, C> train(final Analysis<I, O> analysis) {
-        List<Future<?>> futures = clusterManager.sendTaskToAll(new Callable() {
-            @Override
-            public Object call() throws Exception {
-                IAnalyzer<I, O, C> analyzer = getAnalyzer(analysis.getAnalyzer());
-                analyzer.train((I) analysis);
-                return analyzer;
-            }
-        });
+        Trainer trainer = new Trainer(analysis);
+        List<Future<IAnalyzer>> futures = clusterManager.sendTaskToAll(trainer);
         ThreadUtilities.waitForFutures(futures, 15);
         return getAnalyzer(analysis.getAnalyzer());
     }
@@ -98,15 +229,8 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Ap
     @Override
     @SuppressWarnings("unchecked")
     public IAnalyzer<I, O, C> build(final Analysis<I, O> analysis) {
-        List<Future<?>> futures = clusterManager.sendTaskToAll(new Callable() {
-            @Override
-            public Object call() throws Exception {
-                Context context = getContext(analysis.getAnalyzer());
-                IAnalyzer<I, O, C> analyzer = getAnalyzer(analysis.getAnalyzer());
-                analyzer.build(context);
-                return analyzer;
-            }
-        });
+        Builder builder = new Builder(analysis);
+        List<Future<IAnalyzer>> futures = clusterManager.sendTaskToAll(builder);
         ThreadUtilities.waitForFutures(futures, 15);
         return getAnalyzer(analysis.getAnalyzer());
     }
@@ -114,270 +238,109 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C>, Ap
     @Override
     @SuppressWarnings("unchecked")
     public Analysis<I, O> analyze(final Analysis<I, O> analysis) {
+        Analyzer analyzer = new Analyzer(analysis);
         if (analysis.isDistributed()) {
             // Set the flag so we don't get infinite recursion
             analysis.setDistributed(Boolean.FALSE);
-            // Create the callable that will be executed on the nodes
-            Callable callable = new Callable<Object>() {
-                @Override
-                @SuppressWarnings("unchecked")
-                public Object call() throws Exception {
-                    IAnalyzer<I, O, C> analyzer = getAnalyzer(analysis.getAnalyzer());
-                    return analyzer.analyze((I) analysis);
-                }
-            };
-            Future<?> future = clusterManager.sendTask(callable);
-            ThreadUtilities.waitForFuture(future, 60);
-            Analysis<I, O> result;
+            // Create the callable that will be executed on one of the nodes
+            Future<?> future = clusterManager.sendTask(analyzer);
             try {
-                result = (Analysis<I, O>) future.get(60, TimeUnit.SECONDS);
-                if (result != null) {
-                    BeanUtilsBean2.getInstance().copyProperties(analysis, result);
-                }
-            } catch (final Exception e) {
-                LOGGER.error("Exception getting the result from the distributed task : ", e);
+                return (Analysis<I, O>) future.get(60, TimeUnit.SECONDS);
+            } catch (final InterruptedException | ExecutionException | TimeoutException e) {
+                throw new RuntimeException(e);
             }
         } else {
-            Timer.Timed timed = new Timer.Timed() {
-                @Override
-                @SuppressWarnings("unchecked")
-                public void execute() {
-                    IAnalyzer<I, O, C> analyzer = getAnalyzer(analysis.getAnalyzer());
-                    try {
-                        analyzer.analyze((I) analysis);
-                    } catch (final Exception e) {
-                        analysis.setException(e);
-                        throw new RuntimeException("Exception analyzing data : " + analysis + ", " + analyzer, e);
-                    }
-                }
-            };
-            execute(timed, analysis);
+            try {
+                return analyzer.call();
+            } catch (final Exception e) {
+                throw new RuntimeException(e);
+            }
         }
-        return analysis;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public Analysis classesOrClusters(final Analysis<I, O> analysis) {
+        // Create the callable that will be executed on the remote node
+        ClassesOrClusters classesOrClusters = new ClassesOrClusters(analysis);
         if (analysis.isDistributed()) {
             // Set the flag so we don't get infinite recursion
             analysis.setDistributed(Boolean.FALSE);
-            // Create the callable that will be executed on the remote node
-            Callable callable = new Callable<Object>() {
-                @Override
-                @SuppressWarnings("unchecked")
-                public Object call() throws Exception {
-                    IAnalyzer analyzer = getAnalyzer(analysis.getAnalyzer());
-                    Object[] classesOrClusters = analyzer.classesOrClusters();
-                    analysis.setClassesOrClusters(classesOrClusters);
-                    return analysis;
-                }
-            };
-            Future<?> future = clusterManager.sendTask(callable);
-            ThreadUtilities.waitForFuture(future, 60);
-            boolean remoteSuccess = Boolean.TRUE;
+            Future<?> future = clusterManager.sendTask(classesOrClusters);
             try {
-                Analysis<I, O> result = (Analysis<I, O>) future.get();
-                if (result != null) {
-                    BeanUtilsBean2.getInstance().copyProperties(analysis, result);
-                }
-            } catch (final Exception e) {
-                remoteSuccess = Boolean.FALSE;
-                LOGGER.error("Exception getting the result from the distributed task : ", e);
-            } finally {
-                // If we don't have a happy ending from the remote server
-                // then we'll try locally, but log a message for interested parties
-                if (!remoteSuccess) {
-                    LOGGER.info("Remote analysis not sucessful, doing local : " + analysis);
-                    analysis.setDistributed(Boolean.FALSE);
-                    classesOrClusters(analysis);
-                }
+                return (Analysis) future.get(60, TimeUnit.SECONDS);
+            } catch (final InterruptedException | ExecutionException | TimeoutException e) {
+                throw new RuntimeException(e);
             }
         } else {
-            Timer.Timed timed = new Timer.Timed() {
-                @Override
-                @SuppressWarnings("unchecked")
-                public void execute() {
-                    IAnalyzer analyzer = getAnalyzer(analysis.getAnalyzer());
-                    try {
-                        Object[] classesOrClusters = analyzer.classesOrClusters();
-                        analysis.setClassesOrClusters(classesOrClusters);
-                    } catch (final Exception e) {
-                        throw new RuntimeException("Exception getting the class of cluster for analysis : ", e);
-                    }
-                }
-            };
-            execute(timed, analysis);
+            try {
+                return classesOrClusters.call();
+            } catch (final Exception e) {
+                throw new RuntimeException(e);
+            }
         }
-        return analysis;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public Analysis<I, O> sizesForClassesOrClusters(final Analysis<I, O> analysis) {
+        // Create the callable that will be executed on the remote node
+        SizesForClassesOrClusters sizesForClassesOrClusters = new SizesForClassesOrClusters(analysis);
         if (analysis.isDistributed()) {
             // Set the flag so we don't get infinite recursion
             analysis.setDistributed(Boolean.FALSE);
-            // Create the callable that will be executed on the remote node
-            Callable callable = new Callable<Object>() {
-                @Override
-                @SuppressWarnings("unchecked")
-                public Object call() throws Exception {
-                    String clazz = analysis.getClazz();
-                    classesOrClusters(analysis);
-                    Object[] classesOrClusters = analysis.getClassesOrClusters();
-                    int[] sizesForClassesOrClusters = new int[analysis.getClassesOrClusters().length];
-                    IAnalyzer analyzer = getAnalyzer(analysis.getAnalyzer());
-                    for (int i = 0; i < classesOrClusters.length; i++) {
-                        analysis.setClazz(classesOrClusters[i].toString());
-                        int sizeForClass = analyzer.sizeForClassOrCluster(analysis);
-                        sizesForClassesOrClusters[i] = sizeForClass;
-                    }
-                    analysis.setSizesForClassesOrClusters(sizesForClassesOrClusters);
-                    analysis.setClazz(clazz);
-                    return analysis;
-                }
-            };
-            Future<?> future = clusterManager.sendTask(callable);
-            ThreadUtilities.waitForFuture(future, 60);
-            boolean remoteSuccess = Boolean.TRUE;
+            Future<?> future = clusterManager.sendTask(sizesForClassesOrClusters);
             try {
-                Analysis<I, O> result = (Analysis<I, O>) future.get();
-                if (result != null) {
-                    BeanUtilsBean2.getInstance().copyProperties(analysis, result);
-                }
-            } catch (final Exception e) {
-                remoteSuccess = Boolean.FALSE;
-                LOGGER.error("Exception getting the result from the distributed task : ", e);
-            } finally {
-                // If we don't have a happy ending from the remote server
-                // then we'll try locally, but log a message for interested parties
-                if (!remoteSuccess) {
-                    LOGGER.info("Remote analysis not sucessful, doing local : " + analysis);
-                    analysis.setDistributed(Boolean.FALSE);
-                    sizesForClassesOrClusters(analysis);
-                }
+                return (Analysis<I, O>) future.get(60, TimeUnit.SECONDS);
+            } catch (final InterruptedException | ExecutionException | TimeoutException e) {
+                throw new RuntimeException(e);
             }
         } else {
-            Timer.Timed timed = new Timer.Timed() {
-                @Override
-                @SuppressWarnings("unchecked")
-                public void execute() {
-                    try {
-                        String clazz = analysis.getClazz();
-                        classesOrClusters(analysis);
-                        Object[] classesOrClusters = analysis.getClassesOrClusters();
-                        int[] sizesForClassesOrClusters = new int[analysis.getClassesOrClusters().length];
-                        IAnalyzer analyzer = getAnalyzer(analysis.getAnalyzer());
-                        for (int i = 0; i < classesOrClusters.length; i++) {
-                            analysis.setClazz(classesOrClusters[i].toString());
-                            int sizeForClass = analyzer.sizeForClassOrCluster(analysis);
-                            sizesForClassesOrClusters[i] = sizeForClass;
-                        }
-                        analysis.setSizesForClassesOrClusters(sizesForClassesOrClusters);
-                        analysis.setClazz(clazz);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            };
-            execute(timed, analysis);
+            try {
+                return sizesForClassesOrClusters.call();
+            } catch (final Exception e) {
+                throw new RuntimeException(e);
+            }
         }
-        return analysis;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public IAnalyzer<I, O, C> destroy(final Context context) {
         // Create the callable that will be executed on the remote node
-        Callable callable = new Callable<Object>() {
-            @Override
-            @SuppressWarnings("unchecked")
-            public Object call() throws Exception {
-                Map<String, Context> contexts = getContexts();
-                Map<String, IAnalyzer> analyzers = getAnalyzers();
-
-                contexts.remove(context.getName());
-                IAnalyzer<I, O, C> analyzer = analyzers.remove(context.getName());
-                if (analyzer != null) {
-                    try {
-                        analyzer.destroy(context);
-                    } catch (Exception e) {
-                        throw new RuntimeException("Exception destroying analyzer : " + context, e);
-                    }
-                }
-                return analyzer;
-            }
-        };
-        Future<?> future = clusterManager.sendTask(callable);
+        Destroyer destroyer = new Destroyer(context);
+        Future<?> future = clusterManager.sendTask(destroyer);
         ThreadUtilities.waitForFuture(future, 60);
-        return getAnalyzer(context.getName());
-    }
-
-    @Override
-    public Context getContext(final String analyzerName) {
-        IAnalyzer analyzer = getAnalyzer(analyzerName);
-        for (final Map.Entry<String, Context> mapEntry : contexts.entrySet()) {
-            if (mapEntry.getValue().getAnalyzer().equals(analyzer)) {
-                return mapEntry.getValue();
-            }
+        try {
+            return (IAnalyzer<I, O, C>) destroyer.call();
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
         }
-        throw new RuntimeException("Couldn't find context for analyzer : " + analyzerName + ", " + analyzer);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
-        // This must be in a thread or there is a dead lock
-        final String name = "analytics-service";
-        ThreadUtilities.submit(name, new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    ThreadUtilities.sleep(3000);
-                    contexts = applicationContext.getBeansOfType(Context.class);
-                    analyzers = applicationContext.getBeansOfType(IAnalyzer.class);
-                    LOGGER.info("Analyzers : " + analyzers);
-                    for (final Map.Entry<String, Context> mapEntry : contexts.entrySet()) {
-                        LOGGER.info("Context : " + mapEntry.getKey() + ", " + mapEntry.getValue().getName());
-                        try {
-                            AnalyzerManager.buildAnalyzer(mapEntry.getValue(), Boolean.FALSE);
-                        } catch (final Exception e) {
-                            LOGGER.error("Error building analyzer : ", e);
-                        }
-                    }
-                    for (final Map.Entry<String, IAnalyzer> mapEntry : analyzers.entrySet()) {
-                        LOGGER.info("Context : " + mapEntry.getKey() + ", " + mapEntry.getValue().getClass().getName());
-                    }
-                } finally {
-                    ThreadUtilities.destroy(name);
-                }
-            }
-        });
-    }
-
-    private void execute(final Timer.Timed timed, final Analysis analysis) {
-        double duration = Timer.execute(timed);
-        analysis.setDuration(duration);
-        analysis.setTimestamp(new Timestamp(System.currentTimeMillis()));
-    }
-
-    @SuppressWarnings("unchecked")
-    IAnalyzer<I, O, C> getAnalyzer(final String analyzerName) {
-        Map<String, IAnalyzer> analyzers = getAnalyzers();
-        IAnalyzer<?, ?, ?> analyzer = analyzers.get(analyzerName);
-        return (IAnalyzer<I, O, C>) analyzer;
+    public Context getContext(final String name) {
+        return getContexts().get(name);
     }
 
     @Override
     public Map<String, IAnalyzer> getAnalyzers() {
+        Map<String, Context> contexts = getContexts();
+        Map<String, IAnalyzer> analyzers = new HashMap<>();
+        for (final Map.Entry<String, Context> mapEntry : contexts.entrySet()) {
+            analyzers.put(mapEntry.getKey(), (IAnalyzer) mapEntry.getValue().getAnalyzer());
+        }
         return analyzers;
     }
 
+    @Override
     public Map<String, Context> getContexts() {
-        return contexts;
+        return AnalyzerManager.getContexts();
+    }
+
+    @SuppressWarnings("unchecked")
+    IAnalyzer<I, O, C> getAnalyzer(final String analyzerName) {
+        return (IAnalyzer<I, O, C>) getContext(analyzerName).getAnalyzer();
     }
 
 }

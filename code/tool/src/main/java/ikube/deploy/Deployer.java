@@ -46,6 +46,7 @@ public final class Deployer {
 
     private static ApplicationContext APPLICATION_CONTEXT;
 
+    @SuppressWarnings("unchecked")
     public static void main(final String[] args) {
         File configurationDirectory = new File(DOT_DIRECTORY);
         String configurationFile = CONFIGURATION_FILE;
@@ -80,7 +81,7 @@ public final class Deployer {
         LOGGER.info("Configuration file path : " + deployerConfigurationPath);
         APPLICATION_CONTEXT = new FileSystemXmlApplicationContext(deployerConfigurationPath);
         if (execute) {
-            List<Future<?>> futures = new ArrayList<>();
+            List<Future<Object>> futures = new ArrayList<>();
             Deployer deployer = APPLICATION_CONTEXT.getBean(Deployer.class);
             for (final Server server : deployer.getServers()) {
                 final String name = Long.toString(System.currentTimeMillis());
@@ -91,7 +92,7 @@ public final class Deployer {
                     // Execute one action at a time, in order, for each server,
                     // but execute all the servers at the same time. So we get the
                     // order of the actions correct, and parallel to the servers
-                    Future<?> future = ThreadUtilities.submit(name, new Runnable() {
+                    Future<Object> future = (Future<Object>) ThreadUtilities.submit(name, new Runnable() {
                         public void run() {
                             try {
                                 execute(server);

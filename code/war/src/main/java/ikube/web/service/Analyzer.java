@@ -64,7 +64,7 @@ public class Analyzer extends Resource {
     public Response train(@Context final HttpServletRequest request) {
         Analysis<String, String> analysis = unmarshall(Analysis.class, request);
         String data = analysis.getInput();
-        String[] inputs = StringUtils.split(data, "\n\r\t");
+        String[] inputs = StringUtils.split(data, "\n\r");
         for (final String input : inputs) {
             Analysis<String, String> clone = SerializationUtilities.clone(Analysis.class, analysis);
             clone.setInput(input);
@@ -155,12 +155,12 @@ public class Analyzer extends Resource {
             }, Timestamp.class);
             beanUtilsBean.copyProperties(context, contextSystem);
             // We must replace the live objects with the names before sending to the gui
-            context.setAlgorithm(context.getAlgorithm().getClass().getName());
-            context.setAnalyzer(context.getAnalyzer().getClass().getName());
+            // context.setAlgorithm(context.getAlgorithm().getClass().getName());
+            // context.setAnalyzer(context.getAnalyzer().getClass().getName());
             // Filters can  be null of course, specially for clusterers
             if (context.getFilter() != null) {
                 // Set the filter name
-                context.setFilter(context.getFilter().getClass().getName());
+                // context.setFilter(context.getFilter().getClass().getName());
             }
             context.setTrainingData(null);
             return context;

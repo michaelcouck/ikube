@@ -41,7 +41,7 @@ public class IClusterManagerIntegration extends IntegrationTest {
     @Test
     @SuppressWarnings("unchecked")
     public void sendTaskToAll() throws Exception {
-        List<Future<?>> futures = clusterManager.sendTaskToAll(new Task());
+        List<Future<Object>> futures = clusterManager.sendTaskToAll(new Task());
         ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
         for (final Future<?> future : futures) {
             assertTrue((Boolean) future.get());

@@ -108,6 +108,7 @@ public class ClassifierTrainingStrategyTest extends AbstractTest {
     /**
      * This test is for the performance of various synchronization mechanisms in Java.
      */
+    @SuppressWarnings("unchecked")
     @Test
     @Ignore
     public void performance() {
@@ -116,9 +117,9 @@ public class ClassifierTrainingStrategyTest extends AbstractTest {
         final AtomicLong syncAtomicLong = new AtomicLong(10000);
         final AtomicLong blockAtomicLong = new AtomicLong(10000);
         final AtomicLong lockAtomicLong = new AtomicLong(10000);
-        List<Future<?>> futures = new ArrayList<>();
+        List<Future<Object>> futures = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
-            Future<?> future = ThreadUtilities.submit(this.getClass().getSimpleName(), new Runnable() {
+            Future<Object> future = (Future<Object>) ThreadUtilities.submit(this.getClass().getSimpleName(), new Runnable() {
                 public void run() {
                     double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
                         public void execute() throws Throwable {
@@ -135,7 +136,7 @@ public class ClassifierTrainingStrategyTest extends AbstractTest {
         ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
         futures = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
-            Future<?> future = ThreadUtilities.submit(this.getClass().getSimpleName(), new Runnable() {
+            Future<Object> future = (Future<Object>) ThreadUtilities.submit(this.getClass().getSimpleName(), new Runnable() {
                 public void run() {
                     double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
                         public void execute() throws Throwable {
@@ -152,7 +153,7 @@ public class ClassifierTrainingStrategyTest extends AbstractTest {
         ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
         futures = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
-            Future<?> future = ThreadUtilities.submit(this.getClass().getSimpleName(), new Runnable() {
+            Future<Object> future = (Future<Object>) ThreadUtilities.submit(this.getClass().getSimpleName(), new Runnable() {
                 public void run() {
                     double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
                         public void execute() throws Throwable {
