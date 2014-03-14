@@ -51,7 +51,7 @@ public class CopyAction extends Action {
             ThreadUtilities.sleep(getSleep());
             String source = getAbsoluteFile(dotFolder, srcFile);
             try {
-                logger.info("Copying directory : " + source + ", to : " + destFile + ", on server : " + server.getIp());
+                logger.info("Copying : " + source + ", to : " + destFile + ", on server : " + server.getIp());
                 SCPFileTransfer scpFileTransfer = sshExec.newSCPFileTransfer();
                 SCPUploadClient scpUploadClient = scpFileTransfer.newSCPUploadClient();
                 returnCode = scpUploadClient.copy(new FileSystemFile(source), destFile);

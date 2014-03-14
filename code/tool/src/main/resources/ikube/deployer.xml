@@ -48,10 +48,10 @@
         property:servers-ref="servers"/>
 
     <util:list id="servers">
-        <!-- ref local="server"/ -->
+        <!-- ref local="server"/>
         <ref local="server-one"/>
         <ref local="server-two"/>
-        <ref local="server-three"/>
+        <ref local="server-three"/ -->
         <!-- 
 	  Note 04-03-2014: Have to get sshj to execute as sudo!
 	  Update later that day: This seems to be impossible, so the solution was to run the 
@@ -60,7 +60,7 @@
 	    thing needs to be on one line, and the user must be configured to not need a 
 	    password to run sudo, tried and failed... :(
 	-->
-        <!-- ref local="server-production"/ -->
+        <ref local="server-production"/>
     </util:list>
 
     <!-- This is the base server on the 32 core machine -->
