@@ -36,9 +36,8 @@ public abstract class Action implements IAction {
                 sshExec.authPassword(username, password.toCharArray());
                 // sshExec.loadKnownHosts();
             } catch (final Exception e) {
-                disconnect(sshExec);
                 handleException("Exception connecting to : " + ip + ", retrying : " + (retry > 0), e);
-                ThreadUtilities.sleep(getSleep());
+                disconnect(sshExec);
             }
         } while (sshExec == null && retry-- >= 0);
         return sshExec;
