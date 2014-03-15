@@ -3,7 +3,6 @@ package ikube.deploy.action;
 import ikube.deploy.model.Server;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
-import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.xfer.FileSystemFile;
 import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
 import net.schmizz.sshj.xfer.scp.SCPUploadClient;
@@ -62,7 +61,10 @@ public class CopyAction extends Action {
                 logger.info("Return code : " + returnCode);
             } catch (final Exception e) {
                 returnCode = 1;
-                handleException("Exception copying directory to server, from : " + source + ", to : " + destFile + ", server : " + server.getIp(), e);
+                handleException("Exception copying directory to server, from : " + source +
+                        ", to : " + destFile +
+                        ", server : " + server.getIp(),
+                        e);
             }
             mustRetry = returnCode > 0 && retry-- >= 0;
             if (mustRetry) {

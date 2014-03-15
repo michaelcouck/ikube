@@ -86,15 +86,20 @@ public class AnalyzerManager implements ApplicationContextAware {
      */
     @Override
     public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
-        Map<String, Context> contexts = applicationContext.getBeansOfType(Context.class);
-        for (final Map.Entry<String, Context> mapEntry : contexts.entrySet()) {
-            try {
-                LOGGER.info("Context : " + mapEntry.getKey() + ", " + mapEntry.getValue().getName());
-                buildAnalyzer(mapEntry.getValue(), Boolean.FALSE);
-            } catch (final Exception e) {
-                throw new RuntimeException("Error building analyzer : " + mapEntry.getKey(), e);
+        ThreadUtilities.submit("analyzer-builder", new Runnable() {
+            public void run() {
+                ThreadUtilities.sleep(30000);
+                Map<String, Context> contexts = applicationContext.getBeansOfType(Context.class);
+                for (final Map.Entry<String, Context> mapEntry : contexts.entrySet()) {
+                    try {
+                        LOGGER.info("Context : " + mapEntry.getKey() + ", " + mapEntry.getValue().getName());
+                        buildAnalyzer(mapEntry.getValue(), Boolean.FALSE);
+                    } catch (final Exception e) {
+                        throw new RuntimeException("Error building analyzer : " + mapEntry.getKey(), e);
+                    }
+                }
             }
-        }
+        });
     }
 
 }
