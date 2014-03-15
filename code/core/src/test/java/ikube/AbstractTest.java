@@ -233,8 +233,12 @@ public abstract class AbstractTest {
         }
     }
 
-    protected File createIndexFileSystem(final IndexContext<?> indexContext, final long time, final String ip,
-                                         final String... strings) throws Exception {
+    protected File createIndexFileSystem(
+            final IndexContext<?> indexContext,
+            final long time,
+            final String ip,
+            final String... strings)
+            throws Exception {
         IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, time, ip);
         addDocuments(indexWriter, IConstants.CONTENTS, strings);
         File indexDirectory = ((FSDirectory) indexWriter.getDirectory()).getDirectory();
@@ -242,8 +246,11 @@ public abstract class AbstractTest {
         return indexDirectory;
     }
 
-    protected List<File> createIndexesFileSystem(final IndexContext<?> indexContext, final long time,
-                                                 final String[] ips, final String... strings) {
+    protected List<File> createIndexesFileSystem(
+            final IndexContext<?> indexContext,
+            final long time,
+            final String[] ips,
+            final String... strings) {
         try {
             List<File> serverIndexDirectories = new ArrayList<>();
             for (String ip : ips) {
@@ -256,8 +263,11 @@ public abstract class AbstractTest {
         }
     }
 
-    protected <T extends Search> T createIndexRamAndSearch(final Class<T> searchClass, final Analyzer analyzer,
-                                                           final String field, final String... strings)
+    protected <T extends Search> T createIndexRamAndSearch(
+            final Class<T> searchClass,
+            final Analyzer analyzer,
+            final String field,
+            final String... strings)
             throws Exception {
         IndexWriter indexWriter = getRamIndexWriter(analyzer);
         addDocuments(indexWriter, field, strings);
@@ -272,9 +282,12 @@ public abstract class AbstractTest {
         return new IndexWriter(directory, conf);
     }
 
-    protected <T extends Search> T createIndexRamAndSearch(final Class<T> searchClass, final Analyzer analyzer,
-                                                           final String[] fields,
-                                                           final String[]... strings) throws Exception {
+    protected <T extends Search> T createIndexRamAndSearch(
+            final Class<T> searchClass,
+            final Analyzer analyzer,
+            final String[] fields,
+            final String[]... strings)
+            throws Exception {
         IndexWriter indexWriter = getRamIndexWriter(analyzer);
         Indexable<?> indexable = getIndexable();
 
@@ -303,8 +316,11 @@ public abstract class AbstractTest {
         return searchClass.getConstructor(IndexSearcher.class, Analyzer.class).newInstance(searcher, analyzer);
     }
 
-    protected void addDocuments(final IndexWriter indexWriter, final String field, final String... strings) throws
-            Exception {
+    protected void addDocuments(
+            final IndexWriter indexWriter,
+            final String field,
+            final String... strings)
+            throws Exception {
         for (final String string : strings) {
             String id = Long.toString(System.currentTimeMillis());
             Document document = getDocument(id, string, field);
