@@ -14,6 +14,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * This class is a convenience to print the documents in an index from the command line.
+ *
  * @author Michael Couck
  * @version 01.00
  * @since at least 23-11-2013
@@ -22,6 +24,13 @@ public class IndexPrinter {
 
     static Logger LOGGER = LoggerFactory.getLogger(IndexPrinter.class);
 
+    /**
+     * Prints the Lucene index.
+     *
+     * @param args the first argument is the absolute path to the index directory
+     *             and the second the number of documents in the index to print, for
+     *             example {java -jar ikube-tool.jar ikube.data.IndexPrinter /tmp/index, 100}
+     */
     public static void main(final String[] args) {
         IndexReader indexReader = null;
         try {

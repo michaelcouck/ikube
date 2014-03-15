@@ -19,7 +19,7 @@ import java.util.List;
  *
  * @author Michael Couck
  * @version 01.00
- * @since 22.06.13
+ * @since 22-06-2013
  */
 public class Reopen extends Action<IndexContext<?>, Boolean> {
 
@@ -30,10 +30,10 @@ public class Reopen extends Action<IndexContext<?>, Boolean> {
     public boolean internalExecute(final IndexContext<?> indexContext) {
         try {
             openOnIndexWriters(indexContext);
+            return Boolean.TRUE;
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
-        return Boolean.TRUE;
     }
 
     void openOnIndexWriters(final IndexContext<?> indexContext) throws IOException {
