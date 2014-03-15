@@ -195,31 +195,6 @@ public class SearcherService implements ISearcherService {
         }
     }
 
-    public class Searcher implements Callable<Search> {
-
-        private Search search;
-
-        public Searcher(final Search search) {
-            this.search = search;
-        }
-
-        @Override
-        public Search call() throws Exception {
-            try {
-                Server local = getClusterManager().getServer();
-                Server remote = getClusterManager().getServer();
-                String localAddress = local.getAddress();
-                String remoteAddress = remote.getAddress();
-                LOGGER.info("Executing remote search : " + localAddress + ", " + remoteAddress);
-                Search remoteSearch = doSearch(search);
-                LOGGER.info("Finished remote search : " + remoteSearch);
-                return remoteSearch;
-            } catch (final Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -242,11 +217,7 @@ public class SearcherService implements ISearcherService {
         }
     }
 
-    private IClusterManager getClusterManager() {
-        return clusterManager;
-    }
-
-    private Search doSearch(final Search search) {
+    public Search doSearch(final Search search) {
         try {
             ikube.search.Search searchAction;
             if (search.getCoordinate() != null && search.getDistance() != 0) {

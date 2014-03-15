@@ -1,7 +1,6 @@
 package ikube.analytics.action;
 
 import ikube.analytics.IAnalyticsService;
-import ikube.analytics.IAnalyzer;
 
 import java.util.concurrent.Callable;
 

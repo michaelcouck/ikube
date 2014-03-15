@@ -125,4 +125,14 @@ public interface ISearcherService {
     Search searchAll(
             final Search search);
 
+    /**
+     * This method, as the one above ({@link ikube.search.ISearcherService#search(ikube.model.Search)}
+     * returns a search but this method is exclusively local.
+     *
+     * @param search the search to perform
+     * @return the search object, populated with results probably
+     */
+    Search doSearch(
+            final Search search);
+
 }
