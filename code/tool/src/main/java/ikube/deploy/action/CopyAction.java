@@ -28,22 +28,26 @@ public class CopyAction extends Action {
     public boolean execute(final Server server) {
         String dotFolder = FileUtilities.cleanFilePath(new File(".").getAbsolutePath());
         logger.info("Dot folder : " + dotFolder);
-        SSHClient sshExec = getSshExec(server);
         // sshExec.useCompression();
+        getSshExec(server);
         if (directories != null) {
             for (final Map.Entry<String, String> filePair : directories.entrySet()) {
-                execute(sshExec, dotFolder, server, filePair.getKey(), filePair.getValue());
+                execute(dotFolder, server, filePair.getKey(), filePair.getValue());
             }
         }
         if (files != null) {
             for (final Map.Entry<String, String> filePair : files.entrySet()) {
-                execute(sshExec, dotFolder, server, filePair.getKey(), filePair.getValue());
+                execute(dotFolder, server, filePair.getKey(), filePair.getValue());
             }
         }
         return Boolean.TRUE;
     }
 
-    private void execute(final SSHClient sshExec, final String dotFolder, final Server server, final String srcFile, final String destFile) {
+    private void execute(
+            final String dotFolder,
+            final Server server,
+            final String srcFile,
+            final String destFile) {
         int retry = RETRY;
         boolean mustRetry;
         int returnCode;
@@ -52,7 +56,7 @@ public class CopyAction extends Action {
             try {
                 ThreadUtilities.sleep(getSleep());
                 logger.info("Copying : " + source + ", to : " + destFile + ", on server : " + server.getIp());
-                SCPFileTransfer scpFileTransfer = sshExec.newSCPFileTransfer();
+                SCPFileTransfer scpFileTransfer = server.getSshExec().newSCPFileTransfer();
                 SCPUploadClient scpUploadClient = scpFileTransfer.newSCPUploadClient();
                 returnCode = scpUploadClient.copy(new FileSystemFile(source), destFile);
                 logger.info("Return code : " + returnCode);

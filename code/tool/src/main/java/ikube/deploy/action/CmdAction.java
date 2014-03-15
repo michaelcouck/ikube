@@ -2,7 +2,6 @@ package ikube.deploy.action;
 
 import ikube.deploy.model.Server;
 import ikube.toolkit.ThreadUtilities;
-import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.IOUtils;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import org.apache.commons.lang.StringUtils;
@@ -25,17 +24,16 @@ public class CmdAction extends Action {
 
     @Override
     public boolean execute(final Server server) throws Exception {
-        SSHClient sshExec = getSshExec(server);
-        logger.debug("Ssh exec : " + sshExec + ", " + commands);
+        getSshExec(server);
         if (commands != null) {
             for (final String command : commands) {
-                execute(sshExec, server, command);
+                execute(server, command);
             }
         }
         return Boolean.TRUE;
     }
 
-    private void execute(final SSHClient sshExec, final Server server, final String command) {
+    private void execute(final Server server, final String command) {
         int retry = RETRY;
         boolean mustRetry;
         Integer exitStatus;
@@ -46,7 +44,7 @@ public class CmdAction extends Action {
                 // Allows sudo apparently
                 // session.allocateDefaultPTY();
 
-                Session session = sshExec.startSession();
+                Session session = server.getSshExec().startSession();
                 Session.Command sessionCommand = session.exec(command);
                 sessionCommand.join(60, TimeUnit.SECONDS);
 

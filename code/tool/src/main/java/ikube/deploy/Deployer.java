@@ -93,19 +93,16 @@ public final class Deployer {
                     // Execute one action at a time, in order, for each server,
                     // but execute all the servers at the same time. So we get the
                     // order of the actions correct, and parallel to the servers
-                    Future<Object> future = (Future<Object>) ThreadUtilities.submit(name, new Runnable() {
+                    class Executor implements Runnable {
                         public void run() {
-                            try {
-                                execute(server);
-                            } finally {
-                                ThreadUtilities.destroy(name);
-                            }
+                            execute(server);
                         }
-                    });
+                    }
+                    Future<Object> future = (Future<Object>) ThreadUtilities.submit(name, new Executor());
                     futures.add(future);
                 }
             }
-            ThreadUtilities.waitForFutures(futures, 6000);
+            ThreadUtilities.waitForFutures(futures, 600 * 6);
         }
         ThreadUtilities.destroy();
         // System.exit(0);
@@ -118,6 +115,7 @@ public final class Deployer {
             }
         } finally {
             disconnect(server.getSshExec());
+            server.setSshExec(null);
         }
     }
 
