@@ -30,7 +30,6 @@ public class CmdAction extends Action {
         try {
             if (commands != null) {
                 for (final String command : commands) {
-                    ThreadUtilities.sleep(getSleep());
                     execute(sshExec, server, command);
                 }
             }
@@ -46,6 +45,7 @@ public class CmdAction extends Action {
         Integer exitStatus;
         do {
             try {
+                ThreadUtilities.sleep(getSleep());
                 logger.info("Running command : {} on machine : {}", new Object[]{command, server.getIp()});
                 // Allows sudo apparently
                 // session.allocateDefaultPTY();
@@ -74,10 +74,11 @@ public class CmdAction extends Action {
             } catch (final Exception e) {
                 exitStatus = 1;
                 handleException("Exception executing command on server : " + command + ", server : " + server.getIp(), e);
-                ThreadUtilities.sleep(getSleep());
             }
             mustRetry = (exitStatus != null && exitStatus > 0) && retry-- >= 0;
-            logger.info("Retrying : " + mustRetry);
+            if (mustRetry) {
+                logger.info("Retrying : " + exitStatus);
+            }
         } while (mustRetry);
     }
 
