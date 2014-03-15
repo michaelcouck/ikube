@@ -239,7 +239,7 @@
         property:commands-ref="start-commands-one"/>
     <util:list id="start-commands-one">
 	<value>${tomcat-one-chmod}</value>
-        <value>${tomcat-one-startup}</value>
+	<value>${tomcat-one-startup}</value>
     </util:list>
     <!-- End one -->
 
@@ -330,6 +330,7 @@
         property:commands-ref="start-commands-two"/>
     <util:list id="start-commands-two">
 	<value>${tomcat-two-chmod}</value>
+	<value>sleep 15;</value>
         <value>${tomcat-two-startup}</value>
     </util:list>
     <!-- End two -->
@@ -420,6 +421,7 @@
         property:commands-ref="start-commands-three"/>
     <util:list id="start-commands-three">
 	<value>${tomcat-three-chmod}</value>
+	<value>sleep 30;</value>
         <value>${tomcat-three-startup}</value>
     </util:list>
     <!-- End three -->
