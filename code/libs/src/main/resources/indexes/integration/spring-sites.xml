@@ -34,6 +34,7 @@
 	<util:list id="sites-indexables">
 		<ref local="ibm" />
 		<ref local="oki" />
+        <ref local="guardian" />
 	</util:list>
 	
 	<bean
@@ -57,6 +58,22 @@
 		class="ikube.model.IndexableInternet"
 		property:name="oki"
 		property:url="http://belgium.oki.com/" 
+		property:idFieldName="id"
+		property:titleFieldName="title"
+		property:contentFieldName="content"
+		property:analyzed="true"
+		property:stored="true"
+		property:vectored="true"
+		property:internetBatchSize="1000"
+		property:excludedPattern="${internet.excluded.pattern}"
+		property:strategies-ref="sites-strategies"
+        property:threads="20"/>
+
+	<bean
+		id="guardian"
+		class="ikube.model.IndexableInternet"
+		property:name="guardian"
+		property:url="http://www.theguardian.com"
 		property:idFieldName="id"
 		property:titleFieldName="title"
 		property:contentFieldName="content"
