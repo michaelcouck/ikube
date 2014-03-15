@@ -2,6 +2,9 @@ package ikube.analytics;
 
 import ikube.AbstractTest;
 import ikube.IConstants;
+import ikube.analytics.action.Builder;
+import ikube.analytics.action.Creator;
+import ikube.analytics.action.Trainer;
 import ikube.analytics.weka.WekaClassifier;
 import ikube.model.Analysis;
 import ikube.model.AnalyzerInfo;
@@ -67,7 +70,7 @@ public class AnalyticsServiceTest extends AbstractTest {
         analyticsService.create(context);
         verify(context, atLeastOnce()).getName();
 
-        IAnalyzer analyzer = analyticsService.new Creator(context).call();
+        IAnalyzer analyzer = new Creator(context).call();
         assertNotNull(analyzer);
         verify(context, atLeastOnce()).setFilter(any());
     }
@@ -78,7 +81,7 @@ public class AnalyticsServiceTest extends AbstractTest {
         analyticsService.train(analysis);
         verify(analysis, atLeastOnce()).getAnalyzer();
 
-        IAnalyzer analyzer = analyticsService.new Trainer(this.analysis).call();
+        IAnalyzer analyzer = new Trainer(this.analysis).call();
         assertNotNull(analyzer);
         verify(analyzer, atLeastOnce()).train(any());
     }
@@ -89,7 +92,7 @@ public class AnalyticsServiceTest extends AbstractTest {
         analyticsService.build(analysis);
         verify(analysis, atLeastOnce()).getAnalyzer();
 
-        IAnalyzer analyzer = analyticsService.new Builder(this.analysis).call();
+        IAnalyzer analyzer = new Builder(this.analysis).call();
         assertNotNull(analyzer);
         verify(analyzer, atLeastOnce()).build(any(Context.class));
     }
