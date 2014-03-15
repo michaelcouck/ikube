@@ -5,6 +5,7 @@ import ikube.deploy.model.Server;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
 import ikube.toolkit.ThreadUtilities;
+import net.schmizz.sshj.SSHClient;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,8 +112,12 @@ public final class Deployer {
     }
 
     private static void execute(final Server server) {
-        for (final IAction action : server.getActions()) {
-            execute(server, action);
+        try {
+            for (final IAction action : server.getActions()) {
+                execute(server, action);
+            }
+        } finally {
+            disconnect(server.getSshExec());
         }
     }
 
@@ -121,6 +126,16 @@ public final class Deployer {
             action.execute(server);
         } catch (final Exception e) {
             LOGGER.error("Exception executing action : " + action + ", server : " + server, e);
+        }
+    }
+
+    protected static void disconnect(final SSHClient sshExec) {
+        try {
+            if (sshExec != null) {
+                sshExec.disconnect();
+            }
+        } catch (final Exception e) {
+            LOGGER.error("Exception disconnecting to server : " + sshExec, e);
         }
     }
 

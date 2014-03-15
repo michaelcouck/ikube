@@ -1,6 +1,6 @@
 package ikube.deploy.action;
 
-import ikube.toolkit.ThreadUtilities;
+import ikube.deploy.model.Server;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
 import org.slf4j.Logger;
@@ -24,33 +24,31 @@ public abstract class Action implements IAction {
     protected long sleep;
     protected boolean breakOnError;
 
-    protected SSHClient getSshExec(final String ip, final String username, final String password) {
+    protected SSHClient getSshExec(final Server server) {
+        if (server.getSshExec() != null) {
+            return server.getSshExec();
+        }
+
+        String ip = server.getIp();
+        String username = server.getUsername();
+        String password = server.getPassword();
+
         int retry = RETRY;
-        SSHClient sshExec = null;
         do {
             try {
-                sshExec = new SSHClient();
+                SSHClient sshExec = new SSHClient();
                 logger.info("Connecting to : " + ip + " as " + username);
                 sshExec.addHostKeyVerifier(new PromiscuousVerifier());
                 sshExec.connect(ip);
                 sshExec.authPassword(username, password.toCharArray());
                 // sshExec.loadKnownHosts();
+                server.setSshExec(sshExec);
             } catch (final Exception e) {
                 handleException("Exception connecting to : " + ip + ", retrying : " + (retry > 0), e);
-                disconnect(sshExec);
+                // disconnect(server.getSshExec());
             }
-        } while (sshExec == null && retry-- >= 0);
-        return sshExec;
-    }
-
-    protected void disconnect(final SSHClient sshExec) {
-        try {
-            if (sshExec != null) {
-                sshExec.disconnect();
-            }
-        } catch (final Exception e) {
-            handleException("Exception closing connection : " + sshExec, e);
-        }
+        } while (server.getSshExec() == null && retry-- >= 0);
+        return server.getSshExec();
     }
 
     protected void handleException(final String message, final Exception exception) {

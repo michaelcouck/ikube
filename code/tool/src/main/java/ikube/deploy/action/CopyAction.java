@@ -28,7 +28,7 @@ public class CopyAction extends Action {
     public boolean execute(final Server server) {
         String dotFolder = FileUtilities.cleanFilePath(new File(".").getAbsolutePath());
         logger.info("Dot folder : " + dotFolder);
-        SSHClient sshExec = getSshExec(server.getIp(), server.getUsername(), server.getPassword());
+        SSHClient sshExec = getSshExec(server);
         // sshExec.useCompression();
         if (directories != null) {
             for (final Map.Entry<String, String> filePair : directories.entrySet()) {

@@ -1,6 +1,7 @@
 package ikube.deploy.model;
 
 import ikube.deploy.action.IAction;
+import net.schmizz.sshj.SSHClient;
 
 import java.util.Collection;
 
@@ -10,6 +11,8 @@ import java.util.Collection;
  * @version 01.00
  */
 public class Server {
+
+    private transient SSHClient sshExec;
 
 	private String ip;
 	private String username;
@@ -49,4 +52,11 @@ public class Server {
 		this.actions = actions;
 	}
 
+    public SSHClient getSshExec() {
+        return sshExec;
+    }
+
+    public void setSshExec(SSHClient sshExec) {
+        this.sshExec = sshExec;
+    }
 }

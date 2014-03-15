@@ -25,16 +25,12 @@ public class CmdAction extends Action {
 
     @Override
     public boolean execute(final Server server) throws Exception {
-        SSHClient sshExec = getSshExec(server.getIp(), server.getUsername(), server.getPassword());
+        SSHClient sshExec = getSshExec(server);
         logger.debug("Ssh exec : " + sshExec + ", " + commands);
-        try {
-            if (commands != null) {
-                for (final String command : commands) {
-                    execute(sshExec, server, command);
-                }
+        if (commands != null) {
+            for (final String command : commands) {
+                execute(sshExec, server, command);
             }
-        } finally {
-            disconnect(sshExec);
         }
         return Boolean.TRUE;
     }
