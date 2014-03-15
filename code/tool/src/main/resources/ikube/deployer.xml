@@ -43,7 +43,7 @@
 
     <bean
         class="ikube.deploy.Deployer"
-        property:parallel="false"
+        property:parallel="true"
         property:maxWaitTime="60"
         property:servers-ref="servers"/>
 
@@ -192,7 +192,7 @@
     <util:list id="clean-commands-one">
         <value>chmod 777 -R ${tomcat-one};</value>
 
-        <!-- value>rm -rf ${tomcat-one-bin}/ikube;</value -->
+        <value>rm -rf ${tomcat-one-bin}/ikube;</value>
         <value>rm -rf ${tomcat-one}/webapps/ikube;</value>
         <value>rm -rf ${tomcat-one}/webapps/ikube.war;</value>
 
@@ -200,7 +200,7 @@
         <value>rm -rf ${tomcat-one}/temp;</value>
         <value>rm -rf ${tomcat-one}/work;</value>
 
-        <!-- value>mkdir -p ${tomcat-one-bin}/ikube;</value -->
+        <value>mkdir -p ${tomcat-one-bin}/ikube;</value>
 
         <value>mkdir -p ${tomcat-one}/logs;</value>
         <value>mkdir -p ${tomcat-one}/temp;</value>
@@ -224,7 +224,7 @@
     </util:map>
     <util:map id="directories-one">
         <entry key="${resources-directory}/ikube" value="${tomcat-one-bin}"/>
-        <!-- entry key="${resources-directory}/analytics" value="${tomcat-one-bin}/ikube"/ -->
+        <entry key="${resources-directory}/analytics" value="${tomcat-one-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/integration" value="${tomcat-one-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/production" value="${tomcat-one-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/twitter" value="${tomcat-one-bin}/ikube"/>
