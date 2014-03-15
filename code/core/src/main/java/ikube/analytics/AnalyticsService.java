@@ -1,19 +1,22 @@
 package ikube.analytics;
 
+import ikube.analytics.action.*;
 import ikube.cluster.IClusterManager;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.ThreadUtilities;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.Converter;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * This class is implemented as a state pattern. The user specifies the type of analyzer, and the
@@ -36,178 +39,12 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
         }, Timestamp.class);
     }
 
-    /**
-     * Remote class to call for creation.
-     */
-    public class Creator implements Callable<IAnalyzer> {
-
-        private Context context;
-
-        public Creator(final Context context) {
-            this.context = context;
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public IAnalyzer call() throws Exception {
-            // Instantiate the classifier, the algorithm and the filter
-            Object analyzerName = context.getAnalyzerInfo().getAnalyzer();
-            Object algorithmName = context.getAnalyzerInfo().getAlgorithm();
-            Object filterName = context.getAnalyzerInfo().getFilter();
-            context.setAnalyzer(Class.forName(String.valueOf(analyzerName)).newInstance());
-            context.setAlgorithm(Class.forName(String.valueOf(algorithmName)).newInstance());
-            if (filterName != null && !StringUtils.isEmpty(String.valueOf(filterName))) {
-                context.setFilter(Class.forName(String.valueOf(filterName)).newInstance());
-            }
-            return AnalyzerManager.buildAnalyzer(context);
-        }
-    }
-
-    /**
-     * Remote class to call for training.
-     */
-    public class Trainer implements Callable<IAnalyzer> {
-
-        private Analysis analysis;
-
-        public Trainer(final Analysis analysis) {
-            this.analysis = analysis;
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public IAnalyzer call() throws Exception {
-            IAnalyzer analyzer = getAnalyzer(analysis.getAnalyzer());
-            analyzer.train(analysis);
-            return analyzer;
-        }
-    }
-
-    /**
-     * Remote class to call for building.
-     */
-    public class Builder implements Callable<IAnalyzer> {
-
-        private Analysis analysis;
-
-        public Builder(final Analysis analysis) {
-            this.analysis = analysis;
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public IAnalyzer call() throws Exception {
-            Context context = getContext(analysis.getAnalyzer());
-            IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();
-            analyzer.build(context);
-            return analyzer;
-        }
-    }
-
-    /**
-     * Remote class to call for analyzing.
-     */
-    public class Analyzer implements Callable<Analysis> {
-
-        private Analysis analysis;
-
-        public Analyzer(final Analysis analysis) {
-            this.analysis = analysis;
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public Analysis call() throws Exception {
-            IAnalyzer<I, O, C> analyzer = getAnalyzer(analysis.getAnalyzer());
-            analyzer.analyze((I) analysis);
-            return analysis;
-        }
-    }
-
-    /**
-     * Remote class to call for classes or clusters.
-     */
-    public class ClassesOrClusters implements Callable<Analysis> {
-
-        private Analysis analysis;
-
-        public ClassesOrClusters(final Analysis analysis) {
-            this.analysis = analysis;
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public Analysis call() throws Exception {
-            IAnalyzer analyzer = getAnalyzer(analysis.getAnalyzer());
-            Object[] classesOrClusters = analyzer.classesOrClusters();
-            analysis.setClassesOrClusters(classesOrClusters);
-            return analysis;
-        }
-    }
-
-    /**
-     * Remote class to call for sizes of classes or clusters.
-     */
-    public class SizesForClassesOrClusters implements Callable<Analysis> {
-
-        private Analysis analysis;
-
-        public SizesForClassesOrClusters(final Analysis analysis) {
-            this.analysis = analysis;
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public Analysis call() throws Exception {
-            String clazz = analysis.getClazz();
-            classesOrClusters(analysis);
-            Object[] classesOrClusters = analysis.getClassesOrClusters();
-            int[] sizesForClassesOrClusters = new int[analysis.getClassesOrClusters().length];
-            IAnalyzer analyzer = getAnalyzer(analysis.getAnalyzer());
-            for (int i = 0; i < classesOrClusters.length; i++) {
-                analysis.setClazz(classesOrClusters[i].toString());
-                int sizeForClass = analyzer.sizeForClassOrCluster(analysis);
-                sizesForClassesOrClusters[i] = sizeForClass;
-            }
-            analysis.setClazz(clazz);
-            analysis.setSizesForClassesOrClusters(sizesForClassesOrClusters);
-            return analysis;
-        }
-    }
-
-    /**
-     * Remote class to call for destroying the analyzer.
-     */
-    public class Destroyer implements Callable {
-
-        private Context context;
-
-        public Destroyer(final Context context) {
-            this.context = context;
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public Object call() throws Exception {
-            Context context = getContexts().remove(this.context.getName());
-            if (context != null) {
-                IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();
-                if (analyzer != null) {
-                    try {
-                        analyzer.destroy(context);
-                    } catch (final Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                    return analyzer;
-                }
-            }
-            return null;
-        }
-    }
-
     @Autowired
     private IClusterManager clusterManager;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public IAnalyzer<I, O, C> create(final Context context) {
@@ -217,6 +54,9 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
         return getAnalyzer(context.getName());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public IAnalyzer<I, O, C> train(final Analysis<I, O> analysis) {
@@ -226,6 +66,9 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
         return getAnalyzer(analysis.getAnalyzer());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public IAnalyzer<I, O, C> build(final Analysis<I, O> analysis) {
@@ -235,6 +78,9 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
         return getAnalyzer(analysis.getAnalyzer());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public Analysis<I, O> analyze(final Analysis<I, O> analysis) {
@@ -258,6 +104,9 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public Analysis classesOrClusters(final Analysis<I, O> analysis) {
@@ -281,6 +130,9 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public Analysis<I, O> sizesForClassesOrClusters(final Analysis<I, O> analysis) {
@@ -304,6 +156,9 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public IAnalyzer<I, O, C> destroy(final Context context) {
@@ -318,11 +173,17 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Context getContext(final String name) {
         return getContexts().get(name);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Map<String, IAnalyzer> getAnalyzers() {
         Map<String, Context> contexts = getContexts();
@@ -333,13 +194,20 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
         return analyzers;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Map<String, Context> getContexts() {
         return AnalyzerManager.getContexts();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     @SuppressWarnings("unchecked")
-    IAnalyzer<I, O, C> getAnalyzer(final String analyzerName) {
+    public IAnalyzer<I, O, C> getAnalyzer(final String analyzerName) {
         Context context = getContext(analyzerName);
         if (context == null) {
             return null;
