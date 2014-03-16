@@ -20,6 +20,7 @@ public class Trainer extends Action<IAnalyzer> {
     @SuppressWarnings("unchecked")
     public IAnalyzer call() throws Exception {
         IAnalyzer analyzer = getAnalyticsService().getAnalyzer(analysis.getAnalyzer());
+        System.out.println("Training remotely : " + analyzer);
         analyzer.train(analysis);
         return analyzer;
     }

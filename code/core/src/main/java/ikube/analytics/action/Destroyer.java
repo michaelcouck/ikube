@@ -20,6 +20,7 @@ public class Destroyer extends Action {
     @SuppressWarnings("unchecked")
     public Object call() throws Exception {
         Context context = (Context) getAnalyticsService().getContexts().remove(this.context.getName());
+        System.out.println("Destroying remotely : " + context);
         if (context != null) {
             IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();
             if (analyzer != null) {

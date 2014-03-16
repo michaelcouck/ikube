@@ -22,6 +22,7 @@ public class Builder extends Action<IAnalyzer> {
     public IAnalyzer call() throws Exception {
         Context context = getAnalyticsService().getContext(analysis.getAnalyzer());
         IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();
+        System.out.println("Building remotely : " + context + ", " + analyzer);
         analyzer.build(context);
         return analyzer;
     }

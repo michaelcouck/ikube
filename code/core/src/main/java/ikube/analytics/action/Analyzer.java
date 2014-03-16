@@ -20,6 +20,7 @@ public class Analyzer extends Action<Analysis> {
     @SuppressWarnings("unchecked")
     public Analysis call() throws Exception {
         IAnalyzer analyzer = getAnalyticsService().getAnalyzer(analysis.getAnalyzer());
+        System.out.println("Analyzing remotely : " + analyzer);
         analyzer.analyze(analysis);
         return analysis;
     }

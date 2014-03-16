@@ -20,6 +20,7 @@ public class ClassesOrClusters extends Action<Analysis> {
     @SuppressWarnings("unchecked")
     public Analysis call() throws Exception {
         IAnalyzer analyzer = getAnalyticsService().getAnalyzer(analysis.getAnalyzer());
+        System.out.println("Classes or clusters remotely : " + analyzer);
         Object[] classesOrClusters = analyzer.classesOrClusters();
         analysis.setClassesOrClusters(classesOrClusters);
         return analysis;

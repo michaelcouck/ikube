@@ -23,6 +23,7 @@ public class Creator implements Callable<IAnalyzer> {
     @Override
     @SuppressWarnings("unchecked")
     public IAnalyzer call() throws Exception {
+        System.out.println("Creating remotely : " + context);
         // Instantiate the classifier, the algorithm and the filter
         Object analyzerName = context.getAnalyzerInfo().getAnalyzer();
         Object algorithmName = context.getAnalyzerInfo().getAlgorithm();

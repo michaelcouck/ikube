@@ -5,9 +5,13 @@ import ikube.model.IndexContext;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.CompositeReaderContext;
 import org.apache.lucene.index.MultiReader;
+import org.apache.lucene.index.SegmentReader;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.store.MMapDirectory;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -24,23 +28,42 @@ public class AreUnopenedIndexes extends ARule<IndexContext<?>> {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("ConstantConditions")
     @Override
+    @SuppressWarnings("ConstantConditions")
     public boolean evaluate(final IndexContext<?> indexContext) {
-        IndexSearcher searchers = indexContext.getMultiSearcher();
-        if (searchers == null) {
+        IndexSearcher indexSearcher = indexContext.getMultiSearcher();
+        if (indexSearcher == null) {
             return new AreIndexesCreated().evaluate(indexContext);
         }
         String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
         File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
-        if (latestIndexDirectory == null || latestIndexDirectory.listFiles() == null || latestIndexDirectory.listFiles().length == 0) {
+        if (latestIndexDirectory == null ||
+                latestIndexDirectory.listFiles() == null ||
+                latestIndexDirectory.listFiles().length == 0) {
             return Boolean.FALSE;
         }
-        MultiReader multiReader = (MultiReader) searchers.getIndexReader();
+        // This block checks that all the directories that have
+        // indexes are in fact opened and are accessible in the index readers
+        // of the index searcher
+        logger.debug("Checking latest index directory for new indexes : {} ", latestIndexDirectory);
+        List<File> indexDirectories = new ArrayList<>(Arrays.asList(latestIndexDirectory.listFiles()));
+        MultiReader multiReader = (MultiReader) indexSearcher.getIndexReader();
         CompositeReaderContext compositeReaderContext = multiReader.getContext();
         List<AtomicReaderContext> atomicReaderContexts = compositeReaderContext.leaves();
-        logger.debug("Checking latest index directory for new indexes : {} ", latestIndexDirectory);
-        return atomicReaderContexts.size() != latestIndexDirectory.listFiles().length;
+        for (final AtomicReaderContext atomicReaderContext : atomicReaderContexts) {
+            SegmentReader atomicReader = (SegmentReader) atomicReaderContext.reader();
+            logger.debug("Atomic reader : " + atomicReader.getClass().getName());
+            MMapDirectory directory = (MMapDirectory) atomicReader.directory();
+            logger.debug("Directory : " + directory.getClass().getName());
+            for (int i = 0; i < indexDirectories.size(); i++) {
+                if (directory.getDirectory().equals(indexDirectories.get(i))) {
+                    indexDirectories.remove(i);
+                    break;
+                }
+            }
+        }
+        // return atomicReaderContexts.size() != latestIndexDirectory.listFiles().length;
+        return indexDirectories.size() > 0;
     }
 
 }

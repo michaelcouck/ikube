@@ -57,7 +57,7 @@ public class Reopen extends Action<IndexContext<?>, Boolean> {
         IndexReader indexReader = new MultiReader(newIndexReaderArray, Boolean.FALSE);
         IndexSearcher indexSearcher = new IndexSearcher(indexReader);
         indexContext.setMultiSearcher(indexSearcher);
-        logger.info("Opening new searcher : " + indexContext.getMultiSearcher().hashCode());
+        logger.info("Re-opening searcher : " + indexContext.getName());
         if (oldIndexSearcher != null && oldIndexSearcher.getIndexReader() != null) {
             oldIndexSearcher.getIndexReader().close();
         }

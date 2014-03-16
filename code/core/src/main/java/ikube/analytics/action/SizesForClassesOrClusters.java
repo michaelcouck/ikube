@@ -20,6 +20,7 @@ public class SizesForClassesOrClusters extends Action<Analysis> {
     @SuppressWarnings("unchecked")
     public Analysis call() throws Exception {
         String clazz = analysis.getClazz();
+        System.out.println("Sizes for classes and clusters remotely : " + clazz);
         getAnalyticsService().classesOrClusters(analysis);
         Object[] classesOrClusters = analysis.getClassesOrClusters();
         int[] sizesForClassesOrClusters = new int[analysis.getClassesOrClusters().length];

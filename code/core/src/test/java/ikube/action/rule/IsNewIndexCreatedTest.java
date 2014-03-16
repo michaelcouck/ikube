@@ -1,17 +1,19 @@
 package ikube.action.rule;
 
 import ikube.AbstractTest;
-import ikube.action.Open;
-import ikube.model.IndexContext;
 import ikube.toolkit.FileUtilities;
-import org.apache.lucene.index.IndexReaderContext;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.MultiReader;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.NIOFSDirectory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.io.File;
-import java.util.Arrays;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -32,33 +34,39 @@ public class IsNewIndexCreatedTest extends AbstractTest {
         FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 
-	@After
-	public void after() {
-		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
-	}
+    @After
+    public void after() {
+        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+    }
 
-	@Test
-	@SuppressWarnings("deprecation")
-	public void evaluate() throws Exception {
-		IndexReaderContext indexReaderContext = Mockito.mock(IndexReaderContext.class);
-		Mockito.when(indexReaderContext.children()).thenReturn(Arrays.asList(indexReaderContext));
-		Mockito.when(indexSearcher.getTopReaderContext()).thenReturn(indexReaderContext);
+    @Test
+    @SuppressWarnings("deprecation")
+    public void evaluate() throws Exception {
+        when(indexContext.getMultiSearcher()).thenReturn(null);
 
-		IsNewIndexCreated isNewIndexCreated = new IsNewIndexCreated();
-		boolean result = isNewIndexCreated.evaluate(indexContext);
-		assertFalse("There is no index created : ", result);
+        // Searcher null
+        IsNewIndexCreated isNewIndexCreated = new IsNewIndexCreated();
+        boolean result = isNewIndexCreated.evaluate(indexContext);
+        assertFalse("No index created : ", result);
 
-		createIndexFileSystem(indexContext, "Some data");
+        // Index not opened, so new index yes
+        File latestIndexDirectory = createIndexFileSystem(indexContext, "Some data");
+        result = isNewIndexCreated.evaluate(indexContext);
+        assertTrue("New index available : ", result);
 
-		result = isNewIndexCreated.evaluate(indexContext);
-		assertTrue("The index is created : ", result);
+        Directory directory = NIOFSDirectory.open(latestIndexDirectory);
+        logger.info("Directory : " + directory);
+        IndexReader indexReader = DirectoryReader.open(directory);
+        MultiReader multiReader = new MultiReader(indexReader);
+        IndexSearcher searcher = new IndexSearcher(multiReader);
 
-		result = isNewIndexCreated.evaluate(indexContext);
-		assertTrue("The latest index is already opened : ", result);
+        Mockito.when(indexContext.getMultiSearcher()).thenReturn(searcher);
+        result = isNewIndexCreated.evaluate(indexContext);
+        assertFalse("The latest index is already opened : ", result);
 
-		createIndexFileSystem(indexContext, "Some more data");
-		result = isNewIndexCreated.evaluate(indexContext);
-		assertTrue("There is a new index, and the searcher is open on the old one : ", result);
-	}
+        createIndexFileSystem(indexContext, "Some more data");
+        result = isNewIndexCreated.evaluate(indexContext);
+        assertTrue("There is a new index, and the searcher is open on the old one : ", result);
+    }
 
 }
