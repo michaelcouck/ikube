@@ -94,11 +94,11 @@ public final class ThreadUtilities {
      * This method will wait for all the futures to finish their logic.
      *
      * @param futures the futures to wait for in seconds
-     * @param maxWait and the maximum amount of time to wait in seconds
+     * @param seconds and the maximum amount of time to wait in seconds
      */
-    public static <T> void waitForFutures(final List<Future<T>> futures, final long maxWait) {
+    public static <T> void waitForFutures(final List<Future<T>> futures, final long seconds) {
         for (final Future<?> future : futures) {
-            ThreadUtilities.waitForFuture(future, maxWait);
+            ThreadUtilities.waitForFuture(future, seconds);
         }
     }
 
@@ -108,15 +108,15 @@ public final class ThreadUtilities {
      * If the future takes too long and passes the maximum wait time, then the method will return immediately.
      *
      * @param future  the future to wait for in seconds
-     * @param maxWait the maximum amount of time to wait in seconds
+     * @param seconds the maximum amount of time to wait in seconds
      */
-    public static void waitForFuture(final Future<?> future, final long maxWait) {
+    public static void waitForFuture(final Future<?> future, final long seconds) {
         if (future == null) {
             LOGGER.info("Future null returning : ");
             return;
         }
         try {
-            future.get(maxWait, TimeUnit.SECONDS);
+            future.get(seconds, TimeUnit.SECONDS);
         } catch (final InterruptedException e) {
             LOGGER.info("Coitus interruptus... : " + e.getMessage());
         } catch (final TimeoutException e) {
@@ -159,11 +159,11 @@ public final class ThreadUtilities {
     /**
      * This method will just sleep for the specified time without the interrupted exception needing to be caught.
      *
-     * @param sleep the time for the current thread to sleep in milli seconds
+     * @param milliSeconds the time for the current thread to sleep in milli seconds
      */
-    public static void sleep(final long sleep) {
+    public static void sleep(final long milliSeconds) {
         try {
-            Thread.sleep(sleep);
+            Thread.sleep(milliSeconds);
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
@@ -174,12 +174,12 @@ public final class ThreadUtilities {
      * This method will just wait for the specified time without the interrupted exception needing to be caught. When
      * a thread goes into wait in a synchronized block he releases the lock.
      *
-     * @param sleep the time for the current thread to sleep in milli seconds
+     * @param milliSeconds the time for the current thread to sleep in milli seconds
      */
     @SuppressWarnings("UnusedDeclaration")
-    public static void waitABit(final long sleep) {
+    public static void waitABit(final long milliSeconds) {
         try {
-            Thread.currentThread().wait(sleep);
+            Thread.currentThread().wait(milliSeconds);
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);

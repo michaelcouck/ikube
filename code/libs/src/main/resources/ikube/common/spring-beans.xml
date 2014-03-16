@@ -154,10 +154,12 @@
 
     <!-- Service layer entities. -->
     <bean
-        id="ikube.search.SearcherService"
+        id="ikube.search.ISearcherService"
+        name="ikube.search.ISearcherService"
         class="ikube.search.SearcherService"/>
     <bean
-        id="ikube.cluster.MonitorService"
+        id="ikube.cluster.IMonitorService"
+        name="ikube.cluster.IMonitorService"
         class="ikube.cluster.MonitorService"/>
 
     <bean

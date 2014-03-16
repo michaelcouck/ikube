@@ -25,7 +25,7 @@ public class Searcher implements Callable<ikube.model.Search>, Serializable {
             // Server server = clusterManager.getServer();
             // String localAddress = server.getAddress();
             // System.out.println("Executing remote search : " + localAddress);
-            ISearcherService searcherService = getBean(ISearcherService.class);
+            ISearcherService searcherService = getBean(ISearcherService.class.getName());
             return searcherService.doSearch(search);
             // System.out.println("Finished remote search : " + remoteSearch);
             // return remoteSearch;

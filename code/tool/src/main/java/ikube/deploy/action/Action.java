@@ -37,6 +37,8 @@ public abstract class Action implements IAction {
         do {
             try {
                 SSHClient sshExec = new SSHClient();
+                sshExec.setTimeout(600);
+                sshExec.setConnectTimeout(600);
                 logger.info("Connecting to : " + ip + " as " + username);
                 sshExec.addHostKeyVerifier(new PromiscuousVerifier());
                 sshExec.connect(ip);
