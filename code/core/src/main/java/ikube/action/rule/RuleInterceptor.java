@@ -197,9 +197,10 @@ public class RuleInterceptor implements IRuleInterceptor {
             final boolean result,
             final Map<String, Object> results) {
         LOGGER.info("Logging : ");
-        Object[] parameters = {indexContext.getName(), action.getClass().getSimpleName(), predicate};
-        LOGGER.info("Rule evaluation of index : {}, action : {}, predicate : {}", parameters);
-        LOGGER.info("Rules evaluation result : {}, results : {}", new Object[]{result, results});
+        LOGGER.info("Rule evaluation of index : " + indexContext.getName() +
+                ", action : " + action.getClass().getSimpleName() +
+                ", predicate : " + predicate);
+        LOGGER.info("Rules evaluation result : " + result + ", results : " + results);
     }
 
 }
