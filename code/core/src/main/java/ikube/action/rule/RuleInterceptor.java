@@ -46,7 +46,7 @@ public class RuleInterceptor implements IRuleInterceptor {
      */
     @Override
     @SuppressWarnings("rawtypes")
-    public synchronized Object decide(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+    public Object decide(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         try {
             Object target = proceedingJoinPoint.getTarget();
             boolean proceed = Boolean.TRUE;
@@ -61,7 +61,7 @@ public class RuleInterceptor implements IRuleInterceptor {
                         proceedWithLocked = clusterManager.lock(IConstants.IKUBE);
                     }
                     if (!proceedWithLocked) {
-                        LOGGER.debug("Couldn't get cluster lock : ", proceedingJoinPoint.getTarget());
+                        LOGGER.info("Couldn't get cluster lock : ", proceedingJoinPoint.getTarget());
                         proceed = Boolean.FALSE;
                     } else {
                         // Find the index context
@@ -77,10 +77,13 @@ public class RuleInterceptor implements IRuleInterceptor {
                 }
             }
             if (proceed) {
+                LOGGER.info("Proceeding : ");
                 proceed(indexContext, proceedingJoinPoint);
+            } else {
+                LOGGER.info("Not proceeding : ");
             }
         } finally {
-            notifyAll();
+            // notifyAll();
         }
         return Boolean.TRUE;
     }
@@ -93,7 +96,7 @@ public class RuleInterceptor implements IRuleInterceptor {
      *
      * @param proceedingJoinPoint the intercepted action join point
      */
-    protected synchronized void proceed(final IndexContext<?> indexContext, final ProceedingJoinPoint proceedingJoinPoint) {
+    protected void proceed(final IndexContext<?> indexContext, final ProceedingJoinPoint proceedingJoinPoint) {
         try {
             // We set the working flag in the action within the cluster lock when setting to true
             Runnable runnable = new Runnable() {
@@ -116,7 +119,7 @@ public class RuleInterceptor implements IRuleInterceptor {
             };
             ThreadUtilities.submit(runnable.toString(), runnable);
         } finally {
-            notifyAll();
+            // notifyAll();
         }
     }
 
@@ -147,9 +150,7 @@ public class RuleInterceptor implements IRuleInterceptor {
             Expression expression = jexlEngine.createExpression(predicate);
             Object result = expression.evaluate(jexlContext);
             finalResult = result != null && (result.equals(1.0d) || result.equals(Boolean.TRUE));
-            if (LOGGER.isInfoEnabled()) {
-                log(indexContext, action, predicate, finalResult, results);
-            }
+            log(indexContext, action, predicate, finalResult, results);
         }
         return finalResult;
     }
