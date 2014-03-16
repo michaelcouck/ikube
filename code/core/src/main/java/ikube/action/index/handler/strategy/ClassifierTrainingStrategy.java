@@ -85,7 +85,7 @@ public class ClassifierTrainingStrategy extends AStrategy {
             analysis.setClazz(clazz);
             analysis.setInput(content);
             analysis.setAnalyzer(context.getName());
-            analysis.setDistributed(Boolean.FALSE);
+            analysis.setDistributed(Boolean.TRUE);
             analysis = analyticsService.sizesForClassesOrClusters(analysis);
             // classifier.sizeForClassOrCluster(analysis);
 
