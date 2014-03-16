@@ -46,14 +46,16 @@ public class RuleInterceptor implements IRuleInterceptor {
      */
     @Override
     @SuppressWarnings("rawtypes")
-    public Object decide(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+    public synchronized Object decide(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         try {
+            LOGGER.info("Rule interceptor decide : ");
             Object target = proceedingJoinPoint.getTarget();
             boolean proceed = Boolean.TRUE;
             IndexContext<?> indexContext = null;
             if (!IAction.class.isAssignableFrom(target.getClass())) {
                 LOGGER.warn("Can't intercept non action class, proceeding : " + target);
             } else {
+                LOGGER.info("Rule interceptor decide : ");
                 IAction action = (IAction) target;
                 try {
                     boolean proceedWithLocked = Boolean.TRUE;
@@ -76,6 +78,7 @@ public class RuleInterceptor implements IRuleInterceptor {
                     clusterManager.unlock(IConstants.IKUBE);
                 }
             }
+            LOGGER.info("Rule interceptor decide : ");
             if (proceed) {
                 LOGGER.info("Proceeding : ");
                 proceed(indexContext, proceedingJoinPoint);
@@ -83,7 +86,7 @@ public class RuleInterceptor implements IRuleInterceptor {
                 LOGGER.info("Not proceeding : ");
             }
         } finally {
-            // notifyAll();
+            notifyAll();
         }
         return Boolean.TRUE;
     }
@@ -96,7 +99,7 @@ public class RuleInterceptor implements IRuleInterceptor {
      *
      * @param proceedingJoinPoint the intercepted action join point
      */
-    protected void proceed(final IndexContext<?> indexContext, final ProceedingJoinPoint proceedingJoinPoint) {
+    protected synchronized void proceed(final IndexContext<?> indexContext, final ProceedingJoinPoint proceedingJoinPoint) {
         try {
             // We set the working flag in the action within the cluster lock when setting to true
             Runnable runnable = new Runnable() {
@@ -119,7 +122,7 @@ public class RuleInterceptor implements IRuleInterceptor {
             };
             ThreadUtilities.submit(runnable.toString(), runnable);
         } finally {
-            // notifyAll();
+            notifyAll();
         }
     }
 
