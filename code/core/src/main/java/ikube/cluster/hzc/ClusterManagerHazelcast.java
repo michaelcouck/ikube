@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("SpringJavaAutowiringInspection")
 public class ClusterManagerHazelcast extends AClusterManager {
 
+    private Random random;
     /**
      * The instance of this server.
      */
@@ -48,6 +49,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
 
     @SuppressWarnings("StringBufferReplaceableByString")
     public void initialize() {
+        random = new Random();
         ip = UriUtilities.getIp();
         Hazelcast.setOutOfMemoryHandler(outOfMemoryHandler);
         int port = hazelcastInstance.getCluster().getLocalMember().getInetSocketAddress().getPort();
@@ -279,7 +281,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
     public <T> Future<T> sendTask(final Callable<T> callable) {
         IExecutorService executorService = hazelcastInstance.getExecutorService(IConstants.EXECUTOR_SERVICE);
         List<Member> members = new ArrayList<>(hazelcastInstance.getCluster().getMembers());
-        Member member = members.get(new Random().nextInt(members.size()));
+        Member member = members.get(random.nextInt(members.size()));
         return executorService.submitToMember(callable, member);
     }
 

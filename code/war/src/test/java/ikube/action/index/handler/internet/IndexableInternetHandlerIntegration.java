@@ -53,7 +53,7 @@ public class IndexableInternetHandlerIntegration extends IntegrationTest {
 
     @After
     public void after() {
-        // FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 
     @Test

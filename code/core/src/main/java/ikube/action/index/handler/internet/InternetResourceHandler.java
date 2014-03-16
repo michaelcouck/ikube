@@ -11,6 +11,7 @@ import ikube.action.index.parse.mime.MimeTypes;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
+import ikube.toolkit.HashUtilities;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
@@ -20,7 +21,8 @@ import java.io.*;
 import java.net.URI;
 
 /**
- * TODO: Document me...
+ * This class will parse the content from the url, extract a title if possible and
+ * persist the parsed content in the Lucene document with the correct field names.
  *
  * @author Michael Couck
  * @version 01.00
@@ -28,6 +30,9 @@ import java.net.URI;
  */
 public class InternetResourceHandler extends ResourceHandler<IndexableInternet> {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Document handleResource(
             final IndexContext<?> indexContext,
@@ -41,7 +46,12 @@ public class InternetResourceHandler extends ResourceHandler<IndexableInternet> 
         if (parsedContent == null) {
             return document;
         }
-        // url.setHash(HashUtilities.hash(url.getParsedContent()));
+        url.setHash(HashUtilities.hash(parsedContent));
+        if (indexContext.getHashes() != null && !indexContext.getHashes().add(url.getHash())) {
+            // Duplicate content, not interesting
+            logger.info("Duplicate : " + url.getUrl());
+            return document;
+        }
         // Add the id field, which is the url in this case
         IndexManager.addStringField(indexableInternet.getIdFieldName(), url.getUrl(), indexableInternet, document);
         // Add the title field
@@ -103,7 +113,7 @@ public class InternetResourceHandler extends ResourceHandler<IndexableInternet> 
             }
             if (outputStream != null) {
                 String parsedContent = outputStream.toString();
-                logger.info("Parsed content length : " + parsedContent.length() + ", content type : " + url.getContentType());
+                logger.debug("Parsed content length : " + parsedContent.length() + ", content type : " + url.getContentType());
                 url.setParsedContent(parsedContent);
             }
         } catch (final Exception e) {

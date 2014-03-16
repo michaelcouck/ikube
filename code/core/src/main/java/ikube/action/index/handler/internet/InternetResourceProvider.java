@@ -4,7 +4,9 @@ import com.googlecode.flaxcrawler.CrawlerConfiguration;
 import com.googlecode.flaxcrawler.CrawlerController;
 import com.googlecode.flaxcrawler.CrawlerException;
 import com.googlecode.flaxcrawler.DefaultCrawler;
+import com.googlecode.flaxcrawler.download.DefaultDownloader;
 import com.googlecode.flaxcrawler.download.DefaultDownloaderController;
+import com.googlecode.flaxcrawler.download.Downloader;
 import com.googlecode.flaxcrawler.model.CrawlerTask;
 import com.googlecode.flaxcrawler.model.Page;
 import com.googlecode.flaxcrawler.parse.DefaultParserController;
@@ -59,30 +61,34 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
     void initialize(final IndexableInternet indexableInternet) {
         urls = new Stack<>();
         final Pattern pattern = Pattern.compile(indexableInternet.getExcludedPattern());
-        // Setting up parser controller
-        /*DefaultDownloader downloader = new DefaultDownloader();
-        downloader.setAllowedContentTypes(null);
-        downloader.setMaxContentLength(indexableInternet.getMaxReadLength());
-        downloader.setConnectionTimeout(60000);
-        downloader.setDownloadRetryPeriod(60000);
-        downloader.setHeadRequest(Boolean.TRUE);
-        downloader.setKeepAlive(Boolean.TRUE);
-        downloader.setReadTimeout(60000);
-        downloader.setTriesCount(10);
-        downloader.setUserAgent("FlaxCrawler/1.1.0");*/
 
         DefaultParserController parserController = new DefaultParserController();
-        DefaultDownloaderController downloaderController = new DefaultDownloaderController();
-        // downloaderController.setGenericDownloader(downloader);
+        DefaultDownloaderController downloaderController = new DefaultDownloaderController() {
+
+            @Override
+            @SuppressWarnings("UnnecessaryLocalVariable")
+            public Downloader getDownloader(final URL url) {
+                DefaultDownloader defaultDownloader = (DefaultDownloader) super.getDownloader(url);
+                // Collection<String> mimeTypes = MimeTypes.getTypesCollection();
+                // mimeTypes.toArray(new String[mimeTypes.size()])
+                defaultDownloader.setAllowedContentTypes(null);
+                // NOTE: If you set this then nothing is downloaded!!!!!! WTF?
+                // defaultDownloader.setMaxContentLength(Long.MAX_VALUE);
+                defaultDownloader.setTriesCount(3);
+                return defaultDownloader;
+            }
+
+        };
 
         // Creating crawler configuration object
         CrawlerConfiguration configuration = new CrawlerConfiguration();
         // Creating some crawlers. The fetching is much faster than the indexing
-        // so we create many more threads to index than to fetch so we don't build up
+        // so we persist the excess urls in the database so we don't build up
         // urls on the stack
         for (int i = 0; i < indexableInternet.getThreads(); i++) {
             // Creating crawler and setting downloader and parser controllers
             DefaultCrawler crawler = new DefaultCrawler() {
+
                 @Override
                 protected void afterCrawl(final CrawlerTask crawlerTask, final Page page) {
                     super.afterCrawl(crawlerTask, page);
@@ -96,11 +102,13 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
                 }
 
                 @Override
-                public boolean shouldCrawl(CrawlerTask crawlerTask, CrawlerTask parent) {
-                    // Default implementation returns true if crawlerTask.getDomainName() == parent.getDomainName()
+                public boolean shouldCrawl(final CrawlerTask crawlerTask, final CrawlerTask parent) {
                     boolean excluded = pattern.matcher(crawlerTask.getUrl()).matches();
-                    return super.shouldCrawl(crawlerTask, parent) && !excluded;
+                    boolean shouldCrawl = super.shouldCrawl(crawlerTask, parent) && !excluded;
+                    logger.debug("Should crawl : " + shouldCrawl);
+                    return shouldCrawl;
                 }
+
             };
             crawler.setParserController(parserController);
             crawler.setDownloaderController(downloaderController);

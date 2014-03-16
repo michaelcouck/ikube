@@ -7,9 +7,7 @@ import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.Url;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class resets the data in the cluster. It is imperative that nothing gets reset if there are any servers
@@ -38,6 +36,7 @@ public class Reset extends Action<IndexContext<?>, Boolean> {
                 delete(dataBase, Url.class, Url.SELECT_FROM_URL_BY_NAME, parameters);
                 delete(dataBase, File.class, File.SELECT_FROM_FILE_BY_NAME, parameters);
             }
+            indexContext.setHashes(new TreeSet<Long>());
             return Boolean.TRUE;
         } finally {
             notifyAll();

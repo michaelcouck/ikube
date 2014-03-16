@@ -3,7 +3,6 @@ package ikube.action.index.handler.strategy;
 import ikube.IConstants;
 import ikube.action.index.handler.IStrategy;
 import ikube.analytics.IAnalyticsService;
-import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.model.IndexContext;
@@ -105,7 +104,7 @@ public class ClassifierTrainingStrategy extends AStrategy {
             try {
                 analyticsService.train(analysis);
                 // classifier.train(analysis);
-                if (classSize % 10 == 0) {
+                if (classSize % 100 == 0) {
                     logger.info("Training : " + clazz + ", language : " + language + ", class size : " + classSize);
                 }
                 if (buildThreshold == 0) {

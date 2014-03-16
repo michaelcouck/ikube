@@ -6,7 +6,6 @@ import ikube.database.IDataBase;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
-import ikube.toolkit.HashUtilities;
 import org.apache.lucene.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -55,9 +54,6 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
         } catch (final Exception e) {
             handleException(indexableInternet, e, "Exception indexing site : " + indexableInternet.getName());
         } finally {
-            if (url.getParsedContent() != null) {
-                url.setHash(HashUtilities.hash(url.getParsedContent()));
-            }
             url.setRawContent(null);
             url.setParsedContent(null);
         }
