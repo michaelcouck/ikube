@@ -56,7 +56,7 @@ public class IndexSchedule extends Schedule {
         // Lets try to shuffel the actions too!
         List<IAction<IndexContext<?>, Boolean>> actions = new ArrayList<>(this.actions);
         Collections.shuffle(actions);
-        LOGGER.info("Actions : " + actions.size());
+        LOGGER.debug("Actions : " + actions.size());
         for (final IAction<IndexContext<?>, Boolean> action : actions) {
             try {
                 ThreadUtilities.sleep(random.nextInt(30));

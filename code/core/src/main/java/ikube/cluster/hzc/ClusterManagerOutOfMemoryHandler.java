@@ -4,7 +4,7 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.OutOfMemoryHandler;
 
 /**
- * On an out of memory we terminate the server immediately, there is no revocering from this.
+ * On an out of memory we terminate the server immediately, there is no recovering from this.
  *
  * @author Michael Couck
  * @version 01.00
@@ -17,8 +17,12 @@ public class ClusterManagerOutOfMemoryHandler extends OutOfMemoryHandler {
      */
     @Override
     public void onOutOfMemory(final OutOfMemoryError oom, final HazelcastInstance[] hazelcastInstances) {
-        for (final HazelcastInstance hazelcastInstance : hazelcastInstances) {
-            ClusterManagerHazelcast.printStatistics(hazelcastInstance);
+        try {
+            for (final HazelcastInstance hazelcastInstance : hazelcastInstances) {
+                ClusterManagerHazelcast.printStatistics(hazelcastInstance);
+            }
+        } catch (final Throwable e) {
+            e.printStackTrace();
         }
         System.err.println("Out of memory, exiting jvm with extreme prejudice : ");
         System.exit(1);

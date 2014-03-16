@@ -249,71 +249,80 @@ public final class ApplicationContextManager implements ApplicationContextAware 
         }
     }
 
+    /**
+     * This class w<ill check if there are any changes in the configuration files
+     * and if so then refresh(restart) the application context. At the time of writing(15-03-2014)
+     * this was untested.
+     */
+    class ApplicationContextRefresher implements Runnable {
+
+        @Override
+        @SuppressWarnings("InfiniteLoopStatement")
+        public void run() {
+            List<File> configurationFiles = new ArrayList<>();
+            long sleep = IConstants.SIXTY_SECONDS;
+            do {
+                ThreadUtilities.sleep(sleep);
+                try {
+                    if (APPLICATION_CONTEXT == null) {
+                        continue;
+                    }
+                    List<File> newConfigurationFiles = new ArrayList<>();
+                    if (AbstractRefreshableWebApplicationContext.class.isAssignableFrom(APPLICATION_CONTEXT.getClass())) {
+                        String[] configLocations = ((AbstractRefreshableWebApplicationContext) APPLICATION_CONTEXT).getConfigLocations();
+                        for (final String configLocation : configLocations) {
+                            newConfigurationFiles.add(new File(configLocation));
+                        }
+                    } else {
+                        File configurationFile = new File(getConfigiFilePath());
+                        if (configurationFile.exists() && configurationFile.isFile() && configurationFile.canRead()) {
+                            List<File> springFiles = FileUtilities.findFilesRecursively(configurationFile.getParentFile(), new ArrayList<File>(), "spring.*\\.xml");
+                            List<File> propertiesFiles = FileUtilities.findFilesRecursively(configurationFile.getParentFile(), new ArrayList<File>(), "spring\\.properties");
+                            newConfigurationFiles.addAll(springFiles);
+                            newConfigurationFiles.addAll(propertiesFiles);
+                        }
+                    }
+                    boolean mustRefresh = Boolean.FALSE;
+                    if (configurationFiles.isEmpty()) {
+                        LOGGER.info("Initializing the files : ");
+                    } else if (configurationFiles.size() != newConfigurationFiles.size()) {
+                        // Refresh the application context
+                        LOGGER.info("Should refresh the application context : ");
+                        mustRefresh = Boolean.TRUE;
+                    } else {
+                        for (int i = 0; i < configurationFiles.size(); i++) {
+                            File one = configurationFiles.get(i);
+                            File two = newConfigurationFiles.get(i);
+                            if (one.lastModified() != two.lastModified()) {
+                                LOGGER.info("Should refresh the application context : ");
+                                mustRefresh = Boolean.TRUE;
+                                break;
+                            }
+                        }
+                    }
+                    LOGGER.info("Must refresh : " + mustRefresh);
+                    configurationFiles.clear();
+                    configurationFiles.addAll(newConfigurationFiles);
+                    if (mustRefresh) {
+                        if (AbstractRefreshableWebApplicationContext.class.isAssignableFrom(APPLICATION_CONTEXT.getClass())) {
+                            LOGGER.info("Refreshing application context : " + APPLICATION_CONTEXT);
+                            ((AbstractRefreshableWebApplicationContext) APPLICATION_CONTEXT).refresh();
+                        } else {
+                            LOGGER.info("Can't refresh application context : " + APPLICATION_CONTEXT.getClass().getName());
+                        }
+                    }
+                } catch (final Exception e) {
+                    // If we have an exception refreshing then sleep for longer
+                    sleep *= 2;
+                    LOGGER.error("Exception refreshing the application context : ", e);
+                }
+            } while (true);
+        }
+
+    }
 
     public void initialize() {
-        ThreadUtilities.submit(IConstants.APPLICATION_CONTEXT_REFRESHER, new Runnable() {
-            @SuppressWarnings("InfiniteLoopStatement")
-            public void run() {
-                List<File> configurationFiles = new ArrayList<>();
-                long sleep = IConstants.SIXTY_SECONDS;
-                do {
-                    ThreadUtilities.sleep(sleep);
-                    try {
-                        if (APPLICATION_CONTEXT == null) {
-                            continue;
-                        }
-                        List<File> newConfigurationFiles = new ArrayList<>();
-                        if (AbstractRefreshableWebApplicationContext.class.isAssignableFrom(APPLICATION_CONTEXT.getClass())) {
-                            String[] configLocations = ((AbstractRefreshableWebApplicationContext) APPLICATION_CONTEXT).getConfigLocations();
-                            for (final String configLocation : configLocations) {
-                                newConfigurationFiles.add(new File(configLocation));
-                            }
-                        } else {
-                            File configurationFile = new File(getConfigiFilePath());
-                            if (configurationFile.exists() && configurationFile.isFile() && configurationFile.canRead()) {
-                                List<File> springFiles = FileUtilities.findFilesRecursively(configurationFile.getParentFile(), new ArrayList<File>(), "spring.*\\.xml");
-                                List<File> propertiesFiles = FileUtilities.findFilesRecursively(configurationFile.getParentFile(), new ArrayList<File>(), "spring\\.properties");
-                                newConfigurationFiles.addAll(springFiles);
-                                newConfigurationFiles.addAll(propertiesFiles);
-                            }
-                        }
-                        boolean mustRefresh = Boolean.FALSE;
-                        if (configurationFiles.isEmpty()) {
-                            LOGGER.info("Initializing the files : ");
-                        } else if (configurationFiles.size() != newConfigurationFiles.size()) {
-                            // Refresh the application context
-                            LOGGER.info("Should refresh the application context : ");
-                            mustRefresh = Boolean.TRUE;
-                        } else {
-                            for (int i = 0; i < configurationFiles.size(); i++) {
-                                File one = configurationFiles.get(i);
-                                File two = newConfigurationFiles.get(i);
-                                if (one.lastModified() != two.lastModified()) {
-                                    LOGGER.info("Should refresh the application context : ");
-                                    mustRefresh = Boolean.TRUE;
-                                    break;
-                                }
-                            }
-                        }
-                        LOGGER.info("Must refresh : " + mustRefresh);
-                        configurationFiles.clear();
-                        configurationFiles.addAll(newConfigurationFiles);
-                        if (mustRefresh) {
-                            if (AbstractRefreshableWebApplicationContext.class.isAssignableFrom(APPLICATION_CONTEXT.getClass())) {
-                                LOGGER.info("Refreshing application context : " + APPLICATION_CONTEXT);
-                                ((AbstractRefreshableWebApplicationContext) APPLICATION_CONTEXT).refresh();
-                            } else {
-                                LOGGER.info("Can't refresh application context : " + APPLICATION_CONTEXT.getClass().getName());
-                            }
-                        }
-                    } catch (final Exception e) {
-                        // If we have an exception refreshing then sleep for longer
-                        sleep *= 2;
-                        LOGGER.error("Exception refreshing the application context : ", e);
-                    }
-                } while (true);
-            }
-        });
+        ThreadUtilities.submit(IConstants.APPLICATION_CONTEXT_REFRESHER, new ApplicationContextRefresher());
     }
 
 }
