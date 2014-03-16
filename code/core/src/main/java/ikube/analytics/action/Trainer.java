@@ -20,7 +20,7 @@ public class Trainer extends Action<Void> {
     @SuppressWarnings("unchecked")
     public Void call() throws Exception {
         IAnalyzer analyzer = getAnalyticsService().getAnalyzer(analysis.getAnalyzer());
-        System.out.println("Training remotely : " + analyzer);
+        // System.out.println("Training remotely : " + analyzer);
         analyzer.train(analysis);
         return null;
     }

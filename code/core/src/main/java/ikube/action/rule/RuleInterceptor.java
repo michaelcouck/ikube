@@ -80,9 +80,7 @@ public class RuleInterceptor implements IRuleInterceptor {
                 } catch (final Exception t) {
                     LOGGER.error("Exception proceeding on target : " + target, t);
                 } finally {
-                    LOGGER.info("Unlocking : ");
                     clusterManager.unlock(IConstants.IKUBE);
-                    LOGGER.info("Unlocked : ");
                 }
                 LOGGER.debug("Continueing : ");
             }

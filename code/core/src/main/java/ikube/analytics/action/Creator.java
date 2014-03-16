@@ -22,7 +22,7 @@ public class Creator implements Callable<Void> {
     @Override
     @SuppressWarnings("unchecked")
     public Void call() throws Exception {
-        System.out.println("Creating remotely : " + context);
+        // System.out.println("Creating remotely : " + context);
         // Instantiate the classifier, the algorithm and the filter
         Object analyzerName = context.getAnalyzerInfo().getAnalyzer();
         Object algorithmName = context.getAnalyzerInfo().getAlgorithm();
