@@ -2,6 +2,7 @@ package ikube.analytics.action;
 
 import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
+import org.apache.commons.lang.SerializationUtils;
 
 /**
  * @author Michael Couck
@@ -32,6 +33,8 @@ public class SizesForClassesOrClusters extends Action<Analysis> {
         }
         analysis.setClazz(clazz);
         analysis.setSizesForClassesOrClusters(sizesForClassesOrClusters);
+        long length = SerializationUtils.serialize(analysis).length;
+        System.out.println("Analysis return length : " + length);
         return analysis;
     }
 }

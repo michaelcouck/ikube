@@ -2,6 +2,7 @@ package ikube.analytics.action;
 
 import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
+import org.apache.commons.lang.SerializationUtils;
 
 /**
  * @author Michael Couck
@@ -23,6 +24,8 @@ public class ClassesOrClusters extends Action<Analysis> {
         // System.out.println("Classes or clusters remotely : " + analyzer);
         Object[] classesOrClusters = analyzer.classesOrClusters();
         analysis.setClassesOrClusters(classesOrClusters);
+        long length = SerializationUtils.serialize(analysis).length;
+        System.out.println("Analysis return length : " + length);
         return analysis;
     }
 }

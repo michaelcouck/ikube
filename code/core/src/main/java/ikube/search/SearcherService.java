@@ -201,7 +201,7 @@ public class SearcherService implements ISearcherService {
     @Override
     public Search search(final Search search) {
         if (search.isDistributed()) {
-            // Set the flag so we don't get infinite recursion
+            /*// Set the flag so we don't get infinite recursion
             search.setDistributed(Boolean.FALSE);
             // Create the callable that will be executed on the nodes
             Searcher searcher = new Searcher(search);
@@ -211,7 +211,8 @@ public class SearcherService implements ISearcherService {
             } catch (final Exception e) {
                 // If we have a remote exception then try to do the search locally
                 return doSearch(search);
-            }
+            }*/
+            return doSearch(search);
         } else {
             return doSearch(search);
         }
