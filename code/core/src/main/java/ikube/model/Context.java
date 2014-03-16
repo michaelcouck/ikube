@@ -1,9 +1,6 @@
 package ikube.model;
 
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
+import javax.persistence.*;
 
 /**
  * This class represents configuration and properties, and potentially logic that can build another object. For
@@ -38,16 +35,19 @@ public class Context<T, F, A, O> extends Persistable {
      * This typically is only defined using the interface, if the analyzers are defined in Spring,then we know immediately
      * what the type will be of course.
      */
+    @Transient
     private transient T analyzer;
 
     /**
      * The filter type to convert the data into for example feature vectors.
      */
+    @Transient
     private transient F filter;
 
     /**
      * The underlying algorithm for the analyzer, for example KMeans or J48 for example.
      */
+    @Transient
     private transient A algorithm;
 
     /**
@@ -58,6 +58,7 @@ public class Context<T, F, A, O> extends Persistable {
     /**
      * This is the string training data, typically set from the front end.
      */
+    @Transient
     private transient String trainingData;
 
     /**

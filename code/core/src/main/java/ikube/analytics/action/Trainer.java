@@ -8,7 +8,7 @@ import ikube.model.Analysis;
  * @version 01.00
  * @since 15-03-2014
  */
-public class Trainer extends Action<IAnalyzer> {
+public class Trainer extends Action<Void> {
 
     private Analysis analysis;
 
@@ -18,10 +18,10 @@ public class Trainer extends Action<IAnalyzer> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public IAnalyzer call() throws Exception {
+    public Void call() throws Exception {
         IAnalyzer analyzer = getAnalyticsService().getAnalyzer(analysis.getAnalyzer());
         System.out.println("Training remotely : " + analyzer);
         analyzer.train(analysis);
-        return analyzer;
+        return null;
     }
 }

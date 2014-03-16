@@ -67,13 +67,14 @@ public class Analysis<Input, Output> extends Distributed {
     @Transient
     private int[] sizesForClassesOrClusters;
 
+    @Transient
+    private transient Exception exception;
+
     private double duration;
     private boolean correlation;
     private boolean distribution;
     private boolean classesAndClusters;
     private boolean sizesForClassesAndClusters;
-
-    private Exception exception;
 
     public String getAnalyzer() {
         return analyzer;

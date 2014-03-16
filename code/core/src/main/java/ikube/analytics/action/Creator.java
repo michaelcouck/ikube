@@ -1,7 +1,6 @@
 package ikube.analytics.action;
 
 import ikube.analytics.AnalyzerManager;
-import ikube.analytics.IAnalyzer;
 import ikube.model.Context;
 import org.apache.commons.lang.StringUtils;
 
@@ -12,7 +11,7 @@ import java.util.concurrent.Callable;
  * @version 01.00
  * @since 15-03-2014
  */
-public class Creator implements Callable<IAnalyzer> {
+public class Creator implements Callable<Void> {
 
     private Context context;
 
@@ -22,7 +21,7 @@ public class Creator implements Callable<IAnalyzer> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public IAnalyzer call() throws Exception {
+    public Void call() throws Exception {
         System.out.println("Creating remotely : " + context);
         // Instantiate the classifier, the algorithm and the filter
         Object analyzerName = context.getAnalyzerInfo().getAnalyzer();
@@ -33,6 +32,7 @@ public class Creator implements Callable<IAnalyzer> {
         if (filterName != null && !StringUtils.isEmpty(String.valueOf(filterName))) {
             context.setFilter(Class.forName(String.valueOf(filterName)).newInstance());
         }
-        return AnalyzerManager.buildAnalyzer(context);
+        AnalyzerManager.buildAnalyzer(context);
+        return null;
     }
 }

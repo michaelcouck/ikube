@@ -48,8 +48,10 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
     @Override
     @SuppressWarnings("unchecked")
     public IAnalyzer<I, O, C> create(final Context context) {
+        context.setFilter(null);
+        context.setAlgorithm(null);
         Creator creator = new Creator(context);
-        List<Future<IAnalyzer>> futures = clusterManager.sendTaskToAll(creator);
+        List<Future<Void>> futures = clusterManager.sendTaskToAll(creator);
         ThreadUtilities.waitForFutures(futures, 15);
         return getAnalyzer(context.getName());
     }
@@ -61,7 +63,7 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
     @SuppressWarnings("unchecked")
     public IAnalyzer<I, O, C> train(final Analysis<I, O> analysis) {
         Trainer trainer = new Trainer(analysis);
-        List<Future<IAnalyzer>> futures = clusterManager.sendTaskToAll(trainer);
+        List<Future<Void>> futures = clusterManager.sendTaskToAll(trainer);
         ThreadUtilities.waitForFutures(futures, 15);
         return getAnalyzer(analysis.getAnalyzer());
     }
@@ -73,7 +75,7 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
     @SuppressWarnings("unchecked")
     public IAnalyzer<I, O, C> build(final Analysis<I, O> analysis) {
         Builder builder = new Builder(analysis);
-        List<Future<IAnalyzer>> futures = clusterManager.sendTaskToAll(builder);
+        List<Future<Void>> futures = clusterManager.sendTaskToAll(builder);
         ThreadUtilities.waitForFutures(futures, 15);
         return getAnalyzer(analysis.getAnalyzer());
     }
@@ -161,16 +163,11 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public IAnalyzer<I, O, C> destroy(final Context context) {
+    public void destroy(final Context context) {
         // Create the callable that will be executed on the remote node
         Destroyer destroyer = new Destroyer(context);
-        Future<?> future = clusterManager.sendTask(destroyer);
-        ThreadUtilities.waitForFuture(future, 60);
-        try {
-            return (IAnalyzer<I, O, C>) destroyer.call();
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
+        List<Future<Void>> futures = clusterManager.sendTaskToAll(destroyer);
+        ThreadUtilities.waitForFutures(futures, 60);
     }
 
     /**

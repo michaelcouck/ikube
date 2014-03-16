@@ -20,7 +20,7 @@ public interface IAnalyticsService<I, O, C> {
 
     Analysis<I, O> analyze(final Analysis<I, O> analysis);
 
-    IAnalyzer<I, O, C> destroy(final Context context);
+    void destroy(final Context context);
 
     Map<String, IAnalyzer> getAnalyzers();
 

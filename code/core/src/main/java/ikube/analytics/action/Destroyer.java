@@ -8,7 +8,7 @@ import ikube.model.Context;
  * @version 01.00
  * @since 15-03-2014
  */
-public class Destroyer extends Action {
+public class Destroyer extends Action<Void> {
 
     private Context context;
 
@@ -18,7 +18,7 @@ public class Destroyer extends Action {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Object call() throws Exception {
+    public Void call() throws Exception {
         Context context = (Context) getAnalyticsService().getContexts().remove(this.context.getName());
         System.out.println("Destroying remotely : " + context);
         if (context != null) {
@@ -29,7 +29,6 @@ public class Destroyer extends Action {
                 } catch (final Exception e) {
                     throw new RuntimeException(e);
                 }
-                return analyzer;
             }
         }
         return null;
