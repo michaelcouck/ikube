@@ -58,23 +58,28 @@ public class RuleInterceptor implements IRuleInterceptor {
                 LOGGER.info("Trying action : ");
                 IAction action = (IAction) target;
                 try {
-                    boolean proceedWithLocked = Boolean.TRUE;
+                    boolean gotLock = Boolean.TRUE;
                     if (action.requiresClusterLock()) {
-                        proceedWithLocked = clusterManager.lock(IConstants.IKUBE);
-                    }
-                    if (!proceedWithLocked) {
-                        LOGGER.info("Couldn't get cluster lock : ", proceedingJoinPoint.getTarget());
-                        proceed = Boolean.FALSE;
+                        gotLock = clusterManager.lock(IConstants.IKUBE);
                     } else {
+                        LOGGER.info("No lock required : ");
+                    }
+                    if (gotLock) {
+                        LOGGER.info("Trying action : ");
                         // Find the index context
                         indexContext = getIndexContext(proceedingJoinPoint);
                         proceed = evaluateRules(indexContext, action);
+                    } else {
+                        proceed = Boolean.FALSE;
+                        LOGGER.info("Couldn't get cluster lock : ", proceedingJoinPoint.getTarget());
                     }
+                    LOGGER.info("Tried action : " + proceed);
                 } catch (final NullPointerException e) {
                     LOGGER.warn("Context closing down : ");
                 } catch (final Exception t) {
                     LOGGER.error("Exception proceeding on target : " + target, t);
                 } finally {
+                    LOGGER.info("Unlocking : ");
                     clusterManager.unlock(IConstants.IKUBE);
                 }
             }
