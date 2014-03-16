@@ -69,11 +69,12 @@ public class RuleInterceptor implements IRuleInterceptor {
                         // Find the index context
                         indexContext = getIndexContext(proceedingJoinPoint);
                         proceed = evaluateRules(indexContext, action);
+                        LOGGER.info("Tried action : " + proceed);
                     } else {
                         proceed = Boolean.FALSE;
                         LOGGER.info("Couldn't get cluster lock : ", proceedingJoinPoint.getTarget());
                     }
-                    LOGGER.info("Tried action : " + proceed);
+                    LOGGER.info("Tried action finished : " + proceed);
                 } catch (final NullPointerException e) {
                     LOGGER.warn("Context closing down : ");
                 } catch (final Exception t) {
@@ -81,7 +82,9 @@ public class RuleInterceptor implements IRuleInterceptor {
                 } finally {
                     LOGGER.info("Unlocking : ");
                     clusterManager.unlock(IConstants.IKUBE);
+                    LOGGER.info("Unlocked : ");
                 }
+                LOGGER.info("Continueing : ");
             }
             LOGGER.info("Potentially proceeding : ");
             if (proceed) {
@@ -143,6 +146,7 @@ public class RuleInterceptor implements IRuleInterceptor {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     protected boolean evaluateRules(final IndexContext<?> indexContext, final IAction action) {
+        LOGGER.info("Evaluating rules : ");
         boolean finalResult = Boolean.TRUE;
         // Get the rules associated with this action
         List<IRule<IndexContext<?>>> rules = action.getRules();
@@ -161,6 +165,7 @@ public class RuleInterceptor implements IRuleInterceptor {
             Expression expression = jexlEngine.createExpression(predicate);
             Object result = expression.evaluate(jexlContext);
             finalResult = result != null && (result.equals(1.0d) || result.equals(Boolean.TRUE));
+            LOGGER.info("Going to log : " + finalResult);
             log(indexContext, action, predicate, finalResult, results);
         }
         return finalResult;
@@ -191,6 +196,7 @@ public class RuleInterceptor implements IRuleInterceptor {
             final String predicate,
             final boolean result,
             final Map<String, Object> results) {
+        LOGGER.info("Logging : ");
         Object[] parameters = {indexContext.getName(), action.getClass().getSimpleName(), predicate};
         LOGGER.info("Rule evaluation of index : {}, action : {}, predicate : {}", parameters);
         LOGGER.info("Rules evaluation result : {}, results : {}", new Object[]{result, results});
