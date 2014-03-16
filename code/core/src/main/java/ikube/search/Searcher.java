@@ -1,8 +1,5 @@
 package ikube.search;
 
-import ikube.cluster.IClusterManager;
-import ikube.model.Server;
-
 import java.io.Serializable;
 import java.util.concurrent.Callable;
 
@@ -24,15 +21,16 @@ public class Searcher implements Callable<ikube.model.Search>, Serializable {
     @Override
     public ikube.model.Search call() throws Exception {
         try {
-            IClusterManager clusterManager = getBean(IClusterManager.class);
-            Server server = clusterManager.getServer();
-            String localAddress = server.getAddress();
-            System.out.println("Executing remote search : " + localAddress);
+            // IClusterManager clusterManager = getBean(IClusterManager.class);
+            // Server server = clusterManager.getServer();
+            // String localAddress = server.getAddress();
+            // System.out.println("Executing remote search : " + localAddress);
             ISearcherService searcherService = getBean(ISearcherService.class);
-            ikube.model.Search remoteSearch = searcherService.doSearch(search);
-            System.out.println("Finished remote search : " + remoteSearch);
-            return remoteSearch;
+            return searcherService.doSearch(search);
+            // System.out.println("Finished remote search : " + remoteSearch);
+            // return remoteSearch;
         } catch (final Exception e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }

@@ -48,7 +48,7 @@ public class RuleInterceptor implements IRuleInterceptor {
     @SuppressWarnings("rawtypes")
     public synchronized Object decide(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         try {
-            LOGGER.info("Rule interceptor decide : ");
+            LOGGER.debug("Rule interceptor decide : ");
             Object target = proceedingJoinPoint.getTarget();
             boolean proceed = Boolean.TRUE;
             IndexContext<?> indexContext = null;
