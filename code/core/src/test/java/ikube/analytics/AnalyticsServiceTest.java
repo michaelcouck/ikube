@@ -2,14 +2,16 @@ package ikube.analytics;
 
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.analytics.action.Builder;
-import ikube.analytics.action.Creator;
-import ikube.analytics.action.Trainer;
+import ikube.analytics.action.Destroyer;
 import ikube.analytics.weka.WekaClassifier;
+import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.Analysis;
 import ikube.model.AnalyzerInfo;
 import ikube.model.Context;
+import ikube.toolkit.ApplicationContextManager;
 import mockit.Deencapsulation;
+import mockit.Mockit;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import weka.classifiers.functions.SMO;
@@ -62,16 +64,18 @@ public class AnalyticsServiceTest extends AbstractTest {
         AnalyzerManager.getContexts().put(context.getName(), context);
 
         Deencapsulation.setField(analyticsService, "clusterManager", clusterManager);
+        Mockit.setUpMocks(ApplicationContextManagerMock.class);
+    }
+
+    @After
+    public void after() {
+        Mockit.tearDownMocks(ApplicationContextManager.class);
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void create() throws Exception {
         analyticsService.create(context);
-        verify(context, atLeastOnce()).getName();
-
-        IAnalyzer analyzer = new Creator(context).call();
-        assertNotNull(analyzer);
         verify(context, atLeastOnce()).setFilter(any());
     }
 
@@ -79,10 +83,6 @@ public class AnalyticsServiceTest extends AbstractTest {
     @SuppressWarnings("unchecked")
     public void train() throws Exception {
         analyticsService.train(analysis);
-        verify(analysis, atLeastOnce()).getAnalyzer();
-
-        IAnalyzer analyzer = new Trainer(this.analysis).call();
-        assertNotNull(analyzer);
         verify(analyzer, atLeastOnce()).train(any());
     }
 
@@ -90,10 +90,6 @@ public class AnalyticsServiceTest extends AbstractTest {
     @SuppressWarnings("unchecked")
     public void build() throws Exception {
         analyticsService.build(analysis);
-        verify(analysis, atLeastOnce()).getAnalyzer();
-
-        IAnalyzer analyzer = new Builder(this.analysis).call();
-        assertNotNull(analyzer);
         verify(analyzer, atLeastOnce()).build(any(Context.class));
     }
 
@@ -155,6 +151,7 @@ public class AnalyticsServiceTest extends AbstractTest {
         when(clusterManager.sendTask(any(Callable.class))).thenReturn(future);
         when(future.get(anyLong(), any(TimeUnit.class))).thenReturn(analysis);
 
+        new Destroyer(context).call();
         analyticsService.destroy(context);
         verify(analyzer, atLeastOnce()).destroy(any(Context.class));
     }
