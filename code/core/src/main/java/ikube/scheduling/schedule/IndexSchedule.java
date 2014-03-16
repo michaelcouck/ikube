@@ -56,6 +56,7 @@ public class IndexSchedule extends Schedule {
         // Lets try to shuffel the actions too!
         List<IAction<IndexContext<?>, Boolean>> actions = new ArrayList<>(this.actions);
         Collections.shuffle(actions);
+        LOGGER.info("Actions : " + actions.size());
         for (final IAction<IndexContext<?>, Boolean> action : actions) {
             try {
                 ThreadUtilities.sleep(random.nextInt(30));
@@ -64,6 +65,7 @@ public class IndexSchedule extends Schedule {
                         try {
                             // The action will be intercepted by the rule interceptor, and the rules will be evaluated
                             // against the cluster. If they result in a true then the action will be allowed to execute the logic
+                            LOGGER.info("Executing action : " + action);
                             action.execute(indexContext);
                         } catch (final Exception e) {
                             LOGGER.error("Exception executing action : " + action, e);
