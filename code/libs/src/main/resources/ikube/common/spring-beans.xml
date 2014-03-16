@@ -265,7 +265,6 @@
     <bean
         id="ikube.search.spelling.SpellingChecker"
         class="ikube.search.spelling.SpellingChecker"
-        init-method="initialize"
         destroy-method="destroy"/>
 
     <!-- The handlers that do the indexing logic. -->

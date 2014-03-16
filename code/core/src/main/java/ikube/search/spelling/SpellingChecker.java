@@ -13,7 +13,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * TODO Document me again...
+ * This class essentially wraps the {@link ikube.IConstants#AUTOCOMPLETE} index, which is
+ * a list of English words. This index can be enhanced to cover other languages simply by adding
+ * other language lists to the index.
  *
  * @author Michael Couck
  * @version 01.00
@@ -22,6 +24,7 @@ import java.util.Map;
 public class SpellingChecker {
 
     private static SpellingChecker INSTANCE;
+
     @Autowired
     @Qualifier(value = IConstants.AUTOCOMPLETE)
     private IndexContext<?> indexContext;
@@ -35,11 +38,6 @@ public class SpellingChecker {
     public static SpellingChecker getSpellingChecker() {
         if (SpellingChecker.INSTANCE == null) {
             SpellingChecker.INSTANCE = new SpellingChecker();
-            try {
-                SpellingChecker.INSTANCE.initialize();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
         }
         return SpellingChecker.INSTANCE;
     }
@@ -49,10 +47,6 @@ public class SpellingChecker {
      */
     public SpellingChecker() {
         SpellingChecker.INSTANCE = this;
-    }
-
-    @Deprecated
-    public void initialize() throws Exception {
     }
 
     /**

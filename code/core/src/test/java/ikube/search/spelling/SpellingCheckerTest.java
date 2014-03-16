@@ -22,60 +22,59 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 27.03.11
+ * @since 27-03-2011
  */
 public class SpellingCheckerTest extends AbstractTest {
 
-	@MockClass(realClass = Search.class)
-	public static class SearchMock {
-		@Mock
-		public ArrayList<HashMap<String, String>> execute() {
-			HashMap<String, String> result = new HashMap<>();
-			result.put(IConstants.WORD, IConstants.WORD);
-			ArrayList<HashMap<String, String>> results = new ArrayList<>();
-			results.add(result);
-			return results;
-		}
-	}
+    @MockClass(realClass = Search.class)
+    public static class SearchMock {
+        @Mock
+        public ArrayList<HashMap<String, String>> execute() {
+            HashMap<String, String> result = new HashMap<>();
+            result.put(IConstants.WORD, IConstants.WORD);
+            ArrayList<HashMap<String, String>> results = new ArrayList<>();
+            results.add(result);
+            return results;
+        }
+    }
 
-	private SpellingChecker spellingChecker;
+    private SpellingChecker spellingChecker;
 
-	@Before
-	public void before() throws Exception {
-		Mockit.tearDownMocks();
-		Mockit.setUpMocks(SearchMock.class);
-		spellingChecker = new SpellingChecker();
-		spellingChecker.initialize();
-		Deencapsulation.setField(spellingChecker, "indexContext", indexContext);
-	}
+    @Before
+    public void before() throws Exception {
+        Mockit.tearDownMocks();
+        Mockit.setUpMocks(SearchMock.class);
+        spellingChecker = new SpellingChecker();
+        Deencapsulation.setField(spellingChecker, "indexContext", indexContext);
+    }
 
-	@After
-	public void after() {
-		Mockit.setUpMocks(SpellingCheckerMock.class);
-	}
+    @After
+    public void after() {
+        Mockit.setUpMocks(SpellingCheckerMock.class);
+    }
 
-	@Test
-	public void checkWords() {
-		String corrected = spellingChecker.checkWord("wrongk");
-		assertEquals(IConstants.WORD, corrected);
-	}
+    @Test
+    public void checkWords() {
+        String corrected = spellingChecker.checkWord("wrongk");
+        assertEquals(IConstants.WORD, corrected);
+    }
 
-	@Test
-	public void checkPerformance() {
-		double iterationsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
-			@Override
-			public void execute() throws Throwable {
-				spellingChecker.checkWord("michael");
-			}
-		}, "Spelling checking performance : ", 1000, Boolean.FALSE);
-		assertTrue(iterationsPerSecond > 100);
-		iterationsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
-			@Override
-			public void execute() throws Throwable {
-				spellingChecker.checkWord("couck");
-			}
-		}, "Spelling checking performance : ", 1000, Boolean.FALSE);
-		assertTrue(iterationsPerSecond > 100);
-	}
+    @Test
+    public void checkPerformance() {
+        double iterationsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+            @Override
+            public void execute() throws Throwable {
+                spellingChecker.checkWord("michael");
+            }
+        }, "Spelling checking performance : ", 1000, Boolean.FALSE);
+        assertTrue(iterationsPerSecond > 100);
+        iterationsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+            @Override
+            public void execute() throws Throwable {
+                spellingChecker.checkWord("couck");
+            }
+        }, "Spelling checking performance : ", 1000, Boolean.FALSE);
+        assertTrue(iterationsPerSecond > 100);
+    }
 
 }
