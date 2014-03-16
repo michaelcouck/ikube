@@ -55,7 +55,7 @@ public class RuleInterceptor implements IRuleInterceptor {
             if (!IAction.class.isAssignableFrom(target.getClass())) {
                 LOGGER.warn("Can't intercept non action class, proceeding : " + target);
             } else {
-                LOGGER.info("Rule interceptor decide : ");
+                LOGGER.info("Trying action : ");
                 IAction action = (IAction) target;
                 try {
                     boolean proceedWithLocked = Boolean.TRUE;
@@ -78,13 +78,16 @@ public class RuleInterceptor implements IRuleInterceptor {
                     clusterManager.unlock(IConstants.IKUBE);
                 }
             }
-            LOGGER.info("Rule interceptor decide : ");
+            LOGGER.info("Potentially proceeding : ");
             if (proceed) {
                 LOGGER.info("Proceeding : ");
                 proceed(indexContext, proceedingJoinPoint);
             } else {
                 LOGGER.info("Not proceeding : ");
             }
+        } catch (final Exception e) {
+            LOGGER.error("Exception in rule interceptor : ", e);
+            throw new RuntimeException(e);
         } finally {
             notifyAll();
         }

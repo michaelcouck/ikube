@@ -8,7 +8,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
  * defined in the Spring configuration.
  * 
  * @author Michael Couck
- * @since 12.02.2011
+ * @since 12-02-2011
  * @version 01.00
  */
 public interface IRuleInterceptor {
@@ -21,6 +21,6 @@ public interface IRuleInterceptor {
 	 * @return the object resulting from the call to the target action or a boolean
 	 * @throws Throwable
 	 */
-	Object decide(ProceedingJoinPoint call) throws Throwable;
+	Object decide(final ProceedingJoinPoint call) throws Throwable;
 
 }
