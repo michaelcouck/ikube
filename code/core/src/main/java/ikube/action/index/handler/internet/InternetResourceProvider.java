@@ -60,7 +60,12 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
 
     void initialize(final IndexableInternet indexableInternet) {
         urls = new Stack<>();
-        final Pattern pattern = Pattern.compile(indexableInternet.getExcludedPattern());
+        final Pattern pattern;
+        if (indexableInternet.getExcludedPattern() != null) {
+            pattern = Pattern.compile(indexableInternet.getExcludedPattern());
+        } else {
+            pattern = null;
+        }
 
         DefaultParserController parserController = new DefaultParserController();
         DefaultDownloaderController downloaderController = new DefaultDownloaderController() {
@@ -103,7 +108,7 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
 
                 @Override
                 public boolean shouldCrawl(final CrawlerTask crawlerTask, final CrawlerTask parent) {
-                    boolean excluded = pattern.matcher(crawlerTask.getUrl()).matches();
+                    boolean excluded = pattern != null ? pattern.matcher(crawlerTask.getUrl()).matches() : Boolean.FALSE;
                     boolean shouldCrawl = super.shouldCrawl(crawlerTask, parent) && !excluded;
                     logger.debug("Should crawl : " + shouldCrawl);
                     return shouldCrawl;

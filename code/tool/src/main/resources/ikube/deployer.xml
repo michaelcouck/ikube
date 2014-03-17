@@ -227,7 +227,7 @@
         <entry key="${resources-directory}/analytics" value="${tomcat-one-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/integration" value="${tomcat-one-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/production" value="${tomcat-one-bin}/ikube"/>
-        <entry key="${resources-directory}/indexes/twitter" value="${tomcat-one-bin}/ikube"/>
+        <!-- entry key="${resources-directory}/indexes/twitter" value="${tomcat-one-bin}/ikube"/ -->
     </util:map>
 
     <bean
