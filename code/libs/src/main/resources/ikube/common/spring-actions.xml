@@ -110,8 +110,8 @@
         class="ikube.action.Open"
         property:ruleExpression="
 		!IsIndexDelta &#38;&#38;
-		!AnyServersWorkingThisIndex &#38;&#38;
-		((AreIndexesCreated &#38;&#38; AreUnopenedIndexes) || IsNewIndexCreated || !IsMultiSearcherInitialised)"
+		    (!AnyServersWorkingThisIndex &#38;&#38;
+		        ((AreIndexesCreated &#38;&#38; AreUnopenedIndexes) || (IsNewIndexCreated &#38;&#38; !IsMultiSearcherInitialised)))"
         property:requiresClusterLock="false">
         <property name="rules">
             <util:list>
