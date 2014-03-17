@@ -1,4 +1,4 @@
-@relation bank-data-final
+@relation instances
 
 @attribute age {0_34,35_51,52_max}
 @attribute sex {FEMALE,MALE}
@@ -13,7 +13,6 @@
 @attribute pep {YES,NO}
 
 @data
-
 35_51,FEMALE,INNER_CITY,0_24386,NO,1,NO,NO,NO,NO,YES
 35_51,MALE,TOWN,24387_43758,YES,3,YES,NO,YES,YES,NO
 52_max,FEMALE,INNER_CITY,0_24386,YES,0,YES,YES,YES,NO,NO

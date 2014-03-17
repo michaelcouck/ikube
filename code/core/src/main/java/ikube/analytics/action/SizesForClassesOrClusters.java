@@ -33,8 +33,8 @@ public class SizesForClassesOrClusters extends Action<Analysis> {
         }
         analysis.setClazz(clazz);
         analysis.setSizesForClassesOrClusters(sizesForClassesOrClusters);
-        long length = SerializationUtils.serialize(analysis).length;
-        System.out.println("Analysis return length : " + length);
+        // long length = SerializationUtils.serialize(analysis).length;
+        // System.out.println("Analysis return length : " + length);
         return analysis;
     }
 }

@@ -1,4 +1,4 @@
-@relation training_data
+@relation instances
 
 @attribute @class@ {positive,negative}
 @attribute @text@ string
@@ -977,3 +977,7 @@ negative,'ryusk bitoeyxx อยู มอห าแม งทรหดมาก 
 negative,'kamkewalin ไม ได คุยกันก นานไม ไดด เจอก หลายวัน '
 positive,'onewan k rt jarinpornn เอาเหอะ ผลัดกันงอแง งี เง าใส กัน เพราะมันทำให รู ว าอีกฝ ายสนใจและให ความสำคัญกับเรา '
 positive,'หูยย พี ริ ว p'
+negative,'ubmint rt lilbabyvoice ช อคโกแลตช วยให สมองคิดคำนวณได เร วขึ นจริงหรอวะ นี แดกจนอ วนละยังไม เห นจะคิดเลขได เร วขึ นเลอ เอ ะหรือกูโง ಠ ಠ htt '
+negative,'mmumizz คิดถึงคิมหันต จุง '
+negative,'keangkraiseven rt nchnjubs หล อใจดี แฟนเซอร วิส น ารัก ไม เคยเปลี ยนเลย 투하트 เครตดิตใครบอกด วยนะคะ อันนี แคปไว นานแล วแต ลืม http t co ucwpw zav'
+positive,'milky allrise ความสุขของเราก ควรขึ นอยู กับเรา อย าเอาไปขึ นอยู กับคนอื น '

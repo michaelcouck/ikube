@@ -1,4 +1,4 @@
-@relation training_data
+@relation instances
 
 @attribute @class@ {positive,negative}
 @attribute @text@ string
@@ -760,3 +760,13 @@ positive,'bandyou malikmalik trop tôt pour savoir on vous dira tout ça au mome
 positive,'itskimposible lets drunk d '
 negative,'lgdrack voilà j arrive pas à construire un raisonnement en arithmétique '
 positive,'beness p w ouii mais de toute façon j avais déjà vu des photos sur twitter p tu l as vu toi aussi '
+positive,'laurinevannier oh l invitation aux ans de rémaille ça ça va déchiré d'
+positive,'erikabieber davidauryn si me lees me debes un te quiero x '
+positive,'rockychocquebec c est rare que je partage ma propre bouffe mais c est vraiment moi qui fait la meilleure crème poireaux panets et poires '
+positive,'unefandekeenv avant j écoutais que du cauet il me faisait péter de rire et j me dis oui exactement chacun ses gout apres http t co i zdy sr '
+positive,'pornsieber rt obriendylan org pornsieber pour nous le octobre '
+positive,'valentinetwirl rt paulinedadams le bêtisier de fiston à la fin mama j en pouvais pluus kevadamss dubosc franck bigdavv'
+positive,'lindsey just bought sun dresses '
+positive,'flopoutop bonsoir désolé de me pas avoir étais présente '
+negative,'staystrong d cm je sais pas pourquoi justin follow des gens qui le spamme pas '
+positive,'cazeneuvemarine rt thomasdvs j aime ça marine '

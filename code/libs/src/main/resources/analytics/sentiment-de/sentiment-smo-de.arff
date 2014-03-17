@@ -1,4 +1,4 @@
-@relation training_data
+@relation instances
 
 @attribute @class@ {positive,negative}
 @attribute @text@ string
@@ -436,3 +436,15 @@ positive,'scheveningenstr und jetzt gehen wir mit dem küchenstuhl zum schlittsc
 positive,'paultomaspeter gruenbraun huch schreck bekommen neuer ava grummelbeate'
 positive,'ifireghost aciro früher war keine arbeit '
 positive,'fantasticjava derxilef ich meinte ja auch hier in deutschland d'
+positive,'vv ntermute die reserveliste der piraten velbert zur stadtratswahl ist dann doch ganze leute lang d das reicht bestimmt bis ich lache hart '
+positive,'inendino rt nikkikainz inendino '
+positive,'helenhboo aminbizetsahli très flatteur merci '
+positive,'mikschne alexi o hab s mir jetzt auch grad gedacht aber hätt auch sonst was sein können na dann hau rein wann ist die '
+positive,'patrick m wolkenmaedchen je nachdem wie hartnäckig sein körper isch xd'
+negative,'iamnosuperman kiwifruit bei mir war der blaue himmel nur ganz kurz zu sehen '
+positive,'fancypt frank rieger der nimmt sich noch arbeit mir nach hause thumbsup '
+positive,'babu belieber rt justinbieber http t co tzsx bss'
+negative,'frannymctanny rt franzisoapblow ich könnte bei yvole den ganzen shop leer kaufen d '
+positive,'biebersxdance theherobieber moi '
+positive,'luuhlawrence mathglams ahsaushausahsaushaus '
+positive,'fatmike isabelledaniel yep durchrutscher trotz boykott vllt ergebnisverkündungstext schon vor boykottbekanntgabe geschrieben '

@@ -1,4 +1,4 @@
-@relation training_data
+@relation instances
 
 @attribute @class@ {positive,negative}
 @attribute @text@ string
@@ -496,3 +496,13 @@ positive,'busu zaa あっ うにさん行けなかったんだ ω いまごろ�
 positive,'yykh とりまびえぴの放送終わるまで離脱 '
 positive,'jyaikiri mskn gb じゃあ眼科で確かめておいで ω 絶対先生に ゆうちゃむの手によって目が汚れてしまいましたね すぐ毒を抜きましょう って言われるわよ ω '
 positive,'ysk oio あとでやろ ω '
+positive,'tokyo suzi カラコン 年 アレグロ allegro 箱 枚 両眼セット 送料無料 レビュー記入で装着液付 度あり 度なし カラーコンタクト ハーフ目 フチなし 円 クイーンアイズ楽天市場店 http t co pfskakcrz qutg '
+positive,'uraretweet rt shi chanura 久しぶりに写真撮った たってなくて ごめんなさい http t co nto og h '
+positive,'nup pro yun yk メガネも携帯みたいに着信から音楽がバイブレーションで見つけられたら楽なんですがね '
+positive,'nene ballet 久々にゆっくりできた休日 ω 明日からまた頑張ります '
+positive,'godkeep whynews 自発くれたらフォロバします\nしばらくお待ちください ω '
+positive,'tachiyon せっかく 時前に寝れたのに 時過ぎに目が覚めて眠れなくなり今に至る д '
+positive,'shion ゆうりさんはきっとそんなことしない rt kiryuu yurin しおんのpc直すの手伝う時にさ 代わりに闇芝居っていう動画見ろよって言っといてな 見ないって言ったら直さなくていいよ '
+positive,'kielthw 明日こそはちゃんと部屋を片付ける ω '
+positive,'mb inast bot しんちゃんpsvita持ってるんだね わたしも欲しいな ω ありんこ '
+positive,'ringo 史上最強にこわい夢を見ておきた こわった ねる ˇωˇ '

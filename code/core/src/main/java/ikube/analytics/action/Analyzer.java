@@ -23,8 +23,8 @@ public class Analyzer extends Action<Analysis> {
         IAnalyzer analyzer = getAnalyticsService().getAnalyzer(analysis.getAnalyzer());
         // System.out.println("Analyzing remotely : " + analyzer);
         analyzer.analyze(analysis);
-        long length = SerializationUtils.serialize(analysis).length;
-        System.out.println("Analysis return length : " + length);
+        // long length = SerializationUtils.serialize(analysis).length;
+        // System.out.println("Analysis return length : " + length);
         return analysis;
     }
 }

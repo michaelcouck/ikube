@@ -24,8 +24,8 @@ public class ClassesOrClusters extends Action<Analysis> {
         // System.out.println("Classes or clusters remotely : " + analyzer);
         Object[] classesOrClusters = analyzer.classesOrClusters();
         analysis.setClassesOrClusters(classesOrClusters);
-        long length = SerializationUtils.serialize(analysis).length;
-        System.out.println("Analysis return length : " + length);
+        // long length = SerializationUtils.serialize(analysis).length;
+        // System.out.println("Analysis return length : " + length);
         return analysis;
     }
 }

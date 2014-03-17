@@ -1,4 +1,4 @@
-@relation training_data
+@relation instances
 
 @attribute @class@ {positive,negative}
 @attribute @text@ string
@@ -759,3 +759,12 @@ positive,'kot boba сука она удалилась '
 positive,'nastyaa ey вечер удался '
 positive,'pleaseyes soon уу\nну всё\nгости ушли\nи я остался один '
 positive,'tuk at rt fashionyumi хамгаас хэрэгтэй тоглоом shurka ts алаг мэлхий өрөх бага бхда цагаан сараар их тоглодог бж d http t co ihu afbqqn '
+positive,'lexie horan d hart да я ничего такого не сделал улыбок и счастья тебе http t co ydypulqrry'
+positive,'adalon l ну вот почему pm vs bigbang не стала голосовать потому что нравятся обе группы '
+positive,'anyta malyar будет классно если не пойдем в школу '
+positive,'fedorrchik во что нашла public ну что буду читать и следить за развитием событий ё маё d'
+positive,'revo ukraine yuri vertigo kshn такому дебилу никакие доказательства не помогут '
+positive,'nanatakano sin сильно красивые '
+positive,'natalierushman ave stark представляю эту картину как рич находит картиночки показывает их робу а тот одобряет или нет d красавцы блин '
+positive,'nikipelova крутое день рождения '
+positive,'aleks niam tvlipetsk meersaltz peterkuznetsov inquisitor rf трепло ты дружок нахлебник на теле трудящихся захребетник болтун одним словом '

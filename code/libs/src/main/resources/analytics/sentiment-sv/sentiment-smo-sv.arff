@@ -1,4 +1,4 @@
-@relation training_data
+@relation instances
 
 @attribute @class@ {positive,negative}
 @attribute @text@ string
@@ -571,3 +571,4 @@ positive,'nocasr averyshrader bem'
 positive,'imletads ycenavarro same doctor din ata tayo i think si dra romero sengson '
 negative,'jacobedh eliasnorling ja tyvärr han hade ju kunnat få lite speltid men icke '
 positive,'legendaryollg atmxrauhl omg flappy bird '
+positive,'demig rt jm vii girls are so confusing xd'
