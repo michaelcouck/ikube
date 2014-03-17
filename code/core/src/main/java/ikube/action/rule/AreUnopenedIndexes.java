@@ -52,10 +52,10 @@ public class AreUnopenedIndexes extends ARule<IndexContext<?>> {
         List<AtomicReaderContext> atomicReaderContexts = compositeReaderContext.leaves();
         for (final AtomicReaderContext atomicReaderContext : atomicReaderContexts) {
             SegmentReader atomicReader = (SegmentReader) atomicReaderContext.reader();
-            logger.info("Atomic reader : " + atomicReader.getClass().getName());
             MMapDirectory directory = (MMapDirectory) atomicReader.directory();
-            logger.info("Directory : " + directory.getClass().getName());
+            logger.info("Directory : " + directory.getDirectory());
             for (int i = 0; i < indexDirectories.size(); i++) {
+                logger.info("        : " + indexDirectories.get(i));
                 if (directory.getDirectory().equals(indexDirectories.get(i))) {
                     indexDirectories.remove(i);
                     break;

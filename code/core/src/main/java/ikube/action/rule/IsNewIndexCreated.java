@@ -31,15 +31,13 @@ public class IsNewIndexCreated extends ARule<IndexContext<?>> {
         String baseIndexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
         File latestIndexDirectory = IndexManager.getLatestIndexDirectory(baseIndexDirectoryPath);
         if (indexSearcher != null) {
-            logger.info("Latest index directory : {} ", latestIndexDirectory);
+            logger.info("Latest index directory : " + latestIndexDirectory);
             MultiReader multiReader = (MultiReader) indexSearcher.getIndexReader();
             CompositeReaderContext compositeReaderContext = multiReader.getContext();
             List<AtomicReaderContext> atomicReaderContexts = compositeReaderContext.leaves();
             for (final AtomicReaderContext atomicReaderContext : atomicReaderContexts) {
                 SegmentReader atomicReader = (SegmentReader) atomicReaderContext.reader();
-                logger.info("Atomic reader : " + atomicReader.getClass().getName());
                 MMapDirectory directory = (MMapDirectory) atomicReader.directory();
-                logger.info("Directory : " + directory.getClass().getName());
                 File indexDirectory = directory.getDirectory();
                 File parentIndexDirectory = indexDirectory.getParentFile();
                 logger.info("Parent : " + parentIndexDirectory + ", " + latestIndexDirectory);
