@@ -54,14 +54,13 @@ public class AreUnopenedIndexes extends ARule<IndexContext<?>> {
         for (final AtomicReaderContext atomicReaderContext : atomicReaderContexts) {
             SegmentReader atomicReader = (SegmentReader) atomicReaderContext.reader();
             MMapDirectory directory = (MMapDirectory) atomicReader.directory();
-            logger.info("Directory : " + directory.getDirectory());
+            File openedIndexDirectory = directory.getDirectory();
             for (int i = 0; i < indexDirectories.size(); i++) {
                 File indexDirectory = indexDirectories.get(i);
-                File openedIndexDirectory = directory.getDirectory();
                 String l = FileUtilities.cleanFilePath(indexDirectory.getAbsolutePath());
                 String p = FileUtilities.cleanFilePath(openedIndexDirectory.getAbsolutePath());
                 boolean isOpened = l.equals(p);
-                logger.info("        : " + isOpened + ", " + indexDirectory);
+                logger.info(" l = p : " + isOpened + ", " + l + ", " + p + ", " + indexDirectory);
                 if (isOpened) {
                     indexDirectories.remove(i);
                 }
