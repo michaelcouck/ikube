@@ -41,16 +41,16 @@ public class IsNewIndexCreated extends ARule<IndexContext<?>> {
                 MMapDirectory directory = (MMapDirectory) atomicReader.directory();
                 File indexDirectory = directory.getDirectory();
                 File parentIndexDirectory = indexDirectory.getParentFile();
-                logger.info("Parent : " + parentIndexDirectory + ", " + latestIndexDirectory);
-                String l = FileUtilities.cleanFilePath(latestIndexDirectory.getAbsolutePath());
-                String p = FileUtilities.cleanFilePath(parentIndexDirectory.getAbsolutePath());
-                boolean latestOpen = l.equals(p);
-                if (!latestOpen) {
+                String l = FileUtilities.cleanFilePath(latestIndexDirectory.getAbsolutePath()).trim();
+                String p = FileUtilities.cleanFilePath(parentIndexDirectory.getAbsolutePath()).trim();
+                logger.info("Parent : " + l.equals(p) + ", " + l + ", " + p);
+                boolean openOnLatest = l.equals(p);
+                if (openOnLatest) {
                     logger.info("Latest : " + latestIndexDirectory);
-                    return Boolean.TRUE;
+                    return Boolean.FALSE;
                 } else {
                     logger.info("Not latest : " + latestIndexDirectory);
-                    return Boolean.FALSE;
+                    return Boolean.TRUE;
                 }
             }
         }
