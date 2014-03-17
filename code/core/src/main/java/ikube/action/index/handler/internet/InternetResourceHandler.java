@@ -107,7 +107,7 @@ public class InternetResourceHandler extends ResourceHandler<IndexableInternet> 
                     parser = ParserProvider.getParser(contentType, bytes);
                     outputStream = parser.parse(byteArrayInputStream, new ByteArrayOutputStream());
                 } else {
-                    String message = "Exception parsing content from url : " + url;
+                    String message = "Exception parsing content from url : " + url.getUrl();
                     logger.error(message, e);
                 }
             }
