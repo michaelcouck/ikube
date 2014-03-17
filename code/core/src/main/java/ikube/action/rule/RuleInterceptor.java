@@ -162,10 +162,10 @@ public class RuleInterceptor implements IRuleInterceptor {
             Expression expression = jexlEngine.createExpression(predicate);
             Object result = expression.evaluate(jexlContext);
             finalResult = result != null && (result.equals(1.0d) || result.equals(Boolean.TRUE));
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Going to log : " + finalResult);
-                log(indexContext, action, predicate, finalResult, results);
-            }
+            LOGGER.info("Going to log : " + finalResult);
+            log(indexContext, action, predicate, finalResult, results);
+            /*if (LOGGER.isDebugEnabled()) {
+            }*/
         }
         return finalResult;
     }
