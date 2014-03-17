@@ -2,6 +2,7 @@ package ikube.action.rule;
 
 import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
+import ikube.toolkit.FileUtilities;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.CompositeReaderContext;
 import org.apache.lucene.index.MultiReader;
@@ -55,10 +56,14 @@ public class AreUnopenedIndexes extends ARule<IndexContext<?>> {
             MMapDirectory directory = (MMapDirectory) atomicReader.directory();
             logger.info("Directory : " + directory.getDirectory());
             for (int i = 0; i < indexDirectories.size(); i++) {
-                logger.info("        : " + indexDirectories.get(i));
-                if (directory.getDirectory().equals(indexDirectories.get(i))) {
+                File indexDirectory = indexDirectories.get(i);
+                File openedIndexDirectory = directory.getDirectory();
+                String l = FileUtilities.cleanFilePath(indexDirectory.getAbsolutePath());
+                String p = FileUtilities.cleanFilePath(openedIndexDirectory.getAbsolutePath());
+                boolean isOpened = l.equals(p);
+                logger.info("        : " + isOpened + ", " + indexDirectory);
+                if (isOpened) {
                     indexDirectories.remove(i);
-                    break;
                 }
             }
         }

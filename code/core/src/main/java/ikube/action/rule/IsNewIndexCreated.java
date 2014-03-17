@@ -2,6 +2,7 @@ package ikube.action.rule;
 
 import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
+import ikube.toolkit.FileUtilities;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.CompositeReaderContext;
 import org.apache.lucene.index.MultiReader;
@@ -41,7 +42,10 @@ public class IsNewIndexCreated extends ARule<IndexContext<?>> {
                 File indexDirectory = directory.getDirectory();
                 File parentIndexDirectory = indexDirectory.getParentFile();
                 logger.info("Parent : " + parentIndexDirectory + ", " + latestIndexDirectory);
-                if (!latestIndexDirectory.equals(parentIndexDirectory)) {
+                String l = FileUtilities.cleanFilePath(latestIndexDirectory.getAbsolutePath());
+                String p = FileUtilities.cleanFilePath(parentIndexDirectory.getAbsolutePath());
+                boolean latestOpen = l.equals(p);
+                if (!latestOpen) {
                     logger.info("Latest : " + latestIndexDirectory);
                     return Boolean.TRUE;
                 } else {
