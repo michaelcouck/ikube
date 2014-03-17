@@ -13,10 +13,7 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * This class is implemented as a state pattern. The user specifies the type of analyzer, and the
@@ -51,8 +48,13 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
         context.setFilter(null);
         context.setAlgorithm(null);
         Creator creator = new Creator(context);
-        List<Future<Void>> futures = clusterManager.sendTaskToAll(creator);
-        ThreadUtilities.waitForFutures(futures, 15);
+        // List<Future<Void>> futures = clusterManager.sendTaskToAll(creator);
+        // ThreadUtilities.waitForFutures(futures, 15);
+        try {
+            creator.call();
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
         return getAnalyzer(context.getName());
     }
 
@@ -65,6 +67,11 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
         Trainer trainer = new Trainer(analysis);
         List<Future<Void>> futures = clusterManager.sendTaskToAll(trainer);
         ThreadUtilities.waitForFutures(futures, 15);
+        /*try {
+            trainer.call();
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }*/
         return getAnalyzer(analysis.getAnalyzer());
     }
 
@@ -75,8 +82,13 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
     @SuppressWarnings("unchecked")
     public IAnalyzer<I, O, C> build(final Analysis<I, O> analysis) {
         Builder builder = new Builder(analysis);
-        List<Future<Void>> futures = clusterManager.sendTaskToAll(builder);
-        ThreadUtilities.waitForFutures(futures, 15);
+        /*List<Future<Void>> futures = clusterManager.sendTaskToAll(builder);
+        ThreadUtilities.waitForFutures(futures, 15);*/
+        try {
+            builder.call();
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
         return getAnalyzer(analysis.getAnalyzer());
     }
 
@@ -91,10 +103,15 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
             // Set the flag so we don't get infinite recursion
             analysis.setDistributed(Boolean.FALSE);
             // Create the callable that will be executed on one of the nodes
-            Future<?> future = clusterManager.sendTask(analyzer);
+            /*Future<?> future = clusterManager.sendTask(analyzer);
             try {
                 return (Analysis<I, O>) future.get(60, TimeUnit.SECONDS);
             } catch (final InterruptedException | ExecutionException | TimeoutException e) {
+                throw new RuntimeException(e);
+            }*/
+            try {
+                return analyzer.call();
+            } catch (final Exception e) {
                 throw new RuntimeException(e);
             }
         } else {
@@ -117,10 +134,15 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
         if (analysis.isDistributed()) {
             // Set the flag so we don't get infinite recursion
             analysis.setDistributed(Boolean.FALSE);
-            Future<?> future = clusterManager.sendTask(classesOrClusters);
+            /*Future<?> future = clusterManager.sendTask(classesOrClusters);
             try {
                 return (Analysis) future.get(60, TimeUnit.SECONDS);
             } catch (final InterruptedException | ExecutionException | TimeoutException e) {
+                throw new RuntimeException(e);
+            }*/
+            try {
+                return classesOrClusters.call();
+            } catch (final Exception e) {
                 throw new RuntimeException(e);
             }
         } else {
@@ -143,10 +165,15 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
         if (analysis.isDistributed()) {
             // Set the flag so we don't get infinite recursion
             analysis.setDistributed(Boolean.FALSE);
-            Future<?> future = clusterManager.sendTask(sizesForClassesOrClusters);
+            /*Future<?> future = clusterManager.sendTask(sizesForClassesOrClusters);
             try {
                 return (Analysis<I, O>) future.get(60, TimeUnit.SECONDS);
             } catch (final InterruptedException | ExecutionException | TimeoutException e) {
+                throw new RuntimeException(e);
+            }*/
+            try {
+                return sizesForClassesOrClusters.call();
+            } catch (final Exception e) {
                 throw new RuntimeException(e);
             }
         } else {
@@ -166,8 +193,13 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
     public void destroy(final Context context) {
         // Create the callable that will be executed on the remote node
         Destroyer destroyer = new Destroyer(context);
-        List<Future<Void>> futures = clusterManager.sendTaskToAll(destroyer);
-        ThreadUtilities.waitForFutures(futures, 60);
+        /*List<Future<Void>> futures = clusterManager.sendTaskToAll(destroyer);
+        ThreadUtilities.waitForFutures(futures, 60);*/
+        try {
+            destroyer.call();
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
