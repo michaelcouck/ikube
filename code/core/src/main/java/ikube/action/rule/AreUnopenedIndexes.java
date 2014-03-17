@@ -60,7 +60,7 @@ public class AreUnopenedIndexes extends ARule<IndexContext<?>> {
                 String l = FileUtilities.cleanFilePath(indexDirectory.getAbsolutePath());
                 String p = FileUtilities.cleanFilePath(openedIndexDirectory.getAbsolutePath());
                 boolean isOpened = l.equals(p);
-                logger.info(" l = p : " + isOpened + ", " + l + ", " + p + ", " + indexDirectory);
+                logger.info("l = p : " + isOpened + ", " + l + ", " + p + ", " + indexDirectory);
                 if (isOpened) {
                     indexDirectories.remove(i);
                 }
