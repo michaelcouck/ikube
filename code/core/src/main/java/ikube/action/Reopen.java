@@ -52,14 +52,16 @@ public class Reopen extends Action<IndexContext<?>, Boolean> {
             newIndexReaders.add(newIndexReader);
         }
         int newIndexReadersSize = newIndexReaders.size();
-        IndexReader[] newIndexReaderArray = new IndexReader[newIndexReadersSize];
-        newIndexReaderArray = newIndexReaders.toArray(newIndexReaderArray);
-        IndexReader indexReader = new MultiReader(newIndexReaderArray, Boolean.FALSE);
-        IndexSearcher indexSearcher = new IndexSearcher(indexReader);
-        indexContext.setMultiSearcher(indexSearcher);
-        logger.info("Re-opening searcher : " + indexContext.getName());
-        if (oldIndexSearcher != null && oldIndexSearcher.getIndexReader() != null) {
-            oldIndexSearcher.getIndexReader().close();
+        if (newIndexReadersSize > 0) {
+            IndexReader[] newIndexReaderArray = new IndexReader[newIndexReadersSize];
+            newIndexReaderArray = newIndexReaders.toArray(newIndexReaderArray);
+            IndexReader indexReader = new MultiReader(newIndexReaderArray, Boolean.FALSE);
+            IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+            indexContext.setMultiSearcher(indexSearcher);
+            logger.info("Re-opening searcher : " + indexContext.getName());
+            if (oldIndexSearcher != null && oldIndexSearcher.getIndexReader() != null) {
+                oldIndexSearcher.getIndexReader().close();
+            }
         }
     }
 

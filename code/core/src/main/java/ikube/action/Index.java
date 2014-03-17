@@ -36,7 +36,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
      */
     @Override
     public boolean preExecute(final IndexContext<?> indexContext) throws Exception {
-        logger.debug("Pre process action : " + this.getClass() + ", " + indexContext.getName());
+        logger.info("Pre process action : " + this.getClass() + ", " + indexContext.getName());
         Server server = clusterManager.getServer();
         IndexWriter[] indexWriters;
         if (indexContext.isDelta()) {
@@ -74,6 +74,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
             ForkJoinTask<?> forkJoinTask = handler.handleIndexableForked(indexContext, indexable);
             ThreadUtilities.executeForkJoinTasks(indexContext.getName(), indexable.getThreads(), forkJoinTask);
             ThreadUtilities.waitForFuture(forkJoinTask, Long.MAX_VALUE);
+            logger.info("Finished indexable : " + indexable.getName());
         }
         return Boolean.TRUE;
     }
@@ -116,7 +117,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
      */
     @Override
     public boolean postExecute(final IndexContext<?> indexContext) throws Exception {
-        logger.debug("Post process action : " + this.getClass() + ", " + indexContext.getName());
+        logger.info("Post process action : " + this.getClass() + ", " + indexContext.getName());
         IndexManager.closeIndexWriters(indexContext);
         indexContext.setIndexWriters();
         return Boolean.TRUE;
@@ -126,8 +127,8 @@ public class Index extends Action<IndexContext<?>, Boolean> {
      * This method finds the correct handler for the indexable.
      *
      * @param indexable the indexable to find the handler for
-     * @return the handler for the indexable or null if there is no handler for the indexable. This will fail with a warning if there is no handler for the
-     * indexable
+     * @return the handler for the indexable or null if there is no handler for the indexable. This
+     * will fail with a warning if there is no handler for the indexable
      */
     protected IIndexableHandler getHandler(final Indexable<?> indexable) {
         for (final IIndexableHandler handler : indexableHandlers) {

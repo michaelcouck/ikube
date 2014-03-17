@@ -51,7 +51,7 @@ public final class IndexManager {
     public static synchronized IndexWriter[] openIndexWriterDelta(
             final IndexContext<?> indexContext)
             throws Exception {
-        LOGGER.info("Opening delta writers on index context : " + indexContext);
+        LOGGER.info("Opening delta writers on index context : " + indexContext.getName());
         String ip = UriUtilities.getIp();
         String indexDirectoryPath = getIndexDirectoryPath(indexContext);
         // Find all the indexes in the latest index directory and open a writer on each one

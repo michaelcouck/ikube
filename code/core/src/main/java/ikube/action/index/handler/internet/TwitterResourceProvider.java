@@ -24,7 +24,7 @@ import java.util.Stack;
  *
  * @author Michael Couck
  * @version 01.00
- * @since 19.06.13
+ * @since 19-06-2013
  */
 class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListener {
 
@@ -46,7 +46,6 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
      * Constructor takes the configuration for the Twitter account, and initializes the streaming classes that will accept the Twitter data.
      *
      * @param indexableTweets the configuration for the Twitter account, importantly the OAuth login details
-     * @throws IOException
      */
     TwitterResourceProvider(final IndexableTweets indexableTweets) throws IOException {
         IndexContext indexContext = (IndexContext) indexableTweets.getParent();
@@ -56,10 +55,10 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
         persistTweets = indexableTweets.isPersistTweets();
         tweetsDirectory = FileUtilities.getOrCreateDirectory(new File(indexContext.getIndexDirectoryPath(), "tweets"));
         TwitterTemplate twitterTemplate = new TwitterTemplate( //
-            indexableTweets.getConsumerKey(), //
-            indexableTweets.getConsumerSecret(), //
-            indexableTweets.getToken(), //
-            indexableTweets.getTokenSecret());
+                indexableTweets.getConsumerKey(), //
+                indexableTweets.getConsumerSecret(), //
+                indexableTweets.getToken(), //
+                indexableTweets.getTokenSecret());
         StreamingOperations streamingOperations = twitterTemplate.streamingOperations();
         StreamListener streamListener = this;
         List<StreamListener> listeners = Arrays.asList(streamListener);
@@ -73,7 +72,8 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
     public synchronized Tweet getResource() {
         while (tweets.isEmpty()) {
             try {
-                wait(1000);
+                logger.debug("Waiting for tweets : ");
+                wait(10000);
             } catch (final InterruptedException e) {
                 logger.error(null, e);
             } catch (final Exception e) {
