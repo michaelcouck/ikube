@@ -65,13 +65,13 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
     @SuppressWarnings("unchecked")
     public IAnalyzer<I, O, C> train(final Analysis<I, O> analysis) {
         Trainer trainer = new Trainer(analysis);
-        List<Future<Void>> futures = clusterManager.sendTaskToAll(trainer);
-        ThreadUtilities.waitForFutures(futures, 15);
-        /*try {
+        /*List<Future<Void>> futures = clusterManager.sendTaskToAll(trainer);
+        ThreadUtilities.waitForFutures(futures, 15);*/
+        try {
             trainer.call();
         } catch (final Exception e) {
             throw new RuntimeException(e);
-        }*/
+        }
         return getAnalyzer(analysis.getAnalyzer());
     }
 
