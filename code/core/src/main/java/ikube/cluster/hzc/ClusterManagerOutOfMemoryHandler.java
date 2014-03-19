@@ -2,6 +2,11 @@ package ikube.cluster.hzc;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.OutOfMemoryHandler;
+import ikube.toolkit.ThreadUtilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 /**
  * On an out of memory we terminate the server immediately, there is no recovering from this.
@@ -12,11 +17,26 @@ import com.hazelcast.core.OutOfMemoryHandler;
  */
 public class ClusterManagerOutOfMemoryHandler extends OutOfMemoryHandler {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClusterManagerOutOfMemoryHandler.class);
+
     /**
      * {@inheritDoc}
      */
     @Override
     public void onOutOfMemory(final OutOfMemoryError oom, final HazelcastInstance[] hazelcastInstances) {
+        // First we'll try to destroy everything
+        ThreadUtilities.destroy();
+        // Now dump all the threads to the log
+        Map<Thread, StackTraceElement[]> threads = Thread.getAllStackTraces();
+        LOGGER.info("Threads : " + threads.size());
+        for (final Map.Entry<Thread, StackTraceElement[]> mapEntry : threads.entrySet()) {
+            Thread thread = mapEntry.getKey();
+            LOGGER.info("Thread : " + thread);
+            StackTraceElement[] stackTraceElements = mapEntry.getValue();
+            for (final StackTraceElement stackTraceElement : stackTraceElements) {
+                LOGGER.info(stackTraceElement.toString());
+            }
+        }
         try {
             for (final HazelcastInstance hazelcastInstance : hazelcastInstances) {
                 ClusterManagerHazelcast.printStatistics(hazelcastInstance);
