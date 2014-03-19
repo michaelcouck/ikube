@@ -32,7 +32,7 @@ public class IsNewIndexCreated extends ARule<IndexContext<?>> {
         String baseIndexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
         File latestIndexDirectory = IndexManager.getLatestIndexDirectory(baseIndexDirectoryPath);
         if (indexSearcher != null) {
-            logger.info("Latest index directory : " + latestIndexDirectory);
+            logger.debug("Latest index directory : " + latestIndexDirectory);
             MultiReader multiReader = (MultiReader) indexSearcher.getIndexReader();
             CompositeReaderContext compositeReaderContext = multiReader.getContext();
             List<AtomicReaderContext> atomicReaderContexts = compositeReaderContext.leaves();
@@ -43,13 +43,13 @@ public class IsNewIndexCreated extends ARule<IndexContext<?>> {
                 File parentIndexDirectory = indexDirectory.getParentFile();
                 String l = FileUtilities.cleanFilePath(latestIndexDirectory.getAbsolutePath()).trim();
                 String p = FileUtilities.cleanFilePath(parentIndexDirectory.getAbsolutePath()).trim();
-                logger.info("Parent : " + l.equals(p) + ", " + l + ", " + p);
+                logger.debug("Parent : " + l.equals(p) + ", " + l + ", " + p);
                 boolean openOnLatest = l.equals(p);
                 if (openOnLatest) {
-                    logger.info("Latest : " + latestIndexDirectory);
+                    logger.debug("Latest : " + latestIndexDirectory);
                     return Boolean.FALSE;
                 } else {
-                    logger.info("Not latest : " + latestIndexDirectory);
+                    logger.debug("Not latest : " + latestIndexDirectory);
                     return Boolean.TRUE;
                 }
             }

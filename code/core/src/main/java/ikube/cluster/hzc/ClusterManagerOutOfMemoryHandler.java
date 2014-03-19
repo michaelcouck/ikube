@@ -25,7 +25,7 @@ public class ClusterManagerOutOfMemoryHandler extends OutOfMemoryHandler {
             e.printStackTrace();
         }
         System.err.println("Out of memory, exiting jvm with extreme prejudice : ");
-        System.exit(1);
+        // System.exit(1);
     }
 
 }

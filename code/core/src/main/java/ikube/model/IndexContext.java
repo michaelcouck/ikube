@@ -34,26 +34,31 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
      * Whether the searcher is open or not.
      */
     @Transient
+    @Attribute(field = false, description = "Whether this index is opened, for transport in the grid as the writers and searchers are not serializable")
     private boolean open;
     /**
      * Can be null if there are no indexes running.
      */
     @Transient
+    @Attribute(field = false, description = "The currently opened index writers, which can be null of course")
     private transient volatile IndexWriter[] indexWriters;
     /**
      * Can be null if there is no index created.
      */
     @Transient
+    @Attribute(field = false, description = "The index searcher for the index, opened with the correct parameters and analyzer")
     private transient volatile IndexSearcher multiSearcher;
     /**
      * This analyzer will be used to index the data, and indeed to do the searching.
      */
     @Transient
+    @Attribute(field = false, description = "The analyzer that was used for indexing this document set and is consequently used for searching")
     private transient volatile Analyzer analyzer;
     /**
      * A collection of currently processed resources, for duplication avoidance.
      */
     @Transient
+    @Attribute(field = false, description = "An arbitrary collection of hashes for currently indexed documents, for disarding duplicates and delta indexing")
     private transient volatile Set<Long> hashes;
 
     /**
@@ -148,11 +153,14 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
     private boolean delta;
 
     @Transient
+    @Attribute(field = false, description = "The number of documents in the currently opened searcher")
     private long numDocsForSearchers;
     @Transient
     @SuppressWarnings("UnusedDeclaration")
+    @Attribute(field = false, description = "The latest snapshot for the index with static details for it, like size on disk etc.")
     private Snapshot snapshot;
     @Transient
+    @Attribute(field = false, description = "The snapshot for this index, in reverse chronological order")
     private transient List<Snapshot> snapshots;
 
     public String getIndexName() {
