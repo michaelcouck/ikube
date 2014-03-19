@@ -24,6 +24,7 @@ public class ClusterManagerOutOfMemoryHandler extends OutOfMemoryHandler {
      */
     @Override
     public void onOutOfMemory(final OutOfMemoryError oom, final HazelcastInstance[] hazelcastInstances) {
+        System.err.println("Out of memory, exiting jobs with extreme prejudice : ");
         // First we'll try to destroy everything
         ThreadUtilities.destroy();
         // Now dump all the threads to the log
@@ -31,7 +32,7 @@ public class ClusterManagerOutOfMemoryHandler extends OutOfMemoryHandler {
         LOGGER.info("Threads : " + threads.size());
         for (final Map.Entry<Thread, StackTraceElement[]> mapEntry : threads.entrySet()) {
             Thread thread = mapEntry.getKey();
-            LOGGER.info("Thread : " + thread);
+            LOGGER.info("        thread : " + thread);
             StackTraceElement[] stackTraceElements = mapEntry.getValue();
             for (final StackTraceElement stackTraceElement : stackTraceElements) {
                 LOGGER.info(stackTraceElement.toString());
@@ -42,9 +43,8 @@ public class ClusterManagerOutOfMemoryHandler extends OutOfMemoryHandler {
                 ClusterManagerHazelcast.printStatistics(hazelcastInstance);
             }
         } catch (final Throwable e) {
-            e.printStackTrace();
+            LOGGER.error("Oops...", e);
         }
-        System.err.println("Out of memory, exiting jvm with extreme prejudice : ");
         // System.exit(1);
     }
 

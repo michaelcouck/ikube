@@ -161,7 +161,7 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
     private Snapshot snapshot;
     @Transient
     @Attribute(field = false, description = "The snapshot for this index, in reverse chronological order")
-    private transient List<Snapshot> snapshots;
+    private List<Snapshot> snapshots;
 
     public String getIndexName() {
         return super.getName();
