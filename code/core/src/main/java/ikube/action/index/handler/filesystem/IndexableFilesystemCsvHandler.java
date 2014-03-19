@@ -78,7 +78,7 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
             columns[i] = columns[i].trim();
         }
 
-        final List<Indexable<?>> indexableColumns = getIndexableColumns(indexableFileSystemCsv, columns);
+        final List<Indexable> indexableColumns = getIndexableColumns(indexableFileSystemCsv, columns);
         indexableFileSystemCsv.setChildren(indexableColumns);
         logger.info("Doing columns : " + indexableColumns.size());
 
@@ -146,10 +146,10 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
         LineIterator.closeQuietly(lineIterator);
     }
 
-    protected List<Indexable<?>> getIndexableColumns(
+    protected List<Indexable> getIndexableColumns(
             final IndexableFileSystemCsv indexable,
             final String[] columns) {
-        List<Indexable<?>> indexableColumns = indexable.getChildren();
+        List<Indexable> indexableColumns = indexable.getChildren();
         if (indexableColumns == null) {
             indexableColumns = new ArrayList<>();
             indexable.setChildren(indexableColumns);
@@ -157,11 +157,11 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
         if (!indexable.isAllColumns()) {
             return indexable.getChildren();
         }
-        List<Indexable<?>> sortedIndexableColumns = new ArrayList<>();
+        List<Indexable> sortedIndexableColumns = new ArrayList<>();
         // Add all the columns that are not present in the configuration
         for (final String columnName : columns) {
             IndexableColumn indexableColumn = null;
-            for (final Indexable<?> child : indexableColumns) {
+            for (final Indexable child : indexableColumns) {
                 if (((IndexableColumn) child).getFieldName().equals(columnName)) {
                     indexableColumn = (IndexableColumn) child;
                     break;

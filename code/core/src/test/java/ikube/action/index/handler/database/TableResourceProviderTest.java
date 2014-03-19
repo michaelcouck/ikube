@@ -40,7 +40,7 @@ public class TableResourceProviderTest extends AbstractTest {
         ResultSet resultSet = mock(ResultSet.class);
 
         when(indexableTable.getDataSource()).thenReturn(dataSource);
-        when(indexableTable.getChildren()).thenReturn(Arrays.<Indexable<?>>asList(indexableColumn));
+        when(indexableTable.getChildren()).thenReturn(Arrays.<Indexable>asList(indexableColumn));
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.createStatement()).thenReturn(statement);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);

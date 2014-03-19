@@ -26,7 +26,7 @@ public class EmoticonClassificationStrategyTest extends AbstractTest {
 
 	@Test
 	public void aroundProcess() throws Exception {
-		final Indexable<?> indexable = Mockito.mock(Indexable.class);
+		final Indexable indexable = Mockito.mock(Indexable.class);
 		when(indexable.isStored()).thenReturn(Boolean.TRUE);
 		when(indexable.isAnalyzed()).thenReturn(Boolean.TRUE);
 		final Object resource = new Object();

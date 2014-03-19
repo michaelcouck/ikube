@@ -238,6 +238,7 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
     }
 
     @Test
+    @SuppressWarnings({"UnnecessaryBoxing", "StatementWithEmptyBody"})
     public void count() throws Exception {
         int inserted = 10;
         List<Url> urls = getUrls(inserted);
@@ -247,7 +248,7 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
         assertEquals(inserted, total.intValue());
 
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put(IConstants.HASH, 5l);
+        parameters.put(IConstants.HASH, Long.valueOf(5));
         parameters.put(IConstants.INDEXED, Boolean.FALSE);
         total = dataBase.count(Url.class, parameters);
         assertEquals(1, total.intValue());
@@ -270,7 +271,7 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
         Date creationTimestamp = dbIndexContext.getTimestamp();
         assertNotNull(creationTimestamp);
 
-        dbIndexContext.setIndexDirectoryPath(indexContext.getIndexDirectoryPath());
+        dbIndexContext.setIndexDirectoryPath("/tmp");
         dbIndexContext = dataBase.merge(dbIndexContext);
 
         Date updateTimestamp = dbIndexContext.getTimestamp();
@@ -298,7 +299,6 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
 
     protected List<Url> getUrls(int batchSize) throws Exception {
         List<Url> urls = new ArrayList<>();
-        long hash = System.currentTimeMillis();
         for (int i = 0; i < batchSize; i++) {
             Url url = new Url();
             url.setName("index");
@@ -306,7 +306,7 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
             url.setRawContent(new byte[0]);
             url.setTitle("title");
             url.setUrl("url");
-            url.setHash(hash++);
+            url.setHash(i);
             url.setIndexed(Boolean.FALSE);
             url.setContentType("content type");
             urls.add(url);

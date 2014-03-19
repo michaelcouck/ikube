@@ -37,7 +37,7 @@ import static org.mockito.Mockito.when;
 public class IndexManagerTest extends AbstractTest {
 
     private File indexFolderTwo;
-    private Indexable<?> indexable;
+    private Indexable indexable;
     private String fieldName = "fieldName";
 
     private Document document = new Document();
@@ -45,7 +45,7 @@ public class IndexManagerTest extends AbstractTest {
     @Before
     public void before() {
         when(indexContext.getIndexDirectoryPath()).thenReturn(this.getClass().getSimpleName());
-        indexable = new Indexable<Object>() {
+        indexable = new Indexable() {
         };
         FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
         getFile(indexContext.getIndexDirectoryPath(), indexContext.getName(), "/1234567889/127.0.0.1");

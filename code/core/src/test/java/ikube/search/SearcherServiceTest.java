@@ -3,7 +3,9 @@ package ikube.search;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.cluster.IClusterManager;
+import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.SpellingCheckerMock;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.ThreadUtilities;
 import mockit.Deencapsulation;
 import mockit.Mock;
@@ -42,10 +44,25 @@ public class SearcherServiceTest extends AbstractTest {
     @SuppressWarnings("unused")
     private static final Logger LOGGER = LoggerFactory.getLogger(SearcherServiceTest.class);
 
-    @MockClass(realClass = Search.class)
-    public static class SearchComplexSortedMock {
+    @SuppressWarnings("UnusedDeclaration")
+    @MockClass(realClass = SearcherService.class)
+    public static class SearcherServiceMock {
+
         @Mock
-        public ArrayList<HashMap<String, String>> execute() {
+        @SuppressWarnings({"unchecked", "UnusedParameters"})
+        protected <T> T getSearch(final Class<?> klass, final String indexName) throws Exception {
+            Search search = (Search) mock(klass);
+            when(search.execute()).thenReturn(getSearchResults());
+            SEARCHES.add(search);
+            return (T) search;
+        }
+
+        @Mock
+        protected void persistSearch(final ikube.model.Search search) {
+            // Nothing
+        }
+
+        private static ArrayList<HashMap<String, String>> getSearchResults() {
             HashMap<String, String> result = new HashMap<>();
             result.put(IConstants.CONTENTS, IConstants.CONTENTS);
             result.put(IConstants.SCORE, Float.toString((float) Math.random()));
@@ -61,23 +78,7 @@ public class SearcherServiceTest extends AbstractTest {
 
             return searchResults;
         }
-    }
 
-    @SuppressWarnings("UnusedDeclaration")
-    @MockClass(realClass = SearcherService.class)
-    public static class SearcherServiceMock {
-        @Mock
-        @SuppressWarnings({"unchecked", "UnusedParameters"})
-        protected <T> T getSearch(final Class<?> klass, final String indexName) throws Exception {
-            Search search = (Search) mock(klass);
-            SEARCHES.add(search);
-            return (T) search;
-        }
-
-        @Mock
-        protected void persistSearch(final ikube.model.Search search) {
-            // Nothing
-        }
     }
 
     private static List<Search> SEARCHES = new ArrayList<>();
@@ -100,7 +101,7 @@ public class SearcherServiceTest extends AbstractTest {
 
     @Before
     public void before() {
-        Mockit.setUpMocks(new SearcherServiceMock(), new SearchComplexSortedMock());
+        Mockit.setUpMocks(new SearcherServiceMock(), new ApplicationContextManagerMock());
 
         clusterManager = mock(IClusterManager.class);
         doAnswer(new Answer() {
@@ -126,6 +127,9 @@ public class SearcherServiceTest extends AbstractTest {
         search.setBoosts(Arrays.<String>asList("1.0"));
 
         searcherService = new SearcherService();
+
+        ApplicationContextManagerMock.BEAN = searcherService;
+
         indexName = indexContext.getIndexName();
 
         Deencapsulation.setField(searcherService, "clusterManager", clusterManager);
@@ -133,7 +137,7 @@ public class SearcherServiceTest extends AbstractTest {
 
     @After
     public void after() {
-        Mockit.tearDownMocks(SearcherServiceMock.class, SearchComplexSortedMock.class);
+        Mockit.tearDownMocks(SearcherServiceMock.class, ApplicationContextManager.class);
     }
 
     @Test
@@ -191,7 +195,6 @@ public class SearcherServiceTest extends AbstractTest {
         when(monitorService.getIndexFieldNames(anyString())).thenReturn(fields);
 
         search.setCoordinate(null);
-        // Deencapsulation.setField(searcherService, dataBase);
         Deencapsulation.setField(searcherService, monitorService);
         ikube.model.Search searchResult = searcherService.searchAll(search);
         int totalResultsPlusStats = monitorService.getIndexNames().length + 1;

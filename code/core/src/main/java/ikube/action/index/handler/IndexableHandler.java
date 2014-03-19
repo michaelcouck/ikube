@@ -27,7 +27,7 @@ import java.util.concurrent.RecursiveAction;
  * @since 29-11-2010
  */
 @Component
-public abstract class IndexableHandler<T extends Indexable<?>> implements IIndexableHandler<T> {
+public abstract class IndexableHandler<T extends Indexable> implements IIndexableHandler<T> {
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -159,7 +159,7 @@ public abstract class IndexableHandler<T extends Indexable<?>> implements IIndex
      * @param messages  any strings that sill be printed along with the exceptions
      */
     protected void handleException(
-            final Indexable<?> indexable,
+            final Indexable indexable,
             final Exception exception,
             final String... messages) {
         int totalExceptions = indexable.incrementAndGetExceptions();

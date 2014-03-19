@@ -90,9 +90,9 @@ public class IndexableDataSourceHandlerTest extends AbstractTest {
 
 	@Test
 	public void isInContextAlready() {
-		Indexable<?> child = mock(Indexable.class);
+		Indexable child = mock(Indexable.class);
 		when(child.getName()).thenReturn("tableName");
-		List<Indexable<?>> children = new ArrayList<Indexable<?>>(Arrays.asList(child));
+		List<Indexable> children = new ArrayList<Indexable>(Arrays.asList(child));
 		when(indexContext.getChildren()).thenReturn(children);
 		Boolean isInContextAlready = Deencapsulation.invoke(indexableDataSourceHandler, "isInContextAlready", "tableOtherName", indexContext);
 		assertFalse(isInContextAlready);

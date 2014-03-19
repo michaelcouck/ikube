@@ -53,7 +53,7 @@ public class ClassifierTrainingStrategy extends AStrategy {
     @Override
     public boolean aroundProcess(
             final IndexContext<?> indexContext,
-            final Indexable<?> indexable,
+            final Indexable indexable,
             final Document document,
             final Object resource)
             throws Exception {

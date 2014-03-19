@@ -6,7 +6,6 @@ import ikube.cluster.IMonitorService;
 import ikube.model.Coordinate;
 import ikube.model.IndexContext;
 import ikube.model.Search;
-import ikube.model.Server;
 import ikube.search.Search.TypeField;
 import ikube.toolkit.HashUtilities;
 import ikube.toolkit.SerializationUtilities;
@@ -23,7 +22,6 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Constructor;
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -210,6 +208,7 @@ public class SearcherService implements ISearcherService {
                 return (Search) future.get(60, TimeUnit.SECONDS);
             } catch (final Exception e) {
                 // If we have a remote exception then try to do the search locally
+                LOGGER.error("Exception doing remote search : " + search, e);
                 return doSearch(search);
             }
             /*search.setDistributed(Boolean.FALSE);
@@ -340,7 +339,7 @@ public class SearcherService implements ISearcherService {
                 ThreadUtilities.destroy(Integer.toString(clonedSearch.hashCode()));
             }
             aggregateResults(search, searches);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             handleException(search.getIndexName(), e);
         }
         return search;
@@ -511,8 +510,6 @@ public class SearcherService implements ISearcherService {
             if (cacheSearch == null) {
                 clusterManager.put(search.getHash(), search);
             } else {
-                // Don't need this, there is a update listener
-                // cacheSearch.setCount(cacheSearch.getCount() + 1);
                 clusterManager.put(cacheSearch.getHash(), cacheSearch);
             }
         } catch (final Exception e) {

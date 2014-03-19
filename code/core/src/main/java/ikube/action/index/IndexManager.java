@@ -470,7 +470,7 @@ public final class IndexManager {
     public static Document addStringField(
             final String fieldName,
             final String fieldContent,
-            final Indexable<?> indexable,
+            final Indexable indexable,
             final Document document) {
         if (fieldName != null && fieldContent != null) {
             Field field;

@@ -72,7 +72,7 @@ public abstract class AbstractTest {
      */
     protected String ip;
     protected ScoreDoc[] scoreDocs;
-    protected List<Indexable<?>> indexables;
+    protected List<Indexable> indexables;
     protected Map<String, Server> servers;
 
     protected Lock lock;
@@ -289,7 +289,7 @@ public abstract class AbstractTest {
             final String[]... strings)
             throws Exception {
         IndexWriter indexWriter = getRamIndexWriter(analyzer);
-        Indexable<?> indexable = getIndexable();
+        Indexable indexable = getIndexable();
 
         for (final String[] row : strings) {
             Document document = new Document();
@@ -336,7 +336,7 @@ public abstract class AbstractTest {
 
     protected Document getDocument(final String id, final String string, final String field) {
         Document document = new Document();
-        Indexable<?> indexable = getIndexable();
+        Indexable indexable = getIndexable();
         IndexManager.addStringField(IConstants.ID, id, indexable, document);
         IndexManager.addStringField(IConstants.NAME, string, indexable, document);
         if (StringUtilities.isNumeric(string.trim())) {
@@ -347,8 +347,8 @@ public abstract class AbstractTest {
         return document;
     }
 
-    protected Indexable<?> getIndexable() {
-        Indexable<?> indexable = new Indexable<Object>() {
+    protected Indexable getIndexable() {
+        Indexable indexable = new Indexable() {
         };
         indexable.setAnalyzed(Boolean.TRUE);
         indexable.setOmitNorms(Boolean.TRUE);

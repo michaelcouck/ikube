@@ -44,7 +44,7 @@ public class MonitorServiceTest extends AbstractTest {
     public void before() {
         monitorService = new MonitorService();
 
-        List<Indexable<?>> indexables = new ArrayList<Indexable<?>>(Arrays.asList(new IndexableFileSystem()));
+        List<Indexable> indexables = new ArrayList<Indexable>(Arrays.asList(new IndexableFileSystem()));
         indexContext.setChildren(indexables);
 
         Mockit.setUpMocks(ApplicationContextManagerMock.class);

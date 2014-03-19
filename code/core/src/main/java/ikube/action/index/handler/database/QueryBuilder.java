@@ -38,7 +38,7 @@ public final class QueryBuilder {
 
 	void buildQuery(final SelectQuery selectQuery, final Table parentTable, final Table table, final IndexableTable indexableTable) {
 		IndexableTable currentIndexableTable = indexableTable;
-		for (final Indexable<?> childIndexable : currentIndexableTable.getChildren()) {
+		for (final Indexable childIndexable : currentIndexableTable.getChildren()) {
 			if (IndexableColumn.class.isAssignableFrom(childIndexable.getClass())) {
 				IndexableColumn indexableColumn = (IndexableColumn) childIndexable;
 				selectQuery.addColumn(table, indexableColumn.getName());
@@ -93,8 +93,8 @@ public final class QueryBuilder {
 	 * @param indexableColumns the columns to look through
 	 * @return the id column or null if no such column is defined. Generally this will mean a configuration problem, every table must have a unique id column
 	 */
-	protected static IndexableColumn getIdColumn(final List<Indexable<?>> indexableColumns) {
-		for (Indexable<?> indexable : indexableColumns) {
+	protected static IndexableColumn getIdColumn(final List<Indexable> indexableColumns) {
+		for (Indexable indexable : indexableColumns) {
 			if (!IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
 				continue;
 			}

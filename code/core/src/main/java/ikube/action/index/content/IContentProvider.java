@@ -14,7 +14,7 @@ import ikube.model.IndexableColumn;
  * @since 21.11.10
  * @version 01.00
  */
-public interface IContentProvider<I extends Indexable<?>> {
+public interface IContentProvider<I extends Indexable> {
 
 	/**
 	 * This method takes the 'indexable' specific object(s) and writes the data to the output stream. In the case of a

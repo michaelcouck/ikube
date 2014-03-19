@@ -29,7 +29,7 @@ public class LanguageCleaningStrategyTest extends AbstractTest {
 
     @Test
     public void aroundProcess() throws Exception {
-        final Indexable<?> indexable = Mockito.mock(Indexable.class);
+        final Indexable indexable = Mockito.mock(Indexable.class);
         final Object resource = new Object();
         Mockito.when(indexable.getContent()).thenReturn(
                 "What a looovely dai where theere are moneyy mistaces aaaahhhhhhh thereererereee yooooouuuuu aaarrrrreeee");

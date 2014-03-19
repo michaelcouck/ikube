@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Entity
 @SuppressWarnings("serial")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class Indexable<E> extends Persistable {
+public class Indexable extends Persistable {
 
     /**
      * This is the content of the indexable, it is therefore only valid while indexing and for the current resource.
@@ -41,9 +41,9 @@ public class Indexable<E> extends Persistable {
     private String name;
     @PrimaryKeyJoinColumn
     @ManyToOne(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
-    private Indexable<?> parent;
+    private Indexable parent;
     @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "parent", fetch = FetchType.EAGER)
-    private List<Indexable<?>> children;
+    private List<Indexable> children;
     @Column
     @Attribute(field = false, description = "Whether this is a geospatial address field")
     private boolean address = Boolean.FALSE;
@@ -98,22 +98,22 @@ public class Indexable<E> extends Persistable {
         return name;
     }
 
-    public Indexable<?> getParent() {
+    public Indexable getParent() {
         return parent;
     }
 
-    public void setParent(final Indexable<?> parent) {
+    public void setParent(final Indexable parent) {
         this.parent = parent;
     }
 
-    public List<Indexable<?>> getChildren() {
+    public List<Indexable> getChildren() {
         return children;
     }
 
-    public void setChildren(final List<Indexable<?>> children) {
+    public void setChildren(final List<Indexable> children) {
         this.children = children;
         if (this.children != null) {
-            for (Indexable<?> child : children) {
+            for (Indexable child : children) {
                 child.setParent(this);
             }
         }

@@ -2,11 +2,8 @@ package ikube.deploy.action;
 
 import ikube.AbstractTest;
 import ikube.deploy.model.Server;
-import mockit.Mockit;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.channel.direct.Session;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -24,16 +21,6 @@ import static org.mockito.Mockito.*;
  */
 public class CmdActionTest extends AbstractTest {
 
-    @Before
-    public void before() {
-        Mockit.setUpMocks();
-    }
-
-    @After
-    public void after() {
-        Mockit.tearDownMocks();
-    }
-
     @Test
     public void execute() throws Exception {
         Server server = populateFields(new Server(), Boolean.TRUE, Integer.MAX_VALUE);
@@ -46,8 +33,10 @@ public class CmdActionTest extends AbstractTest {
         when(command.getInputStream()).thenReturn(inputStream);
         when(command.getErrorStream()).thenReturn(inputStream);
 
+        server.setSshExec(sshExec);
+
         CmdAction commandAction = new CmdAction() {
-            protected SSHClient getSshExec(final String ip, final String username, final String password) {
+            protected SSHClient getSshExec(final Server server) {
                 System.out.println("Ssh : " + sshExec);
                 return sshExec;
             }

@@ -55,8 +55,8 @@ public class Index extends Action<IndexContext<?>, Boolean> {
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
     protected boolean internalExecute(final IndexContext<?> indexContext) throws Exception {
-        List<Indexable<?>> indexables = indexContext.getChildren();
-        for (final Indexable<?> indexable : (Iterable<Indexable<?>>) new ArrayList(indexables)) {
+        List<Indexable> indexables = indexContext.getChildren();
+        for (final Indexable indexable : (Iterable<Indexable>) new ArrayList(indexables)) {
             // Update the action with the new indexable
             Server server = clusterManager.getServer();
             ikube.model.Action action = getAction(server, indexContext, null);
@@ -66,7 +66,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
             dataBase.merge(action);
             clusterManager.put(server.getAddress(), server);
             // Get the right handler for this indexable
-            IIndexableHandler<Indexable<?>> handler = getHandler(indexable);
+            IIndexableHandler<Indexable> handler = getHandler(indexable);
             // Execute the handler and wait for the threads to finish
             logger.info("Indexable : " + indexable.getName());
             // This task it potentially the grand parent of multiple sub
@@ -130,7 +130,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
      * @return the handler for the indexable or null if there is no handler for the indexable. This
      * will fail with a warning if there is no handler for the indexable
      */
-    protected IIndexableHandler getHandler(final Indexable<?> indexable) {
+    protected IIndexableHandler getHandler(final Indexable indexable) {
         for (final IIndexableHandler handler : indexableHandlers) {
             if (handler.getIndexableClass().equals(indexable.getClass())) {
                 return handler;

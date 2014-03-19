@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 @Entity()
 @SuppressWarnings("serial")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class IndexableTweets extends Indexable<IndexableTweets> {
+public class IndexableTweets extends Indexable {
 
     @Transient
     private transient Coordinate coordinate;

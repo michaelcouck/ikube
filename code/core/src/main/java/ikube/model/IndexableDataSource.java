@@ -18,7 +18,7 @@ import javax.sql.DataSource;
 @Entity()
 @SuppressWarnings("serial")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class IndexableDataSource extends Indexable<IndexableDataSource> {
+public class IndexableDataSource extends Indexable {
 
 	/** TODO - the datasource needs to be configured else where. */
 	@Transient

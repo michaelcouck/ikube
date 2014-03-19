@@ -44,15 +44,13 @@ public class CopyActionTest extends AbstractTest {
         final SSHClient sshExec = mock(SSHClient.class);
         final SCPFileTransfer scpFileTransfer = mock(SCPFileTransfer.class);
 
-        // SCPUploadClient uploader = mock(SCPUploadClient.class);
-
         Session session = mock(Session.class);
         when(sshExec.startSession()).thenReturn(session);
         when(sshExec.newSCPFileTransfer()).thenReturn(scpFileTransfer);
         when(scpFileTransfer.newSCPUploadClient()).thenReturn(uploader);
 
         CopyAction copyAction = new CopyAction() {
-            protected SSHClient getSshExec(final String ip, final String username, final String password) {
+            protected SSHClient getSshExec(final Server server) {
                 return sshExec;
             }
         };
@@ -61,6 +59,7 @@ public class CopyActionTest extends AbstractTest {
         server.setUsername("nsername");
         server.setPassword("password");
         server.setIp("127.0.0.1");
+        server.setSshExec(sshExec);
 
         Map<String, String> files = new HashMap<>();
         Map<String, String> directories = new HashMap<>();

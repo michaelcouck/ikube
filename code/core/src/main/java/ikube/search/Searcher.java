@@ -21,16 +21,9 @@ public class Searcher implements Callable<ikube.model.Search>, Serializable {
     @Override
     public ikube.model.Search call() throws Exception {
         try {
-            // IClusterManager clusterManager = getBean(IClusterManager.class);
-            // Server server = clusterManager.getServer();
-            // String localAddress = server.getAddress();
-            // System.out.println("Executing remote search : " + localAddress);
             ISearcherService searcherService = getBean(ISearcherService.class.getName());
             return searcherService.doSearch(search);
-            // System.out.println("Finished remote search : " + remoteSearch);
-            // return remoteSearch;
         } catch (final Exception e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }

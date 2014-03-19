@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 @MockClass(realClass = QueryBuilder.class)
 public class QueryBuilderMock {
     @Mock
-    public static IndexableColumn getIdColumn(final List<Indexable<?>> indexableColumns) {
+    public static IndexableColumn getIdColumn(final List<Indexable> indexableColumns) {
         IndexableColumn indexableColumn = mock(IndexableColumn.class);
         when(indexableColumn.getName()).thenReturn("column-name");
         when(indexableColumn.isAnalyzed()).thenReturn(Boolean.TRUE);

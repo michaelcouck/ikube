@@ -15,7 +15,7 @@ import javax.sql.DataSource;
 @Entity()
 @SuppressWarnings("serial")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class IndexableTable extends Indexable<IndexableTable> {
+public class IndexableTable extends Indexable {
 
 	@Transient
 	private transient long minimumId = -1;

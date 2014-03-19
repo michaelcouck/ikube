@@ -17,7 +17,7 @@ import javax.validation.constraints.Size;
 @Entity()
 @SuppressWarnings("serial")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class IndexableFileSystem extends Indexable<IndexableFileSystem> {
+public class IndexableFileSystem extends Indexable {
 
 	@Column
 	@NotNull

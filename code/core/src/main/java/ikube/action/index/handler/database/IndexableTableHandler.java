@@ -99,12 +99,12 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
             final IContentProvider<IndexableColumn> contentProvider)
             throws Exception {
         // We have results from the table and we are already on the first result
-        List<Indexable<?>> children = indexableTable.getChildren();
+        List<Indexable> children = indexableTable.getChildren();
         // Set the column types and the data from the table in the column objects
         setColumnTypesAndData(children, resultSet);
         // Set the id field
         setIdField(indexableTable, currentDocument);
-        for (final Indexable<?> indexable : children) {
+        for (final Indexable indexable : children) {
             // Handle all the columns, if any column refers to another column then they
             // must be configured in the correct order so that the name column is before the
             // binary data for the document for example
@@ -113,7 +113,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
                 handleColumn(contentProvider, indexableColumn, currentDocument);
             }
         }
-        for (final Indexable<?> indexable : children) {
+        for (final Indexable indexable : children) {
             if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {
                 IndexableTable childTable = (IndexableTable) indexable;
                 handleRow(childTable, resultSet, currentDocument, contentProvider);
@@ -186,7 +186,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
      */
     @SuppressWarnings("StringBufferReplaceableByString")
     protected void setIdField(final IndexableTable indexableTable, final Document document) {
-        List<Indexable<?>> children = indexableTable.getChildren();
+        List<Indexable> children = indexableTable.getChildren();
         IndexableColumn idColumn = QueryBuilder.getIdColumn(children);
         if (idColumn == null) {
             return;
@@ -209,11 +209,11 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
      * @param children  the children indexables of the table object
      * @param resultSet the result set for the table
      */
-    protected void setColumnTypesAndData(final List<Indexable<?>> children, final ResultSet resultSet) {
+    protected void setColumnTypesAndData(final List<Indexable> children, final ResultSet resultSet) {
         try {
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
             for (int i = 0, j = 1; i < children.size(); i++) {
-                Indexable<?> indexable = children.get(i);
+                Indexable indexable = children.get(i);
                 if (IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
                     IndexableColumn indexableColumn = (IndexableColumn) indexable;
                     String columnName = indexableColumn.getName();

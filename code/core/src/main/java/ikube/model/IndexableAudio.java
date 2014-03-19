@@ -13,7 +13,7 @@ import javax.persistence.InheritanceType;
 @Entity()
 @SuppressWarnings("serial")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class IndexableAudio extends Indexable<IndexableAudio> {
+public class IndexableAudio extends Indexable {
 
 	@Column
 	private boolean filePath;

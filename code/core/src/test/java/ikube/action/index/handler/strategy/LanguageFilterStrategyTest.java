@@ -45,7 +45,7 @@ public class LanguageFilterStrategyTest extends AbstractTest {
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void aroundProcessPerformance() {
 		when(indexableColumn.getContent()).thenReturn("some english text");
-		List<Indexable<?>> children = new ArrayList(Arrays.asList(indexableColumn));
+		List<Indexable> children = new ArrayList(Arrays.asList(indexableColumn));
 		when(indexableTable.getChildren()).thenReturn(children);
 
 		int iterations = 1000;

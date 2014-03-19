@@ -61,7 +61,7 @@ public class GeospatialEnrichmentStrategyTest extends AbstractTest {
 		longitudeColumn.setFieldName(IConstants.LONGITUDE);
 		longitudeColumn.setContent("19000");
 
-		List<Indexable<?>> indexableColumns = new ArrayList<Indexable<?>>(Arrays.asList(latitudeColumn, longitudeColumn));
+		List<Indexable> indexableColumns = new ArrayList<Indexable>(Arrays.asList(latitudeColumn, longitudeColumn));
 		indexableTable.setChildren(indexableColumns);
 		boolean result = geospatialEnrichmentStrategy.aroundProcess(indexContext, indexableTable, document, null);
 		printDocument(document);
@@ -84,7 +84,7 @@ public class GeospatialEnrichmentStrategyTest extends AbstractTest {
 		indexableTable.setAddress(Boolean.TRUE);
 		indexableColumn.setAddress(Boolean.TRUE);
 		indexableColumn.setAddressContent("9a Avanue Road, Cape Town, South Africa");
-		indexableTable.setChildren(new ArrayList<Indexable<?>>(Arrays.asList(indexableColumn)));
+		indexableTable.setChildren(new ArrayList<Indexable>(Arrays.asList(indexableColumn)));
 		StringBuilder actual = geospatialEnrichmentStrategy.buildAddress(indexableTable, new StringBuilder());
 
 		logger.info("Address : " + actual);

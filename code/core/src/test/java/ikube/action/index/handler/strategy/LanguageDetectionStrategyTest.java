@@ -31,7 +31,7 @@ public class LanguageDetectionStrategyTest extends AbstractTest {
 	public void before() {
 		languageDetectionStrategy = new LanguageDetectionStrategy();
 		languageDetectionStrategy.initialize();
-		List<Indexable<?>> children = new ArrayList(Arrays.asList(indexableColumn));
+		List<Indexable> children = new ArrayList(Arrays.asList(indexableColumn));
 		when(indexableTable.getChildren()).thenReturn(children);
 		when(indexableTable.isStored()).thenReturn(Boolean.TRUE);
 		when(indexableTable.isAnalyzed()).thenReturn(Boolean.TRUE);

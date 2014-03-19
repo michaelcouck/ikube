@@ -43,7 +43,7 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
     private IndexContext<?> indexContext;
     private IndexableTable snapshotTable;
     private IndexableColumn snapshotColumn;
-    private List<Indexable<?>> snapshotTableChildren;
+    private List<Indexable> snapshotTableChildren;
     private IndexableTableHandler indexableTableHandler;
 
     @BeforeClass
@@ -166,7 +166,7 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
         String ip = InetAddress.getLocalHost().getHostAddress();
         IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
         indexContext.setIndexWriters(indexWriter);
-        for (Indexable<?> indexable : indexContext.getChildren()) {
+        for (Indexable indexable : indexContext.getChildren()) {
             if (!IndexableTable.class.isAssignableFrom(indexable.getClass())) {
                 continue;
             }

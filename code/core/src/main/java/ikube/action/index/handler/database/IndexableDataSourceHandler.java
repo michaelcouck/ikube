@@ -90,7 +90,7 @@ public class IndexableDataSourceHandler extends IndexableHandler<IndexableDataSo
 	}
 
 	private boolean isInContextAlready(final String tableName, final IndexContext<?> indexContext) {
-		for (final Indexable<?> indexable : indexContext.getChildren()) {
+		for (final Indexable indexable : indexContext.getChildren()) {
 			if (indexable.getName().equals(tableName)) {
 				return Boolean.TRUE;
 			}

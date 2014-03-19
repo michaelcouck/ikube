@@ -30,7 +30,7 @@ public class IndexReaderMock {
 
 	private Document getDocument() {
 		Document document = new Document();
-		Indexable<?> indexable = new Indexable<Object>() {
+		Indexable indexable = new Indexable() {
 		};
 		IndexManager.addStringField("path", Long.toString(RandomUtils.nextLong()), indexable, document);
 		IndexManager.addStringField("length", Long.toString(RandomUtils.nextLong()), indexable, document);

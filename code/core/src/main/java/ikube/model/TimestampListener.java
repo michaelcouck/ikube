@@ -1,23 +1,26 @@
 package ikube.model;
 
-import java.sql.Timestamp;
-
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
+import java.sql.Timestamp;
 
 /**
  * This listener will insert the timestamp when the entity gets persisted or updated.
- * 
+ *
  * @author Michael Couck
- * @since 29.09.12
  * @version 01.00
+ * @since 29-09-2012
  */
 public class TimestampListener {
 
-	@PrePersist
-	@PreUpdate
-	public void prePersist(final Persistable persistable) {
-		persistable.setTimestamp(new Timestamp(System.currentTimeMillis()));
-	}
+    @PrePersist
+    public void prePersist(final Persistable persistable) {
+        persistable.setTimestamp(new Timestamp(System.currentTimeMillis()));
+    }
+
+    @PreUpdate
+    public void preUpdate(final Persistable persistable) {
+        persistable.setTimestamp(new Timestamp(System.currentTimeMillis()));
+    }
 
 }

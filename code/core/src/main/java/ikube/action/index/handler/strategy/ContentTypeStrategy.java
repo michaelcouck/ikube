@@ -37,7 +37,7 @@ public final class ContentTypeStrategy extends AStrategy {
     @Override
     public boolean aroundProcess(
             final IndexContext<?> indexContext,
-            final Indexable<?> indexable,
+            final Indexable indexable,
             final Document document,
             final Object resource)
             throws Exception {
@@ -66,13 +66,13 @@ public final class ContentTypeStrategy extends AStrategy {
         return super.aroundProcess(indexContext, indexable, document, resource);
     }
 
-    final Object getRawContent(final Indexable<?> indexable) {
+    final Object getRawContent(final Indexable indexable) {
         Object rawContent = indexable.getRawContent();
         if (rawContent != null) {
             return rawContent;
         } else {
             if (indexable.getChildren() != null) {
-                for (final Indexable<?> child : indexable.getChildren()) {
+                for (final Indexable child : indexable.getChildren()) {
                     rawContent = getRawContent(child);
                     if (rawContent != null) {
                         return rawContent;

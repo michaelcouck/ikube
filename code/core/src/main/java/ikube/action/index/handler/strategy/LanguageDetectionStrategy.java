@@ -42,7 +42,7 @@ public final class LanguageDetectionStrategy extends AStrategy {
     @Override
     public boolean aroundProcess(
             final IndexContext<?> indexContext,
-            final Indexable<?> indexable,
+            final Indexable indexable,
             final Document document,
             final Object resource)
             throws Exception {
@@ -54,7 +54,7 @@ public final class LanguageDetectionStrategy extends AStrategy {
         return super.aroundProcess(indexContext, indexable, document, resource);
     }
 
-    void detectLanguage(final Indexable<?> indexable, final Document document, final String content) {
+    void detectLanguage(final Indexable indexable, final Document document, final String content) {
         if (!StringUtils.isEmpty(content)) {
             try {
                 String language;
@@ -76,12 +76,12 @@ public final class LanguageDetectionStrategy extends AStrategy {
         }
     }
 
-    final String getContent(final Indexable<?> indexable, final StringBuilder builder) {
+    final String getContent(final Indexable indexable, final StringBuilder builder) {
         if (indexable.getContent() != null) {
             builder.append(indexable.getContent());
         }
         if (indexable.getChildren() != null) {
-            for (final Indexable<?> child : indexable.getChildren()) {
+            for (final Indexable child : indexable.getChildren()) {
                 getContent(child, builder);
             }
         }

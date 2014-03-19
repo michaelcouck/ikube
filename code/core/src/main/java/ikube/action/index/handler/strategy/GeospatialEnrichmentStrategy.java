@@ -40,7 +40,7 @@ public final class GeospatialEnrichmentStrategy extends AGeospatialEnrichmentStr
     @Override
     public boolean aroundProcess(
             final IndexContext<?> indexContext,
-            final Indexable<?> indexable,
+            final Indexable indexable,
             final Document document,
             final Object resource)
             throws Exception {
@@ -64,11 +64,11 @@ public final class GeospatialEnrichmentStrategy extends AGeospatialEnrichmentStr
      * or null if there is no geo-data in the indexable, and the reverse
      * geo-coder didn't match anything either
      */
-    final Coordinate getCoordinate(final Indexable<?> indexable) {
+    final Coordinate getCoordinate(final Indexable indexable) {
         Double latitude = null;
         Double longitude = null;
         if (indexable.getChildren() != null) {
-            for (final Indexable<?> child : indexable.getChildren()) {
+            for (final Indexable child : indexable.getChildren()) {
                 if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
                     IndexableColumn indexableColumn = (IndexableColumn) child;
                     Object content = indexableColumn.getContent();
@@ -97,7 +97,7 @@ public final class GeospatialEnrichmentStrategy extends AGeospatialEnrichmentStr
         return coordinate;
     }
 
-    final StringBuilder buildAddress(final Indexable<?> indexable, final StringBuilder builder) {
+    final StringBuilder buildAddress(final Indexable indexable, final StringBuilder builder) {
         if (indexable.isAddress()) {
             if (builder.length() > 0) {
                 builder.append(", ");
@@ -108,7 +108,7 @@ public final class GeospatialEnrichmentStrategy extends AGeospatialEnrichmentStr
             }
         }
         if (indexable.getChildren() != null) {
-            for (Indexable<?> child : indexable.getChildren()) {
+            for (Indexable child : indexable.getChildren()) {
                 buildAddress(child, builder);
             }
         }

@@ -15,7 +15,7 @@ import javax.validation.constraints.Size;
 @Entity
 @SuppressWarnings("serial")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class IndexableEmail extends Indexable<IndexableEmail> {
+public class IndexableEmail extends Indexable {
 
 	@Column
 	@NotNull

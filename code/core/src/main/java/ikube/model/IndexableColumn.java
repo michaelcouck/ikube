@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Entity()
 @SuppressWarnings("serial")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class IndexableColumn extends Indexable<IndexableColumn> {
+public class IndexableColumn extends Indexable {
 
     @Transient
     private transient int columnType;

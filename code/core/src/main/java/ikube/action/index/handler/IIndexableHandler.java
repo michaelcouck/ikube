@@ -22,7 +22,7 @@ import java.util.concurrent.ForkJoinTask;
  * @version 01.00
  * @since 29-11-2010
  */
-public interface IIndexableHandler<T extends Indexable<?>> {
+public interface IIndexableHandler<T extends Indexable> {
 
     /**
      * This method is access to the type of class that this handler can handle.

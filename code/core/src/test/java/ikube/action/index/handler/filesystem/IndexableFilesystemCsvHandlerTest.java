@@ -58,7 +58,7 @@ public class IndexableFilesystemCsvHandlerTest extends AbstractTest {
         when(indexableColumn.getFieldName()).thenReturn("field-name");
         when(indexableColumn.getContent()).thenReturn("field-content");
 
-        List<Indexable<?>> children = new ArrayList<Indexable<?>>(Arrays.asList(indexableColumn));
+        List<Indexable> children = new ArrayList<Indexable>(Arrays.asList(indexableColumn));
         indexableFileSystem.setChildren(children);
         filesystemCsvHandler.handleFile(indexContext, indexableFileSystem, file);
         verify(rowResourceHandler, Mockito.atLeastOnce()).handleResource(any(IndexContext.class),
@@ -89,13 +89,13 @@ public class IndexableFilesystemCsvHandlerTest extends AbstractTest {
     public void getIndexableColumns() {
         String[] columns = new String[]{"NAME", "ADDRESS", "CD_LATITUDE", "CD_LONGITUDE"};
         // IndexableFileSystemCsv indexableFileSystem = new IndexableFileSystemCsv();
-        List<Indexable<?>> children = new ArrayList<>();
+        List<Indexable> children = new ArrayList<>();
         IndexableColumn indexableColumn = new IndexableColumn();
         indexableColumn.setFieldName(columns[3]);
         children.add(indexableColumn);
         indexableFileSystem.setChildren(children);
         indexableFileSystem.setAllColumns(Boolean.TRUE);
-        List<Indexable<?>> sortedChildren = filesystemCsvHandler.getIndexableColumns(indexableFileSystem, columns);
+        List<Indexable> sortedChildren = filesystemCsvHandler.getIndexableColumns(indexableFileSystem, columns);
         assertEquals("There must be four columns, the existing one plus the three from the file : ", 4,
                 sortedChildren.size());
         for (int i = 0; i < columns.length; i++) {

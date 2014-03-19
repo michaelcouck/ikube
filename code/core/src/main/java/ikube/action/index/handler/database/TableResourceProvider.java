@@ -172,9 +172,9 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
      * @throws SQLException
      */
     private void setParameters(final IndexableTable indexableTable, final PreparedStatement preparedStatement) throws SQLException {
-        List<Indexable<?>> children = indexableTable.getChildren();
+        List<Indexable> children = indexableTable.getChildren();
         int parameterIndex = 1;
-        for (final Indexable<?> child : children) {
+        for (final Indexable child : children) {
             if (!IndexableColumn.class.isAssignableFrom(child.getClass())) {
                 continue;
             }
@@ -251,7 +251,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
                 return;
             }
             String primaryKeyColumn = primaryKeyColumns.size() > 0 ? primaryKeyColumns.get(0) : columnNames.get(0);
-            List<Indexable<?>> children = indexableTable.getChildren();
+            List<Indexable> children = indexableTable.getChildren();
             if (children == null) {
                 children = new ArrayList<>();
             }
@@ -276,7 +276,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
         }
         // Now do all the child tables
         if (indexableTable.getChildren() != null) {
-            for (final Indexable<?> indexable : indexableTable.getChildren()) {
+            for (final Indexable indexable : indexableTable.getChildren()) {
                 if (IndexableTable.class.isAssignableFrom(indexable.getClass())) {
                     addAllColumns((IndexableTable) indexable, dataSource);
                 }
@@ -288,7 +288,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
         if (indexableTable.getChildren() == null) {
             return Boolean.FALSE;
         }
-        for (final Indexable<?> child : indexableTable.getChildren()) {
+        for (final Indexable child : indexableTable.getChildren()) {
             if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
                 if (child.getName().equalsIgnoreCase(columnName)) {
                     return Boolean.TRUE;

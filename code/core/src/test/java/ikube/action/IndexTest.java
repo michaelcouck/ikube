@@ -54,7 +54,7 @@ public class IndexTest extends AbstractTest {
         indexableTable.setName("indexableName");
         List<IIndexableHandler> indexableHandlers = new ArrayList<>();
         indexableHandlers.add(indexableTableHandler);
-        List<Indexable<?>> indexables = new ArrayList<Indexable<?>>(Arrays.asList(indexableTable));
+        List<Indexable> indexables = new ArrayList<Indexable>(Arrays.asList(indexableTable));
 
         Mockit.setUpMocks(IndexManagerMock.class, ApplicationContextManagerMock.class, ThreadUtilitiesMock.class);
         ForkJoinTask forkJoinTask = new RecursiveAction() {

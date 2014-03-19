@@ -36,11 +36,11 @@ public class RowResourceHandler extends ResourceHandler<IndexableFileSystemCsv> 
         String fileName = indexableFileSystemCsv.getFile().getName();
         int lineNumber = indexableFileSystemCsv.getLineNumber();
         String lineNumberFieldName = indexableFileSystemCsv.getLineNumberFieldName();
-        List<Indexable<?>> indexableColumns = indexableFileSystemCsv.getChildren();
+        List<Indexable> indexableColumns = indexableFileSystemCsv.getChildren();
         String identifier = StringUtils.join(new Object[]{fileName, Integer.toString(lineNumber)}, IConstants.SPACE);
         // Add the line number field
         IndexManager.addStringField(lineNumberFieldName, identifier, indexableFileSystemCsv, document);
-        for (Indexable<?> indexable : indexableColumns) {
+        for (Indexable indexable : indexableColumns) {
             if (!IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
                 continue;
             }

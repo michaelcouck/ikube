@@ -23,7 +23,7 @@ import javax.validation.constraints.Size;
 @Entity()
 @SuppressWarnings("serial")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class IndexableInternet extends Indexable<IndexableInternet> {
+public class IndexableInternet extends Indexable {
 
 	@Transient
 	private transient String currentUrl;

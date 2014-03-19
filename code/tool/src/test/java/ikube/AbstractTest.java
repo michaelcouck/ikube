@@ -62,7 +62,7 @@ public abstract class AbstractTest {
 
     protected Document getDocument(final String id, final String string, final String field) {
         Document document = new Document();
-        Indexable<?> indexable = getIndexable();
+        Indexable indexable = getIndexable();
         IndexManager.addStringField(IConstants.ID, id, indexable, document);
         IndexManager.addStringField(IConstants.NAME, string, indexable, document);
         if (StringUtilities.isNumeric(string.trim())) {
@@ -73,8 +73,8 @@ public abstract class AbstractTest {
         return document;
     }
 
-    protected Indexable<?> getIndexable() {
-        Indexable<?> indexable = new Indexable<Object>() {
+    protected Indexable getIndexable() {
+        Indexable indexable = new Indexable() {
         };
         indexable.setAnalyzed(Boolean.TRUE);
         indexable.setOmitNorms(Boolean.TRUE);
