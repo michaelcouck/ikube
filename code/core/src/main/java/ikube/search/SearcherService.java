@@ -212,7 +212,7 @@ public class SearcherService implements ISearcherService {
                 // If we have a remote exception then try to do the search locally
                 return doSearch(search);
             }*/
-            return doSearch(search);
+            return search(search);
         } else {
             return doSearch(search);
         }

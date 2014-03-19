@@ -4,16 +4,13 @@ import ikube.analytics.action.*;
 import ikube.cluster.IClusterManager;
 import ikube.model.Analysis;
 import ikube.model.Context;
-import ikube.toolkit.ThreadUtilities;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.Converter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Future;
 
 /**
  * This class is implemented as a state pattern. The user specifies the type of analyzer, and the
@@ -37,6 +34,7 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
     }
 
     @Autowired
+    @SuppressWarnings("UnusedDeclaration")
     private IClusterManager clusterManager;
 
     /**
@@ -109,11 +107,7 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
             } catch (final InterruptedException | ExecutionException | TimeoutException e) {
                 throw new RuntimeException(e);
             }*/
-            try {
-                return analyzer.call();
-            } catch (final Exception e) {
-                throw new RuntimeException(e);
-            }
+            return analyze(analysis);
         } else {
             try {
                 return analyzer.call();
@@ -140,11 +134,7 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
             } catch (final InterruptedException | ExecutionException | TimeoutException e) {
                 throw new RuntimeException(e);
             }*/
-            try {
-                return classesOrClusters.call();
-            } catch (final Exception e) {
-                throw new RuntimeException(e);
-            }
+            return classesOrClusters(analysis);
         } else {
             try {
                 return classesOrClusters.call();
@@ -171,11 +161,7 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
             } catch (final InterruptedException | ExecutionException | TimeoutException e) {
                 throw new RuntimeException(e);
             }*/
-            try {
-                return sizesForClassesOrClusters.call();
-            } catch (final Exception e) {
-                throw new RuntimeException(e);
-            }
+            return sizesForClassesOrClusters(analysis);
         } else {
             try {
                 return sizesForClassesOrClusters.call();

@@ -152,8 +152,8 @@ public class IndexContext<T> extends Indexable<T> implements Comparable<IndexCon
     @Transient
     @SuppressWarnings("UnusedDeclaration")
     private Snapshot snapshot;
-    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
-    private List<Snapshot> snapshots;
+    @Transient
+    private transient List<Snapshot> snapshots;
 
     public String getIndexName() {
         return super.getName();
