@@ -297,6 +297,8 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
     @Test
     @SuppressWarnings("unchecked")
     public void sendTask() throws Exception {
+        Random random = new Random();
+        Deencapsulation.setField(clusterManagerHazelcast, "random", random);
         Future<Boolean> future = clusterManagerHazelcast.sendTask(new Task());
         assertTrue(future.get());
     }

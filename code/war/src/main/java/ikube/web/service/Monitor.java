@@ -14,7 +14,6 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ReflectionUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
@@ -22,11 +21,13 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.*;
 
 /**
+ * The resource is the API interface for actions and statistics from the server, like terminating
+ * an action or disabling the cpu throttling. Also for example getting and generating the indexing
+ * data for the servers dynamically.
+ *
  * @author Michael couck
  * @version 01.00
  * @since 16-10-2012
@@ -80,7 +81,6 @@ public class Monitor extends Resource {
     }
 
     @GET
-    @SuppressWarnings("rawtypes")
     @Path(Monitor.INDEX_CONTEXT)
     @Consumes(MediaType.APPLICATION_XML)
     public Response indexContext(
@@ -89,17 +89,7 @@ public class Monitor extends Resource {
         return buildJsonResponse(indexContext);
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private IndexContext cloneIndexContext(
-            final IndexContext indexContext) {
-        IndexContext cloneIndexContext = (IndexContext) SerializationUtilities.clone(indexContext);
-        cloneIndexContext.setChildren(null);
-        // cloneIndexContext.setSnapshots(null);
-        return cloneIndexContext;
-    }
-
     @GET
-    @SuppressWarnings({"rawtypes"})
     @Path(Monitor.INDEX_CONTEXTS)
     @Consumes(MediaType.APPLICATION_XML)
     public Response indexContexts(
@@ -147,20 +137,10 @@ public class Monitor extends Resource {
         return buildJsonResponse(result);
     }
 
-    private Server cloneServer(final Server server) {
-        Server cloneServer = (Server) SerializationUtilities.clone(server);
-        cloneServer.setIndexContexts(null);
-        List<Action> actions = cloneServer.getActions();
-        for (Action cloneAction : actions) {
-            cloneAction.setServer(null);
-        }
-        return cloneServer;
-    }
-
     @GET
     @Path(Monitor.INDEXING)
     @Consumes(MediaType.APPLICATION_XML)
-    @SuppressWarnings({"rawtypes", "unchecked", "UnnecessaryBoxing"})
+    @SuppressWarnings({"UnnecessaryBoxing", "unchecked"})
     public Response indexingStatistics() {
         Map<String, Server> servers = clusterManager.getServers();
         Object[] times = getTimes(servers, new ArrayList<Object>(Arrays.asList(addQuotes("Times"))));
@@ -189,14 +169,15 @@ public class Monitor extends Resource {
             serverIndex++;
         }
         data[serverIndex] = times;
-        String stringified = Arrays.deepToString(invertMatrix(data));
+        Object[][] invertedData = invertMatrix(data);
+        String stringified = Arrays.deepToString(invertedData);
         return buildResponse().entity(stringified).build();
     }
 
     @GET
     @Path(Monitor.SEARCHING)
     @Consumes(MediaType.APPLICATION_XML)
-    @SuppressWarnings({"rawtypes", "unchecked", "UnnecessaryBoxing"})
+    @SuppressWarnings({"UnnecessaryBoxing", "unchecked"})
     public Response searchingStatistics() {
         Map<String, Server> servers = clusterManager.getServers();
         Object[] times = getTimes(servers, new ArrayList<Object>(Arrays.asList(addQuotes("Times"))));
@@ -225,7 +206,8 @@ public class Monitor extends Resource {
             serverIndex++;
         }
         data[serverIndex] = times;
-        String stringified = Arrays.deepToString(invertMatrix(data));
+        Object[][] invertedData = invertMatrix(data);
+        String stringified = Arrays.deepToString(invertedData);
         return buildResponse().entity(stringified).build();
     }
 
@@ -321,38 +303,26 @@ public class Monitor extends Resource {
         return buildResponse().build();
     }
 
-    @SuppressWarnings({"rawtypes", "unused"})
-    private IndexContext getIndexContextFromServer(final String indexName, final Server server) {
-        List<IndexContext> indexContexts = server.getIndexContexts();
-        if (indexContexts != null) {
-            for (final IndexContext indexContext : indexContexts) {
-                if (indexContext.getIndexName().equals(indexName)) {
-                    return indexContext;
-                }
-            }
+    private Server cloneServer(final Server server) {
+        Server cloneServer = (Server) SerializationUtilities.clone(server);
+        cloneServer.setIndexContexts(null);
+        List<Action> actions = cloneServer.getActions();
+        for (Action cloneAction : actions) {
+            cloneAction.setServer(null);
         }
-        return null;
+        return cloneServer;
     }
 
-    @SuppressWarnings("unused")
-    private void addFieldValues(final Action action, final Map<String, Object> actionData) {
-        ReflectionUtils.doWithFields(action.getClass(), new ReflectionUtils.FieldCallback() {
-            @Override
-            public void doWith(final Field field) throws IllegalArgumentException, IllegalAccessException {
-                if (Modifier.isStatic(field.getModifiers())) {
-                    return;
-                }
-                field.setAccessible(Boolean.TRUE);
-                Object value = ReflectionUtils.getField(field, action);
-                if (value != null) {
-                    value = value.toString();
-                }
-                actionData.put(field.getName(), value);
-            }
-        });
+    @SuppressWarnings("unchecked")
+    private IndexContext cloneIndexContext(
+            final IndexContext indexContext) {
+        IndexContext cloneIndexContext = (IndexContext) SerializationUtilities.clone(indexContext);
+        cloneIndexContext.setChildren(null);
+        // cloneIndexContext.setSnapshots(null);
+        return cloneIndexContext;
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked", "LoopStatementThatDoesntLoop"})
+    @SuppressWarnings({"LoopStatementThatDoesntLoop", "unchecked"})
     private Object[] getTimes(final Map<String, Server> servers, final ArrayList<Object> times) {
         GregorianCalendar gregorianCalendar = new GregorianCalendar();
         outer:

@@ -80,7 +80,6 @@ public class DeltaIndexableFilesystemStrategyTest extends AbstractTest {
         indexContext.getHashes().add(HashUtilities.hash(file.getAbsolutePath(), file.length(), file.lastModified()));
         indexContext.getHashes().add(HashUtilities.hash(file.getAbsolutePath(), file.length(), Integer.MIN_VALUE));
         indexContext.getHashes().add(HashUtilities.hash(file.getAbsolutePath(), file.length(), Integer.MAX_VALUE));
-        // Collections.sort(indexContext.getHashes());
 
         mustProcess = deltaStrategy.aroundProcess(indexContext, indexableFileSystem, new Document(), file);
         assertFalse(mustProcess);

@@ -100,7 +100,11 @@ public class MonitorService implements IMonitorService {
             @Override
             public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
                 Attribute attribute = field.getAnnotation(Attribute.class);
-                if (attribute == null || !(field.getType().isPrimitive() || field.getType().getPackage().equals(Object.class.getPackage()))) {
+                // LOGGER.info("Att : " + attribute + ", " + field + ", " + field.getType() + ", " + field.getType().getPackage());
+                if (attribute == null ||
+                        !(field.getType().isPrimitive() ||
+                                field.getType().getPackage() == null ||
+                                field.getType().getPackage().equals(Object.class.getPackage()))) {
                     return;
                 }
                 fieldDescriptions.add(attribute.description());

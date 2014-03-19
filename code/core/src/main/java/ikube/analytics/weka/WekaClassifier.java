@@ -14,9 +14,9 @@ import java.util.Enumeration;
 import java.util.concurrent.TimeUnit;
 
 /**
- * TODO: Document me more.
- * <p/>
- * This is a wrapper for the Weka classifiers.
+ * This is a wrapper for the Weka classifiers. It is essentially a holder with some methods for
+ * building and training and using the underlying Weka classification(any one, for example {@link weka.classifiers.functions.SMO})
+ * algorithm.
  *
  * @author Michael Couck
  * @version 01.00

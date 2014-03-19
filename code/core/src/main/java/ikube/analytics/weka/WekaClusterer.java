@@ -11,9 +11,13 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 /**
+ * This class is the Weka clusterer wrapper. Ultimately just wrapping the Weka
+ * algoritym(any one of the clustering algorithms) and adds some easier to understand
+ * methods for building and training said algorithms.
+ *
  * @author Michael Couck
  * @version 01.00
- * @since 10.04.13
+ * @since 10-04-2013
  */
 public class WekaClusterer extends WekaAnalyzer {
 
@@ -35,7 +39,6 @@ public class WekaClusterer extends WekaAnalyzer {
     public void build(final Context context) throws Exception {
         double duration = Timer.execute(new Timer.Timed() {
             @Override
-            @SuppressWarnings("unchecked")
             public void execute() {
                 try {
                     analyzeLock.lock();

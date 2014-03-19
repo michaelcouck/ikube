@@ -45,7 +45,7 @@ public class DeltaIndexableFilesystemStrategy extends AStrategy {
         String length = Long.toString(file.length());
         String lastModified = Long.toString(file.lastModified());
         Long identifier = HashUtilities.hash(path, length, lastModified);
-        boolean mustProceed = indexContext.getHashes().remove(identifier);
+        boolean mustProceed = !indexContext.getHashes().remove(identifier);
         // logger.info("Around process delta file strategy : " + mustProceed);
         return mustProceed && super.aroundProcess(indexContext, indexable, document, resource);
     }

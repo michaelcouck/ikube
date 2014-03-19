@@ -40,10 +40,14 @@ public class WekaClassifierTest extends AbstractTest {
         context = new Context<>();
         context.setAlgorithm(SMO.class.newInstance());
         context.setFilter(StringToWordVector.class.newInstance());
-        context.setName("sentiment-smo-en");
-        context.setMaxTraining(1000);
+        context.setName("sentiment-smo-en-test");
+        context.setMaxTraining(10000);
 
-        wekaClassifier = new WekaClassifier();
+        wekaClassifier = new WekaClassifier() {
+            void persist(final Context context, final Instances instances) {
+                // Do nothing
+            }
+        };
         wekaClassifier.init(context);
         wekaClassifier.build(context);
     }
@@ -118,7 +122,7 @@ public class WekaClassifierTest extends AbstractTest {
         double classOrCluster = wekaClassifier.classOrCluster(instance);
         assertEquals(0.0, classOrCluster);
 
-        instance = instances.instance(2);
+        instance = instances.instance(2188);
         classOrCluster = wekaClassifier.classOrCluster(instance);
         assertEquals(1.0, classOrCluster);
     }
@@ -126,11 +130,18 @@ public class WekaClassifierTest extends AbstractTest {
     @Test
     public void distributionForInstance() throws Exception {
         Instances instances = Deencapsulation.getField(wekaClassifier, "instances");
+
         Instance instance = instances.firstInstance();
 
         double[] distributionForInstance = wekaClassifier.distributionForInstance(instance);
         assertEquals(1.0, distributionForInstance[0]);
         assertEquals(0.0, distributionForInstance[1]);
+
+        instance = instances.instance(2188);
+
+        distributionForInstance = wekaClassifier.distributionForInstance(instance);
+        assertEquals(0.0, distributionForInstance[0]);
+        assertEquals(1.0, distributionForInstance[1]);
     }
 
     @SuppressWarnings("unchecked")
@@ -193,7 +204,7 @@ public class WekaClassifierTest extends AbstractTest {
     public void size() throws Exception {
         Analysis<String, double[]> analysis = getAnalysis(IConstants.POSITIVE, null);
         int sizeForClass = wekaClassifier.sizeForClassOrCluster(analysis);
-        assertTrue(sizeForClass > 500);
+        assertTrue(sizeForClass > 20);
     }
 
     @Test

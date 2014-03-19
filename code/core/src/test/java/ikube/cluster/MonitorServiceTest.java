@@ -19,8 +19,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,8 +37,6 @@ import static org.junit.Assert.assertTrue;
  */
 @SuppressWarnings("deprecation")
 public class MonitorServiceTest extends AbstractTest {
-
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private IMonitorService monitorService;
 
@@ -67,20 +63,16 @@ public class MonitorServiceTest extends AbstractTest {
     @Test
     public void getFieldNames() {
         String[] fieldNames = monitorService.getFieldNames(IndexableEmail.class);
-        logger.info("Field names : " + Arrays.deepToString(fieldNames));
         assertEquals(
                 "[idField, titleField, contentField, mailHost, username, password, " +
                         "port, protocol, secureSocketLayer, name, address, stored, analyzed, " +
                         "vectored, omitNorms, tokenized, boost, maxExceptions, threads, id]",
                 Arrays.deepToString(fieldNames));
-        fieldNames = monitorService.getFieldNames(IndexContext.class);
-        logger.info("Field names : " + Arrays.deepToString(fieldNames));
     }
 
     @Test
     public void getFieldDescriptions() {
         String[] descriptions = monitorService.getFieldDescriptions(IndexContext.class);
-        logger.info("Descriptions : " + Arrays.deepToString(descriptions));
         assertTrue(Arrays.deepToString(descriptions).contains("This is the throttle in mili seconds that will slow " +
                 "down the indexing"));
     }
@@ -90,7 +82,6 @@ public class MonitorServiceTest extends AbstractTest {
         IndexSearcher multiSearcher = null;
         try {
             File indexDirectory = createIndexFileSystem(indexContext, "Hello world");
-            logger.info("Index directory : " + indexDirectory.getAbsolutePath());
 
             Directory directory = FSDirectory.open(indexDirectory);
             IndexReader indexReader = new MultiReader(DirectoryReader.open(directory));
@@ -117,7 +108,6 @@ public class MonitorServiceTest extends AbstractTest {
             FileUtilities.setContents(propertiesFile, contents.getBytes());
 
             Map<String, String> filesAndProperties = monitorService.getProperties();
-            logger.info("Files found : " + filesAndProperties.keySet());
             String cleanPath = FileUtilities.cleanFilePath(propertiesFile.getAbsolutePath());
             assertTrue(filesAndProperties.containsKey(cleanPath));
 

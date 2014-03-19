@@ -2,7 +2,10 @@ package ikube.analytics;
 
 import ikube.AbstractTest;
 import ikube.IConstants;
+import ikube.analytics.action.Analyzer;
+import ikube.analytics.action.Builder;
 import ikube.analytics.action.Destroyer;
+import ikube.analytics.action.Trainer;
 import ikube.analytics.weka.WekaClassifier;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.Analysis;
@@ -83,6 +86,13 @@ public class AnalyticsServiceTest extends AbstractTest {
     @SuppressWarnings("unchecked")
     public void train() throws Exception {
         analyticsService.train(analysis);
+        verify(clusterManager, atLeastOnce()).sendTaskToAll(any(Callable.class));
+
+        Trainer trainer = new Trainer(analysis);
+        IAnalyticsService service = trainer.getAnalyticsService();
+        when(service.getAnalyzer(any(String.class))).thenReturn(analyzer);
+        trainer.call();
+
         verify(analyzer, atLeastOnce()).train(any());
     }
 
@@ -90,6 +100,13 @@ public class AnalyticsServiceTest extends AbstractTest {
     @SuppressWarnings("unchecked")
     public void build() throws Exception {
         analyticsService.build(analysis);
+        verify(clusterManager, atLeastOnce()).sendTaskToAll(any(Callable.class));
+
+        Builder builder = new Builder(analysis);
+        IAnalyticsService service = builder.getAnalyticsService();
+        when(service.getContext(any(String.class))).thenReturn(context);
+        builder.call();
+
         verify(analyzer, atLeastOnce()).build(any(Context.class));
     }
 
@@ -108,7 +125,12 @@ public class AnalyticsServiceTest extends AbstractTest {
         analyticsService.analyze(this.analysis);
         verify(clusterManager, atLeastOnce()).sendTask(any(Callable.class));
 
-        verify(analyzer, atLeastOnce()).analyze(any());
+        Analyzer analyzer = new Analyzer(analysis);
+        IAnalyticsService service = analyzer.getAnalyticsService();
+        when(service.getAnalyzer(any(String.class))).thenReturn(this.analyzer);
+        analyzer.call();
+
+        verify(this.analyzer, atLeastOnce()).analyze(any());
     }
 
     @Test
@@ -147,12 +169,14 @@ public class AnalyticsServiceTest extends AbstractTest {
     @Test
     @SuppressWarnings("unchecked")
     public void destroy() throws Exception {
-        Future future = mock(Future.class);
-        when(clusterManager.sendTask(any(Callable.class))).thenReturn(future);
-        when(future.get(anyLong(), any(TimeUnit.class))).thenReturn(analysis);
-
-        new Destroyer(context).call();
         analyticsService.destroy(context);
+        verify(clusterManager, atLeastOnce()).sendTaskToAll(any(Callable.class));
+
+        Destroyer destroyer = new Destroyer(context);
+        IAnalyticsService service = destroyer.getAnalyticsService();
+        when(service.getContexts()).thenReturn(AnalyzerManager.getContexts());
+        destroyer.call();
+
         verify(analyzer, atLeastOnce()).destroy(any(Context.class));
     }
 
