@@ -195,7 +195,6 @@ public class RuleInterceptor implements IRuleInterceptor {
             final String predicate,
             final boolean result,
             final Map<String, Object> results) {
-        LOGGER.info("Logging : ");
         LOGGER.info("Rule evaluation of index : " + indexContext.getName() +
                 ", action : " + action.getClass().getSimpleName() +
                 ", predicate : " + predicate);
