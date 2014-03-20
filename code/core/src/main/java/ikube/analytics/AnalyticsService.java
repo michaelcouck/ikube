@@ -7,6 +7,9 @@ import ikube.model.Context;
 import ikube.toolkit.ThreadUtilities;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.Converter;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.Timestamp;
@@ -39,6 +42,8 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
         }, Timestamp.class);
     }
 
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     @SuppressWarnings("UnusedDeclaration")
     private IClusterManager clusterManager;
@@ -49,11 +54,13 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
     @Override
     @SuppressWarnings("unchecked")
     public IAnalyzer<I, O, C> create(final Context context) {
+        logger.info("Create analytics service : " + context.getName());
         context.setFilter(null);
         context.setAlgorithm(null);
         Creator creator = new Creator(context);
         List<Future<Void>> futures = clusterManager.sendTaskToAll(creator);
         ThreadUtilities.waitForFutures(futures, 15);
+        logger.info("Finished building remote analyzer : " + context.getName());
         /*try {
             creator.call();
         } catch (final Exception e) {

@@ -39,6 +39,7 @@
 				<version>2.7.1</version>
 				<configuration>
 					<forkMode>once</forkMode>
+                    <testFailureIgnore>true</testFailureIgnore>
 					<argLine>-javaagent:../../serenity/serenity.jar ${memory.parameters} ${serenity.parameters} -XX:-UseSplitVerifier</argLine>
 				</configuration>
 			</plugin>

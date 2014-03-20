@@ -67,7 +67,7 @@ public class IndexableFileSystemHandlerTest extends AbstractTest {
         IndexableFileSystem indexableFileSystem = getIndexableFileSystem(compressedFilePath);
         final ForkJoinTask<?> forkJoinTask = indexableFileSystemHandler.handleIndexableForked(indexContext, indexableFileSystem);
         ThreadUtilities.executeForkJoinTasks(this.getClass().getSimpleName(), 3, forkJoinTask);
-        ThreadUtilities.sleep(3000);
+        ThreadUtilities.waitForFuture(forkJoinTask, Integer.MAX_VALUE);
         verify(resourceHandler, atLeastOnce()).handleResource(any(IndexContext.class), any(IndexableFileSystem.class), any(Document.class), any(File.class));
     }
 

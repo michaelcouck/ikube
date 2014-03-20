@@ -19,6 +19,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -53,9 +54,14 @@ public class Analyzer extends Resource {
     @Path(Analyzer.CREATE)
     @SuppressWarnings("unchecked")
     public Response create(@Context final HttpServletRequest request) {
+        logger.info("Create request : ");
         ikube.model.Context context = unmarshall(ikube.model.Context.class, request);
-        analyticsService.create(context);
-        return buildJsonResponse(context(context));
+        logger.info("               : " + context.getName());
+        IAnalyzer analyzer = analyticsService.create(context);
+        logger.info("               : " + analyzer);
+        ikube.model.Context response = context(context);
+        logger.info("               : " + response.getName());
+        return buildJsonResponse(response);
     }
 
     @POST
@@ -114,8 +120,11 @@ public class Analyzer extends Resource {
     @Path(Analyzer.ANALYZERS)
     @SuppressWarnings("unchecked")
     public Response analyzers() {
+        logger.info("Analyzers : ");
         Map<String, IAnalyzer> analyzers = analyticsService.getAnalyzers();
+        logger.info("           : " + analyzers);
         String[] names = analyzers.keySet().toArray(new String[analyzers.size()]);
+        logger.info("           : " + Arrays.toString(names));
         return buildJsonResponse(names);
     }
 

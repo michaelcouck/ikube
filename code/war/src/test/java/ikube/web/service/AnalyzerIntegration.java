@@ -20,6 +20,7 @@ import javax.ws.rs.core.MediaType;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import static junit.framework.Assert.*;
  * @version 01.00
  * @since 05-02-2014
  */
+// @Ignore
 public class AnalyzerIntegration extends BaseTest {
 
     private Gson gson;
@@ -144,7 +146,7 @@ public class AnalyzerIntegration extends BaseTest {
         String[] names = executeGet(analyzersUrl, String[].class);
         List<String> list = new ArrayList<>(Arrays.asList(names));
         logger.info("List : " + list);
-        assertTrue(list.contains("sentiment-smo-en"));
+        assertTrue(list.toString().equals("[bank-data, bmw-browsers, sentiment-smo]"));
     }
 
     private <T> T executeGet(final String url, final Class<T> type) throws Exception {
@@ -162,10 +164,13 @@ public class AnalyzerIntegration extends BaseTest {
 
     private <T> T executeMethod(final HttpMethod httpMethod, final Class<T> type) throws Exception {
         HTTP_CLIENT.executeMethod(httpMethod);
-        // logger.info("Response : " + httpMethod.getResponseBodyAsString());
-        assertEquals(200, httpMethod.getStatusCode());
-        String response = FileUtilities.getContents(httpMethod.getResponseBodyAsStream(), Integer.MAX_VALUE).toString();
+        InputStream inputStream = httpMethod.getResponseBodyAsStream();
+        String response = FileUtilities.getContents(inputStream, Integer.MAX_VALUE).toString();
+        int statusCode = httpMethod.getStatusCode();
+        logger.info("Response : " + statusCode);
+        assertEquals(200, statusCode);
         T result = gson.fromJson(response, type);
+        logger.info("         : " + result);
         assertNotNull(result);
         return result;
     }
