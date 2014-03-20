@@ -29,12 +29,12 @@ public class ActionTest extends AbstractTest {
 		Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
 		action = new Action<Object, Object>() {
 			@Override
-			public Boolean execute(IndexContext<?> context) throws Exception {
+			public Boolean execute(IndexContext context) throws Exception {
 				return null;
 			}
 
 			@Override
-			public boolean internalExecute(IndexContext<?> indexContext) throws Exception {
+			public boolean internalExecute(IndexContext indexContext) throws Exception {
 				return false;
 			}
 		};

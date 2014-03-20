@@ -24,14 +24,14 @@ import java.util.List;
  * @version 01.00
  * @since 12-02-2011
  */
-public class AreUnopenedIndexes extends ARule<IndexContext<?>> {
+public class AreUnopenedIndexes extends ARule<IndexContext> {
 
     /**
      * {@inheritDoc}
      */
     @Override
     @SuppressWarnings("ConstantConditions")
-    public boolean evaluate(final IndexContext<?> indexContext) {
+    public boolean evaluate(final IndexContext indexContext) {
         IndexSearcher indexSearcher = indexContext.getMultiSearcher();
         if (indexSearcher == null) {
             return new AreIndexesCreated().evaluate(indexContext);

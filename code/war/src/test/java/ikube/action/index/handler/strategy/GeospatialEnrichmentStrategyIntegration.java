@@ -30,7 +30,7 @@ import static org.junit.Assert.assertNotNull;
  */
 public class GeospatialEnrichmentStrategyIntegration extends IntegrationTest {
 
-    private IndexContext<?> indexContext;
+    private IndexContext indexContext;
     private IndexableFileSystemCsv indexableFileSystemCsv;
     private IndexableFilesystemCsvHandler indexableHandlerFilesystemCsvHandler;
 

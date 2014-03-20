@@ -60,7 +60,7 @@ public abstract class IndexableHandler<T extends Indexable> implements IIndexabl
      * @return the recursive action that has already spawned off the sub tasks, if necessary
      */
     protected ForkJoinTask<?> getRecursiveAction(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final T indexable,
             final IResourceProvider<?> resourceProvider) {
         class RecursiveActionImpl extends RecursiveAction {
@@ -114,7 +114,7 @@ public abstract class IndexableHandler<T extends Indexable> implements IIndexabl
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void computeRecursive(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final T indexable,
             final IResourceProvider<?> resourceProvider) {
         if (indexable.incrementThreads(-1) <= 0) {
@@ -142,7 +142,7 @@ public abstract class IndexableHandler<T extends Indexable> implements IIndexabl
      * @return the list of additional resources collected by the processing of the resource, can be empty or null
      */
     protected abstract List<?> handleResource(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final T indexable,
             final Object resource);
 

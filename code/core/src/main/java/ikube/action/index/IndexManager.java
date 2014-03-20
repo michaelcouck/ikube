@@ -49,7 +49,7 @@ public final class IndexManager {
      */
     @SuppressWarnings("ConstantConditions")
     public static synchronized IndexWriter[] openIndexWriterDelta(
-            final IndexContext<?> indexContext)
+            final IndexContext indexContext)
             throws Exception {
         LOGGER.info("Opening delta writers on index context : " + indexContext.getName());
         String ip = UriUtilities.getIp();
@@ -91,7 +91,7 @@ public final class IndexManager {
      * @return the index writer opened for this index context or null if there was any exception opening the index
      */
     public static synchronized IndexWriter openIndexWriter(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final long time,
             final String ip) {
         boolean delete = Boolean.FALSE;
@@ -137,7 +137,7 @@ public final class IndexManager {
      * @throws Exception
      */
     public static synchronized IndexWriter openIndexWriter(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final File indexDirectory,
             final boolean create)
             throws Exception {
@@ -155,7 +155,7 @@ public final class IndexManager {
      * @throws Exception
      */
     public static synchronized IndexWriter openIndexWriter(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final Directory directory,
             final boolean create)
             throws Exception {
@@ -183,7 +183,7 @@ public final class IndexManager {
      * @param indexContext the index context to close the writer for
      */
     public static synchronized void closeIndexWriters(
-            final IndexContext<?> indexContext) {
+            final IndexContext indexContext) {
         try {
             if (indexContext.getIndexWriters() != null) {
                 for (final IndexWriter indexWriter : indexContext.getIndexWriters()) {
@@ -265,7 +265,7 @@ public final class IndexManager {
      */
     @SuppressWarnings("StringBufferReplaceableByString")
     public static String getIndexDirectory(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final long time,
             final String ip) {
         StringBuilder builder = new StringBuilder();
@@ -345,7 +345,7 @@ public final class IndexManager {
     }
 
     @SuppressWarnings("StringBufferReplaceableByString")
-    public static long getIndexSize(final IndexContext<?> indexContext) {
+    public static long getIndexSize(final IndexContext indexContext) {
         long indexSize = 0;
         try {
             StringBuilder stringBuilder = new StringBuilder();
@@ -401,7 +401,7 @@ public final class IndexManager {
      *                     in the searcher
      * @return the total current number of documents in the index context
      */
-    public static long getNumDocsForIndexWriters(final IndexContext<?> indexContext) {
+    public static long getNumDocsForIndexWriters(final IndexContext indexContext) {
         long numDocs = 0;
         IndexWriter[] indexWriters = indexContext.getIndexWriters();
         if (indexWriters != null && indexWriters.length > 0) {
@@ -418,7 +418,7 @@ public final class IndexManager {
         return numDocs;
     }
 
-    public static long getNumDocsForIndexSearchers(final IndexContext<?> indexContext) {
+    public static long getNumDocsForIndexSearchers(final IndexContext indexContext) {
         long numDocs = 0;
         if (indexContext.getMultiSearcher() != null) {
             numDocs = indexContext.getMultiSearcher().getIndexReader().numDocs();
@@ -426,7 +426,7 @@ public final class IndexManager {
         return numDocs;
     }
 
-    public static Date getLatestIndexDirectoryDate(final IndexContext<?> indexContext) {
+    public static Date getLatestIndexDirectoryDate(final IndexContext indexContext) {
         long timestamp = 0;
         File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
         if (latestIndexDirectory != null) {
@@ -444,7 +444,7 @@ public final class IndexManager {
      * @param indexContext the index context to the the path to the indexes for
      * @return the absolute, cleaned path to the indexes for this index context
      */
-    public static String getIndexDirectoryPath(final IndexContext<?> indexContext) {
+    public static String getIndexDirectoryPath(final IndexContext indexContext) {
         return getIndexDirectoryPath(indexContext, indexContext.getIndexDirectoryPath());
     }
 
@@ -455,11 +455,11 @@ public final class IndexManager {
      * @param indexContext the index context to the the path to the backup directory for the indexes
      * @return the absolute, cleaned path to the backup directory for the indexes for this index context
      */
-    public static String getIndexDirectoryPathBackup(final IndexContext<?> indexContext) {
+    public static String getIndexDirectoryPathBackup(final IndexContext indexContext) {
         return getIndexDirectoryPath(indexContext, indexContext.getIndexDirectoryPathBackup());
     }
 
-    private static String getIndexDirectoryPath(final IndexContext<?> indexContext, final String indexDirectory) {
+    private static String getIndexDirectoryPath(final IndexContext indexContext, final String indexDirectory) {
         StringBuilder builder = new StringBuilder();
         builder.append(new File(indexDirectory).getAbsolutePath()); // Path
         builder.append(File.separator);

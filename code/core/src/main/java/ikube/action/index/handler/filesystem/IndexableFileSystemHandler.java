@@ -43,7 +43,7 @@ public class IndexableFileSystemHandler extends IndexableHandler<IndexableFileSy
      */
     @Override
     public ForkJoinTask<?> handleIndexableForked(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final IndexableFileSystem indexableFileSystem)
             throws Exception {
         Pattern pattern = getPattern(indexableFileSystem.getExcludedPattern());
@@ -56,7 +56,7 @@ public class IndexableFileSystemHandler extends IndexableHandler<IndexableFileSy
      */
     @Override
     protected List<?> handleResource(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final IndexableFileSystem indexableFileSystem,
             final Object resource) {
         handleFile(indexContext, indexableFileSystem, (File) resource);
@@ -71,7 +71,7 @@ public class IndexableFileSystemHandler extends IndexableHandler<IndexableFileSy
      * @param file                the file to parse and index
      */
     void handleFile(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final IndexableFileSystem indexableFileSystem,
             final File file) {
         // First we handle the zips if necessary

@@ -1,7 +1,6 @@
 package ikube.toolkit;
 
 import ikube.model.IndexContext;
-import ikube.model.Indexable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +21,7 @@ public final class Optimizer {
 	@SuppressWarnings("rawtypes")
 	public static void main(String[] args) {
 		try {
-			IndexContext<?> indexContext = new IndexContext<Indexable>();
+			IndexContext indexContext = new IndexContext();
 			indexContext.setMergeFactor(10000);
 			indexContext.setBufferSize(256);
 			indexContext.setBufferedDocs(10000);

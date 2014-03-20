@@ -45,7 +45,7 @@ public class StartListener implements IListener<Message<Object>>, MessageListene
             event.setConsumed(Boolean.TRUE);
             LOGGER.info("Manually starting indexing : " + ToStringBuilder.reflectionToString(event));
             final String indexName = event.getObject().toString();
-            final IndexContext<?> indexContext = monitorService.getIndexContexts().get(indexName);
+            final IndexContext indexContext = monitorService.getIndexContexts().get(indexName);
             final long maxAge = indexContext.getMaxAge();
             indexContext.setMaxAge(0);
             // Start a thread to revert the max age of the index

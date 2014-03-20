@@ -27,7 +27,7 @@ public class RowResourceHandler extends ResourceHandler<IndexableFileSystemCsv> 
      */
     @Override
     public Document handleResource(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final IndexableFileSystemCsv indexableFileSystemCsv,
             final Document document,
             final Object resource)

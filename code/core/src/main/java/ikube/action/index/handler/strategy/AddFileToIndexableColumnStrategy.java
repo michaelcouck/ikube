@@ -29,7 +29,7 @@ public class AddFileToIndexableColumnStrategy extends AStrategy {
     @Override
     @SuppressWarnings("null")
     public boolean aroundProcess(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final Indexable indexable,
             final Document document,
             final Object resource)
@@ -46,7 +46,7 @@ public class AddFileToIndexableColumnStrategy extends AStrategy {
         return super.aroundProcess(indexContext, indexable, document, resource);
     }
 
-    protected void addFileContentToColumnContent(final IndexContext<?> indexContext, final IndexableColumn indexableColumn, final String filePath)
+    protected void addFileContentToColumnContent(final IndexContext indexContext, final IndexableColumn indexableColumn, final String filePath)
             throws Exception {
         InputStream inputStream = null;
         ByteArrayInputStream byteInputStream = null;

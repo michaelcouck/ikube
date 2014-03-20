@@ -39,14 +39,14 @@ public class IndexDeltaIntegration extends IntegrationTest {
      * Class under test.
      */
     private Index index;
-    private IndexContext<?> indexContext;
+    private IndexContext indexContext;
     private IndexableFileSystem indexableFileSystem;
 
     @Before
     public void before() {
         index = ApplicationContextManager.getBean(Index.class);
         indexableFileSystem = ApplicationContextManager.getBean("desktopFolder");
-        indexContext = (IndexContext<?>) indexableFileSystem.getParent();
+        indexContext = (IndexContext) indexableFileSystem.getParent();
         indexContext.setDelta(Boolean.TRUE);
         FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
     }

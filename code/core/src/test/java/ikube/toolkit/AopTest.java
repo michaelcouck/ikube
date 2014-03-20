@@ -63,7 +63,7 @@ public class AopTest {
 
         Index indexDelta = ApplicationContextManager.getBean(Index.class);
         // Deencapsulation.setField(indexDelta, "clusterManager", clusterManager);
-        IndexContext<?> indexContext = mock(IndexContext.class);
+        IndexContext indexContext = mock(IndexContext.class);
         when(indexContext.isDelta()).thenReturn(Boolean.TRUE);
         indexDelta.preExecute(indexContext);
 

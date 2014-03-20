@@ -57,7 +57,7 @@ public abstract class ARule<T> implements IRule<T> {
      * @param indexDirectoryPath the index directory path to the indexes for this context, could be the back indexes too of course
      * @return whether the index defined by the index path is current
      */
-    protected boolean isIndexCurrent(final IndexContext<?> indexContext, final String indexDirectoryPath) {
+    protected boolean isIndexCurrent(final IndexContext indexContext, final String indexDirectoryPath) {
         File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
         if (latestIndexDirectory == null) {
             return Boolean.FALSE;

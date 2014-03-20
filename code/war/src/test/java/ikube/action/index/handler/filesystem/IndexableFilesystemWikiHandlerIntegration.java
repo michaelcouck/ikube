@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
 @Deprecated
 public class IndexableFilesystemWikiHandlerIntegration extends IntegrationTest {
 
-    private IndexContext<?> wikiHistoryArabic;
+    private IndexContext wikiHistoryArabic;
     private IndexableFileSystemWiki wikiHistoryDataArabic;
     private IndexableFilesystemWikiHandler indexableFilesystemHandler;
 

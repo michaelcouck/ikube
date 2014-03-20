@@ -17,13 +17,13 @@ import org.apache.commons.io.FileUtils;
  * @since 08.04.11
  * @version 01.00
  */
-public class Restore extends Action<IndexContext<?>, Boolean> {
+public class Restore extends Action<IndexContext, Boolean> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean internalExecute(final IndexContext<?> indexContext) {
+	boolean internalExecute(final IndexContext indexContext) {
 		// Check that the index directory and the backup directory are not the same
 		if (indexContext.getIndexDirectoryPath().equals(indexContext.getIndexDirectoryPathBackup())) {
 			logger.debug("Index and backup paths are the same : ");

@@ -29,12 +29,12 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private IndexContext<?> indexContext;
+    private IndexContext indexContext;
     private IndexableTable indexableTable;
     private DataSource dataSource;
     private AtomicLong currentId;
 
-    TableResourceProvider(final IndexContext<?> indexContext, final IndexableTable indexableTable) throws IOException {
+    TableResourceProvider(final IndexContext indexContext, final IndexableTable indexableTable) throws IOException {
         this.indexContext = indexContext;
         this.indexableTable = indexableTable;
         this.dataSource = indexableTable.getDataSource();
@@ -118,7 +118,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
      * @return the result set for the table
      * @throws SQLException
      */
-    synchronized ResultSet getResultSet(final IndexContext<?> indexContext, final IndexableTable indexableTable, final AtomicLong currentId)
+    synchronized ResultSet getResultSet(final IndexContext indexContext, final IndexableTable indexableTable, final AtomicLong currentId)
             throws SQLException {
         Connection connection = dataSource.getConnection();
         ResultSet resultSet;

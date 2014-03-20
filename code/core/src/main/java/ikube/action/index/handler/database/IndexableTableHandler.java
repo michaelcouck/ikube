@@ -52,7 +52,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
      */
     @Override
     public ForkJoinTask<?> handleIndexableForked(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final IndexableTable indexableTable)
             throws Exception {
         IResourceProvider<ResultSet> resourceProvider = new TableResourceProvider(indexContext, indexableTable);
@@ -64,7 +64,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
      */
     @Override
     protected List<?> handleResource(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final IndexableTable indexableTable,
             final Object resource) {
         ResultSet resultSet = (ResultSet) resource;

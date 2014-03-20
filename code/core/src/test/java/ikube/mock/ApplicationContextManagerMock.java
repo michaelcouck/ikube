@@ -41,7 +41,7 @@ public class ApplicationContextManagerMock {
     private static final Logger LOGGER = Logger.getLogger(ApplicationContextManagerMock.class);
 
     public static Object BEAN;
-    public static IndexContext<?> INDEX_CONTEXT;
+    public static IndexContext INDEX_CONTEXT;
     public static Server SERVER = mock(Server.class);
     public static IDataBase DATABASE = mock(IDataBase.class);
     public static IClusterManager CLUSTER_MANAGER = mock(IClusterManager.class);
@@ -110,7 +110,7 @@ public class ApplicationContextManagerMock {
         ApplicationContextManagerMock.CLUSTER_MANAGER = clusterManager;
     }
 
-    public static void setIndexContext(final IndexContext<?> indexContext) {
+    public static void setIndexContext(final IndexContext indexContext) {
         ApplicationContextManagerMock.INDEX_CONTEXT = indexContext;
     }
 

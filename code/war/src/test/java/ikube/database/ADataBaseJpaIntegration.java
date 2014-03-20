@@ -257,7 +257,7 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
     @Test
     @SuppressWarnings("rawtypes")
     public void persistIndexContext() {
-        IndexContext<?> indexContext = new IndexContext<Object>();
+        IndexContext indexContext = new IndexContext();
         dataBase.persist(indexContext);
         IndexContext dbIndexContext = dataBase.find(IndexContext.class, indexContext.getId());
         assertNotNull(dbIndexContext);
@@ -265,9 +265,9 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
 
     @Test
     public void timestamp() {
-        IndexContext<?> indexContext = new IndexContext<Object>();
+        IndexContext indexContext = new IndexContext();
         dataBase.persist(indexContext);
-        IndexContext<?> dbIndexContext = dataBase.find(IndexContext.class, indexContext.getId());
+        IndexContext dbIndexContext = dataBase.find(IndexContext.class, indexContext.getId());
         Date creationTimestamp = dbIndexContext.getTimestamp();
         assertNotNull(creationTimestamp);
 

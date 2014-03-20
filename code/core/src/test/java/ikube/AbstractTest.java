@@ -86,7 +86,7 @@ public abstract class AbstractTest {
     protected TopFieldDocs topFieldDocs;
     protected IndexSearcher multiSearcher;
     protected IndexSearcher indexSearcher;
-    protected IndexContext<?> indexContext;
+    protected IndexContext indexContext;
     protected IClusterManager clusterManager;
     protected IMonitorService monitorService;
     protected IndexableTable indexableTable;
@@ -225,7 +225,7 @@ public abstract class AbstractTest {
         dataBase.persistBatch(tees);
     }
 
-    protected File createIndexFileSystem(final IndexContext<?> indexContext, final String... strings) {
+    protected File createIndexFileSystem(final IndexContext indexContext, final String... strings) {
         try {
             return createIndexFileSystem(indexContext, System.currentTimeMillis(), ip, strings);
         } catch (final Exception e) {
@@ -234,7 +234,7 @@ public abstract class AbstractTest {
     }
 
     protected File createIndexFileSystem(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final long time,
             final String ip,
             final String... strings)
@@ -247,7 +247,7 @@ public abstract class AbstractTest {
     }
 
     protected List<File> createIndexesFileSystem(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final long time,
             final String[] ips,
             final String... strings) {

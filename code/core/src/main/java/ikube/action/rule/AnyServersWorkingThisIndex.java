@@ -10,13 +10,13 @@ import ikube.model.IndexContext;
  * @since 12.02.2011
  * @version 01.00
  */
-public class AnyServersWorkingThisIndex extends ARule<IndexContext<?>> {
+public class AnyServersWorkingThisIndex extends ARule<IndexContext> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean evaluate(final IndexContext<?> indexContext) {
+	public boolean evaluate(final IndexContext indexContext) {
 		return clusterManager.anyWorking(indexContext.getIndexName());
 	}
 

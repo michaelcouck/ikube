@@ -14,13 +14,13 @@ import java.util.Map;
  * @since 08-04-2014
  */
 @SuppressWarnings("UnusedDeclaration")
-public class Synchronize extends Action<IndexContext<?>, Boolean> {
+public class Synchronize extends Action<IndexContext, Boolean> {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    boolean internalExecute(final IndexContext<?> indexContext) {
+    boolean internalExecute(final IndexContext indexContext) {
         Server server = clusterManager.getServer();
         Map<String, Server> servers = clusterManager.getServers();
         for (final Map.Entry<String, Server> mapEntry : servers.entrySet()) {

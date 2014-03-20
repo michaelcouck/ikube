@@ -24,7 +24,7 @@ public class IndexManagerMock {
 	private static File LATEST_INDEX_DIRECTORY;
 
 	@Mock()
-	public static synchronized IndexWriter openIndexWriter(final IndexContext<?> indexContext, final long time, final String ip) {
+	public static synchronized IndexWriter openIndexWriter(final IndexContext indexContext, final long time, final String ip) {
 		return INDEX_WRITER;
 	}
 
@@ -38,7 +38,7 @@ public class IndexManagerMock {
 	}
 
 	@Mock()
-	public static synchronized IndexWriter[] openIndexWriterDelta(final IndexContext<?> indexContext) throws Exception {
+	public static synchronized IndexWriter[] openIndexWriterDelta(final IndexContext indexContext) throws Exception {
 		return new IndexWriter[] { INDEX_WRITER };
 	}
 

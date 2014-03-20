@@ -20,14 +20,14 @@ import java.util.List;
  * @version 01.00
  * @since 11-06-2011
  */
-public class IsNewIndexCreated extends ARule<IndexContext<?>> {
+public class IsNewIndexCreated extends ARule<IndexContext> {
 
     /**
      * {@inheritDoc}
      */
     @Override
     @SuppressWarnings("LoopStatementThatDoesntLoop")
-    public boolean evaluate(final IndexContext<?> indexContext) {
+    public boolean evaluate(final IndexContext indexContext) {
         IndexSearcher indexSearcher = indexContext.getMultiSearcher();
         String baseIndexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
         File latestIndexDirectory = IndexManager.getLatestIndexDirectory(baseIndexDirectoryPath);

@@ -18,14 +18,14 @@ import java.util.*;
  * @version 01.00
  * @since 31-10-2010
  */
-public class Reset extends Action<IndexContext<?>, Boolean> {
+public class Reset extends Action<IndexContext, Boolean> {
 
     /**
      * {@inheritDoc}
      */
     @Override
     synchronized boolean internalExecute(
-            final IndexContext<?> indexContext) {
+            final IndexContext indexContext) {
         try {
             Map<String, Object> parameters = new HashMap<>();
             parameters.put(IConstants.NAME, indexContext.getName());

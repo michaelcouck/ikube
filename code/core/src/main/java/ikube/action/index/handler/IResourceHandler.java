@@ -23,6 +23,6 @@ public interface IResourceHandler<T> {
 	 * @return the document that was fed in as a parameter as a convenience
 	 * @throws Exception
 	 */
-	Document handleResource(final IndexContext<?> indexContext, final T indexable, final Document document, final Object resource) throws Exception;
+	Document handleResource(final IndexContext indexContext, final T indexable, final Document document, final Object resource) throws Exception;
 
 }

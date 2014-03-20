@@ -32,7 +32,7 @@ public class TwitterHandler extends IndexableHandler<IndexableTweets> {
      */
     @Override
     public ForkJoinTask<?> handleIndexableForked(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final IndexableTweets indexableTweets)
             throws Exception {
         IResourceProvider<Tweet> twitterResourceProvider = new TwitterResourceProvider(indexableTweets);
@@ -45,7 +45,7 @@ public class TwitterHandler extends IndexableHandler<IndexableTweets> {
     @Override
     @SuppressWarnings("StringBufferReplaceableByString")
     protected List<?> handleResource(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final IndexableTweets indexableTweets,
             final Object resource) {
         Tweet tweet = (Tweet) resource;

@@ -52,7 +52,7 @@ public class StrategyInterceptor implements IStrategyInterceptor {
 			@Override
 			public void execute() {
 
-				IndexContext<?> indexContext = (IndexContext<?>) args[0];
+				IndexContext indexContext = (IndexContext) args[0];
 				Indexable indexable = (Indexable) args[1];
 				Document document = (Document) args[2];
 				Object resource = args[3];
@@ -88,7 +88,7 @@ public class StrategyInterceptor implements IStrategyInterceptor {
 			@Override
 			public void execute() {
 
-				IndexContext<?> indexContext = (IndexContext<?>) args[0];
+				IndexContext indexContext = (IndexContext) args[0];
 				Indexable indexable = (Indexable) args[1];
 				Document document = (Document) args[2];
 				Object resource = args[3];

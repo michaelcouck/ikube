@@ -42,7 +42,7 @@ public class IndexSizeSchedule extends Schedule {
     public void run() {
         Map<String, IndexContext> indexContexts = monitorService.getIndexContexts();
         for (Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
-            IndexContext<?> indexContext = mapEntry.getValue();
+            IndexContext indexContext = mapEntry.getValue();
 
             IndexWriter[] indexWriters = indexContext.getIndexWriters();
             if (indexWriters == null || indexWriters.length == 0) {

@@ -46,7 +46,7 @@ public abstract class AStrategy implements IStrategy {
      */
     @Override
     public boolean aroundProcess(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final Indexable indexable,
             final Document document,
             final Object resource)
@@ -62,7 +62,7 @@ public abstract class AStrategy implements IStrategy {
      */
     @Override
     public boolean postProcess(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final Indexable indexable,
             final Document document,
             final Object resource)

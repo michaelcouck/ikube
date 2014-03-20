@@ -22,7 +22,7 @@ import java.util.concurrent.ForkJoinTask;
  * @version 01.00
  * @since 21-11-2010
  */
-public class Index extends Action<IndexContext<?>, Boolean> {
+public class Index extends Action<IndexContext, Boolean> {
 
     /**
      * This is the list of handlers for all the sources of data. One such handler would be the
@@ -35,7 +35,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
      * {@inheritDoc}
      */
     @Override
-    public boolean preExecute(final IndexContext<?> indexContext) throws Exception {
+    public boolean preExecute(final IndexContext indexContext) throws Exception {
         logger.info("Pre process action : " + this.getClass() + ", " + indexContext.getName());
         Server server = clusterManager.getServer();
         IndexWriter[] indexWriters;
@@ -54,7 +54,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
      */
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
-    protected boolean internalExecute(final IndexContext<?> indexContext) throws Exception {
+    protected boolean internalExecute(final IndexContext indexContext) throws Exception {
         List<Indexable> indexables = indexContext.getChildren();
         for (final Indexable indexable : (Iterable<Indexable>) new ArrayList(indexables)) {
             // Update the action with the new indexable
@@ -89,7 +89,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
      * @param indexableName the indexable that is currently being indexed by this instance
      * @return the action from the server that is currently being executed, with
      */
-    ikube.model.Action getAction(final Server server, final IndexContext<?> indexContext, final String indexableName) {
+    ikube.model.Action getAction(final Server server, final IndexContext indexContext, final String indexableName) {
         for (final ikube.model.Action action : server.getActions()) {
             if (action.getActionName().equals(this.getClass().getSimpleName())) {
                 if (!action.getIndexName().equals(indexContext.getName())) {
@@ -116,7 +116,7 @@ public class Index extends Action<IndexContext<?>, Boolean> {
      * {@inheritDoc}
      */
     @Override
-    public boolean postExecute(final IndexContext<?> indexContext) throws Exception {
+    public boolean postExecute(final IndexContext indexContext) throws Exception {
         logger.info("Post process action : " + this.getClass() + ", " + indexContext.getName());
         IndexManager.closeIndexWriters(indexContext);
         indexContext.setIndexWriters();

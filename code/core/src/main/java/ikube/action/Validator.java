@@ -13,7 +13,7 @@ import java.io.File;
  * @version 01.00
  * @since 31-10-2010
  */
-public class Validator extends Action<IndexContext<?>, Boolean> {
+public class Validator extends Action<IndexContext, Boolean> {
 
     /**
      * Conditions:<br>
@@ -27,7 +27,7 @@ public class Validator extends Action<IndexContext<?>, Boolean> {
      * There must be at least one index being generated, or one index created // and one being generated for each index context
      */
     @Override
-    boolean internalExecute(final IndexContext<?> indexContext) {
+    boolean internalExecute(final IndexContext indexContext) {
         boolean everythingInitialized = Boolean.TRUE;
 
         String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);

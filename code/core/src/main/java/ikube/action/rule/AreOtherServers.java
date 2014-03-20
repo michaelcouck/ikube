@@ -9,13 +9,13 @@ import ikube.model.IndexContext;
  * @since 16.12.2011
  * @version 01.00
  */
-public class AreOtherServers extends ARule<IndexContext<?>> {
+public class AreOtherServers extends ARule<IndexContext> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean evaluate(final IndexContext<?> indexContext) {
+	public boolean evaluate(final IndexContext indexContext) {
 		return clusterManager.getServers().size() > 1;
 	}
 

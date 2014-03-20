@@ -13,13 +13,13 @@ import java.util.List;
  * @version 01.00
  * @since 03.02.2014
  */
-public class IsThisServerWorkingThisIndex extends ARule<IndexContext<?>> {
+public class IsThisServerWorkingThisIndex extends ARule<IndexContext> {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean evaluate(final IndexContext<?> indexContext) {
+    public boolean evaluate(final IndexContext indexContext) {
         Server server = clusterManager.getServer();
         List<Action> actions = server.getActions();
         if (actions != null) {

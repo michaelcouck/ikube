@@ -30,7 +30,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
      */
     @Override
     public ForkJoinTask<?> handleIndexableForked(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final IndexableInternet indexableInternet)
             throws Exception {
         IResourceProvider resourceProvider = new InternetResourceProvider(indexableInternet, dataBase);
@@ -43,7 +43,7 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
     @Override
     @SuppressWarnings("unchecked")
     protected List<Url> handleResource(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final IndexableInternet indexableInternet,
             final Object resource) {
         Url url = (Url) resource;

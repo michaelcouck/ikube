@@ -35,7 +35,7 @@ public class InternetResourceHandler extends ResourceHandler<IndexableInternet> 
      */
     @Override
     public Document handleResource(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final IndexableInternet indexableInternet,
             final Document document,
             final Object resource)

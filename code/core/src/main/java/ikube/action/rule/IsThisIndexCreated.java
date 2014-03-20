@@ -18,14 +18,14 @@ import org.apache.lucene.store.NIOFSDirectory;
  * @since 21.06.2013
  * @version 01.00
  */
-public class IsThisIndexCreated extends ARule<IndexContext<?>> {
+public class IsThisIndexCreated extends ARule<IndexContext> {
 
 	/**
 	 * @param indexContext the index context
 	 * @return something whether this server created this index
 	 */
 	@Override
-	public boolean evaluate(final IndexContext<?> indexContext) {
+	public boolean evaluate(final IndexContext indexContext) {
 		boolean indexCreated = Boolean.TRUE;
 		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);

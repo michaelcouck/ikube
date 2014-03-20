@@ -22,13 +22,13 @@ import java.io.IOException;
  * @since 31-10-2010
  */
 @Deprecated
-public class Clean extends Action<IndexContext<?>, Boolean> {
+public class Clean extends Action<IndexContext, Boolean> {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    boolean internalExecute(final IndexContext<?> indexContext) {
+    boolean internalExecute(final IndexContext indexContext) {
         String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
         File baseIndexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
         File[] timeIndexDirectories = baseIndexDirectory.listFiles();

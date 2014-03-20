@@ -40,7 +40,7 @@ import static org.junit.Assert.*;
 public class IndexableTableHandlerIntegration extends AbstractTest {
 
     private Connection connection;
-    private IndexContext<?> indexContext;
+    private IndexContext indexContext;
     private IndexableTable snapshotTable;
     private IndexableColumn snapshotColumn;
     private List<Indexable> snapshotTableChildren;

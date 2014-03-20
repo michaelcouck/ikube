@@ -212,7 +212,7 @@ public class IndexManagerTest extends AbstractTest {
 
     @Test
     public void getIndexSize() throws Exception {
-        IndexContext<?> indexContext = new IndexContext<Object>();
+        IndexContext indexContext = new IndexContext();
         indexContext.setName("index");
         indexContext.setChildren(indexables);
         indexContext.setIndexDirectoryPath(indexDirectoryPath);

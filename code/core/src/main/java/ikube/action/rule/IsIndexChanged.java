@@ -9,10 +9,10 @@ import org.apache.lucene.search.IndexSearcher;
  * @version 01.00
  * @since 20.21.2013
  */
-public class IsIndexChanged extends ARule<IndexContext<?>> {
+public class IsIndexChanged extends ARule<IndexContext> {
 
     @Override
-    public boolean evaluate(final IndexContext<?> indexContext) {
+    public boolean evaluate(final IndexContext indexContext) {
         IndexSearcher oldIndexSearcher = indexContext.getMultiSearcher();
         boolean indexChanged = Boolean.FALSE;
         try {

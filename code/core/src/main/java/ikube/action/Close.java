@@ -13,13 +13,13 @@ import java.io.IOException;
  * @version 01.00
  * @since 24.08.08
  */
-public class Close extends Action<IndexContext<?>, Boolean> {
+public class Close extends Action<IndexContext, Boolean> {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean internalExecute(final IndexContext<?> indexContext) {
+    public boolean internalExecute(final IndexContext indexContext) {
         final IndexSearcher indexSearcher = indexContext.getMultiSearcher();
         if (indexSearcher != null && indexSearcher.getIndexReader() != null) {
             final String name = Long.toHexString(System.currentTimeMillis());

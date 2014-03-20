@@ -10,7 +10,7 @@ import ikube.model.IndexContext;
  * @since 12.02.2011
  * @version 01.00
  */
-public class IsBackupIndexCurrent extends ARule<IndexContext<?>> {
+public class IsBackupIndexCurrent extends ARule<IndexContext> {
 
 	/**
 	 * Checks to see whether the backup index is still current.
@@ -20,7 +20,7 @@ public class IsBackupIndexCurrent extends ARule<IndexContext<?>> {
 	 * @return whether the backup index for this index context is passed it's expiration date
 	 */
 	@Override
-	public boolean evaluate(final IndexContext<?> indexContext) {
+	public boolean evaluate(final IndexContext indexContext) {
 		String indexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
 		return isIndexCurrent(indexContext, indexDirectoryPathBackup);
 	}

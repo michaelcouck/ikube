@@ -24,7 +24,7 @@ public class AudioHandler extends IndexableHandler<IndexableAudio> {
 	 */
 	@Override
 	@SuppressWarnings("unused")
-	public ForkJoinTask<?> handleIndexableForked(final IndexContext<?> indexContext, final IndexableAudio indexable) throws Exception {
+	public ForkJoinTask<?> handleIndexableForked(final IndexContext indexContext, final IndexableAudio indexable) throws Exception {
 		ConfigurationManager cm = new ConfigurationManager(this.getClass().getResource("helloworld.config.xml"));
 		Recognizer recognizer = (Recognizer) cm.lookup("recognizer");
 		recognizer.allocate();
@@ -47,7 +47,7 @@ public class AudioHandler extends IndexableHandler<IndexableAudio> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected List<?> handleResource(final IndexContext<?> indexContext, final IndexableAudio indexable, final Object resource) {
+	protected List<?> handleResource(final IndexContext indexContext, final IndexableAudio indexable, final Object resource) {
 		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
 		return null;
 	}

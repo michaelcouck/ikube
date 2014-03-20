@@ -68,7 +68,7 @@ public class SnapshotScheduleTest extends AbstractTest {
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void handleNotification() {
-		IndexContext indexContext = new IndexContext<Object>();
+		IndexContext indexContext = new IndexContext();
 		indexContext.setName(action.getIndexName());
 		indexContext.setIndexDirectoryPath("./indexes");
 		Map<String, IndexContext> indexContexts = new HashMap<String, IndexContext>();

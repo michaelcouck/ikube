@@ -17,13 +17,13 @@ import org.apache.commons.io.FileUtils;
  * @since 08.04.11
  * @version 01.00
  */
-public class Backup extends Action<IndexContext<?>, Boolean> {
+public class Backup extends Action<IndexContext, Boolean> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean internalExecute(final IndexContext<?> indexContext) {
+	boolean internalExecute(final IndexContext indexContext) {
 		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
 		if (latestIndexDirectory == null || !latestIndexDirectory.exists()) {

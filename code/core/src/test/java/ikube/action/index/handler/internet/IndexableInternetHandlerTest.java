@@ -51,7 +51,7 @@ public class IndexableInternetHandlerTest extends AbstractTest {
 
         InternetResourceHandler resourceHandler = new InternetResourceHandler() {
             public Document handleResource(
-                    final IndexContext<?> indexContext,
+                    final IndexContext indexContext,
                     final IndexableInternet indexable,
                     final Document document,
                     final Object resource)

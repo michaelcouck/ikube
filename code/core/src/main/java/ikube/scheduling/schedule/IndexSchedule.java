@@ -34,7 +34,7 @@ public class IndexSchedule extends Schedule {
     @Autowired
     private IMonitorService monitorService;
     @Autowired
-    private List<IAction<IndexContext<?>, Boolean>> actions;
+    private List<IAction<IndexContext, Boolean>> actions;
 
     /**
      * {@inheritDoc}
@@ -46,7 +46,7 @@ public class IndexSchedule extends Schedule {
         List<IndexContext> indexContexts = new ArrayList<>(monitorService.getIndexContexts().values());
         // We shuffle the contexts so they all get a chance to get processed
         Collections.shuffle(indexContexts);
-        for (final IndexContext<?> indexContext : indexContexts) {
+        for (final IndexContext indexContext : indexContexts) {
             processIndexContext(indexContext, random);
         }
     }
@@ -54,10 +54,10 @@ public class IndexSchedule extends Schedule {
     @SuppressWarnings("rawtypes")
     private void processIndexContext(final IndexContext indexContext, final Random random) {
         // Lets try to shuffel the actions too!
-        List<IAction<IndexContext<?>, Boolean>> actions = new ArrayList<>(this.actions);
+        List<IAction<IndexContext, Boolean>> actions = new ArrayList<>(this.actions);
         Collections.shuffle(actions);
         LOGGER.debug("Actions : " + actions.size());
-        for (final IAction<IndexContext<?>, Boolean> action : actions) {
+        for (final IAction<IndexContext, Boolean> action : actions) {
             try {
                 ThreadUtilities.sleep(random.nextInt(30));
                 Runnable runnable = new Runnable() {

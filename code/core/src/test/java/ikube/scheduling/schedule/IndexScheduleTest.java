@@ -36,13 +36,13 @@ public class IndexScheduleTest extends AbstractTest {
 	/** Class under test. */
 	private IndexSchedule indexSchedule;
 	private IMonitorService monitorService;
-	private List<IAction<IndexContext<?>, Boolean>> actions;
+	private List<IAction<IndexContext, Boolean>> actions;
 
 	@Before
 	@SuppressWarnings("rawtypes")
 	public void before() {
 		indexSchedule = new IndexSchedule();
-		actions = new ArrayList<IAction<IndexContext<?>, Boolean>>();
+		actions = new ArrayList<IAction<IndexContext, Boolean>>();
 
 		index = mock(Index.class);
 		monitorService = mock(IMonitorService.class);

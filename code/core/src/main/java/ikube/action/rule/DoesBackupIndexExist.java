@@ -12,14 +12,14 @@ import java.io.File;
  * @since 12.07.11
  * @version 01.00
  */
-public class DoesBackupIndexExist extends ARule<IndexContext<?>> {
+public class DoesBackupIndexExist extends ARule<IndexContext> {
 
 	/**
 	 * @param indexContext the index context to check if the index is expired
 	 * @return whether the backup index for this index exists
 	 */
 	@Override
-	public boolean evaluate(final IndexContext<?> indexContext) {
+	public boolean evaluate(final IndexContext indexContext) {
 		String indexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
 		File latestIndexDirectoryBackup = IndexManager.getLatestIndexDirectory(indexDirectoryPathBackup);
 		return latestIndexDirectoryBackup != null && latestIndexDirectoryBackup.exists();

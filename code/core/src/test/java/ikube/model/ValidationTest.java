@@ -17,7 +17,7 @@ public class ValidationTest extends AbstractTest {
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void validate() {
-		IndexContext indexContext = new IndexContext<Object>();
+		IndexContext indexContext = new IndexContext();
 		ValidatorFactory validationFactory = Validation.buildDefaultValidatorFactory();
 		Validator validator = validationFactory.getValidator();
 		Set<ConstraintViolation<IndexContext>> constraintViolations = validator.validate(indexContext);

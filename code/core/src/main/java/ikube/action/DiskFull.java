@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
  * @since 02.06.11
  * @version 01.00
  */
-public class DiskFull extends Action<IndexContext<?>, Boolean> {
+public class DiskFull extends Action<IndexContext, Boolean> {
 
 	@Value("${minimum.free.space}")
 	private long minimumFreeSpace = 1000; // In megs
@@ -33,7 +33,7 @@ public class DiskFull extends Action<IndexContext<?>, Boolean> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean internalExecute(final IndexContext<?> indexContext) {
+	boolean internalExecute(final IndexContext indexContext) {
 		File indexesDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 		if (indexesDirectory == null || !indexesDirectory.exists() || !indexesDirectory.isDirectory()) {
 			return Boolean.FALSE;

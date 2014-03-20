@@ -31,17 +31,17 @@ import java.util.List;
  * @version 01.00
  * @since 31-10-2010
  */
-public class Open extends Action<IndexContext<?>, Boolean> {
+public class Open extends Action<IndexContext, Boolean> {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean internalExecute(final IndexContext<?> indexContext) throws Exception {
+    public boolean internalExecute(final IndexContext indexContext) throws Exception {
         return openOnFile(indexContext);
     }
 
-    boolean openOnFile(final IndexContext<?> indexContext) throws Exception {
+    boolean openOnFile(final IndexContext indexContext) throws Exception {
         // First open the new searchables
         String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
         File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);

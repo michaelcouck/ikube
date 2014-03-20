@@ -51,7 +51,7 @@ public class RuleInterceptor implements IRuleInterceptor {
             LOGGER.debug("Rule interceptor decide : ");
             Object target = proceedingJoinPoint.getTarget();
             boolean proceed = Boolean.TRUE;
-            IndexContext<?> indexContext = null;
+            IndexContext indexContext = null;
             if (!IAction.class.isAssignableFrom(target.getClass())) {
                 LOGGER.warn("Can't intercept non action class, proceeding : " + target);
             } else {
@@ -107,7 +107,7 @@ public class RuleInterceptor implements IRuleInterceptor {
      *
      * @param proceedingJoinPoint the intercepted action join point
      */
-    protected synchronized void proceed(final IndexContext<?> indexContext, final ProceedingJoinPoint proceedingJoinPoint) {
+    protected synchronized void proceed(final IndexContext indexContext, final ProceedingJoinPoint proceedingJoinPoint) {
         try {
             // We set the working flag in the action within the cluster lock when setting to true
             Runnable runnable = new Runnable() {
@@ -142,18 +142,18 @@ public class RuleInterceptor implements IRuleInterceptor {
      * @return the category from the execution of the rules for the action
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    protected boolean evaluateRules(final IndexContext<?> indexContext, final IAction action) {
+    protected boolean evaluateRules(final IndexContext indexContext, final IAction action) {
         LOGGER.debug("Evaluating rules : ");
         boolean finalResult = Boolean.TRUE;
         // Get the rules associated with this action
-        List<IRule<IndexContext<?>>> rules = action.getRules();
+        List<IRule<IndexContext>> rules = action.getRules();
         if (rules == null || rules.size() == 0) {
             LOGGER.info("No rules defined, proceeding : " + action);
         } else {
             Map<String, Object> results = new HashMap<>();
             JexlEngine jexlEngine = new JexlEngine();
             JexlContext jexlContext = new MapContext(results);
-            for (final IRule<IndexContext<?>> rule : rules) {
+            for (final IRule<IndexContext> rule : rules) {
                 boolean evaluation = rule.evaluate(indexContext);
                 String ruleName = rule.getClass().getSimpleName();
                 jexlContext.set(ruleName, evaluation);
@@ -176,12 +176,12 @@ public class RuleInterceptor implements IRuleInterceptor {
      * @param proceedingJoinPoint the intercepted action join point
      * @return the index context from the arguments or null if it can not be found
      */
-    protected IndexContext<?> getIndexContext(final ProceedingJoinPoint proceedingJoinPoint) {
+    protected IndexContext getIndexContext(final ProceedingJoinPoint proceedingJoinPoint) {
         Object[] args = proceedingJoinPoint.getArgs();
         for (final Object arg : args) {
             if (arg != null) {
                 if (IndexContext.class.isAssignableFrom(arg.getClass())) {
-                    return (IndexContext<?>) arg;
+                    return (IndexContext) arg;
                 }
             }
         }

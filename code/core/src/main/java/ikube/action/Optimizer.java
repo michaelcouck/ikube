@@ -22,13 +22,13 @@ import java.util.List;
  * @version 01.00
  * @since 08-02-2013
  */
-public class Optimizer extends Action<IndexContext<?>, Boolean> {
+public class Optimizer extends Action<IndexContext, Boolean> {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean internalExecute(final IndexContext<?> indexContext) throws IOException {
+    public boolean internalExecute(final IndexContext indexContext) throws IOException {
         File baseDirectory = new File(indexContext.getIndexDirectoryPath());
         logger.debug("Starting at directory : " + baseDirectory);
         List<File> segmentsFiles = FileUtilities.findFilesRecursively(baseDirectory, new ArrayList<File>(), "segments.gen");

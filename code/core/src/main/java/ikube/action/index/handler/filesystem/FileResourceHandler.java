@@ -31,7 +31,7 @@ public class FileResourceHandler extends ResourceHandler<IndexableFileSystem> {
      */
     @Override
     public Document handleResource(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final IndexableFileSystem indexableFileSystem,
             final Document document,
             final Object resource)
@@ -52,7 +52,7 @@ public class FileResourceHandler extends ResourceHandler<IndexableFileSystem> {
     }
 
     private Document handleResource(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final IndexableFileSystem indexableFileSystem,
             final Document document,
             final File file,

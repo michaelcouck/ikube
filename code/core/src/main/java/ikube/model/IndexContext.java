@@ -26,7 +26,7 @@ import java.util.Set;
 @SuppressWarnings({"serial"})
 @Inheritance(strategy = InheritanceType.JOINED)
 @NamedQueries({@NamedQuery(name = IndexContext.FIND_BY_NAME, query = IndexContext.FIND_BY_NAME)})
-public class IndexContext<T> extends Indexable implements Comparable<IndexContext<?>> {
+public class IndexContext extends Indexable implements Comparable<IndexContext> {
 
     public static final String FIND_BY_NAME = "select i from IndexContext as i where i.name = :name";
 
@@ -355,7 +355,7 @@ public class IndexContext<T> extends Indexable implements Comparable<IndexContex
 
     @Override
     @SuppressWarnings("NullableProblems")
-    public int compareTo(final IndexContext<?> other) {
+    public int compareTo(final IndexContext other) {
         return getIndexName().compareTo(other.getIndexName());
     }
 

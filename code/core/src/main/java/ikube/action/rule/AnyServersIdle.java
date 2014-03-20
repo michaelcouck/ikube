@@ -12,13 +12,13 @@ import java.util.Map;
  * @since 19.12.2012
  * @version 01.00
  */
-public class AnyServersIdle extends ARule<IndexContext<?>> {
+public class AnyServersIdle extends ARule<IndexContext> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean evaluate(final IndexContext<?> indexContext) {
+	public boolean evaluate(final IndexContext indexContext) {
 		Server thisServer = clusterManager.getServer();
 		Map<String, Server> servers = clusterManager.getServers();
 		for (Map.Entry<String, Server> mapEntry : servers.entrySet()) {

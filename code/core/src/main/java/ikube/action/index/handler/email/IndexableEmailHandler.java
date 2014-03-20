@@ -54,7 +54,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ForkJoinTask<?> handleIndexableForked(final IndexContext<?> indexContext,
+	public ForkJoinTask<?> handleIndexableForked(final IndexContext indexContext,
 												 final IndexableEmail indexableEmail) throws Exception {
 		IResourceProvider<IndexableEmail> emailResourceProvider = new IResourceProvider<IndexableEmail>() {
 
@@ -78,7 +78,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	}
 
 	@Override
-	protected List<?> handleResource(final IndexContext<?> indexContext, final IndexableEmail indexableEmail,
+	protected List<?> handleResource(final IndexContext indexContext, final IndexableEmail indexableEmail,
 									 final Object resource) {
 		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
 		handleEmail(indexContext, indexableEmail);
@@ -91,7 +91,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	 * @param indexContext  the context for the index
 	 * @param indexableMail the indexable to index
 	 */
-	protected void handleEmail(final IndexContext<?> indexContext, final IndexableEmail indexableMail) {
+	protected void handleEmail(final IndexContext indexContext, final IndexableEmail indexableMail) {
 		Store store;
 		try {
 			store = getStore(indexableMail);
@@ -139,7 +139,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	 * @param folder        the email folder that will be 'crawled'
 	 * @throws Exception
 	 */
-	protected void handleFolder(final IndexContext<?> indexContext, final IndexableEmail indexableMail,
+	protected void handleFolder(final IndexContext indexContext, final IndexableEmail indexableMail,
 								final Folder folder) throws Exception {
 		folder.open(Folder.READ_ONLY);
 
@@ -152,7 +152,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 		folder.close(true);
 	}
 
-	Document handleResource(IndexContext<?> indexContext, IndexableEmail indexableMail, Document document,
+	Document handleResource(IndexContext indexContext, IndexableEmail indexableMail, Document document,
 							Object resource) throws Exception {
 		Message message = (Message) resource;
 		Date recievedDate = message.getReceivedDate();

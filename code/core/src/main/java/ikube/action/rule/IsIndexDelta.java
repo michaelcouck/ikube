@@ -7,13 +7,13 @@ import ikube.model.IndexContext;
  * @since 21.06.13
  * @version 01.00
  */
-public class IsIndexDelta extends ARule<IndexContext<?>> {
+public class IsIndexDelta extends ARule<IndexContext> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean evaluate(final IndexContext<?> indexContext) {
+	public boolean evaluate(final IndexContext indexContext) {
 		return indexContext.isDelta();
 	}
 

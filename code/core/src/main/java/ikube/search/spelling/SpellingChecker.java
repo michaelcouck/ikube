@@ -27,7 +27,7 @@ public class SpellingChecker {
 
     @Autowired
     @Qualifier(value = IConstants.AUTOCOMPLETE)
-    private IndexContext<?> indexContext;
+    private IndexContext indexContext;
 
     /**
      * Static access to the system spelling checker.

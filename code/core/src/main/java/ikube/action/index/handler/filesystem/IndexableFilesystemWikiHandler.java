@@ -47,7 +47,7 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ForkJoinTask<?> handleIndexableForked(final IndexContext<?> indexContext,
+	public ForkJoinTask<?> handleIndexableForked(final IndexContext indexContext,
 												 final IndexableFileSystemWiki indexable) throws Exception {
 		counter = new Counter();
 
@@ -79,7 +79,7 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 	}
 
 	@Override
-	protected List<?> handleResource(final IndexContext<?> indexContext, final IndexableFileSystemWiki
+	protected List<?> handleResource(final IndexContext indexContext, final IndexableFileSystemWiki
 		indexableFileSystemWiki, final Object resource) {
 		handleFile(indexContext, indexableFileSystemWiki, (File) resource, counter);
 		return null;
@@ -94,7 +94,7 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 	 * @param indexableFileSystem the file system object, i.e. the path to the bzip file
 	 * @param file                the Bzip2 file with the Wiki data in it
 	 */
-	protected void handleFile(final IndexContext<?> indexContext, final IndexableFileSystemWiki indexableFileSystem,
+	protected void handleFile(final IndexContext indexContext, final IndexableFileSystemWiki indexableFileSystem,
 							  final File file, final Counter counter) {
 		// Get the wiki history file
 		long start = System.currentTimeMillis();
@@ -154,7 +154,7 @@ public class IndexableFilesystemWikiHandler extends IndexableHandler<IndexableFi
 	 * @param content             the content to add to the index
 	 * @throws Exception
 	 */
-	Document handleResource(final IndexContext<?> indexContext, final IndexableFileSystemWiki indexableFileSystem,
+	Document handleResource(final IndexContext indexContext, final IndexableFileSystemWiki indexableFileSystem,
 							final Document document, final Object content)
 		throws Exception {
 		String pathFieldName = indexableFileSystem.getPathFieldName();

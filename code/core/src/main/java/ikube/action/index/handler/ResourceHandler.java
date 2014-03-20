@@ -23,7 +23,7 @@ public class ResourceHandler<T> implements IResourceHandler<T> {
      */
     @Override
     public Document handleResource(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final T indexable,
             final Document document,
             final Object resource)
@@ -40,7 +40,7 @@ public class ResourceHandler<T> implements IResourceHandler<T> {
      * @throws Exception
      */
     protected void addDocument(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final Document document)
             throws Exception {
         IndexWriter[] indexWriters = indexContext.getIndexWriters();

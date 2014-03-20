@@ -31,7 +31,7 @@ public class IndexableDataSourceHandler extends IndexableHandler<IndexableDataSo
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ForkJoinTask<?> handleIndexableForked(final IndexContext<?> indexContext, final IndexableDataSource indexableDataSource) throws Exception {
+	public ForkJoinTask<?> handleIndexableForked(final IndexContext indexContext, final IndexableDataSource indexableDataSource) throws Exception {
 		return new RecursiveTask<Object>() {
 			@Override
 			protected Object compute() {
@@ -45,7 +45,7 @@ public class IndexableDataSourceHandler extends IndexableHandler<IndexableDataSo
 		};
 	}
 
-	private void addAllTables(final IndexContext<?> indexContext, final IndexableDataSource indexableDataSource) throws SQLException {
+	private void addAllTables(final IndexContext indexContext, final IndexableDataSource indexableDataSource) throws SQLException {
 		// We just add all the tables individually to the index context, only if they are not there of course
 		ResultSet resultSet = null;
 		String excludedTablePatterns = indexableDataSource.getExcludedTablePatterns();
@@ -89,7 +89,7 @@ public class IndexableDataSourceHandler extends IndexableHandler<IndexableDataSo
 		return indexableTable;
 	}
 
-	private boolean isInContextAlready(final String tableName, final IndexContext<?> indexContext) {
+	private boolean isInContextAlready(final String tableName, final IndexContext indexContext) {
 		for (final Indexable indexable : indexContext.getChildren()) {
 			if (indexable.getName().equals(tableName)) {
 				return Boolean.TRUE;
@@ -110,7 +110,7 @@ public class IndexableDataSourceHandler extends IndexableHandler<IndexableDataSo
 	}
 
 	@Override
-	protected List<?> handleResource(final IndexContext<?> indexContext, final IndexableDataSource indexableDataSource, final Object resource) {
+	protected List<?> handleResource(final IndexContext indexContext, final IndexableDataSource indexableDataSource, final Object resource) {
 		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
 		return null;
 	}

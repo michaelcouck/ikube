@@ -453,7 +453,7 @@ public class SearcherService implements ISearcherService {
         T search = null;
         @SuppressWarnings("rawtypes")
         Map<String, IndexContext> indexContexts = monitorService.getIndexContexts();
-        for (final IndexContext<?> indexContext : indexContexts.values()) {
+        for (final IndexContext indexContext : indexContexts.values()) {
             if (indexContext.getIndexName().equals(indexName)) {
                 if (indexContext.getMultiSearcher() != null) {
                     if (indexContext.getAnalyzer() != null) {

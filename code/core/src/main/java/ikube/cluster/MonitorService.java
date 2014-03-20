@@ -40,7 +40,7 @@ public class MonitorService implements IMonitorService {
         @SuppressWarnings("rawtypes")
         Map<String, IndexContext> indexContexts = getIndexContexts();
         List<String> indexNames = new ArrayList<>();
-        for (final IndexContext<?> indexContext : indexContexts.values()) {
+        for (final IndexContext indexContext : indexContexts.values()) {
             indexNames.add(indexContext.getIndexName());
         }
         return indexNames.toArray(new String[indexNames.size()]);
@@ -52,7 +52,7 @@ public class MonitorService implements IMonitorService {
     @Override
     public String[] getIndexFieldNames(final String indexName) {
         // What we return, a unique set of fields
-        IndexContext<?> indexContext = getIndexContext(indexName);
+        IndexContext indexContext = getIndexContext(indexName);
         if (indexContext.getMultiSearcher() != null) {
             Collection<String> fields = IndexManager.getFieldNames(indexContext.getMultiSearcher());
             return fields.toArray(new String[fields.size()]);
@@ -120,7 +120,7 @@ public class MonitorService implements IMonitorService {
      * @return the index context with the name or null if not found
      */
     @SuppressWarnings("rawtypes")
-    public IndexContext<?> getIndexContext(final String indexName) {
+    public IndexContext getIndexContext(final String indexName) {
         for (final Map.Entry<String, IndexContext> mapEntry : getIndexContexts().entrySet()) {
             if (mapEntry.getValue() == null || mapEntry.getValue().getIndexName() == null) {
                 continue;

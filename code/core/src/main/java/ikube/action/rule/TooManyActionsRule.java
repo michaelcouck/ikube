@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
  * @since 14.01.2012
  * @version 01.00
  */
-public class TooManyActionsRule extends ARule<IndexContext<?>> {
+public class TooManyActionsRule extends ARule<IndexContext> {
 
 	@Value("${max.actions}")
 	private int maxActions;
@@ -25,7 +25,7 @@ public class TooManyActionsRule extends ARule<IndexContext<?>> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean evaluate(final IndexContext<?> indexContext) {
+	public boolean evaluate(final IndexContext indexContext) {
 		final Server server = clusterManager.getServer();
 		final List<Action> actions = server.getActions();
 		if (actions != null && actions.size() >= maxActions) {

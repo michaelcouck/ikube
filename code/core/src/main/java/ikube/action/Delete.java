@@ -18,13 +18,13 @@ import java.util.Comparator;
  * @version 01.00
  * @since 31-10-2010
  */
-public class Delete extends Action<IndexContext<?>, Boolean> {
+public class Delete extends Action<IndexContext, Boolean> {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    boolean internalExecute(final IndexContext<?> indexContext) {
+    boolean internalExecute(final IndexContext indexContext) {
         String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
         String indexDirectoryPathBackup = IndexManager.getIndexDirectoryPathBackup(indexContext);
         boolean deletedOldIndexes = deleteOldIndexes(indexDirectoryPath);

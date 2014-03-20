@@ -29,7 +29,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class IndexableInternetHandlerIntegration extends IntegrationTest {
 
-    private IndexContext<?> indexContext;
+    private IndexContext indexContext;
     private IndexableInternet indexableInternet;
     private IndexableInternetHandler indexableInternetHandler;
 

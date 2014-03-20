@@ -167,7 +167,7 @@ public class SnapshotSchedule extends Schedule {
         return dataBase.execute(Search.SELECT_FROM_SEARCH_COUNT_SEARCHES, fields, values);
     }
 
-    protected long getSearchesPerMinute(final IndexContext<?> indexContext, final Snapshot snapshot) {
+    protected long getSearchesPerMinute(final IndexContext indexContext, final Snapshot snapshot) {
         List<Snapshot> snapshots = indexContext.getSnapshots();
         if (snapshots == null || snapshots.size() < 1) {
             return 0;
@@ -178,7 +178,7 @@ public class SnapshotSchedule extends Schedule {
         return Math.max(0, searchesPerMinute);
     }
 
-    protected long getDocsPerMinute(final IndexContext<?> indexContext, final Snapshot current) {
+    protected long getDocsPerMinute(final IndexContext indexContext, final Snapshot current) {
         List<Snapshot> snapshots = indexContext.getSnapshots();
         if (snapshots == null || snapshots.size() == 0) {
             return 0;

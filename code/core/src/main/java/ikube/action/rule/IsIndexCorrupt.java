@@ -17,13 +17,13 @@ import org.apache.lucene.store.NIOFSDirectory;
  * @since 12.02.2011
  * @version 01.00
  */
-public class IsIndexCorrupt extends ARule<IndexContext<?>> {
+public class IsIndexCorrupt extends ARule<IndexContext> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean evaluate(final IndexContext<?> indexContext) {
+	public boolean evaluate(final IndexContext indexContext) {
 		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
 		if (latestIndexDirectory == null) {

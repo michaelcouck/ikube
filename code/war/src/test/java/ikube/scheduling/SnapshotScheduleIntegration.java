@@ -25,7 +25,7 @@ public class SnapshotScheduleIntegration extends IntegrationTest {
 		for (int i = 0; i < maxSnapshots; i++) {
 			snapshotSchedule.run();
 		}
-		for (IndexContext<?> indexContext : monitorService.getIndexContexts().values()) {
+		for (IndexContext indexContext : monitorService.getIndexContexts().values()) {
 			logger.info("Snapshots : " + indexContext.getSnapshots().size());
 			assertNotNull(indexContext.getSnapshot());
 		}

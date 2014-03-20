@@ -69,14 +69,14 @@ public class RuleInterceptorTest extends AbstractTest {
         Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
         actions = new HashMap<>();
 
-        final List<IRule<IndexContext<?>>> rules = new ArrayList<>();
+        final List<IRule<IndexContext>> rules = new ArrayList<>();
 
         isMultiSearcherInitialised = mock(IsMultiSearcherInitialised.class);
         isIndexCurrent = mock(IsIndexCurrent.class);
         areIndexesCreated = mock(AreIndexesCreated.class);
         areUnopenedIndexes = mock(AreUnopenedIndexes.class);
 
-        IAction<IndexContext<?>, ?> action = mock(IAction.class);
+        IAction<IndexContext, ?> action = mock(IAction.class);
         Close close = mock(Close.class);
 
         rules.add(isMultiSearcherInitialised);

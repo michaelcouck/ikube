@@ -48,6 +48,6 @@ public interface IIndexableHandler<T extends Indexable> {
      * @return the task that will be executed asynchronously
      * @throws Exception any exception is bubbled up to the caller, where everything is caught in the caller
      */
-    ForkJoinTask<?> handleIndexableForked(final IndexContext<?> indexContext, final T indexable) throws Exception;
+    ForkJoinTask<?> handleIndexableForked(final IndexContext indexContext, final T indexable) throws Exception;
 
 }

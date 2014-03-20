@@ -38,7 +38,7 @@ public class DeleteListener implements IListener<Message<Object>>, MessageListen
 		if (object != null && Event.class.isAssignableFrom(object.getClass())) {
 			Event event = (Event) object;
 			if (Event.DELETE_INDEX.equals(event.getType())) {
-				IndexContext<?> indexContext = monitorService.getIndexContext(event.getObject().toString());
+				IndexContext indexContext = monitorService.getIndexContext(event.getObject().toString());
 				String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 				String indexDirectoryBackupPath = IndexManager.getIndexDirectoryPathBackup(indexContext);
 				logger.warn("Deleting index directory : " + indexDirectoryPath);

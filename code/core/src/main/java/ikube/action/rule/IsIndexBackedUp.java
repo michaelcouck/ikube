@@ -12,13 +12,13 @@ import java.io.File;
  * @since 12.02.2011
  * @version 01.00
  */
-public class IsIndexBackedUp extends ARule<IndexContext<?>> {
+public class IsIndexBackedUp extends ARule<IndexContext> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean evaluate(final IndexContext<?> indexContext) {
+	public boolean evaluate(final IndexContext indexContext) {
 		// See if there is a latest index directory that is finished and not corrupt
 		String latestIndexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(latestIndexDirectoryPath);

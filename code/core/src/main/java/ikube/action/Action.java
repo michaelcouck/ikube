@@ -26,7 +26,7 @@ import java.util.List;
  * @since 21-11-2010
  */
 @SuppressWarnings({"SpringJavaAutowiringInspection", "UnusedDeclaration"})
-public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> {
+public abstract class Action<E, F> implements IAction<IndexContext, Boolean> {
 
     protected transient Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -52,13 +52,13 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
      * This is an optional action that the action depends on. For example the index action requires
      * that the reset action is run completely first for this index context.
      */
-    private IAction<IndexContext<?>, Boolean> dependent;
+    private IAction<IndexContext, Boolean> dependent;
 
     /**
      * These are the rules defined for this action. They will be evaluated collectively by the
      * {@link RuleInterceptor} and the action will be executed depending on the category of the rules.
      */
-    private List<IRule<IndexContext<?>>> rules;
+    private List<IRule<IndexContext>> rules;
 
     /**
      * This is the predicate that will be evaluated. The predicate consists of a boolean expression that
@@ -77,7 +77,7 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
      * {@inheritDoc}
      */
     @Override
-    public boolean preExecute(final IndexContext<?> indexContext) throws Exception {
+    public boolean preExecute(final IndexContext indexContext) throws Exception {
         // To be over ridden by sub classes
         return Boolean.TRUE;
     }
@@ -86,7 +86,7 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
      * {@inheritDoc}
      */
     @Override
-    public Boolean execute(final IndexContext<?> indexContext) throws Exception {
+    public Boolean execute(final IndexContext indexContext) throws Exception {
         try {
             preExecute(indexContext);
             boolean result = internalExecute(indexContext);
@@ -128,13 +128,13 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
      * @return whether the execution was successful
      * @throws Exception
      */
-    abstract boolean internalExecute(final IndexContext<?> indexContext) throws Exception;
+    abstract boolean internalExecute(final IndexContext indexContext) throws Exception;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean postExecute(final IndexContext<?> indexContext) throws Exception {
+    public boolean postExecute(final IndexContext indexContext) throws Exception {
         // To be over ridden by sub classes
         return Boolean.TRUE;
     }
@@ -159,7 +159,7 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
      * {@inheritDoc}
      */
     @Override
-    public List<IRule<IndexContext<?>>> getRules() {
+    public List<IRule<IndexContext>> getRules() {
         return rules;
     }
 
@@ -167,7 +167,7 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
      * {@inheritDoc}
      */
     @Override
-    public void setRules(final List<IRule<IndexContext<?>>> rules) {
+    public void setRules(final List<IRule<IndexContext>> rules) {
         this.rules = rules;
     }
 
@@ -216,7 +216,7 @@ public abstract class Action<E, F> implements IAction<IndexContext<?>, Boolean> 
      *
      * @param dependent the action that this action is dependent on
      */
-    public void setDependent(final IAction<IndexContext<?>, Boolean> dependent) {
+    public void setDependent(final IAction<IndexContext, Boolean> dependent) {
         this.dependent = dependent;
     }
 

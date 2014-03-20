@@ -23,7 +23,7 @@ import org.junit.Test;
 public class IndexableFilesystemHandlerIntegration extends IntegrationTest {
 
 	private IndexWriter indexWriter;
-	private IndexContext<?> desktop;
+	private IndexContext desktop;
 	private IndexableFileSystem desktopFolder;
 	private IndexableFileSystemHandler indexableFilesystemHandler;
 

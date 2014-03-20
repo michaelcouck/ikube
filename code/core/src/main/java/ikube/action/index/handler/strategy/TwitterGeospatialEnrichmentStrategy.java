@@ -53,7 +53,7 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
      */
     @Override
     public boolean aroundProcess(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final Indexable indexable,
             final Document document,
             final Object resource)

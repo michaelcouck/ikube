@@ -33,7 +33,7 @@ public class TwitterResourceHandler extends ResourceHandler<IndexableTweets> {
      */
     @Override
     public Document handleResource(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final IndexableTweets indexableTweets,
             final Document document,
             final Object resource)

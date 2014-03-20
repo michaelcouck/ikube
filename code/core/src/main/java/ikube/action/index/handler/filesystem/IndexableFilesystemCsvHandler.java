@@ -36,7 +36,7 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
 
     @Override
     public ForkJoinTask<?> handleIndexableForked(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final IndexableFileSystemCsv indexableFileSystem)
             throws Exception {
         IResourceProvider<File> resourceProvider = new FileSystemCsvResourceProvider(indexableFileSystem.getPath());
@@ -45,7 +45,7 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
 
     @Override
     protected List<?> handleResource(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final IndexableFileSystemCsv indexableFileSystemCsv,
             final Object resource) {
         try {
@@ -61,7 +61,7 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
      * {@inheritDoc}
      */
     void handleFile(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final IndexableFileSystemCsv indexableFileSystemCsv,
             final File file)
             throws Exception {

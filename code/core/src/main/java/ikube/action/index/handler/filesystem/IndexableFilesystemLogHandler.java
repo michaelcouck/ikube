@@ -32,7 +32,7 @@ public class IndexableFilesystemLogHandler extends IndexableHandler<IndexableFil
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ForkJoinTask<?> handleIndexableForked(final IndexContext<?> indexContext, final IndexableFileSystemLog indexable) throws Exception {
+	public ForkJoinTask<?> handleIndexableForked(final IndexContext indexContext, final IndexableFileSystemLog indexable) throws Exception {
 		IResourceProvider<File> fileSystemResourceProvider = new IResourceProvider<File>() {
 
 			private List<File> resources;
@@ -83,7 +83,7 @@ public class IndexableFilesystemLogHandler extends IndexableHandler<IndexableFil
 	}
 
 	@Override
-	protected List<?> handleResource(final IndexContext<?> indexContext, final IndexableFileSystemLog indexableFileSystemLog, final Object resource) {
+	protected List<?> handleResource(final IndexContext indexContext, final IndexableFileSystemLog indexableFileSystemLog, final Object resource) {
 		logger.info("Handling resource : " + resource + ", thread : " + Thread.currentThread().hashCode());
 		handleFile(indexContext, indexableFileSystemLog, (File) resource);
 		return null;
@@ -96,7 +96,7 @@ public class IndexableFilesystemLogHandler extends IndexableHandler<IndexableFil
 	 * @param indexableFileSystem the log file, i.e. the directory where the log files are on the network
 	 * @param logFile and the individual log file that we will index
 	 */
-	private void handleFile(final IndexContext<?> indexContext, final IndexableFileSystemLog indexableFileSystem, final File logFile) {
+	private void handleFile(final IndexContext indexContext, final IndexableFileSystemLog indexableFileSystem, final File logFile) {
 		Reader reader = null;
 		BufferedReader bufferedReader = null;
 

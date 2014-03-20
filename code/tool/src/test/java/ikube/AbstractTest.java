@@ -30,7 +30,7 @@ public abstract class AbstractTest {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     protected File createIndexFileSystem(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final long time,
             final String ip,
             final String... strings) {

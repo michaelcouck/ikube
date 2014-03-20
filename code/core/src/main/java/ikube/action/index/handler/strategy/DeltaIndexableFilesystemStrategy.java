@@ -33,7 +33,7 @@ public class DeltaIndexableFilesystemStrategy extends AStrategy {
      */
     @Override
     public boolean aroundProcess(
-            final IndexContext<?> indexContext,
+            final IndexContext indexContext,
             final Indexable indexable,
             final Document document,
             final Object resource)
