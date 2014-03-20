@@ -10,6 +10,7 @@ import ikube.security.WebServiceAuthentication;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ObjectToolkit;
+import ikube.toolkit.ThreadUtilities;
 import org.apache.log4j.Logger;
 import org.junit.Ignore;
 
@@ -41,6 +42,8 @@ public abstract class IntegrationTest extends BaseTest {
             ApplicationContextManager.getBean(Scheduler.class).shutdown();
             insertData(Snapshot.class, 11000);
             new WebServiceAuthentication().authenticate(HTTP_CLIENT, LOCALHOST, Integer.toString(SERVER_PORT), REST_USER_NAME, REST_PASSWORD);
+            // We will stop this thread a full minute to wait for the server to start completely
+            ThreadUtilities.sleep(60000);
         } catch (final Exception e) {
             e.printStackTrace();
         }
