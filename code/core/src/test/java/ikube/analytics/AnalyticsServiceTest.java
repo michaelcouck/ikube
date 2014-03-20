@@ -14,8 +14,9 @@ import ikube.model.Context;
 import ikube.toolkit.ApplicationContextManager;
 import mockit.Deencapsulation;
 import mockit.Mockit;
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import weka.classifiers.functions.SMO;
 import weka.filters.Filter;
@@ -42,6 +43,16 @@ public class AnalyticsServiceTest extends AbstractTest {
     private Analysis<?, ?> analysis;
     private AnalyticsService analyticsService;
 
+    @BeforeClass
+    public static void beforeClass() {
+        Mockit.setUpMocks(ApplicationContextManagerMock.class);
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        Mockit.tearDownMocks(ApplicationContextManager.class);
+    }
+
     @Before
     @SuppressWarnings("unchecked")
     public void before() throws Exception {
@@ -67,12 +78,6 @@ public class AnalyticsServiceTest extends AbstractTest {
         AnalyzerManager.getContexts().put(context.getName(), context);
 
         Deencapsulation.setField(analyticsService, "clusterManager", clusterManager);
-        Mockit.setUpMocks(ApplicationContextManagerMock.class);
-    }
-
-    @After
-    public void after() {
-        Mockit.tearDownMocks(ApplicationContextManager.class);
     }
 
     @Test
@@ -141,11 +146,13 @@ public class AnalyticsServiceTest extends AbstractTest {
         when(future.get(anyLong(), any(TimeUnit.class))).thenReturn(analysis);
         when(analyzer.analyze(any())).thenReturn(analysis);
 
-        Analysis analysis = analyticsService.classesOrClusters(this.analysis);
+        IAnalyticsService analyticsService = ApplicationContextManager.getBean(IAnalyticsService.class);
+        when(analyticsService.getContexts()).thenReturn(AnalyzerManager.getContexts());
+        Analysis analysis = this.analyticsService.classesOrClusters(this.analysis);
         assertEquals(analysis, this.analysis);
 
         when(this.analysis.isDistributed()).thenReturn(Boolean.TRUE);
-        analyticsService.classesOrClusters(analysis);
+        this.analyticsService.classesOrClusters(analysis);
         verify(analysis, atLeast(1)).setClassesOrClusters(any(Object[].class));
     }
 
@@ -157,12 +164,14 @@ public class AnalyticsServiceTest extends AbstractTest {
         when(future.get(anyLong(), any(TimeUnit.class))).thenReturn(analysis);
         when(analyzer.analyze(any())).thenReturn(analysis);
 
+        IAnalyticsService analyticsService = ApplicationContextManager.getBean(IAnalyticsService.class);
+        when(analyticsService.getContexts()).thenReturn(AnalyzerManager.getContexts());
         when(analysis.getClassesOrClusters()).thenReturn(new Object[]{IConstants.POSITIVE, IConstants.NEGATIVE});
-        Analysis analysis = analyticsService.sizesForClassesOrClusters(this.analysis);
+        Analysis analysis = this.analyticsService.sizesForClassesOrClusters(this.analysis);
         assertEquals(analysis, this.analysis);
 
         when(this.analysis.isDistributed()).thenReturn(Boolean.TRUE);
-        analyticsService.sizesForClassesOrClusters(analysis);
+        this.analyticsService.sizesForClassesOrClusters(analysis);
         verify(analysis, atLeast(1)).setSizesForClassesOrClusters(any(int[].class));
     }
 

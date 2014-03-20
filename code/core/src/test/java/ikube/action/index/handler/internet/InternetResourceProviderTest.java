@@ -42,7 +42,7 @@ public class InternetResourceProviderTest extends AbstractTest {
 
         internetResourceProvider = new InternetResourceProvider(indexableInternet, dataBase);
         Deencapsulation.setField(internetResourceProvider, "RETRY", 1);
-        Deencapsulation.setField(internetResourceProvider, "SLEEP", 1000);
+        Deencapsulation.setField(internetResourceProvider, "SLEEP", 3000);
     }
 
     @After
@@ -53,8 +53,9 @@ public class InternetResourceProviderTest extends AbstractTest {
     @Test
     public void initialize() {
         internetResourceProvider.initialize(indexableInternet);
-        ThreadUtilities.sleep(5000);
-        verify(indexableInternet, atLeastOnce()).getUrl();
+        ThreadUtilities.sleep(15000);
+        verify(indexContext, atLeastOnce()).getName();
+        // verify(indexableInternet, atLeastOnce()).getUrl();
     }
 
     @Test

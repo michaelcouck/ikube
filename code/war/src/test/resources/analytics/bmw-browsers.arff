@@ -1,4 +1,4 @@
-@relation filtered_data
+@relation instances
 
 @attribute Dealership numeric
 @attribute Showroom numeric

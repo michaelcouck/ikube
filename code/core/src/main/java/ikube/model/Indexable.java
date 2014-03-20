@@ -5,7 +5,6 @@ import ikube.action.index.handler.IStrategy;
 import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -18,6 +17,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 @SuppressWarnings("serial")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Indexable extends Persistable {
+
+    @Transient
+    private String type = this.getClass().getName();
 
     /**
      * This is the content of the indexable, it is therefore only valid while indexing and for the current resource.
@@ -39,15 +41,9 @@ public class Indexable extends Persistable {
     @Column
     @Attribute(field = false, description = "The name of this indexable")
     private String name;
-    @PrimaryKeyJoinColumn
-    @ManyToOne(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
-    private Indexable parent;
-    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "parent", fetch = FetchType.EAGER)
-    private List<Indexable> children;
     @Column
     @Attribute(field = false, description = "Whether this is a geospatial address field")
     private boolean address = Boolean.FALSE;
-
     @Column
     @Attribute(field = false, description = "Whether this value should be stored in the index")
     private boolean stored = Boolean.FALSE;
@@ -68,27 +64,24 @@ public class Indexable extends Persistable {
     @Column
     @Attribute(field = false, description = "The boost to give the field at index time")
     private float boost;
-
     @Column
     @Min(value = 1)
     @Max(value = 1000000)
     @Attribute(field = false, description = "This is the maximum exceptions during indexing before the indexing is " +
             "stopped")
     private long maxExceptions = 1000;
-
     @Column
     @Min(value = 1)
     @Max(value = 1000)
     @Attribute(field = false, description = "This is the number of threads that should be spawned for this indexable")
     private int threads = 1;
 
-    @Column
-    @ElementCollection(fetch = FetchType.EAGER, targetClass = String.class)
-    @Attribute(field = false, description = "This is the class names of strategies that can be used during processing")
-    private Collection<String> strategyNames;
-
-    @Transient
-    private String type = this.getClass().getName();
+    // Note to self: You cannot have a primary key join with bi-directional mapping!!!
+    // @PrimaryKeyJoinColumn
+    @ManyToOne(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
+    private Indexable parent;
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "parent", fetch = FetchType.EAGER)
+    private List<Indexable> children;
 
     public void setName(final String name) {
         this.name = name;
@@ -238,14 +231,6 @@ public class Indexable extends Persistable {
 
     public int incrementAndGetExceptions() {
         return exceptions.incrementAndGet();
-    }
-
-    public Collection<String> getStrategyNames() {
-        return strategyNames;
-    }
-
-    public void setStrategyNames(Collection<String> strategyNames) {
-        this.strategyNames = strategyNames;
     }
 
     public String getType() {

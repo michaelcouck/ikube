@@ -1,6 +1,9 @@
 package ikube.model;
 
 import javax.persistence.Embeddable;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 
 /**
  * This class contains class details to construct an analyzer, including the name of the analyzer
@@ -10,7 +13,9 @@ import javax.persistence.Embeddable;
  * @version 01.00
  * @since 14-03-2014
  */
+@Entity
 @Embeddable
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class AnalyzerInfo extends Persistable {
 
     /**

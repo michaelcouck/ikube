@@ -269,10 +269,13 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
             final int thread = i;
 
             class ClusterRunnable implements Runnable {
+
                 ClusterManagerHazelcast clusterManagerHazelcast;
 
                 ClusterRunnable() {
                     clusterManagerHazelcast = new ClusterManagerHazelcast();
+                    HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance();
+                    Deencapsulation.setField(clusterManagerHazelcast, "hazelcastInstance", hazelcastInstance);
                 }
 
                 public void run() {

@@ -28,7 +28,7 @@ import static org.mockito.Mockito.*;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 21.11.10
+ * @since 24-04-2013
  */
 public class TwitterHandlerTest extends AbstractTest {
 
@@ -72,7 +72,7 @@ public class TwitterHandlerTest extends AbstractTest {
         final String forkJoinPoolName = indexContext.getName();
         new Thread(new Runnable() {
             public void run() {
-                ThreadUtilities.sleep(1000);
+                ThreadUtilities.sleep(10000);
                 ThreadUtilities.cancelForkJoinPool(forkJoinPoolName);
             }
         }).start();
@@ -80,8 +80,8 @@ public class TwitterHandlerTest extends AbstractTest {
         final ForkJoinTask<?> forkJoinTask = twitterHandler.handleIndexableForked(indexContext, indexableTweets);
         try {
             ThreadUtilities.executeForkJoinTasks(forkJoinPoolName, indexableTweets.getThreads(), forkJoinTask);
-            ThreadUtilities.sleep(3000);
-        } catch (CancellationException e) {
+            ThreadUtilities.sleep(15000);
+        } catch (final CancellationException e) {
             // Ignore
         }
         verify(twitterResourceHandler, atLeastOnce()).handleResource(any(IndexContext.class), any(IndexableTweets.class), any(Document.class), any(Tweet.class));

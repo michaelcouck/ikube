@@ -155,10 +155,8 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
         Boolean[] directionOfSort = {Boolean.FALSE};
 
         List<Url> dbUrls = dataBase.find(Url.class, fieldsToSortOn, directionOfSort, 0, Integer.MAX_VALUE);
-        logger.info("Urls : " + dbUrls.size());
         long previousId = Long.MAX_VALUE;
         for (final Url url : dbUrls) {
-            logger.info("Url : " + url.getId() + ", " + url.getHash());
             assertTrue("The ids must be in descending order : ", previousId > url.getId());
             previousId = url.getId();
         }
@@ -169,7 +167,6 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
         assertEquals("Max results should be half the total : ", maxResults, dbUrls.size());
         previousId = Long.MAX_VALUE;
         for (final Url url : dbUrls) {
-            logger.info("Url : " + url.getId() + ", " + url.getHash());
             assertTrue("The ids must be in descending order : ", previousId > url.getId());
         }
     }
@@ -295,6 +292,46 @@ public class ADataBaseJpaIntegration extends IntegrationTest {
         Number number = dataBase.execute(Search.SELECT_FROM_SEARCH_COUNT_SEARCHES, new String[]{IConstants.INDEX_NAME}, new Object[]{indexName});
         assertNotNull(number);
         assertTrue(number.longValue() > 0);
+    }
+
+    @Test
+    public void persistCompositeOne() {
+        Indexable parent = new IndexableTable();
+        dataBase.persist(parent);
+
+        Indexable child = new IndexableColumn();
+        dataBase.persist(child);
+
+        parent.setChildren(Arrays.asList(child));
+        dataBase.merge(parent);
+    }
+
+    @Test
+    public void persistCompositeTwo() {
+        Indexable parent = new IndexableTable();
+        Indexable child = new IndexableColumn();
+        parent.setChildren(Arrays.asList(child));
+        dataBase.persist(parent);
+    }
+
+    @Test
+    public void persistCompositeThree() {
+        Indexable parent = new IndexableTable();
+        Indexable child = new IndexableColumn();
+        child.setParent(parent);
+        parent.setChildren(Arrays.asList(child));
+        dataBase.persist(parent);
+    }
+
+    @Test
+    public void persistCompositeFour() {
+        Indexable parent = new IndexableTable();
+        dataBase.persist(parent);
+        Indexable child = new IndexableColumn();
+        child.setParent(parent);
+        dataBase.persist(child);
+        parent.setChildren(Arrays.asList(child));
+        dataBase.merge(parent);
     }
 
     protected List<Url> getUrls(int batchSize) throws Exception {

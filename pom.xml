@@ -224,7 +224,7 @@
 					<!-- Equivalent to -fae on the command line apparently. -->
 					<testFailureIgnore>true</testFailureIgnore>
 					<excludes>
-						<exclude>**/*Integration*.java</exclude>
+                        <exclude>**/*Integration*.java</exclude>
 					</excludes>
 				</configuration>
 			</plugin>

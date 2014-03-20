@@ -23,9 +23,8 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 /**
- * This class will scan the class path looking for entities. Then build an entity graph, persist,
- * update and delete the entity, verifying that the operations
- * were successful as a sanity test for the mappings between the entities and the database.
+ * This test will generate each entity and perform crud operations on each one to verify
+ * the constraints and entity to database mapping.
  *
  * @author Michael Couck
  * @version 01.00
@@ -37,27 +36,55 @@ public class EntityIntegration extends IntegrationTest {
         void doWithEntity(final Object entity, final Class<?> entityClass);
     }
 
+    // "parent", "children", "foreignKey", "nameColumn"
+    private static final String[] SKIPPED_FIELDS = {IConstants.ID};
+
     private IDataBase dataBase;
     /**
      * The names of the classes that we will test in the package.
      */
-    private Class<?>[] entityClasses = new Class<?>[]{Action.class, IndexableDataSource.class, File.class,
+    private Class<?>[] entityClasses = new Class<?>[]{
+            Action.class,
+            Analysis.class,
+            AnalyzerInfo.class,
+            Context.class,
+            Coordinate.class,
+            /*Distributed.class,*/
+            File.class,
+            /*IndexableAudio.class,*/
             IndexableColumn.class,
-            IndexableEmail.class, IndexableFileSystem.class, IndexableFileSystemLog.class, IndexableFileSystemWiki.class,
+            IndexableDataSource.class,
+            IndexableEmail.class,
+            IndexableFileSystem.class,
+            IndexableFileSystemCsv.class,
+            IndexableFileSystemLog.class,
+            IndexableFileSystemWiki.class,
             IndexableInternet.class,
-            IndexableTable.class, IndexContext.class, Search.class, Server.class, Snapshot.class, Url.class,
-            GeoAltName.class, GeoCity.class, GeoCountry.class,
-            GeoName.class, GeoZone.class};
+            IndexableTable.class,
+            IndexableTweets.class,
+            IndexContext.class,
+            Search.class,
+            Server.class,
+            Snapshot.class,
+            Task.class,
+            Url.class,
+
+            GeoName.class,
+            GeoAltName.class,
+            GeoZone.class,
+            GeoCountry.class,
+            GeoCity.class};
 
     @BeforeClass
     public static void beforeClass() {
         ObjectToolkit.registerPredicates(new ObjectToolkit.Predicate() {
 
             @Override
-            public boolean perform(Object target) {
+            public boolean perform(final Object target) {
                 Field field = (Field) target;
                 return isCascadeTypeAll(field) && containsJpaAnnotations(field);
             }
+
         });
     }
 
@@ -77,17 +104,15 @@ public class EntityIntegration extends IntegrationTest {
     @Test
     public void persist() throws Exception {
         doTest(new EntityTester() {
-            @SuppressWarnings("synthetic-access")
             @Override
-            public void doWithEntity(Object entity, Class<?> entityClass) {
+            public void doWithEntity(final Object entity, final Class<?> entityClass) {
                 // Build a graph for all the entities, penetrating one level deep
-                ObjectToolkit.populateFields(entityClass, entity, true, 0, 3, IConstants.ID);
+                ObjectToolkit.populateFields(entityClass, entity, true, 0, 3, SKIPPED_FIELDS);
                 // Insert the object graph
                 dataBase.persist(entity);
                 // Verify that the object is inserted
                 List<?> entities = getEntities(entity.getClass());
-                assertTrue("There should be at least one " + entity + " in the database : " + entities.size(),
-                        entities.size() > 0);
+                assertTrue("There should be at least one " + entity + " in the database : " + entities.size(), entities.size() > 0);
             }
         });
     }
@@ -96,50 +121,55 @@ public class EntityIntegration extends IntegrationTest {
      * Test for one entity updated correctly.
      */
     @Test
-    @SuppressWarnings("synthetic-access")
     public void update() throws Exception {
-        doTest(new EntityTester() {
+        EntityTester entityTester = new EntityTester() {
             @Override
             public void doWithEntity(final Object entity, final Class<?> entityClass) {
                 // Build a graph for all the entities, penetrating one level deep
-                ObjectToolkit.populateFields(entityClass, entity, true, 0, 3, IConstants.ID);
+                ObjectToolkit.populateFields(entityClass, entity, true, 0, 3, SKIPPED_FIELDS);
                 // Insert the object graph
                 dataBase.persist(entity);
                 // Update each field independently
-                ReflectionUtils.doWithFields(entityClass, new ReflectionUtils.FieldCallback() {
-                            @Override
-                            public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
-                                Object value = ObjectToolkit.getObject(field.getType());
-                                field.setAccessible(Boolean.TRUE);
-                                ReflectionUtils.setField(field, entity, value);
-                                dataBase.merge(entity);
-                                // Check the database that the entity is updated
-                                Object result = null;
-                                Object id = ObjectToolkit.getIdFieldValue(entity);
-                                if (id != null) {
-                                    result = dataBase.find(entity.getClass(), (Long) id);
-                                }
-                                assertNotNull(result);
-                                if (value != null) {
-                                    Object fieldValue = ReflectionUtils.getField(field, entity);
-                                    assertEquals(value, fieldValue);
-                                }
-                            }
-                        }, new ReflectionUtils.FieldFilter() {
-                            @Override
-                            @SuppressWarnings("SimplifiableIfStatement")
-                            public boolean matches(Field field) {
-                                if (field == null || field.getType() == null || field.getType().getPackage() == null ||
-                                        field.getType().getPackage().getName() == null) {
-                                    return false;
-                                }
-                                return containsJpaAnnotations(field) && field.getType().getPackage().getName().contains
-                                        (Object.class.getPackage().getName());
-                            }
+                class FieldCallback implements ReflectionUtils.FieldCallback {
+                    @Override
+                    public void doWith(final Field field) throws IllegalArgumentException, IllegalAccessException {
+                        Object value = ObjectToolkit.getObject(field.getType());
+                        field.setAccessible(Boolean.TRUE);
+                        ReflectionUtils.setField(field, entity, value);
+                        dataBase.merge(entity);
+                        // Check the database that the entity is updated
+                        Object result = null;
+                        Object id = ObjectToolkit.getIdFieldValue(entity);
+                        if (id != null) {
+                            result = dataBase.find(entity.getClass(), (Long) id);
                         }
-                );
+                        assertNotNull(result);
+                        if (value != null) {
+                            Object fieldValue = ReflectionUtils.getField(field, entity);
+                            assertEquals(value, fieldValue);
+                        }
+                    }
+                }
+
+                class FieldFilter implements ReflectionUtils.FieldFilter {
+                    @Override
+                    @SuppressWarnings("SimplifiableIfStatement")
+                    public boolean matches(final Field field) {
+                        if (field == null ||
+                                field.getType() == null ||
+                                field.getType().getPackage() == null ||
+                                field.getType().getPackage().getName() == null) {
+                            return Boolean.FALSE;
+                        }
+                        boolean partOfJavaPackage = field.getType().getPackage().getName().contains(Object.class.getPackage().getName());
+                        return containsJpaAnnotations(field) && partOfJavaPackage;
+                    }
+                }
+
+                ReflectionUtils.doWithFields(entityClass, new FieldCallback(), new FieldFilter());
             }
-        });
+        };
+        doTest(entityTester);
     }
 
     /**
@@ -150,10 +180,10 @@ public class EntityIntegration extends IntegrationTest {
         doTest(new EntityTester() {
             @Override
             @SuppressWarnings("synthetic-access")
-            public void doWithEntity(Object entity, Class<?> entityClass) {
+            public void doWithEntity(final Object entity, final Class<?> entityClass) {
                 int existingRecords = dataBase.count(entityClass).intValue();
                 // Build a graph for all the entities, penetrating one level deep
-                ObjectToolkit.populateFields(entityClass, entity, true, 0, 3, IConstants.ID);
+                ObjectToolkit.populateFields(entityClass, entity, true, 0, 3, SKIPPED_FIELDS);
                 // Insert the object graph
                 dataBase.persist(entity);
                 // Remove the entity
@@ -165,9 +195,9 @@ public class EntityIntegration extends IntegrationTest {
     }
 
     /**
-     * This method will check that the Jpa mapping is cascade type all so that adding one to the collection and
-     * persisting the parent will not throw an
-     * exception that the child is not persisted or transient.
+     * This method will check that the Jpa mapping is cascade type all so that adding one
+     * to the collection and persisting the parent will not throw an exception that the child
+     * is not persisted or transient.
      *
      * @param field the field to check for the cascade type
      * @return whether the cascade type includes the all type
@@ -187,20 +217,21 @@ public class EntityIntegration extends IntegrationTest {
     }
 
     /**
-     * This method checks to see if the field is part of the Jpa model, which is decided if it has any Jpa annotations
-     * on the field.
+     * This method checks to see if the field is part of the Jpa model, which is
+     * decided if it has any Jpa annotations on the field.
      *
      * @param field the field to check for Jpa annotations
      * @return whether this field is a persisted type
      */
     private static boolean containsJpaAnnotations(final Field field) {
         boolean isJpa = Boolean.FALSE;
+        boolean notIdField = field.getAnnotation(Id.class) == null;
         Annotation[] annotations = field.getAnnotations();
-        for (Annotation annotation : annotations) {
+        for (final Annotation annotation : annotations) {
             Class<?> annotationType = annotation.annotationType();
             isJpa |= annotationType.getPackage().getName().equals(Id.class.getPackage().getName());
         }
-        return isJpa && field.getAnnotation(Id.class) == null;
+        return isJpa && notIdField;
     }
 
     /**
@@ -218,8 +249,9 @@ public class EntityIntegration extends IntegrationTest {
      *
      * @param entityTester the tester that will execute the test on the entity
      */
-    private void doTest(EntityTester entityTester) {
-        for (Class<?> entityClass : entityClasses) {
+    private void doTest(final EntityTester entityTester) {
+        boolean exceptions = Boolean.FALSE;
+        for (final Class<?> entityClass : entityClasses) {
             try {
                 if (Modifier.isAbstract(entityClass.getModifiers())) {
                     continue;
@@ -230,9 +262,13 @@ public class EntityIntegration extends IntegrationTest {
                 } finally {
                     removeQuietly(entity);
                 }
-            } catch (Exception e) {
-                throw new RuntimeException("An error occurred for class " + entityClass.getName(), e);
+            } catch (final Exception e) {
+                logger.error("Exception thrown on class : " + entityClass, e);
+                exceptions = Boolean.TRUE;
             }
+        }
+        if (exceptions) {
+            throw new RuntimeException("An error occurred for classes : ");
         }
     }
 
@@ -241,12 +277,12 @@ public class EntityIntegration extends IntegrationTest {
      *
      * @param entity the entity to remove
      */
-    private void removeQuietly(Object entity) {
+    private void removeQuietly(final Object entity) {
         if (entity == null) {
             return;
         }
-        // Remove the entity quietly
         try {
+            // Remove the entity quietly
             dataBase.remove(entity);
         } catch (Exception e) {
             // Ignore

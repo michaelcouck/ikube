@@ -9,18 +9,17 @@ import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.model.Snapshot;
-import ikube.toolkit.ObjectToolkit;
 import ikube.web.toolkit.PerformanceTester;
 import mockit.Deencapsulation;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import javax.ws.rs.core.Response;
 import java.sql.Timestamp;
 import java.util.*;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Michael couck
@@ -42,22 +41,22 @@ public class MonitorTest extends BaseTest {
         monitor = new Monitor();
         indexContext = getIndexContext(Integer.toString(random.nextInt()));
 
-        monitorService = Mockito.mock(IMonitorService.class);
-        clusterManager = Mockito.mock(IClusterManager.class);
+        monitorService = mock(IMonitorService.class);
+        clusterManager = mock(IClusterManager.class);
         Deencapsulation.setField(monitor, monitorService);
         Deencapsulation.setField(monitor, clusterManager);
     }
 
     @Test
     public void fields() throws Exception {
-        Mockito.when(monitorService.getIndexFieldNames(Mockito.anyString())).thenReturn(new String[]{"one", "two", "three"});
+        when(monitorService.getIndexFieldNames(anyString())).thenReturn(new String[]{"one", "two", "three"});
         Response fields = monitor.fields("indexName");
         assertEquals("The string should be a concatenation of the fields : ", "[\"one\",\"two\",\"three\"]", fields.getEntity());
     }
 
     @Test
     public void indexContext() {
-        Mockito.when(monitorService.getIndexContext(Mockito.anyString())).thenReturn(indexContext);
+        when(monitorService.getIndexContext(anyString())).thenReturn(indexContext);
         Response indexContext = monitor.indexContext(IConstants.GEOSPATIAL);
         Object entity = indexContext.getEntity();
         assertTrue("The max age should be in the Json string : ", entity.toString().contains("maxAge"));
@@ -72,7 +71,7 @@ public class MonitorTest extends BaseTest {
         indexContexts.put(IConstants.GEOSPATIAL, indexContextOne);
         indexContexts.put(IConstants.ADDRESS, indexContextTwo);
 
-        Mockito.when(monitorService.getIndexContexts()).thenReturn(indexContexts);
+        when(monitorService.getIndexContexts()).thenReturn(indexContexts);
         Response indexContext = monitor.indexContexts("name", true);
         Object entity = indexContext.getEntity();
 
@@ -109,7 +108,7 @@ public class MonitorTest extends BaseTest {
         Map<String, Server> servers = new HashMap<>();
         servers.put(IConstants.IKUBE, server);
 
-        Mockito.when(clusterManager.getServers()).thenReturn(servers);
+        when(clusterManager.getServers()).thenReturn(servers);
         Response indexContext = monitor.servers();
         Object entity = indexContext.getEntity();
         assertTrue("The max age should be in the Json string : ", entity.toString().contains("averageCpuLoad"));
@@ -118,7 +117,7 @@ public class MonitorTest extends BaseTest {
     @Test
     public void indexingStatistics() {
         Map<String, Server> servers = getServers();
-        Mockito.when(clusterManager.getServers()).thenReturn(servers);
+        when(clusterManager.getServers()).thenReturn(servers);
         Response response = monitor.indexingStatistics();
         Object entity = response.getEntity();
         assertEquals(
@@ -136,7 +135,7 @@ public class MonitorTest extends BaseTest {
     @Test
     public void searchingStatistics() {
         Map<String, Server> servers = getServers();
-        Mockito.when(clusterManager.getServers()).thenReturn(servers);
+        when(clusterManager.getServers()).thenReturn(servers);
         Response response = monitor.searchingStatistics();
         Object entity = response.getEntity();
         assertEquals(
@@ -158,7 +157,7 @@ public class MonitorTest extends BaseTest {
         assertFalse(entity.toString().contains(Integer.toString(Integer.MAX_VALUE)));
 
         Map<String, Server> servers = getServers();
-        Mockito.when(clusterManager.getServers()).thenReturn(servers);
+        when(clusterManager.getServers()).thenReturn(servers);
         response = monitor.actions();
         entity = response.getEntity();
         assertTrue(entity.toString().contains(Integer.toString(Integer.MAX_VALUE)));
@@ -218,9 +217,9 @@ public class MonitorTest extends BaseTest {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private IndexContext getIndexContext(final String indexName) {
-        IndexContext indexContext = ObjectToolkit.populateFields(new IndexContext(), Boolean.TRUE, 5, "strategies");
+        IndexContext indexContext = new IndexContext();
         indexContext.setIndexName(indexName);
-        indexContext.setIndexDirectoryPath("indexDirectoryPath");
+        indexContext.setIndexDirectoryPath("index-directory-path");
         List<Snapshot> snapshots = new ArrayList<>();
 
         snapshots.add(getSnapshot(1, 100, 60000));

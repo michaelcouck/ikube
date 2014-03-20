@@ -168,8 +168,12 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
                 } finally {
                     try {
                         logger.info("Terminating crawler : " + indexableInternet.getName());
-                        crawlerController.setQueue(null);
                         crawlerController.dispose();
+                        crawlerController.setQueue(null);
+                    } catch (final CrawlerException e) {
+                        logger.error("Crawl terminated exception : ", e);
+                    }
+                    try {
                         crawlerController.stop();
                     } catch (final CrawlerException e) {
                         logger.error("Crawl terminated exception : ", e);
