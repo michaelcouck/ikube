@@ -31,7 +31,7 @@
 	<util:list id="indexables">
 		<ref local="mail" />
         <!--<ref local="eacbs" />-->
-        <ref local="hazelcast" />
+        <!--<ref local="hazelcast" />-->
 		<ref local="indexContextTable" />
 		<ref local="snapshotTable" />
 	</util:list>
@@ -107,7 +107,7 @@
 		property:contentField="email"
 		property:titleField="title" />
 	
-	<bean
+	<!--<bean
 		id="hazelcast"
 		class="ikube.model.IndexableInternet"
 		property:name="internet"
@@ -119,7 +119,7 @@
 		property:stored="${stored}"
 		property:vectored="${vectored}" 
 		property:internetBatchSize="${internet.batch.size}"
-		property:excludedPattern="${internet.excluded.pattern}" />
+		property:excludedPattern="${internet.excluded.pattern}" />-->
 	
 	<!--<bean
 		id="eacbs"
