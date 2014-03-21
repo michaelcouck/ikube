@@ -43,24 +43,38 @@ public class AreUnopenedIndexesTest extends AbstractTest {
 
     @Test
     public void evaluate() throws Exception {
-        File latestIndexDirectory = createIndexFileSystem(indexContext, "some words to index");
+        IndexSearcher searcher = null;
+        try {
+            File latestIndexDirectory = createIndexFileSystem(indexContext, "some words to index");
 
-        Directory directory = NIOFSDirectory.open(latestIndexDirectory);
-        logger.info("Directory : " + directory);
-        IndexReader indexReader = DirectoryReader.open(directory);
-        MultiReader multiReader = new MultiReader(indexReader);
-        IndexSearcher searcher = new IndexSearcher(multiReader);
+            Directory directory = NIOFSDirectory.open(latestIndexDirectory);
+            IndexReader indexReader = DirectoryReader.open(directory);
+            MultiReader multiReader = new MultiReader(indexReader);
+            searcher = new IndexSearcher(multiReader);
 
-        Mockito.when(indexContext.getMultiSearcher()).thenReturn(searcher);
+            Mockito.when(indexContext.getMultiSearcher()).thenReturn(searcher);
 
-        Boolean result = areUnopenedIndexes.evaluate(indexContext);
-        assertFalse(result);
+            Boolean result = areUnopenedIndexes.evaluate(indexContext);
+            assertFalse(result);
 
-        FileUtils.copyDirectory(
-                latestIndexDirectory,
-                new File(latestIndexDirectory.getParent(), "127.0.0.1.1234567890"));
-        result = areUnopenedIndexes.evaluate(indexContext);
-        assertTrue(result);
+            FileUtils.copyDirectory(
+                    latestIndexDirectory,
+                    new File(latestIndexDirectory.getParent(), "127.0.0.1.1234567890"));
+            result = areUnopenedIndexes.evaluate(indexContext);
+            assertTrue(result);
+
+            IndexReader indexReaderTwo = DirectoryReader.open(directory);
+            multiReader = new MultiReader(indexReader, indexReaderTwo);
+            searcher = new IndexSearcher(multiReader);
+
+            Mockito.when(indexContext.getMultiSearcher()).thenReturn(searcher);
+            result = areUnopenedIndexes.evaluate(indexContext);
+            assertFalse(result);
+        } finally {
+            if (searcher != null && searcher.getIndexReader() != null) {
+                searcher.getIndexReader().close();
+            }
+        }
     }
 
 }

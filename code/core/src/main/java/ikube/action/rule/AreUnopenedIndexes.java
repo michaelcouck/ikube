@@ -2,16 +2,12 @@ package ikube.action.rule;
 
 import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
-import ikube.toolkit.FileUtilities;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.CompositeReaderContext;
 import org.apache.lucene.index.MultiReader;
-import org.apache.lucene.index.SegmentReader;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.store.MMapDirectory;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -46,30 +42,15 @@ public class AreUnopenedIndexes extends ARule<IndexContext> {
         // This block checks that all the directories that have
         // indexes are in fact opened and are accessible in the index readers
         // of the index searcher
-        logger.debug("Checking latest index directory for new indexes : {} ", latestIndexDirectory);
-        List<File> indexDirectories = new ArrayList<>(Arrays.asList(latestIndexDirectory.listFiles()));
+        logger.debug("Checking latest index directory for new indexes : " + latestIndexDirectory + ", " + indexContext.getName());
         MultiReader multiReader = (MultiReader) indexSearcher.getIndexReader();
         CompositeReaderContext compositeReaderContext = multiReader.getContext();
         List<AtomicReaderContext> atomicReaderContexts = compositeReaderContext.leaves();
-        for (final AtomicReaderContext atomicReaderContext : atomicReaderContexts) {
-            SegmentReader atomicReader = (SegmentReader) atomicReaderContext.reader();
-            MMapDirectory directory = (MMapDirectory) atomicReader.directory();
-            File openedIndexDirectory = directory.getDirectory();
-            for (int i = 0; i < indexDirectories.size(); i++) {
-                File indexDirectory = indexDirectories.get(i);
-                String l = FileUtilities.cleanFilePath(indexDirectory.getAbsolutePath());
-                String p = FileUtilities.cleanFilePath(openedIndexDirectory.getAbsolutePath());
-                boolean isOpened = l.equals(p);
-                logger.info("l = p : " + isOpened + ", " + l + ", " + p + ", " + indexDirectory);
-                if (isOpened) {
-                    indexDirectories.remove(i);
-                }
-            }
-        }
-        boolean areUnopenedIndexes = indexDirectories.size() > 0;
-        logger.info("Are unopened : " + areUnopenedIndexes + ", index directories left : " + indexDirectories);
-        // return atomicReaderContexts.size() != latestIndexDirectory.listFiles().length;
-        return areUnopenedIndexes;
+
+        File[] indexDirectories = latestIndexDirectory.listFiles();
+        boolean readersEqualDirectories = atomicReaderContexts.size() == indexDirectories.length;
+        logger.info("Readers and directories : " + readersEqualDirectories + ", " + Arrays.toString(indexDirectories));
+        return !readersEqualDirectories;
     }
 
 }

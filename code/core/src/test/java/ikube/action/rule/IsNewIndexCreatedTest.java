@@ -1,6 +1,7 @@
 package ikube.action.rule;
 
 import ikube.AbstractTest;
+import ikube.action.index.IndexManager;
 import ikube.toolkit.FileUtilities;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -20,12 +21,12 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 /**
- * This test is for the {@link IsNewIndexCreated} class that will check if there is a newer index than the one that is
- * opened in the index searcher.
+ * This test is for the {@link IsNewIndexCreated} class that will check if there
+ * is a newer index than the one that is opened in the index searcher.
  *
  * @author Michael Couck
  * @version 01.00
- * @since 11.06.11
+ * @since 11-06-2011
  */
 public class IsNewIndexCreatedTest extends AbstractTest {
 
@@ -49,13 +50,12 @@ public class IsNewIndexCreatedTest extends AbstractTest {
         boolean result = isNewIndexCreated.evaluate(indexContext);
         assertFalse("No index created : ", result);
 
-        // Index not opened, so new index yes
+        // Index not opened but index created, so new one available
         File latestIndexDirectory = createIndexFileSystem(indexContext, "Some data");
         result = isNewIndexCreated.evaluate(indexContext);
         assertTrue("New index available : ", result);
 
         Directory directory = NIOFSDirectory.open(latestIndexDirectory);
-        logger.info("Directory : " + directory);
         IndexReader indexReader = DirectoryReader.open(directory);
         MultiReader multiReader = new MultiReader(indexReader);
         IndexSearcher searcher = new IndexSearcher(multiReader);
