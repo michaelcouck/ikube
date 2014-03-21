@@ -140,19 +140,20 @@ public class Anal extends Resource {
                 // Remove the statistics for the heat map calculation
                 HashMap<String, String> statistics = searchResults.remove(searchResults.size() - 1);
                 Object[][] heatMapData = heatMapData(searchResults, twitterSearch.getClusters());
-                searchResults.add(statistics);
                 logger.info("Heat map data size : " + heatMapData.length);
                 twitterSearch.setHeatMapData(heatMapData);
+                searchResults.add(statistics);
                 // Reduce the search results to something reasonable,
                 // so we always have some tweets, but don't send 10 meg to the front
-                int maxResults = 1000;
-                if (searchResults.size() > maxResults) {
-                    List<HashMap<String, String>> subList = searchResults.subList(maxResults, searchResults.size());
+                /*if (searchResults.size() > twitterSearch.getMaxResults()) {
+                    List<HashMap<String, String>> subList = searchResults.subList(twitterSearch.getMaxResults(), searchResults.size());
                     searchResults = new ArrayList<>(subList);
                     twitterSearch.setSearchResults(searchResults);
-                }
+                }*/
             }
         });
+        // We don't need the search results for the happy planet page
+        twitterSearch.setSearchResults(new ArrayList<HashMap<String, String>>());
         logger.info("Duration for heat map data : " + duration);
         return buildJsonResponse(twitterSearch);
     }
