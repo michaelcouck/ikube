@@ -128,7 +128,7 @@ public class SearcherServiceTest extends AbstractTest {
 
         searcherService = new SearcherService();
 
-        ApplicationContextManagerMock.BEAN = searcherService;
+        ApplicationContextManagerMock.setBean(ISearcherService.class, searcherService);
 
         indexName = indexContext.getIndexName();
 

@@ -1,5 +1,6 @@
 package ikube.analytics.action;
 
+import ikube.analytics.IAnalyticsService;
 import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
 
@@ -31,7 +32,9 @@ public class SizesForClassesOrClusters extends Action<Analysis> {
         getAnalyticsService().classesOrClusters(analysis);
         Object[] classesOrClusters = analysis.getClassesOrClusters();
         int[] sizesForClassesOrClusters = new int[analysis.getClassesOrClusters().length];
-        IAnalyzer analyzer = getAnalyticsService().getAnalyzer(analysis.getAnalyzer());
+        IAnalyticsService analyticsService = getAnalyticsService();
+        IAnalyzer analyzer = analyticsService.getAnalyzer(analysis.getAnalyzer());
+        System.out.println("Analytics service : " + analyticsService + ", " + analyzer);
         // Calculate the sizes for the classes or clusters, as the case may be
         for (int i = 0; i < classesOrClusters.length; i++) {
             analysis.setClazz(classesOrClusters[i].toString());

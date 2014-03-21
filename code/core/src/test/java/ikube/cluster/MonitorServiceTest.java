@@ -50,7 +50,7 @@ public class MonitorServiceTest extends AbstractTest {
         Mockit.setUpMocks(ApplicationContextManagerMock.class);
         FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 
-        ApplicationContextManagerMock.INDEX_CONTEXT = indexContext;
+        ApplicationContextManagerMock.setBean(IndexContext.class, indexContext);
     }
 
     @After

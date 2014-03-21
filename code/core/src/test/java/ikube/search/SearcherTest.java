@@ -38,7 +38,7 @@ public class SearcherTest extends AbstractTest {
     public void call() throws Exception {
         ISearcherService searcherService = mock(ISearcherService.class);
         when(searcherService.doSearch(any(Search.class))).thenReturn(search);
-        ApplicationContextManagerMock.setBean(searcherService);
+        ApplicationContextManagerMock.setBean(ISearcherService.class, searcherService);
         Search search = searcher.call();
         assertEquals(this.search, search);
     }

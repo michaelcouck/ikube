@@ -1,6 +1,7 @@
 package ikube;
 
 import ikube.action.index.IndexManager;
+import ikube.action.index.handler.database.IndexableTableHandler;
 import ikube.action.index.parse.mime.MimeMapper;
 import ikube.action.index.parse.mime.MimeTypes;
 import ikube.cluster.IClusterManager;
@@ -183,7 +184,8 @@ public abstract class AbstractTest {
         when(indexableColumn.isStored()).thenReturn(Boolean.TRUE);
         when(indexableColumn.isVectored()).thenReturn(Boolean.TRUE);
 
-        when(ApplicationContextManagerMock.HANDLER.getIndexableClass()).thenReturn(IndexableTable.class);
+        IndexableTableHandler indexableTableHandler = ApplicationContextManagerMock.getBean(IndexableTableHandler.class);
+        when(indexableTableHandler.getIndexableClass()).thenReturn(IndexableTable.class);
 
         servers.put(ip, server);
         indexables.add(indexableTable);
@@ -192,8 +194,9 @@ public abstract class AbstractTest {
         indexContexts.put(indexContext.getIndexName(), indexContext);
 
         IndexManagerMock.setIndexWriter(indexWriter);
-        ApplicationContextManagerMock.setIndexContext(indexContext);
-        ApplicationContextManagerMock.setClusterManager(clusterManager);
+
+        ApplicationContextManagerMock.setBean(IndexContext.class, indexContext);
+        ApplicationContextManagerMock.setBean(IClusterManager.class, clusterManager);
     }
 
     protected static void delete(final IDataBase dataBase, final Class<?>... klasses) {

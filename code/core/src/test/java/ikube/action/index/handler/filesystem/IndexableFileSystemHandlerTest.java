@@ -55,8 +55,7 @@ public class IndexableFileSystemHandlerTest extends AbstractTest {
         indexableFileSystem.setUnpackZips(Boolean.FALSE);
         ForkJoinTask<?> forkJoinTask = indexableFileSystemHandler.handleIndexableForked(indexContext, indexableFileSystem);
         ThreadUtilities.executeForkJoinTasks(this.getClass().getSimpleName(), 3, forkJoinTask);
-        ThreadUtilities.sleep(5000);
-        ThreadUtilities.cancelForkJoinPool(this.getClass().getSimpleName());
+        ThreadUtilities.waitForFuture(forkJoinTask, Integer.MAX_VALUE);
         verify(resourceHandler, atLeastOnce()).handleResource(any(IndexContext.class), any(IndexableFileSystem.class), any(Document.class), any(File.class));
     }
 

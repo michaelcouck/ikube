@@ -71,7 +71,8 @@ public class IndexTest extends AbstractTest {
         when(action.getIndexableName()).thenReturn(indexableTable.getName());
         when(indexContext.getName()).thenReturn("indexName");
         when(indexContext.getChildren()).thenReturn(indexables);
-        when(ApplicationContextManagerMock.HANDLER.handleIndexableForked(any(IndexContext.class), any(IndexableTable.class))).thenReturn(forkJoinTask);
+        IndexableTableHandler tableHandler = ApplicationContextManagerMock.getBean(IndexableTableHandler.class);
+        when(tableHandler.handleIndexableForked(any(IndexContext.class), any(IndexableTable.class))).thenReturn(forkJoinTask);
 
         Deencapsulation.setField(index, dataBase);
         Deencapsulation.setField(index, clusterManager);

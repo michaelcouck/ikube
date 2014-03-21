@@ -165,6 +165,7 @@ public class AnalyticsServiceTest extends AbstractTest {
         when(analyzer.analyze(any())).thenReturn(analysis);
 
         IAnalyticsService analyticsService = ApplicationContextManager.getBean(IAnalyticsService.class);
+        logger.info("Analytics service : " + analyticsService);
         when(analyticsService.getContexts()).thenReturn(AnalyzerManager.getContexts());
         when(analysis.getClassesOrClusters()).thenReturn(new Object[]{IConstants.POSITIVE, IConstants.NEGATIVE});
         Analysis analysis = this.analyticsService.sizesForClassesOrClusters(this.analysis);

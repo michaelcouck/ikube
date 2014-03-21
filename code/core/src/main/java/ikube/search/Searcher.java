@@ -6,6 +6,8 @@ import java.util.concurrent.Callable;
 import static ikube.toolkit.ApplicationContextManager.getBean;
 
 /**
+ * This is the distributed searcher that will call the search logic over the wire.
+ *
  * @author Michael Couck
  * @version 01.00
  * @since 15-03-2014
