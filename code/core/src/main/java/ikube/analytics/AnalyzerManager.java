@@ -86,20 +86,30 @@ public class AnalyzerManager implements ApplicationContextAware {
      */
     @Override
     public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
-        ThreadUtilities.submit("analyzer-builder", new Runnable() {
+        // Build the analyzers in parallel using all the cores
+        final String name = "analyzer-builder";
+        class Starter implements Runnable {
+            @Override
             public void run() {
-                ThreadUtilities.sleep(30000);
+                ThreadUtilities.sleep(15000);
                 Map<String, Context> contexts = applicationContext.getBeansOfType(Context.class);
                 for (final Map.Entry<String, Context> mapEntry : contexts.entrySet()) {
-                    try {
-                        LOGGER.info("Context : " + mapEntry.getKey() + ", " + mapEntry.getValue().getName());
-                        buildAnalyzer(mapEntry.getValue(), Boolean.FALSE);
-                    } catch (final Exception e) {
-                        throw new RuntimeException("Error building analyzer : " + mapEntry.getKey(), e);
+                    class Builder implements Runnable {
+                        @Override
+                        public void run() {
+                            try {
+                                LOGGER.info("Context : " + mapEntry.getKey() + ", " + mapEntry.getValue().getName());
+                                buildAnalyzer(mapEntry.getValue(), Boolean.FALSE);
+                            } catch (final Exception e) {
+                                throw new RuntimeException("Error building analyzer : " + mapEntry.getKey(), e);
+                            }
+                        }
                     }
+                    ThreadUtilities.submit(name, new Builder());
                 }
             }
-        });
+        }
+        ThreadUtilities.submit("analyzer-builder", new Starter());
     }
 
 }

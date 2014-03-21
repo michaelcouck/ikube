@@ -60,15 +60,16 @@ public class AreUnopenedIndexes extends ARule<IndexContext> {
                 String l = FileUtilities.cleanFilePath(indexDirectory.getAbsolutePath());
                 String p = FileUtilities.cleanFilePath(openedIndexDirectory.getAbsolutePath());
                 boolean isOpened = l.equals(p);
-                logger.debug("l = p : " + isOpened + ", " + l + ", " + p + ", " + indexDirectory);
+                logger.info("l = p : " + isOpened + ", " + l + ", " + p + ", " + indexDirectory);
                 if (isOpened) {
                     indexDirectories.remove(i);
                 }
             }
         }
-        logger.debug("Index directories left : " + indexDirectories);
+        boolean areUnopenedIndexes = indexDirectories.size() > 0;
+        logger.info("Are unopened : " + areUnopenedIndexes + ", index directories left : " + indexDirectories);
         // return atomicReaderContexts.size() != latestIndexDirectory.listFiles().length;
-        return indexDirectories.size() > 0;
+        return areUnopenedIndexes;
     }
 
 }

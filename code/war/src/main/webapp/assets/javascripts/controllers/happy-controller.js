@@ -144,7 +144,7 @@ module.controller('HappyController', function ($scope, $http, $timeout, $log) {
                         map: $scope.map,
                         icon: getServiceUrl('/ikube/assets/images/icons/person_obj.gif'),
                         position: new google.maps.LatLng(latitude, longitude),
-                        title: 'Bla...'
+                        title: key['userName']
                     });
                     $timeout(function () {
                         marker.setMap(null);

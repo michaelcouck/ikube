@@ -1,1 +1,2 @@
-tail -1000f ikube/ikube.log
+#!/bin/sh
+tail -1000f ../logs/catalina.out

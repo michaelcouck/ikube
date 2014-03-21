@@ -127,7 +127,8 @@
         property:files-ref="files"
         property:directories-ref="directories"/>
     <util:map id="files">
-        <entry key="code/war/target/${ikube-war}" value="${tomcat-webapps}"/>
+        <entry key="${tail-script}" value="${tomcat-bin}"/>
+	<entry key="code/war/target/${ikube-war}" value="${tomcat-webapps}"/>
 	<!-- This over writes the properties specific for the target environment -->
 	<entry key="${resources-directory}/environments/sys/spring.properties" value="${tomcat-bin}/ikube/common"/>
     </util:map>
@@ -218,6 +219,7 @@
         property:files-ref="files-one"
         property:directories-ref="directories-one"/>
     <util:map id="files-one">
+	<entry key="${tail-script}" value="${tomcat-one-bin}"/>
         <entry key="code/war/target/${ikube-war}" value="${tomcat-one-webapps}"/>
 	<!-- This over writes the properties specific for the target environment -->
 	<entry key="${resources-directory}/environments/sys/spring.properties" value="${tomcat-one-bin}/ikube/common"/>
@@ -309,6 +311,7 @@
         property:files-ref="files-two"
         property:directories-ref="directories-two"/>
     <util:map id="files-two">
+	<entry key="${tail-script}" value="${tomcat-two-bin}"/>
         <entry key="code/war/target/${ikube-war}" value="${tomcat-two-webapps}"/>
 	<!-- This over writes the properties specific for the target environment -->
 	<entry key="${resources-directory}/environments/sys/spring.properties" value="${tomcat-two-bin}/ikube/common"/>
@@ -400,6 +403,7 @@
         property:files-ref="files-three"
         property:directories-ref="directories-three"/>
     <util:map id="files-three">
+	<entry key="${tail-script}" value="${tomcat-three-bin}"/>
         <entry key="code/war/target/${ikube-war}" value="${tomcat-three-webapps}"/>
 	<!-- This over writes the properties specific for the target environment -->
 	<entry key="${resources-directory}/environments/sys/spring.properties" value="${tomcat-three-bin}/ikube/common"/>
@@ -491,6 +495,7 @@
         property:files-ref="files-production"
         property:directories-ref="directories-production"/>
     <util:map id="files-production">
+	<entry key="${tail-script}" value="${tomcat-production-bin}"/>
         <entry key="code/war/target/${ikube-war}" value="${tomcat-production-webapps}"/>
 	<!-- This over writes the properties specific for the target environment -->
 	<entry key="${resources-directory}/environments/prod/spring.properties" value="${tomcat-production-bin}/ikube/common"/>
