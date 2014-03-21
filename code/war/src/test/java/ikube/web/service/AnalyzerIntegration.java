@@ -8,6 +8,7 @@ import ikube.model.Analysis;
 import ikube.model.AnalyzerInfo;
 import ikube.model.Context;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.ThreadUtilities;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -42,6 +43,8 @@ public class AnalyzerIntegration extends BaseTest {
     @Before
     public void before() {
         gson = new Gson();
+        // We will stop this thread a full minute to wait for the server to start completely
+        ThreadUtilities.sleep(60000);
     }
 
     @Test
@@ -184,6 +187,7 @@ public class AnalyzerIntegration extends BaseTest {
         builder.append(Analyzer.ANALYZER);
         builder.append(service);
         return new URL("http", LOCALHOST, SERVER_PORT, builder.toString()).toString();
+        // return new URL("http", "ikube.be", 80, builder.toString()).toString();
     }
 
     @SuppressWarnings("unchecked")
