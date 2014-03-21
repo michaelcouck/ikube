@@ -159,7 +159,7 @@ public class IndexContext extends Indexable implements Comparable<IndexContext> 
     @SuppressWarnings("UnusedDeclaration")
     @Attribute(field = false, description = "The latest snapshot for the index with static details for it, like size on disk etc.")
     private Snapshot snapshot;
-    @Transient
+    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     @Attribute(field = false, description = "The snapshot for this index, in reverse chronological order")
     private List<Snapshot> snapshots;
 
