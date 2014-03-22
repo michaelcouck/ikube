@@ -1,7 +1,6 @@
 package ikube.action.rule;
 
 import ikube.AbstractTest;
-import ikube.action.index.IndexManager;
 import ikube.toolkit.FileUtilities;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -10,7 +9,6 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -29,11 +27,6 @@ import static org.mockito.Mockito.when;
  * @since 11-06-2011
  */
 public class IsNewIndexCreatedTest extends AbstractTest {
-
-    @Before
-    public void before() {
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
-    }
 
     @After
     public void after() {

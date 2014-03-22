@@ -81,8 +81,8 @@ public class IndexTest extends AbstractTest {
 
     @After
     public void after() {
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
         Mockit.tearDownMocks(IndexManager.class, ApplicationContextManager.class, ThreadUtilities.class);
+        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 
     @Test

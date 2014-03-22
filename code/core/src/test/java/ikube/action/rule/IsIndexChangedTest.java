@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 19.01.14
+ * @since 19-01-2014
  */
 public class IsIndexChangedTest extends AbstractTest {
 
@@ -43,7 +43,7 @@ public class IsIndexChangedTest extends AbstractTest {
 
     @After
     public void after() {
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 
     @Test

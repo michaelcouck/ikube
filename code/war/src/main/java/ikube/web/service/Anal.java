@@ -31,19 +31,20 @@ import java.util.concurrent.Future;
 
 /**
  * Strangely enough, if this class name is changed to 'Twitter', Spring and Jersey
- * do not inject the services. Hmmm... what's in a name huh?
+ * do not inject the services. Hmmm... what's in a name huh? Could be because there is a mapping
+ * for a tile called twitter? OR a Jsp called twitter and without the suffix, well you know.
  *
  * @author Michael couck
  * @version 01.00
  * @since 17-12-2013
  */
-@SuppressWarnings("SpringJavaAutowiringInspection")
 @Provider
 @Autowire
 @Component
 @Path(Anal.TWITTER)
 @Scope(Resource.REQUEST)
 @Produces(MediaType.APPLICATION_JSON)
+@SuppressWarnings("SpringJavaAutowiringInspection")
 public class Anal extends Resource {
 
     /**
@@ -63,7 +64,7 @@ public class Anal extends Resource {
             return timeLineSentiment;
         }
 
-        public void setTimeLineSentiment(Object[][] timeLineSentiment) {
+        public void setTimeLineSentiment(final Object[][] timeLineSentiment) {
             this.timeLineSentiment = timeLineSentiment;
         }
 
@@ -71,7 +72,7 @@ public class Anal extends Resource {
             return heatMapData;
         }
 
-        public void setHeatMapData(Object[][] heatMapData) {
+        public void setHeatMapData(final Object[][] heatMapData) {
             this.heatMapData = heatMapData;
         }
 
@@ -79,7 +80,7 @@ public class Anal extends Resource {
             return classification;
         }
 
-        public void setClassification(String classification) {
+        public void setClassification(final String classification) {
             this.classification = classification;
         }
 
@@ -87,7 +88,7 @@ public class Anal extends Resource {
             return minutesOfHistory;
         }
 
-        public void setMinutesOfHistory(long minutesOfHistory) {
+        public void setMinutesOfHistory(final long minutesOfHistory) {
             this.minutesOfHistory = minutesOfHistory;
         }
 
@@ -95,7 +96,7 @@ public class Anal extends Resource {
             return startHour;
         }
 
-        public void setStartHour(long startHour) {
+        public void setStartHour(final long startHour) {
             this.startHour = startHour;
         }
 
@@ -103,7 +104,7 @@ public class Anal extends Resource {
             return clusters;
         }
 
-        public void setClusters(int clusters) {
+        public void setClusters(final int clusters) {
             this.clusters = clusters;
         }
     }
@@ -182,7 +183,7 @@ public class Anal extends Resource {
             clusters.add(1.0, coordinate, key);
         }
         List<DblResult<List<double[]>>> clustered = clusters.results();
-        logger.info("Clusters : " + clustered.size());
+        logger.debug("Clusters : " + clustered.size());
         Object[][] heatMapData = new Object[clustered.size()][3];
         for (int i = 0; i < clustered.size(); i++) {
             final DblResult<List<double[]>> cluster = clustered.get(i);
@@ -225,7 +226,6 @@ public class Anal extends Resource {
         int period = (int) Math.abs(search.getStartHour());
         long startTime = System.currentTimeMillis() - (((long) (period)) * HOUR_MILLIS);
         long endTime = System.currentTimeMillis();
-        // logger.info("Start : " + startTime + ", end : " + endTime);
         // Periods plus one for the headers
         final Object[][] timeLineSentiment = new Object[3][period + 1];
 
@@ -240,12 +240,10 @@ public class Anal extends Resource {
         } while (startTime < endTime);
         ThreadUtilities.waitForFutures(futures, 300);
 
-        // new HashMap<>();
         ArrayList<HashMap<String, String>> searchResults = search.getSearchResults();
         HashMap<String, String> statistics = searchResults.get(searchResults.size() - 1);
         addCount(timeLineSentiment[0], IConstants.POSITIVE, statistics);
         addCount(timeLineSentiment[1], IConstants.NEGATIVE, statistics);
-        // search.getSearchResults().add(statistics);
 
         // Invert the matrix
         Object[][] invertedTimeLineSentiment = invertMatrix(timeLineSentiment);
@@ -267,14 +265,17 @@ public class Anal extends Resource {
         statistics.put(property, Integer.toString(total));
     }
 
-    Future<?> search(final Search search, final int periods, final long periodTime, final long endTime, final int hour, final Object[][] timeLineSentiment) {
+    Future<?> search(
+            final Search search,
+            final int periods,
+            final long periodTime,
+            final long endTime,
+            final int hour,
+            final Object[][] timeLineSentiment) {
         return ThreadUtilities.submit(this.getClass().getSimpleName(), new Runnable() {
             public void run() {
                 int positiveCount = search(search, periodTime, endTime, IConstants.POSITIVE);
                 int negativeCount = search(search, periodTime, endTime, IConstants.NEGATIVE);
-                /*if (logger.isDebugEnabled()) {
-                    logger.debug("Positive/negative : " + hour + "-" + positiveCount + "-" + negativeCount);
-                }*/
                 timeLineSentiment[0][periods] = positiveCount;
                 timeLineSentiment[1][periods] = negativeCount;
                 timeLineSentiment[2][periods] = hour;
@@ -283,7 +284,11 @@ public class Anal extends Resource {
     }
 
     @SuppressWarnings("StringBufferReplaceableByString")
-    int search(final Search search, final long startTime, final long endTime, final String classification) {
+    int search(
+            final Search search,
+            final long startTime,
+            final long endTime,
+            final String classification) {
         Search searchClone = SerializationUtilities.clone(Search.class, search);
         String timeRange = new StringBuilder(Long.toString(startTime)).append("-").append(endTime).toString();
         searchClone.getSearchStrings().add(timeRange);
@@ -300,16 +305,11 @@ public class Anal extends Resource {
         // searchClone.setSortFields(Arrays.asList(CREATED_AT));
         // searchClone.setSortDirections(Arrays.asList(Boolean.TRUE.toString()));
 
-        /*if (logger.isDebugEnabled()) {
-            logger.debug("Search range : " + timeRange);
-        }*/
-
         searchClone = searcherService.search(searchClone);
         ArrayList<HashMap<String, String>> searchCloneResults = searchClone.getSearchResults();
         HashMap<String, String> statistics = searchCloneResults.get(searchCloneResults.size() - 1);
         String total = statistics.get(IConstants.TOTAL);
         search.setSearchResults(searchCloneResults);
-        // logger.info("Total : " + total);
         return Integer.valueOf(total);
     }
 

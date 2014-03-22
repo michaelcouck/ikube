@@ -1,5 +1,6 @@
 package ikube.analytics.action;
 
+import ikube.analytics.IAnalyticsService;
 import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
 
@@ -27,7 +28,8 @@ public class ClassesOrClusters extends Action<Analysis> {
     @SuppressWarnings("unchecked")
     public Analysis call() throws Exception {
         // Get the remote analysis service
-        IAnalyzer analyzer = getAnalyticsService().getAnalyzer(analysis.getAnalyzer());
+        IAnalyticsService analyticsService = getAnalyticsService();
+        IAnalyzer analyzer = analyticsService.getAnalyzer(analysis.getAnalyzer());
         Object[] classesOrClusters = analyzer.classesOrClusters();
         analysis.setClassesOrClusters(classesOrClusters);
         // Return the analysis to the now local caller

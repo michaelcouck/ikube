@@ -6,6 +6,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.Lock;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,43 +19,47 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 29.03.2011
+ * @since 29-03-2011
  */
 public class IsIndexCorruptTest extends AbstractTest {
 
-	/**
-	 * Class under test.
-	 */
-	private IsIndexCorrupt isIndexCorrupt;
+    /**
+     * Class under test.
+     */
+    private IsIndexCorrupt isIndexCorrupt;
 
-	@Before
-	public void before() {
-		// Mockit.tearDownMocks();
-		isIndexCorrupt = new IsIndexCorrupt();
-	}
+    @Before
+    public void before() {
+        isIndexCorrupt = new IsIndexCorrupt();
+    }
 
-	@Test
-	public void evaluate() throws IOException {
-		// Create an index
-		File latestIndexDirectory = createIndexFileSystem(indexContext, "a little text for good will");
-		Directory directory = FSDirectory.open(latestIndexDirectory);
-		// Lock the index
-		Lock lock = getLock(directory, latestIndexDirectory);
-		if (!lock.isLocked()) {
-			logger.warn("Couldn't get lock on index : " + lock);
-		}
-		boolean isCorrupt = isIndexCorrupt.evaluate(indexContext);
-		// It should not be corrupt
-		assertFalse(isCorrupt);
+    @After
+    public void after() {
+        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+    }
 
-		// Unlock the index
-		lock.release();
-		directory.clearLock(IndexWriter.WRITE_LOCK_NAME);
-		// Delete the segments files
-		FileUtilities.deleteFiles(latestIndexDirectory, "segments");
-		// The index should be corrupt
-		isCorrupt = isIndexCorrupt.evaluate(indexContext);
-		assertTrue(isCorrupt);
-	}
+    @Test
+    public void evaluate() throws IOException {
+        // Create an index
+        File latestIndexDirectory = createIndexFileSystem(indexContext, "a little text for good will");
+        Directory directory = FSDirectory.open(latestIndexDirectory);
+        // Lock the index
+        Lock lock = getLock(directory, latestIndexDirectory);
+        if (!lock.isLocked()) {
+            logger.warn("Couldn't get lock on index : " + lock);
+        }
+        boolean isCorrupt = isIndexCorrupt.evaluate(indexContext);
+        // It should not be corrupt
+        assertFalse(isCorrupt);
+
+        // Unlock the index
+        lock.release();
+        directory.clearLock(IndexWriter.WRITE_LOCK_NAME);
+        // Delete the segments files
+        FileUtilities.deleteFiles(latestIndexDirectory, "segments");
+        // The index should be corrupt
+        isCorrupt = isIndexCorrupt.evaluate(indexContext);
+        assertTrue(isCorrupt);
+    }
 
 }

@@ -20,12 +20,13 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests the restore process that copies an index from the backup directory to the index directory and sets the time stamp ahead of the max
- * age to give the server a time to recover before starting a new index.
+ * Tests the restore process that copies an index from the backup directory to the
+ * index directory and sets the time stamp ahead of the max age to give the server a time
+ * to recover before starting a new index.
  *
  * @author Michael Couck
  * @version 01.00
- * @since 17.04.11
+ * @since 17-04-2011
  */
 public class RestoreTest extends AbstractTest {
 
@@ -35,15 +36,14 @@ public class RestoreTest extends AbstractTest {
     public void before() throws Exception {
         restore = new Restore();
         Deencapsulation.setField(restore, clusterManager);
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()), 1);
+        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()));
     }
 
     @After
     public void after() throws Exception {
-        // Mockit.tearDownMocks();
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()), 1);
+        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()));
     }
 
     @Test

@@ -14,9 +14,8 @@ import ikube.model.Context;
 import ikube.toolkit.ApplicationContextManager;
 import mockit.Deencapsulation;
 import mockit.Mockit;
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import weka.classifiers.functions.SMO;
 import weka.filters.Filter;
@@ -43,19 +42,11 @@ public class AnalyticsServiceTest extends AbstractTest {
     private Analysis<?, ?> analysis;
     private AnalyticsService analyticsService;
 
-    @BeforeClass
-    public static void beforeClass() {
-        Mockit.setUpMocks(ApplicationContextManagerMock.class);
-    }
-
-    @AfterClass
-    public static void afterClass() {
-        Mockit.tearDownMocks(ApplicationContextManager.class);
-    }
-
     @Before
     @SuppressWarnings("unchecked")
     public void before() throws Exception {
+        Mockit.setUpMocks(ApplicationContextManagerMock.class);
+
         analyzer = mock(IAnalyzer.class);
         analysis = mock(Analysis.class);
 
@@ -78,6 +69,11 @@ public class AnalyticsServiceTest extends AbstractTest {
         AnalyzerManager.getContexts().put(context.getName(), context);
 
         Deencapsulation.setField(analyticsService, "clusterManager", clusterManager);
+    }
+
+    @After
+    public void after() {
+        Mockit.tearDownMocks(ApplicationContextManager.class);
     }
 
     @Test
@@ -146,7 +142,7 @@ public class AnalyticsServiceTest extends AbstractTest {
         when(future.get(anyLong(), any(TimeUnit.class))).thenReturn(analysis);
         when(analyzer.analyze(any())).thenReturn(analysis);
 
-        IAnalyticsService analyticsService = ApplicationContextManager.getBean(IAnalyticsService.class);
+        IAnalyticsService analyticsService = ApplicationContextManagerMock.getBean(IAnalyticsService.class);
         when(analyticsService.getContexts()).thenReturn(AnalyzerManager.getContexts());
         Analysis analysis = this.analyticsService.classesOrClusters(this.analysis);
         assertEquals(analysis, this.analysis);
@@ -164,7 +160,7 @@ public class AnalyticsServiceTest extends AbstractTest {
         when(future.get(anyLong(), any(TimeUnit.class))).thenReturn(analysis);
         when(analyzer.analyze(any())).thenReturn(analysis);
 
-        IAnalyticsService analyticsService = ApplicationContextManager.getBean(IAnalyticsService.class);
+        IAnalyticsService analyticsService = ApplicationContextManagerMock.getBean(IAnalyticsService.class);
         logger.info("Analytics service : " + analyticsService);
         when(analyticsService.getContexts()).thenReturn(AnalyzerManager.getContexts());
         when(analysis.getClassesOrClusters()).thenReturn(new Object[]{IConstants.POSITIVE, IConstants.NEGATIVE});

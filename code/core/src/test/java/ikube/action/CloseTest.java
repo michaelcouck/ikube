@@ -4,6 +4,7 @@ import ikube.AbstractTest;
 import ikube.cluster.IClusterManager;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
+import ikube.toolkit.FileUtilities;
 import mockit.Deencapsulation;
 import mockit.Mockit;
 import org.apache.lucene.search.IndexSearcher;
@@ -12,12 +13,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.io.File;
+
 import static org.junit.Assert.assertTrue;
 
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 21.11.10
+ * @since 21-11-2010
  */
 @SuppressWarnings("deprecation")
 public class CloseTest extends AbstractTest {
@@ -35,6 +38,7 @@ public class CloseTest extends AbstractTest {
     @After
     public void after() {
         Mockit.tearDownMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
+        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 
     @Test
