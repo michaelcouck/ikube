@@ -19,12 +19,14 @@ import java.io.IOException;
 import java.util.Arrays;
 
 /**
- * This class will open the index with a searcher and execute a query on the index for the specified field and string, and print the results to the output. Note
- * that the analyzer is the {@link StandardAnalyzer} as the specific analyzers are in the core and this module does not have the core as a dependency.
+ * This class will open the index with a searcher and execute a query on the index for the
+ * specified field and string, and print the results to the output. Note that the analyzer is
+ * the {@link StandardAnalyzer} as the specific analyzers are in the core and this module
+ * does not have the core as a dependency.
  *
  * @author Michael Couck
  * @version 01.00
- * @since at least 14.04.2012
+ * @since at least 14-04-2012
  */
 public final class SearchToolkit {
 
@@ -48,6 +50,8 @@ public final class SearchToolkit {
                 LOGGER.info("Document : " + i + ", " + document);
             }
         } catch (final Exception e) {
+            LOGGER.info("Usage: java -jar ikube-tools.jar /tmp contents world");
+            LOGGER.info("Usage: java -jar ikube-tools.jar index-directory field-in-index search-string");
             LOGGER.error("Exception printing index : " + Arrays.deepToString(args), e);
         } finally {
             if (indexSearcher != null) {
