@@ -49,7 +49,9 @@ public class AreUnopenedIndexes extends ARule<IndexContext> {
 
         File[] indexDirectories = latestIndexDirectory.listFiles();
         boolean readersEqualDirectories = atomicReaderContexts.size() == indexDirectories.length;
-        logger.info("Readers and directories : " + readersEqualDirectories + ", " + Arrays.toString(indexDirectories));
+        logger.info("Readers and directories true : " + readersEqualDirectories +
+                ", " + indexContext.getName() +
+                ", " + Arrays.toString(indexDirectories));
         return !readersEqualDirectories;
     }
 

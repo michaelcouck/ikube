@@ -4,18 +4,17 @@ import ikube.AbstractTest;
 import ikube.deploy.action.CmdAction;
 import ikube.deploy.action.CopyAction;
 import ikube.deploy.model.Server;
+import ikube.toolkit.ThreadUtilities;
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mockit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.assertEquals;
 
 /**
  * @author Michael Couck
@@ -24,22 +23,19 @@ import static junit.framework.Assert.assertTrue;
  */
 public class DeployerTest extends AbstractTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeployerTest.class);
-
-    private static final AtomicInteger ATOMIC_INTEGER = new AtomicInteger();
+    private static AtomicInteger ATOMIC_INTEGER;
 
     @MockClass(realClass = CopyAction.class)
     public static class CopyActionMock {
         @Mock
         public boolean execute(final Server server) {
-            LOGGER.info("Copy : " + server.getIp());
             ATOMIC_INTEGER.getAndIncrement();
             return Boolean.TRUE;
         }
     }
 
     @MockClass(realClass = CmdAction.class)
-    public static class CommandActionMock {
+    public static class CmdActionMock {
         @Mock
         public boolean execute(final Server server) {
             ATOMIC_INTEGER.getAndIncrement();
@@ -49,22 +45,38 @@ public class DeployerTest extends AbstractTest {
 
     @Before
     public void before() {
+        ThreadUtilities.initialize();
+        ATOMIC_INTEGER = new AtomicInteger();
         System.setProperty("username", "username");
         System.setProperty("password", "password");
         System.setProperty("production-username", "username");
         System.setProperty("production-password", "password");
-        Mockit.setUpMocks(CommandActionMock.class, CopyActionMock.class);
+        Mockit.setUpMocks(CmdActionMock.class, CopyActionMock.class);
     }
 
     @After
     public void after() {
-        Mockit.tearDownMocks(CommandActionMock.class, CopyActionMock.class);
+        Mockit.tearDownMocks(CmdActionMock.class, CopyActionMock.class);
     }
 
     @Test
     public void main() {
         Deployer.main(null);
-        assertTrue("Servers and actions : ", ATOMIC_INTEGER.get() >= 3);
+        assertEquals("Servers and actions : ", 16, ATOMIC_INTEGER.get());
+    }
+
+    @Test
+    public void mainSome() {
+        System.setProperty(Deployer.DEPLOY_TO_IPS, "192.168.1.20");
+        Deployer.main(null);
+        assertEquals("Servers and actions : ", 4, ATOMIC_INTEGER.get());
+    }
+
+    @Test
+    public void mainNone() {
+        System.setProperty(Deployer.DEPLOY_TO_IPS, "192.168.1.30");
+        Deployer.main(null);
+        assertEquals("Servers and actions : ", 0, ATOMIC_INTEGER.get());
     }
 
 }

@@ -4,16 +4,15 @@ import ikube.AbstractTest;
 import ikube.cluster.IClusterManager;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
-import ikube.toolkit.FileUtilities;
+import ikube.mock.IndexReaderMock;
+import ikube.toolkit.ThreadUtilities;
 import mockit.Deencapsulation;
 import mockit.Mockit;
-import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.index.IndexReader;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import java.io.File;
 
 import static org.junit.Assert.assertTrue;
 
@@ -29,25 +28,28 @@ public class CloseTest extends AbstractTest {
 
     @Before
     public void before() {
-        Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
         close = new Close();
+        ThreadUtilities.initialize();
         IClusterManager clusterManager = Mockito.mock(IClusterManager.class);
         Deencapsulation.setField(close, clusterManager);
+        Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class, IndexReaderMock.class);
     }
 
     @After
     public void after() {
-        Mockit.tearDownMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        Mockit.tearDownMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class, IndexReader.class);
     }
 
     @Test
     public void execute() throws Exception {
-        IndexSearcher multiSearcher = Mockito.mock(IndexSearcher.class);
-        indexContext.setMultiSearcher(multiSearcher);
+        Mockito.when(multiSearcher.getIndexReader()).thenReturn(indexReader);
+        Mockito.when(indexContext.getMultiSearcher()).thenReturn(multiSearcher);
+
         boolean closed = close.execute(indexContext);
+        ThreadUtilities.sleep(11000);
+
         assertTrue("The index was open and it should have been closed in the action : ", closed);
-        Mockito.verify(indexContext, Mockito.atLeastOnce()).setMultiSearcher(Mockito.any(IndexSearcher.class));
+        Mockito.verify(indexReader, Mockito.atLeastOnce()).close();
     }
 
 }

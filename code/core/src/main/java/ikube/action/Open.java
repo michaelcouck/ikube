@@ -84,12 +84,15 @@ public class Open extends Action<IndexContext, Boolean> {
         }
 
         if (indexReaders.size() > 0) {
+            IndexReader[] subReaders = new IndexReader[indexReaders.size()];
+            subReaders = indexReaders.toArray(subReaders);
+            IndexReader indexReader = new MultiReader(subReaders, Boolean.TRUE);
+            IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+
             // Make sure that the old searchables are closed,
             // but give them some time for the actions on them to finish
             new Close().execute(indexContext);
 
-            IndexReader indexReader = new MultiReader(indexReaders.toArray(new IndexReader[indexReaders.size()]), Boolean.FALSE);
-            IndexSearcher indexSearcher = new IndexSearcher(indexReader);
             indexContext.setMultiSearcher(indexSearcher);
         }
 

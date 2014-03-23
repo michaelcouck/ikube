@@ -1,5 +1,6 @@
 package ikube.deploy;
 
+import ikube.IConstants;
 import ikube.deploy.action.IAction;
 import ikube.deploy.model.Server;
 import ikube.toolkit.FileUtilities;
@@ -42,6 +43,7 @@ public final class Deployer {
         LOGGER = LoggerFactory.getLogger(Deployer.class);
     }
 
+    public static final String DEPLOY_TO_IPS = "deploy-to-ips";
     private static final String DOT_DIRECTORY = ".";
     private static final String CONFIGURATION_FILE = "deployer\\.xml";
 
@@ -81,10 +83,23 @@ public final class Deployer {
         String deployerConfigurationPath = "file:" + FileUtilities.cleanFilePath(deployerConfiguration.getAbsolutePath());
         LOGGER.info("Configuration file path : " + deployerConfigurationPath);
         APPLICATION_CONTEXT = new FileSystemXmlApplicationContext(deployerConfigurationPath);
+        // Get the command line ips that we will deploy to, if any of course
+        List<String> ips = new ArrayList<>();
+        String cmdIps = System.getProperty(DEPLOY_TO_IPS);
+        if (cmdIps != null) {
+            ips.addAll(Arrays.asList(StringUtils.split(cmdIps, IConstants.DELIMITER_CHARACTERS)));
+        }
         if (execute) {
             List<Future<Object>> futures = new ArrayList<>();
             Deployer deployer = APPLICATION_CONTEXT.getBean(Deployer.class);
             for (final Server server : deployer.getServers()) {
+                // If there was defined on the command line a set of ips to deploy to, then
+                // we only deploy to the ones defined and not all the servers in the configuration
+                if (ips.size() > 0 && !ips.contains(server.getIp())) {
+                    LOGGER.info("Not deploying to : " + server.getIp());
+                    continue;
+                }
+                LOGGER.info("Deploying to : " + server.getIp());
                 final String name = Long.toString(System.currentTimeMillis());
                 if (!deployer.isParallel()) {
                     // Execute one action at a time

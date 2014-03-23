@@ -11,7 +11,7 @@ import java.io.IOException;
  *
  * @author Michael Couck
  * @version 01.00
- * @since 24.08.08
+ * @since 24-08-2008
  */
 public class Close extends Action<IndexContext, Boolean> {
 
@@ -26,10 +26,10 @@ public class Close extends Action<IndexContext, Boolean> {
             ThreadUtilities.submit(name, new Runnable() {
                 public void run() {
                     try {
-                        ThreadUtilities.sleep(60000);
+                        ThreadUtilities.sleep(10000);
                         logger.info("Closing searcher : " + indexContext.getName() + ", " + indexSearcher.hashCode());
                         indexSearcher.getIndexReader().close();
-                    } catch (IOException e) {
+                    } catch (final IOException e) {
                         throw new RuntimeException(e);
                     } finally {
                         ThreadUtilities.destroy(name);

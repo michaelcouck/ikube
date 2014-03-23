@@ -36,7 +36,7 @@
 		<spring.security.oauth.version>3.19</spring.security.oauth.version>
 		<spring.version>3.0.5.RELEASE</spring.version>
 		<tiles.version>2.1.3</tiles.version>
-		<slf4j.version>1.5.10</slf4j.version>
+		<slf4j.version>1.6.6</slf4j.version>
 		<logback.version>0.9.15</logback.version>
 		<junit.version>4.8.2</junit.version>
 		<encoding>UTF8</encoding>

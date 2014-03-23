@@ -40,6 +40,8 @@ public class IsNewIndexCreated extends ARule<IndexContext> {
         MultiReader multiReader = (MultiReader) indexSearcher.getIndexReader();
         CompositeReaderContext compositeReaderContext = multiReader.getContext();
         List<AtomicReaderContext> atomicReaderContexts = compositeReaderContext.leaves();
+        printReaders(atomicReaderContexts);
+
         for (final AtomicReaderContext atomicReaderContext : atomicReaderContexts) {
             SegmentReader atomicReader = (SegmentReader) atomicReaderContext.reader();
             MMapDirectory directory = (MMapDirectory) atomicReader.directory();
@@ -57,8 +59,20 @@ public class IsNewIndexCreated extends ARule<IndexContext> {
             return Boolean.FALSE;
         }
         boolean isNewIndexCreated = !latest.equals(current);
-        logger.info("Index created : " + isNewIndexCreated + ", " + latest.getTime() + ", " + current.getTime());
+        logger.info("Index created : " + isNewIndexCreated +
+                "," + indexContext.getName() +
+                ", " + latest.getTime() +
+                ", " + current.getTime());
         return isNewIndexCreated;
+    }
+
+    private void printReaders(final List<AtomicReaderContext> atomicReaderContexts) {
+        for (final AtomicReaderContext atomicReaderContext : atomicReaderContexts) {
+            SegmentReader atomicReader = (SegmentReader) atomicReaderContext.reader();
+            MMapDirectory directory = (MMapDirectory) atomicReader.directory();
+            File openedIndexDirectory = directory.getDirectory();
+            logger.info("Opened index directory : " + openedIndexDirectory);
+        }
     }
 
 }
