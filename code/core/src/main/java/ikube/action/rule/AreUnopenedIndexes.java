@@ -52,7 +52,8 @@ public class AreUnopenedIndexes extends ARule<IndexContext> {
         logger.info("Readers and directories true : " + readersEqualDirectories +
                 ", " + indexContext.getName() +
                 ", " + Arrays.toString(indexDirectories));
-        return !readersEqualDirectories;
+        // TODO: Is there an elegant way to check this?
+        return Boolean.FALSE;
     }
 
 }

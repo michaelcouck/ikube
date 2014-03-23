@@ -43,7 +43,7 @@ public class IsNewIndexCreated extends ARule<IndexContext> {
         MultiReader multiReader = (MultiReader) indexSearcher.getIndexReader();
         CompositeReaderContext compositeReaderContext = multiReader.getContext();
         List<AtomicReaderContext> atomicReaderContexts = compositeReaderContext.leaves();
-        printReaders(atomicReaderContexts);
+        // printReaders(atomicReaderContexts);
 
         File openedIndexDirectory = null;
         for (final AtomicReaderContext atomicReaderContext : atomicReaderContexts) {
@@ -75,6 +75,7 @@ public class IsNewIndexCreated extends ARule<IndexContext> {
         return isNewIndexCreated;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     private void printReaders(final List<AtomicReaderContext> atomicReaderContexts) {
         for (final AtomicReaderContext atomicReaderContext : atomicReaderContexts) {
             SegmentReader atomicReader = (SegmentReader) atomicReaderContext.reader();
