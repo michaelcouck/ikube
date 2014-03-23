@@ -37,27 +37,35 @@ public class IsNewIndexCreated extends ARule<IndexContext> {
         }
         Date current = null;
         Date latest = IndexManager.getLatestIndexDirectoryDate(indexContext);
+        String baseIndexDirectory = IndexManager.getIndexDirectoryPath(indexContext);
+        File latestIndexDirectory = IndexManager.getLatestIndexDirectory(baseIndexDirectory);
+
         MultiReader multiReader = (MultiReader) indexSearcher.getIndexReader();
         CompositeReaderContext compositeReaderContext = multiReader.getContext();
         List<AtomicReaderContext> atomicReaderContexts = compositeReaderContext.leaves();
         printReaders(atomicReaderContexts);
 
+        File openedIndexDirectory = null;
         for (final AtomicReaderContext atomicReaderContext : atomicReaderContexts) {
             SegmentReader atomicReader = (SegmentReader) atomicReaderContext.reader();
             MMapDirectory directory = (MMapDirectory) atomicReader.directory();
-            File indexDirectory = directory.getDirectory();
+            openedIndexDirectory = directory.getDirectory();
             do {
-                if (StringUtilities.isNumeric(indexDirectory.getName())) {
-                    current = new Date(Long.parseLong(indexDirectory.getName()));
+                if (StringUtilities.isNumeric(openedIndexDirectory.getName())) {
+                    current = new Date(Long.parseLong(openedIndexDirectory.getName()));
                 }
-                indexDirectory = indexDirectory.getParentFile();
-            } while (current == null && indexDirectory.getParentFile() != null);
+                openedIndexDirectory = openedIndexDirectory.getParentFile();
+            } while (current == null && openedIndexDirectory.getParentFile() != null);
             break;
         }
         if (current == null) {
             logger.info("Not really open then : " + indexContext.getName());
             return Boolean.FALSE;
         }
+
+        logger.info("Opened : " + openedIndexDirectory);
+        logger.info("Latest : " + latestIndexDirectory);
+
         boolean isNewIndexCreated = !latest.equals(current);
         logger.info("Index created : " + isNewIndexCreated +
                 "," + indexContext.getName() +
