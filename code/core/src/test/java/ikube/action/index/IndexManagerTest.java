@@ -173,6 +173,19 @@ public class IndexManagerTest extends AbstractTest {
         logger.info("Latest : " + latest.getAbsolutePath());
         assertTrue(latest != null && latest.exists());
         assertNotSame(indexFolderTwo.getParentFile(), latest);
+
+        when(indexContext.getIndexName()).thenReturn("different-index-context");
+        File latestIndexDirectory = createIndexFileSystem(indexContext, "The data in the index");
+        latestIndexDirectoryDate = IndexManager.getLatestIndexDirectoryDate(indexContext);
+        logger.info("Latest index directory : " + latestIndexDirectory + ", " + latestIndexDirectoryDate.getTime());
+        assertEquals(Long.parseLong(latestIndexDirectory.getParentFile().getName()), latestIndexDirectoryDate.getTime());
+
+        latestIndexDirectory = createIndexFileSystem(indexContext, "The data in the index");
+        assertNotSame(Long.parseLong(latestIndexDirectory.getParentFile().getName()), latestIndexDirectoryDate.getTime());
+
+        latestIndexDirectoryDate = IndexManager.getLatestIndexDirectoryDate(indexContext);
+        logger.info("Latest index directory : " + latestIndexDirectory  + ", " + latestIndexDirectoryDate.getTime());
+        assertEquals(Long.parseLong(latestIndexDirectory.getParentFile().getName()), latestIndexDirectoryDate.getTime());
     }
 
     @Test

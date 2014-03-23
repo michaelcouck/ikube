@@ -53,9 +53,10 @@ public class IsNewIndexCreated extends ARule<IndexContext> {
             do {
                 if (StringUtilities.isNumeric(openedIndexDirectory.getName())) {
                     current = new Date(Long.parseLong(openedIndexDirectory.getName()));
+                    break;
                 }
                 openedIndexDirectory = openedIndexDirectory.getParentFile();
-            } while (current == null && openedIndexDirectory.getParentFile() != null);
+            } while (openedIndexDirectory.getParentFile() != null);
             break;
         }
         if (current == null) {

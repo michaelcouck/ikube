@@ -428,7 +428,8 @@ public final class IndexManager {
 
     public static Date getLatestIndexDirectoryDate(final IndexContext indexContext) {
         long timestamp = 0;
-        File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+        String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
+        File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
         if (latestIndexDirectory != null) {
             String name = latestIndexDirectory.getName();
             if (StringUtils.isNumeric(name)) {
