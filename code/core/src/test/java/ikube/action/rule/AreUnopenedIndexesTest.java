@@ -11,6 +11,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -24,6 +25,7 @@ import static org.junit.Assert.assertTrue;
  * @version 01.00
  * @since 29-03-2011
  */
+@Ignore
 public class AreUnopenedIndexesTest extends AbstractTest {
 
     /**
