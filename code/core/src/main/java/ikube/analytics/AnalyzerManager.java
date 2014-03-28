@@ -5,6 +5,7 @@ import ikube.toolkit.ThreadUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -81,6 +82,10 @@ public class AnalyzerManager implements ApplicationContextAware {
         return analyzer;
     }
 
+    @Value("${analyzer-manager-wait}")
+    private long waitToBuildAnalyzers;
+
+
     /**
      * {@inheritDoc}
      */
@@ -91,7 +96,7 @@ public class AnalyzerManager implements ApplicationContextAware {
         class Starter implements Runnable {
             @Override
             public void run() {
-                ThreadUtilities.sleep(15000);
+                ThreadUtilities.sleep(waitToBuildAnalyzers);
                 Map<String, Context> contexts = applicationContext.getBeansOfType(Context.class);
                 for (final Map.Entry<String, Context> mapEntry : contexts.entrySet()) {
                     class Builder implements Runnable {

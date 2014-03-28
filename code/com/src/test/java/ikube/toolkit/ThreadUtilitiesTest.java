@@ -103,14 +103,8 @@ public class ThreadUtilitiesTest extends AbstractTest {
         ThreadUtilities.destroy(name);
         logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
 
-        String osName = System.getProperty("os.name");
-        String osVersion = System.getProperty("os.version");
-        logger.info("Name of the OS: " + osName);
-        logger.info("Version of the OS: " + osVersion);
-        logger.info("Architecture of the OS: " + System.getProperty("os.arch"));
-
         // TODO: This does not work on CentOs!!!!!! WTFN? (Why the fuck not?)
-        if ("3.11.0-12-generic".equals(osVersion)) {
+        if (OsUtilities.isOs("3.11.0-12-generic")) {
             assertTrue(future.isDone());
             assertTrue(future.isCancelled());
         } else {

@@ -49,7 +49,7 @@ public class AreUnopenedIndexes extends ARule<IndexContext> {
 
         File[] indexDirectories = latestIndexDirectory.listFiles();
         boolean readersEqualDirectories = atomicReaderContexts.size() == indexDirectories.length;
-        logger.info("Readers and directories true : " + readersEqualDirectories +
+        logger.debug("Readers and directories true : " + readersEqualDirectories +
                 ", " + indexContext.getName() +
                 ", " + Arrays.toString(indexDirectories));
         // TODO: Is there an elegant way to check this?

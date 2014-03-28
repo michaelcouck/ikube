@@ -34,7 +34,7 @@ public class SizesForClassesOrClusters extends Action<Analysis> {
         int[] sizesForClassesOrClusters = new int[analysis.getClassesOrClusters().length];
         IAnalyticsService analyticsService = getAnalyticsService();
         IAnalyzer analyzer = analyticsService.getAnalyzer(analysis.getAnalyzer());
-        System.out.println("Analytics service : " + analyticsService + ", " + analyzer);
+        // System.out.println("Analytics service : " + analyticsService + ", " + analyzer);
         // Calculate the sizes for the classes or clusters, as the case may be
         for (int i = 0; i < classesOrClusters.length; i++) {
             analysis.setClazz(classesOrClusters[i].toString());

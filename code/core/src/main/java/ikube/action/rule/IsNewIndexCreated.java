@@ -60,15 +60,15 @@ public class IsNewIndexCreated extends ARule<IndexContext> {
             break;
         }
         if (current == null) {
-            logger.info("Not really open then : " + indexContext.getName());
+            logger.debug("Not really open then : " + indexContext.getName());
             return Boolean.FALSE;
         }
 
-        logger.info("Opened : " + openedIndexDirectory);
-        logger.info("Latest : " + latestIndexDirectory);
+        logger.debug("Opened : " + openedIndexDirectory);
+        logger.debug("Latest : " + latestIndexDirectory);
 
         boolean isNewIndexCreated = !latest.equals(current);
-        logger.info("Index created : " + isNewIndexCreated +
+        logger.debug("Index created : " + isNewIndexCreated +
                 "," + indexContext.getName() +
                 ", " + latest.getTime() +
                 ", " + current.getTime());
