@@ -5,6 +5,7 @@ import ikube.toolkit.ObjectToolkit;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.persistence.Id;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -56,6 +57,8 @@ public class DatabaseUtilitiesTest extends AbstractTest {
     }
 
     public static class Url {
+
+        @Id
         long id;
 
         public long getId() {
