@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 21.11.13
+ * @since 21-11-2013
  */
 public class WekaAnalyzerTest extends AbstractTest {
 
@@ -49,7 +49,7 @@ public class WekaAnalyzerTest extends AbstractTest {
     @SuppressWarnings("unchecked")
     public void before() throws Exception {
         context = new Context();
-        context.setName("sentiment-smo-en");
+        context.setName("sentiment-smo-cn");
         context.setFilter(StringToWordVector.class.newInstance());
         context.setAlgorithm(SMO.class.newInstance());
         context.setMaxTraining(1000);

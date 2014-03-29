@@ -195,9 +195,6 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<String, double[
      * @param instances the instances to persist to a file
      */
     void persist(final Context context, final Instances instances) {
-        if (instances.numInstances() < 10) {
-            return;
-        }
         double duration = Timer.execute(new Timer.Timed() {
             @Override
             public void execute() {
