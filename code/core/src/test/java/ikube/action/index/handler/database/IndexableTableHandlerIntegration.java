@@ -6,10 +6,10 @@ import ikube.action.index.IndexManager;
 import ikube.action.index.content.ColumnContentProvider;
 import ikube.action.index.content.IContentProvider;
 import ikube.cluster.IClusterManager;
+import ikube.database.DatabaseUtilities;
 import ikube.database.IDataBase;
 import ikube.model.*;
 import ikube.scheduling.Scheduler;
-import ikube.toolkit.DatabaseUtilities;
 import ikube.toolkit.PropertyConfigurer;
 import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.UriUtilities;
@@ -25,8 +25,8 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static ikube.database.DatabaseUtilities.close;
 import static ikube.toolkit.ApplicationContextManager.getBean;
-import static ikube.toolkit.DatabaseUtilities.close;
 import static mockit.Deencapsulation.invoke;
 import static org.junit.Assert.*;
 
@@ -35,7 +35,7 @@ import static org.junit.Assert.*;
  *
  * @author Michael Couck
  * @version 01.00
- * @since 12.10.2010
+ * @since 12-10-2010
  */
 public class IndexableTableHandlerIntegration extends AbstractTest {
 
@@ -124,7 +124,7 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
 
         String idFieldValue = document.get(IConstants.ID);
         assertTrue("The id field for the table is the name of the table and the column name, then the value : " + idFieldValue,
-            idFieldValue.contains("snapshot id"));
+                idFieldValue.contains("snapshot id"));
 
         close(resultSet);
         close(statement);

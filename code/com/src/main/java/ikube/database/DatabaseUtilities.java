@@ -1,27 +1,20 @@
-package ikube.toolkit;
+package ikube.database;
 
-import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.Driver;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
+import ikube.toolkit.Logging;
+import org.apache.log4j.Logger;
 
 import javax.sql.DataSource;
-
-import org.apache.log4j.Logger;
+import java.lang.reflect.Field;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * General database operations like closing result sets etc.
  *
  * @author Michael Couck
  * @version 01.00
- * @since 23.12.10
+ * @since 23-12-2010
  */
 public final class DatabaseUtilities {
 
@@ -31,7 +24,12 @@ public final class DatabaseUtilities {
 
     private static final Logger LOGGER = Logger.getLogger(DatabaseUtilities.class);
 
-    public static Connection getConnection(final String url, final String user, final String password, final Class<? extends Driver> driverClass) {
+    @SuppressWarnings("UnusedDeclaration")
+    public static Connection getConnection(
+            final String url,
+            final String user,
+            final String password,
+            final Class<? extends Driver> driverClass) {
         try {
             DriverManager.registerDriver(driverClass.newInstance());
             return DriverManager.getConnection(url, user, password);
@@ -40,10 +38,11 @@ public final class DatabaseUtilities {
         }
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public static ResultSet executeQuery(final Connection connection, final String query) {
         try {
             return connection.createStatement().executeQuery(query);
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
@@ -68,11 +67,11 @@ public final class DatabaseUtilities {
                             }
                         }
                     }
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     LOGGER.error(null, e);
                 }
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOGGER.error(null, e);
         } finally {
             close(connection);
@@ -94,7 +93,7 @@ public final class DatabaseUtilities {
             statement = connection.createStatement();
             boolean result = statement.execute(sql);
             LOGGER.debug("Result from statement : " + result);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOGGER.error("Exception executing statement : " + sql + ", on data source : " + dataSource);
             LOGGER.debug(null, e);
         } finally {
@@ -119,7 +118,7 @@ public final class DatabaseUtilities {
             if (statement != null) {
                 connection = statement.getConnection();
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOGGER.error("Exception getting the statement and connection from the category set : ", e);
         }
         close(resultSet);
@@ -138,7 +137,7 @@ public final class DatabaseUtilities {
         }
         try {
             statement.close();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOGGER.error("Exception closing the statement : ", e);
         }
     }
@@ -154,7 +153,7 @@ public final class DatabaseUtilities {
         }
         try {
             connection.close();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOGGER.error("Exception closing the connection : ", e);
         }
     }
@@ -170,7 +169,7 @@ public final class DatabaseUtilities {
         }
         try {
             resultSet.close();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOGGER.error("Exception closing the category set : ", e);
         }
     }
@@ -195,7 +194,7 @@ public final class DatabaseUtilities {
             } else {
                 LOGGER.warn("Can't commit the connection as it is not user comitted : " + connection);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOGGER.error("Exception comitting the connection : " + connection, e);
         }
     }
@@ -207,6 +206,7 @@ public final class DatabaseUtilities {
      * @param table      the name of the table to get the columns for
      * @return the list of all columns for the table
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static List<String> getAllColumns(final Connection connection, final String table) {
         List<String> columnNames = new ArrayList<>();
         ResultSet columnsResultSet = null;
@@ -226,7 +226,7 @@ public final class DatabaseUtilities {
                 Object columnValue = columnsResultSet.getObject("COLUMN_NAME");
                 columnNames.add(columnValue.toString());
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             LOGGER.error("Exception getting the column names for table : " + table, e);
         } finally {
             close(columnsResultSet);
@@ -234,6 +234,7 @@ public final class DatabaseUtilities {
         return columnNames;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public static List<String> getPrimaryKeys(final Connection connection, final String table) {
         DatabaseMetaData databaseMetaData;
         ResultSet primaryKeyResultSet = null;
@@ -245,7 +246,7 @@ public final class DatabaseUtilities {
                 Object columnName = primaryKeyResultSet.getObject("COLUMN_NAME");
                 primaryKeyColumns.add(columnName.toString());
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             LOGGER.error("Exception getting the primary keys for table : " + table, e);
         } finally {
             close(primaryKeyResultSet);
@@ -253,7 +254,7 @@ public final class DatabaseUtilities {
         return primaryKeyColumns;
     }
 
-    public static void printResultSet(ResultSet resultSet) {
+    public static void printResultSet(final ResultSet resultSet) {
         try {
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
             while (resultSet.next()) {
@@ -268,13 +269,14 @@ public final class DatabaseUtilities {
                 }
                 LOGGER.warn(stringBuilder.toString());
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             LOGGER.error("Exception printing the category set : ", e);
         } finally {
             close(resultSet);
         }
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public static List<String[]> getForeignKeys(final Connection connection, final String table) {
         List<String[]> foreignKeys = new ArrayList<>();
         DatabaseMetaData databaseMetaData;
@@ -289,7 +291,7 @@ public final class DatabaseUtilities {
                 // String[] key = { fkTableName, fkColumnName };
                 // foreignKeys.add(key);
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             LOGGER.error("Exception getting the foreign keys : " + table, e);
         } finally {
             close(importedKeys);
@@ -297,10 +299,11 @@ public final class DatabaseUtilities {
         return foreignKeys;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public static Object getFieldValue(final Field field, final Object object) {
         try {
             return field.get(object);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOGGER.error("Exception accessing field : " + field, e);
         }
         return null;

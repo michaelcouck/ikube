@@ -1,11 +1,11 @@
 package ikube.action.index.handler.database;
 
 import ikube.action.index.handler.IResourceProvider;
+import ikube.database.DatabaseUtilities;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
-import ikube.toolkit.DatabaseUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

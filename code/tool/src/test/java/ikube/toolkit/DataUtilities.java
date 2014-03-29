@@ -1,5 +1,6 @@
 package ikube.toolkit;
 
+import ikube.database.DatabaseUtilities;
 import org.apache.log4j.Logger;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConnection;
@@ -28,7 +29,7 @@ import java.sql.Statement;
  *
  * @author Michael Couck
  * @version 01.00
- * @since 03.07.2011
+ * @since 03-07-2011
  */
 @SuppressWarnings("UnusedDeclaration")
 public final class DataUtilities {

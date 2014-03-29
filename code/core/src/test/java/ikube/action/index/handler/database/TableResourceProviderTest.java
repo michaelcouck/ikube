@@ -1,12 +1,12 @@
 package ikube.action.index.handler.database;
 
 import ikube.AbstractTest;
+import ikube.database.DatabaseUtilities;
 import ikube.mock.DatabaseUtilitiesMock;
 import ikube.mock.QueryBuilderMock;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
-import ikube.toolkit.DatabaseUtilities;
 import mockit.Deencapsulation;
 import mockit.Mockit;
 import org.junit.After;

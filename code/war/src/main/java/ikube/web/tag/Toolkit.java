@@ -1,27 +1,21 @@
 package ikube.web.tag;
 
-import ikube.toolkit.DatabaseUtilities;
+import ikube.database.DatabaseUtilities;
 import ikube.toolkit.VersionUtilities;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Field;
+import java.util.*;
+
 /**
  * A set of functions that can be used in Jsp pages, like concatenation of strings and getting the size of collections.
  * 
  * @author Michael Couck
- * @since 12.12.11
+ * @since 12-12-2011
  * @version 01.00
  */
 public class Toolkit {

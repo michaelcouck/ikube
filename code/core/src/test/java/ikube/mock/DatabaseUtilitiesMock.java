@@ -1,6 +1,6 @@
 package ikube.mock;
 
-import ikube.toolkit.DatabaseUtilities;
+import ikube.database.DatabaseUtilities;
 import mockit.Mock;
 import mockit.MockClass;
 
