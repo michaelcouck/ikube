@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Stack;
 
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
@@ -42,7 +43,7 @@ public class InternetResourceProviderTest extends AbstractTest {
 
         internetResourceProvider = new InternetResourceProvider(indexableInternet, dataBase);
         Deencapsulation.setField(internetResourceProvider, "RETRY", 1);
-        Deencapsulation.setField(internetResourceProvider, "SLEEP", 3000);
+        Deencapsulation.setField(internetResourceProvider, "SLEEP", 1000);
     }
 
     @After
@@ -53,7 +54,7 @@ public class InternetResourceProviderTest extends AbstractTest {
     @Test
     public void initialize() {
         internetResourceProvider.initialize(indexableInternet);
-        ThreadUtilities.sleep(15000);
+        ThreadUtilities.sleep(3000);
         verify(indexContext, atLeastOnce()).getName();
         // verify(indexableInternet, atLeastOnce()).getUrl();
     }
@@ -61,12 +62,14 @@ public class InternetResourceProviderTest extends AbstractTest {
     @Test
     public void setResources() {
         Url url = new Url();
-        url.setUrl("www.blablabla.com");
         internetResourceProvider.setResources(Arrays.asList(url));
     }
 
     @Test
     public void getResource() {
+        Stack<Url> urls = new Stack<>();
+        urls.push(new Url());
+        Deencapsulation.setField(internetResourceProvider, "urls", urls);
         Url url = internetResourceProvider.getResource();
         assertNotNull(url);
         do {
