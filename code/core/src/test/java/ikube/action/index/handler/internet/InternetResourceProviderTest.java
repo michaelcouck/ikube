@@ -13,10 +13,10 @@ import org.junit.Test;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Stack;
 
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -56,13 +56,25 @@ public class InternetResourceProviderTest extends AbstractTest {
         internetResourceProvider.initialize(indexableInternet);
         ThreadUtilities.sleep(3000);
         verify(indexContext, atLeastOnce()).getName();
-        // verify(indexableInternet, atLeastOnce()).getUrl();
     }
 
     @Test
     public void setResources() {
         Url url = new Url();
         internetResourceProvider.setResources(Arrays.asList(url));
+        Stack<Url> urls = Deencapsulation.getField(internetResourceProvider, "urls");
+        assertNotNull(urls);
+        assertEquals(1, urls.size());
+
+        //noinspection StatementWithEmptyBody
+        while (internetResourceProvider.getResource() != null) ;
+
+        urls = new Stack<>();
+        Url[] array = new Url[1001];
+        Arrays.fill(array, 0, array.length, url);
+        urls.addAll(Arrays.asList(array));
+        internetResourceProvider.setResources(urls);
+        verify(dataBase, atLeastOnce()).persistBatch(any(List.class));
     }
 
     @Test
