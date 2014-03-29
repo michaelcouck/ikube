@@ -29,7 +29,7 @@ public class IndexPrinter {
      *
      * @param args the first argument is the absolute path to the index directory
      *             and the second the number of documents in the index to print, for
-     *             example {java -jar ikube-tool.jar ikube.data.IndexPrinter /tmp/index, 100}
+     *             example => java -jar ikube-tool.jar ikube.data.IndexPrinter /tmp/index 100
      */
     public static void main(final String[] args) {
         IndexReader indexReader = null;
