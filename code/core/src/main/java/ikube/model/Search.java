@@ -1,5 +1,7 @@
 package ikube.model;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -139,6 +141,7 @@ public class Search extends Distributed {
         return totalResults;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public void setTotalResults(int totalResults) {
         this.totalResults = totalResults;
     }
@@ -238,6 +241,10 @@ public class Search extends Distributed {
 
     public void setSearchResults(ArrayList<HashMap<String, String>> searchResults) {
         this.searchResults = searchResults;
+    }
+
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 
 }

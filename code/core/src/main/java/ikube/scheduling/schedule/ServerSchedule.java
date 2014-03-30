@@ -33,24 +33,24 @@ public class ServerSchedule extends Schedule {
      */
     @Override
     public void run() {
+        Server local = clusterManager.getServer();
         // Remove all servers that are past the max age
         Collection<Server> servers = new ArrayList<>(clusterManager.getServers().values());
-        for (final Server server : servers) {
-            if (server.getAddress().equals(clusterManager.getServer().getAddress())) {
+        for (final Server remote : servers) {
+            if (remote.getAddress().equals(local.getAddress())) {
                 continue;
             }
-            long age = System.currentTimeMillis() - server.getAge();
+            long age = System.currentTimeMillis() - remote.getAge();
             boolean expired = age > IConstants.MAX_AGE;
             if (expired) {
-                Object[] parameters = {server.getAddress(), new Date(server.getAge()), (age / 1000), expired};
-                LOGGER.info("Removing expired server : {}, date : {}, age : {}, expited : {}", parameters);
-                clusterManager.remove(server.getAddress());
+                Date birthDate = new Date(remote.getAge());
+                LOGGER.info("Removing expired server : " + remote.getAddress() + ", date : " + birthDate + ", age : " + (age / 1000));
+                clusterManager.remove(IConstants.SERVER, remote.getAddress());
             }
         }
         // Finally put ourselves back in the grid
-        Server server = clusterManager.getServer();
-        server.setAge(System.currentTimeMillis());
+        local.setAge(System.currentTimeMillis());
         // LOGGER.info("Putting server back : " + new Date(server.getAge()));
-        clusterManager.put(IConstants.SERVER, server.getAddress(), server);
+        clusterManager.put(IConstants.SERVER, local.getAddress(), local);
     }
 }
