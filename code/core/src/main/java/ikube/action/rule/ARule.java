@@ -20,10 +20,10 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class ARule<T> implements IRule<T> {
 
-    protected Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected transient Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    protected IClusterManager clusterManager;
+    protected transient IClusterManager clusterManager;
 
     /**
      * This method goes through all the server index directories in the latest index directory and
