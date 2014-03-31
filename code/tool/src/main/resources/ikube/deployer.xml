@@ -196,7 +196,7 @@
     <util:list id="clean-commands-one">
         <value>chmod 777 -R ${tomcat-one};</value>
 
-        <!-- value>rm -rf ${tomcat-one-bin}/ikube;</value -->
+        <value>rm -rf ${tomcat-one-bin}/ikube;</value>
         <value>rm -rf ${tomcat-one}/webapps/ikube;</value>
         <value>rm -rf ${tomcat-one}/webapps/ikube.war;</value>
 
@@ -204,7 +204,7 @@
         <value>rm -rf ${tomcat-one}/temp;</value>
         <value>rm -rf ${tomcat-one}/work;</value>
 
-        <!-- value>mkdir -p ${tomcat-one-bin}/ikube;</value -->
+        <value>mkdir -p ${tomcat-one-bin}/ikube;</value>
 
         <value>mkdir -p ${tomcat-one}/logs;</value>
         <value>mkdir -p ${tomcat-one}/temp;</value>
@@ -228,8 +228,8 @@
 	<entry key="${resources-directory}/environments/sys/spring.properties" value="${tomcat-one-bin}/ikube/common"/>
     </util:map>
     <util:map id="directories-one">
-        <!-- entry key="${resources-directory}/ikube" value="${tomcat-one-bin}"/ -->
-        <!-- entry key="${resources-directory}/analytics" value="${tomcat-one-bin}/ikube"/ -->
+        <entry key="${resources-directory}/ikube" value="${tomcat-one-bin}"/>
+        <entry key="${resources-directory}/analytics" value="${tomcat-one-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/integration" value="${tomcat-one-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/production" value="${tomcat-one-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/twitter" value="${tomcat-one-bin}/ikube"/>
@@ -288,7 +288,7 @@
     <util:list id="clean-commands-two">
         <value>chmod 777 -R ${tomcat-two};</value>
 
-        <!-- value>rm -rf ${tomcat-two-bin}/ikube;</value -->
+        <value>rm -rf ${tomcat-two-bin}/ikube;</value>
         <value>rm -rf ${tomcat-two}/webapps/ikube;</value>
         <value>rm -rf ${tomcat-two}/webapps/ikube.war;</value>
 
@@ -296,7 +296,7 @@
         <value>rm -rf ${tomcat-two}/temp;</value>
         <value>rm -rf ${tomcat-two}/work;</value>
 
-        <!-- value>mkdir -p ${tomcat-two-bin}/ikube;</value -->
+        <value>mkdir -p ${tomcat-two-bin}/ikube;</value>
 
         <value>mkdir -p ${tomcat-two}/logs;</value>
         <value>mkdir -p ${tomcat-two}/temp;</value>
@@ -320,8 +320,8 @@
 	<entry key="${resources-directory}/environments/sys/spring.properties" value="${tomcat-two-bin}/ikube/common"/>
     </util:map>
     <util:map id="directories-two">
-        <!-- entry key="${resources-directory}/ikube" value="${tomcat-two-bin}"/ -->
-        <!-- entry key="${resources-directory}/analytics" value="${tomcat-two-bin}/ikube"/ -->
+        <entry key="${resources-directory}/ikube" value="${tomcat-two-bin}"/>
+        <entry key="${resources-directory}/analytics" value="${tomcat-two-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/integration" value="${tomcat-two-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/production" value="${tomcat-two-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/twitter" value="${tomcat-two-bin}/ikube"/>
@@ -380,7 +380,7 @@
     <util:list id="clean-commands-three">
         <value>chmod 777 -R ${tomcat-three};</value>
 
-        <!-- value>rm -rf ${tomcat-three-bin}/ikube;</value -->
+        <value>rm -rf ${tomcat-three-bin}/ikube;</value>
         <value>rm -rf ${tomcat-three}/webapps/ikube;</value>
         <value>rm -rf ${tomcat-three}/webapps/ikube.war;</value>
 
@@ -388,7 +388,7 @@
         <value>rm -rf ${tomcat-three}/temp;</value>
         <value>rm -rf ${tomcat-three}/work;</value>
 
-        <!-- value>mkdir -p ${tomcat-three-bin}/ikube;</value -->
+        <value>mkdir -p ${tomcat-three-bin}/ikube;</value>
 
         <value>mkdir -p ${tomcat-three}/logs;</value>
         <value>mkdir -p ${tomcat-three}/temp;</value>
@@ -412,8 +412,8 @@
 	<entry key="${resources-directory}/environments/sys/spring.properties" value="${tomcat-three-bin}/ikube/common"/>
     </util:map>
     <util:map id="directories-three">
-        <!-- entry key="${resources-directory}/ikube" value="${tomcat-three-bin}"/ -->
-        <!-- entry key="${resources-directory}/analytics" value="${tomcat-three-bin}/ikube"/ -->
+        <entry key="${resources-directory}/ikube" value="${tomcat-three-bin}"/>
+        <entry key="${resources-directory}/analytics" value="${tomcat-three-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/integration" value="${tomcat-three-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/production" value="${tomcat-three-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/twitter" value="${tomcat-three-bin}/ikube"/>

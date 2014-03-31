@@ -9,7 +9,7 @@ import java.util.concurrent.Future;
 
 /**
  * This rule checks to see if there are any remote indexes for the target index context
- * that are current, i.e. not out of date and not currupt.
+ * that are current, i.e. not out of date and not corrupt.
  *
  * @author Michael Couck
  * @version 01.00

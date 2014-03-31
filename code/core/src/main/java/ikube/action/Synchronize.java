@@ -7,6 +7,13 @@ import java.util.Date;
 import java.util.Map;
 
 /**
+ * TODO: This must still be completed.
+ * <p/>
+ * The possible implementations are:
+ * 1) User ftp for linux
+ * 2) User the java ssh library
+ * 3) User a remote task in Hazelcast that compresses a chunk of file at a time
+ * <p/>
  * This action will synchronize indexes between servers.
  *
  * @author Michael Couck
@@ -31,17 +38,12 @@ public class Synchronize extends Action<IndexContext, Boolean> {
                 if (!indexContext.getName().equals(remoteIndexContext.getName())) {
                     continue;
                 }
-                Date localTimestamp = indexContext.getSnapshot().getLatestIndexTimestamp();
                 // Get the tiemstamp from the remote machines
                 Date remoteTimestamp = remoteIndexContext.getSnapshot().getLatestIndexTimestamp();
-                //noinspection StatementWithEmptyBody
-                if (localTimestamp.before(remoteTimestamp)) {
-                    // Get the latest one, and if it does not match the local one
-                    // TODO: Copy the index to this server
-                    // Write the index to a directory on the local file system
-                    // Rename the directory once completely rewritten
-                    // The automatic logic will open the index eventually
-                }
+                // TODO: Copy the index to this server
+                // Write the index to a directory on the local file system
+                // Rename the directory once completely rewritten
+                // The automatic logic will open the index eventually
             }
         }
         return Boolean.TRUE;

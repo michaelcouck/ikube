@@ -1,11 +1,11 @@
-@relation training_data
+@relation instances
 
 @attribute @class@ {positive,negative}
 @attribute @text@ string
 
 @data
-positive,'positive'
-negative,'negative'
+positive,positive
+negative,negative
 positive,'Fantastic holiday'
 negative,'Terrible weather'
 positive,'my beautiful little girl'
