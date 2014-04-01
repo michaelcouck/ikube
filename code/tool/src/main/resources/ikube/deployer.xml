@@ -52,9 +52,9 @@
         <ref local="server-one"/>
         <ref local="server-two"/>
         <ref local="server-three"/>
-	<!-- ref local="server-four"/>
+	<ref local="server-four"/>
 	<ref local="server-five"/>
-	<ref local="server-six"/ -->
+	<ref local="server-six"/>
         <!-- 
 	  Note 04-03-2014: Have to get sshj to execute as sudo!
 	  Update later that day: This seems to be impossible, so the solution was to run the 
