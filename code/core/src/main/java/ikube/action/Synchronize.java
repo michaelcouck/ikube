@@ -28,24 +28,8 @@ public class Synchronize extends Action<IndexContext, Boolean> {
      */
     @Override
     boolean internalExecute(final IndexContext indexContext) {
-        Server server = clusterManager.getServer();
-        Map<String, Server> servers = clusterManager.getServers();
-        for (final Map.Entry<String, Server> mapEntry : servers.entrySet()) {
-            if (mapEntry.getValue().getAddress().equals(server.getAddress())) {
-                continue;
-            }
-            for (final IndexContext remoteIndexContext : server.getIndexContexts()) {
-                if (!indexContext.getName().equals(remoteIndexContext.getName())) {
-                    continue;
-                }
-                // Get the tiemstamp from the remote machines
-                Date remoteTimestamp = remoteIndexContext.getSnapshot().getLatestIndexTimestamp();
-                // TODO: Copy the index to this server
-                // Write the index to a directory on the local file system
-                // Rename the directory once completely rewritten
-                // The automatic logic will open the index eventually
-            }
-        }
+        SynchronizeLatestIndexCallable synchronizeLatestIndexCallable = new SynchronizeLatestIndexCallable(indexContext);
+        clusterManager.sendTaskToAll(synchronizeLatestIndexCallable);
         return Boolean.TRUE;
     }
 

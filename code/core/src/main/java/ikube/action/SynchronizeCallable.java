@@ -26,7 +26,7 @@ public class SynchronizeCallable implements Callable<FileChunk>, Serializable {
         public String name;
         // The length of the chunk to read from the file
         public int length;
-        // The offert in the file to read from, or write to
+        // The offset in the file to read from, or write to
         public int offset;
         // The chunk of the file at the specified position
         public byte[] chunk;

@@ -7,6 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -14,6 +15,7 @@ import org.apache.lucene.search.*;
 import org.apache.lucene.search.highlight.Highlighter;
 import org.apache.lucene.search.highlight.QueryScorer;
 import org.apache.lucene.search.highlight.Scorer;
+import org.apache.lucene.util.Version;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -72,7 +74,7 @@ public abstract class Search {
     /**
      * The default analyzer.
      */
-    protected static final Analyzer ANALYZER = new StemmingAnalyzer();
+    protected static final Analyzer ANALYZER = new StandardAnalyzer(Version.LUCENE_46);
     /**
      * The conjunctions matcher to not replace these key words.
      */
