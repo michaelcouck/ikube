@@ -1,10 +1,14 @@
 package ikube.action;
 
+import ikube.IConstants;
+import ikube.action.remote.SynchronizeLatestIndexCallable;
 import ikube.model.IndexContext;
-import ikube.model.Server;
+import ikube.toolkit.StringUtilities;
 
 import java.util.Date;
-import java.util.Map;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * TODO: This must still be completed.
@@ -29,8 +33,46 @@ public class Synchronize extends Action<IndexContext, Boolean> {
     @Override
     boolean internalExecute(final IndexContext indexContext) {
         SynchronizeLatestIndexCallable synchronizeLatestIndexCallable = new SynchronizeLatestIndexCallable(indexContext);
-        clusterManager.sendTaskToAll(synchronizeLatestIndexCallable);
+        List<Future<String[]>> futures = clusterManager.sendTaskToAll(synchronizeLatestIndexCallable);
+        Future<String[]> latestFuture = null;
+        for (final Future<String[]> future : futures) {
+            if (latestFuture == null) {
+                latestFuture = future;
+                continue;
+            }
+            try {
+                String[] indexFiles = future.get();
+                String[] latestIndexFiles = latestFuture.get();
+                if (indexFiles == null || indexFiles.length == 0) {
+                    continue;
+                }
+                if (latestIndexFiles == null || latestIndexFiles.length == 0) {
+                    latestFuture = future;
+                    continue;
+                }
+                // Compare the index timestamps
+                long indexDate = getDirectoryDate(indexFiles[0]);
+                long latestIndexDate = getDirectoryDate(latestIndexFiles[0]);
+                if (indexDate > latestIndexDate) {
+                    latestFuture = future;
+                }
+            } catch (final InterruptedException | ExecutionException e) {
+                logger.error("Exception checking future for index files : ", e);
+            }
+        }
+        // We have the latest future from the remote servers
+
         return Boolean.TRUE;
+    }
+
+    long getDirectoryDate(final String filePath) {
+        String[] segments = filePath.split(IConstants.SEP);
+        for (final String segment : segments) {
+            if (StringUtilities.isNumeric(segment)) {
+                return Long.parseLong(segment);
+            }
+        }
+        return Long.MIN_VALUE;
     }
 
 }
