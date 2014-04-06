@@ -17,14 +17,20 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
- * TODO: This must still be completed.
+ * This class will synchronize a remote index with a local one. In the case each server is
+ * configured to us it's own file system for the indexes, i.e. they are not shared on the network,
+ * to avoid each server re-indexing the data, this class will essentially copy the remote index to
+ * the local machine.
+ * <p/>
+ * First the remote server with the latest index is discovered. Then each file from the remote
+ * index is copied a chunk at a time, using a remote callable, until the files is completely copied
+ * and the chunk(binary array) is empty.
  * <p/>
  * The possible implementations are:
- * 1) User ftp for linux
- * 2) User the java ssh library
- * 3) User a remote task in Hazelcast that compresses a chunk of file at a time
+ * 1) Use ftp for linux
+ * 2) Use the java ssh library
+ * 3) Use a remote task in Hazelcast that compresses a chunk of file at a time
  * <p/>
- * This action will synchronize indexes between servers.
  *
  * @author Michael Couck
  * @version 01.00
@@ -38,11 +44,13 @@ public class Synchronize extends Action<IndexContext, Boolean> {
      */
     @Override
     boolean internalExecute(final IndexContext indexContext) {
+        // Get the latest index on one of the remote servers
         Server remote = getTargetRemoteServer(indexContext);
         if (remote == null) {
             return Boolean.FALSE;
         }
 
+        // Get all the remote index files from the target server
         String[] indexFiles;
         SynchronizeLatestIndexCallable latestCallable = new SynchronizeLatestIndexCallable(indexContext);
         Future<String[]> future = clusterManager.sendTaskTo(remote, latestCallable);
@@ -52,13 +60,17 @@ public class Synchronize extends Action<IndexContext, Boolean> {
             throw new RuntimeException("Exception getting the index files from the remote server : " + remote);
         }
 
+        // Iterate over the index files and copy them to the local file system
         boolean exception = Boolean.FALSE;
         try {
             int offset = 0;
+            // Ten megs at a time should be fine
             int length = 1024 * 1024 * 10;
             for (final String indexFile : indexFiles) {
                 byte[] chunk;
                 do {
+                    // Keep calling the remote server for chunks of the index file
+                    // until there is no more data left, i.e. the files is completely copied
                     SynchronizeCallable chunkCallable = new SynchronizeCallable(indexFile, offset, length);
                     Future<byte[]> chunkFuture = clusterManager.sendTaskTo(remote, chunkCallable);
                     chunk = chunkFuture.get();

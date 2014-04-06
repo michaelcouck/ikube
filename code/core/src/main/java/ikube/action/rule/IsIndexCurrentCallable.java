@@ -2,6 +2,7 @@ package ikube.action.rule;
 
 import ikube.model.IndexContext;
 
+import java.io.Serializable;
 import java.util.concurrent.Callable;
 
 /**
@@ -13,7 +14,7 @@ import java.util.concurrent.Callable;
  * @version 01.00
  * @since 30-03-2014
  */
-public class IsIndexCurrentCallable implements Callable<Boolean> {
+public class IsIndexCurrentCallable implements Callable<Boolean>, Serializable {
 
     private IndexContext indexContext;
 
