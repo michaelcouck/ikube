@@ -130,6 +130,12 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>ikube</groupId>
+            <artifactId>ikube-war</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>sevenzip</groupId>
             <artifactId>jbinding</artifactId>
             <version>4.65.1</version>
