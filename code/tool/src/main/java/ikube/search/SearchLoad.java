@@ -4,14 +4,12 @@ import com.google.gson.Gson;
 import ikube.IConstants;
 import ikube.model.Search;
 import ikube.toolkit.Timer;
-import ikube.web.service.SearcherJson;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -45,7 +43,7 @@ public class SearchLoad {
 
         Gson gson = new Gson();
         String content = gson.toJson(search);
-        StringRequestEntity stringRequestEntity = new StringRequestEntity(content, MediaType.APPLICATION_JSON, IConstants.ENCODING);
+        StringRequestEntity stringRequestEntity = new StringRequestEntity(content, "application/json", IConstants.ENCODING);
         postMethod.setRequestEntity(stringRequestEntity);
 
         final int iterations = 10000;
@@ -67,11 +65,10 @@ public class SearchLoad {
     @SuppressWarnings("StringBufferReplaceableByString")
     protected static String getUrl() throws MalformedURLException {
         StringBuilder builder = new StringBuilder();
-        builder.append(IConstants.SEP);
-        builder.append(IConstants.IKUBE);
-        builder.append("service");
-        builder.append(SearcherJson.SEARCH);
-        builder.append(SearcherJson.JSON);
+        builder.append("/ikube");
+        builder.append("/service");
+        builder.append("/search");
+        builder.append("/json");
         return new URL("http", "ikube.be", 80, builder.toString()).toString();
     }
 

@@ -129,12 +129,12 @@
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>ikube</groupId>
             <artifactId>ikube-war</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>sevenzip</groupId>
             <artifactId>jbinding</artifactId>
