@@ -140,6 +140,7 @@
         class="ikube.action.Index"
         property:ruleExpression="
         !TooManyActionsRule &#38;&#38;
+        !IsRemoteIndexCurrent &#38;&#38;
         !AnyServersWorkingThisIndex &#38;&#38;
         ((IsIndexDelta &#38;&#38; !IsThisServerWorkingThisIndex) ||
 		 (!IsIndexCurrent &#38;&#38; !IsIndexDelta &#38;&#38;
@@ -156,6 +157,7 @@
                 <ref local="ikube.action.rule.AnyServersIdle"/>
                 <ref local="ikube.action.rule.IsIndexDelta"/>
                 <ref local="ikube.action.rule.IsThisServerWorkingThisIndex"/>
+                <ref local="ikube.action.rule.IsRemoteIndexCurrent"/>
             </util:list>
         </property>
     </bean>
@@ -208,6 +210,26 @@
             </util:list>
         </property>
     </bean>-->
+    <bean
+        id="ikube.action.Synchronize"
+        class="ikube.action.Synchronize"
+        property:ruleExpression="
+        !TooManyActionsRule &#38;&#38;
+        IsRemoteIndexCurrent &#38;&#38;
+        !AnyServersWorkingThisIndex &#38;&#38;
+        !IsThisServerWorkingThisIndex &#38;&#38;
+        !IsIndexCurrent"
+        property:requiresClusterLock="true">
+        <property name="rules">
+            <util:list>
+                <ref local="ikube.action.rule.TooManyActionsRule"/>
+                <ref local="ikube.action.rule.IsRemoteIndexCurrent"/>
+                <ref local="ikube.action.rule.AnyServersWorkingThisIndex"/>
+                <ref local="ikube.action.rule.IsIndexCurrent"/>
+                <ref local="ikube.action.rule.IsThisServerWorkingThisIndex"/>
+            </util:list>
+        </property>
+    </bean>
 
     <bean id="ikube.action.rule.AnyServersWorking" class="ikube.action.rule.AnyServersWorking"/>
     <bean id="ikube.action.rule.AreDirectoriesEqual" class="ikube.action.rule.AreDirectoriesEqual"/>
@@ -230,5 +252,6 @@
     <bean id="ikube.action.rule.IsIndexDelta" class="ikube.action.rule.IsIndexDelta"/>
     <bean id="ikube.action.rule.IsThisIndexCreated" class="ikube.action.rule.IsThisIndexCreated"/>
     <bean id="ikube.action.rule.IsThisServerWorkingThisIndex" class="ikube.action.rule.IsThisServerWorkingThisIndex"/>
+    <bean id="ikube.action.rule.IsRemoteIndexCurrent" class="ikube.action.rule.IsRemoteIndexCurrent"/>
 
 </beans>

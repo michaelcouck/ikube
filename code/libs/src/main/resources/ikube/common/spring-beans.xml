@@ -142,6 +142,13 @@
         lazy-init="false"/>
 
     <bean
+        id="ikube.toolkit.DataManager"
+        name="ikube.toolkit.DataManager"
+        class="ikube.toolkit.DataManager"
+        lazy-init="false"
+        init-method="loadData"/>
+
+    <bean
         id="ikube.action.index.parse.mime.MimeMapper"
         class="ikube.action.index.parse.mime.MimeMapper">
         <constructor-arg value="mime-mapping.xml"/>
@@ -379,7 +386,9 @@
         id="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy"
         name="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy"
         class="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy"
-        init-method="initialize"/>
+        init-method="initialize"
+        depends-on="ikube.toolkit.DataManager"
+        lazy-init="true"/>
 
     <bean
         id="ikube.action.index.handler.strategy.EmoticonClassificationStrategy"

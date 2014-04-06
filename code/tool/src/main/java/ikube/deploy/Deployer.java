@@ -58,6 +58,7 @@ public final class Deployer {
             if (args.length > 1) {
                 int upDirectories = 0;
                 while (args[0].contains("../")) {
+                    LOGGER.info("Args 0 : " + args[0]);
                     args[0] = args[0].replace("../", "");
                     upDirectories++;
                 }

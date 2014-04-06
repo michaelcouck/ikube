@@ -11,6 +11,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
+/**
+ * This class contains common utilities for files like deleting directories recursively, creating
+ * files and directories and searching for files and directories recursively, before the {@link org.apache.commons.io.FileUtils}
+ * from Apache was available.
+ *
+ * @author Michael Couck
+ * @version 01.00
+ * @since 25-01-2011
+ */
 public final class FileUtilities {
 
     private static final Logger LOGGER = Logger.getLogger(FileUtilities.class);
@@ -23,7 +32,8 @@ public final class FileUtilities {
     }
 
     /**
-     * This method looks through all the files defined in the folder in the parameter list, recursively, and gets the first one that matches the pattern.
+     * This method looks through all the files defined in the folder in the parameter
+     * list, recursively, and gets the first one that matches the pattern.
      *
      * @param folder         the folder to start looking through
      * @param stringPatterns the patterns to look for in the file paths
@@ -35,8 +45,8 @@ public final class FileUtilities {
     }
 
     /**
-     * This method will recursively look for a directory in the file system starting at the specified abstract file position and return the first one that is
-     * encountered.
+     * This method will recursively look for a directory in the file system starting at
+     * the specified abstract file position and return the first one that is encountered.
      *
      * @param folder         the folder to start looking for the patterns
      * @param stringPatterns the patterns of the folder to look for
@@ -54,11 +64,13 @@ public final class FileUtilities {
     }
 
     /**
-     * This method looks through all the files defined in the folder in the parameter list, recursively, and gets the first one that matches the pattern.
+     * This method looks through all the files defined in the folder in the
+     * parameter list, recursively, and gets the first one that matches the pattern.
      *
      * @param folder         the folder to start looking through
      * @param stringPatterns the patterns to look for in the file paths
-     * @param upDirectories  the number of directories to go up before starting the search, i.e. the parent and grandparent directories
+     * @param upDirectories  the number of directories to go up before starting the search,
+     *                       i.e. the parent and grandparent directories
      * @return the first file that was encountered that has the specified pattern(s) in it
      */
     public static File findFileRecursively(final File folder, final int upDirectories, final String... stringPatterns) {
@@ -68,7 +80,8 @@ public final class FileUtilities {
     }
 
     /**
-     * This method will first walk backwards through the directories before doing a search for the directory pattern specified.
+     * This method will first walk backwards through the directories before doing a
+     * search for the directory pattern specified.
      *
      * @param folder         the folder to start looking through
      * @param stringPatterns the patterns to look for in the file paths
@@ -80,6 +93,9 @@ public final class FileUtilities {
     }
 
     public static File moveUpDirectories(final File folder, final int upDirectories) {
+        if (upDirectories == 0) {
+            return folder;
+        }
         int directories = upDirectories;
         String upFolderPath = FileUtilities.cleanFilePath(folder.getAbsolutePath());
         File upFolder = new File(upFolderPath);
@@ -109,8 +125,8 @@ public final class FileUtilities {
     }
 
     /**
-     * This method will look through all the files in the top level folder, and all the sub folders, adding files to the list when they match the patterns that
-     * are provided.
+     * This method will look through all the files in the top level folder, and all
+     * the sub folders, adding files to the list when they match the patterns that are provided.
      *
      * @param folder         the folder to start looking through
      * @param stringPatterns the patterns to match the file paths with
@@ -134,7 +150,8 @@ public final class FileUtilities {
     }
 
     /**
-     * This method, similar to the {@link FileUtilities#findFilesRecursively(File, List, String...)} will just move up a few directories before searching for
+     * This method, similar to the {@link FileUtilities#findFilesRecursively(File, List, String...)}
+     * will just move up a few directories before searching for
      * the patterns.
      *
      * @param folder         the start folder
@@ -149,7 +166,8 @@ public final class FileUtilities {
     }
 
     /**
-     * Finds files with the specified pattern only in the folder specified in the parameter list, i.e. not recursively.
+     * Finds files with the specified pattern only in the folder specified in the parameter list,
+     * i.e. not recursively.
      *
      * @param folder         the folder to look for files in
      * @param stringPatterns the pattern to look for in the file path
@@ -244,7 +262,8 @@ public final class FileUtilities {
     }
 
     /**
-     * Gets all the content from the file and puts it into a string, assuming the default encoding for the platform and file contents are in fact strings.
+     * Gets all the content from the file and puts it into a string,
+     * assuming the default encoding for the platform and file contents are in fact strings.
      *
      * @param file the file to read into a string
      * @return the contents of the file or null if there was an exception reading the file
@@ -271,8 +290,10 @@ public final class FileUtilities {
     }
 
     /**
-     * Deletes all files recursively, that have the specified pattern in the path. Note that this is dangerous and you really need to know what files are in the
-     * directory that you feed this method. There is no turning back, these files will be completely deleted, no re-cycle bin and all that.
+     * Deletes all files recursively, that have the specified pattern in the path. Note
+     * that this is dangerous and you really need to know what files are in the directory that
+     * you feed this method. There is no turning back, these files will be completely deleted, no
+     * re-cycle bin and all that.
      *
      * @param file           the top level directory or file to start looking into
      * @param stringPatterns the patterns to look for in the file paths
@@ -327,8 +348,9 @@ public final class FileUtilities {
     }
 
     /**
-     * Deletes the file/folder recursively. If the file cannot be deleted then the file is set to delete on exit of the JVM, which doesn't generally work of
-     * course, but we try anyway.
+     * Deletes the file/folder recursively. If the file cannot be deleted then the
+     * file is set to delete on exit of the JVM, which doesn't generally work of course,
+     * but we try anyway.
      *
      * @param file          the file/folder to delete
      * @param maxRetryCount the number of times to re-try the delete operation
@@ -616,7 +638,8 @@ public final class FileUtilities {
     }
 
     /**
-     * This method checks to see if the file can be read, that it exists and that it is not in the excluded pattern defined in the configuration.
+     * This method checks to see if the file can be read, that it exists
+     * and that it is not in the excluded pattern defined in the configuration.
      *
      * @param file    the file to check for inclusion in the processing
      * @param pattern the pattern that excludes explicitly files and folders

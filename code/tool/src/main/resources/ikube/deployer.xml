@@ -52,17 +52,17 @@
         <ref local="server-one"/>
         <ref local="server-two"/>
         <ref local="server-three"/>
-	<ref local="server-four"/>
-	<ref local="server-five"/>
-	<ref local="server-six"/>
+        <ref local="server-four"/>
+        <ref local="server-five"/>
+        <ref local="server-six"/>
         <!-- 
-	  Note 04-03-2014: Have to get sshj to execute as sudo!
-	  Update later that day: This seems to be impossible, so the solution was to run the 
-	    server on port 8080, and have the router point to this port. Not very convenient
-	    at all. But in fact, it seems that it could be possible to run sudo, but every
-	    thing needs to be on one line, and the user must be configured to not need a 
-	    password to run sudo, tried and failed... :(
-	-->
+    	    Note 04-03-2014: Have to get sshj to execute as sudo!
+    	    Update later that day: This seems to be impossible, so the solution was to run the
+    	    server on port 8080, and have the router point to this port. Not very convenient
+    	    at all. But in fact, it seems that it could be possible to run sudo, but every
+    	    thing needs to be on one line, and the user must be configured to not need a
+    	    password to run sudo, tried and failed... :(
+	    -->
         <ref local="server-production"/>
     </util:list>
 
@@ -87,36 +87,30 @@
         id="stop-action"
         name="stop-action"
         class="ikube.deploy.action.CmdAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="stop-commands"/>
     <util:list id="stop-commands">
         <value>${tomcat-shutdown};</value>
-	<value>${tomcat-kill};</value>
+        <value>${tomcat-kill};</value>
     </util:list>
 
     <bean
         id="clean-action"
         name="clean-action"
         class="ikube.deploy.action.CmdAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="clean-commands"/>
     <util:list id="clean-commands">
         <value>chmod 777 -R ${tomcat};</value>
 
-        <value>rm -rf ${tomcat-bin}/ikube</value>
+        <value>rm -rf ${tomcat-bin}/ikube/*</value>
         <value>rm -rf ${tomcat}/webapps/ikube*;</value>
 
-        <value>rm -rf ${tomcat}/logs;</value>
-        <value>rm -rf ${tomcat}/temp;</value>
-        <value>rm -rf ${tomcat}/work;</value>
-
-        <value>mkdir -p ${tomcat-bin}/ikube;</value>
-
-        <value>mkdir -p ${tomcat}/logs;</value>
-        <value>mkdir -p ${tomcat}/temp;</value>
-        <value>mkdir -p ${tomcat}/work;</value>
+        <value>rm -rf ${tomcat}/logs/*;</value>
+        <value>rm -rf ${tomcat}/temp/*;</value>
+        <value>rm -rf ${tomcat}/work/*;</value>
 
         <value>chmod 777 -R ${tomcat};</value>
     </util:list>
@@ -125,15 +119,15 @@
         id="copy-action"
         name="copy-action"
         class="ikube.deploy.action.CopyAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="true"
         property:files-ref="files"
         property:directories-ref="directories"/>
     <util:map id="files">
         <entry key="${tail-script}" value="${tomcat-bin}"/>
-	<entry key="code/war/target/${ikube-war}" value="${tomcat-webapps}"/>
-	<!-- This over writes the properties specific for the target environment -->
-	<entry key="${resources-directory}/environments/sys/spring.properties" value="${tomcat-bin}/ikube/common"/>
+        <entry key="code/war/target/${ikube-war}" value="${tomcat-webapps}"/>
+        <!-- This over writes the properties specific for the target environment -->
+        <entry key="${resources-directory}/environments/sys/spring.properties" value="${tomcat-bin}/ikube/common"/>
     </util:map>
     <util:map id="directories">
         <entry key="${resources-directory}/ikube" value="${tomcat-bin}"/>
@@ -147,11 +141,11 @@
         id="start-action"
         name="start-action"
         class="ikube.deploy.action.CmdAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="start-commands"/>
     <util:list id="start-commands">
-	<value>${tomcat-chmod}</value>
+        <value>${tomcat-chmod}</value>
         <value>${tomcat-startup}</value>
     </util:list>
 
@@ -178,37 +172,30 @@
         id="stop-action-one"
         name="stop-action-one"
         class="ikube.deploy.action.CmdAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="stop-commands-one"/>
     <util:list id="stop-commands-one">
-	<value>${tomcat-one-shutdown};</value>
-	<value>${tomcat-one-kill};</value>
+        <value>${tomcat-one-shutdown};</value>
+        <value>${tomcat-one-kill};</value>
     </util:list>
 
     <bean
         id="clean-action-one"
         name="clean-action-one"
         class="ikube.deploy.action.CmdAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="clean-commands-one"/>
     <util:list id="clean-commands-one">
         <value>chmod 777 -R ${tomcat-one};</value>
 
-        <value>rm -rf ${tomcat-one-bin}/ikube;</value>
-        <value>rm -rf ${tomcat-one}/webapps/ikube;</value>
-        <value>rm -rf ${tomcat-one}/webapps/ikube.war;</value>
+        <value>rm -rf ${tomcat-one-bin}/ikube/*;</value>
+        <value>rm -rf ${tomcat-one}/webapps/ikube*;</value>
 
-        <value>rm -rf ${tomcat-one}/logs;</value>
-        <value>rm -rf ${tomcat-one}/temp;</value>
-        <value>rm -rf ${tomcat-one}/work;</value>
-
-        <value>mkdir -p ${tomcat-one-bin}/ikube;</value>
-
-        <value>mkdir -p ${tomcat-one}/logs;</value>
-        <value>mkdir -p ${tomcat-one}/temp;</value>
-        <value>mkdir -p ${tomcat-one}/work;</value>
+        <value>rm -rf ${tomcat-one}/logs/*;</value>
+        <value>rm -rf ${tomcat-one}/temp/*;</value>
+        <value>rm -rf ${tomcat-one}/work/*;</value>
 
         <value>chmod 777 -R ${tomcat-one};</value>
     </util:list>
@@ -217,15 +204,15 @@
         id="copy-action-one"
         name="copy-action-one"
         class="ikube.deploy.action.CopyAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="true"
         property:files-ref="files-one"
         property:directories-ref="directories-one"/>
     <util:map id="files-one">
-	<entry key="${tail-script}" value="${tomcat-one-bin}"/>
+        <entry key="${tail-script}" value="${tomcat-one-bin}"/>
         <entry key="code/war/target/${ikube-war}" value="${tomcat-one-webapps}"/>
-	<!-- This over writes the properties specific for the target environment -->
-	<entry key="${resources-directory}/environments/sys/spring.properties" value="${tomcat-one-bin}/ikube/common"/>
+        <!-- This over writes the properties specific for the target environment -->
+        <entry key="${resources-directory}/environments/sys/spring.properties" value="${tomcat-one-bin}/ikube/common"/>
     </util:map>
     <util:map id="directories-one">
         <entry key="${resources-directory}/ikube" value="${tomcat-one-bin}"/>
@@ -239,12 +226,12 @@
         id="start-action-one"
         name="start-action-one"
         class="ikube.deploy.action.CmdAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="start-commands-one"/>
     <util:list id="start-commands-one">
-	<value>${tomcat-one-chmod}</value>
-	<value>${tomcat-one-startup}</value>
+        <value>${tomcat-one-chmod}</value>
+        <value>${tomcat-one-startup}</value>
     </util:list>
     <!-- End one -->
 
@@ -269,7 +256,7 @@
         id="stop-action-two"
         name="stop-action-two"
         class="ikube.deploy.action.CmdAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="stop-commands-two"/>
     <util:list id="stop-commands-two">
@@ -282,25 +269,18 @@
         id="clean-action-two"
         name="clean-action-two"
         class="ikube.deploy.action.CmdAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="clean-commands-two"/>
     <util:list id="clean-commands-two">
         <value>chmod 777 -R ${tomcat-two};</value>
 
-        <value>rm -rf ${tomcat-two-bin}/ikube;</value>
-        <value>rm -rf ${tomcat-two}/webapps/ikube;</value>
-        <value>rm -rf ${tomcat-two}/webapps/ikube.war;</value>
+        <value>rm -rf ${tomcat-two-bin}/ikube/*;</value>
+        <value>rm -rf ${tomcat-two}/webapps/ikube*;</value>
 
-        <value>rm -rf ${tomcat-two}/logs;</value>
-        <value>rm -rf ${tomcat-two}/temp;</value>
-        <value>rm -rf ${tomcat-two}/work;</value>
-
-        <value>mkdir -p ${tomcat-two-bin}/ikube;</value>
-
-        <value>mkdir -p ${tomcat-two}/logs;</value>
-        <value>mkdir -p ${tomcat-two}/temp;</value>
-        <value>mkdir -p ${tomcat-two}/work;</value>
+        <value>rm -rf ${tomcat-two}/logs/*;</value>
+        <value>rm -rf ${tomcat-two}/temp/*;</value>
+        <value>rm -rf ${tomcat-two}/work/*;</value>
 
         <value>chmod 777 -R ${tomcat-two};</value>
     </util:list>
@@ -309,15 +289,15 @@
         id="copy-action-two"
         name="copy-action-two"
         class="ikube.deploy.action.CopyAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="true"
         property:files-ref="files-two"
         property:directories-ref="directories-two"/>
     <util:map id="files-two">
-	<entry key="${tail-script}" value="${tomcat-two-bin}"/>
+        <entry key="${tail-script}" value="${tomcat-two-bin}"/>
         <entry key="code/war/target/${ikube-war}" value="${tomcat-two-webapps}"/>
-	<!-- This over writes the properties specific for the target environment -->
-	<entry key="${resources-directory}/environments/sys/spring.properties" value="${tomcat-two-bin}/ikube/common"/>
+        <!-- This over writes the properties specific for the target environment -->
+        <entry key="${resources-directory}/environments/sys/spring.properties" value="${tomcat-two-bin}/ikube/common"/>
     </util:map>
     <util:map id="directories-two">
         <entry key="${resources-directory}/ikube" value="${tomcat-two-bin}"/>
@@ -331,12 +311,12 @@
         id="start-action-two"
         name="start-action-two"
         class="ikube.deploy.action.CmdAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="start-commands-two"/>
     <util:list id="start-commands-two">
-	<value>${tomcat-two-chmod}</value>
-	<value>sleep 20;</value>
+        <value>${tomcat-two-chmod}</value>
+        <value>sleep 20;</value>
         <value>${tomcat-two-startup}</value>
     </util:list>
     <!-- End two -->
@@ -362,7 +342,7 @@
         id="stop-action-three"
         name="stop-action-three"
         class="ikube.deploy.action.CmdAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="stop-commands-three"/>
     <util:list id="stop-commands-three">
@@ -374,25 +354,18 @@
         id="clean-action-three"
         name="clean-action-three"
         class="ikube.deploy.action.CmdAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="clean-commands-three"/>
     <util:list id="clean-commands-three">
         <value>chmod 777 -R ${tomcat-three};</value>
 
-        <value>rm -rf ${tomcat-three-bin}/ikube;</value>
-        <value>rm -rf ${tomcat-three}/webapps/ikube;</value>
-        <value>rm -rf ${tomcat-three}/webapps/ikube.war;</value>
+        <value>rm -rf ${tomcat-three-bin}/ikube/*;</value>
+        <value>rm -rf ${tomcat-three}/webapps/ikube*;</value>
 
-        <value>rm -rf ${tomcat-three}/logs;</value>
-        <value>rm -rf ${tomcat-three}/temp;</value>
-        <value>rm -rf ${tomcat-three}/work;</value>
-
-        <value>mkdir -p ${tomcat-three-bin}/ikube;</value>
-
-        <value>mkdir -p ${tomcat-three}/logs;</value>
-        <value>mkdir -p ${tomcat-three}/temp;</value>
-        <value>mkdir -p ${tomcat-three}/work;</value>
+        <value>rm -rf ${tomcat-three}/logs/*;</value>
+        <value>rm -rf ${tomcat-three}/temp/*;</value>
+        <value>rm -rf ${tomcat-three}/work/*;</value>
 
         <value>chmod 777 -R ${tomcat-three};</value>
     </util:list>
@@ -401,15 +374,16 @@
         id="copy-action-three"
         name="copy-action-three"
         class="ikube.deploy.action.CopyAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="true"
         property:files-ref="files-three"
         property:directories-ref="directories-three"/>
     <util:map id="files-three">
-	<entry key="${tail-script}" value="${tomcat-three-bin}"/>
+        <entry key="${tail-script}" value="${tomcat-three-bin}"/>
         <entry key="code/war/target/${ikube-war}" value="${tomcat-three-webapps}"/>
-	<!-- This over writes the properties specific for the target environment -->
-	<entry key="${resources-directory}/environments/sys/spring.properties" value="${tomcat-three-bin}/ikube/common"/>
+        <!-- This over writes the properties specific for the target environment -->
+        <entry key="${resources-directory}/environments/sys/spring.properties"
+               value="${tomcat-three-bin}/ikube/common"/>
     </util:map>
     <util:map id="directories-three">
         <entry key="${resources-directory}/ikube" value="${tomcat-three-bin}"/>
@@ -423,12 +397,12 @@
         id="start-action-three"
         name="start-action-three"
         class="ikube.deploy.action.CmdAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="start-commands-three"/>
     <util:list id="start-commands-three">
-	<value>${tomcat-three-chmod}</value>
-	<value>sleep 40;</value>
+        <value>${tomcat-three-chmod}</value>
+        <value>sleep 40;</value>
         <value>${tomcat-three-startup}</value>
     </util:list>
     <!-- End three -->
@@ -454,7 +428,7 @@
         id="stop-action-four"
         name="stop-action-four"
         class="ikube.deploy.action.CmdAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="stop-commands-four"/>
     <util:list id="stop-commands-four">
@@ -466,25 +440,18 @@
         id="clean-action-four"
         name="clean-action-four"
         class="ikube.deploy.action.CmdAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="clean-commands-four"/>
     <util:list id="clean-commands-four">
         <value>chmod 777 -R ${tomcat-four};</value>
 
-        <value>rm -rf ${tomcat-four-bin}/ikube;</value>
-        <value>rm -rf ${tomcat-four}/webapps/ikube;</value>
-        <value>rm -rf ${tomcat-four}/webapps/ikube.war;</value>
+        <value>rm -rf ${tomcat-four-bin}/ikube/*;</value>
+        <value>rm -rf ${tomcat-four}/webapps/ikube*;</value>
 
-        <value>rm -rf ${tomcat-four}/logs;</value>
-        <value>rm -rf ${tomcat-four}/temp;</value>
-        <value>rm -rf ${tomcat-four}/work;</value>
-
-        <value>mkdir -p ${tomcat-four-bin}/ikube;</value>
-
-        <value>mkdir -p ${tomcat-four}/logs;</value>
-        <value>mkdir -p ${tomcat-four}/temp;</value>
-        <value>mkdir -p ${tomcat-four}/work;</value>
+        <value>rm -rf ${tomcat-four}/logs/*;</value>
+        <value>rm -rf ${tomcat-four}/temp/*;</value>
+        <value>rm -rf ${tomcat-four}/work/*;</value>
 
         <value>chmod 777 -R ${tomcat-four};</value>
     </util:list>
@@ -493,15 +460,15 @@
         id="copy-action-four"
         name="copy-action-four"
         class="ikube.deploy.action.CopyAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="true"
         property:files-ref="files-four"
         property:directories-ref="directories-four"/>
     <util:map id="files-four">
-	<entry key="${tail-script}" value="${tomcat-four-bin}"/>
+        <entry key="${tail-script}" value="${tomcat-four-bin}"/>
         <entry key="code/war/target/${ikube-war}" value="${tomcat-four-webapps}"/>
-	<!-- This over writes the properties specific for the target environment -->
-	<entry key="${resources-directory}/environments/sys/spring.properties" value="${tomcat-four-bin}/ikube/common"/>
+        <!-- This over writes the properties specific for the target environment -->
+        <entry key="${resources-directory}/environments/sys/spring.properties" value="${tomcat-four-bin}/ikube/common"/>
     </util:map>
     <util:map id="directories-four">
         <entry key="${resources-directory}/ikube" value="${tomcat-four-bin}"/>
@@ -515,16 +482,16 @@
         id="start-action-four"
         name="start-action-four"
         class="ikube.deploy.action.CmdAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="start-commands-four"/>
     <util:list id="start-commands-four">
-	<value>${tomcat-four-chmod}</value>
-	<value>sleep 40;</value>
+        <value>${tomcat-four-chmod}</value>
+        <value>sleep 40;</value>
         <value>${tomcat-four-startup}</value>
     </util:list>
     <!-- End four -->
-    
+
     <!-- Five -->
     <bean
         id="server-five"
@@ -546,7 +513,7 @@
         id="stop-action-five"
         name="stop-action-five"
         class="ikube.deploy.action.CmdAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="stop-commands-five"/>
     <util:list id="stop-commands-five">
@@ -558,25 +525,18 @@
         id="clean-action-five"
         name="clean-action-five"
         class="ikube.deploy.action.CmdAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="clean-commands-five"/>
     <util:list id="clean-commands-five">
         <value>chmod 777 -R ${tomcat-five};</value>
 
-        <value>rm -rf ${tomcat-five-bin}/ikube;</value>
-        <value>rm -rf ${tomcat-five}/webapps/ikube;</value>
-        <value>rm -rf ${tomcat-five}/webapps/ikube.war;</value>
+        <value>rm -rf ${tomcat-five-bin}/ikube/*;</value>
+        <value>rm -rf ${tomcat-five}/webapps/ikube*;</value>
 
-        <value>rm -rf ${tomcat-five}/logs;</value>
-        <value>rm -rf ${tomcat-five}/temp;</value>
-        <value>rm -rf ${tomcat-five}/work;</value>
-
-        <value>mkdir -p ${tomcat-five-bin}/ikube;</value>
-
-        <value>mkdir -p ${tomcat-five}/logs;</value>
-        <value>mkdir -p ${tomcat-five}/temp;</value>
-        <value>mkdir -p ${tomcat-five}/work;</value>
+        <value>rm -rf ${tomcat-five}/logs/*;</value>
+        <value>rm -rf ${tomcat-five}/temp/*;</value>
+        <value>rm -rf ${tomcat-five}/work/*;</value>
 
         <value>chmod 777 -R ${tomcat-five};</value>
     </util:list>
@@ -585,15 +545,15 @@
         id="copy-action-five"
         name="copy-action-five"
         class="ikube.deploy.action.CopyAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="true"
         property:files-ref="files-five"
         property:directories-ref="directories-five"/>
     <util:map id="files-five">
-	<entry key="${tail-script}" value="${tomcat-five-bin}"/>
+        <entry key="${tail-script}" value="${tomcat-five-bin}"/>
         <entry key="code/war/target/${ikube-war}" value="${tomcat-five-webapps}"/>
-	<!-- This over writes the properties specific for the target environment -->
-	<entry key="${resources-directory}/environments/sys/spring.properties" value="${tomcat-five-bin}/ikube/common"/>
+        <!-- This over writes the properties specific for the target environment -->
+        <entry key="${resources-directory}/environments/sys/spring.properties" value="${tomcat-five-bin}/ikube/common"/>
     </util:map>
     <util:map id="directories-five">
         <entry key="${resources-directory}/ikube" value="${tomcat-five-bin}"/>
@@ -607,16 +567,16 @@
         id="start-action-five"
         name="start-action-five"
         class="ikube.deploy.action.CmdAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="start-commands-five"/>
     <util:list id="start-commands-five">
-	<value>${tomcat-five-chmod}</value>
-	<value>sleep 40;</value>
+        <value>${tomcat-five-chmod}</value>
+        <value>sleep 40;</value>
         <value>${tomcat-five-startup}</value>
     </util:list>
     <!-- End five -->
-    
+
     <!-- Six -->
     <bean
         id="server-six"
@@ -638,7 +598,7 @@
         id="stop-action-six"
         name="stop-action-six"
         class="ikube.deploy.action.CmdAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="stop-commands-six"/>
     <util:list id="stop-commands-six">
@@ -650,25 +610,18 @@
         id="clean-action-six"
         name="clean-action-six"
         class="ikube.deploy.action.CmdAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="clean-commands-six"/>
     <util:list id="clean-commands-six">
         <value>chmod 777 -R ${tomcat-six};</value>
 
-        <value>rm -rf ${tomcat-six-bin}/ikube;</value>
-        <value>rm -rf ${tomcat-six}/webapps/ikube;</value>
-        <value>rm -rf ${tomcat-six}/webapps/ikube.war;</value>
+        <value>rm -rf ${tomcat-six-bin}/ikube/*;</value>
+        <value>rm -rf ${tomcat-six}/webapps/ikube*;</value>
 
-        <value>rm -rf ${tomcat-six}/logs;</value>
-        <value>rm -rf ${tomcat-six}/temp;</value>
-        <value>rm -rf ${tomcat-six}/work;</value>
-
-        <value>mkdir -p ${tomcat-six-bin}/ikube;</value>
-
-        <value>mkdir -p ${tomcat-six}/logs;</value>
-        <value>mkdir -p ${tomcat-six}/temp;</value>
-        <value>mkdir -p ${tomcat-six}/work;</value>
+        <value>rm -rf ${tomcat-six}/logs/*;</value>
+        <value>rm -rf ${tomcat-six}/temp/*;</value>
+        <value>rm -rf ${tomcat-six}/work/*;</value>
 
         <value>chmod 777 -R ${tomcat-six};</value>
     </util:list>
@@ -677,15 +630,15 @@
         id="copy-action-six"
         name="copy-action-six"
         class="ikube.deploy.action.CopyAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="true"
         property:files-ref="files-six"
         property:directories-ref="directories-six"/>
     <util:map id="files-six">
-	<entry key="${tail-script}" value="${tomcat-six-bin}"/>
+        <entry key="${tail-script}" value="${tomcat-six-bin}"/>
         <entry key="code/war/target/${ikube-war}" value="${tomcat-six-webapps}"/>
-	<!-- This over writes the properties specific for the target environment -->
-	<entry key="${resources-directory}/environments/sys/spring.properties" value="${tomcat-six-bin}/ikube/common"/>
+        <!-- This over writes the properties specific for the target environment -->
+        <entry key="${resources-directory}/environments/sys/spring.properties" value="${tomcat-six-bin}/ikube/common"/>
     </util:map>
     <util:map id="directories-six">
         <entry key="${resources-directory}/ikube" value="${tomcat-six-bin}"/>
@@ -699,12 +652,12 @@
         id="start-action-six"
         name="start-action-six"
         class="ikube.deploy.action.CmdAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="true"
         property:commands-ref="start-commands-six"/>
     <util:list id="start-commands-six">
-	<value>${tomcat-six-chmod}</value>
-	<value>sleep 40;</value>
+        <value>${tomcat-six-chmod}</value>
+        <value>sleep 40;</value>
         <value>${tomcat-six-startup}</value>
     </util:list>
     <!-- End six -->
@@ -730,7 +683,7 @@
         id="stop-action-production"
         name="stop-action-production"
         class="ikube.deploy.action.CmdAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="false"
         property:commands-ref="stop-commands-production"/>
     <util:list id="stop-commands-production">
@@ -742,25 +695,18 @@
         id="clean-action-production"
         name="clean-action-production"
         class="ikube.deploy.action.CmdAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="false"
         property:commands-ref="clean-commands-production"/>
     <util:list id="clean-commands-production">
         <value>chmod 777 -R ${tomcat-production};</value>
 
-        <value>rm -rf ${tomcat-production-bin}/ikube;</value>
-        <value>rm -rf ${tomcat-production}/webapps/ikube;</value>
-        <value>rm -rf ${tomcat-production}/webapps/ikube.war;</value>
+        <value>rm -rf ${tomcat-production-bin}/ikube/*;</value>
+        <value>rm -rf ${tomcat-production}/webapps/ikube*;</value>
 
-        <value>rm -rf ${tomcat-production}/logs;</value>
-        <value>rm -rf ${tomcat-production}/temp;</value>
-        <value>rm -rf ${tomcat-production}/work;</value>
-
-        <value>mkdir -p ${tomcat-production-bin}/ikube;</value>
-
-        <value>mkdir -p ${tomcat-production}/logs;</value>
-        <value>mkdir -p ${tomcat-production}/temp;</value>
-        <value>mkdir -p ${tomcat-production}/work;</value>
+        <value>rm -rf ${tomcat-production}/logs/*;</value>
+        <value>rm -rf ${tomcat-production}/temp/*;</value>
+        <value>rm -rf ${tomcat-production}/work/*;</value>
 
         <value>chmod 777 -R ${tomcat-production};</value>
     </util:list>
@@ -769,15 +715,16 @@
         id="copy-action-production"
         name="copy-action-production"
         class="ikube.deploy.action.CopyAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="false"
         property:files-ref="files-production"
         property:directories-ref="directories-production"/>
     <util:map id="files-production">
-	<entry key="${tail-script}" value="${tomcat-production-bin}"/>
+        <entry key="${tail-script}" value="${tomcat-production-bin}"/>
         <entry key="code/war/target/${ikube-war}" value="${tomcat-production-webapps}"/>
-	<!-- This over writes the properties specific for the target environment -->
-	<entry key="${resources-directory}/environments/prod/spring.properties" value="${tomcat-production-bin}/ikube/common"/>
+        <!-- This over writes the properties specific for the target environment -->
+        <entry key="${resources-directory}/environments/prod/spring.properties"
+               value="${tomcat-production-bin}/ikube/common"/>
     </util:map>
     <util:map id="directories-production">
         <entry key="${resources-directory}/ikube" value="${tomcat-production-bin}"/>
@@ -789,11 +736,11 @@
         id="start-action-production"
         name="start-action-production"
         class="ikube.deploy.action.CmdAction"
-	property:sleep="${sleep}"
+        property:sleep="${sleep}"
         property:breakOnError="false"
         property:commands-ref="start-commands-production"/>
     <util:list id="start-commands-production">
-	<value>${tomcat-production-chmod}</value>
+        <value>${tomcat-production-chmod}</value>
         <value>${tomcat-production-startup}</value>
     </util:list>
     <!-- End production -->

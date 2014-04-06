@@ -273,7 +273,9 @@
         id="ikube.action.index.handler.strategy.TwitterGeospatialEnrichmentStrategy"
         name="ikube.action.index.handler.strategy.TwitterGeospatialEnrichmentStrategy"
         class="ikube.action.index.handler.strategy.TwitterGeospatialEnrichmentStrategy"
-        init-method="initialize"/>
+        init-method="initialize"
+        depends-on="ikube.toolkit.DataManager"
+        lazy-init="true"/>
 
     <bean
         id="twitter-training-strategy-en"

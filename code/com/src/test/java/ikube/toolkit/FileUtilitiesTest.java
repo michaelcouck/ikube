@@ -82,10 +82,10 @@ public class FileUtilitiesTest extends AbstractTest {
         assertTrue(initialLength >= 1);
 
         List<File> properties = FileUtilities.findFilesRecursively(dotFolder, new ArrayList<File>(), "spring\\.properties");
-        List<File> configuration = FileUtilities.findFilesRecursively(dotFolder, new ArrayList<File>(), "spring.*\\.xml");
+        List<File> configurations = FileUtilities.findFilesRecursively(dotFolder, new ArrayList<File>(), "spring.*\\.xml");
 
-        logger.info("Properties : " + properties.size() + ", " + properties);
-        logger.info("Configuration : " + configuration.size() + ", " + configuration);
+        assertTrue(properties.size() > 10);
+        assertTrue(configurations.size() > 10);
     }
 
     @Test
@@ -161,6 +161,16 @@ public class FileUtilitiesTest extends AbstractTest {
         }
     }
 
+    /**
+     * NOTE: This tests needs to run in a directory where there is only one directory
+     * that is called ikube. For example it will not work in a directory where the structure is
+     * <pre>
+     *     Workspace
+     *          ikube
+     *          ikube-bck
+     * </pre>
+     * because it will look in both ikube directories and probably will not get the correct file.
+     */
     @Test
     public void relativeParent() {
         String dotFolderPath = FileUtilities.cleanFilePath(new File(".").getAbsolutePath());
@@ -168,10 +178,9 @@ public class FileUtilitiesTest extends AbstractTest {
         File relative = FileUtilities.relative(dotFolder, "../../");
         assertEquals(dotFolder.getParentFile().getParentFile(), relative);
 
-        File allData = FileUtilities.findFileRecursively(new File("."), 1, "weka.jar");
-        File allDataRelative = FileUtilities.relative(new File("."), "../libs/tools/analytics/weka.jar");
-        logger.info("All : " + allData + ", " + allDataRelative);
-        assertEquals(allData, allDataRelative);
+        File wekaJar = FileUtilities.findFileRecursively(new File("."), 1, "weka.jar");
+        File wekaJarRelative = FileUtilities.relative(new File("."), "../ikube-git/code/libs/tools/analytics/weka.jar");
+        assertEquals(wekaJar, wekaJarRelative);
     }
 
     private HttpClient getHttpClient() {

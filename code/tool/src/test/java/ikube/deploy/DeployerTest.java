@@ -25,6 +25,7 @@ public class DeployerTest extends AbstractTest {
 
     private static AtomicInteger ATOMIC_INTEGER;
 
+    @SuppressWarnings("UnusedDeclaration")
     @MockClass(realClass = CopyAction.class)
     public static class CopyActionMock {
         @Mock
@@ -34,6 +35,7 @@ public class DeployerTest extends AbstractTest {
         }
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     @MockClass(realClass = CmdAction.class)
     public static class CmdActionMock {
         @Mock
@@ -57,12 +59,6 @@ public class DeployerTest extends AbstractTest {
     @After
     public void after() {
         Mockit.tearDownMocks(CmdActionMock.class, CopyActionMock.class);
-    }
-
-    @Test
-    public void main() {
-        Deployer.main(null);
-        assertEquals("Servers and actions : ", 16, ATOMIC_INTEGER.get());
     }
 
     @Test
