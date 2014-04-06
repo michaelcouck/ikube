@@ -7,7 +7,6 @@ import ikube.model.Context;
 import ikube.toolkit.ThreadUtilities;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.Converter;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,11 +60,6 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
         List<Future<Void>> futures = clusterManager.sendTaskToAll(creator);
         ThreadUtilities.waitForFutures(futures, 15);
         logger.info("Finished building remote analyzer : " + context.getName());
-        /*try {
-            creator.call();
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }*/
         return getAnalyzer(context.getName());
     }
 
@@ -78,11 +72,6 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
         Trainer trainer = new Trainer(analysis);
         List<Future<Void>> futures = clusterManager.sendTaskToAll(trainer);
         ThreadUtilities.waitForFutures(futures, 15);
-        /*try {
-            trainer.call();
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }*/
         return getAnalyzer(analysis.getAnalyzer());
     }
 
@@ -95,11 +84,6 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
         Builder builder = new Builder(analysis);
         List<Future<Void>> futures = clusterManager.sendTaskToAll(builder);
         ThreadUtilities.waitForFutures(futures, 15);
-        /*try {
-            builder.call();
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }*/
         return getAnalyzer(analysis.getAnalyzer());
     }
 
@@ -120,7 +104,6 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
             } catch (final InterruptedException | ExecutionException | TimeoutException e) {
                 throw new RuntimeException(e);
             }
-            // return analyze(analysis);
         } else {
             try {
                 return analyzer.call();
@@ -147,7 +130,6 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
             } catch (final InterruptedException | ExecutionException | TimeoutException e) {
                 throw new RuntimeException(e);
             }
-            // return classesOrClusters(analysis);
         } else {
             try {
                 return classesOrClusters.call();
@@ -174,7 +156,6 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
             } catch (final InterruptedException | ExecutionException | TimeoutException e) {
                 throw new RuntimeException(e);
             }
-            // return sizesForClassesOrClusters(analysis);
         } else {
             try {
                 return sizesForClassesOrClusters.call();
@@ -194,11 +175,6 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
         Destroyer destroyer = new Destroyer(context);
         List<Future<Void>> futures = clusterManager.sendTaskToAll(destroyer);
         ThreadUtilities.waitForFutures(futures, 60);
-        /*try {
-            destroyer.call();
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }*/
     }
 
     /**

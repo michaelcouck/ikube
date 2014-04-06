@@ -69,6 +69,10 @@ public class AnalyticsServiceTest extends AbstractTest {
         AnalyzerManager.getContexts().put(context.getName(), context);
 
         Deencapsulation.setField(analyticsService, "clusterManager", clusterManager);
+
+        IAnalyticsService analyticsServiceMock = mock(IAnalyticsService.class);
+        when(analyticsServiceMock.getAnalyzer(any(String.class))).thenReturn(analyzer);
+        ApplicationContextManagerMock.setBean(IAnalyticsService.class, analyticsServiceMock);
     }
 
     @After
