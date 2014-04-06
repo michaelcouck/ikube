@@ -24,7 +24,7 @@
     </parent>
 
     <properties>
-        <phase>site</phase>
+        <phase>install</phase>
         <packaging>jar</packaging>
         <generate-pom>true</generate-pom>
         <repository-id>ikube</repository-id>
@@ -522,13 +522,13 @@
         </plugins>
     </build>
 
-    <dependencies>
+    <!--<dependencies>
         <dependency>
             <groupId>ikube</groupId>
             <artifactId>ikube-core</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
-    </dependencies>
+    </dependencies>-->
 
 </project>
