@@ -84,8 +84,8 @@ public class FileUtilitiesTest extends AbstractTest {
         List<File> properties = FileUtilities.findFilesRecursively(dotFolder, new ArrayList<File>(), "spring\\.properties");
         List<File> configurations = FileUtilities.findFilesRecursively(dotFolder, new ArrayList<File>(), "spring.*\\.xml");
 
-        assertTrue(properties.size() > 10);
-        assertTrue(configurations.size() > 10);
+        assertTrue(properties.size() > 0);
+        assertTrue(configurations.size() > 0);
     }
 
     @Test
@@ -177,10 +177,6 @@ public class FileUtilitiesTest extends AbstractTest {
         File dotFolder = new File(dotFolderPath);
         File relative = FileUtilities.relative(dotFolder, "../../");
         assertEquals(dotFolder.getParentFile().getParentFile(), relative);
-
-        File wekaJar = FileUtilities.findFileRecursively(new File("."), 1, "weka.jar");
-        File wekaJarRelative = FileUtilities.relative(new File("."), "../ikube-git/code/libs/tools/analytics/weka.jar");
-        assertEquals(wekaJar, wekaJarRelative);
     }
 
     private HttpClient getHttpClient() {
