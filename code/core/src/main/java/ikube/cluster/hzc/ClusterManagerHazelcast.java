@@ -289,6 +289,21 @@ public class ClusterManagerHazelcast extends AClusterManager {
      * {@inheritDoc}
      */
     @Override
+    public <T> Future<T> sendTaskTo(final Server server, final Callable<T> callable) {
+        IExecutorService executorService = hazelcastInstance.getExecutorService(IConstants.EXECUTOR_SERVICE);
+        List<Member> members = new ArrayList<>(hazelcastInstance.getCluster().getMembers());
+        for (final Member member : members) {
+            if (server.getAddress().contains(member.getInetSocketAddress().getAddress().getHostAddress())) {
+                return executorService.submitToMember(callable, member);
+            }
+        }
+        throw new RuntimeException("Couldn't find member with address : " + server.getAddress());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public <T> List<Future<T>> sendTaskToAll(final Callable<T> callable) {
         IExecutorService executorService = hazelcastInstance.getExecutorService(IConstants.EXECUTOR_SERVICE);
         Map<Member, Future<T>> futures = executorService.submitToAllMembers(callable);

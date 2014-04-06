@@ -103,6 +103,16 @@ public interface IClusterManager {
     <T> Future<T> sendTask(final Callable<T> callable);
 
     /**
+     * This method will send a task to a particular server.
+     *
+     * @param server   the server to send the task to
+     * @param callable the callable to execute remotely
+     * @param <T>      the type of result expected from the remote server
+     * @return the return value for the execution of the logic
+     */
+    <T> Future<T> sendTaskTo(final Server server, final Callable<T> callable);
+
+    /**
      * Similar to the above this method will execute a task on a target member of the cluster, except that
      * this method will execute the same task on all nodes in the cluster. This can be useful when, for example,
      *

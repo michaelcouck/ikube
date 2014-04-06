@@ -1,12 +1,18 @@
 package ikube.action;
 
-import ikube.IConstants;
+import ikube.action.remote.SynchronizeCallable;
 import ikube.action.remote.SynchronizeLatestIndexCallable;
 import ikube.model.IndexContext;
-import ikube.toolkit.StringUtilities;
+import ikube.model.Server;
+import ikube.model.Snapshot;
+import ikube.toolkit.FileUtilities;
+import org.apache.commons.io.IOUtils;
 
+import java.io.File;
+import java.io.RandomAccessFile;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -32,47 +38,96 @@ public class Synchronize extends Action<IndexContext, Boolean> {
      */
     @Override
     boolean internalExecute(final IndexContext indexContext) {
-        SynchronizeLatestIndexCallable synchronizeLatestIndexCallable = new SynchronizeLatestIndexCallable(indexContext);
-        List<Future<String[]>> futures = clusterManager.sendTaskToAll(synchronizeLatestIndexCallable);
-        Future<String[]> latestFuture = null;
-        for (final Future<String[]> future : futures) {
-            if (latestFuture == null) {
-                latestFuture = future;
-                continue;
+        Server remote = getTargetRemoteServer(indexContext);
+        if (remote == null) {
+            return Boolean.FALSE;
+        }
+
+        String[] indexFiles;
+        SynchronizeLatestIndexCallable latestCallable = new SynchronizeLatestIndexCallable(indexContext);
+        Future<String[]> future = clusterManager.sendTaskTo(remote, latestCallable);
+        try {
+            indexFiles = future.get();
+        } catch (final InterruptedException | ExecutionException e) {
+            throw new RuntimeException("Exception getting the index files from the remote server : " + remote);
+        }
+
+        boolean exception = Boolean.FALSE;
+        try {
+            int offset = 0;
+            int length = 1024 * 1024 * 10;
+            for (final String indexFile : indexFiles) {
+                byte[] chunk;
+                do {
+                    SynchronizeCallable chunkCallable = new SynchronizeCallable(indexFile, offset, length);
+                    Future<byte[]> chunkFuture = clusterManager.sendTaskTo(remote, chunkCallable);
+                    chunk = chunkFuture.get();
+                    if (chunk.length > 0) {
+                        File file = new File(indexFile);
+                        RandomAccessFile randomAccessFile = null;
+                        try {
+                            randomAccessFile = new RandomAccessFile(indexFile, "rw");
+                            randomAccessFile.seek(offset);
+                            randomAccessFile.write(chunk);
+                        } finally {
+                            IOUtils.closeQuietly(randomAccessFile);
+                        }
+                    }
+                    offset += chunk.length;
+                } while (chunk.length > 0);
             }
-            try {
-                String[] indexFiles = future.get();
-                String[] latestIndexFiles = latestFuture.get();
-                if (indexFiles == null || indexFiles.length == 0) {
-                    continue;
+        } catch (final Exception e) {
+            exception = Boolean.TRUE;
+            throw new RuntimeException("Exception synchronizing remote index : ", e);
+        } finally {
+            if (exception) {
+                // Try to delete the potentially corrupt index files
+                //noinspection ConstantConditions
+                if (indexFiles != null) {
+                    File indexDirectory = new File(indexFiles[0]).getParentFile();
+                    logger.warn("Deleting index file coming from remote server : " + indexDirectory);
+                    FileUtilities.deleteFile(indexDirectory);
                 }
-                if (latestIndexFiles == null || latestIndexFiles.length == 0) {
-                    latestFuture = future;
-                    continue;
-                }
-                // Compare the index timestamps
-                long indexDate = getDirectoryDate(indexFiles[0]);
-                long latestIndexDate = getDirectoryDate(latestIndexFiles[0]);
-                if (indexDate > latestIndexDate) {
-                    latestFuture = future;
-                }
-            } catch (final InterruptedException | ExecutionException e) {
-                logger.error("Exception checking future for index files : ", e);
             }
         }
-        // We have the latest future from the remote servers
-
         return Boolean.TRUE;
     }
 
-    long getDirectoryDate(final String filePath) {
-        String[] segments = filePath.split(IConstants.SEP);
-        for (final String segment : segments) {
-            if (StringUtilities.isNumeric(segment)) {
-                return Long.parseLong(segment);
+    Server getTargetRemoteServer(final IndexContext indexContext) {
+        Server remote = null;
+        Date timestamp = null;
+        Server local = clusterManager.getServer();
+        Map<String, Server> servers = clusterManager.getServers();
+        for (final Map.Entry<String, Server> mapEntry : servers.entrySet()) {
+            Server server = mapEntry.getValue();
+            if (server.getAddress().equals(local.getAddress())) {
+                continue;
+            }
+            List<IndexContext> indexContexts = server.getIndexContexts();
+            Date latestIndexTimestamp = getLatestIndexTimestamp(indexContext, indexContexts);
+            if (timestamp == null) {
+                timestamp = latestIndexTimestamp;
+                remote = server;
+            } else {
+                if (latestIndexTimestamp.after(timestamp)) {
+                    timestamp = latestIndexTimestamp;
+                    remote = server;
+                }
             }
         }
-        return Long.MIN_VALUE;
+        return remote;
+    }
+
+    Date getLatestIndexTimestamp(final IndexContext indexContext, final List<IndexContext> indexContexts) {
+        for (final IndexContext remoteIndexContext : indexContexts) {
+            if (remoteIndexContext.getName().equals(indexContext.getName())) {
+                Snapshot snapshot = remoteIndexContext.getSnapshot();
+                if (snapshot != null) {
+                    return snapshot.getLatestIndexTimestamp();
+                }
+            }
+        }
+        return null;
     }
 
 }
