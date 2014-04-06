@@ -13,7 +13,7 @@ import java.util.concurrent.Callable;
  * @version 01.00
  * @since 30-03-2014
  */
-public class IsIndexCurrentCallable extends IsIndexCurrent implements Callable<Boolean> {
+public class IsIndexCurrentCallable implements Callable<Boolean> {
 
     private IndexContext indexContext;
 
@@ -26,7 +26,7 @@ public class IsIndexCurrentCallable extends IsIndexCurrent implements Callable<B
      */
     @Override
     public Boolean call() throws Exception {
-        return this.evaluate(indexContext);
+        return new IsIndexCurrent().evaluate(indexContext);
     }
 
 }
