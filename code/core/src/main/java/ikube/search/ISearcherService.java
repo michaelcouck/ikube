@@ -6,7 +6,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * This is the 'service' layer for searching.
+ * This is the 'service' layer for searching. This interface has several methods for searching, specifically
+ * with multiple parameters, including the name of the index, the search strings and fields, and so on. It also has
+ * a more convenience method(s) with a {@link ikube.model.Search} object, which decomposes to reveal all the required
+ * parameters for a complex search, including the above, i.e. index name and so on.
+ *
+ * Typically the {@link ikube.model.Search} object methods will be used from a Json call, and the other methods
+ * will be called by systems that define parameters in the url for convenience.
  *
  * @author Michael Couck
  * @version 01.00

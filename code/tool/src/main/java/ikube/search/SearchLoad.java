@@ -26,12 +26,13 @@ public class SearchLoad {
 
     public static void main(String[] args) throws IOException {
         Search search = new Search();
+        search.setFirstResult(0);
+        search.setMaxResults(10);
         search.setDistributed(Boolean.FALSE);
         search.setSearchStrings(Arrays.asList("cape town"));
-        search.setFirstResult(0);
+
         search.setFragment(Boolean.TRUE);
         search.setIndexName(IConstants.GEOSPATIAL);
-        search.setMaxResults(10);
         search.setOccurrenceFields(Arrays.asList("must"));
         search.setSearchFields(Arrays.asList(IConstants.NAME));
         search.setTypeFields(Arrays.asList("string"));
@@ -69,7 +70,7 @@ public class SearchLoad {
         builder.append("/service");
         builder.append("/search");
         builder.append("/json");
-        return new URL("http", "ikube.be", 80, builder.toString()).toString();
+        return new URL("http", "ikube.be", 8080, builder.toString()).toString();
     }
 
 }

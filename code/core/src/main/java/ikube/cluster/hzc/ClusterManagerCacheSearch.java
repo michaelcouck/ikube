@@ -2,6 +2,7 @@ package ikube.cluster.hzc;
 
 import com.hazelcast.core.MapStore;
 import com.hazelcast.spring.context.SpringAware;
+import ikube.IConstants;
 import ikube.database.IDataBase;
 import ikube.model.Search;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +55,7 @@ public class ClusterManagerCacheSearch implements MapStore<Long, Search> {
      */
     @Override
     public void delete(final Long hash) {
-        Search search = dataBase.find(Search.class, new String[]{"hash"}, new Object[]{hash});
+        Search search = dataBase.find(Search.class, new String[]{IConstants.HASH}, new Object[]{hash});
         if (search != null) {
             dataBase.remove(search);
         }
@@ -75,7 +76,7 @@ public class ClusterManagerCacheSearch implements MapStore<Long, Search> {
      */
     @Override
     public Search load(final Long hash) {
-        return dataBase.find(Search.class, new String[]{"hash"}, new Object[]{hash});
+        return dataBase.find(Search.class, new String[]{IConstants.HASH}, new Object[]{hash});
     }
 
     /**
@@ -99,7 +100,7 @@ public class ClusterManagerCacheSearch implements MapStore<Long, Search> {
     @Override
     public Set<Long> loadAllKeys() {
         Set<Long> hashes = new TreeSet<>();
-        List<Search> searches = dataBase.find(Search.class, 0, 1000);
+        List<Search> searches = dataBase.find(Search.class, 0, 10000);
         for (final Search search : searches) {
             hashes.add(search.getHash());
         }

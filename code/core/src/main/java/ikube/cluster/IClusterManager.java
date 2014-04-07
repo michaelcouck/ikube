@@ -11,7 +11,10 @@ import java.util.concurrent.Future;
 
 /**
  * This is the interface that will synchronize and coordinate the servers in the cluster. The
- * implementations are critical to the functioning of Ikube.
+ * implementations are critical to the functioning of Ikube. Along with this is the functionality that
+ * will distribute the searches in the cluster, as well as the analytics. This class, because it controls the grid, will
+ * also be responsible for the persistence of the searches in the database. Typically the grid functionality will be
+ * used as a write delay to the database.
  *
  * @author Michael Couck
  * @version 01.00
@@ -91,10 +94,10 @@ public interface IClusterManager {
 
     /**
      * This method will post a callable to the a member in the cluster. The result can be gotten from
-     * the future that is returned, and or the callable. Keep in mind that on the other node, there is no
+     * the future that is returned. Keep in mind that on the remote node, there is no
      * dependency injection, so you have to get everything on that side when you get there.
      * <p/>
-     * This method will randomly select a node to execute the task on. Over time this distribution should be
+     * This method will randomly select a node to execute the task on. Over time the tasks should be
      * evenly distributed over the nodes in the cluster, essentially load balancing the stress over the cluster.
      *
      * @param callable the callable that will be executed on a random target node
@@ -103,7 +106,7 @@ public interface IClusterManager {
     <T> Future<T> sendTask(final Callable<T> callable);
 
     /**
-     * This method will send a task to a particular server.
+     * This method, similar to the above, will send a task to a particular server.
      *
      * @param server   the server to send the task to
      * @param callable the callable to execute remotely
@@ -114,7 +117,9 @@ public interface IClusterManager {
 
     /**
      * Similar to the above this method will execute a task on a target member of the cluster, except that
-     * this method will execute the same task on all nodes in the cluster. This can be useful when, for example,
+     * this method will execute the same task on all nodes in the cluster. This can be useful when, for example
+     * when there are models being dynamically trained and all the servers need to stay in synch, so they all get
+     * the updated analysis object to re-train from, and consequently persist the model to their local file system.
      *
      * @param callable the callable that will be executed on the all nodes of the cluster
      * @return the futures from all the members that the callable is be executed on

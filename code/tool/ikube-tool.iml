@@ -12,7 +12,13 @@
       <configuration>
         <setting name="validation-enabled" value="true" />
         <setting name="provider-name" value="" />
-        <datasource-mapping />
+        <datasource-mapping>
+          <factory-entry name="${ikube.persistenceUnit}" />
+          <factory-entry name="IkubePersistenceUnitDb2" value="3874489b-b543-420e-8979-ef3c40671ef9" />
+          <factory-entry name="IkubePersistenceUnitH2" value="c2f80ce1-20c5-4c68-a675-25af2ef95b42" />
+          <factory-entry name="IkubePersistenceUnitOracle" value="05af5846-5a68-4122-91d3-10131effed1f" />
+          <factory-entry name="IkubePersistenceUnitPostgres" value="8cc3b5f2-d40a-4b4e-bcb0-d338ba159bcb" />
+        </datasource-mapping>
         <deploymentDescriptor name="persistence.xml" url="file://$MODULE_DIR$/src/main/resources/META-INF/persistence.xml" />
       </configuration>
     </facet>

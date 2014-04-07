@@ -41,7 +41,7 @@ public class SearcherService implements ISearcherService {
     private static final ArrayList<HashMap<String, String>> EMPTY_RESULTS = new ArrayList<>();
 
     /**
-     * The service to distribute the searches in the cluster.
+     * The service to distribute the searches in the cluster, and to put the searches in the grid.
      */
     @Autowired
     private IClusterManager clusterManager;
@@ -508,9 +508,9 @@ public class SearcherService implements ISearcherService {
         try {
             Search cacheSearch = clusterManager.get(IConstants.SEARCH, hash);
             if (cacheSearch == null) {
-                clusterManager.put(search.getHash(), search);
+                clusterManager.put(IConstants.SEARCH, search.getHash(), search);
             } else {
-                clusterManager.put(cacheSearch.getHash(), cacheSearch);
+                clusterManager.put(IConstants.SEARCH, cacheSearch.getHash(), cacheSearch);
             }
         } catch (final Exception e) {
             LOGGER.error("Exception setting search in database : ", e);
