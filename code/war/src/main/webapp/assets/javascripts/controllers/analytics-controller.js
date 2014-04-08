@@ -39,13 +39,18 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
     };
 
     $scope.context = {
-        name: undefined, // 'weka',
-        analyzer: undefined, // 'ikube.analytics.weka.WekaClassifier',
+        name: undefined, // 'weka', sentiment-smo-en
+        /*analyzer: undefined, // 'ikube.analytics.weka.WekaClassifier',
         filter: undefined, // 'weka.filters.unsupervised.attribute.StringToWordVector',
-        algorithm: undefined, // 'weka.classifiers.functions.SMO',
+        algorithm: undefined, // 'weka.classifiers.functions.SMO',*/
         options: undefined, // -N 6 (six clusters for example)
         trainingData: undefined,
-        maxTraining: 10000
+        maxTraining: 10000,
+        analyzerInfo : {
+            analyzer : undefined,
+            algorithm : undefined,
+            filter : undefined
+        }
     };
 
     $scope.doCreate = function () {

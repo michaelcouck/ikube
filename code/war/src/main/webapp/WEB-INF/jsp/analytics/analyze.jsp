@@ -58,7 +58,7 @@
                                 <input
                                     class="input"
                                     type="text"
-                                    ng-model="context.analyzer"
+                                    ng-model="context.analyzerInfo.analyzer"
                                     placeholder="Analyzer identifier..."
                                     readonly>
                             </div>
@@ -67,7 +67,7 @@
                                 <input
                                     class="input"
                                     type="text"
-                                    ng-model="context.filter"
+                                    ng-model="context.analyzerInfo.filter"
                                     placeholder="Filter class..."
                                     readonly>
                             </div>
@@ -76,7 +76,7 @@
                                 <input
                                     class="input"
                                     type="text"
-                                    ng-model="context.algorithm"
+                                    ng-model="context.analyzerInfo.algorithm"
                                     placeholder="Algorithm class..."
                                     readonly>
                             </div>

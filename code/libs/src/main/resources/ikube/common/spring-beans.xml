@@ -146,7 +146,8 @@
         name="ikube.toolkit.DataManager"
         class="ikube.toolkit.DataManager"
         lazy-init="false"
-        init-method="loadData"/>
+        init-method="loadData"
+        depends-on="ikube.toolkit.ThreadUtilities"/>
 
     <bean
         id="ikube.action.index.parse.mime.MimeMapper"

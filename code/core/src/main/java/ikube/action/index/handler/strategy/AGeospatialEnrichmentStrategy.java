@@ -84,10 +84,13 @@ public abstract class AGeospatialEnrichmentStrategy extends AStrategy {
         this.spatialStrategy = new RecursivePrefixTreeStrategy(spatialPrefixTree, IConstants.POSITION_FIELD_NAME);
 
         final String name = "wait-for-data-load";
+		if (!ThreadUtilities.isInitialized()) {
+			ThreadUtilities.initialize();
+		}
         ThreadUtilities.submit(name, new Runnable() {
             public void run() {
                 try {
-                    ThreadUtilities.sleep(15000);
+                    ThreadUtilities.sleep(30000);
                     if (GEO_CITY == null) {
                         GEO_CITY = new HashMap<>();
                         Collection<GeoCity> geoCities = dataBase.find(GeoCity.class, 0, Integer.MAX_VALUE);

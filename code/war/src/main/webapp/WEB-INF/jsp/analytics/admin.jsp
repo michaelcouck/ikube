@@ -40,21 +40,21 @@
                                     <input
                                         class="input"
                                         type="text"
-                                        ng-model="context.analyzer"
+                                        ng-model="context.analyzerInfo.analyzer"
                                         placeholder="Analyzer class...">
                                 </div>
                                 <div class="input">
                                     <input
                                         class="input"
                                         type="text"
-                                        ng-model="context.filter"
+                                        ng-model="context.analyzerInfo.filter"
                                         placeholder="Filter class...">
                                 </div>
                                 <div class="input">
                                     <input
                                         class="input"
                                         type="text"
-                                        ng-model="context.algorithm"
+                                        ng-model="context.analyzerInfo.algorithm"
                                         placeholder="Algorithm class...">
                                 </div>
                                 <div class="note"><b>Specify the options, string[] for Weka format, please refer to the Weka documentation</b></div>
