@@ -37,7 +37,6 @@ public class SearcherService implements ISearcherService {
 
     static final Logger LOGGER = LoggerFactory.getLogger(SearcherService.class);
 
-    static final int MAX_PERSIST_SIZE = 1000;
     private static final ArrayList<HashMap<String, String>> EMPTY_RESULTS = new ArrayList<>();
 
     /**
