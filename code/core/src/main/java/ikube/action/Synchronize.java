@@ -75,7 +75,7 @@ public class Synchronize extends Action<IndexContext, Boolean> {
                     Future<byte[]> chunkFuture = clusterManager.sendTaskTo(remote, chunkCallable);
                     chunk = chunkFuture.get();
                     if (chunk.length > 0) {
-                        File file = new File(indexFile);
+                        File file = FileUtilities.getOrCreateFile(new File(indexFile));
                         RandomAccessFile randomAccessFile = null;
                         try {
                             randomAccessFile = new RandomAccessFile(indexFile, "rw");
