@@ -49,14 +49,14 @@ public class SynchronizeCallable implements Callable<byte[]>, Serializable {
 		RandomAccessFile randomAccessFile = null;
 		try {
 			File indexFile = new File(this.indexFile);
-			System.out.println("Getting chunk from : " + offset + ", " + length + ", " + indexFile);
 			randomAccessFile = new RandomAccessFile(indexFile, "rw");
 			if (randomAccessFile.length() > offset) {
 				length = (int) Math.min(randomAccessFile.length() - offset, length);
+				System.out.println("Getting chunk from : " + offset + ", " + length + ", " + indexFile);
 				chunk = new byte[length];
 				randomAccessFile.seek(offset);
 				length = randomAccessFile.read(chunk, 0, length);
-				System.out.println("Chunk : " + length + ", " + chunk.length);
+				System.out.println("Read length : " + length + ", " + chunk.length);
 			}
 		} finally {
 			IOUtils.closeQuietly(randomAccessFile);

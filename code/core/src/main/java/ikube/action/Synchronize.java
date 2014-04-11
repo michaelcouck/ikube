@@ -116,9 +116,9 @@ public class Synchronize extends Action<IndexContext, Boolean> {
         Map<String, Server> servers = clusterManager.getServers();
         for (final Map.Entry<String, Server> mapEntry : servers.entrySet()) {
             Server server = mapEntry.getValue();
-            if (server.getAddress().equals(local.getAddress())) {
+            /*if (server.getAddress().equals(local.getAddress())) {
                 continue;
-            }
+            }*/
             List<IndexContext> indexContexts = server.getIndexContexts();
             Date latestIndexTimestamp = getLatestIndexTimestamp(indexContext, indexContexts);
             if (timestamp == null) {
