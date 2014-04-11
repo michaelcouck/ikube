@@ -23,7 +23,7 @@ public class SearcherClientIntegration {
     public void main() throws Exception {
 
         String path = "/ikube/service/search/xml/geospatial";
-        URL url = new URL("http", "localhost", 9090, path);
+        URL url = new URL("http", "ikube.be", 80, path);
         System.out.println(url);
 
         String[] names = { //

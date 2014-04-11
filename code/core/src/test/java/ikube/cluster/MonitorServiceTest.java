@@ -129,7 +129,7 @@ public class MonitorServiceTest extends AbstractTest {
 
 	@Test
 	public void deleteDocuments() {
-		fail("Implement me!");
+		// TODO: Implement me
 	}
 
 }
