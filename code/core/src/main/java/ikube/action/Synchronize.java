@@ -69,11 +69,15 @@ public class Synchronize extends Action<IndexContext, Boolean> {
             for (final String indexFile : indexFiles) {
                 byte[] chunk;
                 do {
+					logger.info("Getting file : " + indexFile + ", " + offset + ", " + length);
                     // Keep calling the remote server for chunks of the index file
                     // until there is no more data left, i.e. the files is completely copied
                     SynchronizeCallable chunkCallable = new SynchronizeCallable(indexFile, offset, length);
                     Future<byte[]> chunkFuture = clusterManager.sendTaskTo(remote, chunkCallable);
                     chunk = chunkFuture.get();
+					if (chunk == null) {
+						break;
+					}
                     if (chunk.length > 0) {
                         File file = FileUtilities.getOrCreateFile(new File(indexFile));
                         RandomAccessFile randomAccessFile = null;
@@ -84,9 +88,9 @@ public class Synchronize extends Action<IndexContext, Boolean> {
                         } finally {
                             IOUtils.closeQuietly(randomAccessFile);
                         }
-                    }
-                    offset += chunk.length;
-                } while (chunk.length > 0);
+					}
+					offset += chunk.length;
+				} while (chunk.length > 0);
             }
         } catch (final Exception e) {
             exception = Boolean.TRUE;

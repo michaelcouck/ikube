@@ -26,6 +26,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.Stack;
 import java.util.concurrent.RecursiveAction;
 import java.util.regex.Pattern;
@@ -48,6 +49,7 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
 
     private Logger logger = LoggerFactory.getLogger(InternetResourceProvider.class);
 
+	private Random random;
     private Stack<Url> urls;
     private IDataBase dataBase;
     private IndexableInternet indexableInternet;
@@ -59,6 +61,7 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
     }
 
     void initialize(final IndexableInternet indexableInternet) {
+		random = new Random();
         urls = new Stack<>();
         final Pattern pattern;
         if (indexableInternet.getExcludedPattern() != null) {
@@ -219,11 +222,12 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
             logger.info("Going to database for resources : ");
             String[] fields = {IConstants.NAME, IConstants.INDEXED};
             Object[] values = {indexableInternet.getName(), Boolean.FALSE};
-            url = dataBase.find(Url.class, fields, values);
-            if (url != null) {
-                logger.info("Removing url : " + url);
-                dataBase.remove(url);
-            }
+            List<Url> dbUrls = dataBase.find(Url.class, fields, values, 0, 100);
+			dataBase.removeBatch(dbUrls);
+			this.urls.addAll(dbUrls);
+			if (this.urls.size() > 0) {
+				url = this.urls.pop();
+			}
         }
         logger.debug("Doing url : " + url + ", " + urls.size());
         return url;
@@ -240,9 +244,11 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
         if (urls.size() + resources.size() < IConstants.ONE_THOUSAND) {
             urls.addAll(resources);
         } else {
-            // If we go over the limit for the stack size then we need to
-            // persist the url in the database to avoid running out of memory
-            logger.info("Persisting resources : " + resources.size());
+			if (random.nextLong() % 1000 == 0) {
+				// If we go over the limit for the stack size then we need to
+				// persist the url in the database to avoid running out of memory
+				logger.info("Persisting resources : " + resources.size() + ", urls : " + urls.size() + ", " + resources);
+			}
             dataBase.persistBatch(resources);
         }
     }

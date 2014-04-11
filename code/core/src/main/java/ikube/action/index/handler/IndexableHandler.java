@@ -117,7 +117,7 @@ public abstract class IndexableHandler<T extends Indexable> implements IIndexabl
             final IndexContext indexContext,
             final T indexable,
             final IResourceProvider<?> resourceProvider) {
-        if (indexable.incrementThreads(-1) <= 0) {
+        if (indexable.incrementThreads(-1) < 0) {
             return;
         }
         // Split off some more threads to help do the work

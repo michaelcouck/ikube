@@ -21,66 +21,64 @@ import java.util.concurrent.Callable;
  */
 public class SynchronizeCallable implements Callable<byte[]>, Serializable {
 
-    /**
-     * The absolute path to the file on the remote server
-     */
-    private String indexFile;
-    /**
-     * The offset to start reading from in the file stream
-     */
-    private long offset;
-    /**
-     * The length of data to read from the target file
-     */
-    private int length;
+	/**
+	 * The absolute path to the file on the remote server
+	 */
+	private String indexFile;
+	/**
+	 * The offset to start reading from in the file stream
+	 */
+	private long offset;
+	/**
+	 * The length of data to read from the target file
+	 */
+	private int length;
 
-    public SynchronizeCallable(final String indexFile, final long offset, final int length) {
-        this.indexFile = indexFile;
-        this.offset = offset;
-        this.length = length;
-    }
+	public SynchronizeCallable(final String indexFile, final long offset, final int length) {
+		this.indexFile = indexFile;
+		this.offset = offset;
+		this.length = length;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public byte[] call() throws Exception {
-        byte[] chunk = new byte[0];
-        RandomAccessFile randomAccessFile = null;
-        try {
-            File indexFile = new File(this.indexFile);
-            randomAccessFile = new RandomAccessFile(indexFile, "rw");
-            if (randomAccessFile.length() > offset) {
-                randomAccessFile.seek(offset);
-                chunk = new byte[length];
-                int length = randomAccessFile.read(chunk, 0, this.length);
-                if (length != this.length) {
-                    byte[] chunkClone = new byte[length];
-                    System.arraycopy(chunk, 0, chunkClone, 0, length);
-                    chunk = chunkClone;
-                }
-            }
-        } finally {
-            IOUtils.closeQuietly(randomAccessFile);
-        }
-        return chunk;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public byte[] call() throws Exception {
+		byte[] chunk = new byte[0];
+		RandomAccessFile randomAccessFile = null;
+		try {
+			File indexFile = new File(this.indexFile);
+			System.out.println("Getting chunk from : " + offset + ", " + length + ", " + indexFile);
+			randomAccessFile = new RandomAccessFile(indexFile, "rw");
+			if (randomAccessFile.length() > offset) {
+				length = (int) Math.min(randomAccessFile.length() - offset, length);
+				chunk = new byte[length];
+				randomAccessFile.seek(offset);
+				length = randomAccessFile.read(chunk, 0, length);
+				System.out.println("Chunk : " + length + ", " + chunk.length);
+			}
+		} finally {
+			IOUtils.closeQuietly(randomAccessFile);
+		}
+		return chunk;
+	}
 
-    /**
-     * This method can be used to compress the data over the wire.
-     *
-     * @param chunk the chunk of data to compress
-     * @return the compressed binary array of data
-     */
-    @SuppressWarnings("UnusedDeclaration")
-    private byte[] compress(final byte[] chunk) {
-        LZ4Factory factory = LZ4Factory.fastestInstance();
-        int decompressedLength = length;
-        LZ4Compressor compressor = factory.fastCompressor();
-        int maxCompressedLength = compressor.maxCompressedLength(decompressedLength);
-        byte[] compressed = new byte[maxCompressedLength];
-        int compressedLength = compressor.compress(chunk, 0, decompressedLength, compressed, 0, maxCompressedLength);
-        return compressed;
-    }
+	/**
+	 * This method can be used to compress the data over the wire.
+	 *
+	 * @param chunk the chunk of data to compress
+	 * @return the compressed binary array of data
+	 */
+	@SuppressWarnings("UnusedDeclaration")
+	private byte[] compress(final byte[] chunk) {
+		LZ4Factory factory = LZ4Factory.fastestInstance();
+		int decompressedLength = length;
+		LZ4Compressor compressor = factory.fastCompressor();
+		int maxCompressedLength = compressor.maxCompressedLength(decompressedLength);
+		byte[] compressed = new byte[maxCompressedLength];
+		int compressedLength = compressor.compress(chunk, 0, decompressedLength, compressed, 0, maxCompressedLength);
+		return compressed;
+	}
 
 }

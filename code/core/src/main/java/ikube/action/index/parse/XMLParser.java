@@ -1,16 +1,6 @@
 package ikube.action.index.parse;
 
 import ikube.IConstants;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.List;
-
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -19,13 +9,17 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import java.io.*;
+import java.util.List;
+
 /**
- * This class will extract text data from an xml file. It will completely ignore dtd files, going so far as to return dummy files so it doesn't validate against
- * a non existing file and crash.
- * 
+ * This class will extract text data from an xml file. It will completely ignore dtd files,
+ * going so far as to return dummy files so it doesn't validate against a non existing file and
+ * crash.
+ *
  * @author Michael Couck
- * @since 03.09.10
  * @version 01.00
+ * @since 03-09-2010
  */
 public class XMLParser implements IParser {
 
@@ -62,7 +56,7 @@ public class XMLParser implements IParser {
 
 	/**
 	 * Visits each tag up and down the tree recursively getting the text content from the tag.
-	 * 
+	 *
 	 * @param parent the parent tag to start recursing
 	 * @throws IOException
 	 */
@@ -76,7 +70,7 @@ public class XMLParser implements IParser {
 		// Get all the attributes as well
 		List<Attribute> attributes = parent.attributes();
 		if (attributes != null) {
-			for (Attribute attribute : attributes) {
+			for (final Attribute attribute : attributes) {
 				String name = attribute.getName();
 				String value = attribute.getValue();
 				if (name != null && !name.trim().equals("")) {
@@ -88,7 +82,7 @@ public class XMLParser implements IParser {
 			}
 		}
 		List<Element> children = parent.elements();
-		for (Element child : children) {
+		for (final Element child : children) {
 			visit(child, writer);
 		}
 	}
