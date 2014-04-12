@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:property="http://www.springframework.org/schema/p"
+    xmlns:util="http://www.springframework.org/schema/util"
+
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <description>This file is the Belgacom index configuration.</description>
+
+    <bean
+        id="belgacom"
+        class="ikube.model.IndexContext"
+        property:name="belgacom"
+        property:maxAge="600"
+        property:compoundFile="true"
+        property:bufferedDocs="10"
+        property:bufferSize="32"
+        property:internetBatchSize="10"
+        property:mergeFactor="10"
+        property:maxFieldLength="1000"
+        property:maxReadLength="100000"
+        property:throttle="0"
+        property:indexDirectoryPath="${index.directory.path}"
+        property:indexDirectoryPathBackup="${index.directory.path.backup}"
+        property:analyzer-ref="belgacom-analyzer"
+        property:children-ref="belgacom-indexables"/>
+    <util:list id="belgacom-indexables">
+        <!--<ref local="belgacom-stock" />-->
+        <ref local="belgacom-repository"/>
+    </util:list>
+
+    <bean
+        id="belgacom-analyzer"
+        class="org.apache.lucene.analysis.standard.StandardAnalyzer">
+        <constructor-arg value="LUCENE_46" />
+    </bean>
+
+    <!--<bean
+        id="belgacom-stock"
+        class="ikube.model.IndexableTable"
+        property:name="product_stock"
+        property:address="false"
+        property:maxExceptions="1000"
+        property:threads="1"
+        property:allColumns="true"
+
+        property:stored="true"
+        property:analyzed="true"
+        property:vectored="false"
+        property:omitNorms="true"
+
+        property:dataSource-ref="nonXaDataSourceBelgacom" />-->
+
+    <bean
+        id="belgacom-repository"
+        class="ikube.model.IndexableInternet"
+        property:name="belgacom-repository"
+        property:url="http://ssr.web.bc/repository/"
+        property:idFieldName="id"
+        property:titleFieldName="title"
+        property:contentFieldName="contents"
+        property:analyzed="true"
+        property:stored="true"
+        property:vectored="true"
+        property:address="false"
+        property:tokenized="true"
+
+        property:excludedPattern=""
+        property:maxExceptions="100"
+        property:maxReadLength="100000"
+        property:timeout="60000"
+        property:omitNorms="false"
+        property:threads="4"
+        property:internetBatchSize="${internet.batch.size}"/>
+
+</beans>
