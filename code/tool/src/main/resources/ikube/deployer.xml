@@ -44,33 +44,14 @@
     <bean
         class="ikube.deploy.Deployer"
         property:parallel="${in-parallel}"
-        property:maxWaitTime="60"
-        property:servers-ref="servers"/>
-
-    <util:list id="servers">
-        <!-- ref local="server"/ -->
-        <ref local="server-one"/>
-        <ref local="server-two"/>
-        <ref local="server-three"/>
-        <ref local="server-four"/>
-        <ref local="server-five"/>
-        <ref local="server-six"/>
-        <!-- 
-    	    Note 04-03-2014: Have to get sshj to execute as sudo!
-    	    Update later that day: This seems to be impossible, so the solution was to run the
-    	    server on port 8080, and have the router point to this port. Not very convenient
-    	    at all. But in fact, it seems that it could be possible to run sudo, but every
-    	    thing needs to be on one line, and the user must be configured to not need a
-    	    password to run sudo, tried and failed... :(
-	    -->
-        <ref local="server-production"/>
-    </util:list>
+        property:maxWaitTime="60"/>
 
     <!-- This is the base server on the 32 core machine -->
     <bean
         id="server"
         name="server"
         class="ikube.deploy.model.Server"
+	property:name="server"
         property:ip="${server-system-ip}"
         property:username="${username}"
         property:password="${password}"
@@ -80,7 +61,7 @@
         <ref local="stop-action"/>
         <ref local="clean-action"/>
         <ref local="copy-action"/>
-        <!-- ref local="start-action"/ -->
+        <ref local="start-action"/>
     </util:list>
 
     <bean
@@ -156,6 +137,7 @@
         id="server-one"
         name="server-one"
         class="ikube.deploy.model.Server"
+	property:name="server-one"
         property:ip="${server-system-ip}"
         property:username="${username}"
         property:password="${password}"
@@ -240,6 +222,7 @@
         id="server-two"
         name="server-two"
         class="ikube.deploy.model.Server"
+	property:name="server-two"
         property:ip="${server-system-ip}"
         property:username="${username}"
         property:password="${password}"
@@ -326,6 +309,7 @@
         id="server-three"
         name="server-three"
         class="ikube.deploy.model.Server"
+	property:name="server-three"
         property:ip="${server-system-ip}"
         property:username="${username}"
         property:password="${password}"
@@ -412,6 +396,7 @@
         id="server-four"
         name="server-four"
         class="ikube.deploy.model.Server"
+	property:name="server-four"
         property:ip="${server-system-ip}"
         property:username="${username}"
         property:password="${password}"
@@ -497,6 +482,7 @@
         id="server-five"
         name="server-five"
         class="ikube.deploy.model.Server"
+	property:name="server-five"
         property:ip="${server-system-ip}"
         property:username="${username}"
         property:password="${password}"
@@ -582,6 +568,7 @@
         id="server-six"
         name="server-six"
         class="ikube.deploy.model.Server"
+	property:name="server-six"
         property:ip="${server-system-ip}"
         property:username="${username}"
         property:password="${password}"
@@ -661,15 +648,100 @@
         <value>${tomcat-six-startup}</value>
     </util:list>
     <!-- End six -->
+    
+    <!-- Synchronize -->
+    <bean
+        id="server-synchronize"
+        name="server-synchronize"
+        class="ikube.deploy.model.Server"
+	property:name="server-synchronize"
+        property:ip="${server-synchronize-ip}"
+        property:username="${username}"
+        property:password="${password}"
+        property:actions-ref="actions-synchronize"/>
+
+    <util:list id="actions-synchronize">
+        <ref local="stop-action-synchronize"/>
+        <ref local="clean-action-synchronize"/>
+        <ref local="copy-action-synchronize"/>
+        <ref local="start-action-synchronize"/>
+    </util:list>
+
+    <bean
+        id="stop-action-synchronize"
+        name="stop-action-synchronize"
+        class="ikube.deploy.action.CmdAction"
+        property:sleep="${sleep}"
+        property:breakOnError="true"
+        property:commands-ref="stop-commands-synchronize"/>
+    <util:list id="stop-commands-synchronize">
+        <value>${tomcat-synchronize-shutdown};</value>
+        <value>${tomcat-synchronize-kill};</value>
+    </util:list>
+
+    <bean
+        id="clean-action-synchronize"
+        name="clean-action-synchronize"
+        class="ikube.deploy.action.CmdAction"
+        property:sleep="${sleep}"
+        property:breakOnError="true"
+        property:commands-ref="clean-commands-synchronize"/>
+    <util:list id="clean-commands-synchronize">
+        <value>chmod 777 -R ${tomcat-synchronize};</value>
+
+        <value>rm -rf ${tomcat-synchronize-bin}/ikube/*;</value>
+        <value>rm -rf ${tomcat-synchronize}/webapps/ikube*;</value>
+
+        <value>rm -rf ${tomcat-synchronize}/logs/*;</value>
+        <value>rm -rf ${tomcat-synchronize}/temp/*;</value>
+        <value>rm -rf ${tomcat-synchronize}/work/*;</value>
+
+        <value>chmod 777 -R ${tomcat-synchronize};</value>
+    </util:list>
+
+    <bean
+        id="copy-action-synchronize"
+        name="copy-action-synchronize"
+        class="ikube.deploy.action.CopyAction"
+        property:sleep="${sleep}"
+        property:breakOnError="true"
+        property:files-ref="files-synchronize"
+        property:directories-ref="directories-synchronize"/>
+    <util:map id="files-synchronize">
+        <entry key="${tail-script}" value="${tomcat-synchronize-bin}"/>
+        <entry key="code/war/target/${ikube-war}" value="${tomcat-synchronize-webapps}"/>
+        <!-- This over writes the properties specific for the target environment -->
+        <entry key="${resources-directory}/environments/sys/spring.properties" value="${tomcat-synchronize-bin}/ikube/common"/>
+    </util:map>
+    <util:map id="directories-synchronize">
+        <entry key="${resources-directory}/ikube" value="${tomcat-synchronize-bin}"/>
+        <entry key="${resources-directory}/analytics" value="${tomcat-synchronize-bin}/ikube"/>
+        <entry key="${resources-directory}/indexes/production" value="${tomcat-synchronize-bin}/ikube"/>
+    </util:map>
+
+    <bean
+        id="start-action-synchronize"
+        name="start-action-synchronize"
+        class="ikube.deploy.action.CmdAction"
+        property:sleep="${sleep}"
+        property:breakOnError="true"
+        property:commands-ref="start-commands-synchronize"/>
+    <util:list id="start-commands-synchronize">
+        <value>${tomcat-synchronize-chmod}</value>
+        <value>sleep 40;</value>
+        <value>${tomcat-synchronize-startup}</value>
+    </util:list>
+    <!-- End synchronize -->
 
     <!-- Production -->
     <bean
         id="server-production"
         name="server-production"
         class="ikube.deploy.model.Server"
+	property:name="server-production"
         property:ip="${server-production-ip}"
-        property:username="${production-username}"
-        property:password="${production-password}"
+        property:username="${username}"
+        property:password="${password}"
         property:actions-ref="actions-production"/>
 
     <util:list id="actions-production">

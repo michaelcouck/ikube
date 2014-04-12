@@ -123,11 +123,11 @@
     </transaction:advice>
 
     <aop:config>
-        <aop:pointcut id="dataBaseJpaH2" expression="execution(* ikube.database.jpa.DataBaseJpaH2.*(..))"/>
-        <aop:pointcut id="dataBaseJpaDb2" expression="execution(* ikube.database.jpa.DataBaseJpaDb2.*(..))"/>
-        <aop:pointcut id="dataBaseJpaOracle" expression="execution(* ikube.database.jpa.DataBaseJpaOracle.*(..))"/>
-        <aop:pointcut id="dataBaseJpaPostgres" expression="execution(* ikube.database.jpa.DataBaseJpaPostgres.*(..))"/>
-        <aop:pointcut id="dataBaseAbstract" expression="execution(* ikube.database.jpa.ADataBaseJpa.*(..))"/>
+        <aop:pointcut id="dataBaseJpaH2" expression="execution(* ikube.database.DataBaseJpaH2.*(..))"/>
+        <aop:pointcut id="dataBaseJpaDb2" expression="execution(* ikube.database.DataBaseJpaDb2.*(..))"/>
+        <aop:pointcut id="dataBaseJpaOracle" expression="execution(* ikube.database.DataBaseJpaOracle.*(..))"/>
+        <aop:pointcut id="dataBaseJpaPostgres" expression="execution(* ikube.database.DataBaseJpaPostgres.*(..))"/>
+        <aop:pointcut id="dataBaseAbstract" expression="execution(* ikube.database.ADataBaseJpa.*(..))"/>
         <aop:advisor advice-ref="transactionAdvice" pointcut-ref="dataBaseJpaH2"/>
         <aop:advisor advice-ref="transactionAdvice" pointcut-ref="dataBaseJpaDb2"/>
         <aop:advisor advice-ref="transactionAdvice" pointcut-ref="dataBaseJpaOracle"/>

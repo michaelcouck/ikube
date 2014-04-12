@@ -9,60 +9,70 @@ import java.util.Collection;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 18-06-13
+ * @since 18-06-2013
  */
 public class Server {
 
-    private transient SSHClient sshExec;
+	private transient SSHClient sshExec;
 
-    private String ip;
-    private String username;
-    private String password;
+	private String ip;
 
-    private Collection<IAction> actions;
+	private String name;
+	private String username;
+	private String password;
 
-    public String getIp() {
-        return ip;
-    }
+	private Collection<IAction> actions;
 
-    public void setIp(String ip) {
-        this.ip = ip;
-    }
+	public String getIp() {
+		return ip;
+	}
 
-    public String getUsername() {
-        return username;
-    }
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getPassword() {
-        return password;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+	public String getUsername() {
+		return username;
+	}
 
-    public Collection<IAction> getActions() {
-        return actions;
-    }
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
-    public void setActions(Collection<IAction> actions) {
-        this.actions = actions;
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    public SSHClient getSshExec() {
-        return sshExec;
-    }
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
-    public void setSshExec(SSHClient sshExec) {
-        this.sshExec = sshExec;
-    }
+	public Collection<IAction> getActions() {
+		return actions;
+	}
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
+	public void setActions(Collection<IAction> actions) {
+		this.actions = actions;
+	}
+
+	public SSHClient getSshExec() {
+		return sshExec;
+	}
+
+	public void setSshExec(SSHClient sshExec) {
+		this.sshExec = sshExec;
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
+	}
 }

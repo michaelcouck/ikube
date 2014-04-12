@@ -93,7 +93,7 @@
 					<artifactId>lifecycle-mapping</artifactId>
 					<version>1.0.0</version>
 					<configuration>
-						<lifecycleMappingMetadata>
+						<!--<lifecycleMappingMetadata>
 							<pluginExecutions>
 								<pluginExecution>
 									<pluginExecutionFilter>
@@ -148,7 +148,7 @@
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
-						</lifecycleMappingMetadata>
+						</lifecycleMappingMetadata>-->
 					</configuration>
 				</plugin>
 				<plugin>

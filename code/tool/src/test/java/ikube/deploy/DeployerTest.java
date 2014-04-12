@@ -63,14 +63,14 @@ public class DeployerTest extends AbstractTest {
 
     @Test
     public void mainSome() {
-        System.setProperty(Deployer.DEPLOY_TO_IPS, "192.168.1.20");
+        System.setProperty(Deployer.DEPLOY_TO_SERVERS, "server-production");
         Deployer.main(null);
         assertEquals("Servers and actions : ", 4, ATOMIC_INTEGER.get());
     }
 
     @Test
     public void mainNone() {
-        System.setProperty(Deployer.DEPLOY_TO_IPS, "192.168.1.30");
+        System.setProperty(Deployer.DEPLOY_TO_SERVERS, "192.168.1.30");
         Deployer.main(null);
         assertEquals("Servers and actions : ", 0, ATOMIC_INTEGER.get());
     }

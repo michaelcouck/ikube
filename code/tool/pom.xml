@@ -51,7 +51,7 @@
                 <version>1.2.1</version>
                 <executions>
                     <execution>
-                        <phase>deploy</phase>
+                        <phase>install</phase>
                         <configuration>
                             <mainClass>ikube.deploy.Deployer</mainClass>
                             <arguments>
@@ -117,12 +117,12 @@
     </build>
 
     <dependencies>
-        <dependency>
+        <!--<dependency>
             <groupId>ikube</groupId>
             <artifactId>ikube-com</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>ikube</groupId>
             <artifactId>ikube-core</artifactId>

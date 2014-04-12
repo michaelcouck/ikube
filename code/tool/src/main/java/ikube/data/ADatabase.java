@@ -1,7 +1,7 @@
 package ikube.data;
 
-import ikube.database.jpa.ADataBaseJpa;
-import ikube.database.jpa.DataBaseJpaH2;
+import ikube.database.ADataBaseJpa;
+import ikube.database.DataBaseJpaH2;
 import mockit.Deencapsulation;
 
 import javax.persistence.EntityManager;
