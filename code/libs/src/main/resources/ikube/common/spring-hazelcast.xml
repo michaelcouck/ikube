@@ -35,12 +35,21 @@
             <hz:group name="${hz-group-name}" password="${hz-group-password}"/>
             <!-- Hazelcast Management Center URL -->
             <hz:management-center enabled="${hz-management-center-enabled}" url="${hz-management-center-url}"/>
+            <hz:properties>
+                <hz:property name="hazelcast.redo.wait.millis">15000</hz:property>
+                <hz:property name="hazelcast.redo.giveup.threshold">10</hz:property>
+                <!--<hz:property name="hazelcast.redo.giveup.threshold">1000</hz:property>-->
+                <hz:property name="hazelcast.max.operation.timeout">600000</hz:property>
+                <!--<hz:property name="hazelcast.socket.bind.any">true</hz:property>-->
+                <hz:property name="hazelcast.icmp.enabled">true</hz:property>
+                <!--<hz:property name="hazelcast.elastic.memory.enabled">true</hz:property>-->
+            </hz:properties>
             <!-- Hazelcast Tcp based network configuration -->
             <hz:network port="${hz-network-port}" port-auto-increment="${hz-network-port-auto-increment}">
                 <hz:join>
                     <hz:multicast enabled="${hz-multicast-enabled}" multicast-group="${hz-multicast-group}" multicast-port="8050"/>
                     <hz:tcp-ip enabled="${hz-tcp-ip-enabled}">
-                        <!--<hz:members>${hz-members}</hz:members>-->
+                        <hz:members>${hz-members}</hz:members>
                     </hz:tcp-ip>
                 </hz:join>
                 <hz:interfaces enabled="${hz-interfaces-enabled}">
