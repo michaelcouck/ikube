@@ -32,7 +32,7 @@
         <datasource-mapping>
           <factory-entry name="${ikube.persistenceUnit}" />
           <factory-entry name="IkubePersistenceUnitDb2" />
-          <factory-entry name="IkubePersistenceUnitH2" />
+          <factory-entry name="IkubePersistenceUnitH2" value="nonXaDataSourceH2" />
           <factory-entry name="IkubePersistenceUnitOracle" />
           <factory-entry name="IkubePersistenceUnitPostgres" />
         </datasource-mapping>
