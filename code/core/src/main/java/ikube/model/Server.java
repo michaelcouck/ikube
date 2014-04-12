@@ -231,4 +231,8 @@ public class Server extends Persistable implements Comparable<Server> {
         return this.getAddress().compareTo(other.getAddress());
     }
 
+	public String toString() {
+		return getAddress() + ", ";
+	}
+
 }

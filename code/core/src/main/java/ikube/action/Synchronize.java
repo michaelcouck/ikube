@@ -46,6 +46,7 @@ public class Synchronize extends Action<IndexContext, Boolean> {
     boolean internalExecute(final IndexContext indexContext) {
         // Get the latest index on one of the remote servers
         Server remote = getTargetRemoteServer(indexContext);
+		logger.info("Remote server : " + remote);
         if (remote == null) {
             return Boolean.FALSE;
         }
@@ -57,7 +58,7 @@ public class Synchronize extends Action<IndexContext, Boolean> {
         try {
             indexFiles = future.get();
         } catch (final InterruptedException | ExecutionException e) {
-            throw new RuntimeException("Exception getting the index files from the remote server : " + remote);
+            throw new RuntimeException("Exception getting the index files from the remote server : " + remote, e);
         }
 
         // Iterate over the index files and copy them to the local file system

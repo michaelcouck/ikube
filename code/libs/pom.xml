@@ -32,7 +32,6 @@
     </properties>
 
     <build>
-        <finalName>configuration</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -521,14 +520,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <!--<dependencies>
-        <dependency>
-            <groupId>ikube</groupId>
-            <artifactId>ikube-core</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-    </dependencies>-->
 
 </project>

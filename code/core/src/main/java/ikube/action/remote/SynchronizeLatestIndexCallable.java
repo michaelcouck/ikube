@@ -23,28 +23,33 @@ import java.util.concurrent.Callable;
  */
 public class SynchronizeLatestIndexCallable implements Callable<String[]>, Serializable {
 
-    private IndexContext indexContext;
+	private IndexContext indexContext;
 
-    public SynchronizeLatestIndexCallable(final IndexContext indexContext) {
-        this.indexContext = indexContext;
-    }
+	public SynchronizeLatestIndexCallable(final IndexContext indexContext) {
+		this.indexContext = indexContext;
+	}
 
-    @Override
-    public String[] call() throws Exception {
-        final List<String> filePaths = new ArrayList<>();
-        String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
-        File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
-        Files.walkFileTree(latestIndexDirectory.getParentFile().toPath(), new SimpleFileVisitor<Path>() {
-            @Override
-            public FileVisitResult visitFile(final Path path, final BasicFileAttributes basicFileAttributes) {
-                File file = path.toFile();
-                if (file.isFile()) {
-                    filePaths.add(file.getAbsolutePath());
-                }
-                return FileVisitResult.CONTINUE;
-            }
-        });
-        return filePaths.toArray(new String[filePaths.size()]);
-    }
+	@Override
+	public String[] call() throws Exception {
+		final List<String> filePaths = new ArrayList<>();
+		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
+		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
+		System.out.println("Latest index directory : " + latestIndexDirectory);
+		if (latestIndexDirectory != null && latestIndexDirectory.exists()) {
+			Files.walkFileTree(latestIndexDirectory.toPath(), new SimpleFileVisitor<Path>() {
+				@Override
+				public FileVisitResult visitFile(final Path path, final BasicFileAttributes basicFileAttributes) {
+					File file = path.toFile();
+					if (file.isFile()) {
+						filePaths.add(file.getAbsolutePath());
+					}
+					return FileVisitResult.CONTINUE;
+				}
+			});
+		} else {
+			System.out.println("Index directory not initialized : " + indexDirectoryPath);
+		}
+		return filePaths.toArray(new String[filePaths.size()]);
+	}
 
 }

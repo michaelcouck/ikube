@@ -1,4 +1,4 @@
 ikube
 =====
 
-First class Enterprise Search Engine
+Grid based, distributed processing platform with enterprise analytics and search embedded

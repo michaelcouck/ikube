@@ -139,7 +139,7 @@ public interface IConstants {
 
     String SEARCH = "search";
 
-    String TMP_UNZIPPED_FOLDER = "/tmp/unzipped";
+    String TMP_UNZIPPED_FOLDER = "/tmp/ikube-unzipped";
     String STRING_PATTERN = ".*(\\.zip\\Z).*|.*(\\.jar\\Z).*|.*(\\.war\\Z).*|.*(\\.ear\\Z).*|.*(\\.gz\\Z).*|.*(\\.sar\\Z).*|.*(\\.tar\\Z).*|.*(\\.rar\\Z).*";
     Pattern ZIP_JAR_WAR_EAR_PATTERN = Pattern.compile(STRING_PATTERN);
 

@@ -24,7 +24,8 @@
         <!-- Optimizer is not safe in a cluster. -->
         <!--<ref bean="ikube.action.Optimizer"  />-->
         <ref bean="ikube.action.Reset"/>
-        <!--<ref bean="ikube.action.Restore" />-->
+        <ref bean="ikube.action.Synchronize"/>
+        <ref bean="ikube.action.Restore" />
         <ref bean="ikube.action.Index"/>
         <ref bean="ikube.action.Open"/>
         <ref bean="ikube.action.Reopen"/>
@@ -39,6 +40,7 @@
             This action needs a dedicated mail server!
          -->
         <!--<ref bean="ikube.action.Validator" />-->
+        <ref bean="ikube.action.Clean" />
     </util:list>
 
     <bean
@@ -54,7 +56,7 @@
         </property>
     </bean>
     <!-- !IsThisServerWorking &#38;&#38; -->
-    <!--<bean
+    <bean
         id="ikube.action.Restore"
         class="ikube.action.Restore"
         property:ruleExpression="
@@ -66,14 +68,14 @@
         <property name="rules">
             <util:list>
                 <ref local="ikube.action.rule.IsNewIndexCreated" />
-                &lt;!&ndash;<ref local="ikube.action.rule.IsThisServerWorking" />&ndash;&gt;
+                <!--<ref local="ikube.action.rule.IsThisServerWorking" />-->
                 <ref local="ikube.action.rule.AnyServersWorkingThisIndex" />
                 <ref local="ikube.action.rule.DoesBackupIndexExist" />
                 <ref local="ikube.action.rule.AreIndexesCreated" />
                 <ref local="ikube.action.rule.IsIndexCorrupt" />
             </util:list>
         </property>
-    </bean>-->
+    </bean>
     <!--<bean
         id="ikube.action.Close"
         class="ikube.action.Close"
@@ -214,11 +216,11 @@
         id="ikube.action.Synchronize"
         class="ikube.action.Synchronize"
         property:ruleExpression="
-        !TooManyActionsRule &#38;&#38;
-        IsRemoteIndexCurrent &#38;&#38;
-        !AnyServersWorkingThisIndex &#38;&#38;
-        !IsThisServerWorkingThisIndex &#38;&#38;
-        !IsIndexCurrent"
+            !TooManyActionsRule &#38;&#38;
+            IsRemoteIndexCurrent &#38;&#38;
+            !AnyServersWorkingThisIndex &#38;&#38;
+            !IsThisServerWorkingThisIndex &#38;&#38;
+            !IsIndexCurrent"
         property:requiresClusterLock="true">
         <property name="rules">
             <util:list>
@@ -227,6 +229,18 @@
                 <ref local="ikube.action.rule.AnyServersWorkingThisIndex"/>
                 <ref local="ikube.action.rule.IsIndexCurrent"/>
                 <ref local="ikube.action.rule.IsThisServerWorkingThisIndex"/>
+            </util:list>
+        </property>
+    </bean>
+    <bean
+        id="ikube.action.Clean"
+        class="ikube.action.Clean"
+        property:ruleExpression="
+            !IsIndexCorrupt || IsIndexCorrupt"
+        property:requiresClusterLock="true">
+        <property name="rules">
+            <util:list>
+                <ref local="ikube.action.rule.IsIndexCorrupt"/>
             </util:list>
         </property>
     </bean>
