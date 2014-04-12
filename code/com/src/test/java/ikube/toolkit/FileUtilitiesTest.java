@@ -9,6 +9,7 @@ import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -67,6 +68,7 @@ public class FileUtilitiesTest extends AbstractTest {
 	}
 
 	@Test
+	@Ignore
 	public void findFilesRecursively() throws Exception {
 		assertFalse(file.exists());
 		assertTrue(file.createNewFile());
