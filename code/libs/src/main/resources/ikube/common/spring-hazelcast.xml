@@ -49,7 +49,7 @@
                 <hz:join>
                     <hz:multicast enabled="${hz-multicast-enabled}" multicast-group="${hz-multicast-group}" multicast-port="8050"/>
                     <hz:tcp-ip enabled="${hz-tcp-ip-enabled}">
-                        <hz:members>${hz-members}</hz:members>
+                        <!--<hz:members>${hz-members}</hz:members>-->
                     </hz:tcp-ip>
                 </hz:join>
                 <hz:interfaces enabled="${hz-interfaces-enabled}">
