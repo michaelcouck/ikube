@@ -39,112 +39,120 @@ import java.util.concurrent.Future;
 @SuppressWarnings("UnusedDeclaration")
 public class Synchronize extends Action<IndexContext, Boolean> {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    boolean internalExecute(final IndexContext indexContext) {
-        // Get the latest index on one of the remote servers
-        Server remote = getTargetRemoteServer(indexContext);
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	boolean internalExecute(final IndexContext indexContext) {
+		// Get the latest index on one of the remote servers
+		Server remote = getTargetRemoteServer(indexContext);
 		logger.info("Remote server : " + remote);
-        if (remote == null) {
-            return Boolean.FALSE;
-        }
+		if (remote == null) {
+			return Boolean.FALSE;
+		}
 
-        // Get all the remote index files from the target server
-        String[] indexFiles;
-        SynchronizeLatestIndexCallable latestCallable = new SynchronizeLatestIndexCallable(indexContext);
-        Future<String[]> future = clusterManager.sendTaskTo(remote, latestCallable);
-        try {
-            indexFiles = future.get();
-        } catch (final InterruptedException | ExecutionException e) {
-            throw new RuntimeException("Exception getting the index files from the remote server : " + remote, e);
-        }
+		// Get all the remote index files from the target server
+		String[] indexFiles;
+		SynchronizeLatestIndexCallable latestCallable = new SynchronizeLatestIndexCallable(indexContext);
+		Future<String[]> future = clusterManager.sendTaskTo(remote, latestCallable);
+		try {
+			indexFiles = future.get();
+		} catch (final InterruptedException | ExecutionException e) {
+			throw new RuntimeException("Exception getting the index files from the remote server : " + remote, e);
+		}
 
-        // Iterate over the index files and copy them to the local file system
-        boolean exception = Boolean.FALSE;
-        try {
-            int offset = 0;
-            // Ten megs at a time should be fine
-            int length = 1024 * 1024 * 10;
-            for (final String indexFile : indexFiles) {
-                byte[] chunk;
-                do {
-					logger.info("Getting file : " + indexFile + ", " + offset + ", " + length);
-                    // Keep calling the remote server for chunks of the index file
-                    // until there is no more data left, i.e. the files is completely copied
-                    SynchronizeCallable chunkCallable = new SynchronizeCallable(indexFile, offset, length);
-                    Future<byte[]> chunkFuture = clusterManager.sendTaskTo(remote, chunkCallable);
-                    chunk = chunkFuture.get();
-					if (chunk == null) {
+		// Iterate over the index files and copy them to the local file system
+		boolean exception = Boolean.FALSE;
+		try {
+			int offset = 0;
+			// Ten megs at a time should be fine
+			int length = 1024 * 1024 * 10;
+			for (final String indexFile : indexFiles) {
+				byte[] chunk = null;
+				do {
+					// Keep calling the remote server for chunks of the index file
+					// until there is no more data left, i.e. the files is completely copied
+					int retry = 5;
+					do {
+						try {
+							logger.info("Getting file : " + indexFile + ", " + offset + ", " + length);
+							SynchronizeCallable chunkCallable = new SynchronizeCallable(indexFile, offset, length);
+							Future<byte[]> chunkFuture = clusterManager.sendTaskTo(remote, chunkCallable);
+							chunk = chunkFuture.get();
+						} catch (final Exception e) {
+							logger.error("Exception getting chunk, will retry : " + retry, e);
+						}
+						// We'll retry a few times for this chunk
+					} while (chunk == null && retry-- > 0);
+					if (chunk == null || chunk.length == 0) {
 						break;
 					}
-                    if (chunk.length > 0) {
-                        File file = FileUtilities.getOrCreateFile(new File(indexFile));
-                        RandomAccessFile randomAccessFile = null;
-                        try {
-                            randomAccessFile = new RandomAccessFile(indexFile, "rw");
-                            randomAccessFile.seek(offset);
-                            randomAccessFile.write(chunk);
-                        } finally {
-                            IOUtils.closeQuietly(randomAccessFile);
-                        }
+					if (chunk.length > 0) {
+						File file = FileUtilities.getOrCreateFile(new File(indexFile));
+						RandomAccessFile randomAccessFile = null;
+						try {
+							randomAccessFile = new RandomAccessFile(indexFile, "rw");
+							randomAccessFile.seek(offset);
+							randomAccessFile.write(chunk);
+						} finally {
+							IOUtils.closeQuietly(randomAccessFile);
+						}
 					}
 					offset += chunk.length;
 				} while (chunk.length > 0);
-            }
-        } catch (final Exception e) {
-            exception = Boolean.TRUE;
-            throw new RuntimeException("Exception synchronizing remote index : ", e);
-        } finally {
-            if (exception) {
-                // Try to delete the potentially corrupt index files
-                //noinspection ConstantConditions
-                if (indexFiles != null) {
-                    File indexDirectory = new File(indexFiles[0]).getParentFile();
-                    logger.warn("Deleting index file coming from remote server : " + indexDirectory);
-                    FileUtilities.deleteFile(indexDirectory);
-                }
-            }
-        }
-        return Boolean.TRUE;
-    }
+			}
+		} catch (final Exception e) {
+			exception = Boolean.TRUE;
+			throw new RuntimeException("Exception synchronizing remote index : ", e);
+		} finally {
+			if (exception) {
+				// Try to delete the potentially corrupt index files
+				//noinspection ConstantConditions
+				if (indexFiles != null) {
+					File indexDirectory = new File(indexFiles[0]).getParentFile();
+					logger.warn("Deleting index file coming from remote server : " + indexDirectory);
+					FileUtilities.deleteFile(indexDirectory);
+				}
+			}
+		}
+		return Boolean.TRUE;
+	}
 
-    Server getTargetRemoteServer(final IndexContext indexContext) {
-        Server remote = null;
-        Date timestamp = null;
-        Server local = clusterManager.getServer();
-        Map<String, Server> servers = clusterManager.getServers();
-        for (final Map.Entry<String, Server> mapEntry : servers.entrySet()) {
-            Server server = mapEntry.getValue();
-            /*if (server.getAddress().equals(local.getAddress())) {
+	Server getTargetRemoteServer(final IndexContext indexContext) {
+		Server remote = null;
+		Date timestamp = null;
+		Server local = clusterManager.getServer();
+		Map<String, Server> servers = clusterManager.getServers();
+		for (final Map.Entry<String, Server> mapEntry : servers.entrySet()) {
+			Server server = mapEntry.getValue();
+			/*if (server.getAddress().equals(local.getAddress())) {
                 continue;
             }*/
-            List<IndexContext> indexContexts = server.getIndexContexts();
-            Date latestIndexTimestamp = getLatestIndexTimestamp(indexContext, indexContexts);
-            if (timestamp == null) {
-                timestamp = latestIndexTimestamp;
-                remote = server;
-            } else {
-                if (latestIndexTimestamp.after(timestamp)) {
-                    timestamp = latestIndexTimestamp;
-                    remote = server;
-                }
-            }
-        }
-        return remote;
-    }
+			List<IndexContext> indexContexts = server.getIndexContexts();
+			Date latestIndexTimestamp = getLatestIndexTimestamp(indexContext, indexContexts);
+			if (timestamp == null) {
+				timestamp = latestIndexTimestamp;
+				remote = server;
+			} else {
+				if (latestIndexTimestamp.after(timestamp)) {
+					timestamp = latestIndexTimestamp;
+					remote = server;
+				}
+			}
+		}
+		return remote;
+	}
 
-    Date getLatestIndexTimestamp(final IndexContext indexContext, final List<IndexContext> indexContexts) {
-        for (final IndexContext remoteIndexContext : indexContexts) {
-            if (remoteIndexContext.getName().equals(indexContext.getName())) {
-                Snapshot snapshot = remoteIndexContext.getSnapshot();
-                if (snapshot != null) {
-                    return snapshot.getLatestIndexTimestamp();
-                }
-            }
-        }
-        return null;
-    }
+	Date getLatestIndexTimestamp(final IndexContext indexContext, final List<IndexContext> indexContexts) {
+		for (final IndexContext remoteIndexContext : indexContexts) {
+			if (remoteIndexContext.getName().equals(indexContext.getName())) {
+				Snapshot snapshot = remoteIndexContext.getSnapshot();
+				if (snapshot != null) {
+					return snapshot.getLatestIndexTimestamp();
+				}
+			}
+		}
+		return null;
+	}
 
 }
