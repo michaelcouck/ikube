@@ -13,9 +13,8 @@
         http://www.springframework.org/schema/util/spring-util.xsd">
 
     <description>
-        This file is not to be modified by users generally. This is the configuration for the geospatial index which is
-        an index
-        of the geonames table on the Ikube server.
+        This file is not to be modified by users generally. This is the configuration for the geospatial
+        index which is an index of the geonames table on the Ikube server.
     </description>
 
     <bean
@@ -109,7 +108,7 @@
         class="ikube.model.IndexableColumn"
         property:name="geonameid"
         property:fieldName="geonameid"
-        property:numeric="false"
+        property:numeric="true"
         property:omitNorms="true"/>
     <bean
         id="geospatialAsciiname"
@@ -133,7 +132,7 @@
         class="ikube.model.IndexableColumn"
         property:name="latitude"
         property:fieldName="latitude"
-        property:numeric="false"
+        property:numeric="true"
         property:omitNorms="true"/>
     <bean
         id="geospatialLongitude"
@@ -141,7 +140,7 @@
         class="ikube.model.IndexableColumn"
         property:name="longitude"
         property:fieldName="longitude"
-        property:numeric="false"
+        property:numeric="true"
         property:omitNorms="true"/>
     <bean
         id="geospatialPopulation"
@@ -149,7 +148,7 @@
         class="ikube.model.IndexableColumn"
         property:name="population"
         property:fieldName="population"
-        property:numeric="false"
+        property:numeric="true"
         property:omitNorms="true"/>
     <bean
         id="geospatialElevation"
@@ -157,7 +156,7 @@
         class="ikube.model.IndexableColumn"
         property:name="elevation"
         property:fieldName="elevation"
-        property:numeric="false"
+        property:numeric="true"
         property:omitNorms="true"/>
     <bean
         id="geospatialTimezone"
