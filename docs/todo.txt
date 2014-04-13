@@ -27,7 +27,6 @@ Sub total: 9 1/2
 
 Total: 16 1/2
 
-
 Bugs:
 
 Done:

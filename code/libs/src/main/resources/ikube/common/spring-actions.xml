@@ -24,7 +24,6 @@
         <!--<ref bean="ikube.action.Close"  />-->
         <!-- Optimizer is not safe in a cluster. -->
         <!--<ref bean="ikube.action.Optimizer"  />-->
-        <ref bean="ikube.action.Prune"/>
         <ref bean="ikube.action.Reset"/>
         <ref bean="ikube.action.Synchronize"/>
         <ref bean="ikube.action.Restore"/>
