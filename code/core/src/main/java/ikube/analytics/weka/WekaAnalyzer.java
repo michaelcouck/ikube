@@ -50,19 +50,17 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<String, double[
             instances = instances(context);
             instances.setRelationName("instances");
             Object algorithm = context.getAlgorithm();
-            if (OptionHandler.class.isAssignableFrom(algorithm.getClass())) {
-                if (context.getOptions() != null) {
-                    String[] options;
-                    if (String[].class.isAssignableFrom(context.getOptions().getClass())) {
-                        options = (String[]) context.getOptions();
-                    } else if (List.class.isAssignableFrom(context.getOptions().getClass())) {
-                        List list = (List) context.getOptions();
-                        options = (String[]) list.toArray(new String[list.size()]);
-                    } else {
-                        throw new RuntimeException("Options must be of type string array : " + context.getOptions());
-                    }
-                    ((OptionHandler) algorithm).setOptions(options);
-                }
+            if (OptionHandler.class.isAssignableFrom(algorithm.getClass()) && context.getOptions() != null) {
+				String[] options;
+				if (String[].class.isAssignableFrom(context.getOptions().getClass())) {
+					options = (String[]) context.getOptions();
+				} else if (List.class.isAssignableFrom(context.getOptions().getClass())) {
+					List list = (List) context.getOptions();
+					options = (String[]) list.toArray(new String[list.size()]);
+				} else {
+					throw new RuntimeException("Options must be of type string array : " + context.getOptions());
+				}
+				((OptionHandler) algorithm).setOptions(options);
             }
         } finally {
             analyzeLock.unlock();

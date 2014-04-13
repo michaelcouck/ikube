@@ -15,11 +15,18 @@
 		<spring.security.oauth.version>3.19</spring.security.oauth.version>
 	</properties>
 	
-	<scm>
+	<!--<scm>
 		<url>https://ikube.googlecode.com/svn/trunk</url>
 		<connection>scm:svn:https://ikube.googlecode.com/svn/trunk</connection>
 		<developerConnection>scm:svn:https://ikube.googlecode.com/svn/trunk</developerConnection>
-	</scm>
+	</scm>-->
+
+    <scm>
+        <url>https://github.com/michaelcouck/ikube</url>
+        <!--<url>https://github.com/kevinsawicki/github-maven-example</url>-->
+        <connection>scm:git:git://github.com/michaelcouck/ikube.git</connection>
+        <developerConnection>scm:git:git@github.com:michaelcouck/ikube.git</developerConnection>
+    </scm>
 
 	<distributionManagement>
 		<site>

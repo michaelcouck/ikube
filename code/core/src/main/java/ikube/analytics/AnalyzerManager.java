@@ -114,7 +114,7 @@ public class AnalyzerManager implements ApplicationContextAware {
                 }
             }
         }
-        ThreadUtilities.submit("analyzer-builder", new Starter());
+        ThreadUtilities.submit(name, new Starter());
     }
 
 }

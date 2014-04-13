@@ -12,7 +12,7 @@ import weka.core.Instances;
 
 /**
  * This class is the Weka clusterer wrapper. Ultimately just wrapping the Weka
- * algoritym(any one of the clustering algorithms) and adds some easier to understand
+ * algorithm(any one of the clustering algorithms) and adds some easier to understand
  * methods for building and training said algorithms.
  *
  * @author Michael Couck

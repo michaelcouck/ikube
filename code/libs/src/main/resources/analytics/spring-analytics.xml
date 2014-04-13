@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--suppress InjectionValueTypeInspection, SpringBeanNameConventionInspection -->
+
+<!--suppress SpringBeanNameConventionInspection -->
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://www.springframework.org/schema/beans"
        xmlns:property="http://www.springframework.org/schema/p"
@@ -15,6 +16,12 @@
     <bean id="weka-clusterer" name="weka-clusterer" class="ikube.analytics.weka.WekaClusterer"/>
     <bean id="weka-clusterer-em" name="weka-clusterer-em" class="weka.clusterers.EM"/>
     <bean
+        id="analyzer-info-em"
+        class="ikube.model.AnalyzerInfo"
+        property:analyzer="ikube.analytics.weka.WekaClusterer"
+        property:algorithm="weka.clusterers.EM"/>
+    <!--suppress InjectionValueTypeInspection -->
+    <bean
         id="context-em"
         name="context-em"
         class="ikube.model.Context"
@@ -22,7 +29,8 @@
         property:analyzer-ref="weka-clusterer"
         property:algorithm-ref="weka-clusterer-em"
         property:options-ref="cluster-options"
-        property:maxTraining="${max-training}"/>
+        property:maxTraining="${max-training}"
+        property:analyzerInfo-ref="analyzer-info-em"/>
     <util:list id="cluster-options">
         <value type="java.lang.String">-R</value>
         <value type="java.lang.String">6</value>
@@ -33,6 +41,13 @@
     <bean id="string-to-word-vector" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
     <bean id="weka-classifier-smo" name="weka-classifier-smo" class="weka.classifiers.functions.SMO"/>
     <bean
+        id="analyzer-info-smo"
+        class="ikube.model.AnalyzerInfo"
+        property:analyzer="ikube.analytics.weka.WekaClassifier"
+        property:filter="weka.filters.unsupervised.attribute.StringToWordVector"
+        property:algorithm="weka.classifiers.functions.SMO"/>
+    <!--suppress InjectionValueTypeInspection -->
+    <bean
         id="context-smo"
         name="context-smo"
         class="ikube.model.Context"
@@ -40,22 +55,15 @@
         property:analyzer-ref="weka-classifier"
         property:filter-ref="string-to-word-vector"
         property:algorithm-ref="weka-classifier-smo"
-        property:maxTraining="${max-training}"/>
+        property:maxTraining="${max-training}"
+        property:analyzerInfo-ref="analyzer-info-smo"/>
 
     <!-- This will initialize all the analyzers and build them in parallel. -->
-    <!-- property:staticMethod="ikube.analytics.AnalyzerManager.buildAnalyzers" -->
     <bean
         id="ikube.analytics.AnalyzerManager"
         name="ikube.analytics.AnalyzerManager"
         class="ikube.analytics.AnalyzerManager"
-        depends-on="ikube.toolkit.ThreadUtilities">
-        <!--<property name="arguments">
-            <list>
-                <ref local="context-em"/>
-                <ref local="context-smo"/>
-            </list>
-        </property>-->
-    </bean>
+        depends-on="ikube.toolkit.ThreadUtilities"/>
 
     <bean
         id="ikube.analytics.IAnalyticsService"
