@@ -26,44 +26,38 @@ import java.io.IOException;
  */
 public class DeleteListener implements IListener<Message<Object>>, MessageListener<Object> {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
-    @Autowired
-    private IMonitorService monitorService;
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	@Autowired
+	@SuppressWarnings("SpringJavaAutowiringInspection")
+	private IMonitorService monitorService;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onMessage(final Message<Object> message) {
-        Object object = message.getMessageObject();
-        if (object != null && Event.class.isAssignableFrom(object.getClass())) {
-            Event event = (Event) object;
-            if (Event.DELETE_INDEX.equals(event.getType())) {
-                IndexContext indexContext = monitorService.getIndexContext(event.getObject().toString());
-                try {
-                    // First close the searcher
-                    IndexSearcher indexSearcher = indexContext.getMultiSearcher();
-                    if (indexSearcher != null && indexSearcher.getIndexReader() != null) {
-                        indexContext.getMultiSearcher().getIndexReader().close();
-                    }
-                } catch (final IOException e) {
-                    logger.error("Exception closing the index prior to deleteing : ", e);
-                }
-                if(indexContext.getMultiSearcher() != null) {
-                    try {
-                        indexContext.getMultiSearcher().getIndexReader().close();
-                    } catch (final Exception e) {
-                        logger.error("Exception closing the index before delete : ", e);
-                    }
-                }
-                String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
-                String indexDirectoryBackupPath = IndexManager.getIndexDirectoryPathBackup(indexContext);
-                logger.warn("Deleting index directory : " + indexDirectoryPath);
-                logger.warn("Deleting backup index directory : " + indexDirectoryBackupPath);
-                FileUtilities.deleteFile(new File(indexDirectoryPath), 3);
-                FileUtilities.deleteFile(new File(indexDirectoryBackupPath), 3);
-            }
-        }
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onMessage(final Message<Object> message) {
+		Object object = message.getMessageObject();
+		if (object != null && Event.class.isAssignableFrom(object.getClass())) {
+			Event event = (Event) object;
+			if (Event.DELETE_INDEX.equals(event.getType())) {
+				IndexContext indexContext = monitorService.getIndexContext(event.getObject().toString());
+				try {
+					// First close the searcher
+					IndexSearcher indexSearcher = indexContext.getMultiSearcher();
+					if (indexSearcher != null && indexSearcher.getIndexReader() != null) {
+						indexContext.getMultiSearcher().getIndexReader().close();
+					}
+				} catch (final IOException e) {
+					logger.error("Exception closing the index prior to deleting it : ", e);
+				}
+				String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
+				String indexDirectoryBackupPath = IndexManager.getIndexDirectoryPathBackup(indexContext);
+				logger.warn("Deleting index directory : " + indexDirectoryPath);
+				logger.warn("Deleting backup index directory : " + indexDirectoryBackupPath);
+				FileUtilities.deleteFile(new File(indexDirectoryPath), 3);
+				FileUtilities.deleteFile(new File(indexDirectoryBackupPath), 3);
+			}
+		}
+	}
 
 }
