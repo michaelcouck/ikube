@@ -201,7 +201,7 @@
         <entry key="${resources-directory}/analytics" value="${tomcat-one-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/integration" value="${tomcat-one-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/production" value="${tomcat-one-bin}/ikube"/>
-        <entry key="${resources-directory}/indexes/twitter" value="${tomcat-one-bin}/ikube"/>
+        <!-- entry key="${resources-directory}/indexes/twitter" value="${tomcat-one-bin}/ikube"/ -->
     </util:map>
 
     <bean
@@ -287,7 +287,7 @@
         <entry key="${resources-directory}/analytics" value="${tomcat-two-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/integration" value="${tomcat-two-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/production" value="${tomcat-two-bin}/ikube"/>
-        <entry key="${resources-directory}/indexes/twitter" value="${tomcat-two-bin}/ikube"/>
+        <!-- entry key="${resources-directory}/indexes/twitter" value="${tomcat-two-bin}/ikube"/ -->
     </util:map>
 
     <bean
@@ -374,7 +374,7 @@
         <entry key="${resources-directory}/analytics" value="${tomcat-three-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/integration" value="${tomcat-three-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/production" value="${tomcat-three-bin}/ikube"/>
-        <entry key="${resources-directory}/indexes/twitter" value="${tomcat-three-bin}/ikube"/>
+        <!-- entry key="${resources-directory}/indexes/twitter" value="${tomcat-three-bin}/ikube"/ -->
     </util:map>
 
     <bean
@@ -728,7 +728,6 @@
         property:commands-ref="start-commands-synchronize"/>
     <util:list id="start-commands-synchronize">
         <value>${tomcat-synchronize-chmod}</value>
-        <value>sleep 40;</value>
         <value>${tomcat-synchronize-startup}</value>
     </util:list>
     <!-- End synchronize -->

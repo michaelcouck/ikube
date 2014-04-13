@@ -51,7 +51,7 @@
                 <version>1.2.1</version>
                 <executions>
                     <execution>
-                        <phase>site</phase>
+                        <phase>deploy</phase>
                         <configuration>
                             <mainClass>ikube.deploy.Deployer</mainClass>
                             <arguments>
@@ -117,24 +117,12 @@
     </build>
 
     <dependencies>
-        <!--<dependency>
-            <groupId>ikube</groupId>
-            <artifactId>ikube-com</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>-->
         <dependency>
             <groupId>ikube</groupId>
             <artifactId>ikube-core</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
-        <!--<dependency>
-            <groupId>ikube</groupId>
-            <artifactId>ikube-war</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>-->
         <dependency>
             <groupId>sevenzip</groupId>
             <artifactId>jbinding</artifactId>
@@ -163,12 +151,6 @@
             <groupId>ant</groupId>
             <artifactId>ant</artifactId>
             <version>1.7.0</version>
-        </dependency>
-        <dependency>
-            <groupId>mockit</groupId>
-            <artifactId>jmockit</artifactId>
-            <version>0.999</version>
-            <type>jar</type>
         </dependency>
     </dependencies>
 
