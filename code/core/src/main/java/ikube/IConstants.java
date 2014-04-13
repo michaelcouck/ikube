@@ -163,7 +163,7 @@ public interface IConstants {
 
     String LANGUAGE = "language";
     String LANGUAGE_ORIGINAL = "language-original";
-    String LANGUAGE_DETECT_PROFILES_DIRECTORY = "profiles";
+    String LANGUAGE_PROFILES_DIRECTORY = "language-profiles";
     String CLASSIFICATION = "classification";
     String CLASSIFICATION_CONFLICT = "classification-conflict";
 

@@ -20,14 +20,14 @@ import static org.mockito.Mockito.when;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 05.04.13
+ * @since 05-04-2013
  */
 public class LanguageDetectionStrategyTest extends AbstractTest {
 
 	private LanguageDetectionStrategy languageDetectionStrategy;
 
 	@Before
-	@SuppressWarnings({"unchecked", "rawtypes"})
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void before() {
 		languageDetectionStrategy = new LanguageDetectionStrategy();
 		languageDetectionStrategy.initialize();
@@ -37,17 +37,11 @@ public class LanguageDetectionStrategyTest extends AbstractTest {
 		when(indexableTable.isAnalyzed()).thenReturn(Boolean.TRUE);
 	}
 
-//	@After
-//	public void after() {
-//		Mockit.tearDownMocks();
-//	}
-
 	@Test
 	public void aroundProcess() throws Exception {
 		Document document = new Document();
 		// English
-		when(indexableColumn.getContent()).thenReturn("some english text that can not be confused with swedish for " +
-			"God's sake");
+		when(indexableColumn.getContent()).thenReturn("some english text that can not be confused with swedish for God's sake");
 		languageDetectionStrategy.aroundProcess(indexContext, indexableTable, document, null);
 		String english = Locale.ENGLISH.getDisplayLanguage(Locale.ENGLISH);
 		String language = document.get(IConstants.LANGUAGE);
