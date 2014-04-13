@@ -45,80 +45,36 @@
                             <target>
                                 <echo message="Base directory : ${basedir}, ">Base directory : ${basedir}</echo>
 
-                                <delete dir="ikube" />
-                                <delete dir="../core/ikube" />
-                                <delete dir="../war/ikube" />
-                                <delete dir="../../ikube" />
-                                <delete dir="ikube/production" />
-                                <delete dir="../core/ikube/production" />
-                                <delete dir="../war/ikube/production" />
-                                <delete dir="../../ikube/production" />
-                                <delete dir="ikube/integration" />
-                                <delete dir="../core/ikube/integration" />
-                                <delete dir="../war/ikube/integration" />
-                                <delete dir="../../ikube/integration" />
-                                <delete dir="ikube/analytics" />
-                                <delete dir="../core/ikube/analytics" />
-                                <delete dir="../war/ikube/analytics" />
-                                <delete dir="../../ikube/analytics" />
-                                <delete dir="../war/ikube/twitter" />
+                                <delete dir="ikube"/>
+                                <delete dir="../core/ikube"/>
+                                <delete dir="../war/ikube"/>
+                                <delete dir="../libs/ikube"/>
+                                <delete dir="../../ikube"/>
 
-                                <copy todir="ikube" failonerror="true" verbose="false">
-                                    <fileset dir="../libs/src/main/resources/ikube"/>
-                                </copy>
-                                <copy todir="../core/ikube" failonerror="true" verbose="false">
-                                    <fileset dir="../libs/src/main/resources/ikube"/>
-                                </copy>
-                                <copy todir="../war/ikube" failonerror="true" verbose="false">
-                                    <fileset dir="../libs/src/main/resources/ikube"/>
-                                </copy>
-                                <copy todir="../../ikube" failonerror="true" verbose="false">
-                                    <fileset dir="../libs/src/main/resources/ikube"/>
-                                </copy>
+                                <copydir src="../libs/src/main/resources/ikube" dest="ikube"/>
+                                <copydir src="../libs/src/main/resources/analytics" dest="ikube/analytics"/>
+                                <copydir src="../libs/src/main/resources/indexes/production" dest="ikube/production"/>
+                                <copydir src="../libs/src/main/resources/indexes/integration" dest="ikube/integration"/>
 
-                                <copy todir="ikube/production" failonerror="true" verbose="false">
-                                    <fileset dir="../libs/src/main/resources/indexes/production"/>
-                                </copy>
+                                <copydir src="../libs/src/main/resources/ikube" dest="../core/ikube"/>
+                                <copydir src="../libs/src/main/resources/analytics" dest="../core/ikube/analytics"/>
+                                <copydir src="../libs/src/main/resources/indexes/production" dest="../core/ikube/production"/>
+                                <copydir src="../libs/src/main/resources/indexes/integration" dest="../core/ikube/integration"/>
 
-                                <copy todir="../core/ikube/production" failonerror="true" verbose="false">
-                                    <fileset dir="../libs/src/main/resources/indexes/production"/>
-                                </copy>
-                                <copy todir="../war/ikube/production" failonerror="true" verbose="false">
-                                    <fileset dir="../libs/src/main/resources/indexes/production"/>
-                                </copy>
-                                <copy todir="../../ikube/production" failonerror="true" verbose="false">
-                                    <fileset dir="../libs/src/main/resources/indexes/production"/>
-                                </copy>
+                                <copydir src="../libs/src/main/resources/ikube" dest="../war/ikube"/>
+                                <copydir src="../libs/src/main/resources/analytics" dest="../war/ikube/analytics"/>
+                                <copydir src="../libs/src/main/resources/indexes/production" dest="../war/ikube/production"/>
+                                <copydir src="../libs/src/main/resources/indexes/integration" dest="../war/ikube/integration"/>
+                                <copydir src="../libs/src/main/resources/indexes/twitter" dest="../war/ikube/twitter"/>
 
-                                <copy todir="ikube/integration" failonerror="true" verbose="false">
-                                    <fileset dir="../libs/src/main/resources/indexes/integration"/>
-                                </copy>
-                                <copy todir="../core/ikube/integration" failonerror="true" verbose="false">
-                                    <fileset dir="../libs/src/main/resources/indexes/integration"/>
-                                </copy>
-                                <copy todir="../war/ikube/integration" failonerror="true" verbose="false">
-                                    <fileset dir="../libs/src/main/resources/indexes/integration"/>
-                                </copy>
-                                <copy todir="../../ikube/integration" failonerror="true" verbose="false">
-                                    <fileset dir="../libs/src/main/resources/indexes/integration"/>
-                                </copy>
+                                <copydir src="../libs/src/main/resources/ikube" dest="../libs/ikube"/>
+                                <copydir src="../libs/src/main/resources/analytics" dest="../libs/ikube/analytics"/>
+                                <copydir src="../libs/src/main/resources/indexes/production" dest="../libs/ikube/production"/>
 
-                                <copy todir="ikube/analytics" failonerror="true" verbose="false">
-                                    <fileset dir="../libs/src/main/resources/analytics"/>
-                                </copy>
-                                <copy todir="../core/ikube/analytics" failonerror="true" verbose="false">
-                                    <fileset dir="../libs/src/main/resources/analytics"/>
-                                </copy>
-                                <copy todir="../war/ikube/analytics" failonerror="true" verbose="false">
-                                    <fileset dir="../libs/src/main/resources/analytics"/>
-                                </copy>
-                                <copy todir="../../ikube/analytics" failonerror="true" verbose="false">
-                                    <fileset dir="../libs/src/main/resources/analytics"/>
-                                </copy>
-
-                                <copy todir="../war/ikube/twitter" failonerror="true" verbose="true">
-                                    <fileset dir="../libs/src/main/resources/indexes/twitter"/>
-                                </copy>
+                                <copydir src="../libs/src/main/resources/ikube" dest="../../ikube"/>
+                                <copydir src="../libs/src/main/resources/analytics" dest="../../ikube/analytics"/>
+                                <copydir src="../libs/src/main/resources/indexes/production" dest="../../ikube/production"/>
+                                <copydir src="../libs/src/main/resources/indexes/integration" dest="../../ikube/integration"/>
                             </target>
                         </configuration>
                         <goals>

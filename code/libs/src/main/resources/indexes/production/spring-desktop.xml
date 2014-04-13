@@ -75,18 +75,6 @@
 		<ref bean="ikube.action.index.handler.strategy.LanguageCleaningStrategy" />
 		<ref bean="ikube.action.index.handler.strategy.ContentTypeStrategy" />
 		<ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
-		<!-- Classification strategies, from Twitter training -->
-		<!-- <ref bean="wekaClassificationStrategy.en" />
-		<ref bean="wekaClassificationStrategy.es" />
-		<ref bean="wekaClassificationStrategy.jp" />
-		<ref bean="wekaClassificationStrategy.cn" />
-		<ref bean="wekaClassificationStrategy.nl" />
-		<ref bean="wekaClassificationStrategy.fr" />
-		<ref bean="wekaClassificationStrategy.de" />
-		<ref bean="wekaClassificationStrategy.sv" />
-		<ref bean="wekaClassificationStrategy.th" />
-		<ref bean="wekaClassificationStrategy.ar" />
-		<ref bean="wekaClassificationStrategy.tr" /> -->
 	</util:list>
 	
 </beans>

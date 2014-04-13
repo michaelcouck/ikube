@@ -32,6 +32,11 @@
     </properties>
 
     <build>
+        <resources>
+            <resource>
+                <directory>ikube</directory>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -520,7 +525,7 @@
                         <goals>
                             <goal>deploy-file</goal>
                         </goals>
-                        <phase>install</phase>
+                        <phase>${phase}</phase>
                         <configuration>
                             <groupId>org.springframework.social</groupId>
                             <artifactId>spring-social-twitter</artifactId>

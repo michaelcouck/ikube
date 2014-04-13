@@ -6,6 +6,7 @@ import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.CompositeReaderContext;
 import org.apache.lucene.index.MultiReader;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.store.AlreadyClosedException;
 
 import java.io.File;
 import java.util.Arrays;
@@ -22,40 +23,43 @@ import java.util.List;
  */
 public class AreUnopenedIndexes extends ARule<IndexContext> {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @SuppressWarnings("ConstantConditions")
-    public boolean evaluate(final IndexContext indexContext) {
-        IndexSearcher indexSearcher = indexContext.getMultiSearcher();
-        if (indexSearcher == null) {
-            return new AreIndexesCreated().evaluate(indexContext);
-        }
-        String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
-        File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
-        if (latestIndexDirectory == null ||
-                latestIndexDirectory.listFiles() == null ||
-                latestIndexDirectory.listFiles().length == 0) {
-            return Boolean.FALSE;
-        }
-        // This block checks that all the directories that have
-        // indexes are in fact opened and are accessible in the index readers
-        // of the index searcher
-        logger.debug("Checking latest index directory for new indexes : " + latestIndexDirectory + ", " + indexContext.getName());
-        MultiReader multiReader = (MultiReader) indexSearcher.getIndexReader();
-        CompositeReaderContext compositeReaderContext = multiReader.getContext();
-        List<AtomicReaderContext> atomicReaderContexts = compositeReaderContext.leaves();
-
-        File[] indexDirectories = latestIndexDirectory.listFiles();
-        boolean readersEqualDirectories = atomicReaderContexts.size() == indexDirectories.length;
-        logger.debug("Readers equal directories : " + readersEqualDirectories +
-                ", readers : " + atomicReaderContexts.size() +
-                ", index name : " + indexContext.getName() +
-                ", index directories : " + Arrays.toString(indexDirectories));
-        // TODO: Is there a more elegant way to check this?
-        // return !readersEqualDirectories;
-        return Boolean.FALSE;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	@SuppressWarnings("ConstantConditions")
+	public boolean evaluate(final IndexContext indexContext) {
+		IndexSearcher indexSearcher = indexContext.getMultiSearcher();
+		if (indexSearcher == null) {
+			return new AreIndexesCreated().evaluate(indexContext);
+		}
+		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
+		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
+		if (latestIndexDirectory == null ||
+		  latestIndexDirectory.listFiles() == null ||
+		  latestIndexDirectory.listFiles().length == 0) {
+			return Boolean.FALSE;
+		}
+		// This block checks that all the directories that have
+		// indexes are in fact opened and are accessible in the index readers
+		// of the index searcher
+		logger.debug("Checking latest index directory for new indexes : " + latestIndexDirectory + ", " + indexContext.getName());
+		MultiReader multiReader = (MultiReader) indexSearcher.getIndexReader();
+		try {
+			CompositeReaderContext compositeReaderContext = multiReader.getContext();
+			List<AtomicReaderContext> atomicReaderContexts = compositeReaderContext.leaves();
+			File[] indexDirectories = latestIndexDirectory.listFiles();
+			boolean readersEqualDirectories = atomicReaderContexts.size() == indexDirectories.length;
+			logger.debug("Readers equal directories : " + readersEqualDirectories +
+			  ", readers : " + atomicReaderContexts.size() +
+			  ", index name : " + indexContext.getName() +
+			  ", index directories : " + Arrays.toString(indexDirectories));
+			// TODO: Is there a more elegant way to check this?
+			// return !readersEqualDirectories;
+		} catch (final AlreadyClosedException e) {
+			logger.error("Index closed, corrupt perhaps : " + indexContext, e);
+		}
+		return Boolean.FALSE;
+	}
 
 }

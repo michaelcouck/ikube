@@ -359,4 +359,8 @@ public class IndexContext extends Indexable implements Comparable<IndexContext> 
         return getIndexName().compareTo(other.getIndexName());
     }
 
+	public String toString() {
+		return getId() + ":" + getIndexName();
+	}
+
 }
