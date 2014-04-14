@@ -2,6 +2,7 @@ package ikube.action.rule;
 
 import ikube.IConstants;
 import ikube.action.IAction;
+import ikube.action.Index;
 import ikube.cluster.IClusterManager;
 import ikube.model.Action;
 import ikube.model.IndexContext;
@@ -157,11 +158,18 @@ public class RuleInterceptor implements IRuleInterceptor {
                 boolean evaluation = rule.evaluate(indexContext);
                 String ruleName = rule.getClass().getSimpleName();
                 jexlContext.set(ruleName, evaluation);
+				/*if (Index.class.isAssignableFrom(action.getClass()) && indexContext.getName().equals("twitter")) {
+					LOGGER.info("Rule : " + ruleName + ", " + evaluation);
+				}*/
             }
             String predicate = action.getRuleExpression();
             Expression expression = jexlEngine.createExpression(predicate);
             Object result = expression.evaluate(jexlContext);
             finalResult = result != null && (result.equals(1.0d) || result.equals(Boolean.TRUE));
+			/*if (Index.class.isAssignableFrom(action.getClass()) && indexContext.getName().equals("twitter")) {
+				LOGGER.info("     : ");
+				LOGGER.info("     : " + finalResult);
+			}*/
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.info("Going to log : " + finalResult);
                 log(indexContext, action, predicate, finalResult, results);

@@ -23,7 +23,9 @@ import java.util.Arrays;
 import java.util.Map;
 
 /**
- * TODO Implement this and the architecture of course...
+ * This resource(rest api) class exposes the analytics over rest to a client. This class will
+ * call the service layer to provide functions like creating the analyzer, training, and building,
+ * and of course using the analyzer, i.e. doing anl analysis on a chunk of data.
  *
  * @author Michael couck
  * @version 01.00
@@ -46,6 +48,8 @@ public class Analyzer extends Resource {
 	public static final String ANALYZERS = "/analyzers";
 	public static final String CONTEXT = "/context";
 	public static final String CONTEXTS = "/contexts";
+
+	public static final String APPLICATION_JSON_V1 = "analyzer/v1";
 
 	@Autowired
 	protected IAnalyticsService analyticsService;
@@ -89,8 +93,9 @@ public class Analyzer extends Resource {
 	}
 
 	/**
-	 * This method will take an analysis object, classify it using the classifier that is defined in the analysis object and, add the
-	 * classification results to the analysis object and serialize it for the caller.
+	 * This method will take an analysis object, classify it using the classifier that is
+	 * defined in the analysis object and, add the classification results to the analysis object
+	 * and serialize it for the caller.
 	 */
 	@POST
 	@Path(Analyzer.ANALYZE)
@@ -105,6 +110,15 @@ public class Analyzer extends Resource {
 			analyticsService.sizesForClassesOrClusters(analysis);
 		}
 		return buildJsonResponse(analysis);
+	}
+
+	@POST
+	@Path(Analyzer.CREATE)
+	@Consumes(APPLICATION_JSON_V1)
+	@Produces(APPLICATION_JSON_V1)
+	@SuppressWarnings({ "UnusedParameters" })
+	public Response analyzeV1(@Context final HttpServletRequest request) {
+		return buildJsonResponse("A different version of the api");
 	}
 
 	@POST
@@ -164,13 +178,13 @@ public class Analyzer extends Resource {
 			}, Timestamp.class);
 			beanUtilsBean.copyProperties(context, contextSystem);
 			// We must replace the live objects with the names before sending to the gui
-			context.setAlgorithm(null /* context.getAlgorithm().getClass().getName() */);
-			context.setAnalyzer(null /* context.getAnalyzer().getClass().getName() */);
+			/*context.setAlgorithm(null *//* context.getAlgorithm().getClass().getName() *//*);
+			context.setAnalyzer(null *//* context.getAnalyzer().getClass().getName() *//*);
 			// Filters can  be null of course, specially for clusterers
 			if (context.getFilter() != null) {
 				// Set the filter name
-				context.setFilter(null /* context.getFilter().getClass().getName() */);
-			}
+				context.setFilter(null *//* context.getFilter().getClass().getName() *//*);
+			}*/
 			context.setTrainingData(null);
 			return context;
 		} catch (final IllegalAccessException | InvocationTargetException e) {

@@ -38,6 +38,7 @@ public class Reopen extends Action<IndexContext, Boolean> {
 
     void openOnIndexWriters(final IndexContext indexContext) throws IOException {
         if (indexContext.getIndexWriters() == null) {
+			logger.info("Index writers not initialized for delta index : " + indexContext.getName());
             return;
         }
         IndexSearcher oldIndexSearcher = indexContext.getMultiSearcher();
@@ -58,7 +59,7 @@ public class Reopen extends Action<IndexContext, Boolean> {
             IndexReader indexReader = new MultiReader(newIndexReaderArray, Boolean.FALSE);
             IndexSearcher indexSearcher = new IndexSearcher(indexReader);
             indexContext.setMultiSearcher(indexSearcher);
-            logger.info("Re-opening searcher : " + indexContext.getName());
+            logger.info("f" + indexContext.getName());
             if (oldIndexSearcher != null && oldIndexSearcher.getIndexReader() != null) {
                 oldIndexSearcher.getIndexReader().close();
             }

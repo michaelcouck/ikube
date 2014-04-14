@@ -106,22 +106,21 @@
             </util:list>
         </property>
     </bean>-->
-    <!-- AreUnopenedIndexes -->
+    <!-- AreUnopenedIndexes, !IsIndexDelta &#38;&#38; &#38;&#38; !AnyServersWorkingThisIndex -->
     <bean
         id="ikube.action.Open"
         class="ikube.action.Open"
         property:ruleExpression="
-    		!IsIndexDelta &#38;&#38;
-	    	((!IsMultiSearcherInitialised || IsNewIndexCreated) &#38;&#38; !AnyServersWorkingThisIndex)"
+	    	!IsMultiSearcherInitialised || IsNewIndexCreated"
         property:requiresClusterLock="false">
         <property name="rules">
             <util:list>
-                <ref local="ikube.action.rule.IsIndexDelta"/>
-                <ref local="ikube.action.rule.AnyServersWorkingThisIndex"/>
-                <ref local="ikube.action.rule.AreIndexesCreated"/>
-                <!--<ref local="ikube.action.rule.AreUnopenedIndexes"/>-->
-                <ref local="ikube.action.rule.IsNewIndexCreated"/>
                 <ref local="ikube.action.rule.IsMultiSearcherInitialised"/>
+                <ref local="ikube.action.rule.IsNewIndexCreated"/>
+                <!--<ref local="ikube.action.rule.IsIndexDelta"/>
+                <ref local="ikube.action.rule.AnyServersWorkingThisIndex"/>
+                <ref local="ikube.action.rule.AreIndexesCreated"/>-->
+                <!--<ref local="ikube.action.rule.AreUnopenedIndexes"/>-->
             </util:list>
         </property>
     </bean>
@@ -141,10 +140,9 @@
         id="ikube.action.Index"
         class="ikube.action.Index"
         property:ruleExpression="
-            !TooManyActionsRule &#38;&#38;
-            !IsRemoteIndexCurrent &#38;&#38;
-            !AnyServersWorkingThisIndex &#38;&#38;
-            ((IsIndexDelta &#38;&#38; !IsThisServerWorkingThisIndex) ||
+            !TooManyActionsRule &#38;&#38; !(AnyServersIdle &#38;&#38; AreOtherServers) &#38;&#38;
+            (!AnyServersWorkingThisIndex &#38;&#38; !IsThisServerWorkingThisIndex &#38;&#38; IsIndexDelta) ||
+            (!IsRemoteIndexCurrent &#38;&#38; !AnyServersWorkingThisIndex &#38;&#38;
                 (!IsIndexCurrent &#38;&#38; !IsIndexDelta &#38;&#38;
                     !(IsThisServerWorking &#38;&#38; AreOtherServers &#38;&#38; AnyServersIdle)))"
         property:indexableHandlers-ref="indexable-handlers"

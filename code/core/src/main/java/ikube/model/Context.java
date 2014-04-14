@@ -36,19 +36,19 @@ public class Context<T, F, A, O> extends Persistable {
      * what the type will be of course.
      */
     @Transient
-    private T analyzer;
+    private transient T analyzer;
 
     /**
      * The filter type to convert the data into for example feature vectors.
      */
     @Transient
-    private F filter;
+    private transient F filter;
 
     /**
      * The underlying algorithm for the analyzer, for example KMeans or J48 for example.
      */
     @Transient
-    private A algorithm;
+    private transient A algorithm;
 
     /**
      * Any options or even classes that modify the algorithm in some way. Could be an array, something like a command line args.
