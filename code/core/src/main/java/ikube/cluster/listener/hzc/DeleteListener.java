@@ -49,6 +49,8 @@ public class DeleteListener implements IListener<Message<Object>>, MessageListen
 					}
 				} catch (final IOException e) {
 					logger.error("Exception closing the index prior to deleting it : ", e);
+				} finally {
+					indexContext.setMultiSearcher(null);
 				}
 				String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 				String indexDirectoryBackupPath = IndexManager.getIndexDirectoryPathBackup(indexContext);

@@ -96,7 +96,7 @@ public abstract class AGeospatialEnrichmentStrategy extends AStrategy {
                         Collection<GeoCity> geoCities = dataBase.find(GeoCity.class, 0, Integer.MAX_VALUE);
                         if (geoCities != null) {
                             for (final GeoCity geoCity : geoCities) {
-                                Long hash = HashUtilities.hash(geoCity.getName());
+                                Long hash = HashUtilities.hash(geoCity.getName().toLowerCase());
                                 GEO_CITY.put(hash, geoCity);
                             }
                             logger.info("Loaded country/city map : " + GEO_CITY.size());

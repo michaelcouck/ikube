@@ -121,12 +121,13 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
         if (!StringUtils.isEmpty(timeZone)) {
             // This seems to be the most accurate
             String city = getCityFromTimeZone(timeZone);
-
-            Long hash = HashUtilities.hash(city);
-            GeoCity geoCity = GEO_CITY.get(hash);
-            if (geoCity != null) {
-                timeZoneCoordinate = geoCity.getCoordinate();
-            }
+			if (!StringUtils.isEmpty(city)) {
+				Long hash = HashUtilities.hash(city.toLowerCase());
+				GeoCity geoCity = GEO_CITY.get(hash);
+				if (geoCity != null) {
+					timeZoneCoordinate = geoCity.getCoordinate();
+				}
+			}
         }
 
         // Get the location based on the user input
@@ -145,7 +146,7 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
 
     String getCityFromTimeZone(final String timeZone) {
         String[] utcTimeZoneLocations = StringUtils.split(timeZone, '/');
-        return utcTimeZoneLocations[utcTimeZoneLocations.length - 1];
+        return utcTimeZoneLocations[utcTimeZoneLocations.length - 1].toLowerCase();
     }
 
     /**
