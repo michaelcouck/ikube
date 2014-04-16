@@ -32,9 +32,9 @@ public class SynchronizeCallable implements Callable<byte[]>, Serializable {
 	/**
 	 * The length of data to read from the target file
 	 */
-	private int length;
+	private long length;
 
-	public SynchronizeCallable(final String indexFile, final long offset, final int length) {
+	public SynchronizeCallable(final String indexFile, final long offset, final long length) {
 		this.indexFile = indexFile;
 		this.offset = offset;
 		this.length = length;
@@ -45,23 +45,29 @@ public class SynchronizeCallable implements Callable<byte[]>, Serializable {
 	 */
 	@Override
 	public byte[] call() throws Exception {
-		byte[] chunk = new byte[0];
+		byte[] bytes = new byte[0];
 		RandomAccessFile randomAccessFile = null;
 		try {
 			File indexFile = new File(this.indexFile);
 			randomAccessFile = new RandomAccessFile(indexFile, "rw");
 			if (randomAccessFile.length() > offset) {
-				length = (int) Math.min(randomAccessFile.length() - offset, length);
-				System.out.println("Getting chunk from : " + offset + ", " + length + ", " + indexFile);
-				chunk = new byte[length];
+				bytes = new byte[(int) length];
+				System.out.println("Offset : " + offset);
 				randomAccessFile.seek(offset);
-				length = randomAccessFile.read(chunk, 0, length);
-				System.out.println("Read length : " + length + ", " + chunk.length);
+				long pointer = randomAccessFile.getFilePointer();
+				System.out.println("Pointer : " + pointer);
+				long read = randomAccessFile.read(bytes);
+				System.out.println("Read : " + read);
+				if (read < length) {
+					byte[] holder = new byte[(int) read];
+					System.arraycopy(bytes, 0, holder, 0, holder.length);
+					bytes = holder;
+				}
 			}
 		} finally {
 			IOUtils.closeQuietly(randomAccessFile);
 		}
-		return chunk;
+		return bytes;
 	}
 
 	/**
@@ -73,11 +79,11 @@ public class SynchronizeCallable implements Callable<byte[]>, Serializable {
 	@SuppressWarnings("UnusedDeclaration")
 	private byte[] compress(final byte[] chunk) {
 		LZ4Factory factory = LZ4Factory.fastestInstance();
-		int decompressedLength = length;
+		long decompressedLength = length;
 		LZ4Compressor compressor = factory.fastCompressor();
-		int maxCompressedLength = compressor.maxCompressedLength(decompressedLength);
-		byte[] compressed = new byte[maxCompressedLength];
-		int compressedLength = compressor.compress(chunk, 0, decompressedLength, compressed, 0, maxCompressedLength);
+		long maxCompressedLength = compressor.maxCompressedLength((int) decompressedLength);
+		byte[] compressed = new byte[(int) maxCompressedLength];
+		long compressedLength = compressor.compress(chunk, 0, (int) decompressedLength, compressed, 0, (int) maxCompressedLength);
 		return compressed;
 	}
 

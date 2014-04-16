@@ -711,7 +711,7 @@
         <entry key="${tail-script}" value="${tomcat-synchronize-bin}"/>
         <entry key="code/war/target/${ikube-war}" value="${tomcat-synchronize-webapps}"/>
         <!-- This over writes the properties specific for the target environment -->
-        <entry key="${resources-directory}/environments/sys/spring.properties" value="${tomcat-synchronize-bin}/ikube/common"/>
+        <entry key="${resources-directory}/environments/prd/spring.properties" value="${tomcat-synchronize-bin}/ikube/common"/>
     </util:map>
     <util:map id="directories-synchronize">
         <entry key="${resources-directory}/ikube" value="${tomcat-synchronize-bin}"/>
@@ -794,7 +794,7 @@
         <entry key="${tail-script}" value="${tomcat-production-bin}"/>
         <entry key="code/war/target/${ikube-war}" value="${tomcat-production-webapps}"/>
         <!-- This over writes the properties specific for the target environment -->
-        <entry key="${resources-directory}/environments/prod/spring.properties"
+        <entry key="${resources-directory}/environments/prd/spring.properties"
                value="${tomcat-production-bin}/ikube/common"/>
     </util:map>
     <util:map id="directories-production">

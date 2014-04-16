@@ -197,8 +197,7 @@ public class SearcherService implements ISearcherService {
      */
     @Override
     public Search search(final Search search) {
-		// TODO : Check that there are some other servers before executing the distributed search
-        if (search.isDistributed() && clusterManager.getServers().size() > 1) {
+        if (search.isDistributed()) {
             // Set the flag so we don't get infinite recursion
             search.setDistributed(Boolean.FALSE);
             // Create the callable that will be executed on the nodes

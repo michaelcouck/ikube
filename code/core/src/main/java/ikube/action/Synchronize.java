@@ -1,5 +1,6 @@
 package ikube.action;
 
+import ikube.action.index.IndexManager;
 import ikube.action.remote.SynchronizeCallable;
 import ikube.action.remote.SynchronizeLatestIndexCallable;
 import ikube.model.IndexContext;
@@ -7,8 +8,10 @@ import ikube.model.Server;
 import ikube.model.Snapshot;
 import ikube.toolkit.FileUtilities;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Date;
 import java.util.List;
@@ -63,43 +66,23 @@ public class Synchronize extends Action<IndexContext, Boolean> {
 
 		// Iterate over the index files and copy them to the local file system
 		boolean exception = Boolean.FALSE;
+		String currentIndexFile = null;
 		try {
 			int offset = 0;
 			// Ten megs at a time should be fine
 			int length = 1024 * 1024 * 10;
 			for (final String indexFile : indexFiles) {
-				byte[] chunk = null;
+				currentIndexFile = indexFile;
 				do {
 					// Keep calling the remote server for chunks of the index file
 					// until there is no more data left, i.e. the files is completely copied
-					int retry = 5;
-					do {
-						try {
-							logger.info("Getting file : " + indexFile + ", " + offset + ", " + length);
-							SynchronizeCallable chunkCallable = new SynchronizeCallable(indexFile, offset, length);
-							Future<byte[]> chunkFuture = clusterManager.sendTaskTo(remote, chunkCallable);
-							chunk = chunkFuture.get();
-						} catch (final Exception e) {
-							logger.error("Exception getting chunk, will retry : " + retry, e);
-						}
-						// We'll retry a few times for this chunk
-					} while (chunk == null && retry-- > 0);
+					byte[] chunk = getChunk(remote, indexFile, offset, length);
 					if (chunk == null || chunk.length == 0) {
 						break;
 					}
-					if (chunk.length > 0) {
-						File file = FileUtilities.getOrCreateFile(new File(indexFile));
-						RandomAccessFile randomAccessFile = null;
-						try {
-							randomAccessFile = new RandomAccessFile(indexFile, "rw");
-							randomAccessFile.seek(offset);
-							randomAccessFile.write(chunk);
-						} finally {
-							IOUtils.closeQuietly(randomAccessFile);
-						}
-					}
+					writeFile(indexContext, indexFile, chunk, offset);
 					offset += chunk.length;
-				} while (chunk.length > 0);
+				} while (true);
 			}
 		} catch (final Exception e) {
 			exception = Boolean.TRUE;
@@ -108,14 +91,66 @@ public class Synchronize extends Action<IndexContext, Boolean> {
 			if (exception) {
 				// Try to delete the potentially corrupt index files
 				//noinspection ConstantConditions
-				if (indexFiles != null) {
-					File indexDirectory = new File(indexFiles[0]).getParentFile();
+				if (currentIndexFile != null) {
+					File indexDirectory = getOutputFile(indexContext, currentIndexFile);
 					logger.warn("Deleting index file coming from remote server : " + indexDirectory);
 					FileUtilities.deleteFile(indexDirectory);
 				}
 			}
 		}
 		return Boolean.TRUE;
+	}
+
+	byte[] getChunk(final Server remote, final String indexFile, final long offset, final long length) {
+		int retry = 5;
+		byte[] chunk = null;
+		do {
+			try {
+				logger.info("Getting file : " + indexFile + ", " + offset + ", " + length);
+				SynchronizeCallable chunkCallable = new SynchronizeCallable(indexFile, offset, length);
+				Future<byte[]> chunkFuture = clusterManager.sendTaskTo(remote, chunkCallable);
+				chunk = chunkFuture.get();
+			} catch (final Exception e) {
+				logger.error("Exception getting chunk, will retry : " + retry, e);
+			}
+			// We'll retry a few times for this chunk
+		} while (chunk == null && retry-- > 0);
+		return chunk;
+	}
+
+	void writeFile(final IndexContext indexContext, final String indexFile, final byte[] chunk, final long offset) throws IOException {
+		File file = getOutputFile(indexContext, indexFile);
+		RandomAccessFile randomAccessFile = null;
+		try {
+			logger.info("Offset : " + offset + ", length : " + chunk.length);
+			randomAccessFile = new RandomAccessFile(indexFile, "rw");
+			randomAccessFile.seek(offset);
+			randomAccessFile.write(chunk);
+		} finally {
+			IOUtils.closeQuietly(randomAccessFile);
+		}
+	}
+
+	private File getOutputFile(final IndexContext indexContext, final String indexFile) {
+		// /mnt/sdb/indexes/autocomplete/1397377466355/192.168.1.8-8022
+		String[] segments = StringUtils.split(indexFile, File.separator);
+		String timestampDirectory = segments[segments.length - 3];
+		String serverDirectory = segments[segments.length - 2];
+		String fileName = segments[segments.length - 1];
+
+		String indexDirectory = IndexManager.getIndexDirectoryPath(indexContext);
+
+		StringBuilder builder = new StringBuilder(indexDirectory);
+		builder.append(File.separator);
+		builder.append(timestampDirectory);
+		builder.append(File.separator);
+		builder.append(serverDirectory);
+		builder.append(File.separator);
+		builder.append(fileName);
+
+		logger.info("Writing to file : " + builder.toString());
+
+		return FileUtilities.getOrCreateFile(new File(builder.toString()));
 	}
 
 	Server getTargetRemoteServer(final IndexContext indexContext) {
@@ -125,16 +160,16 @@ public class Synchronize extends Action<IndexContext, Boolean> {
 		Map<String, Server> servers = clusterManager.getServers();
 		for (final Map.Entry<String, Server> mapEntry : servers.entrySet()) {
 			Server server = mapEntry.getValue();
-			/*if (server.getAddress().equals(local.getAddress())) {
-                continue;
-            }*/
+			if (server.getAddress().equals(local.getAddress())) {
+				continue;
+			}
 			List<IndexContext> indexContexts = server.getIndexContexts();
 			Date latestIndexTimestamp = getLatestIndexTimestamp(indexContext, indexContexts);
 			if (timestamp == null) {
 				timestamp = latestIndexTimestamp;
 				remote = server;
 			} else {
-				if (latestIndexTimestamp.after(timestamp)) {
+				if (latestIndexTimestamp != null && latestIndexTimestamp.after(timestamp)) {
 					timestamp = latestIndexTimestamp;
 					remote = server;
 				}

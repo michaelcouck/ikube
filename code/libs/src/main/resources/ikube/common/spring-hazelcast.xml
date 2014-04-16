@@ -37,6 +37,7 @@
             <hz:management-center enabled="${hz-management-center-enabled}" url="${hz-management-center-url}"/>
             <hz:properties>
                 <hz:property name="hazelcast.redo.wait.millis">15000</hz:property>
+                <hz:property name="hazelcast.operation.call.timeout.millis">600000</hz:property>
                 <hz:property name="hazelcast.redo.giveup.threshold">10</hz:property>
                 <!--<hz:property name="hazelcast.redo.giveup.threshold">1000</hz:property>-->
                 <hz:property name="hazelcast.max.operation.timeout">600000</hz:property>
