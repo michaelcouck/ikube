@@ -2,7 +2,6 @@ package ikube.action.rule;
 
 import ikube.IConstants;
 import ikube.action.IAction;
-import ikube.action.Index;
 import ikube.cluster.IClusterManager;
 import ikube.model.Action;
 import ikube.model.IndexContext;
@@ -83,7 +82,7 @@ public class RuleInterceptor implements IRuleInterceptor {
                 } finally {
                     clusterManager.unlock(IConstants.IKUBE);
                 }
-                LOGGER.debug("Continueing : ");
+                LOGGER.debug("Continuing : ");
             }
             if (proceed) {
                 LOGGER.debug("Proceeding : ");
@@ -116,8 +115,9 @@ public class RuleInterceptor implements IRuleInterceptor {
                     Action action = null;
                     try {
                         // Start the action in the cluster
+						String indexName = indexContext.getIndexName();
                         String actionName = proceedingJoinPoint.getTarget().getClass().getSimpleName();
-                        action = clusterManager.startWorking(actionName, indexContext.getIndexName(), null);
+                        action = clusterManager.startWorking(actionName, indexName, null);
                         // Execute the action logic
                         proceedingJoinPoint.proceed();
                     } catch (final Throwable e) {
@@ -170,10 +170,10 @@ public class RuleInterceptor implements IRuleInterceptor {
 				LOGGER.info("     : ");
 				LOGGER.info("     : " + finalResult);
 			}*/
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.info("Going to log : " + finalResult);
-                log(indexContext, action, predicate, finalResult, results);
-            }
+			LOGGER.info("Going to log : " + finalResult);
+			log(indexContext, action, predicate, finalResult, results);
+			/*if (LOGGER.isDebugEnabled()) {
+            }*/
         }
         return finalResult;
     }

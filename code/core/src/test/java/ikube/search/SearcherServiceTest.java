@@ -122,7 +122,7 @@ public class SearcherServiceTest extends AbstractTest {
 		search = new ikube.model.Search();
 		search = populateFields(new ikube.model.Search(), Boolean.TRUE, 10);
 		search.setDistributed(Boolean.TRUE);
-		search.setBoosts(Arrays.<String>asList("1.0"));
+		search.setBoosts(Arrays.asList("1.0"));
 
 		searcherService = new SearcherService();
 

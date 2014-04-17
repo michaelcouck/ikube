@@ -215,11 +215,12 @@
         id="ikube.action.Synchronize"
         class="ikube.action.Synchronize"
         property:ruleExpression="
+            !IsBackupIndexCurrent &#38;&#38;
+            !IsIndexCurrent &#38;&#38;
             !TooManyActionsRule &#38;&#38;
             IsRemoteIndexCurrent &#38;&#38;
             !AnyServersWorkingThisIndex &#38;&#38;
-            !IsThisServerWorkingThisIndex &#38;&#38;
-            !IsIndexCurrent"
+            !IsThisServerWorkingThisIndex"
         property:requiresClusterLock="true">
         <property name="rules">
             <util:list>
@@ -227,6 +228,7 @@
                 <ref local="ikube.action.rule.IsRemoteIndexCurrent"/>
                 <ref local="ikube.action.rule.AnyServersWorkingThisIndex"/>
                 <ref local="ikube.action.rule.IsIndexCurrent"/>
+                <ref local="ikube.action.rule.IsBackupIndexCurrent"/>
                 <ref local="ikube.action.rule.IsThisServerWorkingThisIndex"/>
             </util:list>
         </property>

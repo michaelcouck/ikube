@@ -8,8 +8,9 @@
 
     <scm>
         <url>https://github.com/michaelcouck/ikube</url>
-        <connection>scm:git:git://github.com/michaelcouck/ikube.git</connection>
-        <developerConnection>scm:git:git://github.com/michaelcouck/ikube.git</developerConnection>
+        <connection>scm:git:ssh://github.com/michaelcouck/ikube.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/michaelcouck/ikube.git</developerConnection>
+        <tag>HEAD</tag>
     </scm>
 
     <developers>
