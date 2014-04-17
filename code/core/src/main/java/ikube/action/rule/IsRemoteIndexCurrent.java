@@ -32,12 +32,13 @@ public class IsRemoteIndexCurrent extends ARule<IndexContext> {
                 continue;
             }
             try {
-                isRemoteIndexCurrent |= future.get();
+				boolean remoteIndexCurrent = future.get();
+                isRemoteIndexCurrent |= remoteIndexCurrent;
             } catch (final InterruptedException | ExecutionException e) {
                 logger.error("Exception getting result from remote future : ", e);
             }
         }
-        logger.debug("Remote index created : " + isRemoteIndexCurrent);
+        logger.info("Remote index current : " + isRemoteIndexCurrent);
         return isRemoteIndexCurrent;
     }
 

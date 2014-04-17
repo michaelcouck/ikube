@@ -27,7 +27,9 @@ public class IsIndexCurrentCallable implements Callable<Boolean>, Serializable {
      */
     @Override
     public Boolean call() throws Exception {
-        return new IsIndexCurrent().evaluate(indexContext);
+		boolean indexCurrent = new IsIndexCurrent().evaluate(indexContext);
+		System.out.println("Remote index current : " + indexCurrent + ", " + indexContext.getName());
+        return indexCurrent;
     }
 
 }

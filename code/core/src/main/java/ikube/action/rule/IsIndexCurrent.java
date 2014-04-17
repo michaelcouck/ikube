@@ -23,7 +23,9 @@ public class IsIndexCurrent extends ARule<IndexContext> {
     @Override
     public boolean evaluate(final IndexContext indexContext) {
         String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
-        return isIndexCurrent(indexContext, indexDirectoryPath);
+		boolean indexCurrent = isIndexCurrent(indexContext, indexDirectoryPath);
+		logger.info("Index current : " + indexContext + ", " + indexContext.getName());
+        return indexCurrent;
     }
 
 }
