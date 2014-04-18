@@ -32,7 +32,8 @@
         property:delta="true"
         property:indexDirectoryPath="${index.directory.path}"
         property:indexDirectoryPathBackup="${index.directory.path.backup}"
-        property:children-ref="twitter-indexables"/>
+        property:children-ref="twitter-indexables"
+        destroy-method="destroy"/>
     <util:list id="twitter-indexables">
         <ref local="twitter-index"/>
     </util:list>

@@ -363,4 +363,15 @@ public class IndexContext extends Indexable implements Comparable<IndexContext> 
 		return getId() + ":" + getIndexName();
 	}
 
+	public void destroy() {
+		try {
+			IndexSearcher indexSearcher = getMultiSearcher();
+			if (indexSearcher != null && indexSearcher.getIndexReader() != null) {
+				indexSearcher.getIndexReader().close();
+			}
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 }
