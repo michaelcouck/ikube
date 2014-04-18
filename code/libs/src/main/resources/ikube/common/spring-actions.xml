@@ -136,6 +136,7 @@
             </util:list>
         </property>
     </bean>
+    
     <bean
         id="ikube.action.Index"
         class="ikube.action.Index"
@@ -164,6 +165,7 @@
             </util:list>
         </property>
     </bean>
+    
     <bean
         id="ikube.action.Delete"
         class="ikube.action.Delete"
