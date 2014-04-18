@@ -141,8 +141,10 @@
         class="ikube.action.Index"
         property:ruleExpression="
             !TooManyActionsRule &#38;&#38;
+
                 (IsIndexDelta &#38;&#38; !AnyServersWorkingThisIndex &#38;&#38; !IsThisServerWorkingThisIndex &#38;&#38;
-                    (AreOtherServers &#38;&#38; AnyServersIdle &#38;&#38; IsThisServerWorking)) ||
+                    !(IsThisServerWorking &#38;&#38; AreOtherServers &#38;&#38; AnyServersIdle)) ||
+
                 (!IsRemoteIndexCurrent &#38;&#38; !AnyServersWorkingThisIndex &#38;&#38;
                     (!IsIndexCurrent &#38;&#38; !IsIndexDelta &#38;&#38;
                         !(IsThisServerWorking &#38;&#38; AreOtherServers &#38;&#38; AnyServersIdle)))"

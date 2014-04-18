@@ -41,36 +41,30 @@
 	</distributionManagement>
 
 	<properties>
-		<targetJdk>1.7</targetJdk>
+        <encoding>UTF8</encoding>
+        <targetJdk>1.7</targetJdk>
+        <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
 
-		<spring.security.oauth.version>3.19</spring.security.oauth.version>
-		<spring.version>3.0.5.RELEASE</spring.version>
-		<tiles.version>2.1.3</tiles.version>
-		<slf4j.version>1.6.6</slf4j.version>
-		<logback.version>0.9.15</logback.version>
-		<junit.version>4.8.2</junit.version>
-		<encoding>UTF8</encoding>
-		<project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
+		<spring-security-oauth-version>3.19</spring-security-oauth-version>
+		<spring-version>3.0.5.RELEASE</spring-version>
+		<junit-version>4.8.2</junit-version>
+        <!-- Serenity parameters -->
+		<write-classes>-Dwrite.classes=true</write-classes>
+		<clean-classes>-Dclean.classes=true</clean-classes>
+		<included-packages>-Dincluded.packages=ikube</included-packages>
+		<excluded-packages>-Dexcluded.packages=model:Mock:Test:Integration</excluded-packages>
+		<included-adapters>-Dincluded.adapters=coverage:complexity:dependency</included-adapters>
+		<serenity-parameters>${write-classes} ${clean-classes} ${included-packages} ${excluded-packages} ${included-adapters} -noverify</serenity-parameters>
+		<memory-parameters>-XX:PermSize=256m -XX:MaxPermSize=1024m -Xms1024m -Xmx4096m</memory-parameters>
 
-		<write.classes>-Dwrite.classes=true</write.classes>
-		<clean.classes>-Dclean.classes=true</clean.classes>
-		<included.packages>-Dincluded.packages=ikube:edu.uci</included.packages>
-		<excluded.packages>-Dexcluded.packages=model:Mock:Test:Integration:sshxcute</excluded.packages>
-		<included.adapters>-Dincluded.adapters=coverage:complexity:dependency</included.adapters>
-		<serenity.parameters>${included.adapters} ${included.packages} ${excluded.packages} ${write.classes} ${clean.classes}</serenity.parameters>
-		<memory.parameters>-XX:PermSize=256m -XX:MaxPermSize=1024m -Xms1024m -Xmx4096m</memory.parameters>
-
-		<war.base.root>code/war/target/ikube</war.base.root>
-		<postgresql.driver.version>9.1-901-1.jdbc4</postgresql.driver.version>
-		<!-- <jetty.version>6.1.25</jetty.version> -->
-		<jetty.version>6.1.11</jetty.version>
+		<postgresql-driver-version>9.1-901-1.jdbc4</postgresql-driver-version>
+		<jetty-version>6.1.11</jetty-version>
 
 		<!--
 			Was 3.6.1 at 20.03.12
 			Was 3.6.2 at 23.12.13
 		-->
-		<lucene.version>4.6.0</lucene.version>
-		<lucene.spellchecker.version>3.6.2</lucene.spellchecker.version>
+		<lucene-version>4.6.0</lucene-version>
 	</properties>
 
 	<build>
@@ -292,45 +286,45 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
-			<version>${spring.version}</version>
+			<version>${spring-version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
-			<version>${spring.version}</version>
+			<version>${spring-version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context-support</artifactId>
-			<version>${spring.version}</version>
+			<version>${spring-version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
-			<version>${spring.version}</version>
+			<version>${spring-version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jdbc</artifactId>
-			<version>${spring.version}</version>
+			<version>${spring-version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aop</artifactId>
-			<version>${spring.version}</version>
+			<version>${spring-version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aspects</artifactId>
-			<version>${spring.version}</version>
+			<version>${spring-version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
@@ -339,7 +333,7 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-core</artifactId>
-			<version>${spring.version}</version>
+			<version>${spring-version}</version>
 			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
@@ -363,7 +357,7 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-acl</artifactId>
-			<version>${spring.version}</version>
+			<version>${spring-version}</version>
 			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
@@ -380,13 +374,13 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-config</artifactId>
-			<version>${spring.version}</version>
+			<version>${spring-version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-taglibs</artifactId>
-			<version>${spring.version}</version>
+			<version>${spring-version}</version>
 			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
@@ -398,7 +392,7 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-web</artifactId>
-			<version>${spring.version}</version>
+			<version>${spring-version}</version>
 			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
@@ -410,19 +404,19 @@
 		<dependency>
 			<groupId>org.codehaus.spring-security-oauth</groupId>
 			<artifactId>spring-security-oauth</artifactId>
-			<version>${spring.security.oauth.version}</version>
+			<version>${spring-security-oauth-version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-ldap</artifactId>
-			<version>${spring.version}</version>
+			<version>${spring-version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
-			<version>${spring.version}</version>
+			<version>${spring-version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 			<exclusions>
@@ -435,14 +429,14 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-tx</artifactId>
-			<version>${spring.version}</version>
+			<version>${spring-version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-orm</artifactId>
-			<version>${spring.version}</version>
+			<version>${spring-version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
@@ -584,14 +578,14 @@
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-core</artifactId>
-			<version>${lucene.version}</version>
+			<version>${lucene-version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-highlighter</artifactId>
-			<version>${lucene.version}</version>
+			<version>${lucene-version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 			<exclusions>
@@ -604,18 +598,18 @@
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-spatial</artifactId>
-            <version>${lucene.version}</version>
+            <version>${lucene-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-misc</artifactId>
-			<version>${lucene.version}</version>
+			<version>${lucene-version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-classification</artifactId>
-			<version>${lucene.version}</version>
+			<version>${lucene-version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -642,7 +636,7 @@
 		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>${postgresql.driver.version}</version>
+			<version>${postgresql-driver-version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -662,7 +656,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
+			<version>${junit-version}</version>
 			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
@@ -888,25 +882,25 @@
 		<dependency>
 			<groupId>org.mortbay.jetty</groupId>
 			<artifactId>jetty-embedded</artifactId>
-			<version>${jetty.version}</version>
+			<version>${jetty-version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mortbay.jetty</groupId>
 			<artifactId>jetty</artifactId>
-			<version>${jetty.version}</version>
+			<version>${jetty-version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mortbay.jetty</groupId>
 			<artifactId>start</artifactId>
-			<version>${jetty.version}</version>
+			<version>${jetty-version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mortbay.jetty</groupId>
 			<artifactId>jetty-util</artifactId>
-			<version>${jetty.version}</version>
+			<version>${jetty-version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -1058,7 +1052,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
-			<version>${spring.version}</version>
+			<version>${spring-version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -1090,21 +1084,21 @@
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-analyzers-common</artifactId>
-            <version>${lucene.version}</version>
+            <version>${lucene-version}</version>
             <type>jar</type>
             <scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-queries</artifactId>
-            <version>${lucene.version}</version>
+            <version>${lucene-version}</version>
             <type>jar</type>
             <scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-queryparser</artifactId>
-            <version>${lucene.version}</version>
+            <version>${lucene-version}</version>
             <type>jar</type>
             <scope>compile</scope>
 		</dependency>

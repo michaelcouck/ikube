@@ -174,13 +174,22 @@ public class ClusterManagerHazelcast extends AClusterManager {
      */
     @Override
     public boolean anyWorking(final String indexName) {
+		@SuppressWarnings("UnusedDeclaration")
+		Server local = getServer();
         Map<String, Server> servers = getServers();
         for (final Map.Entry<String, Server> mapEntry : servers.entrySet()) {
             Server server = mapEntry.getValue();
+			// TODO: Should there be a local server check? What are
+			// the side effects if any.
+			// Case 1: Server indexing the twitter data, this will return
+			// false, so the indexing will start again!! No?
+			/*if (server.getAddress().equals(local.getAddress())) {
+				continue;
+			}*/
             if (!server.isWorking() || server.getActions() == null) {
                 continue;
             }
-            for (Action action : server.getActions()) {
+            for (final Action action : server.getActions()) {
                 if (indexName.equals(action.getIndexName())) {
                     return true;
                 }

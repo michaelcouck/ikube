@@ -5,12 +5,17 @@ import ikube.IConstants;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
+import ikube.security.WebServiceAuthentication;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
 import mockit.Deencapsulation;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.lucene.document.Document;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -26,65 +31,93 @@ import static org.mockito.Mockito.*;
  */
 public class IndexableInternetHandlerTest extends AbstractTest {
 
-    private String url = "http://www.ikube.be/ikube";
-    private IndexableInternet indexableInternet;
-    private IndexableInternetHandler indexableInternetHandler;
+	private String url = "http://www.ikube.be/ikube";
+	private IndexableInternet indexableInternet;
+	private IndexableInternetHandler indexableInternetHandler;
 
-    @Before
-    public void before() {
-        ThreadUtilities.initialize();
+	@Before
+	public void before() {
+		ThreadUtilities.initialize();
 
-        indexableInternet = new IndexableInternet();
-        indexableInternet.setName("indexable-internet");
-        indexableInternet.setIdFieldName(IConstants.ID);
-        indexableInternet.setTitleFieldName(IConstants.TITLE);
-        indexableInternet.setContentFieldName(IConstants.CONTENT);
+		indexableInternet = new IndexableInternet();
+		indexableInternet.setName("indexable-internet");
+		indexableInternet.setIdFieldName(IConstants.ID);
+		indexableInternet.setTitleFieldName(IConstants.TITLE);
+		indexableInternet.setContentFieldName(IConstants.CONTENT);
 
-        indexableInternet.setThreads(3);
-        indexableInternet.setUrl(url);
-        indexableInternet.setBaseUrl(url);
-        indexableInternet.setMaxReadLength(Integer.MAX_VALUE);
-        indexableInternet.setExcludedPattern("some-pattern");
-        indexableInternet.setParent(indexContext);
+		indexableInternet.setThreads(3);
+		indexableInternet.setUrl(url);
+		indexableInternet.setBaseUrl(url);
+		indexableInternet.setMaxReadLength(Integer.MAX_VALUE);
+		indexableInternet.setExcludedPattern("some-pattern");
+		indexableInternet.setParent(indexContext);
 
-        indexableInternetHandler = new IndexableInternetHandler();
+		indexableInternetHandler = new IndexableInternetHandler();
 
-        InternetResourceHandler resourceHandler = new InternetResourceHandler() {
-            public Document handleResource(
-                    final IndexContext indexContext,
-                    final IndexableInternet indexable,
-                    final Document document,
-                    final Object resource)
-                    throws Exception {
-                return document;
-            }
-        };
-        Deencapsulation.setField(indexableInternetHandler, dataBase);
-        Deencapsulation.setField(indexableInternetHandler, resourceHandler);
-    }
+		InternetResourceHandler resourceHandler = new InternetResourceHandler() {
+			public Document handleResource(
+			  final IndexContext indexContext,
+			  final IndexableInternet indexable,
+			  final Document document,
+			  final Object resource)
+			  throws Exception {
+				return document;
+			}
+		};
+		Deencapsulation.setField(indexableInternetHandler, dataBase);
+		Deencapsulation.setField(indexableInternetHandler, resourceHandler);
+	}
 
-    @After
-    public void after() {
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
-    }
+	@After
+	public void after() {
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+	}
 
-    @Test
-    public void handleIndexable() throws Exception {
-        ForkJoinTask<?> forkJoinTask = indexableInternetHandler.handleIndexableForked(indexContext, indexableInternet);
-        ThreadUtilities.waitForFuture(forkJoinTask, 10);
-        assertNotNull(forkJoinTask);
-    }
+	@Test
+	public void handleIndexable() throws Exception {
+		ForkJoinTask<?> forkJoinTask = indexableInternetHandler.handleIndexableForked(indexContext, indexableInternet);
+		ThreadUtilities.waitForFuture(forkJoinTask, 10);
+		assertNotNull(forkJoinTask);
+	}
 
-    @Test
-    public void handleResource() {
-        Url url = mock(Url.class);
+	@Test
+	@Ignore
+	public void login() throws Exception {
 
-        when(url.getUrl()).thenReturn(this.url);
-        when(url.getParsedContent()).thenReturn("text/html");
-        when(url.getRawContent()).thenReturn("hello world".getBytes());
+		/*System.setProperty("http.proxyUser", "id837406");
+		System.setProperty("http.proxyPassword", "xxx");
+		System.setProperty("http.proxyPort", "8080");
+		System.setProperty("http.proxyHost", "wwwintproxy.bgc.net");
 
-        indexableInternetHandler.handleResource(indexContext, indexableInternet, url);
-        verify(url, atLeastOnce()).setParsedContent(anyString());
-    }
+		new ProxyAuthenticator().initialize();*/
+
+		url = "http://el1710.bc:18080/svn/";
+		// url = "http://www.google.com";
+
+		HttpClient httpClient = new HttpClient();
+		new WebServiceAuthentication().authenticate(httpClient, url, "18080", "id837406", "xxx");
+		HttpMethod httpMethod = new GetMethod(url);
+		int response = httpClient.executeMethod(httpMethod);
+		String result = httpMethod.getResponseBodyAsString();
+		logger.info("Response : " + response + ", " + result);
+
+		/*indexableInternet.setUrl(url);
+		indexableInternet.setBaseUrl(url);
+		indexableInternet.setUserid("id8370406");
+		indexableInternet.setPassword("xxx");
+		handleIndexable();*/
+	}
+
+	@Test
+	public void handleResource() {
+		Url url = mock(Url.class);
+
+		when(url.getUrl()).thenReturn(this.url);
+		when(url.getParsedContent()).thenReturn("text/html");
+		when(url.getRawContent()).thenReturn("hello world".getBytes());
+
+		indexableInternetHandler.handleResource(indexContext, indexableInternet, url);
+		verify(url, atLeastOnce()).setParsedContent(anyString());
+	}
 
 }
