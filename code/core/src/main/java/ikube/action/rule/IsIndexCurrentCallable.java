@@ -1,8 +1,10 @@
 package ikube.action.rule;
 
 import ikube.model.IndexContext;
+import ikube.toolkit.ApplicationContextManager;
 
 import java.io.Serializable;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 /**
@@ -27,9 +29,17 @@ public class IsIndexCurrentCallable implements Callable<Boolean>, Serializable {
      */
     @Override
     public Boolean call() throws Exception {
-		boolean indexCurrent = new IsIndexCurrent().evaluate(indexContext);
-		System.out.println("Remote index current : " + indexCurrent + ", " + indexContext.getName());
-        return indexCurrent;
+		// Get the local index context, as we are now on the remote machine
+		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
+		for (final Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
+			if (indexContext.getName().equals(mapEntry.getValue().getName())) {
+				boolean indexCurrent = new IsIndexCurrent().evaluate(mapEntry.getValue());
+				System.out.println("Remote index current : " + indexCurrent + ", " + indexContext);
+				return indexCurrent;
+			}
+		}
+		System.out.println("Remote index not current : " + indexContext);
+        return Boolean.FALSE;
     }
 
 }
