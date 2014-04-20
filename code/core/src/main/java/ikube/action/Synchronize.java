@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +61,7 @@ public class Synchronize extends Action<IndexContext, Boolean> {
 		Future<String[]> future = clusterManager.sendTaskTo(remote, latestCallable);
 		try {
 			indexFiles = future.get();
+			logger.info("Index files : " + Arrays.toString(indexFiles));
 		} catch (final InterruptedException | ExecutionException e) {
 			throw new RuntimeException("Exception getting the index files from the remote server : " + remote, e);
 		}
@@ -72,6 +74,7 @@ public class Synchronize extends Action<IndexContext, Boolean> {
 			// Ten megs at a time should be fine
 			int length = 1024 * 1024 * 10;
 			for (final String indexFile : indexFiles) {
+				logger.info("Index file : " + indexFile);
 				currentIndexFile = indexFile;
 				do {
 					// Keep calling the remote server for chunks of the index file

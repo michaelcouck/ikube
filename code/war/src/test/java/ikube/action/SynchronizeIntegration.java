@@ -37,6 +37,7 @@ public class SynchronizeIntegration extends IntegrationTest {
 		indexContext = ApplicationContextManager.getBean("desktop");
 		IndexableFileSystem indexableFileSystem = ApplicationContextManager.getBean("desktopFolder");
 		indexableFileSystem.setPath("/tmp");
+		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
 	}
 
 	@After
@@ -47,12 +48,13 @@ public class SynchronizeIntegration extends IntegrationTest {
 	@Test
 	public void execute() throws Exception {
 		// Create the index
-		Index index = ApplicationContextManager.getBean(Index.class);
+		/*Index index = ApplicationContextManager.getBean(Index.class);
 		index.execute(indexContext);
-		ThreadUtilities.sleep(15000);
+		ThreadUtilities.sleep(15000);*/
 		// Synchronize it to the local files
 		Synchronize synchronize = ApplicationContextManager.getBean(Synchronize.class);
 		synchronize.execute(indexContext);
+		ThreadUtilities.sleep(180000);
 		// Verify that it is in fact changed and valid
 		Open open = ApplicationContextManager.getBean(Open.class);
 		open.execute(indexContext);

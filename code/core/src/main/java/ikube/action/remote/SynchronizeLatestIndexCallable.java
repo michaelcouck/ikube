@@ -1,7 +1,9 @@
 package ikube.action.remote;
 
 import ikube.action.index.IndexManager;
+import ikube.action.rule.IsIndexCurrent;
 import ikube.model.IndexContext;
+import ikube.toolkit.ApplicationContextManager;
 
 import java.io.File;
 import java.io.Serializable;
@@ -12,6 +14,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 /**
@@ -31,23 +34,33 @@ public class SynchronizeLatestIndexCallable implements Callable<String[]>, Seria
 
 	@Override
 	public String[] call() throws Exception {
+		IndexContext indexContext = null;
+		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
+		for (final Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
+			if (this.indexContext.getName().equals(mapEntry.getValue().getName())) {
+				indexContext = mapEntry.getValue();
+			}
+		}
+
 		final List<String> filePaths = new ArrayList<>();
-		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
-		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
-		System.out.println("Latest index directory : " + latestIndexDirectory);
-		if (latestIndexDirectory != null && latestIndexDirectory.exists()) {
-			Files.walkFileTree(latestIndexDirectory.toPath(), new SimpleFileVisitor<Path>() {
-				@Override
-				public FileVisitResult visitFile(final Path path, final BasicFileAttributes basicFileAttributes) {
-					File file = path.toFile();
-					if (file.isFile()) {
-						filePaths.add(file.getAbsolutePath());
+		if (indexContext != null) {
+			String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
+			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
+			System.out.println("Latest index directory : " + latestIndexDirectory);
+			if (latestIndexDirectory != null && latestIndexDirectory.exists()) {
+				Files.walkFileTree(latestIndexDirectory.toPath(), new SimpleFileVisitor<Path>() {
+					@Override
+					public FileVisitResult visitFile(final Path path, final BasicFileAttributes basicFileAttributes) {
+						File file = path.toFile();
+						if (file.isFile()) {
+							filePaths.add(file.getAbsolutePath());
+						}
+						return FileVisitResult.CONTINUE;
 					}
-					return FileVisitResult.CONTINUE;
-				}
-			});
-		} else {
-			System.out.println("Index directory not initialized : " + indexDirectoryPath);
+				});
+			} else {
+				System.out.println("Index directory not initialized : " + indexDirectoryPath);
+			}
 		}
 		return filePaths.toArray(new String[filePaths.size()]);
 	}

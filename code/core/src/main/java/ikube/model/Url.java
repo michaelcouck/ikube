@@ -108,7 +108,7 @@ public class Url extends Persistable {
     }
 
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.DEFAULT_STYLE, false);
+        return getUrl();
     }
 
 }
