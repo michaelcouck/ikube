@@ -52,12 +52,11 @@ public class SynchronizeCallable implements Callable<byte[]>, Serializable {
 			randomAccessFile = new RandomAccessFile(indexFile, "rw");
 			if (randomAccessFile.length() > offset) {
 				bytes = new byte[(int) length];
-				System.out.println("Offset : " + offset);
 				randomAccessFile.seek(offset);
+				@SuppressWarnings("UnusedDeclaration")
 				long pointer = randomAccessFile.getFilePointer();
-				System.out.println("Pointer : " + pointer);
 				long read = randomAccessFile.read(bytes);
-				System.out.println("Read : " + read);
+				// System.out.println("Offset : " + offset + ", " + pointer + ", " + read);
 				if (read < length) {
 					byte[] holder = new byte[(int) read];
 					System.arraycopy(bytes, 0, holder, 0, holder.length);

@@ -158,22 +158,15 @@ public class RuleInterceptor implements IRuleInterceptor {
                 boolean evaluation = rule.evaluate(indexContext);
                 String ruleName = rule.getClass().getSimpleName();
                 jexlContext.set(ruleName, evaluation);
-				/*if (Index.class.isAssignableFrom(action.getClass()) && indexContext.getName().equals("twitter")) {
-					LOGGER.info("Rule : " + ruleName + ", " + evaluation);
-				}*/
             }
             String predicate = action.getRuleExpression();
             Expression expression = jexlEngine.createExpression(predicate);
             Object result = expression.evaluate(jexlContext);
             finalResult = result != null && (result.equals(1.0d) || result.equals(Boolean.TRUE));
-			/*if (Index.class.isAssignableFrom(action.getClass()) && indexContext.getName().equals("twitter")) {
-				LOGGER.info("     : ");
-				LOGGER.info("     : " + finalResult);
-			}*/
-			LOGGER.info("Going to log : " + finalResult);
-			log(indexContext, action, predicate, finalResult, results);
-			/*if (LOGGER.isDebugEnabled()) {
-            }*/
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Going to log : " + finalResult);
+				log(indexContext, action, predicate, finalResult, results);
+			}
         }
         return finalResult;
     }

@@ -1,7 +1,6 @@
 package ikube.action.remote;
 
 import ikube.action.index.IndexManager;
-import ikube.action.rule.IsIndexCurrent;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
 
@@ -46,7 +45,7 @@ public class SynchronizeLatestIndexCallable implements Callable<String[]>, Seria
 		if (indexContext != null) {
 			String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
 			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
-			System.out.println("Latest index directory : " + latestIndexDirectory);
+			// System.out.println("Latest index directory : " + latestIndexDirectory);
 			if (latestIndexDirectory != null && latestIndexDirectory.exists()) {
 				Files.walkFileTree(latestIndexDirectory.toPath(), new SimpleFileVisitor<Path>() {
 					@Override

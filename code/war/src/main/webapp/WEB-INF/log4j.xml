@@ -2,23 +2,23 @@
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
 
-    <appender class="org.apache.log4j.ConsoleAppender" name="console">
-        <param value="true" name="ImmediateFlush"/>
-        <param value="DEBUG" name="Threshold"/>
+    <appender name="console" class="org.apache.log4j.ConsoleAppender">
+        <param name="ImmediateFlush" value="true"/>
+        <param name="Threshold" value="DEBUG"/>
         <layout class="org.apache.log4j.PatternLayout">
-            <param value="%d{HH:mm:ss,SSS} %-5p %C{1}.%M(%L) - %m%n" name="ConversionPattern"/>
+            <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %-5p %C{1}.%M(%L) - %m%n"/>
         </layout>
     </appender>
 
     <appender class="org.apache.log4j.RollingFileAppender" name="file">
-        <param value="false" name="Append"/>
-        <param value="ikube/ikube.log" name="File"/>
-        <param value="true" name="ImmediateFlush"/>
-        <param value="4" name="MaxBackupIndex"/>
-        <param value="250MB" name="MaxFileSize"/>
-        <param value="DEBUG" name="Threshold"/>
+        <param name="Append" value="false"/>
+        <param name="File" value="ikube/ikube.log"/>
+        <param name="ImmediateFlush" value="true"/>
+        <param name="MaxBackupIndex" value="4"/>
+        <param name="MaxFileSize" value="100MB"/>
+        <param name="Threshold" value="DEBUG"/>
         <layout class="org.apache.log4j.PatternLayout">
-            <param value="%d{HH:mm:ss,SSS} %-5p %C{1}.%M(%L) - %m%n" name="ConversionPattern"/>
+            <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %-5p %C{1}.%M(%L) - %m%n"/>
         </layout>
     </appender>
 

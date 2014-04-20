@@ -38,7 +38,7 @@ public class IsRemoteIndexCurrent extends ARule<IndexContext> {
                 logger.error("Exception getting result from remote future : ", e);
             }
         }
-        logger.info("Is remote index current : " + isRemoteIndexCurrent);
+        logger.debug("Is remote index current : " + isRemoteIndexCurrent);
         return isRemoteIndexCurrent;
     }
 

@@ -33,12 +33,13 @@ public class IsIndexCurrentCallable implements Callable<Boolean>, Serializable {
 		Map<String, IndexContext> indexContexts = ApplicationContextManager.getBeans(IndexContext.class);
 		for (final Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
 			if (indexContext.getName().equals(mapEntry.getValue().getName())) {
+				@SuppressWarnings("UnnecessaryLocalVariable")
 				boolean indexCurrent = new IsIndexCurrent().evaluate(mapEntry.getValue());
-				System.out.println("Remote index current : " + indexCurrent + ", " + indexContext);
+				// System.out.println("Remote index current : " + indexCurrent + ", " + indexContext);
 				return indexCurrent;
 			}
 		}
-		System.out.println("Remote index not current : " + indexContext);
+		// System.out.println("Remote index not current : " + indexContext);
         return Boolean.FALSE;
     }
 
