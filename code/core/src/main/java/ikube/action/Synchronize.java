@@ -70,10 +70,10 @@ public class Synchronize extends Action<IndexContext, Boolean> {
 		boolean exception = Boolean.FALSE;
 		String currentIndexFile = null;
 		try {
-			int offset = 0;
 			// Ten megs at a time should be fine
 			int length = 1024 * 1024 * 10;
 			for (final String indexFile : indexFiles) {
+				int offset = 0;
 				logger.info("Index file : " + indexFile);
 				currentIndexFile = indexFile;
 				do {
@@ -105,7 +105,7 @@ public class Synchronize extends Action<IndexContext, Boolean> {
 	}
 
 	byte[] getChunk(final Server remote, final String indexFile, final long offset, final long length) {
-		int retry = 5;
+		int retry = 3;
 		byte[] chunk = null;
 		do {
 			try {
@@ -113,11 +113,12 @@ public class Synchronize extends Action<IndexContext, Boolean> {
 				SynchronizeCallable chunkCallable = new SynchronizeCallable(indexFile, offset, length);
 				Future<byte[]> chunkFuture = clusterManager.sendTaskTo(remote, chunkCallable);
 				chunk = chunkFuture.get();
+				break;
 			} catch (final Exception e) {
 				logger.error("Exception getting chunk, will retry : " + retry, e);
 			}
 			// We'll retry a few times for this chunk
-		} while (chunk == null && retry-- > 0);
+		} while (retry-- > 0);
 		return chunk;
 	}
 
@@ -126,7 +127,7 @@ public class Synchronize extends Action<IndexContext, Boolean> {
 		RandomAccessFile randomAccessFile = null;
 		try {
 			logger.info("Offset : " + offset + ", length : " + chunk.length);
-			randomAccessFile = new RandomAccessFile(indexFile, "rw");
+			randomAccessFile = new RandomAccessFile(file, "rw");
 			randomAccessFile.seek(offset);
 			randomAccessFile.write(chunk);
 		} finally {

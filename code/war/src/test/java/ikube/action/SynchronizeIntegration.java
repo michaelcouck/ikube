@@ -54,7 +54,7 @@ public class SynchronizeIntegration extends IntegrationTest {
 		// Synchronize it to the local files
 		Synchronize synchronize = ApplicationContextManager.getBean(Synchronize.class);
 		synchronize.execute(indexContext);
-		ThreadUtilities.sleep(180000);
+		ThreadUtilities.sleep(Integer.MAX_VALUE);
 		// Verify that it is in fact changed and valid
 		Open open = ApplicationContextManager.getBean(Open.class);
 		open.execute(indexContext);
