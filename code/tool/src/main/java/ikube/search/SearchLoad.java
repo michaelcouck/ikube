@@ -16,61 +16,69 @@ import java.net.URL;
 import java.util.Arrays;
 
 /**
+ * This class will just execute a search on an index several times, and the results and
+ * performance can be checked visually to verify that there are no bottlenecks in the search
+ * logic.
+ *
  * @author Michael Couck
  * @version 01.00
- * @since 14-04-2012
+ * @since 06-04-2014
  */
 public class SearchLoad {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SearchLoad.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SearchLoad.class);
 
-    public static void main(String[] args) throws IOException {
-        Search search = new Search();
-        search.setFirstResult(0);
-        search.setMaxResults(10);
-        search.setDistributed(Boolean.FALSE);
-        search.setSearchStrings(Arrays.asList("cape town"));
+	public static void main(final String[] args) throws IOException {
+		Search search = new Search();
+		search.setFirstResult(0);
+		search.setMaxResults(10);
+		search.setDistributed(Boolean.FALSE);
+		search.setSearchStrings(Arrays.asList("cape town"));
 
-        search.setFragment(Boolean.TRUE);
-        search.setIndexName(IConstants.GEOSPATIAL);
-        search.setOccurrenceFields(Arrays.asList("must"));
-        search.setSearchFields(Arrays.asList(IConstants.NAME));
-        search.setTypeFields(Arrays.asList("string"));
+		search.setFragment(Boolean.TRUE);
+		search.setIndexName(IConstants.GEOSPATIAL);
+		search.setOccurrenceFields(Arrays.asList("must"));
+		search.setSearchFields(Arrays.asList(IConstants.NAME));
+		search.setTypeFields(Arrays.asList("string"));
 
-        String url = getUrl();
+		String url = getUrl();
 
-        final HttpClient httpClient = new HttpClient();
-        final PostMethod postMethod = new PostMethod(url);
+		final HttpClient httpClient = new HttpClient();
+		final PostMethod postMethod = new PostMethod(url);
 
-        Gson gson = new Gson();
-        String content = gson.toJson(search);
-        StringRequestEntity stringRequestEntity = new StringRequestEntity(content, "application/json", IConstants.ENCODING);
-        postMethod.setRequestEntity(stringRequestEntity);
+		Gson gson = new Gson();
+		String content = gson.toJson(search);
+		StringRequestEntity stringRequestEntity = new StringRequestEntity(content, "application/json", IConstants.ENCODING);
+		postMethod.setRequestEntity(stringRequestEntity);
 
-        final int iterations = 10000;
-        double duration = Timer.execute(new Timer.Timed() {
-            @Override
-            public void execute() {
-                try {
-                    for (int i = 0; i < iterations; i++) {
-                        httpClient.executeMethod(postMethod);
-                    }
-                } catch (final IOException e) {
-                    LOGGER.error("Exception searching production server : ", e);
-                }
-            }
-        });
-        LOGGER.info("Duration for searching : " + iterations + ", is : " + duration + ", per second is : " + iterations / (duration / 1000));
-    }
+		final int iterations = 1000;
+		double duration = Timer.execute(new Timer.Timed() {
+			@Override
+			public void execute() {
+				try {
+					int searches = iterations;
+					do {
+						httpClient.executeMethod(postMethod);
+						if (searches % 100 == 0) {
+							LOGGER.info("Searches : " + searches);
+						}
+					} while (searches-- >= 0);
+				} catch (final IOException e) {
+					LOGGER.error("Exception searching production server : ", e);
+				}
+			}
+		});
+		LOGGER.info("Duration for searching : " + iterations + ", is : " + duration + ", per second is : " + iterations / (duration / 1000));
+	}
 
-    @SuppressWarnings("StringBufferReplaceableByString")
-    protected static String getUrl() throws MalformedURLException {
-        StringBuilder builder = new StringBuilder();
-        builder.append("/ikube");
-        builder.append("/service");
-        builder.append("/search");
-        builder.append("/json");
-        return new URL("http", "ikube.be", 8080, builder.toString()).toString();
-    }
+	@SuppressWarnings("StringBufferReplaceableByString")
+	protected static String getUrl() throws MalformedURLException {
+		StringBuilder builder = new StringBuilder();
+		builder.append("/ikube");
+		builder.append("/service");
+		builder.append("/search");
+		builder.append("/json");
+		return new URL("http", "ikube.be", 80, builder.toString()).toString();
+	}
 
 }

@@ -58,13 +58,13 @@ public class Analyzer extends Resource {
 	@Path(Analyzer.CREATE)
 	@SuppressWarnings("unchecked")
 	public Response create(@Context final HttpServletRequest request) {
-		logger.info("Create request : ");
+		logger.debug("Create request : ");
 		ikube.model.Context context = unmarshall(ikube.model.Context.class, request);
-		logger.info("               : " + context.getName());
+		logger.debug("               : " + context.getName());
 		IAnalyzer analyzer = analyticsService.create(context);
-		logger.info("               : " + analyzer);
+		logger.debug("               : " + analyzer);
 		ikube.model.Context response = context(context);
-		logger.info("               : " + response.getName());
+		logger.debug("               : " + response.getName());
 		return buildJsonResponse(response);
 	}
 
@@ -134,11 +134,11 @@ public class Analyzer extends Resource {
 	@Path(Analyzer.ANALYZERS)
 	@SuppressWarnings("unchecked")
 	public Response analyzers() {
-		logger.info("Analyzers : ");
+		logger.debug("Analyzers : ");
 		Map<String, IAnalyzer> analyzers = analyticsService.getAnalyzers();
-		logger.info("           : " + analyzers);
+		logger.debug("           : " + analyzers);
 		String[] names = analyzers.keySet().toArray(new String[analyzers.size()]);
-		logger.info("           : " + Arrays.toString(names));
+		logger.debug("           : " + Arrays.toString(names));
 		return buildJsonResponse(names);
 	}
 
@@ -177,14 +177,6 @@ public class Analyzer extends Resource {
 				}
 			}, Timestamp.class);
 			beanUtilsBean.copyProperties(context, contextSystem);
-			// We must replace the live objects with the names before sending to the gui
-			/*context.setAlgorithm(null *//* context.getAlgorithm().getClass().getName() *//*);
-			context.setAnalyzer(null *//* context.getAnalyzer().getClass().getName() *//*);
-			// Filters can  be null of course, specially for clusterers
-			if (context.getFilter() != null) {
-				// Set the filter name
-				context.setFilter(null *//* context.getFilter().getClass().getName() *//*);
-			}*/
 			context.setTrainingData(null);
 			return context;
 		} catch (final IllegalAccessException | InvocationTargetException e) {

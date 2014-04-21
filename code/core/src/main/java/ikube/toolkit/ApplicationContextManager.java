@@ -300,7 +300,7 @@ public final class ApplicationContextManager implements ApplicationContextAware 
                             }
                         }
                     }
-                    LOGGER.info("Must refresh : " + mustRefresh);
+                    LOGGER.debug("Must refresh : " + mustRefresh);
                     configurationFiles.clear();
                     configurationFiles.addAll(newConfigurationFiles);
                     if (mustRefresh) {
