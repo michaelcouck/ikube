@@ -4,6 +4,8 @@ import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
 
+import java.io.Serializable;
+
 /**
  * This class is just a serializable snippet of logic that can be distributed over the
  * wire and executed on a remote server, essentially distributing the building of all the
@@ -13,7 +15,7 @@ import ikube.model.Context;
  * @version 01.00
  * @since 15-03-2014
  */
-public class Builder extends Action<Void> {
+public class Builder extends Action<Void> implements Serializable {
 
     /**
      * The analysis object to do the building with

@@ -44,7 +44,7 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    @SuppressWarnings("UnusedDeclaration")
+	@SuppressWarnings({ "UnusedDeclaration", "SpringJavaAutowiringInspection" })
     private IClusterManager clusterManager;
 
     /**

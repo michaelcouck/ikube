@@ -8,20 +8,17 @@ import ikube.model.Analysis;
 import ikube.model.AnalyzerInfo;
 import ikube.model.Context;
 import ikube.toolkit.FileUtilities;
-import ikube.toolkit.ThreadUtilities;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import weka.clusterers.SimpleKMeans;
 
 import javax.ws.rs.core.MediaType;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -38,191 +35,187 @@ import static junit.framework.Assert.*;
  * @version 01.00
  * @since 05-02-2014
  */
-@Ignore
+// @Ignore
 public class AnalyzerIntegration extends BaseTest {
 
-    private Gson gson;
+	private Gson gson;
 
-    @Before
-    public void before() {
-        gson = new Gson();
-        // We will stop this thread a full minute to wait for the server to start completely
-        ThreadUtilities.sleep(60000);
-    }
+	private String line = "1,1,0,1,1,0,1,1";
+	private String analyzerName = "bmw-browsers";
+	private String analyzerModelFileName = "bmw-browsers.arff";
 
-    @Test
-    @SuppressWarnings("unchecked")
-    public void create() throws Exception {
-        Context context = getContext("bmw-browsers.arff", "bmw-browsers");
-        String content = gson.toJson(context);
-        String url = getUrl(Analyzer.CREATE);
-        executePost(url, content, Context.class);
-    }
+	@Before
+	public void before() {
+		gson = new Gson();
+		// We will stop this thread a full minute to wait for the server to start completely
+		// ThreadUtilities.sleep(60000);
+	}
 
-    @Test
-    @SuppressWarnings("unchecked")
-    public void train() throws Exception {
-        create();
+	@After
+	public void after() throws Exception {
+		destroy();
+	}
 
-        String line;
+	@Test
+	@SuppressWarnings("unchecked")
+	public void create() throws Exception {
+		Context context = getContext(analyzerModelFileName, analyzerName);
+		String content = gson.toJson(context);
+		String url = getUrl(Analyzer.CREATE);
+		executePost(url, content, Context.class);
+	}
 
-        File trainingDataFile = FileUtilities.findFileRecursively(new File("."), "bmw-browsers.csv");
-        FileReader fileReader = new FileReader(trainingDataFile);
-        BufferedReader bufferedReader = new BufferedReader(fileReader);
-        while ((line = bufferedReader.readLine()) != null) {
-            Analysis<String, double[]> analysis = getAnalysis("bmw-browsers", line);
-            String content = gson.toJson(analysis);
-            String url = getUrl(Analyzer.TRAIN);
-            executePost(url, content, Analysis.class);
-        }
-    }
+	@Test
+	@SuppressWarnings("unchecked")
+	public void train() throws Exception {
+		create();
 
-    @Test
-    public void build() throws Exception {
-        train();
+		Analysis<String, double[]> analysis = getAnalysis(analyzerName, line);
+		String content = gson.toJson(analysis);
+		String url = getUrl(Analyzer.TRAIN);
+		executePost(url, content, Analysis.class);
+	}
 
-        Analysis analysis = getAnalysis("bmw-browsers", null);
-        String content = gson.toJson(analysis);
-        String url = getUrl(Analyzer.BUILD);
-        executePost(url, content, Analysis.class);
-    }
+	@Test
+	public void build() throws Exception {
+		train();
 
-    @Test
-    @SuppressWarnings("unchecked")
-    public void analyze() throws Exception {
-        build();
+		Analysis analysis = getAnalysis(analyzerName, null);
+		String content = gson.toJson(analysis);
+		String url = getUrl(Analyzer.BUILD);
+		executePost(url, content, Analysis.class);
+	}
 
-        String line;
+	@Test
+	@SuppressWarnings("unchecked")
+	public void analyze() throws Exception {
+		build();
 
-        File trainingDataFile = FileUtilities.findFileRecursively(new File("."), "bmw-browsers.csv");
-        FileReader fileReader = new FileReader(trainingDataFile);
-        BufferedReader bufferedReader = new BufferedReader(fileReader);
-        while ((line = bufferedReader.readLine()) != null) {
-            Analysis<String, double[]> analysis = getAnalysis("bmw-browsers", line);
-            String content = gson.toJson(analysis);
-            String url = getUrl(Analyzer.ANALYZE);
-            Analysis result = executePost(url, content, Analysis.class);
-            assertTrue(Integer.parseInt(result.getClazz()) >= 0 && Integer.parseInt(result.getClazz()) <= 6);
-        }
-    }
+		Analysis<String, double[]> analysis = getAnalysis(analyzerName, line);
+		String content = gson.toJson(analysis);
+		String url = getUrl(Analyzer.ANALYZE);
+		Analysis result = executePost(url, content, Analysis.class);
+		assertTrue(Integer.parseInt(result.getClazz()) >= 0 && Integer.parseInt(result.getClazz()) <= 6);
+	}
 
-    @Test
-    public void destroy() throws Exception {
-        analyze();
+	@Test
+	public void destroy() throws Exception {
+		analyze();
 
-        String analyzersUrl = getUrl(Analyzer.ANALYZERS);
-        String[] names = executeGet(analyzersUrl, String[].class);
-        List<String> list = new ArrayList<>(Arrays.asList(names));
-        assertTrue(list.contains("bmw-browsers"));
+		String analyzersUrl = getUrl(Analyzer.ANALYZERS);
+		String[] names = executeGet(analyzersUrl, String[].class);
+		List<String> list = new ArrayList<>(Arrays.asList(names));
+		assertTrue(list.contains(analyzerName));
 
-        Context context = getContext("bmw-browsers.arff", "bmw-browsers");
-        String content = gson.toJson(context);
-        String destroyUrl = getUrl(Analyzer.DESTROY);
-        executePost(destroyUrl, content, Context.class);
+		Context context = getContext(analyzerModelFileName, analyzerName);
+		String content = gson.toJson(context);
+		String destroyUrl = getUrl(Analyzer.DESTROY);
+		executePost(destroyUrl, content, Context.class);
 
-        names = executeGet(analyzersUrl, String[].class);
-        list = new ArrayList<>(Arrays.asList(names));
-        assertFalse(list.contains("bmw-browsers"));
-    }
+		names = executeGet(analyzersUrl, String[].class);
+		list = new ArrayList<>(Arrays.asList(names));
+		assertFalse(list.contains(analyzerName));
+	}
 
-    @Test
-    public void context() throws Exception {
-        analyze();
+	@Test
+	public void context() throws Exception {
+		analyze();
 
-        Analysis analysis = getAnalysis("bmw-browsers", null);
-        String content = gson.toJson(analysis);
-        String url = getUrl(Analyzer.CONTEXT);
-        Context context = executePost(url, content, Context.class);
-        assertEquals(analysis.getAnalyzer(), context.getName());
-    }
+		Analysis analysis = getAnalysis(analyzerName, null);
+		String content = gson.toJson(analysis);
+		String url = getUrl(Analyzer.CONTEXT);
+		Context context = executePost(url, content, Context.class);
+		assertEquals(analysis.getAnalyzer(), context.getName());
+	}
 
-    @Test
-    public void contexts() throws Exception {
-        analyze();
+	@Test
+	public void contexts() throws Exception {
+		analyze();
 
-        String contextsUrl = getUrl(Analyzer.CONTEXTS);
-        String[] names = executeGet(contextsUrl, String[].class);
-        List<String> list = new ArrayList<>(Arrays.asList(names));
-        assertTrue(list.contains("bmw-browsers"));
-    }
+		String contextsUrl = getUrl(Analyzer.CONTEXTS);
+		String[] names = executeGet(contextsUrl, String[].class);
+		List<String> list = new ArrayList<>(Arrays.asList(names));
+		assertTrue(list.contains(analyzerName));
+	}
 
-    @Test
-    public void analyzers() throws Exception {
-        String analyzersUrl = getUrl(Analyzer.ANALYZERS);
-        String[] names = executeGet(analyzersUrl, String[].class);
-        List<String> list = new ArrayList<>(Arrays.asList(names));
-        logger.info("List : " + list);
-        assertTrue(list.toString().equals("[bank-data, bmw-browsers, sentiment-smo]"));
-    }
+	@Test
+	public void analyzers() throws Exception {
+		create();
+		String analyzersUrl = getUrl(Analyzer.ANALYZERS);
+		String[] names = executeGet(analyzersUrl, String[].class);
+		List<String> list = new ArrayList<>(Arrays.asList(names));
+		logger.info("List : " + list);
+		assertTrue(list.toString().contains(analyzerName));
+	}
 
-    private <T> T executeGet(final String url, final Class<T> type) throws Exception {
-        GetMethod postMethod = new GetMethod(url);
-        // postMethod.setQueryString(null);
-        return executeMethod(postMethod, type);
-    }
+	private <T> T executeGet(final String url, final Class<T> type) throws Exception {
+		GetMethod postMethod = new GetMethod(url);
+		// postMethod.setQueryString(null);
+		return executeMethod(postMethod, type);
+	}
 
-    private <T> T executePost(final String url, final String content, final Class<T> type) throws Exception {
-        PostMethod postMethod = new PostMethod(url);
-        StringRequestEntity stringRequestEntity = new StringRequestEntity(content, MediaType.APPLICATION_JSON, IConstants.ENCODING);
-        postMethod.setRequestEntity(stringRequestEntity);
-        return executeMethod(postMethod, type);
-    }
+	private <T> T executePost(final String url, final String content, final Class<T> type) throws Exception {
+		PostMethod postMethod = new PostMethod(url);
+		StringRequestEntity stringRequestEntity = new StringRequestEntity(content, MediaType.APPLICATION_JSON, IConstants.ENCODING);
+		postMethod.setRequestEntity(stringRequestEntity);
+		return executeMethod(postMethod, type);
+	}
 
-    private <T> T executeMethod(final HttpMethod httpMethod, final Class<T> type) throws Exception {
-        HTTP_CLIENT.executeMethod(httpMethod);
-        InputStream inputStream = httpMethod.getResponseBodyAsStream();
-        String response = FileUtilities.getContents(inputStream, Integer.MAX_VALUE).toString();
-        int statusCode = httpMethod.getStatusCode();
-        logger.info("Response : " + statusCode);
-        assertEquals(200, statusCode);
-        T result = gson.fromJson(response, type);
-        logger.info("         : " + result);
-        assertNotNull(result);
-        return result;
-    }
+	private <T> T executeMethod(final HttpMethod httpMethod, final Class<T> type) throws Exception {
+		HTTP_CLIENT.executeMethod(httpMethod);
+		InputStream inputStream = httpMethod.getResponseBodyAsStream();
+		String response = FileUtilities.getContents(inputStream, Integer.MAX_VALUE).toString();
+		int statusCode = httpMethod.getStatusCode();
+		logger.info("Response : " + statusCode);
+		assertEquals(200, statusCode);
+		T result = gson.fromJson(response, type);
+		logger.info("         : " + result);
+		assertNotNull(result);
+		return result;
+	}
 
-    @SuppressWarnings("StringBufferReplaceableByString")
-    protected String getUrl(final String service) throws MalformedURLException {
-        StringBuilder builder = new StringBuilder();
-        builder.append(IConstants.SEP);
-        builder.append(IConstants.IKUBE);
-        builder.append(BaseTest.SERVICE);
-        builder.append(Analyzer.ANALYZER);
-        builder.append(service);
-        return new URL("http", LOCALHOST, SERVER_PORT, builder.toString()).toString();
-        // return new URL("http", "ikube.be", 80, builder.toString()).toString();
-    }
+	@SuppressWarnings("StringBufferReplaceableByString")
+	protected String getUrl(final String service) throws MalformedURLException {
+		StringBuilder builder = new StringBuilder();
+		builder.append(IConstants.SEP);
+		builder.append(IConstants.IKUBE);
+		builder.append(BaseTest.SERVICE);
+		builder.append(Analyzer.ANALYZER);
+		builder.append(service);
+		return new URL("http", LOCALHOST, SERVER_PORT, builder.toString()).toString();
+		// return new URL("http", "ikube.be", 80, builder.toString()).toString();
+	}
 
-    @SuppressWarnings("unchecked")
-    private Context getContext(final String fileName, final String name) {
-        File trainingDataFile = FileUtilities.findFileRecursively(new File("."), fileName);
-        String trainingData = FileUtilities.getContent(trainingDataFile);
+	@SuppressWarnings("unchecked")
+	private Context getContext(final String fileName, final String name) {
+		File trainingDataFile = FileUtilities.findFileRecursively(new File("."), fileName);
+		String trainingData = FileUtilities.getContent(trainingDataFile);
 
-        Context context = new Context();
-        context.setName(name);
+		Context context = new Context();
+		context.setName(name);
 
-        AnalyzerInfo analyzerInfo = new AnalyzerInfo();
-        analyzerInfo.setAnalyzer(WekaClusterer.class.getName());
-        analyzerInfo.setAlgorithm(SimpleKMeans.class.getName());
+		AnalyzerInfo analyzerInfo = new AnalyzerInfo();
+		analyzerInfo.setAnalyzer(WekaClusterer.class.getName());
+		analyzerInfo.setAlgorithm(SimpleKMeans.class.getName());
 
-        context.setAnalyzerInfo(analyzerInfo);
+		context.setAnalyzerInfo(analyzerInfo);
 
-        context.setOptions(new String[]{"-N", "6"});
-        context.setMaxTraining(Integer.MAX_VALUE);
-        context.setTrainingData(trainingData);
+		context.setOptions(new String[] { "-N", "6" });
+		context.setMaxTraining(Integer.MAX_VALUE);
+		context.setTrainingData(trainingData);
 
-        return context;
-    }
+		return context;
+	}
 
-    private Analysis getAnalysis(final String analyzer, final String input) {
-        Analysis<String, double[]> analysis = new Analysis<>();
-        analysis.setAnalyzer(analyzer);
-        analysis.setInput(input);
-        analysis.setDistribution(Boolean.TRUE);
-        analysis.setClassesAndClusters(Boolean.TRUE);
-        analysis.setAlgorithm(Boolean.TRUE);
-        analysis.setCorrelation(Boolean.TRUE);
-        return analysis;
-    }
+	private Analysis getAnalysis(final String analyzer, final String input) {
+		Analysis<String, double[]> analysis = new Analysis<>();
+		analysis.setAnalyzer(analyzer);
+		analysis.setInput(input);
+		analysis.setDistribution(Boolean.TRUE);
+		analysis.setClassesAndClusters(Boolean.TRUE);
+		analysis.setAlgorithm(Boolean.TRUE);
+		analysis.setCorrelation(Boolean.TRUE);
+		return analysis;
+	}
 
 }

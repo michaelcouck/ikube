@@ -1,6 +1,6 @@
 package ikube;
 
-import ikube.ikube.mock.SpellingCheckerMock;
+import ikube.mock.SpellingCheckerMock;
 import ikube.toolkit.Logging;
 import mockit.Mockit;
 import org.apache.commons.httpclient.HttpClient;

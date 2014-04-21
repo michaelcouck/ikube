@@ -3,6 +3,8 @@ package ikube.analytics.action;
 import ikube.analytics.IAnalyzer;
 import ikube.model.Context;
 
+import java.io.Serializable;
+
 /**
  * This class is just a serializable snippet of logic that can be distributed over the
  * wire and executed on a remote server, essentially destroying the analyzers on all machines
@@ -12,7 +14,7 @@ import ikube.model.Context;
  * @version 01.00
  * @since 15-03-2014
  */
-public class Destroyer extends Action<Void> {
+public class Destroyer extends Action<Void> implements Serializable {
 
     /**
      * The context object that will be used for destroying the analyzer

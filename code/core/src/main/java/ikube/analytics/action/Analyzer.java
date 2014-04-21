@@ -3,6 +3,8 @@ package ikube.analytics.action;
 import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
 
+import java.io.Serializable;
+
 /**
  * This class is just a serializable snippet of logic that can be distributed over the
  * wire and executed on a remote server, essentially distributing the analysis throughout
@@ -12,7 +14,7 @@ import ikube.model.Analysis;
  * @version 01.00
  * @since 15-03-2014
  */
-public class Analyzer extends Action<Analysis> {
+public class Analyzer extends Action<Analysis> implements Serializable {
 
     /**
      * The analysis object to do the analysis on :)

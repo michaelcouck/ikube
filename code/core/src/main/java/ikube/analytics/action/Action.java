@@ -2,7 +2,6 @@ package ikube.analytics.action;
 
 import ikube.analytics.IAnalyticsService;
 
-import java.io.Serializable;
 import java.util.concurrent.Callable;
 
 import static ikube.toolkit.ApplicationContextManager.getBean;
@@ -14,7 +13,7 @@ import static ikube.toolkit.ApplicationContextManager.getBean;
  * @version 01.00
  * @since 15-03-2014
  */
-public abstract class Action<T> implements Callable<T>, Serializable {
+public abstract class Action<T> implements Callable<T> {
 
     /**
      * This method returns the analytics service from Spring because we are now on the
