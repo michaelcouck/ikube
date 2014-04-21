@@ -4,6 +4,7 @@ import ikube.analytics.AnalyzerManager;
 import ikube.model.Context;
 import org.apache.commons.lang.StringUtils;
 
+import java.io.Serializable;
 import java.util.concurrent.Callable;
 
 /**
@@ -15,7 +16,7 @@ import java.util.concurrent.Callable;
  * @version 01.00
  * @since 15-03-2014
  */
-public class Creator implements Callable<Void> {
+public class Creator implements Callable<Void>, Serializable {
 
     /**
      * The context object that will be used for creating the analyzer
