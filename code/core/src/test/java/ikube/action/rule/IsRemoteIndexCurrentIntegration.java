@@ -7,6 +7,7 @@ import ikube.toolkit.ApplicationContextManager;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -31,7 +32,7 @@ public class IsRemoteIndexCurrentIntegration extends AbstractTest {
 	public void evaluate() throws Exception {
 		IndexContext indexContext = ApplicationContextManager.getBean(IConstants.GEOSPATIAL);
 		boolean indexCurrent = isRemoteIndexCurrent.evaluate(indexContext);
-		assertTrue("This index should always be current : ", indexCurrent);
+		assertFalse("This index should never be current in the tests : ", indexCurrent);
 	}
 
 }

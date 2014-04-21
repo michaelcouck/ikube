@@ -1,8 +1,13 @@
 package ikube.action.remote;
 
 import ikube.AbstractTest;
+import ikube.mock.ApplicationContextManagerMock;
+import ikube.model.IndexContext;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
+import mockit.Mockit;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
@@ -19,8 +24,15 @@ import static org.junit.Assert.assertEquals;
  */
 public class SynchronizeLatestIndexCallableTest extends AbstractTest {
 
+	@Before
+	public void before() {
+		Mockit.setUpMocks(ApplicationContextManagerMock.class);
+		ApplicationContextManagerMock.setBean(IndexContext.class, indexContext);
+	}
+
     @After
     public void after() {
+		Mockit.tearDownMocks(ApplicationContextManager.class);
         FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 
