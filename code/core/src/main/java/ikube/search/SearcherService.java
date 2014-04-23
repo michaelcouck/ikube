@@ -509,6 +509,7 @@ public class SearcherService implements ISearcherService {
             if (cacheSearch == null) {
                 clusterManager.put(IConstants.SEARCH, search.getHash(), search);
             } else {
+				cacheSearch.setCount(cacheSearch.getCount() + 1);
                 clusterManager.put(IConstants.SEARCH, cacheSearch.getHash(), cacheSearch);
             }
         } catch (final Exception e) {
