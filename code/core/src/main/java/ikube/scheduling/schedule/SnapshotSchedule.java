@@ -30,6 +30,7 @@ import java.util.*;
  * @version 01.00
  * @since 22-07-2012
  */
+@SuppressWarnings("SpringJavaAutowiringInspection")
 public class SnapshotSchedule extends Schedule {
 
     static final int MAX_SNAPSHOTS_CONTEXT = 90;
