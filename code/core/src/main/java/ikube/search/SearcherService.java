@@ -197,7 +197,7 @@ public class SearcherService implements ISearcherService {
      */
     @Override
     public Search search(final Search search) {
-        if (search.isDistributed()) {
+        if (search.isDistributed() && clusterManager.getServers().size() > 1) {
             // Set the flag so we don't get infinite recursion
             search.setDistributed(Boolean.FALSE);
             // Create the callable that will be executed on the nodes
@@ -207,7 +207,8 @@ public class SearcherService implements ISearcherService {
                 return (Search) future.get(60, TimeUnit.SECONDS);
             } catch (final Exception e) {
                 // If we have a remote exception then try to do the search locally
-                LOGGER.error("Exception doing remote search : " + search, e);
+                LOGGER.info("Exception doing remote search : " + search);
+				LOGGER.debug(null, e);
                 return doSearch(search);
             }
             /*search.setDistributed(Boolean.FALSE);
@@ -231,7 +232,7 @@ public class SearcherService implements ISearcherService {
             }
 
             if (searchAction == null) {
-                LOGGER.debug("Searcher null for index : {} ", search.getIndexName());
+                LOGGER.info("Searcher null for index : {} ", search.getIndexName());
                 return search;
             }
             String[] searchStrings = search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]);
