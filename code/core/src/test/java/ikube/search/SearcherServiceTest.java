@@ -4,6 +4,7 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.cluster.IClusterManager;
 import ikube.mock.ApplicationContextManagerMock;
+import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.ThreadUtilities;
 import mockit.Deencapsulation;
@@ -20,10 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 import static ikube.toolkit.ObjectToolkit.populateFields;
@@ -191,6 +189,14 @@ public class SearcherServiceTest extends AbstractTest {
 		String[] fields = { "field-one", "field-two", "field-three", "field-four" };
 		when(monitorService.getIndexNames()).thenReturn(indexes);
 		when(monitorService.getIndexFieldNames(anyString())).thenReturn(fields);
+
+		Map<String, Server> servers = new HashMap<>();
+		servers.put("1", server);
+		servers.put("2", server);
+		servers.put("3", server);
+		servers.put("4", server);
+		servers.put("5", server);
+		when(clusterManager.getServers()).thenReturn(servers);
 
 		search.setCoordinate(null);
 		Deencapsulation.setField(searcherService, monitorService);
