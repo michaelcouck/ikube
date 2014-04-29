@@ -4,13 +4,13 @@
 	<groupId>ikube</groupId>
 	<artifactId>ikube</artifactId>
 	<packaging>pom</packaging>
-	<version>4.4.0</version>
+	<version>4.4.1-SNAPSHOT</version>
 
     <scm>
         <url>https://github.com/michaelcouck/ikube</url>
         <connection>scm:git:ssh://github.com/michaelcouck/ikube.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/michaelcouck/ikube.git</developerConnection>
-        <tag>ikube-4.4.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <developers>
