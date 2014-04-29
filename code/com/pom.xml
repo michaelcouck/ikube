@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>ikube-com</artifactId>
@@ -10,7 +9,7 @@
     <parent>
         <groupId>ikube</groupId>
         <artifactId>ikube</artifactId>
-        <version>4.4.0-SNAPSHOT</version>
+        <version>4.4.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -46,36 +45,36 @@
                             <target>
                                 <echo message="Base directory : ${basedir}, ">Base directory : ${basedir}</echo>
 
-                                <delete dir="ikube"/>
-                                <delete dir="../core/ikube"/>
-                                <delete dir="../war/ikube"/>
-                                <delete dir="../libs/ikube"/>
-                                <delete dir="../../ikube"/>
+                                <delete dir="ikube" />
+                                <delete dir="../core/ikube" />
+                                <delete dir="../war/ikube" />
+                                <delete dir="../libs/ikube" />
+                                <delete dir="../../ikube" />
 
-                                <copydir src="../libs/src/main/resources/ikube" dest="ikube"/>
-                                <copydir src="../libs/src/main/resources/analytics" dest="ikube/analytics"/>
-                                <copydir src="../libs/src/main/resources/indexes/production" dest="ikube/production"/>
-                                <copydir src="../libs/src/main/resources/indexes/integration" dest="ikube/integration"/>
+                                <copydir src="../libs/src/main/resources/ikube" dest="ikube" />
+                                <copydir src="../libs/src/main/resources/analytics" dest="ikube/analytics" />
+                                <copydir src="../libs/src/main/resources/indexes/production" dest="ikube/production" />
+                                <copydir src="../libs/src/main/resources/indexes/integration" dest="ikube/integration" />
 
-                                <copydir src="../libs/src/main/resources/ikube" dest="../core/ikube"/>
-                                <copydir src="../libs/src/main/resources/analytics" dest="../core/ikube/analytics"/>
-                                <copydir src="../libs/src/main/resources/indexes/production" dest="../core/ikube/production"/>
-                                <copydir src="../libs/src/main/resources/indexes/integration" dest="../core/ikube/integration"/>
+                                <copydir src="../libs/src/main/resources/ikube" dest="../core/ikube" />
+                                <copydir src="../libs/src/main/resources/analytics" dest="../core/ikube/analytics" />
+                                <copydir src="../libs/src/main/resources/indexes/production" dest="../core/ikube/production" />
+                                <copydir src="../libs/src/main/resources/indexes/integration" dest="../core/ikube/integration" />
 
-                                <copydir src="../libs/src/main/resources/ikube" dest="../war/ikube"/>
-                                <copydir src="../libs/src/main/resources/analytics" dest="../war/ikube/analytics"/>
-                                <copydir src="../libs/src/main/resources/indexes/production" dest="../war/ikube/production"/>
-                                <copydir src="../libs/src/main/resources/indexes/integration" dest="../war/ikube/integration"/>
-                                <copydir src="../libs/src/main/resources/indexes/twitter" dest="../war/ikube/twitter"/>
+                                <copydir src="../libs/src/main/resources/ikube" dest="../war/ikube" />
+                                <copydir src="../libs/src/main/resources/analytics" dest="../war/ikube/analytics" />
+                                <copydir src="../libs/src/main/resources/indexes/production" dest="../war/ikube/production" />
+                                <copydir src="../libs/src/main/resources/indexes/integration" dest="../war/ikube/integration" />
+                                <copydir src="../libs/src/main/resources/indexes/twitter" dest="../war/ikube/twitter" />
 
-                                <copydir src="../libs/src/main/resources/ikube" dest="../libs/ikube"/>
-                                <copydir src="../libs/src/main/resources/analytics" dest="../libs/ikube/analytics"/>
-                                <copydir src="../libs/src/main/resources/indexes/production" dest="../libs/ikube/production"/>
+                                <copydir src="../libs/src/main/resources/ikube" dest="../libs/ikube" />
+                                <copydir src="../libs/src/main/resources/analytics" dest="../libs/ikube/analytics" />
+                                <copydir src="../libs/src/main/resources/indexes/production" dest="../libs/ikube/production" />
 
-                                <copydir src="../libs/src/main/resources/ikube" dest="../../ikube"/>
-                                <copydir src="../libs/src/main/resources/analytics" dest="../../ikube/analytics"/>
-                                <copydir src="../libs/src/main/resources/indexes/production" dest="../../ikube/production"/>
-                                <copydir src="../libs/src/main/resources/indexes/integration" dest="../../ikube/integration"/>
+                                <copydir src="../libs/src/main/resources/ikube" dest="../../ikube" />
+                                <copydir src="../libs/src/main/resources/analytics" dest="../../ikube/analytics" />
+                                <copydir src="../libs/src/main/resources/indexes/production" dest="../../ikube/production" />
+                                <copydir src="../libs/src/main/resources/indexes/integration" dest="../../ikube/integration" />
                             </target>
                         </configuration>
                         <goals>
