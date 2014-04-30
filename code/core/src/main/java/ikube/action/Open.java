@@ -33,70 +33,70 @@ import java.util.List;
  */
 public class Open extends Action<IndexContext, Boolean> {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean internalExecute(final IndexContext indexContext) throws Exception {
-        return openOnFile(indexContext);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean internalExecute(final IndexContext indexContext) throws Exception {
+		return openOnFile(indexContext);
+	}
 
-    boolean openOnFile(final IndexContext indexContext) throws Exception {
-        // First open the new searchables
-        String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
-        File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
-        if (latestIndexDirectory == null) {
-            logger.info("No indexes : " + indexDirectoryPath);
-            return Boolean.FALSE;
-        }
-        List<IndexReader> indexReaders = new ArrayList<>();
-        File[] serverIndexDirectories = latestIndexDirectory.listFiles();
-        if (serverIndexDirectories != null) {
-            logger.info("Opening searcher : " + indexContext.getName());
-            for (final File serverIndexDirectory : serverIndexDirectories) {
-                logger.info("Index directory : " + serverIndexDirectory);
-                Directory directory = null;
-                IndexReader reader = null;
-                boolean open = Boolean.TRUE;
-                try {
-                    directory = NIOFSDirectory.open(serverIndexDirectory);
-                    if (!DirectoryReader.indexExists(directory)) {
-                        directory.close();
-                        logger.info("Not opening index : " + serverIndexDirectory);
-                        continue;
-                    }
-                    if (IndexWriter.isLocked(directory)) {
-                        logger.info("Opening reader on locked directory, indexing perhaps?");
-                    }
-                    reader = DirectoryReader.open(directory);
-                    indexReaders.add(reader);
-                    logger.info("Opened index on : " + serverIndexDirectory);
-                } catch (final Exception e) {
-                    open = Boolean.FALSE;
-                    logger.error("Exception opening directory : " + serverIndexDirectory, e);
-                } finally {
-                    if (!open && reader != null) {
-                        indexReaders.remove(reader);
-                        close(directory, reader);
-                    }
-                }
-            }
-        }
+	boolean openOnFile(final IndexContext indexContext) throws Exception {
+		// First open the new searchables
+		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
+		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
+		if (latestIndexDirectory == null) {
+			logger.info("No indexes : " + indexDirectoryPath);
+			return Boolean.FALSE;
+		}
+		IndexSearcher oldIndexSearcher = indexContext.getMultiSearcher();
+		List<IndexReader> indexReaders = new ArrayList<>();
+		File[] serverIndexDirectories = latestIndexDirectory.listFiles();
+		if (serverIndexDirectories != null) {
+			logger.info("Opening searcher : " + indexContext.getName());
+			for (final File serverIndexDirectory : serverIndexDirectories) {
+				logger.info("Index directory : " + serverIndexDirectory);
+				Directory directory = null;
+				IndexReader reader = null;
+				boolean open = Boolean.TRUE;
+				try {
+					directory = NIOFSDirectory.open(serverIndexDirectory);
+					if (!DirectoryReader.indexExists(directory)) {
+						directory.close();
+						logger.info("Not opening index : " + serverIndexDirectory);
+						continue;
+					}
+					if (IndexWriter.isLocked(directory)) {
+						logger.info("Opening reader on locked directory, indexing perhaps?");
+					}
+					reader = DirectoryReader.open(directory);
+					indexReaders.add(reader);
+					logger.info("Opened index on : " + serverIndexDirectory);
+				} catch (final Exception e) {
+					open = Boolean.FALSE;
+					logger.error("Exception opening directory : " + serverIndexDirectory, e);
+				} finally {
+					if (!open && reader != null) {
+						indexReaders.remove(reader);
+						close(directory, reader);
+					}
+				}
+			}
+		}
 
-        if (indexReaders.size() > 0) {
-            IndexReader[] subReaders = new IndexReader[indexReaders.size()];
-            subReaders = indexReaders.toArray(subReaders);
-            IndexReader indexReader = new MultiReader(subReaders, Boolean.TRUE);
-            IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+		if (indexReaders.size() > 0) {
+			IndexReader[] subReaders = new IndexReader[indexReaders.size()];
+			subReaders = indexReaders.toArray(subReaders);
+			IndexReader indexReader = new MultiReader(subReaders, Boolean.TRUE);
+			IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+			indexContext.setMultiSearcher(indexSearcher);
 
-            // Make sure that the old searchables are closed,
-            // but give them some time for the actions on them to finish
-            new Close().execute(indexContext);
+			// Make sure that the old searchables are closed,
+			// but give them some time for the actions on them to finish
+			close(oldIndexSearcher.getIndexReader());
+		}
 
-            indexContext.setMultiSearcher(indexSearcher);
-        }
-
-        return Boolean.TRUE;
-    }
+		return Boolean.TRUE;
+	}
 
 }

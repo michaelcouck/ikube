@@ -100,7 +100,9 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
             // Create the callable that will be executed on one of the nodes
             Future<?> future = clusterManager.sendTask(analyzer);
             try {
-                return (Analysis<I, O>) future.get(60, TimeUnit.SECONDS);
+				// TODO: User this rather than the future directly
+				// ThreadUtilities.waitForFuture(future, 60 * 60);
+                return (Analysis<I, O>) future.get(60 * 60, TimeUnit.SECONDS);
             } catch (final InterruptedException | ExecutionException | TimeoutException e) {
                 throw new RuntimeException(e);
             }
@@ -126,7 +128,9 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
             analysis.setDistributed(Boolean.FALSE);
             Future<?> future = clusterManager.sendTask(classesOrClusters);
             try {
-                return (Analysis) future.get(60, TimeUnit.SECONDS);
+				// TODO: User this rather than the future directly
+				// ThreadUtilities.waitForFuture(future, 60 * 60);
+                return (Analysis) future.get(60 * 60, TimeUnit.SECONDS);
             } catch (final InterruptedException | ExecutionException | TimeoutException e) {
                 throw new RuntimeException(e);
             }
@@ -152,7 +156,7 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
             analysis.setDistributed(Boolean.FALSE);
             Future<?> future = clusterManager.sendTask(sizesForClassesOrClusters);
             try {
-                return (Analysis<I, O>) future.get(60, TimeUnit.SECONDS);
+                return (Analysis<I, O>) future.get(60 * 60, TimeUnit.SECONDS);
             } catch (final InterruptedException | ExecutionException | TimeoutException e) {
                 throw new RuntimeException(e);
             }
