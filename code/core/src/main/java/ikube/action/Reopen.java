@@ -60,7 +60,9 @@ public class Reopen extends Open {
 				indexContext.setMultiSearcher(indexSearcher);
 
 				logger.info("Closing old delta index reader : " + indexContext.getName());
-				close(oldIndexSearcher.getIndexReader());
+                if (oldIndexSearcher != null) {
+                    close(oldIndexSearcher.getIndexReader());
+                }
 
 				/*if (oldIndexSearcher != null && oldIndexSearcher.getIndexReader() != null) {
 					oldIndexSearcher.getIndexReader().close();

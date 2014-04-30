@@ -31,7 +31,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 12.10.2010
+ * @since 12-10-2010
  */
 @SuppressWarnings("deprecation")
 public class IndexManagerTest extends AbstractTest {
