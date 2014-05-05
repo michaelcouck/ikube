@@ -299,7 +299,7 @@
         property:commands-ref="start-commands-two"/>
     <util:list id="start-commands-two">
         <value>${tomcat-two-chmod}</value>
-        <value>sleep 20;</value>
+        <value>sleep 600;</value>
         <value>${tomcat-two-startup}</value>
     </util:list>
     <!-- End two -->
@@ -386,7 +386,7 @@
         property:commands-ref="start-commands-three"/>
     <util:list id="start-commands-three">
         <value>${tomcat-three-chmod}</value>
-        <value>sleep 40;</value>
+        <value>sleep 1200;</value>
         <value>${tomcat-three-startup}</value>
     </util:list>
     <!-- End three -->
@@ -472,7 +472,7 @@
         property:commands-ref="start-commands-four"/>
     <util:list id="start-commands-four">
         <value>${tomcat-four-chmod}</value>
-        <value>sleep 40;</value>
+        <value>sleep 1800;</value>
         <value>${tomcat-four-startup}</value>
     </util:list>
     <!-- End four -->
@@ -558,7 +558,7 @@
         property:commands-ref="start-commands-five"/>
     <util:list id="start-commands-five">
         <value>${tomcat-five-chmod}</value>
-        <value>sleep 40;</value>
+        <value>sleep 2400;</value>
         <value>${tomcat-five-startup}</value>
     </util:list>
     <!-- End five -->
@@ -644,7 +644,7 @@
         property:commands-ref="start-commands-six"/>
     <util:list id="start-commands-six">
         <value>${tomcat-six-chmod}</value>
-        <value>sleep 40;</value>
+        <value>sleep 3000;</value>
         <value>${tomcat-six-startup}</value>
     </util:list>
     <!-- End six -->
