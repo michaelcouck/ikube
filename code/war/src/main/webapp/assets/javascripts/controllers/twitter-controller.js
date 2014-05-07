@@ -145,7 +145,11 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
             return;
         }
         var data = google.visualization.arrayToDataTable($scope.search.timeLineSentiment);
-        var options = { title : 'Twitter sentiment timeline', curveType : 'function', backgroundColor: { fill : 'transparent' } };
+        var options = {
+            title : 'Twitter sentiment timeline',
+            curveType : 'function',
+            backgroundColor: { fill : 'transparent' },
+            colors : ['#336600', '#800000'] };
         var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
         chart.draw(data, options);
     };
