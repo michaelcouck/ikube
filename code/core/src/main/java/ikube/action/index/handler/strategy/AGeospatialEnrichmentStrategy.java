@@ -36,7 +36,7 @@ import java.util.Map;
 @SuppressWarnings("SpringJavaAutowiringInspection")
 public abstract class AGeospatialEnrichmentStrategy extends AStrategy {
 
-    protected static Map<Long, GeoCity> GEO_CITY;
+    protected static Map<Long, GeoCity> GEO_CITY = new HashMap<>();
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -83,31 +83,27 @@ public abstract class AGeospatialEnrichmentStrategy extends AStrategy {
         SpatialPrefixTree spatialPrefixTree = new GeohashPrefixTree(spatialContext, maxGeohashLevels);
         this.spatialStrategy = new RecursivePrefixTreeStrategy(spatialPrefixTree, IConstants.POSITION_FIELD_NAME);
 
+        if (!ThreadUtilities.isInitialized()) {
+            ThreadUtilities.initialize();
+        }
         final String name = "wait-for-data-load";
-		if (!ThreadUtilities.isInitialized()) {
-			ThreadUtilities.initialize();
-		}
         ThreadUtilities.submit(name, new Runnable() {
             public void run() {
                 try {
-                    ThreadUtilities.sleep(30000);
-                    if (GEO_CITY == null) {
-                        GEO_CITY = new HashMap<>();
-                        Collection<GeoCity> geoCities = dataBase.find(GeoCity.class, 0, Integer.MAX_VALUE);
-                        if (geoCities != null) {
-                            for (final GeoCity geoCity : geoCities) {
-                                Long hash = HashUtilities.hash(geoCity.getName().toLowerCase());
-                                GEO_CITY.put(hash, geoCity);
-                            }
-                            logger.info("Loaded country/city map : " + GEO_CITY.size());
+                    ThreadUtilities.sleep(120000);
+                    Collection<GeoCity> geoCities = dataBase.find(GeoCity.class, 0, Integer.MAX_VALUE);
+                    if (geoCities != null) {
+                        for (final GeoCity geoCity : geoCities) {
+                            Long hash = HashUtilities.hash(geoCity.getName().toLowerCase());
+                            GEO_CITY.put(hash, geoCity);
                         }
+                        logger.info("Loaded country/city map : " + GEO_CITY.size());
                     }
                 } finally {
                     ThreadUtilities.destroy(name);
                 }
             }
         });
-
     }
 
 }
