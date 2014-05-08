@@ -294,12 +294,11 @@
         id="start-action-two"
         name="start-action-two"
         class="ikube.deploy.action.CmdAction"
-        property:sleep="${sleep}"
+        property:sleep="600000"
         property:breakOnError="true"
         property:commands-ref="start-commands-two"/>
     <util:list id="start-commands-two">
         <value>${tomcat-two-chmod}</value>
-        <value>sleep 600;</value>
         <value>${tomcat-two-startup}</value>
     </util:list>
     <!-- End two -->
@@ -381,12 +380,11 @@
         id="start-action-three"
         name="start-action-three"
         class="ikube.deploy.action.CmdAction"
-        property:sleep="${sleep}"
+        property:sleep="120000"
         property:breakOnError="true"
         property:commands-ref="start-commands-three"/>
     <util:list id="start-commands-three">
         <value>${tomcat-three-chmod}</value>
-        <value>sleep 1200;</value>
         <value>${tomcat-three-startup}</value>
     </util:list>
     <!-- End three -->
@@ -467,12 +465,11 @@
         id="start-action-four"
         name="start-action-four"
         class="ikube.deploy.action.CmdAction"
-        property:sleep="${sleep}"
+        property:sleep="180000"
         property:breakOnError="true"
         property:commands-ref="start-commands-four"/>
     <util:list id="start-commands-four">
         <value>${tomcat-four-chmod}</value>
-        <value>sleep 1800;</value>
         <value>${tomcat-four-startup}</value>
     </util:list>
     <!-- End four -->
@@ -553,12 +550,11 @@
         id="start-action-five"
         name="start-action-five"
         class="ikube.deploy.action.CmdAction"
-        property:sleep="${sleep}"
+        property:sleep="240000"
         property:breakOnError="true"
         property:commands-ref="start-commands-five"/>
     <util:list id="start-commands-five">
         <value>${tomcat-five-chmod}</value>
-        <value>sleep 2400;</value>
         <value>${tomcat-five-startup}</value>
     </util:list>
     <!-- End five -->
@@ -639,12 +635,11 @@
         id="start-action-six"
         name="start-action-six"
         class="ikube.deploy.action.CmdAction"
-        property:sleep="${sleep}"
+        property:sleep="320000"
         property:breakOnError="true"
         property:commands-ref="start-commands-six"/>
     <util:list id="start-commands-six">
         <value>${tomcat-six-chmod}</value>
-        <value>sleep 3000;</value>
         <value>${tomcat-six-startup}</value>
     </util:list>
     <!-- End six -->

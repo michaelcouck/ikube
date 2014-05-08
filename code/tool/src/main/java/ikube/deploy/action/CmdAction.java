@@ -35,25 +35,23 @@ public class CmdAction extends Action {
 
     private void execute(final Server server, final String command) {
         int retry = RETRY;
-        boolean mustRetry;
-        Integer exitStatus;
+        int exitStatus = 1;
         do {
             try {
-                ThreadUtilities.sleep(getSleep());
                 logger.info("Running command : {} on machine : {}", new Object[]{command, server.getIp()});
                 // Allows sudo apparently
                 // session.allocateDefaultPTY();
 
                 Session session = server.getSshExec().startSession();
                 Session.Command sessionCommand = session.exec(command);
-                sessionCommand.join(60, TimeUnit.SECONDS);
+                sessionCommand.join(600, TimeUnit.SECONDS);
 
                 exitStatus = sessionCommand.getExitStatus();
                 String errorMessage = sessionCommand.getExitErrorMessage();
                 // This fails for some reason
                 // boolean coreDump = sessionCommand.getExitWasCoreDumped();
 
-                if (exitStatus != null && exitStatus > 0) {
+                if (exitStatus > 0) {
                     // NOTE TO SELF!!!: Do not consume the output, this acts like consuming the nohup
                     // for example, and the script terminates when the shell exits, i.e. it doesn't start the
                     // tomcat. We only read from the output if there is an error otherwise the process
@@ -66,14 +64,11 @@ public class CmdAction extends Action {
                     logger.info("Error message : " + errorMessage);
                 }
             } catch (final Exception e) {
-                exitStatus = 1;
                 handleException("Exception executing command on server : " + command + ", server : " + server.getIp(), e);
-            }
-            mustRetry = (exitStatus != null && exitStatus > 0) && retry-- >= 0;
-            if (mustRetry) {
                 logger.info("Retrying : " + exitStatus);
             }
-        } while (mustRetry);
+            ThreadUtilities.sleep(getSleep());
+        } while (exitStatus > 0 && --retry >= 0);
     }
 
     public void setCommands(final Collection<String> commands) {

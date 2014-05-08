@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class Action implements IAction {
 
-    protected static final int RETRY = 5;
+    protected static final int RETRY = 3;
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -49,7 +49,7 @@ public abstract class Action implements IAction {
                 handleException("Exception connecting to : " + ip + ", retrying : " + (retry > 0), e);
                 // disconnect(server.getSshExec());
             }
-        } while (server.getSshExec() == null && retry-- >= 0);
+        } while (server.getSshExec() == null && --retry >= 0);
         return server.getSshExec();
     }
 

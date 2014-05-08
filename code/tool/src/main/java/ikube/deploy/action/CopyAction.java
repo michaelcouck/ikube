@@ -42,35 +42,27 @@ public class CopyAction extends Action {
         return Boolean.TRUE;
     }
 
-    private void execute(
-            final String dotFolder,
-            final Server server,
-            final String srcFile,
-            final String destFile) {
+    private void execute(final String dotFolder, final Server server, final String srcFile, final String destFile) {
         int retry = RETRY;
-        boolean mustRetry;
-        int returnCode;
+        int returnCode = 1;
         do {
-            String source = getAbsoluteFile(dotFolder, srcFile);
+            String source = null;
             try {
-                ThreadUtilities.sleep(getSleep());
+                source = getAbsoluteFile(dotFolder, srcFile);
                 logger.info("Copying : " + source + ", to : " + destFile + ", on server : " + server.getIp());
                 SCPFileTransfer scpFileTransfer = server.getSshExec().newSCPFileTransfer();
                 SCPUploadClient scpUploadClient = scpFileTransfer.newSCPUploadClient();
                 returnCode = scpUploadClient.copy(new FileSystemFile(source), destFile);
                 logger.debug("Return code : " + returnCode);
             } catch (final Exception e) {
-                returnCode = 1;
                 handleException("Exception copying directory to server, from : " + source +
                         ", to : " + destFile +
                         ", server : " + server.getIp(),
                         e);
-            }
-            mustRetry = returnCode > 0 && retry-- >= 0;
-            if (mustRetry) {
                 logger.info("Retrying : " + source + ", " + destFile);
             }
-        } while (mustRetry);
+            ThreadUtilities.sleep(getSleep());
+        } while (returnCode > 0 && --retry >= 0);
     }
 
     private String getAbsoluteFile(final String dotFolder, final String path) {
