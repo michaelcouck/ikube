@@ -22,63 +22,61 @@ import java.util.List;
  */
 public class Reopen extends Open {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean internalExecute(final IndexContext indexContext) {
-		try {
-			openOnIndexWriters(indexContext);
-			return Boolean.TRUE;
-		} catch (final Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean internalExecute(final IndexContext indexContext) {
+        try {
+            openOnIndexWriters(indexContext);
+            return Boolean.TRUE;
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	void openOnIndexWriters(final IndexContext indexContext) throws Exception {
-		List<IndexReader> newIndexReaders = new ArrayList<>();
-		IndexSearcher oldIndexSearcher = indexContext.getMultiSearcher();
-		if (indexContext.getIndexWriters() == null) {
-			logger.info("Index writers not initialized for delta index : " + indexContext.getName());
-			openOnFile(indexContext);
-		} else {
-			for (final IndexWriter indexWriter : indexContext.getIndexWriters()) {
-				Directory directory = indexWriter.getDirectory();
-				if (!DirectoryReader.indexExists(directory)) {
-					logger.warn("Directory for writer does not exist : " + directory);
-					continue;
-				}
-				IndexReader newIndexReader = DirectoryReader.open(directory);
-				newIndexReaders.add(newIndexReader);
-			}
-			int newIndexReadersSize = newIndexReaders.size();
-			if (newIndexReadersSize > 0) {
-				IndexReader[] newIndexReaderArray = new IndexReader[newIndexReadersSize];
-				newIndexReaderArray = newIndexReaders.toArray(newIndexReaderArray);
-				IndexReader indexReader = new MultiReader(newIndexReaderArray, Boolean.FALSE);
-				IndexSearcher indexSearcher = new IndexSearcher(indexReader);
-				indexContext.setMultiSearcher(indexSearcher);
+    void openOnIndexWriters(final IndexContext indexContext) throws Exception {
+        List<IndexReader> newIndexReaders = new ArrayList<>();
+        IndexSearcher oldIndexSearcher = indexContext.getMultiSearcher();
+        if (indexContext.getIndexWriters() == null) {
+            logger.info("Index writers not initialized for delta index : " + indexContext.getName());
+            openOnFile(indexContext);
+        } else {
+            for (final IndexWriter indexWriter : indexContext.getIndexWriters()) {
+                Directory directory = indexWriter.getDirectory();
+                if (!DirectoryReader.indexExists(directory)) {
+                    logger.warn("Directory for writer does not exist : " + directory);
+                    continue;
+                }
+                IndexReader newIndexReader = DirectoryReader.open(directory);
+                newIndexReaders.add(newIndexReader);
+            }
+            int newIndexReadersSize = newIndexReaders.size();
+            if (newIndexReadersSize > 0) {
+                IndexReader[] newIndexReaderArray = new IndexReader[newIndexReadersSize];
+                newIndexReaderArray = newIndexReaders.toArray(newIndexReaderArray);
+                IndexReader indexReader = new MultiReader(newIndexReaderArray, Boolean.FALSE);
+                IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+                indexContext.setMultiSearcher(indexSearcher);
 
-				logger.info("Closing old delta index reader : " + indexContext.getName());
+                logger.info("Closing old delta index reader : " + indexContext.getName());
                 if (oldIndexSearcher != null) {
                     close(oldIndexSearcher.getIndexReader());
                 }
+            }
+        }
+    }
 
-				/*if (oldIndexSearcher != null && oldIndexSearcher.getIndexReader() != null) {
-					oldIndexSearcher.getIndexReader().close();
-				}*/
-			}
-		}
-	}
+    // NOTE: This has a memory leak too, somewhere... ********************
 
     /*void open(final IndexContext<?> indexContext) throws Exception {
-		// This has a memory leak too, somewhere...
         new Open().execute(indexContext);
     }*/
 
+    // NOTE: This has a memory leak n the FST class *********************
+
     /*@SuppressWarnings("UnusedDeclaration")
 	void openNewReaders(final IndexContext<?> indexContext, final IndexSearcher oldIndexSearcher) throws IOException {
-        // This has a memory leak n the FST class
         boolean hasNewReader = Boolean.FALSE;
         List<IndexReader> newIndexReaders = new ArrayList<>();
         MultiReader oldMultiReader = (MultiReader) oldIndexSearcher.getIndexReader();

@@ -28,6 +28,7 @@ public class CmdAction extends Action {
         if (commands != null) {
             for (final String command : commands) {
                 execute(server, command);
+                ThreadUtilities.sleep(getSleep());
             }
         }
         return Boolean.TRUE;
@@ -67,7 +68,6 @@ public class CmdAction extends Action {
                 handleException("Exception executing command on server : " + command + ", server : " + server.getIp(), e);
                 logger.info("Retrying : " + exitStatus);
             }
-            ThreadUtilities.sleep(getSleep());
         } while (exitStatus > 0 && --retry >= 0);
     }
 

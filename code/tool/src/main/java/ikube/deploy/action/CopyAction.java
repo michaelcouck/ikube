@@ -32,11 +32,13 @@ public class CopyAction extends Action {
         if (directories != null) {
             for (final Map.Entry<String, String> filePair : directories.entrySet()) {
                 execute(dotFolder, server, filePair.getKey(), filePair.getValue());
+                ThreadUtilities.sleep(getSleep());
             }
         }
         if (files != null) {
             for (final Map.Entry<String, String> filePair : files.entrySet()) {
                 execute(dotFolder, server, filePair.getKey(), filePair.getValue());
+                ThreadUtilities.sleep(getSleep());
             }
         }
         return Boolean.TRUE;
@@ -61,7 +63,6 @@ public class CopyAction extends Action {
                         e);
                 logger.info("Retrying : " + source + ", " + destFile);
             }
-            ThreadUtilities.sleep(getSleep());
         } while (returnCode > 0 && --retry >= 0);
     }
 

@@ -50,8 +50,7 @@ public final class SearchToolkit {
                 LOGGER.info("Document : " + i + ", " + document);
             }
         } catch (final Exception e) {
-            LOGGER.info("Usage: java -jar ikube-tools.jar /tmp contents world");
-            LOGGER.info("Usage: java -jar ikube-tools.jar index-directory field-in-index search-string");
+            verbose();
             LOGGER.error("Exception printing index : " + Arrays.deepToString(args), e);
         } finally {
             if (indexSearcher != null) {
@@ -62,6 +61,11 @@ public final class SearchToolkit {
                 }
             }
         }
+    }
+
+    private static void verbose() {
+        LOGGER.info("Usage: java -jar ikube-tools.jar ikube.search.SearchToolkit /tmp contents world");
+        LOGGER.info("Usage: java -jar ikube-tools.jar ikube.search.SearchToolkit index-directory field-in-index search-string");
     }
 
 }

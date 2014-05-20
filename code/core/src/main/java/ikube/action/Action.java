@@ -113,7 +113,7 @@ public abstract class Action<E, F> implements IAction<IndexContext, Boolean> {
      * lock, and because getting the lock in a cluster of 100 machines is very network expensive, we
      * try to avoid this if we can.
      *
-     * @param requiresClusterLock whether the action rewuires cluster atomicity and a lock before the logic is executed
+     * @param requiresClusterLock whether the action requires cluster atomicity and a lock before the logic is executed
      */
     public void setRequiresClusterLock(final boolean requiresClusterLock) {
         this.requiresClusterLock = requiresClusterLock;

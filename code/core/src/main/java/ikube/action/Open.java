@@ -90,15 +90,14 @@ public class Open extends Action<IndexContext, Boolean> {
 			IndexReader indexReader = new MultiReader(subReaders, Boolean.TRUE);
 			IndexSearcher indexSearcher = new IndexSearcher(indexReader);
 			indexContext.setMultiSearcher(indexSearcher);
-
             if (oldIndexSearcher != null) {
                 // Make sure that the old searchables are closed,
                 // but give them some time for the actions on them to finish
                 close(oldIndexSearcher.getIndexReader());
             }
-		}
-
-		return Boolean.TRUE;
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
 	}
 
 }
