@@ -46,36 +46,40 @@ public class DataManager {
         File baseDirectory = new File(IConstants.IKUBE_DIRECTORY);
         File file = FileUtilities.findFileRecursively(baseDirectory, countryCityFile);
 
-        int removed = dataBase.remove(GeoCountry.DELETE_ALL);
-        LOGGER.info("Removed countries : " + removed);
         Reader reader = null;
         CSVReader csvReader = null;
         try {
             reader = new FileReader(file);
             csvReader = new CSVReader(reader, '|');
             List<String[]> data = csvReader.readAll();
-            for (final String[] datum : data) {
-                double latitude = Double.parseDouble(datum[3]);
-                double longitude = Double.parseDouble(datum[4]);
-                Coordinate coordinate = new Coordinate(latitude, longitude);
+            long count = dataBase.count(GeoCity.class);
+            if (count < data.size()) {
+                int removed = dataBase.remove(GeoCountry.DELETE_ALL);
+                LOGGER.info("Removed countries : " + removed);
 
-                GeoCity geoCity = new GeoCity();
-                GeoCountry geoCountry = new GeoCountry();
+                for (final String[] datum : data) {
+                    double latitude = Double.parseDouble(datum[3]);
+                    double longitude = Double.parseDouble(datum[4]);
+                    Coordinate coordinate = new Coordinate(latitude, longitude);
 
-                // Setting this here affects OpenJpa for some reason! WTF!?
-                // geoCity.setName(datum[1]);
-                geoCity.setCoordinate(coordinate);
-                geoCity.setParent(geoCountry);
+                    GeoCity geoCity = new GeoCity();
+                    GeoCountry geoCountry = new GeoCountry();
 
-                geoCountry.setName(datum[0]);
-                geoCountry.setLanguage(datum[2]);
-                geoCountry.setChildren(Arrays.asList(geoCity));
+                    // Setting this here affects OpenJpa for some reason! WTF!?
+                    // geoCity.setName(datum[1]);
+                    geoCity.setCoordinate(coordinate);
+                    geoCity.setParent(geoCountry);
 
-                dataBase.persist(geoCountry);
-                geoCity.setName(datum[1]);
-                dataBase.merge(geoCity);
+                    geoCountry.setName(datum[0]);
+                    geoCountry.setLanguage(datum[2]);
+                    geoCountry.setChildren(Arrays.asList(geoCity));
+
+                    dataBase.persist(geoCountry);
+                    geoCity.setName(datum[1]);
+                    dataBase.merge(geoCity);
+                }
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException(e);
         } finally {
             IOUtils.closeQuietly(reader);

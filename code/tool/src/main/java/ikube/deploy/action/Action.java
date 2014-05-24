@@ -35,8 +35,9 @@ public abstract class Action implements IAction {
 
         int retry = RETRY;
         do {
+            SSHClient sshExec = null;
             try {
-                SSHClient sshExec = new SSHClient();
+                sshExec = new SSHClient();
                 logger.info("Connecting to : " + ip + " as " + username);
                 sshExec.setTimeout(Integer.MAX_VALUE);
                 sshExec.setConnectTimeout(Integer.MAX_VALUE);
@@ -47,7 +48,15 @@ public abstract class Action implements IAction {
                 server.setSshExec(sshExec);
             } catch (final Exception e) {
                 handleException("Exception connecting to : " + ip + ", retrying : " + (retry > 0), e);
-                // disconnect(server.getSshExec());
+            } finally {
+                if ((server.getSshExec() == null || !server.getSshExec().isConnected()) && sshExec != null) {
+                    try {
+                        sshExec.disconnect();
+                        sshExec.close();
+                    } catch (final Exception e) {
+                        handleException("Exception dis-connecting : ", e);
+                    }
+                }
             }
         } while (server.getSshExec() == null && --retry >= 0);
         return server.getSshExec();

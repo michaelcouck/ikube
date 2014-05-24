@@ -27,6 +27,7 @@ public class ClusterManagerOutOfMemoryHandler extends OutOfMemoryHandler {
         System.err.println("Out of memory, exiting jobs with extreme prejudice : ");
         // First we'll try to destroy everything
         ThreadUtilities.destroy();
+        ThreadUtilities.sleep(60000);
         // Now dump all the threads to the log
         Map<Thread, StackTraceElement[]> threads = Thread.getAllStackTraces();
         LOGGER.info("Threads : " + threads.size());

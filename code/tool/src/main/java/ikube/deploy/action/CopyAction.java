@@ -59,9 +59,9 @@ public class CopyAction extends Action {
             } catch (final Exception e) {
                 handleException("Exception copying directory to server, from : " + source +
                         ", to : " + destFile +
-                        ", server : " + server.getIp(),
-                        e);
-                logger.info("Retrying : " + source + ", " + destFile);
+                        ", server : " + server.getIp() +
+                        ", return code : " + returnCode +
+                        ", retrying...", e);
             }
         } while (returnCode > 0 && --retry >= 0);
     }

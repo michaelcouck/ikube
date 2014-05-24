@@ -65,8 +65,10 @@ public class CmdAction extends Action {
                     logger.info("Error message : " + errorMessage);
                 }
             } catch (final Exception e) {
-                handleException("Exception executing command on server : " + command + ", server : " + server.getIp(), e);
-                logger.info("Retrying : " + exitStatus);
+                handleException("Exception executing command on server : " + command +
+                        ", server : " + server.getIp() +
+                        ", exit status : " + exitStatus +
+                        ", retrying...", e);
             }
         } while (exitStatus > 0 && --retry >= 0);
     }
