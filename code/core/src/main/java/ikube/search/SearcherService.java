@@ -198,6 +198,9 @@ public class SearcherService implements ISearcherService {
     @Override
     public Search search(final Search search) {
         if (search.isDistributed() && clusterManager.getServers().size() > 1) {
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Distributing search : " + search);
+            }
             // Set the flag so we don't get infinite recursion
             search.setDistributed(Boolean.FALSE);
             // Create the callable that will be executed on the nodes
@@ -206,18 +209,23 @@ public class SearcherService implements ISearcherService {
             try {
                 return (Search) future.get(60, TimeUnit.SECONDS);
             } catch (final Exception e) {
-                // If we have a remote exception then try to do the search locally
                 LOGGER.info("Exception doing remote search : " + search);
-				LOGGER.debug(null, e);
-                return doSearch(search);
+                LOGGER.debug(null, e);
             }
-            /*search.setDistributed(Boolean.FALSE);
-            return search(search);*/
+            // If we have a remote exception then try to do the search locally
+            return doSearch(search);
         } else {
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Not distributing search : " + search);
+            }
             return doSearch(search);
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Search doSearch(final Search search) {
         try {
             ikube.search.Search searchAction;
@@ -507,11 +515,14 @@ public class SearcherService implements ISearcherService {
         long hash = HashUtilities.hash(cleanedSearchStrings.toString());
         try {
             Search cacheSearch = clusterManager.get(IConstants.SEARCH, hash);
-            if (cacheSearch == null) {
-                clusterManager.put(IConstants.SEARCH, search.getHash(), search);
+            if (cacheSearch != null) {
+                cacheSearch.setCount(cacheSearch.getCount() + 1);
             } else {
-				cacheSearch.setCount(cacheSearch.getCount() + 1);
-                clusterManager.put(IConstants.SEARCH, cacheSearch.getHash(), cacheSearch);
+                cacheSearch = search;
+            }
+            clusterManager.put(IConstants.SEARCH, cacheSearch.getHash(), cacheSearch);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Updated search : " + cacheSearch);
             }
         } catch (final Exception e) {
             LOGGER.error("Exception setting search in database : ", e);
