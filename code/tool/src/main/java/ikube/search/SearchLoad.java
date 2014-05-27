@@ -8,6 +8,8 @@ import ikube.toolkit.Timer;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,23 +27,47 @@ import java.util.Arrays;
  * @version 01.00
  * @since 06-04-2014
  */
+@SuppressWarnings("FieldCanBeLocal")
 public class SearchLoad {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SearchLoad.class);
 
-    public static void main(final String[] args) throws IOException {
+    @Option(name = "-t")
+    private int threads = 5;
+    @Option(name = "-i")
+    private int iterations = 1000000;
+    @Option(name = "-u")
+    private String url = "ikube.be";
+    @Option(name = "-p")
+    private int port = 80;
+    @Option(name = "-s")
+    private String searchString = "cape town";
+    @Option(name = "-d")
+    private String indexName = IConstants.GEOSPATIAL;
+    @Option(name = "-f")
+    private String fieldName = IConstants.NAME;
+
+    public static void main(final String[] args) throws Exception {
+        new SearchLoad().doMain(args);
+    }
+
+    protected void doMain(final String[] args) throws Exception {
+        CmdLineParser parser = new CmdLineParser(this);
+        parser.setUsageWidth(140);
+        parser.parseArgument(args);
+
         ThreadUtilities.initialize();
 
         Search search = new Search();
         search.setFirstResult(0);
         search.setMaxResults(10);
         search.setDistributed(Boolean.FALSE);
-        search.setSearchStrings(Arrays.asList("cape town"));
+        search.setSearchStrings(Arrays.asList(searchString));
 
         search.setFragment(Boolean.TRUE);
-        search.setIndexName(IConstants.GEOSPATIAL);
+        search.setIndexName(indexName);
         search.setOccurrenceFields(Arrays.asList("must"));
-        search.setSearchFields(Arrays.asList(IConstants.NAME));
+        search.setSearchFields(Arrays.asList(fieldName));
         search.setTypeFields(Arrays.asList("string"));
 
         String url = getUrl();
@@ -50,46 +76,51 @@ public class SearchLoad {
         String content = gson.toJson(search);
         StringRequestEntity stringRequestEntity = new StringRequestEntity(content, "application/json", IConstants.ENCODING);
 
-        final int threads = 5;
-        final int iterations = 1000000;
-        for (int i = threads; i > 0; i--) {
+        int count = 0;
+        do {
             final HttpClient httpClient = new HttpClient();
             final PostMethod postMethod = new PostMethod(url);
             postMethod.setRequestEntity(stringRequestEntity);
-            Runnable runnable = new Runnable() {
+
+            class Timed implements Timer.Timed {
+                @Override
+                public void execute() {
+                    try {
+                        int searches = iterations / threads;
+                        do {
+                            httpClient.executeMethod(postMethod);
+                            if (searches % 1000 == 0) {
+                                LOGGER.info("Searches : " + searches);
+                            }
+                        } while (searches-- >= 0);
+                    } catch (final IOException e) {
+                        LOGGER.error("Exception searching production server : ", e);
+                    }
+                }
+            }
+
+            final Timer.Timed timed = new Timed();
+            class Runner implements Runnable {
                 @Override
                 public void run() {
-                    double duration = Timer.execute(new Timer.Timed() {
-                        @Override
-                        public void execute() {
-                            try {
-                                int searches = iterations / threads;
-                                do {
-                                    httpClient.executeMethod(postMethod);
-                                    if (searches % 1000 == 0) {
-                                        LOGGER.info("Searches : " + searches);
-                                    }
-                                } while (searches-- >= 0);
-                            } catch (final IOException e) {
-                                LOGGER.error("Exception searching production server : ", e);
-                            }
-                        }
-                    });
+                    double duration = Timer.execute(timed);
                     LOGGER.info("Duration for searching : " + iterations + ", is : " + duration + ", per second is : " + iterations / (duration / 1000));
                 }
-            };
+            }
+
+            Runnable runnable = new Runner();
             ThreadUtilities.submit(runnable.toString(), runnable);
-        }
+        } while (count++ < threads);
     }
 
     @SuppressWarnings("StringBufferReplaceableByString")
-    protected static String getUrl() throws MalformedURLException {
+    protected String getUrl() throws MalformedURLException {
         StringBuilder builder = new StringBuilder();
         builder.append("/ikube");
         builder.append("/service");
         builder.append("/search");
         builder.append("/json");
-        return new URL("http", "ikube.be", 80, builder.toString()).toString();
+        return new URL("http", url, port, builder.toString()).toString();
     }
 
 }
