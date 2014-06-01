@@ -209,22 +209,23 @@ public class SearcherServiceTest extends AbstractTest {
 	@Test
 	public void persistSearch() {
 		Mockit.tearDownMocks(SearcherService.class, ApplicationContextManager.class);
-		search.setIndexName(IConstants.GEOSPATIAL);
-		search.setCount(0);
+        SearcherService searcherService = new SearcherService();
+        Deencapsulation.setField(searcherService, "clusterManager", clusterManager);
 
-		SearcherService searcherService = new SearcherService();
-		Deencapsulation.setField(searcherService, "clusterManager", clusterManager);
-		when(clusterManager.get(anyString(), any())).thenReturn(search);
+        ArrayList<HashMap<String, String>> results = new ArrayList<>();
+        HashMap<String, String> result = new HashMap<>();
+        HashMap<String, String> statistics = new HashMap<>();
 
-		ArrayList<HashMap<String, String>> results = new ArrayList<>();
-		HashMap<String, String> result = new HashMap<>();
+        search.setIndexName(IConstants.GEOSPATIAL);
+        search.setCount(0);
 
-		HashMap<String, String> statistics = new HashMap<>();
-		statistics.put(IConstants.TOTAL, "100");
-		statistics.put(IConstants.DURATION, "100");
-		statistics.put(IConstants.SCORE, "100");
-		statistics.put(IConstants.SEARCH_STRINGS, "searchString");
-		statistics.put(IConstants.CORRECTIONS, "correctedSearchString");
+        statistics.put(IConstants.TOTAL, "100");
+        statistics.put(IConstants.DURATION, "100");
+        statistics.put(IConstants.SCORE, "100");
+        statistics.put(IConstants.SEARCH_STRINGS, "searchString");
+        statistics.put(IConstants.CORRECTIONS, "correctedSearchString");
+
+        when(clusterManager.get(anyString(), any())).thenReturn(search);
 
 		results.add(result);
 		results.add(statistics);
@@ -235,6 +236,12 @@ public class SearcherServiceTest extends AbstractTest {
 		searcherService.persistSearch(search);
 
 		verify(clusterManager, atLeastOnce()).put(any(String.class), any(Object.class), any(Serializable.class));
+
+        for (int i = 0; i < 1000; i++) {
+            searcherService.persistSearch(search);
+        }
+
+        assertEquals(1001, search.getCount());
 	}
 
 	private void verifySearches() {

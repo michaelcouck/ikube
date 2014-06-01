@@ -504,13 +504,14 @@ public class SearcherService implements ISearcherService {
         if (cleanedSearchStrings.size() == 0) {
             return;
         }
-        long hash = HashUtilities.hash(cleanedSearchStrings.toString());
+        long hash = HashUtilities.hash(cleanedSearchStrings.toString().toLowerCase());
         try {
             Search cacheSearch = clusterManager.get(IConstants.SEARCH, hash);
             if (cacheSearch != null) {
                 cacheSearch.setCount(cacheSearch.getCount() + 1);
             } else {
                 cacheSearch = search;
+                cacheSearch.setHash(hash);
             }
             clusterManager.put(IConstants.SEARCH, cacheSearch.getHash(), cacheSearch);
             if (LOGGER.isDebugEnabled()) {

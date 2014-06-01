@@ -9,10 +9,7 @@ import ikube.cluster.MonitorService;
 import ikube.cluster.listener.IListener;
 import ikube.cluster.listener.hzc.StopListener;
 import ikube.database.IDataBase;
-import ikube.model.Action;
-import ikube.model.Server;
-import ikube.model.Snapshot;
-import ikube.model.Task;
+import ikube.model.*;
 import ikube.scheduling.schedule.Event;
 import ikube.toolkit.ThreadUtilities;
 import mockit.*;
@@ -45,8 +42,8 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
         static IMap<String, Server> servers = mock(IMap.class);
 
         @Mock
-        @SuppressWarnings("unchecked")
-        public static <K, V> IMap<K, V> getMap(String name) {
+        @SuppressWarnings({"unchecked", "UnusedDeclaration"})
+        public static <K, V> IMap<K, V> getMap(final String name) {
             return (IMap<K, V>) servers;
         }
     }
@@ -59,6 +56,7 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
     private String indexName = "indexName";
     private String indexableName = "indexableName";
 
+    @SuppressWarnings("FieldCanBeLocal")
     private IDataBase dataBase;
     private IMonitorService monitorService;
 
@@ -314,6 +312,15 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
         for (final Future<?> future : futures) {
             assertTrue((Boolean) future.get());
         }
+    }
+
+    @Test
+    public void putMapKeyValue() {
+        String key = Long.toString(System.currentTimeMillis());
+        Server value = new Server();
+        clusterManagerHazelcast.put(IConstants.SERVER, key, value);
+        Server result = clusterManagerHazelcast.get(IConstants.SERVER, key);
+        assertNotNull(result);
     }
 
     /**
