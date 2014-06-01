@@ -36,7 +36,7 @@
         <level value="warn"/>
     </logger>
     <logger name="ikube.search">
-        <level value="debug"/>
+        <level value="warn"/>
     </logger>
 
     <root>

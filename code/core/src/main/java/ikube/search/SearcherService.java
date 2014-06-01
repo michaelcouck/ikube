@@ -3,6 +3,7 @@ package ikube.search;
 import ikube.IConstants;
 import ikube.cluster.IClusterManager;
 import ikube.cluster.IMonitorService;
+import ikube.database.IDataBase;
 import ikube.model.Coordinate;
 import ikube.model.IndexContext;
 import ikube.model.Search;
@@ -39,6 +40,8 @@ public class SearcherService implements ISearcherService {
 
     private static final ArrayList<HashMap<String, String>> EMPTY_RESULTS = new ArrayList<>();
 
+    @Autowired
+    private IDataBase dataBase;
     /**
      * The service to distribute the searches in the cluster, and to put the searches in the grid.
      */
@@ -492,8 +495,8 @@ public class SearcherService implements ISearcherService {
         // Add the index name to the statistics here, not elegant, I know
         statistics.put(IConstants.INDEX_NAME, indexName);
 
-        List<String> cleanedSearchStrings = new ArrayList<>(Arrays.asList(searchStrings));
         String string;
+        List<String> cleanedSearchStrings = new ArrayList<>(Arrays.asList(searchStrings));
         Iterator<String> iterator = cleanedSearchStrings.iterator();
         do {
             string = iterator.next();
@@ -504,18 +507,21 @@ public class SearcherService implements ISearcherService {
         if (cleanedSearchStrings.size() == 0) {
             return;
         }
-        long hash = HashUtilities.hash(cleanedSearchStrings.toString().toLowerCase());
+        Long hash = HashUtilities.hash(cleanedSearchStrings.toString().toLowerCase());
         try {
             Search cacheSearch = clusterManager.get(IConstants.SEARCH, hash);
-            if (cacheSearch != null) {
-                cacheSearch.setCount(cacheSearch.getCount() + 1);
-            } else {
+            if (cacheSearch == null) {
                 cacheSearch = search;
                 cacheSearch.setHash(hash);
             }
-            clusterManager.put(IConstants.SEARCH, cacheSearch.getHash(), cacheSearch);
+            cacheSearch.setCount(cacheSearch.getCount() + 1);
+            clusterManager.put(IConstants.SEARCH, hash, cacheSearch);
+
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Updated search : " + cacheSearch);
+                cacheSearch = clusterManager.get(IConstants.SEARCH, hash);
+                Search dbSearch = dataBase.find(Search.class, new String[]{IConstants.HASH}, new Object[]{hash});
+                LOGGER.debug("Cache search : " + cacheSearch);
+                LOGGER.debug("Database search : " + dbSearch);
             }
         } catch (final Exception e) {
             LOGGER.error("Exception setting search in database : ", e);
