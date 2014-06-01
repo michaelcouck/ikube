@@ -101,7 +101,7 @@ public class MonitorService implements IMonitorService {
 		final List<String> fieldDescriptions = new ArrayList<>();
 		ReflectionUtils.doWithFields(indexableClass, new ReflectionUtils.FieldCallback() {
 			@Override
-			public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
+			public void doWith(final Field field) throws IllegalArgumentException, IllegalAccessException {
 				Attribute attribute = field.getAnnotation(Attribute.class);
 				// LOGGER.info("Att : " + attribute + ", " + field + ", " + field.getType() + ", " + field.getType().getPackage());
 				if (attribute == null ||
@@ -154,7 +154,7 @@ public class MonitorService implements IMonitorService {
 				filePath = FileUtilities.cleanFilePath(filePath);
 				String fileContents = FileUtilities.getContents(propertyFile, Integer.MAX_VALUE).toString();
 				filesAndProperties.put(filePath, fileContents);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				LOGGER.error("Exception reading property file : " + propertyFile, e);
 			}
 		}
@@ -174,7 +174,7 @@ public class MonitorService implements IMonitorService {
 					continue;
 				}
 				FileUtilities.setContents(mapEntry.getKey(), mapEntry.getValue().getBytes());
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				LOGGER.error("Exception setting properties in file : " + mapEntry.getKey(), e);
 			}
 		}

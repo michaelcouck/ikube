@@ -39,7 +39,7 @@
         <!-- <ref bean="ikube.action.DiskFull" /> -->
         <!-- This action needs a dedicated mail server! -->
         <!--<ref bean="ikube.action.Validator" />-->
-        <ref bean="ikube.action.Clean"/>
+        <!--<ref bean="ikube.action.Clean"/>-->
     </util:list>
 
     <bean

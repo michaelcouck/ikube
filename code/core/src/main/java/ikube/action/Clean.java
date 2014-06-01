@@ -22,6 +22,7 @@ import java.io.IOException;
  * @version 01.00
  * @since 31-10-2010
  */
+@Deprecated
 public class Clean extends Action<IndexContext, Boolean> {
 
 	/**
@@ -53,7 +54,6 @@ public class Clean extends Action<IndexContext, Boolean> {
 	private void processDirectories(final IndexContext indexContext, final File... serverIndexDirectories) {
 		for (final File serverIndexDirectory : serverIndexDirectories) {
 			Directory directory = null;
-			boolean delete = Boolean.FALSE;
 			try {
 				directory = FSDirectory.open(serverIndexDirectory);
 				if (IndexWriter.isLocked(directory)) {
@@ -61,28 +61,22 @@ public class Clean extends Action<IndexContext, Boolean> {
 					continue;
 				}
 				if (!DirectoryReader.indexExists(directory)) {
-					delete = Boolean.TRUE;
+                    logger.warn("Deleting directory : " + serverIndexDirectory + ", as it either corrupt, or partially deleted : ");
+                    try {
+                        new Close().execute(indexContext);
+                    } catch (final Exception e) {
+                        logger.error("Couldn't close director before delete : " + indexContext.getName(), e);
+                    }
+                    FileUtilities.deleteFile(serverIndexDirectory);
 				}
 			} catch (final CorruptIndexException e) {
-				delete = Boolean.TRUE;
 				logger.error("Index corrupt : " + serverIndexDirectory + ", will try to delete : ", e);
 			} catch (final IOException e) {
-				delete = Boolean.TRUE;
 				logger.error("Directory : " + serverIndexDirectory + " not ok, will try to delete : ", e);
 			} catch (final Exception e) {
-				delete = Boolean.TRUE;
 				logger.error("General exception : " + serverIndexDirectory + " not ok, will try to delete : ", e);
 			} finally {
 				close(directory);
-				if (delete) {
-					logger.warn("Deleting directory : " + serverIndexDirectory + ", as it either corrupt, or partially deleted : ");
-					try {
-						new Close().execute(indexContext);
-					} catch (final Exception e) {
-						logger.error("Couldn't close director before delete : " + indexContext.getName(), e);
-					}
-					FileUtilities.deleteFile(serverIndexDirectory);
-				}
 			}
 		}
 	}

@@ -28,6 +28,7 @@ import static org.mockito.Mockito.when;
  * @version 01.00
  * @since 16-01-2012
  */
+@Deprecated
 public class CleanTest extends AbstractTest {
 
     @Before

@@ -458,22 +458,14 @@ public class SearcherService implements ISearcherService {
      */
     @SuppressWarnings("unchecked")
     protected <T> T getSearch(final Class<?> klass, final String indexName) throws Exception {
-        T search = null;
-        @SuppressWarnings("rawtypes")
-        Map<String, IndexContext> indexContexts = monitorService.getIndexContexts();
-        for (final IndexContext indexContext : indexContexts.values()) {
-            if (indexContext.getIndexName().equals(indexName)) {
-                if (indexContext.getMultiSearcher() != null) {
-                    if (indexContext.getAnalyzer() != null) {
-                        Constructor<?> constructor = klass.getConstructor(IndexSearcher.class, Analyzer.class);
-                        search = (T) constructor.newInstance(indexContext.getMultiSearcher(), indexContext.getAnalyzer());
-                    } else {
-                        Constructor<?> constructor = klass.getConstructor(IndexSearcher.class);
-                        search = (T) constructor.newInstance(indexContext.getMultiSearcher());
-                    }
-                }
-                break;
-            }
+        T search;
+        IndexContext indexContext = monitorService.getIndexContext(indexName);
+        if (indexContext.getAnalyzer() != null) {
+            Constructor<?> constructor = klass.getConstructor(IndexSearcher.class, Analyzer.class);
+            search = (T) constructor.newInstance(indexContext.getMultiSearcher(), indexContext.getAnalyzer());
+        } else {
+            Constructor<?> constructor = klass.getConstructor(IndexSearcher.class);
+            search = (T) constructor.newInstance(indexContext.getMultiSearcher());
         }
         return search;
     }

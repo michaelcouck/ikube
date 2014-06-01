@@ -39,6 +39,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
      * The instance of this server.
      */
     private Server server;
+
     @Autowired
     private IMonitorService monitorService;
     @Autowired
@@ -46,44 +47,6 @@ public class ClusterManagerHazelcast extends AClusterManager {
     private HazelcastInstance hazelcastInstance;
     @Autowired
     private OutOfMemoryHandler outOfMemoryHandler;
-
-    @SuppressWarnings("StringBufferReplaceableByString")
-    public void initialize() {
-        random = new Random();
-        ip = UriUtilities.getIp();
-        Hazelcast.setOutOfMemoryHandler(outOfMemoryHandler);
-        int port = hazelcastInstance.getCluster().getLocalMember().getInetSocketAddress().getPort();
-        address = new StringBuilder(ip).append("-").append(port).toString();
-        final Config config = hazelcastInstance.getConfig();
-        config.getNetworkConfig().getInterfaces().setInterfaces(Arrays.asList(ip));
-        // Start a thread that will keep an eye on Hazelcast
-
-        class HazelcastWatcher implements Runnable {
-            @SuppressWarnings("InfiniteLoopStatement")
-            public void run() {
-                do {
-                    boolean reinitialize = Boolean.FALSE;
-                    try {
-                        boolean locked = lock(IConstants.HAZELCAST_WATCHER);
-                        logger.info("Hazelcast watcher lock : " + locked);
-                        printStatistics(hazelcastInstance);
-                    } catch (final Exception e) {
-                        reinitialize = Boolean.TRUE;
-                        logger.error("Error...", e);
-                    } finally {
-                        unlock(IConstants.HAZELCAST_WATCHER);
-                        if (reinitialize) {
-                            logger.info("Restarting the grid!!!");
-                            Hazelcast.shutdownAll();
-                            hazelcastInstance = Hazelcast.newHazelcastInstance(config);
-                        }
-                    }
-                    ThreadUtilities.sleep(IConstants.HUNDRED_THOUSAND * 6);
-                } while (true);
-            }
-        }
-        ThreadUtilities.submit(IConstants.HAZELCAST_WATCHER, new HazelcastWatcher());
-    }
 
     static void printStatistics(final HazelcastInstance hazelcastInstance) {
         printStatistics(hazelcastInstance.getMap(IConstants.IKUBE));
@@ -113,6 +76,50 @@ public class ClusterManagerHazelcast extends AClusterManager {
             }
         }
         ReflectionUtils.doWithMethods(LocalMapStats.class, new MethodCallback(), new MethodFilter());
+    }
+
+    @SuppressWarnings("StringBufferReplaceableByString")
+    public void initialize() {
+        random = new Random();
+        ip = UriUtilities.getIp();
+
+        Hazelcast.setOutOfMemoryHandler(outOfMemoryHandler);
+        int port = hazelcastInstance.getCluster().getLocalMember().getInetSocketAddress().getPort();
+
+        address = new StringBuilder(ip).append("-").append(port).toString();
+        final Config config = hazelcastInstance.getConfig();
+        config.getNetworkConfig().getInterfaces().setInterfaces(Arrays.asList(ip));
+        // Start a thread that will keep an eye on Hazelcast
+        class HazelcastWatcher implements Runnable {
+            @SuppressWarnings("InfiniteLoopStatement")
+            public void run() {
+                do {
+                    try {
+                        boolean locked = lock(IConstants.HAZELCAST_WATCHER);
+                        logger.info("Hazelcast watcher lock : " + locked);
+                        printStatistics(hazelcastInstance);
+                        Member member = hazelcastInstance.getCluster().getLocalMember();
+                        Collection<Member> members = hazelcastInstance.getCluster().getMembers();
+                        if (!members.contains(member)) {
+                            throw new RuntimeException("Hazelcast down, restarting grid : " + member);
+                        }
+                    } catch (final Exception e) {
+                        logger.error("Error...", e);
+                        try {
+                            logger.info("Restarting the grid!!!");
+                            Hazelcast.shutdownAll();
+                            hazelcastInstance = Hazelcast.newHazelcastInstance(config);
+                        } catch (final Exception ex) {
+                            logger.error("Error restarting the grid : ", ex);
+                        }
+                    } finally {
+                        unlock(IConstants.HAZELCAST_WATCHER);
+                    }
+                    ThreadUtilities.sleep(IConstants.HUNDRED_THOUSAND * 6);
+                } while (true);
+            }
+        }
+        ThreadUtilities.submit(IConstants.HAZELCAST_WATCHER, new HazelcastWatcher());
     }
 
     /**
@@ -174,17 +181,17 @@ public class ClusterManagerHazelcast extends AClusterManager {
      */
     @Override
     public boolean anyWorking(final String indexName) {
-		@SuppressWarnings("UnusedDeclaration")
-		Server local = getServer();
+        @SuppressWarnings("UnusedDeclaration")
+        Server local = getServer();
         Map<String, Server> servers = getServers();
         for (final Map.Entry<String, Server> mapEntry : servers.entrySet()) {
             Server server = mapEntry.getValue();
-			// TODO: Should there be a local server check? What are
-			// the side effects if any.
-			// Case 1: Server indexing the twitter data, this will return
-			// false, so the indexing will start again!! No?
-			/*if (server.getAddress().equals(local.getAddress())) {
-				continue;
+            // TODO: Should there be a local server check? What are
+            // the side effects if any.
+            // Case 1: Server indexing the twitter data, this will return
+            // false, so the indexing will start again!! No?
+            /*if (server.getAddress().equals(local.getAddress())) {
+                continue;
 			}*/
             if (!server.isWorking() || server.getActions() == null) {
                 continue;
@@ -228,7 +235,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
             action.setDuration(action.getEndTime().getTime() - action.getStartTime().getTime());
             try {
                 dataBase.merge(action);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 logger.error("Exception merging the action : " + action, e);
             }
             Server server = getServer();
