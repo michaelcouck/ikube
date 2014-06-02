@@ -44,7 +44,8 @@ public class SnapshotScheduleTest extends AbstractTest {
 
 	private SnapshotSchedule snapshotSchedule;
 
-	@Before
+    @Before
+    @SuppressWarnings("UnnecessaryBoxing")
 	public void before() throws Exception {
 		snapshotSchedule = new SnapshotSchedule();
 
@@ -71,7 +72,7 @@ public class SnapshotScheduleTest extends AbstractTest {
 		IndexContext indexContext = new IndexContext();
 		indexContext.setName(action.getIndexName());
 		indexContext.setIndexDirectoryPath("./indexes");
-		Map<String, IndexContext> indexContexts = new HashMap<String, IndexContext>();
+		Map<String, IndexContext> indexContexts = new HashMap<>();
 		indexContexts.put(indexContext.getName(), indexContext);
 		when(monitorService.getIndexContexts()).thenReturn(indexContexts);
 
@@ -130,24 +131,24 @@ public class SnapshotScheduleTest extends AbstractTest {
 
 	@Test
 	public void getSearchesPerMinute() {
-		List<Snapshot> snapshots = new ArrayList<Snapshot>();
+		List<Snapshot> snapshots = new ArrayList<>();
 		when(indexContext.getSnapshots()).thenReturn(snapshots);
 		Snapshot snapshot = new Snapshot();
 
 		long searchesPerMinute = snapshotSchedule.getSearchesPerMinute(indexContext, snapshot);
-		assertEquals(0, searchesPerMinute);
+        assertEquals(0, searchesPerMinute);
 
-		Snapshot previous = new Snapshot();
-		previous.setTimestamp(new Timestamp(System.currentTimeMillis() - 65000));
-		previous.setTotalSearches(100);
+        Snapshot previous = new Snapshot();
+        previous.setTimestamp(new Timestamp(System.currentTimeMillis() - 65000));
+        previous.setTotalSearches(100);
 
-		snapshot.setTotalSearches(200);
-		snapshot.setTimestamp(new Timestamp(System.currentTimeMillis()));
+        snapshot.setTotalSearches(200);
+        snapshot.setTimestamp(new Timestamp(System.currentTimeMillis()));
 
-		when(indexContext.getSnapshots()).thenReturn(Arrays.asList(previous));
+        when(indexContext.getSnapshots()).thenReturn(Arrays.asList(previous));
 
-		searchesPerMinute = snapshotSchedule.getSearchesPerMinute(indexContext, snapshot);
-		assertTrue(searchesPerMinute > 50 && searchesPerMinute < 100);
+        searchesPerMinute = snapshotSchedule.getSearchesPerMinute(indexContext, snapshot);
+		assertEquals(100, searchesPerMinute);
 	}
 
 	@Test
@@ -174,7 +175,7 @@ public class SnapshotScheduleTest extends AbstractTest {
 		FileUtilities.setContents(outputFile, string.getBytes());
 		Deencapsulation.setField(Logging.class, "LOG_FILE", outputFile);
 		
-		List<Snapshot> snapshots = new ArrayList<Snapshot>();
+		List<Snapshot> snapshots = new ArrayList<>();
 		for (int i = 0; i < 10; i++) {
 			Snapshot snapshot = ObjectToolkit.populateFields(Snapshot.class, new Snapshot(), Boolean.TRUE, 5);
 			snapshot.setTimestamp(new Timestamp(System.currentTimeMillis() - i * 1000));

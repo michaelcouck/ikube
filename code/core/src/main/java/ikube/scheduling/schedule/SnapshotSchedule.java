@@ -174,8 +174,7 @@ public class SnapshotSchedule extends Schedule {
             return 0;
         }
         Snapshot previous = snapshots.get(snapshots.size() - 1);
-        double ratio = getRatio(previous, snapshot);
-        long searchesPerMinute = (long) ((snapshot.getTotalSearches() - previous.getTotalSearches()) / ratio);
+        long searchesPerMinute = snapshot.getTotalSearches() - previous.getTotalSearches();
         return Math.max(0, searchesPerMinute);
     }
 

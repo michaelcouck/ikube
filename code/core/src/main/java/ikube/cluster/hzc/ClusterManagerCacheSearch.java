@@ -42,15 +42,18 @@ public class ClusterManagerCacheSearch implements MapStore<Long, Search> {
      * {@inheritDoc}
      */
     @Override
-    public void store(final Long hash, final Search search) {
-        if (search.getId() > 0 || search.getTimestamp() != null) {
+    public synchronized void store(final Long hash, final Search search) {
+        if (search.getId() > 0) {
             try {
-                dataBase.merge(search);
+                if (dataBase.find(Search.class, search.getId()) != null) {
+                    dataBase.merge(search);
+                } else {
+                    Long time = System.currentTimeMillis();
+                    Event cpuThrottleEvent = getEvent(Event.EVICTION, time, search.getId(), Boolean.FALSE);
+                    clusterManager.sendMessage(cpuThrottleEvent);
+                }
             } catch (final OptimisticLockException e) {
                 LOGGER.error(null, e);
-                Long time = System.currentTimeMillis();
-                Event cpuThrottleEvent = getEvent(Event.EVICTION, time, search.getId(), Boolean.FALSE);
-                clusterManager.sendMessage(cpuThrottleEvent);
             }
         } else {
             dataBase.persist(search);
