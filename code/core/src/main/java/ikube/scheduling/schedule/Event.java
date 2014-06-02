@@ -6,11 +6,11 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
- * Events are fired by clients and received by interested parties who can act on them, for example the end of an indexing process might
- * trigger the opening of that index.
+ * Events are fired by clients and received by interested parties who can act on them, for
+ * example the end of an indexing process might trigger the opening of that index.
  * 
  * @author Michael Couck
- * @since 21.11.10
+ * @since 21-11-2010
  * @version 01.00
  */
 public class Event implements Serializable {
@@ -29,6 +29,7 @@ public class Event implements Serializable {
 	public static final String MEMORY_SIZE = "memory-size";
 	public static final String CPU_LOAD_THROTTLING = "cpu-throttling";
 	public static final String TAKE_SNAPSHOT = "take-snapshot";
+	public static final String EVICTION = "take-snapshot";
 
 	private String type;
 	private long timestamp;

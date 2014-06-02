@@ -83,6 +83,7 @@
                     <hz:message-listener implementation="ikube.cluster.listener.hzc.DeleteListener"/>
                     <hz:message-listener implementation="ikube.cluster.listener.hzc.CpuLoadListener"/>
                     <hz:message-listener implementation="ikube.cluster.listener.hzc.SnapshotListener"/>
+                    <hz:message-listener implementation="ikube.cluster.listener.hzc.EvictionListener"/>
                 </hz:message-listeners>
             </hz:topic>
         </hz:config>
@@ -107,6 +108,9 @@
     <bean
         id="ikube.cluster.listener.hzc.SnapshotListener"
         class="ikube.cluster.listener.hzc.SnapshotListener"/>
+    <bean
+        id="ikube.cluster.listener.hzc.EvictionListener"
+        class="ikube.cluster.listener.hzc.EvictionListener"/>
 
     <!-- depends-on="ikube-hazelcast" -->
     <bean
