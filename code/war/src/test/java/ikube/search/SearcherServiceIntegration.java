@@ -14,6 +14,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Michael Couck
@@ -26,7 +27,8 @@ public class SearcherServiceIntegration extends IntegrationTest {
 
     @Before
     public void before() {
-        searcherService = ApplicationContextManager.getBean(ISearcherService.class);
+        Map<String, ISearcherService> beans = ApplicationContextManager.getBeans(ISearcherService.class);
+        searcherService = beans.values().iterator().next();
     }
 
     @Test

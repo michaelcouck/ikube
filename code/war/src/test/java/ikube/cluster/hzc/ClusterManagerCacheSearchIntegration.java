@@ -8,6 +8,8 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Map;
+
 /**
  * @author Michael Couck
  * @version 01.00
@@ -19,7 +21,8 @@ public class ClusterManagerCacheSearchIntegration extends IntegrationTest {
 
     @Before
     public void before() {
-        clusterManagerCacheSearch = ApplicationContextManager.getBean(ClusterManagerCacheSearch.class);
+        Map<String, ClusterManagerCacheSearch> beans = ApplicationContextManager.getBeans(ClusterManagerCacheSearch.class);
+        clusterManagerCacheSearch = beans.values().iterator().next();
     }
 
     @Test
