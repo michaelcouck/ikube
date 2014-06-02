@@ -5,9 +5,12 @@ import com.hazelcast.spring.context.SpringAware;
 import ikube.IConstants;
 import ikube.database.IDataBase;
 import ikube.model.Search;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.OptimisticLockException;
 import java.util.*;
 
 /**
@@ -24,6 +27,8 @@ import java.util.*;
 @SpringAware(beanName = "ikube.cluster.hzc.ClusterManagerCacheSearch")
 public class ClusterManagerCacheSearch implements MapStore<Long, Search> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClusterManagerCacheSearch.class);
+
     @Autowired
     private IDataBase dataBase;
 
@@ -33,7 +38,41 @@ public class ClusterManagerCacheSearch implements MapStore<Long, Search> {
     @Override
     public void store(final Long hash, final Search search) {
         if (search.getId() > 0 || search.getTimestamp() != null) {
-            dataBase.merge(search);
+            try {
+                dataBase.merge(search);
+                return;
+            } catch (final OptimisticLockException e) {
+                LOGGER.error(null, e);
+                try {
+                    dataBase.remove(search);
+                } catch (final Exception ex) {
+                    LOGGER.error(null, ex);
+                }
+            }
+            Search persistable = new Search();
+            persistable.setHash(search.getHash());
+            persistable.setIndexName(search.getIndexName());
+            persistable.setCount(search.getCount());
+            persistable.setSearchStrings(search.getSearchStrings());
+            persistable.setTypeFields(search.getTypeFields());
+            persistable.setBoosts(search.getBoosts());
+            persistable.setCoordinate(search.getCoordinate());
+            persistable.setCorrectedSearchStrings(search.getCorrectedSearchStrings());
+            persistable.setCorrections(search.isCorrections());
+            persistable.setDistance(search.getDistance());
+            persistable.setFirstResult(search.getFirstResult());
+            persistable.setFragment(search.isFragment());
+            persistable.setHighScore(search.getHighScore());
+            persistable.setMaxResults(search.getMaxResults());
+            persistable.setOccurrenceFields(search.getOccurrenceFields());
+            persistable.setSearchFields(search.getSearchFields());
+            persistable.setSearchResults(search.getSearchResults());
+            persistable.setSearchStrings(search.getSearchStrings());
+            persistable.setSortDirections(search.getSortDirections());
+            persistable.setSortFields(search.getSortFields());
+            persistable.setTotalResults(search.getTotalResults());
+            persistable.setDistributed(search.isDistributed());
+            dataBase.persist(persistable);
         } else {
             dataBase.persist(search);
         }
