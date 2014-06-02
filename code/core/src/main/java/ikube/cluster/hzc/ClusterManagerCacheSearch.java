@@ -49,7 +49,7 @@ public class ClusterManagerCacheSearch implements MapStore<Long, Search> {
             } catch (final OptimisticLockException e) {
                 LOGGER.error(null, e);
                 Long time = System.currentTimeMillis();
-                Event cpuThrottleEvent = getEvent(Event.EVICTION, time, search.getHash(), Boolean.FALSE);
+                Event cpuThrottleEvent = getEvent(Event.EVICTION, time, search.getId(), Boolean.FALSE);
                 clusterManager.sendMessage(cpuThrottleEvent);
             }
         } else {
