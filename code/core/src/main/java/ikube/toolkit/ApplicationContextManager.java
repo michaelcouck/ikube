@@ -2,6 +2,7 @@ package ikube.toolkit;
 
 import ikube.IConstants;
 import ikube.model.*;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -18,6 +19,8 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.web.context.support.AbstractRefreshableWebApplicationContext;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -247,6 +250,23 @@ public final class ApplicationContextManager implements ApplicationContextAware 
         } else {
             LOGGER.info("Application context already loaded : " + APPLICATION_CONTEXT);
         }
+		File configDirectory = null;
+		File consoleOutputFile = null;
+		try {
+			configDirectory = new File(IConstants.IKUBE_DIRECTORY);
+			Object ikubeConfigurationPathProperty = System.getProperty(IConstants.IKUBE_CONFIGURATION);
+			// First try the configuration property
+			if (ikubeConfigurationPathProperty != null) {
+				configDirectory = new File(ikubeConfigurationPathProperty.toString());
+			}
+			consoleOutputFile = FileUtilities.findFileRecursively(configDirectory, "console");
+			List lines = IOUtils.readLines(new FileInputStream(consoleOutputFile));
+			for (final Object line : lines) {
+				System.out.println(line);
+			}
+		} catch (final IOException e) {
+			LOGGER.error("Error reading the console file : " + configDirectory + ", " + consoleOutputFile, e);
+		}
     }
 
     /**

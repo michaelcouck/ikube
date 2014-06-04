@@ -42,7 +42,7 @@ class FileSystemResourceProvider implements IResourceProvider<File> {
 	 * @throws IOException
 	 */
 	FileSystemResourceProvider(final IndexableFileSystem indexableFileSystem, final Pattern pattern) throws IOException {
-		files = new Stack<File>();
+		files = new Stack<>();
 		final File startDirectory = new File(indexableFileSystem.getPath());
 		LOGGER.info("Start directory :" + startDirectory);
 		ThreadUtilities.submit(this.toString(), new Runnable() {
