@@ -53,39 +53,6 @@ public class SearcherService implements ISearcherService {
     @Autowired
     private IMonitorService monitorService;
 
-    public SearcherService() {
-        if (!ThreadUtilities.isInitialized()) {
-            ThreadUtilities.initialize();
-        }
-        ThreadUtilities.submit("persister-thread", new Runnable() {
-            @SuppressWarnings("InfiniteLoopStatement")
-            public void run() {
-                while (true) {
-                    ThreadUtilities.sleep(1000);
-                    try {
-                        for (final Map.Entry<Long, Search> entry : searches.entrySet()) {
-                            Long hash = entry.getKey();
-                            Search search = entry.getValue();
-                            if (search.getId() == 0) {
-                                Search cacheSearch = dataBase.find(Search.class, new String[]{IConstants.HASH}, new Object[]{hash});
-                                if (cacheSearch == null) {
-                                    dataBase.persist(search);
-                                } else {
-                                    search.setCount(search.getCount() + cacheSearch.getCount());
-                                }
-                            }
-                        }
-                        LOGGER.info("Persisting batch : " + searches);
-                        dataBase.mergeBatch(new ArrayList<Object>(searches.values()));
-                        searches.clear();
-                    } catch (final Exception e) {
-                        LOGGER.error(null, e);
-                    }
-                }
-            }
-        });
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -341,7 +308,7 @@ public class SearcherService implements ISearcherService {
                 search.setCorrections(Boolean.FALSE);
             }
             search.setSearchResults(results);
-            // persistSearch(search);
+            persistSearch(search);
         } catch (final Exception e) {
             handleException(search.getIndexName(), e);
         }
@@ -506,8 +473,6 @@ public class SearcherService implements ISearcherService {
         return search;
     }
 
-    private final Map<Long, Search> searches = new HashMap<>();
-
     /**
      * This method will persist the search, using the write behind facility of the
      * grid. The search object will also be distributed over the servers so that all the
@@ -515,7 +480,7 @@ public class SearcherService implements ISearcherService {
      * the search object, updating the count using the {@link ikube.database.IDataBase}
      * JPA persistence manager.
      */
-    protected /* synchronized */ void persistSearch(final Search search) {
+    protected synchronized void persistSearch(final Search search) {
         final String indexName = search.getIndexName();
         final String[] searchStrings = search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]);
         final ArrayList<HashMap<String, String>> results = search.getSearchResults();
@@ -544,32 +509,23 @@ public class SearcherService implements ISearcherService {
         }
         Long hash = HashUtilities.hash(cleanedSearchStrings.toString().toLowerCase());
         try {
-            synchronized (searches) {
-                Search cacheSearch = searches.get(hash);
-                if (cacheSearch == null) {
-                    cacheSearch = search;
-                    searches.put(hash, cacheSearch);
-                }
-                LOGGER.info("Search : " + cacheSearch);
-                cacheSearch.setCount(cacheSearch.getCount() + 1);
-            }
-            /*// Search cacheSearch = clusterManager.get(IConstants.SEARCH, hash);
-            Search cacheSearch = dataBase.find(Search.class, new String[]{IConstants.HASH}, new Object[]{hash});
+            Search cacheSearch = clusterManager.get(IConstants.SEARCH, hash);
+            // Search cacheSearch = dataBase.find(Search.class, new String[]{IConstants.HASH}, new Object[]{hash});
             if (cacheSearch == null) {
                 cacheSearch = search;
                 cacheSearch.setHash(hash);
                 dataBase.persist(cacheSearch);
             }
             cacheSearch.setCount(cacheSearch.getCount() + 1);
-            dataBase.merge(cacheSearch);
-            // clusterManager.put(IConstants.SEARCH, hash, cacheSearch);
+            // dataBase.merge(cacheSearch);
+            clusterManager.put(IConstants.SEARCH, hash, cacheSearch);
 
             if (LOGGER.isDebugEnabled()) {
                 cacheSearch = clusterManager.get(IConstants.SEARCH, hash);
                 Search dbSearch = dataBase.find(Search.class, new String[]{IConstants.HASH}, new Object[]{hash});
                 LOGGER.debug("Cache search : " + cacheSearch);
                 LOGGER.debug("Database search : " + dbSearch);
-            }*/
+            }
         } catch (final Exception e) {
             LOGGER.error("Exception setting search in database : ", e);
         }

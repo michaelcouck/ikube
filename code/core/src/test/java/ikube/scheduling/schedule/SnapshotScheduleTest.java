@@ -37,7 +37,7 @@ import org.mockito.stubbing.Answer;
 
 /**
  * @author Michael Couck
- * @since 22.07.12
+ * @since 22-07-2012
  * @version 01.00
  */
 public class SnapshotScheduleTest extends AbstractTest {

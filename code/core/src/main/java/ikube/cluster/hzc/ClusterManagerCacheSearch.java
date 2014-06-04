@@ -3,19 +3,14 @@ package ikube.cluster.hzc;
 import com.hazelcast.core.MapStore;
 import com.hazelcast.spring.context.SpringAware;
 import ikube.IConstants;
-import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.model.Search;
-import ikube.scheduling.schedule.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.OptimisticLockException;
 import java.util.*;
-
-import static ikube.cluster.listener.IListener.EventGenerator.getEvent;
 
 /**
  * This is the implementation for Hazelcast to access the database on startup. We don't
@@ -35,26 +30,14 @@ public class ClusterManagerCacheSearch implements MapStore<Long, Search> {
 
     @Autowired
     private IDataBase dataBase;
-    @Autowired
-    private IClusterManager clusterManager;
 
     /**
      * {@inheritDoc}
      */
     @Override
     public synchronized void store(final Long hash, final Search search) {
-        if (search.getId() > 0) {
-            try {
-                if (dataBase.find(Search.class, search.getId()) != null) {
-                    dataBase.merge(search);
-                } else {
-                    Long time = System.currentTimeMillis();
-                    Event cpuThrottleEvent = getEvent(Event.EVICTION, time, search.getId(), Boolean.FALSE);
-                    clusterManager.sendMessage(cpuThrottleEvent);
-                }
-            } catch (final OptimisticLockException e) {
-                LOGGER.error(null, e);
-            }
+        if (search.getId() >= 0) {
+            dataBase.merge(search);
         } else {
             dataBase.persist(search);
         }

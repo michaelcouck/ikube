@@ -23,6 +23,10 @@ import java.util.Arrays;
  * performance can be checked visually to verify that there are no bottlenecks in the search
  * logic.
  *
+ * <pre>
+ *     java -jar ikube-tool-4.4.1-SNAPSHOT.jar ikube.search.SearchLoad -u localhost -p 9090 -s passwords -d desktop -f contents
+ * </pre>
+ *
  * @author Michael Couck
  * @version 01.00
  * @since 06-04-2014

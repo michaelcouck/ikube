@@ -81,6 +81,7 @@
                     <warDirectory>./</warDirectory>
                     <!--<contextFile>${basedir}/src/main/webapp/META-INF/context.xml</contextFile>-->
                     <systemProperties>
+                        <jvmArgs>-Xms512m -Xmx4096m -XX:MaxPermSize=256m -XX:+CMSClassUnloadingEnabled</jvmArgs>
                         <JAVA_OPTS>-Xms512m -Xmx4096m -XX:MaxPermSize=256m -XX:+CMSClassUnloadingEnabled</JAVA_OPTS>
                     </systemProperties>
                 </configuration>
@@ -114,6 +115,9 @@
 					<stopPort>9180</stopPort>
 					<scanIntervalSeconds>10000</scanIntervalSeconds>
 					<contextPath>/ikube</contextPath>
+                    <!--<jettyConfig>
+                        <jvmArgs>-Xms512m -Xmx4096m -XX:MaxPermSize=256m -XX:+CMSClassUnloadingEnabled</jvmArgs>
+                    </jettyConfig>-->
 					<scanTargets>
 						<scanTarget>src/main/resources</scanTarget>
 						<scanTarget>src/main/webapp</scanTarget>
@@ -124,6 +128,7 @@
 							<maxIdleTime>60000</maxIdleTime>
 						</connector>
 					</connectors>
+                    <!--<jvmArgs>-Xms512m -Xmx4096m -XX:MaxPermSize=256m -XX:+CMSClassUnloadingEnabled</jvmArgs>-->
 				</configuration>
 				<executions>
 					<execution>
