@@ -36,7 +36,7 @@ public class ClusterManagerCacheSearch implements MapStore<Long, Search> {
      */
     @Override
     public synchronized void store(final Long hash, final Search search) {
-        if (search.getId() >= 0) {
+        if (search.getId() > 0) {
             dataBase.merge(search);
         } else {
             dataBase.persist(search);

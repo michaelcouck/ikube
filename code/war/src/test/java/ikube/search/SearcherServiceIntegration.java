@@ -62,6 +62,7 @@ public class SearcherServiceIntegration extends IntegrationTest {
 
         IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
         Search dbSearch = dataBase.find(Search.class, search.getId());
+        ThreadUtilities.sleep(5000);
         Assert.assertNotNull(dbSearch);
         Assert.assertEquals(iterations + 1, dbSearch.getCount());
     }

@@ -2,10 +2,14 @@ package ikube.action.rule;
 
 import ikube.AbstractTest;
 import ikube.IConstants;
+import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.FileUtilities;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.File;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -25,6 +29,9 @@ public class IsRemoteIndexCurrentIntegration extends AbstractTest {
 	@Before
 	public void before() {
 		isRemoteIndexCurrent = ApplicationContextManager.getBean(IsRemoteIndexCurrent.class);
+        IndexContext geospatialIndexContext = ApplicationContextManager.getBean(IConstants.GEOSPATIAL);
+        String indexDirectoryPath = IndexManager.getIndexDirectoryPath(geospatialIndexContext);
+        FileUtilities.deleteFile(new File(indexDirectoryPath));
 	}
 
 	@Test

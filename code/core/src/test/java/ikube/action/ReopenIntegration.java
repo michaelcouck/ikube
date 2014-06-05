@@ -23,8 +23,8 @@ public class ReopenIntegration extends AbstractTest {
         // Now add documents and reopen every ten seconds for a million documents
         System.gc();
         long before = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / IConstants.MILLION;
-        for (int i = 1000; i >= 0; i--) {
-            if (i > 0 && i % 1000 == 0) {
+        for (int i = 100; i >= 0; i--) {
+            if (i > 0 && i % 10 == 0) {
                 System.gc();
                 indexWriters[0].commit();
                 indexWriters[0].forceMerge(10, Boolean.TRUE);
@@ -32,7 +32,7 @@ public class ReopenIntegration extends AbstractTest {
                 System.gc();
                 long after = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / IConstants.MILLION;
                 long increase = (after - before);
-                logger.info("Before : " + before + ", after : " + after + ", increase : " + increase);
+                logger.info(i + ", before : " + before + ", after : " + after + ", increase : " + increase);
             }
             addDocuments(indexWriters[0], IConstants.CONTENTS, "Michael Couck again");
         }

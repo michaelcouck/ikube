@@ -247,26 +247,26 @@ public final class ApplicationContextManager implements ApplicationContextAware 
             LOGGER.info("Setting the application context from the web part : " + applicationContext + ", " + applicationContext.getClass());
             APPLICATION_CONTEXT = applicationContext;
             ((AbstractApplicationContext) APPLICATION_CONTEXT).registerShutdownHook();
+            File configDirectory = null;
+            File consoleOutputFile = null;
+            try {
+                configDirectory = new File(IConstants.IKUBE_DIRECTORY);
+                Object ikubeConfigurationPathProperty = System.getProperty(IConstants.IKUBE_CONFIGURATION);
+                // First try the configuration property
+                if (ikubeConfigurationPathProperty != null) {
+                    configDirectory = new File(ikubeConfigurationPathProperty.toString());
+                }
+                consoleOutputFile = FileUtilities.findFileRecursively(configDirectory, "console");
+                List lines = IOUtils.readLines(new FileInputStream(consoleOutputFile));
+                for (final Object line : lines) {
+                    System.out.println(line);
+                }
+            } catch (final IOException e) {
+                LOGGER.error("Error reading the console file : " + configDirectory + ", " + consoleOutputFile, e);
+            }
         } else {
             LOGGER.info("Application context already loaded : " + APPLICATION_CONTEXT);
         }
-		File configDirectory = null;
-		File consoleOutputFile = null;
-		try {
-			configDirectory = new File(IConstants.IKUBE_DIRECTORY);
-			Object ikubeConfigurationPathProperty = System.getProperty(IConstants.IKUBE_CONFIGURATION);
-			// First try the configuration property
-			if (ikubeConfigurationPathProperty != null) {
-				configDirectory = new File(ikubeConfigurationPathProperty.toString());
-			}
-			consoleOutputFile = FileUtilities.findFileRecursively(configDirectory, "console");
-			List lines = IOUtils.readLines(new FileInputStream(consoleOutputFile));
-			for (final Object line : lines) {
-				System.out.println(line);
-			}
-		} catch (final IOException e) {
-			LOGGER.error("Error reading the console file : " + configDirectory + ", " + consoleOutputFile, e);
-		}
     }
 
     /**
