@@ -56,7 +56,7 @@ public class SvnResourceHandler extends ResourceHandler<IndexableSvn> {
 			IndexManager.addStringField(indexableSvn.getAuthor(), author, indexableSvn, document);
 			IndexManager.addStringField(indexableSvn.getCommitComment(), commit, indexableSvn, document);
 			IndexManager.addStringField(indexableSvn.getRelativeFilePath(), relativePath, indexableSvn, document);
-			IndexManager.addNumericField(indexableSvn.getRevisionDate(), Long.toString(revision), document, Boolean.TRUE, indexableSvn.getBoost());
+			IndexManager.addNumericField(indexableSvn.getRevision(), Long.toString(revision), document, Boolean.TRUE, indexableSvn.getBoost());
 			IndexManager.addNumericField(indexableSvn.getRevisionDate(), Long.toString(date.getTime()), document, Boolean.TRUE, indexableSvn.getBoost());
 			IndexManager.addNumericField(indexableSvn.getSize(), Long.toString(size), document, Boolean.TRUE, indexableSvn.getBoost());
 			IndexManager.addStringField(indexableSvn.getContent().toString(), content, indexableSvn, document);

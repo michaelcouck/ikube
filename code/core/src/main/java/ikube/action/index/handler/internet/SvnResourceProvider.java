@@ -29,7 +29,8 @@ class SvnResourceProvider implements IResourceProvider<SVNDirEntry> {
 
 	SvnResourceProvider(final IndexableSvn indexableSvn) throws Exception {
 		svnDirEntries = new Stack<>();
-		final SVNRepository repository = SVNRepositoryFactory.create(SVNURL.parseURIEncoded(indexableSvn.getUrl()));
+        SVNURL svnurl = SVNURL.parseURIEncoded(indexableSvn.getUrl());
+		final SVNRepository repository = SVNRepositoryFactory.create(svnurl);
 		ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(indexableSvn.getUsername(), indexableSvn.getPassword());
 		repository.setAuthenticationManager(authManager);
 		ThreadUtilities.submit(indexableSvn.getName(), new Runnable() {
