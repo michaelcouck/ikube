@@ -9,6 +9,7 @@ import ikube.cluster.IMonitorService;
 import ikube.search.ISearcherService;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.SerializationUtilities;
+import ikube.web.service.strategy.IdExclusionStrategy;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -52,11 +53,17 @@ public abstract class Resource {
     /**
      * The Gson marshaller to and from the front end.
      */
-    protected Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+    protected GsonBuilder gsonBuilder = new GsonBuilder();
+    {
+        // Add the exclusions, particularly the over ride of the id field in the super class
+        gsonBuilder.addSerializationExclusionStrategy(new IdExclusionStrategy());
+        gsonBuilder.addDeserializationExclusionStrategy(new IdExclusionStrategy());
+    }
+    protected Gson gson = gsonBuilder.create();
 
     /**
-     * This method will create the response builder, then convert the results to Json and add them the the response payload, then build the response object from
-     * the builder.
+     * This method will create the response builder, then convert the results to Json and add them the
+     * response payload, then build the response object from the builder.
      *
      * @param result the data to convert to Json
      * @return the Json response object to send to the caller/client
@@ -73,8 +80,8 @@ public abstract class Resource {
     }
 
     /**
-     * This method will create the response builder, then convert the results to xml and add them the the response payload, then build the response object from
-     * the builder.
+     * This method will create the response builder, then convert the results to xml and add them
+     * the response payload, then build the response object from the builder.
      *
      * @param result the data to convert to xml
      * @return the xml response object to send to the caller/client

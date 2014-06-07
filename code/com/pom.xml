@@ -41,7 +41,7 @@
                 <executions>
                     <execution>
                         <id>copy-configuration</id>
-                        <phase>install</phase>
+                        <phase>deploy</phase>
                         <configuration>
                             <target>
                                 <echo message="Base directory : ${basedir}, ">Base directory : ${basedir}</echo>

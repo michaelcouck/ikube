@@ -1,6 +1,9 @@
 package ikube.search;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import ikube.IConstants;
 import ikube.model.Search;
 import ikube.toolkit.ThreadUtilities;
@@ -14,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
@@ -22,7 +26,7 @@ import java.util.Arrays;
  * This class will just execute a search on an index several times, and the results and
  * performance can be checked visually to verify that there are no bottlenecks in the search
  * logic.
- *
+ * <p/>
  * <pre>
  *     java -jar ikube-tool-4.4.1-SNAPSHOT.jar ikube.search.SearchLoad -u localhost -p 9090 -s passwords -d desktop -f contents
  * </pre>
@@ -74,9 +78,49 @@ public class SearchLoad {
         search.setSearchFields(Arrays.asList(fieldName));
         search.setTypeFields(Arrays.asList("string"));
 
-        String url = getUrl();
+        final String url = getUrl();
 
-        Gson gson = new Gson();
+        final GsonBuilder gsonBuilder = new GsonBuilder();
+
+        class IdExclusionStrategy implements ExclusionStrategy {
+
+            @Override
+            public boolean shouldSkipField(final FieldAttributes fieldAttributes) {
+                String fieldName = fieldAttributes.getName();
+                Class<?> theClass = fieldAttributes.getDeclaringClass();
+                return isFieldInSuperclass(theClass, fieldName);
+            }
+
+            private boolean isFieldInSuperclass(Class<?> subclass, String fieldName) {
+                Class<?> superclass = subclass.getSuperclass();
+                Field field;
+                while (superclass != null) {
+                    field = getField(superclass, fieldName);
+                    if (field != null)
+                        return true;
+                    superclass = superclass.getSuperclass();
+                }
+                return false;
+            }
+
+            private Field getField(Class<?> theClass, String fieldName) {
+                try {
+                    return theClass.getDeclaredField(fieldName);
+                } catch (final Exception e) {
+                    return null;
+                }
+            }
+
+            @Override
+            public boolean shouldSkipClass(final Class<?> aClass) {
+                return false;
+            }
+        }
+
+        gsonBuilder.addSerializationExclusionStrategy(new IdExclusionStrategy());
+        gsonBuilder.addDeserializationExclusionStrategy(new IdExclusionStrategy());
+
+        final Gson gson = gsonBuilder.create();
         String content = gson.toJson(search);
         StringRequestEntity stringRequestEntity = new StringRequestEntity(content, "application/json", IConstants.ENCODING);
 
@@ -94,11 +138,14 @@ public class SearchLoad {
                         do {
                             httpClient.executeMethod(postMethod);
                             if (searches % 1000 == 0) {
-                                LOGGER.info("Searches : " + searches);
+                                String response = postMethod.getResponseBodyAsString();
+                                Search search = gson.fromJson(response, Search.class);
+                                LOGGER.info("Searches : " + searches + ", " + search.getCount() + ", " + search.getTotalResults());
+                                LOGGER.info("Search : " + search);
                             }
                         } while (searches-- >= 0);
                     } catch (final IOException e) {
-                        LOGGER.error("Exception searching production server : ", e);
+                        LOGGER.error("Exception searching server : " + url, e);
                     }
                 }
             }

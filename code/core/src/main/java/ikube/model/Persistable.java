@@ -22,7 +22,7 @@ public abstract class Persistable implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "persistable")
     @SequenceGenerator(name = "persistable", sequenceName = "persistable", allocationSize = 1000)
     @Attribute(field = false, description = "This is the identifier field in the entity and will be set by the database")
-    private long id;
+    protected long id;
 
     @Column
     @Temporal(TemporalType.TIMESTAMP)

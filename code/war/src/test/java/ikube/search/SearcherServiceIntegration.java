@@ -58,13 +58,13 @@ public class SearcherServiceIntegration extends IntegrationTest {
         for (int i = 0; i < iterations; i++) {
             Deencapsulation.invoke(searcherService, "persistSearch", search);
         }
-        ThreadUtilities.sleep(20000);
+        ThreadUtilities.sleep(3000);
 
         IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
         Search dbSearch = dataBase.find(Search.class, search.getId());
-        logger.info("Count : " + dbSearch.getCount() + ":" + iterations);
+        logger.info("Search count : " + dbSearch.getCount() + ", iterations : " + iterations);
         Assert.assertNotNull(dbSearch);
-        Assert.assertTrue(iterations < dbSearch.getCount());
+        Assert.assertTrue(iterations <= dbSearch.getCount());
     }
 
 }

@@ -35,6 +35,29 @@ public class Search extends Distributed {
     public static final String UPDATE_SEARCH_COUNT_SEARCHES = //
             "update Search as s set s.count = :count where s.indexName = :indexName";
 
+    // No generation:
+    /**
+     * Just this seems to work fine, leaving the strategy to the persisting class, and the id is set using the system time.
+     */
+    @Id
+    @Column
+
+    // Auto generation: Not tried
+    // @GeneratedValue(strategy = GenerationType.AUTO)
+
+    // Identity generation: Not tried
+    // @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    // Sequence generation: Not tried
+    // @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    // @SequenceGenerator(name = "persistable", sequenceName = "persistable", allocationSize = 1000)
+
+    // Finally table generation: Not tried
+    // @GeneratedValue(strategy = GenerationType.TABLE)
+    // @TableGenerator(name = "Address_Gen", table = "sequences", pkColumnName = "id", valueColumnName = "sequence_name", pkColumnValue = "sequence", initialValue = 1, allocationSize = 1000)
+
+    protected long id;
+
     @Column
     private String indexName;
     @Column
