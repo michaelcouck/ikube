@@ -4,10 +4,14 @@ import ikube.action.index.parse.mime.MimeMapper;
 import ikube.action.index.parse.mime.MimeTypes;
 import ikube.cluster.IMonitorService;
 import ikube.database.IDataBase;
+import ikube.model.Search;
+import ikube.search.ISearcherService;
 import ikube.security.WebServiceAuthentication;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ObjectToolkit;
+import mockit.Deencapsulation;
 import org.apache.log4j.Logger;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +59,15 @@ public abstract class IntegrationTest extends BaseTest {
     @Autowired
     private IDataBase dataBase;
     @Autowired
-    protected IMonitorService monitorService; // = ApplicationContextManager.getBean(IMonitorService.class);
+    protected IMonitorService monitorService;
+    @Autowired
+    private ISearcherService searcherService;
+
+    @Before
+    public void before() {
+        Search search = new Search();
+        Deencapsulation.invoke(searcherService, "persistSearch", search);
+    }
 
     protected <T> void insertData(final Class<T> klass, final int entities) {
         List<T> tees = new ArrayList<>();

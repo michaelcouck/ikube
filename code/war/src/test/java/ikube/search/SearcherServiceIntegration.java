@@ -7,7 +7,6 @@ import ikube.model.Search;
 import ikube.toolkit.ThreadUtilities;
 import junit.framework.Assert;
 import mockit.Deencapsulation;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,12 +26,6 @@ public class SearcherServiceIntegration extends IntegrationTest {
     private IDataBase dataBase;
     @Autowired
     private ISearcherService searcherService;
-
-    @Before
-    public void before() {
-        /*Map<String, ISearcherService> beans = ApplicationContextManager.getBeans(ISearcherService.class);
-        searcherService = beans.values().iterator().next();*/
-    }
 
     @Test
     public void persistSearch() {
