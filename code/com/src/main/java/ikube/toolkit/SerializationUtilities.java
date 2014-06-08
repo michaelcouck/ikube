@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 
 /**
  * @author Michael Couck
- * @since 21.11.10
+ * @since 21-11-2010
  * @version 01.00
  */
 public final class SerializationUtilities {
@@ -37,7 +37,8 @@ public final class SerializationUtilities {
 	private static ExceptionListener EXCEPTION_LISTENER = new ExceptionListener() {
 		@Override
 		public void exceptionThrown(final Exception exception) {
-			LOGGER.error("General exception : ", exception);
+			LOGGER.error("General exception : " + exception.getMessage());
+			LOGGER.info(null, exception);
 		}
 	};
 
@@ -53,9 +54,9 @@ public final class SerializationUtilities {
 			xmlEncoder.close();
 			xmlEncoder = null;
 			return byteArrayOutputStream.toString(Constants.ENCODING);
-		} catch (UnsupportedEncodingException e) {
+		} catch (final UnsupportedEncodingException e) {
 			LOGGER.error("Unsupported encoding : ", e);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			LOGGER.error("Exception serializing object : " + object, e);
 		} finally {
 			if (xmlEncoder != null) {
@@ -66,7 +67,7 @@ public final class SerializationUtilities {
 	}
 
 	public static Object deserialize(final String xml) {
-		byte[] bytes = null;
+		byte[] bytes;
 		XMLDecoder xmlDecoder = null;
 		try {
 			bytes = xml.getBytes(Constants.ENCODING);
@@ -74,9 +75,9 @@ public final class SerializationUtilities {
 			xmlDecoder = new XMLDecoder(byteArrayInputStream);
 			xmlDecoder.setExceptionListener(EXCEPTION_LISTENER);
 			return xmlDecoder.readObject();
-		} catch (UnsupportedEncodingException e) {
+		} catch (final UnsupportedEncodingException e) {
 			LOGGER.error("Unsupported encoding : ", e);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			LOGGER.error("Exception de-serialising object : " + xml, e);
 		} finally {
 			if (xmlDecoder != null) {
@@ -90,13 +91,13 @@ public final class SerializationUtilities {
 		return SerializationUtils.clone((Serializable) object);
 	}
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "UnusedParameters"})
 	public static <T> T clone(final Class<T> klass, T t) {
 		return (T) clone(t);
 	}
 
 	public static void setTransientFields(Class<?>... classes) {
-		List<Class<?>> doneClasses = new ArrayList<Class<?>>();
+		List<Class<?>> doneClasses = new ArrayList<>();
 		for (Class<?> klass : classes) {
 			setTransientFields(klass, doneClasses);
 		}
@@ -112,12 +113,12 @@ public final class SerializationUtilities {
 			BeanInfo info;
 			try {
 				info = Introspector.getBeanInfo(currentClass);
-			} catch (IntrospectionException e) {
+			} catch (final IntrospectionException e) {
 				LOGGER.error("Exception setting the transient fields in the serializer : ", e);
 				return;
 			}
 			PropertyDescriptor[] propertyDescriptors = info.getPropertyDescriptors();
-			for (PropertyDescriptor pd : propertyDescriptors) {
+			for (final PropertyDescriptor pd : propertyDescriptors) {
 				String fieldName = pd.getName();
 				try {
 					Field field = SerializationUtilities.getField(currentClass, fieldName);
@@ -135,7 +136,7 @@ public final class SerializationUtilities {
 						if (parameterizedType != null) {
 							if (ParameterizedType.class.isAssignableFrom(parameterizedType.getClass())) {
 								Type[] typeArguments = ((ParameterizedType) parameterizedType).getActualTypeArguments();
-								for (Type typeArgument : typeArguments) {
+								for (final Type typeArgument : typeArguments) {
 									if (ParameterizedType.class.isAssignableFrom(typeArgument.getClass())) {
 										Type rawType = ((ParameterizedType) typeArgument).getRawType();
 										if (Class.class.isAssignableFrom(rawType.getClass())) {
@@ -146,12 +147,12 @@ public final class SerializationUtilities {
 							}
 						}
 					}
-				} catch (SecurityException e) {
+				} catch (final SecurityException e) {
 					LOGGER.error("Exception setting the transient fields in the serializer : ", e);
 				}
 			}
 			Field[] fields = currentClass.getDeclaredFields();
-			for (Field field : fields) {
+			for (final Field field : fields) {
 				Class<?> fieldClass = field.getType();
 				setTransientFields(fieldClass, doneClasses);
 			}

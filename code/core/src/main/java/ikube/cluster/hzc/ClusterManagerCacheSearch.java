@@ -5,7 +5,6 @@ import com.hazelcast.spring.context.SpringAware;
 import ikube.IConstants;
 import ikube.database.IDataBase;
 import ikube.model.Search;
-import ikube.toolkit.ObjectToolkit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,13 +38,18 @@ public class ClusterManagerCacheSearch implements MapStore<Long, Search> {
     public synchronized void store(final Long hash, final Search search) {
         if (search.getId() > 0) {
             try {
-                dataBase.merge(search);
+                Search dbSearch = dataBase.find(Search.class, search.getId());
+                if (dbSearch != null) {
+                    dbSearch.setCount(search.getCount());
+                    dataBase.merge(dbSearch);
+                }
             } catch (final Exception e) {
-                LOGGER.error(null, e);
-                ObjectToolkit.setField(search, "pcVersionInit", Boolean.FALSE);
+                LOGGER.error("Exception merging search from cache : " + e.getMessage() + ", " + search.getId() + ", " + search.getHash());
+                // ObjectToolkit.setField(search, "pcVersionInit", Boolean.FALSE);
+                dataBase.remove(Search.class, search.getId());
             }
         } else {
-            search.setId(System.currentTimeMillis());
+            // search.setId(System.currentTimeMillis());
             dataBase.persist(search);
         }
     }

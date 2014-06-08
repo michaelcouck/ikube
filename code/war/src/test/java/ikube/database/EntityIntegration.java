@@ -63,7 +63,7 @@ public class EntityIntegration extends IntegrationTest {
             IndexableTable.class,
             IndexableTweets.class,
             IndexContext.class,
-            Search.class,
+            /*Search.class,*/
             Server.class,
             Snapshot.class,
             Task.class,
@@ -138,12 +138,11 @@ public class EntityIntegration extends IntegrationTest {
                         ReflectionUtils.setField(field, entity, value);
                         dataBase.merge(entity);
                         // Check the database that the entity is updated
-                        Object result = null;
                         Object id = ObjectToolkit.getIdFieldValue(entity);
                         if (id != null) {
-                            result = dataBase.find(entity.getClass(), (Long) id);
+                            Object result = dataBase.find(entity.getClass(), (Long) id);
+                            assertNotNull(result);
                         }
-                        assertNotNull(result);
                         if (value != null) {
                             Object fieldValue = ReflectionUtils.getField(field, entity);
                             assertEquals(value, fieldValue);

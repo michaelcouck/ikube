@@ -1,6 +1,5 @@
 package ikube.web.service;
 
-import com.google.gson.Gson;
 import ikube.BaseTest;
 import ikube.IConstants;
 import ikube.analytics.weka.WekaClusterer;
@@ -38,15 +37,12 @@ import static junit.framework.Assert.*;
 // @Ignore
 public class AnalyzerIntegration extends BaseTest {
 
-	private Gson gson;
-
 	private String line = "1,1,0,1,1,0,1,1";
 	private String analyzerName = "bmw-browsers";
 	private String analyzerModelFileName = "bmw-browsers.arff";
 
 	@Before
 	public void before() {
-		gson = new Gson();
 		// We will stop this thread a full minute to wait for the server to start completely
 		// ThreadUtilities.sleep(60000);
 	}
@@ -60,7 +56,7 @@ public class AnalyzerIntegration extends BaseTest {
 	@SuppressWarnings("unchecked")
 	public void create() throws Exception {
 		Context context = getContext(analyzerModelFileName, analyzerName);
-		String content = gson.toJson(context);
+		String content = IConstants.GSON.toJson(context);
 		String url = getUrl(Analyzer.CREATE);
 		executePost(url, content, Context.class);
 	}
@@ -71,7 +67,7 @@ public class AnalyzerIntegration extends BaseTest {
 		create();
 
 		Analysis<String, double[]> analysis = getAnalysis(analyzerName, line);
-		String content = gson.toJson(analysis);
+		String content = IConstants.GSON.toJson(analysis);
 		String url = getUrl(Analyzer.TRAIN);
 		executePost(url, content, Analysis.class);
 	}
@@ -81,7 +77,7 @@ public class AnalyzerIntegration extends BaseTest {
 		train();
 
 		Analysis analysis = getAnalysis(analyzerName, null);
-		String content = gson.toJson(analysis);
+		String content = IConstants.GSON.toJson(analysis);
 		String url = getUrl(Analyzer.BUILD);
 		executePost(url, content, Analysis.class);
 	}
@@ -92,7 +88,7 @@ public class AnalyzerIntegration extends BaseTest {
 		build();
 
 		Analysis<String, double[]> analysis = getAnalysis(analyzerName, line);
-		String content = gson.toJson(analysis);
+		String content = IConstants.GSON.toJson(analysis);
 		String url = getUrl(Analyzer.ANALYZE);
 		Analysis result = executePost(url, content, Analysis.class);
 		assertTrue(Integer.parseInt(result.getClazz()) >= 0 && Integer.parseInt(result.getClazz()) <= 6);
@@ -108,7 +104,7 @@ public class AnalyzerIntegration extends BaseTest {
 		assertTrue(list.contains(analyzerName));
 
 		Context context = getContext(analyzerModelFileName, analyzerName);
-		String content = gson.toJson(context);
+		String content = IConstants.GSON.toJson(context);
 		String destroyUrl = getUrl(Analyzer.DESTROY);
 		executePost(destroyUrl, content, Context.class);
 
@@ -122,7 +118,7 @@ public class AnalyzerIntegration extends BaseTest {
 		analyze();
 
 		Analysis analysis = getAnalysis(analyzerName, null);
-		String content = gson.toJson(analysis);
+		String content = IConstants.GSON.toJson(analysis);
 		String url = getUrl(Analyzer.CONTEXT);
 		Context context = executePost(url, content, Context.class);
 		assertEquals(analysis.getAnalyzer(), context.getName());
@@ -168,7 +164,7 @@ public class AnalyzerIntegration extends BaseTest {
 		int statusCode = httpMethod.getStatusCode();
 		logger.info("Response : " + statusCode);
 		assertEquals(200, statusCode);
-		T result = gson.fromJson(response, type);
+		T result = IConstants.GSON.fromJson(response, type);
 		logger.info("         : " + result);
 		assertNotNull(result);
 		return result;

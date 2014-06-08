@@ -50,7 +50,8 @@ public class DataBase extends Resource {
 			"numDocsForSearchers", //
 			"open" };
 
-	@Autowired
+    @Autowired
+    @SuppressWarnings("SpringJavaAutowiringInspection")
 	private IDataBase dataBase;
 
 	@GET
@@ -88,7 +89,7 @@ public class DataBase extends Resource {
 	}
 
 	private <T> T create(final Class<T> type, final String entity) {
-		T t = gson.fromJson(entity, type);
+		T t = IConstants.GSON.fromJson(entity, type);
 		logger.info("Entity : " + t);
 		dataBase.persist(t);
 		return t;

@@ -1,7 +1,5 @@
 package ikube.web.service;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import ikube.BaseTest;
 import ikube.IConstants;
 import ikube.model.Search;
@@ -53,15 +51,12 @@ public class AnalTest extends BaseTest {
      * Class under test
      */
     private Anal anal;
-    private Gson gson;
     private ISearcherService searcherService;
     private ArrayList<HashMap<String, String>> results;
 
     @Before
     @SuppressWarnings("unchecked")
     public void before() throws Exception {
-        gson = new GsonBuilder().disableHtmlEscaping().create();
-
         File file = FileUtilities.findFileRecursively(new File("."), "geospatial.results.xml");
         String xml = FileUtilities.getContent(file);
         results = (ArrayList<HashMap<String, String>>) SerializationUtilities.deserialize(xml);
@@ -84,7 +79,7 @@ public class AnalTest extends BaseTest {
         when(anal.unmarshall(any(Class.class), any(HttpServletRequest.class))).thenReturn(search);
         when(searcherService.search(any(Search.class))).thenReturn(search);
 
-        Deencapsulation.setField(anal, gson);
+        Deencapsulation.setField(anal, IConstants.GSON);
         Deencapsulation.setField(anal, logger);
         Deencapsulation.setField(anal, searcherService);
 
@@ -103,7 +98,7 @@ public class AnalTest extends BaseTest {
         when(anal.heatMapData(any(ArrayList.class), anyInt())).thenReturn(new Object[0][]);
         Response response = anal.happy(null);
         String string = (String) response.getEntity();
-        TwitterSearch twitterSearch = gson.fromJson(string, TwitterSearch.class);
+        TwitterSearch twitterSearch = IConstants.GSON.fromJson(string, TwitterSearch.class);
         assertNotNull(twitterSearch);
     }
 
@@ -135,7 +130,7 @@ public class AnalTest extends BaseTest {
     public void twitter() {
         Response response = anal.twitter(null);
         String string = (String) response.getEntity();
-        TwitterSearch twitterSearch = gson.fromJson(string, TwitterSearch.class);
+        TwitterSearch twitterSearch = IConstants.GSON.fromJson(string, TwitterSearch.class);
         assertNotNull(twitterSearch);
     }
 

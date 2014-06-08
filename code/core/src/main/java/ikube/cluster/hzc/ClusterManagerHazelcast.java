@@ -354,6 +354,14 @@ public class ClusterManagerHazelcast extends AClusterManager {
      * {@inheritDoc}
      */
     @Override
+    public void clear(final String map) {
+        hazelcastInstance.getMap(map).clear();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T get(final String map, final Object key) {
         return (T) hazelcastInstance.getMap(map).get(key);

@@ -1,9 +1,5 @@
 package ikube.search;
 
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.FieldAttributes;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import ikube.IConstants;
 import ikube.model.Search;
 import ikube.toolkit.ThreadUtilities;
@@ -17,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
@@ -80,48 +75,7 @@ public class SearchLoad {
 
         final String url = getUrl();
 
-        final GsonBuilder gsonBuilder = new GsonBuilder();
-
-        class IdExclusionStrategy implements ExclusionStrategy {
-
-            @Override
-            public boolean shouldSkipField(final FieldAttributes fieldAttributes) {
-                String fieldName = fieldAttributes.getName();
-                Class<?> theClass = fieldAttributes.getDeclaringClass();
-                return isFieldInSuperclass(theClass, fieldName);
-            }
-
-            private boolean isFieldInSuperclass(Class<?> subclass, String fieldName) {
-                Class<?> superclass = subclass.getSuperclass();
-                Field field;
-                while (superclass != null) {
-                    field = getField(superclass, fieldName);
-                    if (field != null)
-                        return true;
-                    superclass = superclass.getSuperclass();
-                }
-                return false;
-            }
-
-            private Field getField(Class<?> theClass, String fieldName) {
-                try {
-                    return theClass.getDeclaredField(fieldName);
-                } catch (final Exception e) {
-                    return null;
-                }
-            }
-
-            @Override
-            public boolean shouldSkipClass(final Class<?> aClass) {
-                return false;
-            }
-        }
-
-        gsonBuilder.addSerializationExclusionStrategy(new IdExclusionStrategy());
-        gsonBuilder.addDeserializationExclusionStrategy(new IdExclusionStrategy());
-
-        final Gson gson = gsonBuilder.create();
-        String content = gson.toJson(search);
+        String content = IConstants.GSON.toJson(search);
         StringRequestEntity stringRequestEntity = new StringRequestEntity(content, "application/json", IConstants.ENCODING);
 
         int count = 0;
@@ -139,7 +93,7 @@ public class SearchLoad {
                             httpClient.executeMethod(postMethod);
                             if (searches % 1000 == 0) {
                                 String response = postMethod.getResponseBodyAsString();
-                                Search search = gson.fromJson(response, Search.class);
+                                Search search = IConstants.GSON.fromJson(response, Search.class);
                                 LOGGER.info("Searches : " + searches + ", " + search.getCount() + ", " + search.getTotalResults());
                                 LOGGER.info("Search : " + search);
                             }

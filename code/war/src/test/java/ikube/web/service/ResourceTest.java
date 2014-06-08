@@ -1,6 +1,7 @@
 package ikube.web.service;
 
 import ikube.BaseTest;
+import ikube.IConstants;
 import ikube.model.Analysis;
 import ikube.model.Search;
 import ikube.toolkit.ObjectToolkit;
@@ -47,8 +48,8 @@ public class ResourceTest extends BaseTest {
         Object entity = response.getEntity();
         logger.info("Entity : " + entity);
         logger.info("Entity : " + Arrays.deepToString(result));
-        assertTrue("Must have the wierd characters : ", entity.toString().contains(somthingElseAlToGether));
-        assertTrue("Must have the wierd characters : ", entity.toString().contains("ä"));
+        assertTrue("Must have the weird characters : ", entity.toString().contains(somthingElseAlToGether));
+        assertTrue("Must have the weird characters : ", entity.toString().contains("ä"));
 
         Analysis<String, String> analysis = ObjectToolkit.populateFields(new Analysis(), Boolean.TRUE, 100, "exception");
         response = resource.buildJsonResponse(analysis);
@@ -58,7 +59,7 @@ public class ResourceTest extends BaseTest {
     @Test
     public void unmarshall() throws Exception {
         Search search = ObjectToolkit.populateFields(new Search(), Boolean.TRUE, 10, "id", "exception");
-        final String json = resource.gson.toJson(search);
+        final String json = IConstants.GSON.toJson(search);
         final ByteArrayInputStream arrayInputStream = new ByteArrayInputStream(json.getBytes());
 
         HttpServletRequest httpServletRequest = mock(HttpServletRequest.class);

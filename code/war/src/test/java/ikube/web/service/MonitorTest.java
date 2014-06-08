@@ -1,6 +1,5 @@
 package ikube.web.service;
 
-import com.google.gson.Gson;
 import ikube.BaseTest;
 import ikube.IConstants;
 import ikube.cluster.IClusterManager;
@@ -75,8 +74,7 @@ public class MonitorTest extends BaseTest {
         Response indexContext = monitor.indexContexts("name", true);
         Object entity = indexContext.getEntity();
 
-        Gson gson = new Gson();
-        List<LinkedHashMap<String, String>> sortedIndexContexts = gson.fromJson(entity.toString(), List.class);
+        List<LinkedHashMap<String, String>> sortedIndexContexts = IConstants.GSON.fromJson(entity.toString(), List.class);
         String nameOne = sortedIndexContexts.get(0).get("name");
         String nameTwo = sortedIndexContexts.get(1).get("name");
 
@@ -85,7 +83,7 @@ public class MonitorTest extends BaseTest {
 
         indexContext = monitor.indexContexts("name", false);
         entity = indexContext.getEntity();
-        sortedIndexContexts = gson.fromJson(entity.toString(), List.class);
+        sortedIndexContexts = IConstants.GSON.fromJson(entity.toString(), List.class);
         nameOne = sortedIndexContexts.get(0).get("name");
         nameTwo = sortedIndexContexts.get(1).get("name");
         assertEquals("bbb", nameOne);

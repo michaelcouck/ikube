@@ -1,5 +1,8 @@
 package ikube;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import ikube.model.strategy.IdExclusionStrategy;
 import org.apache.lucene.util.Version;
 
 import java.util.regex.Pattern;
@@ -187,4 +190,9 @@ public interface IConstants {
 
     long SIXTY_SECONDS = 1000 * 60;
     String TIMESTAMP = "timestamp";
+
+    Gson GSON = new GsonBuilder()
+            .addSerializationExclusionStrategy(new IdExclusionStrategy())
+            .addDeserializationExclusionStrategy(new IdExclusionStrategy())
+            .create();
 }

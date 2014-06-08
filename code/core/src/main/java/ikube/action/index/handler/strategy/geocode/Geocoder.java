@@ -1,7 +1,5 @@
 package ikube.action.index.handler.strategy.geocode;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import ikube.IConstants;
 import ikube.model.Coordinate;
 import ikube.model.Search;
@@ -40,8 +38,6 @@ public class Geocoder implements IGeocoder, InitializingBean {
 
     private HttpClient httpClient;
 
-    private Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-
     /**
      * {@inheritDoc}
      */
@@ -65,7 +61,7 @@ public class Geocoder implements IGeocoder, InitializingBean {
             search.setSearchStrings(Arrays.asList(searchString));
             search.setTypeFields(Arrays.asList(IConstants.STRING));
 
-            StringRequestEntity requestEntity = new StringRequestEntity(gson.toJson(search), IConstants.APPLICATION_JSON, IConstants.ENCODING);
+            StringRequestEntity requestEntity = new StringRequestEntity(IConstants.GSON.toJson(search), IConstants.APPLICATION_JSON, IConstants.ENCODING);
             postMethod = new PostMethod(searchUrl);
             postMethod.addRequestHeader(IConstants.CONTENT_TYPE, IConstants.APPLICATION_JSON);
             postMethod.setRequestEntity(requestEntity);
@@ -74,7 +70,7 @@ public class Geocoder implements IGeocoder, InitializingBean {
             String json = postMethod.getResponseBodyAsString();
             LOGGER.info("Result from web service : " + result + ", " + json);
 
-            Search response = gson.fromJson(json, Search.class);
+            Search response = IConstants.GSON.fromJson(json, Search.class);
             ArrayList<HashMap<String, String>> results = response.getSearchResults();
             if (results.size() > 1) {
                 Map<String, String> firstResult = results.get(0);

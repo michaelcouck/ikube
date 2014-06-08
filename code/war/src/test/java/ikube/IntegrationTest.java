@@ -4,14 +4,16 @@ import ikube.action.index.parse.mime.MimeMapper;
 import ikube.action.index.parse.mime.MimeTypes;
 import ikube.cluster.IMonitorService;
 import ikube.database.IDataBase;
-import ikube.model.Snapshot;
-import ikube.scheduling.Scheduler;
 import ikube.security.WebServiceAuthentication;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ObjectToolkit;
 import org.apache.log4j.Logger;
 import org.junit.Ignore;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -26,6 +28,10 @@ import java.util.List;
  * @since 12-10-2010
  */
 @Ignore
+@Configurable
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"file:ikube/spring.xml"})
+@SuppressWarnings("SpringJavaAutowiringInspection")
 public abstract class IntegrationTest extends BaseTest {
 
     private static final Logger LOGGER = Logger.getLogger(IntegrationTest.class);
@@ -38,16 +44,20 @@ public abstract class IntegrationTest extends BaseTest {
             new MimeTypes(IConstants.MIME_TYPES);
             new MimeMapper(IConstants.MIME_MAPPING);
 
-            ApplicationContextManager.getBean(Scheduler.class).shutdown();
-            insertData(Snapshot.class, 11000);
+            // ApplicationContextManager.getBean(Scheduler.class).shutdown();
+            // insertData(Snapshot.class, 11000);
             new WebServiceAuthentication().authenticate(HTTP_CLIENT, LOCALHOST, Integer.toString(SERVER_PORT), REST_USER_NAME, REST_PASSWORD);
         } catch (final Exception e) {
-            e.printStackTrace();
+            LOGGER.error(null, e);
         }
     }
 
-    public static <T> void insertData(final Class<T> klass, final int entities) {
-        IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
+    @Autowired
+    private IDataBase dataBase;
+    @Autowired
+    protected IMonitorService monitorService; // = ApplicationContextManager.getBean(IMonitorService.class);
+
+    protected <T> void insertData(final Class<T> klass, final int entities) {
         List<T> tees = new ArrayList<>();
         for (int i = 0; i < entities; i++) {
             try {
@@ -70,7 +80,7 @@ public abstract class IntegrationTest extends BaseTest {
      * @param dataBase the database to use for deleting the data
      * @param klasses  the classes to delete from the database
      */
-    public static void delete(final IDataBase dataBase, final Class<?>... klasses) {
+    protected void delete(final IDataBase dataBase, final Class<?>... klasses) {
         int batchSize = 1000;
         for (final Class<?> klass : klasses) {
             try {
@@ -84,7 +94,5 @@ public abstract class IntegrationTest extends BaseTest {
             }
         }
     }
-
-    protected IMonitorService monitorService = ApplicationContextManager.getBean(IMonitorService.class);
 
 }

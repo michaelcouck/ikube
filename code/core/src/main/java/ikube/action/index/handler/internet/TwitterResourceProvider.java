@@ -1,6 +1,5 @@
 package ikube.action.index.handler.internet;
 
-import com.google.gson.Gson;
 import ikube.IConstants;
 import ikube.action.index.handler.IResourceProvider;
 import ikube.model.IndexContext;
@@ -150,9 +149,8 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
         if (stack.size() > STACK_SIZE) {
             try {
                 File latestDirectory = FileUtilities.getOrCreateDirectory(new File(tweetsDirectory, Long.toString(System.currentTimeMillis())));
-                Gson gson = new Gson();
                 for (final Tweet tweet : stack) {
-                    String string = gson.toJson(tweet);
+                    String string = IConstants.GSON.toJson(tweet);
                     File output = new File(latestDirectory, Long.toString(System.currentTimeMillis()) + ".json");
                     File outputFile = FileUtilities.getOrCreateFile(output);
                     FileUtilities.setContents(outputFile, string.getBytes());

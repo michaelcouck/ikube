@@ -1,6 +1,5 @@
 package ikube.web.service;
 
-import com.google.gson.Gson;
 import ikube.BaseTest;
 import ikube.IConstants;
 import ikube.model.Search;
@@ -174,8 +173,7 @@ public abstract class SearcherIntegration extends BaseTest {
         search.setMaxResults(10);
         search.setFragment(Boolean.TRUE);
 
-        Gson gson = new Gson();
-        String content = gson.toJson(search);
+        String content = IConstants.GSON.toJson(search);
         StringRequestEntity stringRequestEntity = new StringRequestEntity(content, MediaType.APPLICATION_JSON, IConstants.ENCODING);
         postMethod.setRequestEntity(stringRequestEntity);
 

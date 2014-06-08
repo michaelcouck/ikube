@@ -1,29 +1,37 @@
 package ikube.cluster.hzc;
 
+import ikube.IConstants;
 import ikube.IntegrationTest;
+import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.model.Search;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.ThreadUtilities;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author Michael Couck
  * @version 01.00
  * @since 01-06-2014
  */
+@SuppressWarnings("SpringJavaAutowiringInspection")
 public class ClusterManagerCacheSearchIntegration extends IntegrationTest {
 
+    @Autowired
+    private IDataBase dataBase;
+    @Autowired
+    private IClusterManager clusterManager;
+    @Autowired
     private ClusterManagerCacheSearch clusterManagerCacheSearch;
 
     @Before
     public void before() {
-        Map<String, ClusterManagerCacheSearch> beans = ApplicationContextManager.getBeans(ClusterManagerCacheSearch.class);
-        clusterManagerCacheSearch = beans.values().iterator().next();
+        clusterManager.clear(IConstants.SEARCH);
+        delete(dataBase, Search.class);
+        /*Map<String, ClusterManagerCacheSearch> beans = ApplicationContextManager.getBeans(ClusterManagerCacheSearch.class);
+        clusterManagerCacheSearch = beans.values().iterator().next();*/
     }
 
     @Test
@@ -38,7 +46,6 @@ public class ClusterManagerCacheSearchIntegration extends IntegrationTest {
             clusterManagerCacheSearch.store(search.getHash(), search);
         }
 
-        IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
         long count = dataBase.count(Search.class);
         Search dbSearch = dataBase.find(Search.class, search.getId());
         ThreadUtilities.sleep(5000);

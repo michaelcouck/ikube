@@ -17,29 +17,29 @@ public class PatternTest extends AbstractTest {
 
         String input = "http://www.oki.com";
         boolean matches = Pattern.matches(regex, input);
-        logger.warn("Matches : " + matches);
+        logger.info("Matches : " + matches);
         assertTrue(matches);
 
         input = "https://www.oki.com";
         matches = Pattern.matches(regex, input);
-        logger.warn("Matches : " + matches);
+        logger.info("Matches : " + matches);
         assertTrue(matches);
 
         input = "svn://www.oki.com";
         matches = Pattern.matches(regex, input);
-        logger.warn("Matches : " + matches);
+        logger.info("Matches : " + matches);
         assertFalse(matches);
 
         input = "svn://https://www.oki.com";
         matches = Pattern.matches(regex, input);
-        logger.warn("Matches : " + matches);
+        logger.info("Matches : " + matches);
         assertFalse(matches);
 
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(input);
         while (matcher.find()) {
             String link = matcher.group();
-            logger.warn("Link : " + link);
+            logger.info("Link : " + link);
         }
 
         pattern = Pattern.compile(".*support.*|.*\\.pdf.*");

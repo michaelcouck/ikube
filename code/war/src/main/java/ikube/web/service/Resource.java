@@ -1,7 +1,6 @@
 package ikube.web.service;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import ikube.IConstants;
 import ikube.action.index.parse.HtmlParser;
 import ikube.analytics.IAnalyticsService;
 import ikube.cluster.IClusterManager;
@@ -9,7 +8,6 @@ import ikube.cluster.IMonitorService;
 import ikube.search.ISearcherService;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.SerializationUtilities;
-import ikube.web.service.strategy.IdExclusionStrategy;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -50,16 +48,6 @@ public abstract class Resource {
     protected IClusterManager clusterManager;
     @Autowired
     protected IAnalyticsService analyticsService;
-    /**
-     * The Gson marshaller to and from the front end.
-     */
-    protected GsonBuilder gsonBuilder = new GsonBuilder();
-    {
-        // Add the exclusions, particularly the over ride of the id field in the super class
-        gsonBuilder.addSerializationExclusionStrategy(new IdExclusionStrategy());
-        gsonBuilder.addDeserializationExclusionStrategy(new IdExclusionStrategy());
-    }
-    protected Gson gson = gsonBuilder.create();
 
     /**
      * This method will create the response builder, then convert the results to Json and add them the
@@ -72,7 +60,7 @@ public abstract class Resource {
         if (result == null) {
             return buildResponse().build();
         }
-        String jsonString = gson.toJson(result);
+        String jsonString = IConstants.GSON.toJson(result);
         if (logger.isDebugEnabled()) {
             logger.debug("Response size : " + jsonString.length());
         }
@@ -107,7 +95,7 @@ public abstract class Resource {
     <T> T unmarshall(final Class<T> clazz, final HttpServletRequest request) {
         try {
             String json = FileUtilities.getContents(request.getInputStream(), Integer.MAX_VALUE).toString();
-            T t = gson.fromJson(json, clazz);
+            T t = IConstants.GSON.fromJson(json, clazz);
             if (t == null) {
                 t = newInstance(clazz);
             }

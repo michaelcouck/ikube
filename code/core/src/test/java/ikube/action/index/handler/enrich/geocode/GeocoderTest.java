@@ -1,7 +1,5 @@
 package ikube.action.index.handler.enrich.geocode;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.handler.strategy.geocode.Geocoder;
@@ -60,8 +58,7 @@ public class GeocoderTest extends AbstractTest {
 
             Search search = new Search();
             search.setSearchResults(results);
-            Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-            return gson.toJson(search);
+            return IConstants.GSON.toJson(search);
         }
     }
 

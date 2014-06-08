@@ -4,31 +4,34 @@ import ikube.IConstants;
 import ikube.IntegrationTest;
 import ikube.database.IDataBase;
 import ikube.model.Search;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.ThreadUtilities;
 import junit.framework.Assert;
 import mockit.Deencapsulation;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Michael Couck
  * @version 01.00
  * @since 01-06-2014
  */
+@SuppressWarnings("SpringJavaAutowiringInspection")
 public class SearcherServiceIntegration extends IntegrationTest {
 
+    @Autowired
+    private IDataBase dataBase;
+    @Autowired
     private ISearcherService searcherService;
 
     @Before
     public void before() {
-        Map<String, ISearcherService> beans = ApplicationContextManager.getBeans(ISearcherService.class);
-        searcherService = beans.values().iterator().next();
+        /*Map<String, ISearcherService> beans = ApplicationContextManager.getBeans(ISearcherService.class);
+        searcherService = beans.values().iterator().next();*/
     }
 
     @Test
@@ -60,9 +63,8 @@ public class SearcherServiceIntegration extends IntegrationTest {
         }
         ThreadUtilities.sleep(3000);
 
-        IDataBase dataBase = ApplicationContextManager.getBean(IDataBase.class);
         Search dbSearch = dataBase.find(Search.class, search.getId());
-        logger.info("Search count : " + dbSearch.getCount() + ", iterations : " + iterations);
+        logger.info("Search count : " + dbSearch + ", iterations : " + iterations);
         Assert.assertNotNull(dbSearch);
         Assert.assertTrue(iterations <= dbSearch.getCount());
     }

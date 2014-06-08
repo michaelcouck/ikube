@@ -514,7 +514,7 @@ public class SearcherService implements ISearcherService {
             if (cacheSearch == null) {
                 cacheSearch = search;
                 cacheSearch.setHash(hash);
-                dataBase.persist(cacheSearch);
+                // dataBase.persist(cacheSearch);
             }
             cacheSearch.setCount(cacheSearch.getCount() + 1);
             // dataBase.merge(cacheSearch);

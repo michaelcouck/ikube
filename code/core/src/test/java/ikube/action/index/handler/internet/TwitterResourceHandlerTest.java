@@ -1,7 +1,6 @@
 package ikube.action.index.handler.internet;
 
 import au.com.bytecode.opencsv.CSVReader;
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import ikube.AbstractTest;
 import ikube.IConstants;
@@ -107,15 +106,14 @@ public class TwitterResourceHandlerTest extends AbstractTest {
         search.setMaxResults(10);
         search.setFragment(Boolean.TRUE);
 
-        Gson gson = new Gson();
-        String content = gson.toJson(search);
+        String content = IConstants.GSON.toJson(search);
         StringRequestEntity stringRequestEntity = new StringRequestEntity(content, "application/json", IConstants.ENCODING);
         postMethod.setRequestEntity(stringRequestEntity);
 
         HTTP_CLIENT.executeMethod(postMethod);
 
         String json = FileUtilities.getContents(postMethod.getResponseBodyAsStream(), Integer.MAX_VALUE).toString();
-        Search result = gson.fromJson(json, Search.class);
+        Search result = IConstants.GSON.fromJson(json, Search.class);
         Map<String, String> firstResult = result.getSearchResults().get(0);
 
         String latitude = firstResult.get(IConstants.LATITUDE);

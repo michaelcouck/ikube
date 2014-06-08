@@ -150,6 +150,13 @@ public interface IClusterManager {
     void remove(final Object key);
 
     /**
+     * Clears the distributed data from teh grid for the map name.
+     *
+     * @param map the name of the distributed map to clear across the grid
+     */
+    void clear(final String map);
+
+    /**
      * Returns the object in the specified map with the specified key.
      *
      * @param key the key for the object int he distributed map

@@ -178,7 +178,7 @@ public class SnapshotSchedule extends Schedule {
         Snapshot previous = snapshots.get(snapshots.size() - 1);
         long searchesPerMinute = snapshot.getTotalSearches() - previous.getTotalSearches();
         searchesPerMinute = Math.max(0, searchesPerMinute);
-        logger.error("Previous : " + previous.getTotalSearches() +
+        logger.info("Previous : " + previous.getTotalSearches() +
                 ", total : " + snapshot.getTotalSearches() +
                 ", per minute : " + searchesPerMinute);
         return searchesPerMinute;
