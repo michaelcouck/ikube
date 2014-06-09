@@ -50,6 +50,7 @@ public class ResetIntegration extends IntegrationTest {
 
     @Test
     public void execute() throws Exception {
+        delete(dataBase, Url.class);
         List<Url> urls = dataBase.find(Url.class, 0, Integer.MAX_VALUE);
         assertEquals("There should be no urls in the database : ", 0, urls.size());
         Url url = new Url();
