@@ -14,14 +14,15 @@ import static org.mockito.Mockito.*;
  * @version 01.00
  * @since 23-11-10
  */
+@SuppressWarnings("deprecation")
 public class InternetContentProviderTest extends AbstractTest {
-
-    private InternetContentProvider internetContentProvider;
 
     @Before
     public void before() {
         internetContentProvider = new InternetContentProvider();
     }
+
+    private InternetContentProvider internetContentProvider;
 
     @Test
     public void getContent() {

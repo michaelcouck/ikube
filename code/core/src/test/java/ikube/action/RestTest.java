@@ -15,8 +15,9 @@ import static org.mockito.Mockito.*;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 02.01.13
+ * @since 02-01-2013
  */
+@SuppressWarnings("unchecked")
 public class RestTest extends AbstractTest {
 
 	private Reset reset;

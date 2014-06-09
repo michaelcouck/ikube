@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 21.06.13
+ * @since 21-06-2013
  */
 public class IndexCommitScheduleTest extends AbstractTest {
 
@@ -41,7 +41,6 @@ public class IndexCommitScheduleTest extends AbstractTest {
 
 	@After
 	public void after() {
-		// Mockit.tearDownMocks();
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
 	}
 
@@ -64,7 +63,7 @@ public class IndexCommitScheduleTest extends AbstractTest {
 			indexCommitSchedule.run();
 			// There should be a segments file and we should be able to open the reader
 			assertTrue(DirectoryReader.indexExists(directory));
-			indexReader = IndexReader.open(directory);
+			indexReader = DirectoryReader.open(directory);
 		} finally {
 			if (indexWriters != null) {
 				for (final IndexWriter indexWriter : indexWriters) {

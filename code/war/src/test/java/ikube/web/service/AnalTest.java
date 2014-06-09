@@ -32,7 +32,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author Michael couck
  * @version 01.00
- * @since 17.12.13
+ * @since 17-12-2013
  */
 public class AnalTest extends BaseTest {
 
@@ -79,7 +79,6 @@ public class AnalTest extends BaseTest {
         when(anal.unmarshall(any(Class.class), any(HttpServletRequest.class))).thenReturn(search);
         when(searcherService.search(any(Search.class))).thenReturn(search);
 
-        Deencapsulation.setField(anal, IConstants.GSON);
         Deencapsulation.setField(anal, logger);
         Deencapsulation.setField(anal, searcherService);
 

@@ -16,6 +16,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+@SuppressWarnings({"deprecation", "UnusedDeclaration"})
 public class BaseControllerTest {
 
 	private Logger logger = Logger.getLogger(BaseControllerTest.class);

@@ -54,7 +54,7 @@ public class SearcherServiceIntegration extends IntegrationTest {
         for (int i = 0; i < iterations; i++) {
             Deencapsulation.invoke(searcherService, "persistSearch", search);
         }
-        ThreadUtilities.sleep(3000);
+        ThreadUtilities.sleep(15000);
 
         Search dbSearch = dataBase.find(Search.class, search.getId());
         logger.info("Search count : " + dbSearch + ", iterations : " + iterations);

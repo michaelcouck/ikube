@@ -23,9 +23,10 @@ import org.mockito.Mockito;
 
 /**
  * @author Michael Couck
- * @since 21.11.10
+ * @since 21-11-2010
  * @version 01.00
  */
+@SuppressWarnings("deprecation")
 public class IndexableFilesystemWikiHandlerTest extends AbstractTest {
 
 	private IndexableFilesystemWikiHandler indexableFilesystemWikiHandler;

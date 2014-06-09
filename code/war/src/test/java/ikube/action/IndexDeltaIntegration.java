@@ -12,6 +12,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.store.Directory;
@@ -69,24 +70,25 @@ public class IndexDeltaIntegration extends IntegrationTest {
             indexableFileSystem.setPath(deltaFile.getParentFile().getAbsolutePath());
 
             // Indexes the file and results in one hit
-            executeDelta(deltaFile);
+            executeDelta();
             verifyNumDocs(1);
             verifyIndex(inserted);
 
             // Touch the file and it should be re-indexed
             FileUtils.touch(deltaFile);
-            executeDelta(deltaFile);
+            executeDelta();
             verifyNumDocs(1);
             verifyIndex(inserted);
 
             // Modify a file on the file system
             String random = appendRandomString(deltaFile);
             // Re-indexes the file, deletes the old entry and results in still one hit
-            executeDelta(deltaFile);
+            executeDelta();
             verifyIndex(random);
             verifyNumDocs(1);
 
             // Now add a file with the same name in a different folder
+            @SuppressWarnings("StringBufferReplaceableByString")
             StringBuilder stringBuilder = new StringBuilder(deltaFile.getParentFile().getAbsolutePath());
             stringBuilder.append(IConstants.SEP);
             stringBuilder.append("delta-folder");
@@ -100,14 +102,14 @@ public class IndexDeltaIntegration extends IntegrationTest {
 
             random = appendRandomString(secondDeltaFile);
             // Only a hit from the second delta file
-            executeDelta(secondDeltaFile);
+            executeDelta();
             logger.info("Searching for random : " + random);
             verifyIndex(random);
             verifyNumDocs(2);
 
             // No documents should be added after here
             logger.warn("******************** NO DOCUMENTS *************************************");
-            executeDelta(secondDeltaFile);
+            executeDelta();
             verifyIndex(random);
 
             // Verify that the length and the time stamps are the same and the number in the index
@@ -143,12 +145,12 @@ public class IndexDeltaIntegration extends IntegrationTest {
         File indexDirectoryServer = new File(indexDirectory, UriUtilities.getIp());
 
         Directory directory = FSDirectory.open(indexDirectoryServer);
-        IndexReader indexReader = IndexReader.open(directory);
+        IndexReader indexReader = DirectoryReader.open(directory);
         printIndex(indexReader);
         return indexReader;
     }
 
-    private void executeDelta(final File deltaFile) throws Exception {
+    private void executeDelta() throws Exception {
         // Execute the delta index
         index.preExecute(indexContext);
         index.execute(indexContext);
