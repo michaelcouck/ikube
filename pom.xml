@@ -239,7 +239,7 @@
 				<configuration>
 					<forkMode>once</forkMode>
 					<!-- Equivalent to -fae on the command line apparently. -->
-					<testFailureIgnore>true</testFailureIgnore>
+					<testFailureIgnore>false</testFailureIgnore>
 					<excludes>
                         <exclude>**/*Integration*.java</exclude>
 					</excludes>
@@ -250,7 +250,7 @@
 				<version>2.6</version>
 				<configuration>
 					<forkMode>once</forkMode>
-                    <testFailureIgnore>true</testFailureIgnore>
+                    <testFailureIgnore>false</testFailureIgnore>
                     <includes>
                         <include>**/*Integration*.java</include>
                     </includes>

@@ -2,7 +2,7 @@ package ikube.search;
 
 import ikube.IConstants;
 import ikube.IntegrationTest;
-import ikube.database.IDataBase;
+import ikube.cluster.IClusterManager;
 import ikube.model.Search;
 import ikube.toolkit.ThreadUtilities;
 import junit.framework.Assert;
@@ -23,7 +23,7 @@ import java.util.HashMap;
 public class SearcherServiceIntegration extends IntegrationTest {
 
     @Autowired
-    private IDataBase dataBase;
+    private IClusterManager clusterManager;
     @Autowired
     private ISearcherService searcherService;
 
@@ -56,7 +56,7 @@ public class SearcherServiceIntegration extends IntegrationTest {
         }
         ThreadUtilities.sleep(15000);
 
-        Search dbSearch = dataBase.find(Search.class, search.getId());
+        Search dbSearch = clusterManager.get(IConstants.SEARCH, search.getHash());
         logger.info("Search count : " + dbSearch + ", iterations : " + iterations);
         Assert.assertNotNull(dbSearch);
         Assert.assertTrue(iterations <= dbSearch.getCount());
