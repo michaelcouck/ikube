@@ -5,6 +5,7 @@ import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.model.Action;
 import ikube.model.Url;
+import ikube.toolkit.ObjectToolkit;
 import mockit.Deencapsulation;
 import org.junit.After;
 import org.junit.Before;
@@ -27,19 +28,16 @@ import static org.mockito.Mockito.when;
 @SuppressWarnings("SpringJavaAutowiringInspection")
 public class ResetIntegration extends IntegrationTest {
 
-    @Autowired
     private Reset reset;
     @Autowired
     private IDataBase dataBase;
+    private IClusterManager clusterManager;
 
     @Before
     public void before() {
-        // reset = new Reset();
-        // dataBase = ApplicationContextManager.getBean(IDataBase.class);
-        // Deencapsulation.setField(reset, dataBase);
-        IClusterManager clusterManager = mock(IClusterManager.class);
-        Action action = mock(Action.class);
-        when(clusterManager.startWorking(anyString(), anyString(), anyString())).thenReturn(action);
+        reset = new Reset();
+        clusterManager = mock(IClusterManager.class);
+        Deencapsulation.setField(reset, dataBase);
         Deencapsulation.setField(reset, clusterManager);
     }
 
@@ -50,19 +48,15 @@ public class ResetIntegration extends IntegrationTest {
 
     @Test
     public void execute() throws Exception {
+        Action action = mock(Action.class);
+        when(clusterManager.startWorking(anyString(), anyString(), anyString())).thenReturn(action);
+
         delete(dataBase, Url.class);
         List<Url> urls = dataBase.find(Url.class, 0, Integer.MAX_VALUE);
         assertEquals("There should be no urls in the database : ", 0, urls.size());
-        Url url = new Url();
 
-        url.setContentType("text/html");
-        url.setHash(System.nanoTime());
-        url.setIndexed(Boolean.TRUE);
+        Url url = ObjectToolkit.populateFields(new Url(), Boolean.TRUE, 3, "id");
         url.setName("indexContext");
-        url.setParsedContent("");
-        url.setRawContent(null);
-        url.setTitle("title");
-        url.setUrl("url");
 
         dataBase.persist(url);
 
