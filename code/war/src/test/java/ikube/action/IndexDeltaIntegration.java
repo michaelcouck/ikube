@@ -5,7 +5,6 @@ import ikube.IntegrationTest;
 import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.UriUtilities;
 import org.apache.commons.io.FileUtils;
@@ -18,9 +17,10 @@ import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,26 +31,23 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 05.01.12
+ * @since 05-01-2012
  */
 @Ignore
+@SuppressWarnings("SpringJavaAutowiringInspection")
 public class IndexDeltaIntegration extends IntegrationTest {
 
     /**
      * Class under test.
      */
+    @Autowired
     private Index index;
+    @Autowired
+    @Qualifier("desktop")
     private IndexContext indexContext;
+    @Autowired
+    @Qualifier("desktopFolder")
     private IndexableFileSystem indexableFileSystem;
-
-    @Before
-    public void before() {
-        index = ApplicationContextManager.getBean(Index.class);
-        indexableFileSystem = ApplicationContextManager.getBean("desktopFolder");
-        indexContext = (IndexContext) indexableFileSystem.getParent();
-        indexContext.setDelta(Boolean.TRUE);
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
-    }
 
     @After
     public void after() {
@@ -59,6 +56,7 @@ public class IndexDeltaIntegration extends IntegrationTest {
 
     @Test
     public void execute() throws Exception {
+        indexContext.setDelta(Boolean.TRUE);
         File secondDeltaFile = null;
         try {
             String inserted = "Delta file data";

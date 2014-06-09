@@ -2,14 +2,13 @@ package ikube.scheduling;
 
 import ikube.IConstants;
 import ikube.IntegrationTest;
-import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.model.Action;
 import ikube.scheduling.schedule.PruneSchedule;
-import ikube.toolkit.ApplicationContextManager;
-import mockit.Deencapsulation;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -17,23 +16,29 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 
 /**
  * @author Michael Couck
  * @version 01.00
  * @since 12-02-2014
  */
+@SuppressWarnings("SpringJavaAutowiringInspection")
 public class PruneScheduleIntegration extends IntegrationTest {
 
+    @Autowired
     private IDataBase dataBase;
+    @Autowired
     private PruneSchedule prune;
 
     @Before
     public void before() throws Exception {
-        prune = new PruneSchedule();
-        dataBase = ApplicationContextManager.getBean(IDataBase.class);
-        Deencapsulation.setField(prune, dataBase);
+        // prune = new PruneSchedule();
+        // dataBase = ApplicationContextManager.getBean(IDataBase.class);
+        // Deencapsulation.setField(prune, dataBase);
+    }
+
+    @After
+    public void after() {
         delete(dataBase, Action.class);
     }
 

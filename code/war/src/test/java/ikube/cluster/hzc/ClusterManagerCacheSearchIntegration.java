@@ -30,8 +30,6 @@ public class ClusterManagerCacheSearchIntegration extends IntegrationTest {
     public void before() {
         clusterManager.clear(IConstants.SEARCH);
         delete(dataBase, Search.class);
-        /*Map<String, ClusterManagerCacheSearch> beans = ApplicationContextManager.getBeans(ClusterManagerCacheSearch.class);
-        clusterManagerCacheSearch = beans.values().iterator().next();*/
     }
 
     @Test

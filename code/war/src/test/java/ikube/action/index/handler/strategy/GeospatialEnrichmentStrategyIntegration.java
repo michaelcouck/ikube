@@ -6,7 +6,6 @@ import ikube.action.index.IndexManager;
 import ikube.action.index.handler.filesystem.IndexableFilesystemCsvHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystemCsv;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.UriUtilities;
@@ -15,8 +14,9 @@ import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.FSDirectory;
-import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.File;
 import java.util.concurrent.ForkJoinTask;
@@ -26,20 +26,19 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 20.01.2012
+ * @since 20-01-2012
  */
+@SuppressWarnings("SpringJavaAutowiringInspection")
 public class GeospatialEnrichmentStrategyIntegration extends IntegrationTest {
 
+    @Autowired
+    @Qualifier("geoname-csv")
     private IndexContext indexContext;
+    @Autowired
+    @Qualifier("geoname-csv-files")
     private IndexableFileSystemCsv indexableFileSystemCsv;
+    @Autowired
     private IndexableFilesystemCsvHandler indexableHandlerFilesystemCsvHandler;
-
-    @Before
-    public void before() {
-        indexContext = ApplicationContextManager.getBean("geoname-csv");
-        indexableFileSystemCsv = ApplicationContextManager.getBean("geoname-csv-files");
-        indexableHandlerFilesystemCsvHandler = ApplicationContextManager.getBean(IndexableFilesystemCsvHandler.class);
-    }
 
     @Test
     public void aroundProcess() throws Exception {

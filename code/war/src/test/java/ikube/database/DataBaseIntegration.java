@@ -3,12 +3,11 @@ package ikube.database;
 import ikube.IConstants;
 import ikube.IntegrationTest;
 import ikube.model.*;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.ObjectToolkit;
 import ikube.web.toolkit.PerformanceTester;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
@@ -21,15 +20,11 @@ import static org.junit.Assert.*;
  * @version 01.00
  * @since long time
  */
+@SuppressWarnings("SpringJavaAutowiringInspection")
 public class DataBaseIntegration extends IntegrationTest {
 
+    @Autowired
     private IDataBase dataBase;
-
-    @Before
-    public void before() {
-        dataBase = ApplicationContextManager.getBean(IDataBase.class);
-        delete(dataBase, Url.class, File.class, Action.class);
-    }
 
     @After
     public void after() {

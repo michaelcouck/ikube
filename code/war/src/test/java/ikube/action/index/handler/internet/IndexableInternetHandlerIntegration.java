@@ -8,13 +8,14 @@ import ikube.database.IDataBase;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
 import org.apache.lucene.index.IndexWriter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -27,32 +28,30 @@ import static org.junit.Assert.assertTrue;
  * @version 01.00
  * @since 21-11-2010
  */
+@SuppressWarnings("SpringJavaAutowiringInspection")
 public class IndexableInternetHandlerIntegration extends IntegrationTest {
 
+    @Autowired
+    @Qualifier("ikube")
     private IndexContext indexContext;
+    @Autowired
+    @Qualifier("ikube-internet")
     private IndexableInternet indexableInternet;
+    @Autowired
     private IndexableInternetHandler indexableInternetHandler;
+    @Autowired
+    private IClusterManager clusterManager;
+    @Autowired
+    private IDataBase dataBase;
 
     @Before
     public void before() {
-        indexContext = ApplicationContextManager.getBean("ikube");
-        indexableInternet = ApplicationContextManager.getBean("ikube-internet");
-
-        /*indexableInternet.setAnalyzed(Boolean.TRUE);
-        indexableInternet.setOmitNorms(Boolean.TRUE);
-        indexableInternet.setStored(Boolean.TRUE);
-        indexableInternet.setVectored(Boolean.FALSE);
-        indexableInternet.setTokenized(Boolean.TRUE);*/
-
-        indexableInternetHandler = ApplicationContextManager.getBean(IndexableInternetHandler.class);
-        IClusterManager clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-
         clusterManager.startWorking(Index.class.getSimpleName(), indexContext.getName(), indexableInternet.getName());
-        delete(ApplicationContextManager.getBean(IDataBase.class), Url.class);
     }
 
     @After
     public void after() {
+        delete(dataBase, Url.class);
         FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 

@@ -4,12 +4,11 @@ import ikube.IConstants;
 import ikube.IntegrationTest;
 import ikube.model.*;
 import ikube.model.geospatial.*;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.ObjectToolkit;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ReflectionUtils;
 
 import javax.persistence.CascadeType;
@@ -30,6 +29,7 @@ import static org.junit.Assert.*;
  * @version 01.00
  * @since 16-may-12
  */
+@SuppressWarnings("SpringJavaAutowiringInspection")
 public class EntityIntegration extends IntegrationTest {
 
     private interface EntityTester {
@@ -39,6 +39,7 @@ public class EntityIntegration extends IntegrationTest {
     // "parent", "children", "foreignKey", "nameColumn"
     private static final String[] SKIPPED_FIELDS = {IConstants.ID};
 
+    @Autowired
     private IDataBase dataBase;
     /**
      * The names of the classes that we will test in the package.
@@ -86,11 +87,6 @@ public class EntityIntegration extends IntegrationTest {
             }
 
         });
-    }
-
-    @Before
-    public void before() {
-        dataBase = ApplicationContextManager.getBean(IDataBase.class);
     }
 
     @After

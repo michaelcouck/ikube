@@ -3,10 +3,9 @@ package ikube.cluster;
 import com.hazelcast.core.Hazelcast;
 import ikube.IntegrationTest;
 import ikube.model.Task;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.ThreadUtilities;
-import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.concurrent.Future;
@@ -22,14 +21,11 @@ import static org.junit.Assert.*;
  * @version 01.00
  * @since 25-02-2014
  */
-public class IClusterManagerIntegration extends IntegrationTest {
+@SuppressWarnings("SpringJavaAutowiringInspection")
+public class ClusterManagerIntegration extends IntegrationTest {
 
+    @Autowired
     private IClusterManager clusterManager;
-
-    @Before
-    public void before() {
-        clusterManager = ApplicationContextManager.getBean(IClusterManager.class);
-    }
 
     @Test
     public void sendTask() {

@@ -5,16 +5,18 @@ import ikube.action.index.IndexManager;
 import ikube.database.IDataBase;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystemWiki;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -28,21 +30,30 @@ import static org.junit.Assert.assertTrue;
  */
 @Ignore
 @Deprecated
+@SuppressWarnings("SpringJavaAutowiringInspection")
 public class IndexableFilesystemWikiHandlerIntegration extends IntegrationTest {
 
+    @Autowired
+    private IDataBase dataBase;
+    @Autowired
+    @Qualifier("wikiHistoryArabic")
     private IndexContext wikiHistoryArabic;
+    @Autowired
+    @Qualifier("wikiHistoryDataArabic")
     private IndexableFileSystemWiki wikiHistoryDataArabic;
+    @Autowired
     private IndexableFilesystemWikiHandler indexableFilesystemHandler;
 
     @Before
     public void before() {
-        wikiHistoryArabic = ApplicationContextManager.getBean("wikiHistoryArabic");
-        wikiHistoryDataArabic = ApplicationContextManager.getBean("wikiHistoryDataArabic");
         File file = FileUtilities.findFileRecursively(new File("."), "arwiki-latest-pages-meta-history.xml.bz2.100.gig.bz2");
         wikiHistoryDataArabic.setPath(file.getParentFile().getAbsolutePath());
-        indexableFilesystemHandler = ApplicationContextManager.getBean(IndexableFilesystemWikiHandler.class);
-        delete(ApplicationContextManager.getBean(IDataBase.class), ikube.model.File.class);
-        FileUtilities.deleteFile(new File(wikiHistoryArabic.getIndexDirectoryPath()), 1);
+    }
+
+    @After
+    public void after() {
+        delete(dataBase, ikube.model.File.class);
+        FileUtilities.deleteFile(new File(wikiHistoryArabic.getIndexDirectoryPath()));
     }
 
     @Test

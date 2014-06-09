@@ -5,10 +5,11 @@ import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.model.Action;
 import ikube.model.Url;
-import ikube.toolkit.ApplicationContextManager;
 import mockit.Deencapsulation;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -21,22 +22,29 @@ import static org.mockito.Mockito.when;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 21.11.10
+ * @since 21-11-2010
  */
+@SuppressWarnings("SpringJavaAutowiringInspection")
 public class ResetIntegration extends IntegrationTest {
 
+    @Autowired
     private Reset reset;
+    @Autowired
     private IDataBase dataBase;
 
     @Before
     public void before() {
-        reset = new Reset();
-        dataBase = ApplicationContextManager.getBean(IDataBase.class);
-        Deencapsulation.setField(reset, dataBase);
+        // reset = new Reset();
+        // dataBase = ApplicationContextManager.getBean(IDataBase.class);
+        // Deencapsulation.setField(reset, dataBase);
         IClusterManager clusterManager = mock(IClusterManager.class);
         Action action = mock(Action.class);
         when(clusterManager.startWorking(anyString(), anyString(), anyString())).thenReturn(action);
         Deencapsulation.setField(reset, clusterManager);
+    }
+
+    @After
+    public void after() {
         delete(dataBase, Url.class);
     }
 

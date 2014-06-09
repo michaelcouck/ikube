@@ -9,15 +9,18 @@ import ikube.toolkit.ApplicationContextManager;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * @author Michael Couck
+ * @version 01.00
+ * @since 21-11-2012
+ */
+@SuppressWarnings("SpringJavaAutowiringInspection")
 public class SnapshotScheduleIntegration extends IntegrationTest {
 
+    @Autowired
 	private SnapshotSchedule snapshotSchedule;
-
-	@Before
-	public void before() {
-		snapshotSchedule = ApplicationContextManager.getBean(SnapshotSchedule.class);
-	}
 
 	@Test
 	public void handleNotification() {

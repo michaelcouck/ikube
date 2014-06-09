@@ -14,7 +14,7 @@ import org.junit.Test;
  * This test can be used ad-hoc to see if the rules are configured property.
  * 
  * @author Michael Couck
- * @since 20.03.11
+ * @since 20-03-2011
  * @version 01.00
  */
 public class RulesIntegration extends IntegrationTest {
