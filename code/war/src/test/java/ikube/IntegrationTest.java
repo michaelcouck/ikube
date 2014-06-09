@@ -4,14 +4,9 @@ import ikube.action.index.parse.mime.MimeMapper;
 import ikube.action.index.parse.mime.MimeTypes;
 import ikube.cluster.IMonitorService;
 import ikube.database.IDataBase;
-import ikube.model.Search;
-import ikube.search.ISearcherService;
 import ikube.security.WebServiceAuthentication;
 import ikube.toolkit.FileUtilities;
-import ikube.toolkit.ObjectToolkit;
-import mockit.Deencapsulation;
 import org.apache.log4j.Logger;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +15,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,13 +37,9 @@ public abstract class IntegrationTest extends BaseTest {
 
     static {
         try {
-            FileUtilities.deleteFiles(DOT_DIRECTORY, "ikube.h2.db", "ikube.lobs.db", "ikube.log", "openjpa.log");
-
             new MimeTypes(IConstants.MIME_TYPES);
             new MimeMapper(IConstants.MIME_MAPPING);
-
-            // ApplicationContextManager.getBean(Scheduler.class).shutdown();
-            // insertData(Snapshot.class, 11000);
+            FileUtilities.deleteFiles(DOT_DIRECTORY, "ikube.h2.db", "ikube.lobs.db", "ikube.log", "openjpa.log");
             new WebServiceAuthentication().authenticate(HTTP_CLIENT, LOCALHOST, Integer.toString(SERVER_PORT), REST_USER_NAME, REST_PASSWORD);
         } catch (final Exception e) {
             LOGGER.error(null, e);
@@ -57,34 +47,7 @@ public abstract class IntegrationTest extends BaseTest {
     }
 
     @Autowired
-    private IDataBase dataBase;
-    @Autowired
     protected IMonitorService monitorService;
-    @Autowired
-    private ISearcherService searcherService;
-
-    @Before
-    public void before() {
-        Search search = new Search();
-        Deencapsulation.invoke(searcherService, "persistSearch", search);
-    }
-
-    protected <T> void insertData(final Class<T> klass, final int entities) {
-        List<T> tees = new ArrayList<>();
-        for (int i = 0; i < entities; i++) {
-            try {
-                T tee = ObjectToolkit.populateFields(klass, klass.newInstance(), true, 0, 1, "id", "indexContext");
-                tees.add(tee);
-                if (i % 10000 == 0) {
-                    dataBase.persistBatch(tees);
-                    tees.clear();
-                }
-            } catch (Exception e) {
-                LOGGER.error(null, e);
-            }
-        }
-        dataBase.persistBatch(tees);
-    }
 
     /**
      * This method will delete all the specified classes from the database.
