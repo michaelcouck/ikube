@@ -42,7 +42,7 @@
 
 	<properties>
         <encoding>UTF8</encoding>
-        <targetJdk>1.7</targetJdk>
+        <targetJdk>1.8</targetJdk>
         <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
 
 		<spring-security-oauth-version>3.19</spring-security-oauth-version>
