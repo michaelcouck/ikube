@@ -148,7 +148,8 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
         Collections.addAll(stack, tweets);
         if (stack.size() > STACK_SIZE) {
             try {
-                File latestDirectory = FileUtilities.getOrCreateDirectory(new File(tweetsDirectory, Long.toString(System.currentTimeMillis())));
+                File latestDirectory = FileUtilities.getOrCreateDirectory(
+                        new File(tweetsDirectory, Long.toString(System.currentTimeMillis())));
                 for (final Tweet tweet : stack) {
                     String string = IConstants.GSON.toJson(tweet);
                     File output = new File(latestDirectory, Long.toString(System.currentTimeMillis()) + ".json");

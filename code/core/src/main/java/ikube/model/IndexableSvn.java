@@ -15,157 +15,175 @@ import javax.validation.constraints.NotNull;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class IndexableSvn extends Indexable {
 
-	@Transient
-	private transient SVNRepository repository;
+    @Transient
+    private transient SVNRepository repository;
 
-	/**
-	 * Login details for the repository.
-	 */
-	@Column
-	@NotNull
-	@Attribute(field = false, description = "The user name for the login to the repository")
-	private String username;
-	@Column
-	@NotNull
-	@Attribute(field = false, description = "The password for the login to the repository")
-	private String password;
-	@Column
-	@NotNull
-	@Attribute(field = false, description = "The url to the svn repository")
-	private String url;
-	@Column
-	@NotNull
-	@Attribute(field = false, description = "The initial file path in the repository")
-	private String filePath;
+    /**
+     * Login details for the repository.
+     */
+    @Column
+    @NotNull
+    @Attribute(field = true, description = "The user name for the login to the repository")
+    private String username;
+    @Column
+    @NotNull
+    @Attribute(field = true, description = "The password for the login to the repository")
+    private String password;
+    @Column
+    @NotNull
+    @Attribute(field = true, description = "The url to the svn repository")
+    private String url;
+    @Column
+    @NotNull
+    @Attribute(field = true, description = "The initial file path in the repository")
+    private String filePath;
+    @Column
+    @NotNull
+    @Attribute(field = true, description = "The resources that should be ignored, could be part of the path")
+    private String excludedPattern;
 
-	@Column
-	@NotNull
-	@Attribute(field = false, description = "The relative file path of the resource in the repository")
-	private String relativeFilePath;
+    @Column
+    @NotNull
+    @Attribute(field = true, description = "")
+    private String relativeFilePath;
+    @Column
+    @NotNull
+    @Attribute(field = true, description = "")
+    private String author;
+    @Column
+    @NotNull
+    @Attribute(field = true, description = "")
+    private String commitComment;
+    @Column
+    @NotNull
+    @Attribute(field = true, description = "")
+    private String revisionDate;
+    @Column
+    @NotNull
+    @Attribute(field = true, description = "")
+    private String resourceName;
+    @Column
+    @NotNull
+    @Attribute(field = true, description = "")
+    private String revision;
+    @Column
+    @NotNull
+    @Attribute(field = true, description = "")
+    private String size;
+    @Column
+    @NotNull
+    @Attribute(field = true, description = "")
+    private String contents;
 
-	@Column
-	@NotNull
-	@Attribute(field = true, description = "The author of the revision")
-	private String author;
+    public SVNRepository getRepository() {
+        return repository;
+    }
 
-	@Column
-	@NotNull
-	@Attribute(field = true, description = "The commit comment of the revision by the author")
-	private String commitComment;
+    public void setRepository(SVNRepository repository) {
+        this.repository = repository;
+    }
 
-	@Column
-	@NotNull
-	@Attribute(field = true, description = "The date of commit of the revision")
-	private String revisionDate;
+    public String getUsername() {
+        return username;
+    }
 
-	@Column
-	@NotNull
-	@Attribute(field = true, description = "The name of the resource, eg. SomeJavaFile.java")
-	private String resourceName;
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-	@Column
-	@NotNull
-	@Attribute(field = true, description = "The number of the revision")
-	private String revision;
+    public String getPassword() {
+        return password;
+    }
 
-	@Column
-	@NotNull
-	@Attribute(field = true, description = "The size of the resource")
-	private String size;
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-	public SVNRepository getRepository() {
-		return repository;
-	}
+    public String getUrl() {
+        return url;
+    }
 
-	public void setRepository(SVNRepository repository) {
-		this.repository = repository;
-	}
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
-	public String getUsername() {
-		return username;
-	}
+    public String getFilePath() {
+        return filePath;
+    }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
 
-	public String getPassword() {
-		return password;
-	}
+    public String getRelativeFilePath() {
+        return relativeFilePath;
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    public void setRelativeFilePath(String relativeFilePath) {
+        this.relativeFilePath = relativeFilePath;
+    }
 
-	public String getUrl() {
-		return url;
-	}
+    public String getAuthor() {
+        return author;
+    }
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
+    public void setAuthor(String author) {
+        this.author = author;
+    }
 
-	public String getFilePath() {
-		return filePath;
-	}
+    public String getCommitComment() {
+        return commitComment;
+    }
 
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
-	}
+    public void setCommitComment(String commitComment) {
+        this.commitComment = commitComment;
+    }
 
-	public String getRelativeFilePath() {
-		return relativeFilePath;
-	}
+    public String getRevisionDate() {
+        return revisionDate;
+    }
 
-	public void setRelativeFilePath(String relativeFilePath) {
-		this.relativeFilePath = relativeFilePath;
-	}
+    public void setRevisionDate(String revisionDate) {
+        this.revisionDate = revisionDate;
+    }
 
-	public String getAuthor() {
-		return author;
-	}
+    public String getResourceName() {
+        return resourceName;
+    }
 
-	public void setAuthor(String author) {
-		this.author = author;
-	}
+    public void setResourceName(String resourceName) {
+        this.resourceName = resourceName;
+    }
 
-	public String getCommitComment() {
-		return commitComment;
-	}
+    public String getRevision() {
+        return revision;
+    }
 
-	public void setCommitComment(String commitComment) {
-		this.commitComment = commitComment;
-	}
+    public void setRevision(String revision) {
+        this.revision = revision;
+    }
 
-	public String getRevisionDate() {
-		return revisionDate;
-	}
+    public String getSize() {
+        return size;
+    }
 
-	public void setRevisionDate(String revisionDate) {
-		this.revisionDate = revisionDate;
-	}
+    public void setSize(String size) {
+        this.size = size;
+    }
 
-	public String getResourceName() {
-		return resourceName;
-	}
+    public String getContents() {
+        return contents;
+    }
 
-	public void setResourceName(String resourceName) {
-		this.resourceName = resourceName;
-	}
+    public void setContents(String contents) {
+        this.contents = contents;
+    }
 
-	public String getRevision() {
-		return revision;
-	}
+    public String getExcludedPattern() {
+        return excludedPattern;
+    }
 
-	public void setRevision(String revision) {
-		this.revision = revision;
-	}
-
-	public String getSize() {
-		return size;
-	}
-
-	public void setSize(String size) {
-		this.size = size;
-	}
+    public void setExcludedPattern(String excludedPattern) {
+        this.excludedPattern = excludedPattern;
+    }
 }

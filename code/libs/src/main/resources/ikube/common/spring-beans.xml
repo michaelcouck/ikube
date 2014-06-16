@@ -325,6 +325,10 @@
         class="ikube.action.index.handler.internet.TwitterHandler"
         parent="ikube.action.index.handler.IndexableHandler"
         property:indexableClass="ikube.model.IndexableTweets"/>
+    <bean
+        id="ikube.action.index.handler.internet.SvnHandler"
+        class="ikube.action.index.handler.internet.SvnHandler"
+        property:indexableClass="ikube.model.IndexableSvn"/>
 
     <util:list id="indexable-handlers">
         <ref local="ikube.action.index.handler.internet.IndexableInternetHandler"/>
@@ -336,6 +340,7 @@
         <ref local="ikube.action.index.handler.database.IndexableDataSourceHandler"/>
         <ref local="ikube.action.index.handler.filesystem.IndexableFilesystemCsvHandler"/>
         <ref local="ikube.action.index.handler.internet.TwitterHandler"/>
+        <ref local="ikube.action.index.handler.internet.SvnHandler"/>
     </util:list>
 
     <bean
@@ -356,6 +361,9 @@
         class="ikube.action.index.handler.internet.TwitterResourceHandler"
         depends-on="ikube.database.IDataBase"
         init-method="init"/>
+    <bean
+        id="ikube.action.index.handler.internet.SvnResourceHandler"
+        class="ikube.action.index.handler.internet.SvnResourceHandler"/>
 
     <bean
         id="ikube.action.index.analyzer.NgramAnalyzer"

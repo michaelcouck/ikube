@@ -79,4 +79,19 @@
         property:threads="4"
         property:internetBatchSize="${internet.batch.size}"/>
 
+    <bean
+        id="belgacom-svn-fast"
+        class="ikube.model.IndexableSvn"
+        property:name="belgacom-svn-fast"
+        property:username="id837406"
+        property:password="id837406"
+        property:url="http://el1710.bc:18080/svn/FAST"
+        property:filePath="trunk"
+
+        property:analyzed="true"
+        property:stored="true"
+        property:vectored="true"
+        property:address="false"
+        property:tokenized="true"/>
+
 </beans>

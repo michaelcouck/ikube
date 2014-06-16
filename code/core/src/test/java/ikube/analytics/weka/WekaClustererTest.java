@@ -58,10 +58,10 @@ public class WekaClustererTest extends AbstractTest {
                 continue;
             }
             double greatest = 0;
-            Analysis<String, double[]> analysis = getAnalysis(null, line);
-            Analysis<String, double[]> result = wekaClusterer.analyze(analysis);
+            Analysis<Object, Object> analysis = getAnalysis(null, line);
+            Analysis<Object, Object> result = wekaClusterer.analyze(analysis);
             Integer index = 0;
-            double[] output = result.getOutput();
+            double[] output = (double[]) result.getOutput();
             for (int i = 0; i < output.length; i++) {
                 double distribution = output[i];
                 if (Math.abs(distribution) > Math.abs(greatest)) {
@@ -119,8 +119,8 @@ public class WekaClustererTest extends AbstractTest {
         Instances instances = Deencapsulation.getField(wekaClusterer, "instances");
 
         String line = "0,1,0,0,1,1,1,1";
-        Analysis<String, double[]> analysis = getAnalysis(null, line);
-        Analysis<String, double[]> result = wekaClusterer.analyze(analysis);
+        Analysis<Object, Object> analysis = getAnalysis(null, line);
+        Analysis<Object, Object> result = wekaClusterer.analyze(analysis);
         assertEquals("This instance is in the second cluster : ", "3", result.getClazz());
 
         Enumeration<Instance> instanceEnumeration = instances.enumerateInstances();
@@ -174,8 +174,8 @@ public class WekaClustererTest extends AbstractTest {
         wekaClusterer.init(context);
         wekaClusterer.build(context);
         String line = "0,0,0,1,1,0,0,0";
-        Analysis<String, double[]> analysis = getAnalysis(null, line);
-        Analysis<String, double[]> result = wekaClusterer.analyze(analysis);
+        Analysis<Object, Object> analysis = getAnalysis(null, line);
+        Analysis<Object, Object> result = wekaClusterer.analyze(analysis);
         assertNotNull(result.getClazz());
     }
 

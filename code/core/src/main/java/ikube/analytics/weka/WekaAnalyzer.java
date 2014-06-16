@@ -30,7 +30,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @version 01.00
  * @since 18-11-2013
  */
-public abstract class WekaAnalyzer implements IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>, Analysis<String, double[]>> {
+public abstract class WekaAnalyzer implements IAnalyzer<Analysis<Object, Object>, Analysis<Object, Object>, Analysis<Object, Object>> {
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -70,9 +70,9 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<String, double[
     /**
      * {@inheritDoc}
      */
-    @Override
+    // @Override
     @SuppressWarnings("unchecked")
-    public int sizeForClassOrCluster(final Analysis<String, double[]> analysis) throws Exception {
+    public int sizeForClassOrCluster(final Analysis<Object, Object> analysis) throws Exception {
         try {
             analyzeLock.lock();
             int sizeForClazz = 0;
@@ -143,24 +143,32 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<String, double[
      * This method will create an instance from the input string. The string is assumed to be a comma separated list of values, with the same dimensions as the
      * attributes in the instances data set. If not, then the results are undefined.
      *
-     * @param string the input string, a comma separated list of values, i.e. '35_51,FEMALE,INNER_CITY,0_24386,NO,1,NO,NO,NO,NO,YES'
+     * @param input the input string, a comma separated list of values, i.e. '35_51,FEMALE,INNER_CITY,0_24386,NO,1,NO,NO,NO,NO,YES'
      * @return the instance, with the attributes set to the values of the tokens in the input string
      */
-    Instance instance(final String string, final Instances instances) {
-        String[] values = StringUtils.split(string, ',');
-        Instance instance = new Instance(instances.numAttributes());
-        instance.setMissing(0);
-        for (int i = instances.numAttributes() - 1, j = values.length - 1; i >= 1 && j >= 0; i--, j--) {
-            String value = values[j];
-            Attribute attribute = instances.attribute(i);
-            if (attribute.isNumeric()) {
-                instance.setValue(attribute, Double.parseDouble(value));
-            } else if (attribute.isString()) {
-                instance.setValue(attribute, attribute.addStringValue(value));
-            } else {
-                instance.setValue(attribute, value);
-            }
-        }
+    Instance instance(final Object input, final Instances instances) {
+		Instance instance = new Instance(instances.numAttributes());
+		Object[] values = null;
+		if (String.class.isAssignableFrom(input.getClass())) {
+			values = StringUtils.split((String) input, ',');
+
+		} else if (input.getClass().isArray()) {
+			instance.setMissing(0);
+			values = (Object[]) input;
+		}
+		instance.setMissing(0);
+		assert values != null;
+		for (int i = instances.numAttributes() - 1, j = values.length - 1; i >= 1 && j >= 0; i--, j--) {
+			Object value = values[j];
+			Attribute attribute = instances.attribute(i);
+			if (attribute.isNumeric()) {
+				instance.setValue(attribute, Double.parseDouble(value.toString()));
+			} else if (attribute.isString()) {
+				instance.setValue(attribute, attribute.addStringValue(value.toString()));
+			} else {
+				instance.setValue(attribute, (Double) value);
+			}
+		}
         instance.setDataset(instances);
         return instance;
     }

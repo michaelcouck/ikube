@@ -90,7 +90,7 @@ public final class SerializationUtilities {
 	public static Object clone(final Object object) {
 		return SerializationUtils.clone((Serializable) object);
 	}
-	
+
 	@SuppressWarnings({"unchecked", "UnusedParameters"})
 	public static <T> T clone(final Class<T> klass, T t) {
 		return (T) clone(t);
@@ -162,7 +162,7 @@ public final class SerializationUtilities {
 
 	/**
 	 * Gets a field in the class or in the hierarchy of the class.
-	 * 
+	 *
 	 * @param klass the original class
 	 * @param name the name of the field
 	 * @return the field in the object or super classes of the object

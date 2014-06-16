@@ -3,7 +3,6 @@ package ikube.analytics.weka;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.Timer;
-import org.apache.commons.lang.StringUtils;
 import weka.clusterers.ClusterEvaluation;
 import weka.clusterers.Clusterer;
 import weka.core.Attribute;
@@ -70,7 +69,7 @@ public class WekaClusterer extends WekaAnalyzer {
      * {@inheritDoc}
      */
     @Override
-    public boolean train(final Analysis<String, double[]> analysis) throws Exception {
+    public boolean train(final Analysis<Object, Object> analysis) throws Exception {
         try {
             analyzeLock.lock();
             Instance instance = instance(analysis.getInput(), instances);
@@ -85,11 +84,11 @@ public class WekaClusterer extends WekaAnalyzer {
      * {@inheritDoc}
      */
     @Override
-    public Analysis<String, double[]> analyze(final Analysis<String, double[]> analysis) throws Exception {
+    public Analysis<Object, Object> analyze(final Analysis<Object, Object> analysis) throws Exception {
         try {
             analyzeLock.lock();
             // Create the instance from the data
-            String input = analysis.getInput();
+            Object input = analysis.getInput();
             Instance instance = instance(input, instances);
             // Set the output for the client
             int cluster = (int) classOrCluster(instance);
@@ -109,10 +108,7 @@ public class WekaClusterer extends WekaAnalyzer {
             }
             return analysis;
         } catch (final Exception e) {
-            String content = analysis.getInput();
-            if (!StringUtils.isEmpty(content) && content.length() > 128) {
-                content = content.substring(0, 128);
-            }
+            Object content = analysis.getInput();
             logger.error("Exception clustering content : " + content, e);
             throw new RuntimeException(e);
         } finally {

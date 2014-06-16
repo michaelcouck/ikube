@@ -70,7 +70,7 @@ public class WekaClassifierTest extends AbstractTest {
         int initial = instances.numInstances();
         int iterations = context.getMaxTraining();
         do {
-            Analysis<String, double[]> analysis = getAnalysis(IConstants.POSITIVE, positive);
+            Analysis<Object, Object> analysis = getAnalysis(IConstants.POSITIVE, positive);
             boolean trained = wekaClassifier.train(analysis);
             assertTrue(trained);
         } while (--iterations >= 0);
@@ -93,12 +93,12 @@ public class WekaClassifierTest extends AbstractTest {
     public void analyze() throws Exception {
         wekaClassifier.init(context);
         String negative = "narryontop harry styles hello harry";
-        Analysis<String, double[]> analysis = getAnalysis(IConstants.NEGATIVE, negative);
+        Analysis<Object, Object> analysis = getAnalysis(IConstants.NEGATIVE, negative);
         wekaClassifier.train(analysis);
         wekaClassifier.build(context);
 
         analysis = getAnalysis(null, positive);
-        Analysis<String, double[]> result = wekaClassifier.analyze(analysis);
+        Analysis<Object, Object> result = wekaClassifier.analyze(analysis);
         assertEquals(IConstants.POSITIVE, result.getClazz());
 
         analysis = getAnalysis(null, negative);
@@ -172,7 +172,7 @@ public class WekaClassifierTest extends AbstractTest {
                 int i = iterations * 100;
                 while (--i > 0) {
                     try {
-                        Analysis<String, double[]> analysis = getAnalysis(IConstants.POSITIVE, positive);
+                        Analysis<Object, Object> analysis = getAnalysis(IConstants.POSITIVE, positive);
                         wekaClassifier.train(analysis);
                         ThreadUtilities.sleep(1000);
                     } catch (Exception e) {
@@ -187,7 +187,7 @@ public class WekaClassifierTest extends AbstractTest {
                 int i = iterations * 1000;
                 while (--i > 0) {
                     try {
-                        Analysis<String, double[]> analysis = getAnalysis(IConstants.POSITIVE, positive);
+                        Analysis<Object, Object> analysis = getAnalysis(IConstants.POSITIVE, positive);
                         wekaClassifier.analyze(analysis);
                     } catch (Exception e) {
                         exceptions.incrementAndGet();
@@ -203,7 +203,7 @@ public class WekaClassifierTest extends AbstractTest {
 
     @Test
     public void size() throws Exception {
-        Analysis<String, double[]> analysis = getAnalysis(IConstants.POSITIVE, null);
+        Analysis<Object, Object> analysis = getAnalysis(IConstants.POSITIVE, null);
         int sizeForClass = wekaClassifier.sizeForClassOrCluster(analysis);
         assertTrue(sizeForClass > 20);
     }

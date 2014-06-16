@@ -414,8 +414,8 @@ public abstract class AbstractTest {
         }
     }
 
-    protected Analysis<String, double[]> getAnalysis(final String clazz, final String input) {
-        Analysis<String, double[]> analysis = new Analysis<>();
+    protected Analysis<Object, Object> getAnalysis(final String clazz, final String input) {
+        Analysis<Object, Object> analysis = new Analysis<>();
         analysis.setClazz(clazz);
         analysis.setInput(input);
         return analysis;

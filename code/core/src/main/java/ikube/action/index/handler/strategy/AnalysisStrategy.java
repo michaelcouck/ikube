@@ -30,7 +30,7 @@ import static ikube.action.index.IndexManager.addStringField;
 public class AnalysisStrategy extends AStrategy {
 
     private String language;
-    private Context<IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>, Analysis<String, double[]>>, ?, ?, ?> context;
+    private Context<IAnalyzer<Analysis<Object, Object>, Analysis<Object, Object>, Analysis<Object, Object>>, ?, ?, ?> context;
 
     @Autowired
     private IAnalyticsService analyticsService;
@@ -68,12 +68,25 @@ public class AnalysisStrategy extends AStrategy {
                 }
             }
             if (process) {
-                Analysis<String, double[]> analysis = new Analysis<>();
+                Analysis<Object, Object> analysis = new Analysis<>();
                 analysis.setInput(content);
                 analysis.setAnalyzer(context.getName());
                 //noinspection unchecked
                 analysis = analyticsService.analyze(analysis);
                 String currentClassification = analysis.getClazz();
+                if (currentClassification == null) {
+                    // This is a regression algorithm, so the result is the first element in
+                    // the array of the distribution for the instance, so it would be the price
+                    // of the house for example
+                    Object output = analysis.getOutput();
+                    if (output != null && output.getClass().isArray()) {
+                        Object[] array = (Object[]) output;
+                        if (array.length > 0) {
+                            // TODO: Must test this again, integration test, with regression specially
+                            currentClassification = array[0].toString();
+                        }
+                    }
+                }
                 // String currentClassification = context.getAnalyzer().analyze(analysis).getClazz();
                 if (currentClassification != null && !StringUtils.isEmpty(currentClassification)) {
                     String previousClassification = document.get(IConstants.CLASSIFICATION);
@@ -94,7 +107,7 @@ public class AnalysisStrategy extends AStrategy {
         this.language = language;
     }
 
-    public void setContext(Context<IAnalyzer<Analysis<String, double[]>, Analysis<String, double[]>, Analysis<String, double[]>>, ?, ?, ?> context) {
+    public void setContext(Context<IAnalyzer<Analysis<Object, Object>, Analysis<Object, Object>, Analysis<Object, Object>>, ?, ?, ?> context) {
         this.context = context;
     }
 }

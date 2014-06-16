@@ -13,12 +13,12 @@
 
 	<description>
 		This file is not to be modified by users generally.
-		This is the standard configuration for indexing the Ikube documentation wherever 
-		it is deployed. We assume the port to be the default, i.e. 80, although this may not be 
-		the case. The online documentation should mention this and the search results 
+		This is the standard configuration for indexing the Ikube documentation wherever
+		it is deployed. We assume the port to be the default, i.e. 80, although this may not be
+		the case. The online documentation should mention this and the search results
 		should also.
 	</description>
-	
+
 	<bean
 		id="ikube"
 		class="ikube.model.IndexContext"
@@ -40,12 +40,12 @@
 		<ref local="ikube-internet" />
 		<ref local="ikube-google-code" />
 	</util:list>
-	
+
 	<bean
 		id="ikube-internet"
 		class="ikube.model.IndexableInternet"
 		property:name="ikube-internet"
-		property:url="http://www.ikube.be/site/" 
+		property:url="http://www.ikube.be/site/"
 		property:idFieldName="id"
 		property:titleFieldName="title"
 		property:contentFieldName="contents"
@@ -60,9 +60,9 @@
         property:timeout="60000"
         property:omitNorms="false"
 		property:threads="3"
-		property:internetBatchSize="${internet.batch.size}" 
+		property:internetBatchSize="${internet.batch.size}"
 		property:strategies-ref="internet-strategies" />
-		
+
 	<bean
 		id="ikube-google-code"
 		class="ikube.model.IndexableInternet"
@@ -84,10 +84,25 @@
         property:threads="3"
         property:internetBatchSize="${internet.batch.size}"
         property:strategies-ref="internet-strategies" />
-	
+
 	<util:list id="internet-strategies">
 		<ref bean="ikube.action.index.handler.strategy.ContentTypeStrategy" />
 		<ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
 	</util:list>
-	
+
+    <bean
+            id="ikube-svn-google-code"
+            class="ikube.model.IndexableSvn"
+            property:name="ikube-svn-google-code"
+            property:username="michael.couck@gmail.com"
+            property:password="Eh6gw2cY4WA2"
+            property:url="https://ikube.googlecode.com/svn"
+            property:filePath="trunk"
+
+            property:analyzed="true"
+            property:stored="true"
+            property:vectored="true"
+            property:address="false"
+            property:tokenized="true"/>
+
 </beans>
