@@ -11,8 +11,6 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import weka.clusterers.SimpleKMeans;
 
@@ -29,28 +27,17 @@ import static junit.framework.Assert.*;
 
 /**
  * TODO: Note to self. For some reason this test does not work on the Dell server!!!
+ * TODO: Does now it seems... :)
  *
  * @author Michael Couck
  * @version 01.00
  * @since 05-02-2014
  */
-// @Ignore
 public class AnalyzerIntegration extends BaseTest {
 
 	private String line = "1,1,0,1,1,0,1,1";
 	private String analyzerName = "bmw-browsers";
 	private String analyzerModelFileName = "bmw-browsers.arff";
-
-	@Before
-	public void before() {
-		// We will stop this thread a full minute to wait for the server to start completely
-		// ThreadUtilities.sleep(60000);
-	}
-
-	@After
-	public void after() throws Exception {
-		destroy();
-	}
 
 	@Test
 	@SuppressWarnings("unchecked")
@@ -58,6 +45,7 @@ public class AnalyzerIntegration extends BaseTest {
 		Context context = getContext(analyzerModelFileName, analyzerName);
 		String content = IConstants.GSON.toJson(context);
 		String url = getUrl(Analyzer.CREATE);
+        System.out.println(url);
 		executePost(url, content, Context.class);
 	}
 
@@ -163,9 +151,11 @@ public class AnalyzerIntegration extends BaseTest {
 		String response = FileUtilities.getContents(inputStream, Integer.MAX_VALUE).toString();
 		int statusCode = httpMethod.getStatusCode();
 		logger.info("Response : " + statusCode);
+        System.out.println("Response : " + statusCode);
 		assertEquals(200, statusCode);
 		T result = IConstants.GSON.fromJson(response, type);
 		logger.info("         : " + result);
+        System.out.println("         : " + result);
 		assertNotNull(result);
 		return result;
 	}
@@ -179,7 +169,6 @@ public class AnalyzerIntegration extends BaseTest {
 		builder.append(Analyzer.ANALYZER);
 		builder.append(service);
 		return new URL("http", LOCALHOST, SERVER_PORT, builder.toString()).toString();
-		// return new URL("http", "ikube.be", 80, builder.toString()).toString();
 	}
 
 	@SuppressWarnings("unchecked")

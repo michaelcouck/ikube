@@ -145,10 +145,12 @@ public class WekaClassifier extends WekaAnalyzer {
 			Object[] classes = new Object[instances.numClasses()];
 			Attribute attribute = instances.classAttribute();
 			Enumeration enumeration = attribute.enumerateValues();
-			for (int i = 0; enumeration.hasMoreElements(); i++) {
-				Object value = enumeration.nextElement();
-				classes[i] = value;
-			}
+            if (enumeration != null) {
+                for (int i = 0; enumeration.hasMoreElements(); i++) {
+                    Object value = enumeration.nextElement();
+                    classes[i] = value;
+                }
+            }
 			return classes;
 		} finally {
 			analyzeLock.unlock();

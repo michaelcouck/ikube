@@ -1,6 +1,7 @@
 package ikube.search;
 
 import ikube.IConstants;
+import ikube.Load;
 import ikube.model.Search;
 import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.Timer;
@@ -13,8 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 
 /**
@@ -31,7 +30,7 @@ import java.util.Arrays;
  * @since 06-04-2014
  */
 @SuppressWarnings("FieldCanBeLocal")
-public class SearchLoad {
+public class SearchLoad extends Load {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SearchLoad.class);
 
@@ -73,7 +72,7 @@ public class SearchLoad {
         search.setSearchFields(Arrays.asList(fieldName));
         search.setTypeFields(Arrays.asList("string"));
 
-        final String url = getUrl();
+        final String url = getUrl(this.url, this.port, "/ikube/service/search/json");
 
         String content = IConstants.GSON.toJson(search);
         StringRequestEntity stringRequestEntity = new StringRequestEntity(content, "application/json", IConstants.ENCODING);
@@ -116,16 +115,6 @@ public class SearchLoad {
             Runnable runnable = new Runner();
             ThreadUtilities.submit(runnable.toString(), runnable);
         } while (count++ < threads);
-    }
-
-    @SuppressWarnings("StringBufferReplaceableByString")
-    protected String getUrl() throws MalformedURLException {
-        StringBuilder builder = new StringBuilder();
-        builder.append("/ikube");
-        builder.append("/service");
-        builder.append("/search");
-        builder.append("/json");
-        return new URL("http", url, port, builder.toString()).toString();
     }
 
 }

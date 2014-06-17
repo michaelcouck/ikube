@@ -10,6 +10,7 @@ import ikube.model.IndexableInternet;
 import ikube.model.Url;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.UriUtilities;
 import org.apache.lucene.index.IndexWriter;
 import org.junit.After;
 import org.junit.Before;
@@ -86,7 +87,7 @@ public class IndexableInternetHandlerIntegration extends IntegrationTest {
             }
         }).start();
 
-        String ip = InetAddress.getLocalHost().getHostAddress();
+        String ip = UriUtilities.getIp();
         IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
         indexContext.setIndexWriters(indexWriter);
 
