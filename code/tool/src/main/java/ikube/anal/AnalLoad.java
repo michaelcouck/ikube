@@ -124,7 +124,7 @@ public class AnalLoad extends Load {
         analysis.setInput(input);
 
         analysis.setDistribution(Boolean.TRUE);
-        analysis.setClassesAndClusters(Boolean.FALSE);
+        analysis.setClassesAndClusters(Boolean.TRUE);
         analysis.setAlgorithm(Boolean.TRUE);
         analysis.setCorrelation(Boolean.TRUE);
         return analysis;
