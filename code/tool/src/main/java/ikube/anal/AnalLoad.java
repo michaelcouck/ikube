@@ -78,7 +78,7 @@ public class AnalLoad extends Load {
                 .toString();
         String destroyUrl = getUrl("ikube.be", 80, destroyPath);
         content = IConstants.GSON.toJson(context);
-        executePost(destroyUrl, content, Context.class);
+        // executePost(destroyUrl, content, Context.class);
     }
 
     private <T> T executePost(final String url, final String content, final Class<T> type) throws Exception {
