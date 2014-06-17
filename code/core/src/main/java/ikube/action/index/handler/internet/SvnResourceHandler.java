@@ -83,10 +83,13 @@ public class SvnResourceHandler extends ResourceHandler<IndexableSvn> {
         return super.handleResource(indexContext, indexableSvn, document, resource);
     }
 
-    private SVNRepository getSvnRepository(final Indexable indexable, final String name) {
+    SVNRepository getSvnRepository(final Indexable indexable, final String name) {
+        if (indexable.getName().equals(name) && IndexableSvn.class.isAssignableFrom(indexable.getClass())) {
+            return ((IndexableSvn) indexable).getRepository();
+        }
         for (final Indexable child : indexable.getChildren()) {
             if (child.getName().equals(name) && IndexableSvn.class.isAssignableFrom(child.getClass())) {
-                return ((IndexableSvn) child).getRepository();
+                return getSvnRepository(child, name);
             }
         }
         throw new RuntimeException("No repository found for indexable : " + name);

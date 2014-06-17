@@ -4,6 +4,7 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
 import ikube.mock.IndexManagerMock;
+import ikube.model.Indexable;
 import ikube.model.IndexableInternet;
 import ikube.model.IndexableSvn;
 import ikube.model.Url;
@@ -21,6 +22,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNNodeKind;
+import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.io.SVNRepository;
 
 import java.io.File;
@@ -45,13 +47,19 @@ public class SvnResourceHandlerTest extends AbstractTest {
     private IndexableSvn indexableSvn;
     @org.mockito.Mock
     private SVNRepository repository;
+    @org.mockito.Mock
+    private SVNURL svnurl;
 
     private SvnResourceHandler svnResourceHandler;
 
     @Before
     public void before() {
         document = new Document();
-        svnResourceHandler = new SvnResourceHandler();
+        svnResourceHandler = new SvnResourceHandler() {
+            SVNRepository getSvnRepository(final Indexable indexable, final String name) {
+                return repository;
+            }
+        };
         Mockit.setUpMocks(IndexManagerMock.class);
     }
 
@@ -64,10 +72,19 @@ public class SvnResourceHandlerTest extends AbstractTest {
     public void handleResource() throws Exception {
         when(dirEntry.getKind()).thenReturn(SVNNodeKind.FILE);
         when(dirEntry.getDate()).thenReturn(new Date());
+        when(dirEntry.getURL()).thenReturn(svnurl);
+        when(dirEntry.getRepositoryRoot()).thenReturn(svnurl);
+        when(dirEntry.getAuthor()).thenReturn("author");
+        when(dirEntry.getCommitMessage()).thenReturn("message");
+        when(dirEntry.getDate()).thenReturn(new Date());
+
+        when(indexableSvn.getName()).thenReturn(IConstants.NAME);
         when(indexableSvn.getRepository()).thenReturn(repository);
         when(indexableSvn.getContent()).thenReturn(IConstants.CONTENT);
+
         svnResourceHandler.handleResource(indexContext, indexableSvn, document, dirEntry);
-        Mockito.verify(indexableSvn, Mockito.atLeastOnce()).getContent();
+
+        Mockito.verify(indexableSvn, Mockito.atLeastOnce()).getContents();
     }
 
 }
