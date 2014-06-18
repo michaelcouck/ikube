@@ -1,9 +1,14 @@
 package ikube.anal;
 
+import java.io.File;
+
+import org.kohsuke.args4j.CmdLineParser;
+
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+
 import ikube.IConstants;
 import ikube.Load;
 import ikube.analytics.weka.WekaClassifier;
@@ -11,10 +16,7 @@ import ikube.model.Analysis;
 import ikube.model.AnalyzerInfo;
 import ikube.model.Context;
 import ikube.toolkit.FileUtilities;
-import org.kohsuke.args4j.CmdLineParser;
 import weka.classifiers.functions.SimpleLinearRegression;
-
-import java.io.File;
 
 /**
  * @author Michael Couck

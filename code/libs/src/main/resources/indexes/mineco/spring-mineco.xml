@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--suppress ALL -->
+<beans
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:property="http://www.springframework.org/schema/p"
+    xmlns:util="http://www.springframework.org/schema/util"
+
+    xsi:schemaLocation="
+            http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <bean
+         id="mineco-regression"
+         name="mineco-regression"
+         class="ikube.analytics.weka.WekaClassifier"/>
+    <bean
+        id="weka-mineco-regression"
+        name="weka-mineco-regression"
+        class="weka.classifiers.functions.SimpleLinearRegression"/>
+    <bean
+        id="mineco-regression-smo-en"
+        name="mineco-regression-smo-en"
+        class="ikube.model.Context"
+        property:name="mineco-regression"
+        property:analyzer-ref="mineco-regression"
+        property:algorithm-ref="weka-mineco-regression"
+        property:maxTraining="10000000"/>
+
+</beans>

@@ -39,6 +39,9 @@ public class SizesForClassesOrClusters extends Action<Analysis> implements Seria
         // System.out.println("Analytics service : " + analyticsService + ", " + analyzer);
         // Calculate the sizes for the classes or clusters, as the case may be
         for (int i = 0; i < classesOrClusters.length; i++) {
+            if (classesOrClusters[i] == null) {
+                continue;
+            }
             analysis.setClazz(classesOrClusters[i].toString());
             int sizeForClass = analyzer.sizeForClassOrCluster(analysis);
             sizesForClassesOrClusters[i] = sizeForClass;
