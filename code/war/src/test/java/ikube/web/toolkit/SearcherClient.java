@@ -1,12 +1,15 @@
 package ikube.web.toolkit;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.GetMethod;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import ikube.IConstants;
 
+import javax.ws.rs.core.MediaType;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 /**
  * This is an example in Java of how to access the rest web service to get results from the GeoSpatial index.
@@ -17,33 +20,52 @@ import java.util.List;
  */
 public class SearcherClient {
 
-    public static void main(final String[] args) throws Exception {
-        int port = 80;
-        String host = "ikube.be";
-        String path = "/ikube/service/search/xml/geospatial";
-        String url = new URL("http", host, port, path).toString();
+	@SuppressWarnings("unchecked")
+	public static void main(final String[] args) throws Exception {
+		int port = 80;
+		String host = "ikube.be";
+		String path = "/ikube/service/search/xml/geospatial";
+		String url = new URL("http", host, port, path).toString();
+		String username = "administrator";
+		String password = "administrator";
 
-        String[] names = {"indexName", "searchStrings", "searchFields", "typeFields", "fragment", "firstResult", "maxResults", "distance", "latitude", "longitude"};
-        String[] values = {"geospatial", "cape town", "name", "string", "true", "0", "10", "10", "-33.9693580", "18.4622110"};
-        NameValuePair[] params = getNameValuePairs(names, values);
+		String[] names = {
+				"indexName",
+				"searchStrings",
+				"searchFields",
+				"typeFields",
+				"fragment",
+				"firstResult",
+				"maxResults",
+				"distance",
+				"latitude",
+				"longitude" };
+		String[] values = {
+				"geospatial",
+				"cape town",
+				"name",
+				"string",
+				"true",
+				"0",
+				"10",
+				"10",
+				"-33.9693580",
+				"18.4622110" };
 
-        GetMethod getMethod = new GetMethod(url);
-        getMethod.setQueryString(params);
-        HttpClient httpClient = new HttpClient();
+		Client client = Client.create();
+		client.addFilter(new HTTPBasicAuthFilter(username, password));
+		WebResource webResource = client.resource(url);
 
-        int result = httpClient.executeMethod(getMethod);
-        String results = getMethod.getResponseBodyAsString();
-        System.out.println("Result : " + result);
-        System.out.println("Results : " + results);
-    }
+		for (int i = 0; i < names.length; i++) {
+			webResource.queryParam(names[i], values[i]);
+		}
 
-    private static NameValuePair[] getNameValuePairs(String[] names, String[] values) {
-        List<NameValuePair> nameValuePairs = new ArrayList<>();
-        for (int i = 0; i < names.length && i < values.length; i++) {
-            NameValuePair nameValuePair = new NameValuePair(names[i], values[i]);
-            nameValuePairs.add(nameValuePair);
-        }
-        return nameValuePairs.toArray(new NameValuePair[nameValuePairs.size()]);
-    }
+		ClientResponse clientResponse = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+		String response = clientResponse.getEntity(String.class);
+		ArrayList<HashMap<String, String>> results = IConstants.GSON.fromJson(response, ArrayList.class);
+
+		System.out.println("Response : " + response);
+		System.out.println("Search results : " + results);
+	}
 
 }

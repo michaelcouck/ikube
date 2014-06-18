@@ -1,26 +1,30 @@
 package ikube.toolkit;
 
 import ikube.AbstractTest;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.params.HttpClientParams;
-import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.AutoRetryHttpClient;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
+
+/*import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.params.HttpClientParams;
+import org.apache.commons.httpclient.params.HttpConnectionManagerParams;*/
 
 /**
  * @author Michael Couck
@@ -148,13 +152,20 @@ public class FileUtilitiesTest extends AbstractTest {
 	@Test
 	public void getContents() throws IOException {
 		HttpClient httpClient = getHttpClient();
-		GetMethod getMethod = new GetMethod("http://www.google.com");
 		try {
-			httpClient.executeMethod(getMethod);
-			InputStream inputStream = getMethod.getResponseBodyAsStream();
-			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-			FileUtilities.getContents(inputStream, byteArrayOutputStream, Integer.MAX_VALUE);
-			assertTrue(!StringUtils.isEmpty(byteArrayOutputStream.toString()));
+			HttpGet httpGet = new HttpGet("http://www.google.com");
+			ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+				@Override
+				public String handleResponse(final HttpResponse response) {
+					try {
+						return FileUtilities.getContents(response.getEntity().getContent(), Long.MAX_VALUE).toString();
+					} catch (final IOException e) {
+						throw new RuntimeException(e);
+					}
+				}
+			};
+			String response = httpClient.execute(httpGet, responseHandler);
+			assertTrue(!StringUtils.isEmpty(response));
 		} catch (UnknownHostException e) {
 			// We ignore this exception as the machine could be offline
 			logger.error("Machine offline?", e);
@@ -180,15 +191,7 @@ public class FileUtilitiesTest extends AbstractTest {
 	}
 
 	private HttpClient getHttpClient() {
-		MultiThreadedHttpConnectionManager multiThreadedHttpConnectionManager = new MultiThreadedHttpConnectionManager();
-		HttpConnectionManagerParams connectionManagerParams = new HttpConnectionManagerParams();
-		connectionManagerParams.setDefaultMaxConnectionsPerHost(10000);
-		connectionManagerParams.setMaxTotalConnections(100000);
-		connectionManagerParams.setStaleCheckingEnabled(true);
-		connectionManagerParams.setTcpNoDelay(true);
-		multiThreadedHttpConnectionManager.setParams(connectionManagerParams);
-		HttpClientParams httpClientParams = new HttpClientParams();
-		return new HttpClient(httpClientParams, multiThreadedHttpConnectionManager);
+		return new AutoRetryHttpClient();
 	}
 
 }

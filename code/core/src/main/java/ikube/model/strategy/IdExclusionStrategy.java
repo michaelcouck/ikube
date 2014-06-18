@@ -15,6 +15,7 @@ import java.lang.reflect.Field;
  * @version 01.00
  * @since 07-06-2014
  */
+@Deprecated
 public class IdExclusionStrategy implements ExclusionStrategy {
 
     /**

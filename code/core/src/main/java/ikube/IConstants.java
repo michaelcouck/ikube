@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  * @version 01.00
  * @since 21-11-2010
  */
-public interface IConstants {
+public interface IConstants extends Constants {
 
     /**
      * Application name and other bits and pieces use this constant, like the generic grid map.
@@ -102,8 +102,6 @@ public interface IConstants {
     String DESCENDING = "descending";
 
     String ENCODING = "UTF-8";
-    String APPLICATION_JSON = "application/json";
-    String CONTENT_TYPE = "Content-Type";
 
     String INDEX_NAME = "indexName";
     String MAX_RESULTS = "maxResults";
@@ -191,8 +189,4 @@ public interface IConstants {
     long SIXTY_SECONDS = 1000 * 60;
     String TIMESTAMP = "timestamp";
 
-    Gson GSON = new GsonBuilder()
-            .addSerializationExclusionStrategy(new IdExclusionStrategy())
-            .addDeserializationExclusionStrategy(new IdExclusionStrategy())
-            .create();
 }

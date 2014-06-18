@@ -3,8 +3,9 @@ package ikube;
 import ikube.mock.SpellingCheckerMock;
 import ikube.toolkit.Logging;
 import mockit.Mockit;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.NameValuePair;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.AutoRetryHttpClient;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexableField;
@@ -34,9 +35,9 @@ public abstract class BaseTest {
     protected static String REST_PASSWORD = "user";
     protected static String REST_USER_NAME = "user";
     /**
-     * This client({@link HttpClient}) is for the web services.
+     * This client({@link org.apache.http.client.HttpClient}) is for the web services.
      */
-    protected static HttpClient HTTP_CLIENT = new HttpClient();
+    protected static HttpClient HTTP_CLIENT = new AutoRetryHttpClient();
 
     static {
         Logging.configure();
@@ -54,7 +55,19 @@ public abstract class BaseTest {
     protected static NameValuePair[] getNameValuePairs(final String[] names, final String[] values) {
         List<NameValuePair> nameValuePairs = new ArrayList<>();
         for (int i = 0; i < names.length && i < values.length; i++) {
-            NameValuePair nameValuePair = new NameValuePair(names[i], values[i]);
+			final String name = names[i];
+			final String value = values[i];
+            NameValuePair nameValuePair = new NameValuePair() {
+				@Override
+				public String getName() {
+					return name;
+				}
+
+				@Override
+				public String getValue() {
+					return value;
+				}
+			};
             nameValuePairs.add(nameValuePair);
         }
         return nameValuePairs.toArray(new NameValuePair[nameValuePairs.size()]);

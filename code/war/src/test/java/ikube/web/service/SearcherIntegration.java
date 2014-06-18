@@ -3,19 +3,23 @@ package ikube.web.service;
 import ikube.BaseTest;
 import ikube.IConstants;
 import ikube.model.Search;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
+import ikube.security.WebServiceAuthentication;
+import ikube.toolkit.FileUtilities;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.AutoRetryHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.util.Arrays;
 
 import static ikube.toolkit.ObjectToolkit.populateFields;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @Ignore
 public abstract class SearcherIntegration extends BaseTest {
@@ -42,8 +46,7 @@ public abstract class SearcherIntegration extends BaseTest {
             Boolean.TRUE.toString(),//
             "0", //
             "10"};
-        NameValuePair[] params = getNameValuePairs(names, values);
-        verify(url, params);
+        verify(url, names, values);
     }
 
     @Test
@@ -64,8 +67,7 @@ public abstract class SearcherIntegration extends BaseTest {
             Boolean.TRUE.toString(), //
             "0", //
             "10"};
-        NameValuePair[] params = getNameValuePairs(names, values);
-        verify(url, params);
+		verify(url, names, values);
     }
 
     @Test
@@ -88,8 +90,7 @@ public abstract class SearcherIntegration extends BaseTest {
             Boolean.TRUE.toString(), //
             "0", //
             "10"};
-        NameValuePair[] params = getNameValuePairs(names, values);
-        verify(url, params);
+		verify(url, names, values);
     }
 
     @Test
@@ -118,8 +119,7 @@ public abstract class SearcherIntegration extends BaseTest {
             "20", //
             "-33.9693580", //
             "18.4622110"};
-        NameValuePair[] params = getNameValuePairs(names, values);
-        verify(url, params);
+		verify(url, names, values);
     }
 
     @Test
@@ -144,8 +144,7 @@ public abstract class SearcherIntegration extends BaseTest {
             Boolean.TRUE.toString(), //
             "0", //
             "10"};
-        NameValuePair[] params = getNameValuePairs(names, values);
-        verify(url, params);
+		verify(url, names, values);
     }
 
     @Test
@@ -159,8 +158,6 @@ public abstract class SearcherIntegration extends BaseTest {
     }
 
     protected void verify(final String url) throws Exception {
-        PostMethod postMethod = new PostMethod(url);
-
         Search search = populateFields(new Search(), Boolean.TRUE, 10);
         search.setIndexName(INDEX_NAME);
 
@@ -174,19 +171,47 @@ public abstract class SearcherIntegration extends BaseTest {
         search.setFragment(Boolean.TRUE);
 
         String content = IConstants.GSON.toJson(search);
-        StringRequestEntity stringRequestEntity = new StringRequestEntity(content, MediaType.APPLICATION_JSON, IConstants.ENCODING);
-        postMethod.setRequestEntity(stringRequestEntity);
 
-        HTTP_CLIENT.executeMethod(postMethod);
+		HttpClient httpClient = new AutoRetryHttpClient();
+		new WebServiceAuthentication().authenticate(httpClient, url, 18080, "id837406", "xxx");
+
+		HttpGet httpGet = new HttpGet(url);
+		ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+			@Override
+			public String handleResponse(final HttpResponse response) {
+				try {
+					return FileUtilities.getContents(response.getEntity().getContent(), Long.MAX_VALUE).toString();
+				} catch (final IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		};
+		String response = httpClient.execute(httpGet, responseHandler);
         // logger.info("Response : " + postMethod.getResponseBodyAsString());
-        assertEquals(200, postMethod.getStatusCode());
+        assertNotNull(response);
     }
 
-    protected void verify(final String url, final NameValuePair[] params) throws IOException {
-        GetMethod getMethod = new GetMethod(url);
-        getMethod.setQueryString(params);
-        HTTP_CLIENT.executeMethod(getMethod);
-        assertEquals(200, getMethod.getStatusCode());
+    protected void verify(final String url, final String[] names, final Object[] values) throws IOException {
+        HttpGet getMethod = new HttpGet(url);
+		HttpParams httpParams = new BasicHttpParams();
+		for (int i = 0; i < names.length; i++ ){
+			httpParams.setParameter(names[i], values[i]);
+		}
+        getMethod.setParams(httpParams);
+
+		ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+			@Override
+			public String handleResponse(final HttpResponse response) {
+				try {
+					return FileUtilities.getContents(response.getEntity().getContent(), Long.MAX_VALUE).toString();
+				} catch (final IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		};
+
+		String response = HTTP_CLIENT.execute(getMethod, responseHandler);
+		assertNotNull(response);
     }
 
 }

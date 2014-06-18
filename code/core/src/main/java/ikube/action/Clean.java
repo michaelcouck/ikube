@@ -57,7 +57,7 @@ public class Clean extends Action<IndexContext, Boolean> {
 			try {
 				directory = FSDirectory.open(serverIndexDirectory);
 				if (IndexWriter.isLocked(directory)) {
-					logger.warn("Directory still locked : " + serverIndexDirectory);
+					logger.info("Directory still locked : " + serverIndexDirectory);
 					continue;
 				}
 				if (!DirectoryReader.indexExists(directory)) {

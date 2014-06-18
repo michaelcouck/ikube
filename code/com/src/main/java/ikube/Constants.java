@@ -1,5 +1,12 @@
 package ikube;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.lang.reflect.Field;
+
 /**
  * Constants for Ikube.
  * 
@@ -8,6 +15,55 @@ package ikube;
  * @version 01.00
  */
 public interface Constants {
+
+	/**
+	 * This class is to be added to {@link com.google.gson.Gson} so that it doesn't complain when the
+	 * sub class over rides a field in the super class, for example in the Search class
+	 * that over rides the annotations in the super class Persistable, the Persistable#id
+	 * field.
+	 *
+	 * @author Michael Couck
+	 * @version 01.00
+	 * @since 07-06-2014
+	 */
+	public class IdExclusionStrategy implements ExclusionStrategy {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public boolean shouldSkipField(final FieldAttributes fieldAttributes) {
+			String fieldName = fieldAttributes.getName();
+			Class<?> theClass = fieldAttributes.getDeclaringClass();
+			return isFieldInSuperclass(theClass, fieldName);
+		}
+
+		private boolean isFieldInSuperclass(Class<?> subclass, String fieldName) {
+			Class<?> superclass = subclass.getSuperclass();
+			Field field;
+			while (superclass != null) {
+				field = getField(superclass, fieldName);
+				if (field != null)
+					return true;
+				superclass = superclass.getSuperclass();
+			}
+			return false;
+		}
+
+		private Field getField(Class<?> theClass, String fieldName) {
+			try {
+				return theClass.getDeclaredField(fieldName);
+			} catch (final Exception e) {
+				return null;
+			}
+		}
+
+		@Override
+		public boolean shouldSkipClass(final Class<?> aClass) {
+			return false;
+		}
+
+	}
 
 	/** Application name. */
 	String IKUBE = "ikube";
@@ -23,4 +79,12 @@ public interface Constants {
 	
 	/** The property for the configuration location. */
 	String IKUBE_CONFIGURATION = IKUBE + ".configuration";
+
+	String APPLICATION_JSON = "application/json";
+	String CONTENT_TYPE = "Content-Type";
+
+	Gson GSON = new GsonBuilder()
+			.addSerializationExclusionStrategy(new IdExclusionStrategy())
+			.addDeserializationExclusionStrategy(new IdExclusionStrategy())
+			.create();
 }

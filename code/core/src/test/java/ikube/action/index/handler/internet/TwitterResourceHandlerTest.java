@@ -8,10 +8,14 @@ import ikube.model.Coordinate;
 import ikube.model.IndexableTweets;
 import ikube.model.Search;
 import ikube.toolkit.FileUtilities;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.AutoRetryHttpClient;
 import org.apache.lucene.document.Document;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -28,6 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -91,11 +96,9 @@ public class TwitterResourceHandlerTest extends AbstractTest {
         }
     }
 
-    protected static HttpClient HTTP_CLIENT = new HttpClient();
+    protected static HttpClient HTTP_CLIENT = new AutoRetryHttpClient();
 
     private Coordinate getCoordinate(final String searchString) throws Exception {
-        PostMethod postMethod = new PostMethod(getUrl(""));
-
         Search search = new Search();
         search.setIndexName(IConstants.GEOSPATIAL);
 
@@ -107,13 +110,24 @@ public class TwitterResourceHandlerTest extends AbstractTest {
         search.setFragment(Boolean.TRUE);
 
         String content = IConstants.GSON.toJson(search);
-        StringRequestEntity stringRequestEntity = new StringRequestEntity(content, "application/json", IConstants.ENCODING);
-        postMethod.setRequestEntity(stringRequestEntity);
 
-        HTTP_CLIENT.executeMethod(postMethod);
+		ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+			@Override
+			public String handleResponse(final HttpResponse response) {
+				try {
+					return FileUtilities.getContents(response.getEntity().getContent(), Long.MAX_VALUE).toString();
+				} catch (final IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		};
+		HttpEntity httpEntity = new StringEntity(IConstants.GSON.toJson(search), APPLICATION_JSON);
+		HttpPost postMethod = new HttpPost(getUrl(""));
+		postMethod.addHeader(IConstants.CONTENT_TYPE, IConstants.APPLICATION_JSON);
+		postMethod.setEntity(httpEntity);
+		String response = HTTP_CLIENT.execute(postMethod, responseHandler);
 
-        String json = FileUtilities.getContents(postMethod.getResponseBodyAsStream(), Integer.MAX_VALUE).toString();
-        Search result = IConstants.GSON.fromJson(json, Search.class);
+        Search result = IConstants.GSON.fromJson(response, Search.class);
         Map<String, String> firstResult = result.getSearchResults().get(0);
 
         String latitude = firstResult.get(IConstants.LATITUDE);

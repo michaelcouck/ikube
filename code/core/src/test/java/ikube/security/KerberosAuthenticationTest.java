@@ -1,8 +1,8 @@
 package ikube.security;
 
 import ikube.AbstractTest;
-
-import org.apache.commons.httpclient.HttpClient;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.AutoRetryHttpClient;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,7 +13,7 @@ public class KerberosAuthenticationTest extends AbstractTest {
 
 	@Before
 	public void before() {
-		httpClient = new HttpClient();
+		httpClient = new AutoRetryHttpClient();
 	}
 
 	@Test

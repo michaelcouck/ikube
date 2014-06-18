@@ -40,7 +40,7 @@ public abstract class IntegrationTest extends BaseTest {
             new MimeTypes(IConstants.MIME_TYPES);
             new MimeMapper(IConstants.MIME_MAPPING);
             FileUtilities.deleteFiles(DOT_DIRECTORY, "ikube.h2.db", "ikube.lobs.db", "ikube.log", "openjpa.log");
-            new WebServiceAuthentication().authenticate(HTTP_CLIENT, LOCALHOST, Integer.toString(SERVER_PORT), REST_USER_NAME, REST_PASSWORD);
+            new WebServiceAuthentication().authenticate(HTTP_CLIENT, LOCALHOST, SERVER_PORT, REST_USER_NAME, REST_PASSWORD);
         } catch (final Exception e) {
             LOGGER.error(null, e);
         }

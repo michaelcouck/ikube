@@ -7,16 +7,11 @@ import ikube.model.Analysis;
 import ikube.model.AnalyzerInfo;
 import ikube.model.Context;
 import ikube.toolkit.FileUtilities;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
+import ikube.toolkit.HttpClientUtilities;
 import org.junit.Test;
 import weka.clusterers.SimpleKMeans;
 
-import javax.ws.rs.core.MediaType;
 import java.io.File;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -28,6 +23,7 @@ import static junit.framework.Assert.*;
 /**
  * TODO: Note to self. For some reason this test does not work on the Dell server!!!
  * TODO: Does now it seems... :)
+ * TODO: This test must still be completed and verified, perhaps with all sorts of analytics, like regression etc.
  *
  * @author Michael Couck
  * @version 01.00
@@ -43,10 +39,8 @@ public class AnalyzerIntegration extends BaseTest {
 	@SuppressWarnings("unchecked")
 	public void create() throws Exception {
 		Context context = getContext(analyzerModelFileName, analyzerName);
-		String content = IConstants.GSON.toJson(context);
 		String url = getUrl(Analyzer.CREATE);
-        System.out.println(url);
-		executePost(url, content, Context.class);
+		HttpClientUtilities.doPost(url, context, Context.class);
 	}
 
 	@Test
@@ -55,9 +49,8 @@ public class AnalyzerIntegration extends BaseTest {
 		create();
 
 		Analysis<String, double[]> analysis = getAnalysis(analyzerName, line);
-		String content = IConstants.GSON.toJson(analysis);
 		String url = getUrl(Analyzer.TRAIN);
-		executePost(url, content, Analysis.class);
+		HttpClientUtilities.doPost(url, analysis, Analysis.class);
 	}
 
 	@Test
@@ -65,9 +58,8 @@ public class AnalyzerIntegration extends BaseTest {
 		train();
 
 		Analysis analysis = getAnalysis(analyzerName, null);
-		String content = IConstants.GSON.toJson(analysis);
 		String url = getUrl(Analyzer.BUILD);
-		executePost(url, content, Analysis.class);
+		HttpClientUtilities.doPost(url, analysis, Analysis.class);
 	}
 
 	@Test
@@ -76,9 +68,8 @@ public class AnalyzerIntegration extends BaseTest {
 		build();
 
 		Analysis<String, double[]> analysis = getAnalysis(analyzerName, line);
-		String content = IConstants.GSON.toJson(analysis);
 		String url = getUrl(Analyzer.ANALYZE);
-		Analysis result = executePost(url, content, Analysis.class);
+		Analysis result = HttpClientUtilities.doPost(url, analysis, Analysis.class);
 		assertTrue(Integer.parseInt(result.getClazz()) >= 0 && Integer.parseInt(result.getClazz()) <= 6);
 	}
 
@@ -87,16 +78,16 @@ public class AnalyzerIntegration extends BaseTest {
 		analyze();
 
 		String analyzersUrl = getUrl(Analyzer.ANALYZERS);
-		String[] names = executeGet(analyzersUrl, String[].class);
+		String[] names = HttpClientUtilities.doGet(analyzersUrl, String[].class);
 		List<String> list = new ArrayList<>(Arrays.asList(names));
 		assertTrue(list.contains(analyzerName));
 
 		Context context = getContext(analyzerModelFileName, analyzerName);
-		String content = IConstants.GSON.toJson(context);
 		String destroyUrl = getUrl(Analyzer.DESTROY);
-		executePost(destroyUrl, content, Context.class);
 
-		names = executeGet(analyzersUrl, String[].class);
+		HttpClientUtilities.doPost(destroyUrl, context, Context.class);
+
+		names = HttpClientUtilities.doGet(analyzersUrl, String[].class);
 		list = new ArrayList<>(Arrays.asList(names));
 		assertFalse(list.contains(analyzerName));
 	}
@@ -106,9 +97,8 @@ public class AnalyzerIntegration extends BaseTest {
 		analyze();
 
 		Analysis analysis = getAnalysis(analyzerName, null);
-		String content = IConstants.GSON.toJson(analysis);
 		String url = getUrl(Analyzer.CONTEXT);
-		Context context = executePost(url, content, Context.class);
+		Context context = HttpClientUtilities.doPost(url, analysis, Analysis.class, Context.class);
 		assertEquals(analysis.getAnalyzer(), context.getName());
 	}
 
@@ -117,7 +107,7 @@ public class AnalyzerIntegration extends BaseTest {
 		analyze();
 
 		String contextsUrl = getUrl(Analyzer.CONTEXTS);
-		String[] names = executeGet(contextsUrl, String[].class);
+		String[] names = HttpClientUtilities.doGet(contextsUrl, String[].class);
 		List<String> list = new ArrayList<>(Arrays.asList(names));
 		assertTrue(list.contains(analyzerName));
 	}
@@ -125,39 +115,12 @@ public class AnalyzerIntegration extends BaseTest {
 	@Test
 	public void analyzers() throws Exception {
 		create();
+
 		String analyzersUrl = getUrl(Analyzer.ANALYZERS);
-		String[] names = executeGet(analyzersUrl, String[].class);
+		String[] names = HttpClientUtilities.doGet(analyzersUrl, String[].class);
 		List<String> list = new ArrayList<>(Arrays.asList(names));
 		logger.info("List : " + list);
 		assertTrue(list.toString().contains(analyzerName));
-	}
-
-	private <T> T executeGet(final String url, final Class<T> type) throws Exception {
-		GetMethod postMethod = new GetMethod(url);
-		// postMethod.setQueryString(null);
-		return executeMethod(postMethod, type);
-	}
-
-	private <T> T executePost(final String url, final String content, final Class<T> type) throws Exception {
-		PostMethod postMethod = new PostMethod(url);
-		StringRequestEntity stringRequestEntity = new StringRequestEntity(content, MediaType.APPLICATION_JSON, IConstants.ENCODING);
-		postMethod.setRequestEntity(stringRequestEntity);
-		return executeMethod(postMethod, type);
-	}
-
-	private <T> T executeMethod(final HttpMethod httpMethod, final Class<T> type) throws Exception {
-		HTTP_CLIENT.executeMethod(httpMethod);
-		InputStream inputStream = httpMethod.getResponseBodyAsStream();
-		String response = FileUtilities.getContents(inputStream, Integer.MAX_VALUE).toString();
-		int statusCode = httpMethod.getStatusCode();
-		logger.info("Response : " + statusCode);
-        System.out.println("Response : " + statusCode);
-		assertEquals(200, statusCode);
-		T result = IConstants.GSON.fromJson(response, type);
-		logger.info("         : " + result);
-        System.out.println("         : " + result);
-		assertNotNull(result);
-		return result;
 	}
 
 	@SuppressWarnings("StringBufferReplaceableByString")

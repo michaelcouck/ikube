@@ -38,13 +38,13 @@
         property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer"
         property:children-ref="autocompleteIndexables" />
     <util:list id="autocompleteIndexables">
-        <ref local="autocomplete-word-lists" />
+        <ref local="autocomplete-lists" />
     </util:list>
 
     <bean
-        id="autocomplete-word-lists"
+        id="autocomplete-lists"
         class="ikube.model.IndexableFileSystemCsv"
-        property:name="autocomplete-word-lists"
+        property:name="autocomplete-lists"
         property:path="./ikube/common/languages"
 
         property:separator=","

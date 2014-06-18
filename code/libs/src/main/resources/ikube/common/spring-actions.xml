@@ -38,8 +38,8 @@
         -->
         <!-- <ref bean="ikube.action.DiskFull" /> -->
         <!-- This action needs a dedicated mail server! -->
-        <!--<ref bean="ikube.action.Validator" />-->
-        <!--<ref bean="ikube.action.Clean"/>-->
+        <ref bean="ikube.action.Validator" />
+        <ref bean="ikube.action.Clean"/>
     </util:list>
 
     <bean
@@ -203,7 +203,7 @@
             </util:list>
         </property>
     </bean> -->
-    <!--<bean
+    <bean
         id="ikube.action.Validator"
         class="ikube.action.Validator"
         property:ruleExpression="
@@ -214,7 +214,7 @@
                 <ref local="ikube.action.rule.IsIndexDelta" />
             </util:list>
         </property>
-    </bean>-->
+    </bean>
     <bean
         id="ikube.action.Synchronize"
         class="ikube.action.Synchronize"

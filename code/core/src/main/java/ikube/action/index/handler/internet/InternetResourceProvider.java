@@ -223,7 +223,7 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
             String[] fields = {IConstants.NAME, IConstants.INDEXED};
             Object[] values = {indexableInternet.getName(), Boolean.FALSE};
             List<Url> dbUrls = dataBase.find(Url.class, fields, values, 0, 100);
-			dataBase.removeBatch(dbUrls);
+			// dataBase.removeBatch(dbUrls);
 			this.urls.addAll(dbUrls);
 			if (this.urls.size() > 0) {
 				url = this.urls.pop();

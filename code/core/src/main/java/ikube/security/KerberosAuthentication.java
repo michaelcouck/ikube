@@ -1,21 +1,18 @@
 package ikube.security;
 
-import org.apache.commons.httpclient.HttpClient;
+import org.apache.http.client.HttpClient;
 
 /**
  * TODO Document me...
- * 
+ *
  * @author Michael Couck
- * @since 12.04.2013
  * @version 01.00
+ * @since 12.04.2013
  */
 public class KerberosAuthentication implements IAuthentication {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public void authenticate(HttpClient httpClient, String... properties) {
+	public void authenticate(HttpClient httpClient, String url, int port, String username, String password) {
 		// Negotiate
 		// YIIIVgYGKwYBBQUCoIIISjCCCEagDTALBgkqhkiG9xIBAgKhBAMCATCigggtBIIIKWCCCCUGCSqGSIb3EgECAgEAboIIFDCCCBCgAwIBBaEDAgEOogcDBQAAAAAAo4IHNGGCBzAwggcsoAMCAQWhERsPUE9TVC5
 		// CUEdORVQuTkVUoiIwIKADAgEAoRkwFxsESFRUUBsPc2RsLWR2Mi5uZXRwb3N0o4IG7DCCBuigAwIBF6EDAgECooIG2gSCBtbWVq3Y2jglz2L+TZNnEN5L0JEO15m5bOMCtcSSM+0ffZTl8/bn7A8kjTYI/m6v25lYU
@@ -36,5 +33,4 @@ public class KerberosAuthentication implements IAuthentication {
 		// mc1L7QKHQrERHjfXWD8xCBn/1yu9GzmoG0DLJkkL+k3NUNNKCfGa3Oc9GqnPhsr6sM9XsY/kXGnEfaVGbAtzP+KtXnMXnEcKm+70fc1b8ja0ADm5HYNlIsVRHP1MrzrWJoZpTSUCzSyXGC3+viID6sRRlGzXvBG2IAP+nI
 		// AoJSwXYymWmFHsA3gaRu7lv5TP/0+VMJbKknQSZIZ3U=
 	}
-
 }

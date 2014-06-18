@@ -7,8 +7,8 @@ import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
 import ikube.security.WebServiceAuthentication;
-import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.impl.client.AutoRetryHttpClient;
 import org.apache.lucene.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -23,6 +23,7 @@ import java.util.concurrent.ForkJoinTask;
  * @version 01.00
  * @since 21-06-2013
  */
+@SuppressWarnings("SpringJavaAutowiredMembersInspection")
 public class IndexableInternetHandler extends IndexableHandler<IndexableInternet> {
 
 	@Autowired
@@ -45,11 +46,11 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
 
 	private void authenticate(final IndexableInternet indexableInternet) throws MalformedURLException {
 		String url = indexableInternet.getBaseUrl();
-		String port = Integer.toString(new URL(indexableInternet.getUrl()).getPort());
+		int port = new URL(indexableInternet.getUrl()).getPort();
 		String userid = indexableInternet.getUserid();
 		String password = indexableInternet.getPassword();
-		if (!StringUtils.isEmpty(url) && !StringUtils.isEmpty(port) && !StringUtils.isEmpty(userid) && !StringUtils.isEmpty(password)) {
-			new WebServiceAuthentication().authenticate(new HttpClient(), url, port, userid, password);
+		if (!StringUtils.isEmpty(url) && !StringUtils.isEmpty(userid) && !StringUtils.isEmpty(password)) {
+			new WebServiceAuthentication().authenticate(new AutoRetryHttpClient(), url, port, userid, password);
 		}
 	}
 

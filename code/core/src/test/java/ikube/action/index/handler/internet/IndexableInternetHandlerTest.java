@@ -9,9 +9,11 @@ import ikube.security.WebServiceAuthentication;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
 import mockit.Deencapsulation;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.AutoRetryHttpClient;
 import org.apache.lucene.document.Document;
 import org.junit.After;
 import org.junit.Before;
@@ -19,6 +21,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.ForkJoinTask;
 
 import static org.junit.Assert.assertNotNull;
@@ -82,6 +85,9 @@ public class IndexableInternetHandlerTest extends AbstractTest {
 
 	@Test
 	@Ignore
+	/**
+	 * TODO: This test and the logic needs to be completed!!!
+	 */
 	public void login() throws Exception {
 
 		/*System.setProperty("http.proxyUser", "id837406");
@@ -94,12 +100,22 @@ public class IndexableInternetHandlerTest extends AbstractTest {
 		url = "http://el1710.bc:18080/svn/";
 		// url = "http://www.google.com";
 
-		HttpClient httpClient = new HttpClient();
-		new WebServiceAuthentication().authenticate(httpClient, url, "18080", "id837406", "xxx");
-		HttpMethod httpMethod = new GetMethod(url);
-		int response = httpClient.executeMethod(httpMethod);
-		String result = httpMethod.getResponseBodyAsString();
-		logger.info("Response : " + response + ", " + result);
+		HttpClient httpClient = new AutoRetryHttpClient();
+		new WebServiceAuthentication().authenticate(httpClient, url, 18080, "id837406", "xxx");
+
+		HttpGet httpGet = new HttpGet("http://www.google.com");
+		ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+			@Override
+			public String handleResponse(final HttpResponse response) {
+				try {
+					return FileUtilities.getContents(response.getEntity().getContent(), Long.MAX_VALUE).toString();
+				} catch (final IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		};
+		String response = httpClient.execute(httpGet, responseHandler);
+		logger.info("Response : " + response);
 
 		/*indexableInternet.setUrl(url);
 		indexableInternet.setBaseUrl(url);

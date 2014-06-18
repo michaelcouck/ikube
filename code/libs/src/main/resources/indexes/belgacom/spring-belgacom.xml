@@ -31,8 +31,8 @@
         property:analyzer-ref="belgacom-analyzer"
         property:children-ref="belgacom-indexables"/>
     <util:list id="belgacom-indexables">
-        <!--<ref local="belgacom-stock" />-->
         <ref local="belgacom-repository"/>
+        <ref local="belgacom-svn-fast"/>
     </util:list>
 
     <bean
@@ -93,5 +93,27 @@
         property:vectored="true"
         property:address="false"
         property:tokenized="true"/>
+
+    <bean
+        id="belgacom-beim"
+        class="ikube.model.IndexableInternet"
+        property:name="belgacom-beim"
+        property:url="http://dcnweb.bc/~beim/"
+        property:idFieldName="id"
+        property:titleFieldName="title"
+        property:contentFieldName="contents"
+        property:analyzed="true"
+        property:stored="true"
+        property:vectored="true"
+        property:address="false"
+        property:tokenized="true"
+
+        property:excludedPattern=""
+        property:maxExceptions="100"
+        property:maxReadLength="100000"
+        property:timeout="60000"
+        property:omitNorms="false"
+        property:threads="4"
+        property:internetBatchSize="${internet.batch.size}"/>
 
 </beans>

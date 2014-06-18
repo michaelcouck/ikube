@@ -1,28 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
-  <component name="FacetManager">
-    <facet type="Spring" name="Spring">
-      <configuration>
-        <fileset id="fileset" name="Spring Application Context" removed="false">
-          <file>file://$MODULE_DIR$/src/main/resources/ikube/deployer.xml</file>
-        </fileset>
-      </configuration>
-    </facet>
-    <facet type="jpa" name="JPA">
-      <configuration>
-        <setting name="validation-enabled" value="true" />
-        <setting name="provider-name" value="" />
-        <datasource-mapping>
-          <factory-entry name="${ikube.persistenceUnit}" />
-          <factory-entry name="IkubePersistenceUnitDb2" value="3874489b-b543-420e-8979-ef3c40671ef9" />
-          <factory-entry name="IkubePersistenceUnitH2" value="c2f80ce1-20c5-4c68-a675-25af2ef95b42" />
-          <factory-entry name="IkubePersistenceUnitOracle" value="05af5846-5a68-4122-91d3-10131effed1f" />
-          <factory-entry name="IkubePersistenceUnitPostgres" value="8cc3b5f2-d40a-4b4e-bcb0-d338ba159bcb" />
-        </datasource-mapping>
-        <deploymentDescriptor name="persistence.xml" url="file://$MODULE_DIR$/src/main/resources/META-INF/persistence.xml" />
-      </configuration>
-    </facet>
-  </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
@@ -33,7 +10,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
-    <orderEntry type="jdk" jdkName="1.7" jdkType="JavaSDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="ikube-core" />
     <orderEntry type="module" module-name="ikube-com" />
@@ -102,10 +79,9 @@
     <orderEntry type="library" name="Maven: org.apache.pdfbox:jempbox:1.3.1" level="project" />
     <orderEntry type="library" name="Maven: bouncycastle:bcmail-jdk16:140" level="project" />
     <orderEntry type="library" name="Maven: bouncycastle:bcprov-jdk16:140" level="project" />
-    <orderEntry type="library" name="Maven: commons-httpclient:commons-httpclient:3.1" level="project" />
-    <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpclient:4.2.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpcore:4.2.1" level="project" />
+    <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.6" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.0.1" level="project" />
     <orderEntry type="library" name="Maven: aspose:aspose.words:7.0.0" level="project" />
     <orderEntry type="library" name="Maven: aspose:aspose.slides:2.6.0" level="project" />
@@ -210,6 +186,8 @@
     <orderEntry type="library" scope="TEST" name="Maven: com.google.guava:guava:11.0.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.google.code.findbugs:jsr305:1.3.9" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.javassist:javassist:3.16.1-GA" level="project" />
+    <orderEntry type="library" name="Maven: com.sun.jersey:jersey-client:1.18.1" level="project" />
+    <orderEntry type="library" name="Maven: com.sun.jersey:jersey-core:1.18.1" level="project" />
   </component>
 </module>
 
