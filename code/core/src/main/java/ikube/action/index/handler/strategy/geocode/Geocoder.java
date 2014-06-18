@@ -1,31 +1,22 @@
 package ikube.action.index.handler.strategy.geocode;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import ikube.IConstants;
+import ikube.model.Coordinate;
+import ikube.model.Search;
+import ikube.toolkit.ThreadUtilities;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.AutoRetryHttpClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-
-import static org.apache.http.entity.ContentType.APPLICATION_JSON;
-import ikube.IConstants;
-import ikube.model.Coordinate;
-import ikube.model.Search;
-import ikube.security.WebServiceAuthentication;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.ThreadUtilities;
 
 /**
  * @author Michael Couck
@@ -33,7 +24,7 @@ import ikube.toolkit.ThreadUtilities;
  * @see IGeocoder
  * @since 06-03-2011
  */
-public class Geocoder implements IGeocoder, InitializingBean {
+public class Geocoder implements IGeocoder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Geocoder.class);
 
@@ -43,7 +34,7 @@ public class Geocoder implements IGeocoder, InitializingBean {
     private String searchUrl;
     private String searchField;
 
-    private AutoRetryHttpClient httpClient;
+    private Client client = Client.create();
 
     /**
      * {@inheritDoc}
@@ -54,7 +45,7 @@ public class Geocoder implements IGeocoder, InitializingBean {
         if (disabled) {
             return null;
         }
-        HttpPost postMethod = null;
+        ClientResponse clientResponse = null;
         try {
             // Trim the address for strange characters to get a better category
             String trimmedAddress = StringUtils.trim(searchString);
@@ -68,23 +59,13 @@ public class Geocoder implements IGeocoder, InitializingBean {
             search.setSearchStrings(Arrays.asList(searchString));
             search.setTypeFields(Arrays.asList(IConstants.STRING));
 
-			ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
-				@Override
-				public String handleResponse(final HttpResponse response) {
-					try {
-						return FileUtilities.getContents(response.getEntity().getContent(), Long.MAX_VALUE).toString();
-					} catch (final IOException e) {
-						throw new RuntimeException(e);
-					}
-				}
-			};
-			HttpEntity httpEntity = new StringEntity(IConstants.GSON.toJson(search), APPLICATION_JSON);
-			postMethod = new HttpPost(searchUrl);
-			postMethod.addHeader(IConstants.CONTENT_TYPE, IConstants.APPLICATION_JSON);
-			postMethod.setEntity(httpEntity);
-			String response = httpClient.execute(postMethod, responseHandler);
+            client.addFilter(new HTTPBasicAuthFilter(userid, password));
+            WebResource webResource = client.resource(searchUrl);
+            clientResponse = webResource.accept(MediaType.APPLICATION_JSON)
+                    .post(ClientResponse.class, IConstants.GSON.toJson(search));
+            String response = clientResponse.getEntity(String.class);
 
-            LOGGER.info("Result from web service : " + response);
+            LOGGER.debug("Result from web service : " + response);
 
             Search result = IConstants.GSON.fromJson(response, Search.class);
             ArrayList<HashMap<String, String>> results = result.getSearchResults();
@@ -94,7 +75,7 @@ public class Geocoder implements IGeocoder, InitializingBean {
                 // the address according to the data from GeoNames
                 String latitude = firstResult.get(IConstants.LATITUDE);
                 String longitude = firstResult.get(IConstants.LONGITUDE);
-                if (latitude != null && longitude != null) {
+                if (StringUtils.isNotEmpty(latitude) && StringUtils.isNotEmpty(longitude)) {
                     double lat = Double.parseDouble(latitude);
                     double lng = Double.parseDouble(longitude);
                     return new Coordinate(lat, lng, trimmedAddress);
@@ -117,23 +98,11 @@ public class Geocoder implements IGeocoder, InitializingBean {
             LOGGER.error("Address and geocoder : ", searchString, toString());
             LOGGER.error("Exception accessing the spatial search service : ", e);
         } finally {
-            if (postMethod != null) {
-                postMethod.releaseConnection();
+            if (clientResponse != null) {
+                clientResponse.close();
             }
         }
         return null;
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        httpClient = new AutoRetryHttpClient();
-        URL url;
-        try {
-            url = new URL(searchUrl);
-            // new WebServiceAuthentication().authenticate(httpClient, url.getHost(), url.getPort(), userid, password);
-        } catch (final MalformedURLException e) {
-            LOGGER.error(null, e);
-        }
     }
 
     /**

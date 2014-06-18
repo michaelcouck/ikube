@@ -3,13 +3,11 @@ package ikube.web.service;
 import ikube.BaseTest;
 import ikube.IConstants;
 import ikube.model.Search;
-import ikube.security.WebServiceAuthentication;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.HttpClientUtilities;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.AutoRetryHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.junit.Ignore;
@@ -33,19 +31,19 @@ public abstract class SearcherIntegration extends BaseTest {
         String url = getUrl(SearcherXml.SIMPLE);
 
         String[] names = { //
-            IConstants.INDEX_NAME, //
-            IConstants.SEARCH_STRINGS, //
-            IConstants.SEARCH_FIELDS, //
-            IConstants.FRAGMENT,//
-            IConstants.FIRST_RESULT, //
-            IConstants.MAX_RESULTS};
+                IConstants.INDEX_NAME, //
+                IConstants.SEARCH_STRINGS, //
+                IConstants.SEARCH_FIELDS, //
+                IConstants.FRAGMENT,//
+                IConstants.FIRST_RESULT, //
+                IConstants.MAX_RESULTS};
         String[] values = {//
-            INDEX_NAME,//
-            "cape AND town AND university",//
-            IConstants.NAME, //
-            Boolean.TRUE.toString(),//
-            "0", //
-            "10"};
+                INDEX_NAME,//
+                "cape AND town AND university",//
+                IConstants.NAME, //
+                Boolean.TRUE.toString(),//
+                "0", //
+                "10"};
         verify(url, names, values);
     }
 
@@ -54,20 +52,20 @@ public abstract class SearcherIntegration extends BaseTest {
         String url = getUrl(SearcherXml.SIMPLE);
 
         String[] names = { //
-            IConstants.INDEX_NAME, //
-            IConstants.SEARCH_STRINGS, //
-            IConstants.SEARCH_FIELDS, //
-            IConstants.FRAGMENT,//
-            IConstants.FIRST_RESULT, //
-            IConstants.MAX_RESULTS};
+                IConstants.INDEX_NAME, //
+                IConstants.SEARCH_STRINGS, //
+                IConstants.SEARCH_FIELDS, //
+                IConstants.FRAGMENT,//
+                IConstants.FIRST_RESULT, //
+                IConstants.MAX_RESULTS};
         String[] values = { //
-            INDEX_NAME, //
-            "cape AND town AND university;south africa", //
-            IConstants.NAME + ";" + IConstants.COUNTRY,//
-            Boolean.TRUE.toString(), //
-            "0", //
-            "10"};
-		verify(url, names, values);
+                INDEX_NAME, //
+                "cape AND town AND university;south africa", //
+                IConstants.NAME + ";" + IConstants.COUNTRY,//
+                Boolean.TRUE.toString(), //
+                "0", //
+                "10"};
+        verify(url, names, values);
     }
 
     @Test
@@ -75,22 +73,22 @@ public abstract class SearcherIntegration extends BaseTest {
         String url = getUrl(SearcherXml.SORTED);
 
         String[] names = { //
-            IConstants.INDEX_NAME, //
-            IConstants.SEARCH_STRINGS, //
-            IConstants.SEARCH_FIELDS, //
-            IConstants.SORT_FIELDS,//
-            IConstants.FRAGMENT, //
-            IConstants.FIRST_RESULT, //
-            IConstants.MAX_RESULTS};
+                IConstants.INDEX_NAME, //
+                IConstants.SEARCH_STRINGS, //
+                IConstants.SEARCH_FIELDS, //
+                IConstants.SORT_FIELDS,//
+                IConstants.FRAGMENT, //
+                IConstants.FIRST_RESULT, //
+                IConstants.MAX_RESULTS};
         String[] values = { //
-            INDEX_NAME, //
-            "cape AND town AND university;south africa", //
-            IConstants.NAME + ";" + IConstants.COUNTRY,//
-            IConstants.NAME + ";" + IConstants.COUNTRY, //
-            Boolean.TRUE.toString(), //
-            "0", //
-            "10"};
-		verify(url, names, values);
+                INDEX_NAME, //
+                "cape AND town AND university;south africa", //
+                IConstants.NAME + ";" + IConstants.COUNTRY,//
+                IConstants.NAME + ";" + IConstants.COUNTRY, //
+                Boolean.TRUE.toString(), //
+                "0", //
+                "10"};
+        verify(url, names, values);
     }
 
     @Test
@@ -98,28 +96,28 @@ public abstract class SearcherIntegration extends BaseTest {
         String url = getUrl(SearcherXml.GEOSPATIAL);
 
         String[] names = { //
-            IConstants.INDEX_NAME, //
-            IConstants.SEARCH_STRINGS, //
-            IConstants.SEARCH_FIELDS, //
-            IConstants.TYPE_FIELDS, //
-            IConstants.FRAGMENT, //
-            IConstants.FIRST_RESULT, //
-            IConstants.MAX_RESULTS, //
-            IConstants.DISTANCE, //
-            IConstants.LATITUDE, //
-            IConstants.LONGITUDE};
+                IConstants.INDEX_NAME, //
+                IConstants.SEARCH_STRINGS, //
+                IConstants.SEARCH_FIELDS, //
+                IConstants.TYPE_FIELDS, //
+                IConstants.FRAGMENT, //
+                IConstants.FIRST_RESULT, //
+                IConstants.MAX_RESULTS, //
+                IConstants.DISTANCE, //
+                IConstants.LATITUDE, //
+                IConstants.LONGITUDE};
         String[] values = { //
-            IConstants.GEOSPATIAL, //
-            "cape town university|berlin", //
-            "name|name", //
-            "string|string", //
-            Boolean.TRUE.toString(), //
-            "0", //
-            "10", //
-            "20", //
-            "-33.9693580", //
-            "18.4622110"};
-		verify(url, names, values);
+                IConstants.GEOSPATIAL, //
+                "cape town university|berlin", //
+                "name|name", //
+                "string|string", //
+                Boolean.TRUE.toString(), //
+                "0", //
+                "10", //
+                "20", //
+                "-33.9693580", //
+                "18.4622110"};
+        verify(url, names, values);
     }
 
     @Test
@@ -127,24 +125,24 @@ public abstract class SearcherIntegration extends BaseTest {
         String url = getUrl(SearcherXml.SORTED_TYPED);
 
         String[] names = { //
-            IConstants.INDEX_NAME, //
-            IConstants.SEARCH_STRINGS, //
-            IConstants.SEARCH_FIELDS, //
-            IConstants.TYPE_FIELDS, //
-            IConstants.SORT_FIELDS, //
-            IConstants.FRAGMENT, //
-            IConstants.FIRST_RESULT,//
-            IConstants.MAX_RESULTS};
+                IConstants.INDEX_NAME, //
+                IConstants.SEARCH_STRINGS, //
+                IConstants.SEARCH_FIELDS, //
+                IConstants.TYPE_FIELDS, //
+                IConstants.SORT_FIELDS, //
+                IConstants.FRAGMENT, //
+                IConstants.FIRST_RESULT,//
+                IConstants.MAX_RESULTS};
         String[] values = { //
-            INDEX_NAME,//
-            "michael AND couck|123456789", //
-            "contents|lastmodified", //
-            "string|numeric", //
-            "lastmodified", //
-            Boolean.TRUE.toString(), //
-            "0", //
-            "10"};
-		verify(url, names, values);
+                INDEX_NAME,//
+                "michael AND couck|123456789", //
+                "contents|lastmodified", //
+                "string|numeric", //
+                "lastmodified", //
+                Boolean.TRUE.toString(), //
+                "0", //
+                "10"};
+        verify(url, names, values);
     }
 
     @Test
@@ -170,48 +168,31 @@ public abstract class SearcherIntegration extends BaseTest {
         search.setMaxResults(10);
         search.setFragment(Boolean.TRUE);
 
-        String content = IConstants.GSON.toJson(search);
-
-		HttpClient httpClient = new AutoRetryHttpClient();
-		new WebServiceAuthentication().authenticate(httpClient, url, 18080, "id837406", "xxx");
-
-		HttpGet httpGet = new HttpGet(url);
-		ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
-			@Override
-			public String handleResponse(final HttpResponse response) {
-				try {
-					return FileUtilities.getContents(response.getEntity().getContent(), Long.MAX_VALUE).toString();
-				} catch (final IOException e) {
-					throw new RuntimeException(e);
-				}
-			}
-		};
-		String response = httpClient.execute(httpGet, responseHandler);
-        // logger.info("Response : " + postMethod.getResponseBodyAsString());
+        String response = HttpClientUtilities.doPost(url, search, String.class);
         assertNotNull(response);
     }
 
     protected void verify(final String url, final String[] names, final Object[] values) throws IOException {
         HttpGet getMethod = new HttpGet(url);
-		HttpParams httpParams = new BasicHttpParams();
-		for (int i = 0; i < names.length; i++ ){
-			httpParams.setParameter(names[i], values[i]);
-		}
+        HttpParams httpParams = new BasicHttpParams();
+        for (int i = 0; i < names.length; i++) {
+            httpParams.setParameter(names[i], values[i]);
+        }
         getMethod.setParams(httpParams);
 
-		ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
-			@Override
-			public String handleResponse(final HttpResponse response) {
-				try {
-					return FileUtilities.getContents(response.getEntity().getContent(), Long.MAX_VALUE).toString();
-				} catch (final IOException e) {
-					throw new RuntimeException(e);
-				}
-			}
-		};
+        ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+            @Override
+            public String handleResponse(final HttpResponse response) {
+                try {
+                    return FileUtilities.getContents(response.getEntity().getContent(), Long.MAX_VALUE).toString();
+                } catch (final IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
 
-		String response = HTTP_CLIENT.execute(getMethod, responseHandler);
-		assertNotNull(response);
+        String response = HTTP_CLIENT.execute(getMethod, responseHandler);
+        assertNotNull(response);
     }
 
 }

@@ -98,7 +98,7 @@ public class AnalyzerIntegration extends BaseTest {
 
 		Analysis analysis = getAnalysis(analyzerName, null);
 		String url = getUrl(Analyzer.CONTEXT);
-		Context context = HttpClientUtilities.doPost(url, analysis, Analysis.class, Context.class);
+		Context context = HttpClientUtilities.doPost(url, analysis, Context.class);
 		assertEquals(analysis.getAnalyzer(), context.getName());
 	}
 

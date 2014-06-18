@@ -14,39 +14,39 @@ import java.net.URL;
  */
 public class SearcherClientIntegration {
 
-	@Test
-	@SuppressWarnings("StringBufferReplaceableByString")
-	public void main() throws Exception {
+    @Test
+    @SuppressWarnings("StringBufferReplaceableByString")
+    public void main() throws Exception {
 
-		String path = "/ikube/service/search/xml/geospatial";
-		URL url = new URL("http", "ikube.be", 80, path);
-		System.out.println(url);
+        String path = "/ikube/service/search/xml/geospatial";
+        URL url = new URL("http", "ikube.be", 80, path);
+        System.out.println(url);
 
-		String[] names = { //
-				"indexName", //
-				"searchStrings", //
-				"searchFields", //
-				"typeFields", //
-				"fragment", //
-				"firstResult", //
-				"maxResults", //
-				"distance", //
-				"latitude", //
-				"longitude" };
-		String[] values = { //
-				"geospatial", //
-				"saur kraut|berlin", //
-				"name|name", //
-				"string|string", //
-				"true", //
-				"0", //
-				"10", //
-				"20", //
-				"-33.9693580", //
-				"18.4622110" };
+        String[] names = { //
+                "indexName", //
+                "searchStrings", //
+                "searchFields", //
+                "typeFields", //
+                "fragment", //
+                "firstResult", //
+                "maxResults", //
+                "distance", //
+                "latitude", //
+                "longitude"};
+        String[] values = { //
+                "geospatial", //
+                "saur kraut|berlin", //
+                "name|name", //
+                "string|string", //
+                "true", //
+                "0", //
+                "10", //
+                "20", //
+                "-33.9693580", //
+                "18.4622110"};
 
-		String body = HttpClientUtilities.doGet(url.toString(), String.class, names, values);
-		System.out.println("Response body : " + body);
-	}
+        String response = HttpClientUtilities.doGet(url.toString(), String.class, names, values);
+        System.out.println("Response body : " + response);
+    }
 
 }

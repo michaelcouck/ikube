@@ -16,7 +16,7 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-asm:3.0.5.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: commons-logging:commons-logging:1.1.1" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context:3.0.5.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-aop:3.0.5.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-aop:3.0.0.RC3" level="project" />
     <orderEntry type="library" name="Maven: aopalliance:aopalliance:1.0" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-expression:3.0.5.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context-support:3.0.5.RELEASE" level="project" />
@@ -62,7 +62,7 @@
     <orderEntry type="library" name="Maven: postgresql:postgresql:9.1-901-1.jdbc4" level="project" />
     <orderEntry type="library" name="Maven: oracle.ojdbc6:ojdbc6:11" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.8.2" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.mockito:mockito-all:1.8.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.mockito:mockito-all:1.9.5" level="project" />
     <orderEntry type="library" name="Maven: c3p0:c3p0:0.9.1.2" level="project" />
     <orderEntry type="library" name="Maven: javax.mail:mail:1.4.3" level="project" />
     <orderEntry type="library" name="Maven: javax.activation:activation:1.1" level="project" />
@@ -121,7 +121,7 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.mortbay.jetty:start:6.1.11" level="project" />
     <orderEntry type="library" name="Maven: commons-fileupload:commons-fileupload:1.2.2" level="project" />
     <orderEntry type="library" name="Maven: com.hazelcast:hazelcast-all:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: javax.validation:validation-api:1.1.0.Alpha1" level="project" />
+    <orderEntry type="library" name="Maven: javax.validation:validation-api:1.1.0.Final" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.mozilla:rhino:1.7R4" level="project" />
     <orderEntry type="library" name="Maven: org.apache.openjpa:openjpa-all:2.2.1" level="project" />
     <orderEntry type="library" name="Maven: de.schlichtherle.truezip:truezip-kernel:7.7.1" level="project" />
@@ -179,6 +179,14 @@
     <orderEntry type="library" name="Maven: org.antlr:antlr-runtime:3.4" level="project" />
     <orderEntry type="library" name="Maven: com.sun.jersey:jersey-client:1.18.1" level="project" />
     <orderEntry type="library" name="Maven: com.sun.jersey:jersey-core:1.18.1" level="project" />
+    <orderEntry type="library" name="Maven: com.sun.jersey:jersey-json:1.18.1" level="project" />
+    <orderEntry type="library" name="Maven: com.sun.xml.bind:jaxb-impl:2.2.3-1" level="project" />
+    <orderEntry type="library" name="Maven: javax.xml.bind:jaxb-api:2.2.2" level="project" />
+    <orderEntry type="library" name="Maven: com.sun.jersey:jersey-servlet:1.18.1" level="project" />
+    <orderEntry type="library" name="Maven: com.sun.jersey:jersey-server:1.18.1" level="project" />
+    <orderEntry type="library" name="Maven: com.sun.jersey.contribs:jersey-multipart:1.18.1" level="project" />
+    <orderEntry type="library" name="Maven: org.jvnet.mimepull:mimepull:1.9.3" level="project" />
+    <orderEntry type="library" name="Maven: com.sun.jersey.contribs:jersey-spring:1.18.1" level="project" />
   </component>
 </module>
 
