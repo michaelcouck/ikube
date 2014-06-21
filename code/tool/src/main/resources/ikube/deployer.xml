@@ -46,90 +46,6 @@
         property:parallel="${in-parallel}"
         property:maxWaitTime="60"/>
 
-    <!-- This is the base server on the 32 core machine -->
-    <bean
-        id="server"
-        name="server"
-        class="ikube.deploy.model.Server"
-	property:name="server"
-        property:ip="${server-system-ip}"
-        property:username="${username}"
-        property:password="${password}"
-        property:actions-ref="actions"/>
-
-    <util:list id="actions">
-        <ref local="stop-action"/>
-        <ref local="clean-action"/>
-        <ref local="copy-action"/>
-        <ref local="start-action"/>
-    </util:list>
-
-    <bean
-        id="stop-action"
-        name="stop-action"
-        class="ikube.deploy.action.CmdAction"
-        property:sleep="${sleep}"
-        property:breakOnError="true"
-        property:commands-ref="stop-commands"/>
-    <util:list id="stop-commands">
-        <value>${tomcat-shutdown};</value>
-        <value>${tomcat-kill};</value>
-    </util:list>
-
-    <bean
-        id="clean-action"
-        name="clean-action"
-        class="ikube.deploy.action.CmdAction"
-        property:sleep="${sleep}"
-        property:breakOnError="true"
-        property:commands-ref="clean-commands"/>
-    <util:list id="clean-commands">
-        <value>chmod 777 -R ${tomcat};</value>
-
-        <value>rm -rf ${tomcat-bin}/ikube/*</value>
-        <value>rm -rf ${tomcat}/webapps/ikube*;</value>
-
-        <value>rm -rf ${tomcat}/logs/*;</value>
-        <value>rm -rf ${tomcat}/temp/*;</value>
-        <value>rm -rf ${tomcat}/work/*;</value>
-
-        <value>chmod 777 -R ${tomcat};</value>
-    </util:list>
-
-    <bean
-        id="copy-action"
-        name="copy-action"
-        class="ikube.deploy.action.CopyAction"
-        property:sleep="${sleep}"
-        property:breakOnError="true"
-        property:files-ref="files"
-        property:directories-ref="directories"/>
-    <util:map id="files">
-        <entry key="${tail-script}" value="${tomcat-bin}"/>
-        <entry key="code/war/target/${ikube-war}" value="${tomcat-webapps}"/>
-        <!-- This over writes the properties specific for the target environment -->
-        <entry key="${resources-directory}/environments/sys/spring.properties" value="${tomcat-bin}/ikube/common"/>
-    </util:map>
-    <util:map id="directories">
-        <entry key="${resources-directory}/ikube" value="${tomcat-bin}"/>
-        <entry key="${resources-directory}/analytics" value="${tomcat-bin}/ikube"/>
-        <entry key="${resources-directory}/indexes/integration" value="${tomcat-bin}/ikube"/>
-        <entry key="${resources-directory}/indexes/production" value="${tomcat-bin}/ikube"/>
-        <entry key="${resources-directory}/indexes/twitter" value="${tomcat-bin}/ikube"/>
-    </util:map>
-
-    <bean
-        id="start-action"
-        name="start-action"
-        class="ikube.deploy.action.CmdAction"
-        property:sleep="${sleep}"
-        property:breakOnError="true"
-        property:commands-ref="start-commands"/>
-    <util:list id="start-commands">
-        <value>${tomcat-chmod}</value>
-        <value>${tomcat-startup}</value>
-    </util:list>
-
     <!-- Cluster servers one, two and three on the 32 core machine -->
 
     <!-- One -->
@@ -172,7 +88,7 @@
     <util:list id="clean-commands-one">
         <value>chmod 777 -R ${tomcat-one};</value>
 
-        <!--<value>rm -rf ${tomcat-one-bin}/ikube/*;</value>-->
+        <value>rm -rf ${tomcat-one-bin}/ikube/*;</value>
         <value>rm -rf ${tomcat-one}/webapps/ikube*;</value>
 
         <value>rm -rf ${tomcat-one}/logs/*;</value>
@@ -197,11 +113,11 @@
         <entry key="${resources-directory}/environments/sys/spring.properties" value="${tomcat-one-bin}/ikube/common"/>
     </util:map>
     <util:map id="directories-one">
-        <!--<entry key="${resources-directory}/ikube" value="${tomcat-one-bin}"/>
+        <entry key="${resources-directory}/ikube" value="${tomcat-one-bin}"/>
         <entry key="${resources-directory}/analytics" value="${tomcat-one-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/integration" value="${tomcat-one-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/production" value="${tomcat-one-bin}/ikube"/>
-        <entry key="${resources-directory}/indexes/twitter" value="${tomcat-one-bin}/ikube"/>-->
+        <entry key="${resources-directory}/indexes/twitter" value="${tomcat-one-bin}/ikube"/>
     </util:map>
 
     <bean
@@ -213,6 +129,7 @@
         property:commands-ref="start-commands-one"/>
     <util:list id="start-commands-one">
         <value>${tomcat-one-chmod}</value>
+        <value>cp /home/mineco-regression.arff ./ikube/analytics</value>
         <value>${tomcat-one-startup}</value>
     </util:list>
     <!-- End one -->
@@ -243,7 +160,6 @@
         property:breakOnError="true"
         property:commands-ref="stop-commands-two"/>
     <util:list id="stop-commands-two">
-        <value></value>
         <value>${tomcat-two-shutdown};</value>
         <value>${tomcat-two-kill};</value>
     </util:list>
@@ -258,7 +174,7 @@
     <util:list id="clean-commands-two">
         <value>chmod 777 -R ${tomcat-two};</value>
 
-        <!--<value>rm -rf ${tomcat-two-bin}/ikube/*;</value>-->
+        <value>rm -rf ${tomcat-two-bin}/ikube/*;</value>
         <value>rm -rf ${tomcat-two}/webapps/ikube*;</value>
 
         <value>rm -rf ${tomcat-two}/logs/*;</value>
@@ -283,11 +199,11 @@
         <entry key="${resources-directory}/environments/sys/spring.properties" value="${tomcat-two-bin}/ikube/common"/>
     </util:map>
     <util:map id="directories-two">
-        <!--<entry key="${resources-directory}/ikube" value="${tomcat-two-bin}"/>
+        <entry key="${resources-directory}/ikube" value="${tomcat-two-bin}"/>
         <entry key="${resources-directory}/analytics" value="${tomcat-two-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/integration" value="${tomcat-two-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/production" value="${tomcat-two-bin}/ikube"/>
-        <entry key="${resources-directory}/indexes/twitter" value="${tomcat-two-bin}/ikube"/>-->
+        <entry key="${resources-directory}/indexes/twitter" value="${tomcat-two-bin}/ikube"/>
     </util:map>
 
     <bean
@@ -299,6 +215,7 @@
         property:commands-ref="start-commands-two"/>
     <util:list id="start-commands-two">
         <value>${tomcat-two-chmod}</value>
+        <value>cp /home/mineco-regression.arff ./ikube/analytics</value>
         <value>${tomcat-two-startup}</value>
     </util:list>
     <!-- End two -->
@@ -343,7 +260,7 @@
     <util:list id="clean-commands-three">
         <value>chmod 777 -R ${tomcat-three};</value>
 
-        <!--<value>rm -rf ${tomcat-three-bin}/ikube/*;</value>-->
+        <value>rm -rf ${tomcat-three-bin}/ikube/*;</value>
         <value>rm -rf ${tomcat-three}/webapps/ikube*;</value>
 
         <value>rm -rf ${tomcat-three}/logs/*;</value>
@@ -369,11 +286,11 @@
                value="${tomcat-three-bin}/ikube/common"/>
     </util:map>
     <util:map id="directories-three">
-        <!--<entry key="${resources-directory}/ikube" value="${tomcat-three-bin}"/>
+        <entry key="${resources-directory}/ikube" value="${tomcat-three-bin}"/>
         <entry key="${resources-directory}/analytics" value="${tomcat-three-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/integration" value="${tomcat-three-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/production" value="${tomcat-three-bin}/ikube"/>
-        <entry key="${resources-directory}/indexes/twitter" value="${tomcat-three-bin}/ikube"/>-->
+        <entry key="${resources-directory}/indexes/twitter" value="${tomcat-three-bin}/ikube"/>
     </util:map>
 
     <bean
@@ -385,6 +302,7 @@
         property:commands-ref="start-commands-three"/>
     <util:list id="start-commands-three">
         <value>${tomcat-three-chmod}</value>
+        <value>cp /home/mineco-regression.arff ./ikube/analytics</value>
         <value>${tomcat-three-startup}</value>
     </util:list>
     <!-- End three -->
@@ -394,7 +312,7 @@
         id="server-production"
         name="server-production"
         class="ikube.deploy.model.Server"
-	property:name="server-production"
+	    property:name="server-production"
         property:ip="${server-production-ip}"
         property:username="${username}"
         property:password="${password}"
@@ -429,7 +347,7 @@
     <util:list id="clean-commands-production">
         <value>chmod 777 -R ${tomcat-production};</value>
 
-        <!--<value>rm -rf ${tomcat-production-bin}/ikube/*;</value>-->
+        <value>rm -rf ${tomcat-production-bin}/ikube/*;</value>
         <value>rm -rf ${tomcat-production}/webapps/ikube*;</value>
 
         <value>rm -rf ${tomcat-production}/logs/*;</value>
@@ -469,6 +387,7 @@
         property:commands-ref="start-commands-production"/>
     <util:list id="start-commands-production">
         <value>${tomcat-production-chmod}</value>
+        <value>cp /home/mineco-regression.arff ./ikube/analytics</value>
         <value>${tomcat-production-startup}</value>
     </util:list>
     <!-- End production -->
