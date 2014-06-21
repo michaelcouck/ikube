@@ -45,28 +45,31 @@
         <targetJdk>1.7</targetJdk>
         <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
 
-		<spring-security-oauth-version>3.19</spring-security-oauth-version>
-		<spring-version>3.0.5.RELEASE</spring-version>
-		<junit-version>4.8.2</junit-version>
+        <!-- Spring -->
+        <spring-version>3.2.4.RELEASE</spring-version>
+        <spring-security-oauth-version>3.19</spring-security-oauth-version>
+
         <!-- Serenity parameters -->
-		<write-classes>-Dwrite.classes=true</write-classes>
-		<clean-classes>-Dclean.classes=true</clean-classes>
-		<included-packages>-Dincluded.packages=ikube</included-packages>
-		<excluded-packages>-Dexcluded.packages=model:Mock:Test:Integration</excluded-packages>
-		<included-adapters>-Dincluded.adapters=coverage:complexity:dependency</included-adapters>
-		<serenity-parameters>${write-classes} ${clean-classes} ${included-packages} ${excluded-packages} ${included-adapters} -noverify</serenity-parameters>
-		<memory-parameters>-XX:PermSize=256m -XX:MaxPermSize=1024m -Xms1024m -Xmx4096m</memory-parameters>
+        <write-classes>-Dwrite.classes=true</write-classes>
+        <clean-classes>-Dclean.classes=true</clean-classes>
+        <included-packages>-Dincluded.packages=ikube</included-packages>
+        <excluded-packages>-Dexcluded.packages=model:Mock:Test:Integration</excluded-packages>
+        <included-adapters>-Dincluded.adapters=coverage:complexity:dependency</included-adapters>
+        <serenity-parameters>${write-classes} ${clean-classes} ${included-packages} ${excluded-packages} ${included-adapters} -noverify</serenity-parameters>
+        <memory-parameters>-XX:PermSize=256m -XX:MaxPermSize=1024m -Xms1024m -Xmx4096m</memory-parameters>
 
-		<postgresql-driver-version>9.1-901-1.jdbc4</postgresql-driver-version>
-		<!--<jetty-version>6.1.11</jetty-version>-->
+        <!--
+            Lucene:
+            Was 3.6.1 at 20.03.12
+            Was 3.6.2 at 23.12.13
+        -->
+        <lucene-version>4.6.0</lucene-version>
 
-		<!--
-			Was 3.6.1 at 20.03.12
-			Was 3.6.2 at 23.12.13
-		-->
-		<lucene-version>4.6.0</lucene-version>
         <jersey-version>1.18.1</jersey-version>
-	</properties>
+        <postgresql-driver-version>9.1-901-1.jdbc4</postgresql-driver-version>
+
+        <junit-version>4.8.2</junit-version>
+    </properties>
 
 	<build>
 		<resources>
@@ -226,15 +229,15 @@
 	</build>
 
 	<dependencies>
-		<dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring-version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
-			<version>${spring-version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
 			<version>${spring-version}</version>
 			<scope>compile</scope>
 		</dependency>
@@ -379,6 +382,13 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-orm</artifactId>
+			<version>${spring-version}</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
 			<version>${spring-version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
