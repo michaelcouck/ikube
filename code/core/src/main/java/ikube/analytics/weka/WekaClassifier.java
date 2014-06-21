@@ -202,14 +202,10 @@ public class WekaClassifier extends WekaAnalyzer {
 			int numAttributes = instances.numAttributes();
 			int numInstances = instances.numInstances();
 			String expression = //
-					"Building classifier, classesOrClusters : " + //
-							numClasses + //
-							", attributes : " + //
-							numAttributes + //
-							", instances : " + //
-							numInstances + //
-							", classifier :  " + //
-							classifier.hashCode();
+					"Building classifier, classesOrClusters : " + numClasses + //
+							", attributes : " + numAttributes + //
+							", instances : " + numInstances + //
+							", classifier :  " + classifier.hashCode();
 			logger.info(expression);
 		}
 	}
