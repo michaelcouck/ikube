@@ -181,14 +181,29 @@
     <orderEntry type="library" name="Maven: com.sun.jersey.contribs:jersey-multipart:1.18.1" level="project" />
     <orderEntry type="library" name="Maven: org.jvnet.mimepull:mimepull:1.9.3" level="project" />
     <orderEntry type="library" name="Maven: com.sun.jersey.contribs:jersey-spring:1.18.1" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-server:7.6.15.v20140411" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty.orbit:javax.servlet:2.5.0.v201103041518" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-continuation:7.6.15.v20140411" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-http:7.6.15.v20140411" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-io:7.6.15.v20140411" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-util:7.6.15.v20140411" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:example-jetty-embedded:7.6.15.v20140411" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-webapp:7.6.15.v20140411" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-xml:7.6.15.v20140411" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-servlet:7.6.15.v20140411" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-security:7.6.15.v20140411" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-servlets:7.6.15.v20140411" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-client:7.6.15.v20140411" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-rewrite:7.6.15.v20140411" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-deploy:7.6.15.v20140411" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-jmx:7.6.15.v20140411" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-ajp:7.6.15.v20140411" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-websocket:7.6.15.v20140411" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-embedded-examples:7.0.0.M2" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax.servlet:servlet-api:2.5" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax.servlet:jsp-api:2.0" level="project" />
     <orderEntry type="library" name="Maven: taglibs:standard:1.1.2" level="project" />
     <orderEntry type="library" name="Maven: javax.servlet:jstl:1.1.2" level="project" />
-    <orderEntry type="library" name="Maven: org.mortbay.jetty:jetty:6.1.11" level="project" />
-    <orderEntry type="library" name="Maven: org.mortbay.jetty:jetty-util:6.1.11" level="project" />
-    <orderEntry type="library" name="Maven: org.mortbay.jetty:servlet-api-2.5:6.1.11" level="project" />
-    <orderEntry type="library" name="Maven: javax.ws.rs:jsr311-api:1.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.tiles:tiles-jsp:2.2.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.tiles:tiles-template:2.2.0" level="project" />
     <orderEntry type="library" name="Maven: tomgibara:cluster-gvm:1.0" level="project" />
@@ -206,9 +221,6 @@
     <orderEntry type="library" scope="TEST" name="Maven: net.sourceforge.nekohtml:nekohtml:1.9.15" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: net.sourceforge.cssparser:cssparser:0.9.5" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.w3c.css:sac:1.3" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.mortbay.jetty:jetty-embedded:6.1.11" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: javax.servlet.jsp:jsp-api:2.1" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.mortbay.jetty:start:6.1.11" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.mozilla:rhino:1.7R4" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.reflections:reflections:0.9.9-RC1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.google.guava:guava:11.0.2" level="project" />

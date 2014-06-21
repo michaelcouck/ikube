@@ -3,7 +3,6 @@ package ikube;
 import ikube.mock.SpellingCheckerMock;
 import ikube.toolkit.Logging;
 import mockit.Mockit;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.AutoRetryHttpClient;
 import org.apache.lucene.document.Document;
@@ -13,7 +12,6 @@ import org.apache.lucene.search.IndexSearcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,35 +40,6 @@ public abstract class BaseTest {
     static {
         Logging.configure();
         Mockit.setUpMocks(SpellingCheckerMock.class);
-    }
-
-    /**
-     * This method will build an array of name value pairs that can be used in the HttpClient to parameterize the request to resources and
-     * pages in fact.
-     *
-     * @param names  the names of the parameters
-     * @param values the values to be assigned to the parameters
-     * @return the array of name value pairs for the request
-     */
-    protected static NameValuePair[] getNameValuePairs(final String[] names, final String[] values) {
-        List<NameValuePair> nameValuePairs = new ArrayList<>();
-        for (int i = 0; i < names.length && i < values.length; i++) {
-			final String name = names[i];
-			final String value = values[i];
-            NameValuePair nameValuePair = new NameValuePair() {
-				@Override
-				public String getName() {
-					return name;
-				}
-
-				@Override
-				public String getValue() {
-					return value;
-				}
-			};
-            nameValuePairs.add(nameValuePair);
-        }
-        return nameValuePairs.toArray(new NameValuePair[nameValuePairs.size()]);
     }
 
     @SuppressWarnings("UnusedDeclaration")

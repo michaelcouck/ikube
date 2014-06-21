@@ -58,7 +58,7 @@
 		<memory-parameters>-XX:PermSize=256m -XX:MaxPermSize=1024m -Xms1024m -Xmx4096m</memory-parameters>
 
 		<postgresql-driver-version>9.1-901-1.jdbc4</postgresql-driver-version>
-		<jetty-version>6.1.11</jetty-version>
+		<!--<jetty-version>6.1.11</jetty-version>-->
 
 		<!--
 			Was 3.6.1 at 20.03.12
@@ -815,7 +815,7 @@
 			<scope>compile</scope>
 		</dependency>
 
-		<dependency>
+		<!--<dependency>
 			<groupId>org.mortbay.jetty</groupId>
 			<artifactId>jetty-embedded</artifactId>
 			<version>${jetty-version}</version>
@@ -838,7 +838,7 @@
 			<artifactId>jetty-util</artifactId>
 			<version>${jetty-version}</version>
 			<scope>test</scope>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>

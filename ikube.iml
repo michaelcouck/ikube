@@ -110,12 +110,6 @@
     <orderEntry type="library" name="Maven: commons-beanutils:commons-beanutils:1.8.0" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:jcl-over-slf4j:1.5.8" level="project" />
     <orderEntry type="library" name="Maven: org.apache.tiles:tiles-el:2.2.2" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.mortbay.jetty:jetty-embedded:6.1.11" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.mortbay.jetty:jetty:6.1.11" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.mortbay.jetty:jetty-util:6.1.11" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.mortbay.jetty:servlet-api-2.5:6.1.11" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: javax.servlet.jsp:jsp-api:2.1" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.mortbay.jetty:start:6.1.11" level="project" />
     <orderEntry type="library" name="Maven: commons-fileupload:commons-fileupload:1.2.2" level="project" />
     <orderEntry type="library" name="Maven: com.hazelcast:hazelcast-all:3.1.1" level="project" />
     <orderEntry type="library" name="Maven: javax.validation:validation-api:1.1.0.Final" level="project" />
