@@ -46,8 +46,8 @@ public class AnalLoad extends Load {
 
     @SuppressWarnings("StringBufferReplaceableByString")
     private void doMain(final String analyzerName, final String algorithm, final String trainingData) {
-        String url = "localhost";
-        int port = 9090;
+        String url = "ikube.be";
+        int port = 80;
         String path = new StringBuilder("/ikube").append("/service").append("/analyzer").toString();
 
         Client client = Client.create();

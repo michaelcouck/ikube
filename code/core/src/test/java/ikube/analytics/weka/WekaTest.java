@@ -96,7 +96,7 @@ public class WekaTest extends AbstractTest {
 		Instances instances = new Instances(bufferedReader);
 
 		Classifier classifier = new SimpleLinearRegression();
-		instances.setClassIndex(5);
+		instances.setClassIndex(0);
 
 		classifier.buildClassifier(instances);
 

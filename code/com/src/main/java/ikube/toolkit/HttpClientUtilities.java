@@ -43,6 +43,18 @@ public class HttpClientUtilities {
             final String[] names,
             final String[] values,
             final Class<T> returnType) {
+        return doGet(url, username, password, names, values, MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON, returnType);
+    }
+
+    public static <T> T doGet(
+            final String url,
+            final String username,
+            final String password,
+            final String[] names,
+            final String[] values,
+            final String consumes,
+            final String produces,
+            final Class<T> returnType) {
         Client client = Client.create();
         if (StringUtils.isNotEmpty(username) && StringUtils.isNotEmpty(password)) {
             client.addFilter(new HTTPBasicAuthFilter(username, password));
@@ -52,8 +64,8 @@ public class HttpClientUtilities {
             setParameters(webResource, names, values);
         }
         String response = webResource
-                .accept(MediaType.APPLICATION_JSON)
-                .type(MediaType.APPLICATION_JSON)
+                .accept(consumes)
+                .type(produces)
                 .get(String.class);
         return Constants.GSON.fromJson(response, returnType);
     }

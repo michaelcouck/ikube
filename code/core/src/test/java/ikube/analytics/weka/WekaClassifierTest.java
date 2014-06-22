@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static ikube.toolkit.ThreadUtilities.submit;
 import static junit.framework.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -153,51 +154,58 @@ public class WekaClassifierTest extends AbstractTest {
         List<Future<Object>> futures = new ArrayList<>();
         final AtomicInteger exceptions = new AtomicInteger(0);
 
-        Future<Object> future = (Future<Object>) ThreadUtilities.submit(Long.toString(System.currentTimeMillis()), new Runnable() {
+        Future<Object> future = (Future<Object>) submit(Long.toString(System.currentTimeMillis()), new Runnable() {
             public void run() {
                 int i = iterations;
                 while (--i > 0) {
                     try {
+                        logger.debug("Build : " + i);
                         wekaClassifier.build(context);
-                        ThreadUtilities.sleep(3000);
+                        ThreadUtilities.sleep(300);
                     } catch (final Exception e) {
                         exceptions.incrementAndGet();
                     }
                 }
+                logger.debug("Build done : ");
             }
         });
         futures.add(future);
-        future = (Future<Object>) ThreadUtilities.submit(Long.toString(System.currentTimeMillis()), new Runnable() {
+        future = (Future<Object>) submit(Long.toString(System.currentTimeMillis()), new Runnable() {
+            public void run() {
+                int i = iterations * 10;
+                while (--i > 0) {
+                    try {
+                        logger.debug("Train : " + i);
+                        Analysis<Object, Object> analysis = getAnalysis(IConstants.POSITIVE, positive);
+                        wekaClassifier.train(analysis);
+                        ThreadUtilities.sleep(100);
+                    } catch (final Exception e) {
+                        exceptions.incrementAndGet();
+                    }
+                }
+                logger.debug("Train done : ");
+            }
+        });
+        futures.add(future);
+        future = (Future<Object>) submit(Long.toString(System.currentTimeMillis()), new Runnable() {
             public void run() {
                 int i = iterations * 100;
                 while (--i > 0) {
                     try {
-                        Analysis<Object, Object> analysis = getAnalysis(IConstants.POSITIVE, positive);
-                        wekaClassifier.train(analysis);
-                        ThreadUtilities.sleep(1000);
-                    } catch (Exception e) {
-                        exceptions.incrementAndGet();
-                    }
-                }
-            }
-        });
-        futures.add(future);
-        future = (Future<Object>) ThreadUtilities.submit(Long.toString(System.currentTimeMillis()), new Runnable() {
-            public void run() {
-                int i = iterations * 1000;
-                while (--i > 0) {
-                    try {
+                        logger.debug("Analyze : " + i);
                         Analysis<Object, Object> analysis = getAnalysis(IConstants.POSITIVE, positive);
                         wekaClassifier.analyze(analysis);
-                    } catch (Exception e) {
+                        ThreadUtilities.sleep(100);
+                    } catch (final Exception e) {
                         exceptions.incrementAndGet();
                     }
                 }
+                logger.debug("Analyze done : ");
             }
         });
         futures.add(future);
 
-        ThreadUtilities.waitForFutures(futures, 15);
+        ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
         assertEquals(0, exceptions.intValue());
     }
 

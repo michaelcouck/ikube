@@ -1,6 +1,7 @@
 package ikube.analytics.weka;
 
 import ikube.model.Analysis;
+import ikube.model.AnalyzerInfo;
 import ikube.model.Context;
 import ikube.toolkit.Timer;
 import weka.classifiers.Classifier;
@@ -190,6 +191,9 @@ public class WekaClassifier extends WekaAnalyzer {
         Evaluation evaluation = new Evaluation(instances);
         evaluation.evaluateModel(classifier, instances);
         String evaluationReport = evaluation.toSummaryString();
+        if (context.getAnalyzerInfo() == null) {
+            context.setAnalyzerInfo(new AnalyzerInfo());
+        }
         context.getAnalyzerInfo().setEvaluation(evaluationReport);
     }
 

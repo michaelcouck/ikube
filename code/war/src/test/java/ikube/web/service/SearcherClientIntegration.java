@@ -3,6 +3,7 @@ package ikube.web.service;
 import ikube.toolkit.HttpClientUtilities;
 import org.junit.Test;
 
+import javax.ws.rs.core.MediaType;
 import java.net.URL;
 
 /**
@@ -45,7 +46,15 @@ public class SearcherClientIntegration {
                 "-33.9693580", //
                 "18.4622110"};
 
-        String response = HttpClientUtilities.doGet(url.toString(), names, values, String.class);
+        String response = HttpClientUtilities.doGet(
+                url.toString(),
+                null,
+                null,
+                names,
+                values,
+                MediaType.TEXT_PLAIN,
+                MediaType.TEXT_PLAIN,
+                String.class);
         System.out.println("Response body : " + response);
     }
 

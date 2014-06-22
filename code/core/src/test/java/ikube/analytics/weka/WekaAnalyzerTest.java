@@ -2,6 +2,7 @@ package ikube.analytics.weka;
 
 import ikube.AbstractTest;
 import ikube.IConstants;
+import ikube.model.AnalyzerInfo;
 import ikube.model.Context;
 import mockit.Mock;
 import mockit.MockClass;
@@ -53,6 +54,7 @@ public class WekaAnalyzerTest extends AbstractTest {
         context.setFilter(StringToWordVector.class.newInstance());
         context.setAlgorithm(SMO.class.newInstance());
         context.setMaxTraining(1000);
+        context.setAnalyzerInfo(new AnalyzerInfo());
 
         wekaAnalyzer = new WekaClassifier();
         wekaAnalyzer.init(context);
