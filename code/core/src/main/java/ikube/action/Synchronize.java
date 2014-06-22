@@ -50,7 +50,7 @@ public class Synchronize extends Action<IndexContext, Boolean> {
 	boolean internalExecute(final IndexContext indexContext) {
 		// Get the latest index on one of the remote servers
 		Server remote = getTargetRemoteServer(indexContext);
-		logger.debug("Remote server : " + remote);
+		logger.error("Remote server : " + remote);
 		if (remote == null) {
 			return Boolean.FALSE;
 		}
@@ -61,7 +61,7 @@ public class Synchronize extends Action<IndexContext, Boolean> {
 		Future<String[]> future = clusterManager.sendTaskTo(remote, latestCallable);
 		try {
 			indexFiles = future.get();
-			logger.debug("Index files : " + Arrays.toString(indexFiles));
+			logger.error("Index files : " + Arrays.toString(indexFiles));
 		} catch (final InterruptedException | ExecutionException e) {
 			throw new RuntimeException("Exception getting the index files from the remote server : " + remote, e);
 		}
@@ -74,7 +74,7 @@ public class Synchronize extends Action<IndexContext, Boolean> {
 			int length = 1024 * 1024 * 10;
 			for (final String indexFile : indexFiles) {
 				int offset = 0;
-				logger.debug("Index file : " + indexFile);
+				logger.error("Index file : " + indexFile);
 				currentIndexFile = indexFile;
 				do {
 					// Keep calling the remote server for chunks of the index file
@@ -109,7 +109,7 @@ public class Synchronize extends Action<IndexContext, Boolean> {
 		byte[] chunk = null;
 		do {
 			try {
-				logger.debug("Getting file : " + indexFile + ", " + offset + ", " + length);
+				logger.error("Getting file : " + indexFile + ", " + offset + ", " + length);
 				SynchronizeCallable chunkCallable = new SynchronizeCallable(indexFile, offset, length);
 				Future<byte[]> chunkFuture = clusterManager.sendTaskTo(remote, chunkCallable);
 				chunk = chunkFuture.get();

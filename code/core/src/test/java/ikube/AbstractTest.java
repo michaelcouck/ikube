@@ -27,6 +27,8 @@ import org.apache.lucene.store.Lock;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.BytesRef;
 import org.junit.Ignore;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +54,7 @@ import static org.mockito.Mockito.when;
  */
 @Ignore
 @SuppressWarnings("deprecation")
+@RunWith(MockitoJUnitRunner.class)
 public abstract class AbstractTest {
 
     static {

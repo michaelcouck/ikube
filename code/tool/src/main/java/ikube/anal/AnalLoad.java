@@ -1,22 +1,22 @@
 package ikube.anal;
 
-import java.io.File;
-
-import org.kohsuke.args4j.CmdLineParser;
-
 import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-
-import ikube.IConstants;
 import ikube.Load;
 import ikube.analytics.weka.WekaClassifier;
 import ikube.model.Analysis;
 import ikube.model.AnalyzerInfo;
 import ikube.model.Context;
-import ikube.toolkit.FileUtilities;
-import weka.classifiers.functions.SimpleLinearRegression;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.kohsuke.args4j.CmdLineParser;
+import weka.classifiers.functions.IsotonicRegression;
+
+import java.io.File;
+
+import static ikube.Constants.GSON;
+import static ikube.toolkit.FileUtilities.findFileRecursively;
+import static ikube.toolkit.FileUtilities.getContent;
+import static ikube.toolkit.HttpClientUtilities.doPost;
 
 /**
  * @author Michael Couck
@@ -25,104 +25,89 @@ import weka.classifiers.functions.SimpleLinearRegression;
  */
 public class AnalLoad extends Load {
 
-	public static void main(String[] args) throws Exception {
-		new AnalLoad().doMain(args);
-	}
+    public static void main(String[] args) throws Exception {
+        new AnalLoad().doMain(args);
+    }
 
-	@SuppressWarnings("StringBufferReplaceableByString")
-	protected void doMain(final String[] args) throws Exception {
-		CmdLineParser parser = new CmdLineParser(this);
-		parser.setUsageWidth(140);
-		parser.parseArgument(args);
+    @SuppressWarnings("StringBufferReplaceableByString")
+    protected void doMain(final String[] args) throws Exception {
+        CmdLineParser parser = new CmdLineParser(this);
+        parser.setUsageWidth(140);
+        parser.parseArgument(args);
 
-		String analyzerName = "linear-regression";
-		String trainingData = FileUtilities.getContent(FileUtilities.findFileRecursively(new File("."), "regression.arff"));
-		Context context = getContext(analyzerName, trainingData);
-		String content = IConstants.GSON.toJson(context);
+        String analyzerName = "regression";
+        File file = findFileRecursively(new File("."), "regression-mineco");
+        String trainingData = getContent(file);
 
-		Client client = Client.create();
-		client.addFilter(new HTTPBasicAuthFilter("user", "user"));
+        /*doMain(analyzerName, SimpleLinearRegression.class.getName(), trainingData);
+        doMain(analyzerName, GaussianProcesses.class.getName(), trainingData);*/
+        doMain(analyzerName, IsotonicRegression.class.getName(), trainingData);
+    }
 
-		// Create the regression analysis object
-		String createPath = new StringBuilder("/ikube")
-				.append("/service").append("/analyzer").append("/create")
-				.toString();
-		String createUrl = getUrl("ikube.be", 80, createPath);
-		System.out.println(createUrl);
-		// http://ikube.be:80/ikube/service/analyzer/create
-		// executePost(createUrl, content, Context.class);
-		WebResource webResource = client.resource(createUrl);
-		ClientResponse clientResponse = webResource.accept(javax.ws.rs.core.MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-		String response = clientResponse.getEntity(String.class);
-		logger.info("Response : " + response);
+    @SuppressWarnings("StringBufferReplaceableByString")
+    private void doMain(final String analyzerName, final String algorithm, final String trainingData) {
+        String url = "localhost";
+        int port = 9090;
+        String path = new StringBuilder("/ikube").append("/service").append("/analyzer").toString();
 
-		Analysis<Object, Object> analysis = getAnalysis(analyzerName, "205000,3529,9191,6,0,0");
+        Client client = Client.create();
+        client.addFilter(new HTTPBasicAuthFilter("user", "user"));
 
-		// Build the analyzer
-		String buildPath = new StringBuilder("/ikube")
-				.append("/service").append("/analyzer").append("/build")
-				.toString();
-		String buildUrl = getUrl("ikube.be", 80, buildPath);
-		content = IConstants.GSON.toJson(analysis);
-		// executePost(buildUrl, content, Analysis.class);
-		webResource = client.resource(buildUrl);
-		clientResponse = webResource.accept(javax.ws.rs.core.MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-		response = clientResponse.getEntity(String.class);
-		logger.info("Response : " + response);
+        // Create the regression analysis object
+        Context context = getContext(analyzerName, algorithm, trainingData);
+        String content = GSON.toJson(context);
+        String createUrl = getUrl(url, port, path + "/create");
+        Object create = doPost(createUrl, content, Context.class);
+        logger.info("Create : " + create);
 
-		// Use the analysis object
-		String analysisPath = new StringBuilder("/ikube")
-				.append("/service").append("/analyzer").append("/analyze")
-				.toString();
-		String analysisUrl = getUrl("ikube.be", 80, analysisPath);
-		content = IConstants.GSON.toJson(analysis);
-		// executePost(analysisUrl, content, Analysis.class);
-		webResource = client.resource(analysisUrl);
-		clientResponse = webResource.accept(javax.ws.rs.core.MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-		response = clientResponse.getEntity(String.class);
-		logger.info("Response : " + response);
+        // Build the analyzer
+        String buildUrl = getUrl(url, port, path + "/build");
+        Analysis<Object, Object> analysis = getAnalysis(analyzerName, "1652452,2008,44021,8");
+        content = GSON.toJson(analysis);
+        Object build = doPost(buildUrl, content, Analysis.class);
+        logger.info("Build : " + build);
 
-		// Destroy the analysis object
-		String destroyPath = new StringBuilder("/ikube")
-				.append("/service").append("/analyzer").append("/destroy")
-				.toString();
-		String destroyUrl = getUrl("ikube.be", 80, destroyPath);
-		content = IConstants.GSON.toJson(context);
-		// executePost(destroyUrl, content, Context.class);
-		webResource = client.resource(destroyUrl);
-		clientResponse = webResource.accept(javax.ws.rs.core.MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-		response = clientResponse.getEntity(String.class);
-		logger.info("Response : " + response);
-	}
+        // Use the analysis object
+        String analysisUrl = getUrl(url, port, path + "/analyze");
+        content = GSON.toJson(analysis);
+        Object analyze = doPost(analysisUrl, content, Analysis.class);
+        logger.info("Analyze : " + ToStringBuilder.reflectionToString(analyze));
 
-	@SuppressWarnings("unchecked")
-	private Context getContext(final String name, final String trainingData) {
-		Context context = new Context();
-		context.setName(name);
+        // Destroy the analysis object
+        String destroyUrl = getUrl(url, port, path + "/destroy");
+        content = GSON.toJson(context);
+        Object destroy = doPost(destroyUrl, content, Context.class);
+        logger.info("Destroy : " + destroy);
+    }
 
-		AnalyzerInfo analyzerInfo = new AnalyzerInfo();
-		analyzerInfo.setAnalyzer(WekaClassifier.class.getName());
-		analyzerInfo.setAlgorithm(SimpleLinearRegression.class.getName());
+    @SuppressWarnings("unchecked")
+    private Context getContext(final String name, final String algorithm, final String trainingData) {
+        Context context = new Context();
+        context.setName(name);
 
-		context.setAnalyzerInfo(analyzerInfo);
+        AnalyzerInfo analyzerInfo = new AnalyzerInfo();
+        analyzerInfo.setAnalyzer(WekaClassifier.class.getName());
+        analyzerInfo.setAlgorithm(algorithm);
 
-		// context.setOptions(new String[] { "-N", "6" });
-		context.setMaxTraining(Integer.MAX_VALUE);
-		context.setTrainingData(trainingData);
+        context.setAnalyzerInfo(analyzerInfo);
 
-		return context;
-	}
+        // context.setOptions(new String[] { "-N", "6" });
+        context.setMaxTraining(Integer.MAX_VALUE);
+        context.setTrainingData(trainingData);
 
-	private Analysis<Object, Object> getAnalysis(final String analyzer, final Object input) {
-		Analysis<Object, Object> analysis = new Analysis<>();
-		analysis.setAnalyzer(analyzer);
-		analysis.setInput(input);
+        return context;
+    }
 
-		analysis.setDistribution(Boolean.TRUE);
-		analysis.setClassesAndClusters(Boolean.FALSE);
-		analysis.setAlgorithm(Boolean.TRUE);
-		analysis.setCorrelation(Boolean.TRUE);
-		return analysis;
-	}
+    private Analysis<Object, Object> getAnalysis(final String analyzer, final Object input) {
+        Analysis<Object, Object> analysis = new Analysis<>();
+        analysis.setAnalyzer(analyzer);
+        analysis.setInput(input);
+
+        analysis.setAlgorithm(Boolean.TRUE);
+        analysis.setCorrelation(Boolean.TRUE);
+        analysis.setDistribution(Boolean.TRUE);
+        analysis.setClassesAndClusters(Boolean.TRUE);
+        return analysis;
+    }
 
 }

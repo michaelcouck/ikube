@@ -43,10 +43,6 @@ public class Analysis<Input, Output> extends Distributed {
      */
     private String algorithmOutput;
     /**
-     * Whether to get the algorithm output with the results.
-     */
-    private boolean algorithm;
-    /**
      * The correlation co-efficients for the data set, matching the first instance against the next.
      */
     @Transient
@@ -70,10 +66,30 @@ public class Analysis<Input, Output> extends Distributed {
     @Transient
     private transient Exception exception;
 
+    /**
+     * The time taken for the analysis.
+     */
     private double duration;
+
+    /**
+     * Whether to get the algorithm output with the results.
+     */
+    private boolean algorithm;
+    /**
+     * Whether to get the correlation co-efficients for the instances.
+     */
     private boolean correlation;
+    /**
+     * Whether to get the distribution for the instances, very expensive.
+     */
     private boolean distribution;
+    /**
+     * Whether to get the classes or clusters for the instance.
+     */
     private boolean classesAndClusters;
+    /**
+     * Whether to get the sizes for the classes or clusters for the instances.
+     */
     private boolean sizesForClassesAndClusters;
 
     public String getAnalyzer() {

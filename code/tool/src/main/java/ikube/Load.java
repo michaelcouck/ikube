@@ -19,7 +19,7 @@ public abstract class Load {
     protected String getUrl(final String url, final int port, final String path) {
         try {
             return new URL("http", url, port, path).toString();
-        } catch (MalformedURLException e) {
+        } catch (final MalformedURLException e) {
             throw new RuntimeException(e);
         }
     }

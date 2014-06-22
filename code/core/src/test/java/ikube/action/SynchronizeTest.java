@@ -47,8 +47,7 @@ public class SynchronizeTest extends AbstractTest {
 		synchronize.execute(indexContext);
 
 		// There are five chunks and four extra files, so nine calls
-		verify(chunkFuture, atLeast(9)).get();
-		verify(chunkFuture, atMost(9)).get();
+		verify(chunkFuture, times(9)).get();
 	}
 
 	private Map<String, Server> getServers() {

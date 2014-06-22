@@ -105,14 +105,14 @@ public class WekaClassifierTest extends AbstractTest {
         result = wekaClassifier.analyze(analysis);
         assertEquals(IConstants.NEGATIVE, result.getClazz());
 
-        /*System.gc();
+        System.gc();
         long before = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / IConstants.MILLION;
         for (int i = 0; i < IConstants.HUNDRED_THOUSAND; i++) {
             wekaClassifier.analyze(analysis);
         }
         System.gc();
         long after = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / IConstants.MILLION;
-        logger.info("Before : " + before + ", " + after + ", " + (after - before));*/
+        logger.info("Before : " + before + ", after : " + after + ", difference : " + (after - before));
     }
 
     @Test
@@ -145,8 +145,8 @@ public class WekaClassifierTest extends AbstractTest {
         assertEquals(1.0, distributionForInstance[1]);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
+    @SuppressWarnings("unchecked")
     public void multiThreaded() throws Exception {
         ThreadUtilities.initialize();
         final int iterations = 10;

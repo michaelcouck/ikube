@@ -104,6 +104,7 @@ public class WekaClusterer extends WekaAnalyzer {
                 analysis.setCorrelationCoefficients(getCorrelationCoefficients(instances));
             }
             if (analysis.isDistribution()) {
+                // This is very expensive
                 analysis.setDistributionForInstances(getDistributionForInstances(instances));
             }
             return analysis;

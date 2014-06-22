@@ -45,7 +45,7 @@ public class SearcherClientIntegration {
                 "-33.9693580", //
                 "18.4622110"};
 
-        String response = HttpClientUtilities.doGet(url.toString(), String.class, names, values);
+        String response = HttpClientUtilities.doGet(url.toString(), names, values, String.class);
         System.out.println("Response body : " + response);
     }
 

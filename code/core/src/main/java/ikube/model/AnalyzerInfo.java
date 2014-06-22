@@ -30,12 +30,16 @@ public class AnalyzerInfo extends Persistable {
      * The data filter to transform the data into the required type if necessary. Can be null.
      */
     private String filter;
+    /**
+     * The evaluation of the data and the classifier. Note that clusterers can not be evaluated.
+     */
+    private String evaluation;
 
     public String getAnalyzer() {
         return analyzer;
     }
 
-    public void setAnalyzer(String analyzer) {
+    public void setAnalyzer(final String analyzer) {
         this.analyzer = analyzer;
     }
 
@@ -43,7 +47,7 @@ public class AnalyzerInfo extends Persistable {
         return algorithm;
     }
 
-    public void setAlgorithm(String algorithm) {
+    public void setAlgorithm(final String algorithm) {
         this.algorithm = algorithm;
     }
 
@@ -51,7 +55,15 @@ public class AnalyzerInfo extends Persistable {
         return filter;
     }
 
-    public void setFilter(String filter) {
+    public void setFilter(final String filter) {
         this.filter = filter;
+    }
+
+    public String getEvaluation() {
+        return evaluation;
+    }
+
+    public void setEvaluation(final String evaluation) {
+        this.evaluation = evaluation;
     }
 }
