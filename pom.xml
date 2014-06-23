@@ -229,7 +229,7 @@
             <plugin>
                 <groupId>org.asciidoctor</groupId>
                 <artifactId>asciidoctor-maven-plugin</artifactId>
-                <version>0.1.1</version>
+                <version>0.1.4</version>
                 <executions>
                     <execution>
                         <id>render-asciidoc</id>
@@ -240,16 +240,16 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <backend>html</backend>
                     <sourceDirectory>docs</sourceDirectory>
                     <outputDirectory>docs/documentation/html</outputDirectory>
-                    <sourceHighlighter>coderay</sourceHighlighter>
-                    <backend>html5</backend>
-                    <embedAssets>true</embedAssets>
+                    <!--<sourceHighlighter>coderay</sourceHighlighter>-->
+                    <!--<embedAssets>false</embedAssets>-->
                     <attributes>
-                        <toc/>
+                        <!--<toc/>-->
                         <linkcss>true</linkcss>
-                        <copycss>true</copycss>
-                        <stylesheet>code/war/src/main/webapp/assets/stylesheets/application.css</stylesheet>
+                        <!--<copycss>false</copycss>-->
+                        <stylesheet>application.css</stylesheet>
                     </attributes>
                 </configuration>
             </plugin>
