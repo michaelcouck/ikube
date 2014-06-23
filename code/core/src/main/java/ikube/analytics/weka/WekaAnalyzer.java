@@ -5,6 +5,7 @@ import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.StringUtilities;
 import ikube.toolkit.Timer;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -166,7 +167,11 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<Object, Object>
 			} else if (attribute.isString()) {
 				instance.setValue(attribute, attribute.addStringValue(value.toString()));
 			} else {
-				instance.setValue(attribute, (Double) value);
+                if (StringUtilities.isNumeric(value.toString())) {
+                    instance.setValue(attribute, Double.parseDouble(value.toString()));
+                } else {
+                    instance.setValue(attribute, value.toString());
+                }
 			}
 		}
         instance.setDataset(instances);
