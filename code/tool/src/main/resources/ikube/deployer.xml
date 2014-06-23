@@ -376,6 +376,7 @@
         <entry key="${resources-directory}/ikube" value="${tomcat-production-bin}"/>
         <entry key="${resources-directory}/analytics" value="${tomcat-production-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/production" value="${tomcat-production-bin}/ikube"/>
+        <entry key="${resources-directory}/indexes/mineco" value="${tomcat-production-bin}/ikube"/>
     </util:map>
 
     <bean
