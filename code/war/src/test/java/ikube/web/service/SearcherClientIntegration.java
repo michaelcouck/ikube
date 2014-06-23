@@ -36,9 +36,9 @@ public class SearcherClientIntegration {
                 "longitude"};
         String[] values = { //
                 "geospatial", //
-                "saur kraut|berlin", //
-                "name|name", //
-                "string|string", //
+                "hotel", //
+                "name", //
+                "string", //
                 "true", //
                 "0", //
                 "10", //
@@ -52,8 +52,8 @@ public class SearcherClientIntegration {
                 null,
                 names,
                 values,
-                MediaType.TEXT_PLAIN,
-                MediaType.TEXT_PLAIN,
+                MediaType.WILDCARD,
+                MediaType.WILDCARD,
                 String.class);
         System.out.println("Response body : " + response);
     }

@@ -46,6 +46,7 @@ public class HttpClientUtilities {
         return doGet(url, username, password, names, values, MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON, returnType);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T doGet(
             final String url,
             final String username,
@@ -61,12 +62,15 @@ public class HttpClientUtilities {
         }
         WebResource webResource = client.resource(url);
         if (names != null && values != null) {
-            setParameters(webResource, names, values);
+            webResource = setParameters(webResource, names, values);
         }
         String response = webResource
                 .accept(consumes)
                 .type(produces)
                 .get(String.class);
+        if (String.class.isAssignableFrom(returnType)) {
+            return (T) response;
+        }
         return Constants.GSON.fromJson(response, returnType);
     }
 
@@ -84,14 +88,17 @@ public class HttpClientUtilities {
             final String[] names,
             final String[] values,
             final Class<T> returnType) {
-        return doPost(url, null, null, entity, names, values, returnType);
+        return doPost(url, null, null, entity, MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON, names, values, returnType);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T doPost(
             final String url,
             final String username,
             final String password,
             final Object entity,
+            final String consumes,
+            final String produces,
             final String[] names,
             final String[] values,
             final Class<T> returnType) {
@@ -99,30 +106,35 @@ public class HttpClientUtilities {
         if (StringUtils.isNotEmpty(username) && StringUtils.isNotEmpty(password)) {
             client.addFilter(new HTTPBasicAuthFilter(username, password));
         }
-        WebResource webResource = client.resource(url);
-        if (names != null && values != null) {
-            setParameters(webResource, names, values);
-        }
         String body;
         if (String.class.isAssignableFrom(entity.getClass())) {
             body = (String) entity;
         } else {
             body = Constants.GSON.toJson(entity);
         }
+        WebResource webResource = client.resource(url);
+        if (names != null && values != null) {
+            webResource = setParameters(webResource, names, values);
+        }
         String response = webResource
-                .accept(MediaType.APPLICATION_JSON)
-                .type(MediaType.APPLICATION_JSON)
+                .accept(consumes)
+                .type(produces)
                 .post(String.class, body);
+        if (String.class.isAssignableFrom(returnType)) {
+            return (T) response;
+        }
         return Constants.GSON.fromJson(response, returnType);
     }
 
-    private static void setParameters(
+    private static WebResource setParameters(
             final WebResource webResource,
             final String[] names,
             final String[] values) {
+        WebResource withParams = webResource;
         for (int i = 0; i < names.length; i++) {
-            webResource.queryParam(names[i], values[i]);
+            withParams = withParams.queryParam(names[i], values[i]);
         }
+        return withParams;
     }
 
 }

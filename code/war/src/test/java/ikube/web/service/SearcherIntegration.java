@@ -13,9 +13,11 @@ import org.apache.http.params.HttpParams;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.util.Arrays;
 
+import static ikube.toolkit.HttpClientUtilities.doPost;
 import static ikube.toolkit.ObjectToolkit.populateFields;
 import static org.junit.Assert.assertNotNull;
 
@@ -156,6 +158,10 @@ public abstract class SearcherIntegration extends BaseTest {
     }
 
     protected void verify(final String url) throws Exception {
+        verify(url, MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON);
+    }
+
+    protected void verify(final String url, final String consumes, final String produces) throws Exception {
         Search search = populateFields(new Search(), Boolean.TRUE, 10);
         search.setIndexName(INDEX_NAME);
 
@@ -168,9 +174,11 @@ public abstract class SearcherIntegration extends BaseTest {
         search.setMaxResults(10);
         search.setFragment(Boolean.TRUE);
 
-        String response = HttpClientUtilities.doPost(url, search, String.class);
+        String response = doPost(url, null, null, search, consumes, produces, null, null, String.class);
         assertNotNull(response);
     }
+
+
 
     protected void verify(final String url, final String[] names, final Object[] values) throws IOException {
         HttpGet getMethod = new HttpGet(url);

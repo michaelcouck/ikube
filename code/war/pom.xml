@@ -40,7 +40,7 @@
 				<configuration>
 					<forkMode>once</forkMode>
                     <testFailureIgnore>true</testFailureIgnore>
-                    <!--<argLine>-javaagent:../../serenity/serenity.jar ${serenity-parameters} ${memory-parameters}</argLine>-->
+                    <argLine>-javaagent:../../serenity/serenity.jar ${serenity-parameters} ${memory-parameters}</argLine>
 				</configuration>
 			</plugin>
 			<!-- The default plugin for creating the war, we specify a version. -->

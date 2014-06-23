@@ -154,12 +154,13 @@ public class SearcherXml extends Searcher {
     @POST
     @Override
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response search(
             @Context final HttpServletRequest request,
             @Context final UriInfo uriInfo) {
         Search search = unmarshall(Search.class, request);
         Object results = searcherService.search(search);
-        return buildXmlResponse(results);
+        return buildJsonResponse(results);
     }
 
     /**
@@ -169,12 +170,13 @@ public class SearcherXml extends Searcher {
     @Override
     @Path(SearcherXml.ALL)
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response searchAll(
             @Context final HttpServletRequest request,
             @Context final UriInfo uriInfo) {
         Search search = unmarshall(Search.class, request);
         Object results = searcherService.search(search);
-        return buildXmlResponse(results);
+        return buildJsonResponse(results);
     }
 
 }
