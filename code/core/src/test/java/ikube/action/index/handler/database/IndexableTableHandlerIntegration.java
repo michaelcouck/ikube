@@ -37,6 +37,7 @@ import static org.junit.Assert.*;
  * @version 01.00
  * @since 12-10-2010
  */
+@Ignore
 public class IndexableTableHandlerIntegration extends AbstractTest {
 
     private Connection connection;

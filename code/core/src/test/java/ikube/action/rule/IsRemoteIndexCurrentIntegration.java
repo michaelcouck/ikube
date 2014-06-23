@@ -7,6 +7,7 @@ import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -19,6 +20,7 @@ import static org.junit.Assert.assertTrue;
  * @version 01.00
  * @since 19-04-2014
  */
+@Ignore
 public class IsRemoteIndexCurrentIntegration extends AbstractTest {
 
 	/**

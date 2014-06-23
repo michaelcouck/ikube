@@ -1,0 +1,42 @@
+[[Installation]]
+= Installation
+
+[Download]
+== Download
+
+Ikube is available for download in the http://ikube.be/artifactory[Artifactory]. As a web application ikube is
+available as a war file that can be installed on any Java server, Tomcat, FireFly, etc. As well as the war application
+file is a directory of configuration files. These files contain the core configuration of ikube, and optionally the
+indexes and jobs that are defined by the user. Please navigate to the http://ikube.be/artifactory/webapp/browserepo.html?2[Artifacts]
+tab in the http://ikube.be/artifactory[Artifactory], then expand libs-releases-local, the ikube, then ikube-war, and select the
+latest release. Alternatively you can get the latest snapshot release in the libs-snapshot-local repository. Click on the
+version of the war, then in the right panel click the download button.
+
+Similarly the base configuration is in the ikube-libs folder. Again download the latest jar(Java zip file). For this installation
+we wil user a http://tomcat.apache.org/download-70.cgi[Tomcat] server. Please download a Tomcat zip and unpack it to a convenient
+place on your computer, could all be in the Downloads folder.
+
+[Install]
+== Install
+
+Rename the ikube-war-xxx-xxx.war to ikube.war, it will make the web access easier, but not essential. Create
+a folder in the $TOMCAT_UNPACKED_FOLDER/bin called ikube. The directory structure is important for now. Unpack the
+ikube-libs-xxx-xxx.jar using WinRar or unzip feature, into the $TOMCAT_UNPACKED_FOLDER/bin/ikube folder.
+
+[Configure]
+== Configure
+
+If your ip address is something other than 192.168.1.x please change the interface for the grid. We'll get into the grid
+mechanism in a later document. In the folder $TOMCAT_UNPACKED_FOLDER/bin/ikube/common open a file called spring.properties. Go
+to the bottom of the file and find the property called hz-tcp-ip-interface, change the value to your ip address. For you operating
+system you can use ifconfig or ipconfig to find your ip address, from the command line.
+
+Go to the $TOMCAT_UNPACKED_FOLDER/bin folder and execute either the startup.sh or startup.bat depending on your operating system. Note
+that you may need to change the permissions of the scripts on Linux to make them executable but issuing the command => chmod 777 -R * in
+the Tomcat root directory, i.e. $TOMCAT_UNPACKED_FOLDER.
+
+[Verify]
+== Verify
+
+Go to the http://localhost:8080/ikube/login.html[Administration Console]. The login credentials are user/user
+or administrator/administrator. Please refer to the gui documentation for functionality and options in the gui.

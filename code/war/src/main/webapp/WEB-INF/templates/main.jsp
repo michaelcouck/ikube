@@ -27,14 +27,15 @@
     <link href="<c:url value="/assets/stylesheets/ikube.css" />" media="screen" rel="stylesheet" type="text/css" />
 	<link href="<c:url value="/assets/stylesheets/application.css" />" media="screen" rel="stylesheet" type="text/css" />
 	<link href="<c:url value="/assets/stylesheets/prettify.css" />" media="screen" rel="stylesheet" type="text/css" />
-	
-	<!--[if lt IE 9]>
-		<script src="<c:url value="/assets/javascripts/html5shiv.js" />" type="text/javascript"></script>
-		<script src="<c:url value="/assets/javascripts/excanvas.js" />" type="text/javascript"></script>
-		<script src="<c:url value="/assets/javascripts/iefix.js" />" type="text/javascript"></script>
-		<link href="<c:url value="/assets/stylesheets/iefix.css" />" media="screen" rel="stylesheet" type="text/css" />
+
+    <!--[if lt IE 9]>
+    <!--suppress ALL -->
+    <script src="<c:url value="/assets/javascripts/html5shiv.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/excanvas.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/iefix.js" />" type="text/javascript"></script>
+	<link href="<c:url value="/assets/stylesheets/iefix.css" />" media="screen" rel="stylesheet" type="text/css" />
 	<![endif]-->
-	
+
 	<!-- jQuery -->
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>

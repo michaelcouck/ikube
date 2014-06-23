@@ -225,6 +225,35 @@
 				<artifactId>maven-site-plugin</artifactId>
 				<version>2.1.1</version>
 			</plugin>
+
+            <plugin>
+                <groupId>org.asciidoctor</groupId>
+                <artifactId>asciidoctor-maven-plugin</artifactId>
+                <version>0.1.1</version>
+                <executions>
+                    <execution>
+                        <id>render-asciidoc</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>process-asciidoc</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <sourceDirectory>docs</sourceDirectory>
+                    <outputDirectory>docs/documentation/html</outputDirectory>
+                    <sourceHighlighter>coderay</sourceHighlighter>
+                    <backend>html5</backend>
+                    <embedAssets>true</embedAssets>
+                    <attributes>
+                        <toc/>
+                        <linkcss>true</linkcss>
+                        <copycss>true</copycss>
+                        <stylesheet>code/war/src/main/webapp/assets/stylesheets/application.css</stylesheet>
+                    </attributes>
+                </configuration>
+            </plugin>
+
 		</plugins>
 	</build>
 
