@@ -263,7 +263,19 @@
             <artifactId>spring-context</artifactId>
             <version>${spring-version}</version>
             <scope>compile</scope>
+            <!--<exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-aop</artifactId>
+                </exclusion>
+            </exclusions>-->
         </dependency>
+        <!--<dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <version>${spring-version}</version>
+            <scope>compile</scope>
+        </dependency>-->
         <dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
@@ -275,6 +287,12 @@
 			<artifactId>spring-context-support</artifactId>
 			<version>${spring-version}</version>
 			<scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-aop</artifactId>
+                </exclusion>
+            </exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
