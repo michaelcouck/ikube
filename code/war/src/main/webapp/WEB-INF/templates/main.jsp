@@ -29,7 +29,6 @@
 	<link href="<c:url value="/assets/stylesheets/prettify.css" />" media="screen" rel="stylesheet" type="text/css" />
 
     <!--[if lt IE 9]>
-    <!--suppress ALL -->
     <script src="<c:url value="/assets/javascripts/html5shiv.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/excanvas.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/iefix.js" />" type="text/javascript"></script>

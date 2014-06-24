@@ -225,7 +225,6 @@
 				<artifactId>maven-site-plugin</artifactId>
 				<version>2.1.1</version>
 			</plugin>
-
             <plugin>
                 <groupId>org.asciidoctor</groupId>
                 <artifactId>asciidoctor-maven-plugin</artifactId>
@@ -242,7 +241,7 @@
                 <configuration>
                     <backend>html</backend>
                     <sourceDirectory>docs</sourceDirectory>
-                    <outputDirectory>docs/documentation/html</outputDirectory>
+                    <outputDirectory>code/site/src/main/java/webapp/docs/html</outputDirectory>
                     <!--<sourceHighlighter>coderay</sourceHighlighter>-->
                     <!--<embedAssets>false</embedAssets>-->
                     <attributes>
@@ -253,7 +252,11 @@
                     </attributes>
                 </configuration>
             </plugin>
-
+            <plugin>
+                <groupId>org.fusesource.mvnplugins</groupId>
+                <artifactId>maven-graph-plugin</artifactId>
+                <version>1.4</version>
+            </plugin>
 		</plugins>
 	</build>
 
@@ -263,19 +266,7 @@
             <artifactId>spring-context</artifactId>
             <version>${spring-version}</version>
             <scope>compile</scope>
-            <!--<exclusions>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-aop</artifactId>
-                </exclusion>
-            </exclusions>-->
         </dependency>
-        <!--<dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-aop</artifactId>
-            <version>${spring-version}</version>
-            <scope>compile</scope>
-        </dependency>-->
         <dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
@@ -363,7 +354,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-config</artifactId>
@@ -871,31 +861,6 @@
 			<version>2.2.2</version>
 			<scope>compile</scope>
 		</dependency>
-
-		<!--<dependency>
-			<groupId>org.mortbay.jetty</groupId>
-			<artifactId>jetty-embedded</artifactId>
-			<version>${jetty-version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mortbay.jetty</groupId>
-			<artifactId>jetty</artifactId>
-			<version>${jetty-version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mortbay.jetty</groupId>
-			<artifactId>start</artifactId>
-			<version>${jetty-version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mortbay.jetty</groupId>
-			<artifactId>jetty-util</artifactId>
-			<version>${jetty-version}</version>
-			<scope>test</scope>
-		</dependency>-->
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
@@ -1341,7 +1306,7 @@
         <module>code/war</module>
         <module>code/tool</module>
         <module>code/libs</module>
-        <!--<module>code/site</module>-->
+        <module>code/site</module>
     </modules>
 
 	<pluginRepositories>
@@ -1350,6 +1315,13 @@
 			<name>Java.net Maven2 Repository</name>
 			<url>http://download.java.net/maven/2</url>
 		</pluginRepository>
+        <pluginRepository>
+            <id>mvnplugins.fusesource.org</id>
+            <url>http://mvnplugins.fusesource.org/repo/release</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
 	</pluginRepositories>
 
 	<reporting>

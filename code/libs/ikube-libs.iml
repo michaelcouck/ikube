@@ -53,6 +53,9 @@
           <file>file://$MODULE_DIR$/ikube/spring.xml</file>
           <file>file://$MODULE_DIR$/src/main/resources/ikube/spring.xml</file>
         </fileset>
+        <fileset id="fileset2" name="Spring Application Context (2)" removed="false">
+          <dependency>fileset</dependency>
+        </fileset>
       </configuration>
     </facet>
   </component>

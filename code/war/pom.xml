@@ -13,12 +13,8 @@
 	
 	<properties>
 		<webapps>webapps</webapps>
-		<!--<ikube.war>ikube.war</ikube.war>-->
 		<final.name>${project.build.finalName}.${project.packaging}</final.name>
 		<maven.build.timestamp.format>dd-MM-yyyy HH:mm:ss</maven.build.timestamp.format>
-
-		<!--<jersey.version>1.9.1</jersey.version>-->
-		<!--<jaxb-api.version>2.2.1</jaxb-api.version>-->
         <jetty-version>7.6.15.v20140411</jetty-version>
 	</properties>
 
@@ -87,21 +83,16 @@
                     <webApp>
                         <contextPath>/ikube</contextPath>
                     </webApp>
-                    <!--<jettyConfig>
-                        <jvmArgs>-Xms512m -Xmx4096m -XX:MaxPermSize=256m -XX:+CMSClassUnloadingEnabled</jvmArgs>
-                    </jettyConfig>-->
-					<!--<scanTargets>
-						<scanTarget>src/main/resources</scanTarget>
-						<scanTarget>src/main/webapp</scanTarget>
-					</scanTargets>-->
+                    <jettyConfig>
+                        <jvmArgs>-Xms512m -Xmx4096m -XX:MaxPermSize=512-XX:+CMSClassUnloadingEnabled</jvmArgs>
+                    </jettyConfig>
                     <connectors>
-                        <!--implementation="org.mortbay.jetty.nio.SelectChannelConnector"-->
 						<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
 							<port>9090</port>
 							<maxIdleTime>60000</maxIdleTime>
 						</connector>
 					</connectors>
-                    <!--<jvmArgs>-Xms512m -Xmx4096m -XX:MaxPermSize=256m -XX:+CMSClassUnloadingEnabled</jvmArgs>-->
+                    <jvmArgs>-Xms512m -Xmx4096m -XX:MaxPermSize=512m -XX:+CMSClassUnloadingEnabled</jvmArgs>
 				</configuration>
 				<executions>
 					<execution>
@@ -122,26 +113,6 @@
 						</goals>
 					</execution>
 				</executions>
-				<dependencies>
-					<!--<dependency>
-						&lt;!&ndash;
-							XXX It is included to force commons-logging to use 2.5 API instead of 2.3. This caused 
-							by internal dependencies of Jetty, which use version 2.5, but have it packaged in a different 
-							group ID: org.mortbay.jetty. TODO (Roman): If it gets broken again, try to "exclude" servlet-api 
-							dependencies from commons-logging and commons-fileupload. 
-						&ndash;&gt;
-						<groupId>javax.servlet</groupId>
-						<artifactId>servlet-api</artifactId>
-						<version>2.5</version>
-						<scope>compile</scope>
-					</dependency>
-					<dependency>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-						<version>1.1</version>
-						<type>jar</type>
-					</dependency>-->
-				</dependencies>
 			</plugin>
 		</plugins>
 	</build>
@@ -160,12 +131,6 @@
             <version>${jetty-version}</version>
             <type>jar</type>
             <scope>compile</scope>
-            <!--<exclusions>
-                <exclusion>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>servlet-api</artifactId>
-                </exclusion>
-            </exclusions>-->
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
@@ -173,12 +138,6 @@
             <version>${jetty-version}</version>
             <type>jar</type>
             <scope>compile</scope>
-            <!--<exclusions>
-                <exclusion>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>servlet-api</artifactId>
-                </exclusion>
-            </exclusions>-->
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
@@ -220,19 +179,6 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-
-		<!--<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-impl</artifactId>
-			<version>2.1.9</version>
-			<scope>compile</scope>
-		</dependency>-->
-		<!--<dependency>
-			<groupId>javax.ws.rs</groupId>
-			<artifactId>jsr311-api</artifactId>
-			<version>1.0</version>
-			<scope>compile</scope>
-		</dependency>-->
 		<dependency>
 			<groupId>org.apache.tiles</groupId>
 			<artifactId>tiles-jsp</artifactId>

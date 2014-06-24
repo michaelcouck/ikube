@@ -29,7 +29,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private static int STACK_SIZE = IConstants.TEN_THOUSAND;
+    private static int STACK_SIZE = IConstants.ONE_THOUSAND;
 
     private int clones;
     private Stack<Tweet> stack;
@@ -98,7 +98,6 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
      */
     @Override
     public synchronized void onTweet(final Tweet tweet) {
-        persistResources(tweet);
         if (tweets.size() < STACK_SIZE) {
             tweets.push(tweet);
             if (this.clones > 0) {
@@ -109,6 +108,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
                 } while (--clones > 0);
             }
         }
+        persistResources(tweet);
     }
 
     /**
