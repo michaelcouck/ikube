@@ -83,9 +83,6 @@
                     <webApp>
                         <contextPath>/ikube</contextPath>
                     </webApp>
-                    <jettyConfig>
-                        <jvmArgs>-Xms512m -Xmx4096m -XX:MaxPermSize=512-XX:+CMSClassUnloadingEnabled</jvmArgs>
-                    </jettyConfig>
                     <connectors>
 						<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
 							<port>9090</port>
