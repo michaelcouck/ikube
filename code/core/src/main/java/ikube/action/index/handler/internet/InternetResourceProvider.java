@@ -219,6 +219,9 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
         }
         // If there are not urls on the stack try the database
         if (url == null) {
+			// We have to retry because sometimes there is a concurrent access 
+			// problem with Jpa, could change the read access perhaps to transactional?
+			// Will that help?
 			retry = 10;
 			do {
 				try {
@@ -228,10 +231,11 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
 					List<Url> dbUrls = dataBase.find(Url.class, fields, values, 0, 100);
 					dataBase.removeBatch(dbUrls);
 					this.urls.addAll(dbUrls);
+					break;
 				} catch (final Exception e) {
-					logger.error("Exception getting and removing urls from the database : ", e);
+					logger.error("Exception getting and removing urls from the database, retrying : ", e);
 				}
-			} while (retry > 0);
+			} while (retry-- > 0);
 			if (this.urls.size() > 0) {
 				url = this.urls.pop();
 			}
