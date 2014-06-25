@@ -21,8 +21,8 @@
         <phase>site</phase>
         <packaging>jar</packaging>
         <generate-pom>true</generate-pom>
-        <repository-id>ikube</repository-id>
-        <artifactory>http://www.ikube.be/artifactory/libs-release-local</artifactory>
+        <repository-id>libs-release-local</repository-id>
+        <artifactory>http://ikube.be/artifactory/libs-release-local</artifactory>
     </properties>
 
     <build>
