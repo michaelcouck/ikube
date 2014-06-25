@@ -69,11 +69,13 @@ public class IndexableEmailHandlerIntegration extends IntegrationTest {
             logger.error("Exception sending mail, again. Bla, bla, bla...", e);
             logger.error("Message : " + e.getMessage());
             logger.error("Command : " + e.getCommand());
-			if (e.getReturnCode() != 550) {
+            if (e.getReturnCode() != 550) {
                 // TODO: Check the message output
-				// throw e;
-			}
-		}
+                // throw e;
+            }
+        } catch (final Exception e) {
+            logger.error("Exception sending mail, again. Bla, bla, bla...", e);
+        }
 	}
 
 }

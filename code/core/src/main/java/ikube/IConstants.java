@@ -27,7 +27,7 @@ public interface IConstants extends Constants {
     /**
      * The property for the configuration location.
      */
-    String IKUBE_CONFIGURATION = IKUBE + ".configuration";
+    String IKUBE_CONFIGURATION = IKUBE + "-configuration";
     /**
      * The name of the log file.
      */

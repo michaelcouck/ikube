@@ -1,27 +1,19 @@
-=== Ikube analytics and search platform
+= Ikube analytics and search platform
 
 '''
 
-====== *link:preface.html[Preface]*
+== *link:preface.html[Preface]*
+== *link:install.html[Installation]*
+== *link:configuration.html[General configuration]*
+== *link:properties.html[Property reference]*
 
-====== *link:install.html[Installation]*
+== *link:analytics.html[Analytics]*
+== *link:search.html[Search Api]*
+== *link:twitter.html[Twitter]*
 
-====== *link:quick.html[Quick start]*
+== *link:use-cases.html[Use cases]*
 
-====== *link:properties.html[Property reference]*
-
-====== *link:use-cases.html[Use cases]*
-
-====== *link:search.html[Search Api]*
-
-====== *link:analytics.html[Analytics]*
-
-====== *link:twitter.html[Twitter]*
-
-====== *link:license.html[License]*
-
-====== *link:source.html[Source]*
-
-====== *link:testing.html[Testing]*
-
-====== *link:releases.html[Releases]*
+== *link:license.html[License]*
+== *link:source.html[Source]*
+== *link:testing.html[Testing]*
+== *link:releases.html[Releases]*
