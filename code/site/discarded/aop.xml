@@ -1,0 +1,17 @@
+<!DOCTYPE aspectj PUBLIC
+        "-//AspectJ//DTD//EN" "http://www.eclipse.org/aspectj/dtd/aspectj.dtd">
+<aspectj>
+	<!--  options="-verbose -debug" -->
+	<weaver options="-verbose -debug">
+		<include within="ikube.action.*" />
+	</weaver>
+	<aspects>
+		<aspect name="ikube.action.rule.RuleInterceptor" />
+		<!-- <concrete-aspect name="RuleInterceptor" extends="ikube.action.rule.RuleInterceptor">
+			<pointcut 
+				name="decide" 
+				expression="execution(* ikube.action.*.*(..))" />
+		</concrete-aspect> -->
+	</aspects>
+
+</aspectj>

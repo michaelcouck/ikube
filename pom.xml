@@ -239,9 +239,9 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <backend>html</backend>
+                    <backend>html5</backend>
                     <sourceDirectory>docs</sourceDirectory>
-                    <outputDirectory>code/site/src/main/java/webapp/docs/html</outputDirectory>
+                    <outputDirectory>code/site/src/main/webapp/docs</outputDirectory>
                     <!--<sourceHighlighter>coderay</sourceHighlighter>-->
                     <!--<embedAssets>false</embedAssets>-->
                     <attributes>
