@@ -219,12 +219,19 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
         }
         // If there are not urls on the stack try the database
         if (url == null) {
-            logger.info("Going to database for resources : ");
-            String[] fields = {IConstants.NAME, IConstants.INDEXED};
-            Object[] values = {indexableInternet.getName(), Boolean.FALSE};
-            List<Url> dbUrls = dataBase.find(Url.class, fields, values, 0, 100);
-			// dataBase.removeBatch(dbUrls);
-			this.urls.addAll(dbUrls);
+			retry = 10;
+			do {
+				try {
+					logger.info("Going to database for resources : ");
+					String[] fields = {IConstants.NAME, IConstants.INDEXED};
+					Object[] values = {indexableInternet.getName(), Boolean.FALSE};
+					List<Url> dbUrls = dataBase.find(Url.class, fields, values, 0, 100);
+					dataBase.removeBatch(dbUrls);
+					this.urls.addAll(dbUrls);
+				} catch (final Exception e) {
+					logger.error("Exception getting and removing urls from the database : ", e);
+				}
+			} while (retry > 0);
 			if (this.urls.size() > 0) {
 				url = this.urls.pop();
 			}
