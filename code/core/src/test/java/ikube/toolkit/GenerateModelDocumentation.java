@@ -1,12 +1,13 @@
 package ikube.toolkit;
 
-import ikube.model.*;
-import org.dom4j.Document;
-import org.dom4j.DocumentFactory;
-import org.dom4j.Element;
+import com.google.common.base.Predicate;
+import ikube.model.Attribute;
+import org.reflections.Reflections;
 import org.springframework.util.ReflectionUtils;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
+import java.util.Set;
 
 /**
  * This class will just look through the entities for the annotation {@link Attribute} then extract the information
@@ -15,60 +16,45 @@ import java.lang.reflect.Field;
  *
  * @author Michael Couck
  * @version 01.00
- * @since 19.02.13
+ * @since 19-02-2013
  */
 public class GenerateModelDocumentation {
 
-	private static final Class<?>[] CLASSES = new Class<?>[]{Indexable.class, IndexableFileSystemLog.class,
-		IndexableEmail.class,
-		IndexableFileSystem.class, IndexableFileSystemCsv.class, IndexableInternet.class, IndexableTable.class,
-		IndexableColumn.class,
-		IndexableDataSource.class, IndexableFileSystemWiki.class};
+    public static void main(String[] args) {
+        Set<Class<?>> classes = Reflections.collect("ikube.model", new Predicate<String>() {
+            @Override
+            public boolean apply(@Nullable final String string) {
+                return true;
+            }
+        }).getTypesAnnotatedWith(Attribute.class);
+        String output = new GenerateModelDocumentation().createEntityFieldTable(classes);
+        System.out.println(output);
+    }
 
-	public static void main(String[] args) {
-		new GenerateModelDocumentation().createEntityFieldTable();
-	}
+    public String createEntityFieldTable(final Set<Class<?>> classes) {
+        for (final Class<?> klass : classes) {
+            createEntityTableRow(klass);
+        }
+        return null;
+    }
 
-	public String createEntityFieldTable() {
-		Document document = DocumentFactory.getInstance().createDocument();
-		Element tableElement = document.addElement("table");
-		Element headerRowElement = tableElement.addElement("tr");
-		XmlUtilities.addElement(headerRowElement, "th", "Name");
-		XmlUtilities.addElement(headerRowElement, "th", "Property");
-		XmlUtilities.addElement(headerRowElement, "th", "Lucene field");
-		XmlUtilities.addElement(headerRowElement, "th", "Description");
-		for (final Class<?> klass : CLASSES) {
-			createEntityTableRow(klass, tableElement);
-		}
-		return document.asXML().replaceAll("zzz", "<br>");
-	}
-
-	private void createEntityTableRow(final Class<?> klass, final Element tableElement) {
-		final Element rowElement = tableElement.addElement("tr");
-		XmlUtilities.addElement(rowElement, "td", klass.getSimpleName());
-		final StringBuilder propertyBuilder = new StringBuilder();
-		final StringBuilder luceneFieldBuilder = new StringBuilder();
-		final StringBuilder descriptionBuilder = new StringBuilder();
-		class ModelAttributeFieldCallback implements ReflectionUtils.FieldCallback {
-			@Override
-			public void doWith(final Field field) throws IllegalArgumentException, IllegalAccessException {
-				Attribute attribute = field.getAnnotation(Attribute.class);
-				propertyBuilder.append(field.getName() + "zzz");
-				luceneFieldBuilder.append(attribute.field() + "zzz");
-				descriptionBuilder.append(attribute.description() + "zzz");
-			}
-		}
-		class ModelAttributeFieldFilter implements ReflectionUtils.FieldFilter {
-			@Override
-			public boolean matches(final Field field) {
-				return field.getAnnotation(Attribute.class) != null && !field.getName().equals("id");
-			}
-		}
-		ReflectionUtils.doWithFields(klass, new ModelAttributeFieldCallback(), new ModelAttributeFieldFilter());
-		XmlUtilities.addElement(rowElement, "td", propertyBuilder.toString());
-		XmlUtilities.addElement(rowElement, "td", luceneFieldBuilder.toString());
-		Element descriptionElement = XmlUtilities.addElement(rowElement, "td", descriptionBuilder.toString());
-		descriptionElement.addAttribute("nowrap", "nowrap");
-	}
+    private void createEntityTableRow(final Class<?> klass) {
+        class ModelAttributeFieldCallback implements ReflectionUtils.FieldCallback {
+            @Override
+            public void doWith(final Field field) throws IllegalArgumentException, IllegalAccessException {
+                Attribute attribute = field.getAnnotation(Attribute.class);
+                field.getName();
+                attribute.field();
+                attribute.description();
+            }
+        }
+        class ModelAttributeFieldFilter implements ReflectionUtils.FieldFilter {
+            @Override
+            public boolean matches(final Field field) {
+                return field.getAnnotation(Attribute.class) != null && !field.getName().equals("id");
+            }
+        }
+        ReflectionUtils.doWithFields(klass, new ModelAttributeFieldCallback(), new ModelAttributeFieldFilter());
+    }
 
 }

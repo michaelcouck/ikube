@@ -58,3 +58,8 @@ allow access, however for larger installations where multiple applications need 
 integrated to provide the user access and administration.
 
 === Index configuration
+Indexes and processing pipelines are configured in Spring format. This will be familiar to developers that have
+a Spring background, but will also be understandable for technical people.
+
+Configurations start with a context, and IndexContext. Properties related to indexes are:
+

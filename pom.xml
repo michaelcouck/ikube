@@ -92,18 +92,18 @@
 					<artifactId>maven-release-plugin</artifactId>
 					<version>2.5</version>
 					<configuration>
-                        <!--<providerImplementations>
+                        <providerImplementations>
                             <git>jgit</git>
-                        </providerImplementations>-->
+                        </providerImplementations>
 						<workingDirectory>target/checkout</workingDirectory>
 					</configuration>
-                    <!--<dependencies>
+                    <dependencies>
                         <dependency>
                             <groupId>org.apache.maven.scm</groupId>
                             <artifactId>maven-scm-provider-jgit</artifactId>
                             <version>1.9</version>
                         </dependency>
-                    </dependencies>-->
+                    </dependencies>
 				</plugin>
 				<!--
 				    This plugin's configuration is used to store Eclipse m2e settings only.
