@@ -1,5 +1,4 @@
-[[Configuration]]
-= Configuration
+=== Configuration
 Ikube has two parts to the configuration. A base configuration, that doesn't need to be changed or
 modified unless the volumes of data processed scales over multiple machines and deployment topology
 becomes more complex to cope with trillions of events. However this is a general overview of the configuration,
@@ -8,9 +7,8 @@ each of the configuration files generally has comments describing the options ab
 The configuration files must be in a folder named 'ikube' in the user directory, i.e. where the server
 was started.
 
-[Base configuration]
-== Base configuration
-=== Security
+=== Base configuration
+==== Security
 Spring is the base for configuration. The web part contains two spring configuration files, one for security
 and one for Spring MVC. The base security configuration is file based. However Spring allows integration with
 LDAP or OAuth. For details on how to integrate Spring with other forms of security please consult the
@@ -25,14 +23,14 @@ not need to be modified.
 The rest of the configuration files must be placed in the $TOMCAT_HOME/bin/ikube directory as explained in the
 installation instructions.
 
-=== Actions
+==== Actions
 Actions that Ikube performs, like indexing and processing data for analytics are in the spring-actions.xml file.
 
-=== Interceptors
+==== Interceptors
 Ikube has several interceptors, for transaction management and intercepting the actions to perform rules. The rules
 need to be executed atomically, as such the cluster is locked before the rules are executed.
 
-=== General
+==== General
 The file spring-beans.xml contains the database details, threading functionality, the services that users have
 access to like the analytics service and the search service. Ikube actions are based on schedulers, and these are also
 configured in the beans file. There other functionality like mailing and spelling checking that are also defined
@@ -41,12 +39,12 @@ defined in this file. This is where advanced users would define and plug in thei
 of data sources. There are also strategies for enriching data for geospatial searches, and detecting language defined
 in this file. These concepts are described in more detail in the use cases, with examples of usage.
 
-=== Database
+==== Database
 Ikube uses an embedded database, H2. However for more robust users this can be changed to Oracle or DB2 for example
 by modifying the properties in the spring.properties file by changing the details for the database using the examples
 given, looking for the property 'ikube.dataSource'.
 
-=== Grid
+==== Grid
 The grid is Hazelcast at the time or writing. This can be changed to GridGain or any other provider, by implementing
 an interface and changing the configuration file to use the new provider. The configuration for Hazelcast is in the
 spring-hazelcast.xml file. This typically does not need to be changed, however the properties in the spring.properties
@@ -54,10 +52,9 @@ file relating to the grid may be changed to suit the user. Specifically and impo
 changed to the ip address of the machine that it is running on, the property hz-tcp-ip-interface in the spring.properties
 file.
 
-=== Users
+==== Users
 Security for the web console are defined here, and optionally for the web services. Users can be added to this file to
 allow access, however for larger installations where multiple applications need access it is recommended that an LDAP be
 integrated to provide the user access and administration.
 
-[Index configuration]
-== Index configuration
+=== Index configuration
