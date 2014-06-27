@@ -4,7 +4,7 @@
 	<groupId>ikube</groupId>
 	<artifactId>ikube</artifactId>
 	<packaging>pom</packaging>
-	<version>5.0.0-SNAPSHOT</version>
+	<version>5.0.1</version>
 
     <scm>
         <url>https://github.com/michaelcouck/ikube</url>
@@ -41,6 +41,8 @@
 	</distributionManagement>
 
 	<properties>
+        <ikube-version>5.0.1-SNAPSHOT</ikube-version>
+
         <encoding>UTF8</encoding>
         <targetJdk>1.7</targetJdk>
         <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
@@ -87,6 +89,7 @@
 					<artifactId>findbugs-maven-plugin</artifactId>
 					<version>2.3.2</version>
 				</plugin>
+                <!-- Doesn't work :( I hate software that doesn't work. -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-release-plugin</artifactId>

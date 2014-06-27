@@ -9,7 +9,7 @@
     <parent>
         <groupId>ikube</groupId>
         <artifactId>ikube</artifactId>
-        <version>5.0.0-SNAPSHOT</version>
+        <version>5.0.1</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -37,7 +37,7 @@
                 <version>2.7.1</version>
                 <configuration>
                     <forkMode>once</forkMode>
-                    <!--<argLine>-javaagent:../../serenity/serenity.jar ${serenity-parameters} ${memory-parameters}</argLine>-->
+                    <argLine>-javaagent:../../serenity/serenity.jar ${serenity-parameters} ${memory-parameters}</argLine>
                 </configuration>
             </plugin>
 
@@ -47,7 +47,7 @@
                 <version>1.2.1</version>
                 <executions>
                     <execution>
-                        <phase>deploy</phase>
+                        <phase>site</phase>
                         <configuration>
                             <mainClass>ikube.deploy.Deployer</mainClass>
                             <arguments>
