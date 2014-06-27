@@ -92,17 +92,21 @@
 					<artifactId>maven-release-plugin</artifactId>
 					<version>2.5</version>
 					<configuration>
-                        <providerImplementations>
+                        <pushChanges>false</pushChanges>
+                        <username>michaelcouck</username>
+                        <password>Caherl1ne</password>
+                        <remoteTagging>false</remoteTagging>
+                        <!--<providerImplementations>
                             <git>jgit</git>
-                        </providerImplementations>
+                        </providerImplementations>-->
 						<workingDirectory>target/checkout</workingDirectory>
 					</configuration>
                     <dependencies>
-                        <dependency>
+                        <!--<dependency>
                             <groupId>org.apache.maven.scm</groupId>
                             <artifactId>maven-scm-provider-jgit</artifactId>
                             <version>1.9</version>
-                        </dependency>
+                        </dependency>-->
                     </dependencies>
 				</plugin>
 				<!--

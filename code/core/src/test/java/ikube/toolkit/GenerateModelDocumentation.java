@@ -21,9 +21,11 @@ import java.util.Set;
 public class GenerateModelDocumentation {
 
     public static void main(String[] args) {
+        Reflections reflections = new Reflections("ikube.model");
         Set<Class<?>> classes = Reflections.collect("ikube.model", new Predicate<String>() {
             @Override
             public boolean apply(@Nullable final String string) {
+                System.out.println(string);
                 return true;
             }
         }).getTypesAnnotatedWith(Attribute.class);
@@ -39,13 +41,14 @@ public class GenerateModelDocumentation {
     }
 
     private void createEntityTableRow(final Class<?> klass) {
+        System.out.println("=== " + klass.getName());
         class ModelAttributeFieldCallback implements ReflectionUtils.FieldCallback {
             @Override
             public void doWith(final Field field) throws IllegalArgumentException, IllegalAccessException {
                 Attribute attribute = field.getAnnotation(Attribute.class);
-                field.getName();
-                attribute.field();
-                attribute.description();
+                System.out.println("==== " + field.getName());
+                System.out.println("==== " + attribute.field());
+                System.out.println("==== " + attribute.description());
             }
         }
         class ModelAttributeFieldFilter implements ReflectionUtils.FieldFilter {
