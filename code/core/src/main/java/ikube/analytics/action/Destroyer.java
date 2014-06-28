@@ -28,7 +28,7 @@ public class Destroyer extends Action<Void> implements Serializable {
     @Override
     @SuppressWarnings("unchecked")
     public Void call() throws Exception {
-        // Get the local context, but infact we are on the remote machine of course
+        // Get the local context, but in fact we are on the remote machine of course
         Context context = (Context) getAnalyticsService().getContexts().remove(this.context.getName());
         if (context != null) {
             IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();

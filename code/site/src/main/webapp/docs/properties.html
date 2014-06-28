@@ -13,12 +13,3492 @@
 <div id="content">
 <div class="sect2">
 <h3 id="_properties">Properties</h3>
-
+<div class="ulist">
+<ul>
+<li>
+<p>Class : ikube.model.IndexableSvn</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Field name : username</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description : The user name for the login to the repository</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : password</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description : The password for the login to the repository</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : url</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description : The url to the svn repository</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : filePath</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description : The initial file path in the repository</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : excludedPattern</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description : The resources that should be ignored, could be part of the path</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : relativeFilePath</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description :</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : author</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description :</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : commitComment</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description :</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : revisionDate</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description :</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : resourceName</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description :</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : revision</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description :</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : size</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description :</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : contents</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description :</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : name</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The name of this indexable</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : address</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this is a geospatial address field</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : stored</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this value should be stored in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : analyzed</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should be analyzed for stemming and so on</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : vectored</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should be vectored in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : omitNorms</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should have the normalization omitted, i.e. the tf-idf omitted, meaning that longer documents will score higher if the norms are omitted(i.e. they are not written to the index)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : tokenized</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should have the terms tokenized</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : boost</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The boost to give the field at index time</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : maxExceptions</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the maximum exceptions during indexing before the indexing is stopped</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : threads</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the number of threads that should be spawned for this indexable</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Class : ikube.model.Snapshot</p>
+</li>
+<li>
+<p>Class : ikube.model.IndexableFileSystemLog</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Field name : path</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the path to the log folder</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : fileFieldName</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the file name field in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : pathFieldName</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the path name field in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : lineFieldName</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the line number field in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : contentFieldName</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the content field in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : name</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The name of this indexable</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : address</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this is a geospatial address field</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : stored</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this value should be stored in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : analyzed</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should be analyzed for stemming and so on</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : vectored</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should be vectored in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : omitNorms</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should have the normalization omitted, i.e. the tf-idf omitted, meaning that longer documents will score higher if the norms are omitted(i.e. they are not written to the index)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : tokenized</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should have the terms tokenized</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : boost</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The boost to give the field at index time</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : maxExceptions</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the maximum exceptions during indexing before the indexing is stopped</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : threads</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the number of threads that should be spawned for this indexable</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Class : ikube.model.geospatial.GeoZone</p>
+</li>
+<li>
+<p>Class : ikube.model.IndexContext</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Field name : open</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this index is opened, for transport in the grid as the writers and searchers are not serializable</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : indexWriters</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The currently opened index writers, which can be null of course</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : multiSearcher</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The index searcher for the index, opened with the correct parameters and analyzer</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : analyzer</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The analyzer that was used for indexing this document set and is consequently used for searching</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : hashes</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : An arbitrary collection of hashes for currently indexed documents, for disarding duplicates and delta indexing</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : maxAge</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the maximum age that the index can become before it is re-indexed</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : throttle</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the throttle in mili seconds that will slow down the indexing</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : mergeFactor</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The number of documents to keep in the segments before they are merged to the main file during indexing</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : bufferedDocs</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The number of documents to keep in memory before writing to the file</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : bufferSize</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The size of the memory Lucene can occupy before the documents are written to the file</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : maxFieldLength</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The maximum length of a field in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : compoundFile</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this index should be in a compound file format</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : batchSize</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The batch size of the category set for database indexing</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : internetBatchSize</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The batch size of urls for the crawler</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : maxReadLength</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The maximum read length for a document</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : indexDirectoryPath</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The absolute or relative path to the directory where the index will be written</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : indexDirectoryPathBackup</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The absolute or relative path to the directory where the index will be backed up</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : indexing</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This flag indicates whether the index is being generated currently</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : delta</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This flag indicates whether the index should be delta indexed, i.e. no new index just the changes n the resources</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : numDocsForSearchers</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The number of documents in the currently opened searcher</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : snapshot</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The latest snapshot for the index with static details for it, like size on disk etc.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : snapshots</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The snapshot for this index, in reverse chronological order</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : name</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The name of this indexable</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : address</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this is a geospatial address field</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : stored</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this value should be stored in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : analyzed</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should be analyzed for stemming and so on</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : vectored</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should be vectored in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : omitNorms</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should have the normalization omitted, i.e. the tf-idf omitted, meaning that longer documents will score higher if the norms are omitted(i.e. they are not written to the index)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : tokenized</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should have the terms tokenized</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : boost</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The boost to give the field at index time</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : maxExceptions</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the maximum exceptions during indexing before the indexing is stopped</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : threads</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the number of threads that should be spawned for this indexable</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Class : ikube.model.IndexableDataSource</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Field name : allColumns</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This flag is whether to index all the columns in the database, default is true</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : excludedTablePatterns</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is a delimiter seperated list of patterns that will exclude tables from being indexed</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : name</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The name of this indexable</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : address</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this is a geospatial address field</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : stored</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this value should be stored in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : analyzed</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should be analyzed for stemming and so on</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : vectored</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should be vectored in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : omitNorms</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should have the normalization omitted, i.e. the tf-idf omitted, meaning that longer documents will score higher if the norms are omitted(i.e. they are not written to the index)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : tokenized</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should have the terms tokenized</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : boost</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The boost to give the field at index time</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : maxExceptions</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the maximum exceptions during indexing before the indexing is stopped</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : threads</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the number of threads that should be spawned for this indexable</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Class : ikube.model.Url</p>
+</li>
+<li>
+<p>Class : ikube.model.geospatial.GeoCountry</p>
+</li>
+<li>
+<p>Class : ikube.model.Context</p>
+</li>
+<li>
+<p>Class : ikube.model.IndexableInternet</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Field name : url</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the primary url that will be crawled</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : loginUrl</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the url to the login page if it is a protected site</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : userid</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the userid to login to the site</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : password</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the password to login to the site</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : internetBatchSize</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the size that the batches of urls will be per thread</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : excludedPattern</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is is a pattern that will be appled to exclude any urls, i.e. urls that should not be crawled, like confidential pages etc.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : timeout</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the length of time that the crawler will wait for a particular page to be delivered</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : titleFieldName</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the name of the title field in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : idFieldName</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the name of the id field in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : contentFieldName</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the name of the content field int he Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : maxReadLength</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the maximum length of bytes that will be read from the input stream</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : name</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The name of this indexable</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : address</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this is a geospatial address field</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : stored</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this value should be stored in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : analyzed</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should be analyzed for stemming and so on</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : vectored</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should be vectored in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : omitNorms</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should have the normalization omitted, i.e. the tf-idf omitted, meaning that longer documents will score higher if the norms are omitted(i.e. they are not written to the index)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : tokenized</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should have the terms tokenized</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : boost</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The boost to give the field at index time</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : maxExceptions</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the maximum exceptions during indexing before the indexing is stopped</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : threads</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the number of threads that should be spawned for this indexable</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Class : ikube.model.geospatial.GeoCity</p>
+</li>
+<li>
+<p>Class : ikube.model.File</p>
+</li>
+<li>
+<p>Class : ikube.model.IndexableFileSystemCsv</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Field name : path</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the path to the folder where the files to be indexed are</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : excludedPattern</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is a pattern that will be applied to the file name and path to exclude resources that are not to be indexed</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : includedPattern</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is a pattern that will be applied to the name and path to specifically include resources that are to be included in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : maxReadLength</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the maximum read length that will be read from a file. This is required where files are very large and need to be read into memory completely</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : nameFieldName</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description : This is the file name field in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : pathFieldName</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description : This is the name of the path field in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : lastModifiedFieldName</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description : This is the name of the last modified field in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : contentFieldName</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description : This is the name of the content field in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : lengthFieldName</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description : This is the name of the length field in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : batchSize</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description : This is the name of the batch size for files, i.e. how many files each thread will batch, not read in one shot, typical would be 1000</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : unpackZips</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description : Whether to unpack the zip files found, this is deprecated and done automatically by reading in the zips and jars</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : name</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The name of this indexable</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : address</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this is a geospatial address field</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : stored</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this value should be stored in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : analyzed</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should be analyzed for stemming and so on</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : vectored</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should be vectored in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : omitNorms</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should have the normalization omitted, i.e. the tf-idf omitted, meaning that longer documents will score higher if the norms are omitted(i.e. they are not written to the index)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : tokenized</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should have the terms tokenized</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : boost</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The boost to give the field at index time</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : maxExceptions</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the maximum exceptions during indexing before the indexing is stopped</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : threads</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the number of threads that should be spawned for this indexable</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Class : ikube.model.IndexableAudio</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Field name : name</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The name of this indexable</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : address</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this is a geospatial address field</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : stored</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this value should be stored in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : analyzed</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should be analyzed for stemming and so on</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : vectored</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should be vectored in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : omitNorms</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should have the normalization omitted, i.e. the tf-idf omitted, meaning that longer documents will score higher if the norms are omitted(i.e. they are not written to the index)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : tokenized</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should have the terms tokenized</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : boost</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The boost to give the field at index time</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : maxExceptions</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the maximum exceptions during indexing before the indexing is stopped</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : threads</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the number of threads that should be spawned for this indexable</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Class : ikube.model.IndexableTweets</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Field name : consumerKey</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the consumer key for the OAuth security</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : consumerSecret</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the consumer secret key for the OAuth security</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : token</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the token for the OAuth security</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : tokenSecret</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the token secret for the OAuth security</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : textField</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the text field name of the tweet in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : createdAtField</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the date created field name of the tweet in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : fromUserField</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the user name field name of the tweet in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : locationField</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the location/address field name of the tweet in the Lucene index when tweeted, could be different from the users actual location when registering</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : userLocationField</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : ?</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : userNameField</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : ?</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : userScreenNameField</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : ?</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : userTimeZoneField</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : ?</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : userUtcOffsetField</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : ?</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : userLanguageField</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : ?</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : persistTweets</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : ?</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : clones</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The number of times to clone the tweets for volume simulation</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : name</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The name of this indexable</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : address</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this is a geospatial address field</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : stored</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this value should be stored in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : analyzed</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should be analyzed for stemming and so on</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : vectored</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should be vectored in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : omitNorms</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should have the normalization omitted, i.e. the tf-idf omitted, meaning that longer documents will score higher if the norms are omitted(i.e. they are not written to the index)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : tokenized</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should have the terms tokenized</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : boost</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The boost to give the field at index time</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : maxExceptions</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the maximum exceptions during indexing before the indexing is stopped</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : threads</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the number of threads that should be spawned for this indexable</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Class : ikube.model.IndexableFileSystem</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Field name : path</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the path to the folder where the files to be indexed are</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : excludedPattern</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is a pattern that will be applied to the file name and path to exclude resources that are not to be indexed</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : includedPattern</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is a pattern that will be applied to the name and path to specifically include resources that are to be included in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : maxReadLength</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the maximum read length that will be read from a file. This is required where files are very large and need to be read into memory completely</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : nameFieldName</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description : This is the file name field in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : pathFieldName</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description : This is the name of the path field in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : lastModifiedFieldName</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description : This is the name of the last modified field in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : contentFieldName</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description : This is the name of the content field in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : lengthFieldName</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description : This is the name of the length field in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : batchSize</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description : This is the name of the batch size for files, i.e. how many files each thread will batch, not read in one shot, typical would be 1000</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : unpackZips</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description : Whether to unpack the zip files found, this is deprecated and done automatically by reading in the zips and jars</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : name</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The name of this indexable</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : address</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this is a geospatial address field</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : stored</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this value should be stored in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : analyzed</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should be analyzed for stemming and so on</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : vectored</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should be vectored in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : omitNorms</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should have the normalization omitted, i.e. the tf-idf omitted, meaning that longer documents will score higher if the norms are omitted(i.e. they are not written to the index)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : tokenized</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should have the terms tokenized</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : boost</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The boost to give the field at index time</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : maxExceptions</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the maximum exceptions during indexing before the indexing is stopped</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : threads</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the number of threads that should be spawned for this indexable</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Class : ikube.model.IndexableEmail</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Field name : idField</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the name of the id field in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : titleField</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the name of the title field in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : contentField</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the namd of the content field in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : mailHost</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The url where the mail is hosted, i.e. the Imap or Pop server</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : username</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The user name of the mail account</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : password</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The password for the mail account</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : port</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The port number of the mail account</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : protocol</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The protocol of the account, Imap or Pop3 for example</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : secureSocketLayer</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether to use SSL for the mail access</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : name</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The name of this indexable</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : address</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this is a geospatial address field</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : stored</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this value should be stored in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : analyzed</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should be analyzed for stemming and so on</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : vectored</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should be vectored in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : omitNorms</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should have the normalization omitted, i.e. the tf-idf omitted, meaning that longer documents will score higher if the norms are omitted(i.e. they are not written to the index)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : tokenized</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should have the terms tokenized</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : boost</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The boost to give the field at index time</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : maxExceptions</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the maximum exceptions during indexing before the indexing is stopped</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : threads</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the number of threads that should be spawned for this indexable</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Class : ikube.model.geospatial.GeoAltName</p>
+</li>
+<li>
+<p>Class : ikube.model.IndexableColumn</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Field name : fieldName</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description : This is the name of the field in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : hashed</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description : Whether the data from the column is hashed before adding to the document. Typically this is when the data should be numeric, or at least searchable numerically but is actually a string or alphanumeric.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : name</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The name of this indexable</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : address</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this is a geospatial address field</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : stored</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this value should be stored in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : analyzed</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should be analyzed for stemming and so on</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : vectored</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should be vectored in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : omitNorms</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should have the normalization omitted, i.e. the tf-idf omitted, meaning that longer documents will score higher if the norms are omitted(i.e. they are not written to the index)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : tokenized</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should have the terms tokenized</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : boost</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The boost to give the field at index time</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : maxExceptions</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the maximum exceptions during indexing before the indexing is stopped</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : threads</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the number of threads that should be spawned for this indexable</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Class : ikube.model.Search</p>
+</li>
+<li>
+<p>Class : ikube.model.Indexable</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Field name : name</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The name of this indexable</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : address</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this is a geospatial address field</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : stored</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this value should be stored in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : analyzed</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should be analyzed for stemming and so on</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : vectored</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should be vectored in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : omitNorms</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should have the normalization omitted, i.e. the tf-idf omitted, meaning that longer documents will score higher if the norms are omitted(i.e. they are not written to the index)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : tokenized</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should have the terms tokenized</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : boost</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The boost to give the field at index time</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : maxExceptions</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the maximum exceptions during indexing before the indexing is stopped</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : threads</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the number of threads that should be spawned for this indexable</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Class : ikube.model.AnalyzerInfo</p>
+</li>
+<li>
+<p>Class : ikube.model.geospatial.GeoName</p>
+</li>
+<li>
+<p>Class : ikube.model.IndexableFileSystemWiki</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Field name : maxRevisions</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the maximum documents that will be read from the source before the indexing terminates</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : path</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the path to the folder where the files to be indexed are</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : excludedPattern</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is a pattern that will be applied to the file name and path to exclude resources that are not to be indexed</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : includedPattern</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is a pattern that will be applied to the name and path to specifically include resources that are to be included in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : maxReadLength</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the maximum read length that will be read from a file. This is required where files are very large and need to be read into memory completely</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : nameFieldName</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description : This is the file name field in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : pathFieldName</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description : This is the name of the path field in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : lastModifiedFieldName</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description : This is the name of the last modified field in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : contentFieldName</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description : This is the name of the content field in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : lengthFieldName</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description : This is the name of the length field in the Lucene index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : batchSize</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description : This is the name of the batch size for files, i.e. how many files each thread will batch, not read in one shot, typical would be 1000</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : unpackZips</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : true</p>
+</li>
+<li>
+<p>Field description : Whether to unpack the zip files found, this is deprecated and done automatically by reading in the zips and jars</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : name</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The name of this indexable</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : address</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this is a geospatial address field</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : stored</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this value should be stored in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : analyzed</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should be analyzed for stemming and so on</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : vectored</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should be vectored in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : omitNorms</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should have the normalization omitted, i.e. the tf-idf omitted, meaning that longer documents will score higher if the norms are omitted(i.e. they are not written to the index)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : tokenized</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should have the terms tokenized</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : boost</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The boost to give the field at index time</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : maxExceptions</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the maximum exceptions during indexing before the indexing is stopped</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : threads</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the number of threads that should be spawned for this indexable</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Class : ikube.model.Distributed</p>
+</li>
+<li>
+<p>Class : ikube.model.IndexableTable</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Field name : predicate</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is a sql predicate, like <em>where id &gt; 1000</em></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : allColumns</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This flag is whether to index all the columns in the database, default is false</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : name</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The name of this indexable</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : address</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this is a geospatial address field</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : stored</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this value should be stored in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : analyzed</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should be analyzed for stemming and so on</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : vectored</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should be vectored in the index</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : omitNorms</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should have the normalization omitted, i.e. the tf-idf omitted, meaning that longer documents will score higher if the norms are omitted(i.e. they are not written to the index)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : tokenized</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : Whether this field should have the terms tokenized</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : boost</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : The boost to give the field at index time</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : maxExceptions</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the maximum exceptions during indexing before the indexing is stopped</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Field name : threads</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lucene field : false</p>
+</li>
+<li>
+<p>Field description : This is the number of threads that should be spawned for this indexable</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Class : ikube.model.Coordinate</p>
+</li>
+<li>
+<p>Class : ikube.model.Action</p>
+</li>
+<li>
+<p>Class : ikube.model.Task</p>
+</li>
+<li>
+<p>Class : ikube.model.Server</p>
+</li>
+<li>
+<p>Class : ikube.model.Analysis</p>
+</li>
+</ul>
+</div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-06-26 19:23:41 CEST
+Last updated 2014-06-28 09:09:28 CEST
 </div>
 </div>
 </body>

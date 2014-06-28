@@ -4,7 +4,6 @@ import ikube.model.Context;
 import ikube.toolkit.ThreadUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -29,23 +28,16 @@ public class AnalyzerManager implements ApplicationContextAware {
     private static final Logger LOGGER = LoggerFactory.getLogger(AnalyzerManager.class);
     private static final Map<String, Context> CONTEXTS = new HashMap<>();
 
-    public static Map<String, Context> getContexts() {
-        return CONTEXTS;
-    }
-
-    public static Collection<IAnalyzer> buildAnalyzers(final Collection<Context> contexts) throws Exception {
-        Collection<IAnalyzer> analyzers = new ArrayList<>();
-        for (final Context context : contexts) {
-            IAnalyzer analyzer = buildAnalyzer(context);
-            analyzers.add(analyzer);
-        }
-        return analyzers;
-    }
-
+    /**
+     * TODO: Make this not static
+     */
     public static IAnalyzer buildAnalyzer(final Context context) throws Exception {
         return buildAnalyzer(context, Boolean.FALSE);
     }
 
+    /**
+     * TODO: Make this not static
+     */
     public static IAnalyzer buildAnalyzer(final Context context, final boolean waitForBuild) throws Exception {
         final IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();
         class Builder implements Runnable {
@@ -85,32 +77,48 @@ public class AnalyzerManager implements ApplicationContextAware {
     @Value("${analyzer-manager-wait}")
     private long waitToBuildAnalyzers;
 
+    public Map<String, Context> getContexts() {
+        return CONTEXTS;
+    }
+
+    public Collection<IAnalyzer> buildAnalyzers(final Collection<Context> contexts) throws Exception {
+        Collection<IAnalyzer> analyzers = new ArrayList<>();
+        for (final Context context : contexts) {
+            IAnalyzer analyzer = buildAnalyzer(context);
+            analyzers.add(analyzer);
+        }
+        return analyzers;
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(final ApplicationContext applicationContext) {
         // Build the analyzers in parallel using all the cores
         final String name = "analyzer-builder";
+        class Builder implements Runnable {
+            Context context;
+
+            @Override
+            public void run() {
+                try {
+                    LOGGER.info("Context : " + context.getName());
+                    buildAnalyzer(context, Boolean.FALSE);
+                } catch (final Exception e) {
+                    throw new RuntimeException("Error building analyzer : " + context.getName(), e);
+                }
+            }
+        }
         class Starter implements Runnable {
             @Override
             public void run() {
                 ThreadUtilities.sleep(waitToBuildAnalyzers);
                 Map<String, Context> contexts = applicationContext.getBeansOfType(Context.class);
                 for (final Map.Entry<String, Context> mapEntry : contexts.entrySet()) {
-                    class Builder implements Runnable {
-                        @Override
-                        public void run() {
-                            try {
-                                LOGGER.info("Context : " + mapEntry.getKey() + ", " + mapEntry.getValue().getName());
-                                buildAnalyzer(mapEntry.getValue(), Boolean.FALSE);
-                            } catch (final Exception e) {
-                                throw new RuntimeException("Error building analyzer : " + mapEntry.getKey(), e);
-                            }
-                        }
-                    }
-                    ThreadUtilities.submit(name, new Builder());
+                    Builder builder = new Builder();
+                    builder.context = mapEntry.getValue();
+                    ThreadUtilities.submit(name, builder);
                 }
             }
         }

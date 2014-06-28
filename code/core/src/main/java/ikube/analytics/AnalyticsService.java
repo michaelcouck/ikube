@@ -46,6 +46,8 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
     @Autowired
 	@SuppressWarnings({ "UnusedDeclaration", "SpringJavaAutowiringInspection" })
     private IClusterManager clusterManager;
+    @Autowired
+    private AnalyzerManager analyzerManager;
 
     /**
      * {@inheritDoc}
@@ -207,7 +209,7 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
      */
     @Override
     public Map<String, Context> getContexts() {
-        return AnalyzerManager.getContexts();
+        return analyzerManager.getContexts();
     }
 
     /**

@@ -1,1 +1,891 @@
 === Properties
+
+* Class : ikube.model.IndexableSvn
+
+** Field name : username
+*** Lucene field : true
+*** Field description : The user name for the login to the repository
+** Field name : password
+*** Lucene field : true
+*** Field description : The password for the login to the repository
+** Field name : url
+*** Lucene field : true
+*** Field description : The url to the svn repository
+** Field name : filePath
+*** Lucene field : true
+*** Field description : The initial file path in the repository
+** Field name : excludedPattern
+*** Lucene field : true
+*** Field description : The resources that should be ignored, could be part of the path
+** Field name : relativeFilePath
+*** Lucene field : true
+*** Field description :
+** Field name : author
+*** Lucene field : true
+*** Field description :
+** Field name : commitComment
+*** Lucene field : true
+*** Field description :
+** Field name : revisionDate
+*** Lucene field : true
+*** Field description :
+** Field name : resourceName
+*** Lucene field : true
+*** Field description :
+** Field name : revision
+*** Lucene field : true
+*** Field description :
+** Field name : size
+*** Lucene field : true
+*** Field description :
+** Field name : contents
+*** Lucene field : true
+*** Field description :
+** Field name : name
+*** Lucene field : false
+*** Field description : The name of this indexable
+** Field name : address
+*** Lucene field : false
+*** Field description : Whether this is a geospatial address field
+** Field name : stored
+*** Lucene field : false
+*** Field description : Whether this value should be stored in the index
+** Field name : analyzed
+*** Lucene field : false
+*** Field description : Whether this field should be analyzed for stemming and so on
+** Field name : vectored
+*** Lucene field : false
+*** Field description : Whether this field should be vectored in the index
+** Field name : omitNorms
+*** Lucene field : false
+*** Field description : Whether this field should have the normalization omitted, i.e. the tf-idf omitted, meaning that longer documents will score higher if the norms are omitted(i.e. they are not written to the index)
+** Field name : tokenized
+*** Lucene field : false
+*** Field description : Whether this field should have the terms tokenized
+** Field name : boost
+*** Lucene field : false
+*** Field description : The boost to give the field at index time
+** Field name : maxExceptions
+*** Lucene field : false
+*** Field description : This is the maximum exceptions during indexing before the indexing is stopped
+** Field name : threads
+*** Lucene field : false
+*** Field description : This is the number of threads that should be spawned for this indexable
+
+
+* Class : ikube.model.Snapshot
+
+
+
+* Class : ikube.model.IndexableFileSystemLog
+
+** Field name : path
+*** Lucene field : false
+*** Field description : This is the path to the log folder
+** Field name : fileFieldName
+*** Lucene field : false
+*** Field description : This is the file name field in the Lucene index
+** Field name : pathFieldName
+*** Lucene field : false
+*** Field description : This is the path name field in the Lucene index
+** Field name : lineFieldName
+*** Lucene field : false
+*** Field description : This is the line number field in the Lucene index
+** Field name : contentFieldName
+*** Lucene field : false
+*** Field description : This is the content field in the Lucene index
+** Field name : name
+*** Lucene field : false
+*** Field description : The name of this indexable
+** Field name : address
+*** Lucene field : false
+*** Field description : Whether this is a geospatial address field
+** Field name : stored
+*** Lucene field : false
+*** Field description : Whether this value should be stored in the index
+** Field name : analyzed
+*** Lucene field : false
+*** Field description : Whether this field should be analyzed for stemming and so on
+** Field name : vectored
+*** Lucene field : false
+*** Field description : Whether this field should be vectored in the index
+** Field name : omitNorms
+*** Lucene field : false
+*** Field description : Whether this field should have the normalization omitted, i.e. the tf-idf omitted, meaning that longer documents will score higher if the norms are omitted(i.e. they are not written to the index)
+** Field name : tokenized
+*** Lucene field : false
+*** Field description : Whether this field should have the terms tokenized
+** Field name : boost
+*** Lucene field : false
+*** Field description : The boost to give the field at index time
+** Field name : maxExceptions
+*** Lucene field : false
+*** Field description : This is the maximum exceptions during indexing before the indexing is stopped
+** Field name : threads
+*** Lucene field : false
+*** Field description : This is the number of threads that should be spawned for this indexable
+
+
+* Class : ikube.model.geospatial.GeoZone
+
+
+
+* Class : ikube.model.IndexContext
+
+** Field name : open
+*** Lucene field : false
+*** Field description : Whether this index is opened, for transport in the grid as the writers and searchers are not serializable
+** Field name : indexWriters
+*** Lucene field : false
+*** Field description : The currently opened index writers, which can be null of course
+** Field name : multiSearcher
+*** Lucene field : false
+*** Field description : The index searcher for the index, opened with the correct parameters and analyzer
+** Field name : analyzer
+*** Lucene field : false
+*** Field description : The analyzer that was used for indexing this document set and is consequently used for searching
+** Field name : hashes
+*** Lucene field : false
+*** Field description : An arbitrary collection of hashes for currently indexed documents, for disarding duplicates and delta indexing
+** Field name : maxAge
+*** Lucene field : false
+*** Field description : This is the maximum age that the index can become before it is re-indexed
+** Field name : throttle
+*** Lucene field : false
+*** Field description : This is the throttle in mili seconds that will slow down the indexing
+** Field name : mergeFactor
+*** Lucene field : false
+*** Field description : The number of documents to keep in the segments before they are merged to the main file during indexing
+** Field name : bufferedDocs
+*** Lucene field : false
+*** Field description : The number of documents to keep in memory before writing to the file
+** Field name : bufferSize
+*** Lucene field : false
+*** Field description : The size of the memory Lucene can occupy before the documents are written to the file
+** Field name : maxFieldLength
+*** Lucene field : false
+*** Field description : The maximum length of a field in the Lucene index
+** Field name : compoundFile
+*** Lucene field : false
+*** Field description : Whether this index should be in a compound file format
+** Field name : batchSize
+*** Lucene field : false
+*** Field description : The batch size of the category set for database indexing
+** Field name : internetBatchSize
+*** Lucene field : false
+*** Field description : The batch size of urls for the crawler
+** Field name : maxReadLength
+*** Lucene field : false
+*** Field description : The maximum read length for a document
+** Field name : indexDirectoryPath
+*** Lucene field : false
+*** Field description : The absolute or relative path to the directory where the index will be written
+** Field name : indexDirectoryPathBackup
+*** Lucene field : false
+*** Field description : The absolute or relative path to the directory where the index will be backed up
+** Field name : indexing
+*** Lucene field : false
+*** Field description : This flag indicates whether the index is being generated currently
+** Field name : delta
+*** Lucene field : false
+*** Field description : This flag indicates whether the index should be delta indexed, i.e. no new index just the changes n the resources
+** Field name : numDocsForSearchers
+*** Lucene field : false
+*** Field description : The number of documents in the currently opened searcher
+** Field name : snapshot
+*** Lucene field : false
+*** Field description : The latest snapshot for the index with static details for it, like size on disk etc.
+** Field name : snapshots
+*** Lucene field : false
+*** Field description : The snapshot for this index, in reverse chronological order
+** Field name : name
+*** Lucene field : false
+*** Field description : The name of this indexable
+** Field name : address
+*** Lucene field : false
+*** Field description : Whether this is a geospatial address field
+** Field name : stored
+*** Lucene field : false
+*** Field description : Whether this value should be stored in the index
+** Field name : analyzed
+*** Lucene field : false
+*** Field description : Whether this field should be analyzed for stemming and so on
+** Field name : vectored
+*** Lucene field : false
+*** Field description : Whether this field should be vectored in the index
+** Field name : omitNorms
+*** Lucene field : false
+*** Field description : Whether this field should have the normalization omitted, i.e. the tf-idf omitted, meaning that longer documents will score higher if the norms are omitted(i.e. they are not written to the index)
+** Field name : tokenized
+*** Lucene field : false
+*** Field description : Whether this field should have the terms tokenized
+** Field name : boost
+*** Lucene field : false
+*** Field description : The boost to give the field at index time
+** Field name : maxExceptions
+*** Lucene field : false
+*** Field description : This is the maximum exceptions during indexing before the indexing is stopped
+** Field name : threads
+*** Lucene field : false
+*** Field description : This is the number of threads that should be spawned for this indexable
+
+
+* Class : ikube.model.IndexableDataSource
+
+** Field name : allColumns
+*** Lucene field : false
+*** Field description : This flag is whether to index all the columns in the database, default is true
+** Field name : excludedTablePatterns
+*** Lucene field : false
+*** Field description : This is a delimiter seperated list of patterns that will exclude tables from being indexed
+** Field name : name
+*** Lucene field : false
+*** Field description : The name of this indexable
+** Field name : address
+*** Lucene field : false
+*** Field description : Whether this is a geospatial address field
+** Field name : stored
+*** Lucene field : false
+*** Field description : Whether this value should be stored in the index
+** Field name : analyzed
+*** Lucene field : false
+*** Field description : Whether this field should be analyzed for stemming and so on
+** Field name : vectored
+*** Lucene field : false
+*** Field description : Whether this field should be vectored in the index
+** Field name : omitNorms
+*** Lucene field : false
+*** Field description : Whether this field should have the normalization omitted, i.e. the tf-idf omitted, meaning that longer documents will score higher if the norms are omitted(i.e. they are not written to the index)
+** Field name : tokenized
+*** Lucene field : false
+*** Field description : Whether this field should have the terms tokenized
+** Field name : boost
+*** Lucene field : false
+*** Field description : The boost to give the field at index time
+** Field name : maxExceptions
+*** Lucene field : false
+*** Field description : This is the maximum exceptions during indexing before the indexing is stopped
+** Field name : threads
+*** Lucene field : false
+*** Field description : This is the number of threads that should be spawned for this indexable
+
+
+* Class : ikube.model.Url
+
+
+
+* Class : ikube.model.geospatial.GeoCountry
+
+
+
+* Class : ikube.model.Context
+
+
+
+* Class : ikube.model.IndexableInternet
+
+** Field name : url
+*** Lucene field : false
+*** Field description : This is the primary url that will be crawled
+** Field name : loginUrl
+*** Lucene field : false
+*** Field description : This is the url to the login page if it is a protected site
+** Field name : userid
+*** Lucene field : false
+*** Field description : This is the userid to login to the site
+** Field name : password
+*** Lucene field : false
+*** Field description : This is the password to login to the site
+** Field name : internetBatchSize
+*** Lucene field : false
+*** Field description : This is the size that the batches of urls will be per thread
+** Field name : excludedPattern
+*** Lucene field : false
+*** Field description : This is is a pattern that will be appled to exclude any urls, i.e. urls that should not be crawled, like confidential pages etc.
+** Field name : timeout
+*** Lucene field : false
+*** Field description : This is the length of time that the crawler will wait for a particular page to be delivered
+** Field name : titleFieldName
+*** Lucene field : false
+*** Field description : This is the name of the title field in the Lucene index
+** Field name : idFieldName
+*** Lucene field : false
+*** Field description : This is the name of the id field in the Lucene index
+** Field name : contentFieldName
+*** Lucene field : false
+*** Field description : This is the name of the content field int he Lucene index
+** Field name : maxReadLength
+*** Lucene field : false
+*** Field description : This is the maximum length of bytes that will be read from the input stream
+** Field name : name
+*** Lucene field : false
+*** Field description : The name of this indexable
+** Field name : address
+*** Lucene field : false
+*** Field description : Whether this is a geospatial address field
+** Field name : stored
+*** Lucene field : false
+*** Field description : Whether this value should be stored in the index
+** Field name : analyzed
+*** Lucene field : false
+*** Field description : Whether this field should be analyzed for stemming and so on
+** Field name : vectored
+*** Lucene field : false
+*** Field description : Whether this field should be vectored in the index
+** Field name : omitNorms
+*** Lucene field : false
+*** Field description : Whether this field should have the normalization omitted, i.e. the tf-idf omitted, meaning that longer documents will score higher if the norms are omitted(i.e. they are not written to the index)
+** Field name : tokenized
+*** Lucene field : false
+*** Field description : Whether this field should have the terms tokenized
+** Field name : boost
+*** Lucene field : false
+*** Field description : The boost to give the field at index time
+** Field name : maxExceptions
+*** Lucene field : false
+*** Field description : This is the maximum exceptions during indexing before the indexing is stopped
+** Field name : threads
+*** Lucene field : false
+*** Field description : This is the number of threads that should be spawned for this indexable
+
+
+* Class : ikube.model.geospatial.GeoCity
+
+
+
+* Class : ikube.model.File
+
+
+
+* Class : ikube.model.IndexableFileSystemCsv
+
+** Field name : path
+*** Lucene field : false
+*** Field description : This is the path to the folder where the files to be indexed are
+** Field name : excludedPattern
+*** Lucene field : false
+*** Field description : This is a pattern that will be applied to the file name and path to exclude resources that are not to be indexed
+** Field name : includedPattern
+*** Lucene field : false
+*** Field description : This is a pattern that will be applied to the name and path to specifically include resources that are to be included in the index
+** Field name : maxReadLength
+*** Lucene field : false
+*** Field description : This is the maximum read length that will be read from a file. This is required where files are very large and need to be read into memory completely
+** Field name : nameFieldName
+*** Lucene field : true
+*** Field description : This is the file name field in the Lucene index
+** Field name : pathFieldName
+*** Lucene field : true
+*** Field description : This is the name of the path field in the Lucene index
+** Field name : lastModifiedFieldName
+*** Lucene field : true
+*** Field description : This is the name of the last modified field in the Lucene index
+** Field name : contentFieldName
+*** Lucene field : true
+*** Field description : This is the name of the content field in the Lucene index
+** Field name : lengthFieldName
+*** Lucene field : true
+*** Field description : This is the name of the length field in the Lucene index
+** Field name : batchSize
+*** Lucene field : true
+*** Field description : This is the name of the batch size for files, i.e. how many files each thread will batch, not read in one shot, typical would be 1000
+** Field name : unpackZips
+*** Lucene field : true
+*** Field description : Whether to unpack the zip files found, this is deprecated and done automatically by reading in the zips and jars
+** Field name : name
+*** Lucene field : false
+*** Field description : The name of this indexable
+** Field name : address
+*** Lucene field : false
+*** Field description : Whether this is a geospatial address field
+** Field name : stored
+*** Lucene field : false
+*** Field description : Whether this value should be stored in the index
+** Field name : analyzed
+*** Lucene field : false
+*** Field description : Whether this field should be analyzed for stemming and so on
+** Field name : vectored
+*** Lucene field : false
+*** Field description : Whether this field should be vectored in the index
+** Field name : omitNorms
+*** Lucene field : false
+*** Field description : Whether this field should have the normalization omitted, i.e. the tf-idf omitted, meaning that longer documents will score higher if the norms are omitted(i.e. they are not written to the index)
+** Field name : tokenized
+*** Lucene field : false
+*** Field description : Whether this field should have the terms tokenized
+** Field name : boost
+*** Lucene field : false
+*** Field description : The boost to give the field at index time
+** Field name : maxExceptions
+*** Lucene field : false
+*** Field description : This is the maximum exceptions during indexing before the indexing is stopped
+** Field name : threads
+*** Lucene field : false
+*** Field description : This is the number of threads that should be spawned for this indexable
+
+
+* Class : ikube.model.IndexableAudio
+
+** Field name : name
+*** Lucene field : false
+*** Field description : The name of this indexable
+** Field name : address
+*** Lucene field : false
+*** Field description : Whether this is a geospatial address field
+** Field name : stored
+*** Lucene field : false
+*** Field description : Whether this value should be stored in the index
+** Field name : analyzed
+*** Lucene field : false
+*** Field description : Whether this field should be analyzed for stemming and so on
+** Field name : vectored
+*** Lucene field : false
+*** Field description : Whether this field should be vectored in the index
+** Field name : omitNorms
+*** Lucene field : false
+*** Field description : Whether this field should have the normalization omitted, i.e. the tf-idf omitted, meaning that longer documents will score higher if the norms are omitted(i.e. they are not written to the index)
+** Field name : tokenized
+*** Lucene field : false
+*** Field description : Whether this field should have the terms tokenized
+** Field name : boost
+*** Lucene field : false
+*** Field description : The boost to give the field at index time
+** Field name : maxExceptions
+*** Lucene field : false
+*** Field description : This is the maximum exceptions during indexing before the indexing is stopped
+** Field name : threads
+*** Lucene field : false
+*** Field description : This is the number of threads that should be spawned for this indexable
+
+
+* Class : ikube.model.IndexableTweets
+
+** Field name : consumerKey
+*** Lucene field : false
+*** Field description : This is the consumer key for the OAuth security
+** Field name : consumerSecret
+*** Lucene field : false
+*** Field description : This is the consumer secret key for the OAuth security
+** Field name : token
+*** Lucene field : false
+*** Field description : This is the token for the OAuth security
+** Field name : tokenSecret
+*** Lucene field : false
+*** Field description : This is the token secret for the OAuth security
+** Field name : textField
+*** Lucene field : false
+*** Field description : This is the text field name of the tweet in the Lucene index
+** Field name : createdAtField
+*** Lucene field : false
+*** Field description : This is the date created field name of the tweet in the Lucene index
+** Field name : fromUserField
+*** Lucene field : false
+*** Field description : This is the user name field name of the tweet in the Lucene index
+** Field name : locationField
+*** Lucene field : false
+*** Field description : This is the location/address field name of the tweet in the Lucene index when tweeted, could be different from the users actual location when registering
+** Field name : userLocationField
+*** Lucene field : false
+*** Field description : ?
+** Field name : userNameField
+*** Lucene field : false
+*** Field description : ?
+** Field name : userScreenNameField
+*** Lucene field : false
+*** Field description : ?
+** Field name : userTimeZoneField
+*** Lucene field : false
+*** Field description : ?
+** Field name : userUtcOffsetField
+*** Lucene field : false
+*** Field description : ?
+** Field name : userLanguageField
+*** Lucene field : false
+*** Field description : ?
+** Field name : persistTweets
+*** Lucene field : false
+*** Field description : ?
+** Field name : clones
+*** Lucene field : false
+*** Field description : The number of times to clone the tweets for volume simulation
+** Field name : name
+*** Lucene field : false
+*** Field description : The name of this indexable
+** Field name : address
+*** Lucene field : false
+*** Field description : Whether this is a geospatial address field
+** Field name : stored
+*** Lucene field : false
+*** Field description : Whether this value should be stored in the index
+** Field name : analyzed
+*** Lucene field : false
+*** Field description : Whether this field should be analyzed for stemming and so on
+** Field name : vectored
+*** Lucene field : false
+*** Field description : Whether this field should be vectored in the index
+** Field name : omitNorms
+*** Lucene field : false
+*** Field description : Whether this field should have the normalization omitted, i.e. the tf-idf omitted, meaning that longer documents will score higher if the norms are omitted(i.e. they are not written to the index)
+** Field name : tokenized
+*** Lucene field : false
+*** Field description : Whether this field should have the terms tokenized
+** Field name : boost
+*** Lucene field : false
+*** Field description : The boost to give the field at index time
+** Field name : maxExceptions
+*** Lucene field : false
+*** Field description : This is the maximum exceptions during indexing before the indexing is stopped
+** Field name : threads
+*** Lucene field : false
+*** Field description : This is the number of threads that should be spawned for this indexable
+
+
+* Class : ikube.model.IndexableFileSystem
+
+** Field name : path
+*** Lucene field : false
+*** Field description : This is the path to the folder where the files to be indexed are
+** Field name : excludedPattern
+*** Lucene field : false
+*** Field description : This is a pattern that will be applied to the file name and path to exclude resources that are not to be indexed
+** Field name : includedPattern
+*** Lucene field : false
+*** Field description : This is a pattern that will be applied to the name and path to specifically include resources that are to be included in the index
+** Field name : maxReadLength
+*** Lucene field : false
+*** Field description : This is the maximum read length that will be read from a file. This is required where files are very large and need to be read into memory completely
+** Field name : nameFieldName
+*** Lucene field : true
+*** Field description : This is the file name field in the Lucene index
+** Field name : pathFieldName
+*** Lucene field : true
+*** Field description : This is the name of the path field in the Lucene index
+** Field name : lastModifiedFieldName
+*** Lucene field : true
+*** Field description : This is the name of the last modified field in the Lucene index
+** Field name : contentFieldName
+*** Lucene field : true
+*** Field description : This is the name of the content field in the Lucene index
+** Field name : lengthFieldName
+*** Lucene field : true
+*** Field description : This is the name of the length field in the Lucene index
+** Field name : batchSize
+*** Lucene field : true
+*** Field description : This is the name of the batch size for files, i.e. how many files each thread will batch, not read in one shot, typical would be 1000
+** Field name : unpackZips
+*** Lucene field : true
+*** Field description : Whether to unpack the zip files found, this is deprecated and done automatically by reading in the zips and jars
+** Field name : name
+*** Lucene field : false
+*** Field description : The name of this indexable
+** Field name : address
+*** Lucene field : false
+*** Field description : Whether this is a geospatial address field
+** Field name : stored
+*** Lucene field : false
+*** Field description : Whether this value should be stored in the index
+** Field name : analyzed
+*** Lucene field : false
+*** Field description : Whether this field should be analyzed for stemming and so on
+** Field name : vectored
+*** Lucene field : false
+*** Field description : Whether this field should be vectored in the index
+** Field name : omitNorms
+*** Lucene field : false
+*** Field description : Whether this field should have the normalization omitted, i.e. the tf-idf omitted, meaning that longer documents will score higher if the norms are omitted(i.e. they are not written to the index)
+** Field name : tokenized
+*** Lucene field : false
+*** Field description : Whether this field should have the terms tokenized
+** Field name : boost
+*** Lucene field : false
+*** Field description : The boost to give the field at index time
+** Field name : maxExceptions
+*** Lucene field : false
+*** Field description : This is the maximum exceptions during indexing before the indexing is stopped
+** Field name : threads
+*** Lucene field : false
+*** Field description : This is the number of threads that should be spawned for this indexable
+
+
+* Class : ikube.model.IndexableEmail
+
+** Field name : idField
+*** Lucene field : false
+*** Field description : This is the name of the id field in the Lucene index
+** Field name : titleField
+*** Lucene field : false
+*** Field description : This is the name of the title field in the Lucene index
+** Field name : contentField
+*** Lucene field : false
+*** Field description : This is the namd of the content field in the Lucene index
+** Field name : mailHost
+*** Lucene field : false
+*** Field description : The url where the mail is hosted, i.e. the Imap or Pop server
+** Field name : username
+*** Lucene field : false
+*** Field description : The user name of the mail account
+** Field name : password
+*** Lucene field : false
+*** Field description : The password for the mail account
+** Field name : port
+*** Lucene field : false
+*** Field description : The port number of the mail account
+** Field name : protocol
+*** Lucene field : false
+*** Field description : The protocol of the account, Imap or Pop3 for example
+** Field name : secureSocketLayer
+*** Lucene field : false
+*** Field description : Whether to use SSL for the mail access
+** Field name : name
+*** Lucene field : false
+*** Field description : The name of this indexable
+** Field name : address
+*** Lucene field : false
+*** Field description : Whether this is a geospatial address field
+** Field name : stored
+*** Lucene field : false
+*** Field description : Whether this value should be stored in the index
+** Field name : analyzed
+*** Lucene field : false
+*** Field description : Whether this field should be analyzed for stemming and so on
+** Field name : vectored
+*** Lucene field : false
+*** Field description : Whether this field should be vectored in the index
+** Field name : omitNorms
+*** Lucene field : false
+*** Field description : Whether this field should have the normalization omitted, i.e. the tf-idf omitted, meaning that longer documents will score higher if the norms are omitted(i.e. they are not written to the index)
+** Field name : tokenized
+*** Lucene field : false
+*** Field description : Whether this field should have the terms tokenized
+** Field name : boost
+*** Lucene field : false
+*** Field description : The boost to give the field at index time
+** Field name : maxExceptions
+*** Lucene field : false
+*** Field description : This is the maximum exceptions during indexing before the indexing is stopped
+** Field name : threads
+*** Lucene field : false
+*** Field description : This is the number of threads that should be spawned for this indexable
+
+
+* Class : ikube.model.geospatial.GeoAltName
+
+
+
+* Class : ikube.model.IndexableColumn
+
+** Field name : fieldName
+*** Lucene field : true
+*** Field description : This is the name of the field in the Lucene index
+** Field name : hashed
+*** Lucene field : true
+*** Field description : Whether the data from the column is hashed before adding to the document. Typically this is when the data should be numeric, or at least searchable numerically but is actually a string or alphanumeric.
+** Field name : name
+*** Lucene field : false
+*** Field description : The name of this indexable
+** Field name : address
+*** Lucene field : false
+*** Field description : Whether this is a geospatial address field
+** Field name : stored
+*** Lucene field : false
+*** Field description : Whether this value should be stored in the index
+** Field name : analyzed
+*** Lucene field : false
+*** Field description : Whether this field should be analyzed for stemming and so on
+** Field name : vectored
+*** Lucene field : false
+*** Field description : Whether this field should be vectored in the index
+** Field name : omitNorms
+*** Lucene field : false
+*** Field description : Whether this field should have the normalization omitted, i.e. the tf-idf omitted, meaning that longer documents will score higher if the norms are omitted(i.e. they are not written to the index)
+** Field name : tokenized
+*** Lucene field : false
+*** Field description : Whether this field should have the terms tokenized
+** Field name : boost
+*** Lucene field : false
+*** Field description : The boost to give the field at index time
+** Field name : maxExceptions
+*** Lucene field : false
+*** Field description : This is the maximum exceptions during indexing before the indexing is stopped
+** Field name : threads
+*** Lucene field : false
+*** Field description : This is the number of threads that should be spawned for this indexable
+
+
+* Class : ikube.model.Search
+
+
+
+* Class : ikube.model.Indexable
+
+** Field name : name
+*** Lucene field : false
+*** Field description : The name of this indexable
+** Field name : address
+*** Lucene field : false
+*** Field description : Whether this is a geospatial address field
+** Field name : stored
+*** Lucene field : false
+*** Field description : Whether this value should be stored in the index
+** Field name : analyzed
+*** Lucene field : false
+*** Field description : Whether this field should be analyzed for stemming and so on
+** Field name : vectored
+*** Lucene field : false
+*** Field description : Whether this field should be vectored in the index
+** Field name : omitNorms
+*** Lucene field : false
+*** Field description : Whether this field should have the normalization omitted, i.e. the tf-idf omitted, meaning that longer documents will score higher if the norms are omitted(i.e. they are not written to the index)
+** Field name : tokenized
+*** Lucene field : false
+*** Field description : Whether this field should have the terms tokenized
+** Field name : boost
+*** Lucene field : false
+*** Field description : The boost to give the field at index time
+** Field name : maxExceptions
+*** Lucene field : false
+*** Field description : This is the maximum exceptions during indexing before the indexing is stopped
+** Field name : threads
+*** Lucene field : false
+*** Field description : This is the number of threads that should be spawned for this indexable
+
+
+* Class : ikube.model.AnalyzerInfo
+
+
+
+* Class : ikube.model.geospatial.GeoName
+
+
+
+* Class : ikube.model.IndexableFileSystemWiki
+
+** Field name : maxRevisions
+*** Lucene field : false
+*** Field description : This is the maximum documents that will be read from the source before the indexing terminates
+** Field name : path
+*** Lucene field : false
+*** Field description : This is the path to the folder where the files to be indexed are
+** Field name : excludedPattern
+*** Lucene field : false
+*** Field description : This is a pattern that will be applied to the file name and path to exclude resources that are not to be indexed
+** Field name : includedPattern
+*** Lucene field : false
+*** Field description : This is a pattern that will be applied to the name and path to specifically include resources that are to be included in the index
+** Field name : maxReadLength
+*** Lucene field : false
+*** Field description : This is the maximum read length that will be read from a file. This is required where files are very large and need to be read into memory completely
+** Field name : nameFieldName
+*** Lucene field : true
+*** Field description : This is the file name field in the Lucene index
+** Field name : pathFieldName
+*** Lucene field : true
+*** Field description : This is the name of the path field in the Lucene index
+** Field name : lastModifiedFieldName
+*** Lucene field : true
+*** Field description : This is the name of the last modified field in the Lucene index
+** Field name : contentFieldName
+*** Lucene field : true
+*** Field description : This is the name of the content field in the Lucene index
+** Field name : lengthFieldName
+*** Lucene field : true
+*** Field description : This is the name of the length field in the Lucene index
+** Field name : batchSize
+*** Lucene field : true
+*** Field description : This is the name of the batch size for files, i.e. how many files each thread will batch, not read in one shot, typical would be 1000
+** Field name : unpackZips
+*** Lucene field : true
+*** Field description : Whether to unpack the zip files found, this is deprecated and done automatically by reading in the zips and jars
+** Field name : name
+*** Lucene field : false
+*** Field description : The name of this indexable
+** Field name : address
+*** Lucene field : false
+*** Field description : Whether this is a geospatial address field
+** Field name : stored
+*** Lucene field : false
+*** Field description : Whether this value should be stored in the index
+** Field name : analyzed
+*** Lucene field : false
+*** Field description : Whether this field should be analyzed for stemming and so on
+** Field name : vectored
+*** Lucene field : false
+*** Field description : Whether this field should be vectored in the index
+** Field name : omitNorms
+*** Lucene field : false
+*** Field description : Whether this field should have the normalization omitted, i.e. the tf-idf omitted, meaning that longer documents will score higher if the norms are omitted(i.e. they are not written to the index)
+** Field name : tokenized
+*** Lucene field : false
+*** Field description : Whether this field should have the terms tokenized
+** Field name : boost
+*** Lucene field : false
+*** Field description : The boost to give the field at index time
+** Field name : maxExceptions
+*** Lucene field : false
+*** Field description : This is the maximum exceptions during indexing before the indexing is stopped
+** Field name : threads
+*** Lucene field : false
+*** Field description : This is the number of threads that should be spawned for this indexable
+
+
+* Class : ikube.model.Distributed
+
+
+
+* Class : ikube.model.IndexableTable
+
+** Field name : predicate
+*** Lucene field : false
+*** Field description : This is a sql predicate, like 'where id > 1000'
+** Field name : allColumns
+*** Lucene field : false
+*** Field description : This flag is whether to index all the columns in the database, default is false
+** Field name : name
+*** Lucene field : false
+*** Field description : The name of this indexable
+** Field name : address
+*** Lucene field : false
+*** Field description : Whether this is a geospatial address field
+** Field name : stored
+*** Lucene field : false
+*** Field description : Whether this value should be stored in the index
+** Field name : analyzed
+*** Lucene field : false
+*** Field description : Whether this field should be analyzed for stemming and so on
+** Field name : vectored
+*** Lucene field : false
+*** Field description : Whether this field should be vectored in the index
+** Field name : omitNorms
+*** Lucene field : false
+*** Field description : Whether this field should have the normalization omitted, i.e. the tf-idf omitted, meaning that longer documents will score higher if the norms are omitted(i.e. they are not written to the index)
+** Field name : tokenized
+*** Lucene field : false
+*** Field description : Whether this field should have the terms tokenized
+** Field name : boost
+*** Lucene field : false
+*** Field description : The boost to give the field at index time
+** Field name : maxExceptions
+*** Lucene field : false
+*** Field description : This is the maximum exceptions during indexing before the indexing is stopped
+** Field name : threads
+*** Lucene field : false
+*** Field description : This is the number of threads that should be spawned for this indexable
+
+
+* Class : ikube.model.Coordinate
+
+
+
+* Class : ikube.model.Action
+
+
+
+* Class : ikube.model.Task
+
+
+
+* Class : ikube.model.Server
+
+
+
+* Class : ikube.model.Analysis

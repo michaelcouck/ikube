@@ -17,10 +17,12 @@ import mockit.Mockit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import weka.classifiers.functions.SMO;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
@@ -37,9 +39,24 @@ import static org.mockito.Mockito.*;
  */
 public class AnalyticsServiceTest extends AbstractTest {
 
+    @Mock
     private Context context;
+    @Mock
     private IAnalyzer analyzer;
+    @Mock
     private Analysis<?, ?> analysis;
+    @Mock
+    private AnalyzerManager analyzerManager;
+    @Mock
+    private SMO smo;
+    @Mock
+    private Filter filter;
+    @Mock
+    private AnalyzerInfo analyzerInfo;
+
+    @Mock
+    private AnalyticsService analyticsServiceMock;
+
     private AnalyticsService analyticsService;
 
     @Before
@@ -47,32 +64,27 @@ public class AnalyticsServiceTest extends AbstractTest {
     public void before() throws Exception {
         Mockit.setUpMocks(ApplicationContextManagerMock.class);
 
-        analyzer = mock(IAnalyzer.class);
-        analysis = mock(Analysis.class);
-
-        SMO smo = mock(SMO.class);
-        Filter filter = mock(Filter.class);
-        AnalyzerInfo analyzerInfo = mock(AnalyzerInfo.class);
-
         when(analyzerInfo.getAnalyzer()).thenReturn(WekaClassifier.class.getName());
         when(analyzerInfo.getAlgorithm()).thenReturn(SMO.class.getName());
         when(analyzerInfo.getFilter()).thenReturn(StringToWordVector.class.getName());
 
         analyticsService = new AnalyticsService();
 
-        context = mock(Context.class);
         when(context.getAnalyzerInfo()).thenReturn(analyzerInfo);
         when(context.getAlgorithm()).thenReturn(smo);
         when(context.getAnalyzer()).thenReturn(analyzer);
         when(context.getFilter()).thenReturn(filter);
 
-        AnalyzerManager.getContexts().put(context.getName(), context);
+        Map<String, Context> contexts = new HashMap<>();
+        contexts.put(context.getName(), context);
+        when(analyzerManager.getContexts()).thenReturn(contexts);
 
-        Deencapsulation.setField(analyticsService, "clusterManager", clusterManager);
-
-        IAnalyticsService analyticsServiceMock = mock(IAnalyticsService.class);
         when(analyticsServiceMock.getAnalyzer(any(String.class))).thenReturn(analyzer);
+        when(analyticsServiceMock.getContexts()).thenReturn(contexts);
+
         ApplicationContextManagerMock.setBean(IAnalyticsService.class, analyticsServiceMock);
+        Deencapsulation.setField(analyticsService, "clusterManager", clusterManager);
+        Deencapsulation.setField(analyticsService, "analyzerManager", analyzerManager);
     }
 
     @After
@@ -176,8 +188,6 @@ public class AnalyticsServiceTest extends AbstractTest {
         verify(clusterManager, atLeastOnce()).sendTaskToAll(any(Callable.class));
 
         Destroyer destroyer = new Destroyer(context);
-        IAnalyticsService service = destroyer.getAnalyticsService();
-        when(service.getContexts()).thenReturn(AnalyzerManager.getContexts());
         destroyer.call();
 
         verify(analyzer, atLeastOnce()).destroy(any(Context.class));

@@ -1,11 +1,10 @@
 package ikube.toolkit;
 
-import com.google.common.base.Predicate;
 import ikube.model.Attribute;
+import ikube.model.Persistable;
 import org.reflections.Reflections;
 import org.springframework.util.ReflectionUtils;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.Set;
 
@@ -22,33 +21,26 @@ public class GenerateModelDocumentation {
 
     public static void main(String[] args) {
         Reflections reflections = new Reflections("ikube.model");
-        Set<Class<?>> classes = Reflections.collect("ikube.model", new Predicate<String>() {
-            @Override
-            public boolean apply(@Nullable final String string) {
-                System.out.println(string);
-                return true;
-            }
-        }).getTypesAnnotatedWith(Attribute.class);
-        String output = new GenerateModelDocumentation().createEntityFieldTable(classes);
-        System.out.println(output);
+        Set<Class<? extends Persistable>> classes = reflections.getSubTypesOf(Persistable.class);
+        new GenerateModelDocumentation().createEntityFieldTable(classes);
     }
 
-    public String createEntityFieldTable(final Set<Class<?>> classes) {
-        for (final Class<?> klass : classes) {
+    public void createEntityFieldTable(final Set<Class<? extends Persistable>> classes) {
+        for (final Class<? extends Persistable> klass : classes) {
             createEntityTableRow(klass);
         }
-        return null;
     }
 
-    private void createEntityTableRow(final Class<?> klass) {
-        System.out.println("=== " + klass.getName());
+    private void createEntityTableRow(final Class<? extends Persistable> klass) {
+        System.out.println("* Class : " + klass.getName());
+        System.out.println("");
         class ModelAttributeFieldCallback implements ReflectionUtils.FieldCallback {
             @Override
             public void doWith(final Field field) throws IllegalArgumentException, IllegalAccessException {
                 Attribute attribute = field.getAnnotation(Attribute.class);
-                System.out.println("==== " + field.getName());
-                System.out.println("==== " + attribute.field());
-                System.out.println("==== " + attribute.description());
+                System.out.println("** Field name : " + field.getName());
+                System.out.println("*** Lucene field : " + attribute.field());
+                System.out.println("*** Field description : " + attribute.description());
             }
         }
         class ModelAttributeFieldFilter implements ReflectionUtils.FieldFilter {
@@ -58,6 +50,8 @@ public class GenerateModelDocumentation {
             }
         }
         ReflectionUtils.doWithFields(klass, new ModelAttributeFieldCallback(), new ModelAttributeFieldFilter());
+        System.out.println("");
+        System.out.println("");
     }
 
 }
