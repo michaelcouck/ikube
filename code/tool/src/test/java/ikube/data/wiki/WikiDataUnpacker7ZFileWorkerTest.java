@@ -1,14 +1,11 @@
 package ikube.data.wiki;
 
 import ikube.toolkit.FileUtilities;
+import org.apache.log4j.Logger;
+import org.junit.Test;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
-import org.junit.Ignore;
-import org.junit.Test;
-
-@Ignore
 public class WikiDataUnpacker7ZFileWorkerTest {
 
 	static final Logger LOGGER = Logger.getLogger(WikiDataUnpacker7ZFileWorkerTest.class);

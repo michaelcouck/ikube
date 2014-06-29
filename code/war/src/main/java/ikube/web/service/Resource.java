@@ -89,7 +89,7 @@ public abstract class Resource {
     protected ResponseBuilder buildResponse() {
         return Response.status(Response.Status.OK)//
                 .header("Access-Control-Allow-Origin", "*") //
-                .header("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
+                .header("Access-Control-Allow-Methods", "GET, POST, PUT");
     }
 
     <T> T unmarshall(final Class<T> clazz, final HttpServletRequest request) {
@@ -115,6 +115,9 @@ public abstract class Resource {
     }
 
     String[] split(final String string) {
+        if (StringUtils.isEmpty(string)) {
+            return new String[0];
+        }
         String cleaned = string;
         HtmlParser htmlParser = new HtmlParser();
         OutputStream outputStream = new ByteArrayOutputStream();

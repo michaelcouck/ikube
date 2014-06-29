@@ -9,7 +9,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.AutoRetryHttpClient;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -72,7 +71,6 @@ public class FileUtilitiesTest extends AbstractTest {
 	}
 
 	@Test
-	@Ignore
 	public void findFilesRecursively() throws Exception {
 		assertFalse(file.exists());
 		assertTrue(file.createNewFile());

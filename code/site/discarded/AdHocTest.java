@@ -17,7 +17,6 @@ public class AdHocTest extends Base {
 	}
 
 	@Test
-	@Ignore
 	public void myClient() throws Exception {
 		HttpClient httpClient = new HttpClient();
 		PostMethod postMethod = new PostMethod("http://sdl-st2.netpost/sdl-ws/UserService?wsdl");
@@ -29,7 +28,6 @@ public class AdHocTest extends Base {
 	}
 
 	@Test
-	// @Ignore
 	public void guiClient() throws Exception {
 		HttpClient httpclient = new HttpClient();
 		String body = "<soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/' "

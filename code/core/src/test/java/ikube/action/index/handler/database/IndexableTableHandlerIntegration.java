@@ -15,7 +15,10 @@ import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.UriUtilities;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.net.InetAddress;
@@ -37,7 +40,6 @@ import static org.junit.Assert.*;
  * @version 01.00
  * @since 12-10-2010
  */
-@Ignore
 public class IndexableTableHandlerIntegration extends AbstractTest {
 
     private Connection connection;
@@ -242,7 +244,6 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
     }
 
     @Test
-    // @Ignore("Move to table resource provider test")
     public void getResultSetDatasource() throws Exception {
         TableResourceProvider tableResourceProvider = new TableResourceProvider(indexContext, snapshotTable);
 
@@ -258,7 +259,6 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
     }
 
     @Test
-    @Ignore("Move to table resource provider test")
     public void getResultSetConnection() throws Exception {
         TableResourceProvider tableResourceProvider = new TableResourceProvider(indexContext, snapshotTable);
 

@@ -8,7 +8,6 @@ import ikube.model.AnalyzerInfo;
 import ikube.model.Context;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.HttpClientUtilities;
-import org.junit.Ignore;
 import org.junit.Test;
 import weka.clusterers.SimpleKMeans;
 
@@ -19,7 +18,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * TODO: Note to self. For some reason this test does not work on the Dell server!!!
@@ -76,7 +76,6 @@ public class AnalyzerIntegration extends BaseTest {
 	}
 
 	@Test
-    @Ignore
 	public void destroy() throws Exception {
 		analyze();
 
@@ -107,7 +106,6 @@ public class AnalyzerIntegration extends BaseTest {
 	}
 
 	@Test
-    @Ignore
 	public void contexts() throws Exception {
 		analyze();
 
@@ -118,7 +116,6 @@ public class AnalyzerIntegration extends BaseTest {
 	}
 
 	@Test
-    @Ignore
 	public void analyzers() throws Exception {
 		create();
 

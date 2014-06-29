@@ -61,5 +61,63 @@ integrated to provide the user access and administration.
 Indexes and processing pipelines are configured in Spring format. This will be familiar to developers that have
 a Spring background, but will also be understandable for technical people.
 
-Configurations start with a context, and IndexContext. Properties related to indexes are:
+==== Index context
+Configurations start with a context, an IndexContext. Each context must have a unique identifier, which is the name.
+Each context can be viewed as a collection of resources that are indexed for searching or processing viw analytics.
+As ikube is based on schedules, the maximum age of the context will trigger he processing jobs, as such the 'maxAge' property
+is important to determine when processing will start. For all the properties related to contexts please refer to the
+link:properties.html[properties page].
+
+Please refer to the spring-auto.xml configuration in the configuration folder 'production'. The analyzer is important
+for realising the results. In ths autocomplete index the analyzer is an 'EdgeNgramAnalyzer'. This analyzer will break the
+words into tokens, smaller than the whole. The effect of this is that the index will be tolerant of spelling errors
+by the users. The index however will be larges by a factor, and the performance will be less than that of a direct index
+using a standard analyzer.
+
+==== Data source resources
+Please refer to the spring-geo.xml configuration file. This index is a database index. There are two tables that contain
+the geonames data, but only one is indexed. The context specifies the name of the index and some other parameters that are
+described on the link:properties.html[properties page], like the path where the index will be stored etc. This index definition
+also contains 'geoname-strategies'.
+
+The context contains a list of 'indexables' which are the resources that will be indexed and processed. In this case the
+indexable is the 'geoname' indexable. It is a table indexable, meaning it defines a table in a database that will be indexed.
+Similarly the indexable needs a unique identifier, the name and several properties, also described on the
+link:properties.html[properties page]. Interesting in this index is the address property, which indicates that this resource
+will contain physical addresses, and can be enhanced with geospatial data, specifically a longitude and latitude will be
+discovered in the data, or the address will be looked up in the database. We define the number of threads that will handle the
+table, bearing in mind the volumes of data in the database and the hardware that the database is on. The data source is defined
+in the 'nonXaDataSourceDb2' file, spring-db2-jdbc.xml. This configuration file contains the url for the database, and importantly
+the user name and password. Database connections will be retrieved from the database using this datasource configuration. The
+properties for the database are quite self explanatory, and the defaults can be used in most cases.
+
+The geoname context also contains strategies. Strategies are pre and post processing logic. Strategies can be chained, executed
+in order, enhancing the index with various information like language detection or analytics processing. In this case the strategy
+is the 'GeospatialEnrichmentStrategy', which will add geospatial information to the index. Specifically it will look for co-ordinates
+in the data, latitude and longitude, then generate a geohash for the co-ordinates. Fields in the table called 'longitude' or 'latitude'
+will be used to generate the geohash. Failing that, the data will be concatenated and geocoder will be used to estimate the
+location of the resource.
+
+Adding a geohash to the index will allow geospatial searches. The results will be limited to a location or a radius around a
+location, and they will be sorted according to distance from the point specified in the search. For an example of results from the
+geoname index please go to the production instance os ikube at link:http://ikube.be/ikube/search/search.html[search] page. Select
+the geospatial index from the drop down list. Then input 'hotel' in the name field. In the longitude and latitude fields input -33.9693580
+and 18.4622110 respectively. Click on the Go! button at the bottom and wait for the results. They will be displayed on the map
+on the right of the page as in the following screen shot +
+
+image:geospatial-search.jpeg[geospatial search, 300, 200, role="bottom", link="images/geospatial-search.jpeg"] +
+
+==== Full data source
+==== File system
+==== Internet
+==== Email
+==== Csv
+==== Log
+==== Svn
+==== Table
+==== Twitter
+
+
+
+
 

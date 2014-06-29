@@ -1,9 +1,7 @@
 package ikube.web.service;
 
 import ikube.IConstants;
-import org.junit.Test;
 
-import javax.ws.rs.core.MediaType;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -14,26 +12,16 @@ import java.net.URL;
  */
 public class SearcherXmlIntegration extends SearcherIntegration {
 
-/*    @Test
-    public void search() throws Exception {
-        verify(getUrl(""), MediaType.APPLICATION_JSON, MediaType.WILDCARD);
-    }
-
-    @Test
-    public void searchAll() throws Exception {
-        verify(getUrl(Searcher.ALL), MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON);
-    }*/
-
-	@SuppressWarnings("StringBufferReplaceableByString")
+    @SuppressWarnings("StringBufferReplaceableByString")
     protected String getUrl(String path) throws MalformedURLException {
-		StringBuilder builder = new StringBuilder();
-		builder.append(IConstants.SEP);
-		builder.append(IConstants.IKUBE);
-		builder.append(SERVICE);
-		builder.append(SearcherXml.SEARCH);
-		builder.append(SearcherXml.XML);
-		builder.append(path);
-		return new URL("http", LOCALHOST, SERVER_PORT, builder.toString()).toString();
-	}
+        StringBuilder builder = new StringBuilder();
+        builder.append(IConstants.SEP);
+        builder.append(IConstants.IKUBE);
+        builder.append(SERVICE);
+        builder.append(SearcherXml.SEARCH);
+        builder.append(SearcherXml.XML);
+        builder.append(path);
+        return new URL("http", LOCALHOST, SERVER_PORT, builder.toString()).toString();
+    }
 
 }

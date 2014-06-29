@@ -18,7 +18,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.AutoRetryHttpClient;
 import org.apache.lucene.document.Document;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.social.twitter.api.Tweet;
 
@@ -78,7 +77,6 @@ public class TwitterResourceHandlerTest extends AbstractTest {
     }
 
     @Test
-    @Ignore
     public void mergeCountryCityLanguageCoordinate() throws Exception {
         File countryCityFile = FileUtilities.findFileRecursively(new File("."), "country-city-language-coordinate.properties");
         File countryLanguageFile = FileUtilities.findFileRecursively(new File("."), "country-language.properties");

@@ -3,7 +3,6 @@ package ikube.action.remote;
 import ikube.AbstractTest;
 import ikube.toolkit.FileUtilities;
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -63,7 +62,6 @@ public class SynchronizeCallableTest extends AbstractTest {
 	}
 
 	@Test
-	@Ignore
 	public void readChunks() throws Exception {
 		File file = FileUtilities.findFileRecursively(new File("."), "english.txt");
 		RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");

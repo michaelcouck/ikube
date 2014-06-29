@@ -4,13 +4,11 @@ import ikube.BaseTest;
 import ikube.IConstants;
 import ikube.model.Search;
 import ikube.toolkit.FileUtilities;
-import ikube.toolkit.HttpClientUtilities;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;
@@ -21,10 +19,7 @@ import static ikube.toolkit.HttpClientUtilities.doPost;
 import static ikube.toolkit.ObjectToolkit.populateFields;
 import static org.junit.Assert.assertNotNull;
 
-@Ignore
 public abstract class SearcherIntegration extends BaseTest {
-
-    protected static final String INDEX_NAME = "desktop";
 
     protected abstract String getUrl(String path) throws Exception;
 
@@ -40,7 +35,7 @@ public abstract class SearcherIntegration extends BaseTest {
                 IConstants.FIRST_RESULT, //
                 IConstants.MAX_RESULTS};
         String[] values = {//
-                INDEX_NAME,//
+                IConstants.GEOSPATIAL,//
                 "cape AND town AND university",//
                 IConstants.NAME, //
                 Boolean.TRUE.toString(),//
@@ -61,7 +56,7 @@ public abstract class SearcherIntegration extends BaseTest {
                 IConstants.FIRST_RESULT, //
                 IConstants.MAX_RESULTS};
         String[] values = { //
-                INDEX_NAME, //
+                IConstants.GEOSPATIAL, //
                 "cape AND town AND university;south africa", //
                 IConstants.NAME + ";" + IConstants.COUNTRY,//
                 Boolean.TRUE.toString(), //
@@ -83,7 +78,7 @@ public abstract class SearcherIntegration extends BaseTest {
                 IConstants.FIRST_RESULT, //
                 IConstants.MAX_RESULTS};
         String[] values = { //
-                INDEX_NAME, //
+                IConstants.GEOSPATIAL, //
                 "cape AND town AND university;south africa", //
                 IConstants.NAME + ";" + IConstants.COUNTRY,//
                 IConstants.NAME + ";" + IConstants.COUNTRY, //
@@ -136,7 +131,7 @@ public abstract class SearcherIntegration extends BaseTest {
                 IConstants.FIRST_RESULT,//
                 IConstants.MAX_RESULTS};
         String[] values = { //
-                INDEX_NAME,//
+                IConstants.GEOSPATIAL,//
                 "michael AND couck|123456789", //
                 "contents|lastmodified", //
                 "string|numeric", //
@@ -163,7 +158,7 @@ public abstract class SearcherIntegration extends BaseTest {
 
     protected void verify(final String url, final String consumes, final String produces) throws Exception {
         Search search = populateFields(new Search(), Boolean.TRUE, 10);
-        search.setIndexName(INDEX_NAME);
+        search.setIndexName(IConstants.GEOSPATIAL);
 
         search.setSearchStrings(Arrays.asList("Michael Couck"));
         search.setSearchFields(Arrays.asList("contents"));

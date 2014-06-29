@@ -108,9 +108,9 @@ public class ClassifierTrainingStrategyTest extends AbstractTest {
     /**
      * This test is for the performance of various synchronization mechanisms in Java.
      */
-    @SuppressWarnings("unchecked")
     @Test
     @Ignore
+    @SuppressWarnings("unchecked")
     public void performance() {
         ThreadUtilities.initialize();
         final int iterations = 10000;
