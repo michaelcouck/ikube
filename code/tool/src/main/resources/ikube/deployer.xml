@@ -451,7 +451,7 @@
         property:breakOnError="false"
         property:files-ref="files-site"/>
     <util:map id="files-site">
-        <entry key="code/war/target/${ikube-site}" value="${tomcat-site-webapps}"/>
+        <entry key="code/site/target/${site-war}" value="${tomcat-site-webapps}"/>
     </util:map>
 
     <bean
