@@ -1,3 +1,5 @@
+pass:[<script src="analytics.js" type="text/javascript"></script>]
+
 Ikube is a real time analytics and search processing platform. The analytics and search are two
 modules, however they can be combined, in such a way that the historical analytical results can be queried,
 creating derived analytics.

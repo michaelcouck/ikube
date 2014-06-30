@@ -393,4 +393,78 @@
     </util:list>
     <!-- End production -->
 
+    <!-- Site -->
+    <bean
+        id="server-site"
+        name="server-site"
+        class="ikube.deploy.model.Server"
+        property:name="server-site"
+        property:ip="${server-site-ip}"
+        property:username="${username}"
+        property:password="${password}"
+        property:actions-ref="actions-site"/>
+
+    <util:list id="actions-site">
+        <ref local="stop-action-site"/>
+        <ref local="clean-action-site"/>
+        <ref local="copy-action-site"/>
+        <ref local="start-action-site"/>
+    </util:list>
+
+    <bean
+        id="stop-action-site"
+        name="stop-action-site"
+        class="ikube.deploy.action.CmdAction"
+        property:sleep="${sleep}"
+        property:breakOnError="false"
+        property:commands-ref="stop-commands-site"/>
+    <util:list id="stop-commands-site">
+        <value>${tomcat-site-shutdown};</value>
+        <value>${tomcat-site-kill};</value>
+    </util:list>
+
+    <bean
+        id="clean-action-site"
+        name="clean-action-site"
+        class="ikube.deploy.action.CmdAction"
+        property:sleep="${sleep}"
+        property:breakOnError="false"
+        property:commands-ref="clean-commands-site"/>
+    <util:list id="clean-commands-site">
+        <value>chmod 777 -R ${tomcat-site};</value>
+
+        <value>rm -rf ${tomcat-site-bin}/site/*;</value>
+        <value>rm -rf ${tomcat-site}/webapps/site*;</value>
+
+        <value>rm -rf ${tomcat-site}/logs/*;</value>
+        <value>rm -rf ${tomcat-site}/temp/*;</value>
+        <value>rm -rf ${tomcat-site}/work/*;</value>
+
+        <value>chmod 777 -R ${tomcat-site};</value>
+    </util:list>
+
+    <bean
+        id="copy-action-site"
+        name="copy-action-site"
+        class="ikube.deploy.action.CopyAction"
+        property:sleep="${sleep}"
+        property:breakOnError="false"
+        property:files-ref="files-site"/>
+    <util:map id="files-site">
+        <entry key="code/war/target/${ikube-site}" value="${tomcat-site-webapps}"/>
+    </util:map>
+
+    <bean
+        id="start-action-site"
+        name="start-action-site"
+        class="ikube.deploy.action.CmdAction"
+        property:sleep="${sleep}"
+        property:breakOnError="false"
+        property:commands-ref="start-commands-site"/>
+    <util:list id="start-commands-site">
+        <value>${tomcat-site-chmod}</value>
+        <value>${tomcat-site-startup}</value>
+    </util:list>
+    <!-- End site -->
+
 </beans>

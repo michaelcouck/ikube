@@ -1,3 +1,5 @@
+pass:[<script src="analytics.js" type="text/javascript"></script>]
+
 === Configuration
 Ikube has two parts to the configuration. A base configuration, that doesn't need to be changed or
 modified unless the volumes of data processed scales over multiple machines and deployment topology
