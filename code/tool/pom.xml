@@ -37,7 +37,7 @@
                 <version>2.7.1</version>
                 <configuration>
                     <forkMode>once</forkMode>
-                    <!--<argLine>-javaagent:../../serenity/serenity.jar ${serenity-parameters} ${memory-parameters}</argLine>-->
+                    <argLine>-javaagent:../../serenity/serenity.jar ${serenity-parameters} ${memory-parameters}</argLine>
                 </configuration>
             </plugin>
 

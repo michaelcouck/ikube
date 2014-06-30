@@ -94,7 +94,20 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
     @SuppressWarnings("unchecked")
     public Analysis<I, O> analyze(final Analysis<I, O> analysis) {
         Analyzer analyzer = new Analyzer(analysis);
-        if (analysis.isDistributed()) {
+		if (analysis.isAggregated()) {
+			analysis.setDistribution(Boolean.FALSE);
+			analysis.setAggregated(Boolean.FALSE);
+			List<Future<Analysis>> futures = clusterManager.sendTaskToAll(analyzer);
+			for (final Future<Analysis> future : futures) {
+				try {
+					Analysis aggregated = future.get(60 * 60, TimeUnit.SECONDS);
+					// TODO: Somehow aggregate the output here
+				} catch (final InterruptedException | ExecutionException | TimeoutException e) {
+					throw new RuntimeException(e);
+				}
+			}
+			return analysis;
+		} else if (analysis.isDistributed()) {
             // Set the flag so we don't get infinite recursion
             analysis.setDistributed(Boolean.FALSE);
             // Create the callable that will be executed on one of the nodes

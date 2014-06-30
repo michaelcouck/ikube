@@ -99,7 +99,8 @@ public final class IndexManager {
         IndexWriter indexWriter = null;
         try {
             String indexDirectoryPath = getIndexDirectory(indexContext, time, ip);
-            indexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
+            // indexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
+            indexDirectory = FileUtilities.getOrCreateDirectory(indexDirectoryPath);
             boolean readable = indexDirectory.setReadable(true);
             boolean writable = indexDirectory.setWritable(true, false);
             if (!readable || !writable) {

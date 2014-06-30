@@ -91,6 +91,10 @@ public class Analysis<Input, Output> extends Distributed {
      * Whether to get the sizes for the classes or clusters for the instances.
      */
     private boolean sizesForClassesAndClusters;
+	/**
+	 * Whether this analysis object should be aggregated over the servers.
+	 */
+	private boolean aggregated;
 
     public String getAnalyzer() {
         return analyzer;
@@ -220,4 +224,12 @@ public class Analysis<Input, Output> extends Distributed {
     public void setException(Exception exception) {
         this.exception = exception;
     }
+
+	public boolean isAggregated() {
+		return aggregated;
+	}
+
+	public void setAggregated(boolean aggregated) {
+		this.aggregated = aggregated;
+	}
 }
