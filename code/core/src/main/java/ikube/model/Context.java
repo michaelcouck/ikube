@@ -67,6 +67,11 @@ public class Context<T, F, A, O> extends Persistable {
     private int maxTraining;
 
     /**
+     * The name of the file if different from the name of the algorithm.
+     */
+    private String fileName;
+
+    /**
      * The information to construct the analyzer.
      *
      * @see ikube.model.AnalyzerInfo
@@ -132,6 +137,14 @@ public class Context<T, F, A, O> extends Persistable {
 
     public void setMaxTraining(final int maxTraining) {
         this.maxTraining = maxTraining;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public AnalyzerInfo getAnalyzerInfo() {

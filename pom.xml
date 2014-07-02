@@ -1354,7 +1354,7 @@
         <module>code/war</module>
         <module>code/tool</module>
         <module>code/libs</module>
-        <!--<module>code/site</module>-->
+        <module>code/site</module>
     </modules>
 
 	<pluginRepositories>

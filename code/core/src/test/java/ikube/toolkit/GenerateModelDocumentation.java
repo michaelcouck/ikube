@@ -4,6 +4,8 @@ import ikube.model.Attribute;
 import ikube.model.Persistable;
 import org.reflections.Reflections;
 import org.springframework.util.ReflectionUtils;
+import weka.classifiers.Classifier;
+import weka.clusterers.Clusterer;
 
 import java.lang.reflect.Field;
 import java.util.Set;
@@ -20,18 +22,35 @@ import java.util.Set;
 public class GenerateModelDocumentation {
 
     public static void main(String[] args) {
-        Reflections reflections = new Reflections("ikube.model");
+        /*Reflections reflections = new Reflections("ikube.model");
         Set<Class<? extends Persistable>> classes = reflections.getSubTypesOf(Persistable.class);
-        new GenerateModelDocumentation().createEntityFieldTable(classes);
+        new GenerateModelDocumentation().writeAnnotatedFields(classes);*/
+
+        /*new GenerateModelDocumentation()
+                .writeClassifierImplementations(new Reflections("weka.classifiers").getSubTypesOf(Classifier.class));*/
+        new GenerateModelDocumentation()
+                .writeClustererImplementations(new Reflections("weka.clusterers").getSubTypesOf(Clusterer.class));
     }
 
-    public void createEntityFieldTable(final Set<Class<? extends Persistable>> classes) {
-        for (final Class<? extends Persistable> klass : classes) {
-            createEntityTableRow(klass);
+    public void writeClassifierImplementations(final Set<Class<? extends Classifier>> classes) {
+        for (final Class<? extends Classifier> clazz : classes) {
+            System.out.println("==== " + clazz.getName());
         }
     }
 
-    private void createEntityTableRow(final Class<? extends Persistable> klass) {
+    public void writeClustererImplementations(final Set<Class<? extends Clusterer>> classes) {
+        for (final Class<? extends Clusterer> clazz : classes) {
+            System.out.println("==== " + clazz.getName());
+        }
+    }
+
+    public void writeAnnotatedFields(final Set<Class<? extends Persistable>> classes) {
+        for (final Class<? extends Persistable> klass : classes) {
+            writeAnnotatedFields(klass);
+        }
+    }
+
+    private void writeAnnotatedFields(final Class<? extends Persistable> klass) {
         System.out.println("* Class : " + klass.getName());
         System.out.println("");
         class ModelAttributeFieldCallback implements ReflectionUtils.FieldCallback {

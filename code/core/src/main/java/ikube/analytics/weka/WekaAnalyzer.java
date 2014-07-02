@@ -246,8 +246,8 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<Object, Object>
      * the results are undefined
      */
     File getDataFile(final Context context) {
-        String name = context.getName();
-        String fileName = name + ".arff";
+        // Try the defined file name before using the name of the algorithm
+        String fileName = context.getFileName() != null ? context.getFileName() : context.getName() + ".arff";
         Object ikubeConfigurationPathProperty = System.getProperty(IConstants.IKUBE_CONFIGURATION);
         File directory;
         if (ikubeConfigurationPathProperty == null) {

@@ -14,12 +14,13 @@ import org.apache.log4j.PropertyConfigurator;
  * This class just initializes the logging(Log4j).
  * 
  * @author Michael Couck
- * @since 15.09.10
+ * @since 15-09-2010
  * @version 01.00
  */
 public final class Logging implements Constants {
 
-	private static Logger LOGGER;
+	@SuppressWarnings("FieldCanBeLocal")
+    private static Logger LOGGER;
 	private static boolean INITIALISED = false;
 	private static File LOG_FILE;
 
@@ -43,27 +44,23 @@ public final class Logging implements Constants {
 			try {
 				// First check the external logging properties file
 				File log4JPropertiesFile = FileUtilities.findFileRecursively(new File("." + SEP + IKUBE), "log4j.properties");
-				System.out.println(Logging.class.getName() + " Log4j file : " + log4JPropertiesFile);
 				if (log4JPropertiesFile != null && log4JPropertiesFile.exists() && log4JPropertiesFile.canRead()) {
 					inputStream = log4JPropertiesFile.toURI().toURL().openStream();
 				}
 				if (inputStream == null) {
 					// Try the class loader
 					URL url = Logging.class.getResource(LOG_4_J_PROPERTIES);
-					System.out.println(Logging.class.getName() + " Log4j url : " + url);
 					if (url != null) {
 						inputStream = url.openStream();
 					} else {
 						// Nope, try the class loader on a stream
 						inputStream = Logging.class.getResourceAsStream(LOG_4_J_PROPERTIES);
-						System.err.println("Input stream to logging configuration : " + inputStream);
 						if (inputStream == null) {
 							// Finally try the system class loader
 							inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream(LOG_4_J_PROPERTIES);
 						}
 					}
 				}
-				System.out.println("Log for J : " + inputStream);
 				if (inputStream != null) {
 					Properties properties = new Properties();
 					properties.load(inputStream);

@@ -53,19 +53,17 @@
         id="server-one"
         name="server-one"
         class="ikube.deploy.model.Server"
-	property:name="server-one"
+	    property:name="server-one"
         property:ip="${server-system-ip}"
         property:username="${username}"
         property:password="${password}"
         property:actions-ref="actions-one"/>
-
     <util:list id="actions-one">
         <ref local="stop-action-one"/>
         <ref local="clean-action-one"/>
         <ref local="copy-action-one"/>
         <ref local="start-action-one"/>
     </util:list>
-
     <bean
         id="stop-action-one"
         name="stop-action-one"
@@ -77,7 +75,6 @@
         <value>${tomcat-one-shutdown};</value>
         <value>${tomcat-one-kill};</value>
     </util:list>
-
     <bean
         id="clean-action-one"
         name="clean-action-one"
@@ -87,17 +84,12 @@
         property:commands-ref="clean-commands-one"/>
     <util:list id="clean-commands-one">
         <value>chmod 777 -R ${tomcat-one};</value>
-
         <value>rm -rf ${tomcat-one-bin}/ikube/*;</value>
-        <value>rm -rf ${tomcat-one}/webapps/ikube*;</value>
-
+        <value>rm -rf ${tomcat-one-webapps}/ikube*;</value>
         <value>rm -rf ${tomcat-one}/logs/*;</value>
         <value>rm -rf ${tomcat-one}/temp/*;</value>
         <value>rm -rf ${tomcat-one}/work/*;</value>
-
-        <value>chmod 777 -R ${tomcat-one};</value>
     </util:list>
-
     <bean
         id="copy-action-one"
         name="copy-action-one"
@@ -119,7 +111,6 @@
         <entry key="${resources-directory}/indexes/production" value="${tomcat-one-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/twitter" value="${tomcat-one-bin}/ikube"/>
     </util:map>
-
     <bean
         id="start-action-one"
         name="start-action-one"
@@ -139,19 +130,17 @@
         id="server-two"
         name="server-two"
         class="ikube.deploy.model.Server"
-	property:name="server-two"
+    	property:name="server-two"
         property:ip="${server-system-ip}"
         property:username="${username}"
         property:password="${password}"
         property:actions-ref="actions-two"/>
-
     <util:list id="actions-two">
         <ref local="stop-action-two"/>
         <ref local="clean-action-two"/>
         <ref local="copy-action-two"/>
         <ref local="start-action-two"/>
     </util:list>
-
     <bean
         id="stop-action-two"
         name="stop-action-two"
@@ -163,7 +152,6 @@
         <value>${tomcat-two-shutdown};</value>
         <value>${tomcat-two-kill};</value>
     </util:list>
-
     <bean
         id="clean-action-two"
         name="clean-action-two"
@@ -173,17 +161,12 @@
         property:commands-ref="clean-commands-two"/>
     <util:list id="clean-commands-two">
         <value>chmod 777 -R ${tomcat-two};</value>
-
         <value>rm -rf ${tomcat-two-bin}/ikube/*;</value>
-        <value>rm -rf ${tomcat-two}/webapps/ikube*;</value>
-
+        <value>rm -rf ${tomcat-two-webapps}/ikube*;</value>
         <value>rm -rf ${tomcat-two}/logs/*;</value>
         <value>rm -rf ${tomcat-two}/temp/*;</value>
         <value>rm -rf ${tomcat-two}/work/*;</value>
-
-        <value>chmod 777 -R ${tomcat-two};</value>
     </util:list>
-
     <bean
         id="copy-action-two"
         name="copy-action-two"
@@ -205,7 +188,6 @@
         <entry key="${resources-directory}/indexes/production" value="${tomcat-two-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/twitter" value="${tomcat-two-bin}/ikube"/>
     </util:map>
-
     <bean
         id="start-action-two"
         name="start-action-two"
@@ -225,19 +207,17 @@
         id="server-three"
         name="server-three"
         class="ikube.deploy.model.Server"
-	property:name="server-three"
+    	property:name="server-three"
         property:ip="${server-system-ip}"
         property:username="${username}"
         property:password="${password}"
         property:actions-ref="actions-three"/>
-
     <util:list id="actions-three">
         <ref local="stop-action-three"/>
         <ref local="clean-action-three"/>
         <ref local="copy-action-three"/>
         <ref local="start-action-three"/>
     </util:list>
-
     <bean
         id="stop-action-three"
         name="stop-action-three"
@@ -249,7 +229,6 @@
         <value>${tomcat-three-shutdown};</value>
         <value>${tomcat-three-kill};</value>
     </util:list>
-
     <bean
         id="clean-action-three"
         name="clean-action-three"
@@ -259,17 +238,12 @@
         property:commands-ref="clean-commands-three"/>
     <util:list id="clean-commands-three">
         <value>chmod 777 -R ${tomcat-three};</value>
-
         <value>rm -rf ${tomcat-three-bin}/ikube/*;</value>
-        <value>rm -rf ${tomcat-three}/webapps/ikube*;</value>
-
+        <value>rm -rf ${tomcat-three-webapps}/ikube*;</value>
         <value>rm -rf ${tomcat-three}/logs/*;</value>
         <value>rm -rf ${tomcat-three}/temp/*;</value>
         <value>rm -rf ${tomcat-three}/work/*;</value>
-
-        <value>chmod 777 -R ${tomcat-three};</value>
     </util:list>
-
     <bean
         id="copy-action-three"
         name="copy-action-three"
@@ -292,7 +266,6 @@
         <entry key="${resources-directory}/indexes/production" value="${tomcat-three-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/twitter" value="${tomcat-three-bin}/ikube"/>
     </util:map>
-
     <bean
         id="start-action-three"
         name="start-action-three"
@@ -317,14 +290,12 @@
         property:username="${username}"
         property:password="${password}"
         property:actions-ref="actions-production"/>
-
     <util:list id="actions-production">
         <ref local="stop-action-production"/>
         <ref local="clean-action-production"/>
         <ref local="copy-action-production"/>
         <ref local="start-action-production"/>
     </util:list>
-
     <bean
         id="stop-action-production"
         name="stop-action-production"
@@ -336,7 +307,6 @@
         <value>${tomcat-production-shutdown};</value>
         <value>${tomcat-production-kill};</value>
     </util:list>
-
     <bean
         id="clean-action-production"
         name="clean-action-production"
@@ -346,17 +316,12 @@
         property:commands-ref="clean-commands-production"/>
     <util:list id="clean-commands-production">
         <value>chmod 777 -R ${tomcat-production};</value>
-
         <value>rm -rf ${tomcat-production-bin}/ikube/*;</value>
-        <value>rm -rf ${tomcat-production}/webapps/ikube*;</value>
-
+        <value>rm -rf ${tomcat-production-webapps}/ikube*;</value>
         <value>rm -rf ${tomcat-production}/logs/*;</value>
         <value>rm -rf ${tomcat-production}/temp/*;</value>
         <value>rm -rf ${tomcat-production}/work/*;</value>
-
-        <value>chmod 777 -R ${tomcat-production};</value>
     </util:list>
-
     <bean
         id="copy-action-production"
         name="copy-action-production"
@@ -378,7 +343,6 @@
         <entry key="${resources-directory}/indexes/production" value="${tomcat-production-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/mineco" value="${tomcat-production-bin}/ikube"/>
     </util:map>
-
     <bean
         id="start-action-production"
         name="start-action-production"
@@ -403,14 +367,12 @@
         property:username="${username}"
         property:password="${password}"
         property:actions-ref="actions-site"/>
-
     <util:list id="actions-site">
-        <ref local="stop-action-site"/>
+        <!-- ref local="stop-action-site"/ -->
         <ref local="clean-action-site"/>
         <ref local="copy-action-site"/>
-        <ref local="start-action-site"/>
+        <!-- ref local="start-action-site"/ -->
     </util:list>
-
     <bean
         id="stop-action-site"
         name="stop-action-site"
@@ -422,7 +384,6 @@
         <value>${tomcat-site-shutdown};</value>
         <value>${tomcat-site-kill};</value>
     </util:list>
-
     <bean
         id="clean-action-site"
         name="clean-action-site"
@@ -432,17 +393,8 @@
         property:commands-ref="clean-commands-site"/>
     <util:list id="clean-commands-site">
         <value>chmod 777 -R ${tomcat-site};</value>
-
-        <value>rm -rf ${tomcat-site-bin}/site/*;</value>
-        <value>rm -rf ${tomcat-site}/webapps/site*;</value>
-
-        <value>rm -rf ${tomcat-site}/logs/*;</value>
-        <value>rm -rf ${tomcat-site}/temp/*;</value>
-        <value>rm -rf ${tomcat-site}/work/*;</value>
-
-        <value>chmod 777 -R ${tomcat-site};</value>
+        <value>rm -rf ${tomcat-site-webapps}/${site-war};</value>
     </util:list>
-
     <bean
         id="copy-action-site"
         name="copy-action-site"
@@ -453,7 +405,6 @@
     <util:map id="files-site">
         <entry key="code/site/target/${site-war}" value="${tomcat-site-webapps}"/>
     </util:map>
-
     <bean
         id="start-action-site"
         name="start-action-site"

@@ -1,3 +1,182 @@
 pass:[<script src="analytics.js" type="text/javascript"></script>]
 
 === Analytics
+
+Analytics comprises three distinct types:
+* Regression - Typically this is for prediction, predicting the value of something based on the values of other things
+in the same domain. With a data set of houses with floor area, number of bathrooms,  number of bedrooms, predict the value
+of a house in the same data set with 100m² area, two bathrooms and three bedrooms. This is trained analytics.
+* Clustering - Discovering similarities in groups of items, and grouping them into clusters. In a group of a thousand people,
+some small and hairy, some big and white skinned, group the candidates into clusters where the correlations are the greatest, which
+could be a group of people with lighter skin and a group of people with a lot of hair. This is untrained analytics.
+* Classification - Classifying something based on something else. Similar to clustering, but trained rather than untrained. Feed
+the classification algorithm a set of data, tweets for example, which we know have a positive leaning and a negative leaning, this
+is the training data. Then get a classification for a tweet based on the previous training tweets. This is of course trained
+analytics.
+
+Ikube wraps algorithms for analytics. As such any algorithm can be used under the hood, provided it conforms to a particular
+interface, the wrapper interface. Currently Ikube uses Weka as the standard set of analytics algorithms, and grid enables it.
+
+==== Classification algorithms available from Weka are:
+
+* weka.classifiers.IteratedSingleClassifierEnhancer
+* weka.classifiers.RandomizableClassifier
+* weka.classifiers.mi.MIEMDD
+* weka.classifiers.meta.RandomCommittee
+* weka.classifiers.mi.SimpleMI
+* weka.classifiers.trees.lmt.LogisticBase
+* weka.classifiers.bayes.net.BayesNetGenerator
+* weka.classifiers.meta.nestedDichotomies.ND
+* weka.classifiers.meta.RotationForest
+* weka.classifiers.mi.MISMO
+* weka.classifiers.rules.Prism
+* weka.classifiers.trees.RandomForest
+* weka.classifiers.trees.m5.PreConstructedLinearModel
+* weka.classifiers.meta.GridSearch
+* weka.classifiers.rules.Ridor
+* weka.classifiers.meta.Stacking
+* weka.classifiers.trees.Id3
+* weka.classifiers.functions.SPegasos
+* weka.classifiers.trees.ft.FTtree
+* weka.classifiers.bayes.DMNBtext
+* weka.classifiers.rules.ZeroR
+* weka.classifiers.mi.MIDD
+* weka.classifiers.trees.UserClassifier
+* weka.classifiers.trees.lmt.LMTNode
+* weka.classifiers.pmml.consumer.PMMLClassifier
+* weka.classifiers.trees.ft.FTLeavesNode
+* weka.classifiers.misc.SerializedClassifier
+* weka.classifiers.trees.BFTree
+* weka.classifiers.rules.M5Rules
+* weka.classifiers.meta.StackingC
+* weka.classifiers.mi.CitationKNN
+* weka.classifiers.trees.ft.FTInnerNode
+* weka.classifiers.meta.MetaCost
+* weka.classifiers.trees.DecisionStump
+* weka.classifiers.meta.Grading
+* weka.classifiers.SingleClassifierEnhancer
+* weka.classifiers.meta.RandomSubSpace
+* weka.classifiers.rules.NNge
+* weka.classifiers.trees.J48graft
+* weka.classifiers.functions.LibSVM
+* weka.classifiers.meta.CVParameterSelection
+* weka.classifiers.mi.MIBoost
+* weka.classifiers.mi.MISVM
+* weka.classifiers.trees.M5P
+* weka.classifiers.trees.ft.FTNode
+* weka.classifiers.MultipleClassifiersCombiner
+* weka.classifiers.rules.ConjunctiveRule
+* weka.classifiers.trees.m5.RuleNode
+* weka.classifiers.mi.MILR
+* weka.classifiers.meta.nestedDichotomies.ClassBalancedND
+* weka.classifiers.bayes.ComplementNaiveBayes
+* weka.classifiers.meta.AttributeSelectedClassifier
+* weka.classifiers.meta.Vote
+* weka.classifiers.lazy.IBk
+* weka.classifiers.functions.VotedPerceptron
+* weka.classifiers.functions.SMO
+* weka.classifiers.mi.MIWrapper
+* weka.classifiers.functions.MultilayerPerceptron
+* weka.classifiers.functions.PLSClassifier
+* weka.classifiers.meta.ClassificationViaClustering
+* weka.classifiers.rules.JRip
+* weka.classifiers.trees.REPTree
+* weka.classifiers.functions.Logistic
+* weka.classifiers.pmml.consumer.NeuralNetwork
+* weka.classifiers.meta.RacedIncrementalLogitBoost
+* weka.classifiers.bayes.NaiveBayesUpdateable
+* weka.classifiers.meta.nestedDichotomies.DataNearBalancedND
+* weka.classifiers.trees.SimpleCart
+* weka.classifiers.meta.MultiBoostAB
+* weka.classifiers.rules.OneR
+* weka.classifiers.lazy.IB1
+* weka.classifiers.bayes.net.EditableBayesNet
+* weka.classifiers.misc.HyperPipes
+* weka.classifiers.functions.LeastMedSq
+* weka.classifiers.meta.ThresholdSelector
+* weka.classifiers.bayes.WAODE
+* weka.classifiers.rules.DecisionTable
+* weka.classifiers.lazy.LWL
+* weka.classifiers.bayes.AODEsr
+* weka.classifiers.mi.MDD
+* weka.classifiers.misc.VFI
+* weka.classifiers.lazy.KStar
+* weka.classifiers.rules.DTNB
+* weka.classifiers.meta.Bagging
+* weka.classifiers.trees.LMT
+* weka.classifiers.rules.PART
+* weka.classifiers.trees.ADTree
+* weka.classifiers.meta.OrdinalClassClassifier
+* weka.classifiers.trees.RandomTree
+* weka.classifiers.mi.MISVM$SVM
+* weka.classifiers.RandomizableIteratedSingleClassifierEnhancer
+* weka.classifiers.meta.LogitBoost
+* weka.classifiers.meta.CostSensitiveClassifier
+* weka.classifiers.mi.MINND
+* weka.classifiers.meta.Dagging
+* weka.classifiers.functions.LibLINEAR
+* weka.classifiers.RandomizableMultipleClassifiersCombiner
+* weka.classifiers.trees.LADTree
+* weka.classifiers.meta.END
+* weka.classifiers.mi.MIOptimalBall
+* weka.classifiers.trees.J48
+* weka.classifiers.functions.Winnow
+* weka.classifiers.functions.GaussianProcesses
+* weka.classifiers.bayes.BayesNet
+* weka.classifiers.bayes.HNB
+* weka.classifiers.lazy.LBR
+* weka.classifiers.bayes.AODE
+* weka.classifiers.bayes.NaiveBayesMultinomial
+* weka.classifiers.trees.FT
+* weka.classifiers.meta.Decorate
+* weka.classifiers.functions.RBFNetwork
+* weka.classifiers.RandomizableSingleClassifierEnhancer
+* weka.classifiers.trees.NBTree
+* weka.classifiers.meta.AdaBoostM1
+* weka.classifiers.meta.MultiClassClassifier
+* weka.classifiers.trees.m5.M5Base
+* weka.classifiers.meta.FilteredClassifier
+* weka.classifiers.meta.MultiScheme
+* weka.classifiers.bayes.net.BIFReader
+* weka.classifiers.bayes.NaiveBayesMultinomialUpdateable
+
+
+==== Clustering algorithms available from Weka are:
+
+* weka.clusterers.CLOPE
+* weka.clusterers.EM
+* weka.clusterers.XMeans
+* weka.clusterers.SimpleKMeans
+* weka.clusterers.SingleClustererEnhancer
+* weka.clusterers.sIB
+* weka.clusterers.DensityBasedClusterer
+* weka.clusterers.RandomizableSingleClustererEnhancer
+* weka.clusterers.FilteredClusterer
+* weka.clusterers.FarthestFirst
+* weka.clusterers.DBSCAN
+* weka.clusterers.HierarchicalClusterer
+* weka.clusterers.OPTICS
+* weka.clusterers.RandomizableClusterer
+* weka.clusterers.AbstractDensityBasedClusterer
+* weka.clusterers.AbstractClusterer
+* weka.clusterers.RandomizableDensityBasedClusterer
+* weka.clusterers.MakeDensityBasedClusterer
+* weka.clusterers.Cobweb
+
+
+==== Regression algorithms available from Weka are:
+
+* weka.classifiers.meta.AdditiveRegression
+* weka.classifiers.meta.RegressionByDiscretization
+* weka.classifiers.functions.SimpleLinearRegression
+* weka.classifiers.functions.SimpleLogistic
+* weka.classifiers.functions.LinearRegression
+* weka.classifiers.pmml.consumer.GeneralRegression
+* weka.classifiers.functions.PaceRegression
+* weka.classifiers.bayes.NaiveBayes
+* weka.classifiers.bayes.NaiveBayesSimple
+* weka.classifiers.pmml.consumer.Regression
+* weka.classifiers.functions.SMOreg
+* weka.classifiers.bayes.BayesianLogisticRegression
+* weka.classifiers.functions.IsotonicRegression
+* weka.classifiers.meta.ClassificationViaRegression
