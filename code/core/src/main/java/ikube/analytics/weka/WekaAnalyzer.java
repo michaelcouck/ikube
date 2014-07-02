@@ -152,12 +152,9 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<Object, Object>
 		Object[] values = null;
 		if (String.class.isAssignableFrom(input.getClass())) {
 			values = StringUtils.split((String) input, ',');
-
 		} else if (input.getClass().isArray()) {
-			instance.setMissing(0);
 			values = (Object[]) input;
 		}
-		instance.setMissing(0);
 		assert values != null;
 		for (int i = instances.numAttributes() - 1, j = values.length - 1; i >= 1 && j >= 0; i--, j--) {
 			Object value = values[j];
@@ -174,6 +171,7 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<Object, Object>
                 }
 			}
 		}
+		instance.setMissing(0);
         instance.setDataset(instances);
         return instance;
     }

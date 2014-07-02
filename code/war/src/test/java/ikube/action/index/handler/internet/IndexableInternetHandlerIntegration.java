@@ -59,7 +59,7 @@ public class IndexableInternetHandlerIntegration extends IntegrationTest {
     @Test
     public void handleIndexableForked() throws Exception {
         indexContext.setStrategies(null);
-        indexableInternet.setUrl("http://www.ikube.be/site/index.html");
+        indexableInternet.setUrl("http://www.ikube.be/site/docs/index.html");
 
         String ip = InetAddress.getLocalHost().getHostAddress();
         IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);

@@ -1,5 +1,32 @@
 package ikube.action.index.handler.database;
 
+import java.net.InetAddress;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.List;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.atomic.AtomicLong;
+
+import javax.sql.DataSource;
+
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexWriter;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import static ikube.database.DatabaseUtilities.close;
+import static ikube.toolkit.ApplicationContextManager.getBean;
+import static mockit.Deencapsulation.invoke;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
@@ -8,30 +35,15 @@ import ikube.action.index.content.IContentProvider;
 import ikube.cluster.IClusterManager;
 import ikube.database.DatabaseUtilities;
 import ikube.database.IDataBase;
-import ikube.model.*;
+import ikube.model.IndexContext;
+import ikube.model.Indexable;
+import ikube.model.IndexableColumn;
+import ikube.model.IndexableTable;
+import ikube.model.Snapshot;
 import ikube.scheduling.Scheduler;
 import ikube.toolkit.PropertyConfigurer;
 import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.UriUtilities;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexWriter;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import javax.sql.DataSource;
-import java.net.InetAddress;
-import java.sql.*;
-import java.util.List;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
-import java.util.concurrent.atomic.AtomicLong;
-
-import static ikube.database.DatabaseUtilities.close;
-import static ikube.toolkit.ApplicationContextManager.getBean;
-import static mockit.Deencapsulation.invoke;
-import static org.junit.Assert.*;
 
 /**
  * This is an integration test as it will go to the database.
@@ -252,20 +264,6 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
         ResultSet resultSet = invoke(tableResourceProvider, "getResultSet", indexContext, snapshotTable, new AtomicLong(0));
         assertNotNull(resultSet);
         assertTrue(resultSet.next());
-
-        Statement statement = resultSet.getStatement();
-        DatabaseUtilities.close(resultSet);
-        DatabaseUtilities.close(statement);
-    }
-
-    @Test
-    public void getResultSetConnection() throws Exception {
-        TableResourceProvider tableResourceProvider = new TableResourceProvider(indexContext, snapshotTable);
-
-        snapshotColumn.setContent(snapshotTable.getMinimumId());
-        snapshotTable.setMaximumId(snapshotTable.getMaximumId());
-        ResultSet resultSet = invoke(tableResourceProvider, "getResultSet", indexContext, snapshotTable, connection, new AtomicLong(0));
-        assertNotNull(resultSet);
 
         Statement statement = resultSet.getStatement();
         DatabaseUtilities.close(resultSet);
