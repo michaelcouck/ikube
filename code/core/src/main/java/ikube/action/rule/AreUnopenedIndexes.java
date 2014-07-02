@@ -54,8 +54,7 @@ public class AreUnopenedIndexes extends ARule<IndexContext> {
 			  ", readers : " + atomicReaderContexts.size() +
 			  ", index name : " + indexContext.getName() +
 			  ", index directories : " + Arrays.toString(indexDirectories));
-			// TODO: Is there a more elegant way to check this?
-			// return !readersEqualDirectories;
+			return !readersEqualDirectories;
 		} catch (final AlreadyClosedException e) {
 			logger.error("Index closed, corrupt perhaps : " + indexContext, e);
 		}

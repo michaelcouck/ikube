@@ -92,10 +92,10 @@ public class WekaClusterer extends WekaAnalyzer {
             Instance instance = instance(input, instances);
             // Set the output for the client
             int cluster = (int) classOrCluster(instance);
-            double[] distributionForInstance = distributionForInstance(instance);
+            double[] output = distributionForInstance(instance);
 
             analysis.setClazz(Integer.toString(cluster));
-            analysis.setOutput(distributionForInstance);
+            analysis.setOutput(output);
 
             if (analysis.isAlgorithm()) {
                 analysis.setAlgorithmOutput(clusterer.toString());

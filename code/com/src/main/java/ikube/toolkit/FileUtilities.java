@@ -241,21 +241,20 @@ public final class FileUtilities {
     /**
      * Gets a single directory. First looking to find it, if it can not be found then it is created.
      *
-     * @param file the directory that is requested
+     * @param directory the directory that is requested
      * @return the found or newly created {@link File} or <code>null</code> if something went wrong.
      */
-    public static synchronized File getOrCreateDirectory(final File file) {
+    public static synchronized File getOrCreateDirectory(final File directory) {
         try {
-            if (file.exists() && file.isDirectory()) {
-                return file;
+            if (directory.exists() && directory.isDirectory()) {
+                return directory;
             }
-            LOGGER.debug("Creating directory : " + file.getAbsolutePath());
-            boolean created = file.mkdirs();
-            if (created && file.exists()) {
-                return file;
-            }
-            LOGGER.debug("Couldn't create directory(ies) " + file.getAbsolutePath());
-            return null;
+            LOGGER.debug("Creating directory : " + directory.getAbsolutePath());
+            boolean created = directory.mkdirs();
+            if (!created || !directory.exists()) {
+				LOGGER.warn("Couldn't create directory(ies) " + directory.getAbsolutePath());
+			}
+			return directory;
         } finally {
             FileUtilities.class.notifyAll();
         }

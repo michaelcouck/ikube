@@ -1,7 +1,7 @@
 package ikube.action.rule;
 
-import ikube.AbstractTest;
-import ikube.toolkit.FileUtilities;
+import java.io.File;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -12,12 +12,13 @@ import org.apache.lucene.store.NIOFSDirectory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
-import java.io.File;
-
+import static ikube.toolkit.FileUtilities.getOrCreateDirectory;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
+import ikube.AbstractTest;
+import ikube.toolkit.FileUtilities;
 
 /**
  * @author Michael Couck
@@ -52,14 +53,13 @@ public class AreUnopenedIndexesTest extends AbstractTest {
             MultiReader multiReader = new MultiReader(indexReader);
             searcher = new IndexSearcher(multiReader);
 
-            Mockito.when(indexContext.getMultiSearcher()).thenReturn(searcher);
+            when(indexContext.getMultiSearcher()).thenReturn(searcher);
 
             Boolean result = areUnopenedIndexes.evaluate(indexContext);
             assertFalse(result);
 
-            FileUtils.copyDirectory(
-                    latestIndexDirectory,
-                    new File(latestIndexDirectory.getParent(), "127.0.0.1.1234567890"));
+			File parentDirectory = getOrCreateDirectory(new File(latestIndexDirectory.getParent(), "127.0.0.1.1234567890"));
+            FileUtils.copyDirectory(latestIndexDirectory, parentDirectory);
             result = areUnopenedIndexes.evaluate(indexContext);
             assertTrue(result);
 
@@ -67,7 +67,7 @@ public class AreUnopenedIndexesTest extends AbstractTest {
             multiReader = new MultiReader(indexReader, indexReaderTwo);
             searcher = new IndexSearcher(multiReader);
 
-            Mockito.when(indexContext.getMultiSearcher()).thenReturn(searcher);
+            when(indexContext.getMultiSearcher()).thenReturn(searcher);
             result = areUnopenedIndexes.evaluate(indexContext);
             assertFalse(result);
         } finally {

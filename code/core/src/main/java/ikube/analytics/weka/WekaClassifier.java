@@ -108,12 +108,12 @@ public class WekaClassifier extends WekaAnalyzer {
             double classification = classOrCluster(instance);
             // Set the output for the client
             String clazz = instances.classAttribute().value((int) classification);
-            Object distributionForInstance = distributionForInstance(instance);
+            double[] output = distributionForInstance(instance);
 
             analysis.setClazz(clazz);
-            analysis.setOutput(distributionForInstance);
+            analysis.setOutput(output);
 
-            log(clazz, input, distributionForInstance);
+            log(clazz, input, output);
 
             if (analysis.isAlgorithm()) {
                 analysis.setAlgorithmOutput(classifier.toString());

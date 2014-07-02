@@ -1,69 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
-  <component name="FacetManager">
-    <facet type="Spring" name="Spring">
-      <configuration>
-        <fileset id="fileset" name="Spring Application Context" removed="false">
-          <file>file://$MODULE_DIR$/src/main/resources/ikube/common/spring-actions.xml</file>
-          <file>file://$MODULE_DIR$/ikube/common/spring-actions.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/analytics/spring-analytics.xml</file>
-          <file>file://$MODULE_DIR$/ikube/analytics/spring-analytics.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/ikube/common/spring-aop.xml</file>
-          <file>file://$MODULE_DIR$/ikube/common/spring-aop.xml</file>
-          <file>file://$MODULE_DIR$/ikube/production/spring-auto.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/indexes/production/spring-auto.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/ikube/common/spring-beans.xml</file>
-          <file>file://$MODULE_DIR$/ikube/common/spring-beans.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/indexes/belgacom/spring-belgacom.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/indexes/bpost/spring-bpost-events.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/indexes/bpost/spring-bpost-oracle-jdbc.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/indexes/bpost/spring-bpost-streets.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/indexes/integration/spring-client.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/indexes/integration/spring-custom.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/indexes/production/spring-db2-jdbc.xml</file>
-          <file>file://$MODULE_DIR$/ikube/production/spring-db2-jdbc.xml</file>
-          <file>file://$MODULE_DIR$/ikube/production/spring-desktop.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/indexes/production/spring-desktop.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/indexes/system/spring-geo-h2.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/indexes/system/spring-geo-oracle.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/indexes/system/spring-geo-postgres.xml</file>
-          <file>file://$MODULE_DIR$/ikube/production/spring-geo.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/indexes/production/spring-geo.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/indexes/integration/spring-geoname-csv.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/indexes/system/spring-h2-jdbc.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/ikube/common/spring-h2-jdbc.xml</file>
-          <file>file://$MODULE_DIR$/ikube/common/spring-h2-jdbc.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/ikube/common/spring-hazelcast.xml</file>
-          <file>file://$MODULE_DIR$/ikube/common/spring-hazelcast.xml</file>
-          <file>file://$MODULE_DIR$/ikube/production/spring-ikube.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/indexes/production/spring-ikube.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/indexes/jspecial/spring-java-specialist.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/indexes/mineco/spring-mineco.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/indexes/demo/spring-mysql.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/indexes/system/spring-oracle-jdbc.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/indexes/system/spring-postgres-jdbc.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/indexes/integration/spring-sites.xml</file>
-          <file>file://$MODULE_DIR$/ikube/production/spring-system.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/indexes/production/spring-system.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/indexes/twitter/spring-twitter.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/ikube/common/spring-users.xml</file>
-          <file>file://$MODULE_DIR$/ikube/common/spring-users.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/indexes/vlapar/spring-vlapar.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/indexes/system/spring-wiki.xml</file>
-          <file>file://$MODULE_DIR$/ikube/spring.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/ikube/spring.xml</file>
-        </fileset>
-        <fileset id="fileset2" name="Spring Application Context (2)" removed="false">
-          <dependency>fileset</dependency>
-        </fileset>
-      </configuration>
-    </facet>
-  </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/ikube" type="java-resource" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
