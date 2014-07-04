@@ -20,7 +20,10 @@ analytics libraries expect a specific format of data as input, and Weka is no ex
 link:http://www.cs.waikato.ac.nz/ml/weka/[Weka]
 site for information on the format of data. For different types of algorithms the input data is different as well, making it more
 difficult to generate models. However there are filters in Weka that transform the input data into the type of data that each algorithm will
-accept. Here is an exhaustive list of algorithms and the filters that can be applied to the input data to conform to the type expected. +
+accept. Here is an exhaustive list of algorithms and the filters that can be applied to the input data to conform to the type expected.
+Note that link:http://www.cs.waikato.ac.nz/ml/weka/[Weka](the default analytics library) comes with a GUI where data, typically small volumes, 
+ can be visualized. Once satisfied with the format, the function type, options and filters, these values can be used to configure the server 
+  analyzers with the production data. +
 
 Analyzers need to be created, using the algorithm required, classification, clustering etc., potentially a filter to transform
 the data, options for the algorithm and in the case of trained algorithms training data. In the case of trained analyzers they need
@@ -35,7 +38,7 @@ analysis. Please refer to the api section below for usage and examples.
 Analyzers can be defined in Spring configuration, and can be created dynamically. An example of a Spring defined classifier and
 clusterer can be found in the
 link:https://github.com/michaelcouck/ikube/blob/master/code/libs/src/main/resources/analytics/spring-analytics.xml[spring analytics example]
-file.
+file. 
 
 Analyzers can also be created on the fly dynamically using a
 link:https://github.com/michaelcouck/ikube/blob/master/code/core/src/main/java/ikube/model/Context.java[Context] object, also in Json format,
