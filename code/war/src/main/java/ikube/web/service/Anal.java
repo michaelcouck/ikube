@@ -7,6 +7,7 @@ import com.tomgibara.cluster.gvm.dbl.DblResult;
 import ikube.IConstants;
 import ikube.analytics.IAnalyticsService;
 import ikube.model.Search;
+import ikube.model.SearchTwitter;
 import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.Timer;
@@ -48,68 +49,6 @@ import java.util.concurrent.Future;
 public class Anal extends Resource {
 
     /**
-     * Custom search transfer object for the Twitter application.
-     */
-    @SuppressWarnings("UnusedDeclaration")
-    public static class TwitterSearch extends Search {
-
-        int clusters;
-        long startHour;
-        long minutesOfHistory;
-        String classification;
-        Object[][] heatMapData;
-        Object[][] timeLineSentiment;
-
-        public Object[][] getTimeLineSentiment() {
-            return timeLineSentiment;
-        }
-
-        public void setTimeLineSentiment(final Object[][] timeLineSentiment) {
-            this.timeLineSentiment = timeLineSentiment;
-        }
-
-        public Object[][] getHeatMapData() {
-            return heatMapData;
-        }
-
-        public void setHeatMapData(final Object[][] heatMapData) {
-            this.heatMapData = heatMapData;
-        }
-
-        public String getClassification() {
-            return classification;
-        }
-
-        public void setClassification(final String classification) {
-            this.classification = classification;
-        }
-
-        public long getMinutesOfHistory() {
-            return minutesOfHistory;
-        }
-
-        public void setMinutesOfHistory(final long minutesOfHistory) {
-            this.minutesOfHistory = minutesOfHistory;
-        }
-
-        public long getStartHour() {
-            return startHour;
-        }
-
-        public void setStartHour(final long startHour) {
-            this.startHour = startHour;
-        }
-
-        public int getClusters() {
-            return clusters;
-        }
-
-        public void setClusters(final int clusters) {
-            this.clusters = clusters;
-        }
-    }
-
-    /**
      * Web service paths.
      */
     public static final String TWITTER = "/twitter";
@@ -129,7 +68,7 @@ public class Anal extends Resource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response happy(@Context final HttpServletRequest request) {
         // Google Maps API heat map data format is {lat, lng, weight} eg. {42, 1.8, 3}
-        final TwitterSearch twitterSearch = unmarshall(TwitterSearch.class, request);
+        final SearchTwitter twitterSearch = unmarshall(SearchTwitter.class, request);
         final long endTime = System.currentTimeMillis();
         final long minutesOfHistory = twitterSearch.getMinutesOfHistory();
         final long startTime = endTime - (minutesOfHistory * MINUTE_MILLIS);
@@ -199,7 +138,7 @@ public class Anal extends Resource {
     @Path(Anal.ANALYZE)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response twitter(@Context final HttpServletRequest request) {
-        final TwitterSearch search = unmarshall(TwitterSearch.class, request);
+        final SearchTwitter search = unmarshall(SearchTwitter.class, request);
         double duration = Timer.execute(new Timer.Timed() {
             @Override
             public void execute() {
@@ -218,7 +157,7 @@ public class Anal extends Resource {
     }
 
     @SuppressWarnings("unchecked")
-    Object[][] setTimeLineSentiment(final TwitterSearch search) {
+    Object[][] setTimeLineSentiment(final SearchTwitter search) {
         // Now we have to search for positive and negative for each hour
         // going back as far as the user specified, aggregate the results in an
         // array for the chart

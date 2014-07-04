@@ -16,6 +16,7 @@ import java.util.List;
  * @version 01.00
  * @since 01-03-2012
  */
+@SuppressWarnings("JpaQlInspection")
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @EntityListeners(value = {SearchIncrementListener.class})

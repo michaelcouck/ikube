@@ -3,10 +3,10 @@ package ikube.web.service;
 import ikube.BaseTest;
 import ikube.IConstants;
 import ikube.model.Search;
+import ikube.model.SearchTwitter;
 import ikube.search.ISearcherService;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.SerializationUtilities;
-import ikube.web.service.Anal.TwitterSearch;
 import ikube.web.toolkit.PerformanceTester;
 import mockit.Deencapsulation;
 import mockit.Mock;
@@ -45,7 +45,7 @@ public class AnalTest extends BaseTest {
         }
     }
 
-    private static TwitterSearch search;
+    private static SearchTwitter search;
 
     /**
      * Class under test
@@ -61,7 +61,7 @@ public class AnalTest extends BaseTest {
         String xml = FileUtilities.getContent(file);
         results = (ArrayList<HashMap<String, String>>) SerializationUtilities.deserialize(xml);
 
-        search = new TwitterSearch();
+        search = new SearchTwitter();
         search.setSearchStrings(new ArrayList<>(Arrays.asList("hello world")));
         search.setSearchFields(new ArrayList<>(Arrays.asList(IConstants.CONTENTS)));
         search.setOccurrenceFields(new ArrayList<>(Arrays.asList(Anal.OCCURRENCE)));
@@ -97,7 +97,7 @@ public class AnalTest extends BaseTest {
         when(anal.heatMapData(any(ArrayList.class), anyInt())).thenReturn(new Object[0][]);
         Response response = anal.happy(null);
         String string = (String) response.getEntity();
-        TwitterSearch twitterSearch = IConstants.GSON.fromJson(string, TwitterSearch.class);
+        SearchTwitter twitterSearch = IConstants.GSON.fromJson(string, SearchTwitter.class);
         assertNotNull(twitterSearch);
     }
 
@@ -129,14 +129,14 @@ public class AnalTest extends BaseTest {
     public void twitter() {
         Response response = anal.twitter(null);
         String string = (String) response.getEntity();
-        TwitterSearch twitterSearch = IConstants.GSON.fromJson(string, TwitterSearch.class);
+        SearchTwitter twitterSearch = IConstants.GSON.fromJson(string, SearchTwitter.class);
         assertNotNull(twitterSearch);
     }
 
     @Test
     public void timeLineSentiment() {
         search.setStartHour(-6);
-        when(anal.setTimeLineSentiment(any(TwitterSearch.class))).thenCallRealMethod();
+        when(anal.setTimeLineSentiment(any(SearchTwitter.class))).thenCallRealMethod();
         when(anal.search(any(Search.class), anyInt(), anyLong(), anyLong(), anyInt(), any(Object[][].class))).thenCallRealMethod();
         Object[][] data = anal.setTimeLineSentiment(search);
         assertNotNull(data);
