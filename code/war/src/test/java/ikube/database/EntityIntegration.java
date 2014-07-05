@@ -100,7 +100,7 @@ public class EntityIntegration extends IntegrationTest {
                 // Update each field independently
                 class FieldCallback implements ReflectionUtils.FieldCallback {
                     @Override
-                    public void doWith(final Field field) throws IllegalArgumentException, IllegalAccessException {
+                    public void doWith(final Field field) {
                         Object value = ObjectToolkit.getObject(field.getType());
                         field.setAccessible(Boolean.TRUE);
                         ReflectionUtils.setField(field, entity, value);
@@ -148,6 +148,7 @@ public class EntityIntegration extends IntegrationTest {
             @Override
             @SuppressWarnings("synthetic-access")
             public void doWithEntity(final Object entity, final Class<?> entityClass) {
+                logger.error("Removing class : ");
                 int existingRecords = dataBase.count(entityClass).intValue();
                 // Build a graph for all the entities, penetrating one level deep
                 ObjectToolkit.populateFields(entityClass, entity, true, 0, 3, SKIPPED_FIELDS);
@@ -216,26 +217,17 @@ public class EntityIntegration extends IntegrationTest {
      *
      * @param entityTester the tester that will execute the test on the entity
      */
-    private void doTest(final EntityTester entityTester) {
-        boolean exceptions = Boolean.FALSE;
+    private void doTest(final EntityTester entityTester) throws Exception {
         for (final Class<?> entityClass : entityClasses) {
-            try {
-                if (Modifier.isAbstract(entityClass.getModifiers())) {
-                    continue;
-                }
-                Object entity = entityClass.newInstance();
-                try {
-                    entityTester.doWithEntity(entity, entityClass);
-                } finally {
-                    removeQuietly(entity);
-                }
-            } catch (final Exception e) {
-                logger.error("Exception thrown on class : " + entityClass, e);
-                exceptions = Boolean.TRUE;
+            if (Modifier.isAbstract(entityClass.getModifiers())) {
+                continue;
             }
-        }
-        if (exceptions) {
-            throw new RuntimeException("An error occurred for classes : ");
+            Object entity = entityClass.newInstance();
+            try {
+                entityTester.doWithEntity(entity, entityClass);
+            } finally {
+                removeQuietly(entity);
+            }
         }
     }
 
@@ -251,8 +243,8 @@ public class EntityIntegration extends IntegrationTest {
         try {
             // Remove the entity quietly
             dataBase.remove(entity);
-        } catch (Exception e) {
-            // Ignore
+        } catch (final Exception e) {
+            logger.error("Exception thrown removing entity : " + entity, e);
         }
     }
 }

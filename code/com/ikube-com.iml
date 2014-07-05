@@ -1,5 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="Spring" name="Spring">
+      <configuration>
+        <fileset id="fileset" name="Spring Application Context" removed="false">
+          <file>file://$MODULE_DIR$/ikube/integration/spring-custom.xml</file>
+          <file>file://$MODULE_DIR$/ikube/integration/spring-geoname-csv.xml</file>
+          <file>file://$MODULE_DIR$/ikube/spring.xml</file>
+          <file>file://$MODULE_DIR$/ikube/production/spring-geo.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-users.xml</file>
+          <file>file://$MODULE_DIR$/ikube/production/spring-system.xml</file>
+          <file>file://$MODULE_DIR$/ikube/production/spring-db2-jdbc.xml</file>
+          <file>file://$MODULE_DIR$/ikube/production/spring-ikube.xml</file>
+          <file>file://$MODULE_DIR$/ikube/production/spring-desktop.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-hazelcast.xml</file>
+          <file>file://$MODULE_DIR$/ikube/integration/spring-client.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-h2-jdbc.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-beans.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-aop.xml</file>
+          <file>file://$MODULE_DIR$/ikube/production/spring-auto.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-actions.xml</file>
+          <file>file://$MODULE_DIR$/ikube/analytics/spring-analytics.xml</file>
+        </fileset>
+      </configuration>
+    </facet>
+  </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />

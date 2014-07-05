@@ -11,6 +11,7 @@ import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,11 @@ public abstract class IntegrationTest extends BaseTest {
         } catch (final Exception e) {
             LOGGER.error(null, e);
         }
+    }
+
+    @BeforeClass
+    public static void beforeClass() {
+        ThreadUtilities.initialize();
     }
 
     @AfterClass
