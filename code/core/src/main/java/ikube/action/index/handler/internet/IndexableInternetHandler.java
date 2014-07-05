@@ -23,7 +23,7 @@ import java.util.concurrent.ForkJoinTask;
  * @version 01.00
  * @since 21-06-2013
  */
-@SuppressWarnings("SpringJavaAutowiredMembersInspection")
+@SuppressWarnings({"SpringJavaAutowiredMembersInspection", "SpringJavaAutowiringInspection"})
 public class IndexableInternetHandler extends IndexableHandler<IndexableInternet> {
 
 	@Autowired

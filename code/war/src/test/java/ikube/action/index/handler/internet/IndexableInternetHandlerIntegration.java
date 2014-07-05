@@ -105,7 +105,7 @@ public class IndexableInternetHandlerIntegration extends IntegrationTest {
                     assertTrue(forkJoinTask.isDone() || forkJoinTask.isCancelled());
                 } finally {
                     logger.info("Should destroy the thread pools here : " + indexContext.getName());
-                    // ThreadUtilities.destroy();
+                    ThreadUtilities.destroy();
                 }
             }
         }).start();
@@ -113,7 +113,7 @@ public class IndexableInternetHandlerIntegration extends IntegrationTest {
         logger.info("Starting the job : " + indexContext.getName());
         ThreadUtilities.executeForkJoinTasks(indexContext.getName(), indexableInternet.getThreads(), forkJoinTask);
         logger.info("Waiting for the job : " + indexContext.getName());
-        ThreadUtilities.waitForFuture(forkJoinTask, Long.MAX_VALUE);
+        ThreadUtilities.waitForFuture(forkJoinTask, 60 * 10);
         // If this test does not work then we will never get here
     }
 

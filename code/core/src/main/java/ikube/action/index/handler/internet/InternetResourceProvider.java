@@ -153,15 +153,14 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
                                 isCancelled() ||
                                 isCompletedNormally() ||
                                 isCompletedAbnormally()) {
-                            int threadCount = RecursiveAction.getPool().getRunningThreadCount();
-                            logger.info("Thread finished : " +
-                                    ", done : " + isDone() +
-                                    ", cancelled : " + isCancelled() +
-                                    ", completed normally : " + isCompletedNormally() +
-                                    ", completed abnormally : " + isCompletedAbnormally() +
-                                    ", thread count : " + threadCount);
+                            terminateCrawler();
                             break;
                         }
+                        logger.error("Thread finished : " +
+                                ", done : " + isDone() +
+                                ", cancelled : " + isCancelled() +
+                                ", completed normally : " + isCompletedNormally() +
+                                ", completed abnormally : " + isCompletedAbnormally());
                         // Join crawler controller and wait for finish
                         crawlerController.join(IConstants.ONE_THOUSAND);
                     } while (true);
@@ -170,18 +169,22 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
                 } catch (final CrawlerException e) {
                     logger.error("Crawler exception : ", e);
                 } finally {
-                    try {
-                        logger.info("Terminating crawler : " + indexableInternet.getName());
-                        crawlerController.dispose();
-                        crawlerController.setQueue(null);
-                    } catch (final CrawlerException e) {
-                        logger.error("Crawl terminated exception : ", e);
-                    }
-                    try {
-                        crawlerController.stop();
-                    } catch (final CrawlerException e) {
-                        logger.error("Crawl terminated exception : ", e);
-                    }
+                    terminateCrawler();
+                }
+            }
+
+            private void terminateCrawler() {
+                try {
+                    logger.info("Terminating crawler : " + indexableInternet.getName());
+                    crawlerController.dispose();
+                    crawlerController.setQueue(null);
+                } catch (final CrawlerException e) {
+                    logger.error("Crawl terminated exception : ", e);
+                }
+                try {
+                    crawlerController.stop();
+                } catch (final CrawlerException e) {
+                    logger.error("Crawl terminated exception : ", e);
                 }
             }
         }

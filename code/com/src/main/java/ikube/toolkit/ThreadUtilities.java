@@ -99,7 +99,7 @@ public final class ThreadUtilities {
      */
     public static <T> void waitForFutures(final List<Future<T>> futures, final long seconds) {
         for (final Future<?> future : futures) {
-            ThreadUtilities.waitForFuture(future, seconds);
+            waitForFuture(future, seconds);
         }
     }
 
@@ -147,7 +147,7 @@ public final class ThreadUtilities {
                 if (thread.isAlive()) {
                     try {
                         thread.join(1000);
-                    } catch (InterruptedException e) {
+                    } catch (final InterruptedException e) {
                         LOGGER.error("Interrupted waiting for thread : " + thread + ", this thread : " + Thread.currentThread(), e);
                     }
                     continue outer;
@@ -202,11 +202,12 @@ public final class ThreadUtilities {
 
     public static synchronized ForkJoinPool cancelForkJoinPool(final String name) {
         ForkJoinPool forkJoinPool = FORK_JOIN_POOLS.remove(name);
+        LOGGER.error("Terminating fork join pool : " + name + ", " + forkJoinPool);
         if (forkJoinPool != null) {
             try {
                 forkJoinPool.shutdownNow();
             } catch (final CancellationException e) {
-                LOGGER.info("Cancelled fork join pool : " + forkJoinPool);
+                LOGGER.error("Cancelling fork join pool error : " + forkJoinPool, e);
             }
         }
         return forkJoinPool;
@@ -229,7 +230,7 @@ public final class ThreadUtilities {
     }
 
     public static ForkJoinPool executeForkJoinTasks(final String name, final int threads, final ForkJoinTask<?>... forkJoinTasks) {
-        ForkJoinPool forkJoinPool = ThreadUtilities.getForkJoinPool(name, threads);
+        ForkJoinPool forkJoinPool = getForkJoinPool(name, threads);
         for (final ForkJoinTask<?> forkJoinTask : forkJoinTasks) {
             // forkJoinPool.invoke(forkJoinTask);
             forkJoinPool.execute(forkJoinTask);
@@ -257,13 +258,14 @@ public final class ThreadUtilities {
                 List<Runnable> runnables = EXECUTOR_SERVICE.shutdownNow();
                 LOGGER.info("Still waiting to shutdown : " + runnables);
                 EXECUTOR_SERVICE.shutdown();
+                EXECUTOR_SERVICE.shutdownNow();
             }
         } catch (final InterruptedException e) {
             LOGGER.error("Executor service thread interrupted : ", e);
             // Preserve interrupt status
             Thread.currentThread().interrupt();
         }
-        ThreadUtilities.cancelAllForkJoinPools();
+        cancelAllForkJoinPools();
         List<Runnable> runnables = EXECUTOR_SERVICE.shutdownNow();
         LOGGER.info("Not running runnables : " + runnables);
 
@@ -271,7 +273,6 @@ public final class ThreadUtilities {
             FUTURES.clear();
         }
         if (FORK_JOIN_POOLS != null) {
-            cancelAllForkJoinPools();
             FORK_JOIN_POOLS.clear();
         }
 
@@ -284,9 +285,6 @@ public final class ThreadUtilities {
         boolean serviceNull = EXECUTOR_SERVICE == null;
         boolean futuresNull = FUTURES == null;
         boolean poolsNull = FORK_JOIN_POOLS == null;
-        // Object[] parameters = {serviceNull, futuresNull, poolsNull};
-        // LOGGER.info("Executor service : {}, futures : {}, fork pools : {}", parameters);
-        // LOGGER.info("Service : " + parameters[0] + ", " + parameters[1] + ", " + parameters[2]);
         return !serviceNull && !futuresNull && !poolsNull;
     }
 
@@ -302,10 +300,6 @@ public final class ThreadUtilities {
             futures = Collections.synchronizedList(new ArrayList<Future<?>>());
         }
         return futures;
-    }
-
-    public ThreadUtilities() {
-        // Documented
     }
 
 }
