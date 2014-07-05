@@ -56,19 +56,19 @@ public class IsNewIndexCreated extends ARule<IndexContext> {
                     break;
                 }
                 openedIndexDirectory = openedIndexDirectory.getParentFile();
-            } while (openedIndexDirectory.getParentFile() != null);
+            } while (openedIndexDirectory != null);
             break;
         }
         if (current == null) {
-            logger.debug("Not really open then : " + indexContext.getName());
+            logger.info("Not really open then : " + indexContext.getName());
             return Boolean.FALSE;
         }
 
-        logger.debug("Opened : " + openedIndexDirectory);
-        logger.debug("Latest : " + latestIndexDirectory);
+        logger.info("Opened : " + openedIndexDirectory);
+        logger.info("Latest : " + latestIndexDirectory);
 
         boolean isNewIndexCreated = !latest.equals(current);
-        logger.debug("Index created : " + isNewIndexCreated +
+        logger.info("Index created : " + isNewIndexCreated +
                 "," + indexContext.getName() +
                 ", " + latest.getTime() +
                 ", " + current.getTime());
@@ -81,7 +81,7 @@ public class IsNewIndexCreated extends ARule<IndexContext> {
             SegmentReader atomicReader = (SegmentReader) atomicReaderContext.reader();
             MMapDirectory directory = (MMapDirectory) atomicReader.directory();
             File openedIndexDirectory = directory.getDirectory();
-            logger.info("Opened index directory : " + openedIndexDirectory);
+            logger.info("        : Opened index directory : " + openedIndexDirectory);
         }
     }
 

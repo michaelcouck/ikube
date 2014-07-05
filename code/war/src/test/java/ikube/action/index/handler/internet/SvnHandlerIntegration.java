@@ -40,22 +40,21 @@ public class SvnHandlerIntegration extends IntegrationTest {
     @Test
     public void handleIndexableForked() throws Exception {
         // TODO: Complete this test
-        // svnHandler.handleIndexableForked(indexContext, indexableSvn);
         IndexableSvn indexableSvn = new IndexableSvn();
-        indexableSvn.setPassword("michael.couck@gmail.com");
         indexableSvn.setUrl("https://ikube.googlecode.com/svn");
         // indexableSvn.setFilePath("/trunk");
-        indexableSvn.setPassword("Eh6gw2cY4WA2");
 
         SVNURL svnurl = SVNURL.parseURIEncoded(indexableSvn.getUrl());
         SVNRepository repository = SVNRepositoryFactory.create(svnurl);
-        ISVNAuthenticationManager authManager = SVNWCUtil
+        /*ISVNAuthenticationManager authManager = SVNWCUtil
                 .createDefaultAuthenticationManager(indexableSvn.getUsername(), indexableSvn.getPassword());
-        repository.setAuthenticationManager(authManager);
+        repository.setAuthenticationManager(authManager);*/
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         repository.getFile("/trunk/docs/gui/ikube.story", -1, null, byteArrayOutputStream);
         logger.info(new String(byteArrayOutputStream.toByteArray()));
+
+        // svnHandler.handleIndexableForked(indexContext, indexableSvn);
     }
 
     @Test

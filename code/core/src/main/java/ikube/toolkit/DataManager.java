@@ -81,6 +81,8 @@ public class DataManager {
             }
         } catch (final IOException e) {
             throw new RuntimeException(e);
+        } catch (final Exception e) {
+            LOGGER.error("General exception loading the data : " + dataBase, e);
         } finally {
             IOUtils.closeQuietly(reader);
             IOUtils.closeQuietly(csvReader);

@@ -24,6 +24,10 @@ public class IsMultiSearcherInitialised implements IRule<IndexContext> {
             LOGGER.info("Multi searcher null, should try to reopen : " + indexContext.getName());
             return Boolean.FALSE;
         }
+        if (indexContext.getMultiSearcher().getIndexReader().numDocs() == 0) {
+            LOGGER.info("No documents in index : " + indexContext.getName() + ", returning false for open index : ");
+            return Boolean.FALSE;
+        }
         return Boolean.TRUE;
     }
 

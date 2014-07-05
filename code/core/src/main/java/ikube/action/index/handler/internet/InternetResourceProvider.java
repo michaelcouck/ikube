@@ -217,7 +217,7 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
             }
             url = urls.pop();
         }
-        // If there are not urls on the stack try the database
+        // If there are no urls on the stack try the database
         if (url == null) {
 			// We have to retry because sometimes there is a concurrent access 
 			// problem with Jpa, could change the read access perhaps to transactional?
@@ -229,6 +229,7 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
 					String[] fields = {IConstants.NAME, IConstants.INDEXED};
 					Object[] values = {indexableInternet.getName(), Boolean.FALSE};
 					List<Url> dbUrls = dataBase.find(Url.class, fields, values, 0, 100);
+                    // Delete the used urls from the database
 					dataBase.removeBatch(dbUrls);
 					this.urls.addAll(dbUrls);
 					break;

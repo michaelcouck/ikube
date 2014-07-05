@@ -30,9 +30,8 @@
 		property:indexDirectoryPathBackup="${index.directory.path}"
 		property:children-ref="sites-indexables"
         property:threads="20"/>
-    <!-- property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer" -->
 	<util:list id="sites-indexables">
-		<ref local="ibm" />
+		<!--<ref local="ibm" />-->
 		<ref local="oki" />
         <ref local="guardian" />
 	</util:list>

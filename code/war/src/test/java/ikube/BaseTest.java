@@ -4,7 +4,7 @@ import ikube.mock.SpellingCheckerMock;
 import ikube.toolkit.Logging;
 import mockit.Mockit;
 import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.AutoRetryHttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexableField;
@@ -35,7 +35,7 @@ public abstract class BaseTest {
     /**
      * This client({@link org.apache.http.client.HttpClient}) is for the web services.
      */
-    protected static HttpClient HTTP_CLIENT = new AutoRetryHttpClient();
+    protected static HttpClient HTTP_CLIENT = new DefaultHttpClient();
 
     static {
         Logging.configure();

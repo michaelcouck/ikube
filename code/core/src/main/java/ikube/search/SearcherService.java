@@ -243,7 +243,7 @@ public class SearcherService implements ISearcherService {
             }
 
             if (searchAction == null) {
-                LOGGER.info("Searcher null for index : {} ", search.getIndexName());
+                LOGGER.info("Searcher null for index : " + search.getIndexName());
                 return search;
             }
             String[] searchStrings = search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]);
@@ -463,6 +463,10 @@ public class SearcherService implements ISearcherService {
     protected <T> T getSearch(final Class<?> klass, final String indexName) throws Exception {
         T search;
         IndexContext indexContext = monitorService.getIndexContext(indexName);
+        if (indexContext == null) {
+            LOGGER.warn("No index context : " + indexName);
+            return null;
+        }
         if (indexContext.getAnalyzer() != null) {
             Constructor<?> constructor = klass.getConstructor(IndexSearcher.class, Analyzer.class);
             search = (T) constructor.newInstance(indexContext.getMultiSearcher(), indexContext.getAnalyzer());

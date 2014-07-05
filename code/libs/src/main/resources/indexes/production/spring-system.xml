@@ -35,15 +35,9 @@
 		property:throttle="${throttle}"
 		property:indexDirectoryPath="${index.directory.path}"
 		property:indexDirectoryPathBackup="${index.directory.path}"
-		property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer"
-		property:strategies-ref="ikube-system-strategies"
 		property:children-ref="ikube-system-indexables" />
 	<util:list id="ikube-system-indexables">
 		<ref local="ikube-data-source" />
-	</util:list>
-	
-	<util:list id="ikube-system-strategies">
-		<ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
 	</util:list>
 	
 	<bean

@@ -139,7 +139,8 @@
         id="ikube.database.IDataBase"
         name="ikube.database.IDataBase"
         class="${ikube.dataBaseClass}"
-        lazy-init="false"/>
+        lazy-init="false"
+        depends-on="ikube.toolkit.ThreadUtilities"/>
 
     <bean
         id="ikube.toolkit.DataManager"
@@ -147,7 +148,7 @@
         class="ikube.toolkit.DataManager"
         lazy-init="false"
         init-method="loadData"
-        depends-on="ikube.toolkit.ThreadUtilities"/>
+        depends-on="ikube.database.IDataBase"/>
 
     <bean
         id="ikube.action.index.parse.mime.MimeMapper"
@@ -306,11 +307,6 @@
         parent="ikube.action.index.handler.IndexableHandler"
         property:indexableClass="ikube.model.IndexableFileSystemLog"/>
     <bean
-        id="ikube.action.index.handler.filesystem.IndexableFilesystemWikiHandler"
-        class="ikube.action.index.handler.filesystem.IndexableFilesystemWikiHandler"
-        parent="ikube.action.index.handler.IndexableHandler"
-        property:indexableClass="ikube.model.IndexableFileSystemWiki"/>
-    <bean
         id="ikube.action.index.handler.database.IndexableDataSourceHandler"
         class="ikube.action.index.handler.database.IndexableDataSourceHandler"
         parent="ikube.action.index.handler.IndexableHandler"
@@ -336,7 +332,6 @@
         <ref local="ikube.action.index.handler.filesystem.IndexableFileSystemHandler"/>
         <ref local="ikube.action.index.handler.database.IndexableTableHandler"/>
         <ref local="ikube.action.index.handler.filesystem.IndexableFilesystemLogHandler"/>
-        <ref local="ikube.action.index.handler.filesystem.IndexableFilesystemWikiHandler"/>
         <ref local="ikube.action.index.handler.database.IndexableDataSourceHandler"/>
         <ref local="ikube.action.index.handler.filesystem.IndexableFilesystemCsvHandler"/>
         <ref local="ikube.action.index.handler.internet.TwitterHandler"/>

@@ -98,6 +98,36 @@
 					</dependency>
 				</dependencies>
 			</plugin>
+
+            <!-- This plugin creates html from the documentation. -->
+            <plugin>
+                <groupId>org.asciidoctor</groupId>
+                <artifactId>asciidoctor-maven-plugin</artifactId>
+                <version>0.1.4</version>
+                <executions>
+                    <execution>
+                        <id>render-asciidoc</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>process-asciidoc</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <backend>html5</backend>
+                    <sourceDirectory>docs</sourceDirectory>
+                    <outputDirectory>src/main/webapp/docs</outputDirectory>
+                    <!--<sourceHighlighter>coderay</sourceHighlighter>-->
+                    <!--<embedAssets>false</embedAssets>-->
+                    <attributes>
+                        <!--<toc/>-->
+                        <linkcss>true</linkcss>
+                        <!--<copycss>false</copycss>-->
+                        <stylesheet>application.css</stylesheet>
+                    </attributes>
+                </configuration>
+            </plugin>
+
 		</plugins>
 	</build>
 

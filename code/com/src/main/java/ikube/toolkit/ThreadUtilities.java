@@ -88,6 +88,7 @@ public final class ThreadUtilities {
             }
         }
         futures.clear();
+        cancelForkJoinPool(name);
     }
 
     /**
@@ -264,12 +265,13 @@ public final class ThreadUtilities {
         }
         ThreadUtilities.cancelAllForkJoinPools();
         List<Runnable> runnables = EXECUTOR_SERVICE.shutdownNow();
-        LOGGER.info("Runnables shutdown : " + runnables);
+        LOGGER.info("Not running runnables : " + runnables);
 
         if (FUTURES != null) {
             FUTURES.clear();
         }
         if (FORK_JOIN_POOLS != null) {
+            cancelAllForkJoinPools();
             FORK_JOIN_POOLS.clear();
         }
 

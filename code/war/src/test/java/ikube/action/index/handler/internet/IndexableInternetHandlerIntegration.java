@@ -58,21 +58,25 @@ public class IndexableInternetHandlerIntegration extends IntegrationTest {
 
     @Test
     public void handleIndexableForked() throws Exception {
-        indexContext.setStrategies(null);
-        indexableInternet.setUrl("http://www.ikube.be/site/docs/index.html");
+        IndexWriter indexWriter = null;
+        try {
+            indexContext.setStrategies(null);
+            indexableInternet.setUrl("http://www.ikube.be/site");
 
-        String ip = InetAddress.getLocalHost().getHostAddress();
-        IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
-        indexContext.setIndexWriters(indexWriter);
+            String ip = InetAddress.getLocalHost().getHostAddress();
+            indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
+            indexContext.setIndexWriters(indexWriter);
 
-        ForkJoinTask<?> forkJoinTask = indexableInternetHandler.handleIndexableForked(indexContext, indexableInternet);
-        ThreadUtilities.executeForkJoinTasks(indexContext.getName(), indexableInternet.getThreads(), forkJoinTask);
-        ThreadUtilities.waitForFuture(forkJoinTask, Integer.MAX_VALUE);
+            ForkJoinTask<?> forkJoinTask = indexableInternetHandler.handleIndexableForked(indexContext, indexableInternet);
+            ThreadUtilities.executeForkJoinTasks(indexContext.getName(), indexableInternet.getThreads(), forkJoinTask);
+            ThreadUtilities.waitForFuture(forkJoinTask, Integer.MAX_VALUE);
 
-        logger.info("Documents : " + indexWriter.numDocs());
-        assertTrue("There must be some documents in the index : ", indexWriter.numDocs() > 10);
+            logger.info("Documents : " + indexWriter.numDocs());
+            assertTrue("There must be some documents in the index : ", indexWriter.numDocs() > 10);
+        } finally {
+            IndexManager.closeIndexWriter(indexWriter);
+        }
 
-        IndexManager.closeIndexWriter(indexWriter);
     }
 
     @Test
@@ -81,8 +85,8 @@ public class IndexableInternetHandlerIntegration extends IntegrationTest {
         // Start a thread that will terminate the job
         new Thread(new Runnable() {
             public void run() {
-                ThreadUtilities.sleep(60000);
-                logger.info("Terminating the job : " + indexContext.getName());
+                ThreadUtilities.sleep(15000);
+                logger.info("Terminating the internet job : " + indexContext.getName());
                 ThreadUtilities.cancelForkJoinPool(indexContext.getName());
             }
         }).start();
@@ -96,16 +100,19 @@ public class IndexableInternetHandlerIntegration extends IntegrationTest {
         // Start another thread to verify that the task completed
         new Thread(new Runnable() {
             public void run() {
-                ThreadUtilities.sleep(120000);
+                ThreadUtilities.sleep(30000);
                 try {
                     assertTrue(forkJoinTask.isDone() || forkJoinTask.isCancelled());
                 } finally {
-                    ThreadUtilities.destroy();
+                    logger.info("Should destroy the thread pools here : " + indexContext.getName());
+                    // ThreadUtilities.destroy();
                 }
             }
         }).start();
 
+        logger.info("Starting the job : " + indexContext.getName());
         ThreadUtilities.executeForkJoinTasks(indexContext.getName(), indexableInternet.getThreads(), forkJoinTask);
+        logger.info("Waiting for the job : " + indexContext.getName());
         ThreadUtilities.waitForFuture(forkJoinTask, Long.MAX_VALUE);
         // If this test does not work then we will never get here
     }

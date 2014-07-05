@@ -2,12 +2,12 @@ package ikube.database;
 
 import ikube.IConstants;
 import ikube.IntegrationTest;
-import ikube.model.*;
-import ikube.model.geospatial.*;
+import ikube.model.Persistable;
 import ikube.toolkit.ObjectToolkit;
 import org.junit.After;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
+import org.reflections.Reflections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ReflectionUtils;
 
@@ -18,6 +18,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -44,54 +45,25 @@ public class EntityIntegration extends IntegrationTest {
     /**
      * The names of the classes that we will test in the package.
      */
-    private Class<?>[] entityClasses = new Class<?>[]{
-            Action.class,
-            Analysis.class,
-            AnalyzerInfo.class,
-            Context.class,
-            Coordinate.class,
-            /*Distributed.class,*/
-            File.class,
-            /*IndexableAudio.class,*/
-            IndexableColumn.class,
-            IndexableDataSource.class,
-            IndexableEmail.class,
-            IndexableFileSystem.class,
-            IndexableFileSystemCsv.class,
-            IndexableFileSystemLog.class,
-            IndexableFileSystemWiki.class,
-            IndexableInternet.class,
-            IndexableTable.class,
-            IndexableTweets.class,
-            IndexContext.class,
-            /*Search.class,*/
-            Server.class,
-            Snapshot.class,
-            Task.class,
-            Url.class,
+    private Set<Class<? extends Persistable>> entityClasses;
 
-            GeoName.class,
-            GeoAltName.class,
-            GeoZone.class,
-            GeoCountry.class,
-            GeoCity.class};
-
-    @BeforeClass
-    public static void beforeClass() {
+    @Before
+    public void before() {
+        entityClasses = new Reflections("ikube.model").getSubTypesOf(Persistable.class);
         ObjectToolkit.registerPredicates(new ObjectToolkit.Predicate() {
-
             @Override
             public boolean perform(final Object target) {
                 Field field = (Field) target;
                 return isCascadeTypeAll(field) && containsJpaAnnotations(field);
             }
-
         });
     }
 
     @After
     public void after() {
-        delete(dataBase, entityClasses);
+        for (final Class clazz : entityClasses) {
+            delete(dataBase, clazz);
+        }
     }
 
     /**

@@ -94,8 +94,6 @@
             id="ikube-svn-google-code"
             class="ikube.model.IndexableSvn"
             property:name="ikube-svn-google-code"
-            property:username="michael.couck@gmail.com"
-            property:password="Eh6gw2cY4WA2"
             property:url="https://ikube.googlecode.com/svn"
             property:filePath="trunk"
 

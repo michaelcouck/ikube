@@ -40,9 +40,11 @@ class SvnResourceProvider implements IResourceProvider<SVNDirEntry> {
         }
         SVNURL svnurl = SVNURL.parseURIEncoded(indexableSvn.getUrl());
         final SVNRepository repository = SVNRepositoryFactory.create(svnurl);
-        ISVNAuthenticationManager authManager = SVNWCUtil
-                .createDefaultAuthenticationManager(indexableSvn.getUsername(), indexableSvn.getPassword());
-        repository.setAuthenticationManager(authManager);
+        if (StringUtils.isNotEmpty(indexableSvn.getUsername()) && StringUtils.isNotEmpty(indexableSvn.getPassword())) {
+            ISVNAuthenticationManager authManager = SVNWCUtil
+                    .createDefaultAuthenticationManager(indexableSvn.getUsername(), indexableSvn.getPassword());
+            repository.setAuthenticationManager(authManager);
+        }
         indexableSvn.setRepository(repository);
 
         logger.info("Starting walk : ");

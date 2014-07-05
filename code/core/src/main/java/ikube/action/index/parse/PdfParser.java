@@ -65,7 +65,7 @@ public class PdfParser implements IParser {
                     pdfDocument.getDocument().close();
                     pdfDocument.close();
                 }
-            } catch (Exception t) {
+            } catch (final Exception t) {
                 LOGGER.error("Exception thrown closing pdf : " + pdfDocument, t);
             }
         }

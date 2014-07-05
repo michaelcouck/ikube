@@ -27,7 +27,6 @@ import static org.junit.Assert.*;
 @SuppressWarnings("SpringJavaAutowiringInspection")
 public class IndexableFilesystemHandlerIntegration extends IntegrationTest {
 
-    private IndexWriter indexWriter;
     @Autowired
     @Qualifier("desktop")
     private IndexContext desktop;
@@ -40,7 +39,7 @@ public class IndexableFilesystemHandlerIntegration extends IntegrationTest {
     @Before
     public void before() {
         String dataIndexFolderPath = FileUtilities.cleanFilePath(new File(".").getAbsolutePath());
-        indexWriter = IndexManager.openIndexWriter(desktop, System.currentTimeMillis(), UriUtilities.getIp());
+        IndexWriter indexWriter = IndexManager.openIndexWriter(desktop, System.currentTimeMillis(), UriUtilities.getIp());
 
         desktopFolder.setPath(dataIndexFolderPath);
         desktopFolder.setExcludedPattern(null);
@@ -66,7 +65,9 @@ public class IndexableFilesystemHandlerIntegration extends IntegrationTest {
             // Verify that there are some documents in the index
             assertNotNull("The index writer should still be available : ", desktop.getIndexWriters());
             assertEquals("There should only be one index writer : ", 1, desktop.getIndexWriters().length);
-            assertTrue(desktop.getIndexWriters()[0].numDocs() > 0);
+            for (final IndexWriter indexWriter : desktop.getIndexWriters()) {
+                assertTrue(indexWriter.numDocs() > 0);
+            }
         } finally {
             IndexManager.closeIndexWriters(desktop);
         }

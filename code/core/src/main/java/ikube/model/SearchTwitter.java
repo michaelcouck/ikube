@@ -1,28 +1,30 @@
 package ikube.model;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Transient;
 
 /**
  * Custom search transfer object for the Twitter application.
  */
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@EntityListeners(value = {SearchIncrementListener.class})
+@Inheritance(strategy = InheritanceType.JOINED)
 @SuppressWarnings("UnusedDeclaration")
 public class SearchTwitter extends Search {
 
     @Transient
-    int clusters;
+    private int clusters;
     @Transient
-    long startHour;
+    private long startHour;
     @Transient
-    long minutesOfHistory;
+    private long minutesOfHistory;
     @Transient
-    String classification;
+    private String classification;
     @Transient
-    Object[][] heatMapData;
+    private Object[][] heatMapData;
     @Transient
-    Object[][] timeLineSentiment;
+    private Object[][] timeLineSentiment;
 
     public Object[][] getTimeLineSentiment() {
         return timeLineSentiment;

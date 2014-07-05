@@ -43,7 +43,7 @@ import com.sun.mail.pop3.POP3SSLStore;
  *
  * @author Bruno Barin
  * @version 01.00
- * @since 29.11.10
+ * @since 29-11-2010
  */
 public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 
@@ -54,15 +54,14 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ForkJoinTask<?> handleIndexableForked(final IndexContext indexContext,
-												 final IndexableEmail indexableEmail) throws Exception {
+	public ForkJoinTask<?> handleIndexableForked(final IndexContext indexContext, final IndexableEmail indexableEmail) throws Exception {
 		IResourceProvider<IndexableEmail> emailResourceProvider = new IResourceProvider<IndexableEmail>() {
 
 			List<IndexableEmail> indexableEmails;
 
 			@Override
 			public IndexableEmail getResource() {
-				if (indexableEmails.isEmpty()) {
+				if (indexableEmails == null || indexableEmails.isEmpty()) {
 					return null;
 				}
 				return indexableEmails.get(0);
@@ -73,7 +72,7 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 				this.indexableEmails = resources;
 			}
 		};
-		emailResourceProvider.setResources(new ArrayList<IndexableEmail>(Arrays.asList(indexableEmail)));
+		emailResourceProvider.setResources(new ArrayList<>(Arrays.asList(indexableEmail)));
 		return getRecursiveAction(indexContext, indexableEmail, emailResourceProvider);
 	}
 
@@ -186,7 +185,8 @@ public class IndexableEmailHandler extends IndexableHandler<IndexableEmail> {
 		return document;
 	}
 
-	protected String getMessageId(final IndexableEmail indexableMail, final int messageNumber, final long timestamp) {
+	@SuppressWarnings("StringBufferReplaceableByString")
+    protected String getMessageId(final IndexableEmail indexableMail, final int messageNumber, final long timestamp) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(indexableMail.getMailHost());
 		builder.append('.');
