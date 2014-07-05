@@ -42,12 +42,13 @@ import java.util.regex.Pattern;
  * @version 03.00
  * @since 21-06-2013
  */
+@SuppressWarnings("FieldCanBeLocal")
 public class InternetResourceProvider implements IResourceProvider<Url> {
 
     private static int RETRY = 3;
     private static long SLEEP = 10000;
 
-    private Logger logger = LoggerFactory.getLogger(InternetResourceProvider.class);
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private Random random;
     private Stack<Url> urls;
@@ -64,10 +65,10 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
 		random = new Random();
         urls = new Stack<>();
         final Pattern pattern;
-        if (indexableInternet.getExcludedPattern() != null) {
-            pattern = Pattern.compile(indexableInternet.getExcludedPattern());
-        } else {
+        if (indexableInternet.getExcludedPattern() == null) {
             pattern = null;
+        } else {
+            pattern = Pattern.compile(indexableInternet.getExcludedPattern());
         }
 
         DefaultParserController parserController = new DefaultParserController();
@@ -129,8 +130,8 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
         configuration.setMaxParallelRequests(indexableInternet.getThreads());
         // Setting http errors limits. If this limit violated for any
         // site - crawler will stop this site processing
-        configuration.setMaxHttpErrors(HttpURLConnection.HTTP_CLIENT_TIMEOUT, (int) indexableInternet.getMaxExceptions());
         configuration.setMaxHttpErrors(HttpURLConnection.HTTP_BAD_GATEWAY, (int) indexableInternet.getMaxExceptions());
+        configuration.setMaxHttpErrors(HttpURLConnection.HTTP_CLIENT_TIMEOUT, (int) indexableInternet.getMaxExceptions());
         // Setting period between two requests to a single site (in milliseconds)
         configuration.setPolitenessPeriod((int) getIndexContext(indexableInternet).getThrottle());
 

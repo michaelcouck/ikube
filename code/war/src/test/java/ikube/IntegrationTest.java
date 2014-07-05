@@ -4,9 +4,13 @@ import ikube.action.index.parse.mime.MimeMapper;
 import ikube.action.index.parse.mime.MimeTypes;
 import ikube.cluster.IMonitorService;
 import ikube.database.IDataBase;
+import ikube.scheduling.Scheduler;
 import ikube.security.WebServiceAuthentication;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.ThreadUtilities;
 import org.apache.log4j.Logger;
+import org.junit.AfterClass;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +48,12 @@ public abstract class IntegrationTest extends BaseTest {
         } catch (final Exception e) {
             LOGGER.error(null, e);
         }
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        ThreadUtilities.destroy();
+        ApplicationContextManager.getBean(Scheduler.class).shutdown();
     }
 
     @Autowired
