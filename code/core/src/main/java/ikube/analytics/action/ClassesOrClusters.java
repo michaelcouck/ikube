@@ -6,6 +6,8 @@ import ikube.model.Analysis;
 
 import java.io.Serializable;
 
+import static ikube.toolkit.ApplicationContextManager.getBean;
+
 /**
  * This class is just a serializable snippet of logic that can be distributed over the
  * wire and executed on a remote server, essentially distributing the analysis throughout
@@ -30,8 +32,7 @@ public class ClassesOrClusters extends Action<Analysis> implements Serializable 
     @SuppressWarnings("unchecked")
     public Analysis call() throws Exception {
         // Get the remote analysis service
-        IAnalyticsService analyticsService = getAnalyticsService();
-        IAnalyzer analyzer = analyticsService.getAnalyzer(analysis.getAnalyzer());
+        IAnalyzer analyzer = getBean(IAnalyticsService.class).getAnalyzer(analysis.getAnalyzer());
         Object[] classesOrClusters = analyzer.classesOrClusters();
         analysis.setClassesOrClusters(classesOrClusters);
         // Return the analysis to the now local caller

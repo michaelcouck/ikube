@@ -1,10 +1,13 @@
 package ikube.analytics.action;
 
+import ikube.analytics.IAnalyticsService;
 import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
 
 import java.io.Serializable;
+
+import static ikube.toolkit.ApplicationContextManager.getBean;
 
 /**
  * This class is just a serializable snippet of logic that can be distributed over the
@@ -30,7 +33,7 @@ public class Builder extends Action<Void> implements Serializable {
     @SuppressWarnings("unchecked")
     public Void call() throws Exception {
         // Get the remote analyzer service from Spring
-        Context context = getAnalyticsService().getContext(analysis.getAnalyzer());
+        Context context = getBean(IAnalyticsService.class).getContext(analysis.getAnalyzer());
         IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();
         // And build the remote analyzer
         analyzer.build(context);

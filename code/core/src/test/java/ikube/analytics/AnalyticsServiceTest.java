@@ -17,7 +17,9 @@ import mockit.Mockit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import weka.classifiers.functions.SMO;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.StringToWordVector;
@@ -40,14 +42,6 @@ import static org.mockito.Mockito.*;
 public class AnalyticsServiceTest extends AbstractTest {
 
     @Mock
-    private Context context;
-    @Mock
-    private IAnalyzer analyzer;
-    @Mock
-    private Analysis<?, ?> analysis;
-    /*@Mock
-    private AnalyzerManager analyzerManager;*/
-    @Mock
     private SMO smo;
     @Mock
     private Filter filter;
@@ -55,8 +49,17 @@ public class AnalyticsServiceTest extends AbstractTest {
     private AnalyzerInfo analyzerInfo;
 
     @Mock
-    private AnalyticsService analyticsServiceMock;
+    private Context context;
+    @Mock
+    private IAnalyzer analyzer;
+    @Mock
+    private Analysis<?, ?> analysis;
 
+    @Mock
+    private AnalyzerManager analyzerManager;
+
+    @Spy
+    @InjectMocks
     private AnalyticsService analyticsService;
 
     @Before
@@ -68,8 +71,6 @@ public class AnalyticsServiceTest extends AbstractTest {
         when(analyzerInfo.getAlgorithm()).thenReturn(SMO.class.getName());
         when(analyzerInfo.getFilter()).thenReturn(StringToWordVector.class.getName());
 
-        analyticsService = new AnalyticsService();
-
         when(context.getAnalyzerInfo()).thenReturn(analyzerInfo);
         when(context.getAlgorithm()).thenReturn(smo);
         when(context.getAnalyzer()).thenReturn(analyzer);
@@ -77,15 +78,14 @@ public class AnalyticsServiceTest extends AbstractTest {
 
         Map<String, Context> contexts = new HashMap<>();
         contexts.put(context.getName(), context);
-        // when(analyzerManager.getContexts()).thenReturn(contexts);
         Deencapsulation.setField(analyticsService, "contexts", contexts);
 
-        when(analyticsServiceMock.getAnalyzer(any(String.class))).thenReturn(analyzer);
-        when(analyticsServiceMock.getContexts()).thenReturn(contexts);
+        when(analyticsService.getAnalyzer(any(String.class))).thenReturn(analyzer);
+        when(analyticsService.getContexts()).thenReturn(contexts);
 
-        ApplicationContextManagerMock.setBean(IAnalyticsService.class, analyticsServiceMock);
+        ApplicationContextManagerMock.setBean(AnalyzerManager.class, analyzerManager);
+        ApplicationContextManagerMock.setBean(IAnalyticsService.class, analyticsService);
         Deencapsulation.setField(analyticsService, "clusterManager", clusterManager);
-        // Deencapsulation.setField(analyticsService, "analyzerManager", analyzerManager);
     }
 
     @After
@@ -106,9 +106,8 @@ public class AnalyticsServiceTest extends AbstractTest {
         analyticsService.train(analysis);
         verify(clusterManager, atLeastOnce()).sendTaskToAll(any(Callable.class));
 
+        when(analyticsService.getAnalyzer(any(String.class))).thenReturn(analyzer);
         Trainer trainer = new Trainer(analysis);
-        IAnalyticsService service = trainer.getAnalyticsService();
-        when(service.getAnalyzer(any(String.class))).thenReturn(analyzer);
         trainer.call();
 
         verify(analyzer, atLeastOnce()).train(any());
@@ -120,9 +119,8 @@ public class AnalyticsServiceTest extends AbstractTest {
         analyticsService.build(analysis);
         verify(clusterManager, atLeastOnce()).sendTaskToAll(any(Callable.class));
 
+        when(analyticsService.getContext(any(String.class))).thenReturn(context);
         Builder builder = new Builder(analysis);
-        IAnalyticsService service = builder.getAnalyticsService();
-        when(service.getContext(any(String.class))).thenReturn(context);
         builder.call();
 
         verify(analyzer, atLeastOnce()).build(any(Context.class));
@@ -143,9 +141,8 @@ public class AnalyticsServiceTest extends AbstractTest {
         analyticsService.analyze(this.analysis);
         verify(clusterManager, atLeastOnce()).sendTask(any(Callable.class));
 
+        when(analyticsService.getAnalyzer(any(String.class))).thenReturn(this.analyzer);
         Analyzer analyzer = new Analyzer(analysis);
-        IAnalyticsService service = analyzer.getAnalyticsService();
-        when(service.getAnalyzer(any(String.class))).thenReturn(this.analyzer);
         analyzer.call();
 
         verify(this.analyzer, atLeastOnce()).analyze(any());
@@ -159,11 +156,18 @@ public class AnalyticsServiceTest extends AbstractTest {
         when(future.get(anyLong(), any(TimeUnit.class))).thenReturn(analysis);
         when(analyzer.analyze(any())).thenReturn(analysis);
         when(this.analysis.isDistributed()).thenReturn(Boolean.TRUE);
+        when(this.analysis.isClassesAndClusters()).thenReturn(Boolean.TRUE);
 
         this.analyticsService.classesOrClusters(analysis);
         Analysis analysis = this.analyticsService.classesOrClusters(this.analysis);
         assertEquals(analysis, this.analysis);
-        // verify(analysis, atLeast(1)).setClassesOrClusters(any(Object[].class));
+
+        when(this.analysis.isDistributed()).thenReturn(Boolean.FALSE);
+        this.analyticsService.classesOrClusters(analysis);
+        analysis = this.analyticsService.classesOrClusters(this.analysis);
+        assertEquals(analysis, this.analysis);
+
+        verify(analysis, atLeast(1)).setClassesOrClusters(any(Object[].class));
     }
 
     @Test
@@ -174,12 +178,19 @@ public class AnalyticsServiceTest extends AbstractTest {
         when(future.get(anyLong(), any(TimeUnit.class))).thenReturn(analysis);
         when(analyzer.analyze(any())).thenReturn(analysis);
         when(this.analysis.isDistributed()).thenReturn(Boolean.TRUE);
+        when(this.analysis.isSizesForClassesAndClusters()).thenReturn(Boolean.TRUE);
         when(analysis.getClassesOrClusters()).thenReturn(new Object[]{IConstants.POSITIVE, IConstants.NEGATIVE});
 
         this.analyticsService.sizesForClassesOrClusters(analysis);
         Analysis analysis = this.analyticsService.sizesForClassesOrClusters(this.analysis);
         assertEquals(analysis, this.analysis);
-        // verify(analysis, atLeast(1)).setSizesForClassesOrClusters(any(int[].class));
+
+        when(this.analysis.isDistributed()).thenReturn(Boolean.FALSE);
+        this.analyticsService.sizesForClassesOrClusters(analysis);
+        analysis = this.analyticsService.sizesForClassesOrClusters(this.analysis);
+        assertEquals(analysis, this.analysis);
+
+        verify(analysis, atLeast(1)).setSizesForClassesOrClusters(any(int[].class));
     }
 
     @Test
@@ -189,6 +200,7 @@ public class AnalyticsServiceTest extends AbstractTest {
         verify(clusterManager, atLeastOnce()).sendTaskToAll(any(Callable.class));
 
         Destroyer destroyer = new Destroyer(context);
+        when(analyticsService.getContext(anyString())).thenReturn(context);
         destroyer.call();
 
         verify(analyzer, atLeastOnce()).destroy(any(Context.class));

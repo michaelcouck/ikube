@@ -6,6 +6,8 @@ import ikube.model.Analysis;
 
 import java.io.Serializable;
 
+import static ikube.toolkit.ApplicationContextManager.getBean;
+
 /**
  * This class is just a serializable snippet of logic that can be distributed over the
  * wire and executed on a remote server, essentially distributing the analysis throughout
@@ -31,11 +33,10 @@ public class SizesForClassesOrClusters extends Action<Analysis> implements Seria
     public Analysis call() throws Exception {
         String clazz = analysis.getClazz();
         // Get the local analytics service and execute the analysis
-        getAnalyticsService().classesOrClusters(analysis);
+        getBean(IAnalyticsService.class).classesOrClusters(analysis);
         Object[] classesOrClusters = analysis.getClassesOrClusters();
         int[] sizesForClassesOrClusters = new int[analysis.getClassesOrClusters().length];
-        IAnalyticsService analyticsService = getAnalyticsService();
-        IAnalyzer analyzer = analyticsService.getAnalyzer(analysis.getAnalyzer());
+        IAnalyzer analyzer = getBean(IAnalyticsService.class).getAnalyzer(analysis.getAnalyzer());
         // System.out.println("Analytics service : " + analyticsService + ", " + analyzer);
         // Calculate the sizes for the classes or clusters, as the case may be
         for (int i = 0; i < classesOrClusters.length; i++) {

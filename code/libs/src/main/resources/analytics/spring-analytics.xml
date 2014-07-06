@@ -88,16 +88,4 @@
             property:analyzerInfo-ref="analyzer-info-smo"/>
     <!-- END CLASSIFIER DEFINITION: -->
 
-    <!-- This will initialize all the analyzers and build them in parallel. -->
-    <bean
-            id="ikube.analytics.AnalyzerManager"
-            name="ikube.analytics.AnalyzerManager"
-            class="ikube.analytics.AnalyzerManager"
-            depends-on="ikube.toolkit.ThreadUtilities"/>
-
-    <bean
-            id="ikube.analytics.IAnalyticsService"
-            name="ikube.analytics.IAnalyticsService"
-            class="ikube.analytics.AnalyticsService"/>
-
 </beans>

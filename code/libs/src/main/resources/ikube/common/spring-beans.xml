@@ -178,6 +178,18 @@
         init-method="initialize"
         destroy-method="destroy"/>
 
+    <!-- This will initialize all the analyzers and build them in parallel. -->
+    <bean
+        id="ikube.analytics.AnalyzerManager"
+        name="ikube.analytics.AnalyzerManager"
+        class="ikube.analytics.AnalyzerManager"
+        depends-on="ikube.toolkit.ThreadUtilities"/>
+
+    <bean
+        id="ikube.analytics.IAnalyticsService"
+        name="ikube.analytics.IAnalyticsService"
+        class="ikube.analytics.AnalyticsService"/>
+
     <bean
         id="ikube.scheduling.Scheduler"
         class="ikube.scheduling.Scheduler"

@@ -1,6 +1,7 @@
 package ikube.analytics.action;
 
 import ikube.analytics.AnalyzerManager;
+import ikube.analytics.IAnalyticsService;
 import ikube.model.Context;
 import org.apache.commons.lang.StringUtils;
 
@@ -31,9 +32,6 @@ public class Creator extends Action<Void> implements Serializable {
     @Override
     @SuppressWarnings("unchecked")
     public Void call() throws Exception {
-        // Get the local context
-        context = getBean(context.getName());
-
         Object analyzerName = context.getAnalyzerInfo().getAnalyzer();
         Object algorithmName = context.getAnalyzerInfo().getAlgorithm();
         Object filterName = context.getAnalyzerInfo().getFilter();
@@ -45,6 +43,7 @@ public class Creator extends Action<Void> implements Serializable {
 
         // Build and set the analyzer here in the remote machine
         getBean(AnalyzerManager.class).buildAnalyzer(context);
+        getBean(IAnalyticsService.class).getContexts().put(context.getName(), context);
         return null;
     }
 }

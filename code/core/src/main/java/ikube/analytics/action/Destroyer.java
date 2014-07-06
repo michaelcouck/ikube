@@ -1,5 +1,6 @@
 package ikube.analytics.action;
 
+import ikube.analytics.IAnalyticsService;
 import ikube.analytics.IAnalyzer;
 import ikube.model.Context;
 
@@ -31,10 +32,10 @@ public class Destroyer extends Action<Void> implements Serializable {
     @SuppressWarnings("unchecked")
     public Void call() throws Exception {
         // Get the local context
-        context = getBean(context.getName());
+        context = getBean(IAnalyticsService.class).getContext(context.getName());
 
         // Get the local context, but in fact we are on the remote machine of course
-        Context context = (Context) getAnalyticsService().getContexts().remove(this.context.getName());
+        Context context = (Context) getBean(IAnalyticsService.class).getContexts().remove(this.context.getName());
         if (context != null) {
             IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();
             if (analyzer != null) {

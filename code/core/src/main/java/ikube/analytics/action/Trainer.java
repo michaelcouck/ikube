@@ -1,9 +1,12 @@
 package ikube.analytics.action;
 
+import ikube.analytics.IAnalyticsService;
 import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
 
 import java.io.Serializable;
+
+import static ikube.toolkit.ApplicationContextManager.getBean;
 
 /**
  * This class is just a serializable snippet of logic that can be distributed over the
@@ -29,7 +32,7 @@ public class Trainer extends Action<Void> implements Serializable {
     @SuppressWarnings("unchecked")
     public Void call() throws Exception {
         // Get the analyzer on the local machine
-        IAnalyzer analyzer = getAnalyticsService().getAnalyzer(analysis.getAnalyzer());
+        IAnalyzer analyzer = getBean(IAnalyticsService.class).getAnalyzer(analysis.getAnalyzer());
         // And train it
         analyzer.train(analysis);
         return null;
