@@ -40,6 +40,7 @@ import java.util.Map;
 @Scope(Resource.REQUEST)
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
+@Api(description = "The analyzer rest resource")
 @SuppressWarnings("SpringJavaAutowiringInspection")
 public class Analyzer extends Resource {
 
@@ -59,6 +60,15 @@ public class Analyzer extends Resource {
     @POST
     @Path(Analyzer.CREATE)
     @SuppressWarnings("unchecked")
+    @Api(type = "POST",
+            uri = "/ikube/service/analyzer/create",
+            description =
+                    "Creates an analyzer with the context in the body. Returns the context " +
+                            "that was posted as a convenience, the analyzer, although " +
+                            "constructed and referenced in the context, is potentially large, and not " +
+                            "returned to the user",
+            consumes = ikube.model.Context.class,
+            produces = ikube.model.Context.class)
     public Response create(@Context final HttpServletRequest request /* final ikube.model.Context context */) {
         ikube.model.Context context = unmarshall(ikube.model.Context.class, request);
         logger.debug("Create request : " + context.getName());
@@ -71,6 +81,11 @@ public class Analyzer extends Resource {
 
     @POST
     @Path(Analyzer.TRAIN)
+    @Api(type = "POST",
+            uri = "/ikube/service/analyzer/train",
+            description = "Trains an analyzer with the data in the request.",
+            consumes = ikube.model.Analysis.class,
+            produces = ikube.model.Analysis.class)
     @SuppressWarnings({"unchecked"})
     public Response train(@Context final HttpServletRequest request /* final Analysis<String, String> analysis */) {
         Analysis<String, String> analysis = unmarshall(Analysis.class, request);
@@ -86,6 +101,12 @@ public class Analyzer extends Resource {
 
     @POST
     @Path(Analyzer.BUILD)
+    @Api(type = "POST",
+            uri = "/ikube/service/analyzer/build",
+            description = "Builds the analyzer generating the model from the data provided, " +
+                    "returning the context bound to the analyzer.",
+            consumes = ikube.model.Analysis.class,
+            produces = ikube.model.Context.class)
     @SuppressWarnings("unchecked")
     public Response build(@Context final HttpServletRequest request /* final Analysis<?, ?> analysis */) {
         Analysis<?, ?> analysis = unmarshall(Analysis.class, request);
@@ -100,6 +121,13 @@ public class Analyzer extends Resource {
      */
     @POST
     @Path(Analyzer.ANALYZE)
+    @Api(type = "POST",
+            uri = "/ikube/service/analyzer/analyze",
+            description = "Analyses the data using the specified analyzer, and returns the analytis " +
+                    "object, containing among other things the result, and potentially the distribution " +
+                    "for the instance, and even the distribution for the entire data set.",
+            consumes = ikube.model.Analysis.class,
+            produces = ikube.model.Analysis.class)
     @SuppressWarnings("unchecked")
     public Response analyze(@Context final HttpServletRequest request /* final Analysis<?, ?> analysis */) {
         Analysis<?, ?> analysis = unmarshall(Analysis.class, request);
@@ -115,6 +143,11 @@ public class Analyzer extends Resource {
 
     @POST
     @Path(Analyzer.DESTROY)
+    @Api(type = "POST",
+            uri = "/ikube/service/analyzer/destroy",
+            description = "Destroys an analyzer, and the generated model, freeing resources.",
+            consumes = ikube.model.Context.class,
+            produces = ikube.model.Context.class)
     @SuppressWarnings("unchecked")
     public Response destroy(@Context final HttpServletRequest request /* final ikube.model.Context context */) {
         ikube.model.Context context = unmarshall(ikube.model.Context.class, request);
@@ -124,6 +157,11 @@ public class Analyzer extends Resource {
 
     @GET
     @Path(Analyzer.ANALYZERS)
+    @Api(type = "GET",
+            uri = "/ikube/service/analyzer/analyzers",
+            description = "Returns all the names of analyzers.",
+            consumes = String.class,
+            produces = String[].class)
     @SuppressWarnings("unchecked")
     public Response analyzers() {
         logger.debug("Analyzers : ");
@@ -136,6 +174,11 @@ public class Analyzer extends Resource {
 
     @POST
     @Path(Analyzer.CONTEXT)
+    @Api(type = "POST",
+            uri = "/ikube/service/analyzer/context",
+            description = "Returns the context associated with the analyzer specified.",
+            consumes = Analysis.class,
+            produces = ikube.model.Context.class)
     @SuppressWarnings("unchecked")
     public Response context(@Context final HttpServletRequest request /* final Analysis<?, ?> analysis */) {
         Analysis<?, ?> analysis = unmarshall(Analysis.class, request);
@@ -144,6 +187,11 @@ public class Analyzer extends Resource {
 
     @GET
     @Path(Analyzer.CONTEXTS)
+    @Api(type = "POST",
+            uri = "/ikube/service/analyzer/contexts",
+            description = "Returns all the contexts' names defined in the system.",
+            consumes = String.class,
+            produces = String[].class)
     @SuppressWarnings("unchecked")
     public Response contexts() {
         Map<String, Context> contexts = analyticsService.getContexts();

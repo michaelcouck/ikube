@@ -1115,7 +1115,7 @@
             <artifactId>reflections</artifactId>
             <version>0.9.9-RC1</version>
             <type>jar</type>
-            <scope>test</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.sf.opencsv</groupId>

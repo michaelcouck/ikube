@@ -93,6 +93,7 @@
 	<script src="<c:url value="/assets/javascripts/controllers/twitter-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/happy-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/notification-controller.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/controllers/apis-controller.js" />" type="text/javascript"></script>
 
 </head>
 

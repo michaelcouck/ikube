@@ -35,7 +35,6 @@ public class SearcherJson extends Searcher {
     @GET
     @Override
     @Path(SearcherJson.SIMPLE)
-    @Api(description = "Simple search method, only the basic parameters and options, one field, one search string, etc.")
     public Response search(
             @QueryParam(value = INDEX_NAME) final String indexName,
             @QueryParam(value = SEARCH_STRINGS) final String searchStrings,

@@ -53,7 +53,7 @@
 					<i class="icon-cog"></i>
 				</button>
 					<ul class="dropdown-menu" style="font-size: small;">
-						<li><a href="#"><i class="icon-eye-open">&nbsp;</i>Configuration</a></li>
+						<li><a href="#" onClick="modal('#apis-modal');"><i class="icon-eye-open">&nbsp;</i>Apis</a></li>
 						<li class="divider"></li>
 						<li><a href="#" onClick="modal('#logs-modal');"><i class="icon-list-ol">&nbsp;</i>Server logs</a></li>
 						<li><a href="#" onClick="modal('#properties-modal');"><i class="icon-tasks">&nbsp;</i>System properties</a></li>
@@ -72,6 +72,7 @@
 <!-- Include the modals for the input -->
 <jsp:include page="/WEB-INF/jsp/modal/logs.jsp" />
 <jsp:include page="/WEB-INF/jsp/modal/properties.jsp" />
+<jsp:include page="/WEB-INF/jsp/modal/api.jsp" />
 
 <script type="text/html" id="template-notification">
 <div class="notification animated fadeInLeftMiddle fast{{ item.itemClass }}">

@@ -9,6 +9,14 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE, ElementType.METHOD})
 public @interface Api {
 
+    String uri() default "";
+
     String description() default "";
+
+    Class<?> consumes() default String.class;
+
+    Class<?> produces() default String.class;
+
+    String type() default "GET";
 
 }

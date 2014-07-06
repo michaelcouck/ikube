@@ -1,8 +1,5 @@
 package ikube;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import ikube.model.strategy.IdExclusionStrategy;
 import org.apache.lucene.util.Version;
 
 import java.util.regex.Pattern;
