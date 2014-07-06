@@ -166,7 +166,7 @@ public class SnapshotSchedule extends Schedule {
         String[] fields = {"indexName"};
         Object[] values = {indexContext.getIndexName()};
         long totalSearches = dataBase.execute(Search.SELECT_FROM_SEARCH_COUNT_SEARCHES, fields, values);
-        logger.info("Total search database : " + indexContext.getIndexName() + ", " + totalSearches);
+        logger.debug("Total search database : " + indexContext.getIndexName() + ", " + totalSearches);
         return totalSearches;
     }
 
@@ -178,7 +178,7 @@ public class SnapshotSchedule extends Schedule {
         Snapshot previous = snapshots.get(snapshots.size() - 1);
         long searchesPerMinute = snapshot.getTotalSearches() - previous.getTotalSearches();
         searchesPerMinute = Math.max(0, searchesPerMinute);
-        logger.info("Previous : " + previous.getTotalSearches() +
+        logger.debug("Previous : " + previous.getTotalSearches() +
                 ", total : " + snapshot.getTotalSearches() +
                 ", per minute : " + searchesPerMinute);
         return searchesPerMinute;

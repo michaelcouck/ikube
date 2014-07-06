@@ -156,7 +156,7 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
                             terminateCrawler();
                             break;
                         }
-                        logger.error("Thread finished : " +
+                        logger.debug("Thread finished : " +
                                 ", done : " + isDone() +
                                 ", cancelled : " + isCancelled() +
                                 ", completed normally : " + isCompletedNormally() +
