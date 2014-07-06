@@ -40,8 +40,8 @@ public class Search extends Distributed {
     /**
      * Just this seems to work fine, leaving the strategy to the persisting class, and the id is set using the system time.
      */
-    @Id
-    @Column
+    // @Id
+    // @Column
 
     // Auto generation: Not tried
     // @GeneratedValue(strategy = GenerationType.AUTO)
@@ -57,7 +57,7 @@ public class Search extends Distributed {
     // @GeneratedValue(strategy = GenerationType.TABLE)
     // @TableGenerator(name = "Address_Gen", table = "sequences", pkColumnName = "id", valueColumnName = "sequence_name", pkColumnValue = "sequence", initialValue = 1, allocationSize = 1000)
 
-    protected long id;
+    // protected long id;
 
     @Column
     private String indexName;

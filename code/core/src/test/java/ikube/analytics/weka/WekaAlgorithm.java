@@ -7,8 +7,10 @@ import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import weka.classifiers.Classifier;
+import weka.classifiers.functions.MultilayerPerceptron;
 import weka.classifiers.rules.DTNB;
 import weka.classifiers.trees.UserClassifier;
+import weka.clusterers.CLOPE;
 import weka.clusterers.Clusterer;
 import weka.core.Instances;
 import weka.filters.Filter;
@@ -50,24 +52,31 @@ public final class WekaAlgorithm {
         filters.add(null);
 
         Set<Class<? extends Clusterer>> clusterers = new Reflections("weka.clusterers").getSubTypesOf(Clusterer.class);
+        clusterers.remove(CLOPE.class);
 
         Set<Class<? extends Classifier>> classifiers = new Reflections("weka.classifiers").getSubTypesOf(Classifier.class);
         classifiers.remove(UserClassifier.class);
         classifiers.remove(DTNB.class);
+        classifiers.remove(MultilayerPerceptron.class);
 
         File regressionFile = findFileRecursively(new File("."), "regression.arff");
         final String regressionContent = getContent(regressionFile);
         File classificationFile = findFileRecursively(new File("."), "classification.arff");
         final String classificationContent = getContent(classificationFile);
 
+        String regression = "205000,3529,9191,6,0,0";
+        String classification = "'my beautiful little girl'";
+
         for (final Class<? extends Clusterer> clusterer : clusterers) {
-            doClusterer(clusterer, filters, regressionContent, "regression");
-            doClusterer(clusterer, filters, classificationContent, "classification");
+            System.out.println("* " + clusterer.getName());
+            doClusterer(clusterer, filters, regressionContent, regression);
+            doClusterer(clusterer, filters, classificationContent, classification);
         }
 
         for (final Class<? extends Classifier> classifier : classifiers) {
-            doClassifier(classifier, filters, regressionContent, "regression");
-            doClassifier(classifier, filters, classificationContent, "classification");
+            System.out.println("* " + classifier.getName());
+            doClassifier(classifier, filters, regressionContent, regression);
+            doClassifier(classifier, filters, classificationContent, classification);
         }
 
     }
@@ -101,10 +110,9 @@ public final class WekaAlgorithm {
     }
 
     private void doAnalyzer(final WekaAnalyzer analyzer, final Class<?> algorithm, final Set<Class<? extends Filter>> filters, final String type) {
-        System.out.println("* " + algorithm.getName());
         for (final Class<? extends Filter> filter : filters) {
             try {
-                doAnalyzer(analyzer, algorithm, filter);
+                doAnalyzer(analyzer, algorithm, filter, type);
                 System.out.println("** " + filter + ", " + type);
             } catch (final Exception e) {
                 // System.out.println("Error : " + analyzer + "-" + filter);
@@ -113,7 +121,7 @@ public final class WekaAlgorithm {
         }
     }
 
-    private void doAnalyzer(final WekaAnalyzer wekaAnalyzer, final Class<?> algorithm, final Class<? extends Filter> filter)
+    private void doAnalyzer(final WekaAnalyzer wekaAnalyzer, final Class<?> algorithm, final Class<? extends Filter> filter, final String type)
             throws Exception {
         Context context = new Context<>();
         context.setMaxTraining(1000);
@@ -126,7 +134,7 @@ public final class WekaAlgorithm {
         wekaAnalyzer.build(context);
 
         Analysis<Object, Object> analysis = new Analysis<>();
-        analysis.setInput("189900,2397,14156,4,1,0");
+        analysis.setInput(type);
         wekaAnalyzer.analyze(analysis);
 
         // logger.error("Analysis : " + analysis.getClazz() + ", " + analysis.getOutput());
