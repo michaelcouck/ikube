@@ -16,9 +16,9 @@ import java.util.List;
  * @version 01.00
  * @since 01-03-2012
  */
-@SuppressWarnings("JpaQlInspection")
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@SuppressWarnings("JpaQlInspection")
+@Inheritance(strategy = InheritanceType.JOINED)
 @EntityListeners(value = {SearchIncrementListener.class})
 @NamedQueries(value = {
         @NamedQuery(name = Search.SELECT_FROM_SEARCH_BY_INDEX_NAME_AND_SEARCH_STRINGS, query = Search.SELECT_FROM_SEARCH_BY_INDEX_NAME_AND_SEARCH_STRINGS),

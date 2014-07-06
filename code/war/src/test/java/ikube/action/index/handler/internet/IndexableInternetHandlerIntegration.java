@@ -33,17 +33,17 @@ import static org.junit.Assert.assertTrue;
 public class IndexableInternetHandlerIntegration extends IntegrationTest {
 
     @Autowired
+    private IDataBase dataBase;
+    @Autowired
     @Qualifier("ikube")
     private IndexContext indexContext;
+    @Autowired
+    private IClusterManager clusterManager;
     @Autowired
     @Qualifier("ikube-internet")
     private IndexableInternet indexableInternet;
     @Autowired
     private IndexableInternetHandler indexableInternetHandler;
-    @Autowired
-    private IClusterManager clusterManager;
-    @Autowired
-    private IDataBase dataBase;
 
     @Before
     public void before() {

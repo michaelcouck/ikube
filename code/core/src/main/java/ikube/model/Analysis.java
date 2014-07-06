@@ -15,7 +15,7 @@ import javax.persistence.Transient;
  * @since 10-04-2013
  */
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Analysis<Input, Output> extends Distributed {
 
     /**
