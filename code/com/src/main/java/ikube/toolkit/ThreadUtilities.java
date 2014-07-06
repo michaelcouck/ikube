@@ -202,7 +202,7 @@ public final class ThreadUtilities {
 
     public static synchronized ForkJoinPool cancelForkJoinPool(final String name) {
         ForkJoinPool forkJoinPool = FORK_JOIN_POOLS.remove(name);
-        LOGGER.error("Terminating fork join pool : " + name + ", " + forkJoinPool);
+        LOGGER.info("Terminating fork join pool : " + name + ", " + forkJoinPool);
         if (forkJoinPool != null) {
             try {
                 forkJoinPool.shutdownNow();
