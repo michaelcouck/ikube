@@ -9,7 +9,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -31,6 +33,8 @@ public class AnalyzerTest extends AbstractTest {
     private Analysis<?, ?> analysis;
     @Mock
     private IAnalyticsService analyticsService;
+    @Mock
+    private HttpServletRequest httpServletRequest;
 
     @Before
     @SuppressWarnings("unchecked")
@@ -42,9 +46,9 @@ public class AnalyzerTest extends AbstractTest {
     }
 
     @Test
-    public void analyze() {
-        when(analyzer.analyze(analysis)).thenCallRealMethod();
-        analyzer.analyze(analysis);
+    public void analyze() throws IOException {
+        when(analyzer.analyze(httpServletRequest)).thenCallRealMethod();
+        analyzer.analyze(httpServletRequest);
         verify(analyzer, atLeastOnce()).buildJsonResponse(any());
     }
 }

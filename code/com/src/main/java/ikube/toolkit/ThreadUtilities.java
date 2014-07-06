@@ -64,7 +64,7 @@ public final class ThreadUtilities {
      *
      * @param name the name that was assigned to the future when it was submitted for execution
      */
-    public static void destroy(final String name) {
+    public static synchronized void destroy(final String name) {
         List<Future<?>> futures = getFutures(name);
         for (final Future<?> future : futures) {
             if (future == null) {

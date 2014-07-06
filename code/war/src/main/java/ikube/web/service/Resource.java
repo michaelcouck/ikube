@@ -22,6 +22,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import static ikube.toolkit.FileUtilities.getContents;
+
 /**
  * This is the base class for all web services, common logic and properties.
  *
@@ -94,7 +96,7 @@ public abstract class Resource {
 
     <T> T unmarshall(final Class<T> clazz, final HttpServletRequest request) {
         try {
-            String json = FileUtilities.getContents(request.getInputStream(), Integer.MAX_VALUE).toString();
+            String json = getContents(request.getInputStream(), Integer.MAX_VALUE).toString();
             T t = IConstants.GSON.fromJson(json, clazz);
             if (t == null) {
                 t = newInstance(clazz);

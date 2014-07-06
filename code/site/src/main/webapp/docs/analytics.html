@@ -64,7 +64,18 @@ file.</p>
 <a href="https://github.com/michaelcouck/ikube/blob/master/code/core/src/main/java/ikube/model/Context.java">Context</a> object, also in Json format,
 and submitted to the web service. This method of analyzer creation would be suited to machine to machine analytics, where analyzers need to
 be created dynamically based on real time data, then disposed of. Once again please refer to the usage section of examples for creating analyzers
-dynamically.</p>
+dynamically. As with the Spring definition of analyzers, all the properties need to be filled in, including the wrapper, the algorithm
+from Weka and the data for training, in the case of trained analyzers. The api section contains examples of Json that can be used to create
+analyzers dynamically using Json.</p>
+</div>
+<div class="sect3">
+<h4 id="_analytics_api">Analytics API:</h4>
+<div class="paragraph">
+<p>Below are algorithms that are available in Weka, and the usage of filters for each one, for two types of data, an array of
+numbers and a string type. The filter is necessary to convert the data type to the type accepted by the algorithm. Note that this
+list is not exhaustive, and an in depth knowledge of Weka and the algorithms may ne necessary to apply one of the algorithms to
+your specific type of data.</p>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_clustering_algorithms_available_from_weka_are">Clustering algorithms available from Weka are:</h4>
@@ -8507,7 +8518,7 @@ dynamically.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-07-06 10:15:47 CEST
+Last updated 2014-07-06 13:49:08 CEST
 </div>
 </div>
 </body>

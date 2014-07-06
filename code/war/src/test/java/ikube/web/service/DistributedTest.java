@@ -9,6 +9,7 @@ import ikube.toolkit.FileUtilities;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
 import java.io.File;
@@ -23,6 +24,7 @@ import java.util.List;
  * @version 01.00
  * @since 24-02-2014
  */
+@Ignore
 public class DistributedTest extends AbstractTest {
 
     private String analysisFolder = "./analysis-data";

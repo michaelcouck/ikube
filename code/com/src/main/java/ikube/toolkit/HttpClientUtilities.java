@@ -116,6 +116,10 @@ public class HttpClientUtilities {
         if (names != null && values != null) {
             webResource = setParameters(webResource, names, values);
         }
+        // Potentially we could send the entire entity to the rest service,
+        // but strangely enough Jersey doesn't like to do the de-serialization
+        // all on it's own, it wants some kind of body mapper, go figure, so in this
+        // case, and all others we send the string body, not the entity it's self
         String response = webResource
                 .accept(consumes)
                 .type(produces)

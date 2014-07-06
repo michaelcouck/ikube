@@ -6,7 +6,6 @@ import ikube.database.IDataBase;
 import ikube.model.Action;
 import ikube.scheduling.schedule.PruneSchedule;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -29,13 +28,6 @@ public class PruneScheduleIntegration extends IntegrationTest {
     private IDataBase dataBase;
     @Autowired
     private PruneSchedule prune;
-
-    @Before
-    public void before() throws Exception {
-        // prune = new PruneSchedule();
-        // dataBase = ApplicationContextManager.getBean(IDataBase.class);
-        // Deencapsulation.setField(prune, dataBase);
-    }
 
     @After
     public void after() {
@@ -69,7 +61,7 @@ public class PruneScheduleIntegration extends IntegrationTest {
     }
 
     private void persistAction(int inserts) {
-        List<Action> actions = new ArrayList<Action>();
+        List<Action> actions = new ArrayList<>();
         for (int i = 0; i < inserts; i++) {
             Action action = new Action();
             action.setActionName("actionName");

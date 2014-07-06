@@ -448,4 +448,6 @@
 
     <bean class="ikube.security.ProxyAuthenticator" init-method="initialize"/>
 
+    <!--<bean class="com.mangofactory.swagger.configuration.DocumentationConfig" />-->
+
 </beans>

@@ -50,7 +50,7 @@ public class AnalTest extends AbstractTest {
     /**
      * Class under test
      */
-    private Anal anal;
+    private Tweets anal;
     private ISearcherService searcherService;
     private ArrayList<HashMap<String, String>> results;
 
@@ -64,11 +64,11 @@ public class AnalTest extends AbstractTest {
         search = new SearchTwitter();
         search.setSearchStrings(new ArrayList<>(Arrays.asList("hello world")));
         search.setSearchFields(new ArrayList<>(Arrays.asList(IConstants.CONTENTS)));
-        search.setOccurrenceFields(new ArrayList<>(Arrays.asList(Anal.OCCURRENCE)));
+        search.setOccurrenceFields(new ArrayList<>(Arrays.asList(Tweets.OCCURRENCE)));
         search.setTypeFields(new ArrayList<>(Arrays.asList(IConstants.STRING)));
         search.setSearchResults(results);
 
-        anal = mock(Anal.class);
+        anal = mock(Tweets.class);
         searcherService = mock(ISearcherService.class);
 
         when(anal.buildResponse()).thenCallRealMethod();

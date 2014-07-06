@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -22,6 +23,10 @@ import java.util.Arrays;
 import java.util.Map;
 
 /**
+ * NOTE: The reason that the methods take an {@link javax.servlet.http.HttpServletRequest} and not
+ * the Json object directly is because Jersey wants a converter for each type! I know crazzzzzy right,
+ * so it is just easier to de-serialize by hand.
+ * <p/>
  * This resource(rest api) class exposes the analytics over rest to a client. This class will
  * call the service layer to provide functions like creating the analyzer, training, and building,
  * and of course using the analyzer, i.e. doing anl analysis on a chunk of data.
@@ -54,8 +59,8 @@ public class Analyzer extends Resource {
     @POST
     @Path(Analyzer.CREATE)
     @SuppressWarnings("unchecked")
-    public Response create(final ikube.model.Context context /* @Context final HttpServletRequest request */) {
-        // ikube.model.Context context = unmarshall(ikube.model.Context.class, request);
+    public Response create(@Context final HttpServletRequest request /* final ikube.model.Context context */) {
+        ikube.model.Context context = unmarshall(ikube.model.Context.class, request);
         logger.debug("Create request : " + context.getName());
         IAnalyzer analyzer = analyticsService.create(context);
         logger.debug("               : " + analyzer);
@@ -67,8 +72,8 @@ public class Analyzer extends Resource {
     @POST
     @Path(Analyzer.TRAIN)
     @SuppressWarnings({"unchecked"})
-    public Response train(final Analysis<String, String> analysis /* @Context final HttpServletRequest request */) {
-        // Analysis<String, String> analysis = unmarshall(Analysis.class, request);
+    public Response train(@Context final HttpServletRequest request /* final Analysis<String, String> analysis */) {
+        Analysis<String, String> analysis = unmarshall(Analysis.class, request);
         String data = analysis.getInput();
         String[] inputs = StringUtils.split(data, "\n\r");
         for (final String input : inputs) {
@@ -82,8 +87,8 @@ public class Analyzer extends Resource {
     @POST
     @Path(Analyzer.BUILD)
     @SuppressWarnings("unchecked")
-    public Response build(final Analysis<?, ?> analysis /* @Context final HttpServletRequest request */) {
-        // Analysis<?, ?> analysis = unmarshall(Analysis.class, request);
+    public Response build(@Context final HttpServletRequest request /* final Analysis<?, ?> analysis */) {
+        Analysis<?, ?> analysis = unmarshall(Analysis.class, request);
         analyticsService.build(analysis);
         return buildJsonResponse(context(analysis.getAnalyzer()));
     }
@@ -96,8 +101,8 @@ public class Analyzer extends Resource {
     @POST
     @Path(Analyzer.ANALYZE)
     @SuppressWarnings("unchecked")
-    public Response analyze(final Analysis<?, ?> analysis /* @Context final HttpServletRequest request */) {
-        // Analysis<?, ?> analysis = unmarshall(Analysis.class, request);
+    public Response analyze(@Context final HttpServletRequest request /* final Analysis<?, ?> analysis */) {
+        Analysis<?, ?> analysis = unmarshall(Analysis.class, request);
         analyticsService.analyze(analysis);
         if (analysis.isClassesAndClusters()) {
             analyticsService.classesOrClusters(analysis);
@@ -111,8 +116,8 @@ public class Analyzer extends Resource {
     @POST
     @Path(Analyzer.DESTROY)
     @SuppressWarnings("unchecked")
-    public Response destroy(final ikube.model.Context context /* @Context final HttpServletRequest request */) {
-        // ikube.model.Context context = unmarshall(ikube.model.Context.class, request);
+    public Response destroy(@Context final HttpServletRequest request /* final ikube.model.Context context */) {
+        ikube.model.Context context = unmarshall(ikube.model.Context.class, request);
         analyticsService.destroy(context);
         return buildJsonResponse(context);
     }
@@ -132,8 +137,8 @@ public class Analyzer extends Resource {
     @POST
     @Path(Analyzer.CONTEXT)
     @SuppressWarnings("unchecked")
-    public Response context(final Analysis<?, ?> analysis /* @Context final HttpServletRequest request */) {
-        // Analysis<?, ?> analysis = unmarshall(Analysis.class, request);
+    public Response context(@Context final HttpServletRequest request /* final Analysis<?, ?> analysis */) {
+        Analysis<?, ?> analysis = unmarshall(Analysis.class, request);
         return buildJsonResponse(context(analysis.getAnalyzer()));
     }
 

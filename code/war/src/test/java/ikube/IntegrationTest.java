@@ -58,8 +58,12 @@ public abstract class IntegrationTest extends AbstractTest {
 
     @AfterClass
     public static void afterClass() {
-        ThreadUtilities.destroy();
-        ApplicationContextManager.getBean(Scheduler.class).shutdown();
+        try {
+            ThreadUtilities.destroy();
+            ApplicationContextManager.getBean(Scheduler.class).shutdown();
+        } catch (final Exception e) {
+            LOGGER.error("Exception closing down the thread pools : ", e);
+        }
     }
 
     @Autowired
