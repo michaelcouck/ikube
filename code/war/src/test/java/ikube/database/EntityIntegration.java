@@ -170,7 +170,7 @@ public class EntityIntegration extends IntegrationTest {
      * @param field the field to check for the cascade type
      * @return whether the cascade type includes the all type
      */
-    private static boolean isCascadeTypeAll(final Field field) {
+    private boolean isCascadeTypeAll(final Field field) {
         OneToMany oneToMany = field.getAnnotation(OneToMany.class);
         if (oneToMany == null) {
             return Boolean.FALSE;
@@ -191,7 +191,7 @@ public class EntityIntegration extends IntegrationTest {
      * @param field the field to check for Jpa annotations
      * @return whether this field is a persisted type
      */
-    private static boolean containsJpaAnnotations(final Field field) {
+    private boolean containsJpaAnnotations(final Field field) {
         boolean isJpa = Boolean.FALSE;
         boolean notIdField = field.getAnnotation(Id.class) == null;
         Annotation[] annotations = field.getAnnotations();
@@ -222,29 +222,10 @@ public class EntityIntegration extends IntegrationTest {
             if (Modifier.isAbstract(entityClass.getModifiers())) {
                 continue;
             }
+            logger.error("Entity : " + entityClass.getName());
             Object entity = entityClass.newInstance();
-            try {
-                entityTester.doWithEntity(entity, entityClass);
-            } finally {
-                removeQuietly(entity);
-            }
+            entityTester.doWithEntity(entity, entityClass);
         }
     }
 
-    /**
-     * Remove the given entity. Any exceptions thrown while attempting to remove it are ignored.
-     *
-     * @param entity the entity to remove
-     */
-    private void removeQuietly(final Object entity) {
-        if (entity == null) {
-            return;
-        }
-        try {
-            // Remove the entity quietly
-            dataBase.remove(entity);
-        } catch (final Exception e) {
-            logger.error("Exception thrown removing entity : " + entity, e);
-        }
-    }
 }

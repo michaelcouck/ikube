@@ -1,7 +1,7 @@
 @relation sms_test
 
-@attribute @@class@@ {negative,positive}
-@attribute @@text@@ String
+@attribute class {negative,positive}
+@attribute text String
 
 @data
 positive,'positive'

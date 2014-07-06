@@ -5,13 +5,20 @@ import ikube.model.Context;
 import ikube.toolkit.ThreadUtilities;
 import org.reflections.Reflections;
 import weka.classifiers.Classifier;
+import weka.classifiers.rules.DTNB;
+import weka.classifiers.trees.UserClassifier;
 import weka.clusterers.Clusterer;
 import weka.core.Instances;
 import weka.filters.Filter;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Set;
+
+import static ikube.toolkit.FileUtilities.findFileRecursively;
+import static ikube.toolkit.FileUtilities.getContent;
 
 /**
  * This class is for generally testing the different algorithms in Weka.
@@ -32,6 +39,8 @@ public class WekaAlgorithm {
         ThreadUtilities.initialize();
         Set<Class<? extends Clusterer>> clusterers = new Reflections("weka.clusterers").getSubTypesOf(Clusterer.class);
         Set<Class<? extends Classifier>> classifiers = new Reflections("weka.classifiers").getSubTypesOf(Classifier.class);
+        classifiers.remove(UserClassifier.class);
+        classifiers.remove(DTNB.class);
         for (final Class<? extends Classifier> classifier : classifiers) {
             new WekaAlgorithm().doClassifiers(classifier);
         }
@@ -39,58 +48,43 @@ public class WekaAlgorithm {
 
     @SuppressWarnings("unchecked")
     private void doClassifiers(final Class<? extends Classifier> classifier) throws Exception {
-        System.out.println("Classifier : " + classifier.getName());
-        try {
-            doClassifier(classifier, "regression", null);
-        } catch (Exception e) {
-            // logger.error("Error : " + classifier.getName() + ", " + null + " : " + e.getMessage());
-            // logger.error("Error : ", e);
-        }
-        try {
-            doClassifier(classifier, "classification", null);
-        } catch (Exception e) {
-            // logger.error("Error : " + classifier.getName() + ", " + null + " : " + e.getMessage());
-            // logger.error("Error : ", e);
-        }
+        File regressionFile = findFileRecursively(new File("."), "regression.arff");
+        String regressionContent = getContent(regressionFile);
+
+        File classificationFile = findFileRecursively(new File("."), "classification.arff");
+        String classificationContent = getContent(classificationFile);
+
+        System.out.println(classifier.getName());
+
         Set<Class<? extends Filter>> filters = new Reflections("weka.filters").getSubTypesOf(Filter.class);
+        filters.add(null);
         for (final Class<? extends Filter> filter : filters) {
             try {
-                doClassifier(classifier, "regression", filter);
-            } catch (Exception e) {
-                // logger.error("Error : " + classifier.getName() + ", " + filter + " : " + e.getMessage());
-                // logger.error("Error : ", e);
+                doClassifier(classifier, "regression", filter, new ByteArrayInputStream(regressionContent.getBytes()));
+                System.out.println("        : " + filter);
+            } catch (final Exception e) {
+                // System.out.println("Error : " + classifier + "-" + filter);
             }
             try {
-                doClassifier(classifier, "classification", filter);
-            } catch (Exception e) {
-                // logger.error("Error : " + classifier.getName() + ", " + filter + " : " + e.getMessage());
-                // logger.error("Error : ", e);
+                doClassifier(classifier, "classification", filter, new ByteArrayInputStream(classificationContent.getBytes()));
+                System.out.println("        : " + filter);
+            } catch (final Exception e) {
+                // System.out.println("Error : " + classifier + "-" + filter);
             }
         }
     }
 
     @SuppressWarnings("unchecked")
-    private void doClassifier(final Class<? extends Classifier> classifier, final String name, final Class<? extends Filter> filter) throws Exception {
-        String classifierName = classifier.getName();
-        if (classifierName.contains("HNB")
-                || classifierName.contains("UserClassifier")
-                /*|| classifierName.contains("ThresholdSelector")
-                || classifierName.contains("VotedPerceptron")
-                || classifierName.contains("ClassificationViaRegression")
-                || classifierName.contains("SimpleLogistic")*/
-                ) {
-            return;
-        }
+    private void doClassifier(
+            final Class<? extends Classifier> classifier,
+            final String name,
+            final Class<? extends Filter> filter,
+            final InputStream inputStream) throws Exception {
         Context context = new Context<>();
         context.setMaxTraining(1000);
         context.setName(name);
-        // context.setFileName(name);
         context.setAlgorithm(classifier.newInstance());
         if (filter != null) {
-/*            String filterName = filter.getName();
-            if (filterName.contains("RemoveFolds") || filterName.contains("SparseToNonSparse")) {
-                return;
-            }*/
             context.setFilter(filter.newInstance());
         }
 
@@ -98,7 +92,7 @@ public class WekaAlgorithm {
 
             @Override
             InputStream getInputStream(Context context) throws FileNotFoundException {
-                return super.getInputStream(context);
+                return inputStream;
             }
 
             void persist(final Context context, final Instances instances) {
@@ -109,10 +103,8 @@ public class WekaAlgorithm {
         wekaClassifier.build(context);
         Analysis<Object, Object> analysis = new Analysis<>();
         analysis.setInput("189900,2397,14156,4,1,0");
+        wekaClassifier.analyze(analysis);
 
-        // wekaClassifier.analyze(analysis);
-
-        System.out.println("      : " + filter);
         // logger.error("Analysis : " + analysis.getClazz() + ", " + analysis.getOutput());
     }
 

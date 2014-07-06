@@ -1,6 +1,6 @@
 @relation whatever
 
-@attribute @@text@@ string
+@attribute @text@ string
 
 @data
 'Fantastic holiday' 
