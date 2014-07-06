@@ -9,6 +9,8 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.search.IndexSearcher;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +24,8 @@ import java.util.List;
  * @since 21-11-2012
  */
 @SuppressWarnings("deprecation")
-public abstract class BaseTest {
+@RunWith(MockitoJUnitRunner.class)
+public abstract class AbstractTest {
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 

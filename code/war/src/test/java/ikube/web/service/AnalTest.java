@@ -1,6 +1,6 @@
 package ikube.web.service;
 
-import ikube.BaseTest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Search;
 import ikube.model.SearchTwitter;
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when;
  * @version 01.00
  * @since 17-12-2013
  */
-public class AnalTest extends BaseTest {
+public class AnalTest extends AbstractTest {
 
     @MockClass(realClass = SerializationUtilities.class)
     public static class SerializationUtilitiesMock {

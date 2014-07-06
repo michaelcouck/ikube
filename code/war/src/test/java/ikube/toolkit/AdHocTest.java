@@ -1,6 +1,6 @@
 package ikube.toolkit;
 
-import ikube.BaseTest;
+import ikube.AbstractTest;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.Directory;
@@ -14,7 +14,7 @@ import java.io.File;
 import java.io.IOException;
 
 @Ignore
-public class AdHocTest extends BaseTest {
+public class AdHocTest extends AbstractTest {
 
     @Before
     public void before() throws Exception {

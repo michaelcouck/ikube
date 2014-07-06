@@ -1,6 +1,6 @@
 package ikube.web.service;
 
-import ikube.BaseTest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.cluster.IClusterManager;
 import ikube.cluster.IMonitorService;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.*;
  * @version 01.00
  * @since 16-10-2012
  */
-public class MonitorTest extends BaseTest {
+public class MonitorTest extends AbstractTest {
 
     private Monitor monitor;
     private IMonitorService monitorService;

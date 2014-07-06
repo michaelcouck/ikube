@@ -1,49 +1,50 @@
 package ikube.web.service;
 
-import ikube.BaseTest;
+import ikube.AbstractTest;
 import ikube.analytics.IAnalyticsService;
 import ikube.model.Analysis;
-import mockit.Deencapsulation;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Michael couck
  * @version 01.00
  * @since 02-07-2013
  */
-public class AnalyzerTest extends BaseTest {
+public class AnalyzerTest extends AbstractTest {
 
     /**
      * Class under test
      */
+    @Spy
+    @InjectMocks
     private Analyzer analyzer;
+    @Mock
+    private Analysis<?, ?> analysis;
+    @Mock
+    private IAnalyticsService analyticsService;
 
     @Before
     @SuppressWarnings("unchecked")
     public void before() throws Exception {
-        Analysis<?, ?> analysis = mock(Analysis.class);
-        analyzer = mock(Analyzer.class);
-        IAnalyticsService analyticsService = Mockito.mock(IAnalyticsService.class);
-
         when(analysis.getAlgorithmOutput()).thenReturn("output");
-        when(analyzer.analyze(any(HttpServletRequest.class))).thenCallRealMethod();
-        when(analyzer.unmarshall(any(Class.class), any(HttpServletRequest.class))).thenReturn(analysis);
+        when(analysis.isClassesAndClusters()).thenReturn(Boolean.TRUE);
+        when(analyzer.buildJsonResponse(any())).thenReturn(Response.status(Response.Status.OK).build());
         when(analyticsService.analyze(any(Analysis.class))).thenReturn(analysis);
-
-        Deencapsulation.setField(analyzer, analyticsService);
     }
 
     @Test
     public void analyze() {
-        analyzer.analyze(null);
-        Mockito.verify(analyzer, Mockito.atLeastOnce()).buildJsonResponse(any());
+        when(analyzer.analyze(analysis)).thenCallRealMethod();
+        analyzer.analyze(analysis);
+        verify(analyzer, atLeastOnce()).buildJsonResponse(any());
     }
 }

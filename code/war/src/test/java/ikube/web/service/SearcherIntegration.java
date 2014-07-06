@@ -1,6 +1,6 @@
 package ikube.web.service;
 
-import ikube.BaseTest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Search;
 import ikube.toolkit.FileUtilities;
@@ -19,7 +19,7 @@ import static ikube.toolkit.HttpClientUtilities.doPost;
 import static ikube.toolkit.ObjectToolkit.populateFields;
 import static org.junit.Assert.assertNotNull;
 
-public abstract class SearcherIntegration extends BaseTest {
+public abstract class SearcherIntegration extends AbstractTest {
 
     protected abstract String getUrl(String path) throws Exception;
 

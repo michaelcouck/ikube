@@ -1,6 +1,6 @@
 package ikube.web.service;
 
-import ikube.BaseTest;
+import ikube.AbstractTest;
 import ikube.analytics.AnalyzerManager;
 import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
@@ -23,7 +23,7 @@ import java.util.List;
  * @version 01.00
  * @since 24-02-2014
  */
-public class DistributedTest extends BaseTest {
+public class DistributedTest extends AbstractTest {
 
     private String analysisFolder = "./analysis-data";
 

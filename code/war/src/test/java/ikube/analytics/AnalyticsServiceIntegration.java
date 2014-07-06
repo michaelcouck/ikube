@@ -1,6 +1,6 @@
 package ikube.analytics;
 
-import ikube.BaseTest;
+import ikube.AbstractTest;
 import ikube.analytics.weka.WekaClusterer;
 import ikube.model.Analysis;
 import ikube.model.AnalyzerInfo;
@@ -22,7 +22,7 @@ import static junit.framework.Assert.assertNull;
  * @version 01.00
  * @since 21-04-2014
  */
-public class AnalyticsServiceIntegration extends BaseTest {
+public class AnalyticsServiceIntegration extends AbstractTest {
 
 	private String line = "1,1,0,1,1,0,1,1";
 	private String analyzerName = "bmw-browsers";

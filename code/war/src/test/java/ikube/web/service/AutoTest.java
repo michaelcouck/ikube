@@ -1,6 +1,6 @@
 package ikube.web.service;
 
-import ikube.BaseTest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Search;
 import ikube.search.ISearcherService;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
  * @version 01.00
  * @since 01-03-2012
  */
-public class AutoTest extends BaseTest {
+public class AutoTest extends AbstractTest {
 
     /**
      * Class under test

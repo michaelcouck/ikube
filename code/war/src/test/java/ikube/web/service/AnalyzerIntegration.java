@@ -1,6 +1,6 @@
 package ikube.web.service;
 
-import ikube.BaseTest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.analytics.weka.WekaClusterer;
 import ikube.model.Analysis;
@@ -30,7 +30,7 @@ import static junit.framework.Assert.assertTrue;
  * @version 01.00
  * @since 05-02-2014
  */
-public class AnalyzerIntegration extends BaseTest {
+public class AnalyzerIntegration extends AbstractTest {
 
 	private String line = "1,1,0,1,1,0,1,1";
 	private String analyzerName = "bmw-browsers";
@@ -131,7 +131,7 @@ public class AnalyzerIntegration extends BaseTest {
 		StringBuilder builder = new StringBuilder();
 		builder.append(IConstants.SEP);
 		builder.append(IConstants.IKUBE);
-		builder.append(BaseTest.SERVICE);
+		builder.append(AbstractTest.SERVICE);
 		builder.append(Analyzer.ANALYZER);
 		builder.append(service);
 		return new URL("http", LOCALHOST, SERVER_PORT, builder.toString()).toString();

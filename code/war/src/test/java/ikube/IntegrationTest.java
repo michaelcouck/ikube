@@ -35,7 +35,7 @@ import java.util.List;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"file:ikube/spring.xml"})
 @SuppressWarnings("SpringJavaAutowiringInspection")
-public abstract class IntegrationTest extends BaseTest {
+public abstract class IntegrationTest extends AbstractTest {
 
     private static final Logger LOGGER = Logger.getLogger(IntegrationTest.class);
     private static final File DOT_DIRECTORY = new File(".");

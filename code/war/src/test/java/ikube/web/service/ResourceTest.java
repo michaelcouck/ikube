@@ -1,6 +1,6 @@
 package ikube.web.service;
 
-import ikube.BaseTest;
+import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Analysis;
 import ikube.model.Search;
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
  * @version 01.00
  * @since 18-11-2012
  */
-public class ResourceTest extends BaseTest {
+public class ResourceTest extends AbstractTest {
 
     private Resource resource;
 
