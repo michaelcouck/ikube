@@ -109,10 +109,12 @@ public class EntityIntegration extends IntegrationTest {
                         Object id = ObjectToolkit.getIdFieldValue(entity);
                         if (id != null) {
                             Object result = dataBase.find(entity.getClass(), (Long) id);
+                            logger.error("Entity : " + entityClass.getName() + ", " + field + ", " + result + ", not null : " + (result != null));
                             assertNotNull(result);
                         }
                         if (value != null) {
                             Object fieldValue = ReflectionUtils.getField(field, entity);
+                            logger.error("Entity : " + entityClass.getName() + ", " + field + ", " + value + ", " + fieldValue + ", values equal : " + (value == fieldValue));
                             assertEquals(value, fieldValue);
                         }
                     }
@@ -222,7 +224,6 @@ public class EntityIntegration extends IntegrationTest {
             if (Modifier.isAbstract(entityClass.getModifiers())) {
                 continue;
             }
-            logger.error("Entity : " + entityClass.getName());
             Object entity = entityClass.newInstance();
             entityTester.doWithEntity(entity, entityClass);
         }

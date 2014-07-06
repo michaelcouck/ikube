@@ -49,126 +49,2160 @@ dynamically.
 
 ==== Classification algorithms available from Weka are:
 
-* weka.classifiers.IteratedSingleClassifierEnhancer
-* weka.classifiers.RandomizableClassifier
-* weka.classifiers.mi.MIEMDD
-* weka.classifiers.meta.RandomCommittee
-* weka.classifiers.mi.SimpleMI
-* weka.classifiers.trees.lmt.LogisticBase
-* weka.classifiers.bayes.net.BayesNetGenerator
-* weka.classifiers.meta.nestedDichotomies.ND
-* weka.classifiers.meta.RotationForest
-* weka.classifiers.mi.MISMO
-* weka.classifiers.rules.Prism
-* weka.classifiers.trees.RandomForest
-* weka.classifiers.trees.m5.PreConstructedLinearModel
-* weka.classifiers.meta.GridSearch
-* weka.classifiers.rules.Ridor
-* weka.classifiers.meta.Stacking
-* weka.classifiers.trees.Id3
-* weka.classifiers.functions.SPegasos
-* weka.classifiers.trees.ft.FTtree
-* weka.classifiers.bayes.DMNBtext
-* weka.classifiers.rules.ZeroR
-* weka.classifiers.mi.MIDD
-* weka.classifiers.trees.UserClassifier
-* weka.classifiers.trees.lmt.LMTNode
-* weka.classifiers.pmml.consumer.PMMLClassifier
-* weka.classifiers.trees.ft.FTLeavesNode
-* weka.classifiers.misc.SerializedClassifier
-* weka.classifiers.trees.BFTree
-* weka.classifiers.rules.M5Rules
-* weka.classifiers.meta.StackingC
-* weka.classifiers.mi.CitationKNN
-* weka.classifiers.trees.ft.FTInnerNode
-* weka.classifiers.meta.MetaCost
-* weka.classifiers.trees.DecisionStump
-* weka.classifiers.meta.Grading
-* weka.classifiers.SingleClassifierEnhancer
-* weka.classifiers.meta.RandomSubSpace
-* weka.classifiers.rules.NNge
-* weka.classifiers.trees.J48graft
-* weka.classifiers.functions.LibSVM
-* weka.classifiers.meta.CVParameterSelection
-* weka.classifiers.mi.MIBoost
-* weka.classifiers.mi.MISVM
-* weka.classifiers.trees.M5P
-* weka.classifiers.trees.ft.FTNode
-* weka.classifiers.MultipleClassifiersCombiner
-* weka.classifiers.rules.ConjunctiveRule
-* weka.classifiers.trees.m5.RuleNode
-* weka.classifiers.mi.MILR
-* weka.classifiers.meta.nestedDichotomies.ClassBalancedND
-* weka.classifiers.bayes.ComplementNaiveBayes
-* weka.classifiers.meta.AttributeSelectedClassifier
-* weka.classifiers.meta.Vote
-* weka.classifiers.lazy.IBk
-* weka.classifiers.functions.VotedPerceptron
-* weka.classifiers.functions.SMO
-* weka.classifiers.mi.MIWrapper
-* weka.classifiers.functions.MultilayerPerceptron
-* weka.classifiers.functions.PLSClassifier
-* weka.classifiers.meta.ClassificationViaClustering
-* weka.classifiers.rules.JRip
-* weka.classifiers.trees.REPTree
-* weka.classifiers.functions.Logistic
-* weka.classifiers.pmml.consumer.NeuralNetwork
-* weka.classifiers.meta.RacedIncrementalLogitBoost
-* weka.classifiers.bayes.NaiveBayesUpdateable
-* weka.classifiers.meta.nestedDichotomies.DataNearBalancedND
-* weka.classifiers.trees.SimpleCart
-* weka.classifiers.meta.MultiBoostAB
-* weka.classifiers.rules.OneR
-* weka.classifiers.lazy.IB1
-* weka.classifiers.bayes.net.EditableBayesNet
-* weka.classifiers.misc.HyperPipes
-* weka.classifiers.functions.LeastMedSq
-* weka.classifiers.meta.ThresholdSelector
-* weka.classifiers.bayes.WAODE
-* weka.classifiers.rules.DecisionTable
-* weka.classifiers.lazy.LWL
-* weka.classifiers.bayes.AODEsr
-* weka.classifiers.mi.MDD
-* weka.classifiers.misc.VFI
-* weka.classifiers.lazy.KStar
-* weka.classifiers.rules.DTNB
-* weka.classifiers.meta.Bagging
-* weka.classifiers.trees.LMT
-* weka.classifiers.rules.PART
-* weka.classifiers.trees.ADTree
-* weka.classifiers.meta.OrdinalClassClassifier
-* weka.classifiers.trees.RandomTree
-* weka.classifiers.mi.MISVM$SVM
-* weka.classifiers.RandomizableIteratedSingleClassifierEnhancer
-* weka.classifiers.meta.LogitBoost
-* weka.classifiers.meta.CostSensitiveClassifier
-* weka.classifiers.mi.MINND
-* weka.classifiers.meta.Dagging
-* weka.classifiers.functions.LibLINEAR
-* weka.classifiers.RandomizableMultipleClassifiersCombiner
-* weka.classifiers.trees.LADTree
 * weka.classifiers.meta.END
-* weka.classifiers.mi.MIOptimalBall
-* weka.classifiers.trees.J48
-* weka.classifiers.functions.Winnow
-* weka.classifiers.functions.GaussianProcesses
-* weka.classifiers.bayes.BayesNet
-* weka.classifiers.bayes.HNB
-* weka.classifiers.lazy.LBR
-* weka.classifiers.bayes.AODE
-* weka.classifiers.bayes.NaiveBayesMultinomial
-* weka.classifiers.trees.FT
-* weka.classifiers.meta.Decorate
-* weka.classifiers.functions.RBFNetwork
-* weka.classifiers.RandomizableSingleClassifierEnhancer
-* weka.classifiers.trees.NBTree
-* weka.classifiers.meta.AdaBoostM1
-* weka.classifiers.meta.MultiClassClassifier
-* weka.classifiers.trees.m5.M5Base
-* weka.classifiers.meta.FilteredClassifier
-* weka.classifiers.meta.MultiScheme
-* weka.classifiers.bayes.net.BIFReader
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
 * weka.classifiers.bayes.NaiveBayesMultinomialUpdateable
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.functions.PaceRegression
+
+* weka.classifiers.meta.ThresholdSelector
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.trees.m5.PreConstructedLinearModel
+* weka.classifiers.mi.MIDD
+* weka.classifiers.SingleClassifierEnhancer
+
+* weka.classifiers.functions.VotedPerceptron
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.functions.IsotonicRegression
+** null : regression data
+** class weka.filters.supervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Copy : regression data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : regression data
+** class weka.filters.unsupervised.attribute.Center : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : regression data
+** class weka.filters.MultiFilter : regression data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : regression data
+** class weka.filters.AllFilter : regression data
+** class weka.filters.unsupervised.attribute.FirstOrder : regression data
+** class weka.filters.unsupervised.attribute.NumericTransform : regression data
+** class weka.filters.unsupervised.instance.ReservoirSample : regression data
+** class weka.filters.unsupervised.attribute.RemoveUseless : regression data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : regression data
+** class weka.filters.unsupervised.attribute.PrincipalComponents : regression data
+** class weka.filters.unsupervised.attribute.Remove : regression data
+** class weka.filters.unsupervised.attribute.AddID : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : regression data
+** class weka.filters.unsupervised.attribute.MathExpression : regression data
+** class weka.filters.unsupervised.instance.SubsetByExpression : regression data
+** class weka.filters.unsupervised.attribute.RELAGGS : regression data
+** class weka.filters.unsupervised.instance.Resample : regression data
+** class weka.filters.unsupervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.RandomSubset : regression data
+** class weka.filters.unsupervised.attribute.StringToWordVector : regression data
+** class weka.filters.unsupervised.attribute.Normalize : regression data
+** class weka.filters.unsupervised.attribute.NominalToString : regression data
+** class weka.filters.supervised.attribute.AddClassification : regression data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : regression data
+** class weka.filters.unsupervised.attribute.Standardize : regression data
+** class weka.filters.unsupervised.attribute.Wavelet : regression data
+** class weka.filters.unsupervised.attribute.Reorder : regression data
+** class weka.filters.supervised.attribute.AttributeSelection : regression data
+** class weka.filters.unsupervised.attribute.ClusterMembership : regression data
+** class weka.filters.unsupervised.instance.RemoveWithValues : regression data
+** class weka.filters.unsupervised.attribute.KernelFilter : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : regression data
+** class weka.filters.unsupervised.instance.RemovePercentage : regression data
+** class weka.filters.unsupervised.attribute.NumericCleaner : regression data
+** class weka.filters.unsupervised.instance.Randomize : regression data
+** class weka.filters.unsupervised.instance.Normalize : regression data
+** class weka.filters.unsupervised.attribute.Obfuscate : regression data
+
+* weka.classifiers.mi.MIEMDD
+
+* weka.classifiers.lazy.KStar
+** null : regression data
+** class weka.filters.supervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Copy : regression data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : regression data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : regression data
+** class weka.filters.unsupervised.attribute.Center : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.MultiFilter : regression data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : regression data
+** class weka.filters.AllFilter : regression data
+** class weka.filters.unsupervised.attribute.AddCluster : regression data
+** class weka.filters.unsupervised.instance.RemoveRange : regression data
+** class weka.filters.unsupervised.attribute.FirstOrder : regression data
+** class weka.filters.unsupervised.attribute.NumericTransform : regression data
+** class weka.filters.unsupervised.instance.ReservoirSample : regression data
+** class weka.filters.unsupervised.attribute.RemoveUseless : regression data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : regression data
+** class weka.filters.unsupervised.attribute.PrincipalComponents : regression data
+** class weka.filters.unsupervised.attribute.Remove : regression data
+** class weka.filters.unsupervised.attribute.AddID : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.AddExpression : regression data
+** class weka.filters.unsupervised.attribute.MathExpression : regression data
+** class weka.filters.unsupervised.instance.SubsetByExpression : regression data
+** class weka.filters.unsupervised.attribute.RELAGGS : regression data
+** class weka.filters.unsupervised.instance.Resample : regression data
+** class weka.filters.unsupervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Discretize : regression data
+** class weka.filters.unsupervised.attribute.RandomSubset : regression data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.StringToWordVector : regression data
+** class weka.filters.unsupervised.attribute.InterquartileRange : regression data
+** class weka.filters.unsupervised.attribute.Normalize : regression data
+** class weka.filters.unsupervised.attribute.NominalToString : regression data
+** class weka.filters.unsupervised.attribute.NumericToBinary : regression data
+** class weka.filters.supervised.attribute.AddClassification : regression data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : regression data
+** class weka.filters.unsupervised.attribute.Standardize : regression data
+** class weka.filters.unsupervised.attribute.ClassAssigner : regression data
+** class weka.filters.unsupervised.attribute.Wavelet : regression data
+** class weka.filters.unsupervised.attribute.Reorder : regression data
+** class weka.filters.supervised.attribute.AttributeSelection : regression data
+** class weka.filters.unsupervised.attribute.ClusterMembership : regression data
+** class weka.filters.unsupervised.instance.RemoveWithValues : regression data
+** class weka.filters.unsupervised.attribute.KernelFilter : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : regression data
+** class weka.filters.unsupervised.attribute.Add : regression data
+** class weka.filters.unsupervised.instance.RemovePercentage : regression data
+** class weka.filters.unsupervised.attribute.NumericCleaner : regression data
+** class weka.filters.unsupervised.instance.RemoveMisclassified : regression data
+** class weka.filters.unsupervised.instance.Randomize : regression data
+** class weka.filters.unsupervised.instance.Normalize : regression data
+
+** class weka.filters.unsupervised.attribute.Obfuscate : regression data
+* weka.classifiers.trees.BFTree
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.functions.SMO
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.trees.M5P
+** null : regression data
+** class weka.filters.supervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Copy : regression data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : regression data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : regression data
+** class weka.filters.unsupervised.attribute.Center : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : regression data
+** class weka.filters.MultiFilter : regression data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : regression data
+** class weka.filters.AllFilter : regression data
+** class weka.filters.unsupervised.attribute.AddCluster : regression data
+** class weka.filters.unsupervised.attribute.FirstOrder : regression data
+** class weka.filters.unsupervised.attribute.NumericTransform : regression data
+** class weka.filters.unsupervised.instance.ReservoirSample : regression data
+** class weka.filters.unsupervised.attribute.RemoveUseless : regression data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : regression data
+** class weka.filters.unsupervised.attribute.PrincipalComponents : regression data
+** class weka.filters.unsupervised.attribute.Remove : regression data
+** class weka.filters.unsupervised.attribute.AddID : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : regression data
+** class weka.filters.unsupervised.attribute.AddExpression : regression data
+** class weka.filters.unsupervised.attribute.MathExpression : regression data
+** class weka.filters.unsupervised.instance.SubsetByExpression : regression data
+** class weka.filters.unsupervised.attribute.RELAGGS : regression data
+** class weka.filters.unsupervised.instance.Resample : regression data
+** class weka.filters.unsupervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Discretize : regression data
+** class weka.filters.unsupervised.attribute.RandomSubset : regression data
+** class weka.filters.unsupervised.attribute.StringToWordVector : regression data
+** class weka.filters.unsupervised.attribute.InterquartileRange : regression data
+** class weka.filters.unsupervised.attribute.Normalize : regression data
+** class weka.filters.unsupervised.attribute.NominalToString : regression data
+** class weka.filters.unsupervised.attribute.NumericToBinary : regression data
+** class weka.filters.supervised.attribute.AddClassification : regression data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : regression data
+** class weka.filters.unsupervised.attribute.Standardize : regression data
+** class weka.filters.unsupervised.attribute.ClassAssigner : regression data
+** class weka.filters.unsupervised.attribute.Wavelet : regression data
+** class weka.filters.unsupervised.attribute.Reorder : regression data
+** class weka.filters.supervised.attribute.AttributeSelection : regression data
+** class weka.filters.unsupervised.attribute.ClusterMembership : regression data
+** class weka.filters.unsupervised.instance.RemoveWithValues : regression data
+** class weka.filters.unsupervised.attribute.KernelFilter : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : regression data
+** class weka.filters.unsupervised.attribute.Add : regression data
+** class weka.filters.unsupervised.instance.RemovePercentage : regression data
+** class weka.filters.unsupervised.attribute.NumericCleaner : regression data
+** class weka.filters.unsupervised.instance.Randomize : regression data
+** class weka.filters.unsupervised.instance.Normalize : regression data
+** class weka.filters.unsupervised.attribute.Obfuscate : regression data
+
+* weka.classifiers.meta.MultiBoostAB
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.misc.SerializedClassifier
+
+* weka.classifiers.functions.Logistic
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.functions.SimpleLogistic
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.bayes.net.EditableBayesNet
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.misc.HyperPipes
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.functions.LeastMedSq
+** null : regression data
+** class weka.filters.supervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Copy : regression data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : regression data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : regression data
+** class weka.filters.unsupervised.attribute.Center : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : regression data
+** class weka.filters.MultiFilter : regression data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : regression data
+** class weka.filters.AllFilter : regression data
+** class weka.filters.unsupervised.attribute.FirstOrder : regression data
+** class weka.filters.unsupervised.attribute.NumericTransform : regression data
+** class weka.filters.unsupervised.instance.ReservoirSample : regression data
+** class weka.filters.unsupervised.attribute.RemoveUseless : regression data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : regression data
+** class weka.filters.unsupervised.attribute.PrincipalComponents : regression data
+** class weka.filters.unsupervised.attribute.Remove : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : regression data
+** class weka.filters.unsupervised.attribute.MathExpression : regression data
+** class weka.filters.unsupervised.instance.SubsetByExpression : regression data
+** class weka.filters.unsupervised.attribute.RELAGGS : regression data
+** class weka.filters.unsupervised.instance.Resample : regression data
+** class weka.filters.unsupervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Discretize : regression data
+** class weka.filters.unsupervised.attribute.RandomSubset : regression data
+** class weka.filters.unsupervised.attribute.StringToWordVector : regression data
+** class weka.filters.unsupervised.attribute.InterquartileRange : regression data
+** class weka.filters.unsupervised.attribute.Normalize : regression data
+** class weka.filters.unsupervised.attribute.NominalToString : regression data
+** class weka.filters.unsupervised.attribute.NumericToBinary : regression data
+** class weka.filters.supervised.attribute.AddClassification : regression data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : regression data
+** class weka.filters.unsupervised.attribute.Standardize : regression data
+** class weka.filters.unsupervised.attribute.ClassAssigner : regression data
+** class weka.filters.unsupervised.attribute.Wavelet : regression data
+** class weka.filters.unsupervised.attribute.Reorder : regression data
+** class weka.filters.supervised.attribute.AttributeSelection : regression data
+** class weka.filters.unsupervised.attribute.ClusterMembership : regression data
+** class weka.filters.unsupervised.instance.RemoveWithValues : regression data
+** class weka.filters.unsupervised.attribute.KernelFilter : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : regression data
+** class weka.filters.unsupervised.attribute.NumericCleaner : regression data
+** class weka.filters.unsupervised.instance.Randomize : regression data
+** class weka.filters.unsupervised.instance.Normalize : regression data
+** class weka.filters.unsupervised.attribute.Obfuscate : regression data
+
+* weka.classifiers.RandomizableIteratedSingleClassifierEnhancer
+
+* weka.classifiers.functions.RBFNetwork
+** null : regression data
+** class weka.filters.supervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Copy : regression data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : regression data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : regression data
+** class weka.filters.unsupervised.attribute.Center : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.MultiFilter : regression data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : regression data
+** class weka.filters.AllFilter : regression data
+** class weka.filters.unsupervised.attribute.AddCluster : regression data
+** class weka.filters.unsupervised.attribute.FirstOrder : regression data
+** class weka.filters.unsupervised.attribute.NumericTransform : regression data
+** class weka.filters.unsupervised.instance.ReservoirSample : regression data
+** class weka.filters.unsupervised.attribute.RemoveUseless : regression data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : regression data
+** class weka.filters.unsupervised.attribute.PrincipalComponents : regression data
+** class weka.filters.unsupervised.attribute.Remove : regression data
+** class weka.filters.unsupervised.attribute.AddID : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.AddExpression : regression data
+** class weka.filters.unsupervised.attribute.MathExpression : regression data
+** class weka.filters.unsupervised.instance.SubsetByExpression : regression data
+** class weka.filters.unsupervised.attribute.RELAGGS : regression data
+** class weka.filters.unsupervised.instance.Resample : regression data
+** class weka.filters.unsupervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Discretize : regression data
+** class weka.filters.unsupervised.attribute.RandomSubset : regression data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.StringToWordVector : regression data
+** class weka.filters.unsupervised.attribute.InterquartileRange : regression data
+** class weka.filters.unsupervised.attribute.Normalize : regression data
+** class weka.filters.unsupervised.attribute.NominalToString : regression data
+** class weka.filters.unsupervised.attribute.NumericToBinary : regression data
+** class weka.filters.supervised.attribute.AddClassification : regression data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : regression data
+** class weka.filters.unsupervised.attribute.Standardize : regression data
+** class weka.filters.unsupervised.attribute.ClassAssigner : regression data
+** class weka.filters.unsupervised.attribute.Wavelet : regression data
+** class weka.filters.unsupervised.attribute.Reorder : regression data
+** class weka.filters.supervised.attribute.AttributeSelection : regression data
+** class weka.filters.unsupervised.attribute.ClusterMembership : regression data
+** class weka.filters.unsupervised.instance.RemoveWithValues : regression data
+** class weka.filters.unsupervised.attribute.KernelFilter : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : regression data
+** class weka.filters.unsupervised.attribute.Add : regression data
+** class weka.filters.unsupervised.instance.RemovePercentage : regression data
+** class weka.filters.unsupervised.attribute.NumericCleaner : regression data
+** class weka.filters.unsupervised.instance.Randomize : regression data
+** class weka.filters.unsupervised.instance.Normalize : regression data
+** class weka.filters.unsupervised.attribute.Obfuscate : regression data
+
+* weka.classifiers.meta.Stacking
+** null : classification data
+** class weka.filters.supervised.attribute.NominalToBinary : classification data
+** class weka.filters.unsupervised.attribute.Copy : classification data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : classification data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : classification data
+** class weka.filters.supervised.instance.SMOTE : classification data
+** class weka.filters.unsupervised.instance.RemoveFolds : classification data
+** class weka.filters.unsupervised.attribute.Center : classification data
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.MultiFilter : classification data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : classification data
+** class weka.filters.AllFilter : classification data
+** class weka.filters.unsupervised.attribute.FirstOrder : classification data
+** class weka.filters.unsupervised.attribute.NumericTransform : classification data
+** class weka.filters.unsupervised.instance.ReservoirSample : classification data
+** class weka.filters.supervised.attribute.ClassOrder : classification data
+** class weka.filters.unsupervised.attribute.RemoveUseless : classification data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : classification data
+** class weka.filters.unsupervised.attribute.Remove : classification data
+** class weka.filters.unsupervised.attribute.AddID : classification data
+** class weka.filters.supervised.instance.SpreadSubsample : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.AddExpression : classification data
+** class weka.filters.unsupervised.attribute.MathExpression : classification data
+** class weka.filters.unsupervised.instance.Resample : classification data
+** class weka.filters.unsupervised.attribute.NominalToBinary : classification data
+** class weka.filters.unsupervised.attribute.Discretize : classification data
+** class weka.filters.unsupervised.attribute.RandomSubset : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : classification data
+** class weka.filters.unsupervised.attribute.InterquartileRange : classification data
+** class weka.filters.supervised.instance.Resample : classification data
+** class weka.filters.supervised.attribute.Discretize : classification data
+** class weka.filters.unsupervised.attribute.Normalize : classification data
+** class weka.filters.unsupervised.attribute.NominalToString : classification data
+** class weka.filters.unsupervised.attribute.NumericToBinary : classification data
+** class weka.filters.supervised.attribute.AddClassification : classification data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : classification data
+** class weka.filters.unsupervised.attribute.Standardize : classification data
+** class weka.filters.unsupervised.attribute.Reorder : classification data
+** class weka.filters.supervised.instance.StratifiedRemoveFolds : classification data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : classification data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : classification data
+** class weka.filters.unsupervised.attribute.Add : classification data
+** class weka.filters.unsupervised.instance.RemovePercentage : classification data
+** class weka.filters.unsupervised.attribute.NumericCleaner : classification data
+** class weka.filters.unsupervised.instance.RemoveMisclassified : classification data
+** class weka.filters.unsupervised.instance.Randomize : classification data
+** class weka.filters.unsupervised.instance.Normalize : classification data
+** class weka.filters.unsupervised.attribute.Obfuscate : classification data
+
+* weka.classifiers.functions.LibSVM
+* weka.classifiers.meta.GridSearch
+** class weka.filters.unsupervised.attribute.ClusterMembership : regression data
+
+* weka.classifiers.IteratedSingleClassifierEnhancer
+* weka.classifiers.trees.m5.M5Base
+* weka.classifiers.functions.LibLINEAR
+
+* weka.classifiers.meta.RandomSubSpace
+** null : regression data
+** class weka.filters.supervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Copy : regression data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : regression data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : regression data
+** class weka.filters.unsupervised.attribute.Center : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.MultiFilter : regression data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : regression data
+** class weka.filters.AllFilter : regression data
+** class weka.filters.unsupervised.attribute.AddCluster : regression data
+** class weka.filters.unsupervised.attribute.FirstOrder : regression data
+** class weka.filters.unsupervised.attribute.NumericTransform : regression data
+** class weka.filters.unsupervised.instance.ReservoirSample : regression data
+** class weka.filters.unsupervised.attribute.RemoveUseless : regression data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : regression data
+** class weka.filters.unsupervised.attribute.PrincipalComponents : regression data
+** class weka.filters.unsupervised.attribute.Remove : regression data
+** class weka.filters.unsupervised.attribute.AddID : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.AddExpression : regression data
+** class weka.filters.unsupervised.attribute.MathExpression : regression data
+** class weka.filters.unsupervised.instance.SubsetByExpression : regression data
+** class weka.filters.unsupervised.attribute.RELAGGS : regression data
+** class weka.filters.unsupervised.instance.Resample : regression data
+** class weka.filters.unsupervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Discretize : regression data
+** class weka.filters.unsupervised.attribute.RandomSubset : regression data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.StringToWordVector : regression data
+** class weka.filters.unsupervised.attribute.InterquartileRange : regression data
+** class weka.filters.unsupervised.attribute.Normalize : regression data
+** class weka.filters.unsupervised.attribute.NominalToString : regression data
+** class weka.filters.unsupervised.attribute.NumericToBinary : regression data
+** class weka.filters.supervised.attribute.AddClassification : regression data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : regression data
+** class weka.filters.unsupervised.attribute.Standardize : regression data
+** class weka.filters.unsupervised.attribute.ClassAssigner : regression data
+** class weka.filters.unsupervised.attribute.Wavelet : regression data
+** class weka.filters.unsupervised.attribute.Reorder : regression data
+** class weka.filters.supervised.attribute.AttributeSelection : regression data
+** class weka.filters.unsupervised.attribute.ClusterMembership : regression data
+** class weka.filters.unsupervised.instance.RemoveWithValues : regression data
+** class weka.filters.unsupervised.attribute.KernelFilter : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : regression data
+** class weka.filters.unsupervised.attribute.Add : regression data
+** class weka.filters.unsupervised.instance.RemovePercentage : regression data
+** class weka.filters.unsupervised.attribute.NumericCleaner : regression data
+** class weka.filters.unsupervised.instance.Randomize : regression data
+** class weka.filters.unsupervised.instance.Normalize : regression data
+** class weka.filters.unsupervised.attribute.Obfuscate : regression data
+
+* weka.classifiers.mi.MIBoost
+* weka.classifiers.bayes.AODEsr
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.rules.NNge
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.RandomizableMultipleClassifiersCombiner
+* weka.classifiers.trees.ft.FTtree
+* weka.classifiers.trees.Id3
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.meta.FilteredClassifier
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.meta.AdaBoostM1
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.rules.Prism
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.bayes.AODE
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.bayes.WAODE
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.mi.MISVM
+
+* weka.classifiers.pmml.consumer.NeuralNetwork
+* weka.classifiers.rules.ConjunctiveRule
+** null : regression data
+** class weka.filters.supervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Copy : regression data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : regression data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : regression data
+** class weka.filters.unsupervised.attribute.Center : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.MultiFilter : regression data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : regression data
+** class weka.filters.AllFilter : regression data
+** class weka.filters.unsupervised.attribute.AddCluster : regression data
+** class weka.filters.unsupervised.attribute.FirstOrder : regression data
+** class weka.filters.unsupervised.attribute.NumericTransform : regression data
+** class weka.filters.unsupervised.instance.ReservoirSample : regression data
+** class weka.filters.unsupervised.attribute.RemoveUseless : regression data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : regression data
+** class weka.filters.unsupervised.attribute.PrincipalComponents : regression data
+** class weka.filters.unsupervised.attribute.Remove : regression data
+** class weka.filters.unsupervised.attribute.AddID : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.AddExpression : regression data
+** class weka.filters.unsupervised.attribute.MathExpression : regression data
+** class weka.filters.unsupervised.instance.SubsetByExpression : regression data
+** class weka.filters.unsupervised.attribute.RELAGGS : regression data
+** class weka.filters.unsupervised.instance.Resample : regression data
+** class weka.filters.unsupervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Discretize : regression data
+** class weka.filters.unsupervised.attribute.RandomSubset : regression data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.StringToWordVector : regression data
+** class weka.filters.unsupervised.attribute.InterquartileRange : regression data
+** class weka.filters.unsupervised.attribute.Normalize : regression data
+** class weka.filters.unsupervised.attribute.NominalToString : regression data
+** class weka.filters.unsupervised.attribute.NumericToBinary : regression data
+** class weka.filters.supervised.attribute.AddClassification : regression data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : regression data
+** class weka.filters.unsupervised.attribute.Standardize : regression data
+** class weka.filters.unsupervised.attribute.ClassAssigner : regression data
+** class weka.filters.unsupervised.attribute.Wavelet : regression data
+** class weka.filters.unsupervised.attribute.Reorder : regression data
+** class weka.filters.supervised.attribute.AttributeSelection : regression data
+** class weka.filters.unsupervised.attribute.ClusterMembership : regression data
+** class weka.filters.unsupervised.instance.RemoveWithValues : regression data
+** class weka.filters.unsupervised.attribute.KernelFilter : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : regression data
+** class weka.filters.unsupervised.attribute.Add : regression data
+** class weka.filters.unsupervised.instance.RemovePercentage : regression data
+** class weka.filters.unsupervised.attribute.NumericCleaner : regression data
+** class weka.filters.unsupervised.instance.Randomize : regression data
+** class weka.filters.unsupervised.instance.Normalize : regression data
+** class weka.filters.unsupervised.attribute.Obfuscate : regression data
+
+* weka.classifiers.lazy.IBk
+** null : regression data
+** class weka.filters.supervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Copy : regression data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : regression data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : regression data
+** class weka.filters.unsupervised.attribute.Center : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.MultiFilter : regression data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : regression data
+** class weka.filters.AllFilter : regression data
+** class weka.filters.unsupervised.attribute.AddCluster : regression data
+** class weka.filters.unsupervised.instance.RemoveRange : regression data
+** class weka.filters.unsupervised.attribute.FirstOrder : regression data
+** class weka.filters.unsupervised.attribute.NumericTransform : regression data
+** class weka.filters.unsupervised.instance.ReservoirSample : regression data
+** class weka.filters.unsupervised.attribute.RemoveUseless : regression data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : regression data
+** class weka.filters.unsupervised.attribute.PrincipalComponents : regression data
+** class weka.filters.unsupervised.attribute.Remove : regression data
+** class weka.filters.unsupervised.attribute.AddID : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.AddExpression : regression data
+** class weka.filters.unsupervised.attribute.MathExpression : regression data
+** class weka.filters.unsupervised.instance.SubsetByExpression : regression data
+** class weka.filters.unsupervised.attribute.RELAGGS : regression data
+** class weka.filters.unsupervised.instance.Resample : regression data
+** class weka.filters.unsupervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Discretize : regression data
+** class weka.filters.unsupervised.attribute.RandomSubset : regression data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.StringToWordVector : regression data
+** class weka.filters.unsupervised.attribute.InterquartileRange : regression data
+** class weka.filters.unsupervised.attribute.Normalize : regression data
+** class weka.filters.unsupervised.attribute.NominalToString : regression data
+** class weka.filters.unsupervised.attribute.NumericToBinary : regression data
+** class weka.filters.supervised.attribute.AddClassification : regression data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : regression data
+** class weka.filters.unsupervised.attribute.Standardize : regression data
+** class weka.filters.unsupervised.attribute.ClassAssigner : regression data
+** class weka.filters.unsupervised.attribute.Wavelet : regression data
+** class weka.filters.unsupervised.attribute.Reorder : regression data
+** class weka.filters.supervised.attribute.AttributeSelection : regression data
+** class weka.filters.unsupervised.attribute.ClusterMembership : regression data
+** class weka.filters.unsupervised.instance.RemoveWithValues : regression data
+** class weka.filters.unsupervised.attribute.KernelFilter : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : regression data
+** class weka.filters.unsupervised.attribute.Add : regression data
+** class weka.filters.unsupervised.instance.RemovePercentage : regression data
+** class weka.filters.unsupervised.attribute.NumericCleaner : regression data
+** class weka.filters.unsupervised.instance.RemoveMisclassified : regression data
+** class weka.filters.unsupervised.instance.Randomize : regression data
+** class weka.filters.unsupervised.instance.Normalize : regression data
+** class weka.filters.unsupervised.attribute.Obfuscate : regression data
+
+* weka.classifiers.lazy.LWL
+** null : regression data
+** class weka.filters.supervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Copy : regression data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : regression data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : regression data
+** class weka.filters.unsupervised.attribute.Center : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.MultiFilter : regression data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : regression data
+** class weka.filters.AllFilter : regression data
+** class weka.filters.unsupervised.attribute.AddCluster : regression data
+** class weka.filters.unsupervised.attribute.FirstOrder : regression data
+** class weka.filters.unsupervised.attribute.NumericTransform : regression data
+** class weka.filters.unsupervised.instance.ReservoirSample : regression data
+** class weka.filters.unsupervised.attribute.RemoveUseless : regression data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : regression data
+** class weka.filters.unsupervised.attribute.PrincipalComponents : regression data
+** class weka.filters.unsupervised.attribute.Remove : regression data
+** class weka.filters.unsupervised.attribute.AddID : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.AddExpression : regression data
+** class weka.filters.unsupervised.attribute.MathExpression : regression data
+** class weka.filters.unsupervised.instance.SubsetByExpression : regression data
+** class weka.filters.unsupervised.attribute.RELAGGS : regression data
+** class weka.filters.unsupervised.instance.Resample : regression data
+** class weka.filters.unsupervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Discretize : regression data
+** class weka.filters.unsupervised.attribute.RandomSubset : regression data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.StringToWordVector : regression data
+** class weka.filters.unsupervised.attribute.InterquartileRange : regression data
+** class weka.filters.unsupervised.attribute.Normalize : regression data
+** class weka.filters.unsupervised.attribute.NominalToString : regression data
+** class weka.filters.unsupervised.attribute.NumericToBinary : regression data
+** class weka.filters.supervised.attribute.AddClassification : regression data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : regression data
+** class weka.filters.unsupervised.attribute.Standardize : regression data
+** class weka.filters.unsupervised.attribute.ClassAssigner : regression data
+** class weka.filters.unsupervised.attribute.Wavelet : regression data
+** class weka.filters.unsupervised.attribute.Reorder : regression data
+** class weka.filters.supervised.attribute.AttributeSelection : regression data
+** class weka.filters.unsupervised.attribute.ClusterMembership : regression data
+** class weka.filters.unsupervised.instance.RemoveWithValues : regression data
+** class weka.filters.unsupervised.attribute.KernelFilter : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : regression data
+** class weka.filters.unsupervised.attribute.Add : regression data
+** class weka.filters.unsupervised.instance.RemovePercentage : regression data
+** class weka.filters.unsupervised.attribute.NumericCleaner : regression data
+** class weka.filters.unsupervised.instance.Randomize : regression data
+** class weka.filters.unsupervised.instance.Normalize : regression data
+** class weka.filters.unsupervised.attribute.Obfuscate : regression data
+
+* weka.classifiers.trees.ft.FTLeavesNode
+
+* weka.classifiers.meta.nestedDichotomies.DataNearBalancedND
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.meta.nestedDichotomies.ClassBalancedND
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.meta.Bagging
+** null : regression data
+** class weka.filters.supervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Copy : regression data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : regression data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : regression data
+** class weka.filters.unsupervised.attribute.Center : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.MultiFilter : regression data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : regression data
+** class weka.filters.AllFilter : regression data
+** class weka.filters.unsupervised.attribute.AddCluster : regression data
+** class weka.filters.unsupervised.attribute.FirstOrder : regression data
+** class weka.filters.unsupervised.attribute.NumericTransform : regression data
+** class weka.filters.unsupervised.instance.ReservoirSample : regression data
+** class weka.filters.unsupervised.attribute.RemoveUseless : regression data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : regression data
+** class weka.filters.unsupervised.attribute.PrincipalComponents : regression data
+** class weka.filters.unsupervised.attribute.Remove : regression data
+** class weka.filters.unsupervised.attribute.AddID : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.AddExpression : regression data
+** class weka.filters.unsupervised.attribute.MathExpression : regression data
+** class weka.filters.unsupervised.instance.SubsetByExpression : regression data
+** class weka.filters.unsupervised.attribute.RELAGGS : regression data
+** class weka.filters.unsupervised.instance.Resample : regression data
+** class weka.filters.unsupervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Discretize : regression data
+** class weka.filters.unsupervised.attribute.RandomSubset : regression data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.StringToWordVector : regression data
+** class weka.filters.unsupervised.attribute.InterquartileRange : regression data
+** class weka.filters.unsupervised.attribute.Normalize : regression data
+** class weka.filters.unsupervised.attribute.NominalToString : regression data
+** class weka.filters.unsupervised.attribute.NumericToBinary : regression data
+** class weka.filters.supervised.attribute.AddClassification : regression data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : regression data
+** class weka.filters.unsupervised.attribute.Standardize : regression data
+** class weka.filters.unsupervised.attribute.ClassAssigner : regression data
+** class weka.filters.unsupervised.attribute.Wavelet : regression data
+** class weka.filters.unsupervised.attribute.Reorder : regression data
+** class weka.filters.supervised.attribute.AttributeSelection : regression data
+** class weka.filters.unsupervised.attribute.ClusterMembership : regression data
+** class weka.filters.unsupervised.instance.RemoveWithValues : regression data
+** class weka.filters.unsupervised.attribute.KernelFilter : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : regression data
+** class weka.filters.unsupervised.attribute.Add : regression data
+** class weka.filters.unsupervised.instance.RemovePercentage : regression data
+** class weka.filters.unsupervised.attribute.NumericCleaner : regression data
+** class weka.filters.unsupervised.instance.Randomize : regression data
+** class weka.filters.unsupervised.instance.Normalize : regression data
+** class weka.filters.unsupervised.attribute.Obfuscate : regression data
+
+* weka.classifiers.meta.Grading
+** null : classification data
+** class weka.filters.supervised.attribute.NominalToBinary : classification data
+** class weka.filters.unsupervised.attribute.Copy : classification data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : classification data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : classification data
+** class weka.filters.supervised.instance.SMOTE : classification data
+** class weka.filters.unsupervised.instance.RemoveFolds : classification data
+** class weka.filters.unsupervised.attribute.Center : classification data
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.MultiFilter : classification data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : classification data
+** class weka.filters.AllFilter : classification data
+** class weka.filters.unsupervised.attribute.FirstOrder : classification data
+** class weka.filters.unsupervised.attribute.NumericTransform : classification data
+** class weka.filters.unsupervised.instance.ReservoirSample : classification data
+** class weka.filters.supervised.attribute.ClassOrder : classification data
+** class weka.filters.unsupervised.attribute.RemoveUseless : classification data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : classification data
+** class weka.filters.unsupervised.attribute.Remove : classification data
+** class weka.filters.unsupervised.attribute.AddID : classification data
+** class weka.filters.supervised.instance.SpreadSubsample : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.AddExpression : classification data
+** class weka.filters.unsupervised.attribute.MathExpression : classification data
+** class weka.filters.unsupervised.instance.Resample : classification data
+** class weka.filters.unsupervised.attribute.NominalToBinary : classification data
+** class weka.filters.unsupervised.attribute.Discretize : classification data
+** class weka.filters.unsupervised.attribute.RandomSubset : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : classification data
+** class weka.filters.unsupervised.attribute.InterquartileRange : classification data
+** class weka.filters.supervised.instance.Resample : classification data
+** class weka.filters.supervised.attribute.Discretize : classification data
+** class weka.filters.unsupervised.attribute.Normalize : classification data
+** class weka.filters.unsupervised.attribute.NominalToString : classification data
+** class weka.filters.unsupervised.attribute.NumericToBinary : classification data
+** class weka.filters.supervised.attribute.AddClassification : classification data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : classification data
+** class weka.filters.unsupervised.attribute.Standardize : classification data
+** class weka.filters.unsupervised.attribute.Reorder : classification data
+** class weka.filters.supervised.instance.StratifiedRemoveFolds : classification data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : classification data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : classification data
+** class weka.filters.unsupervised.attribute.Add : classification data
+** class weka.filters.unsupervised.instance.RemovePercentage : classification data
+** class weka.filters.unsupervised.attribute.NumericCleaner : classification data
+** class weka.filters.unsupervised.instance.RemoveMisclassified : classification data
+** class weka.filters.unsupervised.instance.Randomize : classification data
+** class weka.filters.unsupervised.instance.Normalize : classification data
+** class weka.filters.unsupervised.attribute.Obfuscate : classification data
+
+* weka.classifiers.meta.Dagging
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.bayes.DMNBtext
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.trees.J48
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.trees.LADTree
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.lazy.LBR
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.meta.CVParameterSelection
+** null : classification data
+** class weka.filters.supervised.attribute.NominalToBinary : classification data
+** class weka.filters.unsupervised.attribute.Copy : classification data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : classification data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : classification data
+** class weka.filters.supervised.instance.SMOTE : classification data
+** class weka.filters.unsupervised.instance.RemoveFolds : classification data
+** class weka.filters.unsupervised.attribute.Center : classification data
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.MultiFilter : classification data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : classification data
+** class weka.filters.AllFilter : classification data
+** class weka.filters.unsupervised.attribute.FirstOrder : classification data
+** class weka.filters.unsupervised.attribute.NumericTransform : classification data
+** class weka.filters.unsupervised.instance.ReservoirSample : classification data
+** class weka.filters.supervised.attribute.ClassOrder : classification data
+** class weka.filters.unsupervised.attribute.RemoveUseless : classification data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : classification data
+** class weka.filters.unsupervised.attribute.Remove : classification data
+** class weka.filters.unsupervised.attribute.AddID : classification data
+** class weka.filters.supervised.instance.SpreadSubsample : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.AddExpression : classification data
+** class weka.filters.unsupervised.attribute.MathExpression : classification data
+** class weka.filters.unsupervised.instance.Resample : classification data
+** class weka.filters.unsupervised.attribute.NominalToBinary : classification data
+** class weka.filters.unsupervised.attribute.Discretize : classification data
+** class weka.filters.unsupervised.attribute.RandomSubset : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : classification data
+** class weka.filters.unsupervised.attribute.InterquartileRange : classification data
+** class weka.filters.supervised.instance.Resample : classification data
+** class weka.filters.supervised.attribute.Discretize : classification data
+** class weka.filters.unsupervised.attribute.Normalize : classification data
+** class weka.filters.unsupervised.attribute.NominalToString : classification data
+** class weka.filters.unsupervised.attribute.NumericToBinary : classification data
+** class weka.filters.supervised.attribute.AddClassification : classification data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : classification data
+** class weka.filters.unsupervised.attribute.Standardize : classification data
+** class weka.filters.unsupervised.attribute.Reorder : classification data
+** class weka.filters.supervised.instance.StratifiedRemoveFolds : classification data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : classification data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : classification data
+** class weka.filters.unsupervised.attribute.Add : classification data
+** class weka.filters.unsupervised.instance.RemovePercentage : classification data
+** class weka.filters.unsupervised.attribute.NumericCleaner : classification data
+** class weka.filters.unsupervised.instance.RemoveMisclassified : classification data
+** class weka.filters.unsupervised.instance.Randomize : classification data
+** class weka.filters.unsupervised.instance.Normalize : classification data
+** class weka.filters.unsupervised.attribute.Obfuscate : classification data
+
+* weka.classifiers.bayes.BayesNet
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.meta.MultiScheme
+** null : regression data
+** null : classification data
+** class weka.filters.supervised.attribute.NominalToBinary : regression data
+** class weka.filters.supervised.attribute.NominalToBinary : classification data
+** class weka.filters.unsupervised.attribute.Copy : regression data
+** class weka.filters.unsupervised.attribute.Copy : classification data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : regression data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : classification data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : regression data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : classification data
+** class weka.filters.supervised.instance.SMOTE : classification data
+** class weka.filters.unsupervised.instance.RemoveFolds : classification data
+** class weka.filters.unsupervised.attribute.Center : regression data
+** class weka.filters.unsupervised.attribute.Center : classification data
+** class weka.filters.unsupervised.attribute.StringToNominal : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.MultiFilter : regression data
+** class weka.filters.MultiFilter : classification data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : regression data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : classification data
+** class weka.filters.AllFilter : regression data
+** class weka.filters.AllFilter : classification data
+** class weka.filters.unsupervised.attribute.AddCluster : regression data
+** class weka.filters.unsupervised.instance.RemoveRange : regression data
+** class weka.filters.unsupervised.instance.RemoveRange : classification data
+** class weka.filters.unsupervised.attribute.FirstOrder : regression data
+** class weka.filters.unsupervised.attribute.FirstOrder : classification data
+** class weka.filters.unsupervised.attribute.NumericTransform : regression data
+** class weka.filters.unsupervised.attribute.NumericTransform : classification data
+** class weka.filters.unsupervised.instance.ReservoirSample : regression data
+** class weka.filters.unsupervised.instance.ReservoirSample : classification data
+** class weka.filters.supervised.attribute.ClassOrder : classification data
+** class weka.filters.unsupervised.attribute.RemoveUseless : regression data
+** class weka.filters.unsupervised.attribute.RemoveUseless : classification data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : regression data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : classification data
+** class weka.filters.unsupervised.attribute.PrincipalComponents : regression data
+** class weka.filters.unsupervised.attribute.Remove : regression data
+** class weka.filters.unsupervised.attribute.Remove : classification data
+** class weka.filters.unsupervised.attribute.AddID : regression data
+** class weka.filters.unsupervised.attribute.AddID : classification data
+** class weka.filters.supervised.instance.SpreadSubsample : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.AddExpression : regression data
+** class weka.filters.unsupervised.attribute.AddExpression : classification data
+** class weka.filters.unsupervised.attribute.MathExpression : regression data
+** class weka.filters.unsupervised.attribute.MathExpression : classification data
+** class weka.filters.unsupervised.instance.SubsetByExpression : regression data
+** class weka.filters.unsupervised.attribute.RELAGGS : regression data
+** class weka.filters.unsupervised.instance.Resample : regression data
+** class weka.filters.unsupervised.instance.Resample : classification data
+** class weka.filters.unsupervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.NominalToBinary : classification data
+** class weka.filters.unsupervised.attribute.Discretize : regression data
+** class weka.filters.unsupervised.attribute.Discretize : classification data
+** class weka.filters.unsupervised.attribute.RandomSubset : regression data
+** class weka.filters.unsupervised.attribute.RandomSubset : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.NumericToNominal : classification data
+** class weka.filters.unsupervised.attribute.StringToWordVector : regression data
+** class weka.filters.unsupervised.attribute.InterquartileRange : regression data
+** class weka.filters.unsupervised.attribute.InterquartileRange : classification data
+** class weka.filters.supervised.instance.Resample : classification data
+** class weka.filters.supervised.attribute.Discretize : classification data
+** class weka.filters.unsupervised.attribute.Normalize : regression data
+** class weka.filters.unsupervised.attribute.Normalize : classification data
+** class weka.filters.unsupervised.attribute.NominalToString : regression data
+** class weka.filters.unsupervised.attribute.NominalToString : classification data
+** class weka.filters.unsupervised.attribute.NumericToBinary : regression data
+** class weka.filters.unsupervised.attribute.NumericToBinary : classification data
+** class weka.filters.supervised.attribute.AddClassification : regression data
+** class weka.filters.supervised.attribute.AddClassification : classification data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : regression data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : classification data
+** class weka.filters.unsupervised.attribute.Standardize : regression data
+** class weka.filters.unsupervised.attribute.Standardize : classification data
+** class weka.filters.unsupervised.attribute.ClassAssigner : regression data
+** class weka.filters.unsupervised.attribute.Wavelet : regression data
+** class weka.filters.unsupervised.attribute.Reorder : regression data
+** class weka.filters.unsupervised.attribute.Reorder : classification data
+** class weka.filters.supervised.attribute.AttributeSelection : regression data
+** class weka.filters.unsupervised.attribute.ClusterMembership : regression data
+** class weka.filters.unsupervised.instance.RemoveWithValues : regression data
+** class weka.filters.unsupervised.attribute.KernelFilter : regression data
+** class weka.filters.supervised.instance.StratifiedRemoveFolds : classification data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : classification data
+** class weka.filters.unsupervised.attribute.RemoveType : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : classification data
+** class weka.filters.unsupervised.attribute.Add : regression data
+** class weka.filters.unsupervised.attribute.Add : classification data
+** class weka.filters.unsupervised.instance.RemovePercentage : regression data
+** class weka.filters.unsupervised.instance.RemovePercentage : classification data
+** class weka.filters.unsupervised.attribute.NumericCleaner : regression data
+** class weka.filters.unsupervised.attribute.NumericCleaner : classification data
+** class weka.filters.unsupervised.instance.RemoveMisclassified : regression data
+** class weka.filters.unsupervised.instance.RemoveMisclassified : classification data
+** class weka.filters.unsupervised.instance.Randomize : regression data
+** class weka.filters.unsupervised.instance.Randomize : classification data
+** class weka.filters.unsupervised.instance.Normalize : regression data
+** class weka.filters.unsupervised.instance.Normalize : classification data
+** class weka.filters.unsupervised.attribute.Obfuscate : regression data
+** class weka.filters.unsupervised.attribute.Obfuscate : classification data
+
+* weka.classifiers.rules.OneR
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.mi.MIWrapper
+
+* weka.classifiers.trees.SimpleCart
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.bayes.net.BayesNetGenerator
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.functions.PLSClassifier
+** class weka.filters.unsupervised.attribute.ClusterMembership : regression data
+
+* weka.classifiers.functions.MultilayerPerceptron
+** null : regression data
+** class weka.filters.supervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Copy : regression data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : regression data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : regression data
+** class weka.filters.unsupervised.attribute.Center : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.MultiFilter : regression data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : regression data
+** class weka.filters.AllFilter : regression data
+** class weka.filters.unsupervised.attribute.AddCluster : regression data
+** class weka.filters.unsupervised.attribute.FirstOrder : regression data
+** class weka.filters.unsupervised.attribute.NumericTransform : regression data
+** class weka.filters.unsupervised.instance.ReservoirSample : regression data
+** class weka.filters.unsupervised.attribute.RemoveUseless : regression data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : regression data
+** class weka.filters.unsupervised.attribute.PrincipalComponents : regression data
+** class weka.filters.unsupervised.attribute.Remove : regression data
+** class weka.filters.unsupervised.attribute.AddID : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.AddExpression : regression data
+** class weka.filters.unsupervised.attribute.MathExpression : regression data
+** class weka.filters.unsupervised.instance.SubsetByExpression : regression data
+** class weka.filters.unsupervised.attribute.RELAGGS : regression data
+** class weka.filters.unsupervised.instance.Resample : regression data
+** class weka.filters.unsupervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Discretize : regression data
+** class weka.filters.unsupervised.attribute.RandomSubset : regression data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.StringToWordVector : regression data
+** class weka.filters.unsupervised.attribute.InterquartileRange : regression data
+** class weka.filters.unsupervised.attribute.Normalize : regression data
+** class weka.filters.unsupervised.attribute.NominalToString : regression data
+** class weka.filters.unsupervised.attribute.NumericToBinary : regression data
+** class weka.filters.supervised.attribute.AddClassification : regression data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : regression data
+** class weka.filters.unsupervised.attribute.Standardize : regression data
+** class weka.filters.unsupervised.attribute.ClassAssigner : regression data
+** class weka.filters.unsupervised.attribute.Wavelet : regression data
+** class weka.filters.unsupervised.attribute.Reorder : regression data
+** class weka.filters.supervised.attribute.AttributeSelection : regression data
+** class weka.filters.unsupervised.attribute.ClusterMembership : regression data
+** class weka.filters.unsupervised.instance.RemoveWithValues : regression data
+** class weka.filters.unsupervised.attribute.KernelFilter : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : regression data
+** class weka.filters.unsupervised.attribute.Add : regression data
+** class weka.filters.unsupervised.instance.RemovePercentage : regression data
+** class weka.filters.unsupervised.attribute.NumericCleaner : regression data
+** class weka.filters.unsupervised.instance.Randomize : regression data
+** class weka.filters.unsupervised.instance.Normalize : regression data
+** class weka.filters.unsupervised.attribute.Obfuscate : regression data
+
+* weka.classifiers.bayes.ComplementNaiveBayes
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.mi.MILR
+
+* weka.classifiers.bayes.HNB
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.meta.nestedDichotomies.ND
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.bayes.net.BIFReader
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.meta.RacedIncrementalLogitBoost
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.meta.MultiClassClassifier
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.trees.lmt.LogisticBase
+** null : regression data
+** class weka.filters.supervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Copy : regression data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : regression data
+** class weka.filters.unsupervised.attribute.Center : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : regression data
+** class weka.filters.MultiFilter : regression data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : regression data
+** class weka.filters.AllFilter : regression data
+** class weka.filters.unsupervised.attribute.FirstOrder : regression data
+** class weka.filters.unsupervised.attribute.NumericTransform : regression data
+** class weka.filters.unsupervised.instance.ReservoirSample : regression data
+** class weka.filters.unsupervised.attribute.RemoveUseless : regression data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : regression data
+** class weka.filters.unsupervised.attribute.PrincipalComponents : regression data
+** class weka.filters.unsupervised.attribute.Remove : regression data
+** class weka.filters.unsupervised.attribute.AddID : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.AddExpression : regression data
+** class weka.filters.unsupervised.attribute.MathExpression : regression data
+** class weka.filters.unsupervised.instance.SubsetByExpression : regression data
+** class weka.filters.unsupervised.attribute.RELAGGS : regression data
+** class weka.filters.unsupervised.instance.Resample : regression data
+** class weka.filters.unsupervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.RandomSubset : regression data
+** class weka.filters.unsupervised.attribute.StringToWordVector : regression data
+** class weka.filters.unsupervised.attribute.Normalize : regression data
+** class weka.filters.unsupervised.attribute.NominalToString : regression data
+** class weka.filters.supervised.attribute.AddClassification : regression data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : regression data
+** class weka.filters.unsupervised.attribute.Standardize : regression data
+** class weka.filters.unsupervised.attribute.ClassAssigner : regression data
+** class weka.filters.unsupervised.attribute.Wavelet : regression data
+** class weka.filters.unsupervised.attribute.Reorder : regression data
+** class weka.filters.supervised.attribute.AttributeSelection : regression data
+** class weka.filters.unsupervised.attribute.ClusterMembership : regression data
+** class weka.filters.unsupervised.instance.RemoveWithValues : regression data
+** class weka.filters.unsupervised.attribute.KernelFilter : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : regression data
+** class weka.filters.unsupervised.attribute.NumericCleaner : regression data
+** class weka.filters.unsupervised.instance.Randomize : regression data
+** class weka.filters.unsupervised.instance.Normalize : regression data
+** class weka.filters.unsupervised.attribute.Obfuscate : regression data
+
+* weka.classifiers.pmml.consumer.PMMLClassifier
+* weka.classifiers.rules.JRip
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.pmml.consumer.Regression
+* weka.classifiers.RandomizableClassifier
+* weka.classifiers.meta.LogitBoost
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.mi.MIOptimalBall
+
+* weka.classifiers.meta.RandomCommittee
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.rules.ZeroR
+** null : regression data
+** null : classification data
+** class weka.filters.supervised.attribute.NominalToBinary : regression data
+** class weka.filters.supervised.attribute.NominalToBinary : classification data
+** class weka.filters.unsupervised.attribute.Copy : regression data
+** class weka.filters.unsupervised.attribute.Copy : classification data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : regression data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : classification data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : regression data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : classification data
+** class weka.filters.supervised.instance.SMOTE : classification data
+** class weka.filters.unsupervised.instance.RemoveFolds : classification data
+** class weka.filters.unsupervised.attribute.Center : regression data
+** class weka.filters.unsupervised.attribute.Center : classification data
+** class weka.filters.unsupervised.attribute.StringToNominal : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.MultiFilter : regression data
+** class weka.filters.MultiFilter : classification data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : regression data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : classification data
+** class weka.filters.AllFilter : regression data
+** class weka.filters.AllFilter : classification data
+** class weka.filters.unsupervised.attribute.AddCluster : regression data
+** class weka.filters.unsupervised.instance.RemoveRange : regression data
+** class weka.filters.unsupervised.instance.RemoveRange : classification data
+** class weka.filters.unsupervised.attribute.FirstOrder : regression data
+** class weka.filters.unsupervised.attribute.FirstOrder : classification data
+** class weka.filters.unsupervised.attribute.NumericTransform : regression data
+** class weka.filters.unsupervised.attribute.NumericTransform : classification data
+** class weka.filters.unsupervised.instance.ReservoirSample : regression data
+** class weka.filters.unsupervised.instance.ReservoirSample : classification data
+** class weka.filters.supervised.attribute.ClassOrder : classification data
+** class weka.filters.unsupervised.attribute.RemoveUseless : regression data
+** class weka.filters.unsupervised.attribute.RemoveUseless : classification data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : regression data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : classification data
+** class weka.filters.unsupervised.attribute.PrincipalComponents : regression data
+** class weka.filters.unsupervised.attribute.Remove : regression data
+** class weka.filters.unsupervised.attribute.Remove : classification data
+** class weka.filters.unsupervised.attribute.AddID : regression data
+** class weka.filters.unsupervised.attribute.AddID : classification data
+** class weka.filters.supervised.instance.SpreadSubsample : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.AddExpression : regression data
+** class weka.filters.unsupervised.attribute.AddExpression : classification data
+** class weka.filters.unsupervised.attribute.MathExpression : regression data
+** class weka.filters.unsupervised.attribute.MathExpression : classification data
+** class weka.filters.unsupervised.instance.SubsetByExpression : regression data
+** class weka.filters.unsupervised.attribute.RELAGGS : regression data
+** class weka.filters.unsupervised.instance.Resample : regression data
+** class weka.filters.unsupervised.instance.Resample : classification data
+** class weka.filters.unsupervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.NominalToBinary : classification data
+** class weka.filters.unsupervised.attribute.Discretize : regression data
+** class weka.filters.unsupervised.attribute.Discretize : classification data
+** class weka.filters.unsupervised.attribute.RandomSubset : regression data
+** class weka.filters.unsupervised.attribute.RandomSubset : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.NumericToNominal : classification data
+** class weka.filters.unsupervised.attribute.StringToWordVector : regression data
+** class weka.filters.unsupervised.attribute.InterquartileRange : regression data
+** class weka.filters.unsupervised.attribute.InterquartileRange : classification data
+** class weka.filters.supervised.instance.Resample : classification data
+** class weka.filters.supervised.attribute.Discretize : classification data
+** class weka.filters.unsupervised.attribute.Normalize : regression data
+** class weka.filters.unsupervised.attribute.Normalize : classification data
+** class weka.filters.unsupervised.attribute.NominalToString : regression data
+** class weka.filters.unsupervised.attribute.NominalToString : classification data
+** class weka.filters.unsupervised.attribute.NumericToBinary : regression data
+** class weka.filters.unsupervised.attribute.NumericToBinary : classification data
+** class weka.filters.supervised.attribute.AddClassification : regression data
+** class weka.filters.supervised.attribute.AddClassification : classification data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : regression data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : classification data
+** class weka.filters.unsupervised.attribute.Standardize : regression data
+** class weka.filters.unsupervised.attribute.Standardize : classification data
+** class weka.filters.unsupervised.attribute.ClassAssigner : regression data
+** class weka.filters.unsupervised.attribute.Wavelet : regression data
+** class weka.filters.unsupervised.attribute.Reorder : regression data
+** class weka.filters.unsupervised.attribute.Reorder : classification data
+** class weka.filters.supervised.attribute.AttributeSelection : regression data
+** class weka.filters.unsupervised.attribute.ClusterMembership : regression data
+** class weka.filters.unsupervised.instance.RemoveWithValues : regression data
+** class weka.filters.unsupervised.attribute.KernelFilter : regression data
+** class weka.filters.supervised.instance.StratifiedRemoveFolds : classification data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : classification data
+** class weka.filters.unsupervised.attribute.RemoveType : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : classification data
+** class weka.filters.unsupervised.attribute.Add : regression data
+** class weka.filters.unsupervised.attribute.Add : classification data
+** class weka.filters.unsupervised.instance.RemovePercentage : regression data
+** class weka.filters.unsupervised.instance.RemovePercentage : classification data
+** class weka.filters.unsupervised.attribute.NumericCleaner : regression data
+** class weka.filters.unsupervised.attribute.NumericCleaner : classification data
+** class weka.filters.unsupervised.instance.RemoveMisclassified : regression data
+** class weka.filters.unsupervised.instance.RemoveMisclassified : classification data
+** class weka.filters.unsupervised.instance.Randomize : regression data
+** class weka.filters.unsupervised.instance.Randomize : classification data
+** class weka.filters.unsupervised.instance.Normalize : regression data
+** class weka.filters.unsupervised.instance.Normalize : classification data
+** class weka.filters.unsupervised.attribute.Obfuscate : regression data
+** class weka.filters.unsupervised.attribute.Obfuscate : classification data
+
+* weka.classifiers.mi.MISVM$SVM
+* weka.classifiers.bayes.NaiveBayesUpdateable
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.bayes.NaiveBayesMultinomial
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.misc.VFI
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.meta.AttributeSelectedClassifier
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.rules.PART
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.mi.SimpleMI
+
+* weka.classifiers.meta.Vote
+** null : regression data
+** null : classification data
+** class weka.filters.supervised.attribute.NominalToBinary : regression data
+** class weka.filters.supervised.attribute.NominalToBinary : classification data
+** class weka.filters.unsupervised.attribute.Copy : regression data
+** class weka.filters.unsupervised.attribute.Copy : classification data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : regression data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : classification data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : regression data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : classification data
+** class weka.filters.supervised.instance.SMOTE : classification data
+** class weka.filters.unsupervised.instance.RemoveFolds : classification data
+** class weka.filters.unsupervised.attribute.Center : regression data
+** class weka.filters.unsupervised.attribute.Center : classification data
+** class weka.filters.unsupervised.attribute.StringToNominal : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.MultiFilter : regression data
+** class weka.filters.MultiFilter : classification data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : regression data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : classification data
+** class weka.filters.AllFilter : regression data
+** class weka.filters.AllFilter : classification data
+** class weka.filters.unsupervised.attribute.AddCluster : regression data
+** class weka.filters.unsupervised.instance.RemoveRange : regression data
+** class weka.filters.unsupervised.instance.RemoveRange : classification data
+** class weka.filters.unsupervised.attribute.FirstOrder : regression data
+** class weka.filters.unsupervised.attribute.FirstOrder : classification data
+** class weka.filters.unsupervised.attribute.NumericTransform : regression data
+** class weka.filters.unsupervised.attribute.NumericTransform : classification data
+** class weka.filters.unsupervised.instance.ReservoirSample : regression data
+** class weka.filters.unsupervised.instance.ReservoirSample : classification data
+** class weka.filters.supervised.attribute.ClassOrder : classification data
+** class weka.filters.unsupervised.attribute.RemoveUseless : regression data
+** class weka.filters.unsupervised.attribute.RemoveUseless : classification data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : regression data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : classification data
+** class weka.filters.unsupervised.attribute.PrincipalComponents : regression data
+** class weka.filters.unsupervised.attribute.Remove : regression data
+** class weka.filters.unsupervised.attribute.Remove : classification data
+** class weka.filters.unsupervised.attribute.AddID : regression data
+** class weka.filters.unsupervised.attribute.AddID : classification data
+** class weka.filters.supervised.instance.SpreadSubsample : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.AddExpression : regression data
+** class weka.filters.unsupervised.attribute.AddExpression : classification data
+** class weka.filters.unsupervised.attribute.MathExpression : regression data
+** class weka.filters.unsupervised.attribute.MathExpression : classification data
+** class weka.filters.unsupervised.instance.SubsetByExpression : regression data
+** class weka.filters.unsupervised.attribute.RELAGGS : regression data
+** class weka.filters.unsupervised.instance.Resample : regression data
+** class weka.filters.unsupervised.instance.Resample : classification data
+** class weka.filters.unsupervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.NominalToBinary : classification data
+** class weka.filters.unsupervised.attribute.Discretize : regression data
+** class weka.filters.unsupervised.attribute.Discretize : classification data
+** class weka.filters.unsupervised.attribute.RandomSubset : regression data
+** class weka.filters.unsupervised.attribute.RandomSubset : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.NumericToNominal : classification data
+** class weka.filters.unsupervised.attribute.StringToWordVector : regression data
+** class weka.filters.unsupervised.attribute.InterquartileRange : regression data
+** class weka.filters.unsupervised.attribute.InterquartileRange : classification data
+** class weka.filters.supervised.instance.Resample : classification data
+** class weka.filters.supervised.attribute.Discretize : classification data
+** class weka.filters.unsupervised.attribute.Normalize : regression data
+** class weka.filters.unsupervised.attribute.Normalize : classification data
+** class weka.filters.unsupervised.attribute.NominalToString : regression data
+** class weka.filters.unsupervised.attribute.NominalToString : classification data
+** class weka.filters.unsupervised.attribute.NumericToBinary : regression data
+** class weka.filters.unsupervised.attribute.NumericToBinary : classification data
+** class weka.filters.supervised.attribute.AddClassification : regression data
+** class weka.filters.supervised.attribute.AddClassification : classification data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : regression data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : classification data
+** class weka.filters.unsupervised.attribute.Standardize : regression data
+** class weka.filters.unsupervised.attribute.Standardize : classification data
+** class weka.filters.unsupervised.attribute.ClassAssigner : regression data
+** class weka.filters.unsupervised.attribute.Wavelet : regression data
+** class weka.filters.unsupervised.attribute.Reorder : regression data
+** class weka.filters.unsupervised.attribute.Reorder : classification data
+** class weka.filters.supervised.attribute.AttributeSelection : regression data
+** class weka.filters.unsupervised.attribute.ClusterMembership : regression data
+** class weka.filters.unsupervised.instance.RemoveWithValues : regression data
+** class weka.filters.unsupervised.attribute.KernelFilter : regression data
+** class weka.filters.supervised.instance.StratifiedRemoveFolds : classification data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : classification data
+** class weka.filters.unsupervised.attribute.RemoveType : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : classification data
+** class weka.filters.unsupervised.attribute.Add : regression data
+** class weka.filters.unsupervised.attribute.Add : classification data
+** class weka.filters.unsupervised.instance.RemovePercentage : regression data
+** class weka.filters.unsupervised.instance.RemovePercentage : classification data
+** class weka.filters.unsupervised.attribute.NumericCleaner : regression data
+** class weka.filters.unsupervised.attribute.NumericCleaner : classification data
+** class weka.filters.unsupervised.instance.RemoveMisclassified : regression data
+** class weka.filters.unsupervised.instance.RemoveMisclassified : classification data
+** class weka.filters.unsupervised.instance.Randomize : regression data
+** class weka.filters.unsupervised.instance.Randomize : classification data
+** class weka.filters.unsupervised.instance.Normalize : regression data
+** class weka.filters.unsupervised.instance.Normalize : classification data
+** class weka.filters.unsupervised.attribute.Obfuscate : regression data
+** class weka.filters.unsupervised.attribute.Obfuscate : classification data
+
+* weka.classifiers.trees.REPTree
+** null : regression data
+** class weka.filters.supervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Copy : regression data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : regression data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : regression data
+** class weka.filters.unsupervised.attribute.Center : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.MultiFilter : regression data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : regression data
+** class weka.filters.AllFilter : regression data
+** class weka.filters.unsupervised.attribute.AddCluster : regression data
+** class weka.filters.unsupervised.attribute.FirstOrder : regression data
+** class weka.filters.unsupervised.attribute.NumericTransform : regression data
+** class weka.filters.unsupervised.instance.ReservoirSample : regression data
+** class weka.filters.unsupervised.attribute.RemoveUseless : regression data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : regression data
+** class weka.filters.unsupervised.attribute.PrincipalComponents : regression data
+** class weka.filters.unsupervised.attribute.Remove : regression data
+** class weka.filters.unsupervised.attribute.AddID : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.AddExpression : regression data
+** class weka.filters.unsupervised.attribute.MathExpression : regression data
+** class weka.filters.unsupervised.instance.SubsetByExpression : regression data
+** class weka.filters.unsupervised.attribute.RELAGGS : regression data
+** class weka.filters.unsupervised.instance.Resample : regression data
+** class weka.filters.unsupervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Discretize : regression data
+** class weka.filters.unsupervised.attribute.RandomSubset : regression data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.StringToWordVector : regression data
+** class weka.filters.unsupervised.attribute.InterquartileRange : regression data
+** class weka.filters.unsupervised.attribute.Normalize : regression data
+** class weka.filters.unsupervised.attribute.NominalToString : regression data
+** class weka.filters.unsupervised.attribute.NumericToBinary : regression data
+** class weka.filters.supervised.attribute.AddClassification : regression data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : regression data
+** class weka.filters.unsupervised.attribute.Standardize : regression data
+** class weka.filters.unsupervised.attribute.ClassAssigner : regression data
+** class weka.filters.unsupervised.attribute.Wavelet : regression data
+** class weka.filters.unsupervised.attribute.Reorder : regression data
+** class weka.filters.supervised.attribute.AttributeSelection : regression data
+** class weka.filters.unsupervised.attribute.ClusterMembership : regression data
+** class weka.filters.unsupervised.instance.RemoveWithValues : regression data
+** class weka.filters.unsupervised.attribute.KernelFilter : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : regression data
+** class weka.filters.unsupervised.attribute.Add : regression data
+** class weka.filters.unsupervised.instance.RemovePercentage : regression data
+** class weka.filters.unsupervised.attribute.NumericCleaner : regression data
+** class weka.filters.unsupervised.instance.Randomize : regression data
+** class weka.filters.unsupervised.instance.Normalize : regression data
+** class weka.filters.unsupervised.attribute.Obfuscate : regression data
+
+* weka.classifiers.meta.OrdinalClassClassifier
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.trees.J48graft
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.trees.NBTree
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.functions.GaussianProcesses
+** null : regression data
+** class weka.filters.supervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Copy : regression data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : regression data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : regression data
+** class weka.filters.unsupervised.attribute.Center : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : regression data
+** class weka.filters.MultiFilter : regression data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : regression data
+** class weka.filters.AllFilter : regression data
+** class weka.filters.unsupervised.attribute.AddCluster : regression data
+** class weka.filters.unsupervised.attribute.FirstOrder : regression data
+** class weka.filters.unsupervised.attribute.NumericTransform : regression data
+** class weka.filters.unsupervised.instance.ReservoirSample : regression data
+** class weka.filters.unsupervised.attribute.RemoveUseless : regression data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : regression data
+** class weka.filters.unsupervised.attribute.PrincipalComponents : regression data
+** class weka.filters.unsupervised.attribute.Remove : regression data
+** class weka.filters.unsupervised.attribute.AddID : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : regression data
+** class weka.filters.unsupervised.attribute.AddExpression : regression data
+** class weka.filters.unsupervised.attribute.MathExpression : regression data
+** class weka.filters.unsupervised.instance.SubsetByExpression : regression data
+** class weka.filters.unsupervised.attribute.RELAGGS : regression data
+** class weka.filters.unsupervised.instance.Resample : regression data
+** class weka.filters.unsupervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Discretize : regression data
+** class weka.filters.unsupervised.attribute.RandomSubset : regression data
+** class weka.filters.unsupervised.attribute.StringToWordVector : regression data
+** class weka.filters.unsupervised.attribute.InterquartileRange : regression data
+** class weka.filters.unsupervised.attribute.Normalize : regression data
+** class weka.filters.unsupervised.attribute.NominalToString : regression data
+** class weka.filters.unsupervised.attribute.NumericToBinary : regression data
+** class weka.filters.supervised.attribute.AddClassification : regression data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : regression data
+** class weka.filters.unsupervised.attribute.Standardize : regression data
+** class weka.filters.unsupervised.attribute.ClassAssigner : regression data
+** class weka.filters.unsupervised.attribute.Wavelet : regression data
+** class weka.filters.unsupervised.attribute.Reorder : regression data
+** class weka.filters.supervised.attribute.AttributeSelection : regression data
+** class weka.filters.unsupervised.attribute.ClusterMembership : regression data
+** class weka.filters.unsupervised.instance.RemoveWithValues : regression data
+** class weka.filters.unsupervised.attribute.KernelFilter : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : regression data
+** class weka.filters.unsupervised.attribute.Add : regression data
+** class weka.filters.unsupervised.instance.RemovePercentage : regression data
+** class weka.filters.unsupervised.attribute.NumericCleaner : regression data
+** class weka.filters.unsupervised.instance.Randomize : regression data
+** class weka.filters.unsupervised.instance.Normalize : regression data
+** class weka.filters.unsupervised.attribute.Obfuscate : regression data
+
+* weka.classifiers.meta.ClassificationViaRegression
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.bayes.BayesianLogisticRegression
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.trees.FT
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.meta.CostSensitiveClassifier
+
+* weka.classifiers.bayes.NaiveBayes
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.functions.SimpleLinearRegression
+** null : regression data
+** class weka.filters.supervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Copy : regression data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : regression data
+** class weka.filters.unsupervised.attribute.Center : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : regression data
+** class weka.filters.MultiFilter : regression data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : regression data
+** class weka.filters.AllFilter : regression data
+** class weka.filters.unsupervised.attribute.FirstOrder : regression data
+** class weka.filters.unsupervised.attribute.NumericTransform : regression data
+** class weka.filters.unsupervised.instance.ReservoirSample : regression data
+** class weka.filters.unsupervised.attribute.RemoveUseless : regression data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : regression data
+** class weka.filters.unsupervised.attribute.PrincipalComponents : regression data
+** class weka.filters.unsupervised.attribute.Remove : regression data
+** class weka.filters.unsupervised.attribute.AddID : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : regression data
+** class weka.filters.unsupervised.attribute.MathExpression : regression data
+** class weka.filters.unsupervised.instance.SubsetByExpression : regression data
+** class weka.filters.unsupervised.attribute.RELAGGS : regression data
+** class weka.filters.unsupervised.instance.Resample : regression data
+** class weka.filters.unsupervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.RandomSubset : regression data
+** class weka.filters.unsupervised.attribute.StringToWordVector : regression data
+** class weka.filters.unsupervised.attribute.Normalize : regression data
+** class weka.filters.unsupervised.attribute.NominalToString : regression data
+** class weka.filters.supervised.attribute.AddClassification : regression data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : regression data
+** class weka.filters.unsupervised.attribute.Standardize : regression data
+** class weka.filters.unsupervised.attribute.Wavelet : regression data
+** class weka.filters.unsupervised.attribute.Reorder : regression data
+** class weka.filters.supervised.attribute.AttributeSelection : regression data
+** class weka.filters.unsupervised.attribute.ClusterMembership : regression data
+** class weka.filters.unsupervised.instance.RemoveWithValues : regression data
+** class weka.filters.unsupervised.attribute.KernelFilter : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : regression data
+** class weka.filters.unsupervised.instance.RemovePercentage : regression data
+** class weka.filters.unsupervised.attribute.NumericCleaner : regression data
+** class weka.filters.unsupervised.instance.Randomize : regression data
+** class weka.filters.unsupervised.instance.Normalize : regression data
+** class weka.filters.unsupervised.attribute.Obfuscate : regression data
+
+* weka.classifiers.meta.StackingC
+** null : classification data
+** class weka.filters.supervised.attribute.NominalToBinary : classification data
+** class weka.filters.unsupervised.attribute.Copy : classification data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : classification data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : classification data
+** class weka.filters.supervised.instance.SMOTE : classification data
+** class weka.filters.unsupervised.instance.RemoveFolds : classification data
+** class weka.filters.unsupervised.attribute.Center : classification data
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.MultiFilter : classification data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : classification data
+** class weka.filters.AllFilter : classification data
+** class weka.filters.unsupervised.attribute.FirstOrder : classification data
+** class weka.filters.unsupervised.attribute.NumericTransform : classification data
+** class weka.filters.unsupervised.instance.ReservoirSample : classification data
+** class weka.filters.supervised.attribute.ClassOrder : classification data
+** class weka.filters.unsupervised.attribute.RemoveUseless : classification data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : classification data
+** class weka.filters.unsupervised.attribute.Remove : classification data
+** class weka.filters.unsupervised.attribute.AddID : classification data
+** class weka.filters.supervised.instance.SpreadSubsample : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.AddExpression : classification data
+** class weka.filters.unsupervised.attribute.MathExpression : classification data
+** class weka.filters.unsupervised.instance.Resample : classification data
+** class weka.filters.unsupervised.attribute.NominalToBinary : classification data
+** class weka.filters.unsupervised.attribute.Discretize : classification data
+** class weka.filters.unsupervised.attribute.RandomSubset : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : classification data
+** class weka.filters.unsupervised.attribute.InterquartileRange : classification data
+** class weka.filters.supervised.instance.Resample : classification data
+** class weka.filters.supervised.attribute.Discretize : classification data
+** class weka.filters.unsupervised.attribute.Normalize : classification data
+** class weka.filters.unsupervised.attribute.NominalToString : classification data
+** class weka.filters.unsupervised.attribute.NumericToBinary : classification data
+** class weka.filters.supervised.attribute.AddClassification : classification data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : classification data
+** class weka.filters.unsupervised.attribute.Standardize : classification data
+** class weka.filters.unsupervised.attribute.Reorder : classification data
+** class weka.filters.supervised.instance.StratifiedRemoveFolds : classification data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : classification data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : classification data
+** class weka.filters.unsupervised.attribute.Add : classification data
+** class weka.filters.unsupervised.instance.RemovePercentage : classification data
+** class weka.filters.unsupervised.attribute.NumericCleaner : classification data
+** class weka.filters.unsupervised.instance.RemoveMisclassified : classification data
+** class weka.filters.unsupervised.instance.Randomize : classification data
+** class weka.filters.unsupervised.instance.Normalize : classification data
+** class weka.filters.unsupervised.attribute.Obfuscate : classification data
+
+* weka.classifiers.functions.LinearRegression
+** null : regression data
+** class weka.filters.supervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Copy : regression data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : regression data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : regression data
+** class weka.filters.unsupervised.attribute.Center : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : regression data
+** class weka.filters.MultiFilter : regression data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : regression data
+** class weka.filters.AllFilter : regression data
+** class weka.filters.unsupervised.attribute.AddCluster : regression data
+** class weka.filters.unsupervised.attribute.FirstOrder : regression data
+** class weka.filters.unsupervised.attribute.NumericTransform : regression data
+** class weka.filters.unsupervised.instance.ReservoirSample : regression data
+** class weka.filters.unsupervised.attribute.RemoveUseless : regression data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : regression data
+** class weka.filters.unsupervised.attribute.PrincipalComponents : regression data
+** class weka.filters.unsupervised.attribute.Remove : regression data
+** class weka.filters.unsupervised.attribute.AddID : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : regression data
+** class weka.filters.unsupervised.attribute.AddExpression : regression data
+** class weka.filters.unsupervised.attribute.MathExpression : regression data
+** class weka.filters.unsupervised.instance.SubsetByExpression : regression data
+** class weka.filters.unsupervised.attribute.RELAGGS : regression data
+** class weka.filters.unsupervised.instance.Resample : regression data
+** class weka.filters.unsupervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Discretize : regression data
+** class weka.filters.unsupervised.attribute.RandomSubset : regression data
+** class weka.filters.unsupervised.attribute.StringToWordVector : regression data
+** class weka.filters.unsupervised.attribute.InterquartileRange : regression data
+** class weka.filters.unsupervised.attribute.Normalize : regression data
+** class weka.filters.unsupervised.attribute.NominalToString : regression data
+** class weka.filters.unsupervised.attribute.NumericToBinary : regression data
+** class weka.filters.supervised.attribute.AddClassification : regression data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : regression data
+** class weka.filters.unsupervised.attribute.Standardize : regression data
+** class weka.filters.unsupervised.attribute.ClassAssigner : regression data
+** class weka.filters.unsupervised.attribute.Wavelet : regression data
+** class weka.filters.unsupervised.attribute.Reorder : regression data
+** class weka.filters.supervised.attribute.AttributeSelection : regression data
+** class weka.filters.unsupervised.attribute.ClusterMembership : regression data
+** class weka.filters.unsupervised.instance.RemoveWithValues : regression data
+** class weka.filters.unsupervised.attribute.KernelFilter : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : regression data
+** class weka.filters.unsupervised.attribute.Add : regression data
+** class weka.filters.unsupervised.instance.RemovePercentage : regression data
+** class weka.filters.unsupervised.attribute.NumericCleaner : regression data
+** class weka.filters.unsupervised.instance.Randomize : regression data
+** class weka.filters.unsupervised.instance.Normalize : regression data
+** class weka.filters.unsupervised.attribute.Obfuscate : regression data
+
+* weka.classifiers.MultipleClassifiersCombiner
+* weka.classifiers.trees.ft.FTInnerNode
+* weka.classifiers.lazy.IB1
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.trees.RandomTree
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.meta.MetaCost
+
+* weka.classifiers.trees.DecisionStump
+** null : regression data
+** class weka.filters.supervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Copy : regression data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : regression data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : regression data
+** class weka.filters.unsupervised.attribute.Center : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.MultiFilter : regression data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : regression data
+** class weka.filters.AllFilter : regression data
+** class weka.filters.unsupervised.attribute.AddCluster : regression data
+** class weka.filters.unsupervised.attribute.FirstOrder : regression data
+** class weka.filters.unsupervised.attribute.NumericTransform : regression data
+** class weka.filters.unsupervised.instance.ReservoirSample : regression data
+** class weka.filters.unsupervised.attribute.RemoveUseless : regression data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : regression data
+** class weka.filters.unsupervised.attribute.PrincipalComponents : regression data
+** class weka.filters.unsupervised.attribute.Remove : regression data
+** class weka.filters.unsupervised.attribute.AddID : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.AddExpression : regression data
+** class weka.filters.unsupervised.attribute.MathExpression : regression data
+** class weka.filters.unsupervised.instance.SubsetByExpression : regression data
+** class weka.filters.unsupervised.attribute.RELAGGS : regression data
+** class weka.filters.unsupervised.instance.Resample : regression data
+** class weka.filters.unsupervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Discretize : regression data
+** class weka.filters.unsupervised.attribute.RandomSubset : regression data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.StringToWordVector : regression data
+** class weka.filters.unsupervised.attribute.InterquartileRange : regression data
+** class weka.filters.unsupervised.attribute.Normalize : regression data
+** class weka.filters.unsupervised.attribute.NominalToString : regression data
+** class weka.filters.unsupervised.attribute.NumericToBinary : regression data
+** class weka.filters.supervised.attribute.AddClassification : regression data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : regression data
+** class weka.filters.unsupervised.attribute.Standardize : regression data
+** class weka.filters.unsupervised.attribute.ClassAssigner : regression data
+** class weka.filters.unsupervised.attribute.Wavelet : regression data
+** class weka.filters.unsupervised.attribute.Reorder : regression data
+** class weka.filters.supervised.attribute.AttributeSelection : regression data
+** class weka.filters.unsupervised.attribute.ClusterMembership : regression data
+** class weka.filters.unsupervised.instance.RemoveWithValues : regression data
+** class weka.filters.unsupervised.attribute.KernelFilter : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : regression data
+Cannot build model (only class attribute present in data!), using ZeroR model instead!
+** class weka.filters.unsupervised.attribute.Add : regression data
+** class weka.filters.unsupervised.instance.RemovePercentage : regression data
+** class weka.filters.unsupervised.attribute.NumericCleaner : regression data
+** class weka.filters.unsupervised.instance.Randomize : regression data
+** class weka.filters.unsupervised.instance.Normalize : regression data
+** class weka.filters.unsupervised.attribute.Obfuscate : regression data
+
+* weka.classifiers.mi.MINND
+
+* weka.classifiers.meta.Decorate
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.bayes.NaiveBayesSimple
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.meta.RegressionByDiscretization
+** null : regression data
+** class weka.filters.supervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Copy : regression data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : regression data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : regression data
+** class weka.filters.unsupervised.attribute.Center : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : regression data
+** class weka.filters.MultiFilter : regression data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : regression data
+** class weka.filters.AllFilter : regression data
+** class weka.filters.unsupervised.attribute.AddCluster : regression data
+** class weka.filters.unsupervised.attribute.FirstOrder : regression data
+** class weka.filters.unsupervised.attribute.NumericTransform : regression data
+** class weka.filters.unsupervised.instance.ReservoirSample : regression data
+** class weka.filters.unsupervised.attribute.RemoveUseless : regression data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : regression data
+** class weka.filters.unsupervised.attribute.PrincipalComponents : regression data
+** class weka.filters.unsupervised.attribute.Remove : regression data
+** class weka.filters.unsupervised.attribute.AddID : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : regression data
+** class weka.filters.unsupervised.attribute.AddExpression : regression data
+** class weka.filters.unsupervised.attribute.MathExpression : regression data
+** class weka.filters.unsupervised.instance.SubsetByExpression : regression data
+** class weka.filters.unsupervised.attribute.RELAGGS : regression data
+** class weka.filters.unsupervised.instance.Resample : regression data
+** class weka.filters.unsupervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Discretize : regression data
+** class weka.filters.unsupervised.attribute.RandomSubset : regression data
+** class weka.filters.unsupervised.attribute.StringToWordVector : regression data
+** class weka.filters.unsupervised.attribute.InterquartileRange : regression data
+** class weka.filters.unsupervised.attribute.Normalize : regression data
+** class weka.filters.unsupervised.attribute.NominalToString : regression data
+** class weka.filters.unsupervised.attribute.NumericToBinary : regression data
+** class weka.filters.supervised.attribute.AddClassification : regression data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : regression data
+** class weka.filters.unsupervised.attribute.Standardize : regression data
+** class weka.filters.unsupervised.attribute.ClassAssigner : regression data
+** class weka.filters.unsupervised.attribute.Wavelet : regression data
+** class weka.filters.unsupervised.attribute.Reorder : regression data
+** class weka.filters.supervised.attribute.AttributeSelection : regression data
+** class weka.filters.unsupervised.attribute.ClusterMembership : regression data
+** class weka.filters.unsupervised.instance.RemoveWithValues : regression data
+** class weka.filters.unsupervised.attribute.KernelFilter : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : regression data
+** class weka.filters.unsupervised.attribute.Add : regression data
+** class weka.filters.unsupervised.instance.RemovePercentage : regression data
+** class weka.filters.unsupervised.attribute.NumericCleaner : regression data
+** class weka.filters.unsupervised.instance.Randomize : regression data
+** class weka.filters.unsupervised.instance.Normalize : regression data
+** class weka.filters.unsupervised.attribute.Obfuscate : regression data
+
+* weka.classifiers.meta.ClassificationViaClustering
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.meta.AdditiveRegression
+** null : regression data
+** class weka.filters.supervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Copy : regression data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : regression data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : regression data
+** class weka.filters.unsupervised.attribute.Center : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : regression data
+** class weka.filters.MultiFilter : regression data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : regression data
+** class weka.filters.AllFilter : regression data
+** class weka.filters.unsupervised.attribute.AddCluster : regression data
+** class weka.filters.unsupervised.attribute.FirstOrder : regression data
+** class weka.filters.unsupervised.attribute.NumericTransform : regression data
+** class weka.filters.unsupervised.instance.ReservoirSample : regression data
+** class weka.filters.unsupervised.attribute.RemoveUseless : regression data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : regression data
+** class weka.filters.unsupervised.attribute.PrincipalComponents : regression data
+** class weka.filters.unsupervised.attribute.Remove : regression data
+** class weka.filters.unsupervised.attribute.AddID : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : regression data
+** class weka.filters.unsupervised.attribute.AddExpression : regression data
+** class weka.filters.unsupervised.attribute.MathExpression : regression data
+** class weka.filters.unsupervised.instance.SubsetByExpression : regression data
+** class weka.filters.unsupervised.attribute.RELAGGS : regression data
+** class weka.filters.unsupervised.instance.Resample : regression data
+** class weka.filters.unsupervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Discretize : regression data
+** class weka.filters.unsupervised.attribute.RandomSubset : regression data
+** class weka.filters.unsupervised.attribute.StringToWordVector : regression data
+** class weka.filters.unsupervised.attribute.InterquartileRange : regression data
+** class weka.filters.unsupervised.attribute.Normalize : regression data
+** class weka.filters.unsupervised.attribute.NominalToString : regression data
+** class weka.filters.unsupervised.attribute.NumericToBinary : regression data
+** class weka.filters.supervised.attribute.AddClassification : regression data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : regression data
+** class weka.filters.unsupervised.attribute.Standardize : regression data
+** class weka.filters.unsupervised.attribute.ClassAssigner : regression data
+** class weka.filters.unsupervised.attribute.Wavelet : regression data
+** class weka.filters.unsupervised.attribute.Reorder : regression data
+** class weka.filters.supervised.attribute.AttributeSelection : regression data
+** class weka.filters.unsupervised.attribute.ClusterMembership : regression data
+** class weka.filters.unsupervised.instance.RemoveWithValues : regression data
+** class weka.filters.unsupervised.attribute.KernelFilter : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : regression data
+** class weka.filters.unsupervised.attribute.Add : regression data
+** class weka.filters.unsupervised.instance.RemovePercentage : regression data
+** class weka.filters.unsupervised.attribute.NumericCleaner : regression data
+** class weka.filters.unsupervised.instance.Randomize : regression data
+** class weka.filters.unsupervised.instance.Normalize : regression data
+** class weka.filters.unsupervised.attribute.Obfuscate : regression data
+
+* weka.classifiers.trees.LMT
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.pmml.consumer.GeneralRegression
+* weka.classifiers.rules.Ridor
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.RandomizableSingleClassifierEnhancer
+* weka.classifiers.functions.Winnow
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.trees.m5.RuleNode
+* weka.classifiers.functions.SMOreg
+** null : regression data
+** class weka.filters.supervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Copy : regression data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : regression data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : regression data
+** class weka.filters.unsupervised.attribute.Center : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : regression data
+** class weka.filters.MultiFilter : regression data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : regression data
+** class weka.filters.AllFilter : regression data
+** class weka.filters.unsupervised.attribute.AddCluster : regression data
+** class weka.filters.unsupervised.attribute.FirstOrder : regression data
+** class weka.filters.unsupervised.attribute.NumericTransform : regression data
+** class weka.filters.unsupervised.instance.ReservoirSample : regression data
+** class weka.filters.unsupervised.attribute.RemoveUseless : regression data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : regression data
+** class weka.filters.unsupervised.attribute.PrincipalComponents : regression data
+** class weka.filters.unsupervised.attribute.Remove : regression data
+** class weka.filters.unsupervised.attribute.AddID : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : regression data
+** class weka.filters.unsupervised.attribute.AddExpression : regression data
+** class weka.filters.unsupervised.attribute.MathExpression : regression data
+** class weka.filters.unsupervised.instance.SubsetByExpression : regression data
+** class weka.filters.unsupervised.attribute.RELAGGS : regression data
+** class weka.filters.unsupervised.instance.Resample : regression data
+** class weka.filters.unsupervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Discretize : regression data
+** class weka.filters.unsupervised.attribute.RandomSubset : regression data
+** class weka.filters.unsupervised.attribute.StringToWordVector : regression data
+** class weka.filters.unsupervised.attribute.InterquartileRange : regression data
+** class weka.filters.unsupervised.attribute.Normalize : regression data
+** class weka.filters.unsupervised.attribute.NominalToString : regression data
+** class weka.filters.unsupervised.attribute.NumericToBinary : regression data
+** class weka.filters.supervised.attribute.AddClassification : regression data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : regression data
+** class weka.filters.unsupervised.attribute.Standardize : regression data
+** class weka.filters.unsupervised.attribute.ClassAssigner : regression data
+** class weka.filters.unsupervised.attribute.Wavelet : regression data
+** class weka.filters.unsupervised.attribute.Reorder : regression data
+** class weka.filters.supervised.attribute.AttributeSelection : regression data
+** class weka.filters.unsupervised.attribute.ClusterMembership : regression data
+** class weka.filters.unsupervised.instance.RemoveWithValues : regression data
+** class weka.filters.unsupervised.attribute.KernelFilter : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : regression data
+** class weka.filters.unsupervised.attribute.Add : regression data
+** class weka.filters.unsupervised.instance.RemovePercentage : regression data
+** class weka.filters.unsupervised.attribute.NumericCleaner : regression data
+** class weka.filters.unsupervised.instance.Randomize : regression data
+** class weka.filters.unsupervised.instance.Normalize : regression data
+** class weka.filters.unsupervised.attribute.Obfuscate : regression data
+
+* weka.classifiers.mi.CitationKNN
+
+* weka.classifiers.trees.lmt.LMTNode
+* weka.classifiers.functions.SPegasos
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.rules.M5Rules
+** null : regression data
+** class weka.filters.supervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Copy : regression data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : regression data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : regression data
+** class weka.filters.unsupervised.attribute.Center : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : regression data
+** class weka.filters.MultiFilter : regression data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : regression data
+** class weka.filters.AllFilter : regression data
+** class weka.filters.unsupervised.attribute.AddCluster : regression data
+** class weka.filters.unsupervised.attribute.FirstOrder : regression data
+** class weka.filters.unsupervised.attribute.NumericTransform : regression data
+** class weka.filters.unsupervised.instance.ReservoirSample : regression data
+** class weka.filters.unsupervised.attribute.RemoveUseless : regression data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : regression data
+** class weka.filters.unsupervised.attribute.PrincipalComponents : regression data
+** class weka.filters.unsupervised.attribute.Remove : regression data
+** class weka.filters.unsupervised.attribute.AddID : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : regression data
+** class weka.filters.unsupervised.attribute.AddExpression : regression data
+** class weka.filters.unsupervised.attribute.MathExpression : regression data
+** class weka.filters.unsupervised.instance.SubsetByExpression : regression data
+** class weka.filters.unsupervised.attribute.RELAGGS : regression data
+** class weka.filters.unsupervised.instance.Resample : regression data
+** class weka.filters.unsupervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Discretize : regression data
+** class weka.filters.unsupervised.attribute.RandomSubset : regression data
+** class weka.filters.unsupervised.attribute.StringToWordVector : regression data
+** class weka.filters.unsupervised.attribute.InterquartileRange : regression data
+** class weka.filters.unsupervised.attribute.Normalize : regression data
+** class weka.filters.unsupervised.attribute.NominalToString : regression data
+** class weka.filters.unsupervised.attribute.NumericToBinary : regression data
+** class weka.filters.supervised.attribute.AddClassification : regression data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : regression data
+** class weka.filters.unsupervised.attribute.Standardize : regression data
+** class weka.filters.unsupervised.attribute.ClassAssigner : regression data
+** class weka.filters.unsupervised.attribute.Wavelet : regression data
+** class weka.filters.unsupervised.attribute.Reorder : regression data
+** class weka.filters.supervised.attribute.AttributeSelection : regression data
+** class weka.filters.unsupervised.attribute.ClusterMembership : regression data
+** class weka.filters.unsupervised.instance.RemoveWithValues : regression data
+** class weka.filters.unsupervised.attribute.KernelFilter : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : regression data
+** class weka.filters.unsupervised.attribute.Add : regression data
+** class weka.filters.unsupervised.instance.RemovePercentage : regression data
+** class weka.filters.unsupervised.attribute.NumericCleaner : regression data
+** class weka.filters.unsupervised.instance.Randomize : regression data
+** class weka.filters.unsupervised.instance.Normalize : regression data
+** class weka.filters.unsupervised.attribute.Obfuscate : regression data
+
+* weka.classifiers.mi.MISMO
+
+* weka.classifiers.trees.ft.FTNode
+* weka.classifiers.trees.RandomForest
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.mi.MDD
+
+* weka.classifiers.meta.RotationForest
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.trees.ADTree
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+
+* weka.classifiers.rules.DecisionTable
+** null : regression data
+** class weka.filters.supervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Copy : regression data
+** class weka.filters.unsupervised.attribute.PKIDiscretize : regression data
+** class weka.filters.unsupervised.instance.SparseToNonSparse : regression data
+** class weka.filters.unsupervised.attribute.Center : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : regression data
+** class weka.filters.unsupervised.attribute.StringToNominal : classification data
+** class weka.filters.MultiFilter : regression data
+** class weka.filters.unsupervised.instance.NonSparseToSparse : regression data
+** class weka.filters.AllFilter : regression data
+** class weka.filters.unsupervised.attribute.AddCluster : regression data
+** class weka.filters.unsupervised.attribute.FirstOrder : regression data
+** class weka.filters.unsupervised.attribute.NumericTransform : regression data
+** class weka.filters.unsupervised.instance.ReservoirSample : regression data
+** class weka.filters.unsupervised.attribute.RemoveUseless : regression data
+** class weka.filters.unsupervised.attribute.PartitionedMultiFilter : regression data
+** class weka.filters.unsupervised.attribute.PrincipalComponents : regression data
+** class weka.filters.unsupervised.attribute.Remove : regression data
+** class weka.filters.unsupervised.attribute.AddID : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : regression data
+** class weka.filters.unsupervised.attribute.RandomProjection : classification data
+** class weka.filters.unsupervised.attribute.AddExpression : regression data
+** class weka.filters.unsupervised.attribute.MathExpression : regression data
+** class weka.filters.unsupervised.instance.SubsetByExpression : regression data
+** class weka.filters.unsupervised.attribute.RELAGGS : regression data
+** class weka.filters.unsupervised.instance.Resample : regression data
+** class weka.filters.unsupervised.attribute.NominalToBinary : regression data
+** class weka.filters.unsupervised.attribute.Discretize : regression data
+** class weka.filters.unsupervised.attribute.RandomSubset : regression data
+** class weka.filters.unsupervised.attribute.NumericToNominal : regression data
+** class weka.filters.unsupervised.attribute.StringToWordVector : regression data
+** class weka.filters.unsupervised.attribute.InterquartileRange : regression data
+** class weka.filters.unsupervised.attribute.Normalize : regression data
+** class weka.filters.unsupervised.attribute.NominalToString : regression data
+** class weka.filters.unsupervised.attribute.NumericToBinary : regression data
+** class weka.filters.supervised.attribute.AddClassification : regression data
+** class weka.filters.unsupervised.attribute.ReplaceMissingValues : regression data
+** class weka.filters.unsupervised.attribute.Standardize : regression data
+** class weka.filters.unsupervised.attribute.ClassAssigner : regression data
+** class weka.filters.unsupervised.attribute.Wavelet : regression data
+** class weka.filters.unsupervised.attribute.Reorder : regression data
+** class weka.filters.supervised.attribute.AttributeSelection : regression data
+** class weka.filters.unsupervised.attribute.ClusterMembership : regression data
+** class weka.filters.unsupervised.instance.RemoveWithValues : regression data
+** class weka.filters.unsupervised.attribute.KernelFilter : regression data
+** class weka.filters.unsupervised.attribute.TimeSeriesDelta : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : regression data
+** class weka.filters.unsupervised.attribute.RemoveType : classification data
+** class weka.filters.unsupervised.attribute.TimeSeriesTranslate : regression data
+** class weka.filters.unsupervised.attribute.Add : regression data
+** class weka.filters.unsupervised.instance.RemovePercentage : regression data
+** class weka.filters.unsupervised.attribute.NumericCleaner : regression data
+** class weka.filters.unsupervised.instance.Randomize : regression data
+** class weka.filters.unsupervised.instance.Normalize : regression data
+** class weka.filters.unsupervised.attribute.Obfuscate : regression data
 
 
 ==== Clustering algorithms available from Weka are:

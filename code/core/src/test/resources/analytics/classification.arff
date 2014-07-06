@@ -1,13 +1,11 @@
-@relation sms_test
+@relation instances
 
-@attribute class {negative,positive}
-@attribute text String
+@attribute @class@ {negative,positive}
+@attribute @text@ string
 
 @data
-positive,'positive'
-negative,'negative'
-positive,'my beautiful little girl'
 negative,'you selfish stupid woman'
+positive,'my beautiful little girl'
 positive,'Go until jurong point, crazy.. Available only in bugis n great world la e buffet... Cine there got amore wat...'
 positive,'Ok lar... Joking wif u oni...'
 negative,'Free entry in 2 a wkly comp to win FA Cup final tkts 21st May 2005. Text FA to 87121 to receive entry question(std txt rate)T&C\'s apply 08452810075over18\'s'
@@ -39,7 +37,7 @@ positive,'Did you catch the bus ? Are you frying an egg ? Did you make a tea? Ar
 positive,'I\'m back &amp; we\'re packing the car now, I\'ll let you know if there\'s room'
 positive,'Ahhh. Work. I vaguely remember that! What does it feel like? Lol'
 positive,'Wait that\'s still not all that clear, were you not sure about me being sarcastic or that that\'s why x doesn\'t want to live with us'
-positive,'Yeah he got in at 2 and was v apologetic. n had fallen out and she was actin like spoilt child and he got caught up in that. Till 2! But we won\'t go there! Not doing too badly cheers. You? ‘
+positive,'Yeah he got in at 2 and was v apologetic. n had fallen out and she was actin like spoilt child and he got caught up in that. Till 2! But we won\'t go there! Not doing too badly cheers. You? ‘'
 positive,'K tell me anything about you.'
 positive,'For fear of fainting with the of all that housework you just did? Quick have a cuppa'
 negative,'Thanks for your subscription to Ringtone UK your mobile will be charged £5/month Please confirm by replying YES or NO. If you reply NO you will not be charged'
@@ -61,10 +59,10 @@ positive,'U don\'t know how stubborn I am. I didn\'t even want to go to the hosp
 positive,'What you thinked about me. First time you saw me in class.'
 positive,'A gram usually runs like  &lt;#&gt; , a half eighth is smarter though and gets you almost a whole second gram for  &lt;#&gt;'
 positive,'K fyi x has a ride early tomorrow morning but he\'s crashing at our place tonight'
-positive,'Wow. I never realized that you were so embarassed by your accomodations. I thought you liked it, since i was doing the best i could and you always seemed so happy about "the cave". I\'m sorry I didn\'t and don\'t have more to give. I\'m sorry i offered. I\'m sorry your room was so embarassing.'
+positive,'Wow. I never realized that you were so embarassed by your accomodations. I thought you liked it, since i was doing the best i could and you always seemed so happy about \"the cave\". I\'m sorry I didn\'t and don\'t have more to give. I\'m sorry i offered. I\'m sorry your room was so embarassing.'
 negative,'SMS. ac Sptv: The New Jersey Devils and the Detroit Red Wings play Ice Hockey. Correct or Incorrect? End? Reply END SPTV'
 positive,'Do you know what Mallika Sherawat did yesterday? Find out now @  &lt;URL&gt;'
-negative,'Congrats! 1 year special cinema pass for 2 is yours. call 09061209465 now! C Suprman V, Matrix3, StarWars3, etc all 4 FREE! bx420-ip4-5we. 150pm. Dont miss out! ‘
+negative,'Congrats! 1 year special cinema pass for 2 is yours. call 09061209465 now! C Suprman V, Matrix3, StarWars3, etc all 4 FREE! bx420-ip4-5we. 150pm. Dont miss out! ‘'
 positive,'Sorry, I\'ll call later in meeting.'
 positive,'Tell where you reached'
 positive,'Yes..gauti and sehwag out of odi series.'
@@ -74,9 +72,9 @@ positive,'Its a part of checking IQ'
 positive,'Sorry my roommates took forever, it ok if I come by now?'
 positive,'Ok lar i double check wif da hair dresser already he said wun cut v short. He said will cut until i look nice.'
 negative,'As a valued customer, I am pleased to advise you that following recent review of your Mob No. you are awarded with a £1500 Bonus Prize, call 09066364589'
-positive,'Today is "song dedicated day.." Which song will u dedicate for me? Send this to all ur valuable frnds but first rply me...'
+positive,'Today is \"song dedicated day..\" Which song will u dedicate for me? Send this to all ur valuable frnds but first rply me...'
 negative,'Urgent UR awarded a complimentary trip to EuroDisinc Trav, Aco&Entry41 Or £1000. To claim txt DIS to 87121 18+6*£1.50(moreFrmMob. ShrAcomOrSglSuplt)10, LS1 3AJ'
-negative,'Did you hear about the new "Divorce Barbie"? It comes with all of Ken\'s stuff!'
+negative,'Did you hear about the new \"Divorce Barbie\"? It comes with all of Ken\'s stuff!'
 positive,'I plane to give on this month end.'
 positive,'Wah lucky man... Then can save money... Hee...'
 positive,'Finished class where are you.'
@@ -89,7 +87,7 @@ positive,'I like you peoples very much:) but am very shy pa.'
 positive,'Does not operate after  &lt;#&gt;  or what'
 positive,'Its not the same here. Still looking for a job. How much do Ta\'s earn there.'
 positive,'Sorry, I\'ll call later'
-positive,'K. Did you call me just now ah? ‘
+positive,'K. Did you call me just now ah? ‘'
 positive,'Ok i am on the way to home hi hi'
 positive,'You will be in the place of that man'
 positive,'Yup next stop.'
@@ -99,14 +97,14 @@ positive,'Yes I started to send requests to make it but pain came back so I\'m b
 positive,'I\'m really not up to it still tonight babe'
 positive,'Ela kano.,il download, come wen ur free..'
 positive,'Yeah do! Don\'t stand to close tho- you\'ll catch something!'
-positive,'Sorry to be a pain. Is it ok if we meet another night? I spent late afternoon in casualty and that means i haven\'t done any of y stuff42moro and that includes all my time sheets and that. Sorry. ‘
+positive,'Sorry to be a pain. Is it ok if we meet another night? I spent late afternoon in casualty and that means i haven\'t done any of y stuff42moro and that includes all my time sheets and that. Sorry. ‘'
 positive,'Smile in Pleasure Smile in Pain Smile when trouble pours like Rain Smile when sum1 Hurts U Smile becoz SOMEONE still Loves to see u Smiling!!'
 negative,'Please call our customer service representative on 0800 169 6031 between 10am-9pm as you have WON a guaranteed £1000 cash or £5000 prize!'
 positive,'Havent planning to buy later. I check already lido only got 530 show in e afternoon. U finish work already?'
-negative,'Your free ringtone is waiting to be collected. Simply text the password "MIX" to 85069 to verify. Get Usher and Britney. FML, PO Box 5249, MK17 92H. 450Ppw 16'
+negative,'Your free ringtone is waiting to be collected. Simply text the password \"MIX\" to 85069 to verify. Get Usher and Britney. FML, PO Box 5249, MK17 92H. 450Ppw 16'
 positive,'Watching telugu movie..wat abt u?'
 positive,'i see. When we finish we have loads of loans to pay'
-positive,'Hi. Wk been ok - on hols now! Yes on for a bit of a run. Forgot that i have hairdressers appointment at four so need to get home n shower beforehand. Does that cause prob for u?"‘
+positive,'Hi. Wk been ok - on hols now! Yes on for a bit of a run. Forgot that i have hairdressers appointment at four so need to get home n shower beforehand. Does that cause prob for u?\"‘'
 positive,'I see a cup of coffee animation'
 positive,'Please don\'t text me anymore. I have nothing else to say.'
 positive,'Okay name ur price as long as its legal! Wen can I pick them up? Y u ave x ams xx'
@@ -125,14 +123,14 @@ positive,'I\'m ok wif it cos i like 2 try new things. But i scared u dun like ma
 negative,'GENT! We are trying to contact you. Last weekends draw shows that you won a £1000 prize GUARANTEED. Call 09064012160. Claim Code K52. Valid 12hrs only. 150ppm'
 positive,'Wa, ur openin sentence very formal... Anyway, i\'m fine too, juz tt i\'m eatin too much n puttin on weight...Haha... So anythin special happened?'
 positive,'As I entered my cabin my PA said, \'\' Happy B\'day Boss !!\'\'. I felt special. She askd me 4 lunch. After lunch she invited me to her apartment. We went there.'
-negative,'You are a winner U have been specially selected 2 receive £1000 or a 4* holiday (flights inc) speak to a live operator 2 claim 0871277810910p/min (18+) ‘
-positive,'Goodo! Yes we must speak friday - egg-potato ratio for tortilla needed! ‘
+negative,'You are a winner U have been specially selected 2 receive £1000 or a 4* holiday (flights inc) speak to a live operator 2 claim 0871277810910p/min (18+) ‘'
+positive,'Goodo! Yes we must speak friday - egg-potato ratio for tortilla needed! ‘'
 positive,'Hmm...my uncle just informed me that he\'s paying the school directly. So pls buy food.'
 negative,'PRIVATE! Your 2004 Account Statement for 07742676969 shows 786 unredeemed Bonus Points. To claim call 08719180248 Identifier Code: 45239 Expires'
 negative,'URGENT! Your Mobile No. was awarded £2000 Bonus Caller Prize on 5/9/03 This is our final try to contact U! Call from Landline 09064019788 BOX42WR29C, 150PPM'
 positive,'here is my new address -apples&pairs&all that malarky'
 negative,'Todays Voda numbers ending 7548 are selected to receive a $350 award. If you have a match please call 08712300220 quoting claim code 4041 standard rates app'
-positive,'I am going to sao mu today. Will be done only at 12 ‘
+positive,'I am going to sao mu today. Will be done only at 12 ‘'
 positive,'Ü predict wat time ü\'ll finish buying?'
 positive,'Good stuff, will do.'
 positive,'Just so that you know,yetunde hasn\'t sent money yet. I just sent her a text not to bother sending. So its over, you dont have to involve yourself in anything. I shouldn\'t have imposed anything on you in the first place so for that, i apologise.'
@@ -151,7 +149,7 @@ negative,'You\'ll not rcv any more msgs from the chat svc. For FREE Hardcore ser
 positive,'Got c... I lazy to type... I forgot ü in lect... I saw a pouch but like not v nice...'
 positive,'K, text me when you\'re on the way'
 positive,'Sir, Waiting for your mail.'
-positive,'A swt thought: "Nver get tired of doing little things 4 lovable persons.." Coz..somtimes those little things occupy d biggest part in their Hearts.. Gud ni8'
+positive,'A swt thought: \"Nver get tired of doing little things 4 lovable persons..\" Coz..somtimes those little things occupy d biggest part in their Hearts.. Gud ni8'
 positive,'I know you are. Can you pls open the back?'
 positive,'Yes see ya not on the dot'
 positive,'Whats the staff name who is taking class for us?'
@@ -177,12 +175,12 @@ negative,'BangBabes Ur order is on the way. U SHOULD receive a Service Msg 2 dow
 positive,'I place all ur points on e cultures module already.'
 negative,'URGENT! We are trying to contact you. Last weekends draw shows that you have won a £900 prize GUARANTEED. Call 09061701939. Claim code S89. Valid 12hrs only'
 positive,'Hi frnd, which is best way to avoid missunderstding wit our beloved one\'s?'
-positive,'Great escape. I fancy the bridge but needs her lager. See you tomo ‘
+positive,'Great escape. I fancy the bridge but needs her lager. See you tomo ‘'
 positive,'Yes :)it completely in out of form:)clark also utter waste.'
 positive,'Sir, I need AXIS BANK account no and bank address.'
-positive,'Hmmm.. Thk sure got time to hop ard... Ya, can go 4 free abt... Muz call u to discuss liao... ‘
-positive,'What time you coming down later? ‘
-positive,'Bloody hell, cant believe you forgot my surname Mr . Ill give u a clue, its spanish and begins with m... ‘
+positive,'Hmmm.. Thk sure got time to hop ard... Ya, can go 4 free abt... Muz call u to discuss liao... ‘'
+positive,'What time you coming down later? ‘'
+positive,'Bloody hell, cant believe you forgot my surname Mr . Ill give u a clue, its spanish and begins with m... ‘'
 positive,'Well, i\'m gonna finish my bath now. Have a good...fine night.'
 positive,'Let me know when you\'ve got the money so carlos can make the call'
 positive,'U still going to the mall?'
@@ -206,5 +204,5 @@ positive,'It will stop on itself. I however suggest she stays with someone that 
 positive,'How are you doing? Hope you\'ve settled in for the new school year. Just wishin you a gr8 day'
 positive,'Gud mrng dear hav a nice day'
 positive,'Did u got that persons story'
-positive,'is your positivester dead? Hey so tmr i meet you at 1pm orchard mrt? ‘
+positive,'is your positivester dead? Hey so tmr i meet you at 1pm orchard mrt? ‘'
 positive,'Hi its Kate how is your evening? I hope i can see you tomorrow for a bit but i have to bloody babyjontet! Txt back if u can. :) xxx'

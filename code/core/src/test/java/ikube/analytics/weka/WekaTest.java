@@ -47,7 +47,7 @@ public class WekaTest extends AbstractTest {
 		double result = classifier.classifyInstance(filteredInstance);
 		String classificationClass = instances.classAttribute().value((int) result);
 
-		assertEquals(IConstants.NEGATIVE, classificationClass);
+		assertEquals(IConstants.POSITIVE, classificationClass);
 	}
 
 	@Test
@@ -135,8 +135,7 @@ public class WekaTest extends AbstractTest {
 			analysis = wekaClassifier.analyze(analysis);
 			//System.out.println("Output : " + Arrays.deepToString((Object[]) analysis.getOutput()));
             double[] outputs = (double[]) analysis.getOutput();
-            System.out.println("Class : " + analysis.getClazz());
-            System.out.println("Class : " + Arrays.toString(analysis.getClassesOrClusters()));
+            System.out.println("Class : " + analysis.getClazz() + ", " + Arrays.toString(analysis.getClassesOrClusters()));
             for (final double output : outputs) {
                 System.out.println("Output : " + output);
             }

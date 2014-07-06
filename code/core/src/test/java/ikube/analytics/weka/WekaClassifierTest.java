@@ -7,6 +7,7 @@ import ikube.model.Context;
 import ikube.toolkit.ThreadUtilities;
 import mockit.Deencapsulation;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import weka.classifiers.functions.SMO;
 import weka.core.Instance;
@@ -41,7 +42,7 @@ public class WekaClassifierTest extends AbstractTest {
         context = new Context<>();
         context.setAlgorithm(SMO.class.newInstance());
         context.setFilter(StringToWordVector.class.newInstance());
-        context.setName("sentiment-smo-en-test");
+        context.setName("classification");
         context.setMaxTraining(10000);
 
         wekaClassifier = new WekaClassifier() {
@@ -57,7 +58,7 @@ public class WekaClassifierTest extends AbstractTest {
     public void init() throws Exception {
         SMO smo = mock(SMO.class);
         Context context = mock(Context.class);
-        when(context.getName()).thenReturn("sentiment-smo-en-test");
+        when(context.getName()).thenReturn("classification");
         when(context.getAlgorithm()).thenReturn(smo);
         when(context.getOptions()).thenReturn(new String[]{"-R", "8"});
         wekaClassifier.init(context);
@@ -124,7 +125,7 @@ public class WekaClassifierTest extends AbstractTest {
         double classOrCluster = wekaClassifier.classOrCluster(instance);
         assertEquals(0.0, classOrCluster);
 
-        instance = instances.instance(2188);
+        instance = instances.instance(150);
         classOrCluster = wekaClassifier.classOrCluster(instance);
         assertEquals(1.0, classOrCluster);
     }
@@ -139,7 +140,7 @@ public class WekaClassifierTest extends AbstractTest {
         assertEquals(1.0, distributionForInstance[0]);
         assertEquals(0.0, distributionForInstance[1]);
 
-        instance = instances.instance(2188);
+        instance = instances.instance(180);
 
         distributionForInstance = wekaClassifier.distributionForInstance(instance);
         assertEquals(0.0, distributionForInstance[0]);
@@ -220,8 +221,8 @@ public class WekaClassifierTest extends AbstractTest {
     public void classes() throws Exception {
         Object[] classes = wekaClassifier.classesOrClusters();
         assertEquals(2, classes.length);
-        assertEquals(IConstants.POSITIVE, classes[0]);
-        assertEquals(IConstants.NEGATIVE, classes[1]);
+        assertEquals(IConstants.NEGATIVE, classes[0]);
+        assertEquals(IConstants.POSITIVE, classes[1]);
     }
 
 }
