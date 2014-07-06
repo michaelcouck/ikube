@@ -45,8 +45,8 @@ public class AnalyticsServiceTest extends AbstractTest {
     private IAnalyzer analyzer;
     @Mock
     private Analysis<?, ?> analysis;
-    @Mock
-    private AnalyzerManager analyzerManager;
+    /*@Mock
+    private AnalyzerManager analyzerManager;*/
     @Mock
     private SMO smo;
     @Mock
@@ -77,14 +77,15 @@ public class AnalyticsServiceTest extends AbstractTest {
 
         Map<String, Context> contexts = new HashMap<>();
         contexts.put(context.getName(), context);
-        when(analyzerManager.getContexts()).thenReturn(contexts);
+        // when(analyzerManager.getContexts()).thenReturn(contexts);
+        Deencapsulation.setField(analyticsService, "contexts", contexts);
 
         when(analyticsServiceMock.getAnalyzer(any(String.class))).thenReturn(analyzer);
         when(analyticsServiceMock.getContexts()).thenReturn(contexts);
 
         ApplicationContextManagerMock.setBean(IAnalyticsService.class, analyticsServiceMock);
         Deencapsulation.setField(analyticsService, "clusterManager", clusterManager);
-        Deencapsulation.setField(analyticsService, "analyzerManager", analyzerManager);
+        // Deencapsulation.setField(analyticsService, "analyzerManager", analyzerManager);
     }
 
     @After

@@ -12,62 +12,92 @@
 			http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util.xsd">
 
-    <!-- A dummy clusterer based on some test data as an example. -->
+    <!-- START CLUSTERER DEFINITION: -->
+    <!--
+        This is the ikube wrapper for the Weka clustering algorithm. This wrapper can
+         be applied to any algorithm, in any language. The default implementation is Weka
+         at the time of writing.
+    -->
     <bean id="weka-clusterer" name="weka-clusterer" class="ikube.analytics.weka.WekaClusterer"/>
+    <!-- This is the Weka algorithm that will do the clustering logic. -->
     <bean id="weka-clusterer-em" name="weka-clusterer-em" class="weka.clusterers.EM"/>
+    <!-- This object holds information about the analyzer, it is used in the gui, and not essential. -->
     <bean
-        id="analyzer-info-em"
-        class="ikube.model.AnalyzerInfo"
-        property:analyzer="ikube.analytics.weka.WekaClusterer"
-        property:algorithm="weka.clusterers.EM"/>
-    <!--suppress InjectionValueTypeInspection -->
+            id="analyzer-info-em"
+            class="ikube.model.AnalyzerInfo"
+            property:analyzer="ikube.analytics.weka.WekaClusterer"
+            property:algorithm="weka.clusterers.EM"/>
+    <!--
+        This is the context for the analyzer. It will 'wire' all the pieces together, specifically
+        the wrapper for the Weka algorithm, the algorithm, some options if there are any for the algorithm. Additionally
+        it contains a unique name for accessing it from the web services, and the maximum training instances that the
+        analyzer will tolerate. Also(optional) is the name of the file used for the training. If no file is specified
+        then the name concatenated with '.arff' will be used to look for the file recursively starting from the base configuration
+        folder.
+    -->
     <bean
-        id="context-em"
-        name="context-em"
-        class="ikube.model.Context"
-        property:name="bank-data"
-        property:analyzer-ref="weka-clusterer"
-        property:algorithm-ref="weka-clusterer-em"
-        property:options-ref="cluster-options"
-        property:maxTraining="${max-training}"
-        property:analyzerInfo-ref="analyzer-info-em"/>
+            id="context-em"
+            name="context-em"
+            class="ikube.model.Context"
+            property:name="bank-data"
+            property:analyzer-ref="weka-clusterer"
+            property:algorithm-ref="weka-clusterer-em"
+            property:options-ref="cluster-options"
+            property:maxTraining="${max-training}"
+            property:analyzerInfo-ref="analyzer-info-em"/>
     <util:list id="cluster-options">
         <value type="java.lang.String">-R</value>
         <value type="java.lang.String">6</value>
     </util:list>
+    <!-- END CLUSTERER DEFINITION: -->
 
-    <!-- A dummy classifier based on some test data as an example. -->
+    <!-- START CLASSIFIER DEFINITION: -->
+    <!--
+        This is the ikube wrapper for the Weka classification algorithm. This wrapper can
+         be applied to any algorithm, in any language. The default implementation is Weka
+         at the time of writing.
+    -->
     <bean id="weka-classifier" name="weka-classifier" class="ikube.analytics.weka.WekaClassifier"/>
+    <!-- This is a filter that will be used to convert the input data into the correct type for the specific Weka algorithm. -->
     <bean id="string-to-word-vector" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
+    <!-- This is the Weka algorithm that will do the clustering logic. -->
     <bean id="weka-classifier-smo" name="weka-classifier-smo" class="weka.classifiers.functions.SMO"/>
     <bean
-        id="analyzer-info-smo"
-        class="ikube.model.AnalyzerInfo"
-        property:analyzer="ikube.analytics.weka.WekaClassifier"
-        property:filter="weka.filters.unsupervised.attribute.StringToWordVector"
-        property:algorithm="weka.classifiers.functions.SMO"/>
-    <!--suppress InjectionValueTypeInspection -->
+            id="analyzer-info-smo"
+            class="ikube.model.AnalyzerInfo"
+            property:analyzer="ikube.analytics.weka.WekaClassifier"
+            property:filter="weka.filters.unsupervised.attribute.StringToWordVector"
+            property:algorithm="weka.classifiers.functions.SMO"/>
+    <!--
+        This is the context for the analyzer. It will 'wire' all the pieces together, specifically
+        the wrapper for the Weka algorithm, the algorithm, some options if there are any for the algorithm. Additionally
+        it contains a unique name for accessing it from the web services, and the maximum training instances that the
+        analyzer will tolerate. Also(optional) is the name of the file used for the training. If no file is specified
+        then the name concatenated with '.arff' will be used to look for the file recursively starting from the base configuration
+        folder.
+    -->
     <bean
-        id="context-smo"
-        name="context-smo"
-        class="ikube.model.Context"
-        property:name="sentiment-smo"
-        property:analyzer-ref="weka-classifier"
-        property:filter-ref="string-to-word-vector"
-        property:algorithm-ref="weka-classifier-smo"
-        property:maxTraining="${max-training}"
-        property:analyzerInfo-ref="analyzer-info-smo"/>
+            id="context-smo"
+            name="context-smo"
+            class="ikube.model.Context"
+            property:name="sentiment-smo"
+            property:analyzer-ref="weka-classifier"
+            property:filter-ref="string-to-word-vector"
+            property:algorithm-ref="weka-classifier-smo"
+            property:maxTraining="${max-training}"
+            property:analyzerInfo-ref="analyzer-info-smo"/>
+    <!-- END CLASSIFIER DEFINITION: -->
 
     <!-- This will initialize all the analyzers and build them in parallel. -->
     <bean
-        id="ikube.analytics.AnalyzerManager"
-        name="ikube.analytics.AnalyzerManager"
-        class="ikube.analytics.AnalyzerManager"
-        depends-on="ikube.toolkit.ThreadUtilities"/>
+            id="ikube.analytics.AnalyzerManager"
+            name="ikube.analytics.AnalyzerManager"
+            class="ikube.analytics.AnalyzerManager"
+            depends-on="ikube.toolkit.ThreadUtilities"/>
 
     <bean
-        id="ikube.analytics.IAnalyticsService"
-        name="ikube.analytics.IAnalyticsService"
-        class="ikube.analytics.AnalyticsService"/>
+            id="ikube.analytics.IAnalyticsService"
+            name="ikube.analytics.IAnalyticsService"
+            class="ikube.analytics.AnalyticsService"/>
 
 </beans>

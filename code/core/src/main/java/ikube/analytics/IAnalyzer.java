@@ -12,7 +12,7 @@ import ikube.model.Context;
  *            required class count, for example 'positive'
  * @author Michael Couck
  * @version 01.00
- * @since 14.08.13
+ * @since 14-08-2013
  */
 public interface IAnalyzer<I, O, C> {
 

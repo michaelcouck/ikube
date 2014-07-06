@@ -6,6 +6,8 @@ import org.apache.commons.lang.StringUtils;
 
 import java.io.Serializable;
 
+import static ikube.toolkit.ApplicationContextManager.getBean;
+
 /**
  * This class is just a serializable snippet of logic that can be distributed over the
  * wire and executed on a remote server, essentially creating the same analyzer in each
@@ -29,6 +31,9 @@ public class Creator extends Action<Void> implements Serializable {
     @Override
     @SuppressWarnings("unchecked")
     public Void call() throws Exception {
+        // Get the local context
+        context = getBean(context.getName());
+
         Object analyzerName = context.getAnalyzerInfo().getAnalyzer();
         Object algorithmName = context.getAnalyzerInfo().getAlgorithm();
         Object filterName = context.getAnalyzerInfo().getFilter();
@@ -37,8 +42,9 @@ public class Creator extends Action<Void> implements Serializable {
         if (filterName != null && !StringUtils.isEmpty(String.valueOf(filterName))) {
             context.setFilter(Class.forName(String.valueOf(filterName)).newInstance());
         }
+
         // Build and set the analyzer here in the remote machine
-        AnalyzerManager.buildAnalyzer(context);
+        getBean(AnalyzerManager.class).buildAnalyzer(context);
         return null;
     }
 }

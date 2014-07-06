@@ -113,7 +113,7 @@ public class DistributedTest extends BaseTest {
             final String[] options)
             throws Exception {
         Context context = getContext(analyzerName, type, algorithm, options);
-        return AnalyzerManager.buildAnalyzer(context, Boolean.TRUE);
+        return new AnalyzerManager().buildAnalyzer(context, Boolean.TRUE);
     }
 
     @SuppressWarnings("unchecked")

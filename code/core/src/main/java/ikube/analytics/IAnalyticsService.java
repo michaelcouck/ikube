@@ -8,6 +8,7 @@ import java.util.Map;
 /**
  * @author Michael Couck
  * @version 01.00
+ * @see ikube.analytics.IAnalyzer for details on the parameterized types
  * @since 10-04-2013
  */
 public interface IAnalyticsService<I, O, C> {

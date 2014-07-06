@@ -44,10 +44,9 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-	@SuppressWarnings({ "UnusedDeclaration", "SpringJavaAutowiringInspection" })
     private IClusterManager clusterManager;
     @Autowired
-    private AnalyzerManager analyzerManager;
+    private Map<String, Context> contexts;
 
     /**
      * {@inheritDoc}
@@ -96,27 +95,27 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
     @SuppressWarnings("unchecked")
     public Analysis<I, O> analyze(final Analysis<I, O> analysis) {
         Analyzer analyzer = new Analyzer(analysis);
-		if (analysis.isAggregated()) {
-			analysis.setDistribution(Boolean.FALSE);
-			analysis.setAggregated(Boolean.FALSE);
-			List<Future<Analysis>> futures = clusterManager.sendTaskToAll(analyzer);
-			for (final Future<Analysis> future : futures) {
-				try {
-					Analysis aggregated = future.get(60 * 60, TimeUnit.SECONDS);
-					// TODO: Somehow aggregate the output here
-				} catch (final InterruptedException | ExecutionException | TimeoutException e) {
-					throw new RuntimeException(e);
-				}
-			}
-			return analysis;
-		} else if (analysis.isDistributed()) {
+        if (analysis.isAggregated()) {
+            analysis.setDistribution(Boolean.FALSE);
+            analysis.setAggregated(Boolean.FALSE);
+            List<Future<Analysis>> futures = clusterManager.sendTaskToAll(analyzer);
+            for (final Future<Analysis> future : futures) {
+                try {
+                    Analysis aggregated = future.get(60 * 60, TimeUnit.SECONDS);
+                    // TODO: Somehow aggregate the output here
+                } catch (final InterruptedException | ExecutionException | TimeoutException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            return analysis;
+        } else if (analysis.isDistributed()) {
             // Set the flag so we don't get infinite recursion
             analysis.setDistributed(Boolean.FALSE);
             // Create the callable that will be executed on one of the nodes
             Future<?> future = clusterManager.sendTask(analyzer);
             try {
-				// TODO: User this rather than the future directly
-				// ThreadUtilities.waitForFuture(future, 60 * 60);
+                // TODO: User this rather than the future directly
+                // ThreadUtilities.waitForFuture(future, 60 * 60);
                 return (Analysis<I, O>) future.get(60 * 60, TimeUnit.SECONDS);
             } catch (final InterruptedException | ExecutionException | TimeoutException e) {
                 throw new RuntimeException(e);
@@ -143,8 +142,8 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
             analysis.setDistributed(Boolean.FALSE);
             Future<?> future = clusterManager.sendTask(classesOrClusters);
             try {
-				// TODO: User this rather than the future directly
-				// ThreadUtilities.waitForFuture(future, 60 * 60);
+                // TODO: User this rather than the future directly
+                // ThreadUtilities.waitForFuture(future, 60 * 60);
                 return (Analysis) future.get(60 * 60, TimeUnit.SECONDS);
             } catch (final InterruptedException | ExecutionException | TimeoutException e) {
                 throw new RuntimeException(e);
@@ -222,7 +221,7 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
      */
     @Override
     public Map<String, Context> getContexts() {
-        return analyzerManager.getContexts();
+        return contexts;
     }
 
     /**

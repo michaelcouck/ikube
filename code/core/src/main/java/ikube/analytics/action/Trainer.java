@@ -28,7 +28,7 @@ public class Trainer extends Action<Void> implements Serializable {
     @Override
     @SuppressWarnings("unchecked")
     public Void call() throws Exception {
-        // Get the analyzer on teh local machine
+        // Get the analyzer on the local machine
         IAnalyzer analyzer = getAnalyticsService().getAnalyzer(analysis.getAnalyzer());
         // And train it
         analyzer.train(analysis);

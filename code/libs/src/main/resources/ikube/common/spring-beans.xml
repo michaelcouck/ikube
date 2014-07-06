@@ -193,6 +193,8 @@
         <ref local="ikube.scheduling.schedule.SnapshotSchedule"/>
         <ref local="ikube.scheduling.schedule.CpuLoadSchedule"/>
         <ref local="ikube.scheduling.schedule.IndexCommitSchedule"/>
+        <ref local="ikube.scheduling.schedule.IndexCommitSchedule"/>
+        <ref local="ikube.scheduling.schedule.AnalyzerSchedule"/>
     </util:list>
 
     <!-- Scheduled objects. -->
@@ -220,6 +222,13 @@
         class="ikube.scheduling.schedule.ActionSchedule"
         property:delay="600000"
         property:period="600000"/>
+    <bean
+        id="ikube.scheduling.schedule.AnalyzerSchedule"
+        name="ikube.scheduling.schedule.AnalyzerSchedule"
+        class="ikube.scheduling.schedule.AnalyzerSchedule"
+        property:single="true"
+        property:delay="${analyzer-manager-wait}"
+        property:period="${analyzer-manager-wait}"/>
     <bean
         id="ikube.scheduling.schedule.SnapshotSchedule"
         name="ikube.scheduling.schedule.SnapshotSchedule"

@@ -5,6 +5,8 @@ import ikube.model.Context;
 
 import java.io.Serializable;
 
+import static ikube.toolkit.ApplicationContextManager.getBean;
+
 /**
  * This class is just a serializable snippet of logic that can be distributed over the
  * wire and executed on a remote server, essentially destroying the analyzers on all machines
@@ -28,6 +30,9 @@ public class Destroyer extends Action<Void> implements Serializable {
     @Override
     @SuppressWarnings("unchecked")
     public Void call() throws Exception {
+        // Get the local context
+        context = getBean(context.getName());
+
         // Get the local context, but in fact we are on the remote machine of course
         Context context = (Context) getAnalyticsService().getContexts().remove(this.context.getName());
         if (context != null) {
