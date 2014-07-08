@@ -1,6 +1,7 @@
 package ikube.action.rule;
 
 import ikube.AbstractTest;
+import ikube.action.index.IndexManager;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.OsUtilities;
 import org.apache.lucene.index.DirectoryReader;
@@ -65,6 +66,12 @@ public class IsNewIndexCreatedTest extends AbstractTest {
         createIndexFileSystem(indexContext, "Some more data");
         result = isNewIndexCreated.evaluate(indexContext);
         assertTrue("There is a new index, and the searcher is open on the old one : ", result);
+
+        for (int i = 0; i < 1000; i++) {
+            result = isNewIndexCreated.evaluate(indexContext);
+            assertTrue("There is a new index, and the searcher is open on the old one : ", result);
+            System.gc();
+        }
     }
 
 }

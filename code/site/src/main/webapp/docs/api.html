@@ -14,15 +14,44 @@
 <body class="article">
 <div id="content">
     <div class="sect2">
-        <h3 id="_analytics">Api</h3>
+        <h3 id="_analytics">Apis</h3>
 
         <div class="paragraph">
             <p>This is a description and examples of the rest services, or Ikube Api.<br></p>
         </div>
         <div class="paragraph" ng-controller="ApisController">
-            <p>
+
+            <div ng-repeat="api in apis">
+                <h4>Api : {{api.api}}</h4>
+                <table class="table-bordered">
+                    <tr>
+                        <th>Type</th>
+                        <th>Uri</th>
+                        <th>Description</th>
+                        <th>Consumes</th>
+                        <th>Produces</th>
+                    </tr>
+                    <tr ng-repeat="apiMethod in api.apiMethods">
+                        <td>{{apiMethod.type}}</td>
+                        <td>{{apiMethod.uri}}</td>
+                        <td>{{apiMethod.description}}</td>
+                        <td>
+                            <textarea rows="10" cols="50" style="background-color: #2e3338; color: #c8c8c8; border: 0 solid black;">
+                                {{apiMethod.consumes}}
+                            </textarea>
+                        </td>
+                        <td>
+                            <!--<textarea name="contents" rows="10" cols="50" style="background-color: #272b30; color: #c8c8c8;">-->
+                            <textarea rows="10" cols="50" style="background-color: #2e3338; color: #c8c8c8; border: 0 solid black;">
+                                {{apiMethod.produces}}
+                            </textarea>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!--<p>
             <div class="input" ng-repeat="api in apis">
-                <h5>Api : {{api.api}}</h5>
                 <div class="input" ng-repeat="apiMethod in api.apiMethods">
                     <b>Type:</b> {{apiMethod.type}}<br><br>
                     <b>Uri:</b> {{apiMethod.uri}}<br><br>
@@ -32,7 +61,7 @@
                     <br>
                 </div>
             </div>
-            </p>
+            </p>-->
         </div>
 
         <div id="footer">

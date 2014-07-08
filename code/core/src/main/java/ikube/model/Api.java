@@ -14,7 +14,13 @@ import java.util.Collection;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Api extends Persistable {
 
+    /**
+     * The name of the resource, i.e. the actual class.
+     */
     private String api;
+    /**
+     * The methods that are exposed as web service methods.
+     */
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     private Collection<ApiMethod> apiMethods = Lists.newArrayList();
 

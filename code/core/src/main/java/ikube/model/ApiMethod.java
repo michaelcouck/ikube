@@ -1,9 +1,6 @@
 package ikube.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
+import javax.persistence.*;
 
 /**
  * @author Michael Couck
@@ -20,10 +17,10 @@ public class ApiMethod extends Persistable {
     private String uri;
     @Column
     private String description;
-    @Column
-    private String consumes;
-    @Column
-    private String produces;
+    @Transient
+    private Object consumes;
+    @Transient
+    private Object produces;
 
     public String getType() {
         return type;
@@ -49,19 +46,20 @@ public class ApiMethod extends Persistable {
         this.description = description;
     }
 
-    public String getConsumes() {
+    public Object getConsumes() {
         return consumes;
     }
 
-    public void setConsumes(String consumes) {
+    public void setConsumes(Object consumes) {
         this.consumes = consumes;
     }
 
-    public String getProduces() {
+    public Object getProduces() {
         return produces;
     }
 
-    public void setProduces(String produces) {
+    public void setProduces(Object produces) {
         this.produces = produces;
     }
+
 }

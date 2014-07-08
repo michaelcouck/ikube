@@ -51,9 +51,6 @@ analyzers dynamically using Json.
 ==== Analytics API:
 
 
-
-
-
 Below are algorithms that are available in Weka, and the usage of filters for each one, for two types of data, an array of
 numbers and a string type. The filter is necessary to convert the data type to the type accepted by the algorithm. Note that this
 list is not exhaustive, and an in depth knowledge of Weka and the algorithms may ne necessary to apply one of the algorithms to

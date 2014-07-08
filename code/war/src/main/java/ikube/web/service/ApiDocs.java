@@ -15,7 +15,6 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Set;
 
-import static ikube.Constants.GSON;
 import static ikube.toolkit.ObjectToolkit.populateFields;
 
 /**
@@ -76,17 +75,16 @@ public class ApiDocs extends Resource {
                 if (annotation.consumes().isArray()) {
                     apiMethod.setConsumes(annotation.consumes().toString());
                 } else {
-                    apiMethod.setConsumes(GSON.toJson(populateFields(annotation.consumes().newInstance(), true, 10)));
+                    apiMethod.setConsumes(populateFields(annotation.consumes().newInstance(), true, 10));
                 }
                 if (annotation.produces().isArray()) {
                     apiMethod.setProduces(annotation.produces().toString());
                 } else {
-                    apiMethod.setProduces(GSON.toJson(populateFields(annotation.produces().newInstance(), true, 10)));
+                    apiMethod.setProduces(populateFields(annotation.produces().newInstance(), true, 10));
                 }
             } catch (final InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
-
             api.getApiMethods().add(apiMethod);
         }
         return api;
