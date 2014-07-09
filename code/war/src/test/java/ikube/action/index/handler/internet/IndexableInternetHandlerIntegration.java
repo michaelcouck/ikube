@@ -61,7 +61,7 @@ public class IndexableInternetHandlerIntegration extends IntegrationTest {
         IndexWriter indexWriter = null;
         try {
             indexContext.setStrategies(null);
-            indexableInternet.setUrl("http://www.ikube.be/site");
+            indexableInternet.setUrl("http://localhost:9090/ikube");
 
             String ip = InetAddress.getLocalHost().getHostAddress();
             indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
@@ -72,7 +72,7 @@ public class IndexableInternetHandlerIntegration extends IntegrationTest {
             ThreadUtilities.waitForFuture(forkJoinTask, Integer.MAX_VALUE);
 
             logger.info("Documents : " + indexWriter.numDocs());
-            assertTrue("There must be some documents in the index : ", indexWriter.numDocs() > 10);
+            assertTrue("There must be some documents in the index : ", indexWriter.numDocs() > 0);
         } finally {
             IndexManager.closeIndexWriter(indexWriter);
         }

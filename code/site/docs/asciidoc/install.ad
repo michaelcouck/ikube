@@ -42,3 +42,8 @@ the Tomcat root directory, i.e. $TOMCAT_UNPACKED_FOLDER.
 
 Go to the http://localhost:8080/ikube/login.html[Administration Console]. The login credentials are user/user
 or administrator/administrator. Please refer to the gui documentation for functionality and options in the gui.
+
+[Deployer]
+==== Deployer
+
+...
