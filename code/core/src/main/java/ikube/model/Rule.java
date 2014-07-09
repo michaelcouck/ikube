@@ -12,9 +12,9 @@ public class Rule extends Persistable {
     @Column
     private String server;
 
-    @Column(length = 4096)
+    @Column(length = 1024)
     private String dump;
-    @Column(length = 4096)
+    @Column(length = 1024)
     private String predicate;
     @Column
     private Boolean result;

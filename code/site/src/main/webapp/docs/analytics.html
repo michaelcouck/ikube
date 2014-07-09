@@ -84,7 +84,10 @@ for what type of data, and the results required, prediction(regression), classif
 <div class="sect3">
 <h4 id="_distributed_processing">Distributed processing</h4>
 <div class="paragraph">
-<p>Ikube is grid based,</p>
+<p>Ikube is grid based, and as such the analyses will be distributed throughout the cluster, randomly, when executing an analyzer
+on a particular vector of data. Vectors are the typical unit of data used by Weka, and we will use this term to refer to an instance
+of data that should be analyzed. Because the analytics are perfectly scalable, adding more servers or computing nodes to the cluster
+will increase the processing potential nearly linearly, with some network overhead.</p>
 </div>
 </div>
 <div class="sect3">
@@ -8537,7 +8540,7 @@ your specific type of data. Each of the algorithms are matched with filters that
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-07-09 20:39:23 CEST
+Last updated 2014-07-09 20:43:49 CEST
 </div>
 </div>
 </body>

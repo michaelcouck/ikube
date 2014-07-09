@@ -16,12 +16,59 @@
 </div>
 <div class="sect2">
 <h3 id="_user_cases">User cases</h3>
-
+<div class="sect3">
+<h4 id="_twitter">Twitter</h4>
+<div class="paragraph">
+<p>Ikube, as an example of sentiment analysis for Twitter, has a configuration and gui pages for a Twitter stream. One percent
+of the Twitter data is streamed into Ikube using the <a href="http://projects.spring.io/spring-social/">Spring Social</a> functionality.
+This library takes the Json response from Twitter and converts it into Java objects that are then processed. There are several
+steps in the processing, iterated below:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Data is indexed(using Lucene), the tweet content, the user name and location etc.</p>
+</li>
+<li>
+<p>The tweet content is then analyzed to separate the tweets into different languages</p>
+</li>
+<li>
+<p>The content is then cleaned of various non language elements, like <em>aaaaahhh</em> etc</p>
+</li>
+<li>
+<p>Emoticons are extracted from the content, and there is a pre processing step that pre analyses the tweet based on the
+emoticons that are present. This is then fed back into the analyzers to re-train them, constantly getting more accurate as
+the vectors increase</p>
+</li>
+<li>
+<p>SMO(sequential minimal optimization) classifiers are executed on the cleaned content, using the support vector algorithm from Weka</p>
+</li>
+<li>
+<p>The results from the analysis are added into the Lucene index, allowing the results to be aggregated after the fact</p>
+</li>
+<li>
+<p>The location of the tweet is calculated based on probability, taking into account where the user signed up for the account,
+then the language which is cross referenced against the time zone, and if all else fails a pure geospatial search is done on the
+data available in the tweet against the geospatial index on the production server</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>As the analysis results are indexed in Lucene, this allows queries like between times, or around a point, or with such a language,
+including words in the tweets, or users etc. Or combinations of the above. The extended functionality comes from the combination
+of searchable data combined with searchable analytics results related to that data, all in real time.</p>
+</div>
+<div class="paragraph">
+<p>The stream was cloned 100 times to simulate the full Twitter stream, and the 32 core server had 50% redundant capacity, demonstrating
+the power of the distributed search and analytics, and the potential for extremely high volumes of data. The full stream is aroung 400
+million tweets a day at the time of testing.</p>
+</div>
+</div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-07-05 15:36:21 CEST
+Last updated 2014-07-09 22:04:46 CEST
 </div>
 </div>
 </body>
