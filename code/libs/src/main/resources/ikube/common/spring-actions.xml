@@ -79,17 +79,19 @@
             </util:list>
         </property>
     </bean>
+    <!-- AreUnopenedIndexes -->
     <bean
             id="ikube.action.Open"
             class="ikube.action.Open"
             property:ruleExpression="
-	    	IsThisIndexCreated &#38;&#38; (!IsMultiSearcherInitialised || IsNewIndexCreated || AreUnopenedIndexes)"
+	    	IsThisIndexCreated &#38;&#38;
+	    	    (!IsMultiSearcherInitialised || IsNewIndexCreated)"
             property:requiresClusterLock="false">
         <property name="rules">
             <util:list>
                 <ref local="ikube.action.rule.IsMultiSearcherInitialised"/>
                 <ref local="ikube.action.rule.IsNewIndexCreated"/>
-                <ref local="ikube.action.rule.AreUnopenedIndexes"/>
+                <!--<ref local="ikube.action.rule.AreUnopenedIndexes"/>-->
                 <ref local="ikube.action.rule.IsThisIndexCreated"/>
             </util:list>
         </property>

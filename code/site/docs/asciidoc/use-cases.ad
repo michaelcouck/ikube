@@ -1,3 +1,7 @@
 pass:[<script src="analytics.js" type="text/javascript"></script>]
 
 === User cases
+
+==== Twitter
+Ikube, as an example of sentiment analysis for Twitter, has a configuration and gui pages for a Twitter stream. One percent
+of the Twitter data is streamed into Ikube using the

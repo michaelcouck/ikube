@@ -5,6 +5,7 @@ import ikube.action.Action;
 import ikube.action.Close;
 import ikube.action.IAction;
 import ikube.action.Index;
+import ikube.database.IDataBase;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
 import ikube.model.IndexContext;
@@ -51,17 +52,19 @@ public class RuleInterceptorTest extends AbstractTest {
     private AreUnopenedIndexes areUnopenedIndexes;
 
     @Cascading
-    IsIndexCurrent isIndexCurrentBug;
+    private IsIndexCurrent isIndexCurrentBug;
     @Cascading
-    AnyServersWorkingThisIndex anyServersWorkingThisIndexBug;
+    private AnyServersWorkingThisIndex anyServersWorkingThisIndexBug;
     @Cascading
-    TooManyActionsRule tooManyActionsRuleBug;
+    private TooManyActionsRule tooManyActionsRuleBug;
     @Cascading
-    IsThisServerWorking isThisServerWorkingBug;
+    private IsThisServerWorking isThisServerWorkingBug;
     @Cascading
-    AreOtherServers areOtherServersBug;
+    private AreOtherServers areOtherServersBug;
     @Cascading
-    AnyServersIdle anyServersIdleBug;
+    private AnyServersIdle anyServersIdleBug;
+    @Cascading
+    private IDataBase dataBase;
 
     @Before
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -111,6 +114,7 @@ public class RuleInterceptorTest extends AbstractTest {
 
         actions.put(action.toString(), action);
 
+        Deencapsulation.setField(ruleInterceptor, dataBase);
         Deencapsulation.setField(ruleInterceptor, clusterManager);
     }
 

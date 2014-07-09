@@ -3,8 +3,10 @@ package ikube.action.rule;
 import ikube.IConstants;
 import ikube.action.IAction;
 import ikube.cluster.IClusterManager;
+import ikube.database.IDataBase;
 import ikube.model.Action;
 import ikube.model.IndexContext;
+import ikube.model.Rule;
 import ikube.toolkit.ThreadUtilities;
 import org.apache.commons.jexl2.Expression;
 import org.apache.commons.jexl2.JexlContext;
@@ -16,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +40,8 @@ public class RuleInterceptor implements IRuleInterceptor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RuleInterceptor.class);
 
+    @Autowired
+    private IDataBase dataBase;
     @Autowired
     @Qualifier("ikube.cluster.IClusterManager")
     private IClusterManager clusterManager;
@@ -115,7 +120,7 @@ public class RuleInterceptor implements IRuleInterceptor {
                     Action action = null;
                     try {
                         // Start the action in the cluster
-						String indexName = indexContext.getIndexName();
+                        String indexName = indexContext.getIndexName();
                         String actionName = proceedingJoinPoint.getTarget().getClass().getSimpleName();
                         action = clusterManager.startWorking(actionName, indexName, null);
                         // Execute the action logic
@@ -151,6 +156,7 @@ public class RuleInterceptor implements IRuleInterceptor {
         if (rules == null || rules.size() == 0) {
             LOGGER.info("No rules defined, proceeding : " + action);
         } else {
+            List<String> evaluationRules = new ArrayList<>();
             Map<String, Object> results = new HashMap<>();
             JexlEngine jexlEngine = new JexlEngine();
             JexlContext jexlContext = new MapContext(results);
@@ -158,15 +164,27 @@ public class RuleInterceptor implements IRuleInterceptor {
                 boolean evaluation = rule.evaluate(indexContext);
                 String ruleName = rule.getClass().getSimpleName();
                 jexlContext.set(ruleName, evaluation);
+                evaluationRules.add(ruleName);
             }
             String predicate = action.getRuleExpression();
             Expression expression = jexlEngine.createExpression(predicate);
             Object result = expression.evaluate(jexlContext);
             finalResult = result != null && (result.equals(1.0d) || result.equals(Boolean.TRUE));
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Going to log : " + finalResult);
-				log(indexContext, action, predicate, finalResult, results);
-			}
+            String dump = expression.dump();
+
+            Rule rule = new Rule();
+            rule.setAction(action.getClass().getName());
+            rule.setDump(dump);
+            rule.setResult(finalResult);
+            rule.setRules(evaluationRules);
+            rule.setServer(clusterManager.getServer().getAddress());
+            rule.setPredicate(predicate);
+            dataBase.persist(rule);
+
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Going to log : " + finalResult);
+                log(indexContext, action, predicate, finalResult, results);
+            }
         }
         return finalResult;
     }

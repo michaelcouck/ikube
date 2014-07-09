@@ -15,20 +15,24 @@ is the training data. Then get a classification for a tweet based on the previou
 analytics. +
 
 Ikube wraps algorithms for analytics. As such any algorithm can be used under the hood, provided it conforms to a particular
-interface, the wrapper interface. Currently Ikube uses Weka as the standard set of analytics algorithms, and grid enables it. Most
+interface, the wrapper interface. Currently Ikube uses Weka as the standard set of analytics algorithms, and grid enables it.
+Most
 analytics libraries expect a specific format of data as input, and Weka is no exception. Please refer to the
 link:http://www.cs.waikato.ac.nz/ml/weka/[Weka]
 site for information on the format of data. For different types of algorithms the input data is different as well, making it more
-difficult to generate models. However there are filters in Weka that transform the input data into the type of data that each algorithm will
+difficult to generate models. However there are filters in Weka that transform the input data into the type of data that each
+algorithm will
 accept. Here is an exhaustive list of algorithms and the filters that can be applied to the input data to conform to the type expected.
-Note that link:http://www.cs.waikato.ac.nz/ml/weka/[Weka](the default analytics library) comes with a GUI where data, typically small volumes, 
- can be visualized. Once satisfied with the format, the function type, options and filters, these values can be used to configure the server 
-  analyzers with the production data. +
+Note that link:http://www.cs.waikato.ac.nz/ml/weka/[Weka](the default analytics library) comes with a GUI where data, typically small
+volumes,
+can be visualized. Once satisfied with the format, the function type, options and filters, these values can be used to configure the
+server
+analyzers with the production data. +
 
 Analyzers need to be created, using the algorithm required, classification, clustering etc., potentially a filter to transform
 the data, options for the algorithm and in the case of trained algorithms training data. In the case of trained analyzers they need
 to be built before they can be used. Analyzers can be re-trained and re-built using the console. Note that with large models building
- the analyzer will be time consuming.
+the analyzer will be time consuming.
 
 Ikube exposes the analyzers over rest, with simple link:http://json.org/[Json]. An
 link:https://github.com/michaelcouck/ikube/blob/master/code/core/src/main/java/ikube/model/Analysis.java[Analysis]
@@ -41,20 +45,33 @@ link:https://github.com/michaelcouck/ikube/blob/master/code/libs/src/main/resour
 file. 
 
 Analyzers can also be created on the fly dynamically using a
-link:https://github.com/michaelcouck/ikube/blob/master/code/core/src/main/java/ikube/model/Context.java[Context] object, also in Json format,
-and submitted to the web service. This method of analyzer creation would be suited to machine to machine analytics, where analyzers need to
-be created dynamically based on real time data, then disposed of. Once again please refer to the usage section of examples for creating analyzers
+link:https://github.com/michaelcouck/ikube/blob/master/code/core/src/main/java/ikube/model/Context.java[Context] object, also in Json
+format,
+and submitted to the web service. This method of analyzer creation would be suited to machine to machine analytics, where analyzers
+need to
+be created dynamically based on real time data, then disposed of. Once again please refer to the usage section of examples for
+creating analyzers
 dynamically. As with the Spring definition of analyzers, all the properties need to be filled in, including the wrapper, the algorithm
-from Weka and the data for training, in the case of trained analyzers. The api section contains examples of Json that can be used to create
+from Weka and the data for training, in the case of trained analyzers. The api section contains examples of Json that can be used to
+create
 analyzers dynamically using Json.
 
-==== Analytics API:
+Please refer to the link:use-cases.html[use cases] page for examples of how to use the analyzers, which types of analyzers
+for what type of data, and the results required, prediction(regression), classification(sentiment analysis) or clustering
+(people that bought these products also bought xxx).
 
+==== Distributed processing
+Ikube is grid based, and as such the analyses will be distributed throughout the cluster, randomly, when executing an analyzer
+on a particular vector of data. Vectors are the typical unit of data used by Weka, and we will use this term to refer to an instance
+of data that should be analyzed. Because the analytics are perfectly scalable, adding more servers or computing nodes to the cluster
+will increase the processing potential nearly linearly, with some network overhead.
+
+==== Analytics API:
 
 Below are algorithms that are available in Weka, and the usage of filters for each one, for two types of data, an array of
 numbers and a string type. The filter is necessary to convert the data type to the type accepted by the algorithm. Note that this
 list is not exhaustive, and an in depth knowledge of Weka and the algorithms may ne necessary to apply one of the algorithms to
-your specific type of data.
+your specific type of data. Each of the algorithms are matched with filters that can change the input data to acceptable formats.
 
 ==== Clustering algorithms available from Weka are:
 
