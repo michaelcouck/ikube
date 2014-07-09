@@ -15,6 +15,7 @@ import java.util.List;
  * @version 01.00
  * @since 22-07-2012
  */
+@SuppressWarnings("SpringJavaAutowiringInspection")
 public class PruneSchedule extends Schedule {
 
 	@Autowired
@@ -31,6 +32,7 @@ public class PruneSchedule extends Schedule {
 		delete(dataBase, ikube.model.Action.class, fieldsToSortOn, directionOfSort, IConstants.MAX_ACTIONS);
 		delete(dataBase, ikube.model.Snapshot.class, fieldsToSortOn, directionOfSort, IConstants.MAX_SNAPSHOTS);
 		delete(dataBase, ikube.model.Server.class, fieldsToSortOn, directionOfSort, IConstants.MAX_SERVERS);
+        delete(dataBase, ikube.model.Rule.class, fieldsToSortOn, directionOfSort, IConstants.MAX_RULES);
 	}
 
 	@SuppressWarnings("unchecked")

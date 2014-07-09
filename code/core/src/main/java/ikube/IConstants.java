@@ -132,6 +132,7 @@ public interface IConstants extends Constants {
     long MAX_ACTIONS = 10000;
     long MAX_SNAPSHOTS = 10000;
     long MAX_SERVERS = 100;
+    long MAX_RULES = 10000;
 
     String TIER = "tier";
 

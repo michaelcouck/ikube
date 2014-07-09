@@ -14,7 +14,7 @@ public class Rule extends Persistable {
 
     @Column(length = 4096)
     private String dump;
-    @Column
+    @Column(length = 4096)
     private String predicate;
     @Column
     private Boolean result;
