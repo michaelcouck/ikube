@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:property="http://www.springframework.org/schema/p"
+        xmlns:util="http://www.springframework.org/schema/util"
+
+        xsi:schemaLocation="
+            http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <description>
+        This file is not to be modified by users generally.
+    </description>
+
+    <bean
+            id="ikube-rules"
+            class="ikube.model.IndexContext"
+            property:name="ikube-rules"
+            property:maxAge="600"
+            property:compoundFile="${compound.file}"
+            property:bufferedDocs="${buffered.docs}"
+            property:bufferSize="${buffer.size}"
+            property:batchSize="${jdbc.batch.size}"
+            property:internetBatchSize="${internet.batch.size}"
+            property:mergeFactor="${merge.factor}"
+            property:maxFieldLength="${max.field.length}"
+            property:maxReadLength="${max.read.length}"
+            property:address="false"
+            property:delta="true"
+            property:throttle="${throttle}"
+            property:indexDirectoryPath="${index.directory.path}"
+            property:indexDirectoryPathBackup="${index.directory.path}"
+            property:children-ref="ikube-rule"/>
+    <util:list id="ikube-rule">
+        <ref local="rule"/>
+    </util:list>
+
+    <bean
+            id="rule"
+            class="ikube.model.IndexableTable"
+            property:name="rule"
+            property:address="true"
+            property:maxExceptions="1000"
+            property:threads="4"
+            property:allColumns="true"
+
+            property:stored="true"
+            property:analyzed="true"
+            property:vectored="false"
+            property:omitNorms="true"
+
+            property:children-ref="rule-columns"
+            property:dataSource-ref="nonXaDataSourceH2"
+            property:strategies-ref="rule-strategies"/>
+    <util:list id="rule-columns">
+        <ref local="rule-id"/>
+    </util:list>
+
+    <util:list id="rule-strategies">
+        <!--<ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy"/>-->
+    </util:list>
+
+    <bean
+            id="rule-id"
+            parent="ikube.model.Indexable"
+            class="ikube.model.IndexableColumn"
+            property:name="id"
+            property:idColumn="true"
+            property:omitNorms="true"
+            property:stored="true"
+            property:analyzed="true"
+            property:vectored="false"/>
+
+</beans>

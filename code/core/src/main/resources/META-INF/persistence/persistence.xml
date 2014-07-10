@@ -38,6 +38,7 @@
         <class>ikube.model.Task</class>
         <class>ikube.model.Url</class>
         <class>ikube.model.Rule</class>
+        <class>ikube.model.SavePoint</class>
 
         <class>ikube.model.geospatial.GeoName</class>
         <class>ikube.model.geospatial.GeoAltName</class>
@@ -102,6 +103,7 @@
         <class>ikube.model.Task</class>
         <class>ikube.model.Url</class>
         <class>ikube.model.Rule</class>
+        <class>ikube.model.SavePoint</class>
 
         <class>ikube.model.geospatial.GeoName</class>
         <class>ikube.model.geospatial.GeoAltName</class>
@@ -150,6 +152,7 @@
         <class>ikube.model.Task</class>
         <class>ikube.model.Url</class>
         <class>ikube.model.Rule</class>
+        <class>ikube.model.SavePoint</class>
 
         <class>ikube.model.geospatial.GeoName</class>
         <class>ikube.model.geospatial.GeoAltName</class>
@@ -198,6 +201,7 @@
         <class>ikube.model.Task</class>
         <class>ikube.model.Url</class>
         <class>ikube.model.Rule</class>
+        <class>ikube.model.SavePoint</class>
 
         <class>ikube.model.geospatial.GeoName</class>
         <class>ikube.model.geospatial.GeoAltName</class>

@@ -187,4 +187,5 @@ public interface IConstants extends Constants {
     long SIXTY_SECONDS = 1000 * 60;
     String TIMESTAMP = "timestamp";
 
+    String SAVE_POINT = "save-point";
 }

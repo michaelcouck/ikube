@@ -63,7 +63,9 @@ public class AnalyzerManager {
             // vectors for example, so we return
             ThreadUtilities.waitForFuture(future, 3);
         }
-        LOGGER.info("Analyzer finished building : " + future.isDone());
+        if (future != null) {
+            LOGGER.info("Analyzer finished building : " + future.isDone());
+        }
         return analyzer;
     }
 

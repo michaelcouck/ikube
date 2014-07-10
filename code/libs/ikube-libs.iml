@@ -38,6 +38,8 @@
           <file>file://$MODULE_DIR$/src/main/resources/indexes/integration/spring-geoname-csv.xml</file>
           <file>file://$MODULE_DIR$/src/main/resources/indexes/demo/spring-mysql.xml</file>
           <file>file://$MODULE_DIR$/src/main/resources/indexes/system/spring-wiki.xml</file>
+          <file>file://$MODULE_DIR$/src/main/resources/indexes/production/spring-rules.xml</file>
+          <file>file://$MODULE_DIR$/src/main/resources/indexes/production/spring-rules.xml</file>
         </fileset>
       </configuration>
     </facet>

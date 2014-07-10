@@ -37,6 +37,10 @@ public class Index extends Action<IndexContext, Boolean> {
     @Override
     public boolean preExecute(final IndexContext indexContext) throws Exception {
         logger.info("Pre process action : " + this.getClass() + ", " + indexContext.getName());
+        if (indexContext.getIndexWriters() != null && indexContext.getIndexWriters().length > 0) {
+            // TODO: Verify that all the writers are open and active, and viable
+            return Boolean.TRUE;
+        }
         Server server = clusterManager.getServer();
         IndexWriter[] indexWriters;
         if (indexContext.isDelta()) {
@@ -118,6 +122,9 @@ public class Index extends Action<IndexContext, Boolean> {
     @Override
     public boolean postExecute(final IndexContext indexContext) throws Exception {
         logger.info("Post process action : " + this.getClass() + ", " + indexContext.getName());
+        if (indexContext.isDelta()) {
+            return Boolean.TRUE;
+        }
         IndexManager.closeIndexWriters(indexContext);
         indexContext.setIndexWriters();
         return Boolean.TRUE;
