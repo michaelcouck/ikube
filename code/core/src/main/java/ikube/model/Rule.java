@@ -20,7 +20,7 @@ public class Rule extends Persistable {
     private Boolean result;
 
     @ElementCollection
-    private List<String> rules;
+    private List<Boolean> evaluations;
 
     public String getAction() {
         return action;
@@ -62,11 +62,11 @@ public class Rule extends Persistable {
         this.result = result;
     }
 
-    public List<String> getRules() {
-        return rules;
+    public List<Boolean> getEvaluations() {
+        return evaluations;
     }
 
-    public void setRules(List<String> rules) {
-        this.rules = rules;
+    public void setEvaluations(List<Boolean> evaluations) {
+        this.evaluations = evaluations;
     }
 }

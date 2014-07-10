@@ -36,12 +36,8 @@ public class PruneSchedule extends Schedule {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void delete(final IDataBase dataBase,
-	  final Class<?> klass,
-	  final String[] fieldsToSortOn,
-	  final Boolean[] directionOfSort,
-	  final long toRemain) {
-		int batchSize = (int) toRemain / 4;
+	protected void delete(final IDataBase dataBase, final Class<?> klass, final String[] fieldsToSortOn, final Boolean[] directionOfSort, final long toRemain) {
+		int batchSize = 1000;
 		int count = dataBase.count(klass).intValue();
 		while (count > toRemain) {
 			logger.info("Count : " + count + ", to remain : " + toRemain + ", batch size : " + batchSize);

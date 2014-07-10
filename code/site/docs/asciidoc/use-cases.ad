@@ -27,3 +27,9 @@ of searchable data combined with searchable analytics results related to that da
 The stream was cloned 100 times to simulate the full Twitter stream, and the 32 core server had 50% redundant capacity, demonstrating
 the power of the distributed search and analytics, and the potential for extremely high volumes of data. The full stream is aroung 400
 million tweets a day at the time of testing.
+
+The results of the tweets are queried for the previous hour, only the positive tweets, they are then aggregated into clusters
+based on their geospatial location, and put on a Google map as a heat map, that depicts the areas of positive tweets for the last
+hour. As well as this, it is possible to query the timeline of the Twitter stream, going back two weeks, and have a positive/negative
+graph of the results aggregated per hour. Ad hoc queries, combining the geospatial position/language/content can be executed for the
+data in combinations.

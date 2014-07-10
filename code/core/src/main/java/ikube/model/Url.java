@@ -1,7 +1,5 @@
 package ikube.model;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.openjpa.persistence.jdbc.Index;
 
 import javax.persistence.*;
@@ -11,7 +9,7 @@ import javax.persistence.*;
  * @version 01.00
  * @since 23-11-2010
  */
-@Entity()
+@Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @NamedQueries(value = {@NamedQuery(name = Url.DELETE_ALL_URLS, query = Url.DELETE_ALL_URLS),
         @NamedQuery(name = Url.SELECT_FROM_URL_BY_HASH, query = Url.SELECT_FROM_URL_BY_HASH),
@@ -34,10 +32,10 @@ public class Url extends Persistable {
     @Column
     @Index(name = "hash_index", enabled = true)
     private long hash;
-    @Column(length = 64)
+    @Column(length = 1024)
     @Index(name = "name_index", enabled = true)
     private String name;
-    @Column(length = 512)
+    @Column(length = 4096)
     private String url;
     @Lob
     @Column

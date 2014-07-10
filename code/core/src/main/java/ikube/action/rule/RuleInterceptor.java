@@ -36,6 +36,7 @@ import java.util.Map;
  * @see IRuleInterceptor
  * @since 12-02-2011
  */
+@SuppressWarnings("SpringJavaAutowiringInspection")
 public class RuleInterceptor implements IRuleInterceptor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RuleInterceptor.class);
@@ -156,7 +157,7 @@ public class RuleInterceptor implements IRuleInterceptor {
         if (rules == null || rules.size() == 0) {
             LOGGER.info("No rules defined, proceeding : " + action);
         } else {
-            List<String> evaluationRules = new ArrayList<>();
+            List<Boolean> evaluations = new ArrayList<>();
             Map<String, Object> results = new HashMap<>();
             JexlEngine jexlEngine = new JexlEngine();
             JexlContext jexlContext = new MapContext(results);
@@ -164,7 +165,7 @@ public class RuleInterceptor implements IRuleInterceptor {
                 boolean evaluation = rule.evaluate(indexContext);
                 String ruleName = rule.getClass().getSimpleName();
                 jexlContext.set(ruleName, evaluation);
-                evaluationRules.add(ruleName);
+                evaluations.add(evaluation);
             }
             String predicate = action.getRuleExpression();
             Expression expression = jexlEngine.createExpression(predicate);
@@ -176,7 +177,7 @@ public class RuleInterceptor implements IRuleInterceptor {
             rule.setAction(action.getClass().getName());
             rule.setDump(dump);
             rule.setResult(finalResult);
-            rule.setRules(evaluationRules);
+            rule.setEvaluations(evaluations);
             rule.setServer(clusterManager.getServer().getAddress());
             rule.setPredicate(predicate);
             dataBase.persist(rule);

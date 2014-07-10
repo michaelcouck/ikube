@@ -1,0 +1,14 @@
+pass:[<script src="analytics.js" type="text/javascript"></script>]
+
+=== The deployment application
+
+Ikube has an embedded deployment application. It is Spring based, and comprises two functions that act remotely
+on Linux servers. A copy command that will copy resources from the local machine to the remove server, and a ssh exec
+task that will execute command line commands on the Linux server. In combination these two functions can deploy, start,
+stop, clean and generally administer a remote machine or machines, and deply ikube int oa cluster of machines, in exactly
+the same way each time.
+
+The deployer is multi threaded and specifically designed to deploy to hundreds of machines in parallel, on a fast network
+this takes only a few minutes.
+
+TODO: Description of usage...
