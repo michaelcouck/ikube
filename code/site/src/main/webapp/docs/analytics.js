@@ -27,8 +27,8 @@ module.controller('ApisController', function($http, $scope) {
      * Gets the api documentation from the server.
      */
     $scope.doApis = function() {
+        $scope.url = 'http://ikube.be/ikube/service/api/apis';
         // $scope.url = getServiceUrl('http://ikube.be/ikube/service/api/apis');
-        $scope.url = 'http://localhost:9090/ikube/service/api/apis';
         var promise = $http.get($scope.url);
         promise.success(function(data, status) {
             $scope.apis = data;
