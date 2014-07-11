@@ -8,13 +8,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.Spy;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Michael Couck
@@ -23,6 +21,8 @@ import static org.mockito.Mockito.verify;
  */
 public class DeltaIndexableTableHandlerTest extends AbstractTest {
 
+    @Mock
+    private SavePoint savePoint;
     @Mock
     private IClusterManager clusterManager;
     @Spy
@@ -36,7 +36,9 @@ public class DeltaIndexableTableHandlerTest extends AbstractTest {
 
     @Test
     public void handleIndexableForked() throws Exception {
-        Mockito.when(indexContext.isDelta()).thenReturn(Boolean.TRUE);
+        when(indexContext.isDelta()).thenReturn(Boolean.TRUE);
+        when(savePoint.getIdentifier()).thenReturn(Long.MAX_VALUE);
+        when(clusterManager.get(anyString(), anyString())).thenReturn(savePoint);
         deltaIndexableTableHandler.handleIndexableForked(indexContext, indexableTable);
         verify(clusterManager, atLeastOnce()).get(anyString(), anyString());
         verify(clusterManager, atLeastOnce()).put(anyString(), anyString(), any(SavePoint.class));
