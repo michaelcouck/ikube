@@ -23,10 +23,10 @@
     <bean id="weka-clusterer-em" name="weka-clusterer-em" class="weka.clusterers.EM"/>
     <!-- This object holds information about the analyzer, it is used in the gui, and not essential. -->
     <bean
-            id="analyzer-info-em"
-            class="ikube.model.AnalyzerInfo"
-            property:analyzer="ikube.analytics.weka.WekaClusterer"
-            property:algorithm="weka.clusterers.EM"/>
+        id="analyzer-info-em"
+        class="ikube.model.AnalyzerInfo"
+        property:analyzer="ikube.analytics.weka.WekaClusterer"
+        property:algorithm="weka.clusterers.EM"/>
     <!--
         This is the context for the analyzer. It will 'wire' all the pieces together, specifically
         the wrapper for the Weka algorithm, the algorithm, some options if there are any for the algorithm. Additionally
@@ -36,15 +36,15 @@
         folder.
     -->
     <bean
-            id="context-em"
-            name="context-em"
-            class="ikube.model.Context"
-            property:name="bank-data"
-            property:analyzer-ref="weka-clusterer"
-            property:algorithm-ref="weka-clusterer-em"
-            property:options-ref="cluster-options"
-            property:maxTraining="${max-training}"
-            property:analyzerInfo-ref="analyzer-info-em"/>
+        id="context-em"
+        name="context-em"
+        class="ikube.model.Context"
+        property:name="bank-data"
+        property:analyzer-ref="weka-clusterer"
+        property:algorithm-ref="weka-clusterer-em"
+        property:options-ref="cluster-options"
+        property:maxTraining="${max-training}"
+        property:analyzerInfo-ref="analyzer-info-em"/>
     <util:list id="cluster-options">
         <value type="java.lang.String">-R</value>
         <value type="java.lang.String">6</value>
@@ -63,11 +63,11 @@
     <!-- This is the Weka algorithm that will do the clustering logic. -->
     <bean id="weka-classifier-smo" name="weka-classifier-smo" class="weka.classifiers.functions.SMO"/>
     <bean
-            id="analyzer-info-smo"
-            class="ikube.model.AnalyzerInfo"
-            property:analyzer="ikube.analytics.weka.WekaClassifier"
-            property:filter="weka.filters.unsupervised.attribute.StringToWordVector"
-            property:algorithm="weka.classifiers.functions.SMO"/>
+        id="analyzer-info-smo"
+        class="ikube.model.AnalyzerInfo"
+        property:analyzer="ikube.analytics.weka.WekaClassifier"
+        property:filter="weka.filters.unsupervised.attribute.StringToWordVector"
+        property:algorithm="weka.classifiers.functions.SMO"/>
     <!--
         This is the context for the analyzer. It will 'wire' all the pieces together, specifically
         the wrapper for the Weka algorithm, the algorithm, some options if there are any for the algorithm. Additionally
@@ -77,15 +77,15 @@
         folder.
     -->
     <bean
-            id="context-smo"
-            name="context-smo"
-            class="ikube.model.Context"
-            property:name="sentiment-smo"
-            property:analyzer-ref="weka-classifier"
-            property:filter-ref="string-to-word-vector"
-            property:algorithm-ref="weka-classifier-smo"
-            property:maxTraining="${max-training}"
-            property:analyzerInfo-ref="analyzer-info-smo"/>
+        id="context-smo"
+        name="context-smo"
+        class="ikube.model.Context"
+        property:name="sentiment-smo"
+        property:analyzer-ref="weka-classifier"
+        property:filter-ref="string-to-word-vector"
+        property:algorithm-ref="weka-classifier-smo"
+        property:maxTraining="${max-training}"
+        property:analyzerInfo-ref="analyzer-info-smo"/>
     <!-- END CLASSIFIER DEFINITION: -->
 
 </beans>

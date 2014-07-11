@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <beans
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns="http://www.springframework.org/schema/beans"
-        xmlns:property="http://www.springframework.org/schema/p"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:property="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
 
-        xsi:schemaLocation="http://www.springframework.org/schema/beans
-            http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
-    
     <bean id="nonXaDataSourcePostgresql"
-		class="com.mchange.v2.c3p0.ComboPooledDataSource"
-		destroy-method="close"
-		property:user="${postgres.jdbc.userid}"
-		property:password="${postgres.jdbc.password}"
-		property:driverClass="${postgres.jdbc.driver}"
-		property:jdbcUrl="${postgres.jdbc.url}"
-		property:initialPoolSize="${jdbc.minPoolSize}"
-		property:maxPoolSize="${jdbc.maxPoolSize}"
-		property:maxStatements="${jdbc.maxStatements}"
-		property:checkoutTimeout="${jdbc.checkOutTimeout}"
-		property:numHelperThreads="${jdbc.numHelperThreads}"
-		property:breakAfterAcquireFailure="${jdbc.breakAfterAcquireFailure}"
-		property:debugUnreturnedConnectionStackTraces="${jdbc.debugUnreturnedConnectionStackTraces}"
-		property:testConnectionOnCheckin="${jdbc.testConnectionOnCheckin}"
-		property:testConnectionOnCheckout="${jdbc.testConnectionOnCheckout}"
-		property:unreturnedConnectionTimeout="${jdbc.unreturnedConnectionTimeout}" />
-	
-	<bean id="nonXaDataSourcePostgresqlBinder" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-		property:staticMethod="ikube.toolkit.JndiInjector.bind">
-		<property name="arguments">
-			<array>
-				<value>nonXaDataSourcePostgresql</value>
-				<ref local="nonXaDataSourcePostgresql" />
-			</array>
-		</property>
-	</bean>
-	
+          class="com.mchange.v2.c3p0.ComboPooledDataSource"
+          destroy-method="close"
+          property:user="${postgres.jdbc.userid}"
+          property:password="${postgres.jdbc.password}"
+          property:driverClass="${postgres.jdbc.driver}"
+          property:jdbcUrl="${postgres.jdbc.url}"
+          property:initialPoolSize="${jdbc.minPoolSize}"
+          property:maxPoolSize="${jdbc.maxPoolSize}"
+          property:maxStatements="${jdbc.maxStatements}"
+          property:checkoutTimeout="${jdbc.checkOutTimeout}"
+          property:numHelperThreads="${jdbc.numHelperThreads}"
+          property:breakAfterAcquireFailure="${jdbc.breakAfterAcquireFailure}"
+          property:debugUnreturnedConnectionStackTraces="${jdbc.debugUnreturnedConnectionStackTraces}"
+          property:testConnectionOnCheckin="${jdbc.testConnectionOnCheckin}"
+          property:testConnectionOnCheckout="${jdbc.testConnectionOnCheckout}"
+          property:unreturnedConnectionTimeout="${jdbc.unreturnedConnectionTimeout}"/>
+
+    <bean id="nonXaDataSourcePostgresqlBinder"
+          class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+          property:staticMethod="ikube.toolkit.JndiInjector.bind">
+        <property name="arguments">
+            <array>
+                <value>nonXaDataSourcePostgresql</value>
+                <ref local="nonXaDataSourcePostgresql"/>
+            </array>
+        </property>
+    </bean>
+
 </beans>

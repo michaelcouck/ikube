@@ -188,4 +188,5 @@ public interface IConstants extends Constants {
     String TIMESTAMP = "timestamp";
 
     String SAVE_POINT = "save-point";
+    String INDEXABLE = "indexable";
 }

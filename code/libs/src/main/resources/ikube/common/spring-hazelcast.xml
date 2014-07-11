@@ -76,6 +76,26 @@
                     implementation="ikube.cluster.hzc.ClusterManagerCacheSearch">
                 </hz:map-store>
             </hz:map>
+
+            <hz:map
+                name="${hz-save-point-map}"
+                backup-count="${hz-map-backup-count}"
+                max-size="${hz-map-max-size}"
+                eviction-percentage="${hz-map-eviction-percentage}"
+                read-backup-data="${hz-map-read-backup-data}"
+                eviction-policy="${hz-map-eviction-policy}"
+                merge-policy="${hz-map-merge-policy}"
+                async-backup-count="${hz-async-backup-count}"
+                max-idle-seconds="${hz-max-idle-seconds}"
+                time-to-live-seconds="${hz-time-to-live-seconds}"
+                statistics-enabled="true">
+                <hz:map-store
+                    enabled="${hz-map-store-enabled}"
+                    write-delay-seconds="${hz-map-store-write-delay}"
+                    implementation="ikube.cluster.hzc.ClusterManagerCacheSavePoint">
+                </hz:map-store>
+            </hz:map>
+
             <hz:topic name="topic">
                 <hz:message-listeners>
                     <hz:message-listener implementation="ikube.cluster.listener.hzc.StartListener"/>
@@ -88,11 +108,17 @@
             </hz:topic>
         </hz:config>
     </hz:hazelcast>
+    <!-- Caches are backed up to the database with these beans -->
     <bean
         id="ikube.cluster.hzc.ClusterManagerCacheSearch"
         class="ikube.cluster.hzc.ClusterManagerCacheSearch"
-        depends-on="ikube.database.IDataBase">
-    </bean>
+        depends-on="ikube.database.IDataBase" />
+    <bean
+        id="ikube.cluster.hzc.ClusterManagerCacheSavePoint"
+        class="ikube.cluster.hzc.ClusterManagerCacheSavePoint"
+        depends-on="ikube.database.IDataBase" />
+
+    <!-- Listeners for the grid to persist items and stop actions -->
     <bean
         id="ikube.cluster.listener.hzc.StartListener"
         class="ikube.cluster.listener.hzc.StartListener"/>
@@ -116,6 +142,8 @@
     <bean
         id="ClusterManagerOutOfMemoryHandler"
         class="ikube.cluster.hzc.ClusterManagerOutOfMemoryHandler"/>
+
+    <!-- This bean controls the access to the grid and cluster synchronization -->
     <bean
         id="ikube.cluster.IClusterManager"
         class="ikube.cluster.hzc.ClusterManagerHazelcast"

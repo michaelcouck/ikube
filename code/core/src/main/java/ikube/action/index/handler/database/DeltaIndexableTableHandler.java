@@ -5,6 +5,7 @@ import ikube.cluster.IClusterManager;
 import ikube.model.IndexContext;
 import ikube.model.IndexableTable;
 import ikube.model.SavePoint;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.ForkJoinTask;
@@ -31,19 +32,17 @@ public class DeltaIndexableTableHandler extends IndexableTableHandler {
         try {
             SavePoint savePoint = clusterManager.get(IConstants.SAVE_POINT, indexableTable.getName());
             if (savePoint != null) {
-                // TODO: Set the next identifier here for the delta
-                indexableTable.getPredicate();
-            } else {
-                indexableTable.getPredicate();
+                logger.warn("Save point start : " + ToStringBuilder.reflectionToString(savePoint));
+                indexableTable.setMinimumId(savePoint.getIdentifier());
             }
             return super.handleIndexableForked(indexContext, indexableTable);
         } finally {
             if (indexContext.isDelta()) {
-                // TODO: Set the save point for the index in the database here
-                SavePoint savePoint = new SavePoint();
+                SavePoint savePoint = clusterManager.get(IConstants.SAVE_POINT, indexableTable.getName());
                 savePoint.setIndexable(indexableTable.getName());
                 savePoint.setIndexContext(indexContext.getName());
                 savePoint.setIdentifier(indexableTable.getMaximumId());
+                logger.warn("Save point end : " + ToStringBuilder.reflectionToString(savePoint));
                 clusterManager.put(IConstants.SAVE_POINT, indexableTable.getName(), savePoint);
             }
         }

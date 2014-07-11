@@ -41,7 +41,7 @@ public class ClusterManagerOutOfMemoryHandler extends OutOfMemoryHandler {
         }
         try {
             for (final HazelcastInstance hazelcastInstance : hazelcastInstances) {
-                ClusterManagerHazelcast.printStatistics(hazelcastInstance);
+                new ClusterManagerHazelcastStatistics().printStatistics(hazelcastInstance);
             }
         } catch (final Throwable e) {
             LOGGER.error("Oops...", e);
