@@ -45,6 +45,8 @@ public class IndexableTableHandlerTest extends AbstractTest {
         when(resultSet.getObject(any(String.class))).thenReturn("Hello world");
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(resultSetMetaData.getColumnCount()).thenReturn(1);
+        when(indexableColumn.getParent()).thenReturn(indexableTable);
+        when(indexableTable.getContent()).thenReturn(new StringBuilder());
 
         ResourceHandler resourceHandler = mock(ResourceHandler.class);
         indexableTableHandler = new IndexableTableHandler();

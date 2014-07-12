@@ -61,8 +61,9 @@
     </util:list>
 
     <util:list id="rule-strategies">
-        <ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy"/>
+        <ref bean="ikube.action.index.handler.strategy.LanguageFilterStrategy"/>
         <ref bean="ikube.action.index.handler.strategy.LanguageCleaningStrategy"/>
+        <ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy"/>
         <ref bean="rule-classification-strategy-en"/>
     </util:list>
 
@@ -83,6 +84,13 @@
         property:algorithm-ref="rule-weka-classifier-smo-en"
         property:fileName="sentiment-smo-en.arff"
         property:maxTraining="1000000"/>
+    <!-- This bean contains human readable data about the analyzer defined above. -->
+    <bean
+        id="rule-analyzer-info-smo"
+        class="ikube.model.AnalyzerInfo"
+        property:analyzer="ikube.analytics.weka.WekaClassifier"
+        property:filter="weka.filters.unsupervised.attribute.StringToWordVector"
+        property:algorithm="weka.classifiers.functions.SMO"/>
     <!-- Define the strategy that will intercept the processing to user the above defined analyzer. -->
     <bean
         id="rule-classification-strategy-en"
@@ -96,6 +104,7 @@
         parent="ikube.model.Indexable"
         class="ikube.model.IndexableColumn"
         property:name="id"
+        property:parent-ref="rule"
         property:idColumn="true"
         property:omitNorms="true"
         property:stored="true"

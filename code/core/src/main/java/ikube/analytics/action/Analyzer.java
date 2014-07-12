@@ -33,8 +33,11 @@ public class Analyzer extends Action<Analysis> implements Serializable {
     public Analysis call() throws Exception {
         // Get the remote analytics service
         IAnalyzer analyzer = getBean(IAnalyticsService.class).getAnalyzer(analysis.getAnalyzer());
-        // Do the analysis
-        analyzer.analyze(analysis);
+        // Could be that the analyzer is not built yet
+        if (analyzer != null) {
+            // Do the analysis
+            analyzer.analyze(analysis);
+        }
         // And return the analysis to the caller, which is not local
         return analysis;
     }

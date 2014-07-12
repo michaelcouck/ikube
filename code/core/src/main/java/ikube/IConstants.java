@@ -129,10 +129,10 @@ public interface IConstants extends Constants {
 
     String STRIP_CHARACTERS = "|!,[]{};:/\\.-_";
 
-    long MAX_ACTIONS = 10000;
-    long MAX_SNAPSHOTS = 10000;
-    long MAX_SERVERS = 100;
-    long MAX_RULES = 10000;
+    long MAX_ACTIONS = 100000;
+    long MAX_SNAPSHOTS = 100000;
+    long MAX_SERVERS = 1000;
+    long MAX_RULES = 1000000;
 
     String TIER = "tier";
 

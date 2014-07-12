@@ -29,13 +29,13 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
         clazz: undefined,
         input: undefined,
         output: undefined,
-        algorithmOutput: undefined,
-        classesOrClusters: undefined,
-        sizesForClassesOrClusters: undefined,
-        correlation: true,
-        distribution: true,
-        classesAndClusters: true,
-        sizesForClassesAndClusters: true
+
+        algorithmOutput: true,
+
+        correlation: false,
+        distribution: false,
+        classesAndClusters: false,
+        sizesForClassesAndClusters: false
     };
 
     $scope.context = {

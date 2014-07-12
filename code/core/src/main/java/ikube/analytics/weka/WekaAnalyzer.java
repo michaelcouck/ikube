@@ -83,7 +83,7 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<Object, Object>
     /**
      * {@inheritDoc}
      */
-    // @Override
+    @Override
     @SuppressWarnings("unchecked")
     public int sizeForClassOrCluster(final Analysis<Object, Object> analysis) throws Exception {
         try {

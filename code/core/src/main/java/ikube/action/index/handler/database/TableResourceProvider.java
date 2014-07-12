@@ -272,6 +272,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
                 indexableColumn.setAnalyzed(indexableTable.isAnalyzed());
                 indexableColumn.setStored(indexableTable.isStored());
                 indexableColumn.setVectored(indexableTable.isVectored());
+                indexableColumn.setParent(indexableTable);
                 children.add(indexableColumn);
             }
             indexableTable.setChildren(children);
@@ -293,6 +294,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
         }
         for (final Indexable child : indexableTable.getChildren()) {
             if (IndexableColumn.class.isAssignableFrom(child.getClass())) {
+                child.setParent(indexableTable);
                 if (child.getName().equalsIgnoreCase(columnName)) {
                     return Boolean.TRUE;
                 }
