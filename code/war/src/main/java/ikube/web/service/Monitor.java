@@ -35,7 +35,8 @@ import java.util.*;
 @Component
 @Path(Monitor.MONITOR)
 @Scope(Monitor.REQUEST)
-@Produces(MediaType.TEXT_PLAIN)
+@Consumes(MediaType.TEXT_PLAIN)
+@Produces(MediaType.APPLICATION_JSON)
 public class Monitor extends Resource {
 
     /**
@@ -65,7 +66,11 @@ public class Monitor extends Resource {
 
     @GET
     @Path(Monitor.FIELDS)
-    @Consumes(MediaType.APPLICATION_XML)
+    @Api(type = "GET",
+            uri = "/ikube/service/monitor/fields",
+            description ="This method will return the names of the Lucene fields in an index.",
+            consumes = String.class,
+            produces = String[].class)
     public Response fields(@QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
         if (StringUtils.isEmpty(indexName)) {
             return buildJsonResponse(new String[0]);
@@ -75,14 +80,25 @@ public class Monitor extends Resource {
 
     @GET
     @Path(Monitor.INDEXES)
-    @Consumes(MediaType.APPLICATION_XML)
+    @Api(type = "GET",
+            uri = "/ikube/service/monitor/indexes",
+            description ="This method will return the names of all the indexes that are defined in the system/instance, this " +
+                    "will be the default indexes like autocomplete and the user defined indexes.",
+            consumes = Void.class,
+            produces = String[].class)
     public Response indexes() {
         return buildJsonResponse(monitorService.getIndexNames());
     }
 
     @GET
     @Path(Monitor.INDEX_CONTEXT)
-    @Consumes(MediaType.APPLICATION_XML)
+    @Api(type = "GET",
+            uri = "/ikube/service/monitor/index-context",
+            description ="This method will return an index context, which is a holder for an inddex/collection. Please " +
+                    "refer to the documentation for the definition of a context and an index and how to configure one in " +
+                    "Spring.",
+            consumes = Void.class,
+            produces = IndexContext.class)
     public Response indexContext(
             @QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
         IndexContext indexContext = cloneIndexContext(monitorService.getIndexContext(indexName));
@@ -91,7 +107,12 @@ public class Monitor extends Resource {
 
     @GET
     @Path(Monitor.INDEX_CONTEXTS)
-    @Consumes(MediaType.APPLICATION_XML)
+    @Api(type = "GET",
+            uri = "/ikube/service/monitor/index-contexts",
+            description ="This method will return a collection of all the index contexts that are defined in the " +
+                    "system, sorted by a user defined field, similar to the above.",
+            consumes = String.class,
+            produces = List.class)
     public Response indexContexts(
             @QueryParam(value = IConstants.SORT_FIELD) final String sortField,
             @QueryParam(value = IConstants.DESCENDING) final boolean descending) {
@@ -116,7 +137,12 @@ public class Monitor extends Resource {
 
     @GET
     @Path(Monitor.SERVER)
-    @Consumes(MediaType.APPLICATION_XML)
+    @Api(type = "GET",
+            uri = "/ikube/service/monitor/server",
+            description ="This method will return the local server object, which holds information on the server, the " +
+                    "contexts defined, the snapshots of the system etc.",
+            consumes = Void.class,
+            produces = Server.class)
     public Response server() {
         Server server = clusterManager.getServer();
         Server cloneServer = cloneServer(server);
@@ -125,7 +151,11 @@ public class Monitor extends Resource {
 
     @GET
     @Path(Monitor.SERVERS)
-    @Consumes(MediaType.APPLICATION_XML)
+    @Api(type = "GET",
+            uri = "/ikube/service/monitor/servers",
+            description ="Similar to the above, this method will return all the servers in the cluster.",
+            consumes = Void.class,
+            produces = List.class)
     public Response servers() {
         List<Server> result = new ArrayList<>();
         Map<String, Server> servers = clusterManager.getServers();
@@ -139,8 +169,13 @@ public class Monitor extends Resource {
 
     @GET
     @Path(Monitor.INDEXING)
-    @Consumes(MediaType.APPLICATION_XML)
     @SuppressWarnings({"UnnecessaryBoxing", "unchecked"})
+    @Api(type = "GET",
+            uri = "/ikube/service/monitor/indexing",
+            description ="This method will return the indexing statistics for the local server, in a matrix " +
+                    "with the documents per minute and the time line for the indexing of the local server.",
+            consumes = Void.class,
+            produces = String.class)
     public Response indexingStatistics() {
         Map<String, Server> servers = clusterManager.getServers();
         Object[] times = getTimes(servers, new ArrayList<Object>(Arrays.asList(addQuotes("Times"))));
@@ -176,7 +211,13 @@ public class Monitor extends Resource {
 
     @GET
     @Path(Monitor.SEARCHING)
-    @Consumes(MediaType.APPLICATION_XML)
+    @Api(type = "GET",
+            uri = "/ikube/service/monitor/searching",
+            description ="This method will return the searching statistics for the local server, also a matrix " +
+                    "of searches per minute and time line, converted into a string for easier Json rendering and graph " +
+                    "creation using JavaScript.",
+            consumes = Void.class,
+            produces = String.class)
     @SuppressWarnings({"UnnecessaryBoxing", "unchecked"})
     public Response searchingStatistics() {
         Map<String, Server> servers = clusterManager.getServers();
@@ -213,7 +254,12 @@ public class Monitor extends Resource {
 
     @GET
     @Path(Monitor.ACTIONS)
-    @Consumes(MediaType.APPLICATION_XML)
+    @Api(type = "GET",
+            uri = "/ikube/service/monitor/actions",
+            description ="This method will return the actions that are currently being executed in the " +
+                    "whole cluster, i.e. all the action running on all the servers.",
+            consumes = Void.class,
+            produces = String.class)
     public Response actions() {
         List<Action> clonedActions = new ArrayList<>();
         Map<String, Server> servers = clusterManager.getServers();
@@ -230,28 +276,44 @@ public class Monitor extends Resource {
         return buildJsonResponse(clonedActions);
     }
 
-    @GET
+    @POST
     @Path(Monitor.START)
-    @Consumes(MediaType.APPLICATION_XML)
-    public Response start(
-            @QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Api(type = "POST",
+            uri = "/ikube/service/monitor/start",
+            description ="This method will start and index running, setting the maximum age to zero, and so " +
+                    "triggering the logic to start the job.",
+            consumes = String.class,
+            produces = String.class)
+    public Response start(final String indexName) {
         monitorService.start(indexName);
         return buildResponse().build();
     }
 
-    @GET
+    @POST
     @Path(Monitor.TERMINATE)
-    @Consumes(MediaType.APPLICATION_XML)
-    public Response terminate(
-            @QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Api(type = "POST",
+            uri = "/ikube/service/monitor/terminate",
+            description ="This method will terminate a job, by terminating the threads that the job has spawned. This " +
+                    "may not always terminate all threads as Java does not support thread termination directly, you have " +
+                    "to ask for the threads to terminate naturally.",
+            consumes = String.class,
+            produces = String.class)
+    public Response terminate(final String indexName) {
         monitorService.terminate(indexName);
         return buildResponse().build();
     }
 
     @GET
     @Path(Monitor.GET_PROPERTIES)
-    @Consumes(MediaType.APPLICATION_XML)
-    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Api(type = "GET",
+            uri = "/ikube/service/monitor/get-properties",
+            description ="This method will get all the properties that are defined in the properties " +
+                    "files for this instance, i.e. the local server.",
+            consumes = Void.class,
+            produces = Map.class)
     public Response getProperties() {
         return buildJsonResponse(monitorService.getProperties());
     }
@@ -260,6 +322,13 @@ public class Monitor extends Resource {
     @SuppressWarnings("unchecked")
     @Path(Monitor.SET_PROPERTIES)
     @Consumes(MediaType.APPLICATION_JSON)
+    @Api(type = "POST",
+            uri = "/ikube/service/monitor/set-properties",
+            description ="This method will set the properties for the application, taking a map of properties and " +
+                    "replacing them by the ones in the method signature. Writing the properties to the properties files " +
+                    "on the file system.",
+            consumes = Map.class,
+            produces = String.class)
     public Response setProperties(
             @Context final HttpServletRequest request) throws IOException {
         Map<String, String> filesAndProperties = unmarshall(Map.class, request);
@@ -267,27 +336,45 @@ public class Monitor extends Resource {
         return buildResponse().build();
     }
 
-    @GET
+    @POST
     @Path(Monitor.TERMINATE_ALL)
-    @Consumes(MediaType.APPLICATION_XML)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Api(type = "GET",
+            uri = "/ikube/service/monitor/terminate-all",
+            description ="This method will terminate all the jobs in teh system. Essentially by destroying " +
+                    "all the thread pools and the underlying threads in them.",
+            consumes = Void.class,
+            produces = String.class)
     public Response terminateAll() {
         monitorService.terminateAll();
         return buildResponse().build();
     }
 
-    @GET
+    @POST
     @Path(Monitor.STARTUP_ALL)
-    @Consumes(MediaType.APPLICATION_XML)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Api(type = "POST",
+            uri = "/ikube/service/monitor/startup-all",
+            description ="This method will start all the thread pools in teh application, and thereby start the " +
+                    "jobs and schedules too.",
+            consumes = Void.class,
+            produces = String.class)
     public Response startupAll() {
         monitorService.startupAll();
         return buildResponse().build();
     }
 
-    @GET
+    @POST
     @Path(Monitor.DELETE_INDEX)
-    @Consumes(MediaType.APPLICATION_XML)
-    public Response delete(
-            @QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Api(type = "POST",
+            uri = "/ikube/service/monitor/delete-index",
+            description ="This method will delete the file system index that is specified, including any backup " +
+                    "index that has been written to the file system. This method is quite brutal, the index will not " +
+                    "be closed, it will just be deleted.",
+            consumes = Void.class,
+            produces = String.class)
+    public Response delete(final String indexName) {
         long time = System.currentTimeMillis();
         Event startEvent = IListener.EventGenerator.getEvent(Event.DELETE_INDEX, time, indexName, Boolean.FALSE);
         logger.info("Sending delete event : " + ToStringBuilder.reflectionToString(startEvent));
@@ -295,9 +382,15 @@ public class Monitor extends Resource {
         return buildResponse().build();
     }
 
-    @GET
+    @POST
     @Path(Monitor.CPU_THROTTLING)
-    @Consumes(MediaType.APPLICATION_XML)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Api(type = "GET",
+            uri = "/ikube/service/monitor/cpu-throttling",
+            description ="This method will toggle the cpu throttling functionality. This will slow down the processing " +
+                    "when the cpu exceeds a certain threshold per core, defined by the user.",
+            consumes = Void.class,
+            produces = String.class)
     public Response cpuThrottling() {
         monitorService.cpuThrottling();
         return buildResponse().build();

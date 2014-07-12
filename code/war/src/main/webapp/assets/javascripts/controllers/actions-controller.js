@@ -18,7 +18,7 @@ module.controller('ActionsController', function($http, $scope) {
 		promise.error(function(data, status) {
 			$scope.status = status;
 		});
-	}
+	};
 	$scope.doShow = function(scopeActions, resultActions) {
 		if (!!scopeActions && !!resultActions) {
 			angular.forEach(scopeActions, function(scopeAction, index) {
@@ -58,7 +58,7 @@ module.controller('ActionsController', function($http, $scope) {
 		// The configuration for the request to the server
 		var config = { params : parameters };
 		// And terminate the indexing for the index
-		var promise = $http.get(url, config);
+		var promise = $http.post(url, config);
 		promise.success(function(data, status) {
 			$scope.status = status;
 		});

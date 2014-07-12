@@ -207,6 +207,7 @@
         <ref local="ikube.scheduling.schedule.IndexCommitSchedule"/>
         <ref local="ikube.scheduling.schedule.IndexCommitSchedule"/>
         <ref local="ikube.scheduling.schedule.AnalyzerSchedule"/>
+        <ref local="ikube.scheduling.schedule.PruneSchedule"/>
     </util:list>
 
     <!-- Scheduled objects. -->

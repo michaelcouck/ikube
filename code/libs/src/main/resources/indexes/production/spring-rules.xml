@@ -36,7 +36,7 @@
         property:indexDirectoryPathBackup="${index.directory.path}"
         property:children-ref="ikube-rule"/>
     <util:list id="ikube-rule">
-        <!--<ref local="rule"/>-->
+        <ref local="rule"/>
     </util:list>
 
     <bean

@@ -30,15 +30,20 @@ public class DeltaIndexableTableHandler extends IndexableTableHandler {
     @Override
     public ForkJoinTask<?> handleIndexableForked(final IndexContext indexContext, final IndexableTable indexableTable) throws Exception {
         try {
-            SavePoint savePoint = clusterManager.get(IConstants.SAVE_POINT, indexableTable.getName());
-            if (savePoint != null) {
-                logger.warn("Save point start : " + ToStringBuilder.reflectionToString(savePoint));
-                indexableTable.setMinimumId(savePoint.getIdentifier());
+            if (indexContext.isDelta()) {
+                SavePoint savePoint = clusterManager.get(IConstants.SAVE_POINT, indexableTable.getName());
+                if (savePoint != null) {
+                    logger.warn("Save point start : " + ToStringBuilder.reflectionToString(savePoint));
+                    indexableTable.setMinimumId(savePoint.getIdentifier());
+                }
             }
             return super.handleIndexableForked(indexContext, indexableTable);
         } finally {
             if (indexContext.isDelta()) {
                 SavePoint savePoint = clusterManager.get(IConstants.SAVE_POINT, indexableTable.getName());
+                if (savePoint == null) {
+                    savePoint = new SavePoint();
+                }
                 savePoint.setIndexable(indexableTable.getName());
                 savePoint.setIndexContext(indexContext.getName());
                 savePoint.setIdentifier(indexableTable.getMaximumId());

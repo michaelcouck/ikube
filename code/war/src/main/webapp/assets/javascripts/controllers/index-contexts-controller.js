@@ -30,7 +30,7 @@ module.controller('IndexContextsController', function($http, $scope, $injector, 
 		promise.error(function(data, status) {
 			$scope.status = status;
 		});
-	}
+	};
 	// Immediately get the data
 	$scope.refreshIndexContexts();
 	// Refresh the index contexts every so often
@@ -50,7 +50,7 @@ module.controller('IndexContextsController', function($http, $scope, $injector, 
 			params : $scope.parameters
 		};
 		// And terminate the indexing for the index
-		var promise = $http.get($scope.url, $scope.config);
+		var promise = $http.post($scope.url, indexName);
 		promise.success(function(data, status) {
 			$scope.status = status;
 			$scope.notification('Start indexing', indexName);
@@ -58,7 +58,7 @@ module.controller('IndexContextsController', function($http, $scope, $injector, 
 		promise.error(function(data, status) {
 			$scope.status = status;
 		});
-	}
+	};
 
 	// This function will delete the index completely on the file system
 	$scope.deleteIndex = function(indexName) {
@@ -73,7 +73,7 @@ module.controller('IndexContextsController', function($http, $scope, $injector, 
 			params : $scope.parameters
 		};
 		// And delete the index
-		var promise = $http.get($scope.url, $scope.config);
+		var promise = $http.post($scope.url, $scope.config);
 		promise.success(function(data, status) {
 			$scope.status = status;
 			$scope.notification('Delete', indexName);
@@ -82,7 +82,7 @@ module.controller('IndexContextsController', function($http, $scope, $injector, 
 			$scope.status = status;
 			// alert('Error sending delete message : ' + status);
 		});
-	}
+	};
 
 	$scope.notification = function(action, indexName) {
 		notificationService.notification(action + ' for index \'' + indexName + '\' executed', '/ikube/assets/images/cloud.png', '5');
@@ -127,7 +127,7 @@ module.controller('IndexContextsController', function($http, $scope, $injector, 
 			"aaData" : data,
 			fnRowCallback : function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
 				// Row click
-				var row = $(nRow)
+				var row = $(nRow);
 				$('td', nRow).attr('nowrap', 'nowrap');
 				row.on("click", function() {
 					var name = row.find("td:first").text();

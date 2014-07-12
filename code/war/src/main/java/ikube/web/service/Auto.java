@@ -40,6 +40,8 @@ public class Auto extends Resource {
     private static final Pattern CONJUNCTIONS = Pattern.compile("AND|OR|NOT|and|or|not");
 
     /**
+     * TODO: Write a unit test for this!!!! Jesus!!!
+     *
      * This method will return suggestions based on the closest match of the word in the index. The index can be a word list,
      * which is probably the best choice, but doesn't have to be. If there are three words the, there will be suggestions for
      * each word, and combinations of those suggestions, sorted by the score for the words.
@@ -56,6 +58,14 @@ public class Auto extends Resource {
      */
     @POST
     @SuppressWarnings("unused")
+    @Api(type = "POST",
+            uri = "/ikube/service/auto",
+            description =
+                    "This method will query the autocomplete index, which is an index of words, English, and potentially " +
+                            "other languages, and return a list of best matches for the word. The autocomplete index is an " +
+                            "n-grammed index, allowing for fuzzy matching.",
+            consumes = ikube.model.Search.class,
+            produces = ikube.model.Search.class)
     public Response auto(
             @Context final HttpServletRequest request,
             @Context final UriInfo uriInfo) {

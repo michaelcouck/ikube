@@ -77,7 +77,7 @@ module.controller('ServersController', function($http, $scope, $timeout, databas
 		// The configuration for the request to the server
 		$scope.config = { params : $scope.parameters };
 		// And start all the schedules again
-		var promise = $http.get($scope.url, $scope.config);
+		var promise = $http.post($scope.url, $scope.config);
 		promise.success(function(data, status) {
 			$scope.status = status;
 		});
@@ -96,7 +96,7 @@ module.controller('ServersController', function($http, $scope, $timeout, databas
 		// The configuration for the request to the server
 		$scope.config = { params : $scope.parameters };
 		// And terminate the schedules in the cluster
-		var promise = $http.get($scope.url, $scope.config);
+		var promise = $http.post($scope.url, $scope.config);
 		promise.success(function(data, status) {
 			$scope.status = status;
 		});
@@ -126,7 +126,7 @@ module.controller('ServersController', function($http, $scope, $timeout, databas
 		$scope.url = getServiceUrl('/ikube/service/monitor/cpu-throttling');
 		$scope.parameters = {};
 		$scope.config = { params : $scope.parameters };
-		var promise = $http.get($scope.url, $scope.config);
+		var promise = $http.post($scope.url, $scope.config);
 		promise.success(function(data, status) {
 			$scope.status = status;
 		});

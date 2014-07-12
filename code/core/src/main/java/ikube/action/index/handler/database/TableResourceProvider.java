@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static ikube.database.DatabaseUtilities.close;
+import static ikube.database.DatabaseUtilities.closeAll;
+
 /**
  * This class provides resources to the table handler. In this case a resource is a result set. Each
  * thread will request a result set, which will be all the records between two identifiers. That result
@@ -55,14 +58,14 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
                 if (resultSet.next()) {
                     return resultSet;
                 }
-                DatabaseUtilities.closeAll(resultSet);
+                closeAll(resultSet);
                 if (currentId.get() > indexableTable.getMaximumId()) {
                     // Finished indexing the table hierarchy,
                     // no more results from this select statement
                     return null;
                 }
             } while (true);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         } finally {
             notifyAll();
@@ -90,7 +93,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
         }
         logger.info("Min id : " + minimumId + ", max id : " + maximumId);
         // logger.info("Closing connection, i.e. back to the pool, with a cocktail :)");
-        DatabaseUtilities.close(connection);
+        close(connection);
     }
 
     Connection getConnection(final DataSource dataSource) {
@@ -98,7 +101,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
             Connection connection = dataSource.getConnection();
             connection.setAutoCommit(Boolean.FALSE);
             return connection;
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
@@ -139,7 +142,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
                 }
                 logger.info("Setting next id to : " + nextId);
                 currentId.set(nextId);
-                DatabaseUtilities.close(resultSet);
+                close(resultSet);
             }
 
             // Build the sql based on the columns defined in the configuration
@@ -232,11 +235,11 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
                 }
             }
             return result;
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         } finally {
-            DatabaseUtilities.close(resultSet);
-            DatabaseUtilities.close(statement);
+            close(resultSet);
+            close(statement);
             notifyAll();
         }
     }
@@ -272,7 +275,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
                 children.add(indexableColumn);
             }
             indexableTable.setChildren(children);
-            DatabaseUtilities.close(connection);
+            close(connection);
         }
         // Now do all the child tables
         if (indexableTable.getChildren() != null) {
