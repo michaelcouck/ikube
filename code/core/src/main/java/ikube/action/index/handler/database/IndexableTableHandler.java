@@ -98,6 +98,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
             final Document currentDocument,
             final IContentProvider<IndexableColumn> contentProvider)
             throws Exception {
+        StringBuilder builder = new StringBuilder();
+        indexableTable.setContent(builder);
         // We have results from the table and we are already on the first result
         List<Indexable> children = indexableTable.getChildren();
         // Set the column types and the data from the table in the column objects
@@ -172,11 +174,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
             }
             // Concatenate the column data to the table indexable content
             IndexableTable indexableTable = (IndexableTable) indexable.getParent();
+            @SuppressWarnings("MismatchedQueryAndUpdateOfStringBuilder")
             StringBuilder builder = (StringBuilder) indexableTable.getContent();
-            if (builder == null) {
-                builder = new StringBuilder();
-                indexableTable.setContent(builder);
-            }
             builder.append(" ");
             builder.append(fieldContent);
         } finally {
