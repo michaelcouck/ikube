@@ -27,6 +27,7 @@ import static ikube.action.index.IndexManager.addStringField;
  * @version 01.00
  * @since 02-12-2013
  */
+@SuppressWarnings("SpringJavaAutowiredMembersInspection")
 public class AnalysisStrategy extends AStrategy {
 
     private String language;

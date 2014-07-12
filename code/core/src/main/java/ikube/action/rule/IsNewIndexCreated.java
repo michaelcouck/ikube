@@ -59,7 +59,7 @@ public class IsNewIndexCreated extends ARule<IndexContext> {
                     openedIndexDirectory = openedIndexDirectory.getParentFile();
                 } while (openedIndexDirectory != null);
             } catch (final Exception e) {
-                logger.info("Is this index closed already? : " + indexContext.getName(), e);
+                logger.debug("Is this index closed already? : " + indexContext.getName(), e);
             }
             break;
         }

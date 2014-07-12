@@ -170,6 +170,15 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
             } else {
                 IndexManager.addStringField(fieldName, fieldContent, indexable, document);
             }
+            // Concatenate the column data to the table indexable content
+            IndexableTable indexableTable = (IndexableTable) indexable.getParent();
+            StringBuilder builder = (StringBuilder) indexableTable.getContent();
+            if (builder == null) {
+                builder = new StringBuilder();
+                indexableTable.setContent(builder);
+            }
+            builder.append(" ");
+            builder.append(fieldContent);
         } finally {
             FileUtilities.close(inputStream);
             FileUtilities.close(parsedOutputStream);
