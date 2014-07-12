@@ -58,7 +58,7 @@ module.controller('ActionsController', function($http, $scope) {
 		// The configuration for the request to the server
 		var config = { params : parameters };
 		// And terminate the indexing for the index
-		var promise = $http.post(url, config);
+		var promise = $http.post(url, indexName);
 		promise.success(function(data, status) {
 			$scope.status = status;
 		});

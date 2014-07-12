@@ -49,14 +49,18 @@ public class IsNewIndexCreated extends ARule<IndexContext> {
         for (final AtomicReaderContext atomicReaderContext : atomicReaderContexts) {
             SegmentReader atomicReader = (SegmentReader) atomicReaderContext.reader();
             MMapDirectory directory = (MMapDirectory) atomicReader.directory();
-            openedIndexDirectory = directory.getDirectory();
-            do {
-                if (StringUtilities.isNumeric(openedIndexDirectory.getName())) {
-                    current = new Date(Long.parseLong(openedIndexDirectory.getName()));
-                    break;
-                }
-                openedIndexDirectory = openedIndexDirectory.getParentFile();
-            } while (openedIndexDirectory != null);
+            try {
+                openedIndexDirectory = directory.getDirectory();
+                do {
+                    if (StringUtilities.isNumeric(openedIndexDirectory.getName())) {
+                        current = new Date(Long.parseLong(openedIndexDirectory.getName()));
+                        break;
+                    }
+                    openedIndexDirectory = openedIndexDirectory.getParentFile();
+                } while (openedIndexDirectory != null);
+            } catch (final Exception e) {
+                logger.info("Is this index closed already? : " + indexContext.getName(), e);
+            }
             break;
         }
         if (current == null) {

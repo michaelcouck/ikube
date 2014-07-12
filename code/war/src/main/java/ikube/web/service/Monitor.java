@@ -37,6 +37,7 @@ import java.util.*;
 @Scope(Monitor.REQUEST)
 @Consumes(MediaType.TEXT_PLAIN)
 @Produces(MediaType.APPLICATION_JSON)
+@Api(description = "The monitoring rest resource")
 public class Monitor extends Resource {
 
     /**
@@ -112,7 +113,7 @@ public class Monitor extends Resource {
             description ="This method will return a collection of all the index contexts that are defined in the " +
                     "system, sorted by a user defined field, similar to the above.",
             consumes = String.class,
-            produces = List.class)
+            produces = ArrayList.class)
     public Response indexContexts(
             @QueryParam(value = IConstants.SORT_FIELD) final String sortField,
             @QueryParam(value = IConstants.DESCENDING) final boolean descending) {
@@ -155,7 +156,7 @@ public class Monitor extends Resource {
             uri = "/ikube/service/monitor/servers",
             description ="Similar to the above, this method will return all the servers in the cluster.",
             consumes = Void.class,
-            produces = List.class)
+            produces = ArrayList.class)
     public Response servers() {
         List<Server> result = new ArrayList<>();
         Map<String, Server> servers = clusterManager.getServers();
@@ -313,7 +314,7 @@ public class Monitor extends Resource {
             description ="This method will get all the properties that are defined in the properties " +
                     "files for this instance, i.e. the local server.",
             consumes = Void.class,
-            produces = Map.class)
+            produces = HashMap.class)
     public Response getProperties() {
         return buildJsonResponse(monitorService.getProperties());
     }
@@ -327,7 +328,7 @@ public class Monitor extends Resource {
             description ="This method will set the properties for the application, taking a map of properties and " +
                     "replacing them by the ones in the method signature. Writing the properties to the properties files " +
                     "on the file system.",
-            consumes = Map.class,
+            consumes = HashMap.class,
             produces = String.class)
     public Response setProperties(
             @Context final HttpServletRequest request) throws IOException {

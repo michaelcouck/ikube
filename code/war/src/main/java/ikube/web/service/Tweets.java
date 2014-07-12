@@ -46,6 +46,7 @@ import java.util.concurrent.Future;
 @Scope(Resource.REQUEST)
 @Produces(MediaType.APPLICATION_JSON)
 @SuppressWarnings("SpringJavaAutowiringInspection")
+@Api(description = "The Twitter rest resource")
 public class Tweets extends Resource {
 
     /**

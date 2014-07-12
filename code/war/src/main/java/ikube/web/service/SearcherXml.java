@@ -10,7 +10,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-
+import java.util.ArrayList;
 import java.util.List;
 
 import static ikube.IConstants.*;
@@ -40,6 +40,7 @@ import static ikube.IConstants.*;
 @Consumes(MediaType.TEXT_PLAIN)
 @Produces(MediaType.APPLICATION_XML)
 @Path(SearcherXml.SEARCH + SearcherXml.XML)
+@Api(description = "The Json search rest resource")
 public class SearcherXml extends Searcher {
 
     public static final String XML = "/xml";
@@ -56,7 +57,7 @@ public class SearcherXml extends Searcher {
                     "array list of hash maps that represent the results. Please refer to the documentation for the format " +
                     "of the results",
             consumes = String.class,
-            produces = List.class)
+            produces = ArrayList.class)
     public Response search(
             @QueryParam(value = INDEX_NAME) final String indexName,
             @QueryParam(value = SEARCH_STRINGS) final String searchStrings,
@@ -86,7 +87,7 @@ public class SearcherXml extends Searcher {
                     "array list of hash maps that represent the results. Additionally this method supports a field in the " +
                     "that the results can be sorted on.",
             consumes = String.class,
-            produces = List.class)
+            produces = ArrayList.class)
     public Response search(
             @QueryParam(value = INDEX_NAME) final String indexName,
             @QueryParam(value = SEARCH_STRINGS) final String searchStrings,
@@ -119,7 +120,7 @@ public class SearcherXml extends Searcher {
                     "that the results can be sorted on, and specifying the types of the fields directly rather than by " +
                     "inspection.",
             consumes = String.class,
-            produces = List.class)
+            produces = ArrayList.class)
     public Response search(
             @QueryParam(value = INDEX_NAME) final String indexName,
             @QueryParam(value = SEARCH_STRINGS) final String searchStrings,
@@ -156,7 +157,7 @@ public class SearcherXml extends Searcher {
                     "the results will be around a point, nad sorted by distance from that point, and not further than the " +
                     "distance from the origin specified.",
             consumes = String.class,
-            produces = List.class)
+            produces = ArrayList.class)
     public Response search(
             @QueryParam(value = INDEX_NAME) final String indexName,
             @QueryParam(value = SEARCH_STRINGS) final String searchStrings,

@@ -88,7 +88,7 @@ module.controller('ServersController', function($http, $scope, $timeout, databas
 
     /**
      * This function will terminate all the thread pools in the server, effectively
-     * destroying and stoppint all the jobs that are currently being executed.
+     * destroying and stopping all the jobs that are currently being executed.
      */
 	$scope.terminateAll = function() {
 		$scope.url = getServiceUrl('/ikube/service/monitor/terminate-all');

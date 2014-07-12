@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 @Scope(Auto.REQUEST)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(description = "The autocomplete rest service")
 public class Auto extends Resource {
 
     /**

@@ -73,7 +73,7 @@ module.controller('IndexContextsController', function($http, $scope, $injector, 
 			params : $scope.parameters
 		};
 		// And delete the index
-		var promise = $http.post($scope.url, $scope.config);
+		var promise = $http.post($scope.url, indexName);
 		promise.success(function(data, status) {
 			$scope.status = status;
 			$scope.notification('Delete', indexName);

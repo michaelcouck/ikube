@@ -12,6 +12,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Set;
 
@@ -72,12 +73,16 @@ public class ApiDocs extends Resource {
             apiMethod.setUri(annotation.uri());
             apiMethod.setDescription(annotation.description());
             try {
-                if (annotation.consumes().isArray()) {
+                if (annotation.consumes().isArray() ||
+                        !Modifier.isPublic(annotation.consumes().getModifiers()) ||
+                        Void.class.isAssignableFrom(annotation.consumes())) {
                     apiMethod.setConsumes(annotation.consumes().toString());
                 } else {
                     apiMethod.setConsumes(populateFields(annotation.consumes().newInstance(), true, 10));
                 }
-                if (annotation.produces().isArray()) {
+                if (annotation.produces().isArray() ||
+                        !Modifier.isPublic(annotation.produces().getModifiers())
+                        || Void.class.isAssignableFrom(annotation.consumes())) {
                     apiMethod.setProduces(annotation.produces().toString());
                 } else {
                     apiMethod.setProduces(populateFields(annotation.produces().newInstance(), true, 10));
