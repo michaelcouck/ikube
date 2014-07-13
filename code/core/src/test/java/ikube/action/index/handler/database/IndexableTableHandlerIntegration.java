@@ -1,19 +1,15 @@
 package ikube.action.index.handler.database;
 
-import java.net.InetAddress;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
-import java.util.List;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
-import java.util.concurrent.atomic.AtomicLong;
-
-import javax.sql.DataSource;
-
+import ikube.AbstractTest;
+import ikube.IConstants;
+import ikube.action.index.content.ColumnContentProvider;
+import ikube.action.index.content.IContentProvider;
+import ikube.cluster.IClusterManager;
+import ikube.database.IDataBase;
+import ikube.model.*;
+import ikube.scheduling.Scheduler;
+import ikube.toolkit.PropertyConfigurer;
+import ikube.toolkit.ThreadUtilities;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.junit.After;
@@ -21,37 +17,23 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.sql.DataSource;
+import java.sql.*;
+import java.util.List;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.atomic.AtomicLong;
+
 import static ikube.action.index.IndexManager.openIndexWriter;
 import static ikube.action.index.handler.database.QueryBuilder.getIdColumn;
 import static ikube.database.DatabaseUtilities.close;
 import static ikube.toolkit.ApplicationContextManager.getBean;
-import static ikube.toolkit.ThreadUtilities.cancelForkJoinPool;
-import static ikube.toolkit.ThreadUtilities.executeForkJoinTasks;
-import static ikube.toolkit.ThreadUtilities.sleep;
+import static ikube.toolkit.ThreadUtilities.*;
 import static ikube.toolkit.UriUtilities.getIp;
 import static java.lang.System.currentTimeMillis;
 import static java.net.InetAddress.getLocalHost;
 import static mockit.Deencapsulation.invoke;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import ikube.AbstractTest;
-import ikube.IConstants;
-import ikube.action.index.IndexManager;
-import ikube.action.index.content.ColumnContentProvider;
-import ikube.action.index.content.IContentProvider;
-import ikube.cluster.IClusterManager;
-import ikube.database.DatabaseUtilities;
-import ikube.database.IDataBase;
-import ikube.model.IndexContext;
-import ikube.model.Indexable;
-import ikube.model.IndexableColumn;
-import ikube.model.IndexableTable;
-import ikube.model.Snapshot;
-import ikube.scheduling.Scheduler;
-import ikube.toolkit.PropertyConfigurer;
-import ikube.toolkit.ThreadUtilities;
-import ikube.toolkit.UriUtilities;
+import static org.junit.Assert.*;
 
 /**
  * This is an integration test as it will go to the database.
@@ -83,6 +65,7 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
 
         indexContext = getBean("indexContext");
         snapshotTable = getBean("snapshotTable");
+
         PropertyConfigurer propertyConfigurer = getBean(PropertyConfigurer.class);
         DataSource dataSource = getBean(propertyConfigurer.getProperty("ikube.dataSource"));
         IClusterManager clusterManager = getBean(IClusterManager.class);
@@ -90,6 +73,8 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
         indexContext.setBatchSize(10000);
         indexContext.setIndexDirectoryPath("./indexes");
         snapshotTable.setThreads(4);
+        snapshotTable.setContent(new StringBuilder());
+
         snapshotTableChildren = snapshotTable.getChildren();
         snapshotColumn = getIdColumn(snapshotTableChildren);
         connection = dataSource.getConnection();
@@ -128,7 +113,8 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
         IndexableColumn snapshotIdIndexableColumn = getIdColumn(snapshotTableChildren);
         snapshotIdIndexableColumn.setContent("Hello World!");
         snapshotIdIndexableColumn.setColumnType(Types.VARCHAR);
-        snapshotIdIndexableColumn.setParent(indexableTable);
+        snapshotIdIndexableColumn.setParent(snapshotTable);
+
         Document document = new Document();
         IContentProvider<IndexableColumn> contentProvider = new ColumnContentProvider();
         invoke(indexableTableHandler, "handleColumn", contentProvider, snapshotIdIndexableColumn, document);

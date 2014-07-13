@@ -69,9 +69,11 @@ public final class LanguageDetectionStrategy extends AStrategy {
 					String languageOriginal = locale.getDisplayLanguage(locale);
 					IndexManager.addStringField(IConstants.LANGUAGE_ORIGINAL, languageOriginal, indexable, document);
 				}
-                logger.warn("Language : " + language + " - " + languageCode + " - " + content);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Language : " + language + " - " + languageCode + " - " + content);
+                }
 				IndexManager.addStringField(IConstants.LANGUAGE, language, indexable, document);
-			} catch (LangDetectException e) {
+			} catch (final LangDetectException e) {
 				logger.debug("Language processing error : {} ", e.getMessage());
 			}
 		}

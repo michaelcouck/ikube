@@ -53,7 +53,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
         try {
             do {
                 setMinAndMaxId(indexableTable, dataSource);
-                logger.info("Current id : " + currentId.get() + ", max id : " + indexableTable.getMaximumId());
+                logger.debug("Current id : " + currentId.get() + ", max id : " + indexableTable.getMaximumId());
                 ResultSet resultSet = getResultSet(indexContext, indexableTable, currentId);
                 if (resultSet.next()) {
                     return resultSet;
@@ -82,16 +82,20 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
 
     void setMinAndMaxId(final IndexableTable indexableTable, final DataSource dataSource) {
         Connection connection = getConnection(dataSource);
-        long minimumId = indexableTable.getMinimumId();
-        if (minimumId <= 0) {
-            minimumId = getIdFunction(indexableTable, connection, "min");
-            indexableTable.setMinimumId(minimumId);
+
+        // long minimumId = indexableTable.getMinimumId();
+        long minimumId = getIdFunction(indexableTable, connection, "min");
+        indexableTable.setMinimumId(minimumId);
+
+        // long maximumId = indexableTable.getMaximumId();
+        long maximumId = getIdFunction(indexableTable, connection, "max");
+        indexableTable.setMaximumId(maximumId);
+
+        /*if (minimumId <= 0) {
         }
-        long maximumId = indexableTable.getMaximumId();
         if (maximumId <= 0) {
-            maximumId = getIdFunction(indexableTable, connection, "max");
-            indexableTable.setMaximumId(maximumId);
-        }
+        }*/
+
         logger.debug("Min id : " + minimumId + ", max id : " + maximumId);
         logger.debug("Closing connection, i.e. back to the pool, with a cocktail :)");
         close(connection);

@@ -26,8 +26,7 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
         clazz: undefined,
         input: undefined,
         output: undefined,
-
-        algorithmOutput: true,
+        algorithmOutput: undefined,
 
         correlation: false,
         distribution: false,
@@ -109,18 +108,18 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
         var url = getServiceUrl('/ikube/service/analyzer/analyze');
         //noinspection JSUnresolvedVariable
 
-        $scope.analysis.clazz = null;
-        $scope.analysis.output = null;
-        $scope.analysis.exception = null;
-        $scope.analysis.algorithmOutput = null;
-        $scope.analysis.correlationCoefficients = false;
-        $scope.analysis.distributionForInstances = false;
+        $scope.analysis.clazz = undefined;
+        $scope.analysis.output = undefined;
+        $scope.analysis.exception = undefined;
+        $scope.analysis.algorithmOutput = undefined;
+        $scope.analysis.correlationCoefficients = undefined;
+        $scope.analysis.distributionForInstances = undefined;
 
-        $scope.analysis.algorithmOutput = true;
         $scope.analysis.correlation = false;
         $scope.analysis.distribution = false;
         $scope.analysis.classesAndClusters = false;
         $scope.analysis.sizesForClassesAndClusters = false;
+        $scope.analysis.algorithm = true;
 
         $scope.status = undefined;
         var promise = $http.post(url, $scope.analysis);

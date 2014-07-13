@@ -84,7 +84,8 @@
         property:filter-ref="rule-string-to-word-vector-en"
         property:algorithm-ref="rule-weka-classifier-smo-en"
         property:fileName="sentiment-smo-en.arff"
-        property:maxTraining="1000000"/>
+        property:maxTraining="1000000"
+        property:analyzerInfo-ref="rule-analyzer-info-smo"/>
     <!-- This bean contains human readable data about the analyzer defined above. -->
     <bean
         id="rule-analyzer-info-smo"

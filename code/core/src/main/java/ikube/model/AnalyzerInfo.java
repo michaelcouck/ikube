@@ -34,6 +34,10 @@ public class AnalyzerInfo extends Persistable {
      * The evaluation of the data and the classifier. Note that clusterers can not be evaluated.
      */
     private String evaluation;
+    /**
+     * This flag is set when the analyzer is completely built.
+     */
+    private Boolean built = Boolean.FALSE;
 
     public String getAnalyzer() {
         return analyzer;
@@ -65,5 +69,13 @@ public class AnalyzerInfo extends Persistable {
 
     public void setEvaluation(final String evaluation) {
         this.evaluation = evaluation;
+    }
+
+    public Boolean getBuilt() {
+        return built;
+    }
+
+    public void setBuilt(final Boolean built) {
+        this.built = built;
     }
 }

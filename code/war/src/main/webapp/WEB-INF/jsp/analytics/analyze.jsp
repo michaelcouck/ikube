@@ -89,6 +89,15 @@
                                     placeholder="The options, if any..."
                                     readonly>
                             </div>
+                            <div class="note"><b>Whether this analyzer has been built or not</b></div>
+                            <div class="input">
+                                <input
+                                    class="input"
+                                    type="text"
+                                    ng-model="context.analyzerInfo.built"
+                                    placeholder="Is this analyzer's model built..."
+                                    readonly>
+                            </div>
 						</div>
 					</div>
 				</form>

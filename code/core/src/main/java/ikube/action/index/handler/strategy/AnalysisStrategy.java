@@ -12,6 +12,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import static ikube.IConstants.CLASSIFICATION;
 import static ikube.IConstants.CLASSIFICATION_CONFLICT;
 import static ikube.action.index.IndexManager.addStringField;
@@ -20,7 +22,7 @@ import static ikube.action.index.IndexManager.addStringField;
  * This strategy is typically used during processing in batch, like during an indexing process. It can be added to
  * the strategy chain, and will add the result of the analysis to the document/resource. The analysis tagged document can
  * then be searched, i.e. the analysis results can then become derived analysis results and or aggregated analysis results.
- *
+ * <p/>
  * Note that the analysis is distributed in the cluster, so all the servers must have identical analyzers.
  *
  * @author Michael Couck
@@ -30,9 +32,29 @@ import static ikube.action.index.IndexManager.addStringField;
 @SuppressWarnings("SpringJavaAutowiredMembersInspection")
 public class AnalysisStrategy extends AStrategy {
 
+    /**
+     * This is a language that is defined on the strategy, which will be taken into account when applying the logic. It
+     * assumes that the language detection strategy is applied before this strategy and that the results are available in the
+     * document. If the language is the same as the detected language then the logic sill be applied, otherwise not. It is
+     * an optional property, and if no language is specified then all the resources will be processed by the strategy.
+     */
     private String language;
+    /**
+     * Just a counter to print some logging from time to time.
+     */
+    private AtomicLong atomicLong = new AtomicLong();
+    /**
+     * The context that contains among other things the actual {@link ikube.analytics.IAnalyzer} object, which is in fact
+     * the wrapper interface for the underlying analyzer algorithm. In the default implementation Weka was used as the machine
+     * learning library.
+     */
     private Context<IAnalyzer<Analysis<Object, Object>, Analysis<Object, Object>, Analysis<Object, Object>>, ?, ?, ?> context;
 
+    /**
+     * This is the service that will process the {@link ikube.model.Analysis} object, optionally distributing it into the
+     * cluster. In the case the property {@link ikube.model.Analysis#isDistributed()} is true, then a random server will be chosen
+     * to execute the analytics on this analysis object.
+     */
     @Autowired
     private IAnalyticsService analyticsService;
 
@@ -63,7 +85,9 @@ public class AnalysisStrategy extends AStrategy {
             if (!StringUtils.isEmpty(this.language)) {
                 // Configuration specified a language
                 String language = document.get(IConstants.LANGUAGE);
-                logger.warn("Language : " + language + " - " + this.language);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Language : " + language + " - " + this.language);
+                }
                 if (StringUtils.isEmpty(language) || !this.language.equals(language)) {
                     // Couldn't find the language or not the correct one so don't train
                     process = Boolean.FALSE;
@@ -76,7 +100,6 @@ public class AnalysisStrategy extends AStrategy {
                 //noinspection unchecked
                 analysis = analyticsService.analyze(analysis);
                 String currentClassification = analysis.getClazz();
-                logger.warn("Classification : " + currentClassification);
                 if (currentClassification == null) {
                     // This is a regression algorithm, so the result is the first element in
                     // the array of the distribution for the instance, so it would be the price
@@ -100,6 +123,9 @@ public class AnalysisStrategy extends AStrategy {
                             addStringField(CLASSIFICATION_CONFLICT, currentClassification, indexable, document);
                         }
                     }
+                }
+                if (atomicLong.getAndIncrement() % 10000 == 0) {
+                    logger.warn("Classification : " + currentClassification + ", " + context.getName());
                 }
             }
         }

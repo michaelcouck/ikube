@@ -42,6 +42,9 @@ public class AnalyzerManager {
                     LOGGER.info("Building analyzer : " + context.getName());
                     analyzer.build(context);
                     LOGGER.info("Analyzer built and ready : " + context.getName());
+                    if (context.getAnalyzerInfo() != null) {
+                        context.getAnalyzerInfo().setBuilt(Boolean.TRUE);
+                    }
                 } catch (final Exception e) {
                     LOGGER.error("Exception building analyzer : " + analyzer, e);
                 } finally {
@@ -63,8 +66,10 @@ public class AnalyzerManager {
             // vectors for example, so we return
             ThreadUtilities.waitForFuture(future, 3);
         }
-        if (future != null) {
+        if (future != null && future.isDone()) {
             LOGGER.info("Analyzer finished building : " + future.isDone());
+        } else {
+            LOGGER.info("Analyzer still building : " + context.getName());
         }
         return analyzer;
     }

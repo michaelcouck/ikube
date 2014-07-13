@@ -58,8 +58,37 @@ public class ResourceTest extends AbstractTest {
 
     @Test
     public void unmarshall() throws Exception {
+        Analysis analysis = ObjectToolkit.populateFields(new Analysis(), Boolean.TRUE, 10);
+        System.out.println(IConstants.GSON.toJson(analysis));
+
         Search search = ObjectToolkit.populateFields(new Search(), Boolean.TRUE, 10, "id", "exception");
         final String json = IConstants.GSON.toJson(search);
+        final ByteArrayInputStream arrayInputStream = new ByteArrayInputStream(json.getBytes());
+
+        HttpServletRequest httpServletRequest = mock(HttpServletRequest.class);
+        ServletInputStream servletInputStream = mock(ServletInputStream.class);
+
+        when(httpServletRequest.getInputStream()).thenReturn(servletInputStream);
+        when(servletInputStream.read(any(byte[].class))).thenAnswer(new Answer<Integer>() {
+            @Override
+            public Integer answer(final InvocationOnMock invocation) throws Throwable {
+                byte[] bytes = (byte[]) invocation.getArguments()[0];
+                return arrayInputStream.read(bytes);
+            }
+        });
+
+        resource.unmarshall(Analysis.class, httpServletRequest);
+    }
+
+    @Test
+    public void unmarshallJson() throws Exception {
+        final String json = "{\"analyzer\":\"\",\"clazz\":\"\",\"input\":{},\"output\":{},\"algorithmOutput\":\"\"," +
+                "\"duration\":0.1230345670741767,\"algorithm\":false,\"correlation\":true,\"distribution\":true,\"classesAndClusters\":false," +
+                "\"sizesForClassesAndClusters\":true,\"aggregated\":true,\"distributed\":false,\"id\":6967546706258352350," +
+                "\"timestamp\":\"Jul 12, 196654457 8:49:06 AM\"}";
+        /*final String json = "{\"analyzer\":\"context-smo\",\"clazz\":null,\"input\":\"Hello world\",\"output\":null," +
+                "\"algorithmOutput\":true,\"correlation\":false,\"distribution\":false,\"classesAndClusters\":false," +
+                "\"sizesForClassesAndClusters\":false,\"exception\":null,\"correlationCoefficients\":false,\"distributionForInstances\":false}";*/
         final ByteArrayInputStream arrayInputStream = new ByteArrayInputStream(json.getBytes());
 
         HttpServletRequest httpServletRequest = mock(HttpServletRequest.class);

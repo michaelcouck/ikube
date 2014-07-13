@@ -126,27 +126,27 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
     /**
      * This method handles a column. Essentially what this means is that the data from the table is extracted and added to the document, in the field specified.
      *
-     * @param indexable the column to extract the data from and add to the document
+     * @param indexableColumn the column to extract the data from and add to the document
      * @param document  the document to add the data to using the field name specified in the column definition
      * @throws Exception
      */
     protected void handleColumn(
             final IContentProvider<IndexableColumn> contentProvider,
-            final IndexableColumn indexable, final Document document)
+            final IndexableColumn indexableColumn, final Document document)
             throws Exception {
         InputStream inputStream = null;
         OutputStream parsedOutputStream = null;
         ByteOutputStream byteOutputStream = null;
         try {
             String mimeType = null;
-            if (indexable.getNameColumn() != null) {
-                if (indexable.getNameColumn().getContent() != null) {
-                    mimeType = indexable.getNameColumn().getContent().toString();
+            if (indexableColumn.getNameColumn() != null) {
+                if (indexableColumn.getNameColumn().getContent() != null) {
+                    mimeType = indexableColumn.getNameColumn().getContent().toString();
                 }
             }
 
             byteOutputStream = new ByteOutputStream();
-            contentProvider.getContent(indexable, byteOutputStream);
+            contentProvider.getContent(indexableColumn, byteOutputStream);
             if (byteOutputStream.size() == 0) {
                 return;
             }
@@ -154,7 +154,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
             byte[] buffer = byteOutputStream.getBytes();
             int length = Math.min(buffer.length, 1024);
             byte[] bytes = new byte[length];
-            indexable.setRawContent(buffer);
+            indexableColumn.setRawContent(buffer);
 
             System.arraycopy(buffer, 0, bytes, 0, bytes.length);
 
@@ -162,18 +162,18 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
             IParser parser = ParserProvider.getParser(mimeType, bytes);
             parsedOutputStream = parser.parse(inputStream, new ByteOutputStream());
 
-            String fieldName = indexable.getFieldName() != null ? indexable.getFieldName() : indexable.getName();
+            String fieldName = indexableColumn.getFieldName() != null ? indexableColumn.getFieldName() : indexableColumn.getName();
             String fieldContent = parsedOutputStream.toString();
-            if (indexable.isNumeric()) {
-                if (indexable.isHashed()) {
+            if (indexableColumn.isNumeric()) {
+                if (indexableColumn.isHashed()) {
                     fieldContent = HashUtilities.hash(fieldContent).toString();
                 }
-                IndexManager.addNumericField(fieldName, fieldContent, document, indexable.isStored(), indexable.getBoost());
+                IndexManager.addNumericField(fieldName, fieldContent, document, indexableColumn.isStored(), indexableColumn.getBoost());
             } else {
-                IndexManager.addStringField(fieldName, fieldContent, indexable, document);
+                IndexManager.addStringField(fieldName, fieldContent, indexableColumn, document);
             }
             // Concatenate the column data to the table indexable content
-            IndexableTable indexableTable = (IndexableTable) indexable.getParent();
+            IndexableTable indexableTable = (IndexableTable) indexableColumn.getParent();
             @SuppressWarnings("MismatchedQueryAndUpdateOfStringBuilder")
             StringBuilder builder = (StringBuilder) indexableTable.getContent();
             builder.append(" ");
