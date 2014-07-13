@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @version 01.00
  * @since 11-07-2014
  */
-@SuppressWarnings({"unchecked", "SpringJavaAutowiredMembersInspection"})
+@SuppressWarnings({"unchecked", "SpringJavaAutowiredMembersInspection", "SpringJavaAutowiringInspection"})
 public class AnalyzerSchedule extends Schedule {
 
     @Autowired
@@ -23,7 +23,9 @@ public class AnalyzerSchedule extends Schedule {
     @Override
     public void run() {
         try {
+            logger.info("Starting the analyzer build : ");
             analyzerManager.buildAnalyzers(analyticsService.getContexts());
+            logger.info("Finished the analyzer build : ");
         } catch (final Exception e) {
             logger.error("Exception building the analyzers : ", e);
         }

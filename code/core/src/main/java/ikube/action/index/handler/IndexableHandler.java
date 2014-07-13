@@ -39,6 +39,7 @@ public abstract class IndexableHandler<T extends Indexable> implements IIndexabl
      * This is the 'generic' handler for the resource, it just adds the document to the index writer.
      */
     @Autowired
+    @SuppressWarnings("SpringJavaAutowiringInspection")
     @Qualifier("ikube.action.index.handler.ResourceHandler")
     protected ResourceHandler<T> resourceHandler;
 
@@ -72,7 +73,8 @@ public abstract class IndexableHandler<T extends Indexable> implements IIndexabl
                 computeRecursive(indexContext, indexable, resourceProvider);
                 logger.info("Thread starting : " + this.hashCode());
                 do {
-                    // When there are no more resources we exit this task
+                    // We call the resource provider here to get the next resource, the provider is
+                    // defined in the sub-class. When there are no more resources we exit this task.
                     Object resource = resourceProvider.getResource();
                     if (resource == null ||
                             isDone() ||
@@ -89,7 +91,11 @@ public abstract class IndexableHandler<T extends Indexable> implements IIndexabl
                                 ", thread count : " + threadCount);
                         break;
                     }
-                    // Call the handle resource on the parent, which is the implementation specific handler method
+                    // Call the handle resource on the sub-class(i.e. {@link ExchangeHandler}, which is
+                    // the implementation specific handler method. This call will possibly index the data,
+                    // and add it to the Lucene index. The result is possibly more resources that have been
+                    // gathered during the processing, an opportunity for the handler to feed back resources
+                    // to the provider if necessary
                     List resources = handleResource(indexContext, indexable, resource);
                     // Set any returned resources back in the resource provider, like a feed back mechanism
                     resourceProvider.setResources(resources);
@@ -134,7 +140,9 @@ public abstract class IndexableHandler<T extends Indexable> implements IIndexabl
     }
 
     /**
-     * This method is called from the fork join actions, individually processing a resource, thread by thread.
+     * This method is called from the fork join actions, individually processing a resource, thread by thread. Potentially
+     * this method can return more resources, that can then be fed back into the provider, so the return type is a collection
+     * of the resources that sub-classes process.
      *
      * @param indexContext the index context being processed
      * @param indexable    the currently processed indexable

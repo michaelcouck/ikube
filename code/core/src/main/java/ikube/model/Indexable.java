@@ -26,10 +26,19 @@ public class Indexable extends Persistable {
      */
     @Transient
     private transient volatile Object content;
+    /**
+     * Similar to the above, this is the raw unprocessed content, potentially binary data, numbers and characters etc.
+     */
     @Transient
     private transient volatile Object rawContent;
+    /**
+     * This is the address constructed content, the handler will construct and use this if necessary.
+     */
     @Transient
     private transient volatile String addressContent;
+    /**
+     * The holder for the maximum number of exceptions that this handler will allow before terminating.
+     */
     @Transient
     private AtomicInteger exceptions = new AtomicInteger(0);
     /**

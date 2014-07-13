@@ -28,6 +28,7 @@ import java.util.concurrent.TimeoutException;
  * @version 01.00
  * @since 10-04-2013
  */
+@SuppressWarnings("SpringJavaAutowiringInspection")
 public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
 
     static {
@@ -44,9 +45,9 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private IClusterManager clusterManager;
-    @Autowired
     private Map<String, Context> contexts;
+    @Autowired
+    private IClusterManager clusterManager;
 
     /**
      * {@inheritDoc}
@@ -114,7 +115,7 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
             // Create the callable that will be executed on one of the nodes
             Future<?> future = clusterManager.sendTask(analyzer);
             try {
-                // TODO: User this rather than the future directly
+                // TODO: Use this rather than the future directly
                 // ThreadUtilities.waitForFuture(future, 60 * 60);
                 return (Analysis<I, O>) future.get(60 * 60, TimeUnit.SECONDS);
             } catch (final InterruptedException | ExecutionException | TimeoutException e) {
@@ -142,7 +143,7 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
             analysis.setDistributed(Boolean.FALSE);
             Future<?> future = clusterManager.sendTask(classesOrClusters);
             try {
-                // TODO: User this rather than the future directly
+                // TODO: Use this rather than the future directly
                 // ThreadUtilities.waitForFuture(future, 60 * 60);
                 return (Analysis) future.get(60 * 60, TimeUnit.SECONDS);
             } catch (final InterruptedException | ExecutionException | TimeoutException e) {

@@ -29,7 +29,7 @@ import static ikube.action.index.IndexManager.addStringField;
  * @version 01.00
  * @since 02-12-2013
  */
-@SuppressWarnings("SpringJavaAutowiredMembersInspection")
+@SuppressWarnings({"SpringJavaAutowiredMembersInspection", "SpringJavaAutowiringInspection"})
 public class AnalysisStrategy extends AStrategy {
 
     /**
@@ -100,11 +100,12 @@ public class AnalysisStrategy extends AStrategy {
                 //noinspection unchecked
                 analysis = analyticsService.analyze(analysis);
                 String currentClassification = analysis.getClazz();
+                Object output = null;
                 if (currentClassification == null) {
                     // This is a regression algorithm, so the result is the first element in
                     // the array of the distribution for the instance, so it would be the price
                     // of the house for example
-                    Object output = analysis.getOutput();
+                    output = analysis.getOutput();
                     if (output != null && output.getClass().isArray()) {
                         Object[] array = (Object[]) output;
                         if (array.length > 0) {
@@ -125,7 +126,8 @@ public class AnalysisStrategy extends AStrategy {
                     }
                 }
                 if (atomicLong.getAndIncrement() % 10000 == 0) {
-                    logger.warn("Classification : " + currentClassification + ", " + context.getName());
+                    logger.warn("Language : " + this.language + ", " + document.get(IConstants.LANGUAGE) + ", " + output);
+                    logger.warn("Classification : " + currentClassification + ", " + context.getName() + ", " + content);
                 }
             }
         }

@@ -57,6 +57,7 @@ public class Index extends Action<IndexContext, Boolean> {
     protected boolean internalExecute(final IndexContext indexContext) throws Exception {
         List<Indexable> indexables = indexContext.getChildren();
         for (final Indexable indexable : (Iterable<Indexable>) new ArrayList(indexables)) {
+            indexable.setExceptions(0);
             // Update the action with the new indexable
             Server server = clusterManager.getServer();
             ikube.model.Action action = getAction(server, indexContext, null);
