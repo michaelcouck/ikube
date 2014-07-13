@@ -37,6 +37,8 @@ public class Analyzer extends Action<Analysis> implements Serializable {
         if (analyzer != null) {
             // Do the analysis
             analyzer.analyze(analysis);
+        } else {
+            logger.warn("Analyzer not defined for name : " + analysis.getAnalyzer());
         }
         // And return the analysis to the caller, which is not local
         return analysis;

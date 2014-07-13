@@ -1,5 +1,8 @@
 package ikube.analytics.action;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.concurrent.Callable;
 
 /**
@@ -10,4 +13,7 @@ import java.util.concurrent.Callable;
  * @since 15-03-2014
  */
 public abstract class Action<T> implements Callable<T> {
+
+    Logger logger = LoggerFactory.getLogger(this.getClass());
+
 }

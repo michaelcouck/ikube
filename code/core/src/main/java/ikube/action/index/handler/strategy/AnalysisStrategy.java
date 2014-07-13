@@ -126,7 +126,7 @@ public class AnalysisStrategy extends AStrategy {
                     }
                 }
                 if (atomicLong.getAndIncrement() % 10000 == 0) {
-                    logger.warn("Language : " + this.language + ", " + document.get(IConstants.LANGUAGE) + ", " + output);
+                    logger.warn("Language : " + this.language + ", " + document.get(IConstants.LANGUAGE));
                     logger.warn("Classification : " + currentClassification + ", " + context.getName() + ", " + content);
                 }
             }
