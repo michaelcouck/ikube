@@ -13,9 +13,6 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
     var textColour = "#aaaaaa";
 
     $scope.status = 200;
-    $scope.showAlgorithmOutput = false;
-    $scope.showCorrelationCoefficients = false;
-    $scope.showDistributionForInstances = false;
 
     $scope.origin = [0, 0];
     $scope.headers = ["Cluster", "Cluster probability"];
@@ -39,10 +36,7 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
     };
 
     $scope.context = {
-        name: undefined, // 'weka', sentiment-smo-en
-        /*analyzer: undefined, // 'ikube.analytics.weka.WekaClassifier',
-        filter: undefined, // 'weka.filters.unsupervised.attribute.StringToWordVector',
-        algorithm: undefined, // 'weka.classifiers.functions.SMO',*/
+        name: undefined,
         options: undefined, // -N 6 (six clusters for example)
         trainingData: undefined,
         maxTraining: 10000,
@@ -56,6 +50,7 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
     $scope.doCreate = function () {
         var url = getServiceUrl('/ikube/service/analyzer/create');
 
+        //noinspection JSUnresolvedVariable
         var context = angular.copy($scope.context);
         if (!!context.options) {
             context.options = context.options.split(',');
@@ -118,8 +113,14 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
         $scope.analysis.output = null;
         $scope.analysis.exception = null;
         $scope.analysis.algorithmOutput = null;
-        $scope.analysis.correlationCoefficients = null;
-        $scope.analysis.distributionForInstances = null;
+        $scope.analysis.correlationCoefficients = false;
+        $scope.analysis.distributionForInstances = false;
+
+        $scope.analysis.algorithmOutput = true;
+        $scope.analysis.correlation = false;
+        $scope.analysis.distribution = false;
+        $scope.analysis.classesAndClusters = false;
+        $scope.analysis.sizesForClassesAndClusters = false;
 
         $scope.status = undefined;
         var promise = $http.post(url, $scope.analysis);

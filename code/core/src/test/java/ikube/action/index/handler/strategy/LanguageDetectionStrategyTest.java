@@ -44,6 +44,7 @@ public class LanguageDetectionStrategyTest extends AbstractTest {
 		when(indexableColumn.getContent()).thenReturn("some english text that can not be confused with swedish for God's sake");
 		languageDetectionStrategy.aroundProcess(indexContext, indexableTable, document, null);
 		String english = Locale.ENGLISH.getDisplayLanguage(Locale.ENGLISH);
+        logger.error("English : " + english);
 		String language = document.get(IConstants.LANGUAGE);
 		assertEquals("We expect English for this one : ", english, language);
 

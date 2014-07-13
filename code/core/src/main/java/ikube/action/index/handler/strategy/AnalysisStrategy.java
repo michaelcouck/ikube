@@ -63,6 +63,7 @@ public class AnalysisStrategy extends AStrategy {
             if (!StringUtils.isEmpty(this.language)) {
                 // Configuration specified a language
                 String language = document.get(IConstants.LANGUAGE);
+                logger.warn("Language : " + language + " - " + this.language);
                 if (StringUtils.isEmpty(language) || !this.language.equals(language)) {
                     // Couldn't find the language or not the correct one so don't train
                     process = Boolean.FALSE;
@@ -75,6 +76,7 @@ public class AnalysisStrategy extends AStrategy {
                 //noinspection unchecked
                 analysis = analyticsService.analyze(analysis);
                 String currentClassification = analysis.getClazz();
+                logger.warn("Classification : " + currentClassification);
                 if (currentClassification == null) {
                     // This is a regression algorithm, so the result is the first element in
                     // the array of the distribution for the instance, so it would be the price

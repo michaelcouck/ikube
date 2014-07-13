@@ -133,9 +133,11 @@ public class Analyzer extends Resource {
         Analysis<?, ?> analysis = unmarshall(Analysis.class, request);
         analyticsService.analyze(analysis);
         if (analysis.isClassesAndClusters()) {
+            logger.warn("Doing classes and clusters : " + analysis);
             analyticsService.classesOrClusters(analysis);
         }
         if (analysis.isSizesForClassesAndClusters()) {
+            logger.warn("Doing sizes for classes or clusters : " + analysis);
             analyticsService.sizesForClassesOrClusters(analysis);
         }
         return buildJsonResponse(analysis);

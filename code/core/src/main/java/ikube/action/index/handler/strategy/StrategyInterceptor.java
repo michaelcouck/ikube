@@ -62,7 +62,7 @@ public class StrategyInterceptor implements IStrategyInterceptor {
 					for (final IStrategy strategy : strategies) {
 						try {
 							mustProcess.set(strategy.aroundProcess(indexContext, indexable, document, resource));
-						} catch (Exception e) {
+						} catch (final Exception e) {
 							throw new RuntimeException(e);
 						}
 						if (!mustProcess.get()) {
@@ -74,7 +74,7 @@ public class StrategyInterceptor implements IStrategyInterceptor {
 			}
 		});
 		if (counter.getAndIncrement() % 10000 == 0) {
-			LOGGER.info("Strategy chain duration : " + duration);
+			LOGGER.info("Strategy chain duration : " + duration + ", done : " + counter.get());
 		}
 		return mustProcess.get();
 	}
@@ -99,7 +99,7 @@ public class StrategyInterceptor implements IStrategyInterceptor {
 						try {
 							// LOGGER.info("Post processing : " + indexable.getClass().getSimpleName() + ", strategy : " + strategy.getClass().getSimpleName());
 							strategy.postProcess(indexContext, indexable, document, resource);
-						} catch (Exception e) {
+						} catch (final Exception e) {
 							throw new RuntimeException(e);
 						}
 					}
@@ -107,7 +107,7 @@ public class StrategyInterceptor implements IStrategyInterceptor {
 			}
 		});
 		if (counter.getAndIncrement() % 10000 == 0) {
-			LOGGER.info("Strategy chain duration : " + duration);
+			LOGGER.info("Strategy chain duration : " + duration + ", done : " + counter.get());
 		}
 	}
 

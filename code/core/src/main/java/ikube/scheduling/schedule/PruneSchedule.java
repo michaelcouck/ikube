@@ -29,40 +29,40 @@ public class PruneSchedule extends Schedule {
 	public void run() {
 		String[] fieldsToSortOn = new String[] { IConstants.ID };
 		Boolean[] directionOfSort = new Boolean[] { true };
-        logger.info("Executing prune schedule : ");
+        logger.debug("Executing prune schedule : ");
 		delete(dataBase, ikube.model.Action.class, fieldsToSortOn, directionOfSort, IConstants.MAX_ACTIONS);
 		delete(dataBase, ikube.model.Snapshot.class, fieldsToSortOn, directionOfSort, IConstants.MAX_SNAPSHOTS);
 		delete(dataBase, ikube.model.Server.class, fieldsToSortOn, directionOfSort, IConstants.MAX_SERVERS);
         delete(dataBase, ikube.model.Rule.class, fieldsToSortOn, directionOfSort, IConstants.MAX_RULES);
-        logger.info("End executing prune schedule : ");
+        logger.debug("End executing prune schedule : ");
 	}
 
 	@SuppressWarnings("unchecked")
 	protected void delete(final IDataBase dataBase, final Class<?> klass, final String[] fieldsToSortOn, final Boolean[] directionOfSort, final long toRemain) {
 		int batchSize = 1000;
 		int count = dataBase.count(klass).intValue();
-        logger.info("Count : " + count + ", to remain : " + toRemain);
+        logger.debug("Count : " + count + ", to remain : " + toRemain);
 		while (count > toRemain) {
-			logger.info("Count : " + count + ", to remain : " + toRemain + ", batch size : " + batchSize);
 			List<?> entities = dataBase.find(klass, fieldsToSortOn, directionOfSort, 0, batchSize);
-			for (final Object entity : entities) {
-				if (ikube.model.Action.class.isAssignableFrom(entity.getClass())) {
-					// We only delete the actions that are complete
-					Action action = (Action) entity;
-					if (action.getEndTime() != null) {
-						dataBase.remove(entity);
-					} else {
-						logger.info("Not removing action : " +
+            for (final Object entity : entities) {
+                if (ikube.model.Action.class.isAssignableFrom(entity.getClass())) {
+                    // We only delete the actions that are complete
+                    Action action = (Action) entity;
+                    if (action.getEndTime() != null) {
+                        dataBase.remove(entity);
+                    } else {
+                        logger.info("Not removing action : " +
 						  action.getIndexName() + ", " +
 						  action.getIndexableName() + ", " +
 						  action.getServer());
-					}
-				} else {
-					dataBase.remove(entity);
-				}
-			}
-			count = dataBase.count(klass).intValue();
-		}
+                    }
+                } else {
+                    dataBase.remove(entity);
+                }
+            }
+            count = dataBase.count(klass).intValue();
+            logger.debug("Count : " + count + ", to remain : " + toRemain + ", batch size : " + batchSize);
+        }
 	}
 
 }

@@ -77,6 +77,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
      */
     @Override
     public void setResources(final List<ResultSet> resources) {
+        // There is no feedback of resources from the table
     }
 
     void setMinAndMaxId(final IndexableTable indexableTable, final DataSource dataSource) {
@@ -91,8 +92,8 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
             maximumId = getIdFunction(indexableTable, connection, "max");
             indexableTable.setMaximumId(maximumId);
         }
-        logger.info("Min id : " + minimumId + ", max id : " + maximumId);
-        // logger.info("Closing connection, i.e. back to the pool, with a cocktail :)");
+        logger.debug("Min id : " + minimumId + ", max id : " + maximumId);
+        logger.debug("Closing connection, i.e. back to the pool, with a cocktail :)");
         close(connection);
     }
 
@@ -140,14 +141,14 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
                 } else {
                     nextId = Long.parseLong(nextIdObject.toString());
                 }
-                logger.info("Setting next id to : " + nextId);
+                logger.debug("Setting next id to : " + nextId);
                 currentId.set(nextId);
                 close(resultSet);
             }
 
             // Build the sql based on the columns defined in the configuration
             String sql = new QueryBuilder().buildQuery(indexableTable, currentId.get(), indexContext.getBatchSize());
-            logger.info("Query : " + sql);
+            logger.debug("Query : " + sql);
             currentId.set(currentId.get() + indexContext.getBatchSize());
             PreparedStatement preparedStatement = connection.prepareStatement(
                     sql,

@@ -21,8 +21,16 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import static ikube.action.index.IndexManager.openIndexWriter;
+import static ikube.action.index.handler.database.QueryBuilder.getIdColumn;
 import static ikube.database.DatabaseUtilities.close;
 import static ikube.toolkit.ApplicationContextManager.getBean;
+import static ikube.toolkit.ThreadUtilities.cancelForkJoinPool;
+import static ikube.toolkit.ThreadUtilities.executeForkJoinTasks;
+import static ikube.toolkit.ThreadUtilities.sleep;
+import static ikube.toolkit.UriUtilities.getIp;
+import static java.lang.System.currentTimeMillis;
+import static java.net.InetAddress.getLocalHost;
 import static mockit.Deencapsulation.invoke;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -83,7 +91,7 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
         indexContext.setIndexDirectoryPath("./indexes");
         snapshotTable.setThreads(4);
         snapshotTableChildren = snapshotTable.getChildren();
-        snapshotColumn = QueryBuilder.getIdColumn(snapshotTableChildren);
+        snapshotColumn = getIdColumn(snapshotTableChildren);
         connection = dataSource.getConnection();
 
         clusterManager.getServer().getActions().clear();
@@ -101,25 +109,26 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
     public void handleTableSingleRow() throws Exception {
         String predicate = snapshotTable.getPredicate();
         try {
-            String ip = InetAddress.getLocalHost().getHostAddress();
-            IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
+            String ip = getLocalHost().getHostAddress();
+            IndexWriter indexWriter = openIndexWriter(indexContext, currentTimeMillis(), ip);
             indexContext.setIndexWriters(indexWriter);
             snapshotTable.setPredicate("snapshot.id = " + snapshotTable.getMinimumId());
             ForkJoinTask<?> forkJoinTask = indexableTableHandler.handleIndexableForked(indexContext, snapshotTable);
-            ThreadUtilities.executeForkJoinTasks(indexContext.getName(), snapshotTable.getThreads(), forkJoinTask);
-            ThreadUtilities.sleep(5000);
+            executeForkJoinTasks(indexContext.getName(), snapshotTable.getThreads(), forkJoinTask);
+            sleep(5000);
             assertTrue("There must be more than one document in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);
         } finally {
             snapshotTable.setPredicate(predicate);
-            ThreadUtilities.cancelForkJoinPool(indexContext.getName());
+            cancelForkJoinPool(indexContext.getName());
         }
     }
 
     @Test
     public void handleColumn() throws Exception {
-        IndexableColumn snapshotIdIndexableColumn = QueryBuilder.getIdColumn(snapshotTableChildren);
+        IndexableColumn snapshotIdIndexableColumn = getIdColumn(snapshotTableChildren);
         snapshotIdIndexableColumn.setContent("Hello World!");
         snapshotIdIndexableColumn.setColumnType(Types.VARCHAR);
+        snapshotIdIndexableColumn.setParent(indexableTable);
         Document document = new Document();
         IContentProvider<IndexableColumn> contentProvider = new ColumnContentProvider();
         invoke(indexableTableHandler, "handleColumn", contentProvider, snapshotIdIndexableColumn, document);
@@ -163,23 +172,23 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
     @Test
     public void handleTable() throws Exception {
         try {
-            String ip = InetAddress.getLocalHost().getHostAddress();
-            IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
+            String ip = getLocalHost().getHostAddress();
+            IndexWriter indexWriter = openIndexWriter(indexContext, currentTimeMillis(), ip);
             indexContext.setIndexWriters(indexWriter);
 
             ForkJoinTask<?> forkJoinTask = indexableTableHandler.handleIndexableForked(indexContext, snapshotTable);
-            ThreadUtilities.executeForkJoinTasks(indexContext.getName(), snapshotTable.getThreads(), forkJoinTask);
-            ThreadUtilities.sleep(5000);
+            executeForkJoinTasks(indexContext.getName(), snapshotTable.getThreads(), forkJoinTask);
+            sleep(5000);
             assertTrue("There must be some data in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);
         } finally {
-            ThreadUtilities.cancelForkJoinPool(indexContext.getName());
+            cancelForkJoinPool(indexContext.getName());
         }
     }
 
     @Test
     public void handleAllColumnsAllTables() throws Exception {
-        String ip = InetAddress.getLocalHost().getHostAddress();
-        IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
+        String ip = getLocalHost().getHostAddress();
+        IndexWriter indexWriter = openIndexWriter(indexContext, currentTimeMillis(), ip);
         indexContext.setIndexWriters(indexWriter);
         for (Indexable indexable : indexContext.getChildren()) {
             if (!IndexableTable.class.isAssignableFrom(indexable.getClass())) {
@@ -187,8 +196,8 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
             }
             try {
                 ForkJoinTask<?> forkJoinTask = indexableTableHandler.handleIndexableForked(indexContext, (IndexableTable) indexable);
-                ThreadUtilities.executeForkJoinTasks(indexContext.getName(), snapshotTable.getThreads(), forkJoinTask);
-                ThreadUtilities.sleep(5000);
+                executeForkJoinTasks(indexContext.getName(), snapshotTable.getThreads(), forkJoinTask);
+                sleep(5000);
             } catch (Exception e) {
                 logger.error(e.getMessage());
             }
@@ -201,11 +210,11 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
         try {
             indexContext.setBatchSize(10);
             indexContext.setThrottle(60000);
-            indexContext.setIndexWriters(IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), UriUtilities.getIp()));
+            indexContext.setIndexWriters(openIndexWriter(indexContext, currentTimeMillis(), getIp()));
             Thread thread = new Thread(new Runnable() {
                 public void run() {
-                    ThreadUtilities.sleep(10000);
-                    ThreadUtilities.cancelForkJoinPool(indexContext.getName());
+                    sleep(10000);
+                    cancelForkJoinPool(indexContext.getName());
                 }
             });
             thread.setDaemon(Boolean.TRUE);
@@ -213,8 +222,8 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
 
             ForkJoinTask<?> forkJoinTask = indexableTableHandler.handleIndexableForked(indexContext, snapshotTable);
             // This should throw a cancellation exception
-            ForkJoinPool forkJoinPool = ThreadUtilities.executeForkJoinTasks(indexContext.getName(), snapshotTable.getThreads(), forkJoinTask);
-            ThreadUtilities.sleep(15000);
+            ForkJoinPool forkJoinPool = executeForkJoinTasks(indexContext.getName(), snapshotTable.getThreads(), forkJoinTask);
+            sleep(15000);
             assertTrue(forkJoinPool.isShutdown() || forkJoinPool.isTerminated() || forkJoinPool.isTerminating());
         } finally {
             indexContext.setThrottle(0);
@@ -236,38 +245,45 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
     // @Ignore("Move to table resource provider test")
     public void setParameters() throws Exception {
         TableResourceProvider tableResourceProvider = new TableResourceProvider(indexContext, snapshotTable);
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
         try {
             IndexableTable indexContextTable = getBean("indexContextTable");
-            IndexableColumn indexContextIdColumn = QueryBuilder.getIdColumn(indexContextTable.getChildren());
+            IndexableColumn indexContextIdColumn = getIdColumn(indexContextTable.getChildren());
             snapshotColumn.setForeignKey(indexContextIdColumn);
             snapshotColumn.setContent(1);
             String sql = "select * from snapshot where id = ?";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement = connection.prepareStatement(sql);
             invoke(tableResourceProvider, "setParameters", snapshotTable, preparedStatement);
             // Execute this statement just for shits and giggles
-            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet = preparedStatement.executeQuery();
             assertNotNull(resultSet);
-
-            DatabaseUtilities.close(resultSet);
-            DatabaseUtilities.close(preparedStatement);
         } finally {
+            close(resultSet);
+            close(preparedStatement);
             snapshotColumn.setForeignKey(null);
         }
     }
 
     @Test
     public void getResultSetDatasource() throws Exception {
-        TableResourceProvider tableResourceProvider = new TableResourceProvider(indexContext, snapshotTable);
+        Statement statement = null;
+        ResultSet resultSet = null;
+        try {
+            TableResourceProvider tableResourceProvider = new TableResourceProvider(indexContext, snapshotTable);
 
-        snapshotColumn.setContent(snapshotTable.getMinimumId());
-        snapshotTable.setMaximumId(snapshotTable.getMaximumId());
-        ResultSet resultSet = invoke(tableResourceProvider, "getResultSet", indexContext, snapshotTable, new AtomicLong(0));
-        assertNotNull(resultSet);
-        assertTrue(resultSet.next());
+            snapshotColumn.setContent(snapshotTable.getMinimumId());
+            snapshotTable.setMaximumId(snapshotTable.getMaximumId());
+            resultSet = invoke(tableResourceProvider, "getResultSet", indexContext, snapshotTable, new AtomicLong(0));
+            assertNotNull(resultSet);
+            assertTrue(resultSet.next());
 
-        Statement statement = resultSet.getStatement();
-        DatabaseUtilities.close(resultSet);
-        DatabaseUtilities.close(statement);
+            statement = resultSet.getStatement();
+            assertNotNull(resultSet);
+        } finally {
+            close(resultSet);
+            close(statement);
+        }
     }
 
 }
