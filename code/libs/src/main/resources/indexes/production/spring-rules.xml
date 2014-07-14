@@ -104,7 +104,7 @@
         id="rule-classification-strategy-en"
         class="ikube.action.index.handler.strategy.AnalysisStrategy"
         property:language="English"
-        property:context-ref="rule-sentiment-smo-en"
+        property:context-ref="rule-context-smo-en"
         init-method="initialize"/>
 
     <bean
