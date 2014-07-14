@@ -68,6 +68,12 @@
         <ref bean="rule-classification-strategy-en"/>
     </util:list>
 
+    <!--
+        The names of the beans are important. The name of the classifier wrapper, 'rule-sentiment-smo-en',
+        must match the reference in the context, and the name specified in the analysis strategy. The contexts
+        and thereby the analyzer are looked up using the 'context' name.
+    -->
+
     <!-- Define the classifier wrapper. -->
     <bean id="rule-sentiment-smo-en" name="rule-sentiment-smo-en" class="ikube.analytics.weka.WekaClassifier"/>
     <!-- Define the filter to convert the data to vectors. -->
@@ -79,7 +85,7 @@
         id="rule-context-smo-en"
         name="rule-context-smo-en"
         class="ikube.model.Context"
-        property:name="rule-context-smo-en"
+        property:name="rule-sentiment-smo-en"
         property:analyzer-ref="rule-sentiment-smo-en"
         property:filter-ref="rule-string-to-word-vector-en"
         property:algorithm-ref="rule-weka-classifier-smo-en"
@@ -98,12 +104,11 @@
         id="rule-classification-strategy-en"
         class="ikube.action.index.handler.strategy.AnalysisStrategy"
         property:language="English"
-        property:context-ref="rule-context-smo-en"
+        property:context-ref="rule-sentiment-smo-en"
         init-method="initialize"/>
 
     <bean
         id="rule-id"
-        parent="ikube.model.Indexable"
         class="ikube.model.IndexableColumn"
         property:name="id"
         property:parent-ref="rule"

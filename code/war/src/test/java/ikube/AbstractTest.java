@@ -68,16 +68,18 @@ public abstract class AbstractTest {
      * @throws Exception
      */
     protected void printIndex(final IndexReader indexReader, final int numDocs) throws Exception {
-        logger.info("Num docs : " + indexReader.numDocs());
+        logger.error("Num docs : " + indexReader.numDocs());
         for (int i = 0; i < indexReader.numDocs() && i < numDocs; i++) {
             Document document = indexReader.document(i);
-            logger.info("Document : " + i);
+            logger.error("Document : " + i);
             List<IndexableField> fields = document.getFields();
             for (final IndexableField fieldable : fields) {
                 String fieldName = fieldable.name();
                 String fieldValue = fieldable.stringValue();
                 int fieldLength = fieldValue != null ? fieldValue.length() : 0;
-                logger.info("        : " + fieldName + ", " + fieldLength + ", " + fieldValue + ", " + fieldable);
+                if (fieldName.equalsIgnoreCase(IConstants.CLASSIFICATION)) {
+                    logger.error("        : " + fieldName + ", " + fieldLength + ", " + fieldValue + ", " + fieldable);
+                }
             }
         }
     }
