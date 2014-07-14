@@ -27,6 +27,9 @@ public class MemorySchedule extends Schedule {
 	 */
 	@Override
 	public void run() {
+        logger.warn("Total memory : " + Runtime.getRuntime().totalMemory());
+        logger.warn("Free memory : " + Runtime.getRuntime().freeMemory());
+        logger.warn("Max memory : " + Runtime.getRuntime().maxMemory());
 		if ((Runtime.getRuntime().totalMemory() / IConstants.MILLION) > maxMemory) {
 			LOGGER.info("Terminating schedules due to memory exceeded : ");
 			ThreadUtilities.destroy();

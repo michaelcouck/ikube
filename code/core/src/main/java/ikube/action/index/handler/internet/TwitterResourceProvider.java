@@ -99,6 +99,9 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
     @Override
     public synchronized void onTweet(final Tweet tweet) {
         if (tweets.size() < STACK_SIZE) {
+            if (tweets.size() % 1000 == 0) {
+                logger.warn("Tweets : " + tweets.size());
+            }
             tweets.push(tweet);
             if (this.clones > 0) {
                 int clones = this.clones;
