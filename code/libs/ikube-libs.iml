@@ -224,6 +224,7 @@
     <orderEntry type="library" name="Maven: com.sun.jersey.contribs:jersey-multipart:1.18.1" level="project" />
     <orderEntry type="library" name="Maven: org.jvnet.mimepull:mimepull:1.9.3" level="project" />
     <orderEntry type="library" name="Maven: com.sun.jersey.contribs:jersey-spring:1.18.1" level="project" />
+    <orderEntry type="library" name="Maven: com.microsoft:ews-java-api:1.2.0" level="project" />
   </component>
 </module>
 
