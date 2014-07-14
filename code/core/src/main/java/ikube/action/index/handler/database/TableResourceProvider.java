@@ -83,20 +83,13 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
     void setMinAndMaxId(final IndexableTable indexableTable, final DataSource dataSource) {
         Connection connection = getConnection(dataSource);
 
-        // long minimumId = indexableTable.getMinimumId();
         long minimumId = getIdFunction(indexableTable, connection, "min");
         indexableTable.setMinimumId(minimumId);
 
-        // long maximumId = indexableTable.getMaximumId();
         long maximumId = getIdFunction(indexableTable, connection, "max");
         indexableTable.setMaximumId(maximumId);
 
-        /*if (minimumId <= 0) {
-        }
-        if (maximumId <= 0) {
-        }*/
-
-        logger.debug("Min id : " + minimumId + ", max id : " + maximumId);
+        logger.warn("Min id : " + minimumId + ", max id : " + maximumId);
         logger.debug("Closing connection, i.e. back to the pool, with a cocktail :)");
         close(connection);
     }

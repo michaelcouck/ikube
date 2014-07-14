@@ -37,7 +37,7 @@
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>2.7</version>
                 <executions>
-                    <execution>
+                    <!--<execution>
                         <id>install-db2-driver</id>
                         <goals>
                             <goal>deploy-file</goal>
@@ -530,7 +530,26 @@
                             <repositoryId>${repository-id}</repositoryId>
                             <url>${artifactory}</url>
                         </configuration>
+                    </execution>-->
+
+                    <execution>
+                        <id>install-exchange-api</id>
+                        <goals>
+                            <goal>deploy-file</goal>
+                        </goals>
+                        <phase>${phase}</phase>
+                        <configuration>
+                            <groupId>com.microsoft</groupId>
+                            <artifactId>ews-java-api</artifactId>
+                            <version>1.2.0</version>
+                            <file>tools/ews-java-api-1.2.0.jar</file>
+                            <packaging>${packaging}</packaging>
+                            <generatePom>${generate-pom}</generatePom>
+                            <repositoryId>${repository-id}</repositoryId>
+                            <url>${artifactory}</url>
+                        </configuration>
                     </execution>
+
                 </executions>
             </plugin>
         </plugins>
