@@ -44,6 +44,10 @@ public class DeltaIndexableTableHandler extends IndexableTableHandler {
                 if (savePoint == null) {
                     savePoint = new SavePoint();
                 }
+                logger.warn("From to point : " +
+                        savePoint.getIdentifier() + ", " +
+                        indexableTable.getMaximumId() + ", " +
+                        (indexableTable.getMaximumId() - savePoint.getIdentifier()));
                 savePoint.setIndexable(indexableTable.getName());
                 savePoint.setIndexContext(indexContext.getName());
                 savePoint.setIdentifier(indexableTable.getMaximumId());
