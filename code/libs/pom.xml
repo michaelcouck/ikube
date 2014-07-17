@@ -532,7 +532,7 @@
                         </configuration>
                     </execution>-->
 
-                    <execution>
+                    <!--<execution>
                         <id>install-exchange-api</id>
                         <goals>
                             <goal>deploy-file</goal>
@@ -543,6 +543,42 @@
                             <artifactId>ews-java-api</artifactId>
                             <version>1.2.0</version>
                             <file>tools/ews-java-api-1.2.0.jar</file>
+                            <packaging>${packaging}</packaging>
+                            <generatePom>${generate-pom}</generatePom>
+                            <repositoryId>${repository-id}</repositoryId>
+                            <url>${artifactory}</url>
+                        </configuration>
+                    </execution>-->
+
+                    <execution>
+                        <id>install-j-web-services</id>
+                        <goals>
+                            <goal>deploy-file</goal>
+                        </goals>
+                        <phase>${phase}</phase>
+                        <configuration>
+                            <groupId>de.independantsoft</groupId>
+                            <artifactId>jwebservices</artifactId>
+                            <version>2.0</version>
+                            <file>tools/jwebservices-2.0.jar</file>
+                            <packaging>${packaging}</packaging>
+                            <generatePom>${generate-pom}</generatePom>
+                            <repositoryId>${repository-id}</repositoryId>
+                            <url>${artifactory}</url>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>install-jcifs</id>
+                        <goals>
+                            <goal>deploy-file</goal>
+                        </goals>
+                        <phase>${phase}</phase>
+                        <configuration>
+                            <groupId>jcifs.samba.org</groupId>
+                            <artifactId>jcifs</artifactId>
+                            <version>1.3.14</version>
+                            <file>tools/jcifs-1.3.14.jar</file>
                             <packaging>${packaging}</packaging>
                             <generatePom>${generate-pom}</generatePom>
                             <repositoryId>${repository-id}</repositoryId>
