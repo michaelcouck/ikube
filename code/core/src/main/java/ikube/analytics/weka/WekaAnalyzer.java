@@ -54,10 +54,14 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<Object, Object>
                 Filter filter = (Filter) Class.forName(filters[i].toString()).newInstance();
                 filters[i] = filter;
             }
-            Object[] options = context.getOptions().clone();
+            Object[] options = context.getOptions();
             // The options for Weka are string arrays only
             if (options != null && options.length > 0 && OptionHandler.class.isAssignableFrom(algorithm.getClass())) {
-                ((OptionHandler) algorithm).setOptions((String[]) options);
+                String[] cloned = new String[options.length];
+                for (int j = 0; j < options.length; j++) {
+                    cloned[j] = options[j].toString();
+                }
+                ((OptionHandler) algorithm).setOptions(cloned);
             }
         }
         // Load the models(Instances) for all the analyzers
