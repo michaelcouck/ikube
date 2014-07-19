@@ -2,12 +2,11 @@ package ikube.analytics.weka;
 
 import ikube.model.Analysis;
 import ikube.model.Context;
-import ikube.toolkit.Timer;
 import weka.clusterers.ClusterEvaluation;
 import weka.clusterers.Clusterer;
-import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.filters.Filter;
 
 /**
  * This class is the Weka clusterer wrapper. Ultimately just wrapping the Weka
@@ -20,155 +19,114 @@ import weka.core.Instances;
  */
 public class WekaClusterer extends WekaAnalyzer {
 
-    private volatile Clusterer clusterer;
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void init(final Context context) throws Exception {
-        super.init(context);
-        clusterer = (Clusterer) context.getAlgorithm();
-    }
-
     /**
      * {@inheritDoc}
      */
     @Override
     public void build(final Context context) throws Exception {
-        double duration = Timer.execute(new Timer.Timed() {
-            @Override
-            public void execute() {
-                try {
-                    analyzeLock.lock();
-                    persist(context, instances);
-                    logger.info("Building clusterer : " + instances.numInstances());
+        // TODO: This must be done in parallel
+        Filter[] filters = (Filter[]) context.getFilters();
+        String[] evaluations = new String[context.getAlgorithms().length];
+        for (int i = 0; i < context.getAlgorithms().length; i++) {
+            // Get the components to create the model
+            Clusterer clusterer = (Clusterer) context.getAlgorithms()[i];
+            Instances instances = (Instances) context.getModels()[i];
 
-                    Instances filteredData = filter(instances, filter);
-                    filteredData.setRelationName("filtered_data");
-                    clusterer.buildClusterer(filteredData);
-
-                    log();
-                } catch (final Exception e) {
-                    throw new RuntimeException(e);
-                } finally {
-                    // As soon as we are finished training with the data, we can
-                    // release the memory of all the training instances
-                    if (instances.numInstances() >= context.getMaxTraining()) {
-                        logger.info("Deleting instances : " + instances.numInstances());
-                        instances.delete();
-                    }
-                    analyzeLock.unlock();
-                }
+            Filter filter = null;
+            if (filters != null && filters.length > i) {
+                filter = filters[i];
             }
-        });
-        logger.info("Built clusterer in : " + duration);
+
+            // Filter the data if necessary
+            Instances filteredInstances = filter(instances, filter);
+            filteredInstances.setRelationName("filtered-instances");
+
+            // And build the model
+            logger.info("Building clusterer : " + instances.numInstances());
+            clusterer.buildClusterer(filteredInstances);
+            logger.info("Clusterer built : " + filteredInstances.numInstances());
+
+            // Set the evaluation
+            evaluations[i] = evaluate(clusterer, instances);
+        }
+        context.setEvaluations(evaluations);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean train(final Analysis<Object, Object> analysis) throws Exception {
-        try {
-            analyzeLock.lock();
+    public boolean train(final Context context, final Analysis<Object, Object> analysis) throws Exception {
+        for (int i = 0; i < context.getAlgorithms().length; i++) {
+            Instances instances = (Instances) context.getModels()[i];
             Instance instance = instance(analysis.getInput(), instances);
             instances.add(instance);
-            return Boolean.TRUE;
-        } finally {
-            analyzeLock.unlock();
         }
+        return Boolean.TRUE;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Analysis<Object, Object> analyze(final Analysis<Object, Object> analysis) throws Exception {
-        try {
-            analyzeLock.lock();
+    public Analysis<Object, Object> analyze(final Context context, final Analysis<Object, Object> analysis) throws Exception {
+        // TODO: Vote the clusterers here!!! In parallel!!!
+        Filter[] filters = (Filter[]) context.getFilters();
+        for (int i = 0; i < context.getAlgorithms().length; i++) {
+            Clusterer clusterer = (Clusterer) context.getAlgorithms()[i];
+            Instances instances = (Instances) context.getModels()[i];
+
+            Filter filter = null;
+            if (filters != null && filters.length > i) {
+                filter = filters[i];
+            }
+
             // Create the instance from the data
             Object input = analysis.getInput();
             Instance instance = instance(input, instances);
+
+            // Cluster the instance
+            Instance filteredInstance = filter(instance, filter);
+            int cluster = clusterer.clusterInstance(filteredInstance);
+
             // Set the output for the client
-            int cluster = (int) classOrCluster(instance);
-            double[] output = distributionForInstance(instance);
+            double[][] output = distributionForInstance(context, instance);
 
             analysis.setClazz(Integer.toString(cluster));
             analysis.setOutput(output);
 
-            if (analysis.isAlgorithm()) {
-                analysis.setAlgorithmOutput(clusterer.toString());
-            }
-            if (analysis.isCorrelation()) {
-                analysis.setCorrelationCoefficients(getCorrelationCoefficients(instances));
-            }
-            if (analysis.isDistribution()) {
-                // This is very expensive
-                analysis.setDistributionForInstances(getDistributionForInstances(instances));
-            }
-            return analysis;
-        } catch (final Exception e) {
-            Object content = analysis.getInput();
-            logger.error("Exception clustering content : " + content, e);
-            throw new RuntimeException(e);
-        } finally {
-            analyzeLock.unlock();
+            analysis.setAlgorithmOutput(clusterer.toString());
+            // TODO: Get the correlation co-efficients
         }
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Object[] classesOrClusters() throws Exception {
-        try {
-            analyzeLock.lock();
-            Object[] clusters = new Object[clusterer.numberOfClusters()];
-            for (double i = 0F; i < clusters.length; i++) {
-                clusters[(int) i] = i;
-            }
-            return clusters;
-        } finally {
-            analyzeLock.unlock();
-        }
+        return analysis;
     }
 
     @Override
-    double classOrCluster(final Instance instance) throws Exception {
-        try {
-            analyzeLock.lock();
-            Instance filteredInstance = filter(instance, filter);
-            return clusterer.clusterInstance(filteredInstance);
-        } finally {
-            analyzeLock.unlock();
+    double[][] distributionForInstance(final Context context, final Instance instance) throws Exception {
+        double[][] distributionForInstance = new double[context.getAlgorithms().length][];
+        Object[] clusterers = context.getAlgorithms();
+        Object[] filters = context.getFilters();
+        for (int i = 0; i < clusterers.length; i++) {
+            Clusterer clusterer = (Clusterer) clusterers[i];
+
+            Filter filter = null;
+            if (filters != null && filters.length > i) {
+                filter = (Filter) filters[i];
+            }
+
+            // Instance filteredInstance = filter(instance, filter);
+            Instance filteredInstance = filter((Instance) instance.copy(), filter);
+            distributionForInstance[i] = clusterer.distributionForInstance(filteredInstance);
         }
+        return distributionForInstance;
     }
 
-    @Override
-    double[] distributionForInstance(final Instance instance) throws Exception {
-        try {
-            analyzeLock.lock();
-            Instance filteredInstance = filter(instance, filter);
-            return clusterer.distributionForInstance(filteredInstance);
-        } finally {
-            analyzeLock.unlock();
-        }
-    }
-
-    private void log() throws Exception {
+    private String evaluate(final Clusterer clusterer, final Instances instances) throws Exception {
         ClusterEvaluation clusterEvaluation = new ClusterEvaluation();
         clusterEvaluation.setClusterer(clusterer);
         clusterEvaluation.evaluateClusterer(instances);
-        logger.info("Num clusters : " + clusterer.numberOfClusters());
-        logger.info("Cluster results : " + clusterEvaluation.clusterResultsToString());
-        for (int i = 0; i < instances.numAttributes(); i++) {
-            Attribute attribute = instances.attribute(i);
-            logger.info("Attribute : " + attribute.name() + ", " + attribute.type());
-            for (int j = 0; j < attribute.numValues(); j++) {
-                logger.debug("          : " + attribute.value(j));
-            }
-        }
+        return clusterEvaluation.clusterResultsToString();
     }
 
 }

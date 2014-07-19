@@ -3,6 +3,7 @@ package ikube.analytics.action;
 import ikube.analytics.IAnalyticsService;
 import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
+import ikube.model.Context;
 
 import java.io.Serializable;
 
@@ -17,7 +18,7 @@ import static ikube.toolkit.ApplicationContextManager.getBean;
  * @version 01.00
  * @since 15-03-2014
  */
-public class Trainer extends Action<Void> implements Serializable {
+public class Trainer extends Action<Boolean> implements Serializable {
 
     /**
      * The analysis object to use for the training
@@ -30,11 +31,16 @@ public class Trainer extends Action<Void> implements Serializable {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Void call() throws Exception {
+    public Boolean call() throws Exception {
         // Get the analyzer on the local machine
-        IAnalyzer analyzer = getBean(IAnalyticsService.class).getAnalyzer(analysis.getAnalyzer());
+        IAnalyticsService service = getAnalyticsService();
+        Context context = service.getContext(analysis.getContext());
+        if (context == null) {
+            return Boolean.FALSE;
+        }
+        IAnalyzer analyzer = context.getAnalyzer();
         // And train it
-        analyzer.train(analysis);
-        return null;
+        analyzer.train(context, analysis);
+        return Boolean.TRUE;
     }
 }

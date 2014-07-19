@@ -3,10 +3,9 @@ package ikube.analytics.action;
 import ikube.analytics.IAnalyticsService;
 import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
+import ikube.model.Context;
 
 import java.io.Serializable;
-
-import static ikube.toolkit.ApplicationContextManager.getBean;
 
 /**
  * This class is just a serializable snippet of logic that can be distributed over the
@@ -24,6 +23,10 @@ public class SizesForClassesOrClusters extends Action<Analysis> implements Seria
      */
     private Analysis analysis;
 
+    public SizesForClassesOrClusters() {
+        this(null);
+    }
+
     public SizesForClassesOrClusters(final Analysis analysis) {
         this.analysis = analysis;
     }
@@ -31,25 +34,10 @@ public class SizesForClassesOrClusters extends Action<Analysis> implements Seria
     @Override
     @SuppressWarnings("unchecked")
     public Analysis call() throws Exception {
-        String clazz = analysis.getClazz();
-        // Get the local analytics service and execute the analysis
-        getBean(IAnalyticsService.class).classesOrClusters(analysis);
-        Object[] classesOrClusters = analysis.getClassesOrClusters();
-        int[] sizesForClassesOrClusters = new int[analysis.getClassesOrClusters().length];
-        IAnalyzer analyzer = getBean(IAnalyticsService.class).getAnalyzer(analysis.getAnalyzer());
-        // System.out.println("Analytics service : " + analyticsService + ", " + analyzer);
-        // Calculate the sizes for the classes or clusters, as the case may be
-        for (int i = 0; i < classesOrClusters.length; i++) {
-            if (classesOrClusters[i] == null) {
-                continue;
-            }
-            analysis.setClazz(classesOrClusters[i].toString());
-            int sizeForClass = analyzer.sizeForClassOrCluster(analysis);
-            sizesForClassesOrClusters[i] = sizeForClass;
-        }
-        analysis.setClazz(clazz);
-        analysis.setSizesForClassesOrClusters(sizesForClassesOrClusters);
-        // And return the analysis object to the local machine
+        IAnalyticsService analyticsService = getAnalyticsService();
+        Context context = analyticsService.getContext(analysis.getContext());
+        IAnalyzer analyzer = context.getAnalyzer();
+        analyzer.analyze(context, analysis);
         return analysis;
     }
 }

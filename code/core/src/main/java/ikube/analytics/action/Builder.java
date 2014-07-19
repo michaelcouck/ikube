@@ -7,8 +7,6 @@ import ikube.model.Context;
 
 import java.io.Serializable;
 
-import static ikube.toolkit.ApplicationContextManager.getBean;
-
 /**
  * This class is just a serializable snippet of logic that can be distributed over the
  * wire and executed on a remote server, essentially distributing the building of all the
@@ -18,7 +16,7 @@ import static ikube.toolkit.ApplicationContextManager.getBean;
  * @version 01.00
  * @since 15-03-2014
  */
-public class Builder extends Action<Void> implements Serializable {
+public class Builder extends Action<Boolean> implements Serializable {
 
     /**
      * The analysis object to do the building with
@@ -31,13 +29,14 @@ public class Builder extends Action<Void> implements Serializable {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Void call() throws Exception {
+    public Boolean call() throws Exception {
         // Get the remote analyzer service from Spring
-        Context context = getBean(IAnalyticsService.class).getContext(analysis.getAnalyzer());
-        IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();
+        IAnalyticsService service = getAnalyticsService();
+        Context context = service.getContext(analysis.getContext());
+        IAnalyzer analyzer = context.getAnalyzer();
         // And build the remote analyzer
         analyzer.build(context);
-        return null;
+        return Boolean.TRUE;
     }
 
 }

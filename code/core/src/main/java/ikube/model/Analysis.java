@@ -24,7 +24,7 @@ public class Analysis<Input, Output> extends Distributed {
      * sentiment-smo-en then the analysis analyzer field name must be the same. Note also that this field
      * and the context field must be the same as the Spring bean id/name too.
      */
-    private String analyzer;
+    private String context;
     /**
      * The class/cluster for the instance, this is the result of the analysis.
      */
@@ -43,65 +43,19 @@ public class Analysis<Input, Output> extends Distributed {
      */
     private String algorithmOutput;
     /**
-     * The correlation co-efficients for the data set, matching the first instance against the next.
-     */
-    @Transient
-    private double[] correlationCoefficients;
-    /**
-     * The distribution probabilities of the instance in the clusters/class categories.
-     */
-    @Transient
-    private double[][] distributionForInstances;
-    /**
-     * The classes or clusters available for the classifier or clusterer.
-     */
-    @Transient
-    private Object[] classesOrClusters;
-    /**
-     * The size of each class or cluster in the classifier or clusterer.
-     */
-    @Transient
-    private int[] sizesForClassesOrClusters;
-
-    @Transient
-    private transient Exception exception;
-
-    /**
      * The time taken for the analysis.
      */
     private double duration;
 
-    /**
-     * Whether to get the algorithm output with the results.
-     */
-    private boolean algorithm;
-    /**
-     * Whether to get the correlation co-efficients for the instances.
-     */
-    private boolean correlation;
-    /**
-     * Whether to get the distribution for the instances, very expensive.
-     */
-    private boolean distribution;
-    /**
-     * Whether to get the classes or clusters for the instance.
-     */
-    private boolean classesAndClusters;
-    /**
-     * Whether to get the sizes for the classes or clusters for the instances.
-     */
-    private boolean sizesForClassesAndClusters;
-	/**
-	 * Whether this analysis object should be aggregated over the servers.
-	 */
-	private boolean aggregated;
+    @Transient
+    private transient Exception exception;
 
-    public String getAnalyzer() {
-        return analyzer;
+    public String getContext() {
+        return context;
     }
 
-    public void setAnalyzer(String analyzer) {
-        this.analyzer = analyzer;
+    public void setContext(String context) {
+        this.context = context;
     }
 
     public String getClazz() {
@@ -136,85 +90,12 @@ public class Analysis<Input, Output> extends Distributed {
         this.algorithmOutput = algorithmOutput;
     }
 
-    public boolean isAlgorithm() {
-        return algorithm;
-    }
-
-    public void setAlgorithm(boolean algorithm) {
-        this.algorithm = algorithm;
-    }
-
-    public double[] getCorrelationCoefficients() {
-        return correlationCoefficients;
-    }
-
-    public void setCorrelationCoefficients(double[] correlationCoefficients) {
-        this.correlationCoefficients = correlationCoefficients;
-    }
-
-    public double[][] getDistributionForInstances() {
-        return distributionForInstances;
-    }
-
-    public void setDistributionForInstances(double[][] distributionForInstances) {
-        this.distributionForInstances = distributionForInstances;
-    }
-
-    public Object[] getClassesOrClusters() {
-        return classesOrClusters;
-    }
-
-    public void setClassesOrClusters(Object[] classesOrClusters) {
-        this.classesOrClusters = classesOrClusters;
-    }
-
-    public int[] getSizesForClassesOrClusters() {
-        return sizesForClassesOrClusters;
-    }
-
-    public void setSizesForClassesOrClusters(int[] sizesForClassesOrClusters) {
-        this.sizesForClassesOrClusters = sizesForClassesOrClusters;
-    }
-
     public double getDuration() {
         return duration;
     }
 
     public void setDuration(double duration) {
         this.duration = duration;
-    }
-
-    public boolean isCorrelation() {
-        return correlation;
-    }
-
-    public void setCorrelation(boolean correlation) {
-        this.correlation = correlation;
-    }
-
-    public boolean isDistribution() {
-        return distribution;
-    }
-
-    public void setDistribution(boolean distribution) {
-        this.distribution = distribution;
-    }
-
-    public boolean isClassesAndClusters() {
-        return classesAndClusters;
-    }
-
-    public void setClassesAndClusters(boolean classesAndClusters) {
-        this.classesAndClusters = classesAndClusters;
-    }
-
-    public boolean isSizesForClassesAndClusters() {
-        return sizesForClassesAndClusters;
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public void setSizesForClassesAndClusters(boolean sizesForClassesAndClusters) {
-        this.sizesForClassesAndClusters = sizesForClassesAndClusters;
     }
 
     public Exception getException() {
@@ -224,12 +105,4 @@ public class Analysis<Input, Output> extends Distributed {
     public void setException(Exception exception) {
         this.exception = exception;
     }
-
-	public boolean isAggregated() {
-		return aggregated;
-	}
-
-	public void setAggregated(boolean aggregated) {
-		this.aggregated = aggregated;
-	}
 }

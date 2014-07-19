@@ -1,23 +1,26 @@
 package ikube.model;
 
-import javax.persistence.*;
+import ikube.analytics.IAnalyzer;
+
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Transient;
 
 /**
  * This class represents configuration and properties, and potentially logic that can build another object. For
  * example the analyzers may need input in the form of files, then this class will hold the properties that are
  * necessary for the analyzer to be instantiated, initialized and trained.
  *
- * @param <T> the type of analyzer in Ikube system
- * @param <F> the type of the filter to convert the data to the input format
- * @param <A> the logical implementation or algorithm for the analyzer
- * @param <O> the possible options passed to the algorithm logic
  * @author Michael Couck
  * @version 01.00
  * @since 10-04-2013
  */
+
 @Entity
+@SuppressWarnings("unchecked")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class Context<T, F, A, O> extends Persistable {
+public class Context extends Persistable {
 
     /**
      * The name of this specific analyzer. The name will also be used to find the initial training file,
@@ -29,133 +32,148 @@ public class Context<T, F, A, O> extends Persistable {
 
     /**
      * Ths internal type, i.e. the {@link ikube.analytics.IAnalyzer} type. Could be for instance
-     * a {@link ikube.analytics.weka.WekaClassifier}. This class then holds a reference to the logical implementation,
+     * a {@link ikube.analytics.weka.WekaClassifier}. This class then holds a reference to the logical implementations,
      * and in the case of a classifier this could be a {@link weka.classifiers.functions.SMO} function.
      * <p/>
      * This typically is only defined using the interface, if the analyzers are defined in Spring,then we know immediately
      * what the type will be of course.
      */
     @Transient
-    private transient T analyzer;
+    private IAnalyzer analyzer;
 
     /**
      * The filter type to convert the data into for example feature vectors.
      */
     @Transient
-    private transient F filter;
-
+    private Object[] filters;
     /**
-     * The underlying algorithm for the analyzer, for example KMeans or J48 for example.
+     * The underlying algorithms for the analyzers, for example KMeans or J48 for example.
      */
     @Transient
-    private transient A algorithm;
-
+    private Object[] algorithms;
+    /**
+     * The model that will train the analyzer. Typically this model is used to build the classifiers
+     * and or used in the clustering of the data int he clusterers.
+     */
+    @Transient
+    private Object[] models;
     /**
      * Any options or even classes that modify the algorithm in some way. Could be an array, something like a command line args.
      */
-    private O options;
-
-    /**
-     * This is the string training data, typically set from the front end.
-     */
     @Transient
-    private String trainingData;
-
-    /**
-     * Ths maximum number of instances that can be used to train this analyzer.
-     */
-    private int maxTraining;
+    private Object[] options;
 
     /**
      * The name of the file if different from the name of the algorithm.
      */
-    private String fileName;
-
+    @Transient
+    private String[] fileNames;
     /**
-     * The information to construct the analyzer.
-     *
-     * @see ikube.model.AnalyzerInfo
+     * If this is built using the rest api, then the files may not exist for the analyzers, in that
+     * case the training data will be used for the training.
      */
-    @Embedded
-    private AnalyzerInfo analyzerInfo;
-
-    public Context() {
-    }
+    @Transient
+    private String[] trainingDatas;
+    /**
+     * Ths maximum number of instances that can be used to train this analyzer.
+     */
+    @Transient
+    private int[] maxTrainings;
+    /**
+     * The evaluation of the clusterer or classifier.
+     */
+    @Transient
+    private String[] evaluations;
+    /**
+     * This flag is set when the model is built completely.
+     */
+    private boolean built;
 
     public String getName() {
         return name;
     }
 
-    public void setName(final String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public F getFilter() {
-        return filter;
-    }
-
-    public void setFilter(final F filter) {
-        this.filter = filter;
-    }
-
-    public T getAnalyzer() {
+    public IAnalyzer getAnalyzer() {
         return analyzer;
     }
 
-    public void setAnalyzer(final T analyzer) {
+    public void setAnalyzer(IAnalyzer analyzer) {
         this.analyzer = analyzer;
     }
 
-    public A getAlgorithm() {
-        return algorithm;
+    public Object[] getFilters() {
+        return filters;
     }
 
-    public void setAlgorithm(final A algorithm) {
-        this.algorithm = algorithm;
+    public void setFilters(Object... filters) {
+        this.filters = filters;
     }
 
-    public O getOptions() {
+    public Object[] getAlgorithms() {
+        return algorithms;
+    }
+
+    public void setAlgorithms(Object... algorithms) {
+        this.algorithms = algorithms;
+    }
+
+    public Object[] getModels() {
+        return models;
+    }
+
+    public void setModels(Object... models) {
+        this.models = models;
+    }
+
+    public Object[] getOptions() {
         return options;
     }
 
-    public void setOptions(O options) {
+    public void setOptions(Object... options) {
         this.options = options;
     }
 
-    public String getTrainingData() {
-        return trainingData;
+    public int[] getMaxTrainings() {
+        return maxTrainings;
     }
 
-    @SuppressWarnings("UnusedDeclaration")
-    public void setTrainingData(final String trainingData) {
-        this.trainingData = trainingData;
+    public void setMaxTrainings(int... maxTrainings) {
+        this.maxTrainings = maxTrainings;
     }
 
-    public int getMaxTraining() {
-        return maxTraining;
+    public String[] getFileNames() {
+        return fileNames;
     }
 
-    public void setMaxTraining(final int maxTraining) {
-        this.maxTraining = maxTraining;
+    public void setFileNames(String... fileNames) {
+        this.fileNames = fileNames;
     }
 
-    public String getFileName() {
-        return fileName;
+    public String[] getTrainingDatas() {
+        return trainingDatas;
     }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+    public void setTrainingDatas(String... trainingDatas) {
+        this.trainingDatas = trainingDatas;
     }
 
-    public AnalyzerInfo getAnalyzerInfo() {
-        return analyzerInfo;
+    public String[] getEvaluations() {
+        return evaluations;
     }
 
-    public void setAnalyzerInfo(AnalyzerInfo analyzerInfo) {
-        this.analyzerInfo = analyzerInfo;
+    public void setEvaluations(String... evaluations) {
+        this.evaluations = evaluations;
     }
 
-    public String toString() {
-        return "Name : " + name + ", analyzer : " + analyzer + ", filter : " + filter + ", algorithm : " + algorithm;
+    public boolean isBuilt() {
+        return built;
+    }
+
+    public void setBuilt(boolean built) {
+        this.built = built;
     }
 }

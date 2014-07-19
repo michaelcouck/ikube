@@ -75,35 +75,23 @@
     -->
 
     <!-- Define the classifier wrapper. -->
-    <bean id="rule-sentiment-smo-en" name="rule-sentiment-smo-en" class="ikube.analytics.weka.WekaClassifier"/>
     <!-- Define the filter to convert the data to vectors. -->
-    <bean id="rule-string-to-word-vector-en" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
     <!-- Define the Weka algorithm from Weka to perform the logic. -->
-    <bean id="rule-weka-classifier-smo-en" name="rule-weka-classifier-smo-en" class="weka.classifiers.functions.SMO"/>
     <!-- Define the context to wrap all the beans together for the analyzer. -->
     <bean
         id="rule-context-smo-en"
         name="rule-context-smo-en"
         class="ikube.model.Context"
         property:name="rule-context-smo-en"
-        property:analyzer-ref="rule-sentiment-smo-en"
-        property:filter-ref="rule-string-to-word-vector-en"
-        property:algorithm-ref="rule-weka-classifier-smo-en"
-        property:fileName="sentiment-smo-en.arff"
-        property:maxTraining="1000000"
-        property:analyzerInfo-ref="rule-analyzer-info-smo"/>
-    <!-- This bean contains human readable data about the analyzer defined above. -->
-    <bean
-        id="rule-analyzer-info-smo"
-        class="ikube.model.AnalyzerInfo"
-        property:analyzer="ikube.analytics.weka.WekaClassifier"
-        property:filter="weka.filters.unsupervised.attribute.StringToWordVector"
-        property:algorithm="weka.classifiers.functions.SMO"/>
+        property:analyzer-ref="analyzer-smo"
+        property:filters="weka.filters.unsupervised.attribute.StringToWordVector"
+        property:algorithms="weka.classifiers.functions.SMO"
+        property:fileNames="sentiment-smo-en.arff"
+        property:maxTrainings="1000000"/>
     <!-- Define the strategy that will intercept the processing to user the above defined analyzer. -->
     <bean
         id="rule-classification-strategy-en"
         class="ikube.action.index.handler.strategy.AnalysisStrategy"
-        property:language="English"
         property:context-ref="rule-context-smo-en"
         init-method="initialize"/>
 

@@ -3,10 +3,9 @@ package ikube.analytics.action;
 import ikube.analytics.IAnalyticsService;
 import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
+import ikube.model.Context;
 
 import java.io.Serializable;
-
-import static ikube.toolkit.ApplicationContextManager.getBean;
 
 /**
  * This class is just a serializable snippet of logic that can be distributed over the
@@ -32,15 +31,11 @@ public class Analyzer extends Action<Analysis> implements Serializable {
     @SuppressWarnings("unchecked")
     public Analysis call() throws Exception {
         // Get the remote analytics service
-        IAnalyzer analyzer = getBean(IAnalyticsService.class).getAnalyzer(analysis.getAnalyzer());
-        // Could be that the analyzer is not built yet
-        if (analyzer != null) {
-            // Do the analysis
-            analyzer.analyze(analysis);
-        } else {
-            logger.warn("Analyzer not defined for name : " + analysis.getAnalyzer());
-        }
-        // And return the analysis to the caller, which is not local
+        IAnalyticsService service = getAnalyticsService();
+        Context context = service.getContext(analysis.getContext());
+        IAnalyzer analyzer = context.getAnalyzer();
+        analyzer.analyze(context, analysis);
+        // And return the analysis to the caller, which may not be local
         return analysis;
     }
 }

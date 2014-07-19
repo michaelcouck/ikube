@@ -84,8 +84,8 @@ public final class WekaAlgorithm {
     private void doClusterer(Class<? extends Clusterer> clusterer, Set<Class<? extends Filter>> filters, final String data, final String type) {
         WekaAnalyzer wekaClusterer = new WekaClusterer() {
             @Override
-            InputStream getInputStream(final Context context) throws FileNotFoundException {
-                return new ByteArrayInputStream(data.getBytes());
+            InputStream[] getInputStreams(final Context context) throws FileNotFoundException {
+                return new InputStream[]{new ByteArrayInputStream(data.getBytes())};
             }
 
             void persist(final Context context, final Instances instances) {
@@ -98,8 +98,8 @@ public final class WekaAlgorithm {
     private void doClassifier(Class<? extends Classifier> classifier, Set<Class<? extends Filter>> filters, final String data, final String type) {
         WekaAnalyzer wekaClassifier = new WekaClassifier() {
             @Override
-            InputStream getInputStream(final Context context) throws FileNotFoundException {
-                return new ByteArrayInputStream(data.getBytes());
+            InputStream[] getInputStreams(final Context context) throws FileNotFoundException {
+                return new InputStream[]{new ByteArrayInputStream(data.getBytes())};
             }
 
             void persist(final Context context, final Instances instances) {
@@ -122,12 +122,12 @@ public final class WekaAlgorithm {
     }
 
     private void doAnalyzer(final WekaAnalyzer wekaAnalyzer, final Class<?> algorithm, final Class<? extends Filter> filter, final String type)
-            throws Exception {
-        Context context = new Context<>();
-        context.setMaxTraining(1000);
-        context.setAlgorithm(algorithm.newInstance());
+        throws Exception {
+        Context context = new Context();
+        context.setMaxTrainings(1000);
+        context.setAlgorithms(algorithm.newInstance());
         if (filter != null) {
-            context.setFilter(filter.newInstance());
+            context.setFilters(filter.newInstance());
         }
 
         wekaAnalyzer.init(context);
@@ -135,7 +135,7 @@ public final class WekaAlgorithm {
 
         Analysis<Object, Object> analysis = new Analysis<>();
         analysis.setInput(type);
-        wekaAnalyzer.analyze(analysis);
+        wekaAnalyzer.analyze(context, analysis);
 
         // logger.error("Analysis : " + analysis.getClazz() + ", " + analysis.getOutput());
     }

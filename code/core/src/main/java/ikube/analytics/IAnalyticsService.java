@@ -11,28 +11,22 @@ import java.util.Map;
  * @see ikube.analytics.IAnalyzer for details on the parameterized types
  * @since 10-04-2013
  */
-public interface IAnalyticsService<I, O, C> {
+public interface IAnalyticsService<I, O> {
 
-    IAnalyzer<I, O, C> create(final Context context);
+    Context create(final Context context);
 
-    IAnalyzer<I, O, C> train(final Analysis<I, O> analysis);
+    Context train(final Analysis<I, O> analysis);
 
-    IAnalyzer<I, O, C> build(final Analysis<I, O> analysis);
+    Context build(final Analysis<I, O> analysis);
 
     Analysis<I, O> analyze(final Analysis<I, O> analysis);
 
-    void destroy(final Context context);
-
-    Map<String, IAnalyzer> getAnalyzers();
-
-    IAnalyzer<I, O, C> getAnalyzer(final String analyzerName);
-
-    Context getContext(final String analyzerName);
+    Analysis<I, O> sizesForClassesOrClusters(final Analysis<I, O> analysis);
 
     Map<String, Context> getContexts();
 
-    Analysis classesOrClusters(final Analysis<I, O> analysis);
+    Context getContext(final String analyzerName);
 
-    Analysis<I, O> sizesForClassesOrClusters(final Analysis<I, O> analysis);
+    void destroy(final Context context);
 
 }

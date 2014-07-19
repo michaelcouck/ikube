@@ -95,7 +95,7 @@ public final class ApplicationContextManager implements ApplicationContextAware 
         }
     }
 
-    private static String getConfigiFilePath() {
+    public static String getConfigiFilePath() {
         File configFile = null;
         Object ikubeConfigurationPathProperty = System.getProperty(IConstants.IKUBE_CONFIGURATION);
         LOGGER.info("Configuration property file : " + ikubeConfigurationPathProperty);
@@ -114,7 +114,7 @@ public final class ApplicationContextManager implements ApplicationContextAware 
             LOGGER.info("Configuration file path : " + configFilePath);
             return configFilePath;
         }
-        return null;
+        throw new RuntimeException("No configuration found : " + ikubeConfigurationPathProperty + ", " + configFile);
     }
 
     /**

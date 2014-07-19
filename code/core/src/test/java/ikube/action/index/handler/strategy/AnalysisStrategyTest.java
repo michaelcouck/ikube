@@ -41,7 +41,7 @@ public class AnalysisStrategyTest extends AbstractTest {
         analyticsService = mock(IAnalyticsService.class);
         Context context = mock(Context.class);
         when(context.getAnalyzer()).thenReturn(analyzer);
-        when(context.getMaxTraining()).thenReturn(1000);
+        when(context.getMaxTrainings()).thenReturn(new int[]{1000});
 
         analysisStrategy = new AnalysisStrategy();
         analysisStrategy.setContext(context);
@@ -59,7 +59,7 @@ public class AnalysisStrategyTest extends AbstractTest {
         when(indexableTweets.isStored()).thenReturn(Boolean.TRUE);
         when(indexableTweets.isAnalyzed()).thenReturn(Boolean.TRUE);
         when(indexableTweets.getContent()).thenReturn(IConstants.CONTENT);
-        when(analyzer.analyze(any(Analysis.class))).thenReturn(analysis);
+        when(analyzer.analyze(any(Context.class), any(Analysis.class))).thenReturn(analysis);
         when(analysis.getClazz()).thenReturn(IConstants.NEGATIVE);
         when(analyticsService.analyze(any(Analysis.class))).thenReturn(analysis);
 
@@ -69,7 +69,6 @@ public class AnalysisStrategyTest extends AbstractTest {
         Tweet tweet = (Tweet) ObjectToolkit.getObject(Tweet.class);
         ObjectToolkit.populateFields(tweet, Boolean.TRUE, 10);
 
-        analysisStrategy.setLanguage(Locale.ENGLISH.getLanguage());
         analysisStrategy.aroundProcess(indexContext, indexableTweets, document, tweet);
 
         Assert.assertEquals(IConstants.NEGATIVE, document.get(IConstants.CLASSIFICATION_CONFLICT));

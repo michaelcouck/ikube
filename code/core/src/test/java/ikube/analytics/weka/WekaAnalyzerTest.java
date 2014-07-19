@@ -2,7 +2,7 @@ package ikube.analytics.weka;
 
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.model.AnalyzerInfo;
+import ikube.model.Analysis;
 import ikube.model.Context;
 import mockit.Mock;
 import mockit.MockClass;
@@ -20,6 +20,7 @@ import weka.filters.unsupervised.attribute.StringToWordVector;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Enumeration;
 
 import static junit.framework.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -44,21 +45,33 @@ public class WekaAnalyzerTest extends AbstractTest {
     }
 
     private Context context;
+    private Analysis analysis;
     private WekaAnalyzer wekaAnalyzer;
 
     @Before
     @SuppressWarnings("unchecked")
     public void before() throws Exception {
+        wekaAnalyzer = new WekaClassifier();
+
+        String algorithm = SMO.class.getName();
+        String filter = StringToWordVector.class.getName();
+        String fileName = "sentiment-smo.arff";
+        String[] options = new String[]{"-D", "-V", "100"};
+        int maxTraining = 10000;
+
         context = new Context();
         context.setName("classification");
-        context.setFilter(StringToWordVector.class.newInstance());
-        context.setAlgorithm(SMO.class.newInstance());
-        context.setMaxTraining(1000);
-        context.setAnalyzerInfo(new AnalyzerInfo());
+        context.setAnalyzer(wekaAnalyzer);
 
-        wekaAnalyzer = new WekaClassifier();
-        wekaAnalyzer.init(context);
-        wekaAnalyzer.build(context);
+        context.setAlgorithms(algorithm, algorithm, algorithm);
+        context.setFilters(filter, filter, filter);
+        context.setOptions(options, options, options);
+
+        context.setFileNames(fileName, fileName, fileName);
+        context.setMaxTrainings(maxTraining, maxTraining, maxTraining);
+
+        analysis = new Analysis();
+
         Mockit.setUpMocks(WekaToolkitMock.class);
     }
 
@@ -68,7 +81,40 @@ public class WekaAnalyzerTest extends AbstractTest {
     }
 
     @Test
+    public void init() throws Exception {
+        wekaAnalyzer.init(context);
+        for (int i = 0; i < context.getAlgorithms().length; i++) {
+            assertTrue(SMO.class.isAssignableFrom(context.getAlgorithms()[i].getClass()));
+            assertTrue(Filter.class.isAssignableFrom(context.getFilters()[i].getClass()));
+            assertTrue(Instances.class.isAssignableFrom(context.getModels()[i].getClass()));
+        }
+        wekaAnalyzer.build(context);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void sizeForClassOrCluster() throws Exception {
+        init();
+        analysis.setClazz(IConstants.POSITIVE);
+        int sizeForClass = wekaAnalyzer.sizeForClassOrCluster(context, analysis);
+        assertEquals(9, sizeForClass);
+    }
+
+    @Test
+    public void destroy() throws Exception {
+        init();
+        for (final Object model : context.getModels()) {
+            assertEquals(7, ((Instances) model).numInstances());
+        }
+        wekaAnalyzer.destroy(context);
+        for (final Object model : context.getModels()) {
+            assertEquals(0, ((Instances) model).numInstances());
+        }
+    }
+
+    @Test
     public void instance() throws Exception {
+        init();
         Instances instances = mock(Instances.class);
         Attribute attTwo = new Attribute("one", (FastVector) null, 1);
         Attribute attThree = new Attribute("two", (FastVector) null, 2);
@@ -89,83 +135,90 @@ public class WekaAnalyzerTest extends AbstractTest {
 
     @Test
     public void instances() throws Exception {
-        Instances instances = wekaAnalyzer.instances(context);
-        assertNotNull(instances);
-        assertEquals(2, instances.numAttributes());
-        assertEquals(Attribute.NOMINAL, instances.attribute(0).type());
-        assertEquals(Attribute.STRING, instances.attribute(1).type());
+        init();
+        Instances[] models = wekaAnalyzer.instances(context);
+        for (final Instances instances : models) {
+            assertNotNull(instances);
+            assertEquals(2, instances.numAttributes());
+            assertEquals(7, instances.numInstances());
+            assertEquals(Attribute.NOMINAL, instances.attribute(0).type());
+            assertEquals(Attribute.STRING, instances.attribute(1).type());
+        }
     }
 
     @Test
     public void persist() throws Exception {
+        init();
         WRITTEN = Boolean.FALSE;
-        Instances instances = wekaAnalyzer.instances(context);
-        wekaAnalyzer.persist(context, instances);
+        wekaAnalyzer.persist(context);
         assertTrue(WRITTEN);
     }
 
     @Test
     public void getInputStream() throws Exception {
-        InputStream inputStream = wekaAnalyzer.getInputStream(context);
-        assertNotNull(inputStream);
-    }
-
-    @Test
-    public void getDataFile() throws Exception {
-        File dataFile = wekaAnalyzer.getDataFile(context);
-        assertNotNull(dataFile);
-    }
-
-    @Test
-    public void filterInstance() throws Exception {
-        Filter filter = (Filter) context.getFilter();
-        Instances instances = wekaAnalyzer.instances(context);
-        Instance instance = instances.firstInstance();
-
-        filter.setInputFormat(instances);
-        Filter.useFilter(instances, filter);
-
-        Instance filteredInstance = wekaAnalyzer.filter(instance, filter);
-        assertNotSame(instance.toString(), filteredInstance.toString());
-    }
-
-    @Test
-    public void filterInstances() throws Exception {
-        Filter filter = (Filter) context.getFilter();
-        Instances instances = wekaAnalyzer.instances(context);
-        Instances filteredInstances = wekaAnalyzer.filter(instances, filter);
-        assertNotSame(instances.firstInstance().toString(), filteredInstances.firstInstance().toString());
-    }
-
-    @Test
-    @SuppressWarnings("MismatchedReadAndWriteOfArray")
-    public void getCorrelationCoefficients() throws Exception {
-        Instances instances = wekaAnalyzer.instances(context);
-        double[] correlationCoefficients = wekaAnalyzer.getCorrelationCoefficients(instances);
-        for (final double correlationCoefficient : correlationCoefficients) {
-            assertTrue(correlationCoefficient >= -1.0 && correlationCoefficient <= 1.0);
+        InputStream[] inputStreams = wekaAnalyzer.getInputStreams(context);
+        assertTrue(inputStreams.length > 0);
+        for (final InputStream inputStream : inputStreams) {
+            assertNotNull(inputStream);
         }
     }
 
     @Test
-    public void getDistributionForInstances() throws Exception {
-        Instances instances = wekaAnalyzer.instances(context);
-        double[][] distributionForInstances = wekaAnalyzer.getDistributionForInstances(instances);
-        for (final double[] distributionForInstance : distributionForInstances) {
-            for (final double probability : distributionForInstance) {
-                assertTrue(probability >= 0.0 || probability <= 1.0);
+    public void getDataFile() throws Exception {
+        File[] dataFiles = wekaAnalyzer.getDataFiles(context);
+        assertTrue(dataFiles.length > 0);
+        for (final File dataFile : dataFiles) {
+            assertNotNull(dataFile);
+        }
+    }
+
+    @Test
+    public void filterInstance() throws Exception {
+        init();
+        Object[] filters = context.getFilters();
+        Instances[] models = wekaAnalyzer.instances(context);
+        for (int i = 0; i < filters.length; i++) {
+            Filter filter = (Filter) filters[i];
+            Instances instances = models[i];
+            filter.setInputFormat(instances);
+            Filter.useFilter(instances, filter);
+
+            Enumeration enumeration = instances.enumerateInstances();
+            while (enumeration.hasMoreElements()) {
+                Instance instance = (Instance) enumeration.nextElement();
+                Instance filteredInstance = wekaAnalyzer.filter(instance, filter);
+                assertNotSame(instance.toString(), filteredInstance.toString());
             }
         }
     }
 
     @Test
-    @SuppressWarnings("unchecked")
-    public void size() throws Exception {
-        int positive = wekaAnalyzer.sizeForClassOrCluster(getAnalysis(IConstants.POSITIVE, null));
-        int negative = wekaAnalyzer.sizeForClassOrCluster(getAnalysis(IConstants.NEGATIVE, null));
-        int total = positive + negative;
-        assertEquals(total - negative, positive);
-        assertEquals(total - positive, negative);
+    public void filterInstances() throws Exception {
+        init();
+        Object[] filters = context.getFilters();
+        Instances[] models = wekaAnalyzer.instances(context);
+        for (int i = 0; i < filters.length; i++) {
+            Filter filter = (Filter) filters[i];
+            Instances instances = models[i];
+            Instances filteredInstances = wekaAnalyzer.filter(instances, filter);
+            assertNotSame(instances.firstInstance().toString(), filteredInstances.firstInstance().toString());
+        }
+    }
+
+    @Test
+    public void getDistributionForInstances() throws Exception {
+        init();
+        Instances[] models = wekaAnalyzer.instances(context);
+        for (final Instances instances : models) {
+            double[][][] distributionForInstances = wekaAnalyzer.getDistributionForInstances(context, instances);
+            for (final double[][] distributionForInstance : distributionForInstances) {
+                for (final double[] distributionInstance : distributionForInstance) {
+                    for (final double probability : distributionInstance) {
+                        assertTrue(probability == 0.0 || probability == 1.0);
+                    }
+                }
+            }
+        }
     }
 
 }

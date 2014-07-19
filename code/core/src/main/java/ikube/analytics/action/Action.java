@@ -1,9 +1,10 @@
 package ikube.analytics.action;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import ikube.analytics.IAnalyticsService;
 
 import java.util.concurrent.Callable;
+
+import static ikube.toolkit.ApplicationContextManager.getBean;
 
 /**
  * This is a base class for analytics actions that can be distributed in the cluster.
@@ -14,6 +15,8 @@ import java.util.concurrent.Callable;
  */
 public abstract class Action<T> implements Callable<T> {
 
-    Logger logger = LoggerFactory.getLogger(this.getClass());
+    IAnalyticsService getAnalyticsService() {
+        return getBean(IAnalyticsService.class);
+    }
 
 }

@@ -1,13 +1,10 @@
 package ikube.analytics.action;
 
-import ikube.analytics.AnalyzerManager;
 import ikube.analytics.IAnalyticsService;
+import ikube.analytics.IAnalyzer;
 import ikube.model.Context;
-import org.apache.commons.lang.StringUtils;
 
 import java.io.Serializable;
-
-import static ikube.toolkit.ApplicationContextManager.getBean;
 
 /**
  * This class is just a serializable snippet of logic that can be distributed over the
@@ -18,7 +15,7 @@ import static ikube.toolkit.ApplicationContextManager.getBean;
  * @version 01.00
  * @since 15-03-2014
  */
-public class Creator extends Action<Void> implements Serializable {
+public class Creator extends Action<Boolean> implements Serializable {
 
     /**
      * The context object that will be used for creating the analyzer
@@ -31,19 +28,11 @@ public class Creator extends Action<Void> implements Serializable {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Void call() throws Exception {
-        Object analyzerName = context.getAnalyzerInfo().getAnalyzer();
-        Object algorithmName = context.getAnalyzerInfo().getAlgorithm();
-        Object filterName = context.getAnalyzerInfo().getFilter();
-        context.setAnalyzer(Class.forName(String.valueOf(analyzerName)).newInstance());
-        context.setAlgorithm(Class.forName(String.valueOf(algorithmName)).newInstance());
-        if (filterName != null && !StringUtils.isEmpty(String.valueOf(filterName))) {
-            context.setFilter(Class.forName(String.valueOf(filterName)).newInstance());
-        }
-
-        // Build and set the analyzer here in the remote machine
-        getBean(AnalyzerManager.class).buildAnalyzer(context);
-        getBean(IAnalyticsService.class).getContexts().put(context.getName(), context);
-        return null;
+    public Boolean call() throws Exception {
+        IAnalyticsService service = getAnalyticsService();
+        IAnalyzer analyzer = context.getAnalyzer();
+        analyzer.init(context);
+        service.getContexts().put(context.getName(), context);
+        return Boolean.FALSE;
     }
 }

@@ -25,6 +25,14 @@
         <artifactory>http://ikube.be/artifactory/libs-release-local</artifactory>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>ikube</groupId>
+            <artifactId>ikube-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
     <build>
         <resources>
             <resource>
@@ -550,7 +558,7 @@
                         </configuration>
                     </execution>-->
 
-                    <execution>
+                    <!--<execution>
                         <id>install-j-web-services</id>
                         <goals>
                             <goal>deploy-file</goal>
@@ -567,7 +575,6 @@
                             <url>${artifactory}</url>
                         </configuration>
                     </execution>
-
                     <execution>
                         <id>install-jcifs</id>
                         <goals>
@@ -584,8 +591,7 @@
                             <repositoryId>${repository-id}</repositoryId>
                             <url>${artifactory}</url>
                         </configuration>
-                    </execution>
-
+                    </execution>-->
                 </executions>
             </plugin>
         </plugins>
