@@ -1,13 +1,12 @@
 package ikube.toolkit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.IConstants;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Michael Couck
@@ -68,6 +67,9 @@ public class StringUtilitiesTest extends AbstractTest {
 		String string = "Hello � World";
 		string = StringUtilities.stripToAlphaNumeric(string);
 		assertEquals("hello world", string);
+
+		string = StringUtilities.stripToAlphaNumeric("hello world.");
+		assertNotSame("hello world.", string);
 	}
 
 }
