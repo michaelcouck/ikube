@@ -5,7 +5,13 @@ import ikube.IConstants;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.FileUtilities;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mockito;
+import org.mockito.Spy;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import weka.classifiers.Classifier;
 import weka.classifiers.functions.SMO;
 import weka.classifiers.functions.SimpleLinearRegression;
@@ -19,12 +25,30 @@ import java.io.FileReader;
 
 import static junit.framework.Assert.assertEquals;
 
+/**
+ * @author Michael Couck
+ * @version 01.00
+ * @since 14-11-2013
+ */
 public class WekaTest extends AbstractTest {
+
+    @Spy
+    @InjectMocks
+    private WekaClassifier wekaClassifier;
+
+    @Before
+    public void before() {
+        Mockito.doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                // Do nothing
+                return null;
+            }
+        }).when(wekaClassifier).persist(Mockito.any(Context.class));
+    }
 
     @Test
     public void readArff() throws Exception {
-        WekaClassifier wekaClassifier = new WekaClassifier();
-
         File file = FileUtilities.findFileRecursively(new File("."), "classification.arff");
         FileReader fileReader = new FileReader(file);
         BufferedReader bufferedReader = new BufferedReader(fileReader);
@@ -103,19 +127,15 @@ public class WekaTest extends AbstractTest {
 
         double result = classifier.classifyInstance(instance);
         String classificationClass = instances.classAttribute().value((int) result);
-        System.out.println("Result : " + result + ", " + classificationClass);
+        logger.info("Result : " + result + ", " + classificationClass);
 
         Context context = new Context();
-        context.setAlgorithms(SimpleLinearRegression.class.newInstance());
-        // context.setFilter(StringToWordVector.class.newInstance());
         context.setName("regression");
+        context.setAnalyzer(WekaClusterer.class.getName());
+        context.setAlgorithms(SimpleLinearRegression.class.getName());
+        context.setFileNames("regression.arff");
         context.setMaxTrainings(10000);
 
-        WekaClassifier wekaClassifier = new WekaClassifier() {
-            void persist(final Context context, final Instances instances) {
-                // Do nothing
-            }
-        };
         wekaClassifier.init(context);
         wekaClassifier.build(context);
 
@@ -132,11 +152,10 @@ public class WekaTest extends AbstractTest {
         for (final Double[] input : inputs) {
             Analysis<Object, Object> analysis = getAnalysis(input);
             analysis = wekaClassifier.analyze(context, analysis);
-            //System.out.println("Output : " + Arrays.deepToString((Object[]) analysis.getOutput()));
             double[] outputs = (double[]) analysis.getOutput();
-            System.out.println("Class : " + analysis.getClazz());
+            logger.info("Class : " + analysis.getClazz());
             for (final double output : outputs) {
-                System.out.println("Output : " + output);
+                logger.info("Output : " + output);
             }
         }
 
