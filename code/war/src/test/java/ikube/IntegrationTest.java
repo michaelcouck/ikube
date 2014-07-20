@@ -2,11 +2,7 @@ package ikube;
 
 import ikube.action.index.parse.mime.MimeMapper;
 import ikube.action.index.parse.mime.MimeTypes;
-import ikube.analytics.weka.WekaClusterer;
-import ikube.cluster.IMonitorService;
 import ikube.database.IDataBase;
-import ikube.model.Analysis;
-import ikube.model.Context;
 import ikube.scheduling.Scheduler;
 import ikube.security.WebServiceAuthentication;
 import ikube.toolkit.ApplicationContextManager;
@@ -17,11 +13,9 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import weka.clusterers.SimpleKMeans;
 
 import java.io.File;
 import java.util.List;
@@ -58,6 +52,7 @@ public abstract class IntegrationTest extends AbstractTest {
     @BeforeClass
     public static void beforeClass() {
         ThreadUtilities.initialize();
+        // ApplicationContextManager.getBean(Scheduler.class).shutdown();
     }
 
     @AfterClass
@@ -69,9 +64,6 @@ public abstract class IntegrationTest extends AbstractTest {
             LOGGER.error("Exception closing down the thread pools : ", e);
         }
     }
-
-    @Autowired
-    protected IMonitorService monitorService;
 
     /**
      * This method will delete all the specified classes from the database.
@@ -94,28 +86,5 @@ public abstract class IntegrationTest extends AbstractTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    protected Context getContext(final String fileName, final String name) throws Exception {
-        File trainingDataFile = FileUtilities.findFileRecursively(new File("."), fileName);
-        String trainingData = FileUtilities.getContent(trainingDataFile);
-
-        Context context = new Context();
-        context.setName(name);
-        context.setAnalyzer(WekaClusterer.class.newInstance());
-        context.setAlgorithms(SimpleKMeans.class.getName());
-        context.setOptions(new String[]{"-N", "6"});
-
-        context.setMaxTrainings(Integer.MAX_VALUE);
-        context.setTrainingDatas(trainingData);
-
-        return context;
-    }
-
-    protected Analysis getAnalysis(final String context, final String input) {
-        Analysis<String, double[]> analysis = new Analysis<>();
-        analysis.setContext(context);
-        analysis.setInput(input);
-        return analysis;
-    }
 
 }

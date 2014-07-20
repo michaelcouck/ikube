@@ -4,13 +4,12 @@ import ikube.analytics.action.*;
 import ikube.cluster.IClusterManager;
 import ikube.model.Analysis;
 import ikube.model.Context;
-import org.apache.commons.beanutils.ConvertUtils;
-import org.apache.commons.beanutils.Converter;
+import ikube.toolkit.ThreadUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.sql.Timestamp;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -28,18 +27,7 @@ import java.util.concurrent.TimeoutException;
 @SuppressWarnings("SpringJavaAutowiringInspection")
 public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
 
-    static {
-        // We register a converter for the Bean utils so it
-        // doesn't complain when the value is null
-        ConvertUtils.register(new Converter() {
-            @Override
-            public Object convert(final Class type, final Object value) {
-                return value;
-            }
-        }, Timestamp.class);
-    }
-
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger LOGGER = LoggerFactory.getLogger(AnalyticsService.class);
 
     @Autowired
     private Map<String, Context> contexts;
@@ -52,9 +40,10 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
     @Override
     @SuppressWarnings("unchecked")
     public Context create(final Context context) {
-        logger.info("Create analytics service : " + context.getName());
         Creator creator = new Creator(context);
-        clusterManager.sendTaskToAll(creator);
+        List<Future<Boolean>> futures = clusterManager.sendTaskToAll(creator);
+        ThreadUtilities.waitForFutures(futures, 15);
+        LOGGER.info("Contexts : " + getContexts());
         return context;
     }
 
@@ -65,7 +54,9 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
     @SuppressWarnings("unchecked")
     public Context train(final Analysis<I, O> analysis) {
         Trainer trainer = new Trainer(analysis);
-        clusterManager.sendTaskToAll(trainer);
+        List<Future<Boolean>> futures = clusterManager.sendTaskToAll(trainer);
+        ThreadUtilities.waitForFutures(futures, 15);
+        LOGGER.info("Contexts : " + getContexts());
         return getContext(analysis.getContext());
     }
 
@@ -76,7 +67,9 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
     @SuppressWarnings("unchecked")
     public Context build(final Analysis<I, O> analysis) {
         Builder builder = new Builder(analysis);
-        clusterManager.sendTaskToAll(builder);
+        List<Future<Boolean>> futures = clusterManager.sendTaskToAll(builder);
+        ThreadUtilities.waitForFutures(futures, 15);
+        LOGGER.info("Contexts : " + getContexts());
         return getContext(analysis.getContext());
     }
 
@@ -140,7 +133,9 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
     public void destroy(final Context context) {
         // Create the callable that will be executed on the remote node
         Destroyer destroyer = new Destroyer(context);
-        clusterManager.sendTaskToAll(destroyer);
+        List<Future<Boolean>> futures = clusterManager.sendTaskToAll(destroyer);
+        ThreadUtilities.waitForFutures(futures, 15);
+        LOGGER.info("Contexts : " + getContexts());
     }
 
     /**
@@ -148,6 +143,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
      */
     @Override
     public Context getContext(final String name) {
+        LOGGER.info("Contexts : " + getContexts());
         return getContexts().get(name);
     }
 
@@ -156,6 +152,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
      */
     @Override
     public Map<String, Context> getContexts() {
+        LOGGER.info("Contexts : " + contexts);
         return contexts;
     }
 

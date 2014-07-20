@@ -101,14 +101,10 @@ public abstract class AbstractTest {
     protected String indexDirectoryPathBackup = "./indexes/backup";
 
     {
-        try {
-            initialize();
-        } catch (final Exception e) {
-            logger.error(null, e);
-        }
+        initialize();
     }
 
-    private void initialize() throws Exception {
+    private void initialize() {
         lock = mock(Lock.class);
         server = mock(Server.class);
         action = mock(Action.class);
@@ -139,10 +135,14 @@ public abstract class AbstractTest {
         topFieldDocs.scoreDocs = scoreDocs;
 
         when(indexSearcher.getIndexReader()).thenReturn(indexReader);
-        when(indexSearcher.search(any(Query.class), anyInt())).thenReturn(topDocs);
 
-        when(multiSearcher.search(any(Query.class), anyInt())).thenReturn(topDocs);
-        when(multiSearcher.search(any(Query.class), any(Filter.class), anyInt(), any(Sort.class))).thenReturn(topFieldDocs);
+        try {
+            when(indexSearcher.search(any(Query.class), anyInt())).thenReturn(topDocs);
+            when(multiSearcher.search(any(Query.class), anyInt())).thenReturn(topDocs);
+            when(multiSearcher.search(any(Query.class), any(Filter.class), anyInt(), any(Sort.class))).thenReturn(topFieldDocs);
+        } catch (final IOException e) {
+            logger.error(null, e);
+        }
 
         when(fsDirectory.makeLock(anyString())).thenReturn(lock);
 
@@ -240,11 +240,11 @@ public abstract class AbstractTest {
     }
 
     protected File createIndexFileSystem(
-            final IndexContext indexContext,
-            final long time,
-            final String ip,
-            final String... strings)
-            throws Exception {
+        final IndexContext indexContext,
+        final long time,
+        final String ip,
+        final String... strings)
+        throws Exception {
         IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, time, ip);
         addDocuments(indexWriter, IConstants.CONTENTS, strings);
         File indexDirectory = ((FSDirectory) indexWriter.getDirectory()).getDirectory();
@@ -253,10 +253,10 @@ public abstract class AbstractTest {
     }
 
     protected List<File> createIndexesFileSystem(
-            final IndexContext indexContext,
-            final long time,
-            final String[] ips,
-            final String... strings) {
+        final IndexContext indexContext,
+        final long time,
+        final String[] ips,
+        final String... strings) {
         try {
             List<File> serverIndexDirectories = new ArrayList<>();
             for (String ip : ips) {
@@ -270,11 +270,11 @@ public abstract class AbstractTest {
     }
 
     protected <T extends Search> T createIndexRamAndSearch(
-            final Class<T> searchClass,
-            final Analyzer analyzer,
-            final String field,
-            final String... strings)
-            throws Exception {
+        final Class<T> searchClass,
+        final Analyzer analyzer,
+        final String field,
+        final String... strings)
+        throws Exception {
         IndexWriter indexWriter = getRamIndexWriter(analyzer);
         addDocuments(indexWriter, field, strings);
         IndexReader indexReader = IndexReader.open(indexWriter.getDirectory());
@@ -289,11 +289,11 @@ public abstract class AbstractTest {
     }
 
     protected <T extends Search> T createIndexRamAndSearch(
-            final Class<T> searchClass,
-            final Analyzer analyzer,
-            final String[] fields,
-            final String[]... strings)
-            throws Exception {
+        final Class<T> searchClass,
+        final Analyzer analyzer,
+        final String[] fields,
+        final String[]... strings)
+        throws Exception {
         IndexWriter indexWriter = getRamIndexWriter(analyzer);
         Indexable indexable = getIndexable();
 
@@ -323,10 +323,10 @@ public abstract class AbstractTest {
     }
 
     protected void addDocuments(
-            final IndexWriter indexWriter,
-            final String field,
-            final String... strings)
-            throws Exception {
+        final IndexWriter indexWriter,
+        final String field,
+        final String... strings)
+        throws Exception {
         for (final String string : strings) {
             String id = Long.toString(System.currentTimeMillis());
             Document document = getDocument(id, string, field);
@@ -371,7 +371,7 @@ public abstract class AbstractTest {
         logger.debug("Got lock : " + gotLock + ", is locked : " + lock.isLocked());
         if (!gotLock) {
             FileUtilities.getFile(new File(serverIndexDirectory, IndexWriter.WRITE_LOCK_NAME).getAbsolutePath(),
-                    Boolean.FALSE);
+                Boolean.FALSE);
         } else {
             assertTrue(IndexWriter.isLocked(directory));
         }

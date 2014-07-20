@@ -5,8 +5,6 @@ import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
 
-import java.io.Serializable;
-
 /**
  * This class is just a serializable snippet of logic that can be distributed over the
  * wire and executed on a remote server, essentially distributing the analysis throughout
@@ -16,7 +14,7 @@ import java.io.Serializable;
  * @version 01.00
  * @since 15-03-2014
  */
-public class SizesForClassesOrClusters extends Action<Analysis> implements Serializable {
+public class SizesForClassesOrClusters extends Action<Analysis> {
 
     /**
      * The analysis object to use for the analysis
@@ -36,8 +34,9 @@ public class SizesForClassesOrClusters extends Action<Analysis> implements Seria
     public Analysis call() throws Exception {
         IAnalyticsService analyticsService = getAnalyticsService();
         Context context = analyticsService.getContext(analysis.getContext());
-        IAnalyzer analyzer = context.getAnalyzer();
-        analyzer.analyze(context, analysis);
+        IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();
+        int sizeForClassOrCluster = analyzer.sizeForClassOrCluster(context, analysis);
+        analysis.setSizeForClassOrCluster(sizeForClassOrCluster);
         return analysis;
     }
 }

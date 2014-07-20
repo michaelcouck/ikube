@@ -6,7 +6,6 @@ import ikube.analytics.IAnalyticsService;
 import ikube.cluster.IClusterManager;
 import ikube.cluster.IMonitorService;
 import ikube.search.ISearcherService;
-import ikube.toolkit.FileUtilities;
 import ikube.toolkit.SerializationUtilities;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -34,9 +33,6 @@ import static ikube.toolkit.FileUtilities.getContents;
 @SuppressWarnings("SpringJavaAutowiringInspection")
 public abstract class Resource {
 
-    /**
-     * Constants for the paths to the web services.
-     */
     public static final String REQUEST = "request";
     private static final String SEPARATOR = "|";
 

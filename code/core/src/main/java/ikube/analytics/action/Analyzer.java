@@ -5,18 +5,16 @@ import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
 
-import java.io.Serializable;
-
 /**
- * This class is just a serializable snippet of logic that can be distributed over the
- * wire and executed on a remote server, essentially distributing the analysis throughout
- * the cluster.
+ * This class will perform an analysis on a specific {@link ikube.model.Context}, and with a
+ * specific {@link ikube.model.Analysis} object as input. It is a serializable to be executed on
+ * a remote server.
  *
  * @author Michael Couck
  * @version 01.00
  * @since 15-03-2014
  */
-public class Analyzer extends Action<Analysis> implements Serializable {
+public class Analyzer extends Action<Analysis> {
 
     /**
      * The analysis object to do the analysis on :)
@@ -33,7 +31,7 @@ public class Analyzer extends Action<Analysis> implements Serializable {
         // Get the remote analytics service
         IAnalyticsService service = getAnalyticsService();
         Context context = service.getContext(analysis.getContext());
-        IAnalyzer analyzer = context.getAnalyzer();
+        IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();
         analyzer.analyze(context, analysis);
         // And return the analysis to the caller, which may not be local
         return analysis;

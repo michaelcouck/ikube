@@ -32,7 +32,10 @@ public class AnalyzerManager {
     }
 
     public IAnalyzer buildAnalyzer(final Context context, final boolean waitForBuild) throws Exception {
-        final IAnalyzer analyzer = context.getAnalyzer();
+        if (String.class.isAssignableFrom(context.getAnalyzer().getClass())) {
+            context.setAnalyzer(Class.forName(context.getAnalyzer().toString()).newInstance());
+        }
+        final IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();
         class Builder implements Runnable {
             public void run() {
                 try {

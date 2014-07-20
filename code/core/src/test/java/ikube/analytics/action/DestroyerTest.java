@@ -3,56 +3,57 @@ package ikube.analytics.action;
 import ikube.AbstractTest;
 import ikube.analytics.IAnalyticsService;
 import ikube.analytics.IAnalyzer;
-import ikube.model.Analysis;
 import ikube.model.Context;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 15-03-2014
+ * @since 20-07-2014
  */
-public class SizesForClassesOrClustersTest extends AbstractTest {
+public class DestroyerTest extends AbstractTest {
 
-    @Mock
-    private Analysis analysis;
+    @Spy
+    @InjectMocks
+    private Destroyer destroyer;
     @Mock
     private Context context;
     @Mock
-    private IAnalyzer analyzer;
+    private IAnalyzer ianalyzer;
     @Mock
     private IAnalyticsService analyticsService;
-    @Spy
-    @InjectMocks
-    private SizesForClassesOrClusters sizesForClassesOrClusters;
 
     @Before
-    public void before() {
+    @SuppressWarnings("unchecked")
+    public void before() throws Exception {
         doAnswer(new Answer() {
             @Override
             public Object answer(final InvocationOnMock invocation) throws Throwable {
                 return analyticsService;
             }
-        }).when(sizesForClassesOrClusters).getAnalyticsService();
-        when(analyticsService.getContext(Mockito.anyString())).thenReturn(context);
-        when(context.getAnalyzer()).thenReturn(analyzer);
+        }).when(destroyer).getAnalyticsService();
+
+        when(analyticsService.getContext(anyString())).thenReturn(context);
+        when(context.getAnalyzer()).thenReturn(ianalyzer);
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void call() throws Exception {
-        Analysis analysis = sizesForClassesOrClusters.call();
-        assertEquals(this.analysis, analysis);
-        verify(this.analysis, atLeastOnce()).setSizeForClassOrCluster(anyInt());
+        boolean destroyed = destroyer.call();
+        assertTrue(destroyed);
+        verify(ianalyzer, atLeastOnce()).destroy(any(Context.class));
     }
 
 }

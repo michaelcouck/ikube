@@ -83,7 +83,7 @@
         name="rule-context-smo-en"
         class="ikube.model.Context"
         property:name="rule-context-smo-en"
-        property:analyzer-ref="analyzer-smo"
+        property:analyzer="ikube.analytics.weka.WekaClassifier"
         property:filters="weka.filters.unsupervised.attribute.StringToWordVector"
         property:algorithms="weka.classifiers.functions.SMO"
         property:fileNames="sentiment-smo-en.arff"

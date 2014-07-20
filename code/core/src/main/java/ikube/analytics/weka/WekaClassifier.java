@@ -58,6 +58,7 @@ public class WekaClassifier extends WekaAnalyzer {
             // Set the evaluation of the classifier and the training model
             evaluations[i] = evaluate(classifier, filteredInstances);
         }
+        context.setBuilt(Boolean.TRUE);
         context.setEvaluations(evaluations);
     }
 
@@ -65,7 +66,7 @@ public class WekaClassifier extends WekaAnalyzer {
      * {@inheritDoc}
      */
     @Override
-    public boolean train(final Context context, final Analysis<Object, Object> analysis) throws Exception {
+    public boolean train(final Context context, final Analysis analysis) throws Exception {
         for (int i = 0; i < context.getAlgorithms().length; i++) {
             Instances instances = (Instances) context.getModels()[i];
             Instance instance = instance(analysis.getInput(), instances);
@@ -78,8 +79,9 @@ public class WekaClassifier extends WekaAnalyzer {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
-    public Analysis<Object, Object> analyze(final Context context, final Analysis<Object, Object> analysis) throws Exception {
+    public Analysis<Object, Object> analyze(final Context context, final Analysis analysis) throws Exception {
         // TODO: Vote the classifiers here!!! In parallel!!!
         for (int i = 0; i < context.getAlgorithms().length; i++) {
             Classifier classifier = (Classifier) context.getAlgorithms()[i];

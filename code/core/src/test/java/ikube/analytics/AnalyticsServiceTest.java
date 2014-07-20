@@ -1,15 +1,13 @@
 package ikube.analytics;
 
 import ikube.AbstractTest;
-import ikube.analytics.action.Analyzer;
-import ikube.analytics.action.Builder;
-import ikube.analytics.action.Destroyer;
-import ikube.analytics.action.Trainer;
+import ikube.analytics.action.*;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.ApplicationContextManager;
 import mockit.Deencapsulation;
+import mockit.MockClass;
 import mockit.Mockit;
 import org.junit.After;
 import org.junit.Before;
@@ -22,11 +20,10 @@ import weka.filters.Filter;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
 /**
@@ -36,10 +33,28 @@ import static org.mockito.Mockito.*;
  */
 public class AnalyticsServiceTest extends AbstractTest {
 
+    @MockClass(realClass = Analyzer.class)
+    public static class AnalyzerMock {
+        @mockit.Mock
+        public Analysis call() throws Exception {
+            return mock(Analysis.class);
+        }
+    }
+
+    @MockClass(realClass = SizesForClassesOrClusters.class)
+    public static class SizesForClassesOrClustersMock {
+        @mockit.Mock
+        public Analysis call() throws Exception {
+            return mock(Analysis.class);
+        }
+    }
+
     @Mock
     private SMO smo;
     @Mock
     private Filter filter;
+    @Mock
+    private Future future;
 
     @Mock
     private Context context;
@@ -58,92 +73,83 @@ public class AnalyticsServiceTest extends AbstractTest {
     @Before
     @SuppressWarnings("unchecked")
     public void before() throws Exception {
-        Mockit.setUpMocks(ApplicationContextManagerMock.class);
+        Mockit.setUpMocks(ApplicationContextManagerMock.class, AnalyzerMock.class, SizesForClassesOrClustersMock.class);
 
-        when(context.getAlgorithms()).thenReturn(new Object[]{smo});
         when(context.getAnalyzer()).thenReturn(analyzer);
+        when(context.getAlgorithms()).thenReturn(new Object[]{smo});
         when(context.getFilters()).thenReturn(new Object[]{filter});
+        when(context.getFileNames()).thenReturn(new String[]{"sentiment-smo.arff"});
 
         Map<String, Context> contexts = new HashMap<>();
         contexts.put(context.getName(), context);
-        Deencapsulation.setField(analyticsService, "contexts", contexts);
-
         when(analyticsService.getContexts()).thenReturn(contexts);
-
-        ApplicationContextManagerMock.setBean(AnalyzerManager.class, analyzerManager);
-        ApplicationContextManagerMock.setBean(IAnalyticsService.class, analyticsService);
-        Deencapsulation.setField(analyticsService, "clusterManager", clusterManager);
     }
 
     @After
     public void after() {
-        Mockit.tearDownMocks(ApplicationContextManager.class);
+        Mockit.tearDownMocks(ApplicationContextManager.class, AnalyzerMock.class, SizesForClassesOrClustersMock.class);
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void create() throws Exception {
-        analyticsService.create(context);
-        verify(context, atLeastOnce()).setFilters(any());
+        context = analyticsService.create(context);
+        assertNotNull(context);
+        verify(clusterManager, atLeastOnce()).sendTaskToAll(any(Creator.class));
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void train() throws Exception {
-        analyticsService.train(analysis);
-        verify(clusterManager, atLeastOnce()).sendTaskToAll(any(Callable.class));
-
-        Trainer trainer = new Trainer(analysis);
-        trainer.call();
-
-        verify(analyzer, atLeastOnce()).train(any(Context.class), any());
+        context = analyticsService.train(analysis);
+        assertNotNull(context);
+        verify(clusterManager, atLeastOnce()).sendTaskToAll(any(Trainer.class));
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void build() throws Exception {
-        analyticsService.build(analysis);
-        verify(clusterManager, atLeastOnce()).sendTaskToAll(any(Callable.class));
-
-        when(analyticsService.getContext(any(String.class))).thenReturn(context);
-        Builder builder = new Builder(analysis);
-        builder.call();
-
-        verify(analyzer, atLeastOnce()).build(any(Context.class));
+        context = analyticsService.build(analysis);
+        assertNotNull(context);
+        verify(clusterManager, atLeastOnce()).sendTaskToAll(any(Builder.class));
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void analyze() throws Exception {
-        Future future = mock(Future.class);
-        when(clusterManager.sendTask(any(Callable.class))).thenReturn(future);
+        when(clusterManager.sendTask(any(Analyzer.class))).thenReturn(future);
         when(future.get(anyLong(), any(TimeUnit.class))).thenReturn(analysis);
-        when(analyzer.analyze(any(Context.class), any())).thenReturn(analysis);
+        // when(analyzer.analyze(any(Context.class), any())).thenReturn(analysis);
 
         Analysis analysis = analyticsService.analyze(this.analysis);
-        assertEquals(analysis, this.analysis);
+        assertNotNull(analysis);
 
-        when(analysis.isDistributed()).thenReturn(Boolean.TRUE);
+        when(this.analysis.isDistributed()).thenReturn(Boolean.TRUE);
         analyticsService.analyze(this.analysis);
-        verify(clusterManager, atLeastOnce()).sendTask(any(Callable.class));
+        verify(clusterManager, atLeastOnce()).sendTask(any(Analyzer.class));
+        verify(future, atLeastOnce()).get(anyLong(), any(TimeUnit.class));
+    }
 
-        Analyzer analyzer = new Analyzer(analysis);
-        analyzer.call();
+    @Test
+    @SuppressWarnings("unchecked")
+    public void sizesForClassesOrClusters() throws Exception {
+        when(clusterManager.sendTask(any(Analyzer.class))).thenReturn(future);
+        when(future.get(anyLong(), any(TimeUnit.class))).thenReturn(analysis);
 
-        verify(this.analyzer, atLeastOnce()).analyze(any(Context.class), any());
+        Analysis analysis = analyticsService.sizesForClassesOrClusters(this.analysis);
+        assertNotNull(analysis);
+
+        when(this.analysis.isDistributed()).thenReturn(Boolean.TRUE);
+        analyticsService.sizesForClassesOrClusters(this.analysis);
+        verify(clusterManager, atLeastOnce()).sendTask(any(SizesForClassesOrClusters.class));
+        verify(future, atLeastOnce()).get(anyLong(), any(TimeUnit.class));
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void destroy() throws Exception {
         analyticsService.destroy(context);
-        verify(clusterManager, atLeastOnce()).sendTaskToAll(any(Callable.class));
-
-        Destroyer destroyer = new Destroyer(context);
-        when(analyticsService.getContext(anyString())).thenReturn(context);
-        destroyer.call();
-
-        verify(analyzer, atLeastOnce()).destroy(any(Context.class));
+        verify(clusterManager, atLeastOnce()).sendTaskToAll(any(Destroyer.class));
     }
 
 }

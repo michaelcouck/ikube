@@ -5,10 +5,6 @@ import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
 
-import java.io.Serializable;
-
-import static ikube.toolkit.ApplicationContextManager.getBean;
-
 /**
  * This class is just a serializable snippet of logic that can be distributed over the
  * wire and executed on a remote server, essentially distributing the training throughout
@@ -18,7 +14,7 @@ import static ikube.toolkit.ApplicationContextManager.getBean;
  * @version 01.00
  * @since 15-03-2014
  */
-public class Trainer extends Action<Boolean> implements Serializable {
+public class Trainer extends Action<Boolean> {
 
     /**
      * The analysis object to use for the training
@@ -38,7 +34,7 @@ public class Trainer extends Action<Boolean> implements Serializable {
         if (context == null) {
             return Boolean.FALSE;
         }
-        IAnalyzer analyzer = context.getAnalyzer();
+        IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();
         // And train it
         analyzer.train(context, analysis);
         return Boolean.TRUE;

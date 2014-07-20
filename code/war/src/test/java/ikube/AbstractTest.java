@@ -1,6 +1,10 @@
 package ikube;
 
+import ikube.analytics.weka.WekaClusterer;
 import ikube.mock.SpellingCheckerMock;
+import ikube.model.Analysis;
+import ikube.model.Context;
+import ikube.toolkit.FileUtilities;
 import ikube.toolkit.Logging;
 import mockit.Mockit;
 import org.apache.http.client.HttpClient;
@@ -13,7 +17,9 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import weka.clusterers.SimpleKMeans;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -82,6 +88,30 @@ public abstract class AbstractTest {
                 }
             }
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Context getContext(final String fileName, final String name) throws Exception {
+        File trainingDataFile = FileUtilities.findFileRecursively(new File("."), fileName);
+        String trainingData = FileUtilities.getContent(trainingDataFile);
+
+        Context context = new Context();
+        context.setName(name);
+        context.setAnalyzer(WekaClusterer.class.getName());
+        context.setAlgorithms(SimpleKMeans.class.getName());
+        context.setOptions(new String[]{"-N", "6"});
+
+        context.setMaxTrainings(Integer.MAX_VALUE);
+        context.setTrainingDatas(trainingData);
+
+        return context;
+    }
+
+    protected Analysis getAnalysis(final String context, final String input) {
+        Analysis<String, double[]> analysis = new Analysis<>();
+        analysis.setContext(context);
+        analysis.setInput(input);
+        return analysis;
     }
 
 }

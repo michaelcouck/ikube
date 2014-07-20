@@ -1,7 +1,5 @@
 package ikube.model;
 
-import ikube.analytics.IAnalyzer;
-
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -39,7 +37,7 @@ public class Context extends Persistable {
      * what the type will be of course.
      */
     @Transient
-    private transient IAnalyzer analyzer;
+    private Object analyzer;
 
     /**
      * The filter type to convert the data into for example feature vectors.
@@ -50,13 +48,13 @@ public class Context extends Persistable {
      * The underlying algorithms for the analyzers, for example KMeans or J48 for example.
      */
     @Transient
-    private transient Object[] algorithms;
+    private Object[] algorithms;
     /**
      * The model that will train the analyzer. Typically this model is used to build the classifiers
      * and or used in the clustering of the data int he clusterers.
      */
     @Transient
-    private transient Object[] models;
+    private Object[] models;
     /**
      * Any options or even classes that modify the algorithm in some way. Could be an array, something like a command line args.
      */
@@ -97,11 +95,11 @@ public class Context extends Persistable {
         this.name = name;
     }
 
-    public IAnalyzer getAnalyzer() {
+    public Object getAnalyzer() {
         return analyzer;
     }
 
-    public void setAnalyzer(IAnalyzer analyzer) {
+    public void setAnalyzer(Object analyzer) {
         this.analyzer = analyzer;
     }
 

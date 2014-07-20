@@ -46,6 +46,10 @@ public class Analysis<Input, Output> extends Distributed {
      * The time taken for the analysis.
      */
     private double duration;
+    /**
+     * The size of a particular cluster or class in the case of a classifier.
+     */
+    private int sizeForClassOfCluster;
 
     @Transient
     private transient Exception exception;
@@ -96,6 +100,14 @@ public class Analysis<Input, Output> extends Distributed {
 
     public void setDuration(double duration) {
         this.duration = duration;
+    }
+
+    public int getSizeForClassOfCluster() {
+        return sizeForClassOfCluster;
+    }
+
+    public void setSizeForClassOrCluster(int sizeForClassOfCluster) {
+        this.sizeForClassOfCluster = sizeForClassOfCluster;
     }
 
     public Exception getException() {

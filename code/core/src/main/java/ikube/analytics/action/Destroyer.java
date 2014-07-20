@@ -4,8 +4,6 @@ import ikube.analytics.IAnalyticsService;
 import ikube.analytics.IAnalyzer;
 import ikube.model.Context;
 
-import java.io.Serializable;
-
 /**
  * This class is just a serializable snippet of logic that can be distributed over the
  * wire and executed on a remote server, essentially destroying the analyzers on all machines
@@ -15,7 +13,7 @@ import java.io.Serializable;
  * @version 01.00
  * @since 15-03-2014
  */
-public class Destroyer extends Action<Boolean> implements Serializable {
+public class Destroyer extends Action<Boolean> {
 
     /**
      * The context object that will be used for destroying the analyzer
@@ -37,7 +35,7 @@ public class Destroyer extends Action<Boolean> implements Serializable {
         }
         // Get the local context, but in fact we are on the remote machine of course
         service.getContexts().remove(context.getName());
-        IAnalyzer analyzer = context.getAnalyzer();
+        IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();
         // And destroy the analyzer
         analyzer.destroy(context);
         return Boolean.TRUE;

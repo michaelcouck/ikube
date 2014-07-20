@@ -2,6 +2,8 @@ package ikube.toolkit;
 
 import ikube.IConstants;
 import ikube.model.*;
+import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.beanutils.Converter;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +23,7 @@ import org.springframework.web.context.support.AbstractRefreshableWebApplication
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -40,11 +43,11 @@ public final class ApplicationContextManager implements ApplicationContextAware 
      * The default location of the configuration files is in the ikube folder at the base of the server.
      */
     private static final String EXTERNAL_SPRING_CONFIGURATION_FILE =
-            "." +
-                    IConstants.SEP +
-                    IConstants.IKUBE +
-                    IConstants.SEP +
-                    IConstants.SPRING_XML;
+        "." +
+            IConstants.SEP +
+            IConstants.IKUBE +
+            IConstants.SEP +
+            IConstants.SPRING_XML;
 
     private static ApplicationContext APPLICATION_CONTEXT;
 
@@ -53,21 +56,29 @@ public final class ApplicationContextManager implements ApplicationContextAware 
         LOGGER = LoggerFactory.getLogger(ApplicationContextManager.class);
         try {
             SerializationUtilities.setTransientFields(//
-                    ikube.model.File.class, //
-                    Url.class, //
-                    Analysis.class, //
-                    Search.class, //
-                    Task.class, //
-                    IndexableInternet.class, //
-                    IndexableEmail.class, //
-                    IndexableFileSystem.class, //
-                    IndexableColumn.class, //
-                    IndexableTable.class, //
-                    IndexContext.class, //
-                    ArrayList.class);
+                ikube.model.File.class, //
+                Url.class, //
+                Analysis.class, //
+                Search.class, //
+                Task.class, //
+                IndexableInternet.class, //
+                IndexableEmail.class, //
+                IndexableFileSystem.class, //
+                IndexableColumn.class, //
+                IndexableTable.class, //
+                IndexContext.class, //
+                ArrayList.class);
         } catch (final Exception e) {
             LOGGER.error("Exception setting the transient fields : ", e);
         }
+        // We register a converter for the Bean utils so it
+        // doesn't complain when the value is null
+        ConvertUtils.register(new Converter() {
+            @Override
+            public Object convert(final Class type, final Object value) {
+                return value;
+            }
+        }, Timestamp.class);
     }
 
     /**

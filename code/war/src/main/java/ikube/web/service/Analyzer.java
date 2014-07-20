@@ -1,6 +1,5 @@
 package ikube.web.service;
 
-import com.google.common.collect.Lists;
 import ikube.analytics.IAnalyticsService;
 import ikube.model.Analysis;
 import ikube.toolkit.SerializationUtilities;
@@ -14,8 +13,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Collection;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -66,7 +64,6 @@ public class Analyzer extends Resource {
         produces = ikube.model.Context.class)
     public Response create(@Context final HttpServletRequest request) {
         ikube.model.Context context = unmarshall(ikube.model.Context.class, request);
-        logger.debug("Create request : " + context.getName());
         analyticsService.create(context);
         return buildJsonResponse(context(context));
     }
@@ -103,7 +100,8 @@ public class Analyzer extends Resource {
     public Response build(@Context final HttpServletRequest request) {
         Analysis<?, ?> analysis = unmarshall(Analysis.class, request);
         analyticsService.build(analysis);
-        return buildJsonResponse(context(analyticsService.getContext(analysis.getContext())));
+        ikube.model.Context context = analyticsService.getContext(analysis.getContext());
+        return buildJsonResponse(context(context));
     }
 
     /**
@@ -151,7 +149,8 @@ public class Analyzer extends Resource {
     @SuppressWarnings("unchecked")
     public Response context(@Context final HttpServletRequest request) {
         Analysis<?, ?> analysis = unmarshall(Analysis.class, request);
-        return buildJsonResponse(context(analyticsService.getContext(analysis.getContext())));
+        ikube.model.Context context = analyticsService.getContext(analysis.getContext());
+        return buildJsonResponse(context(context));
     }
 
     @GET
@@ -160,15 +159,15 @@ public class Analyzer extends Resource {
         uri = "/ikube/service/analyzer/contexts",
         description = "Returns all the contexts' names defined in the system.",
         consumes = String.class,
-        produces = List.class)
+        produces = ArrayList.class)
     @SuppressWarnings("unchecked")
     public Response contexts() {
-        Collection<ikube.model.Context> contexts = Lists.newArrayList();
         Map<String, ikube.model.Context> contextsMap = analyticsService.getContexts();
+        ArrayList contexts = new ArrayList();
         for (final Map.Entry<String, ikube.model.Context> contextEntry : contextsMap.entrySet()) {
-            contexts.add(context(contextEntry.getValue()));
+            contexts.add(contextEntry.getKey());
         }
-        return buildJsonResponse(contexts);
+        return buildJsonResponse(contexts.toArray());
     }
 
     private ikube.model.Context context(final ikube.model.Context context) {
@@ -184,11 +183,18 @@ public class Analyzer extends Resource {
         cloned.setName(context.getName());
         cloned.setOptions(context.getOptions());
 
+        if (String.class.isAssignableFrom(context.getAnalyzer().getClass())) {
+            cloned.setAnalyzer(context.getAnalyzer());
+        } else {
+            cloned.setAnalyzer(context.getAnalyzer().getClass().getName());
+        }
         String[] algorithms = new String[context.getAlgorithms().length];
         String[] filters = new String[context.getAlgorithms().length];
         for (int i = 0; i < context.getAlgorithms().length; i++) {
             algorithms[i] = context.getAlgorithms()[i].getClass().getName();
-            filters[i] = context.getFilters()[i].getClass().getName();
+            if (context.getFilters() != null && context.getFilters().length > i && context.getFilters()[i] != null) {
+                filters[i] = context.getFilters()[i].getClass().getName();
+            }
         }
         cloned.setAlgorithms(algorithms);
         cloned.setFilters(filters);

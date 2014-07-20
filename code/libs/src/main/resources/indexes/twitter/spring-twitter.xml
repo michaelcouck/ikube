@@ -108,9 +108,10 @@
         name="context-smo-en"
         class="ikube.model.Context"
         property:name="sentiment-smo-en"
-        property:analyzer-ref="analyzer-smo"
+        property:analyzer="ikube.analytics.weka.WekaClassifier"
         property:filters="weka.filters.unsupervised.attribute.StringToWordVector"
         property:algorithms="weka.classifiers.functions.SMO"
+        property:fileNames="sentiment-smo-en.arff"
         property:maxTrainings="${max-training}"/>
     <!-- Spanish -->
     <!-- Japanese -->

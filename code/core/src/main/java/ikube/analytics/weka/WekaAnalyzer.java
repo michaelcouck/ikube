@@ -34,9 +34,9 @@ import static ikube.toolkit.FileUtilities.*;
  * @version 01.00
  * @since 18-11-2013
  */
-public abstract class WekaAnalyzer implements IAnalyzer<Analysis<Object, Object>, Analysis<Object, Object>, Analysis<Object, Object>> {
+public abstract class WekaAnalyzer implements IAnalyzer<Analysis, Analysis, Analysis> {
 
-    final Logger logger = LoggerFactory.getLogger(this.getClass());
+    final transient Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * {@inheritDoc}
@@ -44,6 +44,9 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<Object, Object>
     @Override
     @SuppressWarnings("unchecked")
     public void init(final Context context) throws Exception {
+        if (String.class.isAssignableFrom(context.getAnalyzer().getClass())) {
+            context.setAnalyzer(Class.forName(context.getAnalyzer().toString()).newInstance());
+        }
         Object[] algorithms = context.getAlgorithms();
         Object[] filters = context.getFilters();
         // Create the analyzer algorithm, the filter and the model
@@ -83,7 +86,7 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<Object, Object>
      * {@inheritDoc}
      */
     @Override
-    public int sizeForClassOrCluster(final Context context, final Analysis<Object, Object> analysis) throws Exception {
+    public int sizeForClassOrCluster(final Context context, final Analysis analysis) throws Exception {
         int sizeForClassOrCluster = 0;
         Instances[] models = (Instances[]) context.getModels();
         for (final Instances instances : models) {
@@ -229,7 +232,6 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis<Object, Object>
         File configurationDirectory = new File(ApplicationContextManager.getConfigiFilePath()).getParentFile();
         File[] dataFiles = new File[context.getAlgorithms().length];
         for (int i = 0; i < context.getAlgorithms().length; i++) {
-            // Try the defined file name before using the name of the algorithm
             String dataFileName = context.getFileNames()[i];
             File dataFile = findFileRecursively(configurationDirectory, dataFileName);
             logger.info("Looking for data file in directory : " + configurationDirectory.getAbsolutePath());

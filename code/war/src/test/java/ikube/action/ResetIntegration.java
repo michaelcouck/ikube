@@ -2,6 +2,7 @@ package ikube.action;
 
 import ikube.IntegrationTest;
 import ikube.cluster.IClusterManager;
+import ikube.cluster.IMonitorService;
 import ikube.database.IDataBase;
 import ikube.model.Action;
 import ikube.model.Url;
@@ -10,6 +11,9 @@ import mockit.Deencapsulation;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -28,17 +32,23 @@ import static org.mockito.Mockito.when;
 @SuppressWarnings("SpringJavaAutowiringInspection")
 public class ResetIntegration extends IntegrationTest {
 
+    @Spy
+    @InjectMocks
     private Reset reset;
+    @Mock
+    private IClusterManager clusterManager;
+
     @Autowired
     private IDataBase dataBase;
-    private IClusterManager clusterManager;
+    @Autowired
+    protected IMonitorService monitorService;
 
     @Before
     public void before() {
-        reset = new Reset();
-        clusterManager = mock(IClusterManager.class);
+        // reset = new Reset();
+        // clusterManager = mock(IClusterManager.class);
         Deencapsulation.setField(reset, dataBase);
-        Deencapsulation.setField(reset, clusterManager);
+        // Deencapsulation.setField(reset, clusterManager);
     }
 
     @After
