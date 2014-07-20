@@ -33,7 +33,7 @@
                 <configuration>
                     <forkMode>once</forkMode>
                     <!-- Was: -XX:-UseSplitVerifier, now is: -noverify -->
-                    <!--<argLine>-javaagent:../../serenity/serenity.jar ${serenity-parameters} ${memory-parameters}</argLine>-->
+                    <argLine>-javaagent:../../serenity/serenity.jar ${serenity-parameters} ${memory-parameters}</argLine>
                 </configuration>
             </plugin>
             <plugin>

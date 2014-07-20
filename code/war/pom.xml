@@ -46,7 +46,7 @@
 				<version>2.2</version>
 			</plugin>
 			<!-- 
-				This plugin reads the properties from the buid.properties file and makes them all available 
+				This plugin reads the properties from the build.properties file and makes them all available
 				to the rest of the Maven build process. 
 			-->
 			<plugin>
