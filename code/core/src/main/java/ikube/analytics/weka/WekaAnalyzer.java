@@ -318,4 +318,13 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis, Analysis, Anal
         return distributionForInstances;
     }
 
+    Filter getFilter(final Context context, final int i) {
+        Object[] filters = context.getFilters();
+        Filter filter = null;
+        if (filters != null && filters.length > i) {
+            filter = (Filter) filters[i];
+        }
+        return filter;
+    }
+
 }

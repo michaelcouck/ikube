@@ -48,6 +48,7 @@ public class WekaClassifierTest extends AbstractTest {
 
         context = new Context();
         context.setName("classification");
+        context.setAnalyzer(WekaClassifier.class.getName());
         context.setAlgorithms(algorithm, algorithm, algorithm);
         context.setFilters(filter, filter, filter);
         context.setOptions(options);
@@ -79,14 +80,14 @@ public class WekaClassifierTest extends AbstractTest {
     public void train() throws Exception {
         Instances[] instanceses = (Instances[]) context.getModels();
         for (final Instances instances : instanceses) {
-            int iterations = IConstants.HUNDRED_THOUSAND;
+            int iterations = IConstants.ONE_THOUSAND;
             int numInstances = instances.numInstances();
             do {
                 Analysis<Object, Object> analysis = getAnalysis(IConstants.POSITIVE, positive);
                 boolean trained = wekaClassifier.train(context, analysis);
                 assertTrue(trained);
             } while (--iterations >= 0);
-            assertEquals(IConstants.HUNDRED_THOUSAND + numInstances + 1, instances.numInstances());
+            assertEquals(IConstants.ONE_THOUSAND + numInstances + 1, instances.numInstances());
         }
     }
 
@@ -107,7 +108,7 @@ public class WekaClassifierTest extends AbstractTest {
 
         System.gc();
         long before = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / IConstants.MILLION;
-        for (int i = 0; i < IConstants.HUNDRED_THOUSAND; i++) {
+        for (int i = 0; i < IConstants.ONE_THOUSAND; i++) {
             analysis = getAnalysis(null, positive);
             analysis = wekaClassifier.analyze(context, analysis);
             assertEquals(IConstants.POSITIVE, analysis.getClazz());

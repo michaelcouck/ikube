@@ -1,12 +1,20 @@
 package ikube.analytics.weka;
 
+import com.google.common.collect.Lists;
 import ikube.model.Analysis;
 import ikube.model.Context;
+import ikube.toolkit.ThreadUtilities;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.filters.Filter;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This is a wrapper for the Weka classifiers. It is essentially a holder with some methods for
@@ -33,31 +41,37 @@ public class WekaClassifier extends WekaAnalyzer {
      */
     @Override
     public void build(final Context context) throws Exception {
-        // TODO: This must be done in parallel
-        Object[] filters = context.getFilters();
-        String[] evaluations = new String[context.getAlgorithms().length];
+        List<Future> futures = Lists.newArrayList();
+        final String[] evaluations = new String[context.getAlgorithms().length];
         for (int i = 0; i < context.getAlgorithms().length; i++) {
-            // Get the components to create the model
-            Classifier classifier = (Classifier) context.getAlgorithms()[i];
-            Instances instances = (Instances) context.getModels()[i];
+            final int index = i;
+            Future<?> future = ThreadUtilities.submit(this.getClass().getName(), new Runnable() {
+                public void run() {
+                    try {
+                        // Get the components to create the model
+                        Classifier classifier = (Classifier) context.getAlgorithms()[index];
+                        Instances instances = (Instances) context.getModels()[index];
+                        Filter filter = getFilter(context, index);
 
-            Filter filter = null;
-            if (filters != null && filters.length > i) {
-                filter = (Filter) filters[i];
-            }
+                        // Filter the data if necessary
+                        Instances filteredInstances = filter(instances, filter);
+                        filteredInstances.setRelationName("filtered-instances");
 
-            // Filter the data if necessary
-            Instances filteredInstances = filter(instances, filter);
-            filteredInstances.setRelationName("filtered-instances");
+                        // And build the model
+                        logger.info("Building classifier : " + instances.numInstances());
+                        classifier.buildClassifier(filteredInstances);
+                        logger.info("Classifier built : " + filteredInstances.numInstances());
 
-            // And build the model
-            logger.info("Building classifier : " + instances.numInstances());
-            classifier.buildClassifier(filteredInstances);
-            logger.info("Classifier built : " + filteredInstances.numInstances());
-
-            // Set the evaluation of the classifier and the training model
-            evaluations[i] = evaluate(classifier, filteredInstances);
+                        // Set the evaluation of the classifier and the training model
+                        evaluations[index] = evaluate(classifier, filteredInstances);
+                    } catch (final Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+            futures.add(future);
         }
+        ThreadUtilities.waitForAnonymousFutures(futures, Long.MAX_VALUE);
         context.setBuilt(Boolean.TRUE);
         context.setEvaluations(evaluations);
     }
@@ -79,14 +93,18 @@ public class WekaClassifier extends WekaAnalyzer {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
+    @SuppressWarnings("unchecked")
     public Analysis<Object, Object> analyze(final Context context, final Analysis analysis) throws Exception {
-        // TODO: Vote the classifiers here!!! In parallel!!!
+        String majorityClass = null;
+        double[] majorityDistributionForInstance = null;
+        Map<String, AtomicInteger> classes = new HashMap<>();
+        StringBuilder algorithmsOutput = new StringBuilder();
+
         for (int i = 0; i < context.getAlgorithms().length; i++) {
             Classifier classifier = (Classifier) context.getAlgorithms()[i];
             Instances instances = (Instances) context.getModels()[i];
-            Filter filter = (Filter) context.getFilters()[i];
+            Filter filter = getFilter(context, i);
 
             // Create the instance from the data
             Object input = analysis.getInput();
@@ -97,16 +115,31 @@ public class WekaClassifier extends WekaAnalyzer {
             Instance filteredInstance = filter(instance, filter);
             double classification = classifier.classifyInstance(filteredInstance);
             String clazz = instances.classAttribute().value((int) classification);
+            double[] distributionForInstance = classifier.distributionForInstance(filteredInstance);
 
-            // Set the output for the client
-            double[] output = classifier.distributionForInstance(filteredInstance);
+            // Calculate the highest count for class among the classifiers
+            AtomicInteger count = classes.get(clazz);
+            if (count == null) {
+                count = new AtomicInteger(0);
+                classes.put(clazz, count);
+            }
+            count.incrementAndGet();
+            if (majorityClass == null) {
+                majorityClass = clazz;
+                majorityDistributionForInstance = distributionForInstance;
+            }
+            if (count.get() > classes.get(majorityClass).get()) {
+                majorityClass = clazz;
+                majorityDistributionForInstance = distributionForInstance;
+            }
 
-            analysis.setClazz(clazz);
-            analysis.setOutput(output);
-
-            analysis.setAlgorithmOutput(classifier.toString());
+            algorithmsOutput.append(classifier.toString());
+            algorithmsOutput.append("\n\r\n\r");
             // TODO: Get the correlation co-efficients
         }
+        analysis.setClazz(majorityClass);
+        analysis.setOutput(majorityDistributionForInstance);
+        analysis.setAlgorithmOutput(algorithmsOutput.toString());
         return analysis;
     }
 
