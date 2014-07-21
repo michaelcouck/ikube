@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * @since 12-12-2012
  */
 @SuppressWarnings("ALL")
-public abstract class AStrategy implements IStrategy {
+abstract class AStrategy implements IStrategy {
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -37,7 +37,7 @@ public abstract class AStrategy implements IStrategy {
      *
      * @param nextStrategy the chained strategy to execute
      */
-    public AStrategy(final IStrategy nextStrategy) {
+    AStrategy(final IStrategy nextStrategy) {
         this.nextStrategy = nextStrategy;
     }
 

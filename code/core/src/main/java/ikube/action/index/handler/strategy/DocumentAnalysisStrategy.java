@@ -8,21 +8,23 @@ import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
+import ikube.toolkit.FileUtilities;
+import opennlp.tools.sentdetect.SentenceDetectorME;
+import opennlp.tools.sentdetect.SentenceModel;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.BreakIterator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static ikube.IConstants.CLASSIFICATION;
 import static ikube.IConstants.CLASSIFICATION_CONFLICT;
 import static ikube.action.index.IndexManager.addStringField;
-import static java.text.BreakIterator.getCharacterInstance;
+import static java.text.BreakIterator.getSentenceInstance;
 
 /**
  * This strategy, like it's predecessor, will analyze text, using the underlying analyzer. The
@@ -66,30 +68,40 @@ public class DocumentAnalysisStrategy extends AStrategy {
     @SuppressWarnings("unchecked")
     public boolean aroundProcess(final IndexContext indexContext, final Indexable indexable, final Document document, final Object resource)
         throws Exception {
-        String content = indexable.getContent() != null ? indexable.getContent().toString() : resource != null ? resource.toString() : null;
+        String content = getContentForProcessing(indexable, resource);
         if (!StringUtils.isEmpty(StringUtils.stripToEmpty(content))) {
-            // Split the document text into sentences
             String language = document.get(IConstants.LANGUAGE);
             if (language == null) {
                 language = Locale.ENGLISH.getLanguage();
             }
+            // Split the document text into sentences
             List<String> sentences = breakDocumentIntoSentences(content, language);
-            String majorityClassification = highestVotedClassification(sentences);
+            String highestVotedClassification = highestVotedClassification(sentences);
             // Add the highest voted result to the index
-            if (!StringUtils.isEmpty(majorityClassification)) {
+            if (!StringUtils.isEmpty(highestVotedClassification)) {
                 String previousClassification = document.get(IConstants.CLASSIFICATION);
                 if (previousClassification == null) {
-                    addStringField(CLASSIFICATION, majorityClassification, indexable, document);
+                    addStringField(CLASSIFICATION, highestVotedClassification, indexable, document);
                 } else //noinspection ConstantConditions
-                    if (!majorityClassification.equals(previousClassification)) {
-                        addStringField(CLASSIFICATION_CONFLICT, majorityClassification, indexable, document);
+                    if (!highestVotedClassification.equals(previousClassification)) {
+                        addStringField(CLASSIFICATION_CONFLICT, highestVotedClassification, indexable, document);
                     }
             }
             if (System.currentTimeMillis() % 15000 == 0) {
-                logger.warn("Classification : " + majorityClassification + ", " + context.getName() + ", " + content);
+                logger.warn("Classification : " + highestVotedClassification + ", " + context.getName() + ", " + content);
             }
         }
         return super.aroundProcess(indexContext, indexable, document, resource);
+    }
+
+    private String getContentForProcessing(final Indexable indexable, final Object resource) {
+        if (indexable.getContent() != null) {
+            return indexable.getContent().toString();
+        }
+        if (resource != null) {
+            return resource.toString();
+        }
+        return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -123,19 +135,47 @@ public class DocumentAnalysisStrategy extends AStrategy {
         return highestVotedClassification;
     }
 
+    /**
+     * This method will break the document into sentences. This is a very naieve approach, the
+     * {@link java.text.BreakIterator} will just tokenize the string, and look for sentence bounradies
+     * using the punctuation in the text, apparently. But fine for a first implementation.
+     *
+     * @param text     the input text to break into sentences
+     * @param language the language of the text
+     * @return the sentences in the text
+     */
     List<String> breakDocumentIntoSentences(final String text, final String language) {
         List<String> sentences = Lists.newArrayList();
-        BreakIterator breakIterator = getCharacterInstance(Locale.forLanguageTag(language));
+        BreakIterator breakIterator = getSentenceInstance(Locale.forLanguageTag(language));
         breakIterator.setText(text);
 
-        int start = 0;
-        int offset;
-        while ((offset = breakIterator.next()) != BreakIterator.DONE) {
-            String sentence = text.substring(start, offset);
-            sentences.add(sentence);
-            start = offset + 1;
+        int from = 0;
+        int to;
+
+        to = breakIterator.first();
+        while (to != BreakIterator.DONE) {
+            String sentence = text.substring(from, to);
+            if (StringUtils.isNotEmpty(sentence)) {
+                sentences.add(StringUtils.stripToEmpty(sentence));
+            }
+            from = to;
+            to = breakIterator.next();
         }
         return sentences;
+    }
+
+    /**
+     * This method uses OpenNlp as the sentence boundary detector. Seemingly, this is also
+     * just a tokenizer, looking for punctuation that indicates the end of sentences. Also not
+     * very cleaver, what a disappointment.
+     */
+    @SuppressWarnings("UnusedDeclaration")
+    List<String> breakDocumentIntoSentences(final String text) throws IOException {
+        File modelFile = FileUtilities.findFileRecursively(new File("."), "en-sent.bin");
+        SentenceModel sentenceModel = new SentenceModel(modelFile);
+        SentenceDetectorME sentenceDetector = new SentenceDetectorME(sentenceModel);
+        String[] sentences = sentenceDetector.sentDetect(text);
+        return Arrays.asList(sentences);
     }
 
     public void setContext(Context context) {

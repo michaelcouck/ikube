@@ -29,16 +29,6 @@
 			</resource>
 		</resources>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.7.1</version>
-				<configuration>
-					<forkMode>once</forkMode>
-                    <testFailureIgnore>true</testFailureIgnore>
-                    <argLine>-javaagent:../../serenity/serenity.jar ${serenity-parameters} ${memory-parameters}</argLine>
-				</configuration>
-			</plugin>
 			<!-- The default plugin for creating the war, we specify a version. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -121,7 +111,6 @@
 			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
-
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
@@ -146,7 +135,6 @@
             <artifactId>jetty-embedded-examples</artifactId>
             <version>7.0.0.M2</version>
         </dependency>
-
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
@@ -161,7 +149,6 @@
 			<type>jar</type>
 			<scope>provided</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>taglibs</groupId>
 			<artifactId>standard</artifactId>
@@ -194,14 +181,12 @@
             <version>1.0</version>
             <scope>compile</scope>
         </dependency>
-
         <dependency>
             <groupId>org.codehaus.enunciate</groupId>
             <artifactId>enunciate-integration-jaxws-ri-rest-client</artifactId>
             <version>1.28</version>
             <scope>compile</scope>
         </dependency>
-
     </dependencies>
 
 </project>
