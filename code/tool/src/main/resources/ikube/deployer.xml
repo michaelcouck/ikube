@@ -352,7 +352,7 @@
         property:commands-ref="start-commands-production"/>
     <util:list id="start-commands-production">
         <value>${tomcat-production-chmod}</value>
-        <value>cp /home/mineco-regression.arff ${tomcat-production-bin}/ikube/analytics</value>
+        <value>cp /home/data/mineco-regression.arff ${tomcat-production-bin}/ikube/analytics</value>
         <value>${tomcat-production-startup}</value>
     </util:list>
     <!-- End production -->

@@ -43,7 +43,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
         Creator creator = new Creator(context);
         List<Future<Boolean>> futures = clusterManager.sendTaskToAll(creator);
         ThreadUtilities.waitForFutures(futures, 15);
-        LOGGER.info("Contexts : " + getContexts());
+        LOGGER.debug("Contexts : " + getContexts());
         return context;
     }
 
@@ -56,7 +56,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
         Trainer trainer = new Trainer(analysis);
         List<Future<Boolean>> futures = clusterManager.sendTaskToAll(trainer);
         ThreadUtilities.waitForFutures(futures, 15);
-        LOGGER.info("Contexts : " + getContexts());
+        LOGGER.debug("Contexts : " + getContexts());
         return getContext(analysis.getContext());
     }
 
@@ -69,7 +69,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
         Builder builder = new Builder(analysis);
         List<Future<Boolean>> futures = clusterManager.sendTaskToAll(builder);
         ThreadUtilities.waitForFutures(futures, 15);
-        LOGGER.info("Contexts : " + getContexts());
+        LOGGER.debug("Contexts : " + getContexts());
         return getContext(analysis.getContext());
     }
 
@@ -135,7 +135,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
         Destroyer destroyer = new Destroyer(context);
         List<Future<Boolean>> futures = clusterManager.sendTaskToAll(destroyer);
         ThreadUtilities.waitForFutures(futures, 15);
-        LOGGER.info("Contexts : " + getContexts());
+        LOGGER.debug("Contexts : " + getContexts());
     }
 
     /**
@@ -143,7 +143,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
      */
     @Override
     public Context getContext(final String name) {
-        LOGGER.info("Contexts : " + getContexts());
+        LOGGER.debug("Contexts : " + getContexts());
         return getContexts().get(name);
     }
 
@@ -152,7 +152,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
      */
     @Override
     public Map<String, Context> getContexts() {
-        LOGGER.info("Contexts : " + contexts);
+        LOGGER.debug("Contexts : " + contexts);
         return contexts;
     }
 

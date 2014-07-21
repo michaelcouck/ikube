@@ -31,8 +31,10 @@ public class Analyzer extends Action<Analysis> {
         // Get the remote analytics service
         IAnalyticsService service = getAnalyticsService();
         Context context = service.getContext(analysis.getContext());
-        IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();
-        analyzer.analyze(context, analysis);
+        if (context.isBuilt()) {
+            IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();
+            analyzer.analyze(context, analysis);
+        }
         // And return the analysis to the caller, which may not be local
         return analysis;
     }

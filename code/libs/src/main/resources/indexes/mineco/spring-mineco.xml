@@ -26,14 +26,8 @@
         name="mineco-regression-smo-en"
         class="ikube.model.Context"
         property:name="mineco-regression"
-        property:analyzer-ref="mineco-regression"
-        property:algorithm-ref="weka-mineco-regression"
-        property:maxTraining="10000000"
-        property:analyzerInfo-ref="analyzer-info-em" />
-    <bean
-        id="analyzer-info-em"
-        class="ikube.model.AnalyzerInfo"
         property:analyzer="ikube.analytics.weka.WekaClassifier"
-        property:algorithm="weka.classifiers.functions.SimpleLinearRegression"/>
+        property:algorithms="weka.classifiers.functions.SimpleLinearRegression"
+        property:maxTrainings="10000000" />
 
 </beans>

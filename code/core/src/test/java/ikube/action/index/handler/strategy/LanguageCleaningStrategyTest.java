@@ -1,15 +1,18 @@
 package ikube.action.index.handler.strategy;
 
 import ikube.AbstractTest;
+import ikube.action.index.handler.IStrategy;
 import ikube.model.Indexable;
-import ikube.search.spelling.SpellingChecker;
 import ikube.toolkit.PerformanceTester;
 import org.apache.lucene.document.Document;
-import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
 
+import static ikube.toolkit.PerformanceTester.execute;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Michael Couck
@@ -18,31 +21,36 @@ import static org.junit.Assert.assertTrue;
  */
 public class LanguageCleaningStrategyTest extends AbstractTest {
 
-    private LanguageCleaningStrategy languageCleaningStrategy;
+    private Object resource = new Object();
+    private Document document = new Document();
 
-    @Before
-    public void before() throws Exception {
-        new SpellingChecker();
-        languageCleaningStrategy = new LanguageCleaningStrategy();
-        languageCleaningStrategy.initialize();
-    }
+    @Mock
+    private Indexable indexable;
+    @Mock
+    private IStrategy nextStrategy;
+    @Spy
+    @InjectMocks
+    private LanguageCleaningStrategy languageCleaningStrategy;
 
     @Test
     public void aroundProcess() throws Exception {
-        final Indexable indexable = Mockito.mock(Indexable.class);
-        final Object resource = new Object();
-        Mockito.when(indexable.getContent()).thenReturn(
-                "What a looovely dai where theere are moneyy mistaces aaaahhhhhhh thereererereee yooooouuuuu aaarrrrreeee");
-        Document document = new Document();
+        when(indexable.getContent()).thenReturn("What a looovely dai where theere are moneyy mistaces aaaahhhhhhh thereererereee.");
         languageCleaningStrategy.aroundProcess(indexContext, indexable, document, resource);
-        Mockito.verify(indexable, Mockito.atLeastOnce()).setContent("what a loovely dai where theere are moneyy mistaces aahh thereerereree yoouu aarree");
+        verify(indexable, atLeastOnce()).setContent("What a loovely dai where theere are moneyy mistaces aahh thereerereree.");
 
-        double perSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+        double perSecond = execute(new PerformanceTester.APerform() {
             public void execute() throws Throwable {
                 languageCleaningStrategy.aroundProcess(indexContext, indexable, new Document(), resource);
             }
         }, "Language detection strategy : ", 1000, Boolean.TRUE);
         assertTrue(perSecond > 1000);
+    }
+
+    @Test
+    public void punctuation() throws Exception {
+        when(indexable.getContent()).thenReturn("First sentence.No punctuation.Ever it seems.");
+        languageCleaningStrategy.aroundProcess(indexContext, indexable, document, resource);
+        verify(indexable, atLeastOnce()).setContent("First sentence. No punctuation. Ever it seems.");
     }
 
 
