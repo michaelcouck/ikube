@@ -48,6 +48,7 @@ public class AnalyzerTest extends AbstractTest {
         }).when(analyzer).getAnalyticsService();
 
         when(analyticsService.getContext(anyString())).thenReturn(context);
+        when(context.isBuilt()).thenReturn(Boolean.TRUE);
         when(context.getAnalyzer()).thenReturn(ianalyzer);
         when(ianalyzer.analyze(any(Context.class), any(Analysis.class))).thenReturn(this.analysis);
     }

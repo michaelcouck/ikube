@@ -41,7 +41,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
         this.indexContext = indexContext;
         this.indexableTable = indexableTable;
         this.dataSource = indexableTable.getDataSource();
-        this.currentId = new AtomicLong(0);
+        this.currentId = new AtomicLong(indexableTable.getMaximumId());
         addAllColumns(this.indexableTable, this.dataSource);
     }
 
@@ -53,8 +53,8 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
         try {
             do {
                 setMinAndMaxId(indexableTable, dataSource);
-                logger.debug("Current id : " + currentId.get() + ", max id : " + indexableTable.getMaximumId());
-                ResultSet resultSet = getResultSet(indexContext, indexableTable, currentId);
+                logger.info("Current id : " + currentId.get() + ", max id : " + indexableTable.getMaximumId());
+                ResultSet resultSet = getResultSet(indexContext, indexableTable);
                 if (resultSet.next()) {
                     return resultSet;
                 }
@@ -122,7 +122,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
      * @return the result set for the table
      * @throws SQLException
      */
-    synchronized ResultSet getResultSet(final IndexContext indexContext, final IndexableTable indexableTable, final AtomicLong currentId)
+    synchronized ResultSet getResultSet(final IndexContext indexContext, final IndexableTable indexableTable)
             throws SQLException {
         Connection connection = dataSource.getConnection();
         ResultSet resultSet;
@@ -148,7 +148,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
 
             // Build the sql based on the columns defined in the configuration
             String sql = new QueryBuilder().buildQuery(indexableTable, currentId.get(), indexContext.getBatchSize());
-            logger.debug("Query : " + sql);
+            logger.info("Query : " + sql);
             currentId.set(currentId.get() + indexContext.getBatchSize());
             PreparedStatement preparedStatement = connection.prepareStatement(
                     sql,

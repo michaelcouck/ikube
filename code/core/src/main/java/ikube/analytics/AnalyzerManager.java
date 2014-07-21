@@ -39,14 +39,13 @@ public class AnalyzerManager {
         class Builder implements Runnable {
             public void run() {
                 try {
-                    LOGGER.info("Initializing analyzer : " + context.getName());
                     analyzer.init(context);
                     LOGGER.info("Building analyzer : " + context.getName());
                     analyzer.build(context);
                     LOGGER.info("Analyzer built and ready : " + context.getName());
                     context.setBuilt(Boolean.TRUE);
                 } catch (final Exception e) {
-                    LOGGER.error("Exception building analyzer : " + analyzer, e);
+                    LOGGER.error("Exception building analyzer : " + analyzer + ", " + context.getName(), e);
                 } finally {
                     ThreadUtilities.destroy(this.toString());
                 }
