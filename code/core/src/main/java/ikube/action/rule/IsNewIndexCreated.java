@@ -8,11 +8,15 @@ import org.apache.lucene.index.CompositeReaderContext;
 import org.apache.lucene.index.MultiReader;
 import org.apache.lucene.index.SegmentReader;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.store.AlreadyClosedException;
 import org.apache.lucene.store.MMapDirectory;
 
 import java.io.File;
 import java.util.Date;
 import java.util.List;
+
+import static ikube.action.index.IndexManager.getIndexDirectoryPath;
+import static ikube.action.index.IndexManager.getLatestIndexDirectory;
 
 /**
  * This class checks whether the index that is open is the latest index, i.e. whether there is a new index that should be opened.
@@ -31,18 +35,27 @@ public class IsNewIndexCreated extends ARule<IndexContext> {
     public boolean evaluate(final IndexContext indexContext) {
         IndexSearcher indexSearcher = indexContext.getMultiSearcher();
         if (indexSearcher == null) {
-            String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
-            File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
+            String indexDirectoryPath = getIndexDirectoryPath(indexContext);
+            File latestIndexDirectory = getLatestIndexDirectory(indexDirectoryPath);
             return latestIndexDirectory != null;
         }
         Date current = null;
         Date latest = IndexManager.getLatestIndexDirectoryDate(indexContext);
-        String baseIndexDirectory = IndexManager.getIndexDirectoryPath(indexContext);
-        File latestIndexDirectory = IndexManager.getLatestIndexDirectory(baseIndexDirectory);
+        String baseIndexDirectory = getIndexDirectoryPath(indexContext);
+        File latestIndexDirectory = getLatestIndexDirectory(baseIndexDirectory);
 
         MultiReader multiReader = (MultiReader) indexSearcher.getIndexReader();
-        CompositeReaderContext compositeReaderContext = multiReader.getContext();
-        List<AtomicReaderContext> atomicReaderContexts = compositeReaderContext.leaves();
+
+        List<AtomicReaderContext> atomicReaderContexts;
+        try {
+            CompositeReaderContext compositeReaderContext = multiReader.getContext();
+            atomicReaderContexts = compositeReaderContext.leaves();
+        } catch (final AlreadyClosedException e ) {
+            // Close this searcher then
+            logger.error("This index is closed : " + indexContext.getName(), e);
+            return Boolean.FALSE;
+        }
+
         // printReaders(atomicReaderContexts);
 
         File openedIndexDirectory = null;
