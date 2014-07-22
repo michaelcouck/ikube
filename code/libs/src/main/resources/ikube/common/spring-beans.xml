@@ -84,7 +84,7 @@
         <entry key="openjpa.DataCache" value="true(CacheSize=10000,SoftReferenceSize=10000)"/>
         <entry key="openjpa.QueryCache" value="true(CacheSize=10000,SoftReferenceSize=10000)"/>
 
-        <entry key="openjpa.Optimistic" value="true"/>
+        <entry key="openjpa.Optimistic" value="false"/>
         <entry key="openjpa.ReadLockLevel" value="read"/>
         <entry key="openjpa.WriteLockLevel" value="write"/>
         <entry key="openjpa.NontransactionalRead" value="true"/>
