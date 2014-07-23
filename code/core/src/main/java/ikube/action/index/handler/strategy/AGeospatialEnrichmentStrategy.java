@@ -40,7 +40,7 @@ public abstract class AGeospatialEnrichmentStrategy extends AStrategy {
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Value("${max.geohash.levels}")
+    @Value("${max-geohash-levels}")
     protected int maxGeohashLevels = IConstants.MAX_GEOHASH_LEVELS;
 
     /**

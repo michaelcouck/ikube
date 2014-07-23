@@ -12,9 +12,6 @@
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util.xsd">
 
-    <description>
-    </description>
-
     <bean
         id="bosal"
         class="ikube.model.IndexContext"
@@ -33,15 +30,16 @@
         property:children-ref="bosal-indexables"/>
     <util:list id="bosal-indexables">
         <ref local="bosal-mail"/>
+        <ref local="bosal-site"/>
     </util:list>
 
     <bean
         id="bosal-mail"
         class="ikube.model.IndexableExchange"
         property:name="bosal-mail"
-        property:url="http://code.google.com/p/ikube/"
-        property:userid="michael"
-        property:password="caherline"
+        property:url="http://www.bosal.com/"
+        property:userid="userid"
+        property:password="password"
 
         property:analyzed="true"
         property:stored="true"
@@ -52,6 +50,22 @@
         property:omitNorms="false"
         property:threads="3"
         property:strategies-ref="bosal-strategies"/>
+
+    <bean
+        id="bosal-site"
+        class="ikube.model.IndexableInternet"
+        property:threads="3"
+        property:omitNorms="false"
+        property:address="false"
+        property:analyzed="true"
+        property:contentFieldName="contents"
+        property:idFieldName="url"
+        property:maxExceptions="100"
+        property:strategies-ref="bosal-strategies"
+        property:stored="true"
+        property:vectored="true"
+        property:tokenized="true"
+        property:url="http://www.bosal.com/"/>
 
     <util:list id="bosal-strategies">
         <bean class="ikube.action.index.handler.strategy.LanguageCleaningStrategy"/>
