@@ -32,7 +32,7 @@ public class ApiDocsTest extends AbstractTest {
         Object entity = response.getEntity();
         Api api = IConstants.GSON.fromJson(entity.toString(), Api.class);
         assertEquals(Analyzer.class.getName(), api.getApi());
-        assertEquals(8, api.getApiMethods().size());
+        assertEquals(7, api.getApiMethods().size());
 
         Iterator<ApiMethod> apiMethodIterator = api.getApiMethods().iterator();
         ApiMethod apiMethod = apiMethodIterator.next();

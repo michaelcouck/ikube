@@ -40,7 +40,6 @@ public class AnalyzerTest extends AbstractTest {
     @SuppressWarnings("unchecked")
     public void before() throws Exception {
         when(analysis.getAlgorithmOutput()).thenReturn("output");
-        when(analysis.isClassesAndClusters()).thenReturn(Boolean.TRUE);
         when(analyzer.buildJsonResponse(any())).thenReturn(Response.status(Response.Status.OK).build());
         when(analyticsService.analyze(any(Analysis.class))).thenReturn(analysis);
     }

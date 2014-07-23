@@ -1,19 +1,20 @@
 package ikube.analytics.action;
 
 import ikube.AbstractTest;
-import ikube.IConstants;
 import ikube.analytics.IAnalyticsService;
 import ikube.analytics.IAnalyzer;
-import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.Analysis;
-import ikube.toolkit.ApplicationContextManager;
-import junit.framework.Assert;
-import mockit.Mockit;
-import org.junit.After;
+import ikube.model.Context;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.Spy;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
-import static org.mockito.Matchers.any;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
@@ -23,34 +24,35 @@ import static org.mockito.Mockito.*;
  */
 public class SizesForClassesOrClustersTest extends AbstractTest {
 
+    @Mock
     private Analysis analysis;
+    @Mock
+    private Context context;
+    @Mock
+    private IAnalyzer analyzer;
+    @Mock
+    private IAnalyticsService analyticsService;
+    @Spy
+    @InjectMocks
     private SizesForClassesOrClusters sizesForClassesOrClusters;
 
     @Before
     public void before() {
-        analysis = mock(Analysis.class);
-        Object[] classesOrClusters = new Object[]{IConstants.POSITIVE, IConstants.NEGATIVE};
-        when(analysis.getClassesOrClusters()).thenReturn(classesOrClusters);
-        sizesForClassesOrClusters = new SizesForClassesOrClusters(analysis);
-
-        IAnalyticsService analyticsService = mock(IAnalyticsService.class);
-        IAnalyzer analyzer = mock(IAnalyzer.class);
-        when(analyticsService.getAnalyzer(any(String.class))).thenReturn(analyzer);
-        ApplicationContextManagerMock.setBean(IAnalyticsService.class, analyticsService);
-
-        Mockit.setUpMocks(ApplicationContextManagerMock.class);
-    }
-
-    @After
-    public void after() {
-        Mockit.tearDownMocks(ApplicationContextManager.class);
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(final InvocationOnMock invocation) throws Throwable {
+                return analyticsService;
+            }
+        }).when(sizesForClassesOrClusters).getAnalyticsService();
+        when(analyticsService.getContext(Mockito.anyString())).thenReturn(context);
+        when(context.getAnalyzer()).thenReturn(analyzer);
     }
 
     @Test
     public void call() throws Exception {
         Analysis analysis = sizesForClassesOrClusters.call();
-        Assert.assertEquals(this.analysis, analysis);
-        verify(analysis, atLeastOnce()).setSizesForClassesOrClusters(any(int[].class));
+        assertEquals(this.analysis, analysis);
+        verify(this.analysis, atLeastOnce()).setSizeForClassOrCluster(anyInt());
     }
 
 }

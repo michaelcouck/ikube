@@ -17,33 +17,24 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
     $scope.origin = [0, 0];
     $scope.headers = ["Cluster", "Cluster probability"];
 
-    $scope.analyzer = undefined;
-    $scope.analyzers = undefined;
     $scope.contexts = undefined;
 
     $scope.analysis = {
-        analyzer: undefined,
+        context: undefined,
         clazz: undefined,
         input: undefined,
         output: undefined,
-        algorithmOutput: undefined,
-
-        correlation: false,
-        distribution: false,
-        classesAndClusters: false,
-        sizesForClassesAndClusters: false
+        algorithmOutput: undefined
     };
 
     $scope.context = {
         name: undefined,
         options: undefined, // -N 6 (six clusters for example)
-        trainingData: undefined,
-        maxTraining: 10000,
-        analyzerInfo : {
-            analyzer : undefined,
-            algorithm : undefined,
-            filter : undefined
-        }
+        trainingDatas: undefined,
+        maxTrainings: 10000,
+        analyzer: undefined,
+        algorithms: undefined,
+        filters: undefined
     };
 
     $scope.doCreate = function () {
@@ -58,7 +49,7 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
         var promise = $http.post(url, context);
         promise.success(function (data, status) {
             $scope.status = status;
-            $scope.doAnalyzers();
+            $scope.doContexts();
             var text = ['Created analyzer : ', $scope.context.name, ', status : ', $scope.status];
             notificationService.notify(text, '/ikube/assets/images/icons/green_tick.png', 5);
         });
@@ -110,36 +101,12 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
 
         $scope.analysis.clazz = undefined;
         $scope.analysis.output = undefined;
-        $scope.analysis.exception = undefined;
-        $scope.analysis.algorithmOutput = undefined;
-        $scope.analysis.correlationCoefficients = undefined;
-        $scope.analysis.distributionForInstances = undefined;
-
-        $scope.analysis.correlation = false;
-        $scope.analysis.distribution = false;
-        $scope.analysis.classesAndClusters = false;
-        $scope.analysis.sizesForClassesAndClusters = false;
-        $scope.analysis.algorithm = true;
 
         $scope.status = undefined;
         var promise = $http.post(url, $scope.analysis);
         promise.success(function (data, status) {
             $scope.status = status;
             $scope.analysis = data;
-        });
-        promise.error(function (data, status) {
-            $scope.status = status;
-        });
-    };
-
-    $scope.doAnalyzers = function () {
-        var url = getServiceUrl('/ikube/service/analyzer/analyzers');
-        var promise = $http.get(url);
-
-        $scope.status = undefined;
-        promise.success(function (data, status) {
-            $scope.status = status;
-            $scope.analyzers = data;
         });
         promise.error(function (data, status) {
             $scope.status = status;
@@ -160,7 +127,7 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
         });
     };
 
-    $scope.doContext = function() {
+    $scope.doContext = function () {
         var url = getServiceUrl('/ikube/service/analyzer/context');
 
         $scope.status = undefined;
@@ -176,7 +143,6 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
         });
     };
 
-    $scope.doAnalyzers();
     $scope.doContexts();
 
     $scope.doChart = function (distributionForInstances) {

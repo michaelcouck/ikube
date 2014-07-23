@@ -45,7 +45,7 @@ public final class SerializationUtilities {
 	public static String serialize(final Object object) {
 		XMLEncoder xmlEncoder = null;
 		try {
-			SerializationUtilities.setTransientFields(object.getClass(), new ArrayList<Class<?>>());
+			setTransientFields(object.getClass(), new ArrayList<Class<?>>());
 			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 			xmlEncoder = new XMLEncoder(byteArrayOutputStream);
 			xmlEncoder.setExceptionListener(EXCEPTION_LISTENER);
@@ -172,7 +172,7 @@ public final class SerializationUtilities {
 		do {
 			try {
 				return klass.getDeclaredField(name);
-			} catch (Exception e) {
+			} catch (Exception ignore) {
 				// Swallow
 			}
 			currentClass = currentClass.getSuperclass();

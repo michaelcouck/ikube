@@ -20,6 +20,8 @@ import java.lang.management.OperatingSystemMXBean;
 import java.sql.Timestamp;
 import java.util.*;
 
+import static ikube.action.index.IndexManager.*;
+
 /**
  * This schedule will take a snapshot of various system states periodically, including the cpu, how many searches
  * there have been on all the indexes etc. Snapshots are then persisted to the database, and cleaned from time to time
@@ -55,7 +57,7 @@ public class SnapshotSchedule extends Schedule {
         for (final Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
             try {
                 IndexContext indexContext = mapEntry.getValue();
-                indexContext.setNumDocsForSearchers(IndexManager.getNumDocsForIndexSearchers(indexContext));
+                indexContext.setNumDocsForSearchers(getNumDocsForIndexSearchers(indexContext));
                 indexContext.setIndexing(indexContext.getIndexWriters() != null && indexContext.getIndexWriters().length > 0);
 
                 Snapshot snapshot = new Snapshot();
@@ -66,13 +68,17 @@ public class SnapshotSchedule extends Schedule {
                 snapshot.setIndexContext(indexContext.getName());
                 snapshot.setTimestamp(new Timestamp(System.currentTimeMillis()));
 
-                snapshot.setNumDocsForIndexWriters(IndexManager.getNumDocsForIndexWriters(indexContext));
-                snapshot.setIndexSize(IndexManager.getIndexSize(indexContext));
-                snapshot.setLatestIndexTimestamp(IndexManager.getLatestIndexDirectoryDate(indexContext));
+                snapshot.setNumDocsForIndexWriters(getNumDocsForIndexWriters(indexContext));
+                snapshot.setIndexSize(getIndexSize(indexContext));
+                snapshot.setLatestIndexTimestamp(getLatestIndexDirectoryDate(indexContext));
 
                 snapshot.setDocsPerMinute(getDocsPerMinute(indexContext, snapshot));
                 snapshot.setTotalSearches(getTotalSearchesForIndex(indexContext).longValue());
                 snapshot.setSearchesPerMinute(getSearchesPerMinute(indexContext, snapshot));
+
+                if (indexContext.getNumDocsForSearchers() == 0) {
+                    indexContext.setNumDocsForSearchers(snapshot.getNumDocsForIndexWriters());
+                }
 
                 dataBase.persist(snapshot);
                 String[] names = new String[]{IConstants.INDEX_CONTEXT};

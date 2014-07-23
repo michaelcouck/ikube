@@ -40,21 +40,21 @@
                                     <input
                                         class="input"
                                         type="text"
-                                        ng-model="context.analyzerInfo.analyzer"
+                                        ng-model="context.analyzer"
                                         placeholder="Analyzer class...">
                                 </div>
                                 <div class="input">
                                     <input
                                         class="input"
                                         type="text"
-                                        ng-model="context.analyzerInfo.filter"
+                                        ng-model="context.filters"
                                         placeholder="Filter class...">
                                 </div>
                                 <div class="input">
                                     <input
                                         class="input"
                                         type="text"
-                                        ng-model="context.analyzerInfo.algorithm"
+                                        ng-model="context.algorithms"
                                         placeholder="Algorithm class...">
                                 </div>
                                 <div class="note"><b>Specify the options, string[] for Weka format, please refer to the Weka documentation</b></div>
@@ -73,7 +73,7 @@
 									<textarea
 										placeholder="Training data in Weka format..."
 										rows="5"
-										ng-model="context.trainingData"
+										ng-model="context.trainingDatas"
 										title="@relation sentiment
 @attribute class {positive,negative}
 @attribute text String
@@ -117,9 +117,9 @@ negative,'you selfish stupid woman'"></textarea>
                                 </div>
                                 <div class="input">
                                     <select
-                                        ng-model="analysis.analyzer"
-                                        ng-model="analyzers"
-                                        ng-options="analyzer for analyzer in analyzers" class="fill-up">
+                                        ng-model="analysis.context"
+                                        ng-model="contexts"
+                                        ng-options="context for context in contexts" class="fill-up">
                                         <option style="display: none" value="">Analyzer...</option>
                                     </select>
                                 </div>

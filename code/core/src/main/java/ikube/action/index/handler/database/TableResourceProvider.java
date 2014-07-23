@@ -41,7 +41,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
         this.indexContext = indexContext;
         this.indexableTable = indexableTable;
         this.dataSource = indexableTable.getDataSource();
-        this.currentId = new AtomicLong(0);
+        this.currentId = new AtomicLong(indexableTable.getMaximumId());
         addAllColumns(this.indexableTable, this.dataSource);
     }
 
@@ -53,8 +53,8 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
         try {
             do {
                 setMinAndMaxId(indexableTable, dataSource);
-                logger.debug("Current id : " + currentId.get() + ", max id : " + indexableTable.getMaximumId());
-                ResultSet resultSet = getResultSet(indexContext, indexableTable, currentId);
+                logger.info("Current id : " + currentId.get() + ", max id : " + indexableTable.getMaximumId());
+                ResultSet resultSet = getResultSet(indexContext, indexableTable);
                 if (resultSet.next()) {
                     return resultSet;
                 }
@@ -83,20 +83,16 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
     void setMinAndMaxId(final IndexableTable indexableTable, final DataSource dataSource) {
         Connection connection = getConnection(dataSource);
 
-        // long minimumId = indexableTable.getMinimumId();
-        long minimumId = getIdFunction(indexableTable, connection, "min");
-        indexableTable.setMinimumId(minimumId);
+        if (indexableTable.getMinimumId() <= 0) {
+            long minimumId = getIdFunction(indexableTable, connection, "min");
+            indexableTable.setMinimumId(minimumId);
+            logger.warn("Min id : " + minimumId);
+        }
 
-        // long maximumId = indexableTable.getMaximumId();
         long maximumId = getIdFunction(indexableTable, connection, "max");
         indexableTable.setMaximumId(maximumId);
+        logger.warn("Max id : " + maximumId);
 
-        /*if (minimumId <= 0) {
-        }
-        if (maximumId <= 0) {
-        }*/
-
-        logger.debug("Min id : " + minimumId + ", max id : " + maximumId);
         logger.debug("Closing connection, i.e. back to the pool, with a cocktail :)");
         close(connection);
     }
@@ -126,7 +122,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
      * @return the result set for the table
      * @throws SQLException
      */
-    synchronized ResultSet getResultSet(final IndexContext indexContext, final IndexableTable indexableTable, final AtomicLong currentId)
+    synchronized ResultSet getResultSet(final IndexContext indexContext, final IndexableTable indexableTable)
             throws SQLException {
         Connection connection = dataSource.getConnection();
         ResultSet resultSet;
@@ -152,7 +148,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
 
             // Build the sql based on the columns defined in the configuration
             String sql = new QueryBuilder().buildQuery(indexableTable, currentId.get(), indexContext.getBatchSize());
-            logger.debug("Query : " + sql);
+            logger.info("Query : " + sql);
             currentId.set(currentId.get() + indexContext.getBatchSize());
             PreparedStatement preparedStatement = connection.prepareStatement(
                     sql,

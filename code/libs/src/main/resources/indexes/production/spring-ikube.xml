@@ -1,73 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <beans
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns="http://www.springframework.org/schema/beans"
-        xmlns:property="http://www.springframework.org/schema/p"
-        xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:property="http://www.springframework.org/schema/p"
+    xmlns:util="http://www.springframework.org/schema/util"
 
-        xsi:schemaLocation="http://www.springframework.org/schema/beans
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
             http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util.xsd">
 
-	<description>
-		This file is not to be modified by users generally.
-		This is the standard configuration for indexing the Ikube documentation wherever
-		it is deployed. We assume the port to be the default, i.e. 80, although this may not be
-		the case. The online documentation should mention this and the search results
-		should also.
-	</description>
+    <description>
+        This file is not to be modified by users generally.
+        This is the standard configuration for indexing the Ikube documentation wherever
+        it is deployed. We assume the port to be the default, i.e. 80, although this may not be
+        the case. The online documentation should mention this and the search results
+        should also.
+    </description>
 
-	<bean
-		id="ikube"
-		class="ikube.model.IndexContext"
-		property:name="ikube"
-		property:maxAge="6000"
-		property:compoundFile="true"
-		property:bufferedDocs="10"
-		property:bufferSize="32"
-		property:internetBatchSize="10"
-		property:mergeFactor="10"
-		property:maxFieldLength="1000"
-		property:maxReadLength="100000"
-		property:throttle="0"
-		property:indexDirectoryPath="${index.directory.path}"
-		property:indexDirectoryPathBackup="${index.directory.path.backup}"
-		property:children-ref="ikube-indexables" />
-    <!-- property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer" -->
-	<util:list id="ikube-indexables">
-		<ref local="ikube-internet" />
-		<ref local="ikube-google-code" />
-	</util:list>
-
-	<bean
-		id="ikube-internet"
-		class="ikube.model.IndexableInternet"
-		property:name="ikube-internet"
-		property:url="http://www.ikube.be/site/"
-		property:idFieldName="id"
-		property:titleFieldName="title"
-		property:contentFieldName="contents"
-		property:analyzed="true"
-		property:stored="true"
-		property:vectored="true"
-        property:address="false"
-        property:excludedPattern="${internet.excluded.pattern}"
-        property:maxExceptions="100"
+    <bean
+        id="ikube"
+        class="ikube.model.IndexContext"
+        property:name="ikube"
+        property:maxAge="6000"
+        property:compoundFile="true"
+        property:bufferedDocs="10"
+        property:bufferSize="32"
+        property:internetBatchSize="10"
+        property:mergeFactor="10"
+        property:maxFieldLength="1000"
         property:maxReadLength="100000"
-        property:tokenized="true"
-        property:timeout="60000"
-        property:omitNorms="false"
-		property:threads="3"
-		property:internetBatchSize="${internet.batch.size}"
-		property:strategies-ref="internet-strategies" />
+        property:throttle="0"
+        property:indexDirectoryPath="${index.directory.path}"
+        property:indexDirectoryPathBackup="${index.directory.path.backup}"
+        property:children-ref="ikube-indexables"/>
+    <!-- property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer" -->
+    <util:list id="ikube-indexables">
+        <ref local="ikube-internet"/>
+        <ref local="ikube-google-code"/>
+    </util:list>
 
-	<bean
-		id="ikube-google-code"
-		class="ikube.model.IndexableInternet"
-		property:name="ikube-google-code"
-		property:url="http://code.google.com/p/ikube/"
+    <bean
+        id="ikube-internet"
+        class="ikube.model.IndexableInternet"
+        property:name="ikube-internet"
+        property:url="http://www.ikube.be/site/"
         property:idFieldName="id"
         property:titleFieldName="title"
         property:contentFieldName="contents"
@@ -83,24 +61,46 @@
         property:omitNorms="false"
         property:threads="3"
         property:internetBatchSize="${internet.batch.size}"
-        property:strategies-ref="internet-strategies" />
-
-	<util:list id="internet-strategies">
-		<ref bean="ikube.action.index.handler.strategy.ContentTypeStrategy" />
-		<ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy" />
-	</util:list>
+        property:strategies-ref="internet-strategies"/>
 
     <bean
-            id="ikube-svn-google-code"
-            class="ikube.model.IndexableSvn"
-            property:name="ikube-svn-google-code"
-            property:url="https://ikube.googlecode.com/svn"
-            property:filePath="trunk"
+        id="ikube-google-code"
+        class="ikube.model.IndexableInternet"
+        property:name="ikube-google-code"
+        property:url="http://code.google.com/p/ikube/"
+        property:idFieldName="id"
+        property:titleFieldName="title"
+        property:contentFieldName="contents"
+        property:analyzed="true"
+        property:stored="true"
+        property:vectored="true"
+        property:address="false"
+        property:excludedPattern="${internet.excluded.pattern}"
+        property:maxExceptions="100"
+        property:maxReadLength="100000"
+        property:tokenized="true"
+        property:timeout="60000"
+        property:omitNorms="false"
+        property:threads="3"
+        property:internetBatchSize="${internet.batch.size}"
+        property:strategies-ref="internet-strategies"/>
 
-            property:analyzed="true"
-            property:stored="true"
-            property:vectored="true"
-            property:address="false"
-            property:tokenized="true"/>
+    <util:list id="internet-strategies">
+        <ref bean="ikube.action.index.handler.strategy.ContentTypeStrategy"/>
+        <ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy"/>
+    </util:list>
+
+    <bean
+        id="ikube-svn-google-code"
+        class="ikube.model.IndexableSvn"
+        property:name="ikube-svn-google-code"
+        property:url="https://ikube.googlecode.com/svn"
+        property:filePath="trunk"
+
+        property:analyzed="true"
+        property:stored="true"
+        property:vectored="true"
+        property:address="false"
+        property:tokenized="true"/>
 
 </beans>

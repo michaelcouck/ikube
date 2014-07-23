@@ -48,9 +48,7 @@ public final class IndexManager {
      * @throws Exception
      */
     @SuppressWarnings("ConstantConditions")
-    public static synchronized IndexWriter[] openIndexWriterDelta(
-            final IndexContext indexContext)
-            throws Exception {
+    public static synchronized IndexWriter[] openIndexWriterDelta(final IndexContext indexContext) throws Exception {
         LOGGER.info("Opening delta writers on index context : " + indexContext.getName());
         String ip = UriUtilities.getIp();
         String indexDirectoryPath = getIndexDirectoryPath(indexContext);
@@ -58,7 +56,7 @@ public final class IndexManager {
         File latestIndexDirectory = getLatestIndexDirectory(indexDirectoryPath);
         IndexWriter[] indexWriters;
         if (latestIndexDirectory == null || latestIndexDirectory.listFiles() == null || latestIndexDirectory.listFiles() == null ||
-                latestIndexDirectory.listFiles().length == 0) {
+            latestIndexDirectory.listFiles().length == 0) {
             // This means that we tried to do a delta index but there was no index, i.e. we still have to index from the start
             IndexWriter indexWriter = openIndexWriter(indexContext, System.currentTimeMillis(), ip);
             indexWriters = new IndexWriter[]{indexWriter};
@@ -90,10 +88,8 @@ public final class IndexManager {
      *                     category we write the index in the same 'timestamp' directory
      * @return the index writer opened for this index context or null if there was any exception opening the index
      */
-    public static synchronized IndexWriter openIndexWriter(
-            final IndexContext indexContext,
-            final long time,
-            final String ip) {
+    @SuppressWarnings("ConstantConditions")
+    public static synchronized IndexWriter openIndexWriter(final IndexContext indexContext, final long time, final String ip) {
         boolean delete = Boolean.FALSE;
         File indexDirectory = null;
         IndexWriter indexWriter = null;
@@ -106,7 +102,8 @@ public final class IndexManager {
             if (!readable || !writable) {
                 LOGGER.warn("Directory not readable or writable : read : " + readable + ", write : " + writable);
             }
-            LOGGER.info("Index directory time : " + time + ", date : " + new Date(time) + ", writing index to directory " + indexDirectoryPath);
+            LOGGER.info("Index directory time : " + time + ", date : " + new Date(time) +
+                ", writing index to directory " + indexDirectoryPath);
             indexWriter = openIndexWriter(indexContext, indexDirectory, Boolean.TRUE);
         } catch (final CorruptIndexException e) {
             LOGGER.error("We expected a new index and got a corrupt one.", e);
@@ -114,7 +111,7 @@ public final class IndexManager {
             delete = Boolean.TRUE;
         } catch (final LockObtainFailedException e) {
             LOGGER.error("Failed to obtain the lock on the directory. Check the file system permissions or failed indexing jobs, "
-                    + "there will be a lock file in one of the index directories.", e);
+                + "there will be a lock file in one of the index directories.", e);
         } catch (final IOException e) {
             LOGGER.error("IO exception detected opening the writer", e);
         } catch (final Exception e) {
@@ -137,11 +134,8 @@ public final class IndexManager {
      * @return the index writer open on the specified directory
      * @throws Exception
      */
-    public static synchronized IndexWriter openIndexWriter(
-            final IndexContext indexContext,
-            final File indexDirectory,
-            final boolean create)
-            throws Exception {
+    public static synchronized IndexWriter openIndexWriter(final IndexContext indexContext, final File indexDirectory, final boolean create)
+        throws Exception {
         Directory directory = NIOFSDirectory.open(indexDirectory);
         return openIndexWriter(indexContext, directory, create);
     }
@@ -155,11 +149,7 @@ public final class IndexManager {
      * @return the index writer on the directory
      * @throws Exception
      */
-    public static synchronized IndexWriter openIndexWriter(
-            final IndexContext indexContext,
-            final Directory directory,
-            final boolean create)
-            throws Exception {
+    public static synchronized IndexWriter openIndexWriter(final IndexContext indexContext, final Directory directory, final boolean create) throws Exception {
         @SuppressWarnings("resource")
         Analyzer analyzer = indexContext.getAnalyzer() != null ? indexContext.getAnalyzer() : new StemmingAnalyzer();
         IndexWriterConfig indexWriterConfig = new IndexWriterConfig(IConstants.LUCENE_VERSION, analyzer);
@@ -183,8 +173,7 @@ public final class IndexManager {
      *
      * @param indexContext the index context to close the writer for
      */
-    public static synchronized void closeIndexWriters(
-            final IndexContext indexContext) {
+    public static synchronized void closeIndexWriters(final IndexContext indexContext) {
         try {
             if (indexContext.getIndexWriters() != null) {
                 for (final IndexWriter indexWriter : indexContext.getIndexWriters()) {
@@ -204,8 +193,7 @@ public final class IndexManager {
      *
      * @param indexWriter the index writer to close and optimize
      */
-    public static void closeIndexWriter(
-            final IndexWriter indexWriter) {
+    public static void closeIndexWriter(final IndexWriter indexWriter) {
         if (indexWriter == null) {
             LOGGER.warn("Tried to close a null writer : ");
             return;
@@ -265,10 +253,7 @@ public final class IndexManager {
      * @return the full path to the
      */
     @SuppressWarnings("StringBufferReplaceableByString")
-    public static String getIndexDirectory(
-            final IndexContext indexContext,
-            final long time,
-            final String ip) {
+    public static String getIndexDirectory(final IndexContext indexContext, final long time, final String ip) {
         StringBuilder builder = new StringBuilder();
         builder.append(IndexManager.getIndexDirectoryPath(indexContext));
         builder.append(IConstants.SEP);
@@ -469,11 +454,7 @@ public final class IndexManager {
         return FileUtilities.cleanFilePath(builder.toString());
     }
 
-    public static Document addStringField(
-            final String fieldName,
-            final String fieldContent,
-            final Indexable indexable,
-            final Document document) {
+    public static Document addStringField(final String fieldName, final String fieldContent, final Indexable indexable, final Document document) {
         if (fieldName != null && fieldContent != null) {
             Field field;
             FieldType fieldType = new FieldType();
@@ -511,12 +492,7 @@ public final class IndexManager {
         return document;
     }
 
-    public static Document addNumericField(
-            final String fieldName,
-            final String fieldContent,
-            final Document document,
-            final boolean store,
-            final float boost) {
+    public static Document addNumericField(final String fieldName, final String fieldContent, final Document document, final boolean store, final float boost) {
         FieldType floatFieldType = new FieldType();
         floatFieldType.setStored(store);
         floatFieldType.setIndexed(Boolean.TRUE);
@@ -532,12 +508,7 @@ public final class IndexManager {
         return document;
     }
 
-    public static Document addReaderField(
-            final String fieldName,
-            final Document document,
-            final Reader reader,
-            final boolean vectored,
-            final float boost) {
+    public static Document addReaderField(final String fieldName, final Document document, final Reader reader, final boolean vectored, final float boost) {
         if (fieldName != null && reader != null) {
             FieldType fieldType = new FieldType();
             Field field = (Field) document.getField(fieldName);

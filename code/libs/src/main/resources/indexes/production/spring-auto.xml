@@ -36,9 +36,9 @@
         property:indexDirectoryPath="${index.directory.path}"
         property:indexDirectoryPathBackup="${index.directory.path}"
         property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer"
-        property:children-ref="autocompleteIndexables" />
+        property:children-ref="autocompleteIndexables"/>
     <util:list id="autocompleteIndexables">
-        <ref local="autocomplete-lists" />
+        <ref local="autocomplete-lists"/>
     </util:list>
 
     <bean
@@ -67,11 +67,11 @@
         property:maxExceptions="1000"
         property:maxLines="1000000"
         property:threads="1"
-        property:children-ref="autocomplete-word-lists-columns" />
+        property:children-ref="autocomplete-word-lists-columns"/>
 
     <util:list id="autocomplete-word-lists-columns">
-        <ref local="autocomplete-word-lists-word" />
-        <ref local="autocomplete-word-lists-synonym" />
+        <ref local="autocomplete-word-lists-word"/>
+        <ref local="autocomplete-word-lists-synonym"/>
     </util:list>
 
     <bean
@@ -82,7 +82,7 @@
         property:analyzed="true"
         property:stored="true"
         property:vectored="true"
-        property:omitNorms="true" />
+        property:omitNorms="true"/>
     <!-- Do not normalize for length -->
     <bean
         id="autocomplete-word-lists-synonym"
@@ -92,7 +92,7 @@
         property:analyzed="true"
         property:stored="true"
         property:vectored="true"
-        property:omitNorms="true" />
+        property:omitNorms="true"/>
     <!-- Do not normalize for length -->
 
 </beans>

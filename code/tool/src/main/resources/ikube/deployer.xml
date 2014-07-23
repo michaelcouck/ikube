@@ -342,6 +342,7 @@
         <entry key="${resources-directory}/analytics" value="${tomcat-production-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/production" value="${tomcat-production-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/mineco" value="${tomcat-production-bin}/ikube"/>
+        <entry key="${resources-directory}/indexes/bosal" value="${tomcat-production-bin}/ikube"/>
     </util:map>
     <bean
         id="start-action-production"
@@ -352,7 +353,7 @@
         property:commands-ref="start-commands-production"/>
     <util:list id="start-commands-production">
         <value>${tomcat-production-chmod}</value>
-        <value>cp /home/mineco-regression.arff ./ikube/analytics</value>
+        <value>cp /home/data/mineco-regression.arff ${tomcat-production-bin}/ikube/analytics</value>
         <value>${tomcat-production-startup}</value>
     </util:list>
     <!-- End production -->

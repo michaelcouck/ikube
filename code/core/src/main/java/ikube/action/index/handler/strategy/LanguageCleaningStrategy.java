@@ -13,7 +13,7 @@ import org.apache.lucene.document.Document;
  * @version 01.00
  * @since 01-07-2013
  */
-public final class LanguageCleaningStrategy extends AStrategy {
+public class LanguageCleaningStrategy extends AStrategy {
 
     public LanguageCleaningStrategy() {
         this(null);
@@ -46,12 +46,19 @@ public final class LanguageCleaningStrategy extends AStrategy {
             char[] chars = content.toCharArray();
             for (int i = 0, j = 1; i < chars.length; i++, j++) {
                 char c = chars[i];
-                if (i != 0 && c == chars[i - 1] && chars.length > j && c == chars[j]) {
-                    continue;
+                if (i != 0) {
+                    // Multiple similar characters
+                    if (c == chars[i - 1] && chars.length > j && c == chars[j]) {
+                        continue;
+                    }
+                    // No space after a point
+                    if (c != ' ' && chars[i - 1] == '.') {
+                        stringBuilder.append(' ');
+                    }
                 }
                 stringBuilder.append(c);
             }
-            return stringBuilder.toString().toLowerCase();
+            return stringBuilder.toString();
         }
         return content;
     }

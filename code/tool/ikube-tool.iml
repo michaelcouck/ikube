@@ -192,6 +192,12 @@
     <orderEntry type="library" name="Maven: com.sun.jersey.contribs:jersey-multipart:1.18.1" level="project" />
     <orderEntry type="library" name="Maven: org.jvnet.mimepull:mimepull:1.9.3" level="project" />
     <orderEntry type="library" name="Maven: com.sun.jersey.contribs:jersey-spring:1.18.1" level="project" />
+    <orderEntry type="library" name="Maven: com.microsoft:ews-java-api:1.2.0" level="project" />
+    <orderEntry type="library" name="Maven: lingpipe:lingpipe:4.1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.opennlp:opennlp-maxent:3.0.3" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.opennlp:opennlp-tools:1.5.3" level="project" />
+    <orderEntry type="library" name="Maven: net.sf.jwordnet:jwnl:1.3.3" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.opennlp:opennlp-uima:1.5.3" level="project" />
     <orderEntry type="library" name="Maven: sevenzip:jbinding:4.65.1" level="project" />
     <orderEntry type="library" name="Maven: sevenzip:jbinding-linux:4.65.1" level="project" />
     <orderEntry type="library" name="Maven: canyon:canyon:0.9.8" level="project" />

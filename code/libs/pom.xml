@@ -25,6 +25,14 @@
         <artifactory>http://ikube.be/artifactory/libs-release-local</artifactory>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>ikube</groupId>
+            <artifactId>ikube-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
     <build>
         <resources>
             <resource>
@@ -37,7 +45,7 @@
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>2.7</version>
                 <executions>
-                    <execution>
+                    <!--<execution>
                         <id>install-db2-driver</id>
                         <goals>
                             <goal>deploy-file</goal>
@@ -530,7 +538,128 @@
                             <repositoryId>${repository-id}</repositoryId>
                             <url>${artifactory}</url>
                         </configuration>
+                    </execution>-->
+
+                    <!--<execution>
+                        <id>install-exchange-api</id>
+                        <goals>
+                            <goal>deploy-file</goal>
+                        </goals>
+                        <phase>${phase}</phase>
+                        <configuration>
+                            <groupId>com.microsoft</groupId>
+                            <artifactId>ews-java-api</artifactId>
+                            <version>1.2.0</version>
+                            <file>tools/ews-java-api-1.2.0.jar</file>
+                            <packaging>${packaging}</packaging>
+                            <generatePom>${generate-pom}</generatePom>
+                            <repositoryId>${repository-id}</repositoryId>
+                            <url>${artifactory}</url>
+                        </configuration>
+                    </execution>-->
+
+                    <!--<execution>
+                        <id>install-j-web-services</id>
+                        <goals>
+                            <goal>deploy-file</goal>
+                        </goals>
+                        <phase>${phase}</phase>
+                        <configuration>
+                            <groupId>de.independantsoft</groupId>
+                            <artifactId>jwebservices</artifactId>
+                            <version>2.0</version>
+                            <file>tools/jwebservices-2.0.jar</file>
+                            <packaging>${packaging}</packaging>
+                            <generatePom>${generate-pom}</generatePom>
+                            <repositoryId>${repository-id}</repositoryId>
+                            <url>${artifactory}</url>
+                        </configuration>
                     </execution>
+                    <execution>
+                        <id>install-jcifs</id>
+                        <goals>
+                            <goal>deploy-file</goal>
+                        </goals>
+                        <phase>${phase}</phase>
+                        <configuration>
+                            <groupId>jcifs.samba.org</groupId>
+                            <artifactId>jcifs</artifactId>
+                            <version>1.3.14</version>
+                            <file>tools/jcifs-1.3.14.jar</file>
+                            <packaging>${packaging}</packaging>
+                            <generatePom>${generate-pom}</generatePom>
+                            <repositoryId>${repository-id}</repositoryId>
+                            <url>${artifactory}</url>
+                        </configuration>
+                    </execution>-->
+                    <!-- execution>
+                        <id>install-jwnl</id>
+                        <goals>
+                            <goal>deploy-file</goal>
+                        </goals>
+                        <phase>${phase}</phase>
+                        <configuration>
+                            <groupId>jwnl</groupId>
+                            <artifactId>jwnl</artifactId>
+                            <version>1.3.3</version>
+                            <file>tools/analytics/jwnl-1.3.3.jar</file>
+                            <packaging>${packaging}</packaging>
+                            <generatePom>${generate-pom}</generatePom>
+                            <repositoryId>${repository-id}</repositoryId>
+                            <url>${artifactory}</url>
+                        </configuration>
+                    </execution -->
+                    <!--<execution>
+                        <id>install-open-nlp-maxent</id>
+                        <goals>
+                            <goal>deploy-file</goal>
+                        </goals>
+                        <phase>${phase}</phase>
+                        <configuration>
+                            <groupId>org.apache.opennlp</groupId>
+                            <artifactId>opennlp-maxent</artifactId>
+                            <version>3.0.3</version>
+                            <file>tools/analytics/opennlp-maxent-3.0.3.jar</file>
+                            <packaging>${packaging}</packaging>
+                            <generatePom>${generate-pom}</generatePom>
+                            <repositoryId>${repository-id}</repositoryId>
+                            <url>${artifactory}</url>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-open-nlp-tools</id>
+                        <goals>
+                            <goal>deploy-file</goal>
+                        </goals>
+                        <phase>${phase}</phase>
+                        <configuration>
+                            <groupId>org.apache.opennlp</groupId>
+                            <artifactId>opennlp-tools</artifactId>
+                            <version>1.5.3</version>
+                            <file>tools/analytics/opennlp-tools-1.5.3.jar</file>
+                            <packaging>${packaging}</packaging>
+                            <generatePom>${generate-pom}</generatePom>
+                            <repositoryId>${repository-id}</repositoryId>
+                            <url>${artifactory}</url>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-open-nlp-uima</id>
+                        <goals>
+                            <goal>deploy-file</goal>
+                        </goals>
+                        <phase>${phase}</phase>
+                        <configuration>
+                            <groupId>org.apache.opennlp</groupId>
+                            <artifactId>opennlp-uima</artifactId>
+                            <version>1.5.3</version>
+                            <file>tools/analytics/opennlp-uima-1.5.3.jar</file>
+                            <packaging>${packaging}</packaging>
+                            <generatePom>${generate-pom}</generatePom>
+                            <repositoryId>${repository-id}</repositoryId>
+                            <url>${artifactory}</url>
+                        </configuration>
+                    </execution>-->
                 </executions>
             </plugin>
         </plugins>

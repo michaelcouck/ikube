@@ -48,7 +48,8 @@
             <!-- Hazelcast Tcp based network configuration -->
             <hz:network port="${hz-network-port}" port-auto-increment="${hz-network-port-auto-increment}">
                 <hz:join>
-                    <hz:multicast enabled="${hz-multicast-enabled}" multicast-group="${hz-multicast-group}" multicast-port="8050"/>
+                    <hz:multicast enabled="${hz-multicast-enabled}" multicast-group="${hz-multicast-group}"
+                                  multicast-port="8050"/>
                     <hz:tcp-ip enabled="${hz-tcp-ip-enabled}">
                         <hz:members>${hz-members}</hz:members>
                     </hz:tcp-ip>
@@ -112,11 +113,11 @@
     <bean
         id="ikube.cluster.hzc.ClusterManagerCacheSearch"
         class="ikube.cluster.hzc.ClusterManagerCacheSearch"
-        depends-on="ikube.database.IDataBase" />
+        depends-on="ikube.database.IDataBase"/>
     <bean
         id="ikube.cluster.hzc.ClusterManagerCacheSavePoint"
         class="ikube.cluster.hzc.ClusterManagerCacheSavePoint"
-        depends-on="ikube.database.IDataBase" />
+        depends-on="ikube.database.IDataBase"/>
 
     <!-- Listeners for the grid to persist items and stop actions -->
     <bean

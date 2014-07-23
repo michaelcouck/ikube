@@ -4,7 +4,6 @@ import ikube.model.Context;
 import ikube.toolkit.ThreadUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -33,20 +32,20 @@ public class AnalyzerManager {
     }
 
     public IAnalyzer buildAnalyzer(final Context context, final boolean waitForBuild) throws Exception {
+        if (String.class.isAssignableFrom(context.getAnalyzer().getClass())) {
+            context.setAnalyzer(Class.forName(context.getAnalyzer().toString()).newInstance());
+        }
         final IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();
         class Builder implements Runnable {
             public void run() {
                 try {
-                    LOGGER.info("Initializing analyzer : " + context.getName());
                     analyzer.init(context);
                     LOGGER.info("Building analyzer : " + context.getName());
                     analyzer.build(context);
                     LOGGER.info("Analyzer built and ready : " + context.getName());
-                    if (context.getAnalyzerInfo() != null) {
-                        context.getAnalyzerInfo().setBuilt(Boolean.TRUE);
-                    }
+                    context.setBuilt(Boolean.TRUE);
                 } catch (final Exception e) {
-                    LOGGER.error("Exception building analyzer : " + analyzer, e);
+                    LOGGER.error("Exception building analyzer : " + analyzer + ", " + context.getName(), e);
                 } finally {
                     ThreadUtilities.destroy(this.toString());
                 }

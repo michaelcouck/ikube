@@ -260,7 +260,7 @@ public class IndexableTableHandlerIntegration extends AbstractTest {
 
             snapshotColumn.setContent(snapshotTable.getMinimumId());
             snapshotTable.setMaximumId(snapshotTable.getMaximumId());
-            resultSet = invoke(tableResourceProvider, "getResultSet", indexContext, snapshotTable, new AtomicLong(0));
+            resultSet = invoke(tableResourceProvider, "getResultSet", indexContext, snapshotTable);
             assertNotNull(resultSet);
             assertTrue(resultSet.next());
 

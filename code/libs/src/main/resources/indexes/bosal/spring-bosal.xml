@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--suppress SpringBeanNameConventionInspection -->
+<beans
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:property="http://www.springframework.org/schema/p"
+    xmlns:util="http://www.springframework.org/schema/util"
+
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <bean
+        id="bosal"
+        class="ikube.model.IndexContext"
+        property:name="bosal"
+        property:maxAge="6000"
+        property:compoundFile="true"
+        property:bufferedDocs="10"
+        property:bufferSize="32"
+        property:internetBatchSize="10"
+        property:mergeFactor="10"
+        property:maxFieldLength="1000"
+        property:maxReadLength="100000"
+        property:throttle="0"
+        property:indexDirectoryPath="${index.directory.path}"
+        property:indexDirectoryPathBackup="${index.directory.path.backup}"
+        property:children-ref="bosal-indexables"/>
+    <util:list id="bosal-indexables">
+        <ref local="bosal-mail"/>
+        <ref local="bosal-site"/>
+    </util:list>
+
+    <bean
+        id="bosal-mail"
+        class="ikube.model.IndexableExchange"
+        property:name="bosal-mail"
+        property:url="http://www.bosal.com/"
+        property:userid="userid"
+        property:password="password"
+
+        property:analyzed="true"
+        property:stored="true"
+        property:vectored="true"
+        property:address="false"
+        property:maxExceptions="100"
+        property:tokenized="true"
+        property:omitNorms="false"
+        property:threads="3"
+        property:strategies-ref="bosal-strategies"/>
+
+    <bean
+        id="bosal-site"
+        class="ikube.model.IndexableInternet"
+        property:threads="3"
+        property:omitNorms="false"
+        property:address="false"
+        property:analyzed="true"
+        property:contentFieldName="contents"
+        property:idFieldName="url"
+        property:maxExceptions="100"
+        property:strategies-ref="bosal-strategies"
+        property:stored="true"
+        property:vectored="true"
+        property:tokenized="true"
+        property:url="http://www.bosal.com/"/>
+
+    <util:list id="bosal-strategies">
+        <bean class="ikube.action.index.handler.strategy.LanguageCleaningStrategy"/>
+        <bean class="ikube.action.index.handler.strategy.ToLowerCaseStrategy"/>
+        <bean class="ikube.action.index.handler.strategy.LanguageDetectionStrategy"/>
+        <bean
+            class="ikube.action.index.handler.strategy.DocumentAnalysisStrategy"
+            property:context-ref="bosal-sentiment-one"/>
+    </util:list>
+
+    <bean
+        id="bosal-sentiment-one"
+        class="ikube.model.Context"
+        property:analyzer="ikube.analytics.weka.WekaClassifier"
+        property:algorithms="
+            weka.classifiers.functions.SMO,
+            weka.classifiers.functions.SMO,
+            weka.classifiers.functions.SMO,
+            weka.classifiers.functions.SMO,
+            weka.classifiers.functions.SMO,
+            weka.classifiers.functions.SMO,
+            weka.classifiers.functions.SMO,
+            weka.classifiers.functions.SMO,
+            weka.classifiers.functions.SMO,
+            weka.classifiers.functions.SMO"
+        property:fileNames="
+            sentiment-model-150000-300000.arff,
+            sentiment-model-300000-450000.arff,
+            sentiment-model-450000-600000.arff,
+            sentiment-model-600000-750000.arff,
+            sentiment-model-750000-900000.arff,
+            sentiment-model-900000-1050000.arff,
+            sentiment-model-1050000-1200000.arff,
+            sentiment-model-1200000-1350000.arff,
+            sentiment-model-1350000-1500000.arff,
+            sentiment-model-1500000-1650000.arff"
+        property:filters="
+            weka.filters.unsupervised.attribute.StringToWordVector,
+            weka.filters.unsupervised.attribute.StringToWordVector,
+            weka.filters.unsupervised.attribute.StringToWordVector,
+            weka.filters.unsupervised.attribute.StringToWordVector,
+            weka.filters.unsupervised.attribute.StringToWordVector,
+            weka.filters.unsupervised.attribute.StringToWordVector,
+            weka.filters.unsupervised.attribute.StringToWordVector,
+            weka.filters.unsupervised.attribute.StringToWordVector,
+            weka.filters.unsupervised.attribute.StringToWordVector,
+            weka.filters.unsupervised.attribute.StringToWordVector"
+        property:maxTrainings="1000000,1000000,1000000,1000000,1000000,1000000,1000000,1000000,1000000,1000000"
+        property:options="-D"
+        />
+
+</beans>

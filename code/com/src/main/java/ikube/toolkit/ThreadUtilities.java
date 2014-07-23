@@ -103,6 +103,12 @@ public final class ThreadUtilities {
         }
     }
 
+    public static void waitForAnonymousFutures(final List<Future> futures, final long seconds) {
+        for (final Future<?> future : futures) {
+            waitForFuture(future, seconds);
+        }
+    }
+
     /**
      * This method will wait for the future to finish doing it's work. In the event the future is interrupted,
      * for example by the executor service closing down and interrupting all it's threads, it will return immediately.

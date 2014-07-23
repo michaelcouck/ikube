@@ -97,8 +97,8 @@ public final class StringUtilities {
 
 	/**
 	 * Remove single characters and numbers and anything that isn't human
-	 * and strips the whitespace to one character if there are more than one
-	 * or a character is removed
+	 * and strips the whitespace to one character if there are more than one. Will
+     * also remove all punctuation.
 	 *
 	 * @param content the string to strip non-human readable characters from
 	 * @return the cleaned string, all alpha numeric characters

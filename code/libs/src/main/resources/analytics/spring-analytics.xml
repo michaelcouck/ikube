@@ -4,13 +4,9 @@
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://www.springframework.org/schema/beans"
        xmlns:property="http://www.springframework.org/schema/p"
-       xmlns:util="http://www.springframework.org/schema/util"
 
-       xsi:schemaLocation="
-            http://www.springframework.org/schema/beans
-			http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-			http://www.springframework.org/schema/util
-            http://www.springframework.org/schema/util/spring-util.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
     <!-- START CLUSTERER DEFINITION: -->
     <!--
@@ -18,15 +14,7 @@
          be applied to any algorithm, in any language. The default implementation is Weka
          at the time of writing.
     -->
-    <bean id="weka-clusterer" name="weka-clusterer" class="ikube.analytics.weka.WekaClusterer"/>
-    <!-- This is the Weka algorithm that will do the clustering logic. -->
-    <bean id="weka-clusterer-em" name="weka-clusterer-em" class="weka.clusterers.EM"/>
-    <!-- This object holds information about the analyzer, it is used in the gui, and not essential. -->
-    <bean
-        id="analyzer-info-em"
-        class="ikube.model.AnalyzerInfo"
-        property:analyzer="ikube.analytics.weka.WekaClusterer"
-        property:algorithm="weka.clusterers.EM"/>
+    <bean id="analyzer-em" name="analyzer-em" class="ikube.analytics.weka.WekaClusterer" />
     <!--
         This is the context for the analyzer. It will 'wire' all the pieces together, specifically
         the wrapper for the Weka algorithm, the algorithm, some options if there are any for the algorithm. Additionally
@@ -40,15 +28,11 @@
         name="context-em"
         class="ikube.model.Context"
         property:name="bank-data"
-        property:analyzer-ref="weka-clusterer"
-        property:algorithm-ref="weka-clusterer-em"
-        property:options-ref="cluster-options"
-        property:maxTraining="${max-training}"
-        property:analyzerInfo-ref="analyzer-info-em"/>
-    <util:list id="cluster-options">
-        <value type="java.lang.String">-R</value>
-        <value type="java.lang.String">6</value>
-    </util:list>
+        property:analyzer-ref="analyzer-em"
+        property:algorithms="weka.clusterers.EM"
+        property:options="-R,6"
+        property:fileNames="bank-data.arff"
+        property:maxTrainings="10000" />
     <!-- END CLUSTERER DEFINITION: -->
 
     <!-- START CLASSIFIER DEFINITION: -->
@@ -57,17 +41,7 @@
          be applied to any algorithm, in any language. The default implementation is Weka
          at the time of writing.
     -->
-    <bean id="weka-classifier" name="weka-classifier" class="ikube.analytics.weka.WekaClassifier"/>
-    <!-- This is a filter that will be used to convert the input data into the correct type for the specific Weka algorithm. -->
-    <bean id="string-to-word-vector" class="weka.filters.unsupervised.attribute.StringToWordVector"/>
-    <!-- This is the Weka algorithm that will do the clustering logic. -->
-    <bean id="weka-classifier-smo" name="weka-classifier-smo" class="weka.classifiers.functions.SMO"/>
-    <bean
-        id="analyzer-info-smo"
-        class="ikube.model.AnalyzerInfo"
-        property:analyzer="ikube.analytics.weka.WekaClassifier"
-        property:filter="weka.filters.unsupervised.attribute.StringToWordVector"
-        property:algorithm="weka.classifiers.functions.SMO"/>
+    <bean id="analyzer-smo" name="analyzer-smo" class="ikube.analytics.weka.WekaClassifier" />
     <!--
         This is the context for the analyzer. It will 'wire' all the pieces together, specifically
         the wrapper for the Weka algorithm, the algorithm, some options if there are any for the algorithm. Additionally
@@ -81,11 +55,11 @@
         name="context-smo"
         class="ikube.model.Context"
         property:name="sentiment-smo"
-        property:analyzer-ref="weka-classifier"
-        property:filter-ref="string-to-word-vector"
-        property:algorithm-ref="weka-classifier-smo"
-        property:maxTraining="${max-training}"
-        property:analyzerInfo-ref="analyzer-info-smo"/>
+        property:analyzer-ref="analyzer-smo"
+        property:filters="weka.filters.unsupervised.attribute.StringToWordVector"
+        property:algorithms="weka.classifiers.functions.SMO"
+        property:fileNames="sentiment-smo.arff"
+        property:maxTrainings="10000"/>
     <!-- END CLASSIFIER DEFINITION: -->
 
 </beans>

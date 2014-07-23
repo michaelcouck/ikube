@@ -1,15 +1,14 @@
 package ikube.scheduling;
 
-import static org.junit.Assert.assertNotNull;
 import ikube.IConstants;
 import ikube.IntegrationTest;
+import ikube.cluster.IMonitorService;
 import ikube.model.IndexContext;
 import ikube.scheduling.schedule.SnapshotSchedule;
-import ikube.toolkit.ApplicationContextManager;
-
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Michael Couck
@@ -20,18 +19,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class SnapshotScheduleIntegration extends IntegrationTest {
 
     @Autowired
-	private SnapshotSchedule snapshotSchedule;
+    private SnapshotSchedule snapshotSchedule;
+    @Autowired
+    protected IMonitorService monitorService;
 
-	@Test
-	public void handleNotification() {
-		double maxSnapshots = IConstants.MAX_SNAPSHOTS / 1000;
-		for (int i = 0; i < maxSnapshots; i++) {
-			snapshotSchedule.run();
-		}
-		for (IndexContext indexContext : monitorService.getIndexContexts().values()) {
-			logger.info("Snapshots : " + indexContext.getSnapshots().size());
-			assertNotNull(indexContext.getSnapshot());
-		}
-	}
+    @Test
+    public void handleNotification() {
+        double maxSnapshots = IConstants.MAX_SNAPSHOTS / 1000;
+        for (int i = 0; i < maxSnapshots; i++) {
+            snapshotSchedule.run();
+        }
+        for (final IndexContext indexContext : monitorService.getIndexContexts().values()) {
+            assertNotNull(indexContext.getSnapshot());
+        }
+    }
 
 }

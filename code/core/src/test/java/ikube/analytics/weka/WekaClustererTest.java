@@ -1,16 +1,19 @@
 package ikube.analytics.weka;
 
 import ikube.AbstractTest;
+import ikube.IConstants;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.FileUtilities;
-import mockit.Deencapsulation;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
-import weka.clusterers.*;
+import org.mockito.InjectMocks;
+import org.mockito.Spy;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import weka.clusterers.EM;
 import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -18,138 +21,88 @@ import weka.core.Instances;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.List;
 
 import static junit.framework.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doAnswer;
 
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 14.11.13
+ * @since 14-11-2013
  */
 public class WekaClustererTest extends AbstractTest {
 
-    private File dataFile;
     private Context context;
+    @Spy
+    @InjectMocks
     private WekaClusterer wekaClusterer;
 
     @Before
     @SuppressWarnings("unchecked")
     public void before() throws Exception {
-        dataFile = FileUtilities.findFileRecursively(new File("."), "bmw-browsers.arff");
+
+        String algorithm = EM.class.getName();
+        String[] options = new String[]{"-N", "6"};
+        String fileName = "bmw-browsers.arff";
+        int maxTraining = Integer.MAX_VALUE;
 
         context = new Context();
-        context.setAlgorithm(EM.class.newInstance());
-        context.setName(FilenameUtils.getBaseName(dataFile.getName()));
-        context.setMaxTraining(Integer.MAX_VALUE);
-        context.setOptions(new String[]{"-N", "6"});
+        context.setName("clusterer");
+        context.setAnalyzer(WekaClusterer.class.getName());
+        context.setAlgorithms(algorithm, algorithm, algorithm);
+        context.setOptions(options);
+        context.setFileNames(fileName, fileName, fileName);
+        context.setMaxTrainings(maxTraining);
 
-        wekaClusterer = new WekaClusterer();
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                return null;
+            }
+        }).when(wekaClusterer).persist(any(Context.class));
+
         wekaClusterer.init(context);
-        wekaClusterer.build(context);
     }
 
     @Test
-    public void analyze() throws Exception {
-        List<String> lines = IOUtils.readLines(new FileInputStream(dataFile));
-        for (final String line : lines) {
-            if (StringUtils.isEmpty(line) || line.startsWith("@")) {
-                continue;
-            }
-            double greatest = 0;
-            Analysis<Object, Object> analysis = getAnalysis(null, line);
-            Analysis<Object, Object> result = wekaClusterer.analyze(analysis);
-            Integer index = 0;
-            double[] output = (double[]) result.getOutput();
-            for (int i = 0; i < output.length; i++) {
-                double distribution = output[i];
-                if (Math.abs(distribution) > Math.abs(greatest)) {
-                    greatest = distribution;
-                    index = i;
-                }
-            }
-            assertEquals(index.toString(), result.getClazz());
+    public void build() throws Exception {
+        wekaClusterer.build(context);
+        assertEquals(3, context.getEvaluations().length);
+        for (final String evaluation : context.getEvaluations()) {
+            logger.error("Evaluation : " + evaluation);
+            assertNotNull(evaluation);
         }
     }
 
     @Test
-    public void buildAndAnalyzeAll() throws Exception {
-        // These are not interesting clusterers
-        // buildAndAnalyze(DBSCAN.class.getName());
-        // buildAndAnalyze(OPTICS.class.getName());
+    public void analyze() throws Exception {
+        wekaClusterer.build(context);
+        Analysis<Object, Object> analysis = getAnalysis(null, "1,0,1,1,1,1,1,1");
 
-        buildAndAnalyze(CLOPE.class.getName());
-        buildAndAnalyze(HierarchicalClusterer.class.getName());
-        buildAndAnalyze(Cobweb.class.getName());
-        buildAndAnalyze(FarthestFirst.class.getName());
-        buildAndAnalyze(SimpleKMeans.class.getName());
-
-        // These are specialized and need to be integrated properly
-        // buildAndAnalyze(sIB.class.getName());
-        // buildAndAnalyze(XMeans.class.getName());
-    }
-
-    @Test
-    public void getCorrelationCoEfficients() throws Exception {
-        Instances instances = Deencapsulation.getField(wekaClusterer, "instances");
-        double[] correlationCoEfficients = wekaClusterer.getCorrelationCoefficients(instances);
-        for (final double correlationCoEfficient : correlationCoEfficients) {
-            logger.info("Correlation : " + correlationCoEfficient);
-            assertTrue(correlationCoEfficient >= -1 && correlationCoEfficient <= 1);
+        Analysis<Object, Object> result = wekaClusterer.analyze(context, analysis);
+        logger.error(IConstants.GSON.toJson(result.getOutput()));
+        logger.error(IConstants.GSON.toJson(result.getClazz()));
+        for (final String evaluation : context.getEvaluations()) {
+            logger.error(evaluation);
         }
     }
 
     @Test
     public void getDistributionForInstances() throws Exception {
-        Instances instances = Deencapsulation.getField(wekaClusterer, "instances");
-        double[][] distributionForInstances = wekaClusterer.getDistributionForInstances(instances);
-        for (final double[] distribution : distributionForInstances) {
-            logger.info("Probability : " + Arrays.toString(distribution));
-            for (final double probability : distribution) {
-                // logger.info("Probability : " + probability);
-                assertTrue(probability >= 0 && probability <= 1.0);
+        wekaClusterer.build(context);
+        for (final Object model : context.getModels()) {
+            Instances instances = (Instances) model;
+            double[][][] distributionForInstances = wekaClusterer.getDistributionForInstances(context, instances);
+            for (final double[][] distributionForInstance : distributionForInstances) {
+                logger.info("Probability : " + Arrays.toString(distributionForInstance));
+                for (final double[] distribution : distributionForInstance) {
+                    for (final double probability : distribution) {
+                        assertTrue(probability >= 0 && probability <= 1.0);
+                    }
+                }
             }
-        }
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void cluster() throws Exception {
-        Instances instances = Deencapsulation.getField(wekaClusterer, "instances");
-
-        String line = "0,1,0,0,1,1,1,1";
-        Analysis<Object, Object> analysis = getAnalysis(null, line);
-        Analysis<Object, Object> result = wekaClusterer.analyze(analysis);
-        assertEquals("This instance is in the second cluster : ", "3", result.getClazz());
-
-        Enumeration<Instance> instanceEnumeration = instances.enumerateInstances();
-        while (instanceEnumeration.hasMoreElements()) {
-            Instance instance = instanceEnumeration.nextElement();
-            double classOrCluster = wekaClusterer.classOrCluster(instance);
-            // The clusters are one to three
-            assertTrue(classOrCluster >= 0.0 && classOrCluster <= 6);
-        }
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void classesOrClusters() throws Exception {
-        Object[] clusters = wekaClusterer.classesOrClusters();
-        int[] clusterSizes = new int[]{12, 29, 19, 19, 10, 11};
-        assertEquals(6, clusters.length);
-        assertEquals(0.0, clusters[0]);
-        assertEquals(1.0, clusters[1]);
-        assertEquals(2.0, clusters[2]);
-        assertEquals(3.0, clusters[3]);
-        assertEquals(4.0, clusters[4]);
-        assertEquals(5.0, clusters[5]);
-
-        for (int i = 0; i < clusters.length; i++) {
-            final Object cluster = clusters[i];
-            Analysis analysis = getAnalysis(cluster.toString(), null);
-            int size = wekaClusterer.sizeForClassOrCluster(analysis);
-            assertEquals(clusterSizes[i], size);
         }
     }
 
@@ -166,17 +119,6 @@ public class WekaClustererTest extends AbstractTest {
             Instance instance = instances.instance(i);
             logger.info("Instance : " + instance);
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private void buildAndAnalyze(final String type) throws Exception {
-        context.setAlgorithm(Class.forName(type).newInstance());
-        wekaClusterer.init(context);
-        wekaClusterer.build(context);
-        String line = "0,0,0,1,1,0,0,0";
-        Analysis<Object, Object> analysis = getAnalysis(null, line);
-        Analysis<Object, Object> result = wekaClusterer.analyze(analysis);
-        assertNotNull(result.getClazz());
     }
 
 }

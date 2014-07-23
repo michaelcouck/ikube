@@ -1,9 +1,19 @@
 package ikube.scheduling.schedule;
 
+import static ikube.toolkit.FileUtilities.deleteFile;
+import static ikube.toolkit.FileUtilities.getOrCreateFile;
+import static ikube.toolkit.FileUtilities.setContents;
+import static ikube.toolkit.ObjectToolkit.populateFields;
+import static java.util.Arrays.asList;
+import static mockit.Deencapsulation.setField;
+import static mockit.Mockit.setUpMock;
+import static mockit.Mockit.tearDownMocks;
 import static org.junit.Assert.assertEquals;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
 import ikube.IConstants;
@@ -52,18 +62,18 @@ public class SnapshotScheduleTest extends AbstractTest {
 		when(fsDirectory.fileLength(anyString())).thenReturn(Long.MAX_VALUE);
 		when(fsDirectory.listAll()).thenReturn(new String[] { "file" });
 
-		Mockit.setUpMock(ApplicationContextManagerMock.class);
+		setUpMock(ApplicationContextManagerMock.class);
 		when(dataBase.execute(anyString(), any(String[].class), any(Object[].class))).thenReturn(new Long(0));
 
-		Deencapsulation.setField(snapshotSchedule, dataBase);
-		Deencapsulation.setField(snapshotSchedule, monitorService);
-		Deencapsulation.setField(snapshotSchedule, clusterManager);
+		setField(snapshotSchedule, dataBase);
+		setField(snapshotSchedule, monitorService);
+		setField(snapshotSchedule, clusterManager);
 	}
 
 	@After
 	public void after() {
-		Mockit.tearDownMocks(ApplicationContextManagerMock.class);
-		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		tearDownMocks(ApplicationContextManagerMock.class);
+		deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 
 	@Test
@@ -83,13 +93,13 @@ public class SnapshotScheduleTest extends AbstractTest {
 				snapshot.setTimestamp(new Timestamp(System.currentTimeMillis()));
 				return null;
 			}
-		}).when(dataBase).persist(Mockito.any(Snapshot.class));
+		}).when(dataBase).persist(any(Snapshot.class));
 
 		double maxSnapshots = (IConstants.MAX_SNAPSHOTS / 10) + 10d;
 		for (int i = 0; i < maxSnapshots; i++) {
 			snapshotSchedule.run();
 		}
-		Mockito.verify(action, Mockito.atLeastOnce()).setSnapshot(Mockito.any(Snapshot.class));
+		verify(action, atLeastOnce()).setSnapshot(any(Snapshot.class));
 	}
 
 	@Test
@@ -120,13 +130,13 @@ public class SnapshotScheduleTest extends AbstractTest {
 		five.setNumDocsForIndexWriters(Integer.MAX_VALUE);
 		seven.setNumDocsForIndexWriters(Integer.MAX_VALUE);
 		
-		when(indexContext.getSnapshots()).thenReturn(Arrays.asList(one, two, three, four, five, six, seven, eight, nine, ten));
+		when(indexContext.getSnapshots()).thenReturn(asList(one, two, three, four, five, six, seven, eight, nine, ten));
 		snapshotSchedule.getDocsPerMinute(indexContext, snapshot);
 		logger.info(ToStringBuilder.reflectionToString(five));
 		assertTrue(five.getNumDocsForIndexWriters() > 100 && five.getNumDocsForIndexWriters() < 250);
 		assertTrue(six.getNumDocsForIndexWriters() > 100 && six.getNumDocsForIndexWriters() < 250);
 		assertTrue(seven.getNumDocsForIndexWriters() > 100 && seven.getNumDocsForIndexWriters() < 250);
-		Mockito.verify(dataBase, Mockito.atLeastOnce()).merge(any());
+		verify(dataBase, atLeastOnce()).merge(any());
 	}
 
 	@Test
@@ -145,7 +155,7 @@ public class SnapshotScheduleTest extends AbstractTest {
         snapshot.setTotalSearches(200);
         snapshot.setTimestamp(new Timestamp(System.currentTimeMillis()));
 
-        when(indexContext.getSnapshots()).thenReturn(Arrays.asList(previous));
+        when(indexContext.getSnapshots()).thenReturn(asList(previous));
 
         searchesPerMinute = snapshotSchedule.getSearchesPerMinute(indexContext, snapshot);
 		assertEquals(100, searchesPerMinute);
@@ -154,16 +164,16 @@ public class SnapshotScheduleTest extends AbstractTest {
 	@Test
 	public void setLogTail() {
 		String string = "Log tail";
-		File outputFile = FileUtilities.getOrCreateFile("./" + IConstants.IKUBE + IConstants.SEP + IConstants.IKUBE_LOG);
-		FileUtilities.setContents(outputFile, string.getBytes());
-		Deencapsulation.setField(Logging.class, "LOG_FILE", outputFile);
+		File outputFile = getOrCreateFile("./" + IConstants.IKUBE + IConstants.SEP + IConstants.IKUBE_LOG);
+		setContents(outputFile, string.getBytes());
+		setField(Logging.class, "LOG_FILE", outputFile);
 		Server server = new Server();
 		snapshotSchedule.setLogTail(server);
 		assertEquals(string, server.getLogTail());
 
 		byte[] bytes = new byte[IConstants.MILLION + 10];
 		Arrays.fill(bytes, (byte) 'a');
-		FileUtilities.setContents(outputFile, bytes);
+		setContents(outputFile, bytes);
 		snapshotSchedule.setLogTail(server);
 		assertTrue(server.getLogTail().length() > 0);
 	}
@@ -171,13 +181,13 @@ public class SnapshotScheduleTest extends AbstractTest {
 	@Test
 	public void sortSnapshots() throws Exception {
 		String string = "Log tail";
-		File outputFile = FileUtilities.getOrCreateFile("./" + IConstants.IKUBE + IConstants.SEP + IConstants.IKUBE_LOG);
-		FileUtilities.setContents(outputFile, string.getBytes());
-		Deencapsulation.setField(Logging.class, "LOG_FILE", outputFile);
+		File outputFile = getOrCreateFile("./" + IConstants.IKUBE + IConstants.SEP + IConstants.IKUBE_LOG);
+		setContents(outputFile, string.getBytes());
+		setField(Logging.class, "LOG_FILE", outputFile);
 		
 		List<Snapshot> snapshots = new ArrayList<>();
 		for (int i = 0; i < 10; i++) {
-			Snapshot snapshot = ObjectToolkit.populateFields(Snapshot.class, new Snapshot(), Boolean.TRUE, 5);
+			Snapshot snapshot = populateFields(Snapshot.class, new Snapshot(), Boolean.TRUE, 5);
 			snapshot.setTimestamp(new Timestamp(System.currentTimeMillis() - i * 1000));
 			snapshots.add(snapshot);
 		}

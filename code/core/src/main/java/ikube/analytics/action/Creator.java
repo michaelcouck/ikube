@@ -1,24 +1,18 @@
 package ikube.analytics.action;
 
-import ikube.analytics.AnalyzerManager;
 import ikube.analytics.IAnalyticsService;
+import ikube.analytics.IAnalyzer;
 import ikube.model.Context;
-import org.apache.commons.lang.StringUtils;
-
-import java.io.Serializable;
-
-import static ikube.toolkit.ApplicationContextManager.getBean;
 
 /**
- * This class is just a serializable snippet of logic that can be distributed over the
- * wire and executed on a remote server, essentially creating the same analyzer in each
- * server in the cluster so that the analysis can be distributed throughout the cluster.
+ * This class will create an analyzer, potentially on a remove server, using the {@link ikube.analytics.IAnalyzer}
+ * on the remote machine, and indeed the {@link ikube.model.Context} on the remote machine.
  *
  * @author Michael Couck
  * @version 01.00
  * @since 15-03-2014
  */
-public class Creator extends Action<Void> implements Serializable {
+public class Creator extends Action<Boolean> {
 
     /**
      * The context object that will be used for creating the analyzer
@@ -31,19 +25,14 @@ public class Creator extends Action<Void> implements Serializable {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Void call() throws Exception {
-        Object analyzerName = context.getAnalyzerInfo().getAnalyzer();
-        Object algorithmName = context.getAnalyzerInfo().getAlgorithm();
-        Object filterName = context.getAnalyzerInfo().getFilter();
-        context.setAnalyzer(Class.forName(String.valueOf(analyzerName)).newInstance());
-        context.setAlgorithm(Class.forName(String.valueOf(algorithmName)).newInstance());
-        if (filterName != null && !StringUtils.isEmpty(String.valueOf(filterName))) {
-            context.setFilter(Class.forName(String.valueOf(filterName)).newInstance());
+    public Boolean call() throws Exception {
+        IAnalyticsService service = getAnalyticsService();
+        if (String.class.isAssignableFrom(context.getAnalyzer().getClass())) {
+            context.setAnalyzer(Class.forName(context.getAnalyzer().toString()).newInstance());
         }
-
-        // Build and set the analyzer here in the remote machine
-        getBean(AnalyzerManager.class).buildAnalyzer(context);
-        getBean(IAnalyticsService.class).getContexts().put(context.getName(), context);
-        return null;
+        IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();
+        analyzer.init(context);
+        service.getContexts().put(context.getName(), context);
+        return Boolean.TRUE;
     }
 }

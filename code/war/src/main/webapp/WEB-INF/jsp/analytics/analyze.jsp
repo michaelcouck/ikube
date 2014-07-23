@@ -21,9 +21,9 @@
 							</div>
 							<div class="input search">
 								<select
-                                    ng-model="analysis.analyzer"
-                                    ng-model="analyzers"
-									ng-options="analyzer for analyzer in analyzers"
+                                    ng-model="analysis.context"
+                                    ng-model="contexts"
+									ng-options="context for context in contexts"
                                     ng-change="doContext()"
                                     class="fill-up">
 									<option style="display: none" value="">Analyzer...</option>
@@ -58,7 +58,7 @@
                                 <input
                                     class="input"
                                     type="text"
-                                    ng-model="context.analyzerInfo.analyzer"
+                                    ng-model="context.analyzer"
                                     placeholder="Analyzer identifier..."
                                     readonly>
                             </div>
@@ -67,7 +67,7 @@
                                 <input
                                     class="input"
                                     type="text"
-                                    ng-model="context.analyzerInfo.filter"
+                                    ng-model="context.filters"
                                     placeholder="Filter class..."
                                     readonly>
                             </div>
@@ -76,7 +76,7 @@
                                 <input
                                     class="input"
                                     type="text"
-                                    ng-model="context.analyzerInfo.algorithm"
+                                    ng-model="context.algorithms"
                                     placeholder="Algorithm class..."
                                     readonly>
                             </div>
@@ -94,7 +94,7 @@
                                 <input
                                     class="input"
                                     type="text"
-                                    ng-model="context.analyzerInfo.built"
+                                    ng-model="context.built"
                                     placeholder="Is this analyzer's model built..."
                                     readonly>
                             </div>
@@ -140,7 +140,7 @@
                                     placeholder="Analysis output..."
                                     readonly>
                             </div>
-                            <div class="note">Classes or clusters</div>
+                            <!-- div class="note">Classes or clusters</div>
                             <div class="input">
                                 <input
                                     class="input"
@@ -157,7 +157,7 @@
                                     ng-model="analysis.sizesForClassesOrClusters"
                                     placeholder="Sizes for classes or clusters..."
                                     readonly>
-                            </div>
+                            </div -->
                             <div class="note">This area is the analyzer algorithm output for the analysis</div>
                             <div class="input">
                                 <textarea

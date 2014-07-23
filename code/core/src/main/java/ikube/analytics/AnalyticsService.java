@@ -5,14 +5,10 @@ import ikube.cluster.IClusterManager;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.ThreadUtilities;
-import org.apache.commons.beanutils.ConvertUtils;
-import org.apache.commons.beanutils.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.sql.Timestamp;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -29,20 +25,9 @@ import java.util.concurrent.TimeoutException;
  * @since 10-04-2013
  */
 @SuppressWarnings("SpringJavaAutowiringInspection")
-public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
+public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
 
-    static {
-        // We register a converter for the Bean utils so it
-        // doesn't complain when the value is null
-        ConvertUtils.register(new Converter() {
-            @Override
-            public Object convert(final Class type, final Object value) {
-                return value;
-            }
-        }, Timestamp.class);
-    }
-
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger LOGGER = LoggerFactory.getLogger(AnalyticsService.class);
 
     @Autowired
     private Map<String, Context> contexts;
@@ -54,15 +39,12 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public IAnalyzer<I, O, C> create(final Context context) {
-        logger.info("Create analytics service : " + context.getName());
-        context.setFilter(null);
-        context.setAlgorithm(null);
+    public Context create(final Context context) {
         Creator creator = new Creator(context);
-        List<Future<Void>> futures = clusterManager.sendTaskToAll(creator);
+        List<Future<Boolean>> futures = clusterManager.sendTaskToAll(creator);
         ThreadUtilities.waitForFutures(futures, 15);
-        logger.info("Finished building remote analyzer : " + context.getName());
-        return getAnalyzer(context.getName());
+        LOGGER.debug("Contexts : " + getContexts());
+        return context;
     }
 
     /**
@@ -70,11 +52,12 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public IAnalyzer<I, O, C> train(final Analysis<I, O> analysis) {
+    public Context train(final Analysis<I, O> analysis) {
         Trainer trainer = new Trainer(analysis);
-        List<Future<Void>> futures = clusterManager.sendTaskToAll(trainer);
+        List<Future<Boolean>> futures = clusterManager.sendTaskToAll(trainer);
         ThreadUtilities.waitForFutures(futures, 15);
-        return getAnalyzer(analysis.getAnalyzer());
+        LOGGER.debug("Contexts : " + getContexts());
+        return getContext(analysis.getContext());
     }
 
     /**
@@ -82,11 +65,12 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public IAnalyzer<I, O, C> build(final Analysis<I, O> analysis) {
+    public Context build(final Analysis<I, O> analysis) {
         Builder builder = new Builder(analysis);
-        List<Future<Void>> futures = clusterManager.sendTaskToAll(builder);
+        List<Future<Boolean>> futures = clusterManager.sendTaskToAll(builder);
         ThreadUtilities.waitForFutures(futures, 15);
-        return getAnalyzer(analysis.getAnalyzer());
+        LOGGER.debug("Contexts : " + getContexts());
+        return getContext(analysis.getContext());
     }
 
     /**
@@ -96,62 +80,19 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
     @SuppressWarnings("unchecked")
     public Analysis<I, O> analyze(final Analysis<I, O> analysis) {
         Analyzer analyzer = new Analyzer(analysis);
-        if (analysis.isAggregated()) {
-            analysis.setDistribution(Boolean.FALSE);
-            analysis.setAggregated(Boolean.FALSE);
-            List<Future<Analysis>> futures = clusterManager.sendTaskToAll(analyzer);
-            for (final Future<Analysis> future : futures) {
-                try {
-                    Analysis aggregated = future.get(60 * 60, TimeUnit.SECONDS);
-                    // TODO: Somehow aggregate the output here
-                } catch (final InterruptedException | ExecutionException | TimeoutException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            return analysis;
-        } else if (analysis.isDistributed()) {
+        if (analysis.isDistributed()) {
             // Set the flag so we don't get infinite recursion
             analysis.setDistributed(Boolean.FALSE);
             // Create the callable that will be executed on one of the nodes
             Future<?> future = clusterManager.sendTask(analyzer);
             try {
-                // TODO: Use this rather than the future directly
-                // ThreadUtilities.waitForFuture(future, 60 * 60);
-                return (Analysis<I, O>) future.get(60 * 60, TimeUnit.SECONDS);
+                return (Analysis<I, O>) future.get(60, TimeUnit.SECONDS);
             } catch (final InterruptedException | ExecutionException | TimeoutException e) {
                 throw new RuntimeException(e);
             }
         } else {
             try {
                 return analyzer.call();
-            } catch (final Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public Analysis classesOrClusters(final Analysis<I, O> analysis) {
-        // Create the callable that will be executed on the remote node
-        ClassesOrClusters classesOrClusters = new ClassesOrClusters(analysis);
-        if (analysis.isDistributed()) {
-            // Set the flag so we don't get infinite recursion
-            analysis.setDistributed(Boolean.FALSE);
-            Future<?> future = clusterManager.sendTask(classesOrClusters);
-            try {
-                // TODO: Use this rather than the future directly
-                // ThreadUtilities.waitForFuture(future, 60 * 60);
-                return (Analysis) future.get(60 * 60, TimeUnit.SECONDS);
-            } catch (final InterruptedException | ExecutionException | TimeoutException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            try {
-                return classesOrClusters.call();
             } catch (final Exception e) {
                 throw new RuntimeException(e);
             }
@@ -171,7 +112,7 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
             analysis.setDistributed(Boolean.FALSE);
             Future<?> future = clusterManager.sendTask(sizesForClassesOrClusters);
             try {
-                return (Analysis<I, O>) future.get(60 * 60, TimeUnit.SECONDS);
+                return (Analysis<I, O>) future.get(60, TimeUnit.SECONDS);
             } catch (final InterruptedException | ExecutionException | TimeoutException e) {
                 throw new RuntimeException(e);
             }
@@ -192,8 +133,9 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
     public void destroy(final Context context) {
         // Create the callable that will be executed on the remote node
         Destroyer destroyer = new Destroyer(context);
-        List<Future<Void>> futures = clusterManager.sendTaskToAll(destroyer);
-        ThreadUtilities.waitForFutures(futures, 60);
+        List<Future<Boolean>> futures = clusterManager.sendTaskToAll(destroyer);
+        ThreadUtilities.waitForFutures(futures, 15);
+        LOGGER.debug("Contexts : " + getContexts());
     }
 
     /**
@@ -201,6 +143,7 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
      */
     @Override
     public Context getContext(final String name) {
+        LOGGER.debug("Contexts : " + getContexts());
         return getContexts().get(name);
     }
 
@@ -208,34 +151,9 @@ public class AnalyticsService<I, O, C> implements IAnalyticsService<I, O, C> {
      * {@inheritDoc}
      */
     @Override
-    public Map<String, IAnalyzer> getAnalyzers() {
-        Map<String, Context> contexts = getContexts();
-        Map<String, IAnalyzer> analyzers = new HashMap<>();
-        for (final Map.Entry<String, Context> mapEntry : contexts.entrySet()) {
-            analyzers.put(mapEntry.getKey(), (IAnalyzer) mapEntry.getValue().getAnalyzer());
-        }
-        return analyzers;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public Map<String, Context> getContexts() {
+        LOGGER.debug("Contexts : " + contexts);
         return contexts;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public IAnalyzer<I, O, C> getAnalyzer(final String analyzerName) {
-        Context context = getContext(analyzerName);
-        if (context == null) {
-            return null;
-        }
-        return (IAnalyzer<I, O, C>) context.getAnalyzer();
     }
 
 }
