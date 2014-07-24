@@ -124,10 +124,10 @@ public final class WekaAlgorithm {
     private void doAnalyzer(final WekaAnalyzer wekaAnalyzer, final Class<?> algorithm, final Class<? extends Filter> filter, final String type)
         throws Exception {
         Context context = new Context();
-        context.setMaxTrainings(1000);
-        context.setAlgorithms(algorithm.newInstance());
+        context.setMaxTrainings(new int [] {1000});
+        context.setAlgorithms(new Object[] {algorithm.newInstance()});
         if (filter != null) {
-            context.setFilters(filter.newInstance());
+            context.setFilters(new Object[] {filter.newInstance()});
         }
 
         wekaAnalyzer.init(context);

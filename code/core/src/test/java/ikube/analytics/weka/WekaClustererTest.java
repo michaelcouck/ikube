@@ -51,10 +51,10 @@ public class WekaClustererTest extends AbstractTest {
         context = new Context();
         context.setName("clusterer");
         context.setAnalyzer(WekaClusterer.class.getName());
-        context.setAlgorithms(algorithm, algorithm, algorithm);
+        context.setAlgorithms(new String[] {algorithm, algorithm, algorithm});
         context.setOptions(options);
-        context.setFileNames(fileName, fileName, fileName);
-        context.setMaxTrainings(maxTraining);
+        context.setFileNames(new String[] {fileName, fileName, fileName});
+        context.setMaxTrainings(new int[] {maxTraining});
 
         doAnswer(new Answer() {
             @Override

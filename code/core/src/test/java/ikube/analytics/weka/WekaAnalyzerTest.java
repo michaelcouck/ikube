@@ -63,12 +63,12 @@ public class WekaAnalyzerTest extends AbstractTest {
         context.setName("classification");
         context.setAnalyzer(wekaAnalyzer);
 
-        context.setAlgorithms(algorithm, algorithm, algorithm);
-        context.setFilters(filter, filter, filter);
-        context.setOptions(options, options, options);
+        context.setAlgorithms(new String[] {algorithm, algorithm, algorithm});
+        context.setFilters(new String[] {filter, filter, filter});
+        context.setOptions(new Object[] {options, options, options});
 
-        context.setFileNames(fileName, fileName, fileName);
-        context.setMaxTrainings(maxTraining, maxTraining, maxTraining);
+        context.setFileNames(new String[] {fileName, fileName, fileName});
+        context.setMaxTrainings(new int[] {maxTraining, maxTraining, maxTraining});
 
         analysis = new Analysis();
 

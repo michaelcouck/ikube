@@ -162,15 +162,20 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis, Analysis, Anal
         InputStream[] inputStreams = getInputStreams(context);
         Instances[] instances = new Instances[context.getAlgorithms().length];
         for (int i = 0; i < inputStreams.length; i++) {
-            InputStream inputStream = inputStreams[i];
             try {
-                Reader reader = new InputStreamReader(inputStream);
-                instances[i] = new Instances(reader);
-                instances[i].setRelationName("instances");
-            } finally {
-                if (inputStream != null) {
-                    IOUtils.closeQuietly(inputStream);
+                InputStream inputStream = inputStreams[i];
+                try {
+                    Reader reader = new InputStreamReader(inputStream);
+                    instances[i] = new Instances(reader);
+                    instances[i].setRelationName("instances");
+                } finally {
+                    if (inputStream != null) {
+                        IOUtils.closeQuietly(inputStream);
+                    }
                 }
+            } catch (final Exception e) {
+                logger.error("Exception building analyzer : " + context.getFileNames()[i], e);
+                throw new RuntimeException(e);
             }
         }
         return instances;
