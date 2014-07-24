@@ -132,9 +132,9 @@ public class WekaTest extends AbstractTest {
         Context context = new Context();
         context.setName("regression");
         context.setAnalyzer(WekaClusterer.class.getName());
-        context.setAlgorithms(SimpleLinearRegression.class.getName());
-        context.setFileNames("regression.arff");
-        context.setMaxTrainings(10000);
+        context.setAlgorithms(new String[] {SimpleLinearRegression.class.getName()});
+        context.setFileNames(new String[] {"regression.arff"});
+        context.setMaxTrainings(new int[] {10000});
 
         wekaClassifier.init(context);
         wekaClassifier.build(context);

@@ -4,9 +4,6 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Analysis;
 import ikube.model.Context;
-import ikube.toolkit.FileUtilities;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -18,10 +15,7 @@ import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.Arrays;
-import java.util.List;
 
 import static junit.framework.Assert.*;
 import static org.mockito.Matchers.any;
@@ -54,7 +48,7 @@ public class WekaClustererTest extends AbstractTest {
         context.setAlgorithms(algorithm, algorithm, algorithm);
         context.setOptions(options);
         context.setFileNames(fileName, fileName, fileName);
-        context.setMaxTrainings(maxTraining);
+        context.setMaxTrainings(maxTraining, maxTraining, maxTraining);
 
         doAnswer(new Answer() {
             @Override

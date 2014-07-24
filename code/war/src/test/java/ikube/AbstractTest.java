@@ -98,11 +98,11 @@ public abstract class AbstractTest {
         Context context = new Context();
         context.setName(name);
         context.setAnalyzer(WekaClusterer.class.getName());
-        context.setAlgorithms(SimpleKMeans.class.getName());
+        context.setAlgorithms(new String[] {SimpleKMeans.class.getName()});
         context.setOptions(new String[]{"-N", "6"});
 
-        context.setMaxTrainings(Integer.MAX_VALUE);
-        context.setTrainingDatas(trainingData);
+        context.setMaxTrainings(new int[] {Integer.MAX_VALUE});
+        context.setTrainingDatas(new String[] {trainingData});
 
         return context;
     }

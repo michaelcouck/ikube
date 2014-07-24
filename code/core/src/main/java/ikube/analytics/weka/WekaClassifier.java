@@ -28,11 +28,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class WekaClassifier extends WekaAnalyzer {
 
     @Override
-    public void init(final Context context) throws Exception {
-        super.init(context);
-        Instances[] instanceses = (Instances[]) context.getModels();
-        for (final Instances instances : instanceses) {
-            instances.setClassIndex(0);
+    public void init(final Context context) {
+        try {
+            super.init(context);
+            Instances[] instanceses = (Instances[]) context.getModels();
+            for (final Instances instances : instanceses) {
+                instances.setClassIndex(0);
+            }
+        } catch (final Exception e) {
+            logger.error("Exception building analyzer : ", e);
         }
     }
 
