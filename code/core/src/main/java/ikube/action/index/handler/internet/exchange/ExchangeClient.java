@@ -279,7 +279,7 @@ public class ExchangeClient {
             return (items != null && items.iterator() != null && items.iterator().hasNext());
         }
 
-        public IndexMessage getNext(){
+        public IndexableMessage getNext(){
             if (!hasNext())
                 return null;
 
@@ -291,14 +291,14 @@ public class ExchangeClient {
 
                     // get complete message with entire Body
                     Message message2 = service.getMessage(message.getItemId());
-                    return new IndexMessage(
-                            message.getFrom().getName(),
-                            message.getSubject(),
-                            message.getBodyPlainText(),
-                            message.getBody().getType().toString(),
+                    return new IndexableMessage(
+                            toEmail(message.getFrom()),
                             toEmails(message.getToRecipients()),
                             toEmails(message.getCcRecipients()),
                             toEmails(message.getCcRecipients()),
+                            message.getSubject(),
+                            message.getBodyPlainText(),
+                            message.getBody().getType().toString(),
                             message.getCreatedTime(),
                             message.getSentTime(),
                             message.getReceivedTime() );
@@ -312,11 +312,15 @@ public class ExchangeClient {
             return null;
         }
 
-        private List<String> toEmails(List<Mailbox> mailboxes){
-            List<String> emails = new ArrayList<String>();
+        private IndexableMessage.Email toEmail(Mailbox mailbox){
+            return new IndexableMessage.Email(mailbox.getName(), mailbox.getOriginalDisplayName(), mailbox.getEmailAddress());
+        }
+
+        private List<IndexableMessage.Email> toEmails(List<Mailbox> mailboxes){
+            List<IndexableMessage.Email> emails = new ArrayList<IndexableMessage.Email>();
             for(Mailbox mailbox : mailboxes){
                 if(mailbox.getEmailAddress() != null)
-                    emails.add(mailbox.getEmailAddress());
+                    emails.add( toEmail( mailbox ) );
             }
             return emails;
         }
@@ -325,7 +329,7 @@ public class ExchangeClient {
             log.debug("\nUser Mail Message : " +
                     "\n  from = " + message.getFrom().getName() +
                     "\n  to = " + message.getToRecipients() +
-                    "\n  bccs = " + message.getBccRecipients() +
+                    "\n  bcc = " + message.getBccRecipients() +
                     "\n  ccs = " + message.getCcRecipients() +
                     "\n  subject = " + message.getSubject() +
                     "\n  sentTime = " + message.getSentTime() +
