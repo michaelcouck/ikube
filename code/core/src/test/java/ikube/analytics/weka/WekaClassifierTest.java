@@ -49,11 +49,11 @@ public class WekaClassifierTest extends AbstractTest {
         context = new Context();
         context.setName("classification");
         context.setAnalyzer(WekaClassifier.class.getName());
-        context.setAlgorithms(new String[] {algorithm, algorithm, algorithm});
-        context.setFilters(new String[] {filter, filter, filter});
+        context.setAlgorithms(algorithm, algorithm, algorithm);
+        context.setFilters(filter, filter, filter);
         context.setOptions(options);
-        context.setFileNames(new String[] {fileName, fileName, fileName});
-        context.setMaxTrainings(new int[] {maxTraining, maxTraining, maxTraining});
+        context.setFileNames(fileName, fileName, fileName);
+        context.setMaxTrainings(maxTraining, maxTraining, maxTraining);
 
         doAnswer(new Answer() {
             @Override
