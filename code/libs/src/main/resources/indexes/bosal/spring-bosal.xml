@@ -141,8 +141,6 @@
                 <value>1000000</value>
             </list>
         </property>
-
     </bean>
-
 
 </beans>
