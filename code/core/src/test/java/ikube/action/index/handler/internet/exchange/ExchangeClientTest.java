@@ -1,6 +1,5 @@
 package ikube.action.index.handler.internet.exchange;
 
-import ikube.action.index.handler.internet.exchange.ExchangeClient;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -46,7 +45,7 @@ public class ExchangeClientTest {
         if(userAccounts != null && userAccounts.size() > 0) {
             for(ExchangeClient.UserAccount userAccount : userAccounts){
                 ExchangeClient.UserMessages msgs = exchange.getUserMessages(userAccount, before, after );
-                IndexMessage index = msgs.getNext();
+                IndexableMessage index = msgs.getNext();
             }
         }
     }
