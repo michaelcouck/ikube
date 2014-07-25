@@ -132,9 +132,9 @@ public class WekaTest extends AbstractTest {
         Context context = new Context();
         context.setName("regression");
         context.setAnalyzer(WekaClusterer.class.getName());
-        context.setAlgorithms(new String[] {SimpleLinearRegression.class.getName()});
-        context.setFileNames(new String[] {"regression.arff"});
-        context.setMaxTrainings(new int[] {10000});
+        context.setAlgorithms(SimpleLinearRegression.class.getName());
+        context.setFileNames("regression.arff");
+        context.setMaxTrainings(10000);
 
         wekaClassifier.init(context);
         wekaClassifier.build(context);
@@ -153,12 +153,10 @@ public class WekaTest extends AbstractTest {
             Analysis<Object, Object> analysis = getAnalysis(input);
             analysis = wekaClassifier.analyze(context, analysis);
             double[] outputs = (double[]) analysis.getOutput();
-            logger.info("Class : " + analysis.getClazz());
             for (final double output : outputs) {
-                logger.info("Output : " + output);
+                logger.error("Output : " + output);
             }
         }
-
     }
 
     protected Analysis<Object, Object> getAnalysis(final Double[] input) {
