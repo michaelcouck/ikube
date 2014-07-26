@@ -70,7 +70,8 @@ public class AnalyticsServiceIntegration extends IntegrationTest {
         analyze();
         Context context = getContext(analyzerModelFileName, contextName);
         analyticsService.destroy(context);
-        assertNull(analyticsService.getContext(contextName));
+        context = analyticsService.getContext(contextName);
+        assertNull(context);
     }
 
 }

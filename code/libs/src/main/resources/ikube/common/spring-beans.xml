@@ -352,6 +352,10 @@
         id="ikube.action.index.handler.internet.SvnHandler"
         class="ikube.action.index.handler.internet.SvnHandler"
         property:indexableClass="ikube.model.IndexableSvn"/>
+    <bean
+        id="ikube.action.index.handler.internet.ExchangeHandler"
+        class="ikube.action.index.handler.internet.ExchangeHandler"
+        property:indexableClass="ikube.model.IndexableExchange"/>
 
     <util:list id="indexable-handlers">
         <ref local="ikube.action.index.handler.internet.IndexableInternetHandler"/>
