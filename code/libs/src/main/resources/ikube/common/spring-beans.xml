@@ -390,6 +390,9 @@
     <bean
         id="ikube.action.index.handler.internet.SvnResourceHandler"
         class="ikube.action.index.handler.internet.SvnResourceHandler"/>
+    <bean
+        id="ikube.action.index.handler.internet.ExchangeResourceHandler"
+        class="ikube.action.index.handler.internet.ExchangeResourceHandler"/>
 
     <bean
         id="ikube.action.index.analyzer.NgramAnalyzer"
