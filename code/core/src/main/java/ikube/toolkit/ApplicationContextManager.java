@@ -106,6 +106,13 @@ public final class ApplicationContextManager implements ApplicationContextAware 
         }
     }
 
+    /**
+     * This method will return the configuration path on the local file system. If the user specifies the system
+     * property 'ikube-configuration', then this will be the starting point. If this property is not set then we will
+     * look in the './ikube' directory for the configuration.
+     *
+     * @return the absolute path to the configuration directory for the system
+     */
     public static String getConfigiFilePath() {
         File configFile = null;
         Object ikubeConfigurationPathProperty = System.getProperty(IConstants.IKUBE_CONFIGURATION);

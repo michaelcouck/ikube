@@ -5,13 +5,9 @@ import ikube.IConstants;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.FileUtilities;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mockito;
 import org.mockito.Spy;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import weka.classifiers.Classifier;
 import weka.classifiers.functions.SMO;
 import weka.classifiers.functions.SimpleLinearRegression;
@@ -35,17 +31,6 @@ public class WekaTest extends AbstractTest {
     @Spy
     @InjectMocks
     private WekaClassifier wekaClassifier;
-
-    @Before
-    public void before() {
-        Mockito.doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                // Do nothing
-                return null;
-            }
-        }).when(wekaClassifier).persist(Mockito.any(Context.class));
-    }
 
     @Test
     public void readArff() throws Exception {

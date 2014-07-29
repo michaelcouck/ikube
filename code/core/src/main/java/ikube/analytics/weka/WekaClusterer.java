@@ -121,8 +121,11 @@ public class WekaClusterer extends WekaAnalyzer {
                 majorityDistributionForInstance = distributionForInstance;
             }
 
-            algorithmsOutput.append(clusterer.toString());
-            algorithmsOutput.append("\n\r\n\r");
+
+            if (analysis.isAddAlgorithmOutput()) {
+                algorithmsOutput.append(clusterer.toString());
+                algorithmsOutput.append("\n\r\n\r");
+            }
             // TODO: Get the correlation co-efficients
         }
         analysis.setClazz(Integer.toString(majorityCluster));

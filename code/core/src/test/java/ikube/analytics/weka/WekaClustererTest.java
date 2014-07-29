@@ -8,8 +8,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import weka.clusterers.EM;
 import weka.core.Attribute;
 import weka.core.Instance;
@@ -18,8 +16,6 @@ import weka.core.Instances;
 import java.util.Arrays;
 
 import static junit.framework.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doAnswer;
 
 /**
  * @author Michael Couck
@@ -49,13 +45,6 @@ public class WekaClustererTest extends AbstractTest {
         context.setOptions(options);
         context.setFileNames(fileName, fileName, fileName);
         context.setMaxTrainings(maxTraining, maxTraining, maxTraining);
-
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                return null;
-            }
-        }).when(wekaClusterer).persist(any(Context.class));
 
         wekaClusterer.init(context);
     }

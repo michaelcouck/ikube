@@ -1,11 +1,12 @@
 package ikube.analytics.weka;
 
+import com.google.common.collect.Lists;
 import ikube.IConstants;
 import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
-import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.StringUtilities;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -17,10 +18,12 @@ import weka.core.OptionHandler;
 import weka.filters.Filter;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.List;
 
 import static ikube.IConstants.ANALYTICS_DIRECTORY;
-import static ikube.analytics.weka.WekaToolkit.writeToArff;
+import static ikube.toolkit.ApplicationContextManager.getConfigiFilePath;
 import static ikube.toolkit.FileUtilities.*;
 
 /**
@@ -182,25 +185,6 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis, Analysis, Anal
     }
 
     /**
-     * This method persists the instances data to the Weka format file. This file can then be used to
-     * train the classifier in the future, or for inspection.
-     *
-     * @param context the analyzer context for holding the configuration details
-     */
-    void persist(final Context context) {
-        File[] dataFiles = getDataFiles(context);
-        for (int i = 0; i < context.getAlgorithms().length; i++) {
-            File dataFile = dataFiles[i];
-            Instances instances = (Instances) context.getModels()[i];
-            if (dataFile != null) {
-                String filePath = cleanFilePath(dataFile.getAbsolutePath());
-                logger.info("Persisting data : " + instances.numInstances() + ", to file : " + filePath);
-                writeToArff(instances, filePath);
-            }
-        }
-    }
-
-    /**
      * This method gets the input stream to the data file or alternatively creates an input stream from the input in
      * the context. Typically when the latter is the case the analyzer is being trained via the rest API.
      *
@@ -234,29 +218,84 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis, Analysis, Anal
      * the results are undefined
      */
     File[] getDataFiles(final Context context) {
-        File configurationDirectory = new File(ApplicationContextManager.getConfigiFilePath()).getParentFile();
         File[] dataFiles = new File[context.getAlgorithms().length];
+        File configurationDirectory = new File(getConfigiFilePath()).getParentFile();
         for (int i = 0; i < context.getAlgorithms().length; i++) {
             String dataFileName = context.getFileNames()[i];
+            // First look in the configuration directory specified in the system property
             File dataFile = findFileRecursively(configurationDirectory, dataFileName);
             logger.info("Looking for data file in directory : " + configurationDirectory.getAbsolutePath());
+            // Then look starting from the dot directory
             if (dataFile == null || !dataFile.exists() || !dataFile.canRead()) {
                 logger.info("Can't find data file : " + dataFileName + ", will search for it...");
                 dataFile = findFileRecursively(new File("."), dataFileName);
-                if (dataFile == null || !dataFile.exists() || !dataFile.canRead()) {
-                    logger.warn("Couldn't find file for analyzer or can't read file, will create it : " + dataFileName);
-                    File analyticsDirectory = getOrCreateDirectory(new File(ANALYTICS_DIRECTORY));
-                    dataFile = getOrCreateFile(new File(analyticsDirectory, dataFileName));
-                    if (dataFile != null) {
-                        logger.info("Created data file : " + dataFile.getAbsolutePath());
-                    } else {
-                        logger.warn("Couldn't create data file : " + dataFileName);
-                    }
-                }
+            }
+            // Create the file because we will need it
+            if (dataFile == null || !dataFile.exists() || !dataFile.canRead()) {
+                logger.warn("Couldn't find file for analyzer or can't read file, will create it : " + dataFileName);
+                File analyticsDirectory = getOrCreateDirectory(new File(ANALYTICS_DIRECTORY));
+                dataFile = getOrCreateFile(new File(analyticsDirectory, dataFileName));
+            }
+            if (dataFile != null) {
+                logger.info("Created data file : " + dataFile.getAbsolutePath());
+            } else {
+                logger.warn("Couldn't create data file : " + dataFileName);
             }
             dataFiles[i] = dataFile;
         }
         return dataFiles;
+    }
+
+    File[] serializeAnalyzers(final Context context) {
+        File[] dataFiles = getDataFiles(context);
+        File configurationDirectory = new File(getConfigiFilePath()).getParentFile();
+        File serializationDirectory = getOrCreateDirectory(new File(configurationDirectory, context.getName()));
+        Object[] analyzers = context.getAlgorithms();
+        for (int i = 0; i < analyzers.length; i++) {
+            Object analyzer = analyzers[i];
+            // Perhaps user the data file names for the serialization file names
+            // String name = context.getName() + "-" + System.currentTimeMillis() + ".ser";
+            String fileName = FilenameUtils.getBaseName(dataFiles[i].getName()) + ".ser";
+            File serializedAnalyzerFile = getOrCreateFile(new File(serializationDirectory, fileName));
+            FileOutputStream fileOutputStream = null;
+            try {
+                fileOutputStream = new FileOutputStream(serializedAnalyzerFile);
+                ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+                objectOutputStream.writeObject(analyzer);
+            } catch (final IOException e) {
+                e.printStackTrace();
+            } finally {
+                IOUtils.closeQuietly(fileOutputStream);
+            }
+        }
+        return getSerializedAnalyzerFiles(context);
+    }
+
+    Object[] deserializeAnalyzers(final Context context) {
+        List<Object> analyzers = Lists.newArrayList();
+        File[] serializedAnalyzerFiles = getSerializedAnalyzerFiles(context);
+        for (final File serializedAnalyzerFile : serializedAnalyzerFiles) {
+            FileInputStream fileInputStream = null;
+            try {
+                fileInputStream = new FileInputStream(serializedAnalyzerFile);
+                ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+                Object analyzer = objectInputStream.readObject();
+                analyzers.add(analyzer);
+            } catch (final IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            } finally {
+                IOUtils.closeQuietly(fileInputStream);
+            }
+        }
+        return analyzers.toArray(new Object[analyzers.size()]);
+    }
+
+    File[] getSerializedAnalyzerFiles(final Context context) {
+        List<File> dataFiles = Lists.newArrayList();
+        File configurationDirectory = new File(getConfigiFilePath()).getParentFile();
+        File serializationDirectory = getOrCreateDirectory(new File(configurationDirectory, context.getName()));
+        findFilesRecursively(serializationDirectory, dataFiles, ".ser");
+        return dataFiles.toArray(new File[dataFiles.size()]);
     }
 
     /**

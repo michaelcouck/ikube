@@ -147,14 +147,6 @@ public class WekaAnalyzerTest extends AbstractTest {
     }
 
     @Test
-    public void persist() throws Exception {
-        init();
-        WRITTEN = Boolean.FALSE;
-        wekaAnalyzer.persist(context);
-        assertTrue(WRITTEN);
-    }
-
-    @Test
     public void getInputStream() throws Exception {
         InputStream[] inputStreams = wekaAnalyzer.getInputStreams(context);
         assertTrue(inputStreams.length > 0);

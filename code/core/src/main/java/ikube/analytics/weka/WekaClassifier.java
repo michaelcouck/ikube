@@ -45,6 +45,11 @@ public class WekaClassifier extends WekaAnalyzer {
      */
     @Override
     public void build(final Context context) throws Exception {
+        // If this analyzer can be persisted, then first check the file system
+        // for serialized classifiers that have already been built
+        if (context.isPersisted()) {
+            getDataFiles(context);
+        }
         List<Future> futures = Lists.newArrayList();
         final String[] evaluations = new String[context.getAlgorithms().length];
         for (int i = 0; i < context.getAlgorithms().length; i++) {
@@ -137,8 +142,10 @@ public class WekaClassifier extends WekaAnalyzer {
                 majorityDistributionForInstance = distributionForInstance;
             }
 
-            algorithmsOutput.append(classifier.toString());
-            algorithmsOutput.append("\n\r\n\r");
+            if (analysis.isAddAlgorithmOutput()) {
+                algorithmsOutput.append(classifier.toString());
+                algorithmsOutput.append("\n\r\n\r");
+            }
             // TODO: Get the correlation co-efficients
         }
         analysis.setClazz(majorityClass);

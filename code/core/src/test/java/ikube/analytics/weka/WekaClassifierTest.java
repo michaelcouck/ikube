@@ -9,8 +9,6 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import weka.classifiers.functions.SMO;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -20,8 +18,6 @@ import java.util.Arrays;
 import java.util.Enumeration;
 
 import static junit.framework.Assert.*;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doAnswer;
 
 /**
  * @author Michael Couck
@@ -54,13 +50,6 @@ public class WekaClassifierTest extends AbstractTest {
         context.setOptions(options);
         context.setFileNames(fileName, fileName, fileName);
         context.setMaxTrainings(maxTraining, maxTraining, maxTraining);
-
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                return null;
-            }
-        }).when(wekaClassifier).persist(any(Context.class));
 
         wekaClassifier.init(context);
     }
