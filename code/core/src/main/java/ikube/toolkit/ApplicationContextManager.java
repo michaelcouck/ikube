@@ -129,8 +129,8 @@ public final class ApplicationContextManager implements ApplicationContextAware 
         if (configFile.isFile()) {
             // From the file system
             String configFilePath = FileUtilities.cleanFilePath(configFile.getAbsolutePath());
-            // Why did I do this?
-            // configFilePath = "file:" + configFilePath;
+            // Why did I do this? Because Spring context wants it!
+            configFilePath = "file:" + configFilePath;
             LOGGER.info("Configuration file path : " + configFilePath);
             return configFilePath;
         }
