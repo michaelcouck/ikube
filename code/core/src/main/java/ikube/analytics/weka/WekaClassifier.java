@@ -1,6 +1,17 @@
 package ikube.analytics.weka;
 
+import static com.google.common.collect.Lists.newArrayList;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.google.common.collect.Lists;
+
+import static ikube.toolkit.ThreadUtilities.waitForAnonymousFutures;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.ThreadUtilities;
@@ -9,12 +20,6 @@ import weka.classifiers.Evaluation;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.filters.Filter;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This is a wrapper for the Weka classifiers. It is essentially a holder with some methods for
@@ -47,42 +52,49 @@ public class WekaClassifier extends WekaAnalyzer {
     public void build(final Context context) throws Exception {
         // If this analyzer can be persisted, then first check the file system
         // for serialized classifiers that have already been built
-        if (context.isPersisted()) {
-            getDataFiles(context);
-        }
-        List<Future> futures = Lists.newArrayList();
-        final String[] evaluations = new String[context.getAlgorithms().length];
-        for (int i = 0; i < context.getAlgorithms().length; i++) {
-            final int index = i;
-            Future<?> future = ThreadUtilities.submit(this.getClass().getName(), new Runnable() {
-                public void run() {
-                    try {
-                        // Get the components to create the model
-                        Classifier classifier = (Classifier) context.getAlgorithms()[index];
-                        Instances instances = (Instances) context.getModels()[index];
-                        Filter filter = getFilter(context, index);
+		List<Future> futures = newArrayList();
+		final String[] evaluations = new String[context.getAlgorithms().length];
+		Object[] classifiers = null;
+		if (context.isPersisted()) {
+			classifiers = deserializeAnalyzers(context);
+		}
+		if (classifiers == null) {
+			for (int i = 0; i < context.getAlgorithms().length; i++) {
+				final int index = i;
+				class ClassifierBuilder implements Runnable {
+					public void run() {
+						try {
+							// Get the components to create the model
+							Classifier classifier = (Classifier) context.getAlgorithms()[index];
+							Instances instances = (Instances) context.getModels()[index];
+							Filter filter = getFilter(context, index);
 
-                        // Filter the data if necessary
-                        Instances filteredInstances = filter(instances, filter);
-                        filteredInstances.setRelationName("filtered-instances");
+							// Filter the data if necessary
+							Instances filteredInstances = filter(instances, filter);
+							filteredInstances.setRelationName("filtered-instances");
 
-                        // And build the model
-                        logger.info("Building classifier : " + instances.numInstances());
-                        classifier.buildClassifier(filteredInstances);
-                        logger.info("Classifier built : " + filteredInstances.numInstances());
+							// And build the model
+							logger.info("Building classifier : " + instances.numInstances());
+							classifier.buildClassifier(filteredInstances);
+							logger.info("Classifier built : " + filteredInstances.numInstances());
 
-                        // Set the evaluation of the classifier and the training model
-                        evaluations[index] = evaluate(classifier, filteredInstances);
-                    } catch (final Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            });
-            futures.add(future);
-        }
-        ThreadUtilities.waitForAnonymousFutures(futures, Long.MAX_VALUE);
+							// Set the evaluation of the classifier and the training model
+							evaluations[index] = evaluate(classifier, filteredInstances);
+						} catch (final Exception e) {
+							throw new RuntimeException(e);
+						}
+					}
+				}
+				Future<?> future = ThreadUtilities.submit(this.getClass().getName(), new ClassifierBuilder());
+				futures.add(future);
+			}
+		}
+        waitForAnonymousFutures(futures, Long.MAX_VALUE);
         context.setBuilt(Boolean.TRUE);
         context.setEvaluations(evaluations);
+		if (context.isPersisted()) {
+			serializeAnalyzers(context);
+		}
     }
 
     /**

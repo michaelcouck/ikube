@@ -189,4 +189,6 @@ public interface IConstants extends Constants {
 
     String SAVE_POINT = "save-point";
     String INDEXABLE = "indexable";
+
+	String ANALYZER_SERIALIZED_FILE_EXTENSION = ".ser";
 }

@@ -20,6 +20,7 @@ import weka.filters.unsupervised.attribute.StringToWordVector;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Enumeration;
 
 import static junit.framework.Assert.*;
@@ -212,5 +213,42 @@ public class WekaAnalyzerTest extends AbstractTest {
             }
         }
     }
+
+	@Test
+	public void getDataFiles() {
+		File[] dataFiles = wekaAnalyzer.getDataFiles(context);
+		logger.error("Data files : " + Arrays.toString(dataFiles));
+		assertEquals(3, dataFiles.length);
+		for (final File dataFile : dataFiles) {
+			assertTrue(dataFile.exists());
+		}
+
+		context.setFileNames("sentiment-smo-extra.arff");
+		dataFiles = wekaAnalyzer.getDataFiles(context);
+		assertEquals(1, dataFiles.length);
+		for (final File dataFile : dataFiles) {
+			assertTrue(dataFile.exists());
+		}
+	}
+
+	@Test
+	public void serializeAnalyzers() throws Exception {
+		wekaAnalyzer.init(context);
+		File[] serializedAnalyzerFiles = wekaAnalyzer.serializeAnalyzers(context);
+		assertEquals(3, serializedAnalyzerFiles.length);
+		for (final File serializedAnalyzerFile : serializedAnalyzerFiles) {
+			assertTrue(serializedAnalyzerFile.exists());
+		}
+	}
+
+	@Test
+	public void deserializeAnalyzers() {
+		wekaAnalyzer.deserializeAnalyzers(context);
+	}
+
+	@Test
+	public void getSerializedAnalyzerFiles() {
+		wekaAnalyzer.getSerializedAnalyzerFiles(context);
+	}
 
 }

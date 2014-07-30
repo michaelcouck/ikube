@@ -170,6 +170,12 @@ public class FileUtilitiesTest extends AbstractTest {
 		}
 	}
 
+	@Test
+	public void cleanFilePath() {
+		String filePath = FileUtilities.cleanFilePath("file:\\C:\\path\\to\\the\\directory");
+		assertEquals("C:/path/to/the/directory", filePath);
+	}
+
 	/**
 	 * NOTE: This tests needs to run in a directory where there is only one directory
 	 * that is called ikube. For example it will not work in a directory where the structure is

@@ -91,7 +91,7 @@ public final class ApplicationContextManager implements ApplicationContextAware 
     public static synchronized ApplicationContext getApplicationContext() {
         try {
             if (APPLICATION_CONTEXT == null) {
-                String configFilePath = getConfigiFilePath();
+                String configFilePath = getConfigFilePath();
                 if (configFilePath != null) {
                     APPLICATION_CONTEXT = getApplicationContextFilesystem(configFilePath);
                 } else {
@@ -113,13 +113,13 @@ public final class ApplicationContextManager implements ApplicationContextAware 
      *
      * @return the absolute path to the configuration directory for the system
      */
-    public static String getConfigiFilePath() {
+    public static String getConfigFilePath() {
         File configFile = null;
         Object ikubeConfigurationPathProperty = System.getProperty(IConstants.IKUBE_CONFIGURATION);
         LOGGER.info("Configuration property file : " + ikubeConfigurationPathProperty);
         // First try the configuration property
         if (ikubeConfigurationPathProperty != null) {
-            configFile = new File(ikubeConfigurationPathProperty.toString());
+            configFile = new File(ikubeConfigurationPathProperty.toString(), IConstants.SPRING_XML);
         }
         // See if there is a configuration file at the base of where the Jvm was started
         if (configFile == null || !configFile.isFile()) {
@@ -312,7 +312,7 @@ public final class ApplicationContextManager implements ApplicationContextAware 
                             newConfigurationFiles.add(new File(configLocation));
                         }
                     } else {
-                        File configurationFile = new File(getConfigiFilePath());
+                        File configurationFile = new File(getConfigFilePath());
                         if (configurationFile.exists() && configurationFile.isFile() && configurationFile.canRead()) {
                             List<File> springFiles = FileUtilities.findFilesRecursively(configurationFile.getParentFile(), new ArrayList<File>(), "spring.*\\.xml");
                             List<File> propertiesFiles = FileUtilities.findFilesRecursively(configurationFile.getParentFile(), new ArrayList<File>(), "spring\\.properties");

@@ -210,26 +210,29 @@ public final class FileUtilities {
      * @param file the file that is requested
      * @return the found or newly created {@link File} or <code>null</code> if something went wrong.
      */
-    public static synchronized File getOrCreateFile(final File file) {
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+	public static synchronized File getOrCreateFile(final File file) {
         try {
             if (file.exists() && file.isFile()) {
                 return file;
             }
             File parent = file.getParentFile();
             if (parent != null) {
-                parent = getOrCreateDirectory(parent.getAbsolutePath());
-                boolean created = Boolean.FALSE;
-                if (parent != null) {
-                    try {
-                        LOGGER.debug("Creating file : " + file.getAbsolutePath());
-                        created = file.createNewFile();
-                    } catch (IOException e) {
-                        LOGGER.error("Exception creating file : " + file, e);
-                    }
-                }
-                if (created && file != null && file.exists()) {
-                    return file;
-                }
+				if (!parent.exists()) {
+					parent = getOrCreateDirectory(parent);
+					if (parent != null) {
+						try {
+							String parentPath = cleanFilePath(parent.getPath());
+							File createdFile = new File(parentPath, file.getName());
+							LOGGER.info("Creating file : " + file.getAbsolutePath());
+							createdFile.createNewFile();
+							return createdFile;
+						} catch (final IOException e) {
+							LOGGER.error("Exception creating file : " + file, e);
+						}
+					}
+					return file;
+				}
             }
             LOGGER.debug("Couldn't create file : " + file);
             return null;
@@ -249,12 +252,14 @@ public final class FileUtilities {
             if (directory.exists() && directory.isDirectory()) {
                 return directory;
             }
-            LOGGER.debug("Creating directory : " + directory.getAbsolutePath());
-            boolean created = directory.mkdirs();
+			String directoryPath = cleanFilePath(directory.getPath());
+			LOGGER.info("Creating directory : " + directoryPath);
+			File createdDirectory = new File(directoryPath);
+            boolean created = createdDirectory.mkdirs();
             if (!created || !directory.exists()) {
 				LOGGER.warn("Couldn't create directory(ies) " + directory.getAbsolutePath());
 			}
-			return directory;
+			return createdDirectory;
         } finally {
             FileUtilities.class.notifyAll();
         }
@@ -628,8 +633,16 @@ public final class FileUtilities {
         }
     }
 
-    public static String cleanFilePath(final String path) {
-        String filePath = StringUtils.replace(path, "/./", "/");
+    @SuppressWarnings("UnusedAssignment")
+	public static String cleanFilePath(final String path) {
+		String filePath = path;
+        filePath = StringUtils.replace(filePath, "/./", "/");
+		// For windows we must clean the path of 'file:/' because getting the
+		// parent then appends the user path for some reason too, returning something
+		// like C:/tmp/user/directory/C:/path/to/directory
+		filePath = StringUtils.replace(filePath, "file:", "");
+		filePath = StringUtils.replace(filePath, "file:/", "");
+		filePath = StringUtils.replace(filePath, "file:\\", "");
         filePath = StringUtils.replace(filePath, "\\.\\", "/");
         filePath = StringUtils.replace(filePath, "\\", "/");
         filePath = StringUtils.removeEnd(filePath, ".");

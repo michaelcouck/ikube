@@ -1,30 +1,48 @@
 package ikube.analytics.weka;
 
+import static org.apache.commons.io.FilenameUtils.getBaseName;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Enumeration;
+import java.util.List;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.collect.Lists;
+
+import static ikube.IConstants.ANALYTICS_DIRECTORY;
+import static ikube.toolkit.ApplicationContextManager.getConfigFilePath;
+import static ikube.toolkit.FileUtilities.cleanFilePath;
+import static ikube.toolkit.FileUtilities.findFileRecursively;
+import static ikube.toolkit.FileUtilities.findFilesRecursively;
+import static ikube.toolkit.FileUtilities.getOrCreateDirectory;
+import static ikube.toolkit.FileUtilities.getOrCreateFile;
 import ikube.IConstants;
 import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.StringUtilities;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.OptionHandler;
 import weka.filters.Filter;
-
-import java.io.*;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
-
-import static ikube.IConstants.ANALYTICS_DIRECTORY;
-import static ikube.toolkit.ApplicationContextManager.getConfigiFilePath;
-import static ikube.toolkit.FileUtilities.*;
 
 /**
  * This is the base class for the Weka implementation of the analytics API. It has base methods for creating
@@ -218,10 +236,11 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis, Analysis, Anal
      * the results are undefined
      */
     File[] getDataFiles(final Context context) {
-        File[] dataFiles = new File[context.getAlgorithms().length];
-        File configurationDirectory = new File(getConfigiFilePath()).getParentFile();
-        for (int i = 0; i < context.getAlgorithms().length; i++) {
-            String dataFileName = context.getFileNames()[i];
+		String[] dataFileNames = context.getFileNames();
+        File[] dataFiles = new File[context.getFileNames().length];
+        File configurationDirectory = new File(getConfigFilePath()).getParentFile();
+        for (int i = 0; i < dataFiles.length; i++) {
+            String dataFileName = dataFileNames[i];
             // First look in the configuration directory specified in the system property
             File dataFile = findFileRecursively(configurationDirectory, dataFileName);
             logger.info("Looking for data file in directory : " + configurationDirectory.getAbsolutePath());
@@ -247,23 +266,30 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis, Analysis, Anal
     }
 
     File[] serializeAnalyzers(final Context context) {
-        File[] dataFiles = getDataFiles(context);
-        File configurationDirectory = new File(getConfigiFilePath()).getParentFile();
-        File serializationDirectory = getOrCreateDirectory(new File(configurationDirectory, context.getName()));
+        String[] dataFileNames = context.getFileNames();
+		String configFilePath = getConfigFilePath();
+        File configurationDirectory = new File(configFilePath).getParentFile();
+        File serializationDirectory = new File(configurationDirectory, context.getName());
         Object[] analyzers = context.getAlgorithms();
         for (int i = 0; i < analyzers.length; i++) {
             Object analyzer = analyzers[i];
-            // Perhaps user the data file names for the serialization file names
-            // String name = context.getName() + "-" + System.currentTimeMillis() + ".ser";
-            String fileName = FilenameUtils.getBaseName(dataFiles[i].getName()) + ".ser";
-            File serializedAnalyzerFile = getOrCreateFile(new File(serializationDirectory, fileName));
+            String fileName = getBaseName(dataFileNames[i]) + IConstants.ANALYZER_SERIALIZED_FILE_EXTENSION;
+            File serializedAnalyzerFile = new File(serializationDirectory, fileName);
+			logger.error("Serializing file to file : " + serializedAnalyzerFile.getPath());
             FileOutputStream fileOutputStream = null;
             try {
+				if (!serializedAnalyzerFile.exists()) {
+					String filePath = cleanFilePath(serializedAnalyzerFile.getPath());
+					Path path = Paths.get(filePath);
+					Files.createDirectories(path);
+					Path newFilePath = Files.createFile(path);
+					serializedAnalyzerFile = newFilePath.toFile();
+				}
                 fileOutputStream = new FileOutputStream(serializedAnalyzerFile);
                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
                 objectOutputStream.writeObject(analyzer);
             } catch (final IOException e) {
-                e.printStackTrace();
+				logger.error("Exception serializing analyzer : " + serializedAnalyzerFile + ", " + context.getName(), e);
             } finally {
                 IOUtils.closeQuietly(fileOutputStream);
             }
@@ -274,6 +300,10 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis, Analysis, Anal
     Object[] deserializeAnalyzers(final Context context) {
         List<Object> analyzers = Lists.newArrayList();
         File[] serializedAnalyzerFiles = getSerializedAnalyzerFiles(context);
+		if (serializedAnalyzerFiles == null || serializedAnalyzerFiles.length == 0 ||
+				serializedAnalyzerFiles.length != context.getAlgorithms().length) {
+			return null;
+		}
         for (final File serializedAnalyzerFile : serializedAnalyzerFiles) {
             FileInputStream fileInputStream = null;
             try {
@@ -282,7 +312,7 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis, Analysis, Anal
                 Object analyzer = objectInputStream.readObject();
                 analyzers.add(analyzer);
             } catch (final IOException | ClassNotFoundException e) {
-                e.printStackTrace();
+                logger.error("Exception de-serializing analyzer : " + serializedAnalyzerFile + ", " + context.getName(), e);
             } finally {
                 IOUtils.closeQuietly(fileInputStream);
             }
@@ -292,9 +322,9 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis, Analysis, Anal
 
     File[] getSerializedAnalyzerFiles(final Context context) {
         List<File> dataFiles = Lists.newArrayList();
-        File configurationDirectory = new File(getConfigiFilePath()).getParentFile();
+        File configurationDirectory = new File(getConfigFilePath()).getParentFile();
         File serializationDirectory = getOrCreateDirectory(new File(configurationDirectory, context.getName()));
-        findFilesRecursively(serializationDirectory, dataFiles, ".ser");
+        findFilesRecursively(serializationDirectory, dataFiles, IConstants.ANALYZER_SERIALIZED_FILE_EXTENSION);
         return dataFiles.toArray(new File[dataFiles.size()]);
     }
 
