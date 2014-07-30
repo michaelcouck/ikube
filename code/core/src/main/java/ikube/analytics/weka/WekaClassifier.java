@@ -57,6 +57,7 @@ public class WekaClassifier extends WekaAnalyzer {
 		Object[] classifiers = null;
 		if (context.isPersisted()) {
 			classifiers = deserializeAnalyzers(context);
+            context.setAlgorithms(classifiers);
 		}
 		if (classifiers == null) {
 			for (int i = 0; i < context.getAlgorithms().length; i++) {

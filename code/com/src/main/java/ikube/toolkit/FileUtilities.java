@@ -220,22 +220,20 @@ public final class FileUtilities {
             if (parent != null) {
 				if (!parent.exists()) {
 					parent = getOrCreateDirectory(parent);
-					if (parent != null) {
-						try {
-							String parentPath = cleanFilePath(parent.getPath());
-							File createdFile = new File(parentPath, file.getName());
-							LOGGER.info("Creating file : " + file.getAbsolutePath());
-							createdFile.createNewFile();
-							return createdFile;
-						} catch (final IOException e) {
-							LOGGER.error("Exception creating file : " + file, e);
-						}
-					}
-					return file;
 				}
             }
-            LOGGER.debug("Couldn't create file : " + file);
-            return null;
+            if (parent != null) {
+                try {
+                    String parentPath = cleanFilePath(parent.getPath());
+                    File createdFile = new File(parentPath, file.getName());
+                    LOGGER.info("Creating file : " + file.getAbsolutePath());
+                    createdFile.createNewFile();
+                    return createdFile;
+                } catch (final IOException e) {
+                    LOGGER.error("Exception creating file : " + file, e);
+                }
+            }
+            return file;
         } finally {
             FileUtilities.class.notifyAll();
         }
@@ -360,6 +358,9 @@ public final class FileUtilities {
      * @param maxRetryCount the number of times to re-try the delete operation
      */
     public static boolean deleteFile(final File file, final int maxRetryCount) {
+        if (file == null) {
+            return Boolean.FALSE;
+        }
         return deleteFile(file, maxRetryCount, 0);
     }
 

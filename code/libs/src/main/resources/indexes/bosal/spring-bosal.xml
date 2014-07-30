@@ -80,7 +80,8 @@
         id="bosal-sentiment-one"
         class="ikube.model.Context"
         property:analyzer="ikube.analytics.weka.WekaClassifier"
-        property:options="-D">
+        property:options="-D"
+        property:persisted="true">
 
         <property name="algorithms">
             <list>

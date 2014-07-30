@@ -4,6 +4,7 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Analysis;
 import ikube.model.Context;
+import ikube.toolkit.FileUtilities;
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mockit;
@@ -56,7 +57,6 @@ public class WekaAnalyzerTest extends AbstractTest {
 
         String algorithm = SMO.class.getName();
         String filter = StringToWordVector.class.getName();
-        String fileName = "sentiment-smo.arff";
         String[] options = new String[]{"-D", "-V", "100"};
         int maxTraining = 10000;
 
@@ -68,7 +68,7 @@ public class WekaAnalyzerTest extends AbstractTest {
         context.setFilters(filter, filter, filter);
         context.setOptions(options, options, options);
 
-        context.setFileNames(fileName, fileName, fileName);
+        context.setFileNames("sentiment-smo-one.arff", "sentiment-smo-two.arff", "sentiment-smo-three.arff");
         context.setMaxTrainings(maxTraining, maxTraining, maxTraining);
 
         analysis = new Analysis();
@@ -214,41 +214,64 @@ public class WekaAnalyzerTest extends AbstractTest {
         }
     }
 
-	@Test
-	public void getDataFiles() {
-		File[] dataFiles = wekaAnalyzer.getDataFiles(context);
-		logger.error("Data files : " + Arrays.toString(dataFiles));
-		assertEquals(3, dataFiles.length);
-		for (final File dataFile : dataFiles) {
-			assertTrue(dataFile.exists());
-		}
+    @Test
+    public void getDataFiles() {
+        File[] dataFiles = wekaAnalyzer.getDataFiles(context);
+        logger.error("Data files : " + Arrays.toString(dataFiles));
+        assertEquals(3, dataFiles.length);
+        for (final File dataFile : dataFiles) {
+            assertTrue(dataFile.exists());
+        }
 
-		context.setFileNames("sentiment-smo-extra.arff");
-		dataFiles = wekaAnalyzer.getDataFiles(context);
-		assertEquals(1, dataFiles.length);
-		for (final File dataFile : dataFiles) {
-			assertTrue(dataFile.exists());
-		}
-	}
+        context.setFileNames("sentiment-smo-extra.arff");
+        dataFiles = wekaAnalyzer.getDataFiles(context);
+        assertEquals(1, dataFiles.length);
+        for (final File dataFile : dataFiles) {
+            try {
+                assertTrue(dataFile.exists());
+            } finally {
+                FileUtilities.deleteFile(dataFile);
+            }
+        }
+    }
 
-	@Test
-	public void serializeAnalyzers() throws Exception {
-		wekaAnalyzer.init(context);
-		File[] serializedAnalyzerFiles = wekaAnalyzer.serializeAnalyzers(context);
-		assertEquals(3, serializedAnalyzerFiles.length);
-		for (final File serializedAnalyzerFile : serializedAnalyzerFiles) {
-			assertTrue(serializedAnalyzerFile.exists());
-		}
-	}
+    @Test
+    public void serializeAnalyzers() throws Exception {
+        wekaAnalyzer.init(context);
+        File[] serializedAnalyzerFiles = wekaAnalyzer.serializeAnalyzers(context);
+        assertEquals(3, serializedAnalyzerFiles.length);
+        for (final File serializedAnalyzerFile : serializedAnalyzerFiles) {
+            assertTrue(serializedAnalyzerFile.exists());
+        }
+    }
 
-	@Test
-	public void deserializeAnalyzers() {
-		wekaAnalyzer.deserializeAnalyzers(context);
-	}
+    @Test
+    public void deserializeAnalyzers() throws Exception {
+        serializeAnalyzers();
+        Object[] deserializedAnalyzers = wekaAnalyzer.deserializeAnalyzers(context);
+        assertNotNull(deserializedAnalyzers);
+        assertEquals(3, deserializedAnalyzers.length);
+        for (final Object deserializedAnalyzer : deserializedAnalyzers) {
+            assertTrue(SMO.class.isAssignableFrom(deserializedAnalyzer.getClass()));
+        }
+    }
 
-	@Test
-	public void getSerializedAnalyzerFiles() {
-		wekaAnalyzer.getSerializedAnalyzerFiles(context);
-	}
+    @Test
+    public void getSerializedAnalyzerFiles() throws Exception {
+        serializeAnalyzers();
+        File[] serializedAnalyzerFiles = null;
+        try {
+            serializedAnalyzerFiles = wekaAnalyzer.getSerializedAnalyzerFiles(context);
+            assertNotNull(serializedAnalyzerFiles);
+            assertEquals(3, serializedAnalyzerFiles.length);
+            for (final File serializedAnalyzerFile : serializedAnalyzerFiles) {
+                assertTrue(serializedAnalyzerFile.exists());
+            }
+        } finally {
+            for (final File serializedAnalyzerFile : serializedAnalyzerFiles) {
+                FileUtilities.deleteFile(serializedAnalyzerFile);
+            }
+        }
+    }
 
 }

@@ -15,7 +15,7 @@ import static junit.framework.Assert.assertNotNull;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 01.12.12
+ * @since 01-12-2012
  */
 public class ApplicationContextManagerTest extends AbstractTest {
 
@@ -23,7 +23,7 @@ public class ApplicationContextManagerTest extends AbstractTest {
     public void before() {
         File externalConfig = FileUtilities.findDirectoryRecursively(new File("."), "external");
         File springConfig = FileUtilities.findFileRecursively(externalConfig, "spring\\.xml");
-        String springConfigPath = FileUtilities.cleanFilePath(springConfig.getAbsolutePath());
+        String springConfigPath = FileUtilities.cleanFilePath(springConfig.getParentFile().getAbsolutePath());
         System.setProperty(IConstants.IKUBE_CONFIGURATION, springConfigPath);
     }
 
@@ -44,11 +44,6 @@ public class ApplicationContextManagerTest extends AbstractTest {
         ApplicationContextManager.setBean(name, WekaClusterer.class.getName());
         Object wekaAnalyzer = ApplicationContextManager.getBean(name);
         assertNotNull(wekaAnalyzer);
-    }
-
-    @Test
-    public void write() {
-        System.out.printf("%03d", 2);
     }
 
 }

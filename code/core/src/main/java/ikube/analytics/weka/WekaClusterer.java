@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static ikube.toolkit.ThreadUtilities.waitForAnonymousFutures;
+
 /**
  * This class is the Weka clusterer wrapper. Ultimately just wrapping the Weka
  * algorithm(any one of the clustering algorithms) and adds some easier to understand
@@ -34,37 +36,47 @@ public class WekaClusterer extends WekaAnalyzer {
     public void build(final Context context) throws Exception {
         List<Future> futures = Lists.newArrayList();
         final String[] evaluations = new String[context.getAlgorithms().length];
-        for (int i = 0; i < context.getAlgorithms().length; i++) {
-            final int index = i;
-            Future<?> future = ThreadUtilities.submit(this.getClass().getName(), new Runnable() {
-                public void run() {
-                    try {
-                        // Get the components to create the model
-                        Clusterer clusterer = (Clusterer) context.getAlgorithms()[index];
-                        Instances instances = (Instances) context.getModels()[index];
-                        Filter filter = getFilter(context, index);
-
-                        // Filter the data if necessary
-                        Instances filteredInstances = WekaClusterer.this.filter(instances, filter);
-                        filteredInstances.setRelationName("filtered-instances");
-
-                        // And build the model
-                        logger.info("Building clusterer : " + instances.numInstances());
-                        clusterer.buildClusterer(filteredInstances);
-                        logger.info("Clusterer built : " + filteredInstances.numInstances());
-
-                        // Set the evaluation
-                        evaluations[index] = evaluate(clusterer, instances);
-                    } catch (final Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            });
-            futures.add(future);
+        Object[] clusterers = null;
+        if (context.isPersisted()) {
+            clusterers = deserializeAnalyzers(context);
+            context.setAlgorithms(clusterers);
         }
-        ThreadUtilities.waitForAnonymousFutures(futures, Long.MAX_VALUE);
+        if (clusterers == null) {
+            for (int i = 0; i < context.getAlgorithms().length; i++) {
+                final int index = i;
+                Future<?> future = ThreadUtilities.submit(this.getClass().getName(), new Runnable() {
+                    public void run() {
+                        try {
+                            // Get the components to create the model
+                            Clusterer clusterer = (Clusterer) context.getAlgorithms()[index];
+                            Instances instances = (Instances) context.getModels()[index];
+                            Filter filter = getFilter(context, index);
+
+                            // Filter the data if necessary
+                            Instances filteredInstances = WekaClusterer.this.filter(instances, filter);
+                            filteredInstances.setRelationName("filtered-instances");
+
+                            // And build the model
+                            logger.info("Building clusterer : " + instances.numInstances());
+                            clusterer.buildClusterer(filteredInstances);
+                            logger.info("Clusterer built : " + filteredInstances.numInstances());
+
+                            // Set the evaluation
+                            evaluations[index] = evaluate(clusterer, instances);
+                        } catch (final Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                });
+                futures.add(future);
+            }
+        }
+        waitForAnonymousFutures(futures, Long.MAX_VALUE);
         context.setBuilt(Boolean.TRUE);
         context.setEvaluations(evaluations);
+        if (context.isPersisted()) {
+            serializeAnalyzers(context);
+        }
     }
 
     /**

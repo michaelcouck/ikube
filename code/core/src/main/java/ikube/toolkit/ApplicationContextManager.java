@@ -23,6 +23,7 @@ import org.springframework.web.context.support.AbstractRefreshableWebApplication
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -128,7 +129,8 @@ public final class ApplicationContextManager implements ApplicationContextAware 
         if (configFile.isFile()) {
             // From the file system
             String configFilePath = FileUtilities.cleanFilePath(configFile.getAbsolutePath());
-            configFilePath = "file:" + configFilePath;
+            // Why did I do this?
+            // configFilePath = "file:" + configFilePath;
             LOGGER.info("Configuration file path : " + configFilePath);
             return configFilePath;
         }
@@ -267,20 +269,25 @@ public final class ApplicationContextManager implements ApplicationContextAware 
             ((AbstractApplicationContext) APPLICATION_CONTEXT).registerShutdownHook();
             File configDirectory = null;
             File consoleOutputFile = null;
+            InputStream  inputStream = null;
             try {
-                configDirectory = new File(IConstants.IKUBE_DIRECTORY);
                 Object ikubeConfigurationPathProperty = System.getProperty(IConstants.IKUBE_CONFIGURATION);
                 // First try the configuration property
-                if (ikubeConfigurationPathProperty != null) {
+                if (ikubeConfigurationPathProperty == null) {
+                    configDirectory = new File(IConstants.IKUBE_DIRECTORY);
+                } else {
                     configDirectory = new File(ikubeConfigurationPathProperty.toString());
                 }
                 consoleOutputFile = FileUtilities.findFileRecursively(configDirectory, "console");
-                List lines = IOUtils.readLines(new FileInputStream(consoleOutputFile));
+                inputStream = new FileInputStream(consoleOutputFile);
+                List lines = IOUtils.readLines(inputStream);
                 for (final Object line : lines) {
                     System.out.println(line);
                 }
-            } catch (final IOException e) {
+            } catch (final Exception e) {
                 LOGGER.error("Error reading the console file : " + configDirectory + ", " + consoleOutputFile, e);
+            } finally {
+                IOUtils.closeQuietly(inputStream);
             }
         } else {
             LOGGER.info("Application context already loaded : " + APPLICATION_CONTEXT);
