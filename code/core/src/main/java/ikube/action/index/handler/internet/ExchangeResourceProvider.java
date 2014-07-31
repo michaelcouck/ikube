@@ -12,12 +12,14 @@ import java.util.List;
  * @since 11-07-2014
  */
 @SuppressWarnings("FieldCanBeLocal")
-public class ExchangeResourceProvider implements IResourceProvider<Url> {
+public class ExchangeResourceProvider implements IResourceProvider<IndexableExchange> {
 
     private final IndexableExchange indexableExchange;
 
     public ExchangeResourceProvider(final IndexableExchange indexableExchange) {
         this.indexableExchange = indexableExchange;
+        indexableExchange.getUrl();
+        indexableExchange.getUserid();
         // TODO: Start 'crawling' Exchange server here, starting at the point left off the last time
     }
 
@@ -25,7 +27,7 @@ public class ExchangeResourceProvider implements IResourceProvider<Url> {
      * {@inheritDoc}
      */
     @Override
-    public Url getResource() {
+    public IndexableExchange getResource() {
         // TODO: Return a crawled resource to the caller
         return null;
     }
@@ -34,7 +36,7 @@ public class ExchangeResourceProvider implements IResourceProvider<Url> {
      * {@inheritDoc}
      */
     @Override
-    public void setResources(final List<Url> resources) {
+    public void setResources(final List<IndexableExchange> resources) {
         // TODO: Add the resource crawled to the collection available in this object
     }
 
