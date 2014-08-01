@@ -115,6 +115,13 @@ public class WekaClassifierTest extends AbstractTest {
         wekaClassifier.build(context);
         for (final Object model : context.getModels()) {
             Instances instances = (Instances) model;
+
+			Instance randomInstance = wekaClassifier.instance("Hello little world, how are you", instances);
+			double[][] randomDistributionForInstance = wekaClassifier.distributionForInstance(context, randomInstance);
+			for (double[] aDistributionForInstance : randomDistributionForInstance) {
+				System.out.println(aDistributionForInstance[0] + ":" + aDistributionForInstance[1]);
+			}
+
             Enumeration instanceEnumeration = instances.enumerateInstances();
             while (instanceEnumeration.hasMoreElements()) {
                 Instance instance = (Instance) instanceEnumeration.nextElement();

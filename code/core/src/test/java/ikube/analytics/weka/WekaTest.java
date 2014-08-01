@@ -86,11 +86,16 @@ public class WekaTest extends AbstractTest {
         values[3] = 8;
         dataSet.add(new SparseInstance(1.0, values));
 
-        Classifier classifier = new SMO();
+        SMO classifier = new SMO();
+		classifier.setBuildLogisticModels(Boolean.TRUE);
         classifier.buildClassifier(dataSet);
 
         double classification = classifier.classifyInstance(dataSet.firstInstance());
         String classificationClass = dataSet.classAttribute().value((int) classification);
+		double[] distributionForInstance = classifier.distributionForInstance(dataSet.firstInstance());
+		for (double aDistributionForInstance : distributionForInstance) {
+			System.out.println(aDistributionForInstance);
+		}
 
         assertEquals(IConstants.POSITIVE, classificationClass);
     }

@@ -28,6 +28,7 @@
         property:name="mineco-regression"
         property:analyzer="ikube.analytics.weka.WekaClassifier"
         property:algorithms="weka.classifiers.functions.SimpleLinearRegression"
-        property:maxTrainings="10000000" />
+        property:maxTrainings="10000000"
+        property:persisted="true"/>
 
 </beans>
