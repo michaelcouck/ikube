@@ -18,12 +18,14 @@ import weka.core.OptionHandler;
 import weka.filters.Filter;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 
 import static ikube.IConstants.ANALYTICS_DIRECTORY;
 import static ikube.toolkit.ApplicationContextManager.getConfigFilePath;
 import static ikube.toolkit.FileUtilities.*;
+import static org.apache.commons.io.FilenameUtils.concat;
 import static org.apache.commons.io.FilenameUtils.getBaseName;
 
 /**
@@ -217,6 +219,7 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis, Analysis, Anal
      * not present then there is a serious problem and the analyzers will not work properly or at all, i.e.
      * the results are undefined
      */
+    @SuppressWarnings("ConstantConditions")
     File[] getDataFiles(final Context context) {
 		String[] dataFileNames = context.getFileNames();
         File[] dataFiles = new File[context.getFileNames().length];
@@ -236,10 +239,11 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis, Analysis, Anal
                 logger.warn("Couldn't find file for analyzer or can't read file, will create it : " + dataFileName);
                 File analyticsDirectory = getOrCreateDirectory(ANALYTICS_DIRECTORY);
                 dataFile = getOrCreateFile(new File(analyticsDirectory, dataFileName));
-            }
-            if (dataFile != null) {
                 logger.info("Created data file : " + dataFile.getAbsolutePath());
             } else {
+                logger.info("Found data file : " + dataFile.getAbsolutePath());
+            }
+            if (dataFile == null) {
                 logger.warn("Couldn't create data file : " + dataFileName);
             }
             dataFiles[i] = dataFile;
@@ -259,13 +263,13 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis, Analysis, Anal
             String fileName = getBaseName(dataFileNames[i]) + IConstants.ANALYZER_SERIALIZED_FILE_EXTENSION;
             File serializedAnalyzerFile = getOrCreateFile(new File(serializationDirectory, fileName));
             serializedAnalyzerFiles[i] = serializedAnalyzerFile;
-			logger.error("Serializing analyzer to file : " + serializedAnalyzerFile.getPath());
+			logger.info("Serializing analyzer to file : " + serializedAnalyzerFile.getPath());
             FileOutputStream fileOutputStream = null;
             try {
                 fileOutputStream = new FileOutputStream(serializedAnalyzerFile);
                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
                 objectOutputStream.writeObject(analyzer);
-            } catch (final IOException e) {
+            } catch (final Exception e) {
 				logger.error("Exception serializing analyzer : " + serializedAnalyzerFile + ", " + context.getName(), e);
             } finally {
                 IOUtils.closeQuietly(fileOutputStream);
@@ -279,16 +283,18 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis, Analysis, Anal
         File[] serializedAnalyzerFiles = getSerializedAnalyzerFiles(context);
 		if (serializedAnalyzerFiles == null || serializedAnalyzerFiles.length == 0 ||
 				serializedAnalyzerFiles.length != context.getAlgorithms().length) {
+            logger.info("No analyzer files found : " + context.getName() + ", " + Arrays.toString(serializedAnalyzerFiles));
 			return null;
 		}
         for (final File serializedAnalyzerFile : serializedAnalyzerFiles) {
             FileInputStream fileInputStream = null;
             try {
+                logger.info("De-serialising : " + serializedAnalyzerFile);
                 fileInputStream = new FileInputStream(serializedAnalyzerFile);
                 ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
                 Object analyzer = objectInputStream.readObject();
                 analyzers.add(analyzer);
-            } catch (final IOException | ClassNotFoundException e) {
+            } catch (final Exception e) {
                 logger.error("Exception de-serializing analyzer : " + serializedAnalyzerFile + ", " + context.getName(), e);
             } finally {
                 IOUtils.closeQuietly(fileInputStream);

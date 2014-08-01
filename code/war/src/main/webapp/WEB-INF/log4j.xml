@@ -34,6 +34,9 @@
     <logger name="ikube">
         <level value="warn"/>
     </logger>
+    <logger name="ikube.analytics.weka">
+        <level value="info"/>
+    </logger>
 
     <root>
         <level value="warn"/>

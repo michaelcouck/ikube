@@ -1,5 +1,6 @@
 package ikube.analytics.weka;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -33,12 +34,14 @@ public class WekaClusterer extends WekaAnalyzer {
 	public void build(final Context context) throws Exception {
 		List<Future> futures = Lists.newArrayList();
 		final String[] evaluations = new String[context.getAlgorithms().length];
-		Object[] clusterers = null;
+        final List<Object> clusterers = Lists.newArrayList();
 		if (context.isPersisted()) {
-			clusterers = deserializeAnalyzers(context);
-			context.setAlgorithms(clusterers);
+			Object[] deserializeAnalyzers = deserializeAnalyzers(context);
+            if (deserializeAnalyzers != null) {
+                clusterers.addAll(Arrays.asList(deserializeAnalyzers));
+            }
 		}
-		if (clusterers == null) {
+		if (clusterers.isEmpty()) {
 			for (int i = 0; i < context.getAlgorithms().length; i++) {
 				final int index = i;
 				Future<?> future = ThreadUtilities.submit(this.getClass().getName(), new Runnable() {
@@ -57,6 +60,7 @@ public class WekaClusterer extends WekaAnalyzer {
 							logger.info("Building clusterer : " + instances.numInstances());
 							clusterer.buildClusterer(filteredInstances);
 							logger.info("Clusterer built : " + filteredInstances.numInstances());
+                            clusterers.add(clusterer);
 
 							// Set the evaluation
 							evaluations[index] = evaluate(clusterer, instances);
@@ -69,7 +73,9 @@ public class WekaClusterer extends WekaAnalyzer {
 			}
 		}
 		waitForAnonymousFutures(futures, Long.MAX_VALUE);
-		context.setBuilt(Boolean.TRUE);
+		context.setAlgorithms(clusterers.toArray());
+
+        context.setBuilt(Boolean.TRUE);
 		context.setEvaluations(evaluations);
 		if (context.isPersisted()) {
 			serializeAnalyzers(context);
