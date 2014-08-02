@@ -14,7 +14,7 @@
             http://www.springframework.org/schema/util/spring-util.xsd">
 
     <bean
-        id="twitter"
+        name="twitter"
         class="ikube.model.IndexContext"
         property:name="twitter"
         property:maxAge="0"
@@ -35,11 +35,11 @@
         property:children-ref="twitter-indexables"
         destroy-method="destroy"/>
     <util:list id="twitter-indexables">
-        <ref local="twitter-index"/>
+        <ref bean="twitter-index"/>
     </util:list>
 
     <bean
-        id="twitter-analyzer"
+        name="twitter-analyzer"
         class="ikube.action.index.analyzer.StemmingAnalyzer"
         property:useStopWords="false"
         init-method="initialize"/>
@@ -60,7 +60,7 @@
     -->
 
     <bean
-        id="twitter-index"
+        name="twitter-index"
         class="ikube.model.IndexableTweets"
         property:name="twitter-index"
         property:address="false"
@@ -98,32 +98,93 @@
         <!-- Train the language specific classifiers -->
         <!--<ref bean="twitter-training-strategy-en"/>-->
         <!-- Use the trained language specific classifiers -->
-        <ref bean="twitter-classification-strategy-en"/>
+        <ref bean="twitter-classification-strategy"/>
     </util:list>
 
     <!-- These are the language classifiers, they are trained by the Twitter data -->
     <!-- English -->
     <bean
-        id="context-smo-en"
-        name="context-smo-en"
+        name="sentiment-naive-bays-twitter"
         class="ikube.model.Context"
-        property:name="sentiment-smo-en"
-        property:analyzer="ikube.analytics.weka.WekaClassifier"
-        property:filters="weka.filters.unsupervised.attribute.StringToWordVector"
-        property:algorithms="weka.classifiers.functions.SMO"
-        property:fileNames="sentiment-smo-en.arff"
-        property:maxTrainings="${max-training}"/>
-    <!-- Spanish -->
-    <!-- Japanese -->
-    <!-- Chinese -->
-    <!-- Dutch -->
-    <!-- French -->
-    <!-- German -->
-    <!-- Swedish -->
-    <!-- Thai -->
-    <!-- Arabic -->
-    <!-- Turkish -->
-    <!-- Russian -->
+        property:name="sentiment-naive-bays-twitter"
+        property:analyzer="ikube.analytics.weka.WekaClassifier">
+        <property name="algorithms">
+            <list>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+            </list>
+        </property>
+        <property name="fileNames">
+            <list>
+                <!-- English -->
+                <value>sentiment-smo-en.arff</value>
+                <!-- Spanish -->
+                <value>sentiment-smo-es.arff</value>
+                <!-- Japanese -->
+                <value>sentiment-smo-jp.arff</value>
+                <!-- Chinese -->
+                <value>sentiment-smo-cn.arff</value>
+                <!-- Dutch -->
+                <value>sentiment-smo-nl.arff</value>
+                <!-- French -->
+                <value>sentiment-smo-fr.arff</value>
+                <!-- German -->
+                <value>sentiment-smo-de.arff</value>
+                <!-- Swedish -->
+                <value>sentiment-smo-sv.arff</value>
+                <!-- Thai -->
+                <value>sentiment-smo-th.arff</value>
+                <!-- Arabic -->
+                <value>sentiment-smo-ar.arff</value>
+                <!-- Turkish -->
+                <value>sentiment-smo-tr.arff</value>
+                <!-- Russian -->
+                <value>sentiment-smo-ru.arff</value>
+            </list>
+        </property>
+        <property name="filters">
+            <list>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+            </list>
+        </property>
+        <property name="maxTrainings">
+            <list>
+                <value>${max-training}</value>
+                <value>${max-training}</value>
+                <value>${max-training}</value>
+                <value>${max-training}</value>
+                <value>${max-training}</value>
+                <value>${max-training}</value>
+                <value>${max-training}</value>
+                <value>${max-training}</value>
+                <value>${max-training}</value>
+                <value>${max-training}</value>
+                <value>${max-training}</value>
+                <value>${max-training}</value>
+            </list>
+        </property>
+    </bean>
 
     <bean
         id="ikube.action.index.handler.strategy.TwitterGeospatialEnrichmentStrategy"
@@ -134,9 +195,9 @@
         lazy-init="true"/>
 
     <bean
-        id="twitter-classification-strategy-en"
+        id="twitter-classification-strategy"
         class="ikube.action.index.handler.strategy.AnalysisStrategy"
-        property:context-ref="context-smo-en"
+        property:context-ref="sentiment-naive-bays-twitter"
         init-method="initialize"/>
 
 </beans>

@@ -150,6 +150,11 @@ public class WekaClassifier extends WekaAnalyzer {
                 logger.error("Class : " + clazz + ", dist : " + Arrays.toString(distributionForInstance));
             }
 
+            // Note: The distribution for instances for the instance coming from the
+            // classifier must be the probability for each of the classes. In the SMO
+            // class this is seemingly not possible, as such this will probably still
+            // perform properly, but there may be edge cases where the probabilities do
+            // not correspond to the aggregate of the classifiers
             for (final double probability : distributionForInstance) {
                 if (probability > highestProbability) {
                     majorityClass = clazz;
