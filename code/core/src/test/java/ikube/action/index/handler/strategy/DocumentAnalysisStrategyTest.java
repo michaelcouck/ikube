@@ -111,11 +111,14 @@ public class DocumentAnalysisStrategyTest extends AbstractTest {
     public void highestVotedClassification() {
         when(analyticsService.analyze(any(Analysis.class))).thenReturn(analysis);
         when(analysis.getClazz()).thenReturn(POSITIVE, NEGATIVE, POSITIVE);
+        when(analysis.getOutput()).thenReturn(new double[] {0.63556489, 0.3546825}, new double[] {0.12365489, 0.826554687}, new double[] {0.63556489, 0.3546825});
 
         String classification = documentAnalysisStrategy.highestVotedClassification(sentences);
         assertEquals(POSITIVE, classification);
 
         when(analysis.getClazz()).thenReturn(NEGATIVE, NEGATIVE, POSITIVE);
+        when(analysis.getOutput()).thenReturn(new double[] {0.12365489, 0.826554687}, new double[] {0.12365489, 0.826554687}, new double[] {0.63556489, 0.3546825});
+
         classification = documentAnalysisStrategy.highestVotedClassification(sentences);
         assertEquals(NEGATIVE, classification);
     }

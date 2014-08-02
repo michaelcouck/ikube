@@ -43,7 +43,7 @@
         inject the persistence resources into the classes.
     -->
     <bean
-        id="defaultPersistenceUnitManager"
+        name="defaultPersistenceUnitManager"
         class="org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager"
         property:persistenceXmlLocations-ref="persistenceXmlLocations"
         property:defaultDataSource-ref="${ikube.dataSource}"/>
@@ -55,11 +55,11 @@
     <bean
         class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
     <bean
-        id="transactionManager"
+        name="transactionManager"
         class="org.springframework.orm.jpa.JpaTransactionManager"
         property:entityManagerFactory-ref="entityManagerFactory"/>
     <bean
-        id="entityManagerFactory"
+        name="entityManagerFactory"
         class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
         lazy-init="false"
         property:jpaVendorAdapter-ref="jpaAdapter"
@@ -69,10 +69,10 @@
         property:persistenceUnitManager-ref="defaultPersistenceUnitManager"
         property:loadTimeWeaver-ref="loadTimeWeaver"/>
     <bean
-        id="loadTimeWeaver"
+        name="loadTimeWeaver"
         class="org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver"/>
     <bean
-        id="jpaAdapter"
+        name="jpaAdapter"
         class="org.springframework.orm.jpa.vendor.OpenJpaVendorAdapter"
         property:database="${ikube.dataSourceType}"
         property:showSql="false"/>
@@ -136,14 +136,12 @@
     </aop:config>
 
     <bean
-        id="ikube.database.IDataBase"
         name="ikube.database.IDataBase"
         class="${ikube.dataBaseClass}"
         lazy-init="false"
         depends-on="ikube.toolkit.ThreadUtilities"/>
 
     <bean
-        id="ikube.toolkit.DataManager"
         name="ikube.toolkit.DataManager"
         class="ikube.toolkit.DataManager"
         lazy-init="false"
@@ -151,28 +149,26 @@
         depends-on="ikube.database.IDataBase"/>
 
     <bean
-        id="ikube.action.index.parse.mime.MimeMapper"
+        name="ikube.action.index.parse.mime.MimeMapper"
         class="ikube.action.index.parse.mime.MimeMapper">
         <constructor-arg value="mime-mapping.xml"/>
     </bean>
     <bean
-        id="ikube.action.index.parse.mime.MimeTypes"
+        name="ikube.action.index.parse.mime.MimeTypes"
         class="ikube.action.index.parse.mime.MimeTypes">
         <constructor-arg value="mime-types.xml"/>
     </bean>
 
     <!-- Service layer entities. -->
     <bean
-        id="ikube.search.ISearcherService"
         name="ikube.search.ISearcherService"
         class="ikube.search.SearcherService"/>
     <bean
-        id="ikube.cluster.IMonitorService"
         name="ikube.cluster.IMonitorService"
         class="ikube.cluster.MonitorService"/>
 
     <bean
-        id="ikube.toolkit.ThreadUtilities"
+        name="ikube.toolkit.ThreadUtilities"
         class="ikube.toolkit.ThreadUtilities"
         lazy-init="false"
         init-method="initialize"
@@ -180,13 +176,11 @@
 
     <!-- This will initialize all the analyzers and build them in parallel. -->
     <bean
-        id="ikube.analytics.AnalyzerManager"
         name="ikube.analytics.AnalyzerManager"
         class="ikube.analytics.AnalyzerManager"
         depends-on="ikube.toolkit.ThreadUtilities"/>
 
     <bean
-        id="ikube.analytics.IAnalyticsService"
         name="ikube.analytics.IAnalyticsService"
         class="ikube.analytics.AnalyticsService"/>
 
@@ -198,70 +192,61 @@
         property:schedules-ref="ikube.scheduling.Scheduler.schedules"/>
     <!-- The schedules that fire events to start actions. -->
     <util:list id="ikube.scheduling.Scheduler.schedules">
-        <ref local="ikube.scheduling.schedule.IndexSchedule"/>
-        <ref local="ikube.scheduling.schedule.ServerSchedule"/>
-        <ref local="ikube.scheduling.schedule.IndexSizeSchedule"/>
-        <ref local="ikube.scheduling.schedule.ActionSchedule"/>
-        <ref local="ikube.scheduling.schedule.SnapshotSchedule"/>
-        <ref local="ikube.scheduling.schedule.CpuLoadSchedule"/>
-        <ref local="ikube.scheduling.schedule.IndexCommitSchedule"/>
-        <ref local="ikube.scheduling.schedule.IndexCommitSchedule"/>
-        <ref local="ikube.scheduling.schedule.AnalyzerSchedule"/>
-        <ref local="ikube.scheduling.schedule.PruneSchedule"/>
+        <ref bean="ikube.scheduling.schedule.IndexSchedule"/>
+        <ref bean="ikube.scheduling.schedule.ServerSchedule"/>
+        <ref bean="ikube.scheduling.schedule.IndexSizeSchedule"/>
+        <ref bean="ikube.scheduling.schedule.ActionSchedule"/>
+        <ref bean="ikube.scheduling.schedule.SnapshotSchedule"/>
+        <ref bean="ikube.scheduling.schedule.CpuLoadSchedule"/>
+        <ref bean="ikube.scheduling.schedule.IndexCommitSchedule"/>
+        <ref bean="ikube.scheduling.schedule.IndexCommitSchedule"/>
+        <ref bean="ikube.scheduling.schedule.AnalyzerSchedule"/>
+        <ref bean="ikube.scheduling.schedule.PruneSchedule"/>
     </util:list>
 
     <!-- Scheduled objects. -->
     <bean
-        id="ikube.scheduling.schedule.IndexSchedule"
         name="ikube.scheduling.schedule.IndexSchedule"
         class="ikube.scheduling.schedule.IndexSchedule"
         property:delay="${delay}"
         property:period="${period}"/>
     <bean
-        id="ikube.scheduling.schedule.ServerSchedule"
         name="ikube.scheduling.schedule.ServerSchedule"
         class="ikube.scheduling.schedule.ServerSchedule"
         property:delay="10000"
         property:period="60000"/>
     <bean
-        id="ikube.scheduling.schedule.IndexSizeSchedule"
         name="ikube.scheduling.schedule.IndexSizeSchedule"
         class="ikube.scheduling.schedule.IndexSizeSchedule"
         property:delay="600000"
         property:period="600000"/>
     <bean
-        id="ikube.scheduling.schedule.ActionSchedule"
         name="ikube.scheduling.schedule.ActionSchedule"
         class="ikube.scheduling.schedule.ActionSchedule"
         property:delay="600000"
         property:period="600000"/>
     <bean
-        id="ikube.scheduling.schedule.AnalyzerSchedule"
         name="ikube.scheduling.schedule.AnalyzerSchedule"
         class="ikube.scheduling.schedule.AnalyzerSchedule"
         property:single="true"
         property:delay="${analyzer-manager-wait}"
         property:period="${analyzer-manager-wait}"/>
     <bean
-        id="ikube.scheduling.schedule.SnapshotSchedule"
         name="ikube.scheduling.schedule.SnapshotSchedule"
         class="ikube.scheduling.schedule.SnapshotSchedule"
         property:delay="60000"
         property:period="60000"/>
     <bean
-        id="ikube.scheduling.schedule.CpuLoadSchedule"
         name="ikube.scheduling.schedule.CpuLoadSchedule"
         class="ikube.scheduling.schedule.CpuLoadSchedule"
         property:delay="60000"
         property:period="60000"/>
     <bean
-        id="ikube.scheduling.schedule.IndexCommitSchedule"
         name="ikube.scheduling.schedule.IndexCommitSchedule"
         class="ikube.scheduling.schedule.IndexCommitSchedule"
         property:delay="180000"
         property:period="180000"/>
     <bean
-        id="ikube.scheduling.schedule.PruneSchedule"
         name="ikube.scheduling.schedule.PruneSchedule"
         class="ikube.scheduling.schedule.PruneSchedule"
         property:delay="60000"
@@ -272,6 +257,7 @@
         you would want to modify, otherwise I will be getting many, many mails from your system.
     -->
     <bean
+        name="ikube.toolkit.Mailer"
         class="ikube.toolkit.Mailer"
         property:port="465"
         property:auth="true"
@@ -283,7 +269,7 @@
         property:recipients="ikube.notifications@gmail.com"/>
 
     <bean
-        id="messageSource"
+        name="messageSource"
         class="org.springframework.context.support.ReloadableResourceBundleMessageSource"
         property:basenames-ref="messageProperties">
         <property name="defaultEncoding" value="UTF-8"/>
@@ -294,134 +280,125 @@
     </util:list>
 
     <bean
-        id="ikube.search.spelling.SpellingChecker"
+        name="ikube.search.spelling.SpellingChecker"
         class="ikube.search.spelling.SpellingChecker"
         destroy-method="destroy"/>
 
     <!-- The handlers that do the indexing logic. -->
     <bean
-        id="ikube.action.index.handler.IndexableHandler"
+        name="ikube.action.index.handler.IndexableHandler"
         class="ikube.action.index.handler.IndexableHandler"
         abstract="true"/>
     <bean
-        id="ikube.action.index.handler.internet.IndexableInternetHandler"
+        name="ikube.action.index.handler.internet.IndexableInternetHandler"
         class="ikube.action.index.handler.internet.IndexableInternetHandler"
         parent="ikube.action.index.handler.IndexableHandler"
         property:indexableClass="ikube.model.IndexableInternet"/>
     <bean
-        id="ikube.action.index.handler.email.IndexableEmailHandler"
+        name="ikube.action.index.handler.email.IndexableEmailHandler"
         class="ikube.action.index.handler.email.IndexableEmailHandler"
         parent="ikube.action.index.handler.IndexableHandler"
         property:indexableClass="ikube.model.IndexableEmail"/>
     <bean
-        id="ikube.action.index.handler.filesystem.IndexableFileSystemHandler"
+        name="ikube.action.index.handler.filesystem.IndexableFileSystemHandler"
         class="ikube.action.index.handler.filesystem.IndexableFileSystemHandler"
         parent="ikube.action.index.handler.IndexableHandler"
         property:indexableClass="ikube.model.IndexableFileSystem"/>
-    <!--<bean
-        id="ikube.action.index.handler.database.IndexableTableHandler"
-        class="ikube.action.index.handler.database.IndexableTableHandler"
-        parent="ikube.action.index.handler.IndexableHandler"
-        property:indexableClass="ikube.model.IndexableTable"/>-->
     <bean
-        id="ikube.action.index.handler.database.DeltaIndexableTableHandler"
+        name="ikube.action.index.handler.database.DeltaIndexableTableHandler"
         class="ikube.action.index.handler.database.DeltaIndexableTableHandler"
         parent="ikube.action.index.handler.IndexableHandler"
         property:indexableClass="ikube.model.IndexableTable"/>
     <bean
-        id="ikube.action.index.handler.filesystem.IndexableFilesystemLogHandler"
+        name="ikube.action.index.handler.filesystem.IndexableFilesystemLogHandler"
         class="ikube.action.index.handler.filesystem.IndexableFilesystemLogHandler"
         parent="ikube.action.index.handler.IndexableHandler"
         property:indexableClass="ikube.model.IndexableFileSystemLog"/>
     <bean
-        id="ikube.action.index.handler.database.IndexableDataSourceHandler"
+        name="ikube.action.index.handler.database.IndexableDataSourceHandler"
         class="ikube.action.index.handler.database.IndexableDataSourceHandler"
         parent="ikube.action.index.handler.IndexableHandler"
         property:indexableClass="ikube.model.IndexableDataSource"/>
     <bean
-        id="ikube.action.index.handler.filesystem.IndexableFilesystemCsvHandler"
+        name="ikube.action.index.handler.filesystem.IndexableFilesystemCsvHandler"
         class="ikube.action.index.handler.filesystem.IndexableFilesystemCsvHandler"
         parent="ikube.action.index.handler.IndexableHandler"
         property:indexableClass="ikube.model.IndexableFileSystemCsv"/>
     <bean
-        id="ikube.action.index.handler.internet.TwitterHandler"
+        name="ikube.action.index.handler.internet.TwitterHandler"
         class="ikube.action.index.handler.internet.TwitterHandler"
         parent="ikube.action.index.handler.IndexableHandler"
         property:indexableClass="ikube.model.IndexableTweets"/>
     <bean
-        id="ikube.action.index.handler.internet.SvnHandler"
+        name="ikube.action.index.handler.internet.SvnHandler"
         class="ikube.action.index.handler.internet.SvnHandler"
+        parent="ikube.action.index.handler.IndexableHandler"
         property:indexableClass="ikube.model.IndexableSvn"/>
     <bean
-        id="ikube.action.index.handler.internet.ExchangeHandler"
+        name="ikube.action.index.handler.internet.ExchangeHandler"
         class="ikube.action.index.handler.internet.ExchangeHandler"
+        parent="ikube.action.index.handler.IndexableHandler"
         property:indexableClass="ikube.model.IndexableExchange"/>
 
     <util:list id="indexable-handlers">
-        <ref local="ikube.action.index.handler.internet.IndexableInternetHandler"/>
-        <ref local="ikube.action.index.handler.email.IndexableEmailHandler"/>
-        <ref local="ikube.action.index.handler.filesystem.IndexableFileSystemHandler"/>
-        <ref local="ikube.action.index.handler.database.DeltaIndexableTableHandler"/>
-        <ref local="ikube.action.index.handler.filesystem.IndexableFilesystemLogHandler"/>
-        <ref local="ikube.action.index.handler.database.IndexableDataSourceHandler"/>
-        <ref local="ikube.action.index.handler.filesystem.IndexableFilesystemCsvHandler"/>
-        <ref local="ikube.action.index.handler.internet.TwitterHandler"/>
-        <ref local="ikube.action.index.handler.internet.SvnHandler"/>
+        <ref bean="ikube.action.index.handler.internet.IndexableInternetHandler"/>
+        <ref bean="ikube.action.index.handler.email.IndexableEmailHandler"/>
+        <ref bean="ikube.action.index.handler.filesystem.IndexableFileSystemHandler"/>
+        <ref bean="ikube.action.index.handler.database.DeltaIndexableTableHandler"/>
+        <ref bean="ikube.action.index.handler.filesystem.IndexableFilesystemLogHandler"/>
+        <ref bean="ikube.action.index.handler.database.IndexableDataSourceHandler"/>
+        <ref bean="ikube.action.index.handler.filesystem.IndexableFilesystemCsvHandler"/>
+        <ref bean="ikube.action.index.handler.internet.TwitterHandler"/>
+        <ref bean="ikube.action.index.handler.internet.SvnHandler"/>
     </util:list>
 
     <bean
-        id="ikube.action.index.handler.ResourceHandler"
         name="ikube.action.index.handler.ResourceHandler"
         class="ikube.action.index.handler.ResourceHandler"/>
     <bean
-        id="ikube.action.index.handler.filesystem.FileResourceHandler"
+        name="ikube.action.index.handler.filesystem.FileResourceHandler"
         class="ikube.action.index.handler.filesystem.FileResourceHandler"/>
     <bean
-        id="ikube.action.index.handler.filesystem.RowResourceHandler"
+        name="ikube.action.index.handler.filesystem.RowResourceHandler"
         class="ikube.action.index.handler.filesystem.RowResourceHandler"/>
     <bean
-        id="ikube.action.index.handler.internet.InternetResourceHandler"
+        name="ikube.action.index.handler.internet.InternetResourceHandler"
         class="ikube.action.index.handler.internet.InternetResourceHandler"/>
     <bean
-        id="ikube.action.index.handler.internet.TwitterResourceHandler"
+        name="ikube.action.index.handler.internet.TwitterResourceHandler"
         class="ikube.action.index.handler.internet.TwitterResourceHandler"
         depends-on="ikube.database.IDataBase"
         init-method="init"/>
     <bean
-        id="ikube.action.index.handler.internet.SvnResourceHandler"
+        name="ikube.action.index.handler.internet.SvnResourceHandler"
         class="ikube.action.index.handler.internet.SvnResourceHandler"/>
     <bean
-        id="ikube.action.index.handler.internet.ExchangeResourceHandler"
+        name="ikube.action.index.handler.internet.ExchangeResourceHandler"
         class="ikube.action.index.handler.internet.ExchangeResourceHandler"/>
 
     <bean
-        id="ikube.action.index.analyzer.NgramAnalyzer"
         name="ikube.action.index.analyzer.NgramAnalyzer"
         class="ikube.action.index.analyzer.NgramAnalyzer"
         property:minGram="4"
         property:maxGram="21"/>
 
     <bean
-        id="ikube.action.index.analyzer.EdgeNgramAnalyzer"
         name="ikube.action.index.analyzer.EdgeNgramAnalyzer"
         class="ikube.action.index.analyzer.EdgeNgramAnalyzer"
         property:minGram="4"
         property:maxGram="21"/>
 
     <bean
-        id="ikube.action.index.handler.strategy.LanguageCleaningStrategy"
         name="ikube.action.index.handler.strategy.LanguageCleaningStrategy"
         class="ikube.action.index.handler.strategy.LanguageCleaningStrategy"
         init-method="initialize"/>
 
     <bean
-        id="ikube.action.index.handler.strategy.LanguageDetectionStrategy"
         name="ikube.action.index.handler.strategy.LanguageDetectionStrategy"
         class="ikube.action.index.handler.strategy.LanguageDetectionStrategy"
         init-method="initialize"/>
 
     <bean
-        id="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy"
         name="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy"
         class="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy"
         init-method="initialize"
@@ -429,19 +406,16 @@
         lazy-init="true"/>
 
     <bean
-        id="ikube.action.index.handler.strategy.EmoticonClassificationStrategy"
         name="ikube.action.index.handler.strategy.EmoticonClassificationStrategy"
         class="ikube.action.index.handler.strategy.EmoticonClassificationStrategy"
         init-method="initialize"/>
 
     <bean
-        id="ikube.action.index.handler.strategy.ContentTypeStrategy"
         name="ikube.action.index.handler.strategy.ContentTypeStrategy"
         class="ikube.action.index.handler.strategy.ContentTypeStrategy"
         init-method="initialize"/>
 
     <bean
-        id="ikube.action.index.handler.strategy.LanguageFilterStrategy"
         name="ikube.action.index.handler.strategy.LanguageFilterStrategy"
         class="ikube.action.index.handler.strategy.LanguageFilterStrategy"
         init-method="initialize"/>
@@ -451,7 +425,6 @@
 		the indexables contain address fields. The Url for this service  
 	-->
     <bean
-        id="ikube.action.index.handler.strategy.geocode.Geocoder"
         name="ikube.action.index.handler.strategy.geocode.Geocoder"
         class="ikube.action.index.handler.strategy.geocode.Geocoder"
         property:searchField="name"

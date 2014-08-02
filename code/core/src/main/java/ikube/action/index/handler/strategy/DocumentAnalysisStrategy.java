@@ -18,8 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.File;
 import java.io.IOException;
 import java.text.BreakIterator;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 import static ikube.IConstants.CLASSIFICATION;
 import static ikube.IConstants.CLASSIFICATION_CONFLICT;
@@ -106,38 +107,54 @@ public class DocumentAnalysisStrategy extends AStrategy {
 
     @SuppressWarnings("unchecked")
     String highestVotedClassification(final List<String> sentences) {
-        String highestVotedClassification = null;
-        Map<String, AtomicInteger> classificationCounts = new HashMap<>();
-
         // Analyze each sentence separately
-        for (final String sentence : sentences) {
+        String[] classes = new String[sentences.size()];
+        double[][] distributionForInstances = new double[sentences.size()][];
+        for (int i = 0; i < distributionForInstances.length; i++) {
+            String sentence = sentences.get(i);
             Analysis<Object, Object> analysis = new Analysis<>();
             analysis.setInput(sentence);
             analysis.setContext(context.getName());
             analysis = analyticsService.analyze(analysis);
-            String classification = analysis.getClazz();
 
-            // Aggregate the results, i.e. the greatest analysis wins
-            AtomicInteger classificationCount = classificationCounts.get(classification);
-            if (classificationCount == null) {
-                classificationCount = new AtomicInteger();
-                classificationCounts.put(classification, classificationCount);
-            }
-            classificationCount.incrementAndGet();
-            if (highestVotedClassification == null) {
-                highestVotedClassification = classification;
-            }
-            if (classificationCount.get() > classificationCounts.get(highestVotedClassification).get()) {
-                highestVotedClassification = classification;
+            classes[i] = analysis.getClazz();
+            distributionForInstances[i] = (double[]) analysis.getOutput();
+        }
+        // Aggregate the results, i.e. the greatest average probability wins
+        double[] aggregateDistributionForSentences = new double[distributionForInstances[0].length];
+        for (double[] distributionForInstance : distributionForInstances) {
+            for (int j = 0; j < distributionForInstance.length; j++) {
+                aggregateDistributionForSentences[j] += distributionForInstance[j];
             }
         }
-
-        return highestVotedClassification;
+        for (int i = 0; i < aggregateDistributionForSentences.length; i++) {
+            aggregateDistributionForSentences[i] = aggregateDistributionForSentences[i] / sentences.size();
+        }
+        // Find the highest probability in the distribution list
+        int index = 0;
+        double highestProbability = 0.00;
+        for (int i = 0; i < aggregateDistributionForSentences.length; i++) {
+            if (aggregateDistributionForSentences[i] > highestProbability) {
+                highestProbability = aggregateDistributionForSentences[i];
+                index = i;
+            }
+        }
+        String mostProbableClass = null;
+        // Find the closest match in the sentences to this average
+        double smallestDifference = Long.MAX_VALUE;
+        for (int i = 0; i < distributionForInstances.length; i++) {
+            double difference = Math.abs(highestProbability - distributionForInstances[i][index]);
+            if (difference < smallestDifference) {
+                smallestDifference = difference;
+                mostProbableClass = classes[i];
+            }
+        }
+        return mostProbableClass;
     }
 
     /**
-     * This method will break the document into sentences. This is a very naieve approach, the
-     * {@link java.text.BreakIterator} will just tokenize the string, and look for sentence bounradies
+     * This method will break the document into sentences. This is a very naive approach, the
+     * {@link java.text.BreakIterator} will just tokenize the string, and look for sentence boundaries
      * using the punctuation in the text, apparently. But fine for a first implementation.
      *
      * @param text     the input text to break into sentences

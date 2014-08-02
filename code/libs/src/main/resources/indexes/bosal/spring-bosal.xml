@@ -13,7 +13,7 @@
             http://www.springframework.org/schema/util/spring-util.xsd">
 
     <bean
-        id="bosal"
+        name="bosal"
         class="ikube.model.IndexContext"
         property:name="bosal"
         property:maxAge="6000"
@@ -29,12 +29,12 @@
         property:indexDirectoryPathBackup="${index.directory.path.backup}"
         property:children-ref="bosal-indexables"/>
     <util:list id="bosal-indexables">
-        <ref local="bosal-mail"/>
-        <ref local="bosal-site"/>
+        <ref bean="bosal-mail"/>
+        <ref bean="bosal-site"/>
     </util:list>
 
     <bean
-        id="bosal-mail"
+        name="bosal-mail"
         class="ikube.model.IndexableExchange"
         property:name="bosal-mail"
         property:url="http://www.bosal.com/"
@@ -52,7 +52,7 @@
         property:strategies-ref="bosal-strategies"/>
 
     <bean
-        id="bosal-site"
+        name="bosal-site"
         class="ikube.model.IndexableInternet"
         property:threads="3"
         property:omitNorms="false"
@@ -71,30 +71,30 @@
         <bean class="ikube.action.index.handler.strategy.LanguageCleaningStrategy"/>
         <bean class="ikube.action.index.handler.strategy.ToLowerCaseStrategy"/>
         <bean class="ikube.action.index.handler.strategy.LanguageDetectionStrategy"/>
-        <bean
-            class="ikube.action.index.handler.strategy.DocumentAnalysisStrategy"
-            property:context-ref="bosal-sentiment-one"/>
+        <bean class="ikube.action.index.handler.strategy.DocumentAnalysisStrategy"
+              property:context-ref="bosal-sentiment"/>
     </util:list>
 
     <bean
-        id="bosal-sentiment-one"
+        name="bosal-sentiment"
         class="ikube.model.Context"
+        property:name="bosal-sentiment"
         property:analyzer="ikube.analytics.weka.WekaClassifier"
         property:options="-D"
-        property:persisted="true">
+        property:persisted="false">
 
         <property name="algorithms">
             <list>
-                <value>weka.classifiers.functions.SMO</value>
-                <value>weka.classifiers.functions.SMO</value>
-                <value>weka.classifiers.functions.SMO</value>
-                <value>weka.classifiers.functions.SMO</value>
-                <value>weka.classifiers.functions.SMO</value>
-                <value>weka.classifiers.functions.SMO</value>
-                <value>weka.classifiers.functions.SMO</value>
-                <value>weka.classifiers.functions.SMO</value>
-                <value>weka.classifiers.functions.SMO</value>
-                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
             </list>
         </property>
 
