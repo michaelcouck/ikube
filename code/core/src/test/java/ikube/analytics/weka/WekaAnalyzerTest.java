@@ -237,7 +237,6 @@ public class WekaAnalyzerTest extends AbstractTest {
 
     @Test
     public void serializeAnalyzers() throws Exception {
-        wekaAnalyzer.init(context);
         File[] serializedAnalyzerFiles = wekaAnalyzer.serializeAnalyzers(context);
         assertEquals(3, serializedAnalyzerFiles.length);
         for (final File serializedAnalyzerFile : serializedAnalyzerFiles) {
@@ -247,7 +246,10 @@ public class WekaAnalyzerTest extends AbstractTest {
 
     @Test
     public void deserializeAnalyzers() throws Exception {
-        serializeAnalyzers();
+        wekaAnalyzer.init(context);
+        wekaAnalyzer.build(context);
+        wekaAnalyzer.serializeAnalyzers(context);
+
         Object[] deserializedAnalyzers = wekaAnalyzer.deserializeAnalyzers(context);
         assertNotNull(deserializedAnalyzers);
         assertEquals(3, deserializedAnalyzers.length);
@@ -258,7 +260,10 @@ public class WekaAnalyzerTest extends AbstractTest {
 
     @Test
     public void getSerializedAnalyzerFiles() throws Exception {
-        serializeAnalyzers();
+        wekaAnalyzer.init(context);
+        wekaAnalyzer.build(context);
+        wekaAnalyzer.serializeAnalyzers(context);
+
         File[] serializedAnalyzerFiles = null;
         try {
             serializedAnalyzerFiles = wekaAnalyzer.getSerializedAnalyzerFiles(context);

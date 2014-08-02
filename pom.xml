@@ -1288,6 +1288,13 @@
             <version>2.0</version>
             <scope>compile</scope>
         </dependency>
+        <!-- This version is not compatible with Weka being used at the time, 3.7.x -->
+        <!--<dependency>
+            <groupId>libsvm</groupId>
+            <artifactId>libsvm</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
+        </dependency>-->
     </dependencies>
 
 	<repositories>

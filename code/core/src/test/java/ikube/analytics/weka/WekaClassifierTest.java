@@ -8,8 +8,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.Spy;
-import weka.classifiers.functions.SMO;
+import weka.classifiers.bayes.NaiveBayesMultinomial;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.filters.unsupervised.attribute.StringToWordVector;
@@ -36,10 +37,11 @@ public class WekaClassifierTest extends AbstractTest {
 
     @Before
     public void before() throws Exception {
-        String algorithm = SMO.class.getName();
+        String algorithm = NaiveBayesMultinomial.class.getName();
         String filter = StringToWordVector.class.getName();
         String fileName = "sentiment-smo.arff";
-        String[] options = new String[]{"-D", "-V", "100"};
+        // "-V", "100"
+        String[] options = new String[]{"-D"};
         int maxTraining = 10000;
 
         context = new Context();
@@ -62,6 +64,12 @@ public class WekaClassifierTest extends AbstractTest {
             logger.error("Evaluation : " + evaluation);
             assertNotNull(evaluation);
         }
+
+        context.setBuilt(Boolean.FALSE);
+        context.setPersisted(Boolean.TRUE);
+
+        wekaClassifier.build(context);
+        Mockito.verify(wekaClassifier, Mockito.times(1)).deserializeAnalyzers(context);
     }
 
     @Test
@@ -115,13 +123,6 @@ public class WekaClassifierTest extends AbstractTest {
         wekaClassifier.build(context);
         for (final Object model : context.getModels()) {
             Instances instances = (Instances) model;
-
-			Instance randomInstance = wekaClassifier.instance("Hello little world, how are you", instances);
-			double[][] randomDistributionForInstance = wekaClassifier.distributionForInstance(context, randomInstance);
-			for (double[] aDistributionForInstance : randomDistributionForInstance) {
-				System.out.println(aDistributionForInstance[0] + ":" + aDistributionForInstance[1]);
-			}
-
             Enumeration instanceEnumeration = instances.enumerateInstances();
             while (instanceEnumeration.hasMoreElements()) {
                 Instance instance = (Instance) instanceEnumeration.nextElement();
