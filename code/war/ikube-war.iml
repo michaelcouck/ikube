@@ -37,6 +37,22 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: org.htmlparser:htmlparser:1.6" level="project" />
+    <orderEntry type="library" name="Maven: net.htmlparser.jericho:jericho-html:3.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.tiles:tiles-servlet:2.2.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-queryparser:4.6.0" level="project" />
+    <orderEntry type="library" name="Maven: com.sun.jersey:jersey-servlet:1.18.1" level="project" />
+    <orderEntry type="library" name="Maven: com.sun.jersey:jersey-server:1.18.1" level="project" />
+    <orderEntry type="library" name="Maven: de.independantsoft:jwebservices:2.0" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-server:7.6.15.v20140411" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty.orbit:javax.servlet:2.5.0.v201103041518" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-servlet:7.6.15.v20140411" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-servlets:7.6.15.v20140411" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: javax.servlet:servlet-api:2.5" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: javax.servlet:jsp-api:2.0" level="project" />
+    <orderEntry type="library" name="Maven: javax.servlet:jstl:1.1.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: xalan:serializer:2.7.1" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: net.sourceforge.cssparser:cssparser:0.9.5" level="project" />
     <orderEntry type="module" module-name="ikube-core" />
     <orderEntry type="module" module-name="ikube-com" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context:3.2.4.RELEASE" level="project" />

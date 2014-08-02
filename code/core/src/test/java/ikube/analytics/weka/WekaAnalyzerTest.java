@@ -237,35 +237,53 @@ public class WekaAnalyzerTest extends AbstractTest {
 
     @Test
     public void serializeAnalyzers() throws Exception {
-        File[] serializedAnalyzerFiles = wekaAnalyzer.serializeAnalyzers(context);
-        assertEquals(3, serializedAnalyzerFiles.length);
-        for (final File serializedAnalyzerFile : serializedAnalyzerFiles) {
-            assertTrue(serializedAnalyzerFile.exists());
+        File[] serializedAnalyzerFiles = null;
+        try {
+            serializedAnalyzerFiles = wekaAnalyzer.serializeAnalyzers(context);
+            assertEquals(3, serializedAnalyzerFiles.length);
+            for (final File serializedAnalyzerFile : serializedAnalyzerFiles) {
+                assertTrue(serializedAnalyzerFile.exists());
+            }
+        } finally {
+            if (serializedAnalyzerFiles != null) {
+                for (final File serializedAnalyzerFile : serializedAnalyzerFiles) {
+                    FileUtilities.deleteFile(serializedAnalyzerFile);
+                }
+            }
         }
     }
 
     @Test
     public void deserializeAnalyzers() throws Exception {
-        wekaAnalyzer.init(context);
-        wekaAnalyzer.build(context);
-        wekaAnalyzer.serializeAnalyzers(context);
+        File[] serializedAnalyzerFiles = null;
+        try {
+            wekaAnalyzer.init(context);
+            wekaAnalyzer.build(context);
+            serializedAnalyzerFiles = wekaAnalyzer.serializeAnalyzers(context);
 
-        Object[] deserializedAnalyzers = wekaAnalyzer.deserializeAnalyzers(context);
-        assertNotNull(deserializedAnalyzers);
-        assertEquals(3, deserializedAnalyzers.length);
-        for (final Object deserializedAnalyzer : deserializedAnalyzers) {
-            assertTrue(SMO.class.isAssignableFrom(deserializedAnalyzer.getClass()));
+            Object[] deserializedAnalyzers = wekaAnalyzer.deserializeAnalyzers(context);
+            assertNotNull(deserializedAnalyzers);
+            assertEquals(3, deserializedAnalyzers.length);
+            for (final Object deserializedAnalyzer : deserializedAnalyzers) {
+                assertTrue(SMO.class.isAssignableFrom(deserializedAnalyzer.getClass()));
+            }
+        } finally {
+            if (serializedAnalyzerFiles != null) {
+                for (final File serializedAnalyzerFile : serializedAnalyzerFiles) {
+                    FileUtilities.deleteFile(serializedAnalyzerFile);
+                }
+            }
         }
     }
 
     @Test
     public void getSerializedAnalyzerFiles() throws Exception {
-        wekaAnalyzer.init(context);
-        wekaAnalyzer.build(context);
-        wekaAnalyzer.serializeAnalyzers(context);
-
         File[] serializedAnalyzerFiles = null;
         try {
+            wekaAnalyzer.init(context);
+            wekaAnalyzer.build(context);
+            wekaAnalyzer.serializeAnalyzers(context);
+
             serializedAnalyzerFiles = wekaAnalyzer.getSerializedAnalyzerFiles(context);
             assertNotNull(serializedAnalyzerFiles);
             assertEquals(3, serializedAnalyzerFiles.length);
@@ -273,8 +291,10 @@ public class WekaAnalyzerTest extends AbstractTest {
                 assertTrue(serializedAnalyzerFile.exists());
             }
         } finally {
-            for (final File serializedAnalyzerFile : serializedAnalyzerFiles) {
-                FileUtilities.deleteFile(serializedAnalyzerFile);
+            if (serializedAnalyzerFiles != null) {
+                for (final File serializedAnalyzerFile : serializedAnalyzerFiles) {
+                    FileUtilities.deleteFile(serializedAnalyzerFile);
+                }
             }
         }
     }

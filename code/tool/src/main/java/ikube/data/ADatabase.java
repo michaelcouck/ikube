@@ -46,7 +46,6 @@ public abstract class ADatabase {
 		EntityManager entityManager = Persistence.createEntityManagerFactory(persistenceUnit).createEntityManager();
 		ADataBaseJpa aDataBaseJpa = type.newInstance();
 		ObjectToolkit.setField(aDataBaseJpa, "entityManager", entityManager);
-		// Deencapsulation.setField(aDataBaseJpa, entityManager);
 		return aDataBaseJpa;
 	}
 

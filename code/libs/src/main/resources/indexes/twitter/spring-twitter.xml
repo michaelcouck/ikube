@@ -127,29 +127,29 @@
         <property name="fileNames">
             <list>
                 <!-- English -->
-                <value>sentiment-smo-en.arff</value>
+                <value>sentiment-en.arff</value>
                 <!-- Spanish -->
-                <value>sentiment-smo-es.arff</value>
+                <value>sentiment-es.arff</value>
                 <!-- Japanese -->
-                <value>sentiment-smo-jp.arff</value>
+                <value>sentiment-jp.arff</value>
                 <!-- Chinese -->
-                <value>sentiment-smo-cn.arff</value>
+                <value>sentiment-cn.arff</value>
                 <!-- Dutch -->
-                <value>sentiment-smo-nl.arff</value>
+                <value>sentiment-nl.arff</value>
                 <!-- French -->
-                <value>sentiment-smo-fr.arff</value>
+                <value>sentiment-fr.arff</value>
                 <!-- German -->
-                <value>sentiment-smo-de.arff</value>
+                <value>sentiment-de.arff</value>
                 <!-- Swedish -->
-                <value>sentiment-smo-sv.arff</value>
+                <value>sentiment-sv.arff</value>
                 <!-- Thai -->
-                <value>sentiment-smo-th.arff</value>
+                <value>sentiment-th.arff</value>
                 <!-- Arabic -->
-                <value>sentiment-smo-ar.arff</value>
+                <value>sentiment-ar.arff</value>
                 <!-- Turkish -->
-                <value>sentiment-smo-tr.arff</value>
+                <value>sentiment-tr.arff</value>
                 <!-- Russian -->
-                <value>sentiment-smo-ru.arff</value>
+                <value>sentiment-ru.arff</value>
             </list>
         </property>
         <property name="filters">
