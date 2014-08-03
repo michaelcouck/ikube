@@ -42,7 +42,7 @@ public class LanguageDetectionStrategyTest extends AbstractTest {
 		Document document = new Document();
 		// English
 		when(indexableColumn.getContent()).thenReturn("some english text that can not be confused with swedish for God's sake");
-		languageDetectionStrategy.aroundProcess(indexContext, indexableTable, document, null);
+		languageDetectionStrategy.preProcess(indexContext, indexableTable, document, null);
 		String english = Locale.ENGLISH.getDisplayLanguage(Locale.ENGLISH);
         logger.error("English : " + english);
 		String language = document.get(IConstants.LANGUAGE);
@@ -51,7 +51,7 @@ public class LanguageDetectionStrategyTest extends AbstractTest {
 		// Russian, and that is enough I think
 		document = new Document();
 		when(indexableColumn.getContent()).thenReturn("господи");
-		languageDetectionStrategy.aroundProcess(indexContext, indexableTable, document, null);
+		languageDetectionStrategy.preProcess(indexContext, indexableTable, document, null);
 		language = document.get(IConstants.LANGUAGE);
 
 		String russian = new Locale("ru").getDisplayLanguage(Locale.ENGLISH);
@@ -65,7 +65,7 @@ public class LanguageDetectionStrategyTest extends AbstractTest {
 		final Document document = new Document();
 		double perSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			public void execute() throws Exception {
-				languageDetectionStrategy.aroundProcess(indexContext, indexableColumn, document, null);
+				languageDetectionStrategy.preProcess(indexContext, indexableColumn, document, null);
 			}
 		}, "Language detection strategy : ", iterations, Boolean.TRUE);
 		assertTrue(perSecond > 1000);

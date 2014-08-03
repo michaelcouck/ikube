@@ -41,11 +41,11 @@ public final class EmoticonClassificationStrategy extends AStrategy {
      * {@inheritDoc}
      */
     @Override
-    public boolean aroundProcess(
-            final IndexContext indexContext,
-            final Indexable indexable,
-            final Document document,
-            final Object resource)
+    public boolean preProcess(
+        final IndexContext indexContext,
+        final Indexable indexable,
+        final Document document,
+        final Object resource)
             throws Exception {
         // Remove duplicate or re-tweets?
         // Remove the @username strings?
@@ -79,7 +79,7 @@ public final class EmoticonClassificationStrategy extends AStrategy {
                 }
             }
         }
-        return super.aroundProcess(indexContext, indexable, document, resource);
+        return super.preProcess(indexContext, indexable, document, resource);
     }
 
     /**

@@ -1,3 +1,4 @@
+<!--suppress MavenModelInspection -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
@@ -126,6 +127,45 @@
 					<artifactId>exec-maven-plugin</artifactId>
 					<version>1.2.1</version>
 				</plugin>
+                <!--
+                    This plugin will copy the configuration files and directories to the sub modules,
+                    for the tests and for the server to be configured, i.e. the Jetty Maven plugin server.
+                 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>1.6</version>
+                    <executions>
+                        <execution>
+                            <id>copy-configuration</id>
+                            <phase>install</phase>
+                            <configuration>
+                                <target>
+                                    <!--<echo message="basedir : ${basedir}, ">basedir : ${basedir}</echo>
+                                    <echo message="pom.basedir : ${pom.basedir}, ">pom.basedir : ${pom.basedir}</echo>
+                                    <echo message="pom.baseUri : ${pom.baseUri}, ">pom.baseUri : ${pom.baseUri}</echo>
+                                    <echo message="project.basedir : ${project.basedir}, ">project.basedir : ${project.basedir}</echo>
+                                    <echo message="project.baseUri : ${project.baseUri}, ">project.baseUri : ${project.baseUri}</echo>
+                                    <echo message="parent.basedir : ${parent.basedir}, ">parent.basedir : ${parent.basedir}</echo>
+                                    <echo message="project.parent.basedir : ${project.parent.basedir}">project.parent.basedir : ${project.parent.basedir}</echo>
+                                    <echo message="project.parent.relativePath : ${project.parent.relativePath}, ">project.parent.relativePath : ${project.parent.relativePath}</echo>-->
+
+                                    <delete dir="ikube"/>
+
+                                    <copy todir="ikube"><fileset dir="../libs/src/main/resources/ikube" includes="**"/></copy>
+                                    <copy todir="ikube/analytics"><fileset dir="../libs/src/main/resources/analytics" includes="**"/></copy>
+                                    <copy todir="ikube/indexes/production"><fileset dir="../libs/src/main/resources/indexes/production" includes="**"/></copy>
+                                    <copy todir="ikube/indexes/integration"><fileset dir="../libs/src/main/resources/indexes/integration" includes="**"/></copy>
+                                    <copy todir="ikube/indexes/twitter"><fileset dir="../libs/src/main/resources/indexes/twitter" includes="**"/></copy>
+                                    <copy todir="ikube/indexes/bosal"><fileset dir="../libs/src/main/resources/indexes/bosal" includes="**"/></copy>
+                                </target>
+                            </configuration>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
@@ -1168,32 +1208,6 @@
             <artifactId>jersey-json</artifactId>
             <version>${jersey-version}</version>
             <scope>compile</scope>
-            <!--<exclusions>
-                <exclusion>
-                    <artifactId>jettison</artifactId>
-                    <groupId>org.codehaus.jettison</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jackson-core-asl</artifactId>
-                    <groupId>org.codehaus.jackson</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jackson-mapper-asl</artifactId>
-                    <groupId>org.codehaus.jackson</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jackson-jaxrs</artifactId>
-                    <groupId>org.codehaus.jackson</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jackson-xc</artifactId>
-                    <groupId>org.codehaus.jackson</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>stax-api</artifactId>
-                    <groupId>javax.xml.stream</groupId>
-                </exclusion>
-            </exclusions>-->
         </dependency>
         <dependency>
             <groupId>com.sun.jersey</groupId>

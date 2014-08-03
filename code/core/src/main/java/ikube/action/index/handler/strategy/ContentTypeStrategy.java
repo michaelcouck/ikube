@@ -35,11 +35,11 @@ public final class ContentTypeStrategy extends AStrategy {
      * @throws Exception
      */
     @Override
-    public boolean aroundProcess(
-            final IndexContext indexContext,
-            final Indexable indexable,
-            final Document document,
-            final Object resource)
+    public boolean preProcess(
+        final IndexContext indexContext,
+        final Indexable indexable,
+        final Document document,
+        final Object resource)
             throws Exception {
         MimeType mimeType = null;
         // Check the name of the resource, i.e. index.html if it iexists
@@ -63,7 +63,7 @@ public final class ContentTypeStrategy extends AStrategy {
         if (mimeType != null) {
             IndexManager.addStringField(IConstants.MIME_TYPE, mimeType.getName(), indexable, document);
         }
-        return super.aroundProcess(indexContext, indexable, document, resource);
+        return super.preProcess(indexContext, indexable, document, resource);
     }
 
     final Object getRawContent(final Indexable indexable) {

@@ -57,8 +57,8 @@ public class AnalysisStrategy extends AStrategy {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public boolean aroundProcess(final IndexContext indexContext, final Indexable indexable, final Document document,
-                                 final Object resource) throws Exception {
+    public boolean preProcess(final IndexContext indexContext, final Indexable indexable, final Document document,
+                              final Object resource) throws Exception {
         String content = indexable.getContent() != null ? indexable.getContent().toString() : resource != null ? resource.toString() : null;
         // TODO Perhaps detect the subject and the object. Separate the constructs of the sentence for further processing
         if (!StringUtils.isEmpty(StringUtils.stripToEmpty(content))) {
@@ -79,7 +79,7 @@ public class AnalysisStrategy extends AStrategy {
                 logger.warn("Classification : " + classification + ", " + context.getName() + ", " + content);
             }
         }
-        return super.aroundProcess(indexContext, indexable, document, resource);
+        return super.preProcess(indexContext, indexable, document, resource);
     }
 
     public void setContext(Context context) {

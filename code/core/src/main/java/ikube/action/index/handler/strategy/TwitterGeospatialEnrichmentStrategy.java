@@ -52,11 +52,11 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
      * {@inheritDoc}
      */
     @Override
-    public boolean aroundProcess(
-            final IndexContext indexContext,
-            final Indexable indexable,
-            final Document document,
-            final Object resource)
+    public boolean preProcess(
+        final IndexContext indexContext,
+        final Indexable indexable,
+        final Document document,
+        final Object resource)
             throws Exception {
         if (IndexableTweets.class.isAssignableFrom(indexable.getClass()) &&
                 resource != null && Tweet.class.isAssignableFrom(resource.getClass())) {
@@ -66,7 +66,7 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
             // This needs to be added to the Spring Twitter API, I asked Craig Wells on Twitter to add the field
             setCoordinate(indexableTweets, twitterProfile, document);
         }
-        return super.aroundProcess(indexContext, indexable, document, resource);
+        return super.preProcess(indexContext, indexable, document, resource);
     }
 
     void setCoordinate(

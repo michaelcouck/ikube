@@ -52,7 +52,7 @@ public class LanguageFilterStrategyTest extends AbstractTest {
 		final Document document = new Document();
 		double perSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			public void execute() throws Throwable {
-				languageFilterStrategy.aroundProcess(indexContext, indexableTable, document, null);
+				languageFilterStrategy.preProcess(indexContext, indexableTable, document, null);
 			}
 		}, "Language detection strategy : ", iterations, Boolean.TRUE);
 		assertTrue(perSecond > 1000);

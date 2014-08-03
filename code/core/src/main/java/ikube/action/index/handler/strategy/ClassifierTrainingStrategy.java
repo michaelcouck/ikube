@@ -31,10 +31,10 @@ public class ClassifierTrainingStrategy extends AStrategy {
      * {@inheritDoc}
      */
     @Override
-    public boolean aroundProcess(final IndexContext indexContext, final Indexable indexable, final Document document,
-                                 final Object resource) throws Exception {
+    public boolean preProcess(final IndexContext indexContext, final Indexable indexable, final Document document,
+                              final Object resource) throws Exception {
         // There are no moe tweets, so training it dead now
-        return super.aroundProcess(indexContext, indexable, document, resource);
+        return super.preProcess(indexContext, indexable, document, resource);
     }
 
     public void initialize() {

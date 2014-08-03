@@ -33,22 +33,22 @@ public class EmoticonClassificationStrategyTest extends AbstractTest {
 
 		Document document = new Document();
 		Mockito.when(indexable.getContent()).thenReturn("What a lovely day :) :)");
-		emoticonClassificationStrategy.aroundProcess(indexContext, indexable, document, resource);
+		emoticonClassificationStrategy.preProcess(indexContext, indexable, document, resource);
 		assertEquals(IConstants.POSITIVE, document.get(IConstants.CLASSIFICATION));
 
 		document = new Document();
 		Mockito.when(indexable.getContent()).thenReturn("I am having a terrible time :( D:<");
-		emoticonClassificationStrategy.aroundProcess(indexContext, indexable, document, resource);
+		emoticonClassificationStrategy.preProcess(indexContext, indexable, document, resource);
 		assertEquals(IConstants.NEGATIVE, document.get(IConstants.CLASSIFICATION));
 
 		document = new Document();
 		Mockito.when(indexable.getContent()).thenReturn("The bigger the better");
-		emoticonClassificationStrategy.aroundProcess(indexContext, indexable, document, resource);
+		emoticonClassificationStrategy.preProcess(indexContext, indexable, document, resource);
 		assertNull(document.get(IConstants.CLASSIFICATION));
 
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
 			public void execute() throws Throwable {
-				emoticonClassificationStrategy.aroundProcess(indexContext, indexable, new Document(), resource);
+				emoticonClassificationStrategy.preProcess(indexContext, indexable, new Document(), resource);
 			}
 		}, "Emoticon strategy : ", 1000, Boolean.TRUE);
 		assertTrue(executionsPerSecond > 100);

@@ -38,7 +38,7 @@ public final class GeospatialEnrichmentStrategy extends AGeospatialEnrichmentStr
      * {@inheritDoc}
      */
     @Override
-    public boolean aroundProcess(final IndexContext indexContext, final Indexable indexable, final Document document, final Object resource) throws Exception {
+    public boolean preProcess(final IndexContext indexContext, final Indexable indexable, final Document document, final Object resource) throws Exception {
         // The parameters can be either the columns and values from a csv file
         // or the columns from a table filled in with the values. All the logic from the Enrichment class can
         // be used in here to keep all the enrichment logic in the same place
@@ -46,7 +46,7 @@ public final class GeospatialEnrichmentStrategy extends AGeospatialEnrichmentStr
         if (coordinate != null) {
             addSpatialLocationFields(coordinate, document);
         }
-        return super.aroundProcess(indexContext, indexable, document, resource);
+        return super.preProcess(indexContext, indexable, document, resource);
     }
 
     /**

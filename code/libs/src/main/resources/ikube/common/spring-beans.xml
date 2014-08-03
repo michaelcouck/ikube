@@ -350,6 +350,7 @@
         <ref bean="ikube.action.index.handler.filesystem.IndexableFilesystemCsvHandler"/>
         <ref bean="ikube.action.index.handler.internet.TwitterHandler"/>
         <ref bean="ikube.action.index.handler.internet.SvnHandler"/>
+        <ref bean="ikube.action.index.handler.internet.ExchangeHandler"/>
     </util:list>
 
     <bean

@@ -35,12 +35,12 @@ public class LanguageCleaningStrategyTest extends AbstractTest {
     @Test
     public void aroundProcess() throws Exception {
         when(indexable.getContent()).thenReturn("What a looovely dai where theere are moneyy mistaces aaaahhhhhhh thereererereee.");
-        languageCleaningStrategy.aroundProcess(indexContext, indexable, document, resource);
+        languageCleaningStrategy.preProcess(indexContext, indexable, document, resource);
         verify(indexable, atLeastOnce()).setContent("What a loovely dai where theere are moneyy mistaces aahh thereerereree.");
 
         double perSecond = execute(new PerformanceTester.APerform() {
             public void execute() throws Throwable {
-                languageCleaningStrategy.aroundProcess(indexContext, indexable, new Document(), resource);
+                languageCleaningStrategy.preProcess(indexContext, indexable, new Document(), resource);
             }
         }, "Language detection strategy : ", 1000, Boolean.TRUE);
         assertTrue(perSecond > 1000);
@@ -49,7 +49,7 @@ public class LanguageCleaningStrategyTest extends AbstractTest {
     @Test
     public void punctuation() throws Exception {
         when(indexable.getContent()).thenReturn("First sentence.No punctuation.Ever it seems.");
-        languageCleaningStrategy.aroundProcess(indexContext, indexable, document, resource);
+        languageCleaningStrategy.preProcess(indexContext, indexable, document, resource);
         verify(indexable, atLeastOnce()).setContent("First sentence. No punctuation. Ever it seems.");
     }
 

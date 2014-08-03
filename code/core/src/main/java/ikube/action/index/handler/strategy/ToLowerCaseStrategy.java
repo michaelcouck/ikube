@@ -26,14 +26,14 @@ public final class ToLowerCaseStrategy extends AStrategy {
      * {@inheritDoc}
      */
     @Override
-    public boolean aroundProcess(final IndexContext indexContext, final Indexable indexable, final Document document, final Object resource)
+    public boolean preProcess(final IndexContext indexContext, final Indexable indexable, final Document document, final Object resource)
         throws Exception {
         if (indexable.getContent() != null && String.class.isAssignableFrom(indexable.getContent().getClass())) {
             String content = indexable.getContent().toString();
             content = content.toLowerCase();
             indexable.setContent(content);
         }
-        return super.aroundProcess(indexContext, indexable, document, resource);
+        return super.preProcess(indexContext, indexable, document, resource);
     }
 
 }

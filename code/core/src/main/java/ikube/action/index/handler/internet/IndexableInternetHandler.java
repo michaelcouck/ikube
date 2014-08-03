@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ForkJoinTask;
 
@@ -26,56 +25,49 @@ import java.util.concurrent.ForkJoinTask;
 @SuppressWarnings({"SpringJavaAutowiredMembersInspection", "SpringJavaAutowiringInspection"})
 public class IndexableInternetHandler extends IndexableHandler<IndexableInternet> {
 
-	@Autowired
-	private IDataBase dataBase;
-	@Autowired
-	private InternetResourceHandler internetResourceHandler;
+    @Autowired
+    private IDataBase dataBase;
+    @Autowired
+    private InternetResourceHandler internetResourceHandler;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ForkJoinTask<?> handleIndexableForked(
-	  final IndexContext indexContext,
-	  final IndexableInternet indexableInternet)
-	  throws Exception {
-		authenticate(indexableInternet);
-		IResourceProvider resourceProvider = new InternetResourceProvider(indexableInternet, dataBase);
-		return getRecursiveAction(indexContext, indexableInternet, resourceProvider);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ForkJoinTask<?> handleIndexableForked(final IndexContext indexContext, final IndexableInternet indexableInternet) throws Exception {
+        authenticate(indexableInternet);
+        IResourceProvider resourceProvider = new InternetResourceProvider(indexableInternet, dataBase);
+        return getRecursiveAction(indexContext, indexableInternet, resourceProvider);
+    }
 
-	private void authenticate(final IndexableInternet indexableInternet) throws MalformedURLException {
-		String url = indexableInternet.getBaseUrl();
-		int port = new URL(indexableInternet.getUrl()).getPort();
-		String userid = indexableInternet.getUserid();
-		String password = indexableInternet.getPassword();
-		if (!StringUtils.isEmpty(url) && !StringUtils.isEmpty(userid) && !StringUtils.isEmpty(password)) {
-			new WebServiceAuthentication().authenticate(new AutoRetryHttpClient(), url, port, userid, password);
-		}
-	}
+    private void authenticate(final IndexableInternet indexableInternet) throws MalformedURLException {
+        String url = indexableInternet.getBaseUrl();
+        int port = new URL(indexableInternet.getUrl()).getPort();
+        String userid = indexableInternet.getUserid();
+        String password = indexableInternet.getPassword();
+        if (!StringUtils.isEmpty(url) && !StringUtils.isEmpty(userid) && !StringUtils.isEmpty(password)) {
+            new WebServiceAuthentication().authenticate(new AutoRetryHttpClient(), url, port, userid, password);
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	protected List<Url> handleResource(
-	  final IndexContext indexContext,
-	  final IndexableInternet indexableInternet,
-	  final Object resource) {
-		Url url = (Url) resource;
-		try {
-			if (url.getRawContent() != null) {
-				internetResourceHandler.handleResource(indexContext, indexableInternet, new Document(), url);
-			}
-		} catch (final Exception e) {
-			handleException(indexableInternet, e, "Exception indexing site : " + indexableInternet.getName());
-		} finally {
-			url.setRawContent(null);
-			url.setParsedContent(null);
-		}
-		return Collections.EMPTY_LIST;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected List<Url> handleResource(final IndexContext indexContext, final IndexableInternet indexableInternet, final Object resource) {
+        if (Url.class.isAssignableFrom(resource.getClass())) {
+            Url url = (Url) resource;
+            try {
+                if (url.getRawContent() != null) {
+                    Document document = new Document();
+                    internetResourceHandler.handleResource(indexContext, indexableInternet, document, url);
+                }
+            } catch (final Exception e) {
+                handleException(indexableInternet, e, "Exception indexing site : " + indexableInternet.getName());
+            }
+        }
+        return null;
+    }
 
 
 }

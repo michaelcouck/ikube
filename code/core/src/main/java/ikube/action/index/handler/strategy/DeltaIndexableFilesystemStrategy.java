@@ -32,11 +32,11 @@ public class DeltaIndexableFilesystemStrategy extends AStrategy {
      * {@inheritDoc}
      */
     @Override
-    public boolean aroundProcess(
-            final IndexContext indexContext,
-            final Indexable indexable,
-            final Document document,
-            final Object resource)
+    public boolean preProcess(
+        final IndexContext indexContext,
+        final Indexable indexable,
+        final Document document,
+        final Object resource)
             throws Exception {
         // Check that the file is changed or doesn't exist, if changed or doesn't exist then process the
         // method, add the resource to the file system file as a reference against the index
@@ -47,7 +47,7 @@ public class DeltaIndexableFilesystemStrategy extends AStrategy {
         Long identifier = HashUtilities.hash(path, length, lastModified);
         boolean mustProceed = !indexContext.getHashes().remove(identifier);
         // logger.info("Around process delta file strategy : " + mustProceed);
-        return mustProceed && super.aroundProcess(indexContext, indexable, document, resource);
+        return mustProceed && super.preProcess(indexContext, indexable, document, resource);
     }
 
 }

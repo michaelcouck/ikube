@@ -40,18 +40,18 @@ public final class LanguageDetectionStrategy extends AStrategy {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean aroundProcess(
-	  final IndexContext indexContext,
-	  final Indexable indexable,
-	  final Document document,
-	  final Object resource)
+	public boolean preProcess(
+        final IndexContext indexContext,
+        final Indexable indexable,
+        final Document document,
+        final Object resource)
 	  throws Exception {
 		// Concatenate the data in the indexable
 		if (StringUtils.isEmpty(document.get(IConstants.LANGUAGE))) {
 			String content = getContent(indexable, new StringBuilder());
 			detectLanguage(indexable, document, content);
 		}
-		return super.aroundProcess(indexContext, indexable, document, resource);
+		return super.preProcess(indexContext, indexable, document, resource);
 	}
 
 	void detectLanguage(final Indexable indexable, final Document document, final String content) {

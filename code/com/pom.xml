@@ -29,59 +29,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.6</version>
-                <executions>
-                    <execution>
-                        <id>copy-configuration</id>
-                        <phase>install</phase>
-                        <configuration>
-                            <target>
-                                <echo message="Base directory : ${basedir}, ">Base directory : ${basedir}</echo>
-
-                                <delete dir="ikube"/>
-                                <delete dir="../core/ikube"/>
-                                <delete dir="../war/ikube"/>
-                                <delete dir="../libs/ikube"/>
-                                <delete dir="../../ikube"/>
-
-                                <copydir src="../libs/src/main/resources/ikube" dest="ikube"/>
-                                <copydir src="../libs/src/main/resources/analytics" dest="ikube/analytics"/>
-                                <copydir src="../libs/src/main/resources/indexes/production" dest="ikube/production"/>
-                                <copydir src="../libs/src/main/resources/indexes/integration" dest="ikube/integration"/>
-
-                                <copydir src="../libs/src/main/resources/ikube" dest="../core/ikube"/>
-                                <copydir src="../libs/src/main/resources/analytics" dest="../core/ikube/analytics"/>
-                                <copydir src="../libs/src/main/resources/indexes/production"
-                                         dest="../core/ikube/production"/>
-                                <copydir src="../libs/src/main/resources/indexes/integration"
-                                         dest="../core/ikube/integration"/>
-
-                                <copydir src="../libs/src/main/resources/ikube" dest="../war/ikube"/>
-                                <copydir src="../libs/src/main/resources/analytics" dest="../war/ikube/analytics"/>
-                                <copydir src="../libs/src/main/resources/indexes/production"
-                                         dest="../war/ikube/production"/>
-                                <copydir src="../libs/src/main/resources/indexes/integration"
-                                         dest="../war/ikube/integration"/>
-                                <copydir src="../libs/src/main/resources/indexes/twitter" dest="../war/ikube/twitter"/>
-
-                                <copydir src="../libs/src/main/resources/ikube" dest="../libs/ikube"/>
-                                <copydir src="../libs/src/main/resources/analytics" dest="../libs/ikube/analytics"/>
-                                <copydir src="../libs/src/main/resources/indexes/production"
-                                         dest="../libs/ikube/production"/>
-
-                                <copydir src="../libs/src/main/resources/ikube" dest="../../ikube"/>
-                                <copydir src="../libs/src/main/resources/analytics" dest="../../ikube/analytics"/>
-                                <copydir src="../libs/src/main/resources/indexes/production"
-                                         dest="../../ikube/production"/>
-                                <copydir src="../libs/src/main/resources/indexes/integration"
-                                         dest="../../ikube/integration"/>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

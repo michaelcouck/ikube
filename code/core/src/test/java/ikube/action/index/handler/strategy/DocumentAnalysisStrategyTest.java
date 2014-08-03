@@ -1,13 +1,10 @@
 package ikube.action.index.handler.strategy;
 
 import ikube.AbstractTest;
-import ikube.IConstants;
 import ikube.action.index.handler.IStrategy;
 import ikube.analytics.IAnalyticsService;
 import ikube.model.*;
-import ikube.toolkit.StringUtilities;
 import org.apache.lucene.document.Document;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -18,12 +15,9 @@ import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static ikube.IConstants.*;
-import static ikube.IConstants.NEGATIVE;
-import static ikube.IConstants.POSITIVE;
 import static java.lang.Boolean.TRUE;
 import static java.util.Locale.ENGLISH;
 import static org.junit.Assert.assertEquals;
@@ -85,10 +79,10 @@ public class DocumentAnalysisStrategyTest extends AbstractTest {
             public Object answer(final InvocationOnMock invocation) throws Throwable {
                 return POSITIVE;
             }
-        }).when(documentAnalysisStrategy).highestVotedClassification(any(List.class));
-        when(nextStrategy.aroundProcess(any(IndexContext.class), any(Indexable.class), any(Document.class), any())).thenReturn(TRUE);
+        }).when(documentAnalysisStrategy).aggregateClassificationForSentences(any(List.class));
+        when(nextStrategy.preProcess(any(IndexContext.class), any(Indexable.class), any(Document.class), any())).thenReturn(TRUE);
 
-        boolean processed = documentAnalysisStrategy.aroundProcess(indexContext, indexableExchange, document, sentences.toString());
+        boolean processed = documentAnalysisStrategy.preProcess(indexContext, indexableExchange, document, sentences.toString());
         assertTrue(processed);
         assertEquals(POSITIVE, document.get(CLASSIFICATION));
 
@@ -97,13 +91,13 @@ public class DocumentAnalysisStrategyTest extends AbstractTest {
             public Object answer(final InvocationOnMock invocation) throws Throwable {
                 return NEGATIVE;
             }
-        }).when(documentAnalysisStrategy).highestVotedClassification(any(List.class));
-        processed = documentAnalysisStrategy.aroundProcess(indexContext, indexableExchange, document, sentences.toString());
+        }).when(documentAnalysisStrategy).aggregateClassificationForSentences(any(List.class));
+        processed = documentAnalysisStrategy.preProcess(indexContext, indexableExchange, document, sentences.toString());
         assertTrue(processed);
         assertEquals(POSITIVE, document.get(CLASSIFICATION));
         assertEquals(NEGATIVE, document.get(CLASSIFICATION_CONFLICT));
 
-        verify(nextStrategy, atLeastOnce()).aroundProcess(any(IndexContext.class), any(Indexable.class), any(Document.class), any());
+        verify(nextStrategy, atLeastOnce()).preProcess(any(IndexContext.class), any(Indexable.class), any(Document.class), any());
     }
 
     @Test
@@ -111,15 +105,15 @@ public class DocumentAnalysisStrategyTest extends AbstractTest {
     public void highestVotedClassification() {
         when(analyticsService.analyze(any(Analysis.class))).thenReturn(analysis);
         when(analysis.getClazz()).thenReturn(POSITIVE, NEGATIVE, POSITIVE);
-        when(analysis.getOutput()).thenReturn(new double[] {0.63556489, 0.3546825}, new double[] {0.12365489, 0.826554687}, new double[] {0.63556489, 0.3546825});
+        when(analysis.getOutput()).thenReturn(new double[]{0.63556489, 0.3546825}, new double[]{0.12365489, 0.826554687}, new double[]{0.63556489, 0.3546825});
 
-        String classification = documentAnalysisStrategy.highestVotedClassification(sentences);
+        String classification = documentAnalysisStrategy.aggregateClassificationForSentences(sentences);
         assertEquals(POSITIVE, classification);
 
         when(analysis.getClazz()).thenReturn(NEGATIVE, NEGATIVE, POSITIVE);
-        when(analysis.getOutput()).thenReturn(new double[] {0.12365489, 0.826554687}, new double[] {0.12365489, 0.826554687}, new double[] {0.63556489, 0.3546825});
+        when(analysis.getOutput()).thenReturn(new double[]{0.12365489, 0.826554687}, new double[]{0.12365489, 0.826554687}, new double[]{0.63556489, 0.3546825});
 
-        classification = documentAnalysisStrategy.highestVotedClassification(sentences);
+        classification = documentAnalysisStrategy.aggregateClassificationForSentences(sentences);
         assertEquals(NEGATIVE, classification);
     }
 

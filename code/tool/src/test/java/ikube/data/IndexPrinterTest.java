@@ -8,14 +8,11 @@ import mockit.Deencapsulation;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 
 import java.io.File;
 
-import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 /**
@@ -62,27 +59,12 @@ public class IndexPrinterTest extends AbstractTest {
     public void main() {
         final String[] strings = {"and some text", "for the index", "to be able", "to search if necessary"};
         Logger logger = mock(Logger.class);
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(final InvocationOnMock invocation) throws Throwable {
-                for (final Object argument : invocation.getArguments()) {
-                    for (int i = 0; i < strings.length; i++) {
-                        if (strings[i] != null && argument.toString().contains(strings[i])) {
-                            strings[i] = null;
-                        }
-                    }
-                }
-                return null;
-            }
-        }).when(logger).info(any(String.class));
         Deencapsulation.setField(IndexPrinter.class, "LOGGER", logger);
 
         File file = createIndexFileSystem(indexContext, System.currentTimeMillis(), "127.0.0.1", strings);
         String[] args = {file.getAbsolutePath(), "100"};
         IndexPrinter.main(args);
-        for (final String string : strings) {
-            assertNull(string);
-        }
+        Mockito.verify(logger, atLeast(10)).error(anyString());
     }
 
 }

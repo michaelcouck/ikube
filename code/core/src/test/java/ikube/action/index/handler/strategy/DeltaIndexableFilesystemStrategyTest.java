@@ -74,14 +74,14 @@ public class DeltaIndexableFilesystemStrategyTest extends AbstractTest {
 
         when(indexContext.getHashes()).thenReturn(new TreeSet<Long>());
 
-        boolean mustProcess = deltaStrategy.aroundProcess(indexContext, indexableFileSystem, new Document(), file);
+        boolean mustProcess = deltaStrategy.preProcess(indexContext, indexableFileSystem, new Document(), file);
         assertTrue(mustProcess);
 
         indexContext.getHashes().add(HashUtilities.hash(file.getAbsolutePath(), file.length(), file.lastModified()));
         indexContext.getHashes().add(HashUtilities.hash(file.getAbsolutePath(), file.length(), Integer.MIN_VALUE));
         indexContext.getHashes().add(HashUtilities.hash(file.getAbsolutePath(), file.length(), Integer.MAX_VALUE));
 
-        mustProcess = deltaStrategy.aroundProcess(indexContext, indexableFileSystem, new Document(), file);
+        mustProcess = deltaStrategy.preProcess(indexContext, indexableFileSystem, new Document(), file);
         assertFalse(mustProcess);
 
         assertEquals(2, indexContext.getHashes().size());
@@ -93,7 +93,7 @@ public class DeltaIndexableFilesystemStrategyTest extends AbstractTest {
         final File file = mock(File.class);
         double perSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
             public void execute() throws Throwable {
-                deltaStrategy.aroundProcess(indexContext, indexableFileSystem, new Document(), file);
+                deltaStrategy.preProcess(indexContext, indexableFileSystem, new Document(), file);
             }
         }, "Delta strategy ", iterations, Boolean.TRUE);
         assertTrue(perSecond > 100);
