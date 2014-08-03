@@ -33,10 +33,10 @@ public class DeltaIndexableFilesystemStrategy extends AStrategy {
      */
     @Override
     public boolean aroundProcess(
-            final IndexContext indexContext,
-            final Indexable indexable,
-            final Document document,
-            final Object resource)
+        final IndexContext indexContext,
+        final Indexable indexable,
+        final Document document,
+        final Object resource)
             throws Exception {
         // Check that the file is changed or doesn't exist, if changed or doesn't exist then process the
         // method, add the resource to the file system file as a reference against the index

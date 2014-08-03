@@ -51,10 +51,10 @@ public class LanguageFilterStrategyTest extends AbstractTest {
 		int iterations = 1000;
 		final Document document = new Document();
 		double perSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
-			public void execute() throws Throwable {
-				languageFilterStrategy.aroundProcess(indexContext, indexableTable, document, null);
-			}
-		}, "Language detection strategy : ", iterations, Boolean.TRUE);
+            public void execute() throws Throwable {
+                languageFilterStrategy.aroundProcess(indexContext, indexableTable, document, null);
+            }
+        }, "Language detection strategy : ", iterations, Boolean.TRUE);
 		assertTrue(perSecond > 1000);
 	}
 

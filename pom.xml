@@ -126,6 +126,41 @@
 					<artifactId>exec-maven-plugin</artifactId>
 					<version>1.2.1</version>
 				</plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>1.6</version>
+                    <executions>
+                        <execution>
+                            <id>copy-configuration</id>
+                            <phase>install</phase>
+                            <configuration>
+                                <target>
+                                    <!--<echo message="basedir : ${basedir}, ">basedir : ${basedir}</echo>
+                                    <echo message="pom.basedir : ${pom.basedir}, ">pom.basedir : ${pom.basedir}</echo>
+                                    <echo message="pom.baseUri : ${pom.baseUri}, ">pom.baseUri : ${pom.baseUri}</echo>
+                                    <echo message="project.basedir : ${project.basedir}, ">project.basedir : ${project.basedir}</echo>
+                                    <echo message="project.baseUri : ${project.baseUri}, ">project.baseUri : ${project.baseUri}</echo>
+                                    <echo message="parent.basedir : ${parent.basedir}, ">parent.basedir : ${parent.basedir}</echo>
+                                    <echo message="project.parent.basedir : ${project.parent.basedir}">project.parent.basedir : ${project.parent.basedir}</echo>
+                                    <echo message="project.parent.relativePath : ${project.parent.relativePath}, ">project.parent.relativePath : ${project.parent.relativePath}</echo>-->
+
+                                    <delete dir="ikube"/>
+
+                                    <copy todir="ikube"><fileset dir="../libs/src/main/resources/ikube" includes="**"/></copy>
+                                    <copy todir="ikube/analytics"><fileset dir="../libs/src/main/resources/analytics" includes="**"/></copy>
+                                    <copy todir="ikube/indexes/production"><fileset dir="../libs/src/main/resources/indexes/production" includes="**"/></copy>
+                                    <copy todir="ikube/indexes/integration"><fileset dir="../libs/src/main/resources/indexes/integration" includes="**"/></copy>
+                                    <copy todir="ikube/indexes/twitter"><fileset dir="../libs/src/main/resources/indexes/twitter" includes="**"/></copy>
+                                    <copy todir="ikube/indexes/bosal"><fileset dir="../libs/src/main/resources/indexes/bosal" includes="**"/></copy>
+                                </target>
+                            </configuration>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>

@@ -1,18 +1,16 @@
 package ikube.action.index.handler.strategy;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
-import static org.mockito.Mockito.*;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Indexable;
 import ikube.toolkit.PerformanceTester;
-
 import org.apache.lucene.document.Document;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import static junit.framework.Assert.*;
+import static org.mockito.Mockito.when;
 
 public class EmoticonClassificationStrategyTest extends AbstractTest {
 
@@ -47,10 +45,10 @@ public class EmoticonClassificationStrategyTest extends AbstractTest {
 		assertNull(document.get(IConstants.CLASSIFICATION));
 
 		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
-			public void execute() throws Throwable {
-				emoticonClassificationStrategy.aroundProcess(indexContext, indexable, new Document(), resource);
-			}
-		}, "Emoticon strategy : ", 1000, Boolean.TRUE);
+            public void execute() throws Throwable {
+                emoticonClassificationStrategy.aroundProcess(indexContext, indexable, new Document(), resource);
+            }
+        }, "Emoticon strategy : ", 1000, Boolean.TRUE);
 		assertTrue(executionsPerSecond > 100);
 	}
 

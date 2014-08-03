@@ -41,10 +41,10 @@ public final class LanguageDetectionStrategy extends AStrategy {
 	 */
 	@Override
 	public boolean aroundProcess(
-	  final IndexContext indexContext,
-	  final Indexable indexable,
-	  final Document document,
-	  final Object resource)
+        final IndexContext indexContext,
+        final Indexable indexable,
+        final Document document,
+        final Object resource)
 	  throws Exception {
 		// Concatenate the data in the indexable
 		if (StringUtils.isEmpty(document.get(IConstants.LANGUAGE))) {

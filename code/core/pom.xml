@@ -20,6 +20,29 @@
 
 	<build>
 		<plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-configuration-to-parent</id>
+                        <phase>install</phase>
+                        <configuration>
+                            <target>
+                                <delete dir="../../ikube"/>
+                                <copy todir="../../ikube"><fileset dir="ikube" includes="**"/></copy>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 			<!-- No idea what this plugin does, perhaps linked to PMD? -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>

@@ -42,10 +42,10 @@ public final class EmoticonClassificationStrategy extends AStrategy {
      */
     @Override
     public boolean aroundProcess(
-            final IndexContext indexContext,
-            final Indexable indexable,
-            final Document document,
-            final Object resource)
+        final IndexContext indexContext,
+        final Indexable indexable,
+        final Document document,
+        final Object resource)
             throws Exception {
         // Remove duplicate or re-tweets?
         // Remove the @username strings?

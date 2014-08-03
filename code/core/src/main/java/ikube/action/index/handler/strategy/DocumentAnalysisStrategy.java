@@ -9,6 +9,7 @@ import ikube.model.Context;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.StringUtilities;
 import opennlp.tools.sentdetect.SentenceDetectorME;
 import opennlp.tools.sentdetect.SentenceModel;
 import org.apache.commons.lang.StringUtils;
@@ -66,52 +67,43 @@ public class DocumentAnalysisStrategy extends AStrategy {
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
-    public boolean aroundProcess(final IndexContext indexContext, final Indexable indexable, final Document document, final Object resource)
-        throws Exception {
-        String content = getContentForProcessing(indexable, resource);
-        if (!StringUtils.isEmpty(StringUtils.stripToEmpty(content))) {
-            String language = document.get(IConstants.LANGUAGE);
-            if (language == null) {
-                language = Locale.ENGLISH.getLanguage();
-            }
-            // Split the document text into sentences
-            List<String> sentences = breakDocumentIntoSentences(content, language);
-            String highestVotedClassification = highestVotedClassification(sentences);
-            // Add the highest voted result to the index
-            if (!StringUtils.isEmpty(highestVotedClassification)) {
-                String previousClassification = document.get(IConstants.CLASSIFICATION);
-                if (previousClassification == null) {
-                    addStringField(CLASSIFICATION, highestVotedClassification, indexable, document);
-                } else //noinspection ConstantConditions
-                    if (!highestVotedClassification.equals(previousClassification)) {
-                        addStringField(CLASSIFICATION_CONFLICT, highestVotedClassification, indexable, document);
-                    }
-            }
-            if (System.currentTimeMillis() % 15000 == 0) {
-                logger.warn("Classification : " + highestVotedClassification + ", " + context.getName() + ", " + content);
+    public boolean aroundProcess(final IndexContext indexContext, final Indexable indexable, final Document document, final Object resource) throws Exception {
+        if (indexable.getContent() != null) {
+            String content = indexable.getContent().toString();
+            if (!StringUtils.isEmpty(StringUtils.stripToEmpty(content))) {
+                String language = document.get(IConstants.LANGUAGE);
+                if (language == null) {
+                    language = Locale.ENGLISH.getLanguage();
+                }
+                // Split the document text into sentences
+                List<String> sentences = breakDocumentIntoSentences(content, language);
+                String highestVotedClassification = aggregateClassificationForSentences(sentences);
+                // Add the highest voted result to the index
+                if (!StringUtils.isEmpty(highestVotedClassification)) {
+                    String previousClassification = document.get(IConstants.CLASSIFICATION);
+                    if (previousClassification == null) {
+                        addStringField(CLASSIFICATION, highestVotedClassification, indexable, document);
+                    } else //noinspection ConstantConditions
+                        if (!highestVotedClassification.equals(previousClassification)) {
+                            addStringField(CLASSIFICATION_CONFLICT, highestVotedClassification, indexable, document);
+                        }
+                }
+                if (System.currentTimeMillis() % 15000 == 0) {
+                    logger.warn("Classification : " + highestVotedClassification + ", " + context.getName() + ", " + content);
+                }
             }
         }
         return super.aroundProcess(indexContext, indexable, document, resource);
     }
 
-    private String getContentForProcessing(final Indexable indexable, final Object resource) {
-        if (indexable.getContent() != null) {
-            return indexable.getContent().toString();
-        }
-        if (resource != null) {
-            return resource.toString();
-        }
-        return null;
-    }
-
     @SuppressWarnings("unchecked")
-    String highestVotedClassification(final List<String> sentences) {
+    String aggregateClassificationForSentences(final List<String> sentences) {
         // Analyze each sentence separately
         String[] classes = new String[sentences.size()];
         double[][] distributionForInstances = new double[sentences.size()][];
         for (int i = 0; i < distributionForInstances.length; i++) {
             String sentence = sentences.get(i);
+            sentence = StringUtilities.stripToAlphaNumeric(sentence);
             Analysis<Object, Object> analysis = new Analysis<>();
             analysis.setInput(sentence);
             analysis.setContext(context.getName());
@@ -119,6 +111,15 @@ public class DocumentAnalysisStrategy extends AStrategy {
 
             classes[i] = analysis.getClazz();
             distributionForInstances[i] = (double[]) analysis.getOutput();
+
+            if (logger.isInfoEnabled()) {
+                logger.info("Class : " + classes[i]);
+                logger.info("Distribution : " + distributionForInstances[i]);
+                logger.info("Sentence : " + sentence);
+            }
+        }
+        if (distributionForInstances[0] == null) {
+            return null;
         }
         // Aggregate the results, i.e. the greatest average probability wins
         double[] aggregateDistributionForSentences = new double[distributionForInstances[0].length];
@@ -149,6 +150,7 @@ public class DocumentAnalysisStrategy extends AStrategy {
                 mostProbableClass = classes[i];
             }
         }
+        logger.error("Most probable class : " + mostProbableClass + ", sentence size : " + sentences.size());
         return mostProbableClass;
     }
 
@@ -171,9 +173,9 @@ public class DocumentAnalysisStrategy extends AStrategy {
 
         to = breakIterator.first();
         while (to != BreakIterator.DONE) {
-            String sentence = text.substring(from, to);
+            String sentence = StringUtils.stripToEmpty(text.substring(from, to));
             if (StringUtils.isNotEmpty(sentence)) {
-                sentences.add(StringUtils.stripToEmpty(sentence));
+                sentences.add(sentence);
             }
             from = to;
             to = breakIterator.next();

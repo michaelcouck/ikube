@@ -28,10 +28,10 @@ public class LanguageCleaningStrategy extends AStrategy {
      */
     @Override
     public boolean aroundProcess(
-            final IndexContext indexContext,
-            final Indexable indexable,
-            final Document document,
-            final Object resource)
+        final IndexContext indexContext,
+        final Indexable indexable,
+        final Document document,
+        final Object resource)
             throws Exception {
         String content = indexable.getContent() != null ? indexable.getContent().toString() : resource != null ? resource.toString() : null;
         String cleanedContent = cleanContent(content);

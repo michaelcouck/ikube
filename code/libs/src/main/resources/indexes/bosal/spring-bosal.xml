@@ -33,6 +33,12 @@
         <ref bean="bosal-site"/>
     </util:list>
 
+    <!--
+        If the field is vectored or tokenized then the results from the
+        searches are surprising. For example for the classification field, i.e.
+        positive and negative, there are no results unless the search string is
+        something like 'positi~', strangely enough.
+    -->
     <bean
         name="bosal-mail"
         class="ikube.model.IndexableExchange"
@@ -43,36 +49,70 @@
 
         property:analyzed="true"
         property:stored="true"
-        property:vectored="true"
+        property:vectored="false"
+        property:tokenized="false"
+        property:omitNorms="true"
+
         property:address="false"
         property:maxExceptions="100"
-        property:tokenized="true"
-        property:omitNorms="false"
+
         property:threads="3"
         property:strategies-ref="bosal-strategies"/>
 
     <bean
         name="bosal-site"
         class="ikube.model.IndexableInternet"
-        property:threads="3"
-        property:omitNorms="false"
-        property:address="false"
-        property:analyzed="true"
-        property:contentFieldName="contents"
+        property:name="bosal-site"
+        property:url="http://www.bosal.com/"
         property:idFieldName="url"
-        property:maxExceptions="100"
-        property:strategies-ref="bosal-strategies"
+        property:titleFieldName="title"
+        property:contentFieldName="contents"
+
+        property:analyzed="true"
         property:stored="true"
-        property:vectored="true"
-        property:tokenized="true"
-        property:url="http://www.bosal.com/"/>
+
+        property:vectored="false"
+        property:tokenized="false"
+
+        property:omitNorms="true"
+
+        property:address="false"
+        property:excludedPattern="${internet.excluded.pattern}"
+        property:maxExceptions="100"
+        property:maxReadLength="1000000"
+        property:timeout="60000"
+        property:threads="3"
+        property:internetBatchSize="${internet.batch.size}"
+        property:strategies-ref="bosal-strategies"/>
 
     <util:list id="bosal-strategies">
-        <bean class="ikube.action.index.handler.strategy.LanguageCleaningStrategy"/>
-        <bean class="ikube.action.index.handler.strategy.ToLowerCaseStrategy"/>
-        <bean class="ikube.action.index.handler.strategy.LanguageDetectionStrategy"/>
-        <bean class="ikube.action.index.handler.strategy.DocumentAnalysisStrategy"
-              property:context-ref="english-sentiment"/>
+        <ref bean="bosal-concatenation-strategy"/>
+        <ref bean="bosal-cleaning-strategy"/>
+        <ref bean="bosal-filter-strategy"/>
+        <ref bean="bosal-to-lowercase-strategy"/>
+        <ref bean="bosal-language-detection-strategy"/>
+        <ref bean="bosal-document-analysis-strategy"/>
     </util:list>
+
+    <bean
+        name="bosal-concatenation-strategy"
+        class="ikube.action.index.handler.strategy.ContentConcatenationStrategy"/>
+    <bean
+        name="bosal-cleaning-strategy"
+        class="ikube.action.index.handler.strategy.LanguageCleaningStrategy"/>
+    <bean
+        name="bosal-filter-strategy"
+        class="ikube.action.index.handler.strategy.LanguageFilterStrategy"/>
+    <bean
+        name="bosal-to-lowercase-strategy"
+        class="ikube.action.index.handler.strategy.ToLowerCaseStrategy"/>
+    <bean
+        name="bosal-language-detection-strategy"
+        class="ikube.action.index.handler.strategy.LanguageDetectionStrategy"
+        init-method="initialize"/>
+    <bean
+        name="bosal-document-analysis-strategy"
+        class="ikube.action.index.handler.strategy.DocumentAnalysisStrategy"
+        property:context-ref="english-sentiment"/>
 
 </beans>
