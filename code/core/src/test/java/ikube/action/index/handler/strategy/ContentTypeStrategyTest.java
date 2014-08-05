@@ -30,12 +30,12 @@ public class ContentTypeStrategyTest extends AbstractTest {
 	public void aroundProcess() throws Exception {
 		Document document = new Document();
 		String resource = "http://www.ikube/site/index.html";
-		contentTypeStrategy.preProcess(indexContext, indexableColumn, document, resource);
+		contentTypeStrategy.aroundProcess(indexContext, indexableColumn, document, resource);
 		assertEquals("text/html", document.get(IConstants.MIME_TYPE));
 
 		document = new Document();
 		resource = "/a/folder/perhaps";
-		contentTypeStrategy.preProcess(indexContext, indexableColumn, document, resource);
+		contentTypeStrategy.aroundProcess(indexContext, indexableColumn, document, resource);
 		assertEquals(null, document.get(IConstants.MIME_TYPE));
 
 		// Read a word document, no file type and see
@@ -44,7 +44,7 @@ public class ContentTypeStrategyTest extends AbstractTest {
 		Mockito.when(indexableColumn.getRawContent()).thenReturn(content);
 		document = new Document();
 		resource = "/a/folder/perhaps";
-		contentTypeStrategy.preProcess(indexContext, indexableColumn, document, resource);
+		contentTypeStrategy.aroundProcess(indexContext, indexableColumn, document, resource);
 		assertEquals("application/pdf", document.get(IConstants.MIME_TYPE));
 	}
 

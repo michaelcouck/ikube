@@ -2,7 +2,6 @@ package ikube.action.index.handler;
 
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
-
 import org.apache.lucene.document.Document;
 
 /**
@@ -24,7 +23,7 @@ public interface IStrategy {
 	 * @param resource the resource that is to be processed and post processed of course
 	 * @return whether the processing should continue on this resource
 	 */
-	boolean preProcess(final IndexContext indexContext, final Indexable indexable, final Document document, final Object resource) throws Exception;
+	boolean aroundProcess(final IndexContext indexContext, final Indexable indexable, final Document document, final Object resource) throws Exception;
 
 	/**
 	 * This method will post process the data, interesting for enriching the data after the fact.

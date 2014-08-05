@@ -110,7 +110,7 @@ public class WekaClusterer extends WekaAnalyzer {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public Analysis<Object, Object> analyze(final Context context, final Analysis analysis) throws Exception {
+    public synchronized Analysis<Object, Object> analyze(final Context context, final Analysis analysis) throws Exception {
         int majorityCluster = 0;
         double[] majorityDistributionForInstance = null;
         StringBuilder algorithmsOutput = new StringBuilder();

@@ -21,8 +21,9 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 27.12.12
+ * @since 27-12-2012
  */
+@SuppressWarnings("UnusedDeclaration")
 public class StrategyInterceptorTest extends AbstractTest {
 
 	@Cascading
@@ -47,22 +48,17 @@ public class StrategyInterceptorTest extends AbstractTest {
 		Mockit.setUpMocks();
 	}
 
-//	@After
-//	public void after() {
-//		Mockit.tearDownMocks();
-//	}
-
 	@Test
 	public void preProcess() throws Throwable {
 		Object[] args = new Object[]{indexContext, indexable, document, resource};
 		ProceedingJoinPoint proceedingJoinPoint = Mockito.mock(ProceedingJoinPoint.class);
 
-		Mockito.when(strategy.preProcess(indexContext, indexable, document, resource)).thenReturn(Boolean.TRUE);
+		Mockito.when(strategy.aroundProcess(indexContext, indexable, document, resource)).thenReturn(Boolean.TRUE);
 		Mockito.when(indexable.getStrategies()).thenReturn(Arrays.asList(strategy));
 		Mockito.when(proceedingJoinPoint.getArgs()).thenReturn(args);
 		strategyInterceptor.aroundProcess(proceedingJoinPoint);
 
-		Mockito.verify(strategy, Mockito.atLeastOnce()).preProcess(indexContext, indexable, document, resource);
+		Mockito.verify(strategy, Mockito.atLeastOnce()).aroundProcess(indexContext, indexable, document, resource);
 		Mockito.verify(proceedingJoinPoint, Mockito.atLeastOnce()).proceed();
 
 		Mockito.when(proceedingJoinPoint.proceed()).thenReturn(Boolean.TRUE);
@@ -70,7 +66,7 @@ public class StrategyInterceptorTest extends AbstractTest {
 		assertTrue(Boolean.TRUE.equals(result));
 
 		IStrategy strategyFail = Mockito.mock(IStrategy.class);
-		Mockito.when(strategyFail.preProcess(indexContext, indexable, document,
+		Mockito.when(strategyFail.aroundProcess(indexContext, indexable, document,
             resource)).thenReturn(Boolean.FALSE);
 		Mockito.when(indexable.getStrategies()).thenReturn(Arrays.asList(strategy, strategyFail));
 

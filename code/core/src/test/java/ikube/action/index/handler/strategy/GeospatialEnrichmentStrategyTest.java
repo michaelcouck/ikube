@@ -63,7 +63,7 @@ public class GeospatialEnrichmentStrategyTest extends AbstractTest {
 
 		List<Indexable> indexableColumns = new ArrayList<Indexable>(Arrays.asList(latitudeColumn, longitudeColumn));
 		indexableTable.setChildren(indexableColumns);
-		boolean result = geospatialEnrichmentStrategy.preProcess(indexContext, indexableTable, document, null);
+		boolean result = geospatialEnrichmentStrategy.aroundProcess(indexContext, indexableTable, document, null);
 		printDocument(document);
 		assertTrue(result);
 		assertTrue(document.get(IConstants.POSITION_FIELD_NAME) != null);

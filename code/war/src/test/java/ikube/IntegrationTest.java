@@ -52,7 +52,6 @@ public abstract class IntegrationTest extends AbstractTest {
     @BeforeClass
     public static void beforeClass() {
         ThreadUtilities.initialize();
-        // ApplicationContextManager.getBean(Scheduler.class).shutdown();
     }
 
     @AfterClass

@@ -62,6 +62,8 @@ public class DocumentAnalysisStrategyTest extends AbstractTest {
         when(indexableExchange.isTokenized()).thenReturn(TRUE);
         when(indexableExchange.isAnalyzed()).thenReturn(TRUE);
         when(indexableExchange.isStored()).thenReturn(TRUE);
+        when(indexableExchange.getContent()).thenReturn(sentenceOne);
+
         sentences = newArrayList(sentenceOne, sentenceTwo, sentenceThree);
     }
 

@@ -42,7 +42,7 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis, Analysis, Anal
 
     final transient Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    final String configFilePath = FileUtilities.cleanFilePath(getConfigFilePath());
+    String configFilePath;
 
     /**
      * {@inheritDoc}
@@ -50,6 +50,8 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis, Analysis, Anal
     @Override
     @SuppressWarnings("unchecked")
     public void init(final Context context) throws Exception {
+        configFilePath = FileUtilities.cleanFilePath(getConfigFilePath());
+        logger.error("Config file path : " + configFilePath);
         if (String.class.isAssignableFrom(context.getAnalyzer().getClass())) {
             context.setAnalyzer(Class.forName(context.getAnalyzer().toString()).newInstance());
         }
@@ -323,7 +325,7 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis, Analysis, Anal
      * @return the filtered instance that is usable in the analyzer
      * @throws Exception
      */
-    Instance filter(final Instance instance, final Filter filter) throws Exception {
+    synchronized Instance filter(final Instance instance, final Filter filter) throws Exception {
         // Filter from string to inverse vector if necessary
         Instance filteredData;
         if (filter == null) {
@@ -345,7 +347,7 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis, Analysis, Anal
      * @return the transformed instances object, ready to be used in training the classifier
      * @throws Exception
      */
-    Instances filter(final Instances instances, final Filter filter) throws Exception {
+    synchronized Instances filter(final Instances instances, final Filter filter) throws Exception {
         Instances filteredData;
         if (filter == null) {
             filteredData = instances;

@@ -69,7 +69,7 @@ public class AnalysisStrategyTest extends AbstractTest {
         Tweet tweet = (Tweet) ObjectToolkit.getObject(Tweet.class);
         ObjectToolkit.populateFields(tweet, Boolean.TRUE, 10);
 
-        analysisStrategy.preProcess(indexContext, indexableTweets, document, tweet);
+        analysisStrategy.aroundProcess(indexContext, indexableTweets, document, tweet);
 
         Assert.assertEquals(IConstants.NEGATIVE, document.get(IConstants.CLASSIFICATION_CONFLICT));
     }

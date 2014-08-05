@@ -1,5 +1,6 @@
 package ikube.action.index.handler.internet.exchange;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -7,7 +8,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+@Ignore
 public class ExchangeClientTest {
+
     private static final String EWS_URL = "https://outlook.office365.com/ews/exchange.asmx";
     private static final String USERNAME = "administrator@iKube.onmicrosoft.com";
     private static final String PASSWORD = "iKube101";

@@ -71,7 +71,7 @@
         property:analyzed="true"
         property:stored="true"
 
-        property:vectored="false"
+        property:vectored="true"
         property:tokenized="false"
 
         property:omitNorms="true"
