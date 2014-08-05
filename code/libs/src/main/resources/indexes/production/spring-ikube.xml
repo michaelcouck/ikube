@@ -52,11 +52,12 @@
         property:analyzed="true"
         property:stored="true"
         property:vectored="true"
+        property:tokenized="true"
+
         property:address="false"
         property:excludedPattern="${internet.excluded.pattern}"
         property:maxExceptions="100"
         property:maxReadLength="100000"
-        property:tokenized="true"
         property:timeout="60000"
         property:omitNorms="false"
         property:threads="3"

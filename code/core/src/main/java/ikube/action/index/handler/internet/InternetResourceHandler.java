@@ -34,12 +34,8 @@ public class InternetResourceHandler extends ResourceHandler<IndexableInternet> 
      * {@inheritDoc}
      */
     @Override
-    public Document handleResource(
-            final IndexContext indexContext,
-            final IndexableInternet indexableInternet,
-            final Document document,
-            final Object resource)
-            throws Exception {
+    public Document handleResource(final IndexContext indexContext, final IndexableInternet indexableInternet,
+            final Document document, final Object resource) throws Exception {
         Url url = (Url) resource;
         parseContent(url);
         String parsedContent = url.getParsedContent();
