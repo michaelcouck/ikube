@@ -31,11 +31,13 @@ public class Builder extends Action<Boolean> {
         // Get the remote analyzer service from Spring
         IAnalyticsService service = getAnalyticsService();
         Context context = service.getContext(analysis.getContext());
-        IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();
-        // And build the remote analyzer
-        analyzer.build(context);
-        // service.getContexts().put(context.getName(), context);
-        return Boolean.TRUE;
+        if (context != null) {
+            IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();
+            // And build the remote analyzer
+            analyzer.build(context);
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
     }
 
 }

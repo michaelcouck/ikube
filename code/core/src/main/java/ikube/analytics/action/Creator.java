@@ -31,8 +31,11 @@ public class Creator extends Action<Boolean> {
             context.setAnalyzer(Class.forName(context.getAnalyzer().toString()).newInstance());
         }
         IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();
-        analyzer.init(context);
-        service.getContexts().put(context.getName(), context);
-        return Boolean.TRUE;
+        if (analyzer != null) {
+            analyzer.init(context);
+            service.getContexts().put(context.getName(), context);
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
     }
 }

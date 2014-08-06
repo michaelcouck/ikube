@@ -40,7 +40,7 @@ import static org.apache.commons.io.FilenameUtils.getBaseName;
  */
 public abstract class WekaAnalyzer implements IAnalyzer<Analysis, Analysis, Analysis> {
 
-    final transient Logger logger = LoggerFactory.getLogger(this.getClass());
+    transient Logger logger = LoggerFactory.getLogger(this.getClass());
 
     String configFilePath;
 
@@ -50,6 +50,7 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis, Analysis, Anal
     @Override
     @SuppressWarnings("unchecked")
     public void init(final Context context) throws Exception {
+        logger = LoggerFactory.getLogger(this.getClass());
         configFilePath = FileUtilities.cleanFilePath(getConfigFilePath());
         logger.error("Config file path : " + configFilePath);
         if (String.class.isAssignableFrom(context.getAnalyzer().getClass())) {
