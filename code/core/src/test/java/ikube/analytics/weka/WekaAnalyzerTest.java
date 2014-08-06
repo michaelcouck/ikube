@@ -149,6 +149,8 @@ public class WekaAnalyzerTest extends AbstractTest {
 
     @Test
     public void getInputStream() throws Exception {
+        wekaAnalyzer.init(context);
+        wekaAnalyzer.build(context);
         InputStream[] inputStreams = wekaAnalyzer.getInputStreams(context);
         assertTrue(inputStreams.length > 0);
         for (final InputStream inputStream : inputStreams) {
@@ -158,6 +160,8 @@ public class WekaAnalyzerTest extends AbstractTest {
 
     @Test
     public void getDataFile() throws Exception {
+        wekaAnalyzer.init(context);
+        wekaAnalyzer.build(context);
         File[] dataFiles = wekaAnalyzer.getDataFiles(context);
         assertTrue(dataFiles.length > 0);
         for (final File dataFile : dataFiles) {
@@ -215,7 +219,9 @@ public class WekaAnalyzerTest extends AbstractTest {
     }
 
     @Test
-    public void getDataFiles() {
+    public void getDataFiles() throws Exception {
+        wekaAnalyzer.init(context);
+        wekaAnalyzer.build(context);
         File[] dataFiles = wekaAnalyzer.getDataFiles(context);
         logger.error("Data files : " + Arrays.toString(dataFiles));
         assertEquals(3, dataFiles.length);
@@ -239,6 +245,8 @@ public class WekaAnalyzerTest extends AbstractTest {
     public void serializeAnalyzers() throws Exception {
         File[] serializedAnalyzerFiles = null;
         try {
+            wekaAnalyzer.init(context);
+            wekaAnalyzer.build(context);
             serializedAnalyzerFiles = wekaAnalyzer.serializeAnalyzers(context);
             assertEquals(3, serializedAnalyzerFiles.length);
             for (final File serializedAnalyzerFile : serializedAnalyzerFiles) {

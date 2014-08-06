@@ -20,7 +20,6 @@
         <fileset id="fileset" name="Spring Application Context" removed="false">
           <file>file://$MODULE_DIR$/src/main/webapp/WEB-INF/spring/spring-security.xml</file>
           <file>file://$MODULE_DIR$/src/main/webapp/WEB-INF/spring/spring-web.xml</file>
-          <file>file://$MODULE_DIR$/ikube/production/spring-rules.xml</file>
         </fileset>
       </configuration>
     </facet>
