@@ -224,7 +224,7 @@ public final class FileUtilities {
             }
             if (parent != null) {
                 try {
-                    String parentPath = cleanFilePath(parent.getPath());
+                    String parentPath = cleanFilePath(parent.getAbsolutePath());
                     File createdFile = new File(parentPath, file.getName());
                     LOGGER.info("Creating file : " + file.getAbsolutePath());
                     createdFile.createNewFile();
