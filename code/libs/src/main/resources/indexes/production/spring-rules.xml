@@ -49,9 +49,10 @@
         property:threads="1"
         property:allColumns="true"
 
-        property:stored="true"
         property:analyzed="true"
-        property:vectored="false"
+        property:stored="true"
+        property:vectored="true"
+        property:tokenized="false"
         property:omitNorms="true"
 
         property:children-ref="rule-columns"
