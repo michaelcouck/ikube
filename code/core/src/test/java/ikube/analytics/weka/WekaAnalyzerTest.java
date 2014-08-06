@@ -294,7 +294,7 @@ public class WekaAnalyzerTest extends AbstractTest {
 
             serializedAnalyzerFiles = wekaAnalyzer.getSerializedAnalyzerFiles(context);
             assertNotNull(serializedAnalyzerFiles);
-            assertEquals(3, serializedAnalyzerFiles.length);
+            assertTrue(serializedAnalyzerFiles.length >= 3);
             for (final File serializedAnalyzerFile : serializedAnalyzerFiles) {
                 assertTrue(serializedAnalyzerFile.exists());
             }
