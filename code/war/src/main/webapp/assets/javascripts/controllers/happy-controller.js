@@ -18,7 +18,7 @@ module.controller('HappyController', function ($scope, $http, $timeout, $log) {
         maxResults: 100000,
         indexName: 'twitter',
         minutesOfHistory: 60,
-        classification: 'positive',
+        classification: 'positive~',
         clusters: 1000,
         heatMapData: [],
         searchStrings: [],
