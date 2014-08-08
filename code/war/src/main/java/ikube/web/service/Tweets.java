@@ -205,13 +205,7 @@ public class Tweets extends Resource {
         statistics.put(property, Integer.toString(total));
     }
 
-    Future<?> search(
-            final Search search,
-            final int periods,
-            final long periodTime,
-            final long endTime,
-            final int hour,
-            final Object[][] timeLineSentiment) {
+    Future<?> search(final Search search, final int periods, final long periodTime, final long endTime, final int hour, final Object[][] timeLineSentiment) {
         return ThreadUtilities.submit(this.getClass().getSimpleName(), new Runnable() {
             public void run() {
                 int positiveCount = search(search, periodTime, endTime, IConstants.POSITIVE);
@@ -224,29 +218,36 @@ public class Tweets extends Resource {
     }
 
     @SuppressWarnings("StringBufferReplaceableByString")
-    int search(
-            final Search search,
-            final long startTime,
-            final long endTime,
-            final String classification) {
+    int search(final Search search, final long startTime, final long endTime, final String classification) {
         Search searchClone = SerializationUtilities.clone(Search.class, search);
         String timeRange = new StringBuilder(Long.toString(startTime)).append("-").append(endTime).toString();
-        searchClone.getSearchStrings().add(timeRange);
-        searchClone.getSearchFields().add(CREATED_AT);
-        searchClone.getOccurrenceFields().add(OCCURRENCE);
-        searchClone.getTypeFields().add(IConstants.RANGE);
 
-        searchClone.getSearchStrings().add(classification);
-        searchClone.getSearchFields().add(IConstants.CLASSIFICATION);
-        searchClone.getOccurrenceFields().add(OCCURRENCE);
-        searchClone.getTypeFields().add(IConstants.STRING);
+		List<String> searchStrings = new ArrayList<>(searchClone.getSearchStrings());
+		List<String> searchFields = new ArrayList<>(searchClone.getSearchFields());
+		List<String> searchOccurrenceFields = new ArrayList<>(searchClone.getOccurrenceFields());
+		List<String> searchTypeFields = new ArrayList<>(searchClone.getTypeFields());
+
+		searchStrings.add(timeRange);
+		searchFields.add(CREATED_AT);
+		searchOccurrenceFields.add(OCCURRENCE);
+		searchTypeFields.add(IConstants.RANGE);
+
+		searchStrings.add(classification);
+		searchFields.add(IConstants.CLASSIFICATION);
+		searchOccurrenceFields.add(OCCURRENCE);
+		searchTypeFields.add(IConstants.STRING);
+
+        searchClone.setSearchStrings(searchStrings);
+        searchClone.setSearchFields(searchFields);
+        searchClone.setOccurrenceFields(searchOccurrenceFields);
+        searchClone.setTypeFields(searchTypeFields);
 
         // This is not necessary
         // searchClone.setSortFields(Arrays.asList(CREATED_AT));
         // searchClone.setSortDirections(Arrays.asList(Boolean.TRUE.toString()));
 
-        searchClone = searcherService.search(searchClone);
-        ArrayList<HashMap<String, String>> searchCloneResults = searchClone.getSearchResults();
+        searcherService.search(searchClone);
+        ArrayList<HashMap<String, String>> searchCloneResults = new ArrayList<>(searchClone.getSearchResults());
         HashMap<String, String> statistics = searchCloneResults.get(searchCloneResults.size() - 1);
         String total = statistics.get(IConstants.TOTAL);
         search.setSearchResults(searchCloneResults);
