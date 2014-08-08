@@ -32,12 +32,8 @@ public class TwitterResourceHandler extends ResourceHandler<IndexableTweets> {
      * @throws Exception
      */
     @Override
-    public Document handleResource(
-            final IndexContext indexContext,
-            final IndexableTweets indexableTweets,
-            final Document document,
-            final Object resource)
-            throws Exception {
+    public Document handleResource(final IndexContext indexContext, final IndexableTweets indexableTweets, final Document document,
+                                   final Object resource) throws Exception {
         Tweet tweet = (Tweet) resource;
 
         // This is the unique id of the resource to be able to delete it

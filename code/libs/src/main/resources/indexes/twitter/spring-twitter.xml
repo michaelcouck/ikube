@@ -68,8 +68,8 @@
 
         property:analyzed="true"
         property:stored="true"
+        property:tokenized="true"
         property:vectored="false"
-        property:tokenized="false"
         property:omitNorms="true"
 
         property:threads="6"
