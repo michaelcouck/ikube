@@ -75,6 +75,19 @@ public class StringUtilitiesTest extends AbstractTest {
 
         string = StringUtilities.stripToAlphaNumeric("Hello world.  How are you?  ##@");
         assertEquals("Hello world. How are you?", string);
+
+        string = StringUtilities.stripToAlphaNumeric("123456789-9876543210");
+        assertEquals("123456789-9876543210", string);
+
+        string = StringUtilities.stripToAlphaNumeric("&@é123456789-9876543210%%$");
+        assertEquals("é123456789-9876543210", string);
+
+        PerformanceTester.execute(new PerformanceTester.APerform() {
+            @Override
+            public void execute() throws Throwable {
+                StringUtilities.stripToAlphaNumeric("&@é123456789-9876543210%%$");
+            }
+        }, "Strip performance : ", 10000000, false);
     }
 
 }

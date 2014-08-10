@@ -14,7 +14,7 @@ import java.util.Arrays;
 public final class StringUtilities {
 
     private static final char SPACE = ' ';
-    private static final char[] exclusions = {'.', ',', ';', ':', '?', '!', '\''};
+    private static final char[] exclusions = {'.', ',', ';', ':', '?', '!', '\'', '-'};
 
     static {
         Arrays.sort(exclusions);
@@ -115,7 +115,7 @@ public final class StringUtilities {
         return stripToAlphaNumeric(content, exclusions);
     }
 
-    public static String stripToAlphaNumeric(final String content, final char[] exclusions) {
+    public static String stripToAlphaNumeric(final String content, final char... exclusions) {
         if (!StringUtils.isEmpty(content)) {
             StringBuilder builder = new StringBuilder();
             char previous = SPACE;
@@ -126,7 +126,7 @@ public final class StringUtilities {
                     if (previous != SPACE) {
                         append = Boolean.TRUE;
                     }
-                } else if (Character.isAlphabetic(c)) {
+                } else if (Character.isAlphabetic(c) || Character.isDigit(c)) {
                     append = Boolean.TRUE;
                 } else {
                     if (Arrays.binarySearch(exclusions, c) >= 0) {
