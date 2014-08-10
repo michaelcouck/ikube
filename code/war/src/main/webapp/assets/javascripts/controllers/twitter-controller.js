@@ -1,4 +1,6 @@
 /**
+ * This controller does the timeline for the sentiment analysis page.
+ *
  * @author Michael Couck
  * @since 14-12-2013
  */

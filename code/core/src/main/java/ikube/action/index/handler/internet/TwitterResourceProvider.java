@@ -18,6 +18,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
+import static ikube.toolkit.FileUtilities.getOrCreateDirectory;
+import static ikube.toolkit.FileUtilities.getOrCreateFile;
+import static ikube.toolkit.FileUtilities.setContents;
+
 /**
  * This class will use the Spring social module to get tweets from Twitter, at a rate of around 1% of the tweets.
  *
@@ -52,7 +56,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
         stack = new Stack<>();
         tweets = new Stack<>();
         persistTweets = indexableTweets.isPersistTweets();
-        tweetsDirectory = FileUtilities.getOrCreateDirectory(new File(indexContext.getIndexDirectoryPath(), "tweets"));
+        tweetsDirectory = getOrCreateDirectory(new File(indexContext.getIndexDirectoryPath(), "tweets"));
         TwitterTemplate twitterTemplate = new TwitterTemplate( //
                 indexableTweets.getConsumerKey(), //
                 indexableTweets.getConsumerSecret(), //
@@ -151,13 +155,13 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
         Collections.addAll(stack, tweets);
         if (stack.size() > STACK_SIZE) {
             try {
-                File latestDirectory = FileUtilities.getOrCreateDirectory(
+                File latestDirectory = getOrCreateDirectory(
                         new File(tweetsDirectory, Long.toString(System.currentTimeMillis())));
                 for (final Tweet tweet : stack) {
                     String string = IConstants.GSON.toJson(tweet);
                     File output = new File(latestDirectory, Long.toString(System.currentTimeMillis()) + ".json");
-                    File outputFile = FileUtilities.getOrCreateFile(output);
-                    FileUtilities.setContents(outputFile, string.getBytes());
+                    File outputFile = getOrCreateFile(output);
+                    setContents(outputFile, string.getBytes());
                 }
             } catch (final Exception e) {
                 logger.error("Exception persisting the tweets to the file system : ", e);

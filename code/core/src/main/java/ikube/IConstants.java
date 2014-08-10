@@ -148,8 +148,6 @@ public interface IConstants extends Constants {
     String EXCEPTION_STACK = "exception-stack";
     String EXCEPTION_MESSAGE = "exception-message";
 
-    String SEMI_COLON = ";";
-
     String TOPIC = "topic";
     String EXECUTOR_SERVICE = "executor-service";
 
@@ -172,8 +170,6 @@ public interface IConstants extends Constants {
 
     String ANALYZER = "classifier";
     String CLASS = "class";
-    String START_INDEX = "start-index";
-    String END_INDEX = "end-index";
     int MAX_GEOHASH_LEVELS = 7;
 
     String MUST = "must";

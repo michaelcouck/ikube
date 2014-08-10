@@ -83,9 +83,7 @@ public abstract class AbstractTest {
                 String fieldName = fieldable.name();
                 String fieldValue = fieldable.stringValue();
                 int fieldLength = fieldValue != null ? fieldValue.length() : 0;
-                if (fieldName.equalsIgnoreCase(IConstants.CLASSIFICATION)) {
-                    logger.error("        : " + fieldName + ", " + fieldLength + ", " + fieldValue + ", " + fieldable);
-                }
+                logger.error("        : " + fieldName + ", " + fieldLength + ", " + fieldValue + ", " + fieldable);
             }
         }
     }

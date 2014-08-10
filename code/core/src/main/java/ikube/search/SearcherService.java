@@ -27,6 +27,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import static ikube.toolkit.StringUtilities.stripToAlphaNumeric;
+import static org.apache.commons.lang.StringUtils.stripToEmpty;
 
 /**
  * @author Michael Couck
@@ -205,11 +206,10 @@ public class SearcherService implements ISearcherService {
         String[] searchStrings = search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]);
         for (int i = 0; i < searchStrings.length; i++) {
             String searchString = searchStrings[i];
-            String cleanedSearchString = stripToAlphaNumeric(searchString);
-            cleanedSearchString =StringUtils.stripToEmpty(cleanedSearchString);
-            searchStrings[i] = cleanedSearchString;
-            search.setSearchStrings(Arrays.asList(searchStrings));
+            searchString = stripToEmpty(searchString);
+            searchStrings[i] = searchString;
         }
+        search.setSearchStrings(Arrays.asList(searchStrings));
 
         if (search.isDistributed() && clusterManager.getServers().size() > 1) {
             if (LOGGER.isDebugEnabled()) {

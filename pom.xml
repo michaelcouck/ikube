@@ -70,6 +70,8 @@
         <jersey-version>1.18.1</jersey-version>
         <postgresql-driver-version>9.1-901-1.jdbc4</postgresql-driver-version>
 
+        <gridgain.version>6.0.1</gridgain.version>
+
         <junit-version>4.8.2</junit-version>
     </properties>
 
@@ -217,6 +219,7 @@
                 <configuration>
                     <forkMode>once</forkMode>
                     <testFailureIgnore>false</testFailureIgnore>
+                    <!--suppress MavenModelInspection -->
                     <argLine>-javaagent:${project.parent.basedir}/serenity/serenity.jar ${serenity-parameters} ${memory-parameters}</argLine>
                 </configuration>
             </plugin>
@@ -916,7 +919,27 @@
 			<version>3.1.1</version>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
+
+        <dependency>
+            <groupId>org.gridgain</groupId>
+            <artifactId>gridgain-platform</artifactId>
+            <version>${gridgain.version}</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.gridgain</groupId>
+            <artifactId>gridgain-streaming</artifactId>
+            <version>${gridgain.version}</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.gridgain</groupId>
+            <artifactId>gridgain-datagrid</artifactId>
+            <version>${gridgain.version}</version>
+            <type>jar</type>
+        </dependency>
+
+        <dependency>
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>
 			<version>1.1.0.Final</version>
@@ -1407,6 +1430,10 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
+        <repository>
+            <id>GridGain External Repository</id>
+            <url>http://www.gridgainsystems.com/nexus/content/repositories/external</url>
+        </repository>
 	</repositories>
 
     <modules>

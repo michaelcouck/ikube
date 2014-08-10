@@ -21,7 +21,7 @@
         name="ikube-rules"
         class="ikube.model.IndexContext"
         property:name="ikube-rules"
-        property:maxAge="600"
+        property:maxAge="36000"
         property:compoundFile="${compound.file}"
         property:bufferedDocs="${buffered.docs}"
         property:bufferSize="${buffer.size}"

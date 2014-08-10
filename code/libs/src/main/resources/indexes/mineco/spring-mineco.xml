@@ -18,7 +18,7 @@
         class="ikube.model.Context"
         property:name="mineco-regression"
         property:analyzer="ikube.analytics.weka.WekaClassifier"
-        property:algorithms="weka.classifiers.functions.SPegasos"
+        property:algorithms="weka.classifiers.bayes.NaiveBayesMultinomial"
         property:fileNames="mineco-regression.arff"
         property:maxTrainings="10000000"
         property:persisted="false"/>
