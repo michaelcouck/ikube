@@ -47,10 +47,10 @@ public final class SearchToolkit {
             long scoreHits = topDocs.scoreDocs.length;
             for (int i = 0; i < totalHits && i < scoreHits; i++) {
                 Document document = indexSearcher.doc(topDocs.scoreDocs[i].doc);
-                LOGGER.info("Document : " + i + ", " + document);
+                LOGGER.error("Document : " + i + ", " + document);
             }
         } catch (final Exception e) {
-            verbose();
+            usage();
             LOGGER.error("Exception printing index : " + Arrays.deepToString(args), e);
         } finally {
             if (indexSearcher != null) {
@@ -63,7 +63,7 @@ public final class SearchToolkit {
         }
     }
 
-    private static void verbose() {
+    private static void usage() {
         LOGGER.info("Usage: java -jar ikube-tools.jar ikube.search.SearchToolkit /tmp contents world");
         LOGGER.info("Usage: java -jar ikube-tools.jar ikube.search.SearchToolkit index-directory field-in-index search-string");
     }

@@ -13,7 +13,7 @@
             http://www.springframework.org/schema/util/spring-util.xsd">
 
     <bean
-        id="bosal"
+        name="bosal"
         class="ikube.model.IndexContext"
         property:name="bosal"
         property:maxAge="6000"
@@ -29,12 +29,18 @@
         property:indexDirectoryPathBackup="${index.directory.path.backup}"
         property:children-ref="bosal-indexables"/>
     <util:list id="bosal-indexables">
-        <ref local="bosal-mail"/>
-        <ref local="bosal-site"/>
+        <ref bean="bosal-mail"/>
+        <ref bean="bosal-site"/>
     </util:list>
 
+    <!--
+        If the field is vectored or tokenized then the results from the
+        searches are surprising. For example for the classification field, i.e.
+        positive and negative, there are no results unless the search string is
+        something like 'positi~', strangely enough.
+    -->
     <bean
-        id="bosal-mail"
+        name="bosal-mail"
         class="ikube.model.IndexableExchange"
         property:name="bosal-mail"
         property:url="http://www.bosal.com/"
@@ -43,106 +49,70 @@
 
         property:analyzed="true"
         property:stored="true"
-        property:vectored="true"
+        property:vectored="false"
+        property:tokenized="false"
+        property:omitNorms="true"
+
         property:address="false"
         property:maxExceptions="100"
-        property:tokenized="true"
-        property:omitNorms="false"
+
         property:threads="3"
         property:strategies-ref="bosal-strategies"/>
 
     <bean
-        id="bosal-site"
+        name="bosal-site"
         class="ikube.model.IndexableInternet"
-        property:threads="3"
-        property:omitNorms="false"
-        property:address="false"
-        property:analyzed="true"
-        property:contentFieldName="contents"
+        property:name="bosal-site"
+        property:url="http://www.bosal.com/"
         property:idFieldName="url"
-        property:maxExceptions="100"
-        property:strategies-ref="bosal-strategies"
+        property:titleFieldName="title"
+        property:contentFieldName="contents"
+
+        property:analyzed="true"
         property:stored="true"
+
         property:vectored="true"
-        property:tokenized="true"
-        property:url="http://www.bosal.com/"/>
+        property:tokenized="false"
+
+        property:omitNorms="true"
+
+        property:address="false"
+        property:excludedPattern="${internet.excluded.pattern}"
+        property:maxExceptions="100"
+        property:maxReadLength="1000000"
+        property:timeout="60000"
+        property:threads="3"
+        property:internetBatchSize="${internet.batch.size}"
+        property:strategies-ref="bosal-strategies"/>
 
     <util:list id="bosal-strategies">
-        <bean class="ikube.action.index.handler.strategy.LanguageCleaningStrategy"/>
-        <bean class="ikube.action.index.handler.strategy.ToLowerCaseStrategy"/>
-        <bean class="ikube.action.index.handler.strategy.LanguageDetectionStrategy"/>
-        <bean
-            class="ikube.action.index.handler.strategy.DocumentAnalysisStrategy"
-            property:context-ref="bosal-sentiment-one"/>
+        <ref bean="bosal-concatenation-strategy"/>
+        <ref bean="bosal-cleaning-strategy"/>
+        <ref bean="bosal-filter-strategy"/>
+        <ref bean="bosal-to-lowercase-strategy"/>
+        <ref bean="bosal-language-detection-strategy"/>
+        <ref bean="bosal-document-analysis-strategy"/>
     </util:list>
 
     <bean
-        id="bosal-sentiment-one"
-        class="ikube.model.Context"
-        property:analyzer="ikube.analytics.weka.WekaClassifier"
-        property:options="-D">
-
-        <property name="algorithms">
-            <list>
-                <value>weka.classifiers.functions.SMO</value>
-                <value>weka.classifiers.functions.SMO</value>
-                <value>weka.classifiers.functions.SMO</value>
-                <value>weka.classifiers.functions.SMO</value>
-                <value>weka.classifiers.functions.SMO</value>
-                <value>weka.classifiers.functions.SMO</value>
-                <value>weka.classifiers.functions.SMO</value>
-                <value>weka.classifiers.functions.SMO</value>
-                <value>weka.classifiers.functions.SMO</value>
-                <value>weka.classifiers.functions.SMO</value>
-            </list>
-        </property>
-
-        <property name="fileNames">
-            <list>
-                <value>sentiment-model-150000-300000.arff</value>
-                <value>sentiment-model-300000-450000.arff</value>
-                <value>sentiment-model-450000-600000.arff</value>
-                <value>sentiment-model-600000-750000.arff</value>
-                <value>sentiment-model-750000-900000.arff</value>
-                <value>sentiment-model-900000-1050000.arff</value>
-                <value>sentiment-model-1050000-1200000.arff</value>
-                <value>sentiment-model-1200000-1350000.arff</value>
-                <value>sentiment-model-1350000-1500000.arff</value>
-                <value>sentiment-model-1500000-1650000.arff</value>
-            </list>
-        </property>
-
-        <property name="filters">
-            <list>
-                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
-                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
-                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
-                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
-                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
-                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
-                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
-                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
-                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
-                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
-            </list>
-        </property>
-
-        <property name="maxTrainings">
-            <list>
-                <value>1000000</value>
-                <value>1000000</value>
-                <value>1000000</value>
-                <value>1000000</value>
-                <value>1000000</value>
-                <value>1000000</value>
-                <value>1000000</value>
-                <value>1000000</value>
-                <value>1000000</value>
-                <value>1000000</value>
-            </list>
-        </property>
-
-    </bean>
-
+        name="bosal-concatenation-strategy"
+        class="ikube.action.index.handler.strategy.ContentConcatenationStrategy"/>
+    <bean
+        name="bosal-cleaning-strategy"
+        class="ikube.action.index.handler.strategy.LanguageCleaningStrategy"/>
+    <bean
+        name="bosal-filter-strategy"
+        class="ikube.action.index.handler.strategy.LanguageFilterStrategy"/>
+    <bean
+        name="bosal-to-lowercase-strategy"
+        class="ikube.action.index.handler.strategy.ToLowerCaseStrategy"/>
+    <bean
+        name="bosal-language-detection-strategy"
+        class="ikube.action.index.handler.strategy.LanguageDetectionStrategy"
+        init-method="initialize"/>
+    <bean
+        name="bosal-document-analysis-strategy"
+        class="ikube.action.index.handler.strategy.DocumentAnalysisStrategy"
+        property:context-ref="english-sentiment"/>
 
 </beans>

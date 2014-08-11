@@ -110,6 +110,7 @@
         <entry key="${resources-directory}/indexes/integration" value="${tomcat-one-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/production" value="${tomcat-one-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/twitter" value="${tomcat-one-bin}/ikube"/>
+        <entry key="${resources-directory}/indexes/bosal" value="${tomcat-one-bin}/ikube"/>
     </util:map>
     <bean
         id="start-action-one"
@@ -187,6 +188,7 @@
         <entry key="${resources-directory}/indexes/integration" value="${tomcat-two-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/production" value="${tomcat-two-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/twitter" value="${tomcat-two-bin}/ikube"/>
+        <entry key="${resources-directory}/indexes/bosal" value="${tomcat-two-bin}/ikube"/>
     </util:map>
     <bean
         id="start-action-two"
@@ -265,6 +267,7 @@
         <entry key="${resources-directory}/indexes/integration" value="${tomcat-three-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/production" value="${tomcat-three-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/twitter" value="${tomcat-three-bin}/ikube"/>
+        <entry key="${resources-directory}/indexes/bosal" value="${tomcat-three-bin}/ikube"/>
     </util:map>
     <bean
         id="start-action-three"
@@ -342,7 +345,7 @@
         <entry key="${resources-directory}/analytics" value="${tomcat-production-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/production" value="${tomcat-production-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/mineco" value="${tomcat-production-bin}/ikube"/>
-        <entry key="${resources-directory}/indexes/bosal" value="${tomcat-production-bin}/ikube"/>
+        <entry key="${resources-directory}/indexes/twitter" value="${tomcat-production-bin}/ikube"/>
     </util:map>
     <bean
         id="start-action-production"

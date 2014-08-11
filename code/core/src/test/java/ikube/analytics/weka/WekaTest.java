@@ -5,13 +5,9 @@ import ikube.IConstants;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.FileUtilities;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mockito;
 import org.mockito.Spy;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import weka.classifiers.Classifier;
 import weka.classifiers.functions.SMO;
 import weka.classifiers.functions.SimpleLinearRegression;
@@ -35,17 +31,6 @@ public class WekaTest extends AbstractTest {
     @Spy
     @InjectMocks
     private WekaClassifier wekaClassifier;
-
-    @Before
-    public void before() {
-        Mockito.doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                // Do nothing
-                return null;
-            }
-        }).when(wekaClassifier).persist(Mockito.any(Context.class));
-    }
 
     @Test
     public void readArff() throws Exception {
@@ -101,11 +86,16 @@ public class WekaTest extends AbstractTest {
         values[3] = 8;
         dataSet.add(new SparseInstance(1.0, values));
 
-        Classifier classifier = new SMO();
+        SMO classifier = new SMO();
+		classifier.setBuildLogisticModels(Boolean.TRUE);
         classifier.buildClassifier(dataSet);
 
         double classification = classifier.classifyInstance(dataSet.firstInstance());
         String classificationClass = dataSet.classAttribute().value((int) classification);
+		double[] distributionForInstance = classifier.distributionForInstance(dataSet.firstInstance());
+		for (double aDistributionForInstance : distributionForInstance) {
+			System.out.println(aDistributionForInstance);
+		}
 
         assertEquals(IConstants.POSITIVE, classificationClass);
     }
@@ -132,9 +122,9 @@ public class WekaTest extends AbstractTest {
         Context context = new Context();
         context.setName("regression");
         context.setAnalyzer(WekaClusterer.class.getName());
-        context.setAlgorithms(new String[] {SimpleLinearRegression.class.getName()});
-        context.setFileNames(new String[] {"regression.arff"});
-        context.setMaxTrainings(new int[] {10000});
+        context.setAlgorithms(SimpleLinearRegression.class.getName());
+        context.setFileNames("regression.arff");
+        context.setMaxTrainings(10000);
 
         wekaClassifier.init(context);
         wekaClassifier.build(context);
@@ -153,12 +143,10 @@ public class WekaTest extends AbstractTest {
             Analysis<Object, Object> analysis = getAnalysis(input);
             analysis = wekaClassifier.analyze(context, analysis);
             double[] outputs = (double[]) analysis.getOutput();
-            logger.info("Class : " + analysis.getClazz());
             for (final double output : outputs) {
-                logger.info("Output : " + output);
+                logger.error("Output : " + output);
             }
         }
-
     }
 
     protected Analysis<Object, Object> getAnalysis(final Double[] input) {

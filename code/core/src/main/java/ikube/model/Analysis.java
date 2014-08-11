@@ -49,7 +49,11 @@ public class Analysis<Input, Output> extends Distributed {
     /**
      * The size of a particular cluster or class in the case of a classifier.
      */
-    private int sizeForClassOfCluster;
+    private int sizeForClassOrCluster;
+    /**
+     * Whether to add the algorithm output to the result. This is potentially expensive.
+     */
+    private boolean addAlgorithmOutput;
 
     @Transient
     private transient Exception exception;
@@ -102,12 +106,20 @@ public class Analysis<Input, Output> extends Distributed {
         this.duration = duration;
     }
 
-    public int getSizeForClassOfCluster() {
-        return sizeForClassOfCluster;
+    public int getSizeForClassOrCluster() {
+        return sizeForClassOrCluster;
     }
 
-    public void setSizeForClassOrCluster(int sizeForClassOfCluster) {
-        this.sizeForClassOfCluster = sizeForClassOfCluster;
+    public void setSizeForClassOrCluster(int sizeForClassOrCluster) {
+        this.sizeForClassOrCluster = sizeForClassOrCluster;
+    }
+
+    public boolean isAddAlgorithmOutput() {
+        return addAlgorithmOutput;
+    }
+
+    public void setAddAlgorithmOutput(boolean addAlgorithmOutput) {
+        this.addAlgorithmOutput = addAlgorithmOutput;
     }
 
     public Exception getException() {

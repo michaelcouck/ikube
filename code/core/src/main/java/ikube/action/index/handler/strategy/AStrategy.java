@@ -45,12 +45,7 @@ abstract class AStrategy implements IStrategy {
      * {@inheritDoc}
      */
     @Override
-    public boolean aroundProcess(
-            final IndexContext indexContext,
-            final Indexable indexable,
-            final Document document,
-            final Object resource)
-            throws Exception {
+    public boolean aroundProcess(final IndexContext indexContext, final Indexable indexable, final Document document, final Object resource) throws Exception {
         if (nextStrategy != null) {
             return nextStrategy.aroundProcess(indexContext, indexable, document, resource);
         }
@@ -61,13 +56,11 @@ abstract class AStrategy implements IStrategy {
      * {@inheritDoc}
      */
     @Override
-    public boolean postProcess(
-            final IndexContext indexContext,
-            final Indexable indexable,
-            final Document document,
-            final Object resource)
-            throws Exception {
+    public boolean postProcess(final IndexContext indexContext, final Indexable indexable, final Document document, final Object resource) throws Exception {
         // Not all strategies need to post process of course
+        if (nextStrategy != null) {
+            return nextStrategy.postProcess(indexContext, indexable, document, resource);
+        }
         return Boolean.TRUE;
     }
 
@@ -76,6 +69,10 @@ abstract class AStrategy implements IStrategy {
      */
     public void initialize() {
         // To be over ridden by sub classes
+    }
+
+    public void setNextStrategy(IStrategy nextStrategy) {
+        this.nextStrategy = nextStrategy;
     }
 
 }

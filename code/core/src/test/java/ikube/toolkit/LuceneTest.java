@@ -82,8 +82,6 @@ public class LuceneTest extends AbstractTest {
             german + " " + //
             french + " " + //
             somethingElseAlToGether + " ";
-    private String somethingNumeric = " 123456789 ";
-    private String somethingElseNumeric = " 1234567890 ";
 
     @Before
     public void before() {
@@ -97,8 +95,11 @@ public class LuceneTest extends AbstractTest {
 
     @Test
     public void search() throws Exception {
-        SearchComplex searchSingle = createIndexRamAndSearch(SearchComplex.class, new StemmingAnalyzer(), IConstants.CONTENTS, russian, german, french,
-                somethingElseAlToGether, string, somethingNumeric, somethingElseNumeric);
+        String somethingNumeric = " 123456789 ";
+        String somethingElseNumeric = " 1234567890 ";
+        SearchComplex searchSingle = createIndexRamAndSearch(SearchComplex.class, new StemmingAnalyzer(),
+                IConstants.CONTENTS, russian, german, french, somethingElseAlToGether, string, somethingNumeric,
+                somethingElseNumeric);
         searchSingle.setFirstResult(0);
         searchSingle.setFragment(true);
         searchSingle.setMaxResults(10);
@@ -123,8 +124,8 @@ public class LuceneTest extends AbstractTest {
         assertEquals(3, results.size());
     }
 
-    @SuppressWarnings("UnnecessaryBoxing")
     @Test
+    @SuppressWarnings("UnnecessaryBoxing")
     public void numericSearch() throws Exception {
         final int integer = 123456789;
         Directory directory = createIndex(IConstants.ID, IConstants.CONTENTS, integer, integer);

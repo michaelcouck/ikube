@@ -22,7 +22,7 @@
         id="ikube-system"
         class="ikube.model.IndexContext"
         property:name="ikube-system"
-        property:maxAge="600"
+        property:maxAge="6000"
         property:compoundFile="${compound.file}"
         property:bufferedDocs="${buffered.docs}"
         property:bufferSize="${buffer.size}"

@@ -51,10 +51,12 @@ public class PruneSchedule extends Schedule {
                     if (action.getEndTime() != null) {
                         dataBase.remove(entity);
                     } else {
-                        logger.info("Not removing action : " +
-						  action.getIndexName() + ", " +
-						  action.getIndexableName() + ", " +
-						  action.getServer());
+                        if (logger.isDebugEnabled()) {
+                            logger.info("Not removing action : " +
+                                    action.getIndexName() + ", " +
+                                    action.getIndexableName() + ", " +
+                                    action.getServer());
+                        }
                     }
                 } else {
                     dataBase.remove(entity);

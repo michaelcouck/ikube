@@ -25,7 +25,6 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.Lock;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.util.BytesRef;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -64,7 +63,7 @@ public abstract class AbstractTest {
             new MimeMapper(IConstants.MIME_MAPPING);
             ThreadUtilities.initialize();
             Mockit.setUpMocks(SpellingCheckerMock.class);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }
@@ -102,6 +101,35 @@ public abstract class AbstractTest {
 
     {
         initialize();
+    }
+
+    protected static void delete(final IDataBase dataBase, final Class<?>... klasses) {
+        for (final Class<?> klass : klasses) {
+            List<?> list = dataBase.find(klass, 0, 1000);
+            do {
+                dataBase.removeBatch(list);
+                list = dataBase.find(klass, 0, 1000);
+            } while (list.size() > 0);
+        }
+    }
+
+    protected static <T> void insert(final Class<T> klass, final int entities) {
+        IDataBase dataBase = getBean(IDataBase.class);
+        List<T> tees = new ArrayList<>();
+        for (int i = 0; i < entities; i++) {
+            T tee;
+            try {
+                tee = populateFields(klass, klass.newInstance(), Boolean.TRUE, 1, "id", "indexContext");
+                tees.add(tee);
+                if (tees.size() >= 1000) {
+                    dataBase.persistBatch(tees);
+                    tees.clear();
+                }
+            } catch (final Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        dataBase.persistBatch(tees);
     }
 
     private void initialize() {
@@ -202,35 +230,6 @@ public abstract class AbstractTest {
         ApplicationContextManagerMock.setBean(IClusterManager.class, clusterManager);
     }
 
-    protected static void delete(final IDataBase dataBase, final Class<?>... klasses) {
-        for (final Class<?> klass : klasses) {
-            List<?> list = dataBase.find(klass, 0, 1000);
-            do {
-                dataBase.removeBatch(list);
-                list = dataBase.find(klass, 0, 1000);
-            } while (list.size() > 0);
-        }
-    }
-
-    protected static <T> void insert(final Class<T> klass, final int entities) {
-        IDataBase dataBase = getBean(IDataBase.class);
-        List<T> tees = new ArrayList<>();
-        for (int i = 0; i < entities; i++) {
-            T tee;
-            try {
-                tee = populateFields(klass, klass.newInstance(), Boolean.TRUE, 1, "id", "indexContext");
-                tees.add(tee);
-                if (tees.size() >= 1000) {
-                    dataBase.persistBatch(tees);
-                    tees.clear();
-                }
-            } catch (final Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-        dataBase.persistBatch(tees);
-    }
-
     protected File createIndexFileSystem(final IndexContext indexContext, final String... strings) {
         try {
             return createIndexFileSystem(indexContext, System.currentTimeMillis(), ip, strings);
@@ -239,12 +238,8 @@ public abstract class AbstractTest {
         }
     }
 
-    protected File createIndexFileSystem(
-        final IndexContext indexContext,
-        final long time,
-        final String ip,
-        final String... strings)
-        throws Exception {
+    protected File createIndexFileSystem(final IndexContext indexContext, final long time, final String ip, final String... strings)
+            throws Exception {
         IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, time, ip);
         addDocuments(indexWriter, IConstants.CONTENTS, strings);
         File indexDirectory = ((FSDirectory) indexWriter.getDirectory()).getDirectory();
@@ -252,11 +247,7 @@ public abstract class AbstractTest {
         return indexDirectory;
     }
 
-    protected List<File> createIndexesFileSystem(
-        final IndexContext indexContext,
-        final long time,
-        final String[] ips,
-        final String... strings) {
+    protected List<File> createIndexesFileSystem(final IndexContext indexContext, final long time, final String[] ips, final String... strings) {
         try {
             List<File> serverIndexDirectories = new ArrayList<>();
             for (String ip : ips) {
@@ -269,12 +260,8 @@ public abstract class AbstractTest {
         }
     }
 
-    protected <T extends Search> T createIndexRamAndSearch(
-        final Class<T> searchClass,
-        final Analyzer analyzer,
-        final String field,
-        final String... strings)
-        throws Exception {
+    protected <T extends Search> T createIndexRamAndSearch(final Class<T> searchClass, final Analyzer analyzer, final String field, final String... strings)
+            throws Exception {
         IndexWriter indexWriter = getRamIndexWriter(analyzer);
         addDocuments(indexWriter, field, strings);
         IndexReader indexReader = IndexReader.open(indexWriter.getDirectory());
@@ -288,12 +275,8 @@ public abstract class AbstractTest {
         return new IndexWriter(directory, conf);
     }
 
-    protected <T extends Search> T createIndexRamAndSearch(
-        final Class<T> searchClass,
-        final Analyzer analyzer,
-        final String[] fields,
-        final String[]... strings)
-        throws Exception {
+    protected <T extends Search> T createIndexRamAndSearch(final Class<T> searchClass, final Analyzer analyzer, final String[] fields, final String[]... strings)
+            throws Exception {
         IndexWriter indexWriter = getRamIndexWriter(analyzer);
         Indexable indexable = getIndexable();
 
@@ -322,11 +305,8 @@ public abstract class AbstractTest {
         return searchClass.getConstructor(IndexSearcher.class, Analyzer.class).newInstance(searcher, analyzer);
     }
 
-    protected void addDocuments(
-        final IndexWriter indexWriter,
-        final String field,
-        final String... strings)
-        throws Exception {
+    protected void addDocuments(final IndexWriter indexWriter, final String field, final String... strings)
+            throws Exception {
         for (final String string : strings) {
             String id = Long.toString(System.currentTimeMillis());
             Document document = getDocument(id, string, field);
@@ -371,7 +351,7 @@ public abstract class AbstractTest {
         logger.debug("Got lock : " + gotLock + ", is locked : " + lock.isLocked());
         if (!gotLock) {
             FileUtilities.getFile(new File(serverIndexDirectory, IndexWriter.WRITE_LOCK_NAME).getAbsolutePath(),
-                Boolean.FALSE);
+                    Boolean.FALSE);
         } else {
             assertTrue(IndexWriter.isLocked(directory));
         }
@@ -386,10 +366,10 @@ public abstract class AbstractTest {
      * @throws Exception
      */
     protected void printIndex(final IndexReader indexReader, final int numDocs) throws Exception {
-        logger.info("Num docs : " + indexReader.numDocs());
+        logger.error("Num docs : " + indexReader.numDocs());
         for (int i = 0; i < numDocs && i < indexReader.numDocs(); i++) {
             Document document = indexReader.document(i);
-            logger.info("Document : " + i + ", " + document.toString().length());
+            logger.error("Document : " + i + ", " + document.toString().length());
             printDocument(document);
         }
     }
@@ -397,14 +377,7 @@ public abstract class AbstractTest {
     protected void printDocument(final Document document) {
         List<IndexableField> fields = document.getFields();
         for (IndexableField indexableField : fields) {
-            String fieldName = indexableField.name();
-            String fieldValue = indexableField.stringValue();
-            String fieldType = indexableField.fieldType().toString();
-            BytesRef bytesRef = indexableField.binaryValue();
-            int fieldLength = fieldValue != null ? fieldValue.length() : 0;
-            Number number = indexableField.numericValue();
-            Object[] parameters = {fieldName, fieldLength, fieldValue, number, bytesRef, fieldType};
-            logger.info("        : field name : {}, field length : {}, field value : {}, numeric value : {}, byte value : {}", parameters);
+            logger.error("        : {}", indexableField);
         }
     }
 

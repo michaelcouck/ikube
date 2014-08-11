@@ -14,7 +14,7 @@
             http://www.springframework.org/schema/util/spring-util.xsd">
 
     <bean
-        id="twitter"
+        name="twitter"
         class="ikube.model.IndexContext"
         property:name="twitter"
         property:maxAge="0"
@@ -35,11 +35,11 @@
         property:children-ref="twitter-indexables"
         destroy-method="destroy"/>
     <util:list id="twitter-indexables">
-        <ref local="twitter-index"/>
+        <ref bean="twitter-index"/>
     </util:list>
 
     <bean
-        id="twitter-analyzer"
+        name="twitter-analyzer"
         class="ikube.action.index.analyzer.StemmingAnalyzer"
         property:useStopWords="false"
         init-method="initialize"/>
@@ -60,14 +60,18 @@
     -->
 
     <bean
-        id="twitter-index"
+        name="twitter-index"
         class="ikube.model.IndexableTweets"
         property:name="twitter-index"
         property:address="false"
         property:maxExceptions="1000"
-        property:stored="true"
+
         property:analyzed="true"
+        property:stored="true"
+        property:tokenized="true"
         property:vectored="false"
+        property:omitNorms="true"
+
         property:threads="6"
 
         property:consumerKey="${consumer-key}"
@@ -98,32 +102,14 @@
         <!-- Train the language specific classifiers -->
         <!--<ref bean="twitter-training-strategy-en"/>-->
         <!-- Use the trained language specific classifiers -->
-        <ref bean="twitter-classification-strategy-en"/>
+        <ref bean="twitter-classification-strategy"/>
     </util:list>
 
-    <!-- These are the language classifiers, they are trained by the Twitter data -->
-    <!-- English -->
     <bean
-        id="context-smo-en"
-        name="context-smo-en"
-        class="ikube.model.Context"
-        property:name="sentiment-smo-en"
-        property:analyzer="ikube.analytics.weka.WekaClassifier"
-        property:filters="weka.filters.unsupervised.attribute.StringToWordVector"
-        property:algorithms="weka.classifiers.functions.SMO"
-        property:fileNames="sentiment-smo-en.arff"
-        property:maxTrainings="${max-training}"/>
-    <!-- Spanish -->
-    <!-- Japanese -->
-    <!-- Chinese -->
-    <!-- Dutch -->
-    <!-- French -->
-    <!-- German -->
-    <!-- Swedish -->
-    <!-- Thai -->
-    <!-- Arabic -->
-    <!-- Turkish -->
-    <!-- Russian -->
+        id="twitter-classification-strategy"
+        class="ikube.action.index.handler.strategy.AnalysisStrategy"
+        property:context-ref="sentiment-smo-twitter"
+        init-method="initialize"/>
 
     <bean
         id="ikube.action.index.handler.strategy.TwitterGeospatialEnrichmentStrategy"
@@ -133,10 +119,89 @@
         depends-on="ikube.toolkit.DataManager"
         lazy-init="true"/>
 
+    <!-- These are the language classifiers, they are trained by the Twitter data -->
+    <!-- English -->
     <bean
-        id="twitter-classification-strategy-en"
-        class="ikube.action.index.handler.strategy.AnalysisStrategy"
-        property:context-ref="context-smo-en"
-        init-method="initialize"/>
+        name="sentiment-smo-twitter"
+        class="ikube.model.Context"
+        property:name="sentiment-smo-twitter"
+        property:analyzer="ikube.analytics.weka.WekaClassifier">
+        <property name="algorithms">
+            <list>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+            </list>
+        </property>
+        <property name="fileNames">
+            <list>
+                <!-- English -->
+                <value>sentiment-en.arff</value>
+                <!-- Spanish -->
+                <value>sentiment-es.arff</value>
+                <!-- Japanese -->
+                <value>sentiment-jp.arff</value>
+                <!-- Chinese -->
+                <value>sentiment-cn.arff</value>
+                <!-- Dutch -->
+                <value>sentiment-nl.arff</value>
+                <!-- French -->
+                <value>sentiment-fr.arff</value>
+                <!-- German -->
+                <value>sentiment-de.arff</value>
+                <!-- Swedish -->
+                <value>sentiment-sv.arff</value>
+                <!-- Thai -->
+                <value>sentiment-th.arff</value>
+                <!-- Arabic -->
+                <value>sentiment-ar.arff</value>
+                <!-- Turkish -->
+                <value>sentiment-tr.arff</value>
+                <!-- Russian -->
+                <value>sentiment-ru.arff</value>
+            </list>
+        </property>
+        <property name="filters">
+            <list>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+            </list>
+        </property>
+        <property name="maxTrainings">
+            <list>
+                <value>${max-training}</value>
+                <value>${max-training}</value>
+                <value>${max-training}</value>
+                <value>${max-training}</value>
+                <value>${max-training}</value>
+                <value>${max-training}</value>
+                <value>${max-training}</value>
+                <value>${max-training}</value>
+                <value>${max-training}</value>
+                <value>${max-training}</value>
+                <value>${max-training}</value>
+                <value>${max-training}</value>
+            </list>
+        </property>
+    </bean>
 
 </beans>

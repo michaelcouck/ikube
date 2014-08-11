@@ -29,10 +29,10 @@ public class AddFileToIndexableColumnStrategy extends AStrategy {
     @Override
     @SuppressWarnings("null")
     public boolean aroundProcess(
-            final IndexContext indexContext,
-            final Indexable indexable,
-            final Document document,
-            final Object resource)
+        final IndexContext indexContext,
+        final Indexable indexable,
+        final Document document,
+        final Object resource)
             throws Exception {
         IndexableColumn indexableColumn = null;
         Object content = indexableColumn.getContent();

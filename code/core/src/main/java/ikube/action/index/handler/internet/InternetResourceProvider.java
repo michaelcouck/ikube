@@ -50,8 +50,8 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	private Random random;
-    private Stack<Url> urls;
+    private Random random = new Random();
+    private Stack<Url> urls = new Stack<>();
     private IDataBase dataBase;
     private IndexableInternet indexableInternet;
 
@@ -62,8 +62,6 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
     }
 
     void initialize(final IndexableInternet indexableInternet) {
-		random = new Random();
-        urls = new Stack<>();
         final Pattern pattern;
         if (indexableInternet.getExcludedPattern() == null) {
             pattern = null;
@@ -224,27 +222,27 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
         }
         // If there are no urls on the stack try the database
         if (url == null) {
-			// We have to retry because sometimes there is a concurrent access 
-			// problem with Jpa, could change the read access perhaps to transactional?
-			// Will that help?
-			retry = 10;
-			do {
-				try {
-					logger.info("Going to database for resources : ");
-					String[] fields = {IConstants.NAME, IConstants.INDEXED};
-					Object[] values = {indexableInternet.getName(), Boolean.FALSE};
-					List<Url> dbUrls = dataBase.find(Url.class, fields, values, 0, 100);
+            // We have to retry because sometimes there is a concurrent access
+            // problem with Jpa, could change the read access perhaps to transactional?
+            // Will that help?
+            retry = 10;
+            do {
+                try {
+                    logger.info("Going to database for resources : ");
+                    String[] fields = {IConstants.NAME, IConstants.INDEXED};
+                    Object[] values = {indexableInternet.getName(), Boolean.FALSE};
+                    List<Url> dbUrls = dataBase.find(Url.class, fields, values, 0, 100);
                     // Delete the used urls from the database
-					dataBase.removeBatch(dbUrls);
-					this.urls.addAll(dbUrls);
-					break;
-				} catch (final Exception e) {
-					logger.error("Exception getting and removing urls from the database, retrying : ", e);
-				}
-			} while (retry-- > 0);
-			if (this.urls.size() > 0) {
-				url = this.urls.pop();
-			}
+                    dataBase.removeBatch(dbUrls);
+                    this.urls.addAll(dbUrls);
+                    break;
+                } catch (final Exception e) {
+                    logger.error("Exception getting and removing urls from the database, retrying : ", e);
+                }
+            } while (retry-- > 0);
+            if (this.urls.size() > 0) {
+                url = this.urls.pop();
+            }
         }
         logger.debug("Doing url : " + url + ", " + urls.size());
         return url;
@@ -261,11 +259,11 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
         if (urls.size() + resources.size() < IConstants.ONE_THOUSAND) {
             urls.addAll(resources);
         } else {
-			if (random.nextLong() % 1000 == 0) {
-				// If we go over the limit for the stack size then we need to
-				// persist the url in the database to avoid running out of memory
-				logger.info("Persisting resources : " + resources.size() + ", urls : " + urls.size() + ", " + resources);
-			}
+            if (random.nextLong() % 1000 == 0) {
+                // If we go over the limit for the stack size then we need to
+                // persist the url in the database to avoid running out of memory
+                logger.info("Persisting resources : " + resources.size() + ", urls : " + urls.size() + ", " + resources);
+            }
             dataBase.persistBatch(resources);
         }
     }

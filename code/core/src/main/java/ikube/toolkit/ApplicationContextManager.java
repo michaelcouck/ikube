@@ -23,6 +23,7 @@ import org.springframework.web.context.support.AbstractRefreshableWebApplication
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -91,7 +92,7 @@ public final class ApplicationContextManager implements ApplicationContextAware 
     public static synchronized ApplicationContext getApplicationContext() {
         try {
             if (APPLICATION_CONTEXT == null) {
-                String configFilePath = getConfigiFilePath();
+                String configFilePath = getConfigFilePath();
                 if (configFilePath != null) {
                     APPLICATION_CONTEXT = getApplicationContextFilesystem(configFilePath);
                 } else {
@@ -106,13 +107,20 @@ public final class ApplicationContextManager implements ApplicationContextAware 
         }
     }
 
-    public static String getConfigiFilePath() {
+    /**
+     * This method will return the configuration path on the local file system. If the user specifies the system
+     * property 'ikube-configuration', then this will be the starting point. If this property is not set then we will
+     * look in the './ikube' directory for the configuration.
+     *
+     * @return the absolute path to the configuration directory for the system
+     */
+    public static String getConfigFilePath() {
         File configFile = null;
         Object ikubeConfigurationPathProperty = System.getProperty(IConstants.IKUBE_CONFIGURATION);
         LOGGER.info("Configuration property file : " + ikubeConfigurationPathProperty);
         // First try the configuration property
         if (ikubeConfigurationPathProperty != null) {
-            configFile = new File(ikubeConfigurationPathProperty.toString());
+            configFile = new File(ikubeConfigurationPathProperty.toString(), IConstants.SPRING_XML);
         }
         // See if there is a configuration file at the base of where the Jvm was started
         if (configFile == null || !configFile.isFile()) {
@@ -121,6 +129,7 @@ public final class ApplicationContextManager implements ApplicationContextAware 
         if (configFile.isFile()) {
             // From the file system
             String configFilePath = FileUtilities.cleanFilePath(configFile.getAbsolutePath());
+            // Why did I do this? Because Spring context wants it!
             configFilePath = "file:" + configFilePath;
             LOGGER.info("Configuration file path : " + configFilePath);
             return configFilePath;
@@ -260,20 +269,25 @@ public final class ApplicationContextManager implements ApplicationContextAware 
             ((AbstractApplicationContext) APPLICATION_CONTEXT).registerShutdownHook();
             File configDirectory = null;
             File consoleOutputFile = null;
+            InputStream  inputStream = null;
             try {
-                configDirectory = new File(IConstants.IKUBE_DIRECTORY);
                 Object ikubeConfigurationPathProperty = System.getProperty(IConstants.IKUBE_CONFIGURATION);
                 // First try the configuration property
-                if (ikubeConfigurationPathProperty != null) {
+                if (ikubeConfigurationPathProperty == null) {
+                    configDirectory = new File(IConstants.IKUBE_DIRECTORY);
+                } else {
                     configDirectory = new File(ikubeConfigurationPathProperty.toString());
                 }
                 consoleOutputFile = FileUtilities.findFileRecursively(configDirectory, "console");
-                List lines = IOUtils.readLines(new FileInputStream(consoleOutputFile));
+                inputStream = new FileInputStream(consoleOutputFile);
+                List lines = IOUtils.readLines(inputStream);
                 for (final Object line : lines) {
                     System.out.println(line);
                 }
-            } catch (final IOException e) {
+            } catch (final Exception e) {
                 LOGGER.error("Error reading the console file : " + configDirectory + ", " + consoleOutputFile, e);
+            } finally {
+                IOUtils.closeQuietly(inputStream);
             }
         } else {
             LOGGER.info("Application context already loaded : " + APPLICATION_CONTEXT);
@@ -305,7 +319,7 @@ public final class ApplicationContextManager implements ApplicationContextAware 
                             newConfigurationFiles.add(new File(configLocation));
                         }
                     } else {
-                        File configurationFile = new File(getConfigiFilePath());
+                        File configurationFile = new File(getConfigFilePath());
                         if (configurationFile.exists() && configurationFile.isFile() && configurationFile.canRead()) {
                             List<File> springFiles = FileUtilities.findFilesRecursively(configurationFile.getParentFile(), new ArrayList<File>(), "spring.*\\.xml");
                             List<File> propertiesFiles = FileUtilities.findFilesRecursively(configurationFile.getParentFile(), new ArrayList<File>(), "spring\\.properties");

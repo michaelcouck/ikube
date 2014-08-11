@@ -70,6 +70,8 @@
         <jersey-version>1.18.1</jersey-version>
         <postgresql-driver-version>9.1-901-1.jdbc4</postgresql-driver-version>
 
+        <gridgain.version>6.0.1</gridgain.version>
+
         <junit-version>4.8.2</junit-version>
     </properties>
 
@@ -126,6 +128,41 @@
 					<artifactId>exec-maven-plugin</artifactId>
 					<version>1.2.1</version>
 				</plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>1.6</version>
+                    <executions>
+                        <execution>
+                            <id>copy-configuration</id>
+                            <phase>install</phase>
+                            <configuration>
+                                <target>
+                                    <!--<echo message="basedir : ${basedir}, ">basedir : ${basedir}</echo>
+                                    <echo message="pom.basedir : ${pom.basedir}, ">pom.basedir : ${pom.basedir}</echo>
+                                    <echo message="pom.baseUri : ${pom.baseUri}, ">pom.baseUri : ${pom.baseUri}</echo>
+                                    <echo message="project.basedir : ${project.basedir}, ">project.basedir : ${project.basedir}</echo>
+                                    <echo message="project.baseUri : ${project.baseUri}, ">project.baseUri : ${project.baseUri}</echo>
+                                    <echo message="parent.basedir : ${parent.basedir}, ">parent.basedir : ${parent.basedir}</echo>
+                                    <echo message="project.parent.basedir : ${project.parent.basedir}">project.parent.basedir : ${project.parent.basedir}</echo>
+                                    <echo message="project.parent.relativePath : ${project.parent.relativePath}, ">project.parent.relativePath : ${project.parent.relativePath}</echo>-->
+
+                                    <delete dir="ikube"/>
+
+                                    <copy todir="ikube"><fileset dir="../libs/src/main/resources/ikube" includes="**"/></copy>
+                                    <copy todir="ikube/analytics"><fileset dir="../libs/src/main/resources/analytics" includes="**"/></copy>
+                                    <copy todir="ikube/indexes/production"><fileset dir="../libs/src/main/resources/indexes/production" includes="**"/></copy>
+                                    <copy todir="ikube/indexes/integration"><fileset dir="../libs/src/main/resources/indexes/integration" includes="**"/></copy>
+                                    <copy todir="ikube/indexes/twitter"><fileset dir="../libs/src/main/resources/indexes/twitter" includes="**"/></copy>
+                                    <copy todir="ikube/indexes/bosal"><fileset dir="../libs/src/main/resources/indexes/bosal" includes="**"/></copy>
+                                </target>
+                            </configuration>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
@@ -182,6 +219,7 @@
                 <configuration>
                     <forkMode>once</forkMode>
                     <testFailureIgnore>true</testFailureIgnore>
+                    <!--suppress MavenModelInspection -->
                     <argLine>-javaagent:${project.parent.basedir}/serenity/serenity.jar ${serenity-parameters} ${memory-parameters}</argLine>
                 </configuration>
             </plugin>
@@ -881,7 +919,27 @@
 			<version>3.1.1</version>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
+
+        <dependency>
+            <groupId>org.gridgain</groupId>
+            <artifactId>gridgain-platform</artifactId>
+            <version>${gridgain.version}</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.gridgain</groupId>
+            <artifactId>gridgain-streaming</artifactId>
+            <version>${gridgain.version}</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.gridgain</groupId>
+            <artifactId>gridgain-datagrid</artifactId>
+            <version>${gridgain.version}</version>
+            <type>jar</type>
+        </dependency>
+
+        <dependency>
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>
 			<version>1.1.0.Final</version>
@@ -1288,6 +1346,13 @@
             <version>2.0</version>
             <scope>compile</scope>
         </dependency>
+        <!-- This version is not compatible with Weka being used at the time, 3.7.x -->
+        <!--<dependency>
+            <groupId>libsvm</groupId>
+            <artifactId>libsvm</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
+        </dependency>-->
     </dependencies>
 
 	<repositories>
@@ -1365,6 +1430,10 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
+        <repository>
+            <id>GridGain External Repository</id>
+            <url>http://www.gridgainsystems.com/nexus/content/repositories/external</url>
+        </repository>
 	</repositories>
 
     <modules>

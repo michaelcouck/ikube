@@ -26,6 +26,9 @@ import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import static ikube.toolkit.StringUtilities.stripToAlphaNumeric;
+import static org.apache.commons.lang.StringUtils.stripToEmpty;
+
 /**
  * @author Michael Couck
  * @version 02.00
@@ -200,6 +203,15 @@ public class SearcherService implements ISearcherService {
      */
     @Override
     public Search search(final Search search) {
+        String[] searchStrings = search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]);
+        for (int i = 0; i < searchStrings.length; i++) {
+            String searchString = searchStrings[i];
+            searchString = stripToAlphaNumeric(searchString);
+            searchString = stripToEmpty(searchString);
+            searchStrings[i] = searchString;
+        }
+        search.setSearchStrings(Arrays.asList(searchStrings));
+
         if (search.isDistributed() && clusterManager.getServers().size() > 1) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Distributing search : " + search);
@@ -438,7 +450,7 @@ public class SearcherService implements ISearcherService {
         String[] newStrings = new String[lengthOfThisArray.length];
         int minLength = Math.min(originalStrings.length, newStrings.length);
         System.arraycopy(originalStrings, 0, newStrings, 0, minLength);
-        String fillerString = originalStrings != null && originalStrings.length > 0 ? originalStrings[0] : "";
+        String fillerString = originalStrings.length > 0 ? originalStrings[0] : "";
         Arrays.fill(newStrings, minLength, newStrings.length, fillerString);
         return newStrings;
     }

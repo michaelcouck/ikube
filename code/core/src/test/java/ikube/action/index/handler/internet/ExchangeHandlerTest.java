@@ -2,6 +2,7 @@ package ikube.action.index.handler.internet;
 
 import ikube.AbstractTest;
 import ikube.database.IDataBase;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -14,6 +15,7 @@ import static org.junit.Assert.fail;
  * @version 01.00
  * @since 11-07-2014
  */
+@Ignore
 public class ExchangeHandlerTest extends AbstractTest {
 
     @Mock

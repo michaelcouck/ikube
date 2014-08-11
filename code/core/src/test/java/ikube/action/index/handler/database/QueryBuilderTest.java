@@ -116,4 +116,10 @@ public class QueryBuilderTest extends AbstractTest {
         }
     }
 
+    @Test
+    public void getFunctionQuery() {
+        String functionQuery = QueryBuilder.getFunctionQuery("min", "geoname", "id");
+        assertEquals("select min(geoname.id) from geoname", functionQuery);
+    }
+
 }

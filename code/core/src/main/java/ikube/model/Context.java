@@ -83,6 +83,10 @@ public class Context extends Persistable {
     @Transient
     private String[] evaluations;
     /**
+     * Whether this set of classifiers can be serialized and persisted on the file system.
+     */
+    private boolean persisted;
+    /**
      * This flag is set when the model is built completely.
      */
     private boolean built;
@@ -165,6 +169,14 @@ public class Context extends Persistable {
 
     public void setEvaluations(String... evaluations) {
         this.evaluations = evaluations;
+    }
+
+    public boolean isPersisted() {
+        return persisted;
+    }
+
+    public void setPersisted(boolean persisted) {
+        this.persisted = persisted;
     }
 
     public boolean isBuilt() {

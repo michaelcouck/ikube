@@ -21,8 +21,9 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 27.12.12
+ * @since 27-12-2012
  */
+@SuppressWarnings("UnusedDeclaration")
 public class StrategyInterceptorTest extends AbstractTest {
 
 	@Cascading
@@ -47,11 +48,6 @@ public class StrategyInterceptorTest extends AbstractTest {
 		Mockit.setUpMocks();
 	}
 
-//	@After
-//	public void after() {
-//		Mockit.tearDownMocks();
-//	}
-
 	@Test
 	public void preProcess() throws Throwable {
 		Object[] args = new Object[]{indexContext, indexable, document, resource};
@@ -71,7 +67,7 @@ public class StrategyInterceptorTest extends AbstractTest {
 
 		IStrategy strategyFail = Mockito.mock(IStrategy.class);
 		Mockito.when(strategyFail.aroundProcess(indexContext, indexable, document,
-			resource)).thenReturn(Boolean.FALSE);
+            resource)).thenReturn(Boolean.FALSE);
 		Mockito.when(indexable.getStrategies()).thenReturn(Arrays.asList(strategy, strategyFail));
 
 		result = strategyInterceptor.aroundProcess(proceedingJoinPoint);

@@ -1,6 +1,5 @@
 package ikube.analytics.weka;
 
-import com.google.common.collect.Lists;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.ThreadUtilities;
@@ -10,16 +9,16 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.filters.Filter;
 
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicInteger;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static ikube.toolkit.ThreadUtilities.waitForAnonymousFutures;
 
 /**
  * This is a wrapper for the Weka classifiers. It is essentially a holder with some methods for
- * building and training and using the underlying Weka classification(any one, for example {@link weka
- * .classifiers.functions.SMO}) algorithm.
+ * building and training and using the underlying Weka classification(any one, for example {@link weka.classifiers.functions.SMO}) algorithm.
  *
  * @author Michael Couck
  * @version 01.00
@@ -45,39 +44,66 @@ public class WekaClassifier extends WekaAnalyzer {
      */
     @Override
     public void build(final Context context) throws Exception {
-        List<Future> futures = Lists.newArrayList();
-        final String[] evaluations = new String[context.getAlgorithms().length];
-        for (int i = 0; i < context.getAlgorithms().length; i++) {
-            final int index = i;
-            Future<?> future = ThreadUtilities.submit(this.getClass().getName(), new Runnable() {
-                public void run() {
-                    try {
-                        // Get the components to create the model
-                        Classifier classifier = (Classifier) context.getAlgorithms()[index];
-                        Instances instances = (Instances) context.getModels()[index];
-                        Filter filter = getFilter(context, index);
+        // If this analyzer can be persisted, then first check the file system
+        // for serialized classifiers that have already been built
+        final Object[] algorithms = context.getAlgorithms();
+        final Object[] models = context.getModels();
+        final String[] evaluations = new String[algorithms.length];
 
-                        // Filter the data if necessary
-                        Instances filteredInstances = filter(instances, filter);
-                        filteredInstances.setRelationName("filtered-instances");
+        class ClassifierBuilder implements Runnable {
+            final int index;
 
-                        // And build the model
-                        logger.info("Building classifier : " + instances.numInstances());
-                        classifier.buildClassifier(filteredInstances);
-                        logger.info("Classifier built : " + filteredInstances.numInstances());
+            ClassifierBuilder(final int index) {
+                this.index = index;
+            }
 
-                        // Set the evaluation of the classifier and the training model
-                        evaluations[index] = evaluate(classifier, filteredInstances);
-                    } catch (final Exception e) {
-                        throw new RuntimeException(e);
-                    }
+            public void run() {
+                try {
+                    // Get the components to create the model
+                    Classifier classifier = (Classifier) algorithms[index];
+                    Instances instances = (Instances) models[index];
+                    Filter filter = getFilter(context, index);
+
+                    // Filter the data if necessary
+                    Instances filteredInstances = filter(instances, filter);
+                    filteredInstances.setRelationName("filtered-instances");
+
+                    // And build the model
+                    logger.info("Building classifier : " + instances.numInstances() + ", " + context.getName());
+                    classifier.buildClassifier(filteredInstances);
+                    logger.info("Classifier built : " + filteredInstances.numInstances());
+                    algorithms[index] = classifier;
+
+                    // Set the evaluation of the classifier and the training model
+                    evaluations[index] = evaluate(classifier, filteredInstances);
+                } catch (final Exception e) {
+                    throw new RuntimeException(e);
                 }
-            });
-            futures.add(future);
+            }
         }
-        ThreadUtilities.waitForAnonymousFutures(futures, Long.MAX_VALUE);
-        context.setBuilt(Boolean.TRUE);
+
+        if (context.isPersisted()) {
+            Object[] deserializeAlgorithms = deserializeAnalyzers(context);
+            if (deserializeAlgorithms != null && deserializeAlgorithms.length == algorithms.length) {
+                System.arraycopy(deserializeAlgorithms, 0, algorithms, 0, algorithms.length);
+                context.setBuilt(Boolean.TRUE);
+            }
+        }
+
+        if (!context.isBuilt()) {
+            List<Future> futures = newArrayList();
+            for (int i = 0; i < algorithms.length; i++) {
+                Future<?> future = ThreadUtilities.submit(this.getClass().getName(), new ClassifierBuilder(i));
+                futures.add(future);
+            }
+            waitForAnonymousFutures(futures, Long.MAX_VALUE);
+        }
+        context.setAlgorithms(algorithms);
         context.setEvaluations(evaluations);
+        if (context.isPersisted() && !context.isBuilt()) {
+            serializeAnalyzers(context);
+        }
+        context.setBuilt(Boolean.TRUE);
     }
 
     /**
@@ -99,12 +125,12 @@ public class WekaClassifier extends WekaAnalyzer {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public Analysis<Object, Object> analyze(final Context context, final Analysis analysis) throws Exception {
+    public synchronized Analysis<Object, Object> analyze(final Context context, final Analysis analysis) throws Exception {
         String majorityClass = null;
         double[] majorityDistributionForInstance = null;
-        Map<String, AtomicInteger> classes = new HashMap<>();
         StringBuilder algorithmsOutput = new StringBuilder();
 
+        double highestProbability = -1.0;
         for (int i = 0; i < context.getAlgorithms().length; i++) {
             Classifier classifier = (Classifier) context.getAlgorithms()[i];
             Instances instances = (Instances) context.getModels()[i];
@@ -120,30 +146,33 @@ public class WekaClassifier extends WekaAnalyzer {
             double classification = classifier.classifyInstance(filteredInstance);
             String clazz = instances.classAttribute().value((int) classification);
             double[] distributionForInstance = classifier.distributionForInstance(filteredInstance);
-
-            // Calculate the highest count for class among the classifiers
-            AtomicInteger count = classes.get(clazz);
-            if (count == null) {
-                count = new AtomicInteger(0);
-                classes.put(clazz, count);
-            }
-            count.incrementAndGet();
-            if (majorityClass == null) {
-                majorityClass = clazz;
-                majorityDistributionForInstance = distributionForInstance;
-            }
-            if (count.get() > classes.get(majorityClass).get()) {
-                majorityClass = clazz;
-                majorityDistributionForInstance = distributionForInstance;
+            if (logger.isDebugEnabled()) {
+                logger.error("Class : " + clazz + ", dist : " + Arrays.toString(distributionForInstance));
             }
 
-            algorithmsOutput.append(classifier.toString());
-            algorithmsOutput.append("\n\r\n\r");
-            // TODO: Get the correlation co-efficients
+            // Note: The distribution for instances for the instance coming from the
+            // classifier must be the probability for each of the classes. In the SMO
+            // class this is seemingly not possible, as such this will probably still
+            // perform properly, but there may be edge cases where the probabilities do
+            // not correspond to the aggregate of the classifiers
+            for (final double probability : distributionForInstance) {
+                if (probability > highestProbability) {
+                    majorityClass = clazz;
+                    highestProbability = probability;
+                    majorityDistributionForInstance = distributionForInstance;
+                }
+            }
+
+            if (analysis.isAddAlgorithmOutput()) {
+                algorithmsOutput.append(classifier.toString());
+                algorithmsOutput.append("\n\r\n\r");
+            }
         }
+
         analysis.setClazz(majorityClass);
         analysis.setOutput(majorityDistributionForInstance);
         analysis.setAlgorithmOutput(algorithmsOutput.toString());
+
         return analysis;
     }
 

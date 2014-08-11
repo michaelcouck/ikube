@@ -36,10 +36,10 @@ public final class ContentTypeStrategy extends AStrategy {
      */
     @Override
     public boolean aroundProcess(
-            final IndexContext indexContext,
-            final Indexable indexable,
-            final Document document,
-            final Object resource)
+        final IndexContext indexContext,
+        final Indexable indexable,
+        final Document document,
+        final Object resource)
             throws Exception {
         MimeType mimeType = null;
         // Check the name of the resource, i.e. index.html if it iexists

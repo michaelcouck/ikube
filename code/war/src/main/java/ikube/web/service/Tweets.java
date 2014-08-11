@@ -25,9 +25,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Future;
 
 /**
@@ -56,10 +54,9 @@ public class Tweets extends Resource {
     public static final String HAPPY = "/happy";
     public static final String ANALYZE = "/analyze";
 
-    static final String OCCURRENCE = "must";
     static final String CREATED_AT = "created-at";
-    static final long MINUTE_MILLIS = 60 * 1000;
-    static final long HOUR_MILLIS = 60 * MINUTE_MILLIS;
+    static final long MINUTE_MILLIS = 1000 * 60;
+    static final long HOUR_MILLIS = MINUTE_MILLIS * 60;
 
     @Autowired
     protected IAnalyticsService analyticsService;
@@ -162,22 +159,24 @@ public class Tweets extends Resource {
         // Now we have to search for positive and negative for each hour
         // going back as far as the user specified, aggregate the results in an
         // array for the chart
-        int hour = 0;
+        long currentTime = System.currentTimeMillis();
         int period = (int) Math.abs(search.getStartHour());
-        long startTime = System.currentTimeMillis() - (((long) (period)) * HOUR_MILLIS);
-        long endTime = System.currentTimeMillis();
+        long startTime = currentTime - period * HOUR_MILLIS;
+        long endTime = startTime + HOUR_MILLIS;
+
         // Periods plus one for the headers
         final Object[][] timeLineSentiment = new Object[3][period + 1];
 
         List<Future<Object>> futures = new ArrayList<>();
         do {
-            Future<Object> future = (Future<Object>) search(search, period, endTime - HOUR_MILLIS, endTime, hour, timeLineSentiment);
+            Future<Object> future = (Future<Object>) search(search, period, startTime, endTime, timeLineSentiment);
             futures.add(future);
             // Plus an hour
-            hour--;
             period--;
-            endTime -= HOUR_MILLIS;
-        } while (startTime < endTime);
+
+            startTime += HOUR_MILLIS;
+            endTime += HOUR_MILLIS;
+        } while (startTime < currentTime);
         ThreadUtilities.waitForFutures(futures, 300);
 
         ArrayList<HashMap<String, String>> searchResults = search.getSearchResults();
@@ -197,59 +196,66 @@ public class Tweets extends Resource {
         return invertedTimeLineSentiment;
     }
 
-    void addCount(final Object[] count, final String property, final HashMap<String, String> statistics) {
-        int total = 0;
-        for (int i = 1; i < count.length; i++) {
-            total += (Integer) count[i];
-        }
-        statistics.put(property, Integer.toString(total));
-    }
-
-    Future<?> search(
-            final Search search,
-            final int periods,
-            final long periodTime,
-            final long endTime,
-            final int hour,
-            final Object[][] timeLineSentiment) {
+    Future<?> search(final Search search, final int period, final long startTime, final long endTime, final Object[][] timeLineSentiment) {
         return ThreadUtilities.submit(this.getClass().getSimpleName(), new Runnable() {
             public void run() {
-                int positiveCount = search(search, periodTime, endTime, IConstants.POSITIVE);
-                int negativeCount = search(search, periodTime, endTime, IConstants.NEGATIVE);
-                timeLineSentiment[0][periods] = positiveCount;
-                timeLineSentiment[1][periods] = negativeCount;
-                timeLineSentiment[2][periods] = hour;
+                int positiveCount = search(search, startTime, endTime, IConstants.POSITIVE);
+                int negativeCount = search(search, startTime, endTime, IConstants.NEGATIVE);
+                timeLineSentiment[0][period] = positiveCount;
+                timeLineSentiment[1][period] = negativeCount;
+                timeLineSentiment[2][period] = -period;
+                // logger.error("Time line : " + Arrays.deepToString(timeLineSentiment));
             }
         });
     }
 
+    void addCount(final Object[] count, final String property, final HashMap<String, String> statistics) {
+        int total = 0;
+        for (int i = 1; i < count.length; i++) {
+            if (count[i] != null) {
+                total += (Integer) count[i];
+            }
+        }
+        statistics.put(property, Integer.toString(total));
+    }
+
     @SuppressWarnings("StringBufferReplaceableByString")
-    int search(
-            final Search search,
-            final long startTime,
-            final long endTime,
-            final String classification) {
+    int search(final Search search, final long startTime, final long endTime, final String classification) {
         Search searchClone = SerializationUtilities.clone(Search.class, search);
         String timeRange = new StringBuilder(Long.toString(startTime)).append("-").append(endTime).toString();
-        searchClone.getSearchStrings().add(timeRange);
-        searchClone.getSearchFields().add(CREATED_AT);
-        searchClone.getOccurrenceFields().add(OCCURRENCE);
-        searchClone.getTypeFields().add(IConstants.RANGE);
 
-        searchClone.getSearchStrings().add(classification);
-        searchClone.getSearchFields().add(IConstants.CLASSIFICATION);
-        searchClone.getOccurrenceFields().add(OCCURRENCE);
-        searchClone.getTypeFields().add(IConstants.STRING);
+        List<String> searchStrings = new ArrayList<>(searchClone.getSearchStrings());
+        List<String> searchFields = new ArrayList<>(searchClone.getSearchFields());
+        List<String> searchOccurrenceFields = new ArrayList<>(searchClone.getOccurrenceFields());
+        List<String> searchTypeFields = new ArrayList<>(searchClone.getTypeFields());
+
+        searchStrings.add(timeRange);
+        searchFields.add(CREATED_AT);
+        searchOccurrenceFields.add(IConstants.MUST);
+        searchTypeFields.add(IConstants.RANGE);
+
+        searchStrings.add(classification);
+        searchFields.add(IConstants.CLASSIFICATION);
+        searchOccurrenceFields.add(IConstants.MUST);
+        searchTypeFields.add(IConstants.STRING);
+
+        searchClone.setSearchStrings(searchStrings);
+        searchClone.setSearchFields(searchFields);
+        searchClone.setOccurrenceFields(searchOccurrenceFields);
+        searchClone.setTypeFields(searchTypeFields);
 
         // This is not necessary
         // searchClone.setSortFields(Arrays.asList(CREATED_AT));
         // searchClone.setSortDirections(Arrays.asList(Boolean.TRUE.toString()));
 
+        // searchClone.setSearchResults(null);
         searchClone = searcherService.search(searchClone);
-        ArrayList<HashMap<String, String>> searchCloneResults = searchClone.getSearchResults();
+        ArrayList<HashMap<String, String>> searchCloneResults = new ArrayList<>(searchClone.getSearchResults());
         HashMap<String, String> statistics = searchCloneResults.get(searchCloneResults.size() - 1);
         String total = statistics.get(IConstants.TOTAL);
         search.setSearchResults(searchCloneResults);
+        System.out.println("Total : " + total);
+        System.out.println(startTime + "-" + endTime + ", " + new Date(startTime) + "-" + new Date(endTime));
         return Integer.valueOf(total);
     }
 

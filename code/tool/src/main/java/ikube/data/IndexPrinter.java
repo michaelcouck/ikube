@@ -38,16 +38,17 @@ public class IndexPrinter {
             int numDocsToPrint = Integer.parseInt(args[1]);
             Directory directory = NIOFSDirectory.open(file);
             indexReader = DirectoryReader.open(directory);
-            LOGGER.info("Num docs : " + indexReader.numDocs());
+            LOGGER.error("Num docs : " + indexReader.numDocs());
             for (int i = 0; i < numDocsToPrint && i < indexReader.numDocs(); i++) {
                 Document document = indexReader.document(i);
-                LOGGER.info("Document : " + i);
+                LOGGER.error("Document : " + i);
                 List<IndexableField> fields = document.getFields();
-                for (IndexableField fieldable : fields) {
+                for (final IndexableField fieldable : fields) {
                     String fieldName = fieldable.name();
                     String fieldValue = fieldable.stringValue();
                     int fieldLength = fieldValue != null ? fieldValue.length() : 0;
-                    LOGGER.info("        : " + fieldName + ", " + fieldLength + ", " + fieldValue);
+                    LOGGER.error("        : " + fieldable);
+                    LOGGER.error("        : " + fieldName + ", " + fieldLength + ", " + fieldValue);
                 }
             }
         } catch (final Exception e) {

@@ -81,6 +81,9 @@ public class Search extends Distributed {
     @Column
     private long hash;
 
+    @Embedded
+    private Coordinate coordinate;
+
     @ElementCollection
     private List<String> searchStrings;
     @ElementCollection
@@ -96,10 +99,7 @@ public class Search extends Distributed {
     @ElementCollection
     private List<String> boosts;
 
-    @Embedded
-    private Coordinate coordinate;
-
-    @ElementCollection
+    @Transient
     private List<String> correctedSearchStrings;
     @Transient
     private ArrayList<HashMap<String, String>> searchResults;
@@ -144,14 +144,6 @@ public class Search extends Distributed {
         this.distance = distance;
     }
 
-    public List<String> getBoosts() {
-        return boosts;
-    }
-
-    public void setBoosts(List<String> boosts) {
-        this.boosts = boosts;
-    }
-
     public int getCount() {
         return count;
     }
@@ -160,12 +152,10 @@ public class Search extends Distributed {
         this.count = count;
     }
 
-    @SuppressWarnings("UnusedDeclaration")
     public int getTotalResults() {
         return totalResults;
     }
 
-    @SuppressWarnings("UnusedDeclaration")
     public void setTotalResults(int totalResults) {
         this.totalResults = totalResults;
     }
@@ -192,6 +182,14 @@ public class Search extends Distributed {
 
     public void setHash(long hash) {
         this.hash = hash;
+    }
+
+    public Coordinate getCoordinate() {
+        return coordinate;
+    }
+
+    public void setCoordinate(Coordinate coordinate) {
+        this.coordinate = coordinate;
     }
 
     public List<String> getSearchStrings() {
@@ -242,15 +240,14 @@ public class Search extends Distributed {
         this.occurrenceFields = occurrenceFields;
     }
 
-    public Coordinate getCoordinate() {
-        return coordinate;
+    public List<String> getBoosts() {
+        return boosts;
     }
 
-    public void setCoordinate(Coordinate coordinate) {
-        this.coordinate = coordinate;
+    public void setBoosts(List<String> boosts) {
+        this.boosts = boosts;
     }
 
-    @SuppressWarnings("UnusedDeclaration")
     public List<String> getCorrectedSearchStrings() {
         return correctedSearchStrings;
     }

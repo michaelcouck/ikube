@@ -22,40 +22,35 @@ import static org.mockito.Mockito.when;
  */
 public class LanguageFilterStrategyTest extends AbstractTest {
 
-	private LanguageFilterStrategy languageFilterStrategy;
+    private LanguageFilterStrategy languageFilterStrategy;
 
-	@Before
-	public void before() {
-		languageFilterStrategy = new LanguageFilterStrategy();
-	}
+    @Before
+    public void before() {
+        languageFilterStrategy = new LanguageFilterStrategy();
+    }
 
-//	@After
-//	public void after() {
-//		Mockit.tearDownMocks();
-//	}
+    @Test
+    public void aroundProcess() throws Exception {
+        String content = "some english text $   ù'àé .class  $$class.again";
+        String cleanedContent = languageFilterStrategy.cleanContent(content);
+        assertEquals("some english text ù'àé .class class.again", cleanedContent);
+    }
 
-	@Test
-	public void aroundProcess() throws Exception {
-		String content = "some english text $   ù'àé .class  $$class.again";
-		String cleanedContent = languageFilterStrategy.cleanContent(content);
-		assertEquals("some english text ù àé class class again", cleanedContent);
-	}
+    @Test
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public void aroundProcessPerformance() {
+        when(indexableColumn.getContent()).thenReturn("some english text");
+        List<Indexable> children = new ArrayList(Arrays.asList(indexableColumn));
+        when(indexableTable.getChildren()).thenReturn(children);
 
-	@Test
-	@SuppressWarnings({"unchecked", "rawtypes"})
-	public void aroundProcessPerformance() {
-		when(indexableColumn.getContent()).thenReturn("some english text");
-		List<Indexable> children = new ArrayList(Arrays.asList(indexableColumn));
-		when(indexableTable.getChildren()).thenReturn(children);
-
-		int iterations = 1000;
-		final Document document = new Document();
-		double perSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
-			public void execute() throws Throwable {
-				languageFilterStrategy.aroundProcess(indexContext, indexableTable, document, null);
-			}
-		}, "Language detection strategy : ", iterations, Boolean.TRUE);
-		assertTrue(perSecond > 1000);
-	}
+        int iterations = 1000;
+        final Document document = new Document();
+        double perSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+            public void execute() throws Throwable {
+                languageFilterStrategy.aroundProcess(indexContext, indexableTable, document, null);
+            }
+        }, "Language detection strategy : ", iterations, Boolean.TRUE);
+        assertTrue(perSecond > 1000);
+    }
 
 }

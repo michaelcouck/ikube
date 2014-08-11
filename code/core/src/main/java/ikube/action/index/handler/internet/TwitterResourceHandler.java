@@ -11,6 +11,9 @@ import org.springframework.social.twitter.api.TwitterProfile;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import static ikube.action.index.IndexManager.addNumericField;
+import static ikube.action.index.IndexManager.addStringField;
+
 /**
  * This class simply takes the specific data from Twitter and adds it to the index.
  *
@@ -32,12 +35,8 @@ public class TwitterResourceHandler extends ResourceHandler<IndexableTweets> {
      * @throws Exception
      */
     @Override
-    public Document handleResource(
-            final IndexContext indexContext,
-            final IndexableTweets indexableTweets,
-            final Document document,
-            final Object resource)
-            throws Exception {
+    public Document handleResource(final IndexContext indexContext, final IndexableTweets indexableTweets, final Document document,
+                                   final Object resource) throws Exception {
         Tweet tweet = (Tweet) resource;
 
         // This is the unique id of the resource to be able to delete it
@@ -48,10 +47,10 @@ public class TwitterResourceHandler extends ResourceHandler<IndexableTweets> {
 
         // NOTE to self: To be able to delete using the index writer the identifier field must be non analyzed and non tokenized/vectored!
         // IndexManager.addStringField(IConstants.ID, tweetId, document, Store.YES, Index.NOT_ANALYZED, TermVector.NO);
-        IndexManager.addNumericField(IConstants.ID, tweetId, document, Boolean.TRUE, 0);
-        IndexManager.addNumericField(createdAtField, Long.toString(tweet.getCreatedAt().getTime()), document, Boolean.TRUE, 0);
-        IndexManager.addStringField(fromUserField, tweet.getFromUser(), indexableTweets, document);
-        IndexManager.addStringField(textField, indexableTweets.getContent().toString(), indexableTweets, document);
+        addNumericField(IConstants.ID, tweetId, document, Boolean.TRUE, 0);
+        addNumericField(createdAtField, Long.toString(tweet.getCreatedAt().getTime()), document, Boolean.TRUE, 0);
+        addStringField(fromUserField, tweet.getFromUser(), indexableTweets, document);
+        addStringField(textField, indexableTweets.getContent().toString(), indexableTweets, document);
 
         handleProfile(indexableTweets, document, tweet);
 
@@ -80,12 +79,12 @@ public class TwitterResourceHandler extends ResourceHandler<IndexableTweets> {
             int userUtcOffset = twitterProfile.getUtcOffset();
             String userLanguage = twitterProfile.getLanguage();
 
-            IndexManager.addStringField(userNameField, userName, indexableTweets, document);
-            IndexManager.addStringField(userScreenNameField, userScreenName, indexableTweets, document);
-            IndexManager.addStringField(userLocationField, userLocation, indexableTweets, document);
-            IndexManager.addStringField(userTimeZoneField, userTimeZone, indexableTweets, document);
-            IndexManager.addNumericField(userUtcOffsetField, Integer.toString(userUtcOffset), document, Boolean.TRUE, 0);
-            IndexManager.addStringField(userLanguageField, userLanguage, indexableTweets, document);
+            addStringField(userNameField, userName, indexableTweets, document);
+            addStringField(userScreenNameField, userScreenName, indexableTweets, document);
+            addStringField(userLocationField, userLocation, indexableTweets, document);
+            addStringField(userTimeZoneField, userTimeZone, indexableTweets, document);
+            addNumericField(userUtcOffsetField, Integer.toString(userUtcOffset), document, Boolean.TRUE, 0);
+            addStringField(userLanguageField, userLanguage, indexableTweets, document);
         }
     }
 

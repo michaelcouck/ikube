@@ -83,10 +83,9 @@ public final class DatabaseCopy extends ADatabase {
      * @throws Exception
      */
     private static void copyEntities(final ADataBaseJpa dataBaseJpa, final Collection<GeoName> geoNames) throws Exception {
-        // EntityManager entityManager = Deencapsulation.getField(dataBaseJpa, EntityManager.class);
 		EntityManager entityManager = (EntityManager) ObjectToolkit.getFieldValue(dataBaseJpa, "entityManager");
         entityManager.getTransaction().begin();
-        List<Object> batch = new ArrayList<Object>();
+        List<Object> batch = new ArrayList<>();
         for (final GeoName geoName : geoNames) {
             GeoName geoNameCopy = new GeoName();
             BeanUtilsBean.getInstance().copyProperties(geoNameCopy, geoName);

@@ -4,6 +4,7 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Analysis;
 import ikube.model.Context;
+import ikube.toolkit.FileUtilities;
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mockit;
@@ -20,6 +21,7 @@ import weka.filters.unsupervised.attribute.StringToWordVector;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Enumeration;
 
 import static junit.framework.Assert.*;
@@ -55,7 +57,6 @@ public class WekaAnalyzerTest extends AbstractTest {
 
         String algorithm = SMO.class.getName();
         String filter = StringToWordVector.class.getName();
-        String fileName = "sentiment-smo.arff";
         String[] options = new String[]{"-D", "-V", "100"};
         int maxTraining = 10000;
 
@@ -67,7 +68,7 @@ public class WekaAnalyzerTest extends AbstractTest {
         context.setFilters(filter, filter, filter);
         context.setOptions(options, options, options);
 
-        context.setFileNames(fileName, fileName, fileName);
+        context.setFileNames("sentiment-smo-one.arff", "sentiment-smo-two.arff", "sentiment-smo-three.arff");
         context.setMaxTrainings(maxTraining, maxTraining, maxTraining);
 
         analysis = new Analysis();
@@ -147,15 +148,9 @@ public class WekaAnalyzerTest extends AbstractTest {
     }
 
     @Test
-    public void persist() throws Exception {
-        init();
-        WRITTEN = Boolean.FALSE;
-        wekaAnalyzer.persist(context);
-        assertTrue(WRITTEN);
-    }
-
-    @Test
     public void getInputStream() throws Exception {
+        wekaAnalyzer.init(context);
+        wekaAnalyzer.build(context);
         InputStream[] inputStreams = wekaAnalyzer.getInputStreams(context);
         assertTrue(inputStreams.length > 0);
         for (final InputStream inputStream : inputStreams) {
@@ -165,6 +160,8 @@ public class WekaAnalyzerTest extends AbstractTest {
 
     @Test
     public void getDataFile() throws Exception {
+        wekaAnalyzer.init(context);
+        wekaAnalyzer.build(context);
         File[] dataFiles = wekaAnalyzer.getDataFiles(context);
         assertTrue(dataFiles.length > 0);
         for (final File dataFile : dataFiles) {
@@ -216,6 +213,95 @@ public class WekaAnalyzerTest extends AbstractTest {
                     for (final double probability : distributionInstance) {
                         assertTrue(probability == 0.0 || probability == 1.0);
                     }
+                }
+            }
+        }
+    }
+
+    @Test
+    public void getDataFiles() throws Exception {
+        wekaAnalyzer.init(context);
+        wekaAnalyzer.build(context);
+        File[] dataFiles = wekaAnalyzer.getDataFiles(context);
+        logger.error("Data files : " + Arrays.toString(dataFiles));
+        assertEquals(3, dataFiles.length);
+        for (final File dataFile : dataFiles) {
+            assertTrue(dataFile.exists());
+        }
+
+        context.setFileNames("sentiment-smo-extra.arff");
+        dataFiles = wekaAnalyzer.getDataFiles(context);
+        assertEquals(1, dataFiles.length);
+        for (final File dataFile : dataFiles) {
+            try {
+                assertTrue(dataFile.exists());
+            } finally {
+                FileUtilities.deleteFile(dataFile);
+            }
+        }
+    }
+
+    @Test
+    public void serializeAnalyzers() throws Exception {
+        File[] serializedAnalyzerFiles = null;
+        try {
+            wekaAnalyzer.init(context);
+            wekaAnalyzer.build(context);
+            serializedAnalyzerFiles = wekaAnalyzer.serializeAnalyzers(context);
+            assertEquals(3, serializedAnalyzerFiles.length);
+            for (final File serializedAnalyzerFile : serializedAnalyzerFiles) {
+                assertTrue(serializedAnalyzerFile.exists());
+            }
+        } finally {
+            if (serializedAnalyzerFiles != null) {
+                for (final File serializedAnalyzerFile : serializedAnalyzerFiles) {
+                    FileUtilities.deleteFile(serializedAnalyzerFile);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void deserializeAnalyzers() throws Exception {
+        File[] serializedAnalyzerFiles = null;
+        try {
+            wekaAnalyzer.init(context);
+            wekaAnalyzer.build(context);
+            serializedAnalyzerFiles = wekaAnalyzer.serializeAnalyzers(context);
+
+            Object[] deserializedAnalyzers = wekaAnalyzer.deserializeAnalyzers(context);
+            assertNotNull(deserializedAnalyzers);
+            assertEquals(3, deserializedAnalyzers.length);
+            for (final Object deserializedAnalyzer : deserializedAnalyzers) {
+                assertTrue(SMO.class.isAssignableFrom(deserializedAnalyzer.getClass()));
+            }
+        } finally {
+            if (serializedAnalyzerFiles != null) {
+                for (final File serializedAnalyzerFile : serializedAnalyzerFiles) {
+                    FileUtilities.deleteFile(serializedAnalyzerFile);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void getSerializedAnalyzerFiles() throws Exception {
+        File[] serializedAnalyzerFiles = null;
+        try {
+            wekaAnalyzer.init(context);
+            wekaAnalyzer.build(context);
+            wekaAnalyzer.serializeAnalyzers(context);
+
+            serializedAnalyzerFiles = wekaAnalyzer.getSerializedAnalyzerFiles(context);
+            assertNotNull(serializedAnalyzerFiles);
+            assertTrue(serializedAnalyzerFiles.length >= 3);
+            for (final File serializedAnalyzerFile : serializedAnalyzerFiles) {
+                assertTrue(serializedAnalyzerFile.exists());
+            }
+        } finally {
+            if (serializedAnalyzerFiles != null) {
+                for (final File serializedAnalyzerFile : serializedAnalyzerFiles) {
+                    FileUtilities.deleteFile(serializedAnalyzerFile);
                 }
             }
         }

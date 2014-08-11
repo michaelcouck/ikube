@@ -18,6 +18,11 @@ import javax.validation.constraints.Size;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class IndexableExchange extends Indexable {
 
+    private transient String subject;
+    private transient String body;
+    private transient String sender;
+    private transient String recipient;
+
     @Column
     @NotNull
     @Pattern(regexp = "^(https?|http?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]", message = "The url must be valid")

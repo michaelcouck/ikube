@@ -16,8 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static ikube.action.index.handler.database.QueryBuilder.buildNextIdQuery;
+import static ikube.action.index.handler.database.QueryBuilder.getFunctionQuery;
+import static ikube.action.index.handler.database.QueryBuilder.getIdColumn;
 import static ikube.database.DatabaseUtilities.close;
 import static ikube.database.DatabaseUtilities.closeAll;
+import static ikube.database.DatabaseUtilities.getAllColumns;
 
 /**
  * This class provides resources to the table handler. In this case a resource is a result set. Each
@@ -91,7 +95,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
 
         long maximumId = getIdFunction(indexableTable, connection, "max");
         indexableTable.setMaximumId(maximumId);
-        logger.warn("Max id : " + maximumId);
+        logger.info("Max id : " + maximumId);
 
         logger.debug("Closing connection, i.e. back to the pool, with a cocktail :)");
         close(connection);
@@ -129,8 +133,8 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
         PreparedStatement statement;
         try {
             // Get the next id, could be 1 000 000 000 away
-            IndexableColumn idColumn = QueryBuilder.getIdColumn(indexableTable.getChildren());
-            String nextIdQuery = QueryBuilder.buildNextIdQuery(indexableTable, currentId.get());
+            IndexableColumn idColumn = getIdColumn(indexableTable.getChildren());
+            String nextIdQuery = buildNextIdQuery(indexableTable, currentId.get());
             statement = connection.prepareStatement(nextIdQuery);
             resultSet = statement.executeQuery();
             if (resultSet.next()) {
@@ -208,7 +212,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
         ResultSet resultSet = null;
         try {
             long result = 0;
-            IndexableColumn idColumn = QueryBuilder.getIdColumn(indexableTable.getChildren());
+            IndexableColumn idColumn = getIdColumn(indexableTable.getChildren());
 
             if (idColumn == null) {
                 logger.warn("Table has no id column : " + indexableTable.getName());
@@ -216,17 +220,9 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
                 return -1;
             }
 
-            StringBuilder builder = new StringBuilder("select ");
-            builder.append(function);
-            builder.append('(');
-            builder.append(indexableTable.getName());
-            builder.append('.');
-            builder.append(idColumn.getName());
-            builder.append(") from ");
-            builder.append(indexableTable.getName());
-
+            String functionQuery = getFunctionQuery(function, indexableTable.getName(), idColumn.getName());
             statement = connection.createStatement();
-            resultSet = statement.executeQuery(builder.toString());
+            resultSet = statement.executeQuery(functionQuery);
             if (resultSet.next()) {
                 Object object = resultSet.getObject(1);
                 if (object == null) {
@@ -248,7 +244,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
     private void addAllColumns(final IndexableTable indexableTable, final DataSource dataSource) {
         if (indexableTable.isAllColumns()) {
             Connection connection = getConnection(dataSource);
-            List<String> columnNames = DatabaseUtilities.getAllColumns(connection, indexableTable.getName());
+            List<String> columnNames = getAllColumns(connection, indexableTable.getName());
             List<String> primaryKeyColumns = DatabaseUtilities.getPrimaryKeys(connection, indexableTable.getName());
             if (columnNames.size() == 0) {
                 logger.warn("No columns found for table : " + indexableTable.getName());

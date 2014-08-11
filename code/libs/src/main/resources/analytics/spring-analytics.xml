@@ -62,4 +62,74 @@
         property:maxTrainings="10000"/>
     <!-- END CLASSIFIER DEFINITION: -->
 
+    <!-- This context contains 1.5 million human classified sentences to train the classifiers. -->
+    <bean
+        name="english-sentiment"
+        class="ikube.model.Context"
+        property:name="english-sentiment"
+        property:analyzer="ikube.analytics.weka.WekaClassifier"
+        property:options="-D"
+        property:persisted="false">
+
+        <property name="algorithms">
+            <list>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+            </list>
+        </property>
+
+        <property name="fileNames">
+            <list>
+                <value>sentiment-model-150000-300000.arff</value>
+                <value>sentiment-model-300000-450000.arff</value>
+                <value>sentiment-model-450000-600000.arff</value>
+                <value>sentiment-model-600000-750000.arff</value>
+                <value>sentiment-model-750000-900000.arff</value>
+                <value>sentiment-model-900000-1050000.arff</value>
+                <value>sentiment-model-1050000-1200000.arff</value>
+                <value>sentiment-model-1200000-1350000.arff</value>
+                <value>sentiment-model-1350000-1500000.arff</value>
+                <value>sentiment-model-1500000-1650000.arff</value>
+            </list>
+        </property>
+
+        <property name="filters">
+            <list>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+            </list>
+        </property>
+
+        <property name="maxTrainings">
+            <list>
+                <value>1000000</value>
+                <value>1000000</value>
+                <value>1000000</value>
+                <value>1000000</value>
+                <value>1000000</value>
+                <value>1000000</value>
+                <value>1000000</value>
+                <value>1000000</value>
+                <value>1000000</value>
+                <value>1000000</value>
+            </list>
+        </property>
+    </bean>
+
 </beans>

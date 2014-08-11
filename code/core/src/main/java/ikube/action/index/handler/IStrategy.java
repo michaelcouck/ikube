@@ -2,7 +2,6 @@ package ikube.action.index.handler;
 
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
-
 import org.apache.lucene.document.Document;
 
 /**

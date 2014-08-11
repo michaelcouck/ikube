@@ -1,16 +1,16 @@
 package ikube.action.index.handler.strategy;
 
-import static junit.framework.Assert.assertEquals;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.toolkit.FileUtilities;
-
-import java.io.File;
-
 import org.apache.lucene.document.Document;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import java.io.File;
+
+import static junit.framework.Assert.assertEquals;
 
 /**
  * @author Michael Couck

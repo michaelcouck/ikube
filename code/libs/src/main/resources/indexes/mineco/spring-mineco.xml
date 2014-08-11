@@ -14,20 +14,13 @@
         http://www.springframework.org/schema/util/spring-util.xsd">
 
     <bean
-        id="mineco-regression"
         name="mineco-regression"
-        class="ikube.analytics.weka.WekaClassifier"/>
-    <bean
-        id="weka-mineco-regression"
-        name="weka-mineco-regression"
-        class="weka.classifiers.functions.SimpleLinearRegression"/>
-    <bean
-        id="mineco-regression-smo-en"
-        name="mineco-regression-smo-en"
         class="ikube.model.Context"
         property:name="mineco-regression"
         property:analyzer="ikube.analytics.weka.WekaClassifier"
-        property:algorithms="weka.classifiers.functions.SimpleLinearRegression"
-        property:maxTrainings="10000000" />
+        property:algorithms="weka.classifiers.bayes.NaiveBayesMultinomial"
+        property:fileNames="mineco-regression.arff"
+        property:maxTrainings="10000000"
+        property:persisted="false"/>
 
 </beans>

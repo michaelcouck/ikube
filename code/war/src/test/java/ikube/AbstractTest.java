@@ -83,9 +83,7 @@ public abstract class AbstractTest {
                 String fieldName = fieldable.name();
                 String fieldValue = fieldable.stringValue();
                 int fieldLength = fieldValue != null ? fieldValue.length() : 0;
-                if (fieldName.equalsIgnoreCase(IConstants.CLASSIFICATION)) {
-                    logger.error("        : " + fieldName + ", " + fieldLength + ", " + fieldValue + ", " + fieldable);
-                }
+                logger.error("        : " + fieldName + ", " + fieldLength + ", " + fieldValue + ", " + fieldable);
             }
         }
     }
@@ -98,11 +96,11 @@ public abstract class AbstractTest {
         Context context = new Context();
         context.setName(name);
         context.setAnalyzer(WekaClusterer.class.getName());
-        context.setAlgorithms(new String[] {SimpleKMeans.class.getName()});
-        context.setOptions(new String[]{"-N", "6"});
+        context.setAlgorithms(SimpleKMeans.class.getName());
+        context.setOptions("-N", "6");
 
-        context.setMaxTrainings(new int[] {Integer.MAX_VALUE});
-        context.setTrainingDatas(new String[] {trainingData});
+        context.setTrainingDatas(trainingData);
+        context.setMaxTrainings(Integer.MAX_VALUE);
 
         return context;
     }

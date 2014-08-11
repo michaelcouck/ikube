@@ -8,10 +8,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.Spy;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import weka.classifiers.functions.SMO;
+import weka.classifiers.bayes.NaiveBayesMultinomial;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.filters.unsupervised.attribute.StringToWordVector;
@@ -20,8 +19,6 @@ import java.util.Arrays;
 import java.util.Enumeration;
 
 import static junit.framework.Assert.*;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doAnswer;
 
 /**
  * @author Michael Couck
@@ -40,10 +37,11 @@ public class WekaClassifierTest extends AbstractTest {
 
     @Before
     public void before() throws Exception {
-        String algorithm = SMO.class.getName();
+        String algorithm = NaiveBayesMultinomial.class.getName();
         String filter = StringToWordVector.class.getName();
         String fileName = "sentiment-smo.arff";
-        String[] options = new String[]{"-D", "-V", "100"};
+        // "-V", "100"
+        String[] options = new String[]{"-D"};
         int maxTraining = 10000;
 
         context = new Context();
@@ -54,13 +52,6 @@ public class WekaClassifierTest extends AbstractTest {
         context.setOptions(options);
         context.setFileNames(fileName, fileName, fileName);
         context.setMaxTrainings(maxTraining, maxTraining, maxTraining);
-
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                return null;
-            }
-        }).when(wekaClassifier).persist(any(Context.class));
 
         wekaClassifier.init(context);
     }
@@ -73,6 +64,12 @@ public class WekaClassifierTest extends AbstractTest {
             logger.error("Evaluation : " + evaluation);
             assertNotNull(evaluation);
         }
+
+        context.setBuilt(Boolean.FALSE);
+        context.setPersisted(Boolean.TRUE);
+
+        wekaClassifier.build(context);
+        Mockito.verify(wekaClassifier, Mockito.times(1)).deserializeAnalyzers(context);
     }
 
     @Test

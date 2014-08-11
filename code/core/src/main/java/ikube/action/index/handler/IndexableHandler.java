@@ -182,7 +182,7 @@ public abstract class IndexableHandler<T extends Indexable> implements IIndexabl
             throw new RuntimeException("Worker thread interrupted : " + message, exception);
         }
         logger.error("Exception handling resource : " + message + ", " + exception.getLocalizedMessage());
-        logger.info(null, exception);
+        logger.warn(null, exception);
     }
 
     /**

@@ -41,6 +41,13 @@ public final class IndexManager {
     private static final Logger LOGGER = Logger.getLogger(IndexManager.class);
 
     /**
+     * There can be only one...
+     */
+    private IndexManager() {
+        // Documented
+    }
+
+    /**
      * This method will open index writers on each of the server index directories.
      *
      * @param indexContext the index to open the writers for
@@ -56,7 +63,7 @@ public final class IndexManager {
         File latestIndexDirectory = getLatestIndexDirectory(indexDirectoryPath);
         IndexWriter[] indexWriters;
         if (latestIndexDirectory == null || latestIndexDirectory.listFiles() == null || latestIndexDirectory.listFiles() == null ||
-            latestIndexDirectory.listFiles().length == 0) {
+                latestIndexDirectory.listFiles().length == 0) {
             // This means that we tried to do a delta index but there was no index, i.e. we still have to index from the start
             IndexWriter indexWriter = openIndexWriter(indexContext, System.currentTimeMillis(), ip);
             indexWriters = new IndexWriter[]{indexWriter};
@@ -103,7 +110,7 @@ public final class IndexManager {
                 LOGGER.warn("Directory not readable or writable : read : " + readable + ", write : " + writable);
             }
             LOGGER.info("Index directory time : " + time + ", date : " + new Date(time) +
-                ", writing index to directory " + indexDirectoryPath);
+                    ", writing index to directory " + indexDirectoryPath);
             indexWriter = openIndexWriter(indexContext, indexDirectory, Boolean.TRUE);
         } catch (final CorruptIndexException e) {
             LOGGER.error("We expected a new index and got a corrupt one.", e);
@@ -111,7 +118,7 @@ public final class IndexManager {
             delete = Boolean.TRUE;
         } catch (final LockObtainFailedException e) {
             LOGGER.error("Failed to obtain the lock on the directory. Check the file system permissions or failed indexing jobs, "
-                + "there will be a lock file in one of the index directories.", e);
+                    + "there will be a lock file in one of the index directories.", e);
         } catch (final IOException e) {
             LOGGER.error("IO exception detected opening the writer", e);
         } catch (final Exception e) {
@@ -135,7 +142,7 @@ public final class IndexManager {
      * @throws Exception
      */
     public static synchronized IndexWriter openIndexWriter(final IndexContext indexContext, final File indexDirectory, final boolean create)
-        throws Exception {
+            throws Exception {
         Directory directory = NIOFSDirectory.open(indexDirectory);
         return openIndexWriter(indexContext, directory, create);
     }
@@ -496,9 +503,10 @@ public final class IndexManager {
         FieldType floatFieldType = new FieldType();
         floatFieldType.setStored(store);
         floatFieldType.setIndexed(Boolean.TRUE);
+        floatFieldType.setNumericType(NumericType.FLOAT);
         // To sort on these fields they must not be tokenized for some reason
         floatFieldType.setTokenized(Boolean.FALSE);
-        floatFieldType.setNumericType(NumericType.FLOAT);
+        floatFieldType.setOmitNorms(Boolean.FALSE);
 
         Field floatField = new FloatField(fieldName, Float.parseFloat(fieldContent), floatFieldType);
         if (boost > 0) {
@@ -573,13 +581,6 @@ public final class IndexManager {
             }
         }
         return fields;
-    }
-
-    /**
-     * There can be only one...
-     */
-    private IndexManager() {
-        // Documented
     }
 
 }

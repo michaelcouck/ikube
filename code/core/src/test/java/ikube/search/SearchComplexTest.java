@@ -15,8 +15,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import mockit.Deencapsulation;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.search.IndexSearcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -86,6 +88,9 @@ public class SearchComplexTest extends AbstractTest {
 		searchComplex.setTypeFields(NUMERIC.fieldType(), NUMERIC.fieldType());
 		searchComplex.setOccurrenceFields(IConstants.SHOULD, IConstants.SHOULD);
 		searchComplex.setSortFields("annee");
+
+        IndexSearcher indexSearcher = Deencapsulation.getField(searchComplex, "searcher");
+        printIndex(indexSearcher.getIndexReader(), 100);
 
 		results = searchComplex.execute();
 		assertEquals("There must be 2 result and the statistics : ", 3, results.size());

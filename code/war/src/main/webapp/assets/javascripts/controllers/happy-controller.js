@@ -15,7 +15,7 @@ module.controller('HappyController', function ($scope, $http, $timeout, $log) {
     $scope.search = {
         fragment: false,
         firstResult: 0,
-        maxResults: 100000,
+        maxResults: 10000,
         indexName: 'twitter',
         minutesOfHistory: 60,
         classification: 'positive',

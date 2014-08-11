@@ -1,6 +1,13 @@
 package ikube.analytics.weka;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.Future;
+
 import com.google.common.collect.Lists;
+
+import static ikube.toolkit.ThreadUtilities.waitForAnonymousFutures;
+
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.ThreadUtilities;
@@ -9,12 +16,6 @@ import weka.clusterers.Clusterer;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.filters.Filter;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This class is the Weka clusterer wrapper. Ultimately just wrapping the Weka
@@ -32,39 +33,63 @@ public class WekaClusterer extends WekaAnalyzer {
      */
     @Override
     public void build(final Context context) throws Exception {
-        List<Future> futures = Lists.newArrayList();
-        final String[] evaluations = new String[context.getAlgorithms().length];
-        for (int i = 0; i < context.getAlgorithms().length; i++) {
-            final int index = i;
-            Future<?> future = ThreadUtilities.submit(this.getClass().getName(), new Runnable() {
-                public void run() {
-                    try {
-                        // Get the components to create the model
-                        Clusterer clusterer = (Clusterer) context.getAlgorithms()[index];
-                        Instances instances = (Instances) context.getModels()[index];
-                        Filter filter = getFilter(context, index);
+        final Object[] algorithms = context.getAlgorithms();
+        final Object[] models = context.getModels();
+        final String[] evaluations = new String[algorithms.length];
 
-                        // Filter the data if necessary
-                        Instances filteredInstances = WekaClusterer.this.filter(instances, filter);
-                        filteredInstances.setRelationName("filtered-instances");
+        class ClustererBuilder implements Runnable {
+            final int index;
 
-                        // And build the model
-                        logger.info("Building clusterer : " + instances.numInstances());
-                        clusterer.buildClusterer(filteredInstances);
-                        logger.info("Clusterer built : " + filteredInstances.numInstances());
+            ClustererBuilder(final int index) {
+                this.index = index;
+            }
 
-                        // Set the evaluation
-                        evaluations[index] = evaluate(clusterer, instances);
-                    } catch (final Exception e) {
-                        throw new RuntimeException(e);
-                    }
+            public void run() {
+                try {
+                    // Get the components to create the model
+                    Clusterer clusterer = (Clusterer) algorithms[index];
+                    Instances instances = (Instances) models[index];
+                    Filter filter = getFilter(context, index);
+
+                    // Filter the data if necessary
+                    Instances filteredInstances = filter(instances, filter);
+                    filteredInstances.setRelationName("filtered-instances");
+
+                    // And build the model
+                    logger.info("Building clusterer : " + instances.numInstances());
+                    clusterer.buildClusterer(filteredInstances);
+                    logger.info("Clusterer built : " + filteredInstances.numInstances());
+                    algorithms[index] = clusterer;
+
+                    // Set the evaluation
+                    evaluations[index] = evaluate(clusterer, instances);
+                } catch (final Exception e) {
+                    throw new RuntimeException(e);
                 }
-            });
-            futures.add(future);
+            }
         }
-        ThreadUtilities.waitForAnonymousFutures(futures, Long.MAX_VALUE);
-        context.setBuilt(Boolean.TRUE);
+
+        if (context.isPersisted()) {
+            Object[] deserializeAlgorithms = deserializeAnalyzers(context);
+            if (deserializeAlgorithms != null && deserializeAlgorithms.length == algorithms.length) {
+                System.arraycopy(deserializeAlgorithms, 0, algorithms, 0, algorithms.length);
+                context.setBuilt(Boolean.TRUE);
+            }
+        }
+        if (!context.isBuilt()) {
+            List<Future> futures = Lists.newArrayList();
+            for (int i = 0; i < context.getAlgorithms().length; i++) {
+                Future<?> future = ThreadUtilities.submit(this.getClass().getName(), new ClustererBuilder(i));
+                futures.add(future);
+            }
+            waitForAnonymousFutures(futures, Long.MAX_VALUE);
+        }
+        context.setAlgorithms(algorithms);
         context.setEvaluations(evaluations);
+        if (context.isPersisted() && !context.isBuilt()) {
+            serializeAnalyzers(context);
+        }
+        context.setBuilt(Boolean.TRUE);
     }
 
     /**
@@ -85,12 +110,12 @@ public class WekaClusterer extends WekaAnalyzer {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public Analysis<Object, Object> analyze(final Context context, final Analysis analysis) throws Exception {
+    public synchronized Analysis<Object, Object> analyze(final Context context, final Analysis analysis) throws Exception {
         int majorityCluster = 0;
         double[] majorityDistributionForInstance = null;
-        Map<Integer, AtomicInteger> clusters = new HashMap<>();
         StringBuilder algorithmsOutput = new StringBuilder();
 
+        double highestProbability = -1.0;
         for (int i = 0; i < context.getAlgorithms().length; i++) {
             Clusterer clusterer = (Clusterer) context.getAlgorithms()[i];
             Instances instances = (Instances) context.getModels()[i];
@@ -106,25 +131,20 @@ public class WekaClusterer extends WekaAnalyzer {
             int cluster = clusterer.clusterInstance(filteredInstance);
             double[] distributionForInstance = clusterer.distributionForInstance(instance);
 
-            AtomicInteger count = clusters.get(cluster);
-            if (count == null) {
-                count = new AtomicInteger(0);
-                clusters.put(cluster, count);
-            }
-            count.incrementAndGet();
-            if (majorityDistributionForInstance == null) {
-                majorityCluster = cluster;
-                majorityDistributionForInstance = distributionForInstance;
-            }
-            if (count.get() > clusters.get(majorityCluster).get()) {
-                majorityCluster = cluster;
-                majorityDistributionForInstance = distributionForInstance;
+            for (final double probability : distributionForInstance) {
+                if (probability > highestProbability) {
+                    majorityCluster = cluster;
+                    highestProbability = probability;
+                    majorityDistributionForInstance = distributionForInstance;
+                }
             }
 
-            algorithmsOutput.append(clusterer.toString());
-            algorithmsOutput.append("\n\r\n\r");
-            // TODO: Get the correlation co-efficients
+            if (analysis.isAddAlgorithmOutput()) {
+                algorithmsOutput.append(clusterer.toString());
+                algorithmsOutput.append("\n\r\n\r");
+            }
         }
+
         analysis.setClazz(Integer.toString(majorityCluster));
         analysis.setOutput(majorityDistributionForInstance);
         analysis.setAlgorithmOutput(algorithmsOutput.toString());
