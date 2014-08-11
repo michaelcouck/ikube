@@ -63,7 +63,7 @@ public abstract class AbstractTest {
             new MimeMapper(IConstants.MIME_MAPPING);
             ThreadUtilities.initialize();
             Mockit.setUpMocks(SpellingCheckerMock.class);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }

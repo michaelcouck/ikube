@@ -105,27 +105,41 @@
         <ref bean="twitter-classification-strategy"/>
     </util:list>
 
+    <bean
+        id="twitter-classification-strategy"
+        class="ikube.action.index.handler.strategy.AnalysisStrategy"
+        property:context-ref="sentiment-smo-twitter"
+        init-method="initialize"/>
+
+    <bean
+        id="ikube.action.index.handler.strategy.TwitterGeospatialEnrichmentStrategy"
+        name="ikube.action.index.handler.strategy.TwitterGeospatialEnrichmentStrategy"
+        class="ikube.action.index.handler.strategy.TwitterGeospatialEnrichmentStrategy"
+        init-method="initialize"
+        depends-on="ikube.toolkit.DataManager"
+        lazy-init="true"/>
+
     <!-- These are the language classifiers, they are trained by the Twitter data -->
     <!-- English -->
     <bean
-        name="sentiment-naive-bayes-twitter"
+        name="sentiment-smo-twitter"
         class="ikube.model.Context"
-        property:name="sentiment-naive-bayes-twitter"
+        property:name="sentiment-smo-twitter"
         property:analyzer="ikube.analytics.weka.WekaClassifier">
         <property name="algorithms">
             <list>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
             </list>
         </property>
         <property name="fileNames">
@@ -189,19 +203,5 @@
             </list>
         </property>
     </bean>
-
-    <bean
-        id="ikube.action.index.handler.strategy.TwitterGeospatialEnrichmentStrategy"
-        name="ikube.action.index.handler.strategy.TwitterGeospatialEnrichmentStrategy"
-        class="ikube.action.index.handler.strategy.TwitterGeospatialEnrichmentStrategy"
-        init-method="initialize"
-        depends-on="ikube.toolkit.DataManager"
-        lazy-init="true"/>
-
-    <bean
-        id="twitter-classification-strategy"
-        class="ikube.action.index.handler.strategy.AnalysisStrategy"
-        property:context-ref="sentiment-naive-bayes-twitter"
-        init-method="initialize"/>
 
 </beans>

@@ -77,8 +77,11 @@ public class FileUtilitiesTest extends AbstractTest {
         files = FileUtilities.findFilesRecursively(dotFolder, files, ".xml");
         assertTrue(files.size() >= 1);
 
-        List<File> properties = FileUtilities.findFilesRecursively(dotFolder, new ArrayList<File>(), "spring\\.properties");
-        List<File> configurations = FileUtilities.findFilesRecursively(dotFolder, new ArrayList<File>(), "spring.*\\.xml");
+        List<File> properties = FileUtilities.findFilesRecursively(dotFolder, new ArrayList<File>(), "spring.properties");
+        List<File> configurations = FileUtilities.findFilesRecursively(dotFolder, new ArrayList<File>(), "spring.*.xml");
+
+        logger.error("" + properties.size() + ", " + properties);
+        logger.error("" + configurations.size() + ", " + configurations);
 
         assertTrue(properties.size() > 0);
         assertTrue(configurations.size() > 0);
