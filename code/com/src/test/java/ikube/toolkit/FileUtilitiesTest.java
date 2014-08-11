@@ -86,7 +86,7 @@ public class FileUtilitiesTest extends AbstractTest {
         try {
             assertTrue(properties.size() > 0);
             assertTrue(configurations.size() > 0);
-        } catch (final Exception e) {
+        } catch (final Throwable e) {
             if (OsUtilities.isOs("3.11.0-12-generic")) {
                 throw e;
             } else {
