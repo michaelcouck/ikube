@@ -4,14 +4,10 @@ import ikube.model.Search;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import java.util.ArrayList;
-import java.util.List;
 
 import static ikube.IConstants.*;
 
@@ -197,10 +193,7 @@ public class SearcherXml extends Searcher {
                     "results.",
             consumes = Search.class,
             produces = Search.class)
-    public Response search(
-            @Context final HttpServletRequest request,
-            @Context final UriInfo uriInfo) {
-        Search search = unmarshall(Search.class, request);
+    public Response search(final Search search) {
         Object results = searcherService.search(search);
         return buildJsonResponse(results);
     }
@@ -222,10 +215,7 @@ public class SearcherXml extends Searcher {
                     "purposes.",
             consumes = Search.class,
             produces = Search.class)
-    public Response searchAll(
-            @Context final HttpServletRequest request,
-            @Context final UriInfo uriInfo) {
-        Search search = unmarshall(Search.class, request);
+    public Response searchAll(final Search search) {
         Object results = searcherService.search(search);
         return buildJsonResponse(results);
     }

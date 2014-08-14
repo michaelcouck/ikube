@@ -1,7 +1,6 @@
 package ikube.web.service;
 
 import ikube.AbstractTest;
-import ikube.IConstants;
 import ikube.model.Api;
 import ikube.model.ApiMethod;
 import org.junit.Test;
@@ -29,8 +28,7 @@ public class ApiDocsTest extends AbstractTest {
     @Test
     public void api() throws Exception {
         Response response = apiDocs.api(Analyzer.class.getName());
-        Object entity = response.getEntity();
-        Api api = IConstants.GSON.fromJson(entity.toString(), Api.class);
+        Api api = (Api) response.getEntity();
         assertEquals(Analyzer.class.getName(), api.getApi());
         assertEquals(7, api.getApiMethods().size());
 
@@ -45,9 +43,8 @@ public class ApiDocsTest extends AbstractTest {
     @SuppressWarnings("unchecked")
     public void apis() throws Exception {
         Response response = apiDocs.apis();
-        Object entity = response.getEntity();
-        Collection<Api> apis = IConstants.GSON.fromJson(entity.toString(), Collection.class);
-        assertEquals(6, apis.size());
+        Collection<Api> apis = (Collection<Api>) response.getEntity();
+        assertEquals(7, apis.size());
     }
 
 }

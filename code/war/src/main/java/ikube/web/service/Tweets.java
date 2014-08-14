@@ -64,9 +64,8 @@ public class Tweets extends Resource {
     @POST
     @Path(Tweets.HAPPY)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response happy(@Context final HttpServletRequest request) {
+    public Response happy(final SearchTwitter twitterSearch) {
         // Google Maps API heat map data format is {lat, lng, weight} eg. {42, 1.8, 3}
-        final SearchTwitter twitterSearch = unmarshall(SearchTwitter.class, request);
         final long endTime = System.currentTimeMillis();
         final long minutesOfHistory = twitterSearch.getMinutesOfHistory();
         final long startTime = endTime - (minutesOfHistory * MINUTE_MILLIS);
@@ -135,8 +134,7 @@ public class Tweets extends Resource {
     @POST
     @Path(Tweets.ANALYZE)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response twitter(@Context final HttpServletRequest request) {
-        final SearchTwitter search = unmarshall(SearchTwitter.class, request);
+    public Response twitter(final SearchTwitter search) {
         double duration = Timer.execute(new Timer.Timed() {
             @Override
             public void execute() {

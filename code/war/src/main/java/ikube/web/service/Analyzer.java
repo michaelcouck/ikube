@@ -2,15 +2,14 @@ package ikube.web.service;
 
 import ikube.analytics.IAnalyticsService;
 import ikube.model.Analysis;
+import ikube.model.Context;
 import ikube.toolkit.SerializationUtilities;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
@@ -60,10 +59,9 @@ public class Analyzer extends Resource {
                 "that was posted as a convenience, the analyzer, although " +
                 "constructed and referenced in the context, is potentially large, and not " +
                 "returned to the user",
-        consumes = ikube.model.Context.class,
-        produces = ikube.model.Context.class)
-    public Response create(@Context final HttpServletRequest request) {
-        ikube.model.Context context = unmarshall(ikube.model.Context.class, request);
+        consumes = Context.class,
+        produces = Context.class)
+    public Response create(final Context context) {
         analyticsService.create(context);
         return buildJsonResponse(context(context));
     }
@@ -73,11 +71,10 @@ public class Analyzer extends Resource {
     @Api(type = "POST",
         uri = "/ikube/service/analyzer/train",
         description = "Trains an analyzer with the data in the request.",
-        consumes = ikube.model.Analysis.class,
-        produces = ikube.model.Analysis.class)
+        consumes = Analysis.class,
+        produces = Analysis.class)
     @SuppressWarnings({"unchecked"})
-    public Response train(@Context final HttpServletRequest request) {
-        Analysis<String, String> analysis = unmarshall(Analysis.class, request);
+    public Response train(final Analysis<String, String> analysis) {
         String data = analysis.getInput();
         String[] inputs = StringUtils.split(data, "\n\r");
         for (final String input : inputs) {
@@ -94,11 +91,10 @@ public class Analyzer extends Resource {
         uri = "/ikube/service/analyzer/build",
         description = "Builds the analyzer generating the model from the data provided, " +
             "returning the context bound to the analyzer.",
-        consumes = ikube.model.Analysis.class,
-        produces = ikube.model.Context.class)
+        consumes = Analysis.class,
+        produces = Context.class)
     @SuppressWarnings("unchecked")
-    public Response build(@Context final HttpServletRequest request) {
-        Analysis<?, ?> analysis = unmarshall(Analysis.class, request);
+    public Response build(final Analysis<?, ?> analysis) {
         analyticsService.build(analysis);
         ikube.model.Context context = analyticsService.getContext(analysis.getContext());
         return buildJsonResponse(context(context));
@@ -116,11 +112,10 @@ public class Analyzer extends Resource {
         description = "Analyses the data using the specified analyzer, and returns the analytis " +
             "object, containing among other things the result, and potentially the distribution " +
             "for the instance, and even the distribution for the entire data set.",
-        consumes = ikube.model.Analysis.class,
-        produces = ikube.model.Analysis.class)
+        consumes = Analysis.class,
+        produces = Analysis.class)
     @SuppressWarnings("unchecked")
-    public Response analyze(@Context final HttpServletRequest request) {
-        Analysis<?, ?> analysis = unmarshall(Analysis.class, request);
+    public Response analyze(final Analysis<?, ?> analysis) {
         analyticsService.analyze(analysis);
         return buildJsonResponse(analysis);
     }
@@ -130,11 +125,10 @@ public class Analyzer extends Resource {
     @Api(type = "POST",
         uri = "/ikube/service/analyzer/destroy",
         description = "Destroys an analyzer, and the generated model, freeing resources.",
-        consumes = ikube.model.Context.class,
-        produces = ikube.model.Context.class)
+        consumes = Context.class,
+        produces = Context.class)
     @SuppressWarnings("unchecked")
-    public Response destroy(@Context final HttpServletRequest request) {
-        ikube.model.Context context = unmarshall(ikube.model.Context.class, request);
+    public Response destroy(final Context context) {
         analyticsService.destroy(context);
         return buildJsonResponse(context(context));
     }
@@ -145,10 +139,9 @@ public class Analyzer extends Resource {
         uri = "/ikube/service/analyzer/context",
         description = "Returns the context associated with the analyzer specified.",
         consumes = Analysis.class,
-        produces = ikube.model.Context.class)
+        produces = Context.class)
     @SuppressWarnings("unchecked")
-    public Response context(@Context final HttpServletRequest request) {
-        Analysis<?, ?> analysis = unmarshall(Analysis.class, request);
+    public Response context(final Analysis<?, ?> analysis) {
         ikube.model.Context context = analyticsService.getContext(analysis.getContext());
         return buildJsonResponse(context(context));
     }
@@ -170,7 +163,7 @@ public class Analyzer extends Resource {
         return buildJsonResponse(contexts.toArray());
     }
 
-    private ikube.model.Context context(final ikube.model.Context context) {
+    private Context context(final Context context) {
         if (context == null) {
             return null;
         }

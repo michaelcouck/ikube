@@ -47,7 +47,8 @@
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
-			<param-value></param-value>
+			<!--suppress WebProperties -->
+            <param-value></param-value>
 		</init-param>
 	</servlet>
 	<servlet-mapping>
@@ -63,10 +64,10 @@
 			<param-name>com.sun.jersey.config.property.packages</param-name>
 			<param-value>ikube.web.service</param-value>
 		</init-param>
-        <!--<init-param>
+        <init-param>
             <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
             <param-value>true</param-value>
-        </init-param>-->
+        </init-param>
 		<load-on-startup>2</load-on-startup>
 	</servlet>
 	<servlet-mapping>

@@ -6,7 +6,6 @@ import ikube.analytics.IAnalyticsService;
 import ikube.cluster.IClusterManager;
 import ikube.cluster.IMonitorService;
 import ikube.search.ISearcherService;
-import ikube.toolkit.SerializationUtilities;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -58,11 +57,7 @@ public abstract class Resource {
         if (result == null) {
             return buildResponse().build();
         }
-        String jsonString = IConstants.GSON.toJson(result);
-        if (logger.isDebugEnabled()) {
-            logger.debug("Response size : " + jsonString.length());
-        }
-        return buildResponse().entity(jsonString).build();
+        return buildResponse().entity(result).build();
     }
 
     /**
@@ -76,7 +71,7 @@ public abstract class Resource {
         if (result == null) {
             return buildResponse().build();
         }
-        return buildResponse().entity(SerializationUtilities.serialize(result)).build();
+        return buildResponse().entity(result).build();
     }
 
     /**
@@ -87,7 +82,7 @@ public abstract class Resource {
     protected ResponseBuilder buildResponse() {
         return Response.status(Response.Status.OK)//
                 .header("Access-Control-Allow-Origin", "*") //
-                .header("Access-Control-Allow-Methods", "GET, POST, PUT");
+                .header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
     }
 
     <T> T unmarshall(final Class<T> clazz, final HttpServletRequest request) {

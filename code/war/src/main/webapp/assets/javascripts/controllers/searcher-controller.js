@@ -1,7 +1,7 @@
 /**
  * The search controller, note that the default is to distribute the
  * search in the cluster. This functionality picks a server at random and
- * executes the code on that server. The cluster needs to be hetrogenus of
+ * executes the code on that server. The cluster needs to be heterogeneous of
  * course.
  *
  * @author Michael Couck
@@ -244,7 +244,6 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 	// This is called by the sub controller(s), probably the type ahead
 	// controller when the user has selected a search string
 	$scope.$on('doSearch', function(event, search) {
-		// $scope.search.searchStrings = search.searchStrings;
 		$scope.search.firstResult = 0;
 		$scope.doSearchAll(search.searchStrings);
 	});
@@ -328,7 +327,7 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 		var modulo = $scope.statistics.total % $scope.search.maxResults;
 		$scope.search.endResult = $scope.search.firstResult + modulo == $scope.statistics.total ? $scope.statistics.total
 				: $scope.search.firstResult + parseInt($scope.search.maxResults, 10);
-	}
+	};
 
 	// This function will put the markers on the map
 	$scope.doMarkers = function() {
@@ -355,7 +354,6 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 				var longitude = key['longitude'];
 				var fragment = key['fragment'];
 				var distance = key['distance'];
-				// alert('Key : ' + key['latitude'] + ', ' + key['longitude']);
 				if (!!latitude && !!longitude) {
 					pointMarker = new google.maps.Marker({
 						map : map,

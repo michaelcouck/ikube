@@ -5,6 +5,7 @@ import ikube.IConstants;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.OsUtilities;
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mockit;
@@ -274,6 +275,12 @@ public class WekaAnalyzerTest extends AbstractTest {
             assertEquals(3, deserializedAnalyzers.length);
             for (final Object deserializedAnalyzer : deserializedAnalyzers) {
                 assertTrue(SMO.class.isAssignableFrom(deserializedAnalyzer.getClass()));
+            }
+        } catch (final Throwable t) {
+            if (OsUtilities.isOs("3.11.0-12-generic")) {
+                throw t;
+            } else {
+                logger.info("Not correct operating system : " + OsUtilities.os());
             }
         } finally {
             if (serializedAnalyzerFiles != null) {

@@ -4,11 +4,9 @@
 <div id="apis-modal" class="black-box modal hide fade" ng-controller="ApisController">
 	<div class="modal-header tab-header">
 		<button type="button" class="close" data-dismiss="modal">&times;</button>
-		<span>Rest API</span>
+		<span>Rest API endpoints</span>
 	</div>
 	<div class="modal-body separator">
-		<h4>API rest endpoints</h4><br>
-
         <div class="input" ng-repeat="api in apis">
             <h5>Api : {{api.api}}</h5>
             <div class="input" ng-repeat="apiMethod in api.apiMethods">

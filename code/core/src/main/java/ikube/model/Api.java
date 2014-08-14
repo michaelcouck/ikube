@@ -19,6 +19,10 @@ public class Api extends Persistable {
      */
     private String api;
     /**
+     * The description of this api.
+     */
+    private String description;
+    /**
      * The methods that are exposed as web service methods.
      */
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
@@ -30,6 +34,14 @@ public class Api extends Persistable {
 
     public void setApi(final String api) {
         this.api = api;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(final String description) {
+        this.description = description;
     }
 
     public Collection<ApiMethod> getApiMethods() {

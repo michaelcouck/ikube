@@ -41,14 +41,6 @@ public class DatabaseUtilitiesTest extends AbstractTest {
     }
 
     @Test
-    public void executeStatement() throws Exception {
-        DatabaseUtilities.executeStatement(dataSource, "select * from action");
-        verify(statement, atLeastOnce()).execute(anyString());
-        verify(statement, atLeastOnce()).close();
-        verify(connection, atLeastOnce()).close();
-    }
-
-    @Test
     public void closeAll() throws Exception {
         DatabaseUtilities.closeAll(resultSet);
         verify(resultSet, atLeastOnce()).close();

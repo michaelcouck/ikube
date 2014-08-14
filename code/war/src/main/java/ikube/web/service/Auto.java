@@ -7,6 +7,7 @@ import ikube.toolkit.Timer;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -52,8 +53,6 @@ public class Auto extends Resource {
      * 		Output: [disease in islanddia honalulu again], [dissapation ...] // the number of results expected, typically 6 or 8
      * </pre>
      *
-     * @param request the Json request, with the {@link Search} object in it
-     * @param uriInfo information about the uri if any, currently not used
      * @return the search result, or all the suggested strings in the {@link Search} object as search results, and the suggestions
      * in the fragments
      */
@@ -67,10 +66,7 @@ public class Auto extends Resource {
                             "n-grammed index, allowing for fuzzy matching.",
             consumes = ikube.model.Search.class,
             produces = ikube.model.Search.class)
-    public Response auto(
-            @Context final HttpServletRequest request,
-            @Context final UriInfo uriInfo) {
-        final Search search = unmarshall(Search.class, request);
+    public Response auto(@RequestBody(required = true) final Search search) {
         final ArrayList<HashMap<String, String>> autoResults = new ArrayList<>();
         double duration = Timer.execute(new Timer.Timed() {
             @Override
@@ -110,9 +106,7 @@ public class Auto extends Resource {
      * @return the array of strings that are a concatenation of the suggestions for each word
      */
     @SuppressWarnings("MismatchedQueryAndUpdateOfStringBuilder")
-    String[] suggestions(
-            final String searchString,
-            final Search search) {
+    String[] suggestions(final String searchString, final Search search) {
         Search clone = (Search) SerializationUtilities.clone(search);
         int rows = clone.getMaxResults();
         String[] words = StringUtils.split(searchString, ' ');
@@ -129,7 +123,7 @@ public class Auto extends Resource {
                 ArrayList<HashMap<String, String>> results = clone.getSearchResults();
                 Map<String, String> statistics = results.remove(clone.getSearchResults().size() - 1);
                 int total = Integer.parseInt(statistics.get(IConstants.TOTAL));
-                // The j < total is redundent
+                // The j < total is redundant
                 for (int j = 0; j < rows && j < results.size() && j < total; j++) {
                     Map<String, String> result = results.get(j);
                     String similar = "<b>" + result.get(IConstants.WORD) + "</b>";
@@ -166,21 +160,16 @@ public class Auto extends Resource {
 
     /**
      * TODO Implement this method, with the top three results based on the words, as in the
-     * {@link Auto#auto(HttpServletRequest, UriInfo)} method, then the next three based on a thesaurus perhaps, i.e.
      * similar words to the search phrase, could be anything. And finally suggestions based on similar searches, that
      * will have to be classified with a k-means or similar algorithm.
      *
-     * @param request the request from the gui
-     * @param uriInfo the uri info if necessary
+     * @param search the request from the gui
      * @return the suggestions based on the thesaurus of words for the language
      */
     @POST
     @Path(Auto.SUGGEST)
     @SuppressWarnings("unused")
-    public Response suggestions(
-            @Context final HttpServletRequest request,
-            @Context final UriInfo uriInfo) {
-        Search search = unmarshall(Search.class, request);
+    public Response suggestions(final Search search) {
         Object results = searcherService.search(search);
         return buildJsonResponse(results);
     }

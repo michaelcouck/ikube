@@ -25,371 +25,297 @@ import java.util.Set;
  */
 public abstract class ADataBaseJpa implements IDataBase {
 
-	protected static final Logger LOGGER = Logger.getLogger(ADataBaseJpa.class);
+    protected static final Logger LOGGER = Logger.getLogger(ADataBaseJpa.class);
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@SuppressWarnings("StringBufferReplaceableByString")
-	public <T> Long count(final Class<T> klass) {
-		StringBuilder query = new StringBuilder("select count(c) from ");
-		query.append(klass.getSimpleName());
-		query.append(" as c ");
-		return (Long) getEntityManager().createQuery(query.toString()).getSingleResult();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("StringBufferReplaceableByString")
+    public <T> Long count(final Class<T> klass) {
+        StringBuilder query = new StringBuilder("select count(c) from ");
+        query.append(klass.getSimpleName());
+        query.append(" as c ");
+        return (Long) getEntityManager().createQuery(query.toString()).getSingleResult();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@SuppressWarnings("ConstantConditions")
-	public <T> Long count(final Class<T> klass, final Map<String, Object> parameters) {
-		StringBuilder stringBuilder = new StringBuilder("select count(c) from ");
-		stringBuilder.append(klass.getSimpleName());
-		stringBuilder.append(" as c ");
-		if (parameters.size() > 0) {
-			stringBuilder.append(" where ");
-			boolean first = true;
-			for (Map.Entry<String, Object> parameter : parameters.entrySet()) {
-				if (!first) {
-					stringBuilder.append(" and ");
-				}
-				first = false;
-				stringBuilder.append("c.");
-				stringBuilder.append(parameter.getKey());
-				stringBuilder.append(" = ");
-				stringBuilder.append(":");
-				stringBuilder.append(parameter.getKey());
-			}
-		}
-		Query query = getEntityManager().createQuery(stringBuilder.toString());
-		setParameters(query, parameters);
-		return (Long) query.getSingleResult();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T> T remove(final Class<T> klass, final Long id) {
+        T toBeRemoved = find(klass, id);
+        if (toBeRemoved != null) {
+            remove(toBeRemoved);
+        }
+        return toBeRemoved;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public <T> T remove(final Class<T> klass, final Long id) {
-		T toBeRemoved = find(klass, id);
-		if (toBeRemoved != null) {
-			remove(toBeRemoved);
-		}
-		return toBeRemoved;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T> void removeBatch(final List<T> batch) {
+        for (final T t : batch) {
+            remove(t);
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public <T> void removeBatch(final List<T> batch) {
-		for (final T t : batch) {
-			remove(t);
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T remove(final T object) {
+        Object result = getEntityManager().merge(object);
+        getEntityManager().remove(result);
+        return (T) result;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T remove(final T object) {
-		Object result = getEntityManager().merge(object);
-		getEntityManager().remove(result);
-		return (T) result;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int remove(final String sql) {
+        return getEntityManager().createNamedQuery(sql).executeUpdate();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int remove(final String sql) {
-		return getEntityManager().createNamedQuery(sql).executeUpdate();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T> T persist(final T object) {
+        if (object != null) {
+            getEntityManager().persist(object);
+        }
+        return object;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public <T> T persist(final T object) {
-		if (object != null) {
-			getEntityManager().persist(object);
-		}
-		return object;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T> void persistBatch(final List<T> list) {
+        for (final T t : list) {
+            persist(t);
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public <T> void persistBatch(final List<T> list) {
-		for (final T t : list) {
-			persist(t);
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T merge(final T object) {
+        Object result = null;
+        if (object != null) {
+            result = getEntityManager().merge(object);
+        }
+        return (T) result;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T merge(final T object) {
-		Object result = null;
-		if (object != null) {
-			result = getEntityManager().merge(object);
-		}
-		return (T) result;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T> void mergeBatch(final List<T> batch) {
+        for (final T t : batch) {
+            merge(t);
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public <T> void mergeBatch(final List<T> batch) {
-		for (final T t : batch) {
-			merge(t);
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T> T find(final Class<T> klass, final Long id) {
+        return getEntityManager().find(klass, id);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public <T> T find(final Class<T> klass, final Long id) {
-		return getEntityManager().find(klass, id);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T> List<T> find(final Class<T> klass, final int firstResult, final int maxResults) {
+        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(klass);
+        Root<T> root = criteriaQuery.from(klass);
+        criteriaQuery = criteriaQuery.select(root);
+        TypedQuery<T> typedQuery = getEntityManager().createQuery(criteriaQuery);
+        typedQuery.setFirstResult(firstResult);
+        typedQuery.setMaxResults(maxResults);
+        return typedQuery.getResultList();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public <T> List<T> find(final Class<T> klass, final int firstResult, final int maxResults) {
-		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
-		CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(klass);
-		Root<T> root = criteriaQuery.from(klass);
-		criteriaQuery = criteriaQuery.select(root);
-		TypedQuery<T> typedQuery = getEntityManager().createQuery(criteriaQuery);
-		typedQuery.setFirstResult(firstResult);
-		typedQuery.setMaxResults(maxResults);
-		return typedQuery.getResultList();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T> List<T> find(final Class<T> klass, final String[] fieldsToSortOn, final Boolean[] directionOfSort,
+                            final int firstResult, final int maxResults) {
+        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(klass);
+        Root<T> root = criteriaQuery.from(klass);
+        criteriaQuery = criteriaQuery.select(root);
+        List<Order> orderByOrders = new ArrayList<>();
+        if (fieldsToSortOn.length > 0) {
+            for (int i = 0; i < fieldsToSortOn.length; i++) {
+                String fieldToSortOn = fieldsToSortOn[i];
+                if (directionOfSort[i]) {
+                    orderByOrders.add(criteriaBuilder.asc(root.get(fieldToSortOn)));
+                } else {
+                    orderByOrders.add(criteriaBuilder.desc(root.get(fieldToSortOn)));
+                }
+            }
+            criteriaQuery.orderBy(orderByOrders);
+        }
+        TypedQuery<T> typedQuery = getEntityManager().createQuery(criteriaQuery);
+        typedQuery.setFirstResult(firstResult);
+        typedQuery.setMaxResults(maxResults);
+        return typedQuery.getResultList();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public <T> List<T> find(final Class<T> klass, final String[] fieldsToSortOn, final Boolean[] directionOfSort,
-	  final int firstResult, final int maxResults) {
-		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
-		CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(klass);
-		Root<T> root = criteriaQuery.from(klass);
-		criteriaQuery = criteriaQuery.select(root);
-		List<Order> orderByOrders = new ArrayList<>();
-		if (fieldsToSortOn.length > 0) {
-			for (int i = 0; i < fieldsToSortOn.length; i++) {
-				String fieldToSortOn = fieldsToSortOn[i];
-				if (directionOfSort[i]) {
-					orderByOrders.add(criteriaBuilder.asc(root.get(fieldToSortOn)));
-				} else {
-					orderByOrders.add(criteriaBuilder.desc(root.get(fieldToSortOn)));
-				}
-			}
-			criteriaQuery.orderBy(orderByOrders);
-		}
-		TypedQuery<T> typedQuery = getEntityManager().createQuery(criteriaQuery);
-		typedQuery.setFirstResult(firstResult);
-		typedQuery.setMaxResults(maxResults);
-		return typedQuery.getResultList();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T> T find(final Class<T> klass, final String[] fieldsToFilterOn, final Object[] valuesToFilterOn) {
+        List<T> entities = find(klass, fieldsToFilterOn, valuesToFilterOn, 0, 1);
+        if (entities.size() == 0) {
+            return null;
+        }
+        return entities.get(0);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public <T> T find(final Class<T> klass, final String[] fieldsToFilterOn, final Object[] valuesToFilterOn) {
-		List<T> entities = find(klass, fieldsToFilterOn, valuesToFilterOn, 0, 10);
-		if (entities.size() == 0) {
-			return null;
-		}
-		return entities.get(0);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T> List<T> find(final Class<T> klass, final String[] fieldsToFilterOn, final Object[] valuesToFilterOn,
+                            final int firstResult, final int maxResults) {
+        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(klass);
+        Root<T> root = criteriaQuery.from(klass);
+        criteriaQuery = criteriaQuery.select(root);
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public <T> List<T> find(final Class<T> klass, final String[] fieldsToFilterOn, final Object[] valuesToFilterOn,
-	  final int firstResult, final int maxResults) {
-		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
-		CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(klass);
-		Root<T> root = criteriaQuery.from(klass);
-		criteriaQuery = criteriaQuery.select(root);
+        List<Predicate> predicates = new ArrayList<>();
+        for (int i = 0; i < fieldsToFilterOn.length; i++) {
+            Path<?> path = root.get(fieldsToFilterOn[i]);
+            Predicate predicate = criteriaBuilder.equal(path, valuesToFilterOn[i]);
+            predicates.add(predicate);
+        }
+        criteriaQuery.where(predicates.toArray(new Predicate[predicates.size()]));
 
-		List<Predicate> predicates = new ArrayList<>();
-		for (int i = 0; i < fieldsToFilterOn.length; i++) {
-			Path<?> path = root.get(fieldsToFilterOn[i]);
-			Predicate predicate = criteriaBuilder.equal(path, valuesToFilterOn[i]);
-			predicates.add(predicate);
-		}
-		criteriaQuery.where(predicates.toArray(new Predicate[predicates.size()]));
+        TypedQuery<T> typedQuery = getEntityManager().createQuery(criteriaQuery);
+        typedQuery.setFirstResult(firstResult);
+        typedQuery.setMaxResults(maxResults);
+        return typedQuery.getResultList();
+    }
 
-		TypedQuery<T> typedQuery = getEntityManager().createQuery(criteriaQuery);
-		typedQuery.setFirstResult(firstResult);
-		typedQuery.setMaxResults(maxResults);
-		return typedQuery.getResultList();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T find(final Long objectId) {
+        try {
+            Set<EntityType<?>> entityTypes = getEntityManager().getMetamodel().getEntities();
+            for (EntityType<?> entityType : entityTypes) {
+                Object object = getEntityManager().find(entityType.getJavaType(), objectId);
+                if (object != null) {
+                    return (T) object;
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Exception looking up the entity : " + objectId, e);
+        }
+        return null;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T find(final Long objectId) {
-		try {
-			Set<EntityType<?>> entityTypes = getEntityManager().getMetamodel().getEntities();
-			for (EntityType<?> entityType : entityTypes) {
-				Object object = getEntityManager().find(entityType.getJavaType(), objectId);
-				if (object != null) {
-					return (T) object;
-				}
-			}
-		} catch (Exception e) {
-			LOGGER.error("Exception looking up the entity : " + objectId, e);
-		}
-		return null;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T find(final Class<T> klass, final String sql, final Map<String, Object> parameters) {
+        String[] names = parameters.keySet().toArray(new String[parameters.keySet().size()]);
+        Object[] values = parameters.values().toArray(new Object[parameters.values().size()]);
+        return find(klass, sql, names, values);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T find(final Class<T> klass, final String sql, final Map<String, Object> parameters) {
-		Query query = getEntityManager().createNamedQuery(sql, klass);
-		setParameters(query, parameters);
-		return (T) query.getSingleResult();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> List<T> find(final Class<T> klass, final String sql, final Map<String, Object> parameters, final int firstResult,
+                            final int maxResults) {
+        String[] names = parameters.keySet().toArray(new String[parameters.keySet().size()]);
+        Object[] values = parameters.values().toArray(new Object[parameters.values().size()]);
+        return find(klass, sql, names, values, firstResult, maxResults);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T> List<T> find(final Class<T> klass, final String sql, final Map<String, Object> parameters, final int startPosition,
-	  final int maxResults) {
-		Query query = getEntityManager().createNamedQuery(sql, klass);
-		query.setFirstResult(startPosition);
-		query.setMaxResults(maxResults);
-		setParameters(query, parameters);
-		return query.getResultList();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T find(final Class<T> klass, final String sql, final String[] names, final Object[] values) {
+        Query query = getEntityManager().createNamedQuery(sql, klass);
+        setParameters(query, names, values);
+        return (T) query.getSingleResult();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T find(final Class<T> klass, final String sql, final String[] names, final Object[] values) {
-		Query query = getEntityManager().createNamedQuery(sql, klass);
-		setParameters(query, names, values);
-		return (T) query.getSingleResult();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> List<T> find(final Class<T> klass, final String sql, final String[] names, final Object[] values, final int firstResult,
+                            final int maxResults) {
+        Query query = getEntityManager().createNamedQuery(sql, klass);
+        query.setFirstResult(firstResult);
+        query.setMaxResults(maxResults);
+        setParameters(query, names, values);
+        return query.getResultList();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T> List<T> find(final Class<T> klass, final String sql, final String[] names, final Object[] values, final int startPosition,
-	  final int maxResults) {
-		Query query = getEntityManager().createNamedQuery(sql, klass);
-		query.setFirstResult(startPosition);
-		query.setMaxResults(maxResults);
-		setParameters(query, names, values);
-		return query.getResultList();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T execute(final String sql, final String[] names, final Object[] values) {
+        Query query = getEntityManager().createQuery(sql);
+        setParameters(query, names, values);
+        return (T) query.getSingleResult();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T execute(final Class<T> klass, final String sql) {
-		return (T) getEntityManager().createNamedQuery(sql).getSingleResult();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T> T refresh(final T t) {
+        getEntityManager().refresh(t);
+        return t;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T execute(final Class<T> klass, final String sql, final Map<String, Object> parameters) {
-		Query query = getEntityManager().createNamedQuery(sql);
-		setParameters(query, parameters);
-		return (T) query.getSingleResult();
-	}
+    private void setParameters(final Query query, final String[] names, final Object[] values) {
+        if (names == null || names.length == 0 || values == null || values.length == 0) {
+            return;
+        }
+        for (int i = 0; i < names.length; i++) {
+            query.setParameter(names[i], values[i]);
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T execute(final String sql, final String[] names, final Object[] values) {
-		Query query = getEntityManager().createQuery(sql);
-		setParameters(query, names, values);
-		return (T) query.getSingleResult();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int executeUpdate(final String sql, final String[] names, final Object[] values) {
-		Query query = getEntityManager().createQuery(sql);
-		setParameters(query, names, values);
-		return query.executeUpdate();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public <T> T refresh(final T t) {
-		getEntityManager().refresh(t);
-		return t;
-	}
-
-	/**
-	 * This method sets the parameters in the query.
-	 *
-	 * @param query      the query to set the parameters for
-	 * @param parameters and the parameter map, key value pairs
-	 */
-	private void setParameters(final Query query, final Map<String, Object> parameters) {
-		if (parameters == null) {
-			return;
-		}
-		setParameters(query, parameters.keySet().toArray(new String[parameters.keySet().size()]), parameters.values().toArray());
-	}
-
-	private void setParameters(final Query query, final String[] names, final Object[] values) {
-		if (names == null || names.length == 0 || values == null || values.length == 0) {
-			return;
-		}
-		for (int i = 0; i < names.length; i++) {
-			query.setParameter(names[i], values[i]);
-		}
-	}
-
-	/**
-	 * This method is for sub-classes to implement. The entity managers are defined in annotations,
-	 * and essentially hard coded, meaning that each database like DB2 or H2 needs to have their own persistence
-	 * unit in the {@link PersistenceContext} annotation at compile time.
-	 *
-	 * @return the entity manager that is defined in the sub-class for a specific database and persistence unit
-	 */
-	protected abstract EntityManager getEntityManager();
+    /**
+     * This method is for sub-classes to implement. The entity managers are defined in annotations,
+     * and essentially hard coded, meaning that each database like DB2 or H2 needs to have their own persistence
+     * unit in the {@link PersistenceContext} annotation at compile time.
+     *
+     * @return the entity manager that is defined in the sub-class for a specific database and persistence unit
+     */
+    protected abstract EntityManager getEntityManager();
 
 }

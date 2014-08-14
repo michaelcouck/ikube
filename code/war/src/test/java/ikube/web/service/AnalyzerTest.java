@@ -46,8 +46,8 @@ public class AnalyzerTest extends AbstractTest {
 
     @Test
     public void analyze() throws IOException {
-        when(analyzer.analyze(httpServletRequest)).thenCallRealMethod();
-        analyzer.analyze(httpServletRequest);
+        when(analyzer.analyze(analysis)).thenCallRealMethod();
+        analyzer.analyze(analysis);
         verify(analyzer, atLeastOnce()).buildJsonResponse(any());
     }
 }

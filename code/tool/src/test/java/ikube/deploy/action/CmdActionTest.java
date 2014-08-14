@@ -4,7 +4,6 @@ import ikube.AbstractTest;
 import ikube.deploy.model.Server;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.channel.direct.Session;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -45,24 +44,6 @@ public class CmdActionTest extends AbstractTest {
         commandAction.execute(server);
         verify(session, atLeastOnce()).exec(any(String.class));
         verify(command, atLeastOnce()).getExitErrorMessage();
-    }
-
-    @Test
-    @Ignore
-    public void command() throws Exception {
-        Server server = new Server();
-        server.setIp("127.0.0.1");
-        server.setUsername("username");
-        server.setPassword("password");
-
-        CmdAction cmdAction = new CmdAction();
-        cmdAction.setSleep(10000);
-        cmdAction.setBreakOnError(false);
-        cmdAction.setCommands(Arrays.asList("kill -9 $(ps aux | grep java | grep -v grep | awk '{print $2}')"));
-
-        server.setActions(Arrays.<IAction>asList(cmdAction));
-
-        cmdAction.execute(server);
     }
 
 }

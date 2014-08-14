@@ -15,11 +15,28 @@ module.controller('ApisController', function($http, $scope) {
 		promise.success(function(data, status) {
 			$scope.apis = data;
 			$scope.status = status;
+            angular.forEach($scope.apis, function(api, index) {
+                angular.forEach(api.apiMethods, function(apiMethod, index) {
+                    apiMethod.consumes = $scope.formatJSON(apiMethod.consumes, 2);
+                    apiMethod.produces = $scope.formatJSON(apiMethod.produces, 2);
+                });
+            });
 		});
 		promise.error(function(data, status) {
 			$scope.status = status;
 		});
 	};
+
+    $scope.formatJSON = function(input, indent) {
+        if (!input || input.length == 0) {
+            return '';
+        }
+        else {
+            // var parsedData = JSON.parse(input);
+            return JSON.stringify(input, null, indent);
+        }
+    };
+
     $scope.doApis();
 
 });

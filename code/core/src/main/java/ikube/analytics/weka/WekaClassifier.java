@@ -11,6 +11,7 @@ import weka.filters.Filter;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.Future;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -18,7 +19,8 @@ import static ikube.toolkit.ThreadUtilities.waitForAnonymousFutures;
 
 /**
  * This is a wrapper for the Weka classifiers. It is essentially a holder with some methods for
- * building and training and using the underlying Weka classification(any one, for example {@link weka.classifiers.functions.SMO}) algorithm.
+ * building and training and using the underlying Weka classification(any one, for example {@link weka.classifiers.functions.SMO})
+ * algorithm.
  *
  * @author Michael Couck
  * @version 01.00
@@ -30,8 +32,8 @@ public class WekaClassifier extends WekaAnalyzer {
     public void init(final Context context) {
         try {
             super.init(context);
-            Instances[] instanceses = (Instances[]) context.getModels();
-            for (final Instances instances : instanceses) {
+            Instances[] instancesArray = (Instances[]) context.getModels();
+            for (final Instances instances : instancesArray) {
                 instances.setClassIndex(0);
             }
         } catch (final Exception e) {
@@ -201,6 +203,7 @@ public class WekaClassifier extends WekaAnalyzer {
 
     private String evaluate(final Classifier classifier, final Instances instances) throws Exception {
         Evaluation evaluation = new Evaluation(instances);
+        evaluation.crossValidateModel(classifier, instances, 3, new Random());
         evaluation.evaluateModel(classifier, instances);
         return evaluation.toSummaryString();
     }

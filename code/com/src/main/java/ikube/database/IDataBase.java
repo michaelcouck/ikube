@@ -23,15 +23,6 @@ public interface IDataBase {
 	<T> Long count(final Class<T> klass);
 
 	/**
-	 * This method counts the number of entities in the database reduced by the parameters.
-	 *
-	 * @param klass      the class of entities to count
-	 * @param parameters the parameters to filter on
-	 * @return the number of rows in the database
-	 */
-	<T> Long count(final Class<T> klass, final Map<String, Object> parameters);
-
-	/**
 	 * This method removed the specified entity from the database.
 	 *
 	 * @param <T>    the type of object that will be removed
@@ -190,30 +181,6 @@ public interface IDataBase {
 	<T> List<T> find(final Class<T> klass, final String sql, final Map<String, Object> parameters, final int startPosition, final int maxResults);
 
 	/**
-	 * Executed the passed sql on the database, returning a single entity. Note that the query should
-	 * result in exactly one entity otherwise either a no result exception or a non unique exception will
-	 * be thrown.
-	 *
-	 * @param <T>   the type of entity expected
-	 * @param klass the class of entity expected
-	 * @param sql   the sql to select a single entity from the database, i.e. must be unique and exist for the query
-	 * @return the single entity resulting from the query
-	 */
-	<T> T execute(final Class<T> klass, final String sql);
-
-	/**
-	 * Executes the query against the database using the sql and parameters dynamically set in the query. As
-	 * with the above this query should result in a unique entity being selected.
-	 *
-	 * @param <T>        the type of entity expected
-	 * @param klass      the class of entity expected
-	 * @param sql        the sql to execute to select the entity
-	 * @param parameters the parameters to narrow the results to one entity
-	 * @return the single entity resulting from the combination of the query and the parameters
-	 */
-	<T> T execute(final Class<T> klass, final String sql, final Map<String, Object> parameters);
-
-	/**
 	 * This method will execute ad-hoc sql, for select, on the database, based on JpaQl like sql. The
 	 * result from the query depends on the query, for example if there are multiple sums and averages in
 	 * the query then it will be an array of numbers, but if the query is something like 'select sum(s.count) from
@@ -226,18 +193,6 @@ public interface IDataBase {
 	 * @return a single result from the query, either an array of object or a single object
 	 */
 	<T> T execute(final String sql, final String[] names, final Object[] values);
-
-	/**
-	 * This method will execute ad-hoc sql, for update, on the database, based on JpaQl like sql. The
-	 * result is the result returned from the entity manager. In the case of a delete the result will be the
-	 * number of records deleted.
-	 *
-	 * @param sql    the JpaQl to execute on the database
-	 * @param names  the names of the parameters
-	 * @param values the values of the parameters to narrow the results
-	 * @return a single result from the query, either an array of object or a single object
-	 */
-	int executeUpdate(final String sql, final String[] names, final Object[] values);
 
 	/**
 	 * This method does a query on the entities using the class type and the parameters are n array format,

@@ -39,11 +39,12 @@ public class ContentConcatenationStrategy extends AStrategy {
      */
     @Override
     public boolean postProcess(final IndexContext indexContext, final Indexable indexable, final Document document, final Object resource) throws Exception {
-        concatenateContent(indexable, resource);
+        String content = concatenateContent(indexable, resource);
+        indexable.setContent(content);
         return super.postProcess(indexContext, indexable, document, resource);
     }
 
-    void concatenateContent(final Indexable indexable, final Object resource) {
+    String concatenateContent(final Indexable indexable, final Object resource) {
         StringBuilder content = new StringBuilder();
         if (Url.class.isAssignableFrom(resource.getClass())) {
             content.append(" \n\r");
@@ -57,7 +58,12 @@ public class ContentConcatenationStrategy extends AStrategy {
         if (indexable.getContent() != null) {
             content.append(StringUtils.stripToEmpty(indexable.getContent().toString()));
         }
-        indexable.setContent(content.toString());
+        if (indexable.getChildren() != null) {
+            for (final Indexable child : indexable.getChildren()) {
+                content.append(concatenateContent(child, resource));
+            }
+        }
+        return content.toString();
     }
 
 }

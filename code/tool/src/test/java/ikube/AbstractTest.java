@@ -9,6 +9,8 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.Ignore;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +23,7 @@ import java.io.IOException;
  * @since 18-06-2013
  */
 @Ignore
+@RunWith(MockitoJUnitRunner.class)
 public abstract class AbstractTest {
 
     static {
