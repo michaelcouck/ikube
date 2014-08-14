@@ -6,7 +6,6 @@ import ikube.analytics.IAnalyticsService;
 import ikube.cluster.IClusterManager;
 import ikube.cluster.IMonitorService;
 import ikube.search.ISearcherService;
-import ikube.toolkit.SerializationUtilities;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -55,7 +54,12 @@ public abstract class Resource {
     protected Response buildResponse(final Object object) {
         Object entity = object;
         if (Collection.class.isAssignableFrom(entity.getClass())) {
-            entity = IConstants.GSON.toJson(entity);
+            // entity = entity.toString();
+            try {
+                entity = IConstants.GSON.toJson(entity);
+            } catch (final Throwable e) {
+                logger.error("Exception converting to Json : " + object, e);
+            }
         }
         return Response.status(Response.Status.OK)//
                 .header("Access-Control-Allow-Origin", "*") //

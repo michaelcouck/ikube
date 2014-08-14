@@ -33,7 +33,9 @@ import java.util.Map;
 @Scope(Resource.REQUEST)
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-@Api(description = "The analyzer rest resource")
+@Api(description = "This resource is the api for the analytics functionality. Methods that are exposed in this " +
+        "web service are creating and analyzer, training, building and using, etc. Please refer to the individual methods " +
+        "for more information on how to use the api.")
 @SuppressWarnings("SpringJavaAutowiringInspection")
 public class Analyzer extends Resource {
 
@@ -52,15 +54,12 @@ public class Analyzer extends Resource {
     @POST
     @Path(Analyzer.CREATE)
     @SuppressWarnings("unchecked")
-    @Api(type = "POST",
-        uri = "/ikube/service/analyzer/create",
-        description =
+    @Api(description =
             "Creates an analyzer with the context in the body. Returns the context " +
-                "that was posted as a convenience, the analyzer, although " +
-                "constructed and referenced in the context, is potentially large, and not " +
-                "returned to the user",
-        consumes = Context.class,
-        produces = Context.class)
+                    "that was posted as a convenience, the analyzer, although " +
+                    "constructed and referenced in the context, is potentially large, and not " +
+                    "returned to the user",
+            produces = Context.class)
     public Response create(final Context context) {
         analyticsService.create(context);
         return buildResponse(context(context));
@@ -68,11 +67,10 @@ public class Analyzer extends Resource {
 
     @POST
     @Path(Analyzer.TRAIN)
-    @Api(type = "POST",
-        uri = "/ikube/service/analyzer/train",
-        description = "Trains an analyzer with the data in the request.",
-        consumes = Analysis.class,
-        produces = Analysis.class)
+    @Api(description = "Trains an analyzer with the data in the request. This method adds the " +
+            "data in the analysis object to the input data for the analyzer, could be a classifier or " +
+            "a clusterer.",
+            produces = Analysis.class)
     @SuppressWarnings({"unchecked"})
     public Response train(final Analysis<String, String> analysis) {
         String data = analysis.getInput();
@@ -87,46 +85,33 @@ public class Analyzer extends Resource {
 
     @POST
     @Path(Analyzer.BUILD)
-    @Api(type = "POST",
-        uri = "/ikube/service/analyzer/build",
-        description = "Builds the analyzer generating the model from the data provided, " +
-            "returning the context bound to the analyzer.",
-        consumes = Analysis.class,
-        produces = Context.class)
+    @Api(description = "Builds the analyzer generating the model from the data provided, " +
+            "returning the context bound to the analyzer. In the case of classifiers for example, the data " +
+            "is probably converted into vectors for a support vector machine, as an example.",
+            produces = Context.class)
     @SuppressWarnings("unchecked")
-    public Response build(final Analysis<?, ?> analysis) {
+    public Response build(final Analysis analysis) {
         analyticsService.build(analysis);
         ikube.model.Context context = analyticsService.getContext(analysis.getContext());
         return buildResponse(context(context));
     }
 
-    /**
-     * This method will take an analysis object, classify it using the classifier that is
-     * defined in the analysis object and, add the classification results to the analysis object
-     * and serialize it for the caller.
-     */
     @POST
     @Path(Analyzer.ANALYZE)
-    @Api(type = "POST",
-        uri = "/ikube/service/analyzer/analyze",
-        description = "Analyses the data using the specified analyzer, and returns the analytis " +
+    @Api(description = "Analyses the data using the specified analyzer, and returns the analytis " +
             "object, containing among other things the result, and potentially the distribution " +
             "for the instance, and even the distribution for the entire data set.",
-        consumes = Analysis.class,
-        produces = Analysis.class)
+            produces = Analysis.class)
     @SuppressWarnings("unchecked")
-    public Response analyze(final Analysis<?, ?> analysis) {
+    public Response analyze(final Analysis analysis) {
         analyticsService.analyze(analysis);
         return buildResponse(analysis);
     }
 
     @POST
     @Path(Analyzer.DESTROY)
-    @Api(type = "POST",
-        uri = "/ikube/service/analyzer/destroy",
-        description = "Destroys an analyzer, and the generated model, freeing resources.",
-        consumes = Context.class,
-        produces = Context.class)
+    @Api(description = "Destroys an analyzer, and the generated model, freeing resources.",
+            produces = Context.class)
     @SuppressWarnings("unchecked")
     public Response destroy(final Context context) {
         analyticsService.destroy(context);
@@ -135,24 +120,18 @@ public class Analyzer extends Resource {
 
     @POST
     @Path(Analyzer.CONTEXT)
-    @Api(type = "POST",
-        uri = "/ikube/service/analyzer/context",
-        description = "Returns the context associated with the analyzer specified.",
-        consumes = Analysis.class,
-        produces = Context.class)
+    @Api(description = "Returns the context associated with the analyzer specified.",
+            produces = Context.class)
     @SuppressWarnings("unchecked")
-    public Response context(final Analysis<?, ?> analysis) {
+    public Response context(final Analysis analysis) {
         ikube.model.Context context = analyticsService.getContext(analysis.getContext());
         return buildResponse(context(context));
     }
 
     @GET
     @Path(Analyzer.CONTEXTS)
-    @Api(type = "POST",
-        uri = "/ikube/service/analyzer/contexts",
-        description = "Returns all the contexts' names defined in the system.",
-        consumes = String.class,
-        produces = ArrayList.class)
+    @Api(description = "Returns all the contexts' names defined in the system.",
+            produces = ArrayList.class)
     @SuppressWarnings("unchecked")
     public Response contexts() {
         Map<String, ikube.model.Context> contextsMap = analyticsService.getContexts();

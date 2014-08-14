@@ -184,7 +184,7 @@ public final class ObjectToolkit {
         return Boolean.FALSE;
     }
 
-    private static Object getPrimitive(final Class<?> klass) {
+    public static Object getPrimitive(final Class<?> klass) {
         Random random = new Random();
         if (int.class.getName().equals(klass.getSimpleName())) {
             return Math.abs(random.nextInt());

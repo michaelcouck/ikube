@@ -1,7 +1,6 @@
 package ikube.search;
 
 import ikube.IConstants;
-import ikube.action.index.analyzer.StemmingAnalyzer;
 import ikube.search.spelling.SpellingChecker;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;

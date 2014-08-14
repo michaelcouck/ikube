@@ -24,7 +24,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -43,9 +42,10 @@ import java.util.concurrent.Future;
 @Component
 @Path(Tweets.TWITTER)
 @Scope(Resource.REQUEST)
+@Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @SuppressWarnings("SpringJavaAutowiringInspection")
-@Api(description = "The Twitter rest resource")
+@Api(description = "The Twitter rest resource, provides twitter results, like a heat map and results of tweets go-locations.")
 public class Tweets extends Resource {
 
     /**
@@ -64,7 +64,9 @@ public class Tweets extends Resource {
 
     @POST
     @Path(Tweets.HAPPY)
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Api(description = "This resource will generate a heat map of the positive tweets on the planet, and " +
+            "collect the last +-10 000 tweets for display on the world map.",
+            produces = SearchTwitter.class)
     public Response happy(final SearchTwitter twitterSearch) {
         // Google Maps API heat map data format is {lat, lng, weight} eg. {42, 1.8, 3}
         final long endTime = System.currentTimeMillis();
@@ -92,6 +94,29 @@ public class Tweets extends Resource {
             }
         });
         logger.info("Duration for heat map data : " + duration);
+        return buildResponse(twitterSearch);
+    }
+
+    @POST
+    @Path(Tweets.ANALYZE)
+    @Api(description = "This resource will do searches, positive and negative, in increments of an hour, and return " +
+            "the data in an array that can be displayed on a time based graph, showing the sentiment trend over time.",
+            produces = SearchTwitter.class)
+    public Response twitter(final SearchTwitter twitterSearch) {
+        double duration = Timer.execute(new Timer.Timed() {
+            @Override
+            public void execute() {
+                // First do the primary search for the term, language, etc...
+                searcherService.search(twitterSearch);
+                // Get the time line for both positive and negative
+                setTimeLineSentiment(twitterSearch);
+            }
+        });
+
+        if (twitterSearch.getSearchResults() != null && twitterSearch.getSearchResults().size() > 0) {
+            HashMap<String, String> statistics = twitterSearch.getSearchResults().get(twitterSearch.getSearchResults().size() - 1);
+            statistics.put(IConstants.DURATION, Double.toString(duration));
+        }
         return buildResponse(twitterSearch);
     }
 
@@ -130,27 +155,6 @@ public class Tweets extends Resource {
             heatMapData[i] = heatMapDatum;
         }
         return heatMapData;
-    }
-
-    @POST
-    @Path(Tweets.ANALYZE)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response twitter(final SearchTwitter search) {
-        double duration = Timer.execute(new Timer.Timed() {
-            @Override
-            public void execute() {
-                // First do the primary search for the term, language, etc...
-                searcherService.search(search);
-                // Get the time line for both positive and negative
-                setTimeLineSentiment(search);
-            }
-        });
-
-        if (search.getSearchResults() != null && search.getSearchResults().size() > 0) {
-            HashMap<String, String> statistics = search.getSearchResults().get(search.getSearchResults().size() - 1);
-            statistics.put(IConstants.DURATION, Double.toString(duration));
-        }
-        return buildResponse(search);
     }
 
     @SuppressWarnings("unchecked")
@@ -253,8 +257,8 @@ public class Tweets extends Resource {
         HashMap<String, String> statistics = searchCloneResults.get(searchCloneResults.size() - 1);
         String total = statistics.get(IConstants.TOTAL);
         search.setSearchResults(searchCloneResults);
-        System.out.println("Total : " + total);
-        System.out.println(startTime + "-" + endTime + ", " + new Date(startTime) + "-" + new Date(endTime));
+        // System.out.println("Total : " + total);
+        // System.out.println(startTime + "-" + endTime + ", " + new Date(startTime) + "-" + new Date(endTime));
         return Integer.valueOf(total);
     }
 

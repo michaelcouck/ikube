@@ -5,6 +5,12 @@
 module.controller('ApisController', function($http, $scope) {
 
 	$scope.apis = undefined;
+    $scope.collapsed = {};
+    $scope.apiIndex = 0;
+
+    $scope.collapse = function(method) {
+        $scope.collapsed[method] = !$scope.collapsed[method];
+    };
 
     /**
      * Gets the api documentation from the server.

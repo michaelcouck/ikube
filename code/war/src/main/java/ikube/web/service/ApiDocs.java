@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import ikube.IConstants;
 import ikube.model.Api;
 import ikube.model.ApiMethod;
+import ikube.toolkit.ObjectToolkit;
 import org.apache.commons.lang.StringUtils;
 import org.reflections.Reflections;
 import org.springframework.context.annotation.Scope;
@@ -18,8 +19,9 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
+import java.util.regex.Pattern;
 
-import static ikube.toolkit.ObjectToolkit.populateFields;
+import static ikube.toolkit.ObjectToolkit.getPrimitive;
 
 /**
  * This rest web service exposes the web services that are annotated with the {@link ikube.web.service.Api}
@@ -40,6 +42,7 @@ public class ApiDocs extends Resource {
 
     public static final String API = "/api";
     public static final String APIS = "/apis";
+    private static final Pattern OPTIONS = Pattern.compile(".*(GET).*|.*(POST).*|.*(PUT).*|.*(OPTIONS).*|.*(HEAD).*|.*(DELETE).*");
 
     /**
      * This method returns all the api objects that have been scanned, as a collection. The collection, as
@@ -50,7 +53,11 @@ public class ApiDocs extends Resource {
      */
     @GET
     @Path(APIS)
-    @ikube.web.service.Api(description = "This method will return all the apis in the system as a collection, Jsonified")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    @ikube.web.service.Api(
+            description = "This method will return all the apis in the system as a collection, Jsonified",
+            produces = ArrayList.class)
     public Response apis() {
         ArrayList<Api> apis = Lists.newArrayList();
         String packageName = this.getClass().getPackage().getName();
@@ -69,7 +76,9 @@ public class ApiDocs extends Resource {
      * @return the Json representation of the {@link ikube.web.service.Api} describing the rest service
      */
     @GET
-    @ikube.web.service.Api(description = "This method will return one api in the system, Jsonified, specified by the parameter name")
+    @ikube.web.service.Api(
+            description = "This method will return one api in the system, Jsonified, specified by the parameter name",
+            produces = Api.class)
     public Response api(@QueryParam(value = IConstants.NAME) final String apiName) {
         try {
             Class<?> resource = Class.forName(apiName);
@@ -80,7 +89,10 @@ public class ApiDocs extends Resource {
         }
     }
 
-    private Api getApi(final Class<?> resource) {
+    Api getApi(final Class<?> resource) {
+        if (!resource.isAnnotationPresent(ikube.web.service.Api.class)) {
+            return null;
+        }
         ikube.web.service.Api apiAnnotation = resource.getAnnotation(ikube.web.service.Api.class);
 
         Path pathAnnotation = resource.getAnnotation(Path.class);
@@ -102,13 +114,13 @@ public class ApiDocs extends Resource {
             }
             ApiMethod apiMethod = new ApiMethod();
             ikube.web.service.Api apiMethodAnnotation = method.getAnnotation(ikube.web.service.Api.class);
+            // The description must be declared in the annotation of course
+            apiMethod.setDescription(apiMethodAnnotation.description());
+
             // Set the path for this method
             setMethodPath(apiMethod, method, basePath, apiMethodAnnotation);
             // The type of the method, Get, Post, etc.
             setMethodType(apiMethod, method, apiMethodAnnotation);
-
-            // The description must be declared in the annotation of course
-            apiMethod.setDescription(apiMethodAnnotation.description());
             // Set what the methods consume as types and produce as types
             setConsumesAndProducesTypes(apiMethod, method, consumesType, producesType);
             try {
@@ -122,7 +134,7 @@ public class ApiDocs extends Resource {
         return api;
     }
 
-    private void setMethodPath(final ApiMethod apiMethod, final Method method, final String basePath, final ikube.web.service.Api apiMethodAnnotation) {
+    void setMethodPath(final ApiMethod apiMethod, final Method method, final String basePath, final ikube.web.service.Api apiMethodAnnotation) {
         // If the uri annotation is set then this overrides the construction of the uri
         if (StringUtils.isNotEmpty(apiMethodAnnotation.uri())) {
             apiMethod.setUri(apiMethodAnnotation.uri());
@@ -135,14 +147,14 @@ public class ApiDocs extends Resource {
         }
     }
 
-    private void setMethodType(final ApiMethod apiMethod, final Method method, final ikube.web.service.Api apiMethodAnnotation) {
+    void setMethodType(final ApiMethod apiMethod, final Method method, final ikube.web.service.Api apiMethodAnnotation) {
         if (StringUtils.isNotEmpty(apiMethodAnnotation.type())) {
             apiMethod.setMethod(apiMethodAnnotation.type());
         } else {
-            Annotation[] methodAnnotations = method.getDeclaredAnnotations();
+            Annotation[] methodAnnotations = method.getAnnotations();
             if (methodAnnotations != null) {
                 for (final Annotation methodAnnotation : methodAnnotations) {
-                    if (methodAnnotation.getClass().getPackage().getName().contains(GET.class.getPackage().getName())) {
+                    if (OPTIONS.matcher(methodAnnotation.toString()).matches()) {
                         apiMethod.setMethod(methodAnnotation.toString());
                     }
                 }
@@ -150,7 +162,7 @@ public class ApiDocs extends Resource {
         }
     }
 
-    private void setConsumesAndProducesTypes(final ApiMethod apiMethod, final Method method, final String consumesType, final String producesType) {
+    void setConsumesAndProducesTypes(final ApiMethod apiMethod, final Method method, final String consumesType, final String producesType) {
         // And now for the consumes and produces
         if (!method.isAnnotationPresent(Consumes.class)) {
             apiMethod.setConsumesType(consumesType);
@@ -164,15 +176,15 @@ public class ApiDocs extends Resource {
         }
     }
 
-    private void setConsumes(final ApiMethod apiMethod, final Method method, final ikube.web.service.Api apiMethodAnnotation)
+    void setConsumes(final ApiMethod apiMethod, final Method method, final ikube.web.service.Api apiMethodAnnotation)
             throws IllegalAccessException, InstantiationException {
-        if (apiMethodAnnotation.consumes() != null) {
+        if (apiMethodAnnotation.consumes() != Object.class) {
             if (apiMethodAnnotation.consumes().isArray() ||
                     !Modifier.isPublic(apiMethodAnnotation.consumes().getModifiers()) ||
                     Void.class.isAssignableFrom(apiMethodAnnotation.consumes())) {
                 apiMethod.setConsumes(apiMethodAnnotation.consumes().toString());
             } else {
-                apiMethod.setConsumes(populateFields(apiMethodAnnotation.consumes().newInstance(), true, 10));
+                apiMethod.setConsumes(populateFields(apiMethodAnnotation.consumes()));
             }
         } else {
             // Here we build the consumes and produces from the parameters and return value
@@ -180,30 +192,44 @@ public class ApiDocs extends Resource {
             Object[] parameters = new Object[parameterTypes.length];
             for (int i = 0; i < parameterTypes.length; i++) {
                 Class<?> parameterType = parameterTypes[i];
-                parameters[i] = populateFields(parameterType.newInstance(), true, 10);
+                if (parameterType.isPrimitive()) {
+                    parameters[i] = getPrimitive(parameterType);
+                } else {
+                    if (String.class.isAssignableFrom(parameterType)) {
+                        parameters[i] = "string";
+                    } else {
+                        parameters[i] = populateFields(parameterType);
+                    }
+                }
             }
-            apiMethod.setConsumes(parameters);
+            apiMethod.setConsumes(Arrays.deepToString(parameters));
         }
     }
 
-    private void setProduces(final ApiMethod apiMethod, final Method method, final ikube.web.service.Api apiMethodAnnotation)
+    void setProduces(final ApiMethod apiMethod, final Method method, final ikube.web.service.Api apiMethodAnnotation)
             throws IllegalAccessException, InstantiationException {
-        if (apiMethodAnnotation.produces() != null) {
+        if (apiMethodAnnotation.produces() != Object.class) {
             if (apiMethodAnnotation.produces().isArray() ||
                     !Modifier.isPublic(apiMethodAnnotation.produces().getModifiers())
                     || Void.class.isAssignableFrom(apiMethodAnnotation.consumes())) {
                 apiMethod.setProduces(apiMethodAnnotation.produces().toString());
             } else {
-                apiMethod.setProduces(populateFields(apiMethodAnnotation.produces().newInstance(), true, 10));
+                apiMethod.setProduces(populateFields(apiMethodAnnotation.produces()));
             }
         } else {
             // Here we build the response somehow, it looks like the only way is to specify it in the annotation
             // if the response is not a type but a {@link Response} object, with no typing etc.
             Class<?> returnType = method.getReturnType();
-            if (!Void.class.isAssignableFrom(returnType)) {
-                apiMethod.setProduces(populateFields(returnType.newInstance(), true, 10));
+            if (String.class.isAssignableFrom(returnType)) {
+                apiMethod.setProduces("string");
+            } else if (!Void.class.isAssignableFrom(returnType) && !Response.class.isAssignableFrom(returnType)) {
+                apiMethod.setProduces(populateFields(returnType));
             }
         }
+    }
+
+    private Object populateFields(final Class<?> clazz) throws IllegalAccessException, InstantiationException {
+        return ObjectToolkit.populateFields(clazz.newInstance(), true, 3, "parent", "id"    );
     }
 
 }

@@ -8,17 +8,20 @@
 	</div>
 	<div class="modal-body separator">
         <div class="input" ng-repeat="api in apis">
-            <h5>Api : {{api.api}}</h5>
-            <div class="input" ng-repeat="apiMethod in api.apiMethods">
-                <b>Type:</b> {{apiMethod.type}}<br><br>
-                <b>Uri:</b> {{apiMethod.uri}}<br><br>
-                <b>Description:</b> {{apiMethod.description}}<br><br>
-                <b>Consumes:</b> {{ apiMethod.consumes }} <br><br>
-                <b>Produces:</b> {{ apiMethod.produces }} <br><br>
+            <h6>{{api.description}}</h6>
+            <div class="input" ng-repeat="apiMethod in api.apiMethods" style="padding-left: 15px;">
+                <a href="#" ng-click="collapse(apiMethod.uri)">{{apiMethod.method}} : /ikube/{{apiMethod.uri}}</a>
+                <div ng-show="collapsed[apiMethod.uri]">
+                    {{apiMethod.description}}
+                    Consumes:<br>
+                    <textarea rows="10" cols="250">{{apiMethod.consumes}}</textarea>
+                    Produces:<br>
+                    <textarea rows="10" cols="250">{{apiMethod.produces}}</textarea>
+                </div>
                 <br>
             </div>
+            <hr>
         </div>
-
 	</div>
 	<div class="modal-footer">
 		<div class="inner-well">
