@@ -2,7 +2,6 @@ package ikube.action.rule;
 
 import ikube.model.IndexContext;
 import org.apache.log4j.Logger;
-import org.apache.lucene.index.IndexReader;
 
 /**
  * This rule checks to see if the index searcher is opened on an index. If it is
@@ -23,11 +22,6 @@ public class IsMultiSearcherInitialised implements IRule<IndexContext> {
     public boolean evaluate(final IndexContext indexContext) {
         if (indexContext.getMultiSearcher() == null) {
             LOGGER.info("Multi searcher null, should try to reopen : " + indexContext.getName());
-            return Boolean.FALSE;
-        }
-        IndexReader indexReader = indexContext.getMultiSearcher().getIndexReader();
-        if (indexReader != null && indexReader.numDocs() == 0) {
-            LOGGER.info("No documents in index : " + indexContext.getName() + ", returning false for open index : ");
             return Boolean.FALSE;
         }
         return Boolean.TRUE;

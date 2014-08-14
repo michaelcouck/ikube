@@ -16,16 +16,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.Future;
 
 /**
@@ -91,7 +92,7 @@ public class Tweets extends Resource {
             }
         });
         logger.info("Duration for heat map data : " + duration);
-        return buildJsonResponse(twitterSearch);
+        return buildResponse(twitterSearch);
     }
 
     /**
@@ -149,7 +150,7 @@ public class Tweets extends Resource {
             HashMap<String, String> statistics = search.getSearchResults().get(search.getSearchResults().size() - 1);
             statistics.put(IConstants.DURATION, Double.toString(duration));
         }
-        return buildJsonResponse(search);
+        return buildResponse(search);
     }
 
     @SuppressWarnings("unchecked")

@@ -14,6 +14,9 @@ import java.util.concurrent.TimeUnit;
  * on the remote machine. This action can potentially work in a windows environment if there is an ssh
  * server running on the target machine.
  *
+ * The logic will retry a few times if there are exceptions and the execution did not end successfully,
+ * and then give up.
+ *
  * @author Michael Couck
  * @version 01.00
  * @since 18-06-2013

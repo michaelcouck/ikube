@@ -56,7 +56,7 @@ public class SearcherJson extends Searcher {
                 fragment,
                 firstResult,
                 maxResults);
-        return buildJsonResponse(results);
+        return buildResponse(results);
     }
 
     /**
@@ -88,7 +88,7 @@ public class SearcherJson extends Searcher {
                 fragment,
                 firstResult,
                 maxResults);
-        return buildJsonResponse(results);
+        return buildResponse(results);
     }
 
     /**
@@ -123,7 +123,7 @@ public class SearcherJson extends Searcher {
                 fragment,
                 firstResult,
                 maxResults);
-        return buildJsonResponse(results);
+        return buildResponse(results);
     }
 
     /**
@@ -164,7 +164,7 @@ public class SearcherJson extends Searcher {
                 distance,
                 latitude,
                 longitude);
-        return buildJsonResponse(results);
+        return buildResponse(results);
     }
 
     /**
@@ -182,7 +182,7 @@ public class SearcherJson extends Searcher {
             produces = Search.class)
     public Response search(final Search search) {
         Object results = searcherService.search(search);
-        return buildJsonResponse(results);
+        return buildResponse(results);
     }
 
     /**
@@ -203,7 +203,7 @@ public class SearcherJson extends Searcher {
             produces = Search.class)
     public Response searchAll(final Search search) {
         Object results = searcherService.searchAll(search);
-        return buildJsonResponse(results);
+        return buildResponse(results);
     }
 
 }

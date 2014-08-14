@@ -74,9 +74,9 @@ public class Monitor extends Resource {
             produces = String[].class)
     public Response fields(@QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
         if (StringUtils.isEmpty(indexName)) {
-            return buildJsonResponse(new String[0]);
+            return buildResponse(new String[0]);
         }
-        return buildJsonResponse(monitorService.getIndexFieldNames(indexName));
+        return buildResponse(monitorService.getIndexFieldNames(indexName));
     }
 
     @GET
@@ -88,7 +88,7 @@ public class Monitor extends Resource {
             consumes = Void.class,
             produces = String[].class)
     public Response indexes() {
-        return buildJsonResponse(monitorService.getIndexNames());
+        return buildResponse(monitorService.getIndexNames());
     }
 
     @GET
@@ -100,10 +100,9 @@ public class Monitor extends Resource {
                     "Spring.",
             consumes = Void.class,
             produces = IndexContext.class)
-    public Response indexContext(
-            @QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
+    public Response indexContext(@QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
         IndexContext indexContext = cloneIndexContext(monitorService.getIndexContext(indexName));
-        return buildJsonResponse(indexContext);
+        return buildResponse(indexContext);
     }
 
     @GET
@@ -133,7 +132,7 @@ public class Monitor extends Resource {
                 }
             });
         }
-        return buildJsonResponse(indexContexts);
+        return buildResponse(indexContexts);
     }
 
     @GET
@@ -147,7 +146,7 @@ public class Monitor extends Resource {
     public Response server() {
         Server server = clusterManager.getServer();
         Server cloneServer = cloneServer(server);
-        return buildJsonResponse(cloneServer);
+        return buildResponse(cloneServer);
     }
 
     @GET
@@ -165,7 +164,7 @@ public class Monitor extends Resource {
             Server cloneServer = cloneServer(server);
             result.add(cloneServer);
         }
-        return buildJsonResponse(result);
+        return buildResponse(result);
     }
 
     @GET
@@ -207,7 +206,7 @@ public class Monitor extends Resource {
         data[serverIndex] = times;
         Object[][] invertedData = invertMatrix(data);
         String stringified = Arrays.deepToString(invertedData);
-        return buildResponse().entity(stringified).build();
+        return buildResponse(stringified);
     }
 
     @GET
@@ -250,7 +249,7 @@ public class Monitor extends Resource {
         data[serverIndex] = times;
         Object[][] invertedData = invertMatrix(data);
         String stringified = Arrays.deepToString(invertedData);
-        return buildResponse().entity(stringified).build();
+        return buildResponse(stringified);
     }
 
     @GET
@@ -274,7 +273,7 @@ public class Monitor extends Resource {
                 clonedActions.add(clonedAction);
             }
         }
-        return buildJsonResponse(clonedActions);
+        return buildResponse(clonedActions);
     }
 
     @POST
@@ -288,7 +287,7 @@ public class Monitor extends Resource {
             produces = String.class)
     public Response start(final String indexName) {
         monitorService.start(indexName);
-        return buildResponse().build();
+        return buildResponse(null);
     }
 
     @POST
@@ -303,7 +302,7 @@ public class Monitor extends Resource {
             produces = String.class)
     public Response terminate(final String indexName) {
         monitorService.terminate(indexName);
-        return buildResponse().build();
+        return buildResponse(null);
     }
 
     @GET
@@ -316,7 +315,7 @@ public class Monitor extends Resource {
             consumes = Void.class,
             produces = HashMap.class)
     public Response getProperties() {
-        return buildJsonResponse(monitorService.getProperties());
+        return buildResponse(monitorService.getProperties());
     }
 
     @POST
@@ -334,7 +333,7 @@ public class Monitor extends Resource {
             @Context final HttpServletRequest request) throws IOException {
         Map<String, String> filesAndProperties = unmarshall(Map.class, request);
         monitorService.setProperties(filesAndProperties);
-        return buildResponse().build();
+        return buildResponse(null);
     }
 
     @POST
@@ -348,7 +347,7 @@ public class Monitor extends Resource {
             produces = String.class)
     public Response terminateAll() {
         monitorService.terminateAll();
-        return buildResponse().build();
+        return buildResponse(null);
     }
 
     @POST
@@ -362,7 +361,7 @@ public class Monitor extends Resource {
             produces = String.class)
     public Response startupAll() {
         monitorService.startupAll();
-        return buildResponse().build();
+        return buildResponse(null);
     }
 
     @POST
@@ -380,7 +379,7 @@ public class Monitor extends Resource {
         Event startEvent = IListener.EventGenerator.getEvent(Event.DELETE_INDEX, time, indexName, Boolean.FALSE);
         logger.info("Sending delete event : " + ToStringBuilder.reflectionToString(startEvent));
         clusterManager.sendMessage(startEvent);
-        return buildResponse().build();
+        return buildResponse(null);
     }
 
     @POST
@@ -394,7 +393,7 @@ public class Monitor extends Resource {
             produces = String.class)
     public Response cpuThrottling() {
         monitorService.cpuThrottling();
-        return buildResponse().build();
+        return buildResponse(null);
     }
 
     private Server cloneServer(final Server server) {

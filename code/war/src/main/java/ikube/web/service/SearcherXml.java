@@ -68,7 +68,7 @@ public class SearcherXml extends Searcher {
                 fragment,
                 firstResult,
                 maxResults);
-        return buildXmlResponse(results);
+        return buildResponse(results);
     }
 
     /**
@@ -100,7 +100,7 @@ public class SearcherXml extends Searcher {
                 fragment,
                 firstResult,
                 maxResults);
-        return buildXmlResponse(results);
+        return buildResponse(results);
     }
 
     /**
@@ -135,7 +135,7 @@ public class SearcherXml extends Searcher {
                 fragment,
                 firstResult,
                 maxResults);
-        return buildXmlResponse(results);
+        return buildResponse(results);
     }
 
     /**
@@ -176,7 +176,7 @@ public class SearcherXml extends Searcher {
                 distance,
                 latitude,
                 longitude);
-        return buildXmlResponse(results);
+        return buildResponse(results);
     }
 
     /**
@@ -195,7 +195,7 @@ public class SearcherXml extends Searcher {
             produces = Search.class)
     public Response search(final Search search) {
         Object results = searcherService.search(search);
-        return buildJsonResponse(results);
+        return buildResponse(results);
     }
 
     /**
@@ -217,7 +217,7 @@ public class SearcherXml extends Searcher {
             produces = Search.class)
     public Response searchAll(final Search search) {
         Object results = searcherService.search(search);
-        return buildJsonResponse(results);
+        return buildResponse(results);
     }
 
 }

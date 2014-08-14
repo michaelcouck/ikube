@@ -47,7 +47,7 @@ public class ResourceTest extends AbstractTest {
         String french = "Qu'est ce qui détermine la productivité, et comment est-il mesuré?";
         String somthingElseAlToGether = "Soleymān Khāţer";
         String[] result = {russian, german, french, somthingElseAlToGether};
-        Response response = resource.buildJsonResponse(result);
+        Response response = resource.buildResponse(result);
         Object entity = response.getEntity();
         logger.info("Entity : " + entity);
         logger.info("Entity : " + Arrays.deepToString(result));
@@ -55,7 +55,7 @@ public class ResourceTest extends AbstractTest {
         assertTrue("Must have the weird characters : ", entity.toString().contains("ä"));
 
         Analysis<String, String> analysis = populateFields(new Analysis(), Boolean.TRUE, 100, "exception");
-        response = resource.buildJsonResponse(analysis);
+        response = resource.buildResponse(analysis);
         logger.info("Response : " + response.getEntity());
     }
 

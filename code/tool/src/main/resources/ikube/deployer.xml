@@ -337,8 +337,7 @@
         <entry key="${tail-script}" value="${tomcat-production-bin}"/>
         <entry key="code/war/target/${ikube-war}" value="${tomcat-production-webapps}"/>
         <!-- This over writes the properties specific for the target environment -->
-        <entry key="${resources-directory}/environments/prd/spring.properties"
-               value="${tomcat-production-bin}/ikube/common"/>
+        <entry key="${resources-directory}/environments/prd/spring.properties" value="${tomcat-production-bin}/ikube/common"/>
     </util:map>
     <util:map id="directories-production">
         <entry key="${resources-directory}/ikube" value="${tomcat-production-bin}"/>

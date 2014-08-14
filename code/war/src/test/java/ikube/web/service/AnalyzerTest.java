@@ -40,7 +40,7 @@ public class AnalyzerTest extends AbstractTest {
     @SuppressWarnings("unchecked")
     public void before() throws Exception {
         when(analysis.getAlgorithmOutput()).thenReturn("output");
-        when(analyzer.buildJsonResponse(any())).thenReturn(Response.status(Response.Status.OK).build());
+        when(analyzer.buildResponse(any())).thenReturn(Response.status(Response.Status.OK).build());
         when(analyticsService.analyze(any(Analysis.class))).thenReturn(analysis);
     }
 
@@ -48,6 +48,6 @@ public class AnalyzerTest extends AbstractTest {
     public void analyze() throws IOException {
         when(analyzer.analyze(analysis)).thenCallRealMethod();
         analyzer.analyze(analysis);
-        verify(analyzer, atLeastOnce()).buildJsonResponse(any());
+        verify(analyzer, atLeastOnce()).buildResponse(any());
     }
 }

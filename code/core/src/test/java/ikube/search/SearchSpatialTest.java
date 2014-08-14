@@ -12,12 +12,16 @@ import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -68,8 +72,6 @@ public class SearchSpatialTest extends AbstractTest {
 		indexWriter.forceMerge(5);
 		IndexReader indexReader = DirectoryReader.open(ramDirectory);
 		searcher = new IndexSearcher(indexReader);
-
-		printIndex(indexReader, indexReader.numDocs());
 	}
 
 	@After
@@ -128,6 +130,30 @@ public class SearchSpatialTest extends AbstractTest {
 		}, "Spatial search performance : ", 1000, Boolean.TRUE);
 		assertTrue(perSecond > 100);
 	}
+
+    @Test
+    public void search() throws IOException {
+        Directory directory = FSDirectory.open(new File("/tmp/indexes/geospatial/1407942554961/192.168.1.8-8000"));
+        IndexReader indexReader = DirectoryReader.open(directory);
+        searcher = new IndexSearcher(indexReader);
+
+        SearchSpatial searchSpatial = new SearchSpatial(searcher);
+        searchSpatial.setDistance(1000);
+        searchSpatial.setFirstResult(0);
+        searchSpatial.setMaxResults(10);
+        searchSpatial.setFragment(Boolean.TRUE);
+        searchSpatial.setSearchStrings("hotel");
+        searchSpatial.setSearchFields(IConstants.NAME);
+        searchSpatial.setOccurrenceFields(IConstants.SHOULD);
+        searchSpatial.setTypeFields(Search.TypeField.STRING.name());
+
+        searchSpatial.setCoordinate(new Coordinate(-33.9, 18.4));
+
+
+        ArrayList<HashMap<String, String>> results = searchSpatial.execute();
+        System.out.println(results.size() + ", " + results.get(results.size() - 1));
+        assertTrue(results.size() > 3);
+    }
 
 	private void verifyDistances(final ArrayList<HashMap<String, String>> results) {
 		double previousDistance = 0;

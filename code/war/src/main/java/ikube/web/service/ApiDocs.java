@@ -15,8 +15,8 @@ import javax.ws.rs.core.Response;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Set;
 
 import static ikube.toolkit.ObjectToolkit.populateFields;
@@ -52,14 +52,14 @@ public class ApiDocs extends Resource {
     @Path(APIS)
     @ikube.web.service.Api(description = "This method will return all the apis in the system as a collection, Jsonified")
     public Response apis() {
-        Collection<Api> apis = Lists.newArrayList();
+        ArrayList<Api> apis = Lists.newArrayList();
         String packageName = this.getClass().getPackage().getName();
         Set<Class<?>> resources = new Reflections(packageName).getTypesAnnotatedWith(ikube.web.service.Api.class);
         for (final Class<?> resource : resources) {
             Api api = getApi(resource);
             apis.add(api);
         }
-        return buildJsonResponse(apis);
+        return buildResponse(apis);
     }
 
     /**
@@ -74,7 +74,7 @@ public class ApiDocs extends Resource {
         try {
             Class<?> resource = Class.forName(apiName);
             Api api = getApi(resource);
-            return buildJsonResponse(api);
+            return buildResponse(api);
         } catch (final ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

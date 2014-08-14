@@ -90,7 +90,7 @@ public class Auto extends Resource {
         statistics.put(IConstants.SEARCH_STRINGS, search.getSearchStrings().toString());
         autoResults.add(statistics);
         search.setSearchResults(autoResults);
-        return buildJsonResponse(search);
+        return buildResponse(search);
     }
 
     /**
@@ -171,7 +171,7 @@ public class Auto extends Resource {
     @SuppressWarnings("unused")
     public Response suggestions(final Search search) {
         Object results = searcherService.search(search);
-        return buildJsonResponse(results);
+        return buildResponse(results);
     }
 
 }

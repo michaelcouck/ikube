@@ -63,7 +63,7 @@ public class Analyzer extends Resource {
         produces = Context.class)
     public Response create(final Context context) {
         analyticsService.create(context);
-        return buildJsonResponse(context(context));
+        return buildResponse(context(context));
     }
 
     @POST
@@ -82,7 +82,7 @@ public class Analyzer extends Resource {
             clone.setInput(input);
             analyticsService.train(clone);
         }
-        return buildJsonResponse(analysis);
+        return buildResponse(analysis);
     }
 
     @POST
@@ -97,7 +97,7 @@ public class Analyzer extends Resource {
     public Response build(final Analysis<?, ?> analysis) {
         analyticsService.build(analysis);
         ikube.model.Context context = analyticsService.getContext(analysis.getContext());
-        return buildJsonResponse(context(context));
+        return buildResponse(context(context));
     }
 
     /**
@@ -117,7 +117,7 @@ public class Analyzer extends Resource {
     @SuppressWarnings("unchecked")
     public Response analyze(final Analysis<?, ?> analysis) {
         analyticsService.analyze(analysis);
-        return buildJsonResponse(analysis);
+        return buildResponse(analysis);
     }
 
     @POST
@@ -130,7 +130,7 @@ public class Analyzer extends Resource {
     @SuppressWarnings("unchecked")
     public Response destroy(final Context context) {
         analyticsService.destroy(context);
-        return buildJsonResponse(context(context));
+        return buildResponse(context(context));
     }
 
     @POST
@@ -143,7 +143,7 @@ public class Analyzer extends Resource {
     @SuppressWarnings("unchecked")
     public Response context(final Analysis<?, ?> analysis) {
         ikube.model.Context context = analyticsService.getContext(analysis.getContext());
-        return buildJsonResponse(context(context));
+        return buildResponse(context(context));
     }
 
     @GET
@@ -160,7 +160,7 @@ public class Analyzer extends Resource {
         for (final Map.Entry<String, ikube.model.Context> contextEntry : contextsMap.entrySet()) {
             contexts.add(contextEntry.getKey());
         }
-        return buildJsonResponse(contexts.toArray());
+        return buildResponse(contexts.toArray());
     }
 
     private Context context(final Context context) {

@@ -6,6 +6,7 @@ import ikube.analytics.IAnalyticsService;
 import ikube.cluster.IClusterManager;
 import ikube.cluster.IMonitorService;
 import ikube.search.ISearcherService;
+import ikube.toolkit.SerializationUtilities;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -14,11 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collection;
 
 import static ikube.toolkit.FileUtilities.getContents;
 
@@ -47,42 +48,19 @@ public abstract class Resource {
     protected IAnalyticsService analyticsService;
 
     /**
-     * This method will create the response builder, then convert the results to Json and add them the
-     * response payload, then build the response object from the builder.
+     * TODO: Document me...
      *
-     * @param result the data to convert to Json
-     * @return the Json response object to send to the caller/client
+     * @return the bla...
      */
-    protected Response buildJsonResponse(final Object result) {
-        if (result == null) {
-            return buildResponse().build();
+    protected Response buildResponse(final Object object) {
+        Object entity = object;
+        if (Collection.class.isAssignableFrom(entity.getClass())) {
+            entity = IConstants.GSON.toJson(entity);
         }
-        return buildResponse().entity(result).build();
-    }
-
-    /**
-     * This method will create the response builder, then convert the results to xml and add them
-     * the response payload, then build the response object from the builder.
-     *
-     * @param result the data to convert to xml
-     * @return the xml response object to send to the caller/client
-     */
-    protected Response buildXmlResponse(final Object result) {
-        if (result == null) {
-            return buildResponse().build();
-        }
-        return buildResponse().entity(result).build();
-    }
-
-    /**
-     * This method will just create the response builder and add some headers for cross site scripting.
-     *
-     * @return the response builder for the category
-     */
-    protected ResponseBuilder buildResponse() {
         return Response.status(Response.Status.OK)//
                 .header("Access-Control-Allow-Origin", "*") //
-                .header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
+                .header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD")
+                .entity(entity).build();
     }
 
     <T> T unmarshall(final Class<T> clazz, final HttpServletRequest request) {
