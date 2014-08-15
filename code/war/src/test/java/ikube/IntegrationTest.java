@@ -18,7 +18,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
+
+import static ikube.toolkit.ApplicationContextManager.getBean;
+import static ikube.toolkit.ObjectToolkit.populateFields;
 
 /**
  * This base class for the integration tests will load some snapshots
@@ -70,7 +74,7 @@ public abstract class IntegrationTest extends AbstractTest {
      * @param dataBase the database to use for deleting the data
      * @param klasses  the classes to delete from the database
      */
-    protected void delete(final IDataBase dataBase, final Class<?>... klasses) {
+    protected static void delete(final IDataBase dataBase, final Class<?>... klasses) {
         int batchSize = 1000;
         for (final Class<?> klass : klasses) {
             try {
@@ -85,5 +89,23 @@ public abstract class IntegrationTest extends AbstractTest {
         }
     }
 
+    protected static <T> void insert(final Class<T> klass, final int entities) {
+        IDataBase dataBase = getBean(IDataBase.class);
+        List<T> tees = new ArrayList<>();
+        for (int i = 0; i < entities; i++) {
+            T tee;
+            try {
+                tee = populateFields(klass, klass.newInstance(), Boolean.TRUE, 1, "id", "indexContext");
+                tees.add(tee);
+                if (tees.size() >= 1000) {
+                    dataBase.persistBatch(tees);
+                    tees.clear();
+                }
+            } catch (final Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        dataBase.persistBatch(tees);
+    }
 
 }

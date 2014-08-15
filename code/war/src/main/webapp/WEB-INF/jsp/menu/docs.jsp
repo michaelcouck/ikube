@@ -9,7 +9,7 @@
 	</li>
 	
 	<li href="docs" active-link="active">
-		<a href="<c:url value="/documentation/apis.html" />">
+		<a href="<c:url value="/documentation/docs.html" />">
 			<i class="icon-book"></i>Documentation
 		</a>
 	</li>

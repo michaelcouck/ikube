@@ -25,11 +25,7 @@ public class ExchangeResourceHandler extends ResourceHandler<IndexableExchange> 
      * {@inheritDoc}
      */
     @Override
-    public Document handleResource(
-            final IndexContext indexContext,
-            final IndexableExchange indexableExchange,
-            final Document document,
-            final Object resource)
+    public Document handleResource(final IndexContext indexContext, final IndexableExchange indexableExchange, final Document document, final Object resource)
             throws Exception {
         // Parse the content from the email for good measure
         parseContent(indexableExchange);

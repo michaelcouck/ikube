@@ -6,22 +6,21 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <nav id="primary" class="main-nav">
-	<ul ng-controller="ActiveController">
-
+	<ul>
+        <%--
+            How the active link works is the following. The href attribute is checked against the path
+             of the document, i.e. the url. If there is a match in the path, then the class attribute, 'active',
+             is set in the element. So, for example, the first tag is 'href="system"', and the url is '/system/dash.html',
+             so system in the href matches system in the url, and the tag is set to active.
+        --%>
         <li href="system" active-link="active"><a href="<c:url value="/system/dash.html" />"><i class="icon-cogs"></i>System</a></li>
-
         <li href="analytics" active-link="active"><a href="<c:url value="/analytics/analyze.html" />"><i class="icon-beaker"></i>Analytics</a></li>
-
         <li href="search" active-link="active"><a href="<c:url value="/search/search.html" />"><i class="icon-list-alt"></i>Search</a></li>
-
-        <li href="apis" active-link="active"><a href="<c:url value="/documentation/apis.html" />"><i class="icon-cloud"></i>Apis</a></li>
-
+        <li href="documentation" active-link="active"><a href="<c:url value="/documentation/apis.html" />"><i class="icon-cloud"></i>Apis</a></li>
         <li href="application" active-link="active"><a href="<c:url value="/application/happy.html" />"><i class="icon-twitter-sign"></i>Twitter</a></li>
-
         <li href="grid" active-link="active" ng-controller="NotificationController">
             <a href="#" ng-click="enterpriseNotification();"><i class="icon-th"></i>Grid</a>
         </li>
-
 		<li class="dropdown">
 			<a class="dropdown-toggle" data-toggle="dropdown">
 				<i class="icon-share-alt"></i>More<span class="caret"></span>

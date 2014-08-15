@@ -184,8 +184,8 @@ public class LuceneTest extends AbstractTest {
         return directory;
     }
 
-    @SuppressWarnings("unchecked")
     @Test
+    @SuppressWarnings("unchecked")
     public void concurrentReadAndWriteToIndex() throws Exception {
         final long sleep = 100;
         final int iterations = 3;
@@ -235,8 +235,8 @@ public class LuceneTest extends AbstractTest {
         ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
+    @SuppressWarnings("unchecked")
     public void searcherManagerReadAndWrite() throws Exception {
         final long sleep = 100;
         final int iterations = 3;

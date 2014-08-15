@@ -44,7 +44,7 @@ import static org.mockito.Mockito.*;
  */
 public class TweetsTest extends AbstractTest {
 
-    private static SearchTwitter search;
+    private static SearchTwitter TWITTER_SEARCH;
     /**
      * Class under test
      */
@@ -62,23 +62,23 @@ public class TweetsTest extends AbstractTest {
         String xml = FileUtilities.getContent(file);
         results = (ArrayList<HashMap<String, String>>) SerializationUtilities.deserialize(xml);
 
-        search = new SearchTwitter();
-        search.setSearchStrings(new ArrayList<>(Arrays.asList("hello world")));
-        search.setSearchFields(new ArrayList<>(Arrays.asList(IConstants.CONTENTS)));
-        search.setOccurrenceFields(new ArrayList<>(Arrays.asList(IConstants.MUST)));
-        search.setTypeFields(new ArrayList<>(Arrays.asList(IConstants.STRING)));
-        search.setSearchResults(results);
+        TWITTER_SEARCH = new SearchTwitter();
+        TWITTER_SEARCH.setSearchStrings(new ArrayList<>(Arrays.asList("hello world")));
+        TWITTER_SEARCH.setSearchFields(new ArrayList<>(Arrays.asList(IConstants.CONTENTS)));
+        TWITTER_SEARCH.setOccurrenceFields(new ArrayList<>(Arrays.asList(IConstants.MUST)));
+        TWITTER_SEARCH.setTypeFields(new ArrayList<>(Arrays.asList(IConstants.STRING)));
+        TWITTER_SEARCH.setSearchResults(results);
 
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
-                return search;
+                return TWITTER_SEARCH;
             }
         }).when(tweets).unmarshall(any(Class.class), any(HttpServletRequest.class));
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
-                return search;
+                return TWITTER_SEARCH;
             }
         }).when(searcherService).search(any(Search.class));
 
@@ -101,9 +101,8 @@ public class TweetsTest extends AbstractTest {
                 return new Object[0][];
             }
         }).when(tweets).heatMapData(any(ArrayList.class), anyInt());
-        Response response = tweets.happy(null);
-        String string = (String) response.getEntity();
-        SearchTwitter twitterSearch = IConstants.GSON.fromJson(string, SearchTwitter.class);
+        Response response = tweets.happy(TWITTER_SEARCH);
+        SearchTwitter twitterSearch = (SearchTwitter) response.getEntity();
         assertNotNull(twitterSearch);
     }
 
@@ -117,38 +116,37 @@ public class TweetsTest extends AbstractTest {
         for (int i = 0; i < 10000; i++) {
             moreResults.addAll(results);
         }
-        search.setClusters(100);
-        Object[][] heatMapData = tweets.heatMapData(moreResults, search.getClusters());
+        TWITTER_SEARCH.setClusters(100);
+        Object[][] heatMapData = tweets.heatMapData(moreResults, TWITTER_SEARCH.getClusters());
         assertTrue("Must be less than the total results : ", heatMapData.length < moreResults.size());
-        assertTrue("Must be less than the clustered capacity too : ", heatMapData.length <= search.getClusters());
+        assertTrue("Must be less than the clustered capacity too : ", heatMapData.length <= TWITTER_SEARCH.getClusters());
 
         execute(new PerformanceTester.APerform() {
             @Override
             public void execute() throws Throwable {
-                tweets.heatMapData(moreResults, search.getClusters());
+                tweets.heatMapData(moreResults, TWITTER_SEARCH.getClusters());
             }
         }, "Heat map data : ", 10);
     }
 
     @Test
     public void twitter() {
-        Response response = tweets.twitter(null);
-        String string = (String) response.getEntity();
-        SearchTwitter twitterSearch = IConstants.GSON.fromJson(string, SearchTwitter.class);
+        Response response = tweets.twitter(TWITTER_SEARCH);
+        SearchTwitter twitterSearch = (SearchTwitter) response.getEntity();
         assertNotNull(twitterSearch);
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void timeLineSentiment() {
-        search.setStartHour(-6);
+        TWITTER_SEARCH.setStartHour(-6);
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 return null;
             }
         }).when(tweets).addCount(any(Object[].class), anyString(), any(HashMap.class));
-        Object[][] data = tweets.setTimeLineSentiment(search);
+        Object[][] data = tweets.setTimeLineSentiment(TWITTER_SEARCH);
 
         logger.error(Arrays.deepToString(data));
 
@@ -161,18 +159,18 @@ public class TweetsTest extends AbstractTest {
     public void count() {
         long startTime = 0;
         long endTime = 10;
-        tweets.search(search, startTime, endTime, IConstants.POSITIVE);
-        assertEquals(3, search.getSearchStrings().size());
-        assertEquals(3, search.getSearchFields().size());
-        assertEquals(3, search.getOccurrenceFields().size());
-        assertEquals(3, search.getTypeFields().size());
+        tweets.search(TWITTER_SEARCH, startTime, endTime, IConstants.POSITIVE);
+        assertEquals(3, TWITTER_SEARCH.getSearchStrings().size());
+        assertEquals(3, TWITTER_SEARCH.getSearchFields().size());
+        assertEquals(3, TWITTER_SEARCH.getOccurrenceFields().size());
+        assertEquals(3, TWITTER_SEARCH.getTypeFields().size());
 
         verify(searcherService, atLeastOnce()).search((Search) anyObject());
     }
 
     @Test
     public void search() {
-        int result = tweets.search(search, 0, 60, IConstants.POSITIVE);
+        int result = tweets.search(TWITTER_SEARCH, 0, 60, IConstants.POSITIVE);
         Assert.assertEquals(22, result);
     }
 
@@ -181,7 +179,7 @@ public class TweetsTest extends AbstractTest {
         @Mock
         @SuppressWarnings({"unchecked", "UnusedParameters"})
         public static <T> T clone(final Class<T> klass, T t) {
-            return (T) search;
+            return (T) TWITTER_SEARCH;
         }
     }
 

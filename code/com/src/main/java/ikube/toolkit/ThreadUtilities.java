@@ -1,5 +1,6 @@
 package ikube.toolkit;
 
+import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -220,7 +221,7 @@ public final class ThreadUtilities {
     }
 
     public static void cancelAllForkJoinPools() {
-        Set<String> names = FORK_JOIN_POOLS.keySet();
+        Set<String> names = new TreeSet<>(FORK_JOIN_POOLS.keySet());
         for (final String name : names) {
             cancelForkJoinPool(name);
         }

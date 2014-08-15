@@ -53,9 +53,12 @@ public abstract class Resource {
      */
     protected Response buildResponse(final Object object) {
         Object entity = object;
-        if (Collection.class.isAssignableFrom(entity.getClass())) {
+        if (entity != null && Collection.class.isAssignableFrom(entity.getClass())) {
             // entity = entity.toString();
             try {
+                // We'll convert collections by hand because Jackson makes
+                // a bolloks of the conversion, very ugly and can't be displayed
+                // on a page
                 entity = IConstants.GSON.toJson(entity);
             } catch (final Throwable e) {
                 logger.error("Exception converting to Json : " + object, e);

@@ -1,11 +1,18 @@
 package ikube.action.index.handler.strategy;
 
 import ikube.AbstractTest;
+import ikube.model.File;
+import ikube.model.Indexable;
 import ikube.model.Url;
-import org.apache.lucene.document.Document;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import static junit.framework.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Michael Couck
@@ -20,12 +27,21 @@ public class ContentConcatenationStrategyTest extends AbstractTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void aroundProcess() throws Exception {
+    public void concatenateContent() throws Exception {
         Url url = new Url();
         url.setParsedContent("Hello world.");
-        Document document = new Document();
-        contentConcatenationStrategy.aroundProcess(indexContext, indexableTable, document, url);
-        // TODO: Finish this test
+        String content = contentConcatenationStrategy.concatenateContent(indexableTable, url, new StringBuilder());
+        assertEquals(url.getParsedContent(), content);
+
+        File file = new File();
+        when(indexableTable.getContent()).thenReturn("content");
+        content = contentConcatenationStrategy.concatenateContent(indexableTable, file, new StringBuilder());
+        assertEquals(indexableTable.getContent(), content);
+
+        when(indexableTable.getChildren()).thenReturn(new ArrayList<Indexable>(Arrays.asList(indexableColumn)));
+        when(indexableColumn.getContent()).thenReturn("column content");
+        content = contentConcatenationStrategy.concatenateContent(indexableTable, file, new StringBuilder());
+        assertEquals(indexableTable.getContent() + " " + indexableColumn.getContent(), content);
     }
 
 }

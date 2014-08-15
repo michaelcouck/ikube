@@ -86,6 +86,7 @@ public class InternetResourceProviderTest extends AbstractTest {
         Deencapsulation.setField(internetResourceProvider, "SLEEP", 100);
         Url url = internetResourceProvider.getResource();
         assertNotNull(url);
+        //noinspection ConstantConditions
         do {
             // Deplete the urls
             url = internetResourceProvider.getResource();

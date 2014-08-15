@@ -9,7 +9,10 @@ import ikube.cluster.MonitorService;
 import ikube.cluster.listener.IListener;
 import ikube.cluster.listener.hzc.StopListener;
 import ikube.database.IDataBase;
-import ikube.model.*;
+import ikube.model.Action;
+import ikube.model.Server;
+import ikube.model.Snapshot;
+import ikube.model.Task;
 import ikube.scheduling.schedule.Event;
 import ikube.toolkit.ThreadUtilities;
 import mockit.*;
@@ -35,36 +38,24 @@ import static org.mockito.Mockito.when;
  */
 public class ClusterManagerHazelcastTest extends AbstractTest {
 
-    @MockClass(realClass = HazelcastInstanceImpl.class)
-    public static class HazelcastMock {
-
-        @SuppressWarnings("unchecked")
-        static IMap<String, Server> servers = mock(IMap.class);
-
-        @Mock
-        @SuppressWarnings({"unchecked", "UnusedDeclaration"})
-        public static <K, V> IMap<K, V> getMap(final String name) {
-            return (IMap<K, V>) servers;
-        }
-    }
-
     private Server server;
     private Map.Entry<String, Server> serverEntry;
     private Set<Map.Entry<String, Server>> serverEntrySet;
-
     private String actionName = "actionName";
     private String indexName = "indexName";
     private String indexableName = "indexableName";
-
     @SuppressWarnings("FieldCanBeLocal")
     private IDataBase dataBase;
     private IMonitorService monitorService;
-
     @Cascading
     @SuppressWarnings("UnusedDeclaration")
     private Snapshot snapshot;
-
     private ClusterManagerHazelcast clusterManagerHazelcast;
+
+    @AfterClass
+    public static void afterClass() {
+        Hazelcast.shutdownAll();
+    }
 
     @Before
     @SuppressWarnings("unchecked")
@@ -94,11 +85,6 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
     public void after() {
         Hazelcast.shutdownAll();
         Mockit.tearDownMocks(HazelcastMock.class);
-    }
-
-    @AfterClass
-    public static void afterClass() {
-        Hazelcast.shutdownAll();
     }
 
     @Test
@@ -231,6 +217,7 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 
     @Test
     public void submitDestroy() {
+        ThreadUtilities.initialize();
         Runnable runnable = new Runnable() {
             @Override
             @SuppressWarnings("InfiniteLoopStatement")
@@ -334,6 +321,19 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
             count = lock == null ? count : lock ? count + 1 : count;
         }
         assertTrue(count <= 1);
+    }
+
+    @MockClass(realClass = HazelcastInstanceImpl.class)
+    public static class HazelcastMock {
+
+        @SuppressWarnings("unchecked")
+        static IMap<String, Server> servers = mock(IMap.class);
+
+        @Mock
+        @SuppressWarnings({"unchecked", "UnusedDeclaration"})
+        public static <K, V> IMap<K, V> getMap(final String name) {
+            return (IMap<K, V>) servers;
+        }
     }
 
 }

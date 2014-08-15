@@ -18,14 +18,14 @@ module.directive('searching', function($http) {
 				var promise = $http.get($scope.url);
 				promise.success(function(data, status) {
 					$scope.status = status;
-					var data = google.visualization.arrayToDataTable(data);
+					data = google.visualization.arrayToDataTable(data);
 					var searchingChart = new google.visualization.LineChart($elm[0]);
 					searchingChart.draw(data, $scope.options);
 				});
 				promise.error(function(data, status) {
 					$scope.status = status;
 				});
-			}
+			};
 			
 			// Initially draw the chart from the server data
 			$scope.drawSearchingChart();
@@ -58,14 +58,14 @@ module.directive('indexing', function($http) {
 				var promise = $http.get($scope.url);
 				promise.success(function(data, status) {
 					$scope.status = status;
-					var data = google.visualization.arrayToDataTable(data);
+					data = google.visualization.arrayToDataTable(data);
 					var indexingChart = new google.visualization.LineChart($elm[0]);
 					indexingChart.draw(data, $scope.options);
 				});
 				promise.error(function(data, status) {
 					$scope.status = status;
 				});
-			}
+			};
 			// Initially draw the chart from the server data
 			$scope.drawIndexingChart();
 			// And re-draw it every few seconds to give the live update feel

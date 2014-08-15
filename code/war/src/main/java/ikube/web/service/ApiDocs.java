@@ -5,6 +5,7 @@ import ikube.IConstants;
 import ikube.model.Api;
 import ikube.model.ApiMethod;
 import ikube.toolkit.ObjectToolkit;
+import ikube.toolkit.StringUtilities;
 import org.apache.commons.lang.StringUtils;
 import org.reflections.Reflections;
 import org.springframework.context.annotation.Scope;
@@ -100,11 +101,11 @@ public class ApiDocs extends Resource {
         Produces producesAnnotation = resource.getAnnotation(Produces.class);
 
         String basePath = pathAnnotation != null ? pathAnnotation.value() : "";
-        String consumesType = consumesAnnotation != null ? Arrays.deepToString(consumesAnnotation.value()) : "";
-        String producesType = producesAnnotation != null ? Arrays.deepToString(producesAnnotation.value()) : "";
+        String consumesType = consumesAnnotation != null ? Arrays.toString(consumesAnnotation.value()) : "";
+        String producesType = producesAnnotation != null ? Arrays.toString(producesAnnotation.value()) : "";
 
         Api api = new Api();
-        api.setApi(resource.getName());
+        api.setApi(resource.getSimpleName());
         api.setDescription(apiAnnotation.description());
         // Only public methods
         Method[] methods = resource.getDeclaredMethods();
@@ -155,7 +156,7 @@ public class ApiDocs extends Resource {
             if (methodAnnotations != null) {
                 for (final Annotation methodAnnotation : methodAnnotations) {
                     if (OPTIONS.matcher(methodAnnotation.toString()).matches()) {
-                        apiMethod.setMethod(methodAnnotation.toString());
+                        apiMethod.setMethod(StringUtilities.stripToAlphaNumeric(methodAnnotation.toString()));
                     }
                 }
             }
@@ -167,21 +168,21 @@ public class ApiDocs extends Resource {
         if (!method.isAnnotationPresent(Consumes.class)) {
             apiMethod.setConsumesType(consumesType);
         } else {
-            apiMethod.setConsumesType(Arrays.deepToString(method.getAnnotation(Consumes.class).value()));
+            apiMethod.setConsumesType(Arrays.toString(method.getAnnotation(Consumes.class).value()));
         }
         if (!method.isAnnotationPresent(Produces.class)) {
             apiMethod.setProducesType(producesType);
         } else {
-            apiMethod.setProducesType(Arrays.deepToString(method.getAnnotation(Produces.class).value()));
+            apiMethod.setProducesType(Arrays.toString(method.getAnnotation(Produces.class).value()));
         }
     }
 
     void setConsumes(final ApiMethod apiMethod, final Method method, final ikube.web.service.Api apiMethodAnnotation)
             throws IllegalAccessException, InstantiationException {
         if (apiMethodAnnotation.consumes() != Object.class) {
-            if (apiMethodAnnotation.consumes().isArray() ||
-                    !Modifier.isPublic(apiMethodAnnotation.consumes().getModifiers()) ||
-                    Void.class.isAssignableFrom(apiMethodAnnotation.consumes())) {
+            if (apiMethodAnnotation.consumes().isArray()
+                    || !Modifier.isPublic(apiMethodAnnotation.consumes().getModifiers())
+                    || Void.class.isAssignableFrom(apiMethodAnnotation.consumes())) {
                 apiMethod.setConsumes(apiMethodAnnotation.consumes().toString());
             } else {
                 apiMethod.setConsumes(populateFields(apiMethodAnnotation.consumes()));
@@ -202,16 +203,16 @@ public class ApiDocs extends Resource {
                     }
                 }
             }
-            apiMethod.setConsumes(Arrays.deepToString(parameters));
+            apiMethod.setConsumes(parameters);
         }
     }
 
     void setProduces(final ApiMethod apiMethod, final Method method, final ikube.web.service.Api apiMethodAnnotation)
             throws IllegalAccessException, InstantiationException {
         if (apiMethodAnnotation.produces() != Object.class) {
-            if (apiMethodAnnotation.produces().isArray() ||
-                    !Modifier.isPublic(apiMethodAnnotation.produces().getModifiers())
-                    || Void.class.isAssignableFrom(apiMethodAnnotation.consumes())) {
+            if (apiMethodAnnotation.produces().isArray()
+                    || !Modifier.isPublic(apiMethodAnnotation.produces().getModifiers())
+                    || Void.class.isAssignableFrom(apiMethodAnnotation.produces())) {
                 apiMethod.setProduces(apiMethodAnnotation.produces().toString());
             } else {
                 apiMethod.setProduces(populateFields(apiMethodAnnotation.produces()));
@@ -229,7 +230,7 @@ public class ApiDocs extends Resource {
     }
 
     private Object populateFields(final Class<?> clazz) throws IllegalAccessException, InstantiationException {
-        return ObjectToolkit.populateFields(clazz.newInstance(), true, 3, "parent", "id"    );
+        return ObjectToolkit.populateFields(clazz.newInstance(), true, 5, "parent", "id");
     }
 
 }

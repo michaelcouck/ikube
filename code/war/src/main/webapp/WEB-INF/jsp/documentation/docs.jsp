@@ -1,4 +1,3 @@
-<%--suppress ALL --%>
 <%@ page errorPage="/WEB-INF/jsp/error.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
@@ -9,10 +8,10 @@
 <div class="container-fluid">
     <div class="row-fluid">
         <div class="span6">
-            Hee hee...
+            Documentation in progress...
         </div>
         <div class="span6">
-            Hee hee...
+            Documentation in progress...
         </div>
     </div>
 </div>

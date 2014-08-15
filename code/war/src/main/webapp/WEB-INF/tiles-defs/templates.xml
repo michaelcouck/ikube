@@ -65,7 +65,7 @@
                 <put-attribute name="sub-menu" value="/WEB-INF/jsp/menu/docs.jsp" />
             </definition>
         </put-attribute>
-        <put-attribute name="content" value="/WEB-INF/jsp/system/indexes.jsp" />
+        <put-attribute name="content" value="/WEB-INF/jsp/documentation/docs.jsp" />
     </definition>
 
     <!-- The login page -->

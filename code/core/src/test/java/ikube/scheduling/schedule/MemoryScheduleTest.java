@@ -29,11 +29,13 @@ public class MemoryScheduleTest extends AbstractTest {
 
     @Before
     public void before() {
+        ThreadUtilities.initialize();
         Mockit.setUpMock(RuntimeMock.class);
     }
 
     @After
     public void after() {
+        ThreadUtilities.initialize();
         Mockit.tearDownMocks(RuntimeMock.class);
     }
 

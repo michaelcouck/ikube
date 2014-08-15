@@ -49,14 +49,15 @@ public class ResourceTest extends AbstractTest {
         String[] result = {russian, german, french, somthingElseAlToGether};
         Response response = resource.buildResponse(result);
         Object entity = response.getEntity();
-        logger.info("Entity : " + entity);
-        logger.info("Entity : " + Arrays.deepToString(result));
-        assertTrue("Must have the weird characters : ", entity.toString().contains(somthingElseAlToGether));
-        assertTrue("Must have the weird characters : ", entity.toString().contains("ä"));
+        String content = Arrays.deepToString((Object[]) entity);
+
+        assertTrue("Must have the weird characters : ", content.contains("ä"));
+        assertTrue("Must have the weird characters : ", content.contains(somthingElseAlToGether));
 
         Analysis<String, String> analysis = populateFields(new Analysis(), Boolean.TRUE, 100, "exception");
         response = resource.buildResponse(analysis);
-        logger.info("Response : " + response.getEntity());
+        entity = response.getEntity();
+        assertTrue(Analysis.class.isAssignableFrom(entity.getClass()));
     }
 
     @Test

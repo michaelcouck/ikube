@@ -53,7 +53,7 @@ public class IndexSchedule extends Schedule {
 
     @SuppressWarnings("rawtypes")
     private void processIndexContext(final IndexContext indexContext, final Random random) {
-        // Lets try to shuffel the actions too!
+        // Lets try to shuffle the actions too!
         List<IAction<IndexContext, Boolean>> actions = new ArrayList<>(this.actions);
         Collections.shuffle(actions);
         LOGGER.debug("Actions : " + actions.size());

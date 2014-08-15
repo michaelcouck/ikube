@@ -1,6 +1,7 @@
 package ikube.web.service;
 
 import ikube.AbstractTest;
+import ikube.IConstants;
 import ikube.model.Api;
 import ikube.model.ApiMethod;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -15,8 +16,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
 
 import static org.junit.Assert.assertEquals;
@@ -49,7 +50,7 @@ public class ApiDocsTest extends AbstractTest {
     public void api() throws Exception {
         Response response = apiDocs.api(Analyzer.class.getName());
         Api api = (Api) response.getEntity();
-        assertEquals(Analyzer.class.getName(), api.getApi());
+        assertEquals(Analyzer.class.getSimpleName(), api.getApi());
         assertEquals(7, api.getApiMethods().size());
 
         Iterator<ApiMethod> apiMethodIterator = api.getApiMethods().iterator();
@@ -63,7 +64,8 @@ public class ApiDocsTest extends AbstractTest {
     @SuppressWarnings("unchecked")
     public void apis() throws Exception {
         Response response = apiDocs.apis();
-        Collection<Api> apis = (Collection<Api>) response.getEntity();
+        Object entity = response.getEntity();
+        ArrayList apis = IConstants.GSON.fromJson(entity.toString(), ArrayList.class);
         assertEquals(7, apis.size());
     }
 
@@ -87,7 +89,7 @@ public class ApiDocsTest extends AbstractTest {
         // We'll use the real annotation for the package name, the proxy is not suitable
         apiMethodAnnotation = method.getAnnotation(ikube.web.service.Api.class);
         apiDocs.setMethodType(apiMethod, method, apiMethodAnnotation);
-        verify(apiMethod, atLeastOnce()).setMethod(GET.class.getSimpleName());
+        verify(apiMethod, atLeastOnce()).setMethod(GET.class.getName());
     }
 
     @Test
@@ -109,14 +111,12 @@ public class ApiDocsTest extends AbstractTest {
         apiMethodAnnotation = method.getAnnotation(ikube.web.service.Api.class);
         apiDocs.setConsumes(apiMethod, method, apiMethodAnnotation);
         apiDocs.setProduces(apiMethod, method, apiMethodAnnotation);
-        logger.error(ToStringBuilder.reflectionToString(apiMethod));
 
         apiMethod = new ApiMethod();
         method = ApiDocs.class.getDeclaredMethod("api", String.class);
         apiMethodAnnotation = method.getAnnotation(ikube.web.service.Api.class);
         apiDocs.setConsumes(apiMethod, method, apiMethodAnnotation);
         apiDocs.setProduces(apiMethod, method, apiMethodAnnotation);
-        logger.error(ToStringBuilder.reflectionToString(apiMethod));
     }
 
 }

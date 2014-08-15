@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class DataManager {
      * their capital city, the primary language spoken in the country/city and the co-ordinate of the city
      * and load them into the database.
      */
-    private void loadCountries() {
+    private synchronized void loadCountries() {
         File baseDirectory = new File(IConstants.IKUBE_DIRECTORY);
         File file = FileUtilities.findFileRecursively(baseDirectory, countryCityFile);
 
@@ -57,27 +58,43 @@ public class DataManager {
                 int removed = dataBase.remove(GeoCountry.DELETE_ALL);
                 LOGGER.info("Removed countries : " + removed);
 
+                List<GeoCountry> geoCountries = new ArrayList<>();
+                List<GeoCity> geoCities = new ArrayList<>();
+
                 for (final String[] datum : data) {
                     double latitude = Double.parseDouble(datum[3]);
                     double longitude = Double.parseDouble(datum[4]);
                     Coordinate coordinate = new Coordinate(latitude, longitude);
 
-                    GeoCity geoCity = new GeoCity();
                     GeoCountry geoCountry = new GeoCountry();
+                    GeoCity geoCity = new GeoCity();
+
+                    geoCountry.setName(datum[0]);
+                    geoCountry.setLanguage(datum[2]);
 
                     // Setting this here affects OpenJpa for some reason! WTF!?
                     // geoCity.setName(datum[1]);
                     geoCity.setCoordinate(coordinate);
                     geoCity.setParent(geoCountry);
 
-                    geoCountry.setName(datum[0]);
-                    geoCountry.setLanguage(datum[2]);
-                    geoCountry.setChildren(Arrays.asList(geoCity));
+                    geoCountry.setChildren(new ArrayList<>(Arrays.asList(geoCity)));
 
-                    dataBase.persist(geoCountry);
-                    geoCity.setName(datum[1]);
-                    dataBase.merge(geoCity);
+                    // dataBase.persist(geoCountry);
+                    // geoCity.setName(datum[1]);
+                    // dataBase.merge(geoCity);
+
+                    geoCountries.add(geoCountry);
+                    geoCities.add(geoCity);
                 }
+
+                dataBase.persistBatch(geoCountries);
+
+                for (int i = 0; i < geoCities.size(); i++) {
+                    GeoCity geoCity = geoCities.get(i);
+                    geoCity.setName(data.get(i)[1]);
+                }
+
+                dataBase.mergeBatch(geoCities);
             }
         } catch (final IOException e) {
             throw new RuntimeException(e);
