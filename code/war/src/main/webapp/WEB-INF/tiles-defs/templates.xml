@@ -3,6 +3,8 @@
        "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
        "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
 <tiles-definitions>
+
+    <!-- Base template -->
 	<definition name=".mainTemplate" template="/WEB-INF/templates/main.jsp">
 		<put-attribute name="title" value="Ikube" type="string" />
 		<put-attribute name="header" value="/WEB-INF/templates/header.jsp" />
@@ -15,7 +17,7 @@
 		<put-attribute name="footer" value="/WEB-INF/templates/footer.jsp" />
 	</definition>
 	
-	<!-- System templates -->
+    <!-- Dashboard -->
 	<definition name="system/dash" extends=".mainTemplate">
 		<put-attribute name="title" value="Ikube Dashboard" type="string" />
 		<put-attribute name="menu">
@@ -34,6 +36,8 @@
 		</put-attribute>
 		<put-attribute name="content" value="/WEB-INF/jsp/system/indexes.jsp" />
 	</definition>
+
+    <!-- Database and crud, not operational -->
 	<definition name="system/crud" extends=".mainTemplate">
 		<put-attribute name="title" value="Ikube Database" type="string" />
 		<put-attribute name="menu">
@@ -43,6 +47,28 @@
 		</put-attribute>
 		<put-attribute name="content" value="/WEB-INF/jsp/system/crud.jsp" />
 	</definition>
+
+    <!-- Apis, rest services and documentation -->
+    <definition name="documentation/apis" extends=".mainTemplate">
+        <put-attribute name="title" value="Ikube Apis and Rest Web Services" type="string" />
+        <put-attribute name="menu">
+            <definition template="/WEB-INF/templates/menu.jsp">
+                <put-attribute name="sub-menu" value="/WEB-INF/jsp/menu/docs.jsp" />
+            </definition>
+        </put-attribute>
+        <put-attribute name="content" value="/WEB-INF/jsp/documentation/apis.jsp" />
+    </definition>
+    <definition name="documentation/docs" extends=".mainTemplate">
+        <put-attribute name="title" value="Ikube Documentation in Markdown" type="string" />
+        <put-attribute name="menu">
+            <definition template="/WEB-INF/templates/menu.jsp">
+                <put-attribute name="sub-menu" value="/WEB-INF/jsp/menu/docs.jsp" />
+            </definition>
+        </put-attribute>
+        <put-attribute name="content" value="/WEB-INF/jsp/system/indexes.jsp" />
+    </definition>
+
+    <!-- The login page -->
 	<definition name="login" extends=".mainTemplate">
 		<put-attribute name="title" value="Login to Ikube Administration Console" type="string" />
 		<put-attribute name="content" value="/WEB-INF/jsp/login.jsp" />

@@ -1,6 +1,8 @@
 /**
  * This controller will change the status of active for all the sibling elements to 
  * not active, and the current element class to active.
+ *
+ *
  * 
  * @author Michael Couck
  * @since 24-11-2013

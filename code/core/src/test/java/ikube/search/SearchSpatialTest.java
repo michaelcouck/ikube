@@ -17,6 +17,7 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -132,6 +133,7 @@ public class SearchSpatialTest extends AbstractTest {
 	}
 
     @Test
+    @Ignore
     public void search() throws IOException {
         Directory directory = FSDirectory.open(new File("/tmp/indexes/geospatial/1407942554961/192.168.1.8-8000"));
         IndexReader indexReader = DirectoryReader.open(directory);

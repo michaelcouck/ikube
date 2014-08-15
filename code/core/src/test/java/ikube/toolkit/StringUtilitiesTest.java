@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 10.01.2012
+ * @since 10-01-2012
  */
 public class StringUtilitiesTest extends AbstractTest {
 
@@ -87,7 +87,7 @@ public class StringUtilitiesTest extends AbstractTest {
             public void execute() throws Throwable {
                 StringUtilities.stripToAlphaNumeric("&@é123456789-9876543210%%$");
             }
-        }, "Strip performance : ", 10000000, false);
+        }, "Strip performance : ", 10000, false);
     }
 
 }

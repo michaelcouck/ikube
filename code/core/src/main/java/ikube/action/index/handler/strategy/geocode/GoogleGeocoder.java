@@ -58,17 +58,7 @@ public class GoogleGeocoder implements IGeocoder {
 	}
 
 	protected String getUri(final String address) {
-		StringBuilder builder = new StringBuilder();
-		builder.append(searchUrl);
-		builder.append("?");
-		builder.append(ADDRESS);
-		builder.append("=");
-		builder.append(address);
-		builder.append("&");
-		builder.append(SENSOR);
-		builder.append("=");
-		builder.append("true");
-		return builder.toString();
+        return searchUrl + "?" + ADDRESS + "=" + address + "&" + SENSOR + "=" + "true";
 	}
 
 	public void setSearchUrl(String searchUrl) {

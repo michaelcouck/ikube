@@ -11,7 +11,6 @@ import net.schmizz.sshj.userauth.UserAuthException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -43,16 +42,18 @@ public class ActionTest extends AbstractTest {
     @Test
     public void getSshExec() throws Exception {
         Server server = mock(Server.class);
-        Mockito.when(server.getUsername()).thenReturn("username");
-        Mockito.when(server.getPassword()).thenReturn("password");
+        when(server.getIp()).thenReturn("127.0.0.1");
+        when(server.getName()).thenReturn("localhost");
+        when(server.getUsername()).thenReturn("username");
+        when(server.getPassword()).thenReturn("password");
 
         action.getSshExec(server);
-        Mockito.verify(server, times(0)).setSshExec(any(SSHClient.class));
-        Mockito.verify(server, atLeast(3)).getSshExec();
+        verify(server, times(0)).setSshExec(any(SSHClient.class));
+        verify(server, atLeast(3)).getSshExec();
 
         Mockit.setUpMocks(SSHClientMock.class);
         action.getSshExec(server);
-        Mockito.verify(server, times(4)).setSshExec(any(SSHClient.class));
+        verify(server, times(4)).setSshExec(any(SSHClient.class));
     }
 
     @SuppressWarnings("UnusedDeclaration")

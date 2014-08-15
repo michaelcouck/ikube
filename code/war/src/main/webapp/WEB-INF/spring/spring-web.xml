@@ -65,9 +65,14 @@
     <mvc:view-controller path="/system/indexes.html"/>
     <mvc:view-controller path="/system/crud.html"/>
 
+    <mvc:view-controller path="/documentation/apis.html"/>
+    <mvc:view-controller path="/documentation/docs.html"/>
+
     <mvc:view-controller path="/search/search.html"/>
+
     <mvc:view-controller path="/analytics/admin.html"/>
     <mvc:view-controller path="/analytics/analyze.html"/>
+
     <mvc:view-controller path="/application/happy.html"/>
     <mvc:view-controller path="/application/twitter.html"/>
 

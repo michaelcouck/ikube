@@ -7,13 +7,21 @@
 
 <nav id="primary" class="main-nav">
 	<ul ng-controller="ActiveController">
-		<li href="system" active-link="active"><a href="<c:url value="/system/dash.html" />"><i class="icon-cogs"></i>System</a></li>
+
+        <li href="system" active-link="active"><a href="<c:url value="/system/dash.html" />"><i class="icon-cogs"></i>System</a></li>
+
         <li href="analytics" active-link="active"><a href="<c:url value="/analytics/analyze.html" />"><i class="icon-beaker"></i>Analytics</a></li>
+
         <li href="search" active-link="active"><a href="<c:url value="/search/search.html" />"><i class="icon-list-alt"></i>Search</a></li>
-		<li href="application" active-link="active"><a href="<c:url value="/application/happy.html" />"><i class="icon-twitter-sign"></i>Twitter</a></li>
-		<li href="grid" active-link="active" ng-controller="NotificationController">
+
+        <li href="apis" active-link="active"><a href="<c:url value="/documentation/apis.html" />"><i class="icon-cloud"></i>Apis</a></li>
+
+        <li href="application" active-link="active"><a href="<c:url value="/application/happy.html" />"><i class="icon-twitter-sign"></i>Twitter</a></li>
+
+        <li href="grid" active-link="active" ng-controller="NotificationController">
             <a href="#" ng-click="enterpriseNotification();"><i class="icon-th"></i>Grid</a>
         </li>
+
 		<li class="dropdown">
 			<a class="dropdown-toggle" data-toggle="dropdown">
 				<i class="icon-share-alt"></i>More<span class="caret"></span>
@@ -53,11 +61,10 @@
 					<i class="icon-cog"></i>
 				</button>
 					<ul class="dropdown-menu" style="font-size: small;">
-						<li><a href="#" onClick="modal('#apis-modal');"><i class="icon-eye-open">&nbsp;</i>Apis</a></li>
-						<li class="divider"></li>
 						<li><a href="#" onClick="modal('#logs-modal');"><i class="icon-list-ol">&nbsp;</i>Server logs</a></li>
-						<li><a href="#" onClick="modal('#properties-modal');"><i class="icon-tasks">&nbsp;</i>System properties</a></li>
-					</ul>
+                        <li><a href="#" onClick="modal('#properties-modal');"><i class="icon-tasks">&nbsp;</i>System properties</a></li>
+                        <%--<li class="divider"></li>--%>
+                    </ul>
 			</div>
 		</div>
 		<div class="pull-right profile-menu-nav-collapse">
@@ -72,7 +79,6 @@
 <!-- Include the modals for the input -->
 <jsp:include page="/WEB-INF/jsp/modal/logs.jsp" />
 <jsp:include page="/WEB-INF/jsp/modal/properties.jsp" />
-<jsp:include page="/WEB-INF/jsp/modal/api.jsp" />
 
 <script type="text/html" id="template-notification">
 <div class="notification animated fadeInLeftMiddle fast{{ item.itemClass }}">

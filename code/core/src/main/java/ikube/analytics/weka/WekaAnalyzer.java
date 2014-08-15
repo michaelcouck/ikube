@@ -52,7 +52,7 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis, Analysis, Anal
     public void init(final Context context) throws Exception {
         logger = LoggerFactory.getLogger(this.getClass());
         configFilePath = FileUtilities.cleanFilePath(getConfigFilePath());
-        logger.error("Config file path : " + configFilePath);
+        logger.warn("Config file path : " + configFilePath);
         if (String.class.isAssignableFrom(context.getAnalyzer().getClass())) {
             context.setAnalyzer(Class.forName(context.getAnalyzer().toString()).newInstance());
         }

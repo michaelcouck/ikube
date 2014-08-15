@@ -1,5 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="jpa" name="JPA">
+      <configuration>
+        <setting name="validation-enabled" value="true" />
+        <setting name="provider-name" value="" />
+        <datasource-mapping />
+        <deploymentDescriptor name="persistence.xml" url="file://$MODULE_DIR$/src/main/resources/META-INF/persistence/persistence.xml" />
+      </configuration>
+    </facet>
+    <facet type="Spring" name="Spring">
+      <configuration>
+        <fileset id="fileset" name="Spring Application Context" removed="false">
+          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-auto.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-rules.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-geo.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/twitter/spring-twitter.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/bosal/spring-bosal.xml</file>
+          <file>file://$MODULE_DIR$/ikube/spring.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-users.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-actions.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-hazelcast.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-grid-gain.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-beans.xml</file>
+          <file>file://$MODULE_DIR$/ikube/analytics/spring-analytics.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-aop.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/integration/spring-geoname-csv.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/integration/spring-client.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/integration/spring-custom.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-desktop.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-ikube.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-h2-jdbc.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-db2-jdbc.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-system.xml</file>
+        </fileset>
+      </configuration>
+    </facet>
+  </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
@@ -101,6 +138,7 @@
     <orderEntry type="library" name="Maven: org.apache.tiles:tiles-el:2.2.2" level="project" />
     <orderEntry type="library" name="Maven: commons-fileupload:commons-fileupload:1.2.2" level="project" />
     <orderEntry type="library" name="Maven: com.hazelcast:hazelcast-all:3.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.gridgain:gridgain-streaming:6.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.aspectj:aspectjrt:1.7.2" level="project" />
     <orderEntry type="library" name="Maven: commons-cli:commons-cli:1.2" level="project" />
     <orderEntry type="library" name="Maven: commons-collections:commons-collections:3.2.1" level="project" />
@@ -184,7 +222,6 @@
     <orderEntry type="library" name="Maven: org.mongodb:mongo-java-driver:2.11.1" level="project" />
     <orderEntry type="library" name="Maven: com.romix:java-concurrent-hash-trie-map:0.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.pcollections:pcollections:2.1.2" level="project" />
-    <orderEntry type="library" name="Maven: org.gridgain:gridgain-streaming:6.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.gridgain:gridgain-datagrid:6.0.1" level="project" />
     <orderEntry type="library" name="Maven: javax.validation:validation-api:1.1.0.Final" level="project" />
     <orderEntry type="library" name="Maven: org.apache.openjpa:openjpa-all:2.2.1" level="project" />
