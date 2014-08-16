@@ -98,11 +98,18 @@ public abstract class IntegrationTest extends AbstractTest {
      * @param <T>      the parameter type of entity
      */
     protected static <T> void insert(final IDataBase dataBase, final Class<T> klass, final int entities) {
+        insert(dataBase, klass, entities, "id", "indexContext");
+    }
+
+    /**
+     * Same as the above but with some excluded fields specified.
+     */
+    protected static <T> void insert(final IDataBase dataBase, final Class<T> klass, final int entities, final String... excludedFields) {
         List<T> tees = new ArrayList<>();
         for (int i = 0; i < entities; i++) {
             T tee;
             try {
-                tee = populateFields(klass, klass.newInstance(), Boolean.TRUE, 1, "id", "indexContext");
+                tee = populateFields(klass, klass.newInstance(), Boolean.TRUE, 1, excludedFields);
                 tees.add(tee);
                 if (tees.size() >= 1000) {
                     dataBase.persistBatch(tees);
