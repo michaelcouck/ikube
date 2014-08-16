@@ -56,7 +56,6 @@ public class GeospatialEnrichmentStrategyIntegration extends IntegrationTest {
         String indexPath = IndexManager.getIndexDirectoryPath(indexContext);
         File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexPath);
         IndexReader indexReader = DirectoryReader.open(FSDirectory.open(new File(latestIndexDirectory, UriUtilities.getIp())));
-        printIndex(indexReader);
         for (int i = 0; i < indexReader.numDocs(); i++) {
             Document document = indexReader.document(i);
             assertNotNull(document.get(IConstants.LAT));

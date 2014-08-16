@@ -4,7 +4,7 @@
 	<groupId>ikube</groupId>
 	<artifactId>ikube</artifactId>
 	<packaging>pom</packaging>
-	<version>5.0.2</version>
+	<version>${ikube-version}</version>
 
     <scm>
         <url>https://github.com/michaelcouck/ikube</url>
@@ -41,7 +41,7 @@
 	</distributionManagement>
 
 	<properties>
-        <ikube-version>5.0.1-SNAPSHOT</ikube-version>
+        <ikube-version>5.0.3</ikube-version>
 
         <encoding>UTF8</encoding>
         <targetJdk>1.7</targetJdk>

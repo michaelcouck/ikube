@@ -143,9 +143,7 @@ public class IndexDeltaIntegration extends IntegrationTest {
         File indexDirectoryServer = new File(indexDirectory, UriUtilities.getIp());
 
         Directory directory = FSDirectory.open(indexDirectoryServer);
-        IndexReader indexReader = DirectoryReader.open(directory);
-        printIndex(indexReader);
-        return indexReader;
+        return DirectoryReader.open(directory);
     }
 
     private void executeDelta() throws Exception {

@@ -9,7 +9,7 @@
     <parent>
         <groupId>ikube</groupId>
         <artifactId>ikube</artifactId>
-        <version>5.0.2</version>
+        <version>${ikube-version}</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 

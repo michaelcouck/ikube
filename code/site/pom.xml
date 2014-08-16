@@ -4,9 +4,10 @@
 	<groupId>ikube</groupId>
 	<artifactId>ikube-site</artifactId>
 	<packaging>war</packaging>
-	<version>5.0.2</version>
+    <version>${ikube-version}</version>
 
 	<properties>
+        <ikube-version>5.0.3</ikube-version>
 		<webapps>webapps</webapps>
 		<ikube.war>site.war</ikube.war>
 		<final.name>${project.build.finalName}.${project.packaging}</final.name>
