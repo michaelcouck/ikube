@@ -64,7 +64,7 @@ public class ClusterManager extends AClusterManager {
             GridCache<String, String> gridCache = grid.cache(IConstants.IKUBE);
             gridCache.unlock(IConstants.IKUBE);
             return Boolean.TRUE;
-        } catch (GridException e) {
+        } catch (final GridException e) {
             throw new RuntimeException(e);
         } finally {
             notifyAll();
@@ -196,7 +196,7 @@ public class ClusterManager extends AClusterManager {
                 while (!gridFuture.isDone() && !gridFuture.isCancelled()) {
                     try {
                         gridFuture.get();
-                    } catch (GridException e) {
+                    } catch (final GridException e) {
                         throw new RuntimeException(e);
                     }
                 }
@@ -235,7 +235,7 @@ public class ClusterManager extends AClusterManager {
         try {
             GridCache<Object, Object> gridCache = grid.cache(IConstants.IKUBE);
             return gridCache.get(key);
-        } catch (GridException e) {
+        } catch (final GridException e) {
             throw new RuntimeException(e);
         }
     }
@@ -249,7 +249,7 @@ public class ClusterManager extends AClusterManager {
         try {
             GridCache<Object, Object> gridCache = grid.cache(IConstants.IKUBE);
             gridCache.put(key, value);
-        } catch (GridException e) {
+        } catch (final GridException e) {
             throw new RuntimeException(e);
         }
     }
@@ -262,8 +262,8 @@ public class ClusterManager extends AClusterManager {
     public void remove(final Object key) {
         try {
             GridCache<Object, Object> gridCache = grid.cache(IConstants.IKUBE);
-            gridCache.remove(null, key);
-        } catch (GridException e) {
+            gridCache.remove(key, get(key));
+        } catch (final GridException e) {
             throw new RuntimeException(e);
         }
     }
@@ -318,7 +318,7 @@ public class ClusterManager extends AClusterManager {
     public void remove(final String map, final Object key) {
         try {
             GridCache<Object, Object> gridCache = grid.cache(map);
-            gridCache.remove(null, key);
+            gridCache.remove(key, get(key));
         } catch (final GridException e) {
             throw new RuntimeException(e);
         }
@@ -331,7 +331,7 @@ public class ClusterManager extends AClusterManager {
     public void destroy() {
         try {
             grid.close();
-        } catch (GridException e) {
+        } catch (final GridException e) {
             throw new RuntimeException(e);
         }
     }

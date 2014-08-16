@@ -221,6 +221,9 @@ public final class ThreadUtilities {
     }
 
     public static void cancelAllForkJoinPools() {
+        if (FORK_JOIN_POOLS == null) {
+            return;
+        }
         Set<String> names = new TreeSet<>(FORK_JOIN_POOLS.keySet());
         for (final String name : names) {
             cancelForkJoinPool(name);

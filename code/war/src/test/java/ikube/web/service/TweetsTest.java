@@ -19,7 +19,6 @@ import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import java.io.File;
 import java.util.ArrayList;
@@ -69,12 +68,6 @@ public class TweetsTest extends AbstractTest {
         TWITTER_SEARCH.setTypeFields(new ArrayList<>(Arrays.asList(IConstants.STRING)));
         TWITTER_SEARCH.setSearchResults(results);
 
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                return TWITTER_SEARCH;
-            }
-        }).when(tweets).unmarshall(any(Class.class), any(HttpServletRequest.class));
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {

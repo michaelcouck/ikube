@@ -20,7 +20,7 @@ public interface IResourceProvider<T> {
      * internet pages, but there are no resources on the stack, this method should sleep the caller until there are once again
      * resources on the stack to return to the client.
      *
-     * @return the resource provided by the class
+     * @return the resource provided by the class. This method must return null to indicate that there are no more resources
      */
     T getResource();
 

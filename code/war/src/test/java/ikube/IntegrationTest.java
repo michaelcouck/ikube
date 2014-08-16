@@ -21,7 +21,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ikube.toolkit.ApplicationContextManager.getBean;
 import static ikube.toolkit.ObjectToolkit.populateFields;
 
 /**
@@ -89,8 +88,16 @@ public abstract class IntegrationTest extends AbstractTest {
         }
     }
 
-    protected static <T> void insert(final Class<T> klass, final int entities) {
-        IDataBase dataBase = getBean(IDataBase.class);
+    /**
+     * This method will persist entities in the database, the specified number, in batch mode. First
+     * populating the entities with random data.
+     *
+     * @param dataBase the database access object to persist the data with
+     * @param klass    the type of class to persist/populate
+     * @param entities the number of entities to persist
+     * @param <T>      the parameter type of entity
+     */
+    protected static <T> void insert(final IDataBase dataBase, final Class<T> klass, final int entities) {
         List<T> tees = new ArrayList<>();
         for (int i = 0; i < entities; i++) {
             T tee;

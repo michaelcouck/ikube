@@ -1,6 +1,5 @@
 package ikube.web.service;
 
-import ikube.IConstants;
 import ikube.action.index.parse.HtmlParser;
 import ikube.analytics.IAnalyticsService;
 import ikube.cluster.IClusterManager;
@@ -12,15 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Collection;
-
-import static ikube.toolkit.FileUtilities.getContents;
 
 /**
  * This is the base class for all web services, common logic and properties.
@@ -47,49 +41,19 @@ public abstract class Resource {
     protected IAnalyticsService analyticsService;
 
     /**
-     * TODO: Document me...
+     * This method will build the response object, setting the headers for cross site JavaScript
+     * operations, and for all the method types of the resource. The underlying Json converter will be
+     * either Jackson or Gson, depending on the configuration.
      *
-     * @return the bla...
+     * @param object the entity response object, the object that will be converted into Json for the client
+     * @return the response object that will be used as the mechanism for transferring the entity to the client
      */
     protected Response buildResponse(final Object object) {
-        Object entity = object;
-        if (entity != null && Collection.class.isAssignableFrom(entity.getClass())) {
-            // entity = entity.toString();
-            try {
-                // We'll convert collections by hand because Jackson makes
-                // a bolloks of the conversion, very ugly and can't be displayed
-                // on a page
-                entity = IConstants.GSON.toJson(entity);
-            } catch (final Throwable e) {
-                logger.error("Exception converting to Json : " + object, e);
-            }
-        }
-        return Response.status(Response.Status.OK)//
+        Response.ResponseBuilder responseBuilder = Response
+                .status(Response.Status.OK)//
                 .header("Access-Control-Allow-Origin", "*") //
-                .header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD")
-                .entity(entity).build();
-    }
-
-    <T> T unmarshall(final Class<T> clazz, final HttpServletRequest request) {
-        try {
-            String json = getContents(request.getInputStream(), Integer.MAX_VALUE).toString();
-            T t = IConstants.GSON.fromJson(json, clazz);
-            if (t == null) {
-                t = newInstance(clazz);
-            }
-            return t;
-        } catch (IOException e) {
-            return newInstance(clazz);
-        }
-    }
-
-    private <T> T newInstance(final Class<T> clazz) {
-        try {
-            // If we don't have the class in the input stream then create one for the caller
-            return clazz.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException("Couldn't unmarshall to : " + clazz, e);
-        }
+                .header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
+        return responseBuilder.entity(object).build();
     }
 
     String[] split(final String string) {

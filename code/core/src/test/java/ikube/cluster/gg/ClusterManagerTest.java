@@ -3,7 +3,6 @@ package ikube.cluster.gg;
 import ikube.AbstractTest;
 import ikube.model.Server;
 import mockit.MockClass;
-import mockit.Mockit;
 import org.gridgain.grid.Grid;
 import org.gridgain.grid.GridGain;
 import org.gridgain.grid.GridIllegalStateException;
@@ -37,17 +36,13 @@ public class ClusterManagerTest extends AbstractTest {
 
     @Before
     public void before() {
-        Mockit.setUpMock(GridGainMock.class);
+        // Mockit.setUpMock(GridGainMock.class);
+        // clusterManager.initialize();
     }
 
     @After
     public void after() {
-        Mockit.tearDownMocks(GridGain.class);
-    }
-
-    @Test
-    public void initialize() {
-        clusterManager.initialize();
+        // Mockit.tearDownMocks(GridGain.class);
     }
 
     @Test

@@ -15,9 +15,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
@@ -184,8 +182,8 @@ public class Monitor extends Resource {
         }
         data[serverIndex] = times;
         Object[][] invertedData = invertMatrix(data);
-        String stringified = Arrays.deepToString(invertedData);
-        return buildResponse(stringified);
+        // String stringified = Arrays.deepToString(invertedData);
+        return buildResponse(invertedData);
     }
 
     @GET
@@ -224,8 +222,8 @@ public class Monitor extends Resource {
         }
         data[serverIndex] = times;
         Object[][] invertedData = invertMatrix(data);
-        String stringified = Arrays.deepToString(invertedData);
-        return buildResponse(stringified);
+        // String stringified = Arrays.deepToString(invertedData);
+        return buildResponse(invertedData);
     }
 
     @GET
@@ -281,15 +279,13 @@ public class Monitor extends Resource {
     }
 
     @POST
-    @SuppressWarnings("unchecked")
     @Path(Monitor.SET_PROPERTIES)
     @Consumes(MediaType.APPLICATION_JSON)
     @Api(description = "This method will set the properties for the application, taking a map of properties and " +
             "replacing them by the ones in the method signature. Writing the properties to the properties files " +
             "on the file system.",
             consumes = HashMap.class)
-    public Response setProperties(@Context final HttpServletRequest request) throws IOException {
-        Map<String, String> filesAndProperties = unmarshall(Map.class, request);
+    public Response setProperties(final Map<String, String> filesAndProperties) throws IOException {
         monitorService.setProperties(filesAndProperties);
         return buildResponse(null);
     }

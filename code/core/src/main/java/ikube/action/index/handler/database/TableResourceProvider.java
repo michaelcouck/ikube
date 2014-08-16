@@ -16,12 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static ikube.action.index.handler.database.QueryBuilder.buildNextIdQuery;
-import static ikube.action.index.handler.database.QueryBuilder.getFunctionQuery;
-import static ikube.action.index.handler.database.QueryBuilder.getIdColumn;
-import static ikube.database.DatabaseUtilities.close;
-import static ikube.database.DatabaseUtilities.closeAll;
-import static ikube.database.DatabaseUtilities.getAllColumns;
+import static ikube.action.index.handler.database.QueryBuilder.*;
+import static ikube.database.DatabaseUtilities.*;
 
 /**
  * This class provides resources to the table handler. In this case a resource is a result set. Each
@@ -90,14 +86,14 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
         if (indexableTable.getMinimumId() <= 0) {
             long minimumId = getIdFunction(indexableTable, connection, "min");
             indexableTable.setMinimumId(minimumId);
-            logger.warn("Min id : " + minimumId);
+            logger.info("Min id : " + minimumId);
         }
 
         long maximumId = getIdFunction(indexableTable, connection, "max");
         indexableTable.setMaximumId(maximumId);
         logger.info("Max id : " + maximumId);
 
-        logger.debug("Closing connection, i.e. back to the pool, with a cocktail :)");
+        logger.info("Closing connection, i.e. back to the pool, with a cocktail :)");
         close(connection);
     }
 
@@ -179,7 +175,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
      * @param preparedStatement the statement to set the parameters in
      * @throws SQLException
      */
-    private void setParameters(final IndexableTable indexableTable, final PreparedStatement preparedStatement) throws SQLException {
+    void setParameters(final IndexableTable indexableTable, final PreparedStatement preparedStatement) throws SQLException {
         List<Indexable> children = indexableTable.getChildren();
         int parameterIndex = 1;
         for (final Indexable child : children) {
@@ -206,8 +202,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
      * @param function       the function to execute on the table
      * @return the id that resulted from the function
      */
-    @SuppressWarnings("StringBufferReplaceableByString")
-    private synchronized long getIdFunction(final IndexableTable indexableTable, final Connection connection, final String function) {
+    synchronized long getIdFunction(final IndexableTable indexableTable, final Connection connection, final String function) {
         Statement statement = null;
         ResultSet resultSet = null;
         try {
@@ -228,7 +223,11 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
                 if (object == null) {
                     logger.warn("No results from min or max from table : " + indexableTable.getName());
                 } else {
-                    result = Long.class.isAssignableFrom(object.getClass()) ? (Long) object : Long.parseLong(object.toString().trim());
+                    if (Long.class.isAssignableFrom(object.getClass())) {
+                        result = (Long) object;
+                    } else {
+                        result = Long.parseLong(object.toString().trim());
+                    }
                 }
             }
             return result;
@@ -241,7 +240,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
         }
     }
 
-    private void addAllColumns(final IndexableTable indexableTable, final DataSource dataSource) {
+    void addAllColumns(final IndexableTable indexableTable, final DataSource dataSource) {
         if (indexableTable.isAllColumns()) {
             Connection connection = getConnection(dataSource);
             List<String> columnNames = getAllColumns(connection, indexableTable.getName());
@@ -285,7 +284,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
         }
     }
 
-    private boolean containsColumn(final IndexableTable indexableTable, final String columnName) {
+    boolean containsColumn(final IndexableTable indexableTable, final String columnName) {
         if (indexableTable.getChildren() == null) {
             return Boolean.FALSE;
         }

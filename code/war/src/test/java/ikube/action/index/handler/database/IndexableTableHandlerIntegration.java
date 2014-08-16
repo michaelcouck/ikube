@@ -7,14 +7,11 @@ import ikube.action.index.content.IContentProvider;
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.model.*;
-import ikube.scheduling.Scheduler;
 import ikube.toolkit.PropertyConfigurer;
-import ikube.toolkit.ThreadUtilities;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -32,7 +29,8 @@ import static ikube.toolkit.UriUtilities.getIp;
 import static java.lang.System.currentTimeMillis;
 import static java.net.InetAddress.getLocalHost;
 import static mockit.Deencapsulation.invoke;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * This is an integration test as it will go to the database.
@@ -49,15 +47,6 @@ public class IndexableTableHandlerIntegration extends IntegrationTest {
     private IndexableColumn snapshotColumn;
     private List<Indexable> snapshotTableChildren;
     private IndexableTableHandler indexableTableHandler;
-
-    @BeforeClass
-    public static void beforeClass() {
-        getBean(Scheduler.class).shutdown();
-        IDataBase dataBase = getBean(IDataBase.class);
-        dataBase.execute("delete from Snapshot", null, null);
-        delete(dataBase, Snapshot.class);
-        insert(Snapshot.class, 11000);
-    }
 
     @Before
     public void before() throws SQLException {
@@ -80,14 +69,19 @@ public class IndexableTableHandlerIntegration extends IntegrationTest {
         connection = dataSource.getConnection();
 
         clusterManager.getServer().getActions().clear();
+
+        IDataBase dataBase = getBean(IDataBase.class);
+        insert(dataBase, Snapshot.class, 11000);
     }
 
     @After
     public void after() {
         close(connection);
+        IDataBase dataBase = getBean(IDataBase.class);
+        delete(dataBase, Snapshot.class);
         IClusterManager clusterManager = getBean(IClusterManager.class);
         clusterManager.getServer().getActions().clear();
-        ThreadUtilities.cancelAllForkJoinPools();
+        // ThreadUtilities.cancelAllForkJoinPools();
     }
 
     @Test
@@ -184,7 +178,7 @@ public class IndexableTableHandlerIntegration extends IntegrationTest {
                 ForkJoinTask<?> forkJoinTask = indexableTableHandler.handleIndexableForked(indexContext, (IndexableTable) indexable);
                 executeForkJoinTasks(indexContext.getName(), snapshotTable.getThreads(), forkJoinTask);
                 sleep(5000);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 logger.error(e.getMessage());
             }
         }
@@ -214,61 +208,6 @@ public class IndexableTableHandlerIntegration extends IntegrationTest {
         } finally {
             indexContext.setThrottle(0);
             indexContext.setBatchSize(1000);
-        }
-    }
-
-    @Test
-    // @Ignore("Move to table resource provider test")
-    public void getIdFunction() throws Exception {
-        TableResourceProvider tableResourceProvider = new TableResourceProvider(indexContext, snapshotTable);
-        Long minId = invoke(tableResourceProvider, "getIdFunction", snapshotTable, connection, "min");
-        assertTrue("The min id should be : " + snapshotTable.getMinimumId(), minId.equals(snapshotTable.getMinimumId()));
-        Long maxId = invoke(tableResourceProvider, "getIdFunction", snapshotTable, connection, "max");
-        assertTrue("The max id should be " + snapshotTable.getMaximumId(), maxId.equals(snapshotTable.getMaximumId()));
-    }
-
-    @Test
-    // @Ignore("Move to table resource provider test")
-    public void setParameters() throws Exception {
-        TableResourceProvider tableResourceProvider = new TableResourceProvider(indexContext, snapshotTable);
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        try {
-            IndexableTable indexContextTable = getBean("indexContextTable");
-            IndexableColumn indexContextIdColumn = getIdColumn(indexContextTable.getChildren());
-            snapshotColumn.setForeignKey(indexContextIdColumn);
-            snapshotColumn.setContent(1);
-            String sql = "select * from snapshot where id = ?";
-            preparedStatement = connection.prepareStatement(sql);
-            invoke(tableResourceProvider, "setParameters", snapshotTable, preparedStatement);
-            // Execute this statement just for shits and giggles
-            resultSet = preparedStatement.executeQuery();
-            assertNotNull(resultSet);
-        } finally {
-            close(resultSet);
-            close(preparedStatement);
-            snapshotColumn.setForeignKey(null);
-        }
-    }
-
-    @Test
-    public void getResultSetDatasource() throws Exception {
-        Statement statement = null;
-        ResultSet resultSet = null;
-        try {
-            TableResourceProvider tableResourceProvider = new TableResourceProvider(indexContext, snapshotTable);
-
-            snapshotColumn.setContent(snapshotTable.getMinimumId());
-            snapshotTable.setMaximumId(snapshotTable.getMaximumId());
-            resultSet = invoke(tableResourceProvider, "getResultSet", indexContext, snapshotTable);
-            assertNotNull(resultSet);
-            assertTrue(resultSet.next());
-
-            statement = resultSet.getStatement();
-            assertNotNull(resultSet);
-        } finally {
-            close(resultSet);
-            close(statement);
         }
     }
 
