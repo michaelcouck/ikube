@@ -1,3 +1,4 @@
+<%--suppress ALL --%>
 <%@ page errorPage="/WEB-INF/jsp/error.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
@@ -7,32 +8,32 @@
 
 <div class="container-fluid" ng-controller="ApisController">
     <div class="row-fluid">
-        <div class="span12">
+        <div class="span6">
             <div class="row-fluid">
-                <div class="big-button-bar">
-                    <a class="button large" href="#" ng-repeat="api in apis"
-                       ng-click="
-                            toggleVisibilityAll(false);
-                            setApi(api);">
-                        <i class="icon-list-ul"></i><span>{{api.api}}</span></a>
+                <div style="margin-bottom: 20px;">
+                    <div class="big-button-bar">
+                        <a class="button large" href="#"
+                           ng-repeat="api in apis"
+                           ng-click="
+                                toggleVisibilityAll(false);
+                                setApi(api);
+                                toggleVisibility(api.api);">
+                           <i class="icon-list-ul"></i><span>{{api.api}}</span>
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <div class="row-fluid" ng-show="!!api">
-        <div class="span6">
             <div class="nav-menu box">
                 <ul class="nav nav-list">
                     <li class="active">
                         <a href="#"><i class="icon-share-alt"></i>Rest Web Service</a>
                     </li>
-                    <li>
+                    <li ng-show="!!api">
                         <a href="#" ng-click="toggleVisibility(api.api)">
                             <i class="icon-info-sign"></i>{{api.api}}<br>
                         </a>
                         <span class="note" style="font-size: 12px; line-height: 13px;">{{api.description}}</span>
-
                         <span ng-show="visible[api.api]">
                             <br>
                             Methods exposed:
@@ -54,16 +55,16 @@
             </div>
         </div>
 
-        <div class="span6" ng-show="visible[apiMethod.uri]">
-            <div class="box">
-                <div class="tab-header">
-                    <span style="font-size: 11px;">{{apiMethod.method}} : {{apiMethod.uri}}</span>
-                </div>
-                <div class="padded">
-                    <jsp:include page="api.jsp"/>
-                </div>
+        <div class="span6">
+        <div class="box">
+            <div class="tab-header">
+                Resource: <span ng-show="visible[apiMethod.uri]" style="font-size: 11px;">{{apiMethod.method}} : {{apiMethod.uri}}</span>
+            </div>
+            <div class="padded" ng-show="visible[apiMethod.uri]">
+                <jsp:include page="api.jsp"/>
             </div>
         </div>
-
+        </div>
     </div>
 </div>
+

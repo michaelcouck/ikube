@@ -85,8 +85,7 @@
 		</div>
 
 		<div class="span6">
-			<div class="row-fluid">
-				<div class="span12">
+
 					<div class="tabbable black-box" style="margin-bottom: 18px;">
 						
 						<div class="tab-header">
@@ -220,8 +219,7 @@
 							<!-- Start: Searching tab and graph -->
 						</div>
 					</div>
-				</div>
-			</div>
+
 		</div>
 	</div>
 </div>
