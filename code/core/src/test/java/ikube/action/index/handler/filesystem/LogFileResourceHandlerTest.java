@@ -30,7 +30,7 @@ public class LogFileResourceHandlerTest extends AbstractTest {
 
     @Test
     public void handleResource() throws Exception {
-        File file = FileUtilities.findFileRecursively(new File("."), ".log");
+        File file = FileUtilities.findFileRecursively(new File("."), "2012-03-05-some.log");
         logFileResourceHandler.handleResource(indexContext, indexableFileSystemLog, new Document(), file);
         verify(indexWriter, atLeast(1)).addDocument(any(Document.class));
     }
