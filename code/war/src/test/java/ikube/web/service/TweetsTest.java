@@ -7,9 +7,8 @@ import ikube.model.SearchTwitter;
 import ikube.search.SearcherService;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.SerializationUtilities;
+import ikube.web.toolkit.MockFactory;
 import ikube.web.toolkit.PerformanceTester;
-import mockit.Mock;
-import mockit.MockClass;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -43,7 +42,7 @@ import static org.mockito.Mockito.*;
  */
 public class TweetsTest extends AbstractTest {
 
-    private static SearchTwitter TWITTER_SEARCH;
+    private SearchTwitter searchTwitter;
     /**
      * Class under test
      */
@@ -61,28 +60,30 @@ public class TweetsTest extends AbstractTest {
         String xml = FileUtilities.getContent(file);
         results = (ArrayList<HashMap<String, String>>) SerializationUtilities.deserialize(xml);
 
-        TWITTER_SEARCH = new SearchTwitter();
-        TWITTER_SEARCH.setSearchStrings(new ArrayList<>(Arrays.asList("hello world")));
-        TWITTER_SEARCH.setSearchFields(new ArrayList<>(Arrays.asList(IConstants.CONTENTS)));
-        TWITTER_SEARCH.setOccurrenceFields(new ArrayList<>(Arrays.asList(IConstants.MUST)));
-        TWITTER_SEARCH.setTypeFields(new ArrayList<>(Arrays.asList(IConstants.STRING)));
-        TWITTER_SEARCH.setSearchResults(results);
+        searchTwitter = new SearchTwitter();
+        searchTwitter.setSearchStrings(new ArrayList<>(Arrays.asList("hello world")));
+        searchTwitter.setSearchFields(new ArrayList<>(Arrays.asList(IConstants.CONTENTS)));
+        searchTwitter.setOccurrenceFields(new ArrayList<>(Arrays.asList(IConstants.MUST)));
+        searchTwitter.setTypeFields(new ArrayList<>(Arrays.asList(IConstants.STRING)));
+        searchTwitter.setSearchResults(results);
 
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
-                return TWITTER_SEARCH;
+                return searchTwitter;
             }
         }).when(searcherService).search(any(Search.class));
 
         setField(tweets, logger);
 
-        setUpMock(SerializationUtilitiesMock.class);
+        setUpMock(MockFactory.SerializationUtilitiesMock.class);
+        MockFactory.setMock(SearchTwitter.class, searchTwitter);
     }
 
     @After
     public void after() {
-        tearDownMocks(SerializationUtilitiesMock.class);
+        tearDownMocks(MockFactory.SerializationUtilitiesMock.class);
+        MockFactory.removeMock(SearchTwitter.class);
     }
 
     @Test
@@ -94,7 +95,7 @@ public class TweetsTest extends AbstractTest {
                 return new Object[0][];
             }
         }).when(tweets).heatMapData(any(ArrayList.class), anyInt());
-        Response response = tweets.happy(TWITTER_SEARCH);
+        Response response = tweets.happy(searchTwitter);
         SearchTwitter twitterSearch = (SearchTwitter) response.getEntity();
         assertNotNull(twitterSearch);
     }
@@ -109,22 +110,22 @@ public class TweetsTest extends AbstractTest {
         for (int i = 0; i < 10000; i++) {
             moreResults.addAll(results);
         }
-        TWITTER_SEARCH.setClusters(100);
-        Object[][] heatMapData = tweets.heatMapData(moreResults, TWITTER_SEARCH.getClusters());
+        searchTwitter.setClusters(100);
+        Object[][] heatMapData = tweets.heatMapData(moreResults, searchTwitter.getClusters());
         assertTrue("Must be less than the total results : ", heatMapData.length < moreResults.size());
-        assertTrue("Must be less than the clustered capacity too : ", heatMapData.length <= TWITTER_SEARCH.getClusters());
+        assertTrue("Must be less than the clustered capacity too : ", heatMapData.length <= searchTwitter.getClusters());
 
         execute(new PerformanceTester.APerform() {
             @Override
             public void execute() throws Throwable {
-                tweets.heatMapData(moreResults, TWITTER_SEARCH.getClusters());
+                tweets.heatMapData(moreResults, searchTwitter.getClusters());
             }
         }, "Heat map data : ", 10);
     }
 
     @Test
     public void twitter() {
-        Response response = tweets.twitter(TWITTER_SEARCH);
+        Response response = tweets.twitter(searchTwitter);
         SearchTwitter twitterSearch = (SearchTwitter) response.getEntity();
         assertNotNull(twitterSearch);
     }
@@ -132,14 +133,14 @@ public class TweetsTest extends AbstractTest {
     @Test
     @SuppressWarnings("unchecked")
     public void timeLineSentiment() {
-        TWITTER_SEARCH.setStartHour(-6);
+        searchTwitter.setStartHour(-6);
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 return null;
             }
         }).when(tweets).addCount(any(Object[].class), anyString(), any(HashMap.class));
-        Object[][] data = tweets.setTimeLineSentiment(TWITTER_SEARCH);
+        Object[][] data = tweets.setTimeLineSentiment(searchTwitter);
 
         logger.error(Arrays.deepToString(data));
 
@@ -152,28 +153,15 @@ public class TweetsTest extends AbstractTest {
     public void count() {
         long startTime = 0;
         long endTime = 10;
-        tweets.search(TWITTER_SEARCH, startTime, endTime, IConstants.POSITIVE);
-        assertEquals(3, TWITTER_SEARCH.getSearchStrings().size());
-        assertEquals(3, TWITTER_SEARCH.getSearchFields().size());
-        assertEquals(3, TWITTER_SEARCH.getOccurrenceFields().size());
-        assertEquals(3, TWITTER_SEARCH.getTypeFields().size());
-
+        int total = tweets.search(searchTwitter, startTime, endTime, IConstants.POSITIVE);
+        assertEquals(22, total);
         verify(searcherService, atLeastOnce()).search((Search) anyObject());
     }
 
     @Test
     public void search() {
-        int result = tweets.search(TWITTER_SEARCH, 0, 60, IConstants.POSITIVE);
+        int result = tweets.search(searchTwitter, 0, 60, IConstants.POSITIVE);
         Assert.assertEquals(22, result);
-    }
-
-    @MockClass(realClass = SerializationUtilities.class)
-    public static class SerializationUtilitiesMock {
-        @Mock
-        @SuppressWarnings({"unchecked", "UnusedParameters"})
-        public static <T> T clone(final Class<T> klass, T t) {
-            return (T) TWITTER_SEARCH;
-        }
     }
 
 }

@@ -30,14 +30,21 @@ public class UdpBroadcaster {
     private static final String MCAST_ADDR = "224.0.0.1";
     // private static final String MCAST_ADDR = "FF7E:230::1234";
 
+    static int MESSAGES_SENT = 0;
+    static int MESSAGES_RECIEVED = 0;
+
     private static InetAddress GROUP;
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         try {
+            long timeToWait = 60;
+            if (args != null && args.length > 0 && StringUtilities.isNumeric(args[0])) {
+                timeToWait = Integer.parseInt(args[0]);
+            }
             GROUP = InetAddress.getByName(MCAST_ADDR);
             List<Future<Object>> futures = new UdpBroadcaster().initialize();
-            ThreadUtilities.waitForFutures(futures, 60000);
-        } catch (Exception e) {
+            ThreadUtilities.waitForFutures(futures, timeToWait);
+        } catch (final Exception e) {
             LOGGER.error("Usage : [group-ip] [port]");
         }
     }
@@ -64,12 +71,13 @@ public class UdpBroadcaster {
                             byte[] receiveData = new byte[256];
                             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                             multicastSocket.receive(receivePacket);
-                            LOGGER.info("Client received from : " + receivePacket.getAddress() + ", " + new String(receivePacket.getData()));
-                        } catch (Exception e) {
+                            UdpBroadcaster.MESSAGES_RECIEVED++;
+                            LOGGER.error("Client received from : " + receivePacket.getAddress() + ", " + new String(receivePacket.getData()));
+                        } catch (final Exception e) {
                             LOGGER.error(null, e);
                         }
                     }
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     LOGGER.error(null, e);
                 }
             }
@@ -88,12 +96,14 @@ public class UdpBroadcaster {
                             byte[] sendData = new byte[256];
                             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, GROUP, PORT);
                             serverSocket.send(sendPacket);
+                            UdpBroadcaster.MESSAGES_SENT++;
+                            LOGGER.error("Server sent : " + Arrays.toString(sendData));
                             ThreadUtilities.sleep(10000);
                         }
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         LOGGER.error(null, e);
                     }
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     LOGGER.error(null, e);
                 }
             }

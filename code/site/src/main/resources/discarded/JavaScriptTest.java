@@ -1,15 +1,12 @@
-package ikube.web.js;
+package discarded;
 
+import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlButtonInput;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import ikube.AbstractTest;
 import ikube.toolkit.FileUtilities;
 import ikube.web.toolkit.WebClientFactory;
-
-import java.io.File;
-import java.net.URL;
-
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -17,10 +14,10 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.ScriptableObject;
 
-import com.gargoylesoftware.htmlunit.BrowserVersion;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlButtonInput;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import java.io.File;
+import java.net.URL;
 
 @Ignore
 public class JavaScriptTest extends AbstractTest {

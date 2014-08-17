@@ -40,7 +40,6 @@ public class Auto extends Resource {
     private static final Pattern CONJUNCTIONS = Pattern.compile("AND|OR|NOT|and|or|not");
 
     /**
-     * TODO: Write a unit test for this!!!! Jesus!!!
      * <p/>
      * This method will return suggestions based on the closest match of the word in the index. The index can be a word list,
      * which is probably the best choice, but doesn't have to be. If there are three words the, there will be suggestions for

@@ -1,61 +1,75 @@
 package ikube.web.toolkit;
 
-import static org.mockito.Mockito.mock;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.SerializationUtilities;
+import mockit.Mock;
+import mockit.MockClass;
+import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import mockit.Mock;
-import mockit.MockClass;
-
-import org.apache.log4j.Logger;
+import static org.mockito.Mockito.mock;
 
 public class MockFactory {
 
-	private static final Logger LOGGER = Logger.getLogger(MockFactory.class);
-	private static final Map<Class<?>, Object> MOCKS = new HashMap<Class<?>, Object>();
+    private static final Logger LOGGER = Logger.getLogger(MockFactory.class);
 
-	@MockClass(realClass = ApplicationContextManager.class)
-	public static class ApplicationContextManagerMock {
+    private static final Map<Class<?>, Object> MOCKS = new HashMap<>();
 
-		@Mock()
-		@SuppressWarnings("unchecked")
-		public static synchronized <T> T getBean(final Class<T> klass) {
-			return (T) MockFactory.getMock(klass);
-		}
+    public static Object getMock(Class<?> klass) {
+        if (MOCKS.get(klass) == null) {
+            Object mock = mock(klass);
+            MOCKS.put(klass, mock);
+        }
+        return MOCKS.get(klass);
+    }
 
-		@Mock()
-		@SuppressWarnings("unchecked")
-		public static synchronized <T> Map<String, T> getBeans(final Class<T> klass) {
-			Map<String, T> beans = new HashMap<String, T>();
-			Object object = MockFactory.getMock(klass);
-			beans.put(object.getClass().getSimpleName(), (T) object);
-			return beans;
-		}
+    public static void setMock(final Class<?> klass, final Object mock) {
+        MOCKS.put(klass, mock);
+    }
 
-		@Mock
-		@SuppressWarnings("unchecked")
-		public static synchronized <T> T getBean(final String name) {
-			try {
-				Class<?> klass = Class.forName(name);
-				return (T) MockFactory.getMock(klass);
-			} catch (ClassNotFoundException e) {
-				LOGGER.error("Class not found : ", e);
-			}
-			return null;
-		}
-	}
+    public static void removeMock(final Class<?> klass) {
+        MOCKS.remove(klass);
+    }
 
-	public static Object getMock(Class<?> klass) {
-		if (MOCKS.get(klass) == null) {
-			Object mock = mock(klass);
-			MOCKS.put(klass, mock);
-		}
-		return MOCKS.get(klass);
-	}
+    @MockClass(realClass = ApplicationContextManager.class)
+    public static class ApplicationContextManagerMock {
 
-	public static void removeMock(Class<?> klass) {
-		MOCKS.remove(klass);
-	}
+        @Mock()
+        @SuppressWarnings("unchecked")
+        public static synchronized <T> T getBean(final Class<T> klass) {
+            return (T) MockFactory.getMock(klass);
+        }
+
+        @Mock()
+        @SuppressWarnings("unchecked")
+        public static synchronized <T> Map<String, T> getBeans(final Class<T> klass) {
+            Map<String, T> beans = new HashMap<>();
+            Object object = MockFactory.getMock(klass);
+            beans.put(object.getClass().getSimpleName(), (T) object);
+            return beans;
+        }
+
+        @Mock
+        @SuppressWarnings("unchecked")
+        public static synchronized <T> T getBean(final String name) {
+            try {
+                Class<?> klass = Class.forName(name);
+                return (T) MockFactory.getMock(klass);
+            } catch (final ClassNotFoundException e) {
+                LOGGER.error("Class not found : ", e);
+            }
+            return null;
+        }
+    }
+
+    @MockClass(realClass = SerializationUtilities.class)
+    public static class SerializationUtilitiesMock {
+        @Mock
+        @SuppressWarnings({"unchecked", "UnusedParameters"})
+        public static <T> T clone(final Class<T> klass, T t) {
+            return (T) getMock(klass);
+        }
+    }
 }

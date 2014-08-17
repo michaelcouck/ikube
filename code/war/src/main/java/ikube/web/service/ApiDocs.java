@@ -100,7 +100,7 @@ public class ApiDocs extends Resource {
         Consumes consumesAnnotation = resource.getAnnotation(Consumes.class);
         Produces producesAnnotation = resource.getAnnotation(Produces.class);
 
-        String basePath = pathAnnotation != null ? pathAnnotation.value() : "";
+        String basePath = pathAnnotation != null ? pathAnnotation.value() : IConstants.SEP + IConstants.IKUBE + IConstants.SEP + IConstants.SERVICE;
         String consumesType = consumesAnnotation != null ? Arrays.toString(consumesAnnotation.value()) : "";
         String producesType = producesAnnotation != null ? Arrays.toString(producesAnnotation.value()) : "";
 

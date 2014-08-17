@@ -4,16 +4,20 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Search;
 import ikube.search.ISearcherService;
-import mockit.Deencapsulation;
-import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.Spy;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -23,22 +27,24 @@ import static org.mockito.Mockito.when;
  */
 public class AutoTest extends AbstractTest {
 
-    /**
-     * Class under test
-     */
+    @Spy
+    @InjectMocks
     private Auto auto;
+    @Mock
     private ISearcherService searcherService;
-
-    @Before
-    public void before() throws Exception {
-        auto = new Auto();
-        searcherService = mock(ISearcherService.class);
-        Deencapsulation.setField(auto, searcherService);
-    }
 
     @Test
     public void auto() {
-        // TODO Redo...
+        Search search = getSearch(new Search(), 2, "some", "fragment");
+        search.setSearchStrings(Arrays.asList("search", "strings"));
+        Mockito.doAnswer(new Answer() {
+            @Override
+            public Object answer(final InvocationOnMock invocation) throws Throwable {
+                return new String[]{"suggestion"};
+            }
+        }).when(auto).suggestions(any(String.class), any(Search.class));
+        auto.auto(search);
+        assertEquals("suggestion", search.getSearchResults().get(0).get(IConstants.FRAGMENT));
     }
 
     @Test

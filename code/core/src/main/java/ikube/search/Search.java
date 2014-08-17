@@ -443,7 +443,6 @@ public abstract class Search {
             exception.printStackTrace(new PrintWriter(outputStream));
             statistics.put(IConstants.EXCEPTION, exception.getMessage());
             statistics.put(IConstants.EXCEPTION_STACK, outputStream.toString());
-            statistics.put(IConstants.EXCEPTION_MESSAGE, exception.getMessage());
         }
         results.add(statistics);
     }

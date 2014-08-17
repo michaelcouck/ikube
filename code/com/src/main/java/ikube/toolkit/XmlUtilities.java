@@ -4,12 +4,7 @@ import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.xml.sax.Attributes;
-import org.xml.sax.helpers.DefaultHandler;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -99,19 +94,6 @@ public final class XmlUtilities {
             }
         }
         return document;
-    }
-
-    public static void parse(File file) throws Exception {
-        SAXParserFactory parserFactory = SAXParserFactory.newInstance();
-        SAXParser parser = parserFactory.newSAXParser();
-        parser.parse(file, new DefaultHandler() {
-            public void startElement(String uri, String localName, String qName, Attributes attributes) {
-                LOGGER.error("Uri : " + uri);
-                LOGGER.error("Local name : " + localName);
-                LOGGER.error("QName : " + qName);
-                LOGGER.error("Attributes : " + attributes);
-            }
-        });
     }
 
 }

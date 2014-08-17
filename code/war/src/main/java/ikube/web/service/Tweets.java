@@ -207,7 +207,6 @@ public class Tweets extends Resource {
                 timeLineSentiment[0][period] = positiveCount;
                 timeLineSentiment[1][period] = negativeCount;
                 timeLineSentiment[2][period] = -period;
-                // logger.error("Time line : " + Arrays.deepToString(timeLineSentiment));
             }
         });
     }
@@ -251,14 +250,11 @@ public class Tweets extends Resource {
         // searchClone.setSortFields(Arrays.asList(CREATED_AT));
         // searchClone.setSortDirections(Arrays.asList(Boolean.TRUE.toString()));
 
-        // searchClone.setSearchResults(null);
         searchClone = searcherService.search(searchClone);
         ArrayList<HashMap<String, String>> searchCloneResults = new ArrayList<>(searchClone.getSearchResults());
         HashMap<String, String> statistics = searchCloneResults.get(searchCloneResults.size() - 1);
         String total = statistics.get(IConstants.TOTAL);
         search.setSearchResults(searchCloneResults);
-        // System.out.println("Total : " + total);
-        // System.out.println(startTime + "-" + endTime + ", " + new Date(startTime) + "-" + new Date(endTime));
         return Integer.valueOf(total);
     }
 

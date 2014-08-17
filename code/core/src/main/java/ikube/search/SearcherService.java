@@ -21,6 +21,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.concurrent.Future;
@@ -36,14 +39,12 @@ import static org.apache.commons.lang.StringUtils.stripToEmpty;
  * @since 21-11-2010
  */
 @Component
-@SuppressWarnings("SpringJavaAutowiringInspection")
 public class SearcherService implements ISearcherService {
 
     static final Logger LOGGER = LoggerFactory.getLogger(SearcherService.class);
 
-    private static final ArrayList<HashMap<String, String>> EMPTY_RESULTS = new ArrayList<>();
-
     @Autowired
+    @SuppressWarnings("SpringJavaAutowiringInspection")
     private IDataBase dataBase;
     /**
      * The service to distribute the searches in the cluster, and to put the searches in the grid.
@@ -68,27 +69,23 @@ public class SearcherService implements ISearcherService {
             final boolean fragment,
             final int firstResult,
             final int maxResults) {
-        try {
-            Search search = new Search();
-            search.setIndexName(indexName);
-            search.setDistributed(Boolean.TRUE);
+        Search search = new Search();
+        search.setIndexName(indexName);
+        search.setDistributed(Boolean.TRUE);
 
-            String[] typeFields = new String[searchFields.length];
-            Arrays.fill(typeFields, TypeField.STRING.fieldType());
+        String[] typeFields = new String[searchFields.length];
+        Arrays.fill(typeFields, TypeField.STRING.fieldType());
 
-            search.setSearchStrings(Arrays.asList(searchStrings));
-            search.setSearchFields(Arrays.asList(searchFields));
-            search.setTypeFields(Arrays.asList(typeFields));
-            search.setSortFields(Collections.EMPTY_LIST);
+        search.setSearchStrings(Arrays.asList(searchStrings));
+        search.setSearchFields(Arrays.asList(searchFields));
+        search.setTypeFields(Arrays.asList(typeFields));
+        search.setSortFields(Collections.EMPTY_LIST);
 
-            search.setFragment(fragment);
-            search.setFirstResult(firstResult);
-            search.setMaxResults(maxResults);
-            search(search);
-            return search.getSearchResults();
-        } catch (final Exception e) {
-            return handleException(indexName, e);
-        }
+        search.setFragment(fragment);
+        search.setFirstResult(firstResult);
+        search.setMaxResults(maxResults);
+        search(search);
+        return search.getSearchResults();
     }
 
     /**
@@ -103,27 +100,23 @@ public class SearcherService implements ISearcherService {
             final boolean fragment,
             final int firstResult,
             final int maxResults) {
-        try {
-            Search search = new Search();
-            search.setIndexName(indexName);
-            search.setDistributed(Boolean.TRUE);
+        Search search = new Search();
+        search.setIndexName(indexName);
+        search.setDistributed(Boolean.TRUE);
 
-            String[] typeFields = new String[searchFields.length];
-            Arrays.fill(typeFields, TypeField.STRING.fieldType());
+        String[] typeFields = new String[searchFields.length];
+        Arrays.fill(typeFields, TypeField.STRING.fieldType());
 
-            search.setSearchStrings(Arrays.asList(searchStrings));
-            search.setSearchFields(Arrays.asList(searchFields));
-            search.setTypeFields(Arrays.asList(typeFields));
-            search.setSortFields(Arrays.asList(sortFields));
+        search.setSearchStrings(Arrays.asList(searchStrings));
+        search.setSearchFields(Arrays.asList(searchFields));
+        search.setTypeFields(Arrays.asList(typeFields));
+        search.setSortFields(Arrays.asList(sortFields));
 
-            search.setFragment(fragment);
-            search.setFirstResult(firstResult);
-            search.setMaxResults(maxResults);
-            search(search);
-            return search.getSearchResults();
-        } catch (final Exception e) {
-            return handleException(indexName, e);
-        }
+        search.setFragment(fragment);
+        search.setFirstResult(firstResult);
+        search.setMaxResults(maxResults);
+        search(search);
+        return search.getSearchResults();
     }
 
     /**
@@ -139,24 +132,20 @@ public class SearcherService implements ISearcherService {
             final boolean fragment,
             final int firstResult,
             final int maxResults) {
-        try {
-            Search search = new Search();
-            search.setIndexName(indexName);
-            search.setDistributed(Boolean.TRUE);
+        Search search = new Search();
+        search.setIndexName(indexName);
+        search.setDistributed(Boolean.TRUE);
 
-            search.setSearchStrings(Arrays.asList(searchStrings));
-            search.setSearchFields(Arrays.asList(searchFields));
-            search.setTypeFields(Arrays.asList(typeFields));
-            search.setSortFields(Arrays.asList(sortFields));
+        search.setSearchStrings(Arrays.asList(searchStrings));
+        search.setSearchFields(Arrays.asList(searchFields));
+        search.setTypeFields(Arrays.asList(typeFields));
+        search.setSortFields(Arrays.asList(sortFields));
 
-            search.setFragment(fragment);
-            search.setFirstResult(firstResult);
-            search.setMaxResults(maxResults);
-            search(search);
-            return search.getSearchResults();
-        } catch (final Exception e) {
-            return handleException(indexName, e);
-        }
+        search.setFragment(fragment);
+        search.setFirstResult(firstResult);
+        search.setMaxResults(maxResults);
+        search(search);
+        return search.getSearchResults();
     }
 
     /**
@@ -175,27 +164,23 @@ public class SearcherService implements ISearcherService {
             final int distance,
             final double latitude,
             final double longitude) {
-        try {
-            Search search = new Search();
-            search.setIndexName(indexName);
-            search.setDistributed(Boolean.TRUE);
+        Search search = new Search();
+        search.setIndexName(indexName);
+        search.setDistributed(Boolean.TRUE);
 
-            search.setSearchStrings(Arrays.asList(searchStrings));
-            search.setSearchFields(Arrays.asList(searchFields));
-            search.setTypeFields(Arrays.asList(typeFields));
-            search.setSortFields(Collections.EMPTY_LIST);
+        search.setSearchStrings(Arrays.asList(searchStrings));
+        search.setSearchFields(Arrays.asList(searchFields));
+        search.setTypeFields(Arrays.asList(typeFields));
+        search.setSortFields(Collections.EMPTY_LIST);
 
-            search.setDistance(distance);
-            search.setCoordinate(new Coordinate(latitude, longitude));
+        search.setDistance(distance);
+        search.setCoordinate(new Coordinate(latitude, longitude));
 
-            search.setFragment(fragment);
-            search.setFirstResult(firstResult);
-            search.setMaxResults(maxResults);
-            search(search);
-            return search.getSearchResults();
-        } catch (final Exception e) {
-            return handleException(indexName, e);
-        }
+        search.setFragment(fragment);
+        search.setFirstResult(firstResult);
+        search.setMaxResults(maxResults);
+        search(search);
+        return search.getSearchResults();
     }
 
     /**
@@ -208,7 +193,7 @@ public class SearcherService implements ISearcherService {
             String searchString = searchStrings[i];
             searchString = stripToAlphaNumeric(searchString);
             searchString = stripToEmpty(searchString);
-            searchStrings[i] = searchString;
+            searchStrings[i] = searchString.toLowerCase();
         }
         search.setSearchStrings(Arrays.asList(searchStrings));
 
@@ -225,7 +210,7 @@ public class SearcherService implements ISearcherService {
                 return (Search) future.get(60, TimeUnit.SECONDS);
             } catch (final Exception e) {
                 LOGGER.info("Exception doing remote search : " + search);
-                LOGGER.debug(null, e);
+                LOGGER.info(null, e);
             }
             // If we have a remote exception then try to do the search locally
             return doSearch(search);
@@ -242,8 +227,8 @@ public class SearcherService implements ISearcherService {
      */
     @Override
     public Search doSearch(final Search search) {
+        ikube.search.Search searchAction;
         try {
-            ikube.search.Search searchAction;
             if (search.getCoordinate() != null && search.getDistance() != 0) {
                 searchAction = getSearch(SearchSpatial.class, search.getIndexName());
                 ((SearchSpatial) searchAction).setDistance(search.getDistance());
@@ -322,7 +307,7 @@ public class SearcherService implements ISearcherService {
             search.setSearchResults(results);
             persistSearch(search);
         } catch (final Exception e) {
-            handleException(search.getIndexName(), e);
+            handleException(search, e);
         }
         return search;
     }
@@ -363,7 +348,7 @@ public class SearcherService implements ISearcherService {
             }
             aggregateResults(search, searches);
         } catch (final Exception e) {
-            handleException(search.getIndexName(), e);
+            handleException(search, e);
         }
         return search;
     }
@@ -455,10 +440,28 @@ public class SearcherService implements ISearcherService {
         return newStrings;
     }
 
-    private ArrayList<HashMap<String, String>> handleException(final String indexName, final Exception e) {
-        LOGGER.error("Exception doing search on : " + indexName + ", " + e.getLocalizedMessage());
-        LOGGER.error(null, e);
-        return EMPTY_RESULTS;
+    private Search handleException(final Search search, final Exception e) {
+        LOGGER.error("Exception doing search on : " + search.getIndexName() + ", " + e.getLocalizedMessage(), e);
+
+        ArrayList<HashMap<String, String>> results = search.getSearchResults();
+        if (results == null) {
+            results = new ArrayList<>();
+            search.setSearchResults(results);
+        }
+        HashMap<String, String> statistics;
+        if (results.size() == 0) {
+            statistics = new HashMap<>();
+            results.add(statistics);
+        } else {
+            statistics = results.get(results.size() - 1);
+        }
+
+        OutputStream outputStream = new ByteArrayOutputStream();
+        e.printStackTrace(new PrintWriter(outputStream));
+
+        statistics.put(IConstants.EXCEPTION_MESSAGE, e.getMessage());
+        statistics.put(IConstants.EXCEPTION_STACK, outputStream.toString());
+        return search;
     }
 
     /**
@@ -526,14 +529,11 @@ public class SearcherService implements ISearcherService {
         Long hash = HashUtilities.hash(cleanedSearchStrings.toString().toLowerCase());
         try {
             Search cacheSearch = clusterManager.get(IConstants.SEARCH, hash);
-            // Search cacheSearch = dataBase.find(Search.class, new String[]{IConstants.HASH}, new Object[]{hash});
             if (cacheSearch == null) {
                 cacheSearch = search;
                 cacheSearch.setHash(hash);
-                // dataBase.persist(cacheSearch);
             }
             cacheSearch.setCount(cacheSearch.getCount() + 1);
-            // dataBase.merge(cacheSearch);
             clusterManager.put(IConstants.SEARCH, hash, cacheSearch);
 
             if (LOGGER.isDebugEnabled()) {

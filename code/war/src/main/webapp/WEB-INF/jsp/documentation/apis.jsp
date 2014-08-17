@@ -45,7 +45,7 @@
                                  toggleVisibility(elementApiMethod.uri);
                                  setApiMethod(elementApiMethod);">
                                     <li><i class="icon-screenshot"></i>
-                                        <span style="line-height: 25px;">{{elementApiMethod.method}} : /ikube/{{elementApiMethod.uri}}</span>
+                                        <span style="line-height: 25px;">{{elementApiMethod.method}} : {{elementApiMethod.uri}}</span>
                                     </li>
                                 </a>
                             </ul>

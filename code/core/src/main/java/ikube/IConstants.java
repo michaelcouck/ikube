@@ -166,11 +166,9 @@ public interface IConstants extends Constants {
 
     String POSITIVE = "positive";
     String NEGATIVE = "negative";
-    String NEUTRAL = "neutral";
 
-    String ANALYZER = "classifier";
     String CLASS = "class";
-    int MAX_GEOHASH_LEVELS = 7;
+    int MAX_GEOHASH_LEVELS = 8;
 
     String MUST = "must";
     String SHOULD = "should";
@@ -187,4 +185,5 @@ public interface IConstants extends Constants {
     String INDEXABLE = "indexable";
 
 	String ANALYZER_SERIALIZED_FILE_EXTENSION = ".ser";
+    String SERVICE = "service";
 }

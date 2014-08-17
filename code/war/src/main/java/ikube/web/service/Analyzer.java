@@ -142,7 +142,7 @@ public class Analyzer extends Resource {
         return buildResponse(contexts.toArray());
     }
 
-    private Context context(final Context context) {
+    Context context(final Context context) {
         if (context == null) {
             return null;
         }
