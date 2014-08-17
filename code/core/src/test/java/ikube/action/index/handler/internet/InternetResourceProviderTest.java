@@ -35,7 +35,7 @@ public class InternetResourceProviderTest extends AbstractTest {
     public void before() {
         when(indexableInternet.getThreads()).thenReturn(10);
         when(indexableInternet.getName()).thenReturn("indexable-internet");
-        when(indexableInternet.getUrl()).thenReturn("http://www.ikube.be/site/");
+        when(indexableInternet.getUrl()).thenReturn("http://www.ikube.be/ikube/login.html");
         when(indexableInternet.getExcludedPattern()).thenReturn("zip");
         when(indexableInternet.getParent()).thenReturn(indexContext);
 
@@ -53,8 +53,8 @@ public class InternetResourceProviderTest extends AbstractTest {
 
     @Test
     public void initialize() {
-        internetResourceProvider.initialize(indexableInternet);
-        ThreadUtilities.sleep(3000);
+        internetResourceProvider = new InternetResourceProvider(indexableInternet, dataBase);
+        ThreadUtilities.sleep(15000);
         verify(indexContext, atLeastOnce()).getName();
     }
 

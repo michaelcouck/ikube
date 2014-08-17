@@ -26,11 +26,7 @@ public class RowResourceHandler extends ResourceHandler<IndexableFileSystemCsv> 
      * {@inheritDoc}
      */
     @Override
-    public Document handleResource(
-            final IndexContext indexContext,
-            final IndexableFileSystemCsv indexableFileSystemCsv,
-            final Document document,
-            final Object resource)
+    public Document handleResource(final IndexContext indexContext, final IndexableFileSystemCsv indexableFileSystemCsv, final Document document, final Object resource)
             throws Exception {
         // countryCityFile, lineNumber, lineNumberFieldName
         String fileName = indexableFileSystemCsv.getFile().getName();

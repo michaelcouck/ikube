@@ -48,6 +48,8 @@ public class ExchangeResourceProvider implements IResourceProvider<String> {
     public ExchangeResourceProvider(final IndexableExchange indexableExchange) {
         this.indexableExchange  = indexableExchange;
 
+        getExchangeClientInstance();
+
         messages = exchange.getUsersMessages(
                 indexableExchange.getIndexFromDate(),
                 new Date(),
