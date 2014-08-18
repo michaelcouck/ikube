@@ -15,7 +15,7 @@
         <param name="File" value="ikube/ikube.log"/>
         <param name="ImmediateFlush" value="true"/>
         <param name="MaxBackupIndex" value="4"/>
-        <param name="MaxFileSize" value="100MB"/>
+        <param name="MaxFileSize" value="25MB"/>
         <param name="Threshold" value="WARN"/>
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %-5p %C{1}.%M(%L) - %m%n"/>
@@ -33,9 +33,6 @@
     </logger>
     <logger name="ikube">
         <level value="warn"/>
-    </logger>
-    <logger name="ikube.analytics.weka">
-        <level value="info"/>
     </logger>
 
     <root>

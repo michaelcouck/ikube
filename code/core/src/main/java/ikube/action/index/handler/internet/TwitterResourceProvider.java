@@ -4,7 +4,6 @@ import ikube.IConstants;
 import ikube.action.index.handler.IResourceProvider;
 import ikube.model.IndexContext;
 import ikube.model.IndexableTweets;
-import ikube.toolkit.FileUtilities;
 import ikube.toolkit.SerializationUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
-import static ikube.toolkit.FileUtilities.getOrCreateDirectory;
-import static ikube.toolkit.FileUtilities.getOrCreateFile;
-import static ikube.toolkit.FileUtilities.setContents;
+import static ikube.toolkit.FileUtilities.*;
 
 /**
  * This class will use the Spring social module to get tweets from Twitter, at a rate of around 1% of the tweets.
@@ -104,7 +101,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
     public synchronized void onTweet(final Tweet tweet) {
         if (tweets.size() < STACK_SIZE) {
             if (tweets.size() % 1000 == 0) {
-                logger.warn("Tweets : " + tweets.size());
+                logger.debug("Tweets : " + tweets.size());
             }
             tweets.push(tweet);
             if (this.clones > 0) {
@@ -123,7 +120,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
      */
     @Override
     public void onLimit(final int numberOfLimitedTweets) {
-        logger.info("Tweets limited : " + numberOfLimitedTweets);
+        logger.debug("Tweets limited : " + numberOfLimitedTweets);
     }
 
     /**
@@ -138,7 +135,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
      */
     @Override
     public void onWarning(final StreamWarningEvent warnEvent) {
-        logger.info("Tweet warning : " + warnEvent.getCode());
+        logger.debug("Tweet warning : " + warnEvent.getCode());
     }
 
     /**
