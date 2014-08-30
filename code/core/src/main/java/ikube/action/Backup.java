@@ -2,6 +2,7 @@ package ikube.action;
 
 import ikube.IConstants;
 import ikube.model.IndexContext;
+import ikube.toolkit.FileUtilities;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -55,7 +56,7 @@ public class Backup extends Action<IndexContext, Boolean> {
                     }
                 }
             };
-			FileUtils.copyDirectory(latestIndexDirectory, latestIndexDirectoryBackup, fileFilter, Boolean.TRUE);
+            FileUtils.copyDirectory(latestIndexDirectory, latestIndexDirectoryBackup, fileFilter, Boolean.TRUE);
 			logger.info("Backed up index from : " + latestIndexDirectory + ", to : " + latestIndexDirectoryBackup);
 		} catch (final IOException e) {
 			throw new RuntimeException(e);

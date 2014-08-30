@@ -8,8 +8,9 @@ import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.UriUtilities;
 import org.gridgain.grid.*;
 import org.gridgain.grid.cache.GridCache;
-import org.gridgain.grid.compute.GridCompute;
+import org.gridgain.grid.compute.*;
 import org.gridgain.grid.messaging.GridMessaging;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.*;
@@ -210,6 +211,26 @@ public class ClusterManager extends AClusterManager {
     @Override
     public <T> Future<T> sendTaskTo(final Server server, final Callable<T> callable) {
         GridCompute gridCompute = grid.compute();
+        Collection<GridNode> gridNodes = grid.nodes();
+        GridNode gridNode = gridNodes.iterator().next();
+//        gridCompute.execute(new GridComputeTask<Object, Object>() {
+//            @Nullable
+//            @Override
+//            public Map<? extends GridComputeJob, GridNode> map(final List<GridNode> subgrid, @Nullable final Object arg) throws GridException {
+//                return null;
+//            }
+//
+//            @Override
+//            public GridComputeJobResultPolicy result(final GridComputeJobResult res, final List<GridComputeJobResult> rcvd) throws GridException {
+//                return null;
+//            }
+//
+//            @Nullable
+//            @Override
+//            public Object reduce(final List<GridComputeJobResult> results) throws GridException {
+//                return null;
+//            }
+//        });
         throw new RuntimeException("Couldn't find member with address : " + server.getAddress());
     }
 
