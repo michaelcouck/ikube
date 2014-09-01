@@ -1,12 +1,10 @@
 package ikube.search;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import ikube.IConstants;
 import ikube.Load;
 import ikube.model.Search;
+import ikube.toolkit.HttpClientUtilities;
+import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.Timer;
 import org.kohsuke.args4j.CmdLineParser;
@@ -14,7 +12,6 @@ import org.kohsuke.args4j.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -53,6 +50,9 @@ public class SearchLoad extends Load {
     private String indexName = IConstants.GEOSPATIAL;
     @Option(name = "-f")
     private String fieldName = IConstants.NAME;
+    @Option(name = "-e")
+    private int printEvery = 1000;
+
 
     public static void main(final String[] args) throws Exception {
         new SearchLoad().doMain(args);
@@ -66,7 +66,7 @@ public class SearchLoad extends Load {
 
         ThreadUtilities.initialize();
 
-        Search search = new Search();
+        final Search search = new Search();
         search.setFirstResult(0);
         search.setMaxResults(10);
         search.setDistributed(Boolean.FALSE);
@@ -79,25 +79,19 @@ public class SearchLoad extends Load {
         search.setTypeFields(Arrays.asList("string"));
 
         final String url = getUrl(this.url, this.port, "/ikube/service/search/json");
-        final String content = IConstants.GSON.toJson(search);
 
         List<Future<Object>> futures = new ArrayList<>();
         int count = 0;
         do {
-            final Client client = Client.create();
-            client.addFilter(new HTTPBasicAuthFilter("user", "user"));
             class Timed implements Timer.Timed {
                 @Override
                 public void execute() {
                     int searches = iterations / threads;
                     do {
-                        WebResource webResource = client.resource(url);
-                        ClientResponse clientResponse = webResource.accept(MediaType.APPLICATION_JSON).post(ClientResponse.class, content);
-                        if (searches % 1000 == 0) {
-                            String response = clientResponse.getEntity(String.class);
-                            Search search = IConstants.GSON.fromJson(response, Search.class);
-                            LOGGER.info("Searches : " + searches + ", " + search.getCount() + ", " + search.getTotalResults());
-                            LOGGER.info("Search : " + search);
+                        Search searchClone = (Search) SerializationUtilities.clone(search);
+                        Search searchResult = HttpClientUtilities.doPost(url, searchClone, Search.class);
+                        if (searches > 0 && searches % printEvery == 0) {
+                            LOGGER.error("Search : " + searchResult);
                         }
                     } while (searches-- >= 0);
                 }
@@ -108,7 +102,7 @@ public class SearchLoad extends Load {
                 @Override
                 public void run() {
                     double duration = Timer.execute(timed);
-                    LOGGER.info("Duration for searching : " + iterations + ", is : " + duration + ", per second is : " + iterations / (duration / 1000));
+                    LOGGER.error("Duration for searching : " + iterations + ", is : " + duration + ", per second is : " + iterations / (duration / 1000));
                 }
             }
 
