@@ -31,7 +31,7 @@ public class ExchangeHandler extends IndexableHandler<IndexableExchange> {
     @Autowired
     private ExchangeResourceHandler exchangeResourceHandler;
 
-    /**
+    /** consumer of ExchangeIndex and feed it to the ExchangeHandler.handleResource
      * TODO: This starts the threads working on the target source of data
      */
     @Override

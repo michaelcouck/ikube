@@ -69,5 +69,4 @@ public class IndexableInternetHandler extends IndexableHandler<IndexableInternet
         return null;
     }
 
-
 }

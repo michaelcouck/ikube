@@ -7,14 +7,13 @@ import ikube.action.index.handler.internet.exchange.IndexableMessage;
 import java.util.Date;
 import java.util.List;
 
-
 /**
  * @author David Turley
  * @version 01.00
  * @since 11-07-2014
  */
 @SuppressWarnings("FieldCanBeLocal")
-public class ExchangeResourceProvider implements IResourceProvider<String> {
+public class ExchangeResourceProvider implements IResourceProvider<IndexableMessage> {
 
     private final IndexableExchange indexableExchange;
 
@@ -48,19 +47,11 @@ public class ExchangeResourceProvider implements IResourceProvider<String> {
     public ExchangeResourceProvider(final IndexableExchange indexableExchange) {
         this.indexableExchange  = indexableExchange;
 
-        messages = exchange.getUsersMessages(
+        messages = getExchangeClientInstance().getUsersMessages(
                 indexableExchange.getIndexFromDate(),
                 new Date(),
                 indexableExchange.getResumeIndexFrom(),
                 indexableExchange.getResumeIndexFromMessage());
-
-        // TODO: Start 'crawling' Exchange server here, starting at the point left off the last time
-        // Get the first email content
-        // Clone the indexable exchange and put the raw content in it
-
-        IndexableMessage message = messages.next();
-        if(message != null)
-            indexableExchange.setIndexableMessage( message );
     }
 
     /**
@@ -68,16 +59,16 @@ public class ExchangeResourceProvider implements IResourceProvider<String> {
      * consumer
      */
     @Override
-    public String getResource() {
+    public IndexableMessage getResource() {
         // TODO: Return a crawled resource to the caller
-        return null;
+        return messages.next();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void setResources(final List<String> resources) {
+    public void setResources(final List<IndexableMessage> resources) {
         // TODO: Add the resource crawled to the collection available in this object
     }
 

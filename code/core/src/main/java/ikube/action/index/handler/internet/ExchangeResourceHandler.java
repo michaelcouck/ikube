@@ -1,18 +1,31 @@
 package ikube.action.index.handler.internet;
 
+import com.independentsoft.exchange.InternetMessageHeader;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
 import ikube.action.index.handler.ResourceHandler;
+import ikube.action.index.handler.internet.exchange.IndexableMessage;
 import ikube.action.index.parse.IParser;
 import ikube.action.index.parse.ParserProvider;
 import ikube.action.index.parse.XMLParser;
+import ikube.model.Attribute;
 import ikube.model.IndexContext;
 import ikube.model.IndexableExchange;
+import ikube.model.IndexableTweets;
 import org.apache.lucene.document.Document;
+import org.springframework.social.twitter.api.Tweet;
+import org.springframework.social.twitter.api.TwitterProfile;
 
+import javax.persistence.Column;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import static ikube.action.index.IndexManager.addNumericField;
+import static ikube.action.index.IndexManager.addStringField;
 
 /**
  * @author David Turley
@@ -20,6 +33,7 @@ import java.io.OutputStream;
  * @since 11-07-2014
  */
 public class ExchangeResourceHandler extends ResourceHandler<IndexableExchange> {
+    SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS Z");
 
     /**
      * {@inheritDoc}
@@ -31,46 +45,63 @@ public class ExchangeResourceHandler extends ResourceHandler<IndexableExchange> 
             final Document document,
             final Object resource)
             throws Exception {
-        // Parse the content from the email for good measure
-        parseContent(indexableExchange);
-        // Add the contents field
-        IndexManager.addStringField(IConstants.CONTENTS, (String) indexableExchange.getContent(), indexableExchange, document);
+        // Parse the content to be indexed from the email IndexableMessage
+        parseContent(indexableExchange, document, (IndexableMessage) resource);
+
         super.addDocument(indexContext, document);
         return document;
     }
 
-    protected void parseContent(final IndexableExchange indexableExchange) {
-        try {
-            // We assume that the content is text, and a string
-            String content = (String) indexableExchange.getContent();
-            byte[] buffer = content.getBytes();
-            String contentType = "text/html";
-            // The first few bytes so we can guess the content type
-            byte[] bytes = new byte[Math.min(buffer.length, 1024)];
-            System.arraycopy(buffer, 0, bytes, 0, bytes.length);
-            IParser parser = ParserProvider.getParser(contentType, bytes);
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buffer, 0, buffer.length);
-            OutputStream outputStream = null;
-            try {
-                outputStream = parser.parse(byteArrayInputStream, new ByteArrayOutputStream());
-            } catch (final Exception e) {
-                // If this is an XML exception then try the HTML parser
-                if (XMLParser.class.isAssignableFrom(parser.getClass())) {
-                    contentType = "text/html";
-                    parser = ParserProvider.getParser(contentType, bytes);
-                    outputStream = parser.parse(byteArrayInputStream, new ByteArrayOutputStream());
-                } else {
-                    String message = "Exception parsing content from email : " + indexableExchange.getContent();
-                    logger.error(message, e);
-                }
-            }
-            if (outputStream != null) {
-                String parsedContent = outputStream.toString();
-                indexableExchange.setContent(parsedContent);
-            }
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
+    void parseContent(final IndexableExchange indexableExchange, final Document document, final IndexableMessage msg) {
+        // Add the contents fields
+        String messageMailboxOwnerField     = indexableExchange.getMessageMailboxOwnerField();
+        String messageMailboxNameField      = indexableExchange.getMessageMailboxNameField();
+        String messageMessageIdField        = indexableExchange.getMessageMessageIdField();
+        String messageConversationIdField   = indexableExchange.getMessageConversationIdField();
+        String messageCreatedDateField      = indexableExchange.getMessageCreatedDateField();
+        String messageSentDateField         = indexableExchange.getMessageSentDateField();
+        String messageReceivedDateField     = indexableExchange.getMessageReceivedDateField();
+        String messageFromField             = indexableExchange.getMessageFromField();
+        String messageToField               = indexableExchange.getMessageToField();
+        String messageBccField              = indexableExchange.getMessageBccField();
+        String messageCcField               = indexableExchange.getMessageCcField();
+        String messageSubjectField          = indexableExchange.getMessageSubjectField();
+        String messageBodyField             = indexableExchange.getMessageBodyField();
+        String messageBodyTypeField         = indexableExchange.getMessageBodyTypeField();
+
+        if (msg != null) {
+            addStringField(messageMailboxOwnerField,   toEmailString(msg.mailboxOwner), indexableExchange, document);
+            addStringField(messageMailboxNameField,    msg.mailboxName,            indexableExchange, document);
+            addStringField(messageMessageIdField,      msg.messageId,              indexableExchange, document);
+            addStringField(messageConversationIdField, msg.conversationId,         indexableExchange, document);
+            addStringField(messageCreatedDateField,    toDateString(msg.created),  indexableExchange, document);
+            addStringField(messageSentDateField,       toDateString(msg.sent),     indexableExchange, document);
+            addStringField(messageReceivedDateField,   toDateString(msg.received), indexableExchange, document);
+            addStringField(messageFromField,           toEmailString(msg.from),    indexableExchange, document);
+            addStringField(messageToField,             toEmailsString(msg.to),     indexableExchange, document);
+            addStringField(messageBccField,            toEmailsString(msg.bcc),    indexableExchange, document);
+            addStringField(messageCcField,             toEmailsString(msg.cc),     indexableExchange, document);
+            addStringField(messageSubjectField,        msg.subject,                indexableExchange, document);
+            addStringField(messageBodyField,           msg.body,                   indexableExchange, document);
+            addStringField(messageBodyTypeField,       msg.bodyType,               indexableExchange, document);
         }
     }
 
+    private String toDateString(Date date){
+        return (date != null) ? DATE_TIME_FORMAT.format(date) : null;
+    }
+
+    private String toEmailString(IndexableMessage.Email email){
+        return (email != null) ? email.toString() : null;
+    }
+
+    private String toEmailsString(List<IndexableMessage.Email> emails){
+        StringBuffer str = new StringBuffer();
+        for(IndexableMessage.Email email : emails){
+            if(str.length() > 0)
+                str.append(", ");
+            str.append(toEmailString(email));
+        }
+        return str.toString();
+    }
 }
