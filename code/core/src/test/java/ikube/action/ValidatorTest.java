@@ -88,7 +88,7 @@ public class ValidatorTest extends AbstractTest {
         assertFalse("The index is locked : ", result);
         // There should be a message sent to notify that there is an index being
         // generated and that the current index is not current
-        lock.release();
+        lock.close();
         directory.clearLock(IndexWriter.WRITE_LOCK_NAME);
         invocations++;
         invocations++;

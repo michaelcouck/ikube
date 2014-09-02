@@ -60,7 +60,7 @@ public class IsThisIndexCreatedTest extends AbstractTest {
             assertTrue("This index should be created : ", isIndexCreated);
         } finally {
             assert lock != null;
-            lock.release();
+            lock.close();
         }
 
         // Index now unlocked but still exists
