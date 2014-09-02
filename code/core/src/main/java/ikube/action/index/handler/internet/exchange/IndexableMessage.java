@@ -2,7 +2,6 @@ package ikube.action.index.handler.internet.exchange;
 
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * IndexableMessage's for indexing by the search engine.
