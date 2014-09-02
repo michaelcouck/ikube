@@ -88,7 +88,7 @@ public class CleanTest extends AbstractTest {
             directory.close();
         }
         clean.execute(indexContext);
-        lock.release();
+        lock.close();
     }
 
 }

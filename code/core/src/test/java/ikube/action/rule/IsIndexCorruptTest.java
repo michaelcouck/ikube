@@ -53,7 +53,7 @@ public class IsIndexCorruptTest extends AbstractTest {
         assertFalse(isCorrupt);
 
         // Unlock the index
-        lock.release();
+        lock.close();
         directory.clearLock(IndexWriter.WRITE_LOCK_NAME);
         // Delete the segments files
         FileUtilities.deleteFiles(latestIndexDirectory, "segments");

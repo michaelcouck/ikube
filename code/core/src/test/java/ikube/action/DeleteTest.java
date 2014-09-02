@@ -79,7 +79,7 @@ public class DeleteTest extends AbstractTest {
         assertTrue(deleted);
         assertEquals(2, latestIndexDirectory.getParentFile().getParentFile().listFiles().length);
 
-        lock.release();
+        lock.close();
         directory.clearLock(IndexWriter.WRITE_LOCK_NAME);
 
         latestIndexDirectory = createIndexFileSystem(indexContext, "some strings");
@@ -94,7 +94,7 @@ public class DeleteTest extends AbstractTest {
         assertTrue(deleted);
         assertEquals(2, latestIndexDirectory.getParentFile().getParentFile().listFiles().length);
 
-        lock.release();
+        lock.close();
         directory.clearLock(IndexWriter.WRITE_LOCK_NAME);
 
         FileUtilities.deleteFile(latestIndexDirectory, 1);

@@ -57,7 +57,7 @@ public class DirectoryExistsAndNotLockedTest extends AbstractTest {
             assertFalse(existsAndNotLocked);
         } finally {
             if (lock != null) {
-                lock.release();
+                lock.close();
             }
         }
     }

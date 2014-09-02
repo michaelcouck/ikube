@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * This listener will check the size of an index and start a new one if it gets over the maximum allowed
  * size. This is because over NFS the size of the Lucene index is important as there is a seek in the file,
- * and aparently this is not well supported over NFS and the performance degrades with the size of the
+ * and apparently this is not well supported over NFS and the performance degrades with the size of the
  * index, i.e. over for example 10 gig.
  *
  * @author Michael Couck
@@ -61,13 +61,13 @@ public class IndexSizeSchedule extends Schedule {
             IndexWriter newIndexWriter = null;
             try {
                 newIndexDirectory = getNewIndexDirectory(indexWriters);
-                LOGGER.info("Starting new index : " + indexContext.getIndexName() + ", " + newIndexDirectory);
+                LOGGER.error("Starting new index : " + indexContext.getIndexName() + ", " + newIndexDirectory);
                 newIndexWriter = IndexManager.openIndexWriter(indexContext, newIndexDirectory, true);
 
                 IndexWriter[] newIndexWriters = new IndexWriter[indexWriters.length + 1];
                 System.arraycopy(indexWriters, 0, newIndexWriters, 0, indexWriters.length);
                 newIndexWriters[newIndexWriters.length - 1] = newIndexWriter;
-                LOGGER.info("Switched to the new index writer : " + indexContext);
+                LOGGER.error("Switched to the new index writer : " + indexContext);
                 indexContext.setIndexWriters(newIndexWriters);
             } catch (Exception e) {
                 LOGGER.error("Exception starting a new index : ", e);

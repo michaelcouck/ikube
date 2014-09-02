@@ -65,7 +65,7 @@
             Was 3.6.1 at 20.03.12
             Was 3.6.2 at 23.12.13
         -->
-        <lucene-version>4.6.0</lucene-version>
+        <lucene-version>4.9.0</lucene-version>
 
         <jersey-version>1.18.1</jersey-version>
         <postgresql-driver-version>9.1-901-1.jdbc4</postgresql-driver-version>

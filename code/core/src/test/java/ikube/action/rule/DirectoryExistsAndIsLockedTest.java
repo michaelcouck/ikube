@@ -31,11 +31,11 @@ public class DirectoryExistsAndIsLockedTest extends AbstractTest {
 
 	@After
 	public void after() {
-		// Mockit.tearDownMocks();
 		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
 	}
 
-	@Test
+    @Test
+    @SuppressWarnings("ConstantConditions")
 	public void evaluate() throws Exception {
 		boolean existsAndIsLockedResult = existsAndIsLocked.evaluate(new File(indexContext.getIndexDirectoryPath()));
 		assertFalse(existsAndIsLockedResult);
@@ -47,14 +47,10 @@ public class DirectoryExistsAndIsLockedTest extends AbstractTest {
 		existsAndIsLockedResult = existsAndIsLocked.evaluate(indexDirectory);
 		assertFalse(existsAndIsLockedResult);
 
-		Lock lock = null;
-		try {
-			lock = getLock(FSDirectory.open(indexDirectory), indexDirectory);
-			existsAndIsLockedResult = existsAndIsLocked.evaluate(indexDirectory);
-			assertTrue(existsAndIsLockedResult);
-		} finally {
-			lock.release();
-		}
+        try (Lock ignored = getLock(FSDirectory.open(indexDirectory), indexDirectory)) {
+            existsAndIsLockedResult = existsAndIsLocked.evaluate(indexDirectory);
+            assertTrue(existsAndIsLockedResult);
+        }
 
 	}
 
