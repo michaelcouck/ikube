@@ -29,7 +29,7 @@
         property:indexDirectoryPathBackup="${index.directory.path.backup}"
         property:children-ref="bosal-indexables"/>
     <util:list id="bosal-indexables">
-        <ref bean="bosal-mail"/>
+        <ref bean="bosal-mail-exchange"/>
         <ref bean="bosal-site"/>
     </util:list>
 
@@ -38,14 +38,34 @@
         searches are surprising. For example for the classification field, i.e.
         positive and negative, there are no results unless the search string is
         something like 'positi~', strangely enough.
+            property:resumeIndexFrom
+            property:resumeIndexFromMessage;
+            property:indexFromDate;
     -->
     <bean
-        name="bosal-mail"
+        name="bosal-mail-exchange"
         class="ikube.model.IndexableExchange"
-        property:name="bosal-mail"
-        property:url="http://www.bosal.com/"
-        property:userid="userid"
-        property:password="password"
+        property:name="bosal-mail-exchange"
+
+        property:exchangeUrl="https://outlook.office365.com/ews/exchange.asmx"
+        property:exchangeUserid="administrator@iKube.onmicrosoft.com"
+        property:exchangePassword="iKube101"
+
+        property:messageMailboxNameField="Mailbox"
+        property:messageMailboxOwnerField="Mailbox Owner"
+        property:messageExchangeIdField="Message Exchange Id"
+        property:messageInternetIdField="Message Internet Id"
+        property:messageConversationIdField="Message Conversation Id"
+        property:messageCreatedDateField="Message Created Date"
+        property:messageSentDateField="Message Sent Date"
+        property:messageReceivedDateField="Message Received Date"
+        property:messageFromField="Message From"
+        property:messageToField="Message To"
+        property:messageBccField="Message Bcc"
+        property:messageCcField="Message Cc"
+        property:messageSubjectField="Message Subject"
+        property:messageBodyField="Message Body"
+        property:messageBodyTypeField="Message Body Type"
 
         property:analyzed="true"
         property:stored="true"

@@ -7,11 +7,13 @@ import java.util.List;
  * IndexableMessage's for indexing by the search engine.
  */
 public class IndexableMessage {
-
+    // mailbox
     public Email  mailboxOwner;
     public String mailboxName;
-    public String messageId;
-    public String internetMessageId;
+
+    // message fields
+    public String messageExchangeId;
+    public String messageInternetId;
     public String conversationId;
     public Email from;
     public List<Email> to, bcc, cc;
@@ -41,8 +43,8 @@ public class IndexableMessage {
         return "\nUser Mail Message : " +
         	"\n  mailboxName:       " + mailboxName +
         	"\n  mailboxOwner:      " + mailboxOwner.toString() +
-        	"\n  messageId:         " + messageId +
-        	"\n  internetMessageId: " + internetMessageId +
+        	"\n  messageExchangeId: " + messageExchangeId +
+        	"\n  messageInternetId: " + messageInternetId +
         	"\n  from:              " + from.toString() +
             "\n  to:                " + to.toString() +
             "\n  cc:                " + cc.toString() +

@@ -1,9 +1,9 @@
 package ikube.action.index.handler.internet;
 
 import ikube.action.index.handler.IResourceProvider;
-import ikube.model.IndexableExchange;
 import ikube.action.index.handler.internet.exchange.ExchangeClient;
 import ikube.action.index.handler.internet.exchange.IndexableMessage;
+import ikube.model.IndexableExchange;
 
 import java.util.Date;
 import java.util.List;
@@ -31,14 +31,14 @@ public class ExchangeResourceProvider implements IResourceProvider<IndexableMess
         if(exchange == null){
             try {
                 exchange = new ExchangeClient(
-                        indexableExchange.getUrl(), null,
-                        indexableExchange.getUserid(),
-                        indexableExchange.getPassword());
+                        indexableExchange.getExchangeUrl(), null,
+                        indexableExchange.getExchangeUserid(),
+                        indexableExchange.getExchangePassword());
                 // optional: exchange.setRequestVersion(RequestServerVersion.EXCHANGE_2013);
             }catch(Exception e){
                 throw new IllegalArgumentException(
                     "Unable to establish a connection with Exchange server URL [" +
-                    indexableExchange.getUrl() +"]. Root cause is " + e.getMessage(), e);
+                    indexableExchange.getExchangeUrl() +"]. Root cause is " + e.getMessage(), e);
             }
         }
         return exchange;
@@ -65,7 +65,7 @@ public class ExchangeResourceProvider implements IResourceProvider<IndexableMess
         return messages.next();
     }
 
-    /**
+    /** feedback from consumer threads - indexablehandler class
      * {@inheritDoc}
      */
     @Override

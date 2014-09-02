@@ -9,8 +9,6 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Date;
 
-import ikube.action.index.handler.internet.exchange.IndexableMessage;
-
 /**
  * @author David Turley
  * @version 01.00
@@ -25,19 +23,21 @@ public class IndexableExchange extends Indexable {
     @NotNull
     @Pattern(regexp = "^(https?|http?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]", message = "The url must be valid")
     @Attribute(field = false, description = "This is the endpoint url for the web service")
-    private String url;
+    private String exchangeUrl;
 
     @Column
     @Size(min = 1, max = 256)
     @Attribute(field = false, description = "This is the userid to login to the server")
-    private String userid;
+    private String exchangeUserid;
 
     @Column
     @Size(min = 1, max = 256)
     @Attribute(field = false, description = "This is the password to login to the server")
-    private String password;
+    private String exchangePassword;
 
-    private IndexableMessage indexableMessage;
+    @Column
+    @Attribute(field = false, description = "This is the date to start indexing all user email messages from (message send date). Null indicates start from the beginning of time.")
+    private Date   indexFromDate;
 
     @Column
     @Size(min = 4, max = 60)
@@ -49,88 +49,79 @@ public class IndexableExchange extends Indexable {
             "The message is an unique identifier of last message processed successfully. Null indicates start from the beginning.")
     private String  resumeIndexFromMessage;
 
-    @Column
-    @Attribute(field = false, description = "This is the date to start indexing all user email messages from (message send date). Null indicates start from the beginning of time.")
-    private Date   indexFromDate;
-
     /**
      * Type names and format to be indexed.
      */
     @Column
-    @Attribute(field = false, description = "?")
+    @Attribute(field = false, description = "the mailbox owners email address")
     private String messageMailboxOwnerField;
     @Column
-    @Attribute(field = false, description = "?")
+    @Attribute(field = false, description = "the mailbox namem for instance Inbox")
     private String messageMailboxNameField;
     @Column
-    @Attribute(field = false, description = "?")
-    private String messageMessageIdField;
+    @Attribute(field = false, description = "the message unique exchange identifier")
+    private String messageExchangeIdField;
     @Column
-    @Attribute(field = false, description = "?")
+    @Attribute(field = false, description = "the message unique internet identifier")
+    private String messageInternetIdField;
+    @Column
+    @Attribute(field = false, description = "the message unique conversation identifier")
     private String messageConversationIdField;
     @Column
-    @Attribute(field = false, description = "?")
+    @Attribute(field = false, description = "the date and time the message was created")
     private String messageCreatedDateField;
     @Column
-    @Attribute(field = false, description = "?")
+    @Attribute(field = false, description = "the date and time the message was sent to the recipients, which includes the mailbox owner.")
     private String messageSentDateField;
     @Column
-    @Attribute(field = false, description = "?")
+    @Attribute(field = false, description = "the date and time the message was received by the mailbox owner")
     private String messageReceivedDateField;
     @Column
-    @Attribute(field = false, description = "?")
+    @Attribute(field = false, description = "whom the message is from")
     private String messageFromField;
     @Column
-    @Attribute(field = false, description = "?")
+    @Attribute(field = false, description = "the to recipients of the message")
     private String messageToField;
     @Column
-    @Attribute(field = false, description = "?")
+    @Attribute(field = false, description = "the cc recipients of the message")
     private String messageBccField;
     @Column
-    @Attribute(field = false, description = "?")
+    @Attribute(field = false, description = "the bcc recipients of the message")
     private String messageCcField;
     @Column
-    @Attribute(field = false, description = "?")
+    @Attribute(field = false, description = "the message body subject title")
     private String messageSubjectField;
     @Column
-    @Attribute(field = false, description = "?")
+    @Attribute(field = false, description = "the message body text")
     private String messageBodyField;
     @Column
-    @Attribute(field = false, description = "bodyType HTML, TEXT, BEST.")
+    @Attribute(field = false, description = "the message body text type - HTML, TEXT, BEST.")
     private String messageBodyTypeField;
 
 
 
-    public String getUrl() {
-        return url;
+    public String getExchangeUrl() {
+        return exchangeUrl;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setExchangeUrl(String url) {
+        this.exchangeUrl = url;
     }
 
-    public String getUserid() {
-        return userid;
+    public String getExchangeUserid() {
+        return exchangeUserid;
     }
 
-    public void setUserid(String userid) {
-        this.userid = userid;
+    public void setExchangeUserid(String userid) {
+        this.exchangeUserid = userid;
     }
 
-    public String getPassword() {
-        return password;
+    public String getExchangePassword() {
+        return exchangePassword;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public IndexableMessage getIndexableMessage() {
-        return indexableMessage;
-    }
-
-    public void setIndexableMessage(IndexableMessage indexableMessage) {
-        this.indexableMessage = indexableMessage;
+    public void setExchangePassword(String password) {
+        this.exchangePassword = password;
     }
 
     public Date   getIndexFromDate(){ return indexFromDate; }
@@ -162,12 +153,20 @@ public class IndexableExchange extends Indexable {
         this.messageMailboxNameField = messageMailboxNameField;
     }
 
-    public String getMessageMessageIdField() {
-        return messageMessageIdField;
+    public String getMessageExchangeIdField() {
+        return messageExchangeIdField;
     }
 
-    public void setMessageMessageIdField(String messageMessageIdField) {
-        this.messageMessageIdField = messageMessageIdField;
+    public void setMessageExchangeIdField(String messageMessageIdField) {
+        this.messageExchangeIdField = messageMessageIdField;
+    }
+
+    public String getMessageInternetIdField() {
+        return messageInternetIdField;
+    }
+
+    public void setMessageInternetIdField(String messageInternetIdField) {
+        this.messageInternetIdField = messageInternetIdField;
     }
 
     public String getMessageConversationIdField() {
