@@ -66,17 +66,19 @@ public class IndexableInternet extends Indexable {
 	@Max(value = 60000)
 	@Attribute(field = false, description = "This is the length of time that the crawler will wait for a particular page to be delivered")
 	private int timeout;
+
 	@Column
 	@Size(min = 1, max = 256)
 	@Attribute(field = false, description = "This is the name of the title field in the Lucene index")
 	private String titleFieldName;
+
 	@Column
 	@Size(min = 1, max = 256)
 	@Attribute(field = false, description = "This is the name of the id field in the Lucene index")
 	private String idFieldName;
 	@Column
 	@Size(min = 1, max = 256)
-	@Attribute(field = false, description = "This is the name of the content field int he Lucene index")
+	@Attribute(field = false, description = "This is the name of the content field in the Lucene index")
 	private String contentFieldName;
 	@Column
 	@Attribute(field = false, description = "This is the maximum length of bytes that will be read from the input stream")

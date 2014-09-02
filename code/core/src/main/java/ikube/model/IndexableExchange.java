@@ -8,6 +8,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.List;
+
 import ikube.action.index.handler.internet.exchange.IndexableMessage;
 
 /**
@@ -19,11 +21,6 @@ import ikube.action.index.handler.internet.exchange.IndexableMessage;
 @SuppressWarnings("serial")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class IndexableExchange extends Indexable {
-
-    private transient String subject;
-    private transient String body;
-    private transient String sender;
-    private transient String recipient;
 
     @Column
     @NotNull
@@ -56,6 +53,54 @@ public class IndexableExchange extends Indexable {
     @Column
     @Attribute(field = false, description = "This is the date to start indexing all user email messages from (message send date). Null indicates start from the beginning of time.")
     private Date   indexFromDate;
+
+    /**
+     * Type names and format to be indexed.
+     */
+    @Column
+    @Attribute(field = false, description = "?")
+    private String messageMailboxOwnerField;
+    @Column
+    @Attribute(field = false, description = "?")
+    private String messageMailboxNameField;
+    @Column
+    @Attribute(field = false, description = "?")
+    private String messageMessageIdField;
+    @Column
+    @Attribute(field = false, description = "?")
+    private String messageConversationIdField;
+    @Column
+    @Attribute(field = false, description = "?")
+    private String messageCreatedDateField;
+    @Column
+    @Attribute(field = false, description = "?")
+    private String messageSentDateField;
+    @Column
+    @Attribute(field = false, description = "?")
+    private String messageReceivedDateField;
+    @Column
+    @Attribute(field = false, description = "?")
+    private String messageFromField;
+    @Column
+    @Attribute(field = false, description = "?")
+    private String messageToField;
+    @Column
+    @Attribute(field = false, description = "?")
+    private String messageBccField;
+    @Column
+    @Attribute(field = false, description = "?")
+    private String messageCcField;
+    @Column
+    @Attribute(field = false, description = "?")
+    private String messageSubjectField;
+    @Column
+    @Attribute(field = false, description = "?")
+    private String messageBodyField;
+    @Column
+    @Attribute(field = false, description = "bodyType HTML, TEXT, BEST.")
+    private String messageBodyTypeField;
+
+
 
     public String getUrl() {
         return url;
@@ -100,4 +145,117 @@ public class IndexableExchange extends Indexable {
     public void setResumeIndexFrom(String emailAddress){ this.resumeIndexFrom = emailAddress; }
 
     public void setResumeIndexFromMessage(String emailMessageId){ this.resumeIndexFromMessage = emailMessageId; }
+
+
+    public String getMessageMailboxOwnerField() {
+        return messageMailboxOwnerField;
+    }
+
+    public void setMessageMailboxOwnerField(String messageMailboxOwnerField) {
+        this.messageMailboxOwnerField = messageMailboxOwnerField;
+    }
+
+    public String getMessageMailboxNameField() {
+        return messageMailboxNameField;
+    }
+
+    public void setMessageMailboxNameField(String messageMailboxNameField) {
+        this.messageMailboxNameField = messageMailboxNameField;
+    }
+
+    public String getMessageMessageIdField() {
+        return messageMessageIdField;
+    }
+
+    public void setMessageMessageIdField(String messageMessageIdField) {
+        this.messageMessageIdField = messageMessageIdField;
+    }
+
+    public String getMessageConversationIdField() {
+        return messageConversationIdField;
+    }
+
+    public void setMessageConversationIdField(String messageConversationIdField) {
+        this.messageConversationIdField = messageConversationIdField;
+    }
+
+    public String getMessageCreatedDateField() {
+        return messageCreatedDateField;
+    }
+
+    public void setMessageCreatedDateField(String messageCreatedDateField) {
+        this.messageCreatedDateField = messageCreatedDateField;
+    }
+
+    public String getMessageSentDateField() {
+        return messageSentDateField;
+    }
+
+    public void setMessageSentDateField(String messageSentDateField) {
+        this.messageSentDateField = messageSentDateField;
+    }
+
+    public String getMessageReceivedDateField() {
+        return messageReceivedDateField;
+    }
+
+    public void setMessageReceivedDateField(String messageReceivedDateField) {
+        this.messageReceivedDateField = messageReceivedDateField;
+    }
+
+    public String getMessageFromField() {
+        return messageFromField;
+    }
+
+    public void setMessageFromField(String messageFromField) {
+        this.messageFromField = messageFromField;
+    }
+
+    public String getMessageToField() {
+        return messageToField;
+    }
+
+    public void setMessageToField(String messageToField) {
+        this.messageToField = messageToField;
+    }
+
+    public String getMessageBccField() {
+        return messageBccField;
+    }
+
+    public void setMessageBccField(String messageBccField) {
+        this.messageBccField = messageBccField;
+    }
+
+    public String getMessageCcField() {
+        return messageCcField;
+    }
+
+    public void setMessageCcField(String messageCcField) {
+        this.messageCcField = messageCcField;
+    }
+
+    public String getMessageSubjectField() {
+        return messageSubjectField;
+    }
+
+    public void setMessageSubjectField(String messageSubjectField) {
+        this.messageSubjectField = messageSubjectField;
+    }
+
+    public String getMessageBodyField() {
+        return messageBodyField;
+    }
+
+    public void setMessageBodyField(String messageBodyField) {
+        this.messageBodyField = messageBodyField;
+    }
+
+    public String getMessageBodyTypeField() {
+        return messageBodyTypeField;
+    }
+
+    public void setMessageBodyTypeField(String messageBodyTypeField) {
+        this.messageBodyTypeField = messageBodyTypeField;
+    }
 }
