@@ -1,5 +1,6 @@
 package ikube.action.index.handler.internet.exchange;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.independentsoft.exchange.ServiceException;
@@ -14,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
+@Ignore
 public class ExchangeClientTest {
     private final Logger log = Logger.getLogger(this.getClass().getName());
     

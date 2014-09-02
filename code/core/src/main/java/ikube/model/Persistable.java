@@ -1,5 +1,7 @@
 package ikube.model;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -13,6 +15,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @SuppressWarnings("serial")
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @EntityListeners(value = {TimestampListener.class})
 public abstract class Persistable implements Serializable {

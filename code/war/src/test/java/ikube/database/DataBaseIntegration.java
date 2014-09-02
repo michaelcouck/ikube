@@ -238,12 +238,6 @@ public class DataBaseIntegration extends IntegrationTest {
 
         Long total = dataBase.count(Url.class);
         assertEquals(inserted, total.intValue());
-
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put(IConstants.HASH, Long.valueOf(5));
-        parameters.put(IConstants.INDEXED, Boolean.FALSE);
-        total = dataBase.count(Url.class, parameters);
-        assertEquals(1, total.intValue());
     }
 
     @Test

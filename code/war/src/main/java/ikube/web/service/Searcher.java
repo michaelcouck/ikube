@@ -1,8 +1,8 @@
 package ikube.web.service;
 
-import javax.servlet.http.HttpServletRequest;
+import ikube.model.Search;
+
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
 /**
  * This is the base class for all searcher web services, common logic and properties. Also all the
@@ -78,16 +78,12 @@ public abstract class Searcher extends Resource {
     /**
      * Search json
      */
-    public abstract Response search(
-            final HttpServletRequest request,
-            final UriInfo uriInfo);
+    public abstract Response search(final Search search);
 
     /**
      * Search Json, all fields in all indexes, just for convenience.
      */
     @SuppressWarnings("UnusedDeclaration")
-    public abstract Response searchAll(
-            final HttpServletRequest request,
-            final UriInfo uriInfo);
+    public abstract Response searchAll(final Search search);
 
 }

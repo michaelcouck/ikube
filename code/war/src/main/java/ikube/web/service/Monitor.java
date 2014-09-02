@@ -15,9 +15,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
@@ -37,7 +35,9 @@ import java.util.*;
 @Scope(Monitor.REQUEST)
 @Consumes(MediaType.TEXT_PLAIN)
 @Produces(MediaType.APPLICATION_JSON)
-@Api(description = "The monitoring rest resource")
+@Api(description = "This resource provides the state of the system, like the indexes " +
+        "configured, the processing statistics, and fields in indexes and so on. It also provides " +
+        "actions like terminating the indexing and deleting an index on the fil system.")
 public class Monitor extends Resource {
 
     /**
@@ -67,52 +67,38 @@ public class Monitor extends Resource {
 
     @GET
     @Path(Monitor.FIELDS)
-    @Api(type = "GET",
-            uri = "/ikube/service/monitor/fields",
-            description ="This method will return the names of the Lucene fields in an index.",
-            consumes = String.class,
+    @Api(description = "This method will return the names of the Lucene fields in an index.",
             produces = String[].class)
     public Response fields(@QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
         if (StringUtils.isEmpty(indexName)) {
-            return buildJsonResponse(new String[0]);
+            return buildResponse(new String[0]);
         }
-        return buildJsonResponse(monitorService.getIndexFieldNames(indexName));
+        return buildResponse(monitorService.getIndexFieldNames(indexName));
     }
 
     @GET
     @Path(Monitor.INDEXES)
-    @Api(type = "GET",
-            uri = "/ikube/service/monitor/indexes",
-            description ="This method will return the names of all the indexes that are defined in the system/instance, this " +
-                    "will be the default indexes like autocomplete and the user defined indexes.",
-            consumes = Void.class,
+    @Api(description = "This method will return the names of all the indexes that are defined in the system/instance, this " +
+            "will be the default indexes like autocomplete and the user defined indexes.",
             produces = String[].class)
     public Response indexes() {
-        return buildJsonResponse(monitorService.getIndexNames());
+        return buildResponse(monitorService.getIndexNames());
     }
 
     @GET
     @Path(Monitor.INDEX_CONTEXT)
-    @Api(type = "GET",
-            uri = "/ikube/service/monitor/index-context",
-            description ="This method will return an index context, which is a holder for an inddex/collection. Please " +
-                    "refer to the documentation for the definition of a context and an index and how to configure one in " +
-                    "Spring.",
-            consumes = Void.class,
-            produces = IndexContext.class)
-    public Response indexContext(
-            @QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
+    @Api(description = "This method will return an index context, which is a holder for an inddex/collection. Please " +
+            "refer to the documentation for the definition of a context and an index and how to configure one in " +
+            "Spring.")
+    public Response indexContext(@QueryParam(value = IConstants.INDEX_NAME) final String indexName) {
         IndexContext indexContext = cloneIndexContext(monitorService.getIndexContext(indexName));
-        return buildJsonResponse(indexContext);
+        return buildResponse(indexContext);
     }
 
     @GET
     @Path(Monitor.INDEX_CONTEXTS)
-    @Api(type = "GET",
-            uri = "/ikube/service/monitor/index-contexts",
-            description ="This method will return a collection of all the index contexts that are defined in the " +
-                    "system, sorted by a user defined field, similar to the above.",
-            consumes = String.class,
+    @Api(description = "This method will return a collection of all the index contexts that are defined in the " +
+            "system, sorted by a user defined field, similar to the above.",
             produces = ArrayList.class)
     public Response indexContexts(
             @QueryParam(value = IConstants.SORT_FIELD) final String sortField,
@@ -133,29 +119,22 @@ public class Monitor extends Resource {
                 }
             });
         }
-        return buildJsonResponse(indexContexts);
+        return buildResponse(indexContexts);
     }
 
     @GET
     @Path(Monitor.SERVER)
-    @Api(type = "GET",
-            uri = "/ikube/service/monitor/server",
-            description ="This method will return the local server object, which holds information on the server, the " +
-                    "contexts defined, the snapshots of the system etc.",
-            consumes = Void.class,
-            produces = Server.class)
+    @Api(description = "This method will return the local server object, which holds information on the server, the " +
+            "contexts defined, the snapshots of the system etc.")
     public Response server() {
         Server server = clusterManager.getServer();
         Server cloneServer = cloneServer(server);
-        return buildJsonResponse(cloneServer);
+        return buildResponse(cloneServer);
     }
 
     @GET
     @Path(Monitor.SERVERS)
-    @Api(type = "GET",
-            uri = "/ikube/service/monitor/servers",
-            description ="Similar to the above, this method will return all the servers in the cluster.",
-            consumes = Void.class,
+    @Api(description = "Similar to the above, this method will return all the servers in the cluster.",
             produces = ArrayList.class)
     public Response servers() {
         List<Server> result = new ArrayList<>();
@@ -165,17 +144,14 @@ public class Monitor extends Resource {
             Server cloneServer = cloneServer(server);
             result.add(cloneServer);
         }
-        return buildJsonResponse(result);
+        return buildResponse(result);
     }
 
     @GET
     @Path(Monitor.INDEXING)
     @SuppressWarnings({"UnnecessaryBoxing", "unchecked"})
-    @Api(type = "GET",
-            uri = "/ikube/service/monitor/indexing",
-            description ="This method will return the indexing statistics for the local server, in a matrix " +
-                    "with the documents per minute and the time line for the indexing of the local server.",
-            consumes = Void.class,
+    @Api(description = "This method will return the indexing statistics for the local server, in a matrix " +
+            "with the documents per minute and the time line for the indexing of the local server.",
             produces = String.class)
     public Response indexingStatistics() {
         Map<String, Server> servers = clusterManager.getServers();
@@ -206,18 +182,15 @@ public class Monitor extends Resource {
         }
         data[serverIndex] = times;
         Object[][] invertedData = invertMatrix(data);
-        String stringified = Arrays.deepToString(invertedData);
-        return buildResponse().entity(stringified).build();
+        // String stringified = Arrays.deepToString(invertedData);
+        return buildResponse(invertedData);
     }
 
     @GET
     @Path(Monitor.SEARCHING)
-    @Api(type = "GET",
-            uri = "/ikube/service/monitor/searching",
-            description ="This method will return the searching statistics for the local server, also a matrix " +
-                    "of searches per minute and time line, converted into a string for easier Json rendering and graph " +
-                    "creation using JavaScript.",
-            consumes = Void.class,
+    @Api(description = "This method will return the searching statistics for the local server, also a matrix " +
+            "of searches per minute and time line, converted into a string for easier Json rendering and graph " +
+            "creation using JavaScript.",
             produces = String.class)
     @SuppressWarnings({"UnnecessaryBoxing", "unchecked"})
     public Response searchingStatistics() {
@@ -249,17 +222,14 @@ public class Monitor extends Resource {
         }
         data[serverIndex] = times;
         Object[][] invertedData = invertMatrix(data);
-        String stringified = Arrays.deepToString(invertedData);
-        return buildResponse().entity(stringified).build();
+        // String stringified = Arrays.deepToString(invertedData);
+        return buildResponse(invertedData);
     }
 
     @GET
     @Path(Monitor.ACTIONS)
-    @Api(type = "GET",
-            uri = "/ikube/service/monitor/actions",
-            description ="This method will return the actions that are currently being executed in the " +
-                    "whole cluster, i.e. all the action running on all the servers.",
-            consumes = Void.class,
+    @Api(description = "This method will return the actions that are currently being executed in the " +
+            "whole cluster, i.e. all the action running on all the servers.",
             produces = String.class)
     public Response actions() {
         List<Action> clonedActions = new ArrayList<>();
@@ -274,127 +244,94 @@ public class Monitor extends Resource {
                 clonedActions.add(clonedAction);
             }
         }
-        return buildJsonResponse(clonedActions);
+        return buildResponse(clonedActions);
     }
 
     @POST
     @Path(Monitor.START)
     @Consumes(MediaType.APPLICATION_JSON)
-    @Api(type = "POST",
-            uri = "/ikube/service/monitor/start",
-            description ="This method will start and index running, setting the maximum age to zero, and so " +
-                    "triggering the logic to start the job.",
-            consumes = String.class,
-            produces = String.class)
+    @Api(description = "This method will start and index running, setting the maximum age to zero, and so " +
+            "triggering the logic to start the job.")
     public Response start(final String indexName) {
         monitorService.start(indexName);
-        return buildResponse().build();
+        return buildResponse(null);
     }
 
     @POST
     @Path(Monitor.TERMINATE)
     @Consumes(MediaType.APPLICATION_JSON)
-    @Api(type = "POST",
-            uri = "/ikube/service/monitor/terminate",
-            description ="This method will terminate a job, by terminating the threads that the job has spawned. This " +
-                    "may not always terminate all threads as Java does not support thread termination directly, you have " +
-                    "to ask for the threads to terminate naturally.",
-            consumes = String.class,
-            produces = String.class)
+    @Api(description = "This method will terminate a job, by terminating the threads that the job has spawned. This " +
+            "may not always terminate all threads as Java does not support thread termination directly, you have " +
+            "to ask for the threads to terminate naturally.")
     public Response terminate(final String indexName) {
         monitorService.terminate(indexName);
-        return buildResponse().build();
+        return buildResponse(null);
     }
 
     @GET
     @Path(Monitor.GET_PROPERTIES)
     @Consumes(MediaType.APPLICATION_JSON)
-    @Api(type = "GET",
-            uri = "/ikube/service/monitor/get-properties",
-            description ="This method will get all the properties that are defined in the properties " +
-                    "files for this instance, i.e. the local server.",
-            consumes = Void.class,
+    @Api(description = "This method will get all the properties that are defined in the properties " +
+            "files for this instance, i.e. the local server.",
             produces = HashMap.class)
     public Response getProperties() {
-        return buildJsonResponse(monitorService.getProperties());
+        return buildResponse(monitorService.getProperties());
     }
 
     @POST
-    @SuppressWarnings("unchecked")
     @Path(Monitor.SET_PROPERTIES)
     @Consumes(MediaType.APPLICATION_JSON)
-    @Api(type = "POST",
-            uri = "/ikube/service/monitor/set-properties",
-            description ="This method will set the properties for the application, taking a map of properties and " +
-                    "replacing them by the ones in the method signature. Writing the properties to the properties files " +
-                    "on the file system.",
-            consumes = HashMap.class,
-            produces = String.class)
-    public Response setProperties(
-            @Context final HttpServletRequest request) throws IOException {
-        Map<String, String> filesAndProperties = unmarshall(Map.class, request);
+    @Api(description = "This method will set the properties for the application, taking a map of properties and " +
+            "replacing them by the ones in the method signature. Writing the properties to the properties files " +
+            "on the file system.",
+            consumes = HashMap.class)
+    public Response setProperties(final Map<String, String> filesAndProperties) throws IOException {
         monitorService.setProperties(filesAndProperties);
-        return buildResponse().build();
+        return buildResponse(null);
     }
 
     @POST
     @Path(Monitor.TERMINATE_ALL)
     @Consumes(MediaType.APPLICATION_JSON)
-    @Api(type = "GET",
-            uri = "/ikube/service/monitor/terminate-all",
-            description ="This method will terminate all the jobs in teh system. Essentially by destroying " +
-                    "all the thread pools and the underlying threads in them.",
-            consumes = Void.class,
-            produces = String.class)
+    @Api(description = "This method will terminate all the jobs in teh system. Essentially by destroying " +
+            "all the thread pools and the underlying threads in them.")
     public Response terminateAll() {
         monitorService.terminateAll();
-        return buildResponse().build();
+        return buildResponse(null);
     }
 
     @POST
     @Path(Monitor.STARTUP_ALL)
     @Consumes(MediaType.APPLICATION_JSON)
-    @Api(type = "POST",
-            uri = "/ikube/service/monitor/startup-all",
-            description ="This method will start all the thread pools in teh application, and thereby start the " +
-                    "jobs and schedules too.",
-            consumes = Void.class,
-            produces = String.class)
+    @Api(description = "This method will start all the thread pools in teh application, and thereby start the " +
+            "jobs and schedules too.")
     public Response startupAll() {
         monitorService.startupAll();
-        return buildResponse().build();
+        return buildResponse(null);
     }
 
     @POST
     @Path(Monitor.DELETE_INDEX)
     @Consumes(MediaType.APPLICATION_JSON)
-    @Api(type = "POST",
-            uri = "/ikube/service/monitor/delete-index",
-            description ="This method will delete the file system index that is specified, including any backup " +
-                    "index that has been written to the file system. This method is quite brutal, the index will not " +
-                    "be closed, it will just be deleted.",
-            consumes = Void.class,
-            produces = String.class)
+    @Api(description = "This method will delete the file system index that is specified, including any backup " +
+            "index that has been written to the file system. This method is quite brutal, the index will not " +
+            "be closed, it will just be deleted.")
     public Response delete(final String indexName) {
         long time = System.currentTimeMillis();
         Event startEvent = IListener.EventGenerator.getEvent(Event.DELETE_INDEX, time, indexName, Boolean.FALSE);
         logger.info("Sending delete event : " + ToStringBuilder.reflectionToString(startEvent));
         clusterManager.sendMessage(startEvent);
-        return buildResponse().build();
+        return buildResponse(null);
     }
 
     @POST
     @Path(Monitor.CPU_THROTTLING)
     @Consumes(MediaType.APPLICATION_JSON)
-    @Api(type = "GET",
-            uri = "/ikube/service/monitor/cpu-throttling",
-            description ="This method will toggle the cpu throttling functionality. This will slow down the processing " +
-                    "when the cpu exceeds a certain threshold per core, defined by the user.",
-            consumes = Void.class,
-            produces = String.class)
+    @Api(description = "This method will toggle the cpu throttling functionality. This will slow down the processing " +
+            "when the cpu exceeds a certain threshold per core, defined by the user.")
     public Response cpuThrottling() {
         monitorService.cpuThrottling();
-        return buildResponse().build();
+        return buildResponse(null);
     }
 
     private Server cloneServer(final Server server) {

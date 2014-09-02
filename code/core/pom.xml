@@ -14,16 +14,18 @@
 	<parent>
 		<groupId>ikube</groupId>
 		<artifactId>ikube</artifactId>
-        <version>5.0.2</version>
+        <version>5.1.0</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
 	<build>
 		<plugins>
+            <!--suppress MavenDuplicatePluginInspection -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
             </plugin>
+            <!--suppress MavenDuplicatePluginInspection -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>

@@ -29,7 +29,8 @@ import java.util.List;
 import java.util.concurrent.ForkJoinTask;
 
 /**
- * This class performs the indexing of tables. It is the primary focus of Ikube. This class is essentially a database crawler, and is multi threaded.
+ * This class performs the indexing of tables. It is the primary focus of Ikube. This class is essentially a database crawler,
+ * and is multi threaded.
  * <p/>
  * Tables are hierarchical, as such the configuration is also. The operation is as follows:
  * <p/>
@@ -51,10 +52,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
      * {@inheritDoc}
      */
     @Override
-    public ForkJoinTask<?> handleIndexableForked(
-            final IndexContext indexContext,
-            final IndexableTable indexableTable)
-            throws Exception {
+    public ForkJoinTask<?> handleIndexableForked(final IndexContext indexContext, final IndexableTable indexableTable) throws Exception {
         IResourceProvider<ResultSet> resourceProvider = new TableResourceProvider(indexContext, indexableTable);
         return getRecursiveAction(indexContext, indexableTable, resourceProvider);
     }
@@ -63,10 +61,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
      * {@inheritDoc}
      */
     @Override
-    protected List<?> handleResource(
-            final IndexContext indexContext,
-            final IndexableTable indexableTable,
-            final Object resource) {
+    protected List<?> handleResource(final IndexContext indexContext, final IndexableTable indexableTable, final Object resource) {
         ResultSet resultSet = (ResultSet) resource;
         IContentProvider<IndexableColumn> contentProvider = new ColumnContentProvider();
         try {
@@ -91,13 +86,8 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
         return null;
     }
 
-    @SuppressWarnings("rawtypes")
-    protected void handleRow(
-            final IndexableTable indexableTable,
-            final ResultSet resultSet,
-            final Document currentDocument,
-            final IContentProvider<IndexableColumn> contentProvider)
-            throws Exception {
+    protected void handleRow(final IndexableTable indexableTable, final ResultSet resultSet, final Document currentDocument,
+                             final IContentProvider<IndexableColumn> contentProvider) throws Exception {
         StringBuilder builder = new StringBuilder();
         indexableTable.setContent(builder);
         // We have results from the table and we are already on the first result
@@ -127,12 +117,10 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
      * This method handles a column. Essentially what this means is that the data from the table is extracted and added to the document, in the field specified.
      *
      * @param indexableColumn the column to extract the data from and add to the document
-     * @param document  the document to add the data to using the field name specified in the column definition
+     * @param document        the document to add the data to using the field name specified in the column definition
      * @throws Exception
      */
-    protected void handleColumn(
-            final IContentProvider<IndexableColumn> contentProvider,
-            final IndexableColumn indexableColumn, final Document document)
+    protected void handleColumn(final IContentProvider<IndexableColumn> contentProvider, final IndexableColumn indexableColumn, final Document document)
             throws Exception {
         InputStream inputStream = null;
         OutputStream parsedOutputStream = null;

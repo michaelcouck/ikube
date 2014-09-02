@@ -1,7 +1,6 @@
 package ikube.search;
 
 import ikube.IConstants;
-import ikube.action.index.analyzer.StemmingAnalyzer;
 import ikube.search.spelling.SpellingChecker;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -444,7 +443,6 @@ public abstract class Search {
             exception.printStackTrace(new PrintWriter(outputStream));
             statistics.put(IConstants.EXCEPTION, exception.getMessage());
             statistics.put(IConstants.EXCEPTION_STACK, outputStream.toString());
-            statistics.put(IConstants.EXCEPTION_MESSAGE, exception.getMessage());
         }
         results.add(statistics);
     }

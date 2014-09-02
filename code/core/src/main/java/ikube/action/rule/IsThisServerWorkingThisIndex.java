@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author Michael Couck
  * @version 01.00
- * @since 03.02.2014
+ * @since 03-02-2014
  */
 public class IsThisServerWorkingThisIndex extends ARule<IndexContext> {
 

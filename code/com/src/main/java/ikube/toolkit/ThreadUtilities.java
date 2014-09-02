@@ -64,30 +64,33 @@ public final class ThreadUtilities {
      *
      * @param name the name that was assigned to the future when it was submitted for execution
      */
-    public static synchronized void destroy(final String name) {
+    @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
+    public static void destroy(final String name) {
         List<Future<?>> futures = getFutures(name);
-        for (final Future<?> future : futures) {
-            if (future == null) {
-                LOGGER.info("Future null : WTF?");
-                continue;
-            }
-            if (future.isDone() || future.isCancelled()) {
-                LOGGER.debug("Future done : " + future + ", " + name);
-                continue;
-            }
-            int maxRetryCount = MAX_RETRY_COUNT;
-            while (maxRetryCount-- > 0) {
-                if (future.cancel(true) || future.isCancelled() || future.isDone()) {
-                    LOGGER.debug("Cancelled future : " + name + ", " + future + ", " + maxRetryCount);
-                    break;
+        synchronized (futures) {
+            for (final Future<?> future : futures) {
+                if (future == null) {
+                    LOGGER.info("Future null : WTF? Can't be : ");
+                    continue;
                 }
-                ThreadUtilities.sleep(1);
+                if (future.isDone() || future.isCancelled()) {
+                    LOGGER.debug("Future done : " + future + ", " + name);
+                    continue;
+                }
+                int maxRetryCount = MAX_RETRY_COUNT;
+                while (maxRetryCount-- > 0) {
+                    if (future.cancel(true) || future.isCancelled() || future.isDone()) {
+                        LOGGER.debug("Cancelled future : " + name + ", " + future + ", " + maxRetryCount);
+                        break;
+                    }
+                    ThreadUtilities.sleep(1);
+                }
+                if (!future.isCancelled() && !future.isDone()) {
+                    LOGGER.warn("Couldn't cancel future : " + name + ", " + future + ", " + maxRetryCount);
+                }
             }
-            if (!future.isCancelled() && !future.isDone()) {
-                LOGGER.warn("Couldn't cancel future : " + name + ", " + future + ", " + maxRetryCount);
-            }
+            futures.clear();
         }
-        futures.clear();
         cancelForkJoinPool(name);
     }
 
@@ -220,7 +223,10 @@ public final class ThreadUtilities {
     }
 
     public static void cancelAllForkJoinPools() {
-        Set<String> names = FORK_JOIN_POOLS.keySet();
+        if (FORK_JOIN_POOLS == null) {
+            return;
+        }
+        Set<String> names = new TreeSet<>(FORK_JOIN_POOLS.keySet());
         for (final String name : names) {
             cancelForkJoinPool(name);
         }

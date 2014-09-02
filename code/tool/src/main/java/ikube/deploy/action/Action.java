@@ -35,24 +35,24 @@ public abstract class Action implements IAction {
 
         int retry = RETRY;
         do {
-            SSHClient sshExec = null;
+            SSHClient sshClient = null;
             try {
-                sshExec = new SSHClient();
+                sshClient = new SSHClient();
                 logger.info("Connecting to : " + ip + " as " + username);
-                sshExec.setTimeout(Integer.MAX_VALUE);
-                sshExec.setConnectTimeout(Integer.MAX_VALUE);
-                sshExec.addHostKeyVerifier(new PromiscuousVerifier());
-                sshExec.connect(ip);
-                sshExec.authPassword(username, password.toCharArray());
+                sshClient.setTimeout(Integer.MAX_VALUE);
+                sshClient.setConnectTimeout(Integer.MAX_VALUE);
+                sshClient.addHostKeyVerifier(new PromiscuousVerifier());
+                sshClient.connect(ip);
+                sshClient.authPassword(username, password.toCharArray());
                 // sshExec.loadKnownHosts();
-                server.setSshExec(sshExec);
+                server.setSshExec(sshClient);
             } catch (final Exception e) {
                 handleException("Exception connecting to : " + ip + ", retrying : " + (retry > 0), e);
             } finally {
-                if ((server.getSshExec() == null || !server.getSshExec().isConnected()) && sshExec != null) {
+                if ((server.getSshExec() == null || !server.getSshExec().isConnected()) && sshClient != null) {
                     try {
-                        sshExec.disconnect();
-                        sshExec.close();
+                        sshClient.disconnect();
+                        sshClient.close();
                     } catch (final Exception e) {
                         handleException("Exception dis-connecting : ", e);
                     }

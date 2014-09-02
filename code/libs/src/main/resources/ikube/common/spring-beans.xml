@@ -376,6 +376,9 @@
     <bean
         name="ikube.action.index.handler.internet.ExchangeResourceHandler"
         class="ikube.action.index.handler.internet.ExchangeResourceHandler"/>
+    <bean
+        name="ikube.action.index.handler.filesystem.LogFileResourceHandler"
+        class="ikube.action.index.handler.filesystem.LogFileResourceHandler"/>
 
     <bean
         name="ikube.action.index.analyzer.NgramAnalyzer"

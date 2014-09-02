@@ -8,8 +8,9 @@ import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.UriUtilities;
 import org.gridgain.grid.*;
 import org.gridgain.grid.cache.GridCache;
-import org.gridgain.grid.compute.GridCompute;
+import org.gridgain.grid.compute.*;
 import org.gridgain.grid.messaging.GridMessaging;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.*;
@@ -64,7 +65,7 @@ public class ClusterManager extends AClusterManager {
             GridCache<String, String> gridCache = grid.cache(IConstants.IKUBE);
             gridCache.unlock(IConstants.IKUBE);
             return Boolean.TRUE;
-        } catch (GridException e) {
+        } catch (final GridException e) {
             throw new RuntimeException(e);
         } finally {
             notifyAll();
@@ -196,7 +197,7 @@ public class ClusterManager extends AClusterManager {
                 while (!gridFuture.isDone() && !gridFuture.isCancelled()) {
                     try {
                         gridFuture.get();
-                    } catch (GridException e) {
+                    } catch (final GridException e) {
                         throw new RuntimeException(e);
                     }
                 }
@@ -210,6 +211,26 @@ public class ClusterManager extends AClusterManager {
     @Override
     public <T> Future<T> sendTaskTo(final Server server, final Callable<T> callable) {
         GridCompute gridCompute = grid.compute();
+        Collection<GridNode> gridNodes = grid.nodes();
+        GridNode gridNode = gridNodes.iterator().next();
+//        gridCompute.execute(new GridComputeTask<Object, Object>() {
+//            @Nullable
+//            @Override
+//            public Map<? extends GridComputeJob, GridNode> map(final List<GridNode> subgrid, @Nullable final Object arg) throws GridException {
+//                return null;
+//            }
+//
+//            @Override
+//            public GridComputeJobResultPolicy result(final GridComputeJobResult res, final List<GridComputeJobResult> rcvd) throws GridException {
+//                return null;
+//            }
+//
+//            @Nullable
+//            @Override
+//            public Object reduce(final List<GridComputeJobResult> results) throws GridException {
+//                return null;
+//            }
+//        });
         throw new RuntimeException("Couldn't find member with address : " + server.getAddress());
     }
 
@@ -235,7 +256,7 @@ public class ClusterManager extends AClusterManager {
         try {
             GridCache<Object, Object> gridCache = grid.cache(IConstants.IKUBE);
             return gridCache.get(key);
-        } catch (GridException e) {
+        } catch (final GridException e) {
             throw new RuntimeException(e);
         }
     }
@@ -249,7 +270,7 @@ public class ClusterManager extends AClusterManager {
         try {
             GridCache<Object, Object> gridCache = grid.cache(IConstants.IKUBE);
             gridCache.put(key, value);
-        } catch (GridException e) {
+        } catch (final GridException e) {
             throw new RuntimeException(e);
         }
     }
@@ -262,8 +283,8 @@ public class ClusterManager extends AClusterManager {
     public void remove(final Object key) {
         try {
             GridCache<Object, Object> gridCache = grid.cache(IConstants.IKUBE);
-            gridCache.remove(null, key);
-        } catch (GridException e) {
+            gridCache.remove(key, get(key));
+        } catch (final GridException e) {
             throw new RuntimeException(e);
         }
     }
@@ -318,7 +339,7 @@ public class ClusterManager extends AClusterManager {
     public void remove(final String map, final Object key) {
         try {
             GridCache<Object, Object> gridCache = grid.cache(map);
-            gridCache.remove(null, key);
+            gridCache.remove(key, get(key));
         } catch (final GridException e) {
             throw new RuntimeException(e);
         }
@@ -331,7 +352,7 @@ public class ClusterManager extends AClusterManager {
     public void destroy() {
         try {
             grid.close();
-        } catch (GridException e) {
+        } catch (final GridException e) {
             throw new RuntimeException(e);
         }
     }

@@ -5,11 +5,13 @@ import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
-import mockit.Deencapsulation;
 import org.apache.lucene.document.Document;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -34,19 +36,16 @@ import static org.mockito.Mockito.*;
 public class IndexableFileSystemHandlerTest extends AbstractTest {
 
     private String analyticsFolderPath;
+    @Mock
     private FileResourceHandler resourceHandler;
-    /**
-     * Class under test.
-     */
+    @Spy
+    @InjectMocks
     private IndexableFileSystemHandler indexableFileSystemHandler;
 
     @Before
     public void before() {
         File analyticsFolder = FileUtilities.findDirectoryRecursively(new File("."), "analytics");
         analyticsFolderPath = FileUtilities.cleanFilePath(analyticsFolder.getAbsolutePath());
-        resourceHandler = mock(FileResourceHandler.class);
-        indexableFileSystemHandler = new IndexableFileSystemHandler();
-        Deencapsulation.setField(indexableFileSystemHandler, "resourceHandler", resourceHandler);
     }
 
     @Test
@@ -60,14 +59,13 @@ public class IndexableFileSystemHandlerTest extends AbstractTest {
     }
 
     @Test
-    public void handleLargeGzip() throws Exception {
-        File compressedFileDirectory = FileUtilities.findFileRecursively(new File("."), "enwiki-revisions.bz2").getParentFile();
-        String compressedFilePath = FileUtilities.cleanFilePath(compressedFileDirectory.getAbsolutePath());
-        IndexableFileSystem indexableFileSystem = getIndexableFileSystem(compressedFilePath);
-        final ForkJoinTask<?> forkJoinTask = indexableFileSystemHandler.handleIndexableForked(indexContext, indexableFileSystem);
-        ThreadUtilities.executeForkJoinTasks(this.getClass().getSimpleName(), 3, forkJoinTask);
-        ThreadUtilities.waitForFuture(forkJoinTask, Integer.MAX_VALUE);
-        verify(resourceHandler, atLeastOnce()).handleResource(any(IndexContext.class), any(IndexableFileSystem.class), any(Document.class), any(File.class));
+    public void handleFile() throws Exception {
+        File file = FileUtilities.findFileRecursively(new File("."), 1, "apache-tomcat-7.0.33.zip");
+        IndexableFileSystem indexableFileSystem = getIndexableFileSystem(analyticsFolderPath);
+        indexableFileSystem.setUnpackZips(Boolean.TRUE);
+        indexableFileSystemHandler.handleFile(indexContext, indexableFileSystem, file);
+        verify(resourceHandler, atLeast(100)).handleResource(any(IndexContext.class), any(IndexableFileSystem.class),
+                any(Document.class), any(File.class));
     }
 
     /**

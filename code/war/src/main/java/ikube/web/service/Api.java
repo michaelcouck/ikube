@@ -11,12 +11,12 @@ public @interface Api {
 
     String uri() default "";
 
-    String description() default "";
+    String type() default "";
 
-    Class<?> consumes() default String.class;
+    String description();
 
-    Class<?> produces() default String.class;
+    Class<?> consumes() default Object.class;
 
-    String type() default "GET";
+    Class<?> produces() default Object.class;
 
 }

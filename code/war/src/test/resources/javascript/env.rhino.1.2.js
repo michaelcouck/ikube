@@ -4749,7 +4749,7 @@ __extend__(Range.prototype, {
     get endOffset(){
 
     },
-    get collapsed(){
+    get visible(){
 
     },
     get commonAncestorContainer(){

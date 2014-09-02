@@ -30,7 +30,7 @@ public class ContentConcatenationStrategy extends AStrategy {
      */
     @Override
     public boolean aroundProcess(final IndexContext indexContext, final Indexable indexable, final Document document, final Object resource) throws Exception {
-        concatenateContent(indexable, resource);
+        concatenateContent(indexable, resource, new StringBuilder());
         return super.aroundProcess(indexContext, indexable, document, resource);
     }
 
@@ -39,25 +39,33 @@ public class ContentConcatenationStrategy extends AStrategy {
      */
     @Override
     public boolean postProcess(final IndexContext indexContext, final Indexable indexable, final Document document, final Object resource) throws Exception {
-        concatenateContent(indexable, resource);
+        String content = concatenateContent(indexable, resource, new StringBuilder());
+        indexable.setContent(content);
         return super.postProcess(indexContext, indexable, document, resource);
     }
 
-    void concatenateContent(final Indexable indexable, final Object resource) {
-        StringBuilder content = new StringBuilder();
+    String concatenateContent(final Indexable indexable, final Object resource, final StringBuilder content) {
+        if (content.length() > 0) {
+            content.append(" ");
+        }
         if (Url.class.isAssignableFrom(resource.getClass())) {
-            content.append(" \n\r");
             Url url = (Url) resource;
             if (url.getParsedContent() != null) {
                 content.append(url.getParsedContent());
             } else {
                 content.append(new String(url.getRawContent()));
             }
+        } else {
+            if (indexable.getContent() != null) {
+                content.append(StringUtils.stripToEmpty(indexable.getContent().toString()));
+            }
+            if (indexable.getChildren() != null) {
+                for (final Indexable child : indexable.getChildren()) {
+                    concatenateContent(child, resource, content);
+                }
+            }
         }
-        if (indexable.getContent() != null) {
-            content.append(StringUtils.stripToEmpty(indexable.getContent().toString()));
-        }
-        indexable.setContent(content.toString());
+        return content.toString().trim();
     }
 
 }

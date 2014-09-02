@@ -12,7 +12,7 @@ import java.util.Map;
 
 /**
  * This action will take files and folders from the machine that it is executing on, and
- * copy them to the target machine using scp.
+ * copy them to the target machine using scp. The logic will retry a few times, and then give up.
  *
  * @author Michael Couck
  * @version 01.00

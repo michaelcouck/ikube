@@ -30,11 +30,6 @@ import java.util.concurrent.RecursiveAction;
 public abstract class IndexableHandler<T extends Indexable> implements IIndexableHandler<T> {
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    /**
-     * The class that this handler can handle.
-     */
-    private Class<T> indexableClass;
     /**
      * This is the 'generic' handler for the resource, it just adds the document to the index writer.
      */
@@ -42,6 +37,10 @@ public abstract class IndexableHandler<T extends Indexable> implements IIndexabl
     @SuppressWarnings("SpringJavaAutowiringInspection")
     @Qualifier("ikube.action.index.handler.ResourceHandler")
     protected ResourceHandler<T> resourceHandler;
+    /**
+     * The class that this handler can handle.
+     */
+    private Class<T> indexableClass;
 
     /**
      * This method will return the recursive action. A {@link RecursiveAction} is one that will potentially spawn off
@@ -60,10 +59,7 @@ public abstract class IndexableHandler<T extends Indexable> implements IIndexabl
      * @param resourceProvider the resource provider for the type of handler, internet or database for example
      * @return the recursive action that has already spawned off the sub tasks, if necessary
      */
-    protected ForkJoinTask<?> getRecursiveAction(
-            final IndexContext indexContext,
-            final T indexable,
-            final IResourceProvider<?> resourceProvider) {
+    protected ForkJoinTask<?> getRecursiveAction(final IndexContext indexContext, final T indexable, final IResourceProvider<?> resourceProvider) {
         class RecursiveActionImpl extends RecursiveAction {
             /** @see IndexableHandler#getRecursiveAction(IndexContext, T, IResourceProvider) */
             @Override
@@ -76,11 +72,11 @@ public abstract class IndexableHandler<T extends Indexable> implements IIndexabl
                     // We call the resource provider here to get the next resource, the provider is
                     // defined in the sub-class. When there are no more resources we exit this task.
                     Object resource = resourceProvider.getResource();
-                    if (resource == null ||
-                            isDone() ||
-                            isCancelled() ||
-                            isCompletedNormally() ||
-                            isCompletedAbnormally()) {
+                    if (resource == null
+                            || isDone()
+                            || isCancelled()
+                            || isCompletedNormally()
+                            || isCompletedAbnormally()) {
                         int threadCount = RecursiveAction.getPool().getRunningThreadCount();
                         logger.info("Thread finished, resource : " +
                                 resource +
@@ -119,10 +115,7 @@ public abstract class IndexableHandler<T extends Indexable> implements IIndexabl
      * @param resourceProvider the resource provider for the indexable, file system, internet etc.
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void computeRecursive(
-            final IndexContext indexContext,
-            final T indexable,
-            final IResourceProvider<?> resourceProvider) {
+    private void computeRecursive(final IndexContext indexContext, final T indexable, final IResourceProvider<?> resourceProvider) {
         if (indexable.incrementThreads(-1) <= 0) {
             return;
         }
@@ -149,10 +142,7 @@ public abstract class IndexableHandler<T extends Indexable> implements IIndexabl
      * @param resource     the resource that is to be processed
      * @return the list of additional resources collected by the processing of the resource, can be empty or null
      */
-    protected abstract List<?> handleResource(
-            final IndexContext indexContext,
-            final T indexable,
-            final Object resource);
+    protected abstract List<?> handleResource(final IndexContext indexContext, final T indexable, final Object resource);
 
     /**
      * This method will log any exceptions, and increment the number of exceptions experienced by the handler. If the
@@ -166,10 +156,7 @@ public abstract class IndexableHandler<T extends Indexable> implements IIndexabl
      *                  ikube internally, but by Hazelcast and even Lucene, and these also halt the execution
      * @param messages  any strings that sill be printed along with the exceptions
      */
-    protected void handleException(
-            final Indexable indexable,
-            final Exception exception,
-            final String... messages) {
+    protected void handleException(final Indexable indexable, final Exception exception, final String... messages) {
         int totalExceptions = indexable.incrementAndGetExceptions();
         String message = messages != null ? Arrays.deepToString(messages) : "";
         if (totalExceptions > indexable.getMaxExceptions()) {

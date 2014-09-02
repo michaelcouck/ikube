@@ -61,7 +61,7 @@ public class IndexableInternetHandlerIntegration extends IntegrationTest {
         IndexWriter indexWriter = null;
         try {
             indexContext.setStrategies(null);
-            indexableInternet.setUrl("http://localhost:9090/ikube");
+            indexableInternet.setUrl("http://localhost:9090/ikube/system/dash.html");
 
             String ip = InetAddress.getLocalHost().getHostAddress();
             indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);

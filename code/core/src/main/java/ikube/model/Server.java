@@ -11,7 +11,7 @@ import java.util.List;
  * @version 01.00
  * @since 21-11-2010
  */
-@Entity()
+@Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Server extends Persistable implements Comparable<Server> {
 
@@ -26,7 +26,6 @@ public class Server extends Persistable implements Comparable<Server> {
     @Transient
     private List<Action> actions;
     @Transient
-    @SuppressWarnings("rawtypes")
     private List<IndexContext> indexContexts;
 
     /**
@@ -76,6 +75,10 @@ public class Server extends Persistable implements Comparable<Server> {
         return address;
     }
 
+    public void setAddress(final String address) {
+        this.address = address;
+    }
+
     public List<Action> getActions() {
         if (actions == null) {
             actions = new ArrayList<>();
@@ -106,10 +109,6 @@ public class Server extends Persistable implements Comparable<Server> {
             }
         }
         return Boolean.FALSE;
-    }
-
-    public void setAddress(final String address) {
-        this.address = address;
     }
 
     public long getAge() {
@@ -231,8 +230,8 @@ public class Server extends Persistable implements Comparable<Server> {
         return this.getAddress().compareTo(other.getAddress());
     }
 
-	public String toString() {
-		return getAddress() + ", ";
-	}
+    public String toString() {
+        return getAddress() + ", ";
+    }
 
 }

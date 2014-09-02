@@ -53,7 +53,7 @@ public class Reopen extends Open {
             }
             int newIndexReadersSize = newIndexReaders.size();
             if (newIndexReadersSize > 0) {
-                logger.warn("Reopening index : " + indexContext.getName());
+                logger.info("Reopening index : " + indexContext.getName());
                 IndexReader[] newIndexReaderArray = new IndexReader[newIndexReadersSize];
                 newIndexReaderArray = newIndexReaders.toArray(newIndexReaderArray);
                 IndexReader indexReader = new MultiReader(newIndexReaderArray, Boolean.FALSE);
@@ -61,7 +61,7 @@ public class Reopen extends Open {
                 indexContext.setMultiSearcher(indexSearcher);
 
                 if (oldIndexSearcher != null) {
-                    logger.warn("Closing old delta index reader : " + indexContext.getName());
+                    logger.info("Closing old delta index reader : " + indexContext.getName());
                     close(oldIndexSearcher.getIndexReader());
                 }
             }

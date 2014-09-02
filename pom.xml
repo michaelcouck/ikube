@@ -4,7 +4,7 @@
 	<groupId>ikube</groupId>
 	<artifactId>ikube</artifactId>
 	<packaging>pom</packaging>
-	<version>5.0.2</version>
+	<version>5.1.0</version>
 
     <scm>
         <url>https://github.com/michaelcouck/ikube</url>
@@ -41,7 +41,7 @@
 	</distributionManagement>
 
 	<properties>
-        <ikube-version>5.0.1-SNAPSHOT</ikube-version>
+        <ikube-version>5.1.0</ikube-version>
 
         <encoding>UTF8</encoding>
         <targetJdk>1.7</targetJdk>
@@ -135,7 +135,7 @@
                     <executions>
                         <execution>
                             <id>copy-configuration</id>
-                            <phase>install</phase>
+                            <phase>test</phase>
                             <configuration>
                                 <target>
                                     <!--<echo message="basedir : ${basedir}, ">basedir : ${basedir}</echo>
@@ -920,23 +920,23 @@
 			<scope>compile</scope>
 		</dependency>
 
-        <dependency>
-            <groupId>org.gridgain</groupId>
-            <artifactId>gridgain-platform</artifactId>
-            <version>${gridgain.version}</version>
-            <type>pom</type>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.gridgain</groupId>-->
+            <!--<artifactId>gridgain-platform</artifactId>-->
+            <!--<version>${gridgain.version}</version>-->
+            <!--<type>pom</type>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.gridgain</groupId>
             <artifactId>gridgain-streaming</artifactId>
             <version>${gridgain.version}</version>
-            <type>jar</type>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.gridgain</groupId>
             <artifactId>gridgain-datagrid</artifactId>
             <version>${gridgain.version}</version>
-            <type>jar</type>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
@@ -1047,12 +1047,6 @@
 					<artifactId>spring-web</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-mapper-asl</artifactId>
-			<version>1.9.9</version>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.social</groupId>
@@ -1226,32 +1220,6 @@
             <artifactId>jersey-json</artifactId>
             <version>${jersey-version}</version>
             <scope>compile</scope>
-            <!--<exclusions>
-                <exclusion>
-                    <artifactId>jettison</artifactId>
-                    <groupId>org.codehaus.jettison</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jackson-core-asl</artifactId>
-                    <groupId>org.codehaus.jackson</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jackson-mapper-asl</artifactId>
-                    <groupId>org.codehaus.jackson</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jackson-jaxrs</artifactId>
-                    <groupId>org.codehaus.jackson</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jackson-xc</artifactId>
-                    <groupId>org.codehaus.jackson</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>stax-api</artifactId>
-                    <groupId>javax.xml.stream</groupId>
-                </exclusion>
-            </exclusions>-->
         </dependency>
         <dependency>
             <groupId>com.sun.jersey</groupId>
@@ -1353,6 +1321,12 @@
             <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>-->
+        <dependency>
+            <groupId>org.neuroph</groupId>
+            <artifactId>neuroph-core</artifactId>
+            <version>2.9</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 	<repositories>
@@ -1457,6 +1431,16 @@
             <releases>
                 <enabled>true</enabled>
             </releases>
+        </pluginRepository>
+        <pluginRepository>
+            <id>sonatype-snapshot</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </pluginRepository>
 	</pluginRepositories>
 

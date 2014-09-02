@@ -1,9 +1,9 @@
 package ikube.analytics.weka;
 
 import ikube.AbstractTest;
-import ikube.IConstants;
 import ikube.model.Analysis;
 import ikube.model.Context;
+import ikube.toolkit.ThreadUtilities;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -32,7 +32,6 @@ public class WekaClustererTest extends AbstractTest {
     @Before
     @SuppressWarnings("unchecked")
     public void before() throws Exception {
-
         String algorithm = EM.class.getName();
         String[] options = new String[]{"-N", "6"};
         String fileName = "bmw-browsers.arff";
@@ -52,9 +51,9 @@ public class WekaClustererTest extends AbstractTest {
     @Test
     public void build() throws Exception {
         wekaClusterer.build(context);
+        ThreadUtilities.sleep(1000);
         assertEquals(3, context.getEvaluations().length);
         for (final String evaluation : context.getEvaluations()) {
-            logger.error("Evaluation : " + evaluation);
             assertNotNull(evaluation);
         }
     }
@@ -62,19 +61,18 @@ public class WekaClustererTest extends AbstractTest {
     @Test
     public void analyze() throws Exception {
         wekaClusterer.build(context);
+        ThreadUtilities.sleep(1000);
         Analysis<Object, Object> analysis = getAnalysis(null, "1,0,1,1,1,1,1,1");
 
         Analysis<Object, Object> result = wekaClusterer.analyze(context, analysis);
-        logger.error(IConstants.GSON.toJson(result.getOutput()));
-        logger.error(IConstants.GSON.toJson(result.getClazz()));
-        for (final String evaluation : context.getEvaluations()) {
-            logger.error(evaluation);
-        }
+        assertNotNull(result.getClazz());
+        assertNotNull(result.getOutput());
     }
 
     @Test
     public void getDistributionForInstances() throws Exception {
         wekaClusterer.build(context);
+        ThreadUtilities.sleep(1000);
         for (final Object model : context.getModels()) {
             Instances instances = (Instances) model;
             double[][][] distributionForInstances = wekaClusterer.getDistributionForInstances(context, instances);

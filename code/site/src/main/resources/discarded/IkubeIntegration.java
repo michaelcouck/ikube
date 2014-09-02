@@ -1,7 +1,6 @@
-package ikube.web;
+package discarded;
 
 import ikube.AbstractTest;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -12,7 +11,6 @@ import static org.junit.Assert.assertTrue;
  * @version 01.00
  * @since 08-02-2014
  */
-@Ignore
 public class IkubeIntegration extends AbstractTest {
 
     @Test

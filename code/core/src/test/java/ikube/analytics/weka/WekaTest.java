@@ -94,7 +94,7 @@ public class WekaTest extends AbstractTest {
         String classificationClass = dataSet.classAttribute().value((int) classification);
 		double[] distributionForInstance = classifier.distributionForInstance(dataSet.firstInstance());
 		for (double aDistributionForInstance : distributionForInstance) {
-			System.out.println(aDistributionForInstance);
+			logger.info("" + aDistributionForInstance);
 		}
 
         assertEquals(IConstants.POSITIVE, classificationClass);
@@ -121,7 +121,7 @@ public class WekaTest extends AbstractTest {
 
         Context context = new Context();
         context.setName("regression");
-        context.setAnalyzer(WekaClusterer.class.getName());
+        context.setAnalyzer(WekaClassifier.class.getName());
         context.setAlgorithms(SimpleLinearRegression.class.getName());
         context.setFileNames("regression.arff");
         context.setMaxTrainings(10000);

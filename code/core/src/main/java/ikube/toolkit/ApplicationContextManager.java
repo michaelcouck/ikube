@@ -18,11 +18,9 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
-import org.springframework.web.context.support.AbstractRefreshableWebApplicationContext;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -44,11 +42,11 @@ public final class ApplicationContextManager implements ApplicationContextAware 
      * The default location of the configuration files is in the ikube folder at the base of the server.
      */
     private static final String EXTERNAL_SPRING_CONFIGURATION_FILE =
-        "." +
-            IConstants.SEP +
-            IConstants.IKUBE +
-            IConstants.SEP +
-            IConstants.SPRING_XML;
+            "." +
+                    IConstants.SEP +
+                    IConstants.IKUBE +
+                    IConstants.SEP +
+                    IConstants.SPRING_XML;
 
     private static ApplicationContext APPLICATION_CONTEXT;
 
@@ -57,18 +55,18 @@ public final class ApplicationContextManager implements ApplicationContextAware 
         LOGGER = LoggerFactory.getLogger(ApplicationContextManager.class);
         try {
             SerializationUtilities.setTransientFields(//
-                ikube.model.File.class, //
-                Url.class, //
-                Analysis.class, //
-                Search.class, //
-                Task.class, //
-                IndexableInternet.class, //
-                IndexableEmail.class, //
-                IndexableFileSystem.class, //
-                IndexableColumn.class, //
-                IndexableTable.class, //
-                IndexContext.class, //
-                ArrayList.class);
+                    ikube.model.File.class, //
+                    Url.class, //
+                    Analysis.class, //
+                    Search.class, //
+                    Task.class, //
+                    IndexableInternet.class, //
+                    IndexableEmail.class, //
+                    IndexableFileSystem.class, //
+                    IndexableColumn.class, //
+                    IndexableTable.class, //
+                    IndexContext.class, //
+                    ArrayList.class);
         } catch (final Exception e) {
             LOGGER.error("Exception setting the transient fields : ", e);
         }
@@ -104,6 +102,46 @@ public final class ApplicationContextManager implements ApplicationContextAware 
             return APPLICATION_CONTEXT;
         } finally {
             ApplicationContextManager.class.notifyAll();
+        }
+    }
+
+    /**
+     * This method is called by the 'web' part of the Spring configuration, which sets the context for us.
+     */
+    @Override
+    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
+        if (APPLICATION_CONTEXT == null) {
+            LOGGER.info("Setting the application context from the web part : " + applicationContext + ", " + applicationContext.getClass());
+            APPLICATION_CONTEXT = applicationContext;
+            ((AbstractApplicationContext) APPLICATION_CONTEXT).registerShutdownHook();
+            File configDirectory = null;
+            File consoleOutputFile = null;
+            InputStream inputStream = null;
+            try {
+                Object ikubeConfigurationPathProperty = System.getProperty(IConstants.IKUBE_CONFIGURATION);
+                // First try the configuration property
+                if (ikubeConfigurationPathProperty == null) {
+                    configDirectory = new File(IConstants.IKUBE_DIRECTORY);
+                } else {
+                    configDirectory = new File(ikubeConfigurationPathProperty.toString());
+                }
+                consoleOutputFile = FileUtilities.findFileRecursively(configDirectory, "console");
+
+                String version = VersionUtilities.version();
+                String timestamp = VersionUtilities.timestamp();
+                inputStream = new FileInputStream(consoleOutputFile);
+                List<String> lines = IOUtils.readLines(inputStream);
+                for (final String line : lines) {
+                    String formatted = String.format(line, version, timestamp);
+                    System.out.println(formatted);
+                }
+            } catch (final Exception e) {
+                LOGGER.error("Error reading the console file : " + configDirectory + ", " + consoleOutputFile, e);
+            } finally {
+                IOUtils.closeQuietly(inputStream);
+            }
+        } else {
+            LOGGER.info("Application context already loaded : " + APPLICATION_CONTEXT);
         }
     }
 
@@ -258,116 +296,8 @@ public final class ApplicationContextManager implements ApplicationContextAware 
         }
     }
 
-    /**
-     * This method is called by the 'web' part of the Spring configuration, which sets the context for us.
-     */
-    @Override
-    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
-        if (APPLICATION_CONTEXT == null) {
-            LOGGER.info("Setting the application context from the web part : " + applicationContext + ", " + applicationContext.getClass());
-            APPLICATION_CONTEXT = applicationContext;
-            ((AbstractApplicationContext) APPLICATION_CONTEXT).registerShutdownHook();
-            File configDirectory = null;
-            File consoleOutputFile = null;
-            InputStream  inputStream = null;
-            try {
-                Object ikubeConfigurationPathProperty = System.getProperty(IConstants.IKUBE_CONFIGURATION);
-                // First try the configuration property
-                if (ikubeConfigurationPathProperty == null) {
-                    configDirectory = new File(IConstants.IKUBE_DIRECTORY);
-                } else {
-                    configDirectory = new File(ikubeConfigurationPathProperty.toString());
-                }
-                consoleOutputFile = FileUtilities.findFileRecursively(configDirectory, "console");
-                inputStream = new FileInputStream(consoleOutputFile);
-                List lines = IOUtils.readLines(inputStream);
-                for (final Object line : lines) {
-                    System.out.println(line);
-                }
-            } catch (final Exception e) {
-                LOGGER.error("Error reading the console file : " + configDirectory + ", " + consoleOutputFile, e);
-            } finally {
-                IOUtils.closeQuietly(inputStream);
-            }
-        } else {
-            LOGGER.info("Application context already loaded : " + APPLICATION_CONTEXT);
-        }
-    }
-
-    /**
-     * This class w<ill check if there are any changes in the configuration files
-     * and if so then refresh(restart) the application context. At the time of writing(15-03-2014)
-     * this was untested.
-     */
-    class ApplicationContextRefresher implements Runnable {
-
-        @Override
-        @SuppressWarnings("InfiniteLoopStatement")
-        public void run() {
-            List<File> configurationFiles = new ArrayList<>();
-            long sleep = IConstants.SIXTY_SECONDS;
-            do {
-                ThreadUtilities.sleep(sleep);
-                try {
-                    if (APPLICATION_CONTEXT == null) {
-                        continue;
-                    }
-                    List<File> newConfigurationFiles = new ArrayList<>();
-                    if (AbstractRefreshableWebApplicationContext.class.isAssignableFrom(APPLICATION_CONTEXT.getClass())) {
-                        String[] configLocations = ((AbstractRefreshableWebApplicationContext) APPLICATION_CONTEXT).getConfigLocations();
-                        for (final String configLocation : configLocations) {
-                            newConfigurationFiles.add(new File(configLocation));
-                        }
-                    } else {
-                        File configurationFile = new File(getConfigFilePath());
-                        if (configurationFile.exists() && configurationFile.isFile() && configurationFile.canRead()) {
-                            List<File> springFiles = FileUtilities.findFilesRecursively(configurationFile.getParentFile(), new ArrayList<File>(), "spring.*\\.xml");
-                            List<File> propertiesFiles = FileUtilities.findFilesRecursively(configurationFile.getParentFile(), new ArrayList<File>(), "spring\\.properties");
-                            newConfigurationFiles.addAll(springFiles);
-                            newConfigurationFiles.addAll(propertiesFiles);
-                        }
-                    }
-                    boolean mustRefresh = Boolean.FALSE;
-                    if (configurationFiles.isEmpty()) {
-                        LOGGER.info("Initializing the files : ");
-                    } else if (configurationFiles.size() != newConfigurationFiles.size()) {
-                        // Refresh the application context
-                        LOGGER.info("Should refresh the application context : ");
-                        mustRefresh = Boolean.TRUE;
-                    } else {
-                        for (int i = 0; i < configurationFiles.size(); i++) {
-                            File one = configurationFiles.get(i);
-                            File two = newConfigurationFiles.get(i);
-                            if (one.lastModified() != two.lastModified()) {
-                                LOGGER.info("Should refresh the application context : ");
-                                mustRefresh = Boolean.TRUE;
-                                break;
-                            }
-                        }
-                    }
-                    // LOGGER.debug("Must refresh : " + mustRefresh);
-                    configurationFiles.clear();
-                    configurationFiles.addAll(newConfigurationFiles);
-                    if (mustRefresh) {
-                        if (AbstractRefreshableWebApplicationContext.class.isAssignableFrom(APPLICATION_CONTEXT.getClass())) {
-                            LOGGER.info("Refreshing application context : " + APPLICATION_CONTEXT);
-                            ((AbstractRefreshableWebApplicationContext) APPLICATION_CONTEXT).refresh();
-                        } else {
-                            LOGGER.info("Can't refresh application context : " + APPLICATION_CONTEXT.getClass().getName());
-                        }
-                    }
-                } catch (final Exception e) {
-                    // If we have an exception refreshing then sleep for longer
-                    sleep *= 2;
-                    LOGGER.error("Exception refreshing the application context : ", e);
-                }
-            } while (true);
-        }
-
-    }
-
     public void initialize() {
-        ThreadUtilities.submit(IConstants.APPLICATION_CONTEXT_REFRESHER, new ApplicationContextRefresher());
+        // What to do?
     }
 
 }

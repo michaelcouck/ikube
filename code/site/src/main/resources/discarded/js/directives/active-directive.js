@@ -1,3 +1,6 @@
+/**
+ *
+ */
 module.directive('activeLink', [ '$location', function(location) {
 	return {
 		restrict : 'A',

@@ -13,7 +13,7 @@
     <parent>
         <groupId>ikube</groupId>
         <artifactId>ikube</artifactId>
-        <version>5.0.2</version>
+        <version>5.1.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -660,6 +660,23 @@
                             <url>${artifactory}</url>
                         </configuration>
                     </execution>-->
+                    <!--<execution>-->
+                        <!--<id>neuroph</id>-->
+                        <!--<goals>-->
+                            <!--<goal>deploy-file</goal>-->
+                        <!--</goals>-->
+                        <!--<phase>install</phase>-->
+                        <!--<configuration>-->
+                            <!--<groupId>org.neuroph</groupId>-->
+                            <!--<artifactId>neuroph-core</artifactId>-->
+                            <!--<version>2.9</version>-->
+                            <!--<file>tools/analytics/neuroph-core-2.9.jar</file>-->
+                            <!--<packaging>${packaging}</packaging>-->
+                            <!--<generatePom>${generate-pom}</generatePom>-->
+                            <!--<repositoryId>${repository-id}</repositoryId>-->
+                            <!--<url>${artifactory}</url>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
                 </executions>
             </plugin>
         </plugins>

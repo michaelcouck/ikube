@@ -15,8 +15,10 @@ import java.io.*;
 public final class CsvFileTools {
 
     public static void main(final String[] args) {
-        File input = new File("/home/laptop/Downloads/sentiment-analysis-dataset.csv");
-        File outputDirectory = new File("/home/laptop/Workspace/ikube/code/libs/src/main/resources/indexes/bosal/");
+        // "/home/laptop/Downloads/sentiment-analysis-dataset.csv"
+        File input = new File(args[0]);
+        // "/home/laptop/Workspace/ikube/code/libs/src/main/resources/indexes/bosal/"
+        File outputDirectory = new File(args[1]);
         File output;
         Reader reader = null;
         Writer writer = null;
@@ -39,7 +41,7 @@ public final class CsvFileTools {
                 }
                 start++;
 
-                String[] inValues = StringUtils.split(line, ',');
+                String[] inValues = StringUtils.split(line, IConstants.DELIMITER_CHARACTERS);
                 String sentiment = inValues[1].equals("0") ? IConstants.NEGATIVE : IConstants.POSITIVE;
                 String[] outValues = new String[]{sentiment, "'" + StringUtilities.stripToAlphaNumeric(inValues[3]) + "'"};
                 //noinspection ConstantConditions

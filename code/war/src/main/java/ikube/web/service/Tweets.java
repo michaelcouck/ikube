@@ -16,16 +16,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.Future;
 
 /**
@@ -42,9 +42,10 @@ import java.util.concurrent.Future;
 @Component
 @Path(Tweets.TWITTER)
 @Scope(Resource.REQUEST)
+@Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @SuppressWarnings("SpringJavaAutowiringInspection")
-@Api(description = "The Twitter rest resource")
+@Api(description = "The Twitter rest resource, provides twitter results, like a heat map and results of tweets go-locations.")
 public class Tweets extends Resource {
 
     /**
@@ -63,10 +64,11 @@ public class Tweets extends Resource {
 
     @POST
     @Path(Tweets.HAPPY)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response happy(@Context final HttpServletRequest request) {
+    @Api(description = "This resource will generate a heat map of the positive tweets on the planet, and " +
+            "collect the last +-10 000 tweets for display on the world map.",
+            produces = SearchTwitter.class)
+    public Response happy(final SearchTwitter twitterSearch) {
         // Google Maps API heat map data format is {lat, lng, weight} eg. {42, 1.8, 3}
-        final SearchTwitter twitterSearch = unmarshall(SearchTwitter.class, request);
         final long endTime = System.currentTimeMillis();
         final long minutesOfHistory = twitterSearch.getMinutesOfHistory();
         final long startTime = endTime - (minutesOfHistory * MINUTE_MILLIS);
@@ -92,7 +94,30 @@ public class Tweets extends Resource {
             }
         });
         logger.info("Duration for heat map data : " + duration);
-        return buildJsonResponse(twitterSearch);
+        return buildResponse(twitterSearch);
+    }
+
+    @POST
+    @Path(Tweets.ANALYZE)
+    @Api(description = "This resource will do searches, positive and negative, in increments of an hour, and return " +
+            "the data in an array that can be displayed on a time based graph, showing the sentiment trend over time.",
+            produces = SearchTwitter.class)
+    public Response twitter(final SearchTwitter twitterSearch) {
+        double duration = Timer.execute(new Timer.Timed() {
+            @Override
+            public void execute() {
+                // First do the primary search for the term, language, etc...
+                searcherService.search(twitterSearch);
+                // Get the time line for both positive and negative
+                setTimeLineSentiment(twitterSearch);
+            }
+        });
+
+        if (twitterSearch.getSearchResults() != null && twitterSearch.getSearchResults().size() > 0) {
+            HashMap<String, String> statistics = twitterSearch.getSearchResults().get(twitterSearch.getSearchResults().size() - 1);
+            statistics.put(IConstants.DURATION, Double.toString(duration));
+        }
+        return buildResponse(twitterSearch);
     }
 
     /**
@@ -130,28 +155,6 @@ public class Tweets extends Resource {
             heatMapData[i] = heatMapDatum;
         }
         return heatMapData;
-    }
-
-    @POST
-    @Path(Tweets.ANALYZE)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response twitter(@Context final HttpServletRequest request) {
-        final SearchTwitter search = unmarshall(SearchTwitter.class, request);
-        double duration = Timer.execute(new Timer.Timed() {
-            @Override
-            public void execute() {
-                // First do the primary search for the term, language, etc...
-                searcherService.search(search);
-                // Get the time line for both positive and negative
-                setTimeLineSentiment(search);
-            }
-        });
-
-        if (search.getSearchResults() != null && search.getSearchResults().size() > 0) {
-            HashMap<String, String> statistics = search.getSearchResults().get(search.getSearchResults().size() - 1);
-            statistics.put(IConstants.DURATION, Double.toString(duration));
-        }
-        return buildJsonResponse(search);
     }
 
     @SuppressWarnings("unchecked")
@@ -204,7 +207,6 @@ public class Tweets extends Resource {
                 timeLineSentiment[0][period] = positiveCount;
                 timeLineSentiment[1][period] = negativeCount;
                 timeLineSentiment[2][period] = -period;
-                // logger.error("Time line : " + Arrays.deepToString(timeLineSentiment));
             }
         });
     }
@@ -248,14 +250,11 @@ public class Tweets extends Resource {
         // searchClone.setSortFields(Arrays.asList(CREATED_AT));
         // searchClone.setSortDirections(Arrays.asList(Boolean.TRUE.toString()));
 
-        // searchClone.setSearchResults(null);
         searchClone = searcherService.search(searchClone);
         ArrayList<HashMap<String, String>> searchCloneResults = new ArrayList<>(searchClone.getSearchResults());
         HashMap<String, String> statistics = searchCloneResults.get(searchCloneResults.size() - 1);
         String total = statistics.get(IConstants.TOTAL);
         search.setSearchResults(searchCloneResults);
-        System.out.println("Total : " + total);
-        System.out.println(startTime + "-" + endTime + ", " + new Date(startTime) + "-" + new Date(endTime));
         return Integer.valueOf(total);
     }
 

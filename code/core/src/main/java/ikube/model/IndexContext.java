@@ -28,6 +28,7 @@ import java.util.Set;
 @NamedQueries({@NamedQuery(name = IndexContext.FIND_BY_NAME, query = IndexContext.FIND_BY_NAME)})
 public class IndexContext extends Indexable implements Comparable<IndexContext> {
 
+    @SuppressWarnings("JpaQlInspection")
     public static final String FIND_BY_NAME = "select i from IndexContext as i where i.name = :name";
 
     /**

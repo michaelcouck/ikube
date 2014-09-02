@@ -74,6 +74,7 @@ public abstract class AbstractTest {
      * These are all mocked objects that are used in sub classes.
      */
     protected String ip;
+    protected String address;
     protected ScoreDoc[] scoreDocs;
     protected List<Indexable> indexables;
     protected Map<String, Server> servers;
@@ -156,6 +157,7 @@ public abstract class AbstractTest {
         indexContexts = new HashMap<>();
 
         ip = UriUtilities.getIp();
+        address = ip + "-8000";
 
         topDocs.totalHits = 0;
         topDocs.scoreDocs = scoreDocs;
@@ -200,9 +202,9 @@ public abstract class AbstractTest {
 
         when(action.getIndexName()).thenReturn("index");
 
-        when(server.isWorking()).thenReturn(Boolean.FALSE);
-        when(server.getAddress()).thenReturn(ip);
         when(server.getIp()).thenReturn(ip);
+        when(server.getAddress()).thenReturn(address);
+        when(server.isWorking()).thenReturn(Boolean.FALSE);
         when(server.getActions()).thenReturn(Arrays.asList(action));
 
         when(indexableTable.getName()).thenReturn("indexableTable");
@@ -218,7 +220,7 @@ public abstract class AbstractTest {
         IndexableTableHandler indexableTableHandler = ApplicationContextManagerMock.getBean(IndexableTableHandler.class);
         when(indexableTableHandler.getIndexableClass()).thenReturn(IndexableTable.class);
 
-        servers.put(ip, server);
+        servers.put(address, server);
         indexables.add(indexableTable);
         indexables.add(indexableColumn);
         indexContexts.put(indexContext.getName(), indexContext);

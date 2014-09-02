@@ -24,84 +24,6 @@ public final class DatabaseUtilities {
 
     private static final Logger LOGGER = Logger.getLogger(DatabaseUtilities.class);
 
-    @SuppressWarnings("UnusedDeclaration")
-    public static Connection getConnection(
-            final String url,
-            final String user,
-            final String password,
-            final Class<? extends Driver> driverClass) {
-        try {
-            DriverManager.registerDriver(driverClass.newInstance());
-            return DriverManager.getConnection(url, user, password);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public static ResultSet executeQuery(final Connection connection, final String query) {
-        try {
-            return connection.createStatement().executeQuery(query);
-        } catch (final SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public static void searchDatabase(final Connection connection, final String string) {
-        try {
-            DatabaseMetaData databaseMetaData = connection.getMetaData();
-            ResultSet tablesResultSet = databaseMetaData.getTables(null, null, "%", new String[]{"TABLE"});
-            while (tablesResultSet.next()) {
-                try {
-                    Object tableName = tablesResultSet.getObject("TABLE_NAME");
-                    LOGGER.info("Table : " + tableName);
-                    String sql = "select * from " + tableName;
-                    ResultSet resultSet = connection.createStatement().executeQuery(sql);
-                    while (resultSet.next()) {
-                        ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-                        for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
-                            Object columnValue = resultSet.getObject(i);
-                            if (columnValue != null && columnValue.toString().contains(string)) {
-                                LOGGER.info("Table : " + tableName + " : " + resultSet.getObject(1));
-                            }
-                        }
-                    }
-                } catch (final Exception e) {
-                    LOGGER.error(null, e);
-                }
-            }
-        } catch (final Exception e) {
-            LOGGER.error(null, e);
-        } finally {
-            close(connection);
-        }
-    }
-
-    /**
-     * Executes an arbitrary sql statement against the database.
-     *
-     * @param dataSource the data source to get the connection from
-     * @param sql        the sql to execute
-     */
-    public static void executeStatement(final DataSource dataSource, final String sql) {
-        LOGGER.debug("Executing statement : " + sql + ", on data source : " + dataSource);
-        Connection connection = null;
-        Statement statement = null;
-        try {
-            connection = dataSource.getConnection();
-            statement = connection.createStatement();
-            boolean result = statement.execute(sql);
-            LOGGER.debug("Result from statement : " + result);
-        } catch (final Exception e) {
-            LOGGER.error("Exception executing statement : " + sql + ", on data source : " + dataSource);
-            LOGGER.debug(null, e);
-        } finally {
-            close(statement);
-            close(connection);
-        }
-    }
-
     /**
      * This method will close all related resources to the category set object in the parameter list. First getting the statement from the category set, then
      * the connection from the statement and closing them, category set, statement then connection.
@@ -171,31 +93,6 @@ public final class DatabaseUtilities {
             resultSet.close();
         } catch (final Exception e) {
             LOGGER.error("Exception closing the category set : ", e);
-        }
-    }
-
-    /**
-     * Commits the connection, only if the auto commit has been set to false, i.e. the user will manually commit the connection.
-     *
-     * @param connection the connection to commit
-     */
-    public static void commit(Connection connection) {
-        if (connection == null) {
-            LOGGER.warn("Connection null : ");
-            return;
-        }
-        try {
-            if (connection.isClosed()) {
-                LOGGER.info("Connection already closed : " + connection);
-                return;
-            }
-            if (!connection.getAutoCommit()) {
-                connection.commit();
-            } else {
-                LOGGER.warn("Can't commit the connection as it is not user comitted : " + connection);
-            }
-        } catch (final Exception e) {
-            LOGGER.error("Exception comitting the connection : " + connection, e);
         }
     }
 
@@ -297,16 +194,6 @@ public final class DatabaseUtilities {
             close(importedKeys);
         }
         return foreignKeys;
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public static Object getFieldValue(final Field field, final Object object) {
-        try {
-            return field.get(object);
-        } catch (final Exception e) {
-            LOGGER.error("Exception accessing field : " + field, e);
-        }
-        return null;
     }
 
     /**

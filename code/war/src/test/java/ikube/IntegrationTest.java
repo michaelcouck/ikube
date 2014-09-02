@@ -18,7 +18,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
+
+import static ikube.toolkit.ObjectToolkit.populateFields;
 
 /**
  * This base class for the integration tests will load some snapshots
@@ -70,7 +73,7 @@ public abstract class IntegrationTest extends AbstractTest {
      * @param dataBase the database to use for deleting the data
      * @param klasses  the classes to delete from the database
      */
-    protected void delete(final IDataBase dataBase, final Class<?>... klasses) {
+    protected static void delete(final IDataBase dataBase, final Class<?>... klasses) {
         int batchSize = 1000;
         for (final Class<?> klass : klasses) {
             try {
@@ -85,5 +88,38 @@ public abstract class IntegrationTest extends AbstractTest {
         }
     }
 
+    /**
+     * This method will persist entities in the database, the specified number, in batch mode. First
+     * populating the entities with random data.
+     *
+     * @param dataBase the database access object to persist the data with
+     * @param klass    the type of class to persist/populate
+     * @param entities the number of entities to persist
+     * @param <T>      the parameter type of entity
+     */
+    protected static <T> void insert(final IDataBase dataBase, final Class<T> klass, final int entities) {
+        insert(dataBase, klass, entities, "id", "indexContext");
+    }
+
+    /**
+     * Same as the above but with some excluded fields specified.
+     */
+    protected static <T> void insert(final IDataBase dataBase, final Class<T> klass, final int entities, final String... excludedFields) {
+        List<T> tees = new ArrayList<>();
+        for (int i = 0; i < entities; i++) {
+            T tee;
+            try {
+                tee = populateFields(klass, klass.newInstance(), Boolean.TRUE, 1, excludedFields);
+                tees.add(tee);
+                if (tees.size() >= 1000) {
+                    dataBase.persistBatch(tees);
+                    tees.clear();
+                }
+            } catch (final Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        dataBase.persistBatch(tees);
+    }
 
 }

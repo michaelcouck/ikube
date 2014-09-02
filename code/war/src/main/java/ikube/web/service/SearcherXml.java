@@ -4,14 +4,10 @@ import ikube.model.Search;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import java.util.ArrayList;
-import java.util.List;
 
 import static ikube.IConstants.*;
 
@@ -51,12 +47,9 @@ public class SearcherXml extends Searcher {
     @GET
     @Override
     @Path(SearcherXml.SIMPLE)
-    @Api(type = "GET",
-            uri = "/ikube/service/search/xml/simple",
-            description ="This is a simple search method, taking just one field and one search string, returning an " +
-                    "array list of hash maps that represent the results. Please refer to the documentation for the format " +
-                    "of the results",
-            consumes = String.class,
+    @Api(description = "This is a simple search method, taking just one field and one search string, returning an " +
+            "array list of hash maps that represent the results. Please refer to the documentation for the format " +
+            "of the results",
             produces = ArrayList.class)
     public Response search(
             @QueryParam(value = INDEX_NAME) final String indexName,
@@ -72,7 +65,7 @@ public class SearcherXml extends Searcher {
                 fragment,
                 firstResult,
                 maxResults);
-        return buildXmlResponse(results);
+        return buildResponse(results);
     }
 
     /**
@@ -81,12 +74,9 @@ public class SearcherXml extends Searcher {
     @GET
     @Override
     @Path(SearcherXml.SORTED)
-    @Api(type = "GET",
-            uri = "/ikube/service/search/xml/sorted",
-            description ="This is a simple search method, taking just one field and one search string, returning an " +
-                    "array list of hash maps that represent the results. Additionally this method supports a field in the " +
-                    "that the results can be sorted on.",
-            consumes = String.class,
+    @Api(description = "This is a simple search method, taking just one field and one search string, returning an " +
+            "array list of hash maps that represent the results. Additionally this method supports a field in the " +
+            "that the results can be sorted on.",
             produces = ArrayList.class)
     public Response search(
             @QueryParam(value = INDEX_NAME) final String indexName,
@@ -104,7 +94,7 @@ public class SearcherXml extends Searcher {
                 fragment,
                 firstResult,
                 maxResults);
-        return buildXmlResponse(results);
+        return buildResponse(results);
     }
 
     /**
@@ -113,13 +103,10 @@ public class SearcherXml extends Searcher {
     @GET
     @Override
     @Path(SearcherXml.SORTED_TYPED)
-    @Api(type = "GET",
-            uri = "/ikube/service/search/xml/sorted-typed",
-            description ="This is a simple search method, taking just one field and one search string, returning an " +
-                    "array list of hash maps that represent the results. Additionally this method supports a field in the " +
-                    "that the results can be sorted on, and specifying the types of the fields directly rather than by " +
-                    "inspection.",
-            consumes = String.class,
+    @Api(description = "This is a simple search method, taking just one field and one search string, returning an " +
+            "array list of hash maps that represent the results. Additionally this method supports a field in the " +
+            "that the results can be sorted on, and specifying the types of the fields directly rather than by " +
+            "inspection.",
             produces = ArrayList.class)
     public Response search(
             @QueryParam(value = INDEX_NAME) final String indexName,
@@ -139,7 +126,7 @@ public class SearcherXml extends Searcher {
                 fragment,
                 firstResult,
                 maxResults);
-        return buildXmlResponse(results);
+        return buildResponse(results);
     }
 
     /**
@@ -148,15 +135,12 @@ public class SearcherXml extends Searcher {
     @GET
     @Override
     @Path(SearcherXml.GEOSPATIAL)
-    @Api(type = "GET",
-            uri = "/ikube/service/search/xml/sorted",
-            description ="This is a simple search method, taking just one field and one search string, returning an " +
-                    "array list of hash maps that represent the results. Additionally this method supports a field in the " +
-                    "that the results can be sorted on and importantly this method defines the geospatial search. Adding " +
-                    "a latitude and longitude to the parameter list, as well as a point of origin, and a maximum distance, " +
-                    "the results will be around a point, nad sorted by distance from that point, and not further than the " +
-                    "distance from the origin specified.",
-            consumes = String.class,
+    @Api(description = "This is a simple search method, taking just one field and one search string, returning an " +
+            "array list of hash maps that represent the results. Additionally this method supports a field in the " +
+            "that the results can be sorted on and importantly this method defines the geospatial search. Adding " +
+            "a latitude and longitude to the parameter list, as well as a point of origin, and a maximum distance, " +
+            "the results will be around a point, nad sorted by distance from that point, and not further than the " +
+            "distance from the origin specified.",
             produces = ArrayList.class)
     public Response search(
             @QueryParam(value = INDEX_NAME) final String indexName,
@@ -180,7 +164,7 @@ public class SearcherXml extends Searcher {
                 distance,
                 latitude,
                 longitude);
-        return buildXmlResponse(results);
+        return buildResponse(results);
     }
 
     /**
@@ -190,19 +174,13 @@ public class SearcherXml extends Searcher {
     @Override
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Api(type = "POST",
-            uri = "/ikube/service/xml/json",
-            description ="This method is the recommended search method, taking a complex object that can be defined " +
-                    "by the caller, with all the options available for search, and returning the search object with the " +
-                    "results.",
-            consumes = Search.class,
+    @Api(description = "This method is the recommended search method, taking a complex object that can be defined " +
+            "by the caller, with all the options available for search, and returning the search object with the " +
+            "results.",
             produces = Search.class)
-    public Response search(
-            @Context final HttpServletRequest request,
-            @Context final UriInfo uriInfo) {
-        Search search = unmarshall(Search.class, request);
+    public Response search(final Search search) {
         Object results = searcherService.search(search);
-        return buildJsonResponse(results);
+        return buildResponse(results);
     }
 
     /**
@@ -213,21 +191,15 @@ public class SearcherXml extends Searcher {
     @Path(SearcherXml.ALL)
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Api(type = "POST",
-            uri = "/ikube/service/search/xml",
-            description ="This method is the recommended search method, taking a complex object that can be defined " +
-                    "by the caller, with all the options available for search, and returning the search object with the " +
-                    "results. One difference is that it will search every field in every index defined in the system. Obviously " +
-                    "this is a very expensive method, and typically will not be exposed to clients, only for administrative " +
-                    "purposes.",
-            consumes = Search.class,
+    @Api(description = "This method is the recommended search method, taking a complex object that can be defined " +
+            "by the caller, with all the options available for search, and returning the search object with the " +
+            "results. One difference is that it will search every field in every index defined in the system. Obviously " +
+            "this is a very expensive method, and typically will not be exposed to clients, only for administrative " +
+            "purposes.",
             produces = Search.class)
-    public Response searchAll(
-            @Context final HttpServletRequest request,
-            @Context final UriInfo uriInfo) {
-        Search search = unmarshall(Search.class, request);
+    public Response searchAll(final Search search) {
         Object results = searcherService.search(search);
-        return buildJsonResponse(results);
+        return buildResponse(results);
     }
 
 }

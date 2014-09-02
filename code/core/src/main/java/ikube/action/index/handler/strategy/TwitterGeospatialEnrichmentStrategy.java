@@ -52,12 +52,7 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
      * {@inheritDoc}
      */
     @Override
-    public boolean aroundProcess(
-        final IndexContext indexContext,
-        final Indexable indexable,
-        final Document document,
-        final Object resource)
-            throws Exception {
+    public boolean aroundProcess(final IndexContext indexContext, final Indexable indexable, final Document document, final Object resource) throws Exception {
         if (IndexableTweets.class.isAssignableFrom(indexable.getClass()) &&
                 resource != null && Tweet.class.isAssignableFrom(resource.getClass())) {
             IndexableTweets indexableTweets = (IndexableTweets) indexable;
@@ -69,10 +64,7 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
         return super.aroundProcess(indexContext, indexable, document, resource);
     }
 
-    void setCoordinate(
-            final IndexableTweets indexableTweets,
-            final TwitterProfile twitterProfile,
-            final Document document) {
+    void setCoordinate(final IndexableTweets indexableTweets, final TwitterProfile twitterProfile, final Document document) {
         String locationField = indexableTweets.getLocationField();
         Coordinate userProfileLocation = getLocationFromUserProfile(twitterProfile);
         Coordinate tweetLocation = null;
@@ -103,10 +95,9 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
 
     /**
      * This method will get the location of the tweet from the time zone of the user profile. Typically this is
-     * accurate as the wite selects an appropriate time
-     * zone for the user based on the ip. This also contains the city, and generally this is the best choice for the
-     * tweet. When the 'geo-tag' is added in
-     * Spring Social, then the 'real' co-ordinate for the tweet will be available and this can check the tweet first.
+     * accurate as Twitter selects an appropriate time zone for the user based on the ip. This also contains the city, and
+     * generally this is the best choice for the tweet. When the 'geo-tag' is added in Spring Social, then the 'real' co-ordinate
+     * for the tweet will be available and this can check the tweet first.
      *
      * @param twitterProfile the profile of the user, cannot be null
      * @return the co-ordinate of the tweet based on the time zone of the user, or null if not time zone can be found
@@ -121,13 +112,13 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
         if (!StringUtils.isEmpty(timeZone)) {
             // This seems to be the most accurate
             String city = getCityFromTimeZone(timeZone);
-			if (!StringUtils.isEmpty(city)) {
-				Long hash = HashUtilities.hash(city.toLowerCase());
-				GeoCity geoCity = GEO_CITY.get(hash);
-				if (geoCity != null) {
-					timeZoneCoordinate = geoCity.getCoordinate();
-				}
-			}
+            if (!StringUtils.isEmpty(city)) {
+                Long hash = HashUtilities.hash(city.toLowerCase());
+                GeoCity geoCity = GEO_CITY.get(hash);
+                if (geoCity != null) {
+                    timeZoneCoordinate = geoCity.getCoordinate();
+                }
+            }
         }
 
         // Get the location based on the user input
@@ -151,9 +142,8 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
 
     /**
      * This method matches that UTC time offset of the user(which should be correct) with the language of the
-     * countries in the time zone. Of course the GMT+3
-     * time zone has many countries that have the Arabic as a primary language, so this is pretty useless except for
-     * the longitude.
+     * countries in the time zone. Of course the GMT+3 time zone has many countries that have the Arabic as a primary
+     * language, so this is pretty useless except for the longitude.
      *
      * @param document       the document that will be added to the index, we get possibly the language of the tweet
      *                       from there

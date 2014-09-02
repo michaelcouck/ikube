@@ -1,38 +1,36 @@
 package ikube.action.index.handler.internet;
 
 import ikube.AbstractTest;
-import org.junit.Ignore;
+import ikube.model.IndexableExchange;
 import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Spy;
-
-import static org.junit.Assert.fail;
+import org.mockito.Mock;
 
 /**
  * @author David Turley
  * @version 01.00
  * @since 11-07-2014
  */
-@Ignore
 public class ExchangeResourceProviderTest extends AbstractTest {
 
-    @Spy
-    @InjectMocks
-    private InternetResourceProvider internetResourceProvider;
+    @Mock
+    private IndexableExchange indexableExchange;
+    private ExchangeResourceProvider exchangeResourceProvider;
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void constructor() {
-        fail("Please implement me :(");
+        exchangeResourceProvider = new ExchangeResourceProvider(indexableExchange);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void getResource() {
-        fail("Please implement me :(");
+        exchangeResourceProvider = new ExchangeResourceProvider(indexableExchange);
+        exchangeResourceProvider.getResource();
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void setResources() {
-        fail("Please implement me :(");
+        exchangeResourceProvider = new ExchangeResourceProvider(indexableExchange);
+        exchangeResourceProvider.setResources(null);
     }
 
 }

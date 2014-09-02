@@ -9,83 +9,9 @@
 	version="2.1">
 
 	<tlib-version>1.0</tlib-version>
-	<!-- <jsp-version>1.2</jsp-version> -->
 	<short-name>ikube</short-name>
 	<uri>http://ikube</uri>
-	<!-- <description>Ikube Taglib</description> -->
 
-	<function>
-		<name>className</name>
-		<function-class>ikube.web.tag.Toolkit</function-class>
-		<function-signature>String className(java.lang.Object)</function-signature>
-	</function>
-	
-	<function>
-		<name>contains</name>
-		<function-class>ikube.web.tag.Toolkit</function-class>
-		<function-signature>boolean contains(java.util.Collection, java.lang.Object)</function-signature>
-	</function>
-	
-	<function>
-		<name>remove</name>
-		<function-class>ikube.web.tag.Toolkit</function-class>
-		<function-signature>java.util.Collection remove(java.util.Collection, java.util.Collection)</function-signature>
-	</function>
-
-	<function>
-		<name>add</name>
-		<function-class>ikube.web.tag.Toolkit</function-class>
-		<function-signature>java.util.Collection add(java.util.Collection, java.util.Collection)</function-signature>
-	</function>
-	
-	<function>
-		<name>clone</name>
-		<function-class>ikube.web.tag.Toolkit</function-class>
-		<function-signature>java.util.Collection clone(java.util.Collection)</function-signature>
-	</function>
-	
-	<function>
-		<name>size</name>
-		<function-class>ikube.web.tag.Toolkit</function-class>
-		<function-signature>int size(java.util.Collection)</function-signature>
-	</function>
-	
-	<function>
-		<name>concat</name>
-		<function-class>ikube.web.tag.Toolkit</function-class>
-		<function-signature>java.lang.String concatenate(java.lang.String, java.lang.String)</function-signature>
-	</function>
-	
-	<function>
-		<name>fieldValue</name>
-		<function-class>ikube.web.tag.Toolkit</function-class>
-		<function-signature>java.lang.Object fieldValue(java.lang.String, java.lang.Object)</function-signature>
-	</function>
-	
-	<function>
-		<name>subString</name>
-		<function-class>ikube.web.tag.Toolkit</function-class>
-		<function-signature>java.lang.String subString(java.lang.String, int, int)</function-signature>
-	</function>
-
-	<function>
-		<name>queryString</name>
-		<function-class>ikube.web.tag.Toolkit</function-class>
-		<function-signature>java.lang.String queryString(java.util.Map, java.util.List, java.util.List)</function-signature>
-	</function>
-
-	<function>
-		<name>asList</name>
-		<function-class>ikube.web.tag.Toolkit</function-class>
-		<function-signature>java.util.List asList(java.lang.Object)</function-signature>
-	</function>
-	
-	<function>
-		<name>documentIcon</name>
-		<function-class>ikube.web.tag.Toolkit</function-class>
-		<function-signature>java.lang.String documentIcon(java.lang.Object, java.lang.String, java.lang.String)</function-signature>
-	</function>
-	
 	<function>
 		<name>version</name>
 		<function-class>ikube.web.tag.Toolkit</function-class>

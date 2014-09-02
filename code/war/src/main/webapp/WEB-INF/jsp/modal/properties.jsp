@@ -1,3 +1,4 @@
+<%--suppress ALL --%>
 <%@ page errorPage="/WEB-INF/jsp/error.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
@@ -16,9 +17,9 @@
 	</div>
 	<div class="modal-footer">
 		<div class="inner-well">
-			<a class="button mini rounded light-gray" data-dismiss="modal">Cancel</a>
+			<a class="button mini rounded light-gray" data-dismiss="modal">Close</a>
 			<security:authorize access="hasRole('ROLE_ADMIN')">
-				<a class="button mini rounded blue" data-dismiss="modal" ng-submit="setProperties();">Save changes</a>
+				<a class="button mini rounded blue" ng-click="setProperties();">Save changes</a>
 			</security:authorize>
 		</div>
 	</div>
