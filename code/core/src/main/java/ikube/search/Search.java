@@ -73,7 +73,7 @@ public abstract class Search {
     /**
      * The default analyzer.
      */
-    protected static final Analyzer ANALYZER = new StandardAnalyzer(Version.LUCENE_46);
+    protected static final Analyzer ANALYZER = new StandardAnalyzer(IConstants.LUCENE_VERSION);
     /**
      * The conjunctions matcher to not replace these key words.
      */

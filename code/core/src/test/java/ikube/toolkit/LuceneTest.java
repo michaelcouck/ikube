@@ -147,12 +147,12 @@ public class LuceneTest extends AbstractTest {
         Directory directory = createIndex(IConstants.ID, IConstants.CONTENTS, integer, integer);
         IndexReader indexReader = DirectoryReader.open(directory);
         IndexSearcher indexSearcher = new IndexSearcher(indexReader);
-        Query query = NumericRangeQuery.newIntRange(IConstants.ID, Integer.MIN_VALUE, Integer.MAX_VALUE, Boolean.TRUE, Boolean.TRUE);
+        Query query = NumericRangeQuery.newIntRange(IConstants.ID, null, null, Boolean.TRUE, Boolean.TRUE);
         TopDocs topDocs = indexSearcher.search(query, 10);
         assertEquals("There must be exactly one result from the search : ", 1, topDocs.scoreDocs.length);
     }
 
-    private Directory createIndex(final String fieldName, final String doubleFieldName, final int fieldValue, final double doubleFieldValue) throws IOException {
+    private Directory createIndex(final String fieldName, final String doubleFieldName, final int fieldValue, final double doubleFieldValue) throws Exception {
         Analyzer analyzer = new StandardAnalyzer(IConstants.LUCENE_VERSION);
         IndexWriterConfig conf = new IndexWriterConfig(IConstants.LUCENE_VERSION, analyzer);
         Directory directory = new RAMDirectory();
@@ -180,6 +180,10 @@ public class LuceneTest extends AbstractTest {
         indexWriter.addDocument(document, analyzer);
         indexWriter.commit();
         indexWriter.forceMerge(5);
+        indexWriter.close();
+
+        IndexReader indexReader = DirectoryReader.open(directory);
+        printIndex(indexReader, Integer.MAX_VALUE);
 
         return directory;
     }

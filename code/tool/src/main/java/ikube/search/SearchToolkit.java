@@ -1,5 +1,6 @@
 package ikube.search;
 
+import ikube.IConstants;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
@@ -41,7 +42,7 @@ public final class SearchToolkit {
             Directory directory = NIOFSDirectory.open(indexDirectory);
             IndexReader indexReader = DirectoryReader.open(directory);
             indexSearcher = new IndexSearcher(indexReader);
-            Query query = new QueryParser(Version.LUCENE_46, searchField, new StandardAnalyzer(Version.LUCENE_46)).parse(searchString);
+            Query query = new QueryParser(IConstants.LUCENE_VERSION, searchField, new StandardAnalyzer(IConstants.LUCENE_VERSION)).parse(searchString);
             TopDocs topDocs = indexSearcher.search(query, 100);
             long totalHits = topDocs.totalHits;
             long scoreHits = topDocs.scoreDocs.length;

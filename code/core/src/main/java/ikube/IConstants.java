@@ -63,7 +63,7 @@ public interface IConstants extends Constants {
      */
     String MIME_MAPPING = "mime-mapping.xml";
 
-    Version LUCENE_VERSION = Version.LUCENE_46;
+    Version LUCENE_VERSION = Version.LUCENE_48;
 
     long MAX_READ_LENGTH = 1000000;
     int MAX_RESULT_FIELD_LENGTH = 100;

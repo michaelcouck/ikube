@@ -13,7 +13,7 @@ public class SearchLoadTest extends AbstractTest {
     @Test
     public void main() throws Exception {
         // We just execute this because there is nothing to test in the results
-        SearchLoad.main(new String[]{"-i", "1000", "-e", "1000", "-p", "80", "-t", "10"});
+        SearchLoad.main(new String[]{"-i", "10", "-e", "1000", "-p", "80", "-t", "10"});
     }
 
 }

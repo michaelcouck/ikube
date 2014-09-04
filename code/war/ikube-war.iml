@@ -73,14 +73,14 @@
     <orderEntry type="library" name="Maven: log4j:log4j:1.2.16" level="project" />
     <orderEntry type="library" name="Maven: cglib:cglib-nodep:2.2" level="project" />
     <orderEntry type="library" name="Maven: org.htmlparser:htmlparser:1.6" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-core:4.9.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-highlighter:4.9.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-memory:4.9.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-queries:4.9.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-spatial:4.9.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-core:4.8.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-highlighter:4.8.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-memory:4.8.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-queries:4.8.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-spatial:4.8.0" level="project" />
     <orderEntry type="library" name="Maven: com.spatial4j:spatial4j:0.4.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-misc:4.9.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-classification:4.9.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-misc:4.8.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-classification:4.8.0" level="project" />
     <orderEntry type="library" name="Maven: net.htmlparser.jericho:jericho-html:3.1" level="project" />
     <orderEntry type="library" name="Maven: com.ibm.db2.jcc:db2jcc4:9.7.2" level="project" />
     <orderEntry type="library" name="Maven: com.ibm.db2.jcc_license_cu:db2jcc_license_cu:9.7.2" level="project" />
@@ -236,9 +236,9 @@
     <orderEntry type="library" name="Maven: net.sf.squirrel-sql.thirdparty-non-maven:java-cup:0.11a" level="project" />
     <orderEntry type="library" name="Maven: squiggle:squiggle:1.4.0" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.security:spring-security-crypto:3.2.4.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-analyzers-common:4.9.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-queryparser:4.9.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-sandbox:4.9.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-analyzers-common:4.8.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-queryparser:4.8.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-sandbox:4.8.0" level="project" />
     <orderEntry type="library" name="Maven: flaxcrawler:flaxcrawler:1.1.0" level="project" />
     <orderEntry type="library" name="Maven: dsiutils:dsiutils:1.0.10" level="project" />
     <orderEntry type="library" name="Maven: fastutil:fastutil:5.1.5" level="project" />

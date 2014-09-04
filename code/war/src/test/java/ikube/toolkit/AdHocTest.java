@@ -1,6 +1,7 @@
 package ikube.toolkit;
 
 import ikube.AbstractTest;
+import ikube.IConstants;
 import ikube.action.index.IndexManager;
 import ikube.action.index.analyzer.StemmingAnalyzer;
 import ikube.model.IndexContext;
@@ -152,7 +153,7 @@ public class AdHocTest extends AbstractTest {
         RAMDirectory idx = new RAMDirectory();
         IndexWriter writer = new IndexWriter(
                 idx,
-                new IndexWriterConfig(Version.LUCENE_40, new ClassicAnalyzer(Version.LUCENE_40))
+                new IndexWriterConfig(IConstants.LUCENE_VERSION, new ClassicAnalyzer(IConstants.LUCENE_VERSION))
         );
         Document document = new Document();
         document.add(new StringField("ticket_number", "t123", Field.Store.YES));

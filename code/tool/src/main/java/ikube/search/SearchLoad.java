@@ -22,6 +22,7 @@ import java.util.concurrent.Future;
  * performance can be checked visually to verify that there are no bottlenecks in the search
  * logic.
  * <p/>
+ *
  * <pre>
  *     java -jar ikube-tool-5.1.0.jar ikube.search.SearchLoad -u url -p 9090 -s search-string -d index-name -f field-name
  *     java -jar ikube-tool-5.1.0.jar ikube.search.SearchLoad -u ikube.be -p 8080 -s passwords -d geospatial -f contents

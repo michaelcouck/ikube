@@ -2,10 +2,10 @@ package ikube.search;
 
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.action.index.analyzer.StemmingAnalyzer;
 import ikube.toolkit.FileUtilities;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
  *
  * @author Michael Couck
  * @version 01.00
- * @since 20.02.2012
+ * @since 20-02-2012
  */
 public class SearchComplexTest extends AbstractTest {
 
@@ -44,7 +44,7 @@ public class SearchComplexTest extends AbstractTest {
 
         String[][] strings = data.toArray(new String[data.size()][]);
         strings = Arrays.copyOfRange(strings, 1, strings.length);
-        searchComplex = createIndexRamAndSearch(SearchComplex.class, new StemmingAnalyzer(), columns, strings);
+        searchComplex = createIndexRamAndSearch(SearchComplex.class, new StandardAnalyzer(IConstants.LUCENE_VERSION), columns, strings);
         searchComplex.setFirstResult(0);
         searchComplex.setFragment(true);
         searchComplex.setMaxResults(10);
@@ -92,12 +92,12 @@ public class SearchComplexTest extends AbstractTest {
     @Test
     public void rangeQuery() throws Exception {
         searchComplex.setSearchFields("annee");
-        searchComplex.setSearchStrings("2001-2003");
+        searchComplex.setSearchStrings("2000-2005");
         searchComplex.setTypeFields(RANGE.fieldType());
         searchComplex.setOccurrenceFields(IConstants.SHOULD);
         searchComplex.setSortFields("annee");
         ArrayList<HashMap<String, String>> results = searchComplex.execute();
-        assertEquals("There must be 3 results and the statistics : ", 4, results.size());
+        assertEquals("There must be 6 results and the statistics : ", 6, results.size());
 
         searchComplex.setSearchFields("annee", "annee");
         searchComplex.setSearchStrings("2001-2003", "2005-2006");
@@ -114,6 +114,14 @@ public class SearchComplexTest extends AbstractTest {
         searchComplex.setSortFields("column-two");
         results = searchComplex.execute();
         assertEquals("There must be 3 results and the statistics : ", 4, results.size());
+
+        searchComplex.setSearchFields("column-two");
+        searchComplex.setSearchStrings("1-9");
+        searchComplex.setTypeFields(RANGE.fieldType());
+        searchComplex.setOccurrenceFields(IConstants.SHOULD);
+        searchComplex.setSortFields("column-two");
+        results = searchComplex.execute();
+        assertEquals("There must be 10 results and the statistics : ", 10, results.size());
     }
 
     @Test
