@@ -5,6 +5,7 @@ import ikube.action.index.handler.internet.exchange.IndexableMessage;
 import ikube.model.IndexContext;
 import ikube.model.IndexableExchange;
 import org.apache.lucene.document.Document;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -36,7 +37,8 @@ public class ExchangeResourceHandler extends ResourceHandler<IndexableExchange> 
         // Add the contents fields
         String messageMailboxOwnerField     = indexableExchange.getMessageMailboxOwnerField();
         String messageMailboxNameField      = indexableExchange.getMessageMailboxNameField();
-        String messageMessageIdField        = indexableExchange.getMessageMessageIdField();
+        String messageExchangeIdField       = indexableExchange.getMessageExchangeIdField();
+        String messageInternetIdField       = indexableExchange.getMessageInternetIdField();
         String messageConversationIdField   = indexableExchange.getMessageConversationIdField();
         String messageCreatedDateField      = indexableExchange.getMessageCreatedDateField();
         String messageSentDateField         = indexableExchange.getMessageSentDateField();
@@ -52,7 +54,8 @@ public class ExchangeResourceHandler extends ResourceHandler<IndexableExchange> 
         if (msg != null) {
             addStringField(messageMailboxOwnerField,   toEmailString(msg.mailboxOwner), indexableExchange, document);
             addStringField(messageMailboxNameField,    msg.mailboxName,            indexableExchange, document);
-            addStringField(messageMessageIdField,      msg.messageId,              indexableExchange, document);
+            addStringField(messageExchangeIdField,     msg.messageExchangeId,      indexableExchange, document);
+            addStringField(messageInternetIdField,     msg.messageInternetId,      indexableExchange, document);
             addStringField(messageConversationIdField, msg.conversationId,         indexableExchange, document);
             addStringField(messageCreatedDateField,    toDateString(msg.created),  indexableExchange, document);
             addStringField(messageSentDateField,       toDateString(msg.sent),     indexableExchange, document);

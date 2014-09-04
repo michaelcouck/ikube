@@ -1,49 +1,16 @@
 package ikube.action.index.handler.internet.exchange;
 
-import java.net.Authenticator;
-import java.net.PasswordAuthentication;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Logger;
-
+import com.independentsoft.exchange.*;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.NTCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 
-import com.independentsoft.exchange.And;
-import com.independentsoft.exchange.Body;
-import com.independentsoft.exchange.ContactPropertyPath;
-import com.independentsoft.exchange.FindItemResponse;
-import com.independentsoft.exchange.FindPeopleResponse;
-import com.independentsoft.exchange.GetRulesResponse;
-import com.independentsoft.exchange.IndexBasePoint;
-import com.independentsoft.exchange.IndexedPageView;
-import com.independentsoft.exchange.IsGreaterThan;
-import com.independentsoft.exchange.IsLessThan;
-import com.independentsoft.exchange.Item;
-import com.independentsoft.exchange.ItemPropertyPath;
-import com.independentsoft.exchange.Mailbox;
-import com.independentsoft.exchange.MapiPropertyTag;
-import com.independentsoft.exchange.Message;
-import com.independentsoft.exchange.MessagePropertyPath;
-import com.independentsoft.exchange.Persona;
-import com.independentsoft.exchange.PersonaShape;
-import com.independentsoft.exchange.PropertyOrder;
-import com.independentsoft.exchange.PropertyPath;
-import com.independentsoft.exchange.RequestServerVersion;
-import com.independentsoft.exchange.Restriction;
-import com.independentsoft.exchange.Rule;
-import com.independentsoft.exchange.Service;
-import com.independentsoft.exchange.ServiceException;
-import com.independentsoft.exchange.ShapeType;
-import com.independentsoft.exchange.SortDirection;
-import com.independentsoft.exchange.StandardFolder;
-import com.independentsoft.exchange.StandardFolderId;
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
+import java.util.*;
+import java.util.logging.Logger;
 /**
  * Search Exchange user accounts for mail in a specified FOLDER between specified date range.
  * Folder can be Inbox, Draft, Private, Calendar etc.
@@ -498,8 +465,8 @@ public class ExchangeClient {
 
             im.mailboxName       = FOLDER.name();
             im.mailboxOwner      = new IndexableMessage.Email(useraccount.firstname, useraccount.surname, useraccount.displayname, useraccount.email); 
-            im.messageId         = message.getItemId().getId();
-            im.internetMessageId = message.getInternetMessageId();
+            im.messageExchangeId = message.getItemId().getId();
+            im.messageInternetId = message.getInternetMessageId();
             im.conversationId    = message.getConversationId().getId(); 
             
             im.from              = toEmail(message.getFrom());
@@ -659,9 +626,9 @@ public class ExchangeClient {
          * hasNext() and getNext() iterate a users email messages from oldest to newest.
          *
     	 * @param afterFrom       - optional - from the specified email address sent date (oldest) or null back to the big bang.
-    	 * @param beforeTo         - required - to the latest email message sent date (newest).
-    	 * @param resumeFromEmail    - optional - start processing from this email address in alphabetic email username order.
-    	 * @param resumeFromSentDate - optional - start processing from this email message sent date. resumeFromSentDate is between fromSentDate and toSentDate inclusive
+    	 * @param beforeTo        - required - to the latest email message sent date (newest).
+    	 * @param resumeFromEmail - optional - start processing from this email address in alphabetic email username order.
+    	 * @param resumeFromMessageIdExclusive - optional - start processing from this email message exchange id.
     	*/
     	private UsersMessages(final ExchangeClient client, final Date afterFrom, final Date beforeTo, 
     			final String resumeFromEmail, final String resumeFromMessageIdExclusive) {
@@ -765,7 +732,7 @@ public class ExchangeClient {
     		currentUserMessages = client.getUserMessages(currentUser, afterFrom, beforeTo );
     		while( currentUserMessages != null && currentUserMessages.hasNext() ){
     			IndexableMessage currentMsg = currentUserMessages.next();
-    			if(currentMsg != null && currentMsg.messageId != null && currentMsg.messageId.equals(resumeFromMessageIdExclusive))
+    			if(currentMsg != null && currentMsg.messageExchangeId != null && currentMsg.messageExchangeId.equals(resumeFromMessageIdExclusive))
     				break;  // resumed complete, were back to where we left off (last processed user message found).
         	}	
         }
