@@ -40,7 +40,7 @@ public class SearchLoad extends Load {
     @Option(name = "-t")
     private int threads = 5;
     @Option(name = "-i")
-    private int iterations = 1000000;
+    private int iterations = 1000;
     @Option(name = "-u")
     private String url = "ikube.be";
     @Option(name = "-p")
