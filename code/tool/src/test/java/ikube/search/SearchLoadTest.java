@@ -1,6 +1,14 @@
 package ikube.search;
 
 import ikube.AbstractTest;
+import ikube.toolkit.HttpClientUtilities;
+import ikube.toolkit.ObjectToolkit;
+import mockit.Mock;
+import mockit.MockClass;
+import mockit.Mockit;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -10,10 +18,35 @@ import org.junit.Test;
  */
 public class SearchLoadTest extends AbstractTest {
 
+    private static int EXECUTIONS;
+
+    @Before
+    public void before() {
+        Mockit.setUpMocks(HttpClientUtilitiesMock.class);
+    }
+
+    @After
+    public void after() {
+        Mockit.tearDownMocks(HttpClientUtilities.class);
+    }
+
     @Test
     public void main() throws Exception {
+        SearchLoad searchLoad = new SearchLoad();
         // We just execute this because there is nothing to test in the results
-        SearchLoad.main(new String[]{"-e", "1000", "-p", "80", "-t", "10"});
+        SearchLoad.main(new String[]{"-t", "10"});
+        logger.error("Executions : " + EXECUTIONS);
+        Assert.assertTrue(searchLoad.iterations < EXECUTIONS);
+    }
+
+    @MockClass(realClass = HttpClientUtilities.class)
+    public static class HttpClientUtilitiesMock {
+        @Mock
+        @SuppressWarnings("unchecked")
+        public static <T> T doPost(final String url, final Object entity, final Class<T> returnType) {
+            EXECUTIONS++;
+            return (T) ObjectToolkit.populateFields(new ikube.model.Search(), true, 3);
+        }
     }
 
 }

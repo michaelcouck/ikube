@@ -12,7 +12,7 @@
             
 	<description>
 		This file is not to be modified by users generally.
-		This is the configuration for the intercepter for the rules.
+		This is the configuration for the interceptor for the rules.
 	</description>
 	
 	<aop:config proxy-target-class="true" />
@@ -64,12 +64,6 @@
 		<aop:aspect ref="ikube.action.index.handler.strategy.IStrategyInterceptor">
 			<aop:around method="aroundProcess" pointcut="execution(* ikube.action.index.handler.*.handleResource*(..))"  />
 		</aop:aspect>
-		<!-- <aop:aspect ref="ikube.action.index.handler.strategy.IStrategyInterceptor">
-			<aop:around method="preProcess" pointcut="execution(* ikube.action.index.handler.*.*.handleResource*(..))"  />
-		</aop:aspect> -->
-		<!-- <aop:aspect ref="ikube.statistics.TimerInterceptor">
-			<aop:around method="preProcess" pointcut="execution(* ikube.action.index.handler.strategy.DynamicallyTrainedLanguageSpecificClassificationStrategy.detectSentiment*(..))"  />
-		</aop:aspect> -->
 	</aop:config>
 	
 </beans>

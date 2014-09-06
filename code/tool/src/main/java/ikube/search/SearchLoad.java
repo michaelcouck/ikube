@@ -38,9 +38,9 @@ public class SearchLoad extends Load {
     private static final Logger LOGGER = LoggerFactory.getLogger(SearchLoad.class);
 
     @Option(name = "-t")
-    private int threads = 5;
+    int threads = 5;
     @Option(name = "-i")
-    private int iterations = 1000;
+    int iterations = 1000;
     @Option(name = "-u")
     private String url = "ikube.be";
     @Option(name = "-p")
@@ -52,7 +52,7 @@ public class SearchLoad extends Load {
     @Option(name = "-f")
     private String fieldName = IConstants.NAME;
     @Option(name = "-e")
-    private int printEvery = 1000;
+    private int printEvery = 250;
 
 
     public static void main(final String[] args) throws Exception {
@@ -94,7 +94,7 @@ public class SearchLoad extends Load {
                         if (searches > 0 && searches % printEvery == 0) {
                             LOGGER.error("Search : " + searchResult);
                         }
-                    } while (searches-- >= 0);
+                    } while (--searches >= 0);
                 }
             }
 
@@ -110,7 +110,7 @@ public class SearchLoad extends Load {
             Runnable runnable = new Runner();
             Future<Object> future = (Future<Object>) ThreadUtilities.submit(runnable.toString(), runnable);
             futures.add(future);
-        } while (count++ < threads);
+        } while (++count < threads);
         ThreadUtilities.waitForFutures(futures, Long.MAX_VALUE);
     }
 
