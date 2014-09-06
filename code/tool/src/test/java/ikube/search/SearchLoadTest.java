@@ -34,7 +34,7 @@ public class SearchLoadTest extends AbstractTest {
     public void main() throws Exception {
         SearchLoad searchLoad = new SearchLoad();
         // We just execute this because there is nothing to test in the results
-        SearchLoad.main(new String[]{"-t", "10"});
+        SearchLoad.main(new String[]{});
         logger.error("Executions : " + EXECUTIONS);
         Assert.assertTrue(searchLoad.iterations < EXECUTIONS);
     }
