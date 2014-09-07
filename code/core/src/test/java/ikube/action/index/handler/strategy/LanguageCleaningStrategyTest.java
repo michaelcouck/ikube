@@ -43,7 +43,7 @@ public class LanguageCleaningStrategyTest extends AbstractTest {
                 languageCleaningStrategy.aroundProcess(indexContext, indexable, new Document(), resource);
             }
         }, "Language detection strategy : ", 1000, Boolean.TRUE);
-        assertTrue(perSecond > 1000);
+        assertTrue(perSecond > 250);
     }
 
     @Test
