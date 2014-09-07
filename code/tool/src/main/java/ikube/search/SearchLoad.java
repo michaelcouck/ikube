@@ -110,7 +110,7 @@ public class SearchLoad extends Load {
             Runnable runnable = new Runner();
             Future<Object> future = (Future<Object>) ThreadUtilities.submit(runnable.toString(), runnable);
             futures.add(future);
-        } while (++count < threads);
+        } while (++count <= threads);
         ThreadUtilities.waitForFutures(futures, Long.MAX_VALUE);
     }
 

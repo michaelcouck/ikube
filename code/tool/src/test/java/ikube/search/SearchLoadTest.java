@@ -39,6 +39,7 @@ public class SearchLoadTest extends AbstractTest {
         Assert.assertTrue(searchLoad.iterations < EXECUTIONS);
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     @MockClass(realClass = HttpClientUtilities.class)
     public static class HttpClientUtilitiesMock {
         @Mock

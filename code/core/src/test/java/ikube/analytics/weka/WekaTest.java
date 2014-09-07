@@ -41,6 +41,10 @@ public class WekaTest extends AbstractTest {
 
         Classifier classifier = new SMO();
         Filter filter = new StringToWordVector();
+        String[] options = classifier.getOptions();
+        for (final String option : options) {
+            logger.error(option);
+        }
 
         instances.setClassIndex(0);
         filter.setInputFormat(instances);

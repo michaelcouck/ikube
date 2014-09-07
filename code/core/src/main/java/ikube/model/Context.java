@@ -62,6 +62,12 @@ public class Context extends Persistable {
     private Object[] options;
 
     /**
+     * Any options or even classes that modify the algorithm in some way. Could be an array, something like a command line args.
+     */
+    @Transient
+    private Object[] capabilities;
+
+    /**
      * The name of the file if different from the name of the algorithm.
      */
     @Transient
@@ -139,6 +145,14 @@ public class Context extends Persistable {
         this.options = options;
     }
 
+    public Object[] getCapabilities() {
+        return capabilities;
+    }
+
+    public void setCapabilities(Object... capabilities) {
+        this.capabilities = capabilities;
+    }
+
     public int[] getMaxTrainings() {
         return maxTrainings;
     }
@@ -186,4 +200,6 @@ public class Context extends Persistable {
     public void setBuilt(boolean built) {
         this.built = built;
     }
+
+
 }

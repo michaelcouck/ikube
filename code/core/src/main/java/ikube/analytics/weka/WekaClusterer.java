@@ -1,17 +1,7 @@
 package ikube.analytics.weka;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.Future;
-
-import com.google.common.collect.Lists;
-
-import static ikube.toolkit.ThreadUtilities.waitForAnonymousFutures;
-
 import ikube.model.Analysis;
 import ikube.model.Context;
-import ikube.toolkit.ThreadUtilities;
-import weka.clusterers.ClusterEvaluation;
 import weka.clusterers.Clusterer;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -27,70 +17,6 @@ import weka.filters.Filter;
  * @since 10-04-2013
  */
 public class WekaClusterer extends WekaAnalyzer {
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void build(final Context context) throws Exception {
-        final Object[] algorithms = context.getAlgorithms();
-        final Object[] models = context.getModels();
-        final String[] evaluations = new String[algorithms.length];
-
-        class ClustererBuilder implements Runnable {
-            final int index;
-
-            ClustererBuilder(final int index) {
-                this.index = index;
-            }
-
-            public void run() {
-                try {
-                    // Get the components to create the model
-                    Clusterer clusterer = (Clusterer) algorithms[index];
-                    Instances instances = (Instances) models[index];
-                    Filter filter = getFilter(context, index);
-
-                    // Filter the data if necessary
-                    Instances filteredInstances = filter(instances, filter);
-                    filteredInstances.setRelationName("filtered-instances");
-
-                    // And build the model
-                    logger.info("Building clusterer : " + instances.numInstances());
-                    clusterer.buildClusterer(filteredInstances);
-                    logger.info("Clusterer built : " + filteredInstances.numInstances());
-                    algorithms[index] = clusterer;
-
-                    // Set the evaluation
-                    evaluations[index] = evaluate(clusterer, instances);
-                } catch (final Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-
-        if (context.isPersisted()) {
-            Object[] deserializeAlgorithms = deserializeAnalyzers(context);
-            if (deserializeAlgorithms != null && deserializeAlgorithms.length == algorithms.length) {
-                System.arraycopy(deserializeAlgorithms, 0, algorithms, 0, algorithms.length);
-                context.setBuilt(Boolean.TRUE);
-            }
-        }
-        if (!context.isBuilt()) {
-            List<Future> futures = Lists.newArrayList();
-            for (int i = 0; i < context.getAlgorithms().length; i++) {
-                Future<?> future = ThreadUtilities.submit(this.getClass().getName(), new ClustererBuilder(i));
-                futures.add(future);
-            }
-            waitForAnonymousFutures(futures, Long.MAX_VALUE);
-        }
-        context.setAlgorithms(algorithms);
-        context.setEvaluations(evaluations);
-        if (context.isPersisted() && !context.isBuilt()) {
-            serializeAnalyzers(context);
-        }
-        context.setBuilt(Boolean.TRUE);
-    }
 
     /**
      * {@inheritDoc}
@@ -164,13 +90,6 @@ public class WekaClusterer extends WekaAnalyzer {
             distributionForInstance[i] = clusterer.distributionForInstance(filteredInstance);
         }
         return distributionForInstance;
-    }
-
-    private String evaluate(final Clusterer clusterer, final Instances instances) throws Exception {
-        ClusterEvaluation clusterEvaluation = new ClusterEvaluation();
-        clusterEvaluation.setClusterer(clusterer);
-        clusterEvaluation.evaluateClusterer(instances);
-        return clusterEvaluation.clusterResultsToString();
     }
 
 }

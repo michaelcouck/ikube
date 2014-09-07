@@ -7,10 +7,15 @@ import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.StringUtilities;
+import ikube.toolkit.ThreadUtilities;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import weka.classifiers.Classifier;
+import weka.classifiers.Evaluation;
+import weka.clusterers.ClusterEvaluation;
+import weka.clusterers.Clusterer;
 import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -21,10 +26,13 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.Future;
 
 import static ikube.IConstants.ANALYTICS_DIRECTORY;
 import static ikube.toolkit.ApplicationContextManager.getConfigFilePath;
 import static ikube.toolkit.FileUtilities.*;
+import static ikube.toolkit.ThreadUtilities.waitForAnonymousFutures;
 import static org.apache.commons.io.FilenameUtils.getBaseName;
 
 /**
@@ -78,6 +86,90 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis, Analysis, Anal
         }
         // Load the models(Instances) for all the analyzers
         context.setModels(instances(context));
+    }
+
+    @Override
+    public void build(final Context context) throws Exception {
+        final Object[] algorithms = context.getAlgorithms();
+        final Object[] models = context.getModels();
+        final String[] evaluations = new String[algorithms.length];
+        final Object[] capabilities = new Object[algorithms.length];
+
+        class AnalyzerBuilder implements Runnable {
+            final int index;
+
+            AnalyzerBuilder(final int index) {
+                this.index = index;
+            }
+
+            public void run() {
+                try {
+                    Instances instances = (Instances) models[index];
+                    Filter filter = getFilter(context, index);
+
+                    // Filter the data if necessary
+                    Instances filteredInstances = filter(instances, filter);
+                    filteredInstances.setRelationName("filtered-instances");
+
+                    Object analyzer = algorithms[index];
+                    if (Clusterer.class.isAssignableFrom(analyzer.getClass())) {
+                        logger.info("Building clusterer : " + instances.numInstances());
+                        ((Clusterer) analyzer).buildClusterer(filteredInstances);
+                        evaluations[index] = evaluate((Clusterer) analyzer, instances);
+                        capabilities[index] = ((Clusterer) analyzer).getCapabilities().toString();
+                        logger.info("Clusterer built : " + filteredInstances.numInstances());
+                    } else if (Classifier.class.isAssignableFrom(analyzer.getClass())) {
+                        // And build the model
+                        logger.info("Building classifier : " + instances.numInstances() + ", " + context.getName());
+                        ((Classifier) analyzer).buildClassifier(filteredInstances);
+                        logger.info("Classifier built : " + filteredInstances.numInstances());
+
+                        // Set the evaluation of the classifier and the training model
+                        evaluations[index] = evaluate((Classifier) analyzer, filteredInstances);
+                        capabilities[index] = ((Classifier) analyzer).getCapabilities().toString();
+                    }
+                } catch (final Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+        if (context.isPersisted()) {
+            Object[] deserializeAlgorithms = deserializeAnalyzers(context);
+            if (deserializeAlgorithms != null && deserializeAlgorithms.length == algorithms.length) {
+                System.arraycopy(deserializeAlgorithms, 0, algorithms, 0, algorithms.length);
+                context.setBuilt(Boolean.TRUE);
+            }
+        }
+        if (!context.isBuilt()) {
+            List<Future> futures = Lists.newArrayList();
+            for (int i = 0; i < context.getAlgorithms().length; i++) {
+                Future<?> future = ThreadUtilities.submit(this.getClass().getName(), new AnalyzerBuilder(i));
+                futures.add(future);
+            }
+            waitForAnonymousFutures(futures, Long.MAX_VALUE);
+        }
+        context.setAlgorithms(algorithms);
+        context.setEvaluations(evaluations);
+        context.setCapabilities(capabilities);
+        if (context.isPersisted() && !context.isBuilt()) {
+            serializeAnalyzers(context);
+        }
+        context.setBuilt(Boolean.TRUE);
+    }
+
+    private String evaluate(final Clusterer clusterer, final Instances instances) throws Exception {
+        ClusterEvaluation clusterEvaluation = new ClusterEvaluation();
+        clusterEvaluation.setClusterer(clusterer);
+        clusterEvaluation.evaluateClusterer(instances);
+        return clusterEvaluation.clusterResultsToString();
+    }
+
+    private String evaluate(final Classifier classifier, final Instances instances) throws Exception {
+        Evaluation evaluation = new Evaluation(instances);
+        evaluation.crossValidateModel(classifier, instances, 3, new Random());
+        evaluation.evaluateModel(classifier, instances);
+        return evaluation.toSummaryString();
     }
 
     /**
@@ -285,7 +377,7 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis, Analysis, Anal
         List<Object> analyzers = Lists.newArrayList();
         File[] serializedAnalyzerFiles = getSerializedAnalyzerFiles(context);
         if (serializedAnalyzerFiles == null || serializedAnalyzerFiles.length == 0 ||
-            serializedAnalyzerFiles.length != context.getAlgorithms().length) {
+                serializedAnalyzerFiles.length != context.getAlgorithms().length) {
             logger.info("No analyzer files found : " + context.getName() + ", " + Arrays.toString(serializedAnalyzerFiles));
             return null;
         }

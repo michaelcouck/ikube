@@ -2,20 +2,12 @@ package ikube.analytics.weka;
 
 import ikube.model.Analysis;
 import ikube.model.Context;
-import ikube.toolkit.ThreadUtilities;
 import weka.classifiers.Classifier;
-import weka.classifiers.Evaluation;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.filters.Filter;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.Future;
-
-import static com.google.common.collect.Lists.newArrayList;
-import static ikube.toolkit.ThreadUtilities.waitForAnonymousFutures;
 
 /**
  * This is a wrapper for the Weka classifiers. It is essentially a holder with some methods for
@@ -39,73 +31,6 @@ public class WekaClassifier extends WekaAnalyzer {
         } catch (final Exception e) {
             logger.error("Exception building analyzer : ", e);
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void build(final Context context) throws Exception {
-        // If this analyzer can be persisted, then first check the file system
-        // for serialized classifiers that have already been built
-        final Object[] algorithms = context.getAlgorithms();
-        final Object[] models = context.getModels();
-        final String[] evaluations = new String[algorithms.length];
-
-        class ClassifierBuilder implements Runnable {
-            final int index;
-
-            ClassifierBuilder(final int index) {
-                this.index = index;
-            }
-
-            public void run() {
-                try {
-                    // Get the components to create the model
-                    Classifier classifier = (Classifier) algorithms[index];
-                    Instances instances = (Instances) models[index];
-                    Filter filter = getFilter(context, index);
-
-                    // Filter the data if necessary
-                    Instances filteredInstances = filter(instances, filter);
-                    filteredInstances.setRelationName("filtered-instances");
-
-                    // And build the model
-                    logger.info("Building classifier : " + instances.numInstances() + ", " + context.getName());
-                    classifier.buildClassifier(filteredInstances);
-                    logger.info("Classifier built : " + filteredInstances.numInstances());
-                    algorithms[index] = classifier;
-
-                    // Set the evaluation of the classifier and the training model
-                    evaluations[index] = evaluate(classifier, filteredInstances);
-                } catch (final Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-
-        if (context.isPersisted()) {
-            Object[] deserializeAlgorithms = deserializeAnalyzers(context);
-            if (deserializeAlgorithms != null && deserializeAlgorithms.length == algorithms.length) {
-                System.arraycopy(deserializeAlgorithms, 0, algorithms, 0, algorithms.length);
-                context.setBuilt(Boolean.TRUE);
-            }
-        }
-
-        if (!context.isBuilt()) {
-            List<Future> futures = newArrayList();
-            for (int i = 0; i < algorithms.length; i++) {
-                Future<?> future = ThreadUtilities.submit(this.getClass().getName(), new ClassifierBuilder(i));
-                futures.add(future);
-            }
-            waitForAnonymousFutures(futures, Long.MAX_VALUE);
-        }
-        context.setAlgorithms(algorithms);
-        context.setEvaluations(evaluations);
-        if (context.isPersisted() && !context.isBuilt()) {
-            serializeAnalyzers(context);
-        }
-        context.setBuilt(Boolean.TRUE);
     }
 
     /**
@@ -199,25 +124,6 @@ public class WekaClassifier extends WekaAnalyzer {
             distributionForInstance[i] = classifier.distributionForInstance(filteredInstance);
         }
         return distributionForInstance;
-    }
-
-    private String evaluate(final Classifier classifier, final Instances instances) throws Exception {
-        Evaluation evaluation = new Evaluation(instances);
-        evaluation.crossValidateModel(classifier, instances, 3, new Random());
-        evaluation.evaluateModel(classifier, instances);
-        return evaluation.toSummaryString();
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    private void log(final Instances instances) throws Exception {
-        int numClasses = instances.numClasses();
-        int numAttributes = instances.numAttributes();
-        int numInstances = instances.numInstances();
-        String expression = //
-            "Classes : " + numClasses + //
-                ", instances : " + numInstances +
-                ", attributes : " + numAttributes;
-        logger.info(expression);
     }
 
 }
