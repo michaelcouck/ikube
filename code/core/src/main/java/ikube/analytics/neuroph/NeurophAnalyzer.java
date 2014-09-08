@@ -4,6 +4,7 @@ import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.ThreadUtilities;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.neuroph.core.NeuralNetwork;
@@ -30,33 +31,6 @@ import static ikube.toolkit.ThreadUtilities.waitForAnonymousFutures;
  *
  * @author Michael Couck
  * @version 01.00
- * @see org.neuroph.nnet.Adaline#Adaline(int)
- * @see org.neuroph.nnet.AutoencoderNetwork#AutoencoderNetwork(int...)
- * @see org.neuroph.nnet.BAM#BAM(int inputNeuronsCount, int outputNeuronsCount)
- * @see org.neuroph.nnet.CompetitiveNetwork#CompetitiveNetwork(int inputNeuronsCount, int outputNeuronsCount)
- * @see org.neuroph.nnet.ConvolutionalNetwork#ConvolutionalNetwork()
- * @see org.neuroph.nnet.ElmanNetwork#ElmanNetwork(int inputNeuronsCount, int hiddenNeuronsCount, int contextNeuronsCount, int outputNeuronsCount)
- * @see org.neuroph.nnet.Hopfield#Hopfield(int neuronsCount)
- * @see org.neuroph.nnet.Hopfield#Hopfield(int neuronsCount, NeuronProperties neuronProperties)
- * @see org.neuroph.nnet.Instar#Instar(int inputNeuronsCount)
- * @see org.neuroph.nnet.UnsupervisedHebbianNetwork#UnsupervisedHebbianNetwork(int inputNeuronsNum, int outputNeuronsNum)
- * @see org.neuroph.nnet.UnsupervisedHebbianNetwork#UnsupervisedHebbianNetwork(int inputNeuronsNum, int outputNeuronsNum, TransferFunctionType transferFunctionType)
- * @see org.neuroph.nnet.SupervisedHebbianNetwork#SupervisedHebbianNetwork(int inputNeuronsNum, int outputNeuronsNum)
- * @see org.neuroph.nnet.SupervisedHebbianNetwork#SupervisedHebbianNetwork(int inputNeuronsNum, int outputNeuronsNum, TransferFunctionType transferFunctionType)
- * @see org.neuroph.nnet.RBFNetwork#RBFNetwork(int inputNeuronsCount, int rbfNeuronsCount, int outputNeuronsCount)
- * @see org.neuroph.nnet.Perceptron#Perceptron(int inputNeuronsCount, int outputNeuronsCount)
- * @see org.neuroph.nnet.Perceptron#Perceptron(int inputNeuronsCount, int outputNeuronsCount, TransferFunctionType transferFunctionType)
- * @see org.neuroph.nnet.Outstar#Outstar(int outputNeuronsCount)
- * @see org.neuroph.nnet.NeuroFuzzyPerceptron#NeuroFuzzyPerceptron(double[][] pointsSets, double[][] timeSets)
- * @see org.neuroph.nnet.NeuroFuzzyPerceptron#NeuroFuzzyPerceptron(int inputNum, Vector inputSets, int outNum)
- * @see org.neuroph.nnet.MultiLayerPerceptron#MultiLayerPerceptron(List neuronsInLayers)
- * @see org.neuroph.nnet.MultiLayerPerceptron#MultiLayerPerceptron(int... neuronsInLayers)
- * @see org.neuroph.nnet.MultiLayerPerceptron#MultiLayerPerceptron(TransferFunctionType transferFunctionType, int...)
- * @see org.neuroph.nnet.MultiLayerPerceptron#MultiLayerPerceptron(List neuronsInLayers, TransferFunctionType transferFunctionType)
- * @see org.neuroph.nnet.MultiLayerPerceptron#MultiLayerPerceptron(List neuronsInLayers, NeuronProperties neuronProperties)
- * @see org.neuroph.nnet.MaxNet#MaxNet(int neuronsCount)
- * @see org.neuroph.nnet.Kohonen#Kohonen(int inputNeuronsCount, int outputNeuronsCount)
- * @see org.neuroph.nnet.JordanNetwork#JordanNetwork(int inputNeuronsCount, int hiddenNeuronsCount, int contextNeuronsCount, int outputNeuronsCount)
  * @since 29-08-2014
  */
 @SuppressWarnings("UnusedDeclaration")
@@ -229,6 +203,10 @@ public class NeurophAnalyzer implements IAnalyzer<Analysis, Analysis, Analysis> 
                 models[i] = new DataSet(inputNeuronsCount);
             }
         }
+        // TODO: Populate the models with the files from the file system
+        // Set the options to null because this causes havoc with the
+        // learning rule and Gson, they don't play nicely together at all
+        context.setOptions();
         context.setModels(models);
     }
 
@@ -261,6 +239,9 @@ public class NeurophAnalyzer implements IAnalyzer<Analysis, Analysis, Analysis> 
                     NeuralNetwork neuralNetwork = (NeuralNetwork) algorithms[index];
                     LOGGER.warn("Building neural network : " + neuralNetwork.getClass().getName());
                     neuralNetwork.learn((DataSet) models[index]);
+                    LOGGER.warn("Finished building neural network : " + neuralNetwork.getClass().getName());
+                    LOGGER.warn(ToStringBuilder.reflectionToString(neuralNetwork.getLearningRule()));
+
                 }
             });
             futures.add(future);

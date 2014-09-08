@@ -3,6 +3,10 @@ package ikube.analytics.neuroph;
 import ikube.AbstractTest;
 import ikube.model.Analysis;
 import ikube.model.Context;
+import ikube.toolkit.OsUtilities;
+import ikube.toolkit.StringUtilities;
+import mockit.Deencapsulation;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,11 +41,12 @@ public class NeurophAnalyzerTest extends AbstractTest {
     private Context context;
     @Spy
     private Analysis analysis;
+    @Mock
+    private LearningRule learningRule;
+
     @Spy
     @InjectMocks
     private NeurophAnalyzer neurophAnalyzer;
-    @Mock
-    private LearningRule learningRule;
 
     private Object[] algorithms;
     private Object[] options;
@@ -58,40 +63,26 @@ public class NeurophAnalyzerTest extends AbstractTest {
 
     @Test
     public void init() throws Exception {
-        algorithms = new Object[]{
-                Adaline.class.getName(),
-                AutoencoderNetwork.class.getName(),
-                BAM.class.getName(),
-                CompetitiveNetwork.class.getName(),
-                ConvolutionalNetwork.class.getName(),
-                // ElmanNetwork.class.getName(),
-                Hopfield.class.getName(),
-                Instar.class.getName(),
-                UnsupervisedHebbianNetwork.class.getName(),
-                SupervisedHebbianNetwork.class.getName(),
-                RBFNetwork.class.getName(),
-                Perceptron.class.getName(),
-                Outstar.class.getName(),
-                // NeuroFuzzyPerceptron.class.getName(),
-                MultiLayerPerceptron.class.getName(),
-                MaxNet.class.getName(),
-                Kohonen.class.getName(),
-                JordanNetwork.class.getName()};
-
-        options = new Object[]{
-                new String[]{
-                        "-label", "label",
-                        // "-weights", "[0.123]",
-                        "-outputLabels", "[one, two, three]",
-                        "-inputNeuronsCount", "3",
-                        "-hiddenNeuronsCount", "3",
-                        "-contextNeuronsCount", "3",
-                        "-rbfNeuronsCount", "3",
-                        "-outputNeuronsCount", "3",
-                        "-pointSets", "[[1, 1, 1, 1], [0, 0, 0, 0], [1, 1, 1, 0]]",
-                        "-timeSets", "[[1, 1, 1, 1], [0, 0, 0, 0], [1, 1, 1, 0]]",
-                        "-neuronsInLayers", "[3, 3, 3]"},
-                learningRule, NeuralNetworkType.ADALINE, neuronProperties, TransferFunctionType.GAUSSIAN, inputSetsVector, neuronsInLayer};
+        algorithms = new Object[]{Adaline.class.getName(), AutoencoderNetwork.class.getName(), BAM.class.getName(),
+                CompetitiveNetwork.class.getName(), ConvolutionalNetwork.class.getName(), // ElmanNetwork.class.getName(),
+                Hopfield.class.getName(), Instar.class.getName(), UnsupervisedHebbianNetwork.class.getName(), SupervisedHebbianNetwork.class.getName(),
+                RBFNetwork.class.getName(), Perceptron.class.getName(), Outstar.class.getName(), // NeuroFuzzyPerceptron.class.getName(),
+                MultiLayerPerceptron.class.getName(), MaxNet.class.getName(), Kohonen.class.getName(), JordanNetwork.class.getName()};
+        String[] fieldValues = new String[]{
+                "-label", "label",
+                "-outputLabels", "[one, two, three]",
+                "-inputNeuronsCount", "3",
+                "-hiddenNeuronsCount", "3",
+                "-contextNeuronsCount", "3",
+                "-rbfNeuronsCount", "3",
+                "-outputNeuronsCount", "3",
+                "-pointSets", "[[1, 1, 1, 1], [0, 0, 0, 0], [1, 1, 1, 0]]",
+                "-timeSets", "[[1, 1, 1, 1], [0, 0, 0, 0], [1, 1, 1, 0]]",
+                "-neuronsInLayers", "[3, 3, 3]"};
+        if (!OsUtilities.isOs("3.11.0-12-generic")) {
+            fieldValues = setFieldValues(fieldValues);
+        }
+        options = new Object[]{fieldValues, learningRule, NeuralNetworkType.ADALINE, neuronProperties, TransferFunctionType.GAUSSIAN, inputSetsVector, neuronsInLayer};
 
         when(context.getAlgorithms()).thenReturn(algorithms);
         when(context.getOptions()).thenReturn(options);
@@ -103,6 +94,19 @@ public class NeurophAnalyzerTest extends AbstractTest {
         for (final Object model : context.getModels()) {
             assertNotNull(model);
         }
+    }
+
+    private String[] setFieldValues(final String[] fieldValues) {
+        for (int i = 0; i < (fieldValues.length - 1) / 2; i++) {
+            String fieldName = StringUtils.strip(fieldValues[i * 2], "-");
+            Object fieldValue = fieldValues[i * 2 + 1];
+            if (StringUtilities.isNumeric(fieldValue.toString())) {
+                fieldValue = Integer.parseInt(fieldValue.toString());
+            }
+            logger.warn("Setting field : " + fieldName + ":" + fieldValue);
+            Deencapsulation.setField(neurophAnalyzer, fieldName, fieldValue);
+        }
+        return new String[0];
     }
 
     @Test
@@ -147,22 +151,20 @@ public class NeurophAnalyzerTest extends AbstractTest {
 
     @Test
     public void analyze() throws Exception {
-        algorithms = new Object[]{
-                Hopfield.class.getName(),
-                Kohonen.class.getName(),
-                RBFNetwork.class.getName()};
-
-        options = new Object[]{
-                new String[]{
-                        "-label", "label",
-                        "-outputLabels", "[one, two, three]",
-                        "-inputNeuronsCount", "3",
-                        "-hiddenNeuronsCount", "3",
-                        "-contextNeuronsCount", "3",
-                        "-rbfNeuronsCount", "3",
-                        "-outputNeuronsCount", "3",
-                        "-neuronsInLayers", "[3, 3, 3]"},
-                learningRule};
+        algorithms = new Object[]{Hopfield.class.getName(), Kohonen.class.getName(), RBFNetwork.class.getName()};
+        String[] fieldValues = new String[]{
+                "-label", "label",
+                "-outputLabels", "[one, two, three]",
+                "-inputNeuronsCount", "3",
+                "-hiddenNeuronsCount", "3",
+                "-contextNeuronsCount", "3",
+                "-rbfNeuronsCount", "3",
+                "-outputNeuronsCount", "3",
+                "-neuronsInLayers", "[3, 3, 3]"};
+        if (!OsUtilities.isOs("3.11.0-12-generic")) {
+            fieldValues = setFieldValues(fieldValues);
+        }
+        options = new Object[]{fieldValues, learningRule};
 
         when(context.getAlgorithms()).thenReturn(algorithms);
         when(context.getOptions()).thenReturn(options);
