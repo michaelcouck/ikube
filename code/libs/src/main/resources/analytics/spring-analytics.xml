@@ -4,9 +4,13 @@
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://www.springframework.org/schema/beans"
        xmlns:property="http://www.springframework.org/schema/p"
+       xmlns:util="http://www.springframework.org/schema/util"
 
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-			http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+			http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd">
 
     <!-- START CLUSTERER DEFINITION: -->
     <!--
@@ -131,5 +135,33 @@
             </list>
         </property>
     </bean>
+
+    <!--<bean-->
+        <!--name="mineco-neural-network"-->
+        <!--class="ikube.model.Context"-->
+        <!--property:name="mineco-neural-network"-->
+        <!--property:analyzer="ikube.analytics.neuroph.NeurophAnalyzer"-->
+        <!--property:algorithms="org.neuroph.nnet.MultiLayerPerceptron"-->
+        <!--property:options-ref="mineco-neural-network-options" />-->
+
+    <!--<util:list id="mineco-neural-network-options">-->
+        <!--<array>-->
+            <!--<value type="java.lang.String">-label</value>-->
+            <!--<value type="java.lang.String">mineco-neural-network</value>-->
+
+            <!--<value type="java.lang.String">-inputNeuronsCount</value>-->
+            <!--<value type="java.lang.String">3</value>-->
+
+            <!--<value type="java.lang.String">-hiddenNeuronsCount</value>-->
+            <!--<value type="java.lang.String">3</value>-->
+
+            <!--<value type="java.lang.String">-outputNeuronsCount</value>-->
+            <!--<value type="java.lang.String">2</value>-->
+
+            <!--<value type="java.lang.String">-neuronsInLayers</value>-->
+            <!--<value type="java.lang.String">[3, 3, 2]</value>-->
+        <!--</array>-->
+        <!--<value type="org.neuroph.util.TransferFunctionType">TANH</value>-->
+    <!--</util:list>-->
 
 </beans>

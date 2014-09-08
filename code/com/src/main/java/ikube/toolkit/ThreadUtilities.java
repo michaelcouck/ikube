@@ -106,6 +106,14 @@ public final class ThreadUtilities {
         }
     }
 
+    /**
+     * This method, similar to the {@link ikube.toolkit.ThreadUtilities#waitForFutures(java.util.List, long)},
+     * halts the current thread, to wait for the futures to complete, but the signature is not parameterized, making it
+     * easier to access
+     *
+     * @param futures the futures to wait for in seconds
+     * @param seconds and the maximum amount of time to wait in seconds
+     */
     public static void waitForAnonymousFutures(final List<Future> futures, final long seconds) {
         for (final Future<?> future : futures) {
             waitForFuture(future, seconds);

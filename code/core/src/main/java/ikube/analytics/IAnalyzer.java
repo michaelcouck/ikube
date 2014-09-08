@@ -38,7 +38,7 @@ public interface IAnalyzer<I, O, C> extends Serializable {
      *                is one of {@link ikube.model.Analysis}, with the class or cluster specified and the
      *                data for training in the input
      * @return whether the training was successful. If the algorithm underneath does not support
-     * incremental training then the return <ill be false
+     * incremental training then the return will be false
      * @throws Exception
      */
     boolean train(final Context context, final I input) throws Exception;

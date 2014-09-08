@@ -676,6 +676,22 @@
                             <!--<repositoryId>${repository-id}</repositoryId>-->
                             <!--<url>${artifactory}</url>-->
                         <!--</configuration>-->
+                    <!--<execution>-->
+                        <!--<id>neuroph</id>-->
+                        <!--<goals>-->
+                            <!--<goal>deploy-file</goal>-->
+                        <!--</goals>-->
+                        <!--<phase>install</phase>-->
+                        <!--<configuration>-->
+                            <!--<groupId>org.neuroph</groupId>-->
+                            <!--<artifactId>neuroph-core-sources</artifactId>-->
+                            <!--<version>2.9</version>-->
+                            <!--<file>tools/analytics/neuroph-core-2.9-sources.jar</file>-->
+                            <!--<packaging>${packaging}</packaging>-->
+                            <!--<generatePom>${generate-pom}</generatePom>-->
+                            <!--<repositoryId>${repository-id}</repositoryId>-->
+                            <!--<url>${artifactory}</url>-->
+                        <!--</configuration>-->
                     <!--</execution>-->
                 </executions>
             </plugin>
