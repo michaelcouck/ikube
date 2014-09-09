@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="generator" content="Asciidoctor 0.1.4">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configuration</title>
+<link rel="stylesheet" href="./application.css">
+</head>
+<body class="article">
+<div id="header">
+</div>
+<div id="content">
+<div class="paragraph">
+<p><script src="analytics.js" type="text/javascript"></script></p>
+</div>
+<div class="sect2">
+<h3 id="_configuration">Configuration</h3>
+<div class="paragraph">
+<p>Ikube has two parts to the configuration. A base configuration, that doesn&#8217;t need to be changed or
+modified unless the volumes of data processed scales over multiple machines and deployment topology
+becomes more complex to cope with trillions of events. However this is a general overview of the configuration,
+each of the configuration files generally has comments describing the options above the module elements.</p>
+</div>
+<div class="paragraph">
+<p>The configuration files must be in a folder named <em>ikube</em> in the user directory, i.e. where the server
+was started.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_base_configuration">Base configuration</h3>
+<div class="sect3">
+<h4 id="_security">Security</h4>
+<div class="paragraph">
+<p>Spring is the base for configuration. The web part contains two spring configuration files, one for security
+and one for Spring MVC. The base security configuration is file based. However Spring allows integration with
+LDAP or OAuth. For details on how to integrate Spring with other forms of security please consult the
+<a href="http://projects.spring.io/spring-security/">Spring security web</a> site.</p>
+</div>
+<div class="paragraph">
+<p>The rest web services are by default not secured. To secure these the spring-security.xml file in the WEB-INF/spring
+directory in the war application needs to be changed ro use ROLE_USER,ROLE_ADMIN rather than IS_AUTHENTICATED_ANONYMOUSLY.</p>
+</div>
+<div class="paragraph">
+<p>The Spring MVC configuration is for the web services(rest) and tiles configuration, and typically does
+not need to be modified.</p>
+</div>
+<div class="paragraph">
+<p>The rest of the configuration files must be placed in the $TOMCAT_HOME/bin/ikube directory as explained in the
+installation instructions.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_actions">Actions</h4>
+<div class="paragraph">
+<p>Actions that Ikube performs, like indexing and processing data for analytics are in the spring-actions.xml file.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_interceptors">Interceptors</h4>
+<div class="paragraph">
+<p>Ikube has several interceptors, for transaction management and intercepting the actions to perform rules. The rules
+need to be executed atomically, as such the cluster is locked before the rules are executed.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_general">General</h4>
+<div class="paragraph">
+<p>The file spring-beans.xml contains the database details, threading functionality, the services that users have
+access to like the analytics service and the search service. Ikube actions are based on schedulers, and these are also
+configured in the beans file. There other functionality like mailing and spelling checking that are also defined
+in this file. Importantly the handlers for various types of data sources, like database and file system are also
+defined in this file. This is where advanced users would define and plug in their own handlers for specific types
+of data sources. There are also strategies for enriching data for geospatial searches, and detecting language defined
+in this file. These concepts are described in more detail in the use cases, with examples of usage.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_database">Database</h4>
+<div class="paragraph">
+<p>Ikube uses an embedded database, H2. However for more robust users this can be changed to Oracle or DB2 for example
+by modifying the properties in the spring.properties file by changing the details for the database using the examples
+given, looking for the property <em>ikube.dataSource</em>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_grid">Grid</h4>
+<div class="paragraph">
+<p>The grid is Hazelcast at the time or writing. This can be changed to GridGain or any other provider, by implementing
+an interface and changing the configuration file to use the new provider. The configuration for Hazelcast is in the
+spring-hazelcast.xml file. This typically does not need to be changed, however the properties in the spring.properties
+file relating to the grid may be changed to suit the user. Specifically and importantly the interface needs to be
+changed to the ip address of the machine that it is running on, the property hz-tcp-ip-interface in the spring.properties
+file.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_users">Users</h4>
+<div class="paragraph">
+<p>Security for the web console are defined here, and optionally for the web services. Users can be added to this file to
+allow access, however for larger installations where multiple applications need access it is recommended that an LDAP be
+integrated to provide the user access and administration.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_index_configuration">Index configuration</h3>
+<div class="paragraph">
+<p>Indexes and processing pipelines are configured in Spring format. This will be familiar to developers that have
+a Spring background, but will also be understandable for technical people.</p>
+</div>
+<div class="sect3">
+<h4 id="_index_context">Index context</h4>
+<div class="paragraph">
+<p>Configurations start with a context, an IndexContext. Each context must have a unique identifier, which is the name.
+Each context can be viewed as a collection of resources that are indexed for searching or processing viw analytics.
+As ikube is based on schedules, the maximum age of the context will trigger he processing jobs, as such the <em>maxAge</em> property
+is important to determine when processing will start. For all the properties related to contexts please refer to the
+<a href="properties.html">properties page</a>.</p>
+</div>
+<div class="paragraph">
+<p>Please refer to the spring-auto.xml configuration in the configuration folder <em>production</em>. The analyzer is important
+for realising the results. In ths autocomplete index the analyzer is an <em>EdgeNgramAnalyzer</em>. This analyzer will break the
+words into tokens, smaller than the whole. The effect of this is that the index will be tolerant of spelling errors
+by the users. The index however will be larges by a factor, and the performance will be less than that of a direct index
+using a standard analyzer.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_data_source_resources">Data source resources</h4>
+<div class="paragraph">
+<p>Please refer to the spring-geo.xml configuration file. This index is a database index. There are two tables that contain
+the geonames data, but only one is indexed. The context specifies the name of the index and some other parameters that are
+described on the <a href="properties.html">properties page</a>, like the path where the index will be stored etc. This index definition
+also contains <em>geoname-strategies</em>.</p>
+</div>
+<div class="paragraph">
+<p>The context contains a list of <em>indexables</em> which are the resources that will be indexed and processed. In this case the
+indexable is the <em>geoname</em> indexable. It is a table indexable, meaning it defines a table in a database that will be indexed.
+Similarly the indexable needs a unique identifier, the name and several properties, also described on the
+<a href="properties.html">properties page</a>. Interesting in this index is the address property, which indicates that this resource
+will contain physical addresses, and can be enhanced with geospatial data, specifically a longitude and latitude will be
+discovered in the data, or the address will be looked up in the database. We define the number of threads that will handle the
+table, bearing in mind the volumes of data in the database and the hardware that the database is on. The data source is defined
+in the <em>nonXaDataSourceDb2</em> file, spring-db2-jdbc.xml. This configuration file contains the url for the database, and importantly
+the user name and password. Database connections will be retrieved from the database using this datasource configuration. The
+properties for the database are quite self explanatory, and the defaults can be used in most cases.</p>
+</div>
+<div class="paragraph">
+<p>The geoname context also contains strategies. Strategies are pre and post processing logic. Strategies can be chained, executed
+in order, enhancing the index with various information like language detection or analytics processing. In this case the strategy
+is the <em>GeospatialEnrichmentStrategy</em>, which will add geospatial information to the index. Specifically it will look for co-ordinates
+in the data, latitude and longitude, then generate a geohash for the co-ordinates. Fields in the table called <em>longitude</em> or <em>latitude</em>
+will be used to generate the geohash. Failing that, the data will be concatenated and geocoder will be used to estimate the
+location of the resource.</p>
+</div>
+<div class="paragraph">
+<p>Adding a geohash to the index will allow geospatial searches. The results will be limited to a location or a radius around a
+location, and they will be sorted according to distance from the point specified in the search. For an example of results from the
+geoname index please go to the production instance os ikube at <a href="http://ikube.be/ikube/search/search.html">search</a> page. Select
+the geospatial index from the drop down list. Then input <em>hotel</em> in the name field. In the longitude and latitude fields input -33.9693580
+and 18.4622110 respectively. Click on the Go! button at the bottom and wait for the results. They will be displayed on the map
+on the right of the page as in the following screen shot<br></p>
+</div>
+<div class="paragraph">
+<p><span class="image bottom"><a class="image" href="images/geospatial-search.jpeg"><img src="images/geospatial-search.jpeg" alt="geospatial search" width="300" height="200"></a></span><br></p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_full_data_source">Full data source</h4>
+
+</div>
+<div class="sect3">
+<h4 id="_file_system">File system</h4>
+
+</div>
+<div class="sect3">
+<h4 id="_internet">Internet</h4>
+
+</div>
+<div class="sect3">
+<h4 id="_email">Email</h4>
+
+</div>
+<div class="sect3">
+<h4 id="_csv">Csv</h4>
+
+</div>
+<div class="sect3">
+<h4 id="_log">Log</h4>
+
+</div>
+<div class="sect3">
+<h4 id="_svn">Svn</h4>
+
+</div>
+<div class="sect3">
+<h4 id="_table">Table</h4>
+
+</div>
+<div class="sect3">
+<h4 id="_twitter">Twitter</h4>
+
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2014-08-06 07:23:47 CEST
+</div>
+</div>
+</body>
+</html>

@@ -107,17 +107,28 @@ the geospatial index from the drop down list. Then input 'hotel' in the name fie
 and 18.4622110 respectively. Click on the Go! button at the bottom and wait for the results. They will be displayed on the map
 on the right of the page as in the following screen shot +
 
-image:geospatial-search.jpeg[geospatial search, 300, 200, role="bottom", link="images/geospatial-search.jpeg"] +
+Gui screen shot:
+image:geospatial-search.jpeg[geospatial search, 300, 200, role="bottom", link="../../images/geospatial-search.jpeg"] +
+
 
 ==== Full data source
+Todo...
 ==== File system
+Todo...
 ==== Internet
+Todo...
 ==== Email
+Todo...
 ==== Csv
+Todo...
 ==== Log
+Todo...
 ==== Svn
+Todo...
 ==== Table
+Todo...
 ==== Twitter
+Todo...
 
 
 

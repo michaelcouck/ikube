@@ -117,12 +117,12 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis, Analysis, Anal
                         ((Clusterer) analyzer).buildClusterer(filteredInstances);
                         evaluations[index] = evaluate((Clusterer) analyzer, instances);
                         capabilities[index] = ((Clusterer) analyzer).getCapabilities().toString();
-                        logger.info("Clusterer built : " + filteredInstances.numInstances());
+                        logger.info("Clusterer built : " + filteredInstances.numInstances() + ", " + context.getName());
                     } else if (Classifier.class.isAssignableFrom(analyzer.getClass())) {
                         // And build the model
                         logger.info("Building classifier : " + instances.numInstances() + ", " + context.getName());
                         ((Classifier) analyzer).buildClassifier(filteredInstances);
-                        logger.info("Classifier built : " + filteredInstances.numInstances());
+                        logger.info("Classifier built : " + filteredInstances.numInstances() + ", " + context.getName());
 
                         // Set the evaluation of the classifier and the training model
                         evaluations[index] = evaluate((Classifier) analyzer, filteredInstances);

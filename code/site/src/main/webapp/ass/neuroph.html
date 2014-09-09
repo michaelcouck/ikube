@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="generator" content="Asciidoctor 0.1.4">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neuroph</title>
+<link rel="stylesheet" href="./application.css">
+</head>
+<body class="article">
+<div id="header">
+</div>
+<div id="content">
+<div class="sect2">
+<h3 id="_neuroph">Neuroph</h3>
+<div class="paragraph">
+<p>Neuroph is a neural network machine learning library. Please refer to the Neuroph site for more information.</p>
+</div>
+<div class="sect4">
+<h5 id="_available_neural_networks">Available neural networks</h5>
+<div class="ulist">
+<ul>
+<li>
+<p>org.neuroph.nnet.Adaline</p>
+</li>
+<li>
+<p>org.neuroph.nnet.AutoencoderNetwork</p>
+</li>
+<li>
+<p>org.neuroph.nnet.BAM</p>
+</li>
+<li>
+<p>org.neuroph.nnet.CompetitiveNetwork</p>
+</li>
+<li>
+<p>org.neuroph.nnet.ConvolutionalNetwork</p>
+</li>
+<li>
+<p>org.neuroph.nnet.Elman</p>
+</li>
+<li>
+<p>org.neuroph.nnet.Hopfield</p>
+</li>
+<li>
+<p>org.neuroph.nnet.Instar</p>
+</li>
+<li>
+<p>org.neuroph.nnet.JordanNetwork</p>
+</li>
+<li>
+<p>org.neuroph.nnet.KahonenNetwork</p>
+</li>
+<li>
+<p>org.neuroph.nnet.MaxNet</p>
+</li>
+<li>
+<p>org.neuroph.nnet.MultiLayerPerceptron</p>
+</li>
+<li>
+<p>org.neuroph.nnet.NeuroFuzzyPerceptron</p>
+</li>
+<li>
+<p>org.neuroph.nnet.Outstar</p>
+</li>
+<li>
+<p>org.neuroph.nnet.Perceptron</p>
+</li>
+<li>
+<p>org.neuroph.nnet.RBFNetwork</p>
+</li>
+<li>
+<p>org.neuroph.nnet.SupervisedHebbianNetwork</p>
+</li>
+<li>
+<p>org.neuroph.nnet.UnsupervisedHebbianNetwork</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Please refer to the Neuroph documentation for the available properties that can be set and configuration for the networks.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_example_api_calls">Example API calls</h4>
+<div class="sect4">
+<h5 id="_create_a_neural_network">Create a neural network</h5>
+<div class="ulist">
+<ul>
+<li>
+<p>Post : <a href="http://ikube.be/ikube/service/analyzer/create">http://ikube.be/ikube/service/analyzer/create</a></p>
+</li>
+<li>
+<p>Body: {
+   "name":"multi-layer-perceptron",
+   "analyzer":"ikube.analytics.neuroph.NeurophAnalyzer",
+   "algorithms":[
+      "org.neuroph.nnet.MultiLayerPerceptron"
+   ],
+   "options":[
+      [
+         "-label",
+         "label",
+         "-outputLabels",
+         "[one, two, three]",
+         "-inputNeuronsCount",
+         "3",
+         "-hiddenNeuronsCount",
+         "3",
+         "-outputNeuronsCount",
+         "2",
+         "-neuronsInLayers",
+         "[3, 3, 2]"
+      ],
+      "TANH"
+   ],
+   "persisted":false,
+   "built":false,
+   "id":0
+}</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_train_a_network">Train a network</h5>
+<div class="paragraph">
+<p>Post: <a href="http://ikube.be/ikube/service/analyzer/train">http://ikube.be/ikube/service/analyzer/train</a>
+Body: {
+         "context":"multi-layer-perceptron",
+         "input":"1,0,1",
+         "output":"1,0",
+         "duration":0.0,
+         "sizeForClassOrCluster":0,
+         "addAlgorithmOutput":false,
+         "distributed":false,
+         "id":0
+      }</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_build_the_network">Build the network</h5>
+<div class="paragraph">
+<p>Post: <a href="http://ikube.be/ikube/service/analyzer/build">http://ikube.be/ikube/service/analyzer/build</a>
+Body: {
+         "context":"multi-layer-perceptron",
+         "duration":0.0,
+         "sizeForClassOrCluster":0,
+         "addAlgorithmOutput":false,
+         "distributed":false,
+         "id":0
+      }</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_analyze_an_observation">Analyze an observation</h5>
+<div class="paragraph">
+<p>Post: <a href="http://ikube.be/ikube/service/analyzer/analyze">http://ikube.be/ikube/service/analyzer/analyze</a>
+Body: {
+         "context":"multi-layer-perceptron",
+         "input":"0,1,0",
+         "duration":0.0,
+         "sizeForClassOrCluster":0,
+         "addAlgorithmOutput":false,
+         "distributed":false,
+         "id":0
+      }</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_destroy_the_network">Destroy the network</h5>
+<div class="paragraph">
+<p>Post: <a href="http://ikube.be/ikube/service/analyzer/destroy">http://ikube.be/ikube/service/analyzer/destroy</a>
+Body: {
+         "name":"multi-layer-perceptron",
+         "analyzer":"ikube.analytics.neuroph.NeurophAnalyzer",
+         "algorithms":[
+            "org.neuroph.nnet.MultiLayerPerceptron"
+         ],
+         "options":[
+            [
+               "-label",
+               "label",
+               "-outputLabels",
+               "[one, two, three]",
+               "-inputNeuronsCount",
+               "3",
+               "-hiddenNeuronsCount",
+               "3",
+               "-outputNeuronsCount",
+               "2",
+               "-neuronsInLayers",
+               "[3, 3, 2]"
+            ],
+            "TANH"
+         ],
+         "persisted":false,
+         "built":false,
+         "id":0
+      }</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2014-09-09 12:08:08 CEST
+</div>
+</div>
+</body>
+</html>
