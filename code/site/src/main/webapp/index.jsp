@@ -7,6 +7,6 @@
 	</head>
 	<body>
 		<%-- Redirected because we can't set the welcome page to a virtual URL. --%>
-		<c:redirect url="/docs/index.html" />
+		<c:redirect url="/index.html" />
 	</body>
 </html>
