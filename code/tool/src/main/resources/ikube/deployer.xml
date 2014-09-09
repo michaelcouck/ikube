@@ -395,7 +395,7 @@
         property:commands-ref="clean-commands-site"/>
     <util:list id="clean-commands-site">
         <value>chmod 777 -R ${tomcat-site};</value>
-        <value>rm -rf ${tomcat-site-webapps}/${site-war};</value>
+        <value>rm -rf ${tomcat-site-webapps}/site*;</value>
     </util:list>
     <bean
         id="copy-action-site"
