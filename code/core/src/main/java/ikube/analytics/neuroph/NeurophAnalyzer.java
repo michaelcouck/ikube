@@ -1,9 +1,10 @@
 package ikube.analytics.neuroph;
 
+import ikube.IConstants;
 import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
-import ikube.toolkit.ThreadUtilities;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -17,13 +18,11 @@ import org.neuroph.util.TransferFunctionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.Future;
 
 import static ikube.Constants.GSON;
+import static ikube.toolkit.ThreadUtilities.submit;
 import static ikube.toolkit.ThreadUtilities.waitForAnonymousFutures;
 
 /**
@@ -80,12 +79,23 @@ public class NeurophAnalyzer implements IAnalyzer<Analysis, Analysis, Analysis> 
         Object[] options = context.getOptions();
 
         for (final Object option : options) {
-            if (option.getClass().isArray()) {
+            Object localOption = option;
+            if (Collection.class.isAssignableFrom(localOption.getClass())) {
+                Collection collection = (Collection) localOption;
+                if (isOneOfType(collection, String.class)) {
+                    localOption = collection.toArray(new String[collection.size()]);
+                } else if (isOneOfType(localOption, Integer.class)) {
+                    localOption = collection.toArray(new Integer[collection.size()]);
+                } else {
+                    localOption = collection.toArray();
+                }
+            }
+            if (localOption.getClass().isArray()) {
                 String[] stringOptions = null;
-                if (String[].class.isAssignableFrom(option.getClass())) {
-                    stringOptions = (String[]) option;
-                } else if (Object[].class.isAssignableFrom(option.getClass())) {
-                    Object[] objects = (Object[]) option;
+                if (String[].class.isAssignableFrom(localOption.getClass())) {
+                    stringOptions = (String[]) localOption;
+                } else if (Object[].class.isAssignableFrom(localOption.getClass())) {
+                    Object[] objects = (Object[]) localOption;
                     stringOptions = new String[objects.length];
                     for (int i = 0; i < objects.length; i++) {
                         stringOptions[i] = objects[i].toString();
@@ -96,7 +106,7 @@ public class NeurophAnalyzer implements IAnalyzer<Analysis, Analysis, Analysis> 
         }
 
         Object[] algorithms = context.getAlgorithms();
-        Object[] models = new Object[algorithms.length];
+        Object[] models = context.getModels() != null ? context.getModels() : new Object[algorithms.length];
         NeuronProperties neuronProperties = getOption(NeuronProperties.class, options);
         TransferFunctionType transferFunctionType = getOption(TransferFunctionType.class, options);
         for (int i = 0; i < algorithms.length; i++) {
@@ -146,7 +156,7 @@ public class NeurophAnalyzer implements IAnalyzer<Analysis, Analysis, Analysis> 
             } else if (Outstar.class.isAssignableFrom(clazz)) {
                 neuralNetwork = new Outstar(outputNeuronsCount);
             } else if (NeuroFuzzyPerceptron.class.isAssignableFrom(clazz)) {
-                Vector<Integer> inputSetsVector = getOption(Vector.class, options);
+                Vector<Integer> inputSetsVector = getOption(Vector.class, options, Integer.class);
                 if (inputSetsVector == null) {
                     double[][] inputPointSets = GSON.fromJson(pointSets, double[][].class);
                     double[][] outputPointSets = GSON.fromJson(timeSets, double[][].class);
@@ -155,8 +165,8 @@ public class NeurophAnalyzer implements IAnalyzer<Analysis, Analysis, Analysis> 
                     neuralNetwork = new NeuroFuzzyPerceptron(inputNeuronsCount, inputSetsVector, outputNeuronsCount);
                 }
             } else if (MultiLayerPerceptron.class.isAssignableFrom(clazz)) {
-                List<Integer> neuronsInLayer = getOption(List.class, options);
-                if (neuronsInLayer != null) {
+                List<Integer> neuronsInLayer = getOption(List.class, options, Integer.class);
+                if (neuronsInLayer != null && !neuronsInLayer.isEmpty()) {
                     if (transferFunctionType != null) {
                         neuralNetwork = new MultiLayerPerceptron(neuronsInLayer, transferFunctionType);
                     } else if (neuronProperties != null) {
@@ -187,23 +197,30 @@ public class NeurophAnalyzer implements IAnalyzer<Analysis, Analysis, Analysis> 
             if (learningRule != null) {
                 neuralNetwork.setLearningRule(learningRule);
             }
+            // Is this necessary?
             NeuralNetworkType neuralNetworkType = getOption(NeuralNetworkType.class, options);
             if (neuralNetworkType != null) {
                 neuralNetwork.setNetworkType(neuralNetworkType);
             }
+            // We need these for determining the 'name' of the output?
             if (outputLabels != null) {
                 neuralNetwork.setOutputLabels(GSON.fromJson(outputLabels, String[].class));
             }
+            // Can we set the weights here? For which networks?
             if (weights != null) {
                 neuralNetwork.setWeights(GSON.fromJson(weights, double[].class));
             }
-            if (outputNeuronsCount > 0) {
-                models[i] = new DataSet(inputNeuronsCount, outputNeuronsCount);
-            } else {
-                models[i] = new DataSet(inputNeuronsCount);
+            // The model could have been set in the Spring configuration
+            if (models[i] == null) {
+                if (outputNeuronsCount <= 0) {
+                    models[i] = new DataSet(inputNeuronsCount);
+                } else {
+                    models[i] = new DataSet(inputNeuronsCount, outputNeuronsCount);
+                }
             }
         }
         // TODO: Populate the models with the files from the file system
+        // TODO: Populate/train the models with the training datas if there are any
         // Set the options to null because this causes havoc with the
         // learning rule and Gson, they don't play nicely together at all
         context.setOptions();
@@ -214,12 +231,13 @@ public class NeurophAnalyzer implements IAnalyzer<Analysis, Analysis, Analysis> 
      * {@inheritDoc}
      */
     @Override
-    public boolean train(final Context context, final Analysis input) throws Exception {
+    public boolean train(final Context context, final Analysis analysis) throws Exception {
+        inputOutputStringToDoubleArray(analysis);
         Object[] models = context.getModels();
         int index = random.nextInt(Math.max(1, models.length - 1));
         DataSet dataSet = (DataSet) models[Math.min(index, models.length - 1)];
-        double[] inputData = (double[]) input.getInput();
-        double[] outputData = (double[]) input.getOutput();
+        double[] inputData = (double[]) analysis.getInput();
+        double[] outputData = (double[]) analysis.getOutput();
         dataSet.addRow(inputData, outputData);
         return Boolean.TRUE;
     }
@@ -234,16 +252,22 @@ public class NeurophAnalyzer implements IAnalyzer<Analysis, Analysis, Analysis> 
         List<Future> futures = new ArrayList<>();
         for (int i = 0; i < algorithms.length; i++) {
             final int index = i;
-            Future future = ThreadUtilities.submit(this.getClass().getName(), new Runnable() {
+            class AnalyzerBuilder implements Runnable {
                 public void run() {
                     NeuralNetwork neuralNetwork = (NeuralNetwork) algorithms[index];
+                    DataSet dataSet = (DataSet) models[index];
+                    if (dataSet.isEmpty()) {
+                        LOGGER.warn("Data set empty for network : " + neuralNetwork.getClass().getName());
+                        return;
+                    }
+
                     LOGGER.warn("Building neural network : " + neuralNetwork.getClass().getName());
-                    neuralNetwork.learn((DataSet) models[index]);
+                    neuralNetwork.learn(dataSet);
                     LOGGER.warn("Finished building neural network : " + neuralNetwork.getClass().getName());
                     LOGGER.warn(ToStringBuilder.reflectionToString(neuralNetwork.getLearningRule()));
-
                 }
-            });
+            }
+            Future future = submit(this.getClass().getName(), new AnalyzerBuilder());
             futures.add(future);
         }
         waitForAnonymousFutures(futures, Integer.MAX_VALUE);
@@ -257,11 +281,12 @@ public class NeurophAnalyzer implements IAnalyzer<Analysis, Analysis, Analysis> 
      */
     @Override
     @SuppressWarnings("unchecked")
-    public Analysis analyze(final Context context, final Analysis input) throws Exception {
+    public Analysis analyze(final Context context, final Analysis analysis) throws Exception {
+        inputOutputStringToDoubleArray(analysis);
         // This is a naive approach, purely an aggregation,
         // perhaps this should be reviewed by Zoran?
         Object[] algorithms = context.getAlgorithms();
-        double[] inputData = (double[]) input.getInput();
+        double[] inputData = (double[]) analysis.getInput();
         double[] aggregateOutput = new double[0];
         for (final Object algorithm : algorithms) {
             NeuralNetwork neuralNetwork = (NeuralNetwork) algorithm;
@@ -282,8 +307,8 @@ public class NeurophAnalyzer implements IAnalyzer<Analysis, Analysis, Analysis> 
             aggregateOutput[i] = aggregateOutput[i] / denominator;
         }
         // TODO: Check that this is the best voting method
-        input.setOutput(aggregateOutput);
-        return input;
+        analysis.setOutput(aggregateOutput);
+        return analysis;
     }
 
     /**
@@ -303,17 +328,55 @@ public class NeurophAnalyzer implements IAnalyzer<Analysis, Analysis, Analysis> 
         // TODO: Destroy here
     }
 
+    @SuppressWarnings("unchecked")
+    private void inputOutputStringToDoubleArray(final Analysis analysis) {
+        analysis.setInput(stringToDoubleArray(analysis.getInput()));
+        analysis.setOutput(stringToDoubleArray(analysis.getOutput()));
+    }
+
+    private double[] stringToDoubleArray(final Object object) {
+        if (object == null || double[].class.isAssignableFrom(object.getClass())) {
+            return (double[]) object;
+        }
+        if (String.class.isAssignableFrom(object.getClass())) {
+            String[] values = StringUtils.split(object.toString().trim(), IConstants.DELIMITER_CHARACTERS);
+            double[] doubleArray = new double[values.length];
+            for (int i = 0; i < values.length; i++) {
+                doubleArray[i] = Double.parseDouble(values[i].trim());
+            }
+            return doubleArray;
+        }
+        return null;
+    }
+
     /**
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    private <T> T getOption(final Class<T> type, final Object[] options) {
+    private <T> T getOption(final Class<T> type, final Object[] options, final Class<?>... types) {
         for (final Object option : options) {
             if (type.isAssignableFrom(option.getClass())) {
+                if (Collection.class.isAssignableFrom(option.getClass()) && types != null) {
+                    if (!isOneOfType(option, types)) {
+                        continue;
+                    }
+                }
                 return (T) option;
             }
         }
         return null;
+    }
+
+    private boolean isOneOfType(final Object object, final Class<?>... types) {
+        if (object == null || types == null || types.length == 0) {
+            return Boolean.FALSE;
+        }
+        for (final Class<?> type : types) {
+            if (type.isAssignableFrom(object.getClass())) {
+                return Boolean.TRUE;
+            }
+        }
+        return Boolean.FALSE;
     }
 
 }

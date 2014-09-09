@@ -7,15 +7,14 @@ pass:[<script src="analytics.js" type="text/javascript"></script>]
 *link:preface.html[Preface]* +
 *link:install.html[Installation]* +
 *link:conf.html[Configuration]* +
-*link:properties.html[Properties]* +
-*link:api.html[Api]* +
-
 *link:analytics.html[Analytics]* +
 *link:search.html[Search]* +
+
 *link:twitter.html[Twitter]* +
 *link:use-cases.html[Use cases]* +
 
 *link:deploy.html[Deploy]* +
+
 *link:license.html[License]* +
 *link:source.html[Source]* +
 *link:testing.html[Testing]* +

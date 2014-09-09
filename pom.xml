@@ -136,7 +136,7 @@
                     <executions>
                         <execution>
                             <id>copy-configuration</id>
-                            <phase>test</phase>
+                            <phase>deploy</phase>
                             <configuration>
                                 <target>
                                     <!--<echo message="basedir : ${basedir}, ">basedir : ${basedir}</echo>

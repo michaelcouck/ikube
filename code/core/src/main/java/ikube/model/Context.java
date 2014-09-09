@@ -54,7 +54,7 @@ public class Context extends Persistable {
      * and or used in the clustering of the data int he clusterers.
      */
     @Transient
-    private Object[] models;
+    private transient Object[] models;
     /**
      * Any options or even classes that modify the algorithm in some way. Could be an array, something like a command line args.
      */

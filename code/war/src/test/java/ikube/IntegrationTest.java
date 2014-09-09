@@ -71,11 +71,11 @@ public abstract class IntegrationTest extends AbstractTest {
      * This method will delete all the specified classes from the database.
      *
      * @param dataBase the database to use for deleting the data
-     * @param klasses  the classes to delete from the database
+     * @param classes  the classes to delete from the database
      */
-    protected static void delete(final IDataBase dataBase, final Class<?>... klasses) {
+    protected static void delete(final IDataBase dataBase, final Class<?>... classes) {
         int batchSize = 1000;
-        for (final Class<?> klass : klasses) {
+        for (final Class<?> klass : classes) {
             try {
                 List<?> list = dataBase.find(klass, 0, batchSize);
                 do {

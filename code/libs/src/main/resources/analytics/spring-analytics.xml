@@ -18,7 +18,7 @@
          be applied to any algorithm, in any language. The default implementation is Weka
          at the time of writing.
     -->
-    <bean id="analyzer-em" name="analyzer-em" class="ikube.analytics.weka.WekaClusterer" />
+    <bean id="analyzer-em" name="analyzer-em" class="ikube.analytics.weka.WekaClusterer"/>
     <!--
         This is the context for the analyzer. It will 'wire' all the pieces together, specifically
         the wrapper for the Weka algorithm, the algorithm, some options if there are any for the algorithm. Additionally
@@ -36,7 +36,7 @@
         property:algorithms="weka.clusterers.EM"
         property:options="-R,6"
         property:fileNames="bank-data.arff"
-        property:maxTrainings="10000" />
+        property:maxTrainings="10000"/>
     <!-- END CLUSTERER DEFINITION: -->
 
     <!-- START CLASSIFIER DEFINITION: -->
@@ -45,7 +45,7 @@
          be applied to any algorithm, in any language. The default implementation is Weka
          at the time of writing.
     -->
-    <bean id="analyzer-smo" name="analyzer-smo" class="ikube.analytics.weka.WekaClassifier" />
+    <bean id="analyzer-smo" name="analyzer-smo" class="ikube.analytics.weka.WekaClassifier"/>
     <!--
         This is the context for the analyzer. It will 'wire' all the pieces together, specifically
         the wrapper for the Weka algorithm, the algorithm, some options if there are any for the algorithm. Additionally
@@ -136,32 +136,76 @@
         </property>
     </bean>
 
-    <!--<bean-->
-        <!--name="mineco-neural-network"-->
-        <!--class="ikube.model.Context"-->
-        <!--property:name="mineco-neural-network"-->
-        <!--property:analyzer="ikube.analytics.neuroph.NeurophAnalyzer"-->
-        <!--property:algorithms="org.neuroph.nnet.MultiLayerPerceptron"-->
-        <!--property:options-ref="mineco-neural-network-options" />-->
+    <bean
+        name="neuroph-neural-network"
+        class="ikube.model.Context"
+        property:name="neuroph-neural-network"
+        property:analyzer="ikube.analytics.neuroph.NeurophAnalyzer"
+        property:algorithms="org.neuroph.nnet.MultiLayerPerceptron"
+        property:models-ref="neuroph-neural-network-models"
+        property:options-ref="neuroph-neural-network-options"/>
 
-    <!--<util:list id="mineco-neural-network-options">-->
-        <!--<array>-->
-            <!--<value type="java.lang.String">-label</value>-->
-            <!--<value type="java.lang.String">mineco-neural-network</value>-->
+    <util:list id="neuroph-neural-network-options">
+        <array>
+            <value type="java.lang.String">-label</value>
+            <value type="java.lang.String">neuroph-neural-network</value>
 
-            <!--<value type="java.lang.String">-inputNeuronsCount</value>-->
-            <!--<value type="java.lang.String">3</value>-->
+            <value type="java.lang.String">-inputNeuronsCount</value>
+            <value type="java.lang.String">3</value>
 
-            <!--<value type="java.lang.String">-hiddenNeuronsCount</value>-->
-            <!--<value type="java.lang.String">3</value>-->
+            <value type="java.lang.String">-hiddenNeuronsCount</value>
+            <value type="java.lang.String">3</value>
 
-            <!--<value type="java.lang.String">-outputNeuronsCount</value>-->
-            <!--<value type="java.lang.String">2</value>-->
+            <value type="java.lang.String">-outputNeuronsCount</value>
+            <value type="java.lang.String">2</value>
 
-            <!--<value type="java.lang.String">-neuronsInLayers</value>-->
-            <!--<value type="java.lang.String">[3, 3, 2]</value>-->
-        <!--</array>-->
-        <!--<value type="org.neuroph.util.TransferFunctionType">TANH</value>-->
-    <!--</util:list>-->
+            <value type="java.lang.String">-neuronsInLayers</value>
+            <value type="java.lang.String">[3, 3, 2]</value>
+        </array>
+        <value type="org.neuroph.util.TransferFunctionType">TANH</value>
+        <bean
+            id="backPropagation"
+            class="org.neuroph.nnet.learning.BackPropagation"
+            property:maxIterations="1000">
+        </bean>
+    </util:list>
+
+    <util:list id="neuroph-neural-network-models">
+        <ref local="neuroph-neural-network-model"/>
+    </util:list>
+
+    <bean
+        id="neuroph-neural-network-model"
+        class="org.neuroph.core.data.DataSet">
+        <constructor-arg index="0" value="3"/>
+        <constructor-arg index="1" value="2"/>
+    </bean>
+    <bean
+        id="neuroph-neural-network-model-row"
+        class="org.neuroph.core.data.DataSetRow">
+        <constructor-arg index="0" type="double[]">
+            <list>
+                <value>1.0</value>
+                <value>0.0</value>
+                <value>1.0</value>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" type="double[]">
+            <list>
+                <value>1.0</value>
+                <value>0.0</value>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="data" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetObject" ref="neuroph-neural-network-model" />
+        <property name="targetMethod" value="addRow"/>
+        <property name="arguments">
+            <array>
+                <ref local="neuroph-neural-network-model-row"/>
+            </array>
+        </property>
+    </bean>
 
 </beans>
