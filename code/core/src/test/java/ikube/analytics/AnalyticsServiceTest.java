@@ -32,7 +32,7 @@ import static org.mockito.Mockito.*;
  */
 public class AnalyticsServiceTest extends AbstractTest {
 
-    @MockClass(realClass = AAnalyzer.class)
+    @MockClass(realClass = Analyzer.class)
     public static class AnalyzerMock {
         @mockit.Mock
         public Analysis call() throws Exception {

@@ -1,8 +1,8 @@
-=== Neuroph
+== Neuroph
 
 Neuroph is a neural network machine learning library. Please refer to the Neuroph site for more information.
 
-===== Available neural networks
+=== Available neural networks
 
 * org.neuroph.nnet.Adaline
 * org.neuroph.nnet.AutoencoderNetwork
@@ -25,9 +25,9 @@ Neuroph is a neural network machine learning library. Please refer to the Neurop
 
 Please refer to the Neuroph documentation for the available properties that can be set and configuration for the networks.
 
-==== Example API calls
+=== Example API calls
 
-===== Create a neural network
+==== Create a neural network
 
 * Post : http://ikube.be/ikube/service/analyzer/create
 * Body: {
@@ -37,20 +37,18 @@ Please refer to the Neuroph documentation for the available properties that can 
               "org.neuroph.nnet.MultiLayerPerceptron"
            ],
            "options":[
-              [
-                 "-label",
-                 "label",
-                 "-outputLabels",
-                 "[one, two, three]",
-                 "-inputNeuronsCount",
-                 "3",
-                 "-hiddenNeuronsCount",
-                 "3",
-                 "-outputNeuronsCount",
-                 "2",
-                 "-neuronsInLayers",
-                 "[3, 3, 2]"
-              ],
+              "-label",
+              "label",
+              "-outputLabels",
+              "[one, two, three]",
+              "-inputNeuronsCount",
+              "3",
+              "-hiddenNeuronsCount",
+              "3",
+              "-outputNeuronsCount",
+              "2",
+              "-neuronsInLayers",
+              "[3, 3, 2]",
               "TANH"
            ],
            "persisted":false,
@@ -58,8 +56,7 @@ Please refer to the Neuroph documentation for the available properties that can 
            "id":0
         }
 
-
-===== Train a network
+==== Train a network
 Post: http://ikube.be/ikube/service/analyzer/train
 Body: {
          "context":"multi-layer-perceptron",
@@ -72,7 +69,7 @@ Body: {
          "id":0
       }
 
-===== Build the network
+==== Build the network
 Post: http://ikube.be/ikube/service/analyzer/build
 Body: {
          "context":"multi-layer-perceptron",
@@ -83,7 +80,7 @@ Body: {
          "id":0
       }
 
-===== Analyze an observation
+==== Analyze an observation
 Post: http://ikube.be/ikube/service/analyzer/analyze
 Body: {
          "context":"multi-layer-perceptron",
@@ -95,7 +92,7 @@ Body: {
          "id":0
       }
 
-===== Destroy the network
+==== Destroy the network
 Post: http://ikube.be/ikube/service/analyzer/destroy
 Body: {
          "name":"multi-layer-perceptron",
@@ -104,20 +101,18 @@ Body: {
             "org.neuroph.nnet.MultiLayerPerceptron"
          ],
          "options":[
-            [
-               "-label",
-               "label",
-               "-outputLabels",
-               "[one, two, three]",
-               "-inputNeuronsCount",
-               "3",
-               "-hiddenNeuronsCount",
-               "3",
-               "-outputNeuronsCount",
-               "2",
-               "-neuronsInLayers",
-               "[3, 3, 2]"
-            ],
+            "-label",
+            "label",
+            "-outputLabels",
+            "[one, two, three]",
+            "-inputNeuronsCount",
+            "3",
+            "-hiddenNeuronsCount",
+            "3",
+            "-outputNeuronsCount",
+            "2",
+            "-neuronsInLayers",
+            "[3, 3, 2]",
             "TANH"
          ],
          "persisted":false,

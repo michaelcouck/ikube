@@ -4,7 +4,9 @@ import ikube.AbstractTest;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.OsUtilities;
+import ikube.toolkit.StringUtilities;
 import mockit.Deencapsulation;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -98,13 +100,16 @@ public class NeurophAnalyzerTest extends AbstractTest {
         List<Object> result = new ArrayList<>();
         Iterator optionsIterator = Arrays.asList(options).iterator();
         while (optionsIterator.hasNext()) {
-            Object fieldName = optionsIterator.next();
-            if (fieldName.toString().startsWith("-") && optionsIterator.hasNext()) {
+            Object option = optionsIterator.next();
+            if (option.toString().startsWith("-") && optionsIterator.hasNext()) {
                 Object fieldValue = optionsIterator.next();
-                logger.warn("Setting field : " + fieldName + ":" + fieldValue);
-                Deencapsulation.setField(neurophAnalyzer, fieldName.toString(), fieldValue);
+                logger.warn("Setting field : " + option + ":" + fieldValue);
+                if (StringUtilities.isNumeric(fieldValue.toString())) {
+                    fieldValue = Integer.parseInt(fieldValue.toString());
+                }
+                Deencapsulation.setField(neurophAnalyzer, StringUtils.strip(option.toString(), "-"), fieldValue);
             } else {
-                result.add(fieldName);
+                result.add(option);
             }
         }
         return result.toArray();
