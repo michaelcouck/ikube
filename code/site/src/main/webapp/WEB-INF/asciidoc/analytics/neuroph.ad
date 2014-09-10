@@ -1,6 +1,11 @@
 == Neuroph
 
-Neuroph is a neural network machine learning library. Please refer to the Neuroph site for more information.
+Neuroph is a neural network machine learning library. Ikube grid enables Neuroph, exposing the
+functionality via rest services, and provides the framework to distribute the analyses, through a
+compute grid, over a cluster of servers, as many as required. This allows unprecedented volumes
+of data to be analyzed, bringing Neuroph into the Internet of Things arena.
+
+Please refer to the Neuroph site for more information.
 
 === Available neural networks
 
@@ -28,6 +33,9 @@ Please refer to the Neuroph documentation for the available properties that can 
 === Example API calls
 
 ==== Create a neural network
+
+This method will create the network, in the example is a MultiLayerPerceptron, which is a supervised
+network. The options provided are Neuroph specific, please refer to the Neuroph for options for this network.
 
 * Post : http://ikube.be/ikube/service/analyzer/create
 * Body: {
@@ -57,6 +65,11 @@ Please refer to the Neuroph documentation for the available properties that can 
         }
 
 ==== Train a network
+
+The train service wil take the input data, a vector of doubles, and add them to the input data set
+in Neuroph. For supervised learning the output vector is required, but for unsupervised, this may not
+be present. Each invocation of this method will add one more row to the training data set.
+
 Post: http://ikube.be/ikube/service/analyzer/train
 Body: {
          "context":"multi-layer-perceptron",
@@ -70,6 +83,11 @@ Body: {
       }
 
 ==== Build the network
+
+Build the network from the existing data set. This method will execute the learning logic in Neuroph. This
+is potentially a very cpu intensive and long process, lasting several hours, even days depending on the size
+of the input/training data, and various other factors.
+
 Post: http://ikube.be/ikube/service/analyzer/build
 Body: {
          "context":"multi-layer-perceptron",
@@ -81,6 +99,11 @@ Body: {
       }
 
 ==== Analyze an observation
+
+This service is to execute the analysis logic on a specific observation, or instance. This logic
+will put the data specified in the input field in the analysis object, through the neural network,
+and return the result as the output, which will be the output of the network.
+
 Post: http://ikube.be/ikube/service/analyzer/analyze
 Body: {
          "context":"multi-layer-perceptron",
@@ -93,6 +116,9 @@ Body: {
       }
 
 ==== Destroy the network
+
+This service will destroy the network, removing it from the system, and releasing the resources.
+
 Post: http://ikube.be/ikube/service/analyzer/destroy
 Body: {
          "name":"multi-layer-perceptron",
