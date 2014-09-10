@@ -163,17 +163,6 @@ public class WekaAnalyzerTest extends AbstractTest {
     }
 
     @Test
-    public void getDataFile() throws Exception {
-        wekaAnalyzer.init(context);
-        wekaAnalyzer.build(context);
-        File[] dataFiles = wekaAnalyzer.getDataFiles(context);
-        assertTrue(dataFiles.length > 0);
-        for (final File dataFile : dataFiles) {
-            assertNotNull(dataFile);
-        }
-    }
-
-    @Test
     public void filterInstance() throws Exception {
         init();
         Object[] filters = context.getFilters();
@@ -218,29 +207,6 @@ public class WekaAnalyzerTest extends AbstractTest {
                         assertTrue(probability == 0.0 || probability == 1.0);
                     }
                 }
-            }
-        }
-    }
-
-    @Test
-    public void getDataFiles() throws Exception {
-        wekaAnalyzer.init(context);
-        wekaAnalyzer.build(context);
-        File[] dataFiles = wekaAnalyzer.getDataFiles(context);
-        logger.error("Data files : " + Arrays.toString(dataFiles));
-        assertEquals(3, dataFiles.length);
-        for (final File dataFile : dataFiles) {
-            assertTrue(dataFile.exists());
-        }
-
-        context.setFileNames("sentiment-smo-extra.arff");
-        dataFiles = wekaAnalyzer.getDataFiles(context);
-        assertEquals(1, dataFiles.length);
-        for (final File dataFile : dataFiles) {
-            try {
-                assertTrue(dataFile.exists());
-            } finally {
-                FileUtilities.deleteFile(dataFile);
             }
         }
     }

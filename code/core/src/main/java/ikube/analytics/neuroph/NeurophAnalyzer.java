@@ -1,7 +1,7 @@
 package ikube.analytics.neuroph;
 
 import ikube.IConstants;
-import ikube.analytics.IAnalyzer;
+import ikube.analytics.AAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import org.apache.commons.lang.StringUtils;
@@ -15,9 +15,13 @@ import org.neuroph.nnet.*;
 import org.neuroph.util.NeuralNetworkType;
 import org.neuroph.util.NeuronProperties;
 import org.neuroph.util.TransferFunctionType;
+import org.neuroph.util.io.FileInputAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.Future;
 
@@ -33,7 +37,7 @@ import static ikube.toolkit.ThreadUtilities.waitForAnonymousFutures;
  * @since 29-08-2014
  */
 @SuppressWarnings("UnusedDeclaration")
-public class NeurophAnalyzer implements IAnalyzer<Analysis, Analysis, Analysis> {
+public class NeurophAnalyzer extends AAnalyzer<Analysis, Analysis, Analysis> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NeurophAnalyzer.class);
 
@@ -78,119 +82,24 @@ public class NeurophAnalyzer implements IAnalyzer<Analysis, Analysis, Analysis> 
 
         Object[] options = context.getOptions();
 
-        for (final Object option : options) {
-            Object localOption = option;
-            if (Collection.class.isAssignableFrom(localOption.getClass())) {
-                Collection collection = (Collection) localOption;
-                if (isOneOfType(collection, String.class)) {
-                    localOption = collection.toArray(new String[collection.size()]);
-                } else if (isOneOfType(localOption, Integer.class)) {
-                    localOption = collection.toArray(new Integer[collection.size()]);
-                } else {
-                    localOption = collection.toArray();
-                }
-            }
-            if (localOption.getClass().isArray()) {
-                String[] stringOptions = null;
-                if (String[].class.isAssignableFrom(localOption.getClass())) {
-                    stringOptions = (String[]) localOption;
-                } else if (Object[].class.isAssignableFrom(localOption.getClass())) {
-                    Object[] objects = (Object[]) localOption;
-                    stringOptions = new String[objects.length];
-                    for (int i = 0; i < objects.length; i++) {
-                        stringOptions[i] = objects[i].toString();
-                    }
-                }
-                parser.parseArgument(stringOptions);
+        Iterator optionsIterator = Arrays.asList(options).iterator();
+        List<String> stringOptions = new ArrayList<>();
+        while (optionsIterator.hasNext()) {
+            Object fieldName = optionsIterator.next();
+            if (fieldName.toString().startsWith("-") && optionsIterator.hasNext()) {
+                stringOptions.add(fieldName.toString());
+                stringOptions.add(optionsIterator.next().toString());
             }
         }
+        parser.parseArgument(stringOptions);
 
         Object[] algorithms = context.getAlgorithms();
         Object[] models = context.getModels() != null ? context.getModels() : new Object[algorithms.length];
+        File[] dataFiles = getDataFiles(context);
         NeuronProperties neuronProperties = getOption(NeuronProperties.class, options);
         TransferFunctionType transferFunctionType = getOption(TransferFunctionType.class, options);
         for (int i = 0; i < algorithms.length; i++) {
-            Class<?> clazz = Class.forName(algorithms[i].toString());
-            NeuralNetwork neuralNetwork = null;
-            if (Adaline.class.isAssignableFrom(clazz)) {
-                neuralNetwork = new Adaline(inputNeuronsCount);
-            } else if (AutoencoderNetwork.class.isAssignableFrom(clazz)) {
-                int[] neuronsInLayersArray = GSON.fromJson(neuronsInLayers, int[].class);
-                neuralNetwork = new AutoencoderNetwork(neuronsInLayersArray);
-            } else if (BAM.class.isAssignableFrom(clazz)) {
-                neuralNetwork = new BAM(inputNeuronsCount, outputNeuronsCount);
-            } else if (CompetitiveNetwork.class.isAssignableFrom(clazz)) {
-                neuralNetwork = new CompetitiveNetwork(inputNeuronsCount, outputNeuronsCount);
-            } else if (ConvolutionalNetwork.class.isAssignableFrom(clazz)) {
-                neuralNetwork = new ConvolutionalNetwork();
-            } else if (ElmanNetwork.class.isAssignableFrom(clazz)) {
-                neuralNetwork = new ElmanNetwork(inputNeuronsCount, hiddenNeuronsCount, contextNeuronsCount, outputNeuronsCount);
-            } else if (Hopfield.class.isAssignableFrom(clazz)) {
-                if (neuronProperties == null) {
-                    neuralNetwork = new Hopfield(inputNeuronsCount);
-                } else {
-                    neuralNetwork = new Hopfield(inputNeuronsCount, neuronProperties);
-                }
-            } else if (Instar.class.isAssignableFrom(clazz)) {
-                neuralNetwork = new Instar(inputNeuronsCount);
-            } else if (UnsupervisedHebbianNetwork.class.isAssignableFrom(clazz)) {
-                if (transferFunctionType == null) {
-                    neuralNetwork = new UnsupervisedHebbianNetwork(inputNeuronsCount, outputNeuronsCount);
-                } else {
-                    neuralNetwork = new UnsupervisedHebbianNetwork(inputNeuronsCount, outputNeuronsCount, transferFunctionType);
-                }
-            } else if (SupervisedHebbianNetwork.class.isAssignableFrom(clazz)) {
-                if (transferFunctionType == null) {
-                    neuralNetwork = new SupervisedHebbianNetwork(inputNeuronsCount, outputNeuronsCount);
-                } else {
-                    neuralNetwork = new SupervisedHebbianNetwork(inputNeuronsCount, outputNeuronsCount, transferFunctionType);
-                }
-            } else if (RBFNetwork.class.isAssignableFrom(clazz)) {
-                neuralNetwork = new RBFNetwork(inputNeuronsCount, rbfNeuronsCount, outputNeuronsCount);
-            } else if (Perceptron.class.isAssignableFrom(clazz)) {
-                if (transferFunctionType == null) {
-                    neuralNetwork = new Perceptron(inputNeuronsCount, outputNeuronsCount);
-                } else {
-                    neuralNetwork = new Perceptron(inputNeuronsCount, outputNeuronsCount, transferFunctionType);
-                }
-            } else if (Outstar.class.isAssignableFrom(clazz)) {
-                neuralNetwork = new Outstar(outputNeuronsCount);
-            } else if (NeuroFuzzyPerceptron.class.isAssignableFrom(clazz)) {
-                Vector<Integer> inputSetsVector = getOption(Vector.class, options, Integer.class);
-                if (inputSetsVector == null) {
-                    double[][] inputPointSets = GSON.fromJson(pointSets, double[][].class);
-                    double[][] outputPointSets = GSON.fromJson(timeSets, double[][].class);
-                    neuralNetwork = new NeuroFuzzyPerceptron(inputPointSets, outputPointSets);
-                } else {
-                    neuralNetwork = new NeuroFuzzyPerceptron(inputNeuronsCount, inputSetsVector, outputNeuronsCount);
-                }
-            } else if (MultiLayerPerceptron.class.isAssignableFrom(clazz)) {
-                List<Integer> neuronsInLayer = getOption(List.class, options, Integer.class);
-                if (neuronsInLayer != null && !neuronsInLayer.isEmpty()) {
-                    if (transferFunctionType != null) {
-                        neuralNetwork = new MultiLayerPerceptron(neuronsInLayer, transferFunctionType);
-                    } else if (neuronProperties != null) {
-                        neuralNetwork = new MultiLayerPerceptron(neuronsInLayer, neuronProperties);
-                    } else {
-                        neuralNetwork = new MultiLayerPerceptron(neuronsInLayer);
-                    }
-                } else {
-                    if (neuronsInLayers != null) {
-                        int[] neuronsInLayersArray = GSON.fromJson(neuronsInLayers, int[].class);
-                        if (transferFunctionType != null) {
-                            neuralNetwork = new MultiLayerPerceptron(transferFunctionType, neuronsInLayersArray);
-                        } else {
-                            neuralNetwork = new MultiLayerPerceptron(neuronsInLayersArray);
-                        }
-                    }
-                }
-            } else if (MaxNet.class.isAssignableFrom(clazz)) {
-                neuralNetwork = new MaxNet(inputNeuronsCount);
-            } else if (Kohonen.class.isAssignableFrom(clazz)) {
-                neuralNetwork = new Kohonen(inputNeuronsCount, outputNeuronsCount);
-            } else if (JordanNetwork.class.isAssignableFrom(clazz)) {
-                neuralNetwork = new JordanNetwork(inputNeuronsCount, hiddenNeuronsCount, contextNeuronsCount, outputNeuronsCount);
-            }
+            NeuralNetwork neuralNetwork = createNeuralNetwork(algorithms[i].toString(), options, neuronProperties, transferFunctionType);
             algorithms[i] = neuralNetwork;
             neuralNetwork.setLabel(label);
             LearningRule learningRule = getOption(LearningRule.class, options);
@@ -218,13 +127,143 @@ public class NeurophAnalyzer implements IAnalyzer<Analysis, Analysis, Analysis> 
                     models[i] = new DataSet(inputNeuronsCount, outputNeuronsCount);
                 }
             }
+            if (dataFiles != null && dataFiles.length > i) {
+                populateDataSet((DataSet) models[i], dataFiles[i]);
+            }
+            // TODO: Populate/train the models with the training datas if there are any
         }
-        // TODO: Populate the models with the files from the file system
-        // TODO: Populate/train the models with the training datas if there are any
         // Set the options to null because this causes havoc with the
         // learning rule and Gson, they don't play nicely together at all
         context.setOptions();
         context.setModels(models);
+    }
+
+    @SuppressWarnings("unchecked")
+    private NeuralNetwork createNeuralNetwork(final String algorithm, final Object[] options, final NeuronProperties neuronProperties,
+                                              final TransferFunctionType transferFunctionType) throws ClassNotFoundException {
+        Class<?> clazz = Class.forName(algorithm);
+        NeuralNetwork neuralNetwork = null;
+        if (Adaline.class.isAssignableFrom(clazz)) {
+            neuralNetwork = new Adaline(inputNeuronsCount);
+        } else if (AutoencoderNetwork.class.isAssignableFrom(clazz)) {
+            int[] neuronsInLayersArray = GSON.fromJson(neuronsInLayers, int[].class);
+            neuralNetwork = new AutoencoderNetwork(neuronsInLayersArray);
+        } else if (BAM.class.isAssignableFrom(clazz)) {
+            neuralNetwork = new BAM(inputNeuronsCount, outputNeuronsCount);
+        } else if (CompetitiveNetwork.class.isAssignableFrom(clazz)) {
+            neuralNetwork = new CompetitiveNetwork(inputNeuronsCount, outputNeuronsCount);
+        } else if (ConvolutionalNetwork.class.isAssignableFrom(clazz)) {
+            neuralNetwork = new ConvolutionalNetwork();
+        } else if (ElmanNetwork.class.isAssignableFrom(clazz)) {
+            neuralNetwork = new ElmanNetwork(inputNeuronsCount, hiddenNeuronsCount, contextNeuronsCount, outputNeuronsCount);
+        } else if (Hopfield.class.isAssignableFrom(clazz)) {
+            if (neuronProperties == null) {
+                neuralNetwork = new Hopfield(inputNeuronsCount);
+            } else {
+                neuralNetwork = new Hopfield(inputNeuronsCount, neuronProperties);
+            }
+        } else if (Instar.class.isAssignableFrom(clazz)) {
+            neuralNetwork = new Instar(inputNeuronsCount);
+        } else if (UnsupervisedHebbianNetwork.class.isAssignableFrom(clazz)) {
+            if (transferFunctionType == null) {
+                neuralNetwork = new UnsupervisedHebbianNetwork(inputNeuronsCount, outputNeuronsCount);
+            } else {
+                neuralNetwork = new UnsupervisedHebbianNetwork(inputNeuronsCount, outputNeuronsCount, transferFunctionType);
+            }
+        } else if (SupervisedHebbianNetwork.class.isAssignableFrom(clazz)) {
+            if (transferFunctionType == null) {
+                neuralNetwork = new SupervisedHebbianNetwork(inputNeuronsCount, outputNeuronsCount);
+            } else {
+                neuralNetwork = new SupervisedHebbianNetwork(inputNeuronsCount, outputNeuronsCount, transferFunctionType);
+            }
+        } else if (RBFNetwork.class.isAssignableFrom(clazz)) {
+            neuralNetwork = new RBFNetwork(inputNeuronsCount, rbfNeuronsCount, outputNeuronsCount);
+        } else if (Perceptron.class.isAssignableFrom(clazz)) {
+            if (transferFunctionType == null) {
+                neuralNetwork = new Perceptron(inputNeuronsCount, outputNeuronsCount);
+            } else {
+                neuralNetwork = new Perceptron(inputNeuronsCount, outputNeuronsCount, transferFunctionType);
+            }
+        } else if (Outstar.class.isAssignableFrom(clazz)) {
+            neuralNetwork = new Outstar(outputNeuronsCount);
+        } else if (NeuroFuzzyPerceptron.class.isAssignableFrom(clazz)) {
+            Vector<Integer> inputSetsVector = getOption(Vector.class, options, Integer.class);
+            if (inputSetsVector == null) {
+                double[][] inputPointSets = GSON.fromJson(pointSets, double[][].class);
+                double[][] outputPointSets = GSON.fromJson(timeSets, double[][].class);
+                neuralNetwork = new NeuroFuzzyPerceptron(inputPointSets, outputPointSets);
+            } else {
+                neuralNetwork = new NeuroFuzzyPerceptron(inputNeuronsCount, inputSetsVector, outputNeuronsCount);
+            }
+        } else if (MultiLayerPerceptron.class.isAssignableFrom(clazz)) {
+            List<Integer> neuronsInLayer = getOption(List.class, options, Integer.class);
+            if (neuronsInLayer != null && !neuronsInLayer.isEmpty()) {
+                if (transferFunctionType != null) {
+                    neuralNetwork = new MultiLayerPerceptron(neuronsInLayer, transferFunctionType);
+                } else if (neuronProperties != null) {
+                    neuralNetwork = new MultiLayerPerceptron(neuronsInLayer, neuronProperties);
+                } else {
+                    neuralNetwork = new MultiLayerPerceptron(neuronsInLayer);
+                }
+            } else {
+                if (neuronsInLayers != null) {
+                    int[] neuronsInLayersArray = GSON.fromJson(neuronsInLayers, int[].class);
+                    if (transferFunctionType != null) {
+                        neuralNetwork = new MultiLayerPerceptron(transferFunctionType, neuronsInLayersArray);
+                    } else {
+                        neuralNetwork = new MultiLayerPerceptron(neuronsInLayersArray);
+                    }
+                }
+            }
+        } else if (MaxNet.class.isAssignableFrom(clazz)) {
+            neuralNetwork = new MaxNet(inputNeuronsCount);
+        } else if (Kohonen.class.isAssignableFrom(clazz)) {
+            neuralNetwork = new Kohonen(inputNeuronsCount, outputNeuronsCount);
+        } else if (JordanNetwork.class.isAssignableFrom(clazz)) {
+            neuralNetwork = new JordanNetwork(inputNeuronsCount, hiddenNeuronsCount, contextNeuronsCount, outputNeuronsCount);
+        }
+        return neuralNetwork;
+    }
+
+    private void populateDataSet(final DataSet dataSet, final File dataFile) throws FileNotFoundException {
+        FileInputAdapter fileInputAdapter = null;
+        try {
+            fileInputAdapter = new FileInputAdapter(dataFile) {
+                @Override
+                public double[] readInput() {
+                    try {
+                        String inputLine = bufferedReader.readLine();
+                        if (inputLine != null) {
+                            String[] splitInputLine = StringUtils.split(inputLine, IConstants.DELIMITER_CHARACTERS);
+                            double[] inputBuffer = new double[splitInputLine.length];
+                            for (int i = 0; i < splitInputLine.length; i++) {
+                                inputBuffer[i] = Double.parseDouble(splitInputLine[i]);
+                            }
+                            return inputBuffer;
+                        }
+                        return null;
+                    } catch (final IOException ex) {
+                        throw new RuntimeException("Error reading input from stream : ", ex);
+                    }
+                }
+            };
+            double[] data;
+            double[] inputData = new double[dataSet.getInputSize()];
+            double[] outputData = new double[dataSet.getOutputSize()];
+            while ((data = fileInputAdapter.readInput()) != null) {
+                System.arraycopy(data, 0, inputData, 0, inputData.length);
+                System.arraycopy(data, inputData.length - 1, outputData, 0, outputData.length);
+                if (outputData.length == 0) {
+                    dataSet.addRow(inputData);
+                } else {
+                    dataSet.addRow(inputData, outputData);
+                }
+            }
+        } finally {
+            if (fileInputAdapter != null) {
+                fileInputAdapter.close();
+            }
+        }
     }
 
     /**
@@ -238,7 +277,13 @@ public class NeurophAnalyzer implements IAnalyzer<Analysis, Analysis, Analysis> 
         DataSet dataSet = (DataSet) models[Math.min(index, models.length - 1)];
         double[] inputData = (double[]) analysis.getInput();
         double[] outputData = (double[]) analysis.getOutput();
-        dataSet.addRow(inputData, outputData);
+        if (outputData == null) {
+            // Unsupervised
+            dataSet.addRow(inputData);
+        } else {
+            // Supervised
+            dataSet.addRow(inputData, outputData);
+        }
         return Boolean.TRUE;
     }
 

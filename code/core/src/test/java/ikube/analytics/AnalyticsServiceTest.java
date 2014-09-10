@@ -6,7 +6,6 @@ import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.ApplicationContextManager;
-import mockit.Deencapsulation;
 import mockit.MockClass;
 import mockit.Mockit;
 import org.junit.After;
@@ -20,9 +19,9 @@ import weka.filters.Filter;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
@@ -33,7 +32,7 @@ import static org.mockito.Mockito.*;
  */
 public class AnalyticsServiceTest extends AbstractTest {
 
-    @MockClass(realClass = Analyzer.class)
+    @MockClass(realClass = AAnalyzer.class)
     public static class AnalyzerMock {
         @mockit.Mock
         public Analysis call() throws Exception {

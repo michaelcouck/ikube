@@ -5,7 +5,6 @@ import ikube.IConstants;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.web.service.Analyzer;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.junit.After;
 import org.junit.Test;
 import org.neuroph.nnet.MultiLayerPerceptron;
@@ -118,14 +117,14 @@ public class NeurophAnalyzerIntegration extends AbstractTest {
     }
 
     private Object[] getOptions() {
-        String[] fieldValues = new String[]{
+        return new Object[]{
                 "-label", "label",
                 "-outputLabels", "[one, two, three]",
                 "-inputNeuronsCount", "3",
                 "-hiddenNeuronsCount", "3",
                 "-outputNeuronsCount", "2",
-                "-neuronsInLayers", "[3, 3, 2]"};
-        return new Object[]{fieldValues, TransferFunctionType.TANH};
+                "-neuronsInLayers", "[3, 3, 2]",
+                TransferFunctionType.TANH};
     }
 
     @SuppressWarnings("StringBufferReplaceableByString")

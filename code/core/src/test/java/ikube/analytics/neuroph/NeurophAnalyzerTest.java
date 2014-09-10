@@ -4,14 +4,12 @@ import ikube.AbstractTest;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.OsUtilities;
-import ikube.toolkit.StringUtilities;
 import mockit.Deencapsulation;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.neuroph.core.NeuralNetwork;
 import org.neuroph.core.data.DataSet;
@@ -22,12 +20,10 @@ import org.neuroph.util.NeuralNetworkType;
 import org.neuroph.util.NeuronProperties;
 import org.neuroph.util.TransferFunctionType;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 import static junit.framework.Assert.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 /**
@@ -68,7 +64,8 @@ public class NeurophAnalyzerTest extends AbstractTest {
                 Hopfield.class.getName(), Instar.class.getName(), UnsupervisedHebbianNetwork.class.getName(), SupervisedHebbianNetwork.class.getName(),
                 RBFNetwork.class.getName(), Perceptron.class.getName(), Outstar.class.getName(), // NeuroFuzzyPerceptron.class.getName(),
                 MultiLayerPerceptron.class.getName(), MaxNet.class.getName(), Kohonen.class.getName(), JordanNetwork.class.getName()};
-        String[] fieldValues = new String[]{
+
+        options = new Object[]{
                 "-label", "label",
                 "-outputLabels", "[one, two, three]",
                 "-inputNeuronsCount", "3",
@@ -78,11 +75,12 @@ public class NeurophAnalyzerTest extends AbstractTest {
                 "-outputNeuronsCount", "3",
                 "-pointSets", "[[1, 1, 1, 1], [0, 0, 0, 0], [1, 1, 1, 0]]",
                 "-timeSets", "[[1, 1, 1, 1], [0, 0, 0, 0], [1, 1, 1, 0]]",
-                "-neuronsInLayers", "[3, 3, 3]"};
+                "-neuronsInLayers", "[3, 3, 3]",
+                learningRule, NeuralNetworkType.ADALINE, neuronProperties, TransferFunctionType.GAUSSIAN,
+                inputSetsVector, neuronsInLayer};
         if (!OsUtilities.isOs("3.11.0-12-generic")) {
-            fieldValues = setFieldValues(fieldValues);
+            options = setFieldValues(options);
         }
-        options = new Object[]{fieldValues, learningRule, NeuralNetworkType.ADALINE, neuronProperties, TransferFunctionType.GAUSSIAN, inputSetsVector, neuronsInLayer};
 
         when(context.getAlgorithms()).thenReturn(algorithms);
         when(context.getOptions()).thenReturn(options);
@@ -96,17 +94,20 @@ public class NeurophAnalyzerTest extends AbstractTest {
         }
     }
 
-    private String[] setFieldValues(final String[] fieldValues) {
-        for (int i = 0; i < (fieldValues.length - 1) / 2; i++) {
-            String fieldName = StringUtils.strip(fieldValues[i * 2], "-");
-            Object fieldValue = fieldValues[i * 2 + 1];
-            if (StringUtilities.isNumeric(fieldValue.toString())) {
-                fieldValue = Integer.parseInt(fieldValue.toString());
+    private Object[] setFieldValues(final Object[] options) {
+        List<Object> result = new ArrayList<>();
+        Iterator optionsIterator = Arrays.asList(options).iterator();
+        while (optionsIterator.hasNext()) {
+            Object fieldName = optionsIterator.next();
+            if (fieldName.toString().startsWith("-") && optionsIterator.hasNext()) {
+                Object fieldValue = optionsIterator.next();
+                logger.warn("Setting field : " + fieldName + ":" + fieldValue);
+                Deencapsulation.setField(neurophAnalyzer, fieldName.toString(), fieldValue);
+            } else {
+                result.add(fieldName);
             }
-            logger.warn("Setting field : " + fieldName + ":" + fieldValue);
-            Deencapsulation.setField(neurophAnalyzer, fieldName, fieldValue);
         }
-        return new String[0];
+        return result.toArray();
     }
 
     @Test
@@ -150,26 +151,31 @@ public class NeurophAnalyzerTest extends AbstractTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void analyze() throws Exception {
         algorithms = new Object[]{Hopfield.class.getName(), Kohonen.class.getName(), RBFNetwork.class.getName()};
-        String[] fieldValues = new String[]{
+        options = new Object[]{
                 "-label", "label",
-                "-outputLabels", "[one, two, three]",
-                "-inputNeuronsCount", "3",
-                "-hiddenNeuronsCount", "3",
-                "-contextNeuronsCount", "3",
-                "-rbfNeuronsCount", "3",
-                "-outputNeuronsCount", "3",
-                "-neuronsInLayers", "[3, 3, 3]"};
+                "-outputLabels", "[one, two, three, four]",
+                "-inputNeuronsCount", "4",
+                "-hiddenNeuronsCount", "4",
+                "-contextNeuronsCount", "4",
+                "-rbfNeuronsCount", "4",
+                "-outputNeuronsCount", "4",
+                "-neuronsInLayers", "[8, 8, 4]",
+                learningRule};
+
         if (!OsUtilities.isOs("3.11.0-12-generic")) {
-            fieldValues = setFieldValues(fieldValues);
+            options = setFieldValues(options);
         }
-        options = new Object[]{fieldValues, learningRule};
+        String[] fileNames = {"bmw-browsers.csv"};
 
         when(context.getAlgorithms()).thenReturn(algorithms);
         when(context.getOptions()).thenReturn(options);
-        when(analysis.getInput()).thenReturn(new double[]{1, 0, 1});
-        when(analysis.getOutput()).thenReturn(new double[]{1, 0, 1});
+        when(context.getFileNames()).thenReturn(fileNames);
+
+        when(analysis.getInput()).thenReturn(new double[]{0, 1, 1, 0});
+        when(analysis.getOutput()).thenReturn(new double[]{1, 0, 1, 1});
 
         neurophAnalyzer.init(context);
         for (int i = 0; i < 1000; i++) {
@@ -178,15 +184,7 @@ public class NeurophAnalyzerTest extends AbstractTest {
         neurophAnalyzer.build(context);
 
         neurophAnalyzer.analyze(context, analysis);
-        double[] input = (double[]) analysis.getInput();
-        double[] output = (double[]) analysis.getOutput();
-        // The output should be an exact match to the input,
-        // as there has been not training other than the input
-        // for any of the neural networks
-        logger.error(ToStringBuilder.reflectionToString(output));
-        for (int i = 0; i < input.length; i++) {
-            assertEquals(input[i], output[i]);
-        }
+        Mockito.verify(analysis, Mockito.atLeast(1000)).setOutput(any());
     }
 
 }

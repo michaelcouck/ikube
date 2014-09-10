@@ -2,16 +2,13 @@ package ikube.analytics.weka;
 
 import com.google.common.collect.Lists;
 import ikube.IConstants;
-import ikube.analytics.IAnalyzer;
+import ikube.analytics.AAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
-import ikube.toolkit.FileUtilities;
 import ikube.toolkit.StringUtilities;
 import ikube.toolkit.ThreadUtilities;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.clusterers.ClusterEvaluation;
@@ -29,8 +26,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Future;
 
-import static ikube.IConstants.ANALYTICS_DIRECTORY;
-import static ikube.toolkit.ApplicationContextManager.getConfigFilePath;
 import static ikube.toolkit.FileUtilities.*;
 import static ikube.toolkit.ThreadUtilities.waitForAnonymousFutures;
 import static org.apache.commons.io.FilenameUtils.getBaseName;
@@ -46,11 +41,7 @@ import static org.apache.commons.io.FilenameUtils.getBaseName;
  * @version 01.00
  * @since 18-11-2013
  */
-public abstract class WekaAnalyzer implements IAnalyzer<Analysis, Analysis, Analysis> {
-
-    transient Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    String configFilePath;
+public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysis> {
 
     /**
      * {@inheritDoc}
@@ -58,8 +49,6 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis, Analysis, Anal
     @Override
     @SuppressWarnings("unchecked")
     public void init(final Context context) throws Exception {
-        logger = LoggerFactory.getLogger(this.getClass());
-        configFilePath = FileUtilities.cleanFilePath(getConfigFilePath());
         logger.warn("Config file path : " + configFilePath);
         if (String.class.isAssignableFrom(context.getAnalyzer().getClass())) {
             context.setAnalyzer(Class.forName(context.getAnalyzer().toString()).newInstance());
@@ -303,48 +292,6 @@ public abstract class WekaAnalyzer implements IAnalyzer<Analysis, Analysis, Anal
             }
         }
         return inputStreams;
-    }
-
-    /**
-     * This method returns the data file for the analyzer. The data file contains the relational attribute set that can be
-     * used to train the analyzer. As with all configuration, we expect this file to reside in the {@link IConstants#IKUBE_DIRECTORY}
-     * some where.
-     *
-     * @param context the context for the analyzer that we want the input training file for
-     * @return the data file for the analyzer, or null if no such file exists. Typically if the file is
-     * not present then there is a serious problem and the analyzers will not work properly or at all, i.e.
-     * the results are undefined
-     */
-    @SuppressWarnings("ConstantConditions")
-    File[] getDataFiles(final Context context) {
-        String[] dataFileNames = context.getFileNames();
-        File[] dataFiles = new File[context.getFileNames().length];
-        File configurationDirectory = new File(configFilePath).getParentFile();
-        for (int i = 0; i < dataFiles.length; i++) {
-            String dataFileName = dataFileNames[i];
-            // First look in the configuration directory specified in the system property
-            File dataFile = findFileRecursively(configurationDirectory, dataFileName);
-            logger.info("Looking for data file in directory : " + configurationDirectory.getAbsolutePath());
-            // Then look starting from the dot directory
-            if (dataFile == null || !dataFile.exists() || !dataFile.canRead()) {
-                logger.info("Can't find data file : " + dataFileName + ", will search for it...");
-                dataFile = findFileRecursively(new File("."), dataFileName);
-            }
-            // Create the file because we will need it
-            if (dataFile == null || !dataFile.exists() || !dataFile.canRead()) {
-                logger.warn("Couldn't find file for analyzer or can't read file, will create it : " + dataFileName);
-                File analyticsDirectory = getOrCreateDirectory(ANALYTICS_DIRECTORY);
-                dataFile = getOrCreateFile(new File(analyticsDirectory, dataFileName));
-                logger.info("Created data file : " + dataFile.getAbsolutePath());
-            } else {
-                logger.info("Found data file : " + dataFile.getAbsolutePath());
-            }
-            if (dataFile == null) {
-                logger.warn("Couldn't create data file : " + dataFileName);
-            }
-            dataFiles[i] = dataFile;
-        }
-        return dataFiles;
     }
 
     File[] serializeAnalyzers(final Context context) {
