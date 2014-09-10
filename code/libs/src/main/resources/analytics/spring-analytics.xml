@@ -146,22 +146,21 @@
         property:options-ref="neuroph-neural-network-options"/>
 
     <util:list id="neuroph-neural-network-options">
-        <array>
-            <value type="java.lang.String">-label</value>
-            <value type="java.lang.String">neuroph-neural-network</value>
+        <value type="java.lang.String">-label</value>
+        <value type="java.lang.String">neuroph-neural-network</value>
 
-            <value type="java.lang.String">-inputNeuronsCount</value>
-            <value type="java.lang.String">3</value>
+        <value type="java.lang.String">-inputNeuronsCount</value>
+        <value type="java.lang.String">3</value>
 
-            <value type="java.lang.String">-hiddenNeuronsCount</value>
-            <value type="java.lang.String">3</value>
+        <value type="java.lang.String">-hiddenNeuronsCount</value>
+        <value type="java.lang.String">3</value>
 
-            <value type="java.lang.String">-outputNeuronsCount</value>
-            <value type="java.lang.String">2</value>
+        <value type="java.lang.String">-outputNeuronsCount</value>
+        <value type="java.lang.String">2</value>
 
-            <value type="java.lang.String">-neuronsInLayers</value>
-            <value type="java.lang.String">[3, 3, 2]</value>
-        </array>
+        <value type="java.lang.String">-neuronsInLayers</value>
+        <value type="java.lang.String">[3, 3, 2]</value>
+
         <value type="org.neuroph.util.TransferFunctionType">TANH</value>
         <bean
             id="backPropagation"
