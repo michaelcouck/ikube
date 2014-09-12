@@ -39,13 +39,14 @@ public class IndexCommitSchedule extends Schedule {
             if (indexWriters == null || indexWriters.length == 0) {
                 continue;
             }
+            logger.warn("Comitting index : " + indexContext.getName());
             for (final IndexWriter indexWriter : indexWriters) {
                 try {
-                    logger.error("Comitting index : " + indexContext.getName());
                     indexWriter.maybeMerge();
                     indexWriter.forceMerge(10, Boolean.FALSE);
                     indexWriter.commit();
                     indexWriter.deleteUnusedFiles();
+                    logger.warn("    committed index : " + indexContext.getName());
                 } catch (final IOException e) {
                     logger.error("Exception comitting the index writer : ", e);
                 }
