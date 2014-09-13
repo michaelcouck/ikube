@@ -43,26 +43,39 @@ public class Reopen extends Open {
             return;
         }
 
-        List<IndexReader> indexReaders = new ArrayList<>();
+        List<IndexReader> newIndexReaders = new ArrayList<>();
+        List<IndexReader> oldIndexReaders = new ArrayList<>();
         MultiReader multiReader = (MultiReader) oldIndexSearcher.getIndexReader();
         CompositeReaderContext compositeReaderContext = multiReader.getContext();
         for (final IndexReaderContext indexReaderContext : compositeReaderContext.children()) {
             IndexReader oldIndexReader = indexReaderContext.reader();
             IndexReader newIndexReader = DirectoryReader.openIfChanged((DirectoryReader) oldIndexReader);
-            indexReaders.add(newIndexReader);
             if (newIndexReader != null && oldIndexReader != newIndexReader) {
                 logger.info("New index reader : " + newIndexReader.hashCode());
-                oldIndexReader.close();
+                newIndexReaders.add(newIndexReader);
+                oldIndexReaders.add(oldIndexReader);
             } else {
-                logger.info("Keeping old index reader : " + oldIndexReader.hashCode());
+                if (oldIndexReader != null) {
+                    newIndexReaders.add(oldIndexReader);
+                    logger.info("Keeping old index reader : " + oldIndexReader.hashCode());
+                }
             }
         }
-        int newIndexReadersSize = indexReaders.size();
-        IndexReader[] newIndexReaderArray = indexReaders.toArray(new IndexReader[newIndexReadersSize]);
+        int newIndexReadersSize = newIndexReaders.size();
+        IndexReader[] newIndexReaderArray = newIndexReaders.toArray(new IndexReader[newIndexReadersSize]);
         IndexReader indexReader = new MultiReader(newIndexReaderArray, Boolean.FALSE);
         IndexSearcher indexSearcher = new IndexSearcher(indexReader);
         indexContext.setMultiSearcher(indexSearcher);
-        logger.info("Opening new searcher : " + indexContext.getMultiSearcher().getIndexReader().numDocs());
+        for (final IndexReader oldIndexReader : oldIndexReaders) {
+            try {
+                if (oldIndexReader != null) {
+                    oldIndexReader.close();
+                }
+            } catch (final Exception e) {
+                logger.error("Exception closing the old index reader : " + oldIndexReader, e);
+            }
+        }
+        logger.info("Opened new searcher : " + indexContext.getMultiSearcher().getIndexReader().numDocs());
     }
 
     // NOTE: 13-09-2014: This finally runs out of memory, open file handles increase gradually
