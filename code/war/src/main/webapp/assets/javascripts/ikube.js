@@ -161,23 +161,6 @@ function getServiceUrl(path) {
     });
 }).call(this);
 
-/*function notification(text, image, duration) {
-    var imagePath = getServiceUrl(image);
-    new Notifications({
-        container: $("body"),
-        bootstrapPositionClass: "span8 offset2"
-    });
-    Notifications.push({
-        imagePath: imagePath,
-        text: text,
-        autoDismiss: duration
-    });
-}
-
-function enterpriseNotification() {
-    notification('This feature is only in the enterprise version, contact michael.couck@gmail.com', '/ikube/assets/images/michael-couck.jpg', '5');
-}*/
-
 function modal(element) {
     return $(element).modal();
 }

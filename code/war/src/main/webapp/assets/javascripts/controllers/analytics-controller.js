@@ -24,7 +24,7 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
         clazz: undefined,
         input: undefined,
         output: undefined,
-        algorithmOutput: undefined
+        addAlgorithmOutput: true
     };
 
     $scope.context = {
