@@ -26,7 +26,6 @@ import static org.mockito.Mockito.atLeastOnce;
  */
 public class InternetResourceHandlerTest extends AbstractTest {
 
-    private String url = "http://www.ikube.be/ikube";
     private InternetResourceHandler internetResourceHandler;
 
     @Before
@@ -69,7 +68,7 @@ public class InternetResourceHandlerTest extends AbstractTest {
         File file = FileUtilities.findFileRecursively(new File("."), "html.html");
         String contents = FileUtilities.getContents(file, Integer.MAX_VALUE).toString();
         Url url = mock(Url.class);
-        when(url.getUrl()).thenReturn(this.url);
+        when(url.getUrl()).thenReturn("http://www.ikube.be/ikube");
         when(url.getRawContent()).thenReturn(contents.getBytes());
         doAnswer(new Answer() {
             @Override
