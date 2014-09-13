@@ -11,13 +11,20 @@
 <div id="header">
 </div>
 <div id="content">
-<div class="sect2">
-<h3 id="_neuroph">Neuroph</h3>
+<div class="sect1">
+<h2 id="_neuroph">Neuroph</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>Neuroph is a neural network machine learning library. Please refer to the Neuroph site for more information.</p>
+<p>Neuroph is a neural network machine learning library. Ikube grid enables Neuroph, exposing the
+functionality via rest services, and provides the framework to distribute the analyses, through a
+compute grid, over a cluster of servers, as many as required. This allows unprecedented volumes
+of data to be analyzed, bringing Neuroph into the Internet of Things arena.</p>
 </div>
-<div class="sect4">
-<h5 id="_available_neural_networks">Available neural networks</h5>
+<div class="paragraph">
+<p>Please refer to the Neuroph site for more information.</p>
+</div>
+<div class="sect2">
+<h3 id="_available_neural_networks">Available neural networks</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -80,10 +87,14 @@
 <p>Please refer to the Neuroph documentation for the available properties that can be set and configuration for the networks.</p>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_example_api_calls">Example API calls</h3>
 <div class="sect3">
-<h4 id="_example_api_calls">Example API calls</h4>
-<div class="sect4">
-<h5 id="_create_a_neural_network">Create a neural network</h5>
+<h4 id="_create_a_neural_network">Create a neural network</h4>
+<div class="paragraph">
+<p>This method will create the network, in the example is a MultiLayerPerceptron, which is a supervised
+network. The options provided are Neuroph specific, please refer to the Neuroph for options for this network.</p>
+</div>
 <div class="ulist">
 <ul>
 <li>
@@ -97,20 +108,18 @@
       "org.neuroph.nnet.MultiLayerPerceptron"
    ],
    "options":[
-      [
-         "-label",
-         "label",
-         "-outputLabels",
-         "[one, two, three]",
-         "-inputNeuronsCount",
-         "3",
-         "-hiddenNeuronsCount",
-         "3",
-         "-outputNeuronsCount",
-         "2",
-         "-neuronsInLayers",
-         "[3, 3, 2]"
-      ],
+      "-label",
+      "label",
+      "-outputLabels",
+      "[one, two, three]",
+      "-inputNeuronsCount",
+      "3",
+      "-hiddenNeuronsCount",
+      "3",
+      "-outputNeuronsCount",
+      "2",
+      "-neuronsInLayers",
+      "[3, 3, 2]",
       "TANH"
    ],
    "persisted":false,
@@ -121,8 +130,13 @@
 </ul>
 </div>
 </div>
-<div class="sect4">
-<h5 id="_train_a_network">Train a network</h5>
+<div class="sect3">
+<h4 id="_train_a_network">Train a network</h4>
+<div class="paragraph">
+<p>The train service wil take the input data, a vector of doubles, and add them to the input data set
+in Neuroph. For supervised learning the output vector is required, but for unsupervised, this may not
+be present. Each invocation of this method will add one more row to the training data set.</p>
+</div>
 <div class="paragraph">
 <p>Post: <a href="http://ikube.be/ikube/service/analyzer/train">http://ikube.be/ikube/service/analyzer/train</a>
 Body: {
@@ -137,8 +151,13 @@ Body: {
       }</p>
 </div>
 </div>
-<div class="sect4">
-<h5 id="_build_the_network">Build the network</h5>
+<div class="sect3">
+<h4 id="_build_the_network">Build the network</h4>
+<div class="paragraph">
+<p>Build the network from the existing data set. This method will execute the learning logic in Neuroph. This
+is potentially a very cpu intensive and long process, lasting several hours, even days depending on the size
+of the input/training data, and various other factors.</p>
+</div>
 <div class="paragraph">
 <p>Post: <a href="http://ikube.be/ikube/service/analyzer/build">http://ikube.be/ikube/service/analyzer/build</a>
 Body: {
@@ -151,8 +170,13 @@ Body: {
       }</p>
 </div>
 </div>
-<div class="sect4">
-<h5 id="_analyze_an_observation">Analyze an observation</h5>
+<div class="sect3">
+<h4 id="_analyze_an_observation">Analyze an observation</h4>
+<div class="paragraph">
+<p>This service is to execute the analysis logic on a specific observation, or instance. This logic
+will put the data specified in the input field in the analysis object, through the neural network,
+and return the result as the output, which will be the output of the network.</p>
+</div>
 <div class="paragraph">
 <p>Post: <a href="http://ikube.be/ikube/service/analyzer/analyze">http://ikube.be/ikube/service/analyzer/analyze</a>
 Body: {
@@ -166,8 +190,11 @@ Body: {
       }</p>
 </div>
 </div>
-<div class="sect4">
-<h5 id="_destroy_the_network">Destroy the network</h5>
+<div class="sect3">
+<h4 id="_destroy_the_network">Destroy the network</h4>
+<div class="paragraph">
+<p>This service will destroy the network, removing it from the system, and releasing the resources.</p>
+</div>
 <div class="paragraph">
 <p>Post: <a href="http://ikube.be/ikube/service/analyzer/destroy">http://ikube.be/ikube/service/analyzer/destroy</a>
 Body: {
@@ -177,20 +204,18 @@ Body: {
             "org.neuroph.nnet.MultiLayerPerceptron"
          ],
          "options":[
-            [
-               "-label",
-               "label",
-               "-outputLabels",
-               "[one, two, three]",
-               "-inputNeuronsCount",
-               "3",
-               "-hiddenNeuronsCount",
-               "3",
-               "-outputNeuronsCount",
-               "2",
-               "-neuronsInLayers",
-               "[3, 3, 2]"
-            ],
+            "-label",
+            "label",
+            "-outputLabels",
+            "[one, two, three]",
+            "-inputNeuronsCount",
+            "3",
+            "-hiddenNeuronsCount",
+            "3",
+            "-outputNeuronsCount",
+            "2",
+            "-neuronsInLayers",
+            "[3, 3, 2]",
             "TANH"
          ],
          "persisted":false,
@@ -202,9 +227,10 @@ Body: {
 </div>
 </div>
 </div>
+</div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-09-09 12:08:08 CEST
+Last updated 2014-09-10 16:41:57 CEST
 </div>
 </div>
 </body>

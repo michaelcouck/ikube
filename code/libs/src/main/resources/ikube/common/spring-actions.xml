@@ -207,12 +207,11 @@
         id="ikube.action.Close"
         class="ikube.action.Close"
         property:ruleExpression="
-			IsIndexCorrupt || AreUnopenedIndexes"
+			IsIndexCorrupt"
         property:requiresClusterLock="false">
         <property name="rules">
             <util:list>
                 <ref local="ikube.action.rule.IsIndexCorrupt"/>
-                <ref local="ikube.action.rule.AreUnopenedIndexes"/>
             </util:list>
         </property>
     </bean>
