@@ -50,7 +50,7 @@ public class Reopen extends Open {
             IndexReader oldIndexReader = indexReaderContext.reader();
             IndexReader newIndexReader = DirectoryReader.openIfChanged((DirectoryReader) oldIndexReader);
             indexReaders.add(newIndexReader);
-            if (oldIndexReader != newIndexReader) {
+            if (newIndexReader != null && oldIndexReader != newIndexReader) {
                 logger.info("New index reader : " + newIndexReader.hashCode());
                 oldIndexReader.close();
             } else {
