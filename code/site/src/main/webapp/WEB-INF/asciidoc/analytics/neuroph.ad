@@ -70,8 +70,8 @@ The train service wil take the input data, a vector of doubles, and add them to 
 in Neuroph. For supervised learning the output vector is required, but for unsupervised, this may not
 be present. Each invocation of this method will add one more row to the training data set.
 
-Post: http://ikube.be/ikube/service/analyzer/train
-Body: {
+* Post: http://ikube.be/ikube/service/analyzer/train
+* Body: {
          "context":"multi-layer-perceptron",
          "input":"1,0,1",
          "output":"1,0",
@@ -88,8 +88,8 @@ Build the network from the existing data set. This method will execute the learn
 is potentially a very cpu intensive and long process, lasting several hours, even days depending on the size
 of the input/training data, and various other factors.
 
-Post: http://ikube.be/ikube/service/analyzer/build
-Body: {
+* Post: http://ikube.be/ikube/service/analyzer/build
+* Body: {
          "context":"multi-layer-perceptron",
          "duration":0.0,
          "sizeForClassOrCluster":0,
@@ -104,8 +104,8 @@ This service is to execute the analysis logic on a specific observation, or inst
 will put the data specified in the input field in the analysis object, through the neural network,
 and return the result as the output, which will be the output of the network.
 
-Post: http://ikube.be/ikube/service/analyzer/analyze
-Body: {
+* Post: http://ikube.be/ikube/service/analyzer/analyze
+* Body: {
          "context":"multi-layer-perceptron",
          "input":"0,1,0",
          "duration":0.0,
@@ -119,8 +119,8 @@ Body: {
 
 This service will destroy the network, removing it from the system, and releasing the resources.
 
-Post: http://ikube.be/ikube/service/analyzer/destroy
-Body: {
+* Post: http://ikube.be/ikube/service/analyzer/destroy
+* Body: {
          "name":"multi-layer-perceptron",
          "analyzer":"ikube.analytics.neuroph.NeurophAnalyzer",
          "algorithms":[
