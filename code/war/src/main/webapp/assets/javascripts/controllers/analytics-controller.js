@@ -101,6 +101,7 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
 
         $scope.analysis.clazz = undefined;
         $scope.analysis.output = undefined;
+        $scope.analysis.algorithmOutput = undefined;
 
         $scope.status = undefined;
         var promise = $http.post(url, $scope.analysis);

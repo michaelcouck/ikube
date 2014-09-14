@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>ikube</groupId>
 		<artifactId>ikube</artifactId>
-        <version>5.1.0</version>
+        <version>5.2.0</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 	
@@ -120,25 +120,30 @@
             <artifactId>jetty-server</artifactId>
             <version>${jetty-version}</version>
             <type>jar</type>
-            <scope>compile</scope>
+            <!--<scope>compile</scope>-->
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-util</artifactId>
             <version>${jetty-version}</version>
             <type>jar</type>
-            <scope>compile</scope>
+            <!--<scope>compile</scope>-->
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>example-jetty-embedded</artifactId>
             <version>${jetty-version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-embedded-examples</artifactId>
             <version>7.0.0.M2</version>
+            <scope>provided</scope>
         </dependency>
+
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>

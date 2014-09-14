@@ -4,7 +4,7 @@
 	<groupId>ikube</groupId>
 	<artifactId>ikube</artifactId>
 	<packaging>pom</packaging>
-	<version>5.1.0</version>
+	<version>5.2.0</version>
 
     <scm>
         <url>https://github.com/michaelcouck/ikube</url>
@@ -40,8 +40,18 @@
         </snapshotRepository>
 	</distributionManagement>
 
+    <modules>
+        <module>code/com</module>
+        <module>code/core</module>
+        <module>code/war</module>
+        <module>code/site</module>
+        <module>code/libs</module>
+        <module>code/web</module>
+        <module>code/tool</module>
+    </modules>
+
 	<properties>
-        <ikube-version>5.1.0</ikube-version>
+        <ikube-version>5.2.0</ikube-version>
 
         <encoding>UTF8</encoding>
         <targetJdk>1.7</targetJdk>
@@ -136,7 +146,7 @@
                     <executions>
                         <execution>
                             <id>copy-configuration</id>
-                            <phase>test</phase>
+                            <phase>deploy</phase>
                             <configuration>
                                 <target>
                                     <!--<echo message="basedir : ${basedir}, ">basedir : ${basedir}</echo>
@@ -155,7 +165,6 @@
                                     <copy todir="ikube/indexes/production"><fileset dir="../libs/src/main/resources/indexes/production" includes="**"/></copy>
                                     <copy todir="ikube/indexes/integration"><fileset dir="../libs/src/main/resources/indexes/integration" includes="**"/></copy>
                                     <copy todir="ikube/indexes/twitter"><fileset dir="../libs/src/main/resources/indexes/twitter" includes="**"/></copy>
-                                    <copy todir="ikube/indexes/bosal"><fileset dir="../libs/src/main/resources/indexes/bosal" includes="**"/></copy>
                                 </target>
                             </configuration>
                             <goals>
@@ -455,6 +464,18 @@
                 </exclusion>
             </exclusions>
 		</dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-crypto</artifactId>
+            <version>${spring-version}</version>
+            <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-aop</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
@@ -482,6 +503,44 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+        <dependency>
+            <groupId>org.springframework.social</groupId>
+            <artifactId>spring-social-core</artifactId>
+            <version>1.0.3.RELEASE</version>
+            <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-web</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.social</groupId>
+            <artifactId>spring-social-twitter</artifactId>
+            <version>1.1.0</version>
+            <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.social</groupId>
+                    <artifactId>spring-social-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.social</groupId>
+                    <artifactId>spring-social-config</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-security-crypto</artifactId>
+                    <groupId>org.springframework.security</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring-version}</version>
+            <scope>compile</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
@@ -489,60 +548,60 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.xbean</groupId>
-			<artifactId>xbean-spring</artifactId>
-			<version>3.6</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springbyexample</groupId>
-			<artifactId>org.springbyexample.dynamic.tiles2</artifactId>
-			<version>1.2</version>
-			<scope>compile</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>org.springframework.beans</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>org.springframework.context</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>org.springframework.context.support</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>org.springframework.core</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>org.springframework.web</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>org.springframework.webflow</artifactId>
-					<groupId>org.springframework.webflow</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>org.springframework.web.servlet</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>org.springframework.js</artifactId>
-					<groupId>org.springframework.webflow</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>com.springsource.org.apache.tiles</artifactId>
-					<groupId>org.apache.tiles</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>com.springsource.org.apache.tiles.core</artifactId>
-					<groupId>org.apache.tiles</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+		<!--<dependency>-->
+			<!--<groupId>org.apache.xbean</groupId>-->
+			<!--<artifactId>xbean-spring</artifactId>-->
+			<!--<version>3.6</version>-->
+			<!--<scope>compile</scope>-->
+		<!--</dependency>-->
+		<!--<dependency>-->
+			<!--<groupId>org.springbyexample</groupId>-->
+			<!--<artifactId>org.springbyexample.dynamic.tiles2</artifactId>-->
+			<!--<version>1.2</version>-->
+			<!--<scope>compile</scope>-->
+			<!--<exclusions>-->
+				<!--<exclusion>-->
+					<!--<artifactId>org.springframework.beans</artifactId>-->
+					<!--<groupId>org.springframework</groupId>-->
+				<!--</exclusion>-->
+				<!--<exclusion>-->
+					<!--<artifactId>org.springframework.context</artifactId>-->
+					<!--<groupId>org.springframework</groupId>-->
+				<!--</exclusion>-->
+				<!--<exclusion>-->
+					<!--<artifactId>org.springframework.context.support</artifactId>-->
+					<!--<groupId>org.springframework</groupId>-->
+				<!--</exclusion>-->
+				<!--<exclusion>-->
+					<!--<artifactId>org.springframework.core</artifactId>-->
+					<!--<groupId>org.springframework</groupId>-->
+				<!--</exclusion>-->
+				<!--<exclusion>-->
+					<!--<artifactId>org.springframework.web</artifactId>-->
+					<!--<groupId>org.springframework</groupId>-->
+				<!--</exclusion>-->
+				<!--<exclusion>-->
+					<!--<artifactId>org.springframework.webflow</artifactId>-->
+					<!--<groupId>org.springframework.webflow</groupId>-->
+				<!--</exclusion>-->
+				<!--<exclusion>-->
+					<!--<artifactId>org.springframework.web.servlet</artifactId>-->
+					<!--<groupId>org.springframework</groupId>-->
+				<!--</exclusion>-->
+				<!--<exclusion>-->
+					<!--<artifactId>org.springframework.js</artifactId>-->
+					<!--<groupId>org.springframework.webflow</groupId>-->
+				<!--</exclusion>-->
+				<!--<exclusion>-->
+					<!--<artifactId>com.springsource.org.apache.tiles</artifactId>-->
+					<!--<groupId>org.apache.tiles</groupId>-->
+				<!--</exclusion>-->
+				<!--<exclusion>-->
+					<!--<artifactId>com.springsource.org.apache.tiles.core</artifactId>-->
+					<!--<groupId>org.apache.tiles</groupId>-->
+				<!--</exclusion>-->
+			<!--</exclusions>-->
+		<!--</dependency>-->
 		<dependency>
 			<groupId>dom4j</groupId>
 			<artifactId>dom4j</artifactId>
@@ -875,20 +934,20 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>net.sourceforge.htmlunit</groupId>
-			<artifactId>htmlunit</artifactId>
-			<version>2.9</version>
-			<type>jar</type>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.ehcache</groupId>
-			<artifactId>ehcache-core</artifactId>
-			<version>2.4.5</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
+		<!--<dependency>-->
+			<!--<groupId>net.sourceforge.htmlunit</groupId>-->
+			<!--<artifactId>htmlunit</artifactId>-->
+			<!--<version>2.9</version>-->
+			<!--<type>jar</type>-->
+			<!--<scope>test</scope>-->
+		<!--</dependency>-->
+		<!--<dependency>-->
+			<!--<groupId>net.sf.ehcache</groupId>-->
+			<!--<artifactId>ehcache-core</artifactId>-->
+			<!--<version>2.4.5</version>-->
+			<!--<type>jar</type>-->
+			<!--<scope>compile</scope>-->
+		<!--</dependency>-->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
@@ -1049,44 +1108,7 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.social</groupId>
-			<artifactId>spring-social-core</artifactId>
-			<version>1.0.3.RELEASE</version>
-			<scope>compile</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-web</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.social</groupId>
-			<artifactId>spring-social-twitter</artifactId>
-			<version>1.1.0</version>
-			<scope>compile</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework.social</groupId>
-					<artifactId>spring-social-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework.social</groupId>
-					<artifactId>spring-social-config</artifactId>
-				</exclusion>
-				<exclusion>
-					<artifactId>spring-security-crypto</artifactId>
-					<groupId>org.springframework.security</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-			<version>${spring-version}</version>
-			<scope>compile</scope>
-		</dependency>
+
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-jexl</artifactId>
@@ -1112,18 +1134,7 @@
 			<version>1.4.0</version>
             <scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-crypto</artifactId>
-			<version>${spring-version}</version>
-            <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-aop</artifactId>
-                </exclusion>
-            </exclusions>
-		</dependency>
+
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-analyzers-common</artifactId>
@@ -1210,11 +1221,11 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.2.2</version>
         </dependency>
-        <dependency>
-            <groupId>org.encog</groupId>
-            <artifactId>encog-core</artifactId>
-            <version>3.0.1</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.encog</groupId>-->
+            <!--<artifactId>encog-core</artifactId>-->
+            <!--<version>3.0.1</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.tmatesoft.svnkit</groupId>
             <artifactId>svnkit</artifactId>
@@ -1296,12 +1307,12 @@
             <version>1.2.0</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>lingpipe</groupId>
-            <artifactId>lingpipe</artifactId>
-            <version>4.1.0</version>
-            <scope>compile</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>lingpipe</groupId>-->
+            <!--<artifactId>lingpipe</artifactId>-->
+            <!--<version>4.1.0</version>-->
+            <!--<scope>compile</scope>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.apache.opennlp</groupId>
@@ -1428,15 +1439,6 @@
             <url>http://www.gridgainsystems.com/nexus/content/repositories/external</url>
         </repository>
 	</repositories>
-
-    <modules>
-        <module>code/com</module>
-        <module>code/core</module>
-        <module>code/war</module>
-        <module>code/site</module>
-        <module>code/tool</module>
-        <module>code/libs</module>
-    </modules>
 
 	<pluginRepositories>
 		<pluginRepository>
