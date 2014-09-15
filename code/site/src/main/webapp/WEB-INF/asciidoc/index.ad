@@ -6,10 +6,11 @@ pass:[<script src="analytics.js" type="text/javascript"></script>]
 
 *link:preface.html[Preface]* +
 *link:install.html[Installation]* +
-*link:conf.html[Configuration]* +
+*link:configuration.html[Configuration]* +
 *link:analytics.html[Analytics]* +
 *link:search.html[Search]* +
 
+*link:architecture.html[Architecture]* +
 *link:twitter.html[Twitter]* +
 *link:use-cases.html[Use cases]* +
 

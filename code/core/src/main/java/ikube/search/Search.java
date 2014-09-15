@@ -264,7 +264,7 @@ public abstract class Search {
             if (exception != null) {
                 String searchString = searchStrings != null && searchStrings.length > 0 ? Arrays.deepToString(searchStrings) : "null";
                 logger.error("Exception searching for string " + searchString + " in searcher");
-                logger.debug(searcher.toString(), exception);
+                logger.debug(searcher, exception);
             }
             // We never want to return a null result set, never
             if (results == null) {

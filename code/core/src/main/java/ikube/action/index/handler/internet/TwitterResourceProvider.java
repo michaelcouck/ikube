@@ -48,10 +48,10 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
      * @param indexableTweets the configuration for the Twitter account, importantly the OAuth login details
      */
     TwitterResourceProvider(final IndexableTweets indexableTweets) throws IOException {
-        IndexContext indexContext = (IndexContext) indexableTweets.getParent();
-        clones = indexableTweets.getClones();
         stack = new Stack<>();
         tweets = new Stack<>();
+        clones = indexableTweets.getClones();
+        IndexContext indexContext = (IndexContext) indexableTweets.getParent();
         persistTweets = indexableTweets.isPersistTweets();
         tweetsDirectory = getOrCreateDirectory(new File(indexContext.getIndexDirectoryPath(), "tweets"));
         TwitterTemplate twitterTemplate = new TwitterTemplate( //
@@ -101,7 +101,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
     public synchronized void onTweet(final Tweet tweet) {
         if (tweets.size() < STACK_SIZE) {
             if (tweets.size() % 1000 == 0) {
-                logger.debug("Tweets : " + tweets.size());
+                logger.info("Tweets : " + tweets.size());
             }
             tweets.push(tweet);
             if (this.clones > 0) {
@@ -120,7 +120,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
      */
     @Override
     public void onLimit(final int numberOfLimitedTweets) {
-        logger.debug("Tweets limited : " + numberOfLimitedTweets);
+        logger.warn("Tweets limited : " + numberOfLimitedTweets);
     }
 
     /**
@@ -135,7 +135,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
      */
     @Override
     public void onWarning(final StreamWarningEvent warnEvent) {
-        logger.debug("Tweet warning : " + warnEvent.getCode());
+        logger.warn("Tweet warning : " + warnEvent.getCode());
     }
 
     /**
@@ -149,6 +149,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
         if (!persistTweets) {
             return;
         }
+        logger.info("Persisting tweets : ");
         Collections.addAll(stack, tweets);
         if (stack.size() > STACK_SIZE) {
             try {

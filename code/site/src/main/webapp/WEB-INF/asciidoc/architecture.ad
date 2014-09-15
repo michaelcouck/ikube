@@ -1,0 +1,20 @@
+pass:[<script src="analytics.js" type="text/javascript"></script>]
+
+=== Architecture
+
+==== Grid
+===== Distributed logic
+
+==== Clustering
+===== Aggregate data for giu
+===== Cluster synchronization and job distribution
+
+==== Services
+==== GUI
+==== Scheduling
+image:images/scheduling-sequence-diagram.png["Scheduling sequence diagram", height=650, width=850]
+==== Analytics
+==== Indexing
+==== Combined analytics and search
+==== Persistence/grid
+

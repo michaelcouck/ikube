@@ -5,19 +5,19 @@ import org.apache.commons.lang.StringUtils;
 import java.util.Arrays;
 
 /**
- * General utilities for strings that are not available in the general string classes from Apache or Spring.
+ * Utilities for strings that are not available in the general string classes from Apache or Spring.
  *
  * @author Michael Couck
  * @version 01.00
- * @since 10.01.2012
+ * @since 10-01-2012
  */
 public final class StringUtilities {
 
-    private static final char SPACE = ' ';
-    private static final char[] exclusions = {'.', ',', ';', ':', '?', '!', '\'', '-'};
+    public static final char SPACE = ' ';
+    public static final char[] EXCLUSIONS = {'.', ',', ';', ':', '?', '!', '\'', '-'};
 
     static {
-        Arrays.sort(exclusions);
+        Arrays.sort(EXCLUSIONS);
     }
 
     /**
@@ -74,6 +74,14 @@ public final class StringUtilities {
         return (before && !dot) || (before && dot && after);
     }
 
+    /**
+     * This method strips all the characters out of the target string that are specified in the parameter list. For example
+     * the string 'Hello! World!' stripped of '!' will become, 'Hello World', having had the exclamation marks removed.
+     *
+     * @param string the string to strip of characters
+     * @param strip the characters to strip from teh string
+     * @return the stripped string, sans the characters for strip
+     */
     public static String strip(final String string, final String strip) {
         char[] chars = string.toCharArray();
         char[] strippedChars = new char[chars.length];
@@ -112,7 +120,7 @@ public final class StringUtilities {
      * @return the cleaned string, all alpha numeric characters
      */
     public static String stripToAlphaNumeric(final String content) {
-        return stripToAlphaNumeric(content, exclusions);
+        return stripToAlphaNumeric(content, EXCLUSIONS);
     }
 
     public static String stripToAlphaNumeric(final String content, final char... exclusions) {

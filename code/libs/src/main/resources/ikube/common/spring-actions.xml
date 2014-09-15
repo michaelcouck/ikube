@@ -25,7 +25,7 @@
         <ref bean="ikube.action.Restore"/>
         <ref bean="ikube.action.Index"/>
         <ref bean="ikube.action.Open"/>
-        <ref bean="ikube.action.Reopen"/>
+        <!--<ref bean="ikube.action.Reopen"/>-->
         <ref bean="ikube.action.Delete"/>
         <ref bean="ikube.action.Backup"/>
         <ref bean="ikube.action.Close"  />
@@ -100,20 +100,20 @@
             </util:list>
         </property>
     </bean>
-    <bean
-        id="ikube.action.Reopen"
-        class="ikube.action.Reopen"
-        property:ruleExpression="
-		    IsIndexDelta &#38;&#38; IsThisIndexCreated &#38;&#38; !IsIndexCorrupt"
-        property:requiresClusterLock="false">
-        <property name="rules">
-            <util:list>
-                <ref local="ikube.action.rule.IsIndexDelta"/>
-                <ref local="ikube.action.rule.IsThisIndexCreated"/>
-                <ref local="ikube.action.rule.IsIndexCorrupt"/>
-            </util:list>
-        </property>
-    </bean>
+    <!--<bean-->
+        <!--id="ikube.action.Reopen"-->
+        <!--class="ikube.action.Reopen"-->
+        <!--property:ruleExpression="-->
+		    <!--IsIndexDelta &#38;&#38; IsThisIndexCreated &#38;&#38; !IsIndexCorrupt"-->
+        <!--property:requiresClusterLock="false">-->
+        <!--<property name="rules">-->
+            <!--<util:list>-->
+                <!--<ref local="ikube.action.rule.IsIndexDelta"/>-->
+                <!--<ref local="ikube.action.rule.IsThisIndexCreated"/>-->
+                <!--<ref local="ikube.action.rule.IsIndexCorrupt"/>-->
+            <!--</util:list>-->
+        <!--</property>-->
+    <!--</bean>-->
     <bean
         id="ikube.action.Index"
         class="ikube.action.Index"

@@ -69,6 +69,8 @@ public class Search extends Distributed {
     private int maxResults;
     @Column
     private int distance;
+    @Column
+    private boolean stripToAlphaNumeric;
 
     @Column
     private int count;
@@ -268,4 +270,11 @@ public class Search extends Distributed {
         return ToStringBuilder.reflectionToString(this);
     }
 
+    public boolean isStripToAlphaNumeric() {
+        return stripToAlphaNumeric;
+    }
+
+    public void setStripToAlphaNumeric(final boolean stripToAlphaNumeric) {
+        this.stripToAlphaNumeric = stripToAlphaNumeric;
+    }
 }

@@ -244,6 +244,12 @@ public class SearcherService implements ISearcherService {
                 return search;
             }
             String[] searchStrings = search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]);
+            if (search.isStripToAlphaNumeric()) {
+                // Strip unwanted characters from the input string
+                for (int i = 0; i < searchStrings.length; i++) {
+                    searchStrings[i] = StringUtilities.stripToAlphaNumeric(searchStrings[i], '*', '~');
+                }
+            }
             String[] searchFields = search.getSearchFields().toArray(new String[search.getSearchFields().size()]);
 
             String[] typeFields;
@@ -478,7 +484,7 @@ public class SearcherService implements ISearcherService {
     protected <T> T getSearch(final Class<?> klass, final String indexName) throws Exception {
         T search;
         IndexContext indexContext = monitorService.getIndexContext(indexName);
-        if (indexContext == null) {
+        if (indexContext == null || indexContext.getMultiSearcher() == null) {
             LOGGER.warn("No index context : " + indexName);
             return null;
         }

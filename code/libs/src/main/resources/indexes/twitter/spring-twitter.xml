@@ -120,7 +120,6 @@
         lazy-init="true"/>
 
     <!-- These are the language classifiers, they are trained by the Twitter data -->
-    <!-- English -->
     <bean
         name="sentiment-smo-twitter"
         class="ikube.model.Context"
@@ -144,30 +143,18 @@
         </property>
         <property name="fileNames">
             <list>
-                <!-- English -->
-                <value>sentiment-en.arff</value>
-                <!-- Spanish -->
-                <value>sentiment-es.arff</value>
-                <!-- Japanese -->
-                <value>sentiment-jp.arff</value>
-                <!-- Chinese -->
-                <value>sentiment-cn.arff</value>
-                <!-- Dutch -->
-                <value>sentiment-nl.arff</value>
-                <!-- French -->
-                <value>sentiment-fr.arff</value>
-                <!-- German -->
-                <value>sentiment-de.arff</value>
-                <!-- Swedish -->
-                <value>sentiment-sv.arff</value>
-                <!-- Thai -->
-                <value>sentiment-th.arff</value>
-                <!-- Arabic -->
-                <value>sentiment-ar.arff</value>
-                <!-- Turkish -->
-                <value>sentiment-tr.arff</value>
-                <!-- Russian -->
-                <value>sentiment-ru.arff</value>
+                <value>sentiment-en.arff</value><!-- English -->
+                <value>sentiment-es.arff</value><!-- Spanish -->
+                <value>sentiment-jp.arff</value><!-- Japanese -->
+                <value>sentiment-cn.arff</value><!-- Chinese -->
+                <value>sentiment-nl.arff</value><!-- Dutch -->
+                <value>sentiment-fr.arff</value><!-- French -->
+                <value>sentiment-de.arff</value><!-- German -->
+                <value>sentiment-sv.arff</value><!-- Swedish -->
+                <value>sentiment-th.arff</value><!-- Thai -->
+                <value>sentiment-ar.arff</value><!-- Arabic -->
+                <value>sentiment-tr.arff</value><!-- Turkish -->
+                <value>sentiment-ru.arff</value><!-- Russian -->
             </list>
         </property>
         <property name="filters">
