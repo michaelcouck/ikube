@@ -25,6 +25,11 @@ public class SpellingChecker {
 
     private static SpellingChecker INSTANCE;
 
+    /**
+     * This is one of the fex mandatory indexes that the system requires. It consists of lists of words, in
+     * different languages, in files, in a designated folder int he configuration structure. These files are then
+     * used to create an index, against the searches are executed for spelling and autocompletion.
+     */
     @Autowired
     @Qualifier(value = IConstants.AUTOCOMPLETE)
     private IndexContext indexContext;
@@ -43,7 +48,7 @@ public class SpellingChecker {
     }
 
     /**
-     * The constructor sets the system wide statis spelling checker.
+     * The constructor sets the system wide static spelling checker.
      */
     public SpellingChecker() {
         SpellingChecker.INSTANCE = this;
@@ -87,7 +92,7 @@ public class SpellingChecker {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
         return null;

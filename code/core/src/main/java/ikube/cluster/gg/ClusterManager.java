@@ -6,10 +6,12 @@ import ikube.model.Action;
 import ikube.model.Server;
 import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.UriUtilities;
+import org.gridgain.client.impl.connection.GridClientTopology;
 import org.gridgain.grid.*;
 import org.gridgain.grid.cache.GridCache;
 import org.gridgain.grid.compute.*;
 import org.gridgain.grid.messaging.GridMessaging;
+import org.gridgain.grid.resources.GridTaskContinuousMapperResource;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
@@ -30,8 +32,9 @@ public class ClusterManager extends AClusterManager {
 
     private Grid grid;
 
-    public void initialize() {
+    public void initialize() throws GridException {
         ip = UriUtilities.getIp();
+        GridGain.start();
         grid = GridGain.grid(IConstants.IKUBE);
         Collection<GridNode> gridNodes = grid.nodes();
         for (final GridNode gridNode : gridNodes) {
@@ -46,8 +49,8 @@ public class ClusterManager extends AClusterManager {
     @SuppressWarnings({"unchecked", "ConstantConditions"})
     public synchronized boolean lock(final String name) {
         try {
-            GridCache<String, String> gridCache = grid.cache(IConstants.IKUBE);
-            return gridCache.lock(IConstants.IKUBE, 250);
+            GridCache<String, String> gridCache = grid.cache(name);
+            return gridCache.lock(name, 250);
         } catch (final GridException e) {
             throw new RuntimeException(e);
         } finally {
@@ -209,29 +212,53 @@ public class ClusterManager extends AClusterManager {
      * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings("unchecked")
     public <T> Future<T> sendTaskTo(final Server server, final Callable<T> callable) {
         GridCompute gridCompute = grid.compute();
         Collection<GridNode> gridNodes = grid.nodes();
-        GridNode gridNode = gridNodes.iterator().next();
-//        gridCompute.execute(new GridComputeTask<Object, Object>() {
-//            @Nullable
-//            @Override
-//            public Map<? extends GridComputeJob, GridNode> map(final List<GridNode> subgrid, @Nullable final Object arg) throws GridException {
-//                return null;
-//            }
-//
-//            @Override
-//            public GridComputeJobResultPolicy result(final GridComputeJobResult res, final List<GridComputeJobResult> rcvd) throws GridException {
-//                return null;
-//            }
-//
-//            @Nullable
-//            @Override
-//            public Object reduce(final List<GridComputeJobResult> results) throws GridException {
-//                return null;
-//            }
-//        });
-        throw new RuntimeException("Couldn't find member with address : " + server.getAddress());
+
+        final GridComputeJob gridComputeJob = new GridComputeJob() {
+
+            @Override
+            public void cancel() {
+            }
+
+            @Nullable
+            @Override
+            public Object execute() throws GridException {
+                try {
+                    return callable.call();
+                } catch (final Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+        final GridNode gridNode = gridNodes.iterator().next();
+
+        GridComputeTask gridComputeTask = new GridComputeTask() {
+
+            @GridTaskContinuousMapperResource
+            private GridComputeTaskContinuousMapper gridComputeTaskContinuousMapper;
+
+            @Nullable
+            @Override
+            public Map<? extends GridComputeJob, GridNode> map(final List subgrid, @Nullable final Object arg) throws GridException {
+                gridComputeTaskContinuousMapper.send(gridComputeJob, gridNode);
+                return null;
+            }
+
+            @Override
+            public GridComputeJobResultPolicy result(final GridComputeJobResult res, final List rcvd) throws GridException {
+                return null;
+            }
+
+            @Nullable
+            @Override
+            public Object reduce(final List list) throws GridException {
+                return null;
+            }
+        };
+        return (Future<T>) gridCompute.execute(gridComputeTask, null);
     }
 
     /**

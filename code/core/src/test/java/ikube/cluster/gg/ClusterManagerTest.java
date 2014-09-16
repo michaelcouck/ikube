@@ -1,6 +1,7 @@
 package ikube.cluster.gg;
 
 import ikube.AbstractTest;
+import ikube.IConstants;
 import ikube.model.Server;
 import mockit.MockClass;
 import org.gridgain.grid.Grid;
@@ -12,7 +13,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
@@ -26,18 +26,16 @@ import org.mockito.stubbing.Answer;
 @Ignore
 public class ClusterManagerTest extends AbstractTest {
 
-    @Mock
-    private Grid grid;
-    @Mock
+    @Spy
     private Server server;
     @Spy
     @InjectMocks
     private ClusterManager clusterManager;
 
     @Before
-    public void before() {
+    public void before() throws Exception {
         // Mockit.setUpMock(GridGainMock.class);
-        // clusterManager.initialize();
+        clusterManager.initialize();
     }
 
     @After
@@ -47,7 +45,7 @@ public class ClusterManagerTest extends AbstractTest {
 
     @Test
     public void lock() {
-        clusterManager.lock(null);
+        clusterManager.lock(IConstants.IKUBE);
     }
 
     @Test

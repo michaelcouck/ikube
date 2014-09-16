@@ -505,7 +505,7 @@ public class SearcherService implements ISearcherService {
      * the search object, updating the count using the {@link ikube.database.IDataBase}
      * JPA persistence manager.
      */
-    protected /* synchronized */ void persistSearch(final Search search) {
+    protected synchronized void persistSearch(final Search search) {
         final String indexName = search.getIndexName();
         final String[] searchStrings = search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]);
         final ArrayList<HashMap<String, String>> results = search.getSearchResults();

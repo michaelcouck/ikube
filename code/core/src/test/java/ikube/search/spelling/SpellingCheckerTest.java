@@ -42,7 +42,7 @@ public class SpellingCheckerTest extends AbstractTest {
 
     @Before
     public void before() throws Exception {
-        Mockit.tearDownMocks();
+        Mockit.tearDownMocks(SpellingChecker.class);
         Mockit.setUpMocks(SearchMock.class);
         spellingChecker = new SpellingChecker();
         Deencapsulation.setField(spellingChecker, "indexContext", indexContext);

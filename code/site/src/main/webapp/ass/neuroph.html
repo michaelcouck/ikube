@@ -137,18 +137,24 @@ network. The options provided are Neuroph specific, please refer to the Neuroph 
 in Neuroph. For supervised learning the output vector is required, but for unsupervised, this may not
 be present. Each invocation of this method will add one more row to the training data set.</p>
 </div>
-<div class="paragraph">
-<p>Post: <a href="http://ikube.be/ikube/service/analyzer/train">http://ikube.be/ikube/service/analyzer/train</a>
-Body: {
-         "context":"multi-layer-perceptron",
-         "input":"1,0,1",
-         "output":"1,0",
-         "duration":0.0,
-         "sizeForClassOrCluster":0,
-         "addAlgorithmOutput":false,
-         "distributed":false,
-         "id":0
-      }</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Post: <a href="http://ikube.be/ikube/service/analyzer/train">http://ikube.be/ikube/service/analyzer/train</a></p>
+</li>
+<li>
+<p>Body: {
+   "context":"multi-layer-perceptron",
+   "input":"1,0,1",
+   "output":"1,0",
+   "duration":0.0,
+   "sizeForClassOrCluster":0,
+   "addAlgorithmOutput":false,
+   "distributed":false,
+   "id":0
+}</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect3">
@@ -158,16 +164,22 @@ Body: {
 is potentially a very cpu intensive and long process, lasting several hours, even days depending on the size
 of the input/training data, and various other factors.</p>
 </div>
-<div class="paragraph">
-<p>Post: <a href="http://ikube.be/ikube/service/analyzer/build">http://ikube.be/ikube/service/analyzer/build</a>
-Body: {
-         "context":"multi-layer-perceptron",
-         "duration":0.0,
-         "sizeForClassOrCluster":0,
-         "addAlgorithmOutput":false,
-         "distributed":false,
-         "id":0
-      }</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Post: <a href="http://ikube.be/ikube/service/analyzer/build">http://ikube.be/ikube/service/analyzer/build</a></p>
+</li>
+<li>
+<p>Body: {
+   "context":"multi-layer-perceptron",
+   "duration":0.0,
+   "sizeForClassOrCluster":0,
+   "addAlgorithmOutput":false,
+   "distributed":false,
+   "id":0
+}</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect3">
@@ -177,17 +189,23 @@ Body: {
 will put the data specified in the input field in the analysis object, through the neural network,
 and return the result as the output, which will be the output of the network.</p>
 </div>
-<div class="paragraph">
-<p>Post: <a href="http://ikube.be/ikube/service/analyzer/analyze">http://ikube.be/ikube/service/analyzer/analyze</a>
-Body: {
-         "context":"multi-layer-perceptron",
-         "input":"0,1,0",
-         "duration":0.0,
-         "sizeForClassOrCluster":0,
-         "addAlgorithmOutput":false,
-         "distributed":false,
-         "id":0
-      }</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Post: <a href="http://ikube.be/ikube/service/analyzer/analyze">http://ikube.be/ikube/service/analyzer/analyze</a></p>
+</li>
+<li>
+<p>Body: {
+   "context":"multi-layer-perceptron",
+   "input":"0,1,0",
+   "duration":0.0,
+   "sizeForClassOrCluster":0,
+   "addAlgorithmOutput":false,
+   "distributed":false,
+   "id":0
+}</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect3">
@@ -195,33 +213,39 @@ Body: {
 <div class="paragraph">
 <p>This service will destroy the network, removing it from the system, and releasing the resources.</p>
 </div>
-<div class="paragraph">
-<p>Post: <a href="http://ikube.be/ikube/service/analyzer/destroy">http://ikube.be/ikube/service/analyzer/destroy</a>
-Body: {
-         "name":"multi-layer-perceptron",
-         "analyzer":"ikube.analytics.neuroph.NeurophAnalyzer",
-         "algorithms":[
-            "org.neuroph.nnet.MultiLayerPerceptron"
-         ],
-         "options":[
-            "-label",
-            "label",
-            "-outputLabels",
-            "[one, two, three]",
-            "-inputNeuronsCount",
-            "3",
-            "-hiddenNeuronsCount",
-            "3",
-            "-outputNeuronsCount",
-            "2",
-            "-neuronsInLayers",
-            "[3, 3, 2]",
-            "TANH"
-         ],
-         "persisted":false,
-         "built":false,
-         "id":0
-      }</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Post: <a href="http://ikube.be/ikube/service/analyzer/destroy">http://ikube.be/ikube/service/analyzer/destroy</a></p>
+</li>
+<li>
+<p>Body: {
+   "name":"multi-layer-perceptron",
+   "analyzer":"ikube.analytics.neuroph.NeurophAnalyzer",
+   "algorithms":[
+      "org.neuroph.nnet.MultiLayerPerceptron"
+   ],
+   "options":[
+      "-label",
+      "label",
+      "-outputLabels",
+      "[one, two, three]",
+      "-inputNeuronsCount",
+      "3",
+      "-hiddenNeuronsCount",
+      "3",
+      "-outputNeuronsCount",
+      "2",
+      "-neuronsInLayers",
+      "[3, 3, 2]",
+      "TANH"
+   ],
+   "persisted":false,
+   "built":false,
+   "id":0
+}</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -230,7 +254,7 @@ Body: {
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-09-10 16:41:57 CEST
+Last updated 2014-09-14 11:55:01 CEST
 </div>
 </div>
 </body>
