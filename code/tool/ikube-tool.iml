@@ -6,7 +6,6 @@
         <setting name="validation-enabled" value="true" />
         <setting name="provider-name" value="" />
         <datasource-mapping>
-          <factory-entry name="${ikube.persistenceUnit}" />
           <factory-entry name="IkubePersistenceUnitDb2" value="76aa5d29-548e-4bca-b7ef-b6714fad0ad0" />
           <factory-entry name="IkubePersistenceUnitH2" value="bc4e839a-fc6b-4a6e-a3ec-8114a525b750" />
           <factory-entry name="IkubePersistenceUnitOracle" value="05f2a302-26e3-4199-b06c-9a12afb2c235" />

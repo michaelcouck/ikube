@@ -1,7 +1,7 @@
 package ikube.search;
 
+import ikube.Client;
 import ikube.IConstants;
-import ikube.Load;
 import ikube.model.Search;
 import ikube.toolkit.HttpClientUtilities;
 import ikube.toolkit.SerializationUtilities;
@@ -22,10 +22,10 @@ import java.util.concurrent.Future;
  * performance can be checked visually to verify that there are no bottlenecks in the search
  * logic.
  * <p/>
- *
+ * <p/>
  * <pre>
- *     java -jar ikube-tool-5.1.0.jar ikube.search.SearchLoad -u url -p 9090 -s search-string -d index-name -f field-name
- *     java -jar ikube-tool-5.1.0.jar ikube.search.SearchLoad -u ikube.be -p 8080 -s passwords -d geospatial -f contents
+ *     java -jar ikube-tool-5.1.0.jar ikube.search.SearchLoadClient -u url -p 9090 -s search-string -d index-name -f field-name
+ *     java -jar ikube-tool-5.1.0.jar ikube.search.SearchLoadClient -u ikube.be -p 8080 -s passwords -d geospatial -f contents
  * </pre>
  *
  * @author Michael Couck
@@ -33,9 +33,9 @@ import java.util.concurrent.Future;
  * @since 06-04-2014
  */
 @SuppressWarnings("FieldCanBeLocal")
-public class SearchLoad extends Load {
+public class SearchLoadClient extends Client {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SearchLoad.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SearchLoadClient.class);
 
     @Option(name = "-t")
     int threads = 5;
@@ -56,7 +56,7 @@ public class SearchLoad extends Load {
 
 
     public static void main(final String[] args) throws Exception {
-        new SearchLoad().doMain(args);
+        new SearchLoadClient().doMain(args);
     }
 
     @SuppressWarnings("unchecked")
@@ -79,7 +79,7 @@ public class SearchLoad extends Load {
         search.setSearchFields(Arrays.asList(fieldName));
         search.setTypeFields(Arrays.asList("string"));
 
-        final String url = getUrl(this.url, this.port, "/ikube/service/search/json");
+        final String url = getUrl(this.url, this.port, "search", "json");
 
         List<Future<Object>> futures = new ArrayList<>();
         int count = 0;

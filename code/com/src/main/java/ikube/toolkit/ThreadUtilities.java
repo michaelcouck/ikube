@@ -19,6 +19,16 @@ public final class ThreadUtilities {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ThreadUtilities.class);
 
+    private static Thread SHUTDOWN_THREAD = new Thread() {
+        public void run() {
+            try {
+                ThreadUtilities.destroy();
+            } catch(final Exception e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
     /**
      * Executes the 'threads' and returns a future.
      */
@@ -215,6 +225,7 @@ public final class ThreadUtilities {
         EXECUTOR_SERVICE = Executors.newCachedThreadPool();
         FUTURES = Collections.synchronizedMap(new HashMap<String, List<Future<?>>>());
         FORK_JOIN_POOLS = Collections.synchronizedMap(new HashMap<String, ForkJoinPool>());
+        Runtime.getRuntime().addShutdownHook(SHUTDOWN_THREAD);
     }
 
     public static synchronized ForkJoinPool cancelForkJoinPool(final String name) {

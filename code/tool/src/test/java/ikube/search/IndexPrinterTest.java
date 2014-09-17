@@ -1,8 +1,9 @@
-package ikube.data;
+package ikube.search;
 
 import ikube.AbstractTest;
 import ikube.action.index.analyzer.NgramAnalyzer;
 import ikube.model.IndexContext;
+import ikube.search.IndexPrinter;
 import ikube.toolkit.FileUtilities;
 import mockit.Deencapsulation;
 import org.junit.After;

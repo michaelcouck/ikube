@@ -32,9 +32,9 @@ public class SearchLoadTest extends AbstractTest {
 
     @Test
     public void main() throws Exception {
-        SearchLoad searchLoad = new SearchLoad();
+        SearchLoadClient searchLoad = new SearchLoadClient();
         // We just execute this because there is nothing to test in the results
-        SearchLoad.main(new String[]{});
+        SearchLoadClient.main(new String[]{});
         logger.error("Executions : " + EXECUTIONS);
         Assert.assertTrue(searchLoad.iterations < EXECUTIONS);
     }
