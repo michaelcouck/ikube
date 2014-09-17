@@ -30,6 +30,20 @@ import static org.mockito.Mockito.when;
  */
 public class TwitterHandlerTest extends AbstractTest {
 
+    @MockClass(realClass = TwitterResourceProvider.class)
+    public static class TwitterResourceProviderMock {
+
+        @Mock
+        @SuppressWarnings({"unused"})
+        public void $init(final IndexableTweets indexableTweets) throws IOException {
+        }
+
+        @Mock
+        public Tweet getResource() {
+            return mock(Tweet.class);
+        }
+    }
+
     @Spy
     @InjectMocks
     private TwitterHandler twitterHandler;
@@ -69,25 +83,6 @@ public class TwitterHandlerTest extends AbstractTest {
             }
         }, "Twitter handler performance : ", 1000, Boolean.TRUE);
         assertTrue(executionsPerSecond > 1000);
-    }
-
-    @Test
-    public void handleResourceLeak() {
-
-    }
-
-    @MockClass(realClass = TwitterResourceProvider.class)
-    public static class TwitterResourceProviderMock {
-
-        @Mock
-        @SuppressWarnings({"unused"})
-        public void $init(final IndexableTweets indexableTweets) throws IOException {
-        }
-
-        @Mock
-        public Tweet getResource() {
-            return mock(Tweet.class);
-        }
     }
 
 }

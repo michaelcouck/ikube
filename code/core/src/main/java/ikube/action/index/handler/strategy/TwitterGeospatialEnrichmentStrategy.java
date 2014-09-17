@@ -25,6 +25,9 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import static ikube.action.index.IndexManager.addNumericField;
+import static ikube.action.index.IndexManager.addStringField;
+
 /**
  * TODO : Document me.
  *
@@ -86,9 +89,9 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
             }
         }
         if (tweetLocation != null) {
-            IndexManager.addStringField(locationField, tweetLocation.getName(), indexableTweets, document);
-            IndexManager.addNumericField(IConstants.LATITUDE, Double.toString(tweetLocation.getLatitude()), document, Boolean.TRUE, indexableTweets.getBoost());
-            IndexManager.addNumericField(IConstants.LONGITUDE, Double.toString(tweetLocation.getLongitude()), document, Boolean.TRUE, indexableTweets.getBoost());
+            addStringField(locationField, tweetLocation.getName(), indexableTweets, document);
+            addNumericField(IConstants.LATITUDE, Double.toString(tweetLocation.getLatitude()), document, Boolean.TRUE, indexableTweets.getBoost());
+            addNumericField(IConstants.LONGITUDE, Double.toString(tweetLocation.getLongitude()), document, Boolean.TRUE, indexableTweets.getBoost());
             addSpatialLocationFields(tweetLocation, document);
         }
     }

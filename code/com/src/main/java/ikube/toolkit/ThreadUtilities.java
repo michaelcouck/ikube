@@ -310,6 +310,7 @@ public final class ThreadUtilities {
         FUTURES = null;
         FORK_JOIN_POOLS = null;
         EXECUTOR_SERVICE = null;
+        Runtime.getRuntime().removeShutdownHook(SHUTDOWN_THREAD);
     }
 
     public static boolean isInitialized() {

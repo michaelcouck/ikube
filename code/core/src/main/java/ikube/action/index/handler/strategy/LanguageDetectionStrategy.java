@@ -40,11 +40,7 @@ public final class LanguageDetectionStrategy extends AStrategy {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean aroundProcess(
-        final IndexContext indexContext,
-        final Indexable indexable,
-        final Document document,
-        final Object resource)
+	public boolean aroundProcess(final IndexContext indexContext, final Indexable indexable, final Document document, final Object resource)
 	  throws Exception {
 		// Concatenate the data in the indexable
 		if (StringUtils.isEmpty(document.get(IConstants.LANGUAGE))) {
@@ -82,6 +78,7 @@ public final class LanguageDetectionStrategy extends AStrategy {
 	final String getContent(final Indexable indexable, final StringBuilder builder) {
 		if (indexable.getContent() != null) {
 			builder.append(indexable.getContent());
+			builder.append(IConstants.SPACE);
 		}
 		if (indexable.getChildren() != null) {
 			for (final Indexable child : indexable.getChildren()) {
