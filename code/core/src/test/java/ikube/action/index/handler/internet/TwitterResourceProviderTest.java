@@ -1,12 +1,8 @@
 package ikube.action.index.handler.internet;
 
 import ikube.AbstractTest;
-import ikube.IConstants;
 import ikube.model.IndexableTweets;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.ObjectToolkit;
 import ikube.toolkit.PerformanceTester;
-import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mockit;
@@ -17,7 +13,6 @@ import org.springframework.social.twitter.api.StreamingOperations;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.impl.TwitterTemplate;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -61,7 +56,6 @@ public class TwitterResourceProviderTest extends AbstractTest {
 	@After
 	public void after() {
 		Mockit.tearDownMocks(TwitterTemplate.class);
-		FileUtilities.deleteFile(new File(IConstants.ANALYTICS_DIRECTORY, "tweets"));
 	}
 
 	@Test
@@ -71,28 +65,12 @@ public class TwitterResourceProviderTest extends AbstractTest {
 		assertNotNull(returnTweet);
 		// Now we'll deplete the stream and see that we always get a tweet
 		PerformanceTester.execute(new PerformanceTester.APerform() {
-			public void execute() {
-				twitterResourceProvider.setResources(Arrays.asList(tweet));
-				Tweet tweet = twitterResourceProvider.getResource();
-				assertNotNull(tweet);
-			}
-		}, "Depletion of the tweets ", 1000, true);
-	}
-
-	@Test
-	public void persistResources() {
-		int stackSize = 100;
-		Deencapsulation.setField(TwitterResourceProvider.class, "STACK_SIZE", stackSize);
-		Deencapsulation.setField(twitterResourceProvider, "persistTweets", Boolean.TRUE);
-		Tweet[] tweets = new Tweet[stackSize * 2];
-		for (int i = 0; i < tweets.length; i++) {
-			Tweet tweet = (Tweet) ObjectToolkit.getObject(Tweet.class);
-			ObjectToolkit.populateFields(tweet, Boolean.TRUE, 10);
-			tweets[i] = tweet;
-		}
-		twitterResourceProvider.persistResources(tweets);
-		File tweetFile = FileUtilities.findFileRecursively(new File("./indexes"), ".json");
-		assertNotNull(tweetFile);
+            public void execute() {
+                twitterResourceProvider.setResources(Arrays.asList(tweet));
+                Tweet tweet = twitterResourceProvider.getResource();
+                assertNotNull(tweet);
+            }
+        }, "Depletion of the tweets ", 1000, true);
 	}
 
 }

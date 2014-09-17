@@ -23,7 +23,8 @@ import java.util.Stack;
  */
 class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListener {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static Logger LOGGER = LoggerFactory.getLogger(TwitterResourceProvider.class);
+    
     private int clones;
     private Stack<Tweet> tweets;
 
@@ -53,12 +54,12 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
     public synchronized Tweet getResource() {
         while (tweets.isEmpty()) {
             try {
-                logger.debug("Waiting for tweets : ");
+                LOGGER.debug("Waiting for tweets : ");
                 wait(10000);
             } catch (final InterruptedException e) {
-                logger.error(null, e);
+                LOGGER.error(null, e);
             } catch (final Exception e) {
-                logger.error(null, e);
+                LOGGER.error(null, e);
                 return null;
             }
         }
@@ -82,7 +83,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
     public synchronized void onTweet(final Tweet tweet) {
         if (tweets.size() < IConstants.ONE_THOUSAND) {
             if (tweets.size() % 1000 == 0) {
-                logger.info("Tweets : " + tweets.size());
+                LOGGER.info("Tweets : " + tweets.size());
             }
             tweets.push(tweet);
             if (this.clones > 0) {
@@ -100,7 +101,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
      */
     @Override
     public void onLimit(final int numberOfLimitedTweets) {
-        logger.warn("Tweets limited : " + numberOfLimitedTweets);
+        LOGGER.warn("Tweets limited : " + numberOfLimitedTweets);
     }
 
     /**
@@ -115,7 +116,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
      */
     @Override
     public void onWarning(final StreamWarningEvent warnEvent) {
-        logger.warn("Tweet warning : " + warnEvent.getCode());
+        LOGGER.warn("Tweet warning : " + warnEvent.getCode());
     }
 
 }

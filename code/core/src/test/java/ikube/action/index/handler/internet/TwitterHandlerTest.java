@@ -4,13 +4,14 @@ import ikube.AbstractTest;
 import ikube.model.IndexableTweets;
 import ikube.toolkit.ObjectToolkit;
 import ikube.toolkit.PerformanceTester;
-import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mockit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Spy;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.TwitterProfile;
 
@@ -29,61 +30,64 @@ import static org.mockito.Mockito.when;
  */
 public class TwitterHandlerTest extends AbstractTest {
 
-	@MockClass(realClass = TwitterResourceProvider.class)
-	public static class TwitterResourceProviderMock {
+    @Spy
+    @InjectMocks
+    private TwitterHandler twitterHandler;
+    @org.mockito.Mock
+    private IndexableTweets indexableTweets;
+    @org.mockito.Mock
+    private TwitterResourceHandler twitterResourceHandler;
 
-		@Mock
-		@SuppressWarnings({ "unused" })
-		public void $init(final IndexableTweets indexableTweets) throws IOException {
-		}
+    @Before
+    public void before() throws Exception {
+        Mockit.setUpMocks(TwitterResourceProviderMock.class);
+        when(indexableTweets.getThreads()).thenReturn(0);
+    }
 
-		@Mock
-		public Tweet getResource() {
-			return mock(Tweet.class);
-		}
-	}
+    @After
+    public void after() {
+        Mockit.tearDownMocks(TwitterResourceProviderMock.class);
+    }
 
-	private TwitterHandler twitterHandler;
-	private IndexableTweets indexableTweets;
+    @Test
+    public void handleIndexable() throws Exception {
+        ForkJoinTask<?> forkJoinTask = twitterHandler.handleIndexableForked(indexContext, indexableTweets);
+        assertNotNull(forkJoinTask);
+    }
 
-	@Before
-	public void before() throws Exception {
-		Mockit.setUpMocks(TwitterResourceProviderMock.class);
+    @Test
+    public void handleResource() {
+        final Tweet tweet = (Tweet) ObjectToolkit.getObject(Tweet.class);
+        ObjectToolkit.populateFields(tweet, Boolean.TRUE, 10);
+        TwitterProfile twitterProfile = (TwitterProfile) ObjectToolkit.getObject(TwitterProfile.class);
+        ObjectToolkit.populateFields(twitterProfile, Boolean.TRUE, 10);
+        tweet.setUser(twitterProfile);
 
-		twitterHandler = new TwitterHandler();
-		indexableTweets = mock(IndexableTweets.class);
-		TwitterResourceHandler twitterResourceHandler = mock(TwitterResourceHandler.class);
+        double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+            public void execute() throws Throwable {
+                twitterHandler.handleResource(indexContext, indexableTweets, tweet);
+            }
+        }, "Twitter handler performance : ", 1000, Boolean.TRUE);
+        assertTrue(executionsPerSecond > 1000);
+    }
 
-		when(indexableTweets.getThreads()).thenReturn(0);
+    @Test
+    public void handleResourceLeak() {
 
-		Deencapsulation.setField(twitterHandler, "twitterResourceHandler", twitterResourceHandler);
-	}
+    }
 
-	@After
-	public void after() {
-		Mockit.tearDownMocks(TwitterResourceProviderMock.class);
-	}
+    @MockClass(realClass = TwitterResourceProvider.class)
+    public static class TwitterResourceProviderMock {
 
-	@Test
-	public void handleIndexable() throws Exception {
-		ForkJoinTask<?> forkJoinTask = twitterHandler.handleIndexableForked(indexContext, indexableTweets);
-		assertNotNull(forkJoinTask);
-	}
+        @Mock
+        @SuppressWarnings({"unused"})
+        public void $init(final IndexableTweets indexableTweets) throws IOException {
+        }
 
-	@Test
-	public void handleResource() {
-		final Tweet tweet = (Tweet) ObjectToolkit.getObject(Tweet.class);
-		ObjectToolkit.populateFields(tweet, Boolean.TRUE, 10);
-		TwitterProfile twitterProfile = (TwitterProfile) ObjectToolkit.getObject(TwitterProfile.class);
-		ObjectToolkit.populateFields(twitterProfile, Boolean.TRUE, 10);
-		tweet.setUser(twitterProfile);
-
-		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
-			public void execute() throws Throwable {
-				twitterHandler.handleResource(indexContext, indexableTweets, tweet);
-			}
-		}, "Twitter handler performance : ", 1000, Boolean.TRUE);
-		assertTrue(executionsPerSecond > 1000);
-	}
+        @Mock
+        public Tweet getResource() {
+            return mock(Tweet.class);
+        }
+    }
 
 }
