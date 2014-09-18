@@ -1,5 +1,7 @@
 package ikube.toolkit;
 
+import au.com.bytecode.opencsv.CSVReader;
+import au.com.bytecode.opencsv.CSVWriter;
 import ikube.AbstractTest;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
@@ -9,10 +11,10 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.AutoRetryHttpClient;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -222,6 +224,33 @@ public class FileUtilitiesTest extends AbstractTest {
         } finally {
             FileUtilities.deleteFile(directory);
         }
+    }
+
+    @Test
+    @Ignore
+    @SuppressWarnings("SuspiciousSystemArraycopy")
+    public void adHoc() throws Exception {
+        File inputFile = new File("/home/laptop/Workspace/ikube/code/tool/src/test/resources/data/stock.csv");
+        FileReader fileReader = new FileReader(inputFile);
+        CSVReader csvReader = new CSVReader(fileReader);
+        List<String[]> lines = csvReader.readAll();
+        Object[][] matrix = new Object[lines.size()][];
+        for (int i = 0; i < lines.size(); i++) {
+            String[] row = lines.get(i);
+            matrix[i] = row;
+        }
+        Object[][] invertedMatrix = MatrixUtilities.invertMatrix(matrix);
+        lines.clear();
+        for (final Object[] row : invertedMatrix) {
+            String[] converted = new String[row.length];
+            System.arraycopy(row, 0, converted, 0, converted.length);
+            lines.add(converted);
+        }
+
+        File outputFile = new File("/home/laptop/Workspace/ikube/code/tool/src/test/resources/data/stock-inverted.csv");
+        FileWriter fileWriter = new FileWriter(outputFile);
+        CSVWriter csvWriter = new CSVWriter(fileWriter, ',', ' ');
+        csvWriter.writeAll(lines);
     }
 
     private HttpClient getHttpClient() {

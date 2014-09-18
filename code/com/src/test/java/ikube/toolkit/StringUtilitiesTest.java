@@ -1,7 +1,7 @@
 package ikube.toolkit;
 
 import ikube.AbstractTest;
-import ikube.IConstants;
+import ikube.Constants;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
@@ -43,18 +43,18 @@ public class StringUtilitiesTest extends AbstractTest {
 
     @Test
     public void strip() {
-        String stripped = StringUtilities.strip("Michael Couck", IConstants.STRIP_CHARACTERS);
+        String stripped = StringUtilities.strip("Michael Couck", Constants.STRIP_CHARACTERS);
         assertEquals("Michael Couck", stripped);
-        stripped = StringUtilities.strip("Michael Couck " + IConstants.STRIP_CHARACTERS, IConstants.STRIP_CHARACTERS);
+        stripped = StringUtilities.strip("Michael Couck " + Constants.STRIP_CHARACTERS, Constants.STRIP_CHARACTERS);
         assertEquals("Michael Couck ", stripped);
-        stripped = StringUtilities.strip("\"Michael \"Couck \"stripped " + IConstants.STRIP_CHARACTERS, "\"");
-        assertEquals(" Michael Couck stripped " + IConstants.STRIP_CHARACTERS, stripped);
-        stripped = StringUtilities.strip("\" Michael \"Couck \" stripped " + IConstants.STRIP_CHARACTERS, IConstants.STRIP_CHARACTERS);
+        stripped = StringUtilities.strip("\"Michael \"Couck \"stripped " + Constants.STRIP_CHARACTERS, "\"");
+        assertEquals(" Michael Couck stripped " + Constants.STRIP_CHARACTERS, stripped);
+        stripped = StringUtilities.strip("\" Michael \"Couck \" stripped " + Constants.STRIP_CHARACTERS, Constants.STRIP_CHARACTERS);
         assertEquals("\" Michael \"Couck \" stripped ", stripped);
 
         double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
             public void execute() throws Throwable {
-                StringUtilities.strip("Michael ,[]{};:/\\.-_ Couck", IConstants.STRIP_CHARACTERS);
+                StringUtilities.strip("Michael ,[]{};:/\\.-_ Couck", Constants.STRIP_CHARACTERS);
             }
         }, "Strip characters ", 1000, Boolean.TRUE);
         logger.info("Per second : " + executionsPerSecond);

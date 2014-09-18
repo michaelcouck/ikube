@@ -399,4 +399,11 @@ public abstract class AbstractTest {
         return analysis;
     }
 
+    protected void printMemoryDelta(final long before) {
+        System.gc();
+        long after = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / IConstants.MILLION;
+        long increase = (after - before);
+        logger.info("Before : " + before + ", after : " + after + ", increase : " + increase);
+    }
+
 }

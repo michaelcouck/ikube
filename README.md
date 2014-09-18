@@ -29,14 +29,27 @@ of the Json for each call in the analytics services.
 Features:
 ====
 
-* Grid enabled/distributed
-  ** Allows for extremely large volumes
-  *** Big data and beyond
-  *** IoT type of volumes
-
-* Enterprise search embedded
-  ** Allows for analytics to be indexed, and made searchable, for complex queries, and derived analytics
-  ** All the features of enterprise search, including indexing of log files, file systems, networks, 
-     and databases in complex configurations
-* Geospatial out of the box, for analytics and search
-* More to come...
+<ul>
+    <li>Grid enabled/distributed</li>
+    <ul>
+        <li>Allows for extremely large volumes</li>
+        <ul>
+            <li>Big data and beyond</li>
+            <li>IoT type of volumes</li>
+        </ul>
+        <li>Perfectly laterally scalable</li>
+        <li>Automatic network discovery of nodes</li>
+        <li>Automatic load distribution throughout the cluster</li>
+    </ul>
+    <li>Enterprise search embedded</li>
+    <ul>
+        <li>Allows for analytics to be indexed, and made searchable, for complex queries, and derived analytics</li>
+        <li>All the features of enterprise search, including indexing of log files, file systems, networks, 
+                 and databases in complex configurations</li>
+    </ul>
+    <li>Geospatial out of the box, for analytics and search</li>
+    <li>Connectors for all major sources of data</li>
+    <li>Process complex relational database hierarchies, adding enrichment strategies</li>
+    <li>Cutting edge analytic statistical models and neural networks available</li>
+    <li>More to come...</li>
+</ul>

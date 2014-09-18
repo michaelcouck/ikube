@@ -127,8 +127,6 @@ public interface IConstants extends Constants {
      */
     int MAX_AGE = 180000;
 
-    String STRIP_CHARACTERS = "|!,[]{};:/\\.-_";
-
     long MAX_ACTIONS = 10000;
     long MAX_SNAPSHOTS = 10000;
     long MAX_SERVERS = 1000;
@@ -156,16 +154,11 @@ public interface IConstants extends Constants {
     int HUNDRED_THOUSAND = TEN_THOUSAND * 10;
     int MILLION = HUNDRED_THOUSAND * 10;
 
-    String DELIMITER_CHARACTERS = ";,|:";
-
     String LANGUAGE = "language";
     String LANGUAGE_ORIGINAL = "language-original";
     String LANGUAGE_PROFILES_DIRECTORY = "language-profiles";
     String CLASSIFICATION = "classification";
     String CLASSIFICATION_CONFLICT = "classification-conflict";
-
-    String POSITIVE = "positive";
-    String NEGATIVE = "negative";
 
     String CLASS = "class";
     int MAX_GEOHASH_LEVELS = 8;

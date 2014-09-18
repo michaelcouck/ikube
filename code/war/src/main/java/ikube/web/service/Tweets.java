@@ -8,6 +8,7 @@ import ikube.IConstants;
 import ikube.analytics.IAnalyticsService;
 import ikube.model.Search;
 import ikube.model.SearchTwitter;
+import ikube.toolkit.MatrixUtilities;
 import ikube.toolkit.SerializationUtilities;
 import ikube.toolkit.ThreadUtilities;
 import ikube.toolkit.Timer;
@@ -27,6 +28,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Future;
+
+import static ikube.toolkit.MatrixUtilities.invertMatrix;
 
 /**
  * Strangely enough, if this class name is changed to 'Twitter', Spring and Jersey

@@ -7,6 +7,7 @@ import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.model.Snapshot;
 import ikube.scheduling.schedule.Event;
+import ikube.toolkit.MatrixUtilities;
 import ikube.toolkit.ObjectToolkit;
 import ikube.toolkit.SerializationUtilities;
 import org.apache.commons.lang.StringUtils;
@@ -20,6 +21,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.*;
+
+import static ikube.toolkit.MatrixUtilities.invertMatrix;
 
 /**
  * The resource is the API interface for actions and statistics from the server, like terminating

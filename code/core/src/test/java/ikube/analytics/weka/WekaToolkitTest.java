@@ -12,6 +12,11 @@ import weka.core.Instances;
 
 import java.io.File;
 
+/**
+ * @author Michael Couck
+ * @version 01.00
+ * @since 02-06-2014
+ */
 public class WekaToolkitTest extends AbstractTest {
 
     private String filePath;
@@ -36,7 +41,4 @@ public class WekaToolkitTest extends AbstractTest {
         Assert.assertTrue(new File(filePath).exists());
     }
 
-    @Test
-    public void nonSparseToSparse() throws Exception {
-    }
 }

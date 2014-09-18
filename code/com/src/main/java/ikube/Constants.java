@@ -12,7 +12,7 @@ import java.lang.reflect.Field;
  *
  * @author Michael Couck
  * @version 01.00
- * @since 21.11.10
+ * @since 21-11-2010
  */
 public interface Constants {
 
@@ -94,6 +94,12 @@ public interface Constants {
     String IKUBE_CONFIGURATION = IKUBE + ".configuration";
 
     String APPLICATION_JSON = "application/json";
+
+    String DELIMITER_CHARACTERS = ";,|:";
+    String STRIP_CHARACTERS = "|!,[]{};:/\\.-_";
+
+    String POSITIVE = "positive";
+    String NEGATIVE = "negative";
 
     Gson GSON = new GsonBuilder()
         .addSerializationExclusionStrategy(new IdExclusionStrategy())

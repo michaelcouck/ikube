@@ -75,16 +75,4 @@ public abstract class Resource {
         return StringUtils.split(cleaned, SEPARATOR);
     }
 
-    Object[][] invertMatrix(Object[][] matrix) {
-        final int m = matrix.length;
-        final int n = matrix[0].length;
-        Object[][] inverted = new Object[n][m];
-        for (int r = 0; r < m; r++) {
-            for (int c = 0; c < n; c++) {
-                inverted[c][m - 1 - r] = matrix[r][c];
-            }
-        }
-        return inverted;
-    }
-
 }

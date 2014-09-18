@@ -17,18 +17,17 @@ import java.util.concurrent.*;
  */
 public final class ThreadUtilities {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ThreadUtilities.class);
-
-    private static Thread SHUTDOWN_THREAD = new Thread() {
+    private static class ShutdownThread extends Thread {
         public void run() {
             try {
                 ThreadUtilities.destroy();
-            } catch(final Exception e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
             }
         }
-    };
+    }
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ThreadUtilities.class);
     /**
      * Executes the 'threads' and returns a future.
      */
@@ -44,6 +43,20 @@ public final class ThreadUtilities {
      */
     private static Map<String, List<Future<?>>> FUTURES;
     private static Map<String, ForkJoinPool> FORK_JOIN_POOLS;
+
+    /**
+     * This method initializes the executor service, and the thread pool that will execute runnables.
+     */
+    public static void initialize() {
+        if (EXECUTOR_SERVICE != null && !EXECUTOR_SERVICE.isShutdown() && FUTURES != null && FORK_JOIN_POOLS != null) {
+            LOGGER.info("Executor service already initialized : ");
+            return;
+        }
+        EXECUTOR_SERVICE = Executors.newCachedThreadPool();
+        FUTURES = Collections.synchronizedMap(new HashMap<String, List<Future<?>>>());
+        FORK_JOIN_POOLS = Collections.synchronizedMap(new HashMap<String, ForkJoinPool>());
+        Runtime.getRuntime().addShutdownHook(new ShutdownThread());
+    }
 
     /**
      * This method will submit the runnable and add it to a map so the caller can cancel the future if necessary.
@@ -214,20 +227,6 @@ public final class ThreadUtilities {
         }
     }
 
-    /**
-     * This method initializes the executor service, and the thread pool that will execute runnables.
-     */
-    public static void initialize() {
-        if (EXECUTOR_SERVICE != null && !EXECUTOR_SERVICE.isShutdown() && FUTURES != null && FORK_JOIN_POOLS != null) {
-            LOGGER.info("Executor service already initialized : ");
-            return;
-        }
-        EXECUTOR_SERVICE = Executors.newCachedThreadPool();
-        FUTURES = Collections.synchronizedMap(new HashMap<String, List<Future<?>>>());
-        FORK_JOIN_POOLS = Collections.synchronizedMap(new HashMap<String, ForkJoinPool>());
-        Runtime.getRuntime().addShutdownHook(SHUTDOWN_THREAD);
-    }
-
     public static synchronized ForkJoinPool cancelForkJoinPool(final String name) {
         ForkJoinPool forkJoinPool = FORK_JOIN_POOLS.remove(name);
         LOGGER.debug("Terminating fork join pool : " + name + ", " + forkJoinPool);
@@ -278,10 +277,14 @@ public final class ThreadUtilities {
             LOGGER.debug("Executor service already shutdown : ");
             return;
         }
+
+        // Destroy all the futures one by one
         Collection<String> futureNames = new ArrayList<>(FUTURES.keySet());
         for (String futureName : futureNames) {
             destroy(futureName);
         }
+
+        // Shut down the executor service
         EXECUTOR_SERVICE.shutdown();
         try {
             int maxRetryCount = MAX_RETRY_COUNT;
@@ -296,21 +299,22 @@ public final class ThreadUtilities {
             // Preserve interrupt status
             Thread.currentThread().interrupt();
         }
+
+        // Cancel all the fork join pools
         cancelAllForkJoinPools();
+
+        // Check that there are not runnables still active
         List<Runnable> runnables = EXECUTOR_SERVICE.shutdownNow();
         LOGGER.info("Not running runnables : " + runnables);
 
-        if (FUTURES != null) {
-            FUTURES.clear();
-        }
-        if (FORK_JOIN_POOLS != null) {
-            FORK_JOIN_POOLS.clear();
-        }
+        // Clear everything just to be sure
+        FUTURES.clear();
+        FORK_JOIN_POOLS.clear();
 
+        // And finally null all references to pools of threads
+        EXECUTOR_SERVICE = null;
         FUTURES = null;
         FORK_JOIN_POOLS = null;
-        EXECUTOR_SERVICE = null;
-        Runtime.getRuntime().removeShutdownHook(SHUTDOWN_THREAD);
     }
 
     public static boolean isInitialized() {

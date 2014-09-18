@@ -251,8 +251,11 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
     Instances[] instances(final Context context) throws IOException {
         InputStream[] inputStreams = getInputStreams(context);
         Instances[] instances = new Instances[context.getAlgorithms().length];
-        for (int i = 0; i < inputStreams.length; i++) {
+        for (int i = 0; inputStreams != null && i < inputStreams.length; i++) {
             try {
+                if (inputStreams[i] == null) {
+                    continue;
+                }
                 InputStream inputStream = inputStreams[i];
                 try {
                     Reader reader = new InputStreamReader(inputStream);
@@ -264,7 +267,7 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
                     }
                 }
             } catch (final Exception e) {
-                logger.error("Exception building analyzer : " + context.getFileNames()[i], e);
+                logger.error("Exception building analyzer : " + context.getName(), e);
                 throw new RuntimeException(e);
             }
         }
