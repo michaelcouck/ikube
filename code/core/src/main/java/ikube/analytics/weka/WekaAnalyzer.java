@@ -102,20 +102,21 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
 
                     Object analyzer = algorithms[index];
                     if (Clusterer.class.isAssignableFrom(analyzer.getClass())) {
+                        Clusterer clusterer = ((Clusterer) analyzer);
                         logger.info("Building clusterer : " + instances.numInstances());
-                        ((Clusterer) analyzer).buildClusterer(filteredInstances);
-                        evaluations[index] = evaluate((Clusterer) analyzer, instances);
-                        capabilities[index] = ((Clusterer) analyzer).getCapabilities().toString();
+                        clusterer.buildClusterer(filteredInstances);
+                        evaluations[index] = evaluate(clusterer, instances);
+                        capabilities[index] = clusterer.getCapabilities().toString();
                         logger.info("Clusterer built : " + filteredInstances.numInstances() + ", " + context.getName());
                     } else if (Classifier.class.isAssignableFrom(analyzer.getClass())) {
+                        Classifier classifier = (Classifier) analyzer;
                         // And build the model
-                        logger.info("Building classifier : " + instances.numInstances() + ", " + context.getName());
-                        ((Classifier) analyzer).buildClassifier(filteredInstances);
-                        logger.info("Classifier built : " + filteredInstances.numInstances() + ", " + context.getName());
-
+                        logger.error("Building classifier : " + instances.numInstances() + ", " + context.getName());
+                        classifier.buildClassifier(filteredInstances);
+                        logger.error("Classifier built : " + filteredInstances.numInstances() + ", " + context.getName());
                         // Set the evaluation of the classifier and the training model
-                        evaluations[index] = evaluate((Classifier) analyzer, filteredInstances);
-                        capabilities[index] = ((Classifier) analyzer).getCapabilities().toString();
+                        evaluations[index] = evaluate(classifier, filteredInstances);
+                        capabilities[index] = classifier.getCapabilities().toString();
                     }
                 } catch (final Exception e) {
                     throw new RuntimeException(e);
@@ -123,21 +124,13 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
             }
         }
 
-        if (context.isPersisted()) {
-            Object[] deserializeAlgorithms = deserializeAnalyzers(context);
-            if (deserializeAlgorithms != null && deserializeAlgorithms.length == algorithms.length) {
-                System.arraycopy(deserializeAlgorithms, 0, algorithms, 0, algorithms.length);
-                context.setBuilt(Boolean.TRUE);
-            }
+        List<Future> futures = Lists.newArrayList();
+        for (int i = 0; i < context.getAlgorithms().length; i++) {
+            Future<?> future = ThreadUtilities.submit(this.getClass().getName(), new AnalyzerBuilder(i));
+            futures.add(future);
         }
-        if (!context.isBuilt()) {
-            List<Future> futures = Lists.newArrayList();
-            for (int i = 0; i < context.getAlgorithms().length; i++) {
-                Future<?> future = ThreadUtilities.submit(this.getClass().getName(), new AnalyzerBuilder(i));
-                futures.add(future);
-            }
-            waitForAnonymousFutures(futures, Long.MAX_VALUE);
-        }
+        waitForAnonymousFutures(futures, Long.MAX_VALUE);
+
         context.setAlgorithms(algorithms);
         context.setEvaluations(evaluations);
         context.setCapabilities(capabilities);
@@ -290,7 +283,7 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
             }
         } else {
             File[] dataFiles = getDataFiles(context);
-            for (int i = 0; i < dataFiles.length; i++) {
+            for (int i = 0; dataFiles != null && i < dataFiles.length; i++) {
                 inputStreams[i] = new FileInputStream(dataFiles[i]);
             }
         }

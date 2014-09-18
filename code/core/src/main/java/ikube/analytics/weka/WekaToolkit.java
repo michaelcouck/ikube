@@ -3,20 +3,25 @@ package ikube.analytics.weka;
 import ikube.model.Context;
 import ikube.toolkit.CsvFileTools;
 import ikube.toolkit.FileUtilities;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import weka.clusterers.Clusterer;
 import weka.core.Attribute;
 import weka.core.FastVector;
+import weka.core.Instance;
 import weka.core.Instances;
-import weka.core.SparseInstance;
 import weka.core.converters.ArffSaver;
 import weka.filters.Filter;
 import weka.filters.unsupervised.instance.NonSparseToSparse;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
-import static ikube.toolkit.MatrixUtilities.objectArrayToDoubleArray;
+import static ikube.toolkit.MatrixUtilities.excludeColumns;
+import static ikube.toolkit.MatrixUtilities.objectVectorToDoubleVector;
 
 /**
  * This class contains general methods for manipulating the Weka data, and for writing
@@ -26,7 +31,6 @@ import static ikube.toolkit.MatrixUtilities.objectArrayToDoubleArray;
  * @version 01.00
  * @since 10-04-2013
  */
-@SuppressWarnings("ALL")
 public final class WekaToolkit {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WekaToolkit.class);
@@ -39,11 +43,11 @@ public final class WekaToolkit {
      */
     public static void writeToArff(final Instances instances, final String filePath) {
         try {
-            ArffSaver arffSaverInstance = new ArffSaver();
-            arffSaverInstance.setInstances(instances);
+            ArffSaver arffSaver = new ArffSaver();
+            arffSaver.setInstances(instances);
             File file = FileUtilities.getOrCreateFile(filePath);
-            arffSaverInstance.setFile(file);
-            arffSaverInstance.writeBatch();
+            arffSaver.setFile(file);
+            arffSaver.writeBatch();
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
@@ -77,14 +81,41 @@ public final class WekaToolkit {
      * @return the instances object created from the input, data, with the same number of attributed labled as
      * the input data has vector lengths
      */
-    public static Instances csvToInstances(final String filePath, final int classIndex) {
-        Object[][] data = CsvFileTools.getCsvData(new String[]{"-i", filePath});
+    public static Instances csvFileToInstances(final String filePath, final int classIndex) {
+        Object[][] matrix;
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(new File(filePath));
+            matrix = new CsvFileTools().getCsvData(inputStream);
+            return matrixToInstances(matrix, classIndex);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            IOUtils.closeQuietly(inputStream);
+        }
+    }
+
+    /**
+     * This method will convert a matrix to a 'flat' {@link weka.core.Instances} object. Note that the
+     * matrix will be converted where necessary to a double vector to comply with the input requirements
+     * of the Weka algorithms.
+     *
+     * @param matrix             the matrix to convert into an instances object, or data set for Weka
+     * @param classIndex         the class index or index o the attribute that is 'missing' or to be predicted, if this is
+     *                           set to Integer.MAX_VALUE then the last attribute will be used as the clss index
+     * @param excludedAttributes attributes that should be excluded from the matrix. If these are specified then the
+     *                           matrix will be pruned of the 'columns' that are specified before creating the instances
+     *                           object
+     * @return the instances object created from the matrix, with all the attributes doubles, ready for processing
+     */
+    public static Instances matrixToInstances(final Object[][] matrix, final int classIndex, final int... excludedAttributes) {
+        Object[][] prunedMatrix = excludeColumns(matrix, excludedAttributes);
         // Create the instances from the matrix data
         FastVector attributes = new FastVector();
         // Check that we have the shortest vector
         int shortestVectorLength = Integer.MAX_VALUE;
-        for (final Object[] row : data) {
-            shortestVectorLength = Math.min(shortestVectorLength, row.length);
+        for (final Object[] vector : prunedMatrix) {
+            shortestVectorLength = Math.min(shortestVectorLength, vector.length);
         }
         // Add the attributes to the data set
         for (int i = 0; i < shortestVectorLength; i++) {
@@ -92,12 +123,16 @@ public final class WekaToolkit {
         }
         // Create the instances data set from the data and the attributes
         Instances instances = new Instances("instances", attributes, 0);
-        instances.setClass(instances.attribute(Math.max(instances.numAttributes() - 1, classIndex)));
+        instances.setClass(instances.attribute(Math.min(instances.numAttributes() - 1, classIndex)));
         // Populate the instances
-        for (final Object[] row : data) {
-            double[] doubleRow = objectArrayToDoubleArray(row, shortestVectorLength);
-            SparseInstance sparseInstance = new SparseInstance(1.0, doubleRow);
-            instances.add(sparseInstance);
+        for (final Object[] vector : prunedMatrix) {
+            double[] doubleVector = objectVectorToDoubleVector(vector, shortestVectorLength);
+            Instance instance = new Instance(1.0, doubleVector);
+            instances.add(instance);
+        }
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Instances : " + instances.numAttributes() + ", " + instances.numInstances()
+                    + ", " + instances.toSummaryString());
         }
         return instances;
     }

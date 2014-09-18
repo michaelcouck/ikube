@@ -7,13 +7,15 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.kohsuke.args4j.CmdLineException;
+import org.mockito.Spy;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileReader;
+import java.io.InputStream;
 
 import static ikube.toolkit.FileUtilities.findFileRecursively;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Michael Couck
@@ -23,6 +25,8 @@ import static org.junit.Assert.assertTrue;
 public class CsvFileToolsTest extends AbstractTest {
 
     private String inputFilePath;
+    @Spy
+    private CsvFileTools csvFileTools;
 
     @Before
     public void before() {
@@ -37,7 +41,6 @@ public class CsvFileToolsTest extends AbstractTest {
 
         String[] args = {"-i", inputFilePath, "-o", outputFilePath, "-c", "[1,3]"};
 
-        CsvFileTools csvFileTools = new CsvFileTools();
         csvFileTools.doMain(args);
         csvFileTools.includeColumns();
 
@@ -53,7 +56,6 @@ public class CsvFileToolsTest extends AbstractTest {
 
         String[] args = {"-i", inputFilePath, "-o", outputFilePath};
 
-        CsvFileTools csvFileTools = new CsvFileTools();
         csvFileTools.doMain(args);
         csvFileTools.splitFile();
 
@@ -66,12 +68,20 @@ public class CsvFileToolsTest extends AbstractTest {
     public void getCsvData() throws Exception {
         String[] args = {"-i", inputFilePath};
 
-        CsvFileTools csvFileTools = new CsvFileTools();
         csvFileTools.doMain(args);
         Object[][] csvData = csvFileTools.getCsvData();
         assertNotNull(csvData);
         assertTrue(csvData.length == 2);
         assertTrue(csvData[0].length == 4);
+    }
+
+    @Test
+    public void getCsvDataStreamExcluded() throws Exception {
+        String input = "1,2,3,4,5,6,7,8,9,10\n1,2,3,4,5,6,7,8,9,10\n1,2,3,4,5,6,7,8,9,10";
+        InputStream inputStream = new ByteArrayInputStream(input.getBytes());
+        Object[][] csvData = csvFileTools.getCsvData(inputStream, 2, 8, 9);
+        assertEquals(3, csvData.length);
+        assertEquals(7, csvData[0].length);
     }
 
 }

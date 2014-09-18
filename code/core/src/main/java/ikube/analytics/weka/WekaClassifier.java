@@ -25,8 +25,12 @@ public class WekaClassifier extends WekaAnalyzer {
         try {
             super.init(context);
             Instances[] instancesArray = (Instances[]) context.getModels();
-            for (final Instances instances : instancesArray) {
-                instances.setClassIndex(0);
+            if (instancesArray != null) {
+                for (final Instances instances : instancesArray) {
+                    if (instances != null) {
+                        instances.setClassIndex(0);
+                    }
+                }
             }
         } catch (final Exception e) {
             logger.error("Exception building analyzer : ", e);

@@ -3,6 +3,8 @@ package ikube;
 import ikube.toolkit.Logging;
 
 import org.junit.Ignore;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +14,7 @@ import org.slf4j.LoggerFactory;
  * @version 01.00
  */
 @Ignore
+@RunWith(MockitoJUnitRunner.class)
 public abstract class AbstractTest {
 
 	static {

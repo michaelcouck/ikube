@@ -1,6 +1,7 @@
 package ikube.use;
 
 import ikube.AbstractTest;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
