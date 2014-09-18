@@ -20,6 +20,7 @@ import java.io.File;
  * @version 01.00
  * @since 16-09-2014
  */
+@Ignore
 public class AnalyzerClientTest extends AbstractTest {
 
     @Test

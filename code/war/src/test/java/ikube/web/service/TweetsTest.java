@@ -10,7 +10,6 @@ import ikube.toolkit.PerformanceTester;
 import ikube.toolkit.SerializationUtilities;
 import ikube.web.toolkit.MockFactory;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -119,7 +118,7 @@ public class TweetsTest extends AbstractTest {
             public void execute() throws Throwable {
                 tweets.heatMapData(moreResults, searchTwitter.getClusters());
             }
-        }, "Heat map data ", 100, false);
+        }, "Heat map data ", 10, false);
     }
 
     @Test

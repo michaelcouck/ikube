@@ -37,7 +37,12 @@ public final class MatrixUtilities {
     public static double[] objectArrayToDoubleArray(final Object[] array, final int length) {
         double[] doubleArray = new double[length];
         for (int i = 0; i < array.length && i < doubleArray.length; i++) {
-            doubleArray[i] = Double.parseDouble(array[i].toString());
+            String arrayElement = array[i].toString();
+            if (StringUtilities.isNumeric(arrayElement)) {
+                doubleArray[i] = Double.parseDouble(arrayElement);
+            } else {
+                doubleArray[i] = arrayElement.hashCode();
+            }
         }
         return doubleArray;
     }

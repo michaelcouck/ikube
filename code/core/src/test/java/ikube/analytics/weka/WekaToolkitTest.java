@@ -41,4 +41,14 @@ public class WekaToolkitTest extends AbstractTest {
         Assert.assertTrue(new File(filePath).exists());
     }
 
+    @Test
+    public void csvToInstances() {
+        File file = FileUtilities.findFileRecursively(new File("."), "general.csv");
+        String filePath = FileUtilities.cleanFilePath(file.getAbsolutePath());
+        Instances instances = WekaToolkit.csvToInstances(filePath, 0);
+        Assert.assertNotNull(instances);
+        Assert.assertTrue(instances.numAttributes() > 10);
+        Assert.assertTrue(instances.numInstances() > 100);
+    }
+
 }
