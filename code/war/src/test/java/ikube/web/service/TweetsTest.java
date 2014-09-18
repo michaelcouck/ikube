@@ -6,9 +6,9 @@ import ikube.model.Search;
 import ikube.model.SearchTwitter;
 import ikube.search.SearcherService;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.PerformanceTester;
 import ikube.toolkit.SerializationUtilities;
 import ikube.web.toolkit.MockFactory;
-import ikube.web.toolkit.PerformanceTester;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import static ikube.web.toolkit.PerformanceTester.execute;
 import static junit.framework.Assert.*;
 import static mockit.Deencapsulation.setField;
 import static mockit.Mockit.setUpMock;
@@ -115,12 +114,12 @@ public class TweetsTest extends AbstractTest {
         assertTrue("Must be less than the total results : ", heatMapData.length < moreResults.size());
         assertTrue("Must be less than the clustered capacity too : ", heatMapData.length <= searchTwitter.getClusters());
 
-        execute(new PerformanceTester.APerform() {
+        PerformanceTester.execute(new PerformanceTester.APerform() {
             @Override
             public void execute() throws Throwable {
                 tweets.heatMapData(moreResults, searchTwitter.getClusters());
             }
-        }, "Heat map data : ", 10);
+        }, "Heat map data ", 100, false);
     }
 
     @Test
@@ -161,7 +160,7 @@ public class TweetsTest extends AbstractTest {
     @Test
     public void search() {
         int result = tweets.search(searchTwitter, 0, 60, IConstants.POSITIVE);
-        Assert.assertEquals(22, result);
+        assertEquals(22, result);
     }
 
 }

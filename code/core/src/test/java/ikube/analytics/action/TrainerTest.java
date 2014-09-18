@@ -27,7 +27,7 @@ public class TrainerTest extends AbstractTest {
 
     @Spy
     @InjectMocks
-    private Trainer trainer;
+    private Train trainer;
     @Mock
     private Analysis analysis;
     @Mock

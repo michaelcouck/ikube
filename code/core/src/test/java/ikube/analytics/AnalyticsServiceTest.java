@@ -32,7 +32,7 @@ import static org.mockito.Mockito.*;
  */
 public class AnalyticsServiceTest extends AbstractTest {
 
-    @MockClass(realClass = Analyzer.class)
+    @MockClass(realClass = Analyze.class)
     public static class AnalyzerMock {
         @mockit.Mock
         public Analysis call() throws Exception {
@@ -94,7 +94,7 @@ public class AnalyticsServiceTest extends AbstractTest {
     public void create() throws Exception {
         context = analyticsService.create(context);
         assertNotNull(context);
-        verify(clusterManager, atLeastOnce()).sendTaskToAll(any(Creator.class));
+        verify(clusterManager, atLeastOnce()).sendTaskToAll(any(Create.class));
     }
 
     @Test
@@ -102,7 +102,7 @@ public class AnalyticsServiceTest extends AbstractTest {
     public void train() throws Exception {
         context = analyticsService.train(analysis);
         assertNotNull(context);
-        verify(clusterManager, atLeastOnce()).sendTaskToAll(any(Trainer.class));
+        verify(clusterManager, atLeastOnce()).sendTaskToAll(any(Train.class));
     }
 
     @Test
@@ -110,13 +110,13 @@ public class AnalyticsServiceTest extends AbstractTest {
     public void build() throws Exception {
         context = analyticsService.build(analysis);
         assertNotNull(context);
-        verify(clusterManager, atLeastOnce()).sendTaskToAll(any(Builder.class));
+        verify(clusterManager, atLeastOnce()).sendTaskToAll(any(Build.class));
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void analyze() throws Exception {
-        when(clusterManager.sendTask(any(Analyzer.class))).thenReturn(future);
+        when(clusterManager.sendTask(any(Analyze.class))).thenReturn(future);
         when(future.get(anyLong(), any(TimeUnit.class))).thenReturn(analysis);
         // when(analyzer.analyze(any(Context.class), any())).thenReturn(analysis);
 
@@ -125,14 +125,14 @@ public class AnalyticsServiceTest extends AbstractTest {
 
         when(this.analysis.isDistributed()).thenReturn(Boolean.TRUE);
         analyticsService.analyze(this.analysis);
-        verify(clusterManager, atLeastOnce()).sendTask(any(Analyzer.class));
+        verify(clusterManager, atLeastOnce()).sendTask(any(Analyze.class));
         verify(future, atLeastOnce()).get(anyLong(), any(TimeUnit.class));
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void sizesForClassesOrClusters() throws Exception {
-        when(clusterManager.sendTask(any(Analyzer.class))).thenReturn(future);
+        when(clusterManager.sendTask(any(Analyze.class))).thenReturn(future);
         when(future.get(anyLong(), any(TimeUnit.class))).thenReturn(analysis);
 
         Analysis analysis = analyticsService.sizesForClassesOrClusters(this.analysis);
@@ -148,7 +148,7 @@ public class AnalyticsServiceTest extends AbstractTest {
     @SuppressWarnings("unchecked")
     public void destroy() throws Exception {
         analyticsService.destroy(context);
-        verify(clusterManager, atLeastOnce()).sendTaskToAll(any(Destroyer.class));
+        verify(clusterManager, atLeastOnce()).sendTaskToAll(any(Destroy.class));
     }
 
 }

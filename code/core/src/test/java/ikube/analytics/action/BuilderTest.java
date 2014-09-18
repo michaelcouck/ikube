@@ -27,7 +27,7 @@ public class BuilderTest extends AbstractTest {
 
     @Spy
     @InjectMocks
-    private Builder builder;
+    private Build builder;
     @Mock
     private Analysis analysis;
     @Mock

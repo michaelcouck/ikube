@@ -14,14 +14,14 @@ import ikube.model.Context;
  * @version 01.00
  * @since 15-03-2014
  */
-public class Builder extends Action<Boolean> {
+public class Build extends Action<Boolean> {
 
     /**
      * The analysis object to do the building with
      */
     private Analysis analysis;
 
-    public Builder(final Analysis analysis) {
+    public Build(final Analysis analysis) {
         this.analysis = analysis;
     }
 
@@ -37,6 +37,7 @@ public class Builder extends Action<Boolean> {
             analyzer.build(context);
             return Boolean.TRUE;
         }
+        // Doesn't exist on this server
         return Boolean.FALSE;
     }
 

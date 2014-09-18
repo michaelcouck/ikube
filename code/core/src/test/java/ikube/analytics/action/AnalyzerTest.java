@@ -27,7 +27,7 @@ public class AnalyzerTest extends AbstractTest {
 
     @Spy
     @InjectMocks
-    private Analyzer analyzer;
+    private Analyze analyzer;
     @Mock
     private Analysis analysis;
     @Mock

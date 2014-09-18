@@ -13,14 +13,14 @@ import ikube.model.Context;
  * @version 01.00
  * @since 15-03-2014
  */
-public class Destroyer extends Action<Boolean> {
+public class Destroy extends Action<Boolean> {
 
     /**
      * The context object that will be used for destroying the analyzer
      */
     private Context context;
 
-    public Destroyer(final Context context) {
+    public Destroy(final Context context) {
         this.context = context;
     }
 
@@ -31,6 +31,7 @@ public class Destroyer extends Action<Boolean> {
         // Get the local context
         context = service.getContext(context.getName());
         if (context == null) {
+            // Doesn't exist on this server
             return Boolean.FALSE;
         }
         // Get the local context, but in fact we are on the remote machine of course

@@ -14,14 +14,14 @@ import ikube.model.Context;
  * @version 01.00
  * @since 15-03-2014
  */
-public class Trainer extends Action<Boolean> {
+public class Train extends Action<Boolean> {
 
     /**
      * The analysis object to use for the training
      */
     private Analysis analysis;
 
-    public Trainer(final Analysis analysis) {
+    public Train(final Analysis analysis) {
         this.analysis = analysis;
     }
 
@@ -32,6 +32,7 @@ public class Trainer extends Action<Boolean> {
         IAnalyticsService service = getAnalyticsService();
         Context context = service.getContext(analysis.getContext());
         if (context == null) {
+            // Doesn't exist on this server
             return Boolean.FALSE;
         }
         IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();

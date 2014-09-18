@@ -14,6 +14,11 @@ import java.util.Arrays;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
+/**
+ * @author Michael Couck
+ * @version 01.00
+ * @since 10-09-2014
+ */
 public class AAnalyzerTest extends AbstractTest {
 
     private Context context;
@@ -29,7 +34,6 @@ public class AAnalyzerTest extends AbstractTest {
         analyzer = new AAnalyzer() {
             @Override
             public void init(final Context context) throws Exception {
-
             }
 
             @Override
@@ -39,7 +43,6 @@ public class AAnalyzerTest extends AbstractTest {
 
             @Override
             public void build(final Context context) throws Exception {
-
             }
 
             @Override

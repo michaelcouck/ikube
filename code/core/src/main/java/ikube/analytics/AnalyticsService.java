@@ -40,7 +40,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
     @Override
     @SuppressWarnings("unchecked")
     public Context create(final Context context) {
-        Creator creator = new Creator(context);
+        Create creator = new Create(context);
         List<Future<Boolean>> futures = clusterManager.sendTaskToAll(creator);
         ThreadUtilities.waitForFutures(futures, 15);
         LOGGER.debug("Contexts : " + getContexts());
@@ -53,7 +53,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
     @Override
     @SuppressWarnings("unchecked")
     public Context train(final Analysis<I, O> analysis) {
-        Trainer trainer = new Trainer(analysis);
+        Train trainer = new Train(analysis);
         List<Future<Boolean>> futures = clusterManager.sendTaskToAll(trainer);
         ThreadUtilities.waitForFutures(futures, 15);
         LOGGER.debug("Contexts : " + getContexts());
@@ -66,7 +66,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
     @Override
     @SuppressWarnings("unchecked")
     public Context build(final Analysis<I, O> analysis) {
-        Builder builder = new Builder(analysis);
+        Build builder = new Build(analysis);
         List<Future<Boolean>> futures = clusterManager.sendTaskToAll(builder);
         ThreadUtilities.waitForFutures(futures, 15);
         LOGGER.debug("Contexts : " + getContexts());
@@ -79,7 +79,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
     @Override
     @SuppressWarnings("unchecked")
     public Analysis<I, O> analyze(final Analysis<I, O> analysis) {
-        Analyzer analyzer = new Analyzer(analysis);
+        Analyze analyzer = new Analyze(analysis);
         if (analysis.isDistributed()) {
             // Set the flag so we don't get infinite recursion
             analysis.setDistributed(Boolean.FALSE);
@@ -132,7 +132,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
     @SuppressWarnings("unchecked")
     public void destroy(final Context context) {
         // Create the callable that will be executed on the remote node
-        Destroyer destroyer = new Destroyer(context);
+        Destroy destroyer = new Destroy(context);
         List<Future<Boolean>> futures = clusterManager.sendTaskToAll(destroyer);
         ThreadUtilities.waitForFutures(futures, 15);
         LOGGER.debug("Contexts : " + getContexts());

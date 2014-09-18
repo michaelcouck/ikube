@@ -26,7 +26,7 @@ public class DestroyerTest extends AbstractTest {
 
     @Spy
     @InjectMocks
-    private Destroyer destroyer;
+    private Destroy destroyer;
     @Mock
     private Context context;
     @Mock

@@ -14,14 +14,14 @@ import ikube.model.Context;
  * @version 01.00
  * @since 15-03-2014
  */
-public class Analyzer extends Action<Analysis> {
+public class Analyze extends Action<Analysis> {
 
     /**
      * The analysis object to do the analysis on :)
      */
     private Analysis analysis;
 
-    public Analyzer(final Analysis analysis) {
+    public Analyze(final Analysis analysis) {
         this.analysis = analysis;
     }
 

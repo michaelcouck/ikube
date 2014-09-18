@@ -26,7 +26,7 @@ public class CreatorTest extends AbstractTest {
 
     @Spy
     @InjectMocks
-    private Creator creator;
+    private Create creator;
     @Mock
     private Context context;
     @Mock

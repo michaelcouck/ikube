@@ -12,14 +12,14 @@ import ikube.model.Context;
  * @version 01.00
  * @since 15-03-2014
  */
-public class Creator extends Action<Boolean> {
+public class Create extends Action<Boolean> {
 
     /**
      * The context object that will be used for creating the analyzer
      */
     private Context context;
 
-    public Creator(final Context context) {
+    public Create(final Context context) {
         this.context = context;
     }
 
@@ -36,6 +36,7 @@ public class Creator extends Action<Boolean> {
             service.getContexts().put(context.getName(), context);
             return Boolean.TRUE;
         }
+        // Doesn't exist on this server
         return Boolean.FALSE;
     }
 }

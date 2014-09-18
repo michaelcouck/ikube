@@ -4,7 +4,7 @@ import ikube.IConstants;
 import ikube.IntegrationTest;
 import ikube.model.*;
 import ikube.toolkit.ObjectToolkit;
-import ikube.web.toolkit.PerformanceTester;
+import ikube.toolkit.PerformanceTester;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,7 +118,7 @@ public class DataBaseIntegration extends IntegrationTest {
                     dataBase.persistBatch(urls);
                     urls.clear();
                 }
-            }, "Iterations per second : ", iterations);
+            }, "Iterations per second : ", iterations, false);
             double insertsPerSecond = (perSecond * batchSize);
             logger.info("Inserts per second : " + insertsPerSecond);
             assertTrue("We must have at least " + minimumInsertsPerSecond + " inserts per second : " + insertsPerSecond,
