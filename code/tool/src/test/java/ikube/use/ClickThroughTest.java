@@ -11,6 +11,7 @@ import org.mockito.Spy;
  * @version 01.00
  * @since 18-09-2014
  */
+@Ignore
 public class ClickThroughTest extends AbstractTest {
 
     @Spy

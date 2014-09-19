@@ -108,7 +108,7 @@ public class ClickThrough {
             double actual = instance.toDoubleArray()[0];
             if (output[0] > 0.5 && actual == 1.0) {
                 hits++;
-                LOGGER.error("Result : " + result + ", output : " + IConstants.GSON.toJson(output) + ", actual : " + actual);
+                // LOGGER.error("Result : " + result + ", output : " + IConstants.GSON.toJson(output) + ", actual : " + actual);
             }
         }
         return hits;
