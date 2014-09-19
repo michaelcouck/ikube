@@ -188,17 +188,6 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void destroy(final Context context) throws Exception {
-        for (int i = 0; i < context.getAlgorithms().length; i++) {
-            Instances instances = (Instances) context.getModels()[i];
-            instances.delete();
-        }
-    }
-
-    /**
      * This method will create an instance from the input string. The string is assumed to be a comma separated list of values, with the same dimensions as the
      * attributes in the instances data set. If not, then the results are undefined.
      *
@@ -357,41 +346,47 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
      * for us in this method.
      *
      * @param instance the instance to filter into the correct form for the analyser
-     * @param filter   the filter to use for the transformation
+     * @param filters   the filter to use for the transformation
      * @return the filtered instance that is usable in the analyzer
      * @throws Exception
      */
-    synchronized Instance filter(final Instance instance, final Filter filter) throws Exception {
-        // Filter from string to inverse vector if necessary
-        Instance filteredData;
-        if (filter == null) {
-            filteredData = instance;
-        } else {
-            filter.input(instance);
-            filteredData = filter.output();
+    synchronized Instance filter(final Instance instance, final Filter... filters) throws Exception {
+        if (filters == null || filters.length == 0) {
+            return instance;
         }
-        return filteredData;
+        Instance filteredInstance = instance;
+        for (final Filter filter : filters) {
+            // Filter from string to inverse vector if necessary
+            if (filter != null) {
+                filter.input(filteredInstance);
+                filteredInstance = filter.output();
+            }
+        }
+        return filteredInstance;
     }
 
     /**
-     * As with the {@link ikube.analytics.weka.WekaAnalyzer#filter(weka.core.Instance, weka.filters.Filter)} method, this method filters
+     * As with the {@link ikube.analytics.weka.WekaAnalyzer#filter(weka.core.Instance, weka.filters.Filter...)} method, this method filters
      * the entire data set into something that is usable. Typically this is used in the training faze of the logic when the 'raw' data set
      * needs to be transformed into a matrix that can be used for training the analyzer.
      *
      * @param instances the instances that are to be transformed using the filter
-     * @param filter    the filter to use for the transformation
+     * @param filters    the filter to use for the transformation
      * @return the transformed instances object, ready to be used in training the classifier
      * @throws Exception
      */
-    synchronized Instances filter(final Instances instances, final Filter filter) throws Exception {
-        Instances filteredData;
-        if (filter == null) {
-            filteredData = instances;
-        } else {
-            filter.setInputFormat(instances);
-            filteredData = Filter.useFilter(instances, filter);
+    synchronized Instances filter(final Instances instances, final Filter... filters) throws Exception {
+        if (filters == null || filters.length == 0) {
+            return instances;
         }
-        return filteredData;
+        Instances filteredInstances = instances;
+        for (final Filter filter : filters) {
+            if (filter != null) {
+                filter.setInputFormat(filteredInstances);
+                filteredInstances = Filter.useFilter(filteredInstances, filter);
+            }
+        }
+        return filteredInstances;
     }
 
     /**
@@ -420,6 +415,17 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
             filter = (Filter) filters[i];
         }
         return filter;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void destroy(final Context context) throws Exception {
+        for (int i = 0; i < context.getAlgorithms().length; i++) {
+            Instances instances = (Instances) context.getModels()[i];
+            instances.delete();
+        }
     }
 
 }

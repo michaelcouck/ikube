@@ -9,7 +9,6 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
-import org.springframework.util.ReflectionUtils;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -19,6 +18,8 @@ import java.net.MalformedURLException;
 import static ikube.IConstants.DELIMITER_CHARACTERS;
 import static ikube.toolkit.FileUtilities.getContent;
 import static ikube.toolkit.HttpClientUtilities.doPost;
+import static org.springframework.util.ReflectionUtils.MethodCallback;
+import static org.springframework.util.ReflectionUtils.doWithMethods;
 
 /**
  * TODO: Document this client if it becomes used.
@@ -68,7 +69,7 @@ public class AnalyzerClient extends Client {
 
         final AnalyzerClient analClient = this;
 
-        ReflectionUtils.doWithMethods(this.getClass(), new ReflectionUtils.MethodCallback() {
+        doWithMethods(this.getClass(), new MethodCallback() {
             @Override
             public void doWith(final Method method) throws IllegalArgumentException, IllegalAccessException {
                 for (final String operationName : StringUtils.split(operationNames, DELIMITER_CHARACTERS)) {
@@ -76,7 +77,7 @@ public class AnalyzerClient extends Client {
                         try {
                             method.invoke(analClient);
                         } catch (final InvocationTargetException e) {
-                            e.printStackTrace();
+                            throw new RuntimeException(e);
                         }
                     }
                 }

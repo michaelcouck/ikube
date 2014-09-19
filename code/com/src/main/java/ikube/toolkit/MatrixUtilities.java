@@ -43,10 +43,29 @@ public final class MatrixUtilities {
             if (StringUtilities.isNumeric(element)) {
                 doubleVector[i] = Double.parseDouble(element);
             } else {
-                doubleVector[i] = element.hashCode();
+                doubleVector[i] = HashUtilities.hash(element);
             }
         }
         return doubleVector;
+    }
+
+    /**
+     * Converts an object vector to a String[], with the specified length.
+     *
+     * @param vector the array to convert to the string array
+     * @param length the maximum length of the array
+     * @return the string array from the input
+     */
+    public static String[] objectVectorToStringVector(final Object[] vector, final int length) {
+        String[] stringVector = new String[length];
+        for (int i = 0; i < vector.length && i < stringVector.length; i++) {
+            if (String.class.isAssignableFrom(vector[i].getClass())) {
+                stringVector[i] = (String) vector[i];
+            } else {
+                stringVector[i] = vector[i].toString();
+            }
+        }
+        return stringVector;
     }
 
     /**
@@ -63,7 +82,7 @@ public final class MatrixUtilities {
             Object[] vector = matrix[i];
             Object[] prunedVector = new Object[vector.length - excludedColumns.length];
             for (int j = 0, k = 0; j < vector.length; j++) {
-                if (Arrays.binarySearch(excludedColumns, j) < 0) {
+                if (Arrays.binarySearch(excludedColumns, j) < 0 && prunedVector.length > k && vector.length > j) {
                     prunedVector[k++] = vector[j];
                 }
             }

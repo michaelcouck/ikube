@@ -55,19 +55,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="exchange-ws" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-core:4.6.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-highlighter:4.6.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-memory:4.6.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-queries:4.6.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-spatial:4.6.0" level="project" />
-    <orderEntry type="library" name="Maven: com.spatial4j:spatial4j:0.3" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-misc:4.6.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-classification:4.6.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-analyzers-common:4.6.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-queryparser:4.6.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-sandbox:4.6.0" level="project" />
-    <orderEntry type="library" name="Maven: jakarta-regexp:jakarta-regexp:1.4" level="project" />
     <orderEntry type="module" module-name="ikube-com" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context:3.2.4.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-beans:3.2.4.RELEASE" level="project" />

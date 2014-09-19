@@ -46,7 +46,7 @@ public class WekaToolkitTest extends AbstractTest {
     public void csvFileToInstances() {
         File file = FileUtilities.findFileRecursively(new File("."), "general.csv");
         String filePath = FileUtilities.cleanFilePath(file.getAbsolutePath());
-        Instances instances = WekaToolkit.csvFileToInstances(filePath, 0);
+        Instances instances = WekaToolkit.csvFileToInstances(filePath, 0, Double.class);
         assertNotNull(instances);
         assertTrue(instances.numAttributes() > 10);
         assertTrue(instances.numInstances() > 100);
@@ -59,7 +59,7 @@ public class WekaToolkitTest extends AbstractTest {
             matrix[i] = new Object[]{1, "2", "3.5"};
         }
         int[] columnsToExclude = {2};
-        Instances instances = WekaToolkit.matrixToInstances(matrix, 0, columnsToExclude);
+        Instances instances = WekaToolkit.matrixToInstances(matrix, 0, Double.class, columnsToExclude);
         assertEquals(matrix.length, instances.numInstances());
         assertEquals(matrix[0].length - columnsToExclude.length, instances.numAttributes());
     }

@@ -25,13 +25,6 @@ public final class FileUtilities {
     private static final Logger LOGGER = Logger.getLogger(FileUtilities.class);
 
     /**
-     * Singularity.
-     */
-    private FileUtilities() {
-        // Documented
-    }
-
-    /**
      * This method looks through all the files defined in the folder in the parameter
      * list, recursively, and gets the first one that matches the pattern.
      *
@@ -211,16 +204,16 @@ public final class FileUtilities {
      * @return the found or newly created {@link File} or <code>null</code> if something went wrong.
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-	public static synchronized File getOrCreateFile(final File file) {
+    public static synchronized File getOrCreateFile(final File file) {
         try {
             if (file.exists() && file.isFile()) {
                 return file;
             }
             File parent = file.getParentFile();
             if (parent != null) {
-				if (!parent.exists()) {
-					parent = getOrCreateDirectory(parent);
-				}
+                if (!parent.exists()) {
+                    parent = getOrCreateDirectory(parent);
+                }
             }
             if (parent != null) {
                 try {
@@ -250,14 +243,14 @@ public final class FileUtilities {
             if (directory.exists() && directory.isDirectory()) {
                 return directory;
             }
-			String directoryPath = cleanFilePath(directory.getPath());
-			LOGGER.info("Creating directory : " + directoryPath);
-			File createdDirectory = new File(directoryPath);
+            String directoryPath = cleanFilePath(directory.getPath());
+            LOGGER.info("Creating directory : " + directoryPath);
+            File createdDirectory = new File(directoryPath);
             boolean created = createdDirectory.mkdirs();
             if (!created || !directory.exists()) {
-				LOGGER.warn("Couldn't create directory(ies) " + directory.getAbsolutePath());
-			}
-			return createdDirectory;
+                LOGGER.warn("Couldn't create directory(ies) " + directory.getAbsolutePath());
+            }
+            return createdDirectory;
         } finally {
             FileUtilities.class.notifyAll();
         }
@@ -634,20 +627,42 @@ public final class FileUtilities {
         }
     }
 
-    @SuppressWarnings("UnusedAssignment")
-	public static String cleanFilePath(final String path) {
-		String filePath = path;
+    /**
+     * This method will clean the path, as some operating systems add their special
+     * characters, back spaces and the like, that interfere with the normal working of the
+     * file system.
+     *
+     * @param path the path to clea, perhaps something like 'file:C:\\path\\.\\some\\more'
+     * @return the path that can be used as an absolute path on the file system
+     */
+    public static String cleanFilePath(final String path) {
+        String filePath = path;
         filePath = StringUtils.replace(filePath, "/./", "/");
-		// For windows we must clean the path of 'file:/' because getting the
-		// parent then appends the user path for some reason too, returning something
-		// like C:/tmp/user/directory/C:/path/to/directory
-		filePath = StringUtils.replace(filePath, "file:", "");
-		filePath = StringUtils.replace(filePath, "file:/", "");
-		filePath = StringUtils.replace(filePath, "file:\\", "");
+        // For windows we must clean the path of 'file:/' because getting the
+        // parent then appends the user path for some reason too, returning something
+        // like C:/tmp/user/directory/C:/path/to/directory
+        filePath = StringUtils.replace(filePath, "file:", "");
+        filePath = StringUtils.replace(filePath, "file:/", "");
+        filePath = StringUtils.replace(filePath, "file:\\", "");
         filePath = StringUtils.replace(filePath, "\\.\\", "/");
         filePath = StringUtils.replace(filePath, "\\", "/");
         filePath = StringUtils.removeEnd(filePath, ".");
         return filePath;
+    }
+
+    /**
+     * This is just a convenience method to find the file and clean the absolute path.
+     *
+     * @param folder the folder to start looking for the patterns
+     * @param pattern the pattern of the file sought after
+     * @return the cleaned absolute path to the file
+     */
+    public static String findFileAndGetCleanedPath(final File folder, final String pattern) {
+        File file = findFileRecursively(folder, pattern);
+        if (file == null) {
+            return null;
+        }
+        return cleanFilePath(file.getAbsolutePath());
     }
 
     /**
@@ -686,6 +701,13 @@ public final class FileUtilities {
         }
         // LOGGER.info("Name : " + isNameExcluded + ", " + isPathExcluded + ", " + isSymLink + ", " + exceptionReading);
         return isNameExcluded || isPathExcluded || isSymLink || exceptionReading;
+    }
+
+    /**
+     * Singularity.
+     */
+    private FileUtilities() {
+        // Documented
     }
 
 }
