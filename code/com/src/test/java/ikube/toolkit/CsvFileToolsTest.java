@@ -3,6 +3,7 @@ package ikube.toolkit;
 import au.com.bytecode.opencsv.CSVReader;
 import ikube.AbstractTest;
 import ikube.Constants;
+import mockit.Deencapsulation;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +33,7 @@ public class CsvFileToolsTest extends AbstractTest {
     public void before() {
         File inputFile = FileUtilities.findFileRecursively(new File("."), "csv-file-tools.csv");
         inputFilePath = FileUtilities.cleanFilePath(inputFile.getAbsolutePath());
+        Deencapsulation.setField(csvFileTools, "inputFile", inputFilePath);
     }
 
     @Test
@@ -39,9 +41,9 @@ public class CsvFileToolsTest extends AbstractTest {
         File outputFile = FileUtilities.getOrCreateFile(new File("./target/csv-file-tools-cut.csv"));
         String outputFilePath = FileUtilities.cleanFilePath(outputFile.getAbsolutePath());
 
-        String[] args = {"-i", inputFilePath, "-o", outputFilePath, "-c", "[1,3]"};
+        Deencapsulation.setField(csvFileTools, "outputFile", outputFilePath);
+        Deencapsulation.setField(csvFileTools, "columnsToInclude", "[1,3]");
 
-        csvFileTools.doMain(args);
         csvFileTools.includeColumns();
 
         CSVReader csvReader = new CSVReader(new FileReader(outputFilePath));
@@ -54,9 +56,8 @@ public class CsvFileToolsTest extends AbstractTest {
         File outputFile = FileUtilities.getOrCreateDirectory(new File("./target"));
         String outputFilePath = FileUtilities.cleanFilePath(outputFile.getAbsolutePath());
 
-        String[] args = {"-i", inputFilePath, "-o", outputFilePath};
+        Deencapsulation.setField(csvFileTools, "outputFile", outputFilePath);
 
-        csvFileTools.doMain(args);
         csvFileTools.splitFile();
 
         outputFile = findFileRecursively(new File("."), "sentiment-model-");
@@ -66,9 +67,6 @@ public class CsvFileToolsTest extends AbstractTest {
 
     @Test
     public void getCsvData() throws Exception {
-        String[] args = {"-i", inputFilePath};
-
-        csvFileTools.doMain(args);
         Object[][] csvData = csvFileTools.getCsvData();
         assertNotNull(csvData);
         assertTrue(csvData.length == 2);
