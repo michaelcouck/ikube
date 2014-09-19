@@ -60,6 +60,10 @@ public class ClickThrough {
      */
     private Object[][] matrix;
 
+    public static void main(final String[] args) throws CmdLineException {
+        new ClickThrough(args);
+    }
+
     public ClickThrough() throws CmdLineException {
         this(null);
     }
