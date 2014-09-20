@@ -20,7 +20,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-import static ikube.toolkit.MatrixUtilities.*;
+import static ikube.toolkit.MatrixUtilities.objectVectorToDoubleVector;
+import static ikube.toolkit.MatrixUtilities.objectVectorToStringVector;
 
 /**
  * This class contains general methods for manipulating the Weka data, and for writing
@@ -102,19 +103,18 @@ public final class WekaToolkit {
      * @param matrix             the matrix to convert into an instances object, or data set for Weka
      * @param classIndex         the class index or index o the attribute that is 'missing' or to be predicted, if this is
      *                           set to Integer.MAX_VALUE then the last attribute will be used as the class index
-     * @param type the type of attributes to use in the instances, either double or string
+     * @param type               the type of attributes to use in the instances, either double or string
      * @param excludedAttributes attributes that should be excluded from the matrix. If these are specified then the
      *                           matrix will be pruned of the 'columns' that are specified before creating the instances
      *                           object
      * @return the instances object created from the matrix, with all the attributes doubles or strings, ready for processing
      */
-    public static Instances matrixToInstances(final Object[][] matrix, final int classIndex, final Class<?> type, final int... excludedAttributes) {
-        Object[][] prunedMatrix = excludeColumns(matrix, excludedAttributes);
+    public static Instances matrixToInstances(final Object[][] matrix, final int classIndex, final Class<?> type) {
         // Create the instances from the matrix data
         FastVector attributes = new FastVector();
         // Check that we have the shortest vector
         int shortestVectorLength = Integer.MAX_VALUE;
-        for (final Object[] vector : prunedMatrix) {
+        for (final Object[] vector : matrix) {
             shortestVectorLength = Math.min(shortestVectorLength, vector.length);
         }
         // Add the attributes to the data set
@@ -125,7 +125,7 @@ public final class WekaToolkit {
         Instances instances = new Instances("instances", attributes, 0);
         instances.setClass(instances.attribute(Math.min(instances.numAttributes() - 1, classIndex)));
         // Populate the instances
-        for (final Object[] vector : prunedMatrix) {
+        for (final Object[] vector : matrix) {
             instances.add(getInstance(instances, vector, shortestVectorLength, type));
         }
         return instances;
@@ -133,7 +133,7 @@ public final class WekaToolkit {
 
     private static Attribute getAttribute(final int index, final Class<?> type) {
         if (Double.class.isAssignableFrom(type)) {
-            return new Attribute(Integer.toHexString(index));
+            return new Attribute(Integer.toString(index));
         } else if (String.class.isAssignableFrom(type)) {
             return new Attribute(Integer.toString(index), (FastVector) null);
         } else {

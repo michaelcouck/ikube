@@ -5,8 +5,6 @@ import ikube.IConstants;
 import ikube.toolkit.CsvFileTools;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Spy;
 import weka.classifiers.Classifier;
 import weka.classifiers.functions.SMO;
 import weka.core.Instance;
@@ -29,13 +27,17 @@ import static ikube.toolkit.FileUtilities.findFileRecursively;
 @Ignore
 public class ClickThroughTest extends AbstractTest {
 
-    @Spy
-    @InjectMocks
-    private ClickThrough clickThrough;
-
     @Test
-    public void hillClimb() throws Exception {
-        clickThrough.regression();
+    public void regression() throws Exception {
+        String[] args = new String[]{
+                "-t", "8", // Threads
+                "-f", "3", // Folds
+                "-o", "regression", // Type
+                "-n", "click-through-0-1", // Name and file
+                "-e", "30", // Percentage permutations
+                "-r", "[]" // Reduce by columns
+        };
+        new ClickThrough(args);
     }
 
     @Test

@@ -18,8 +18,9 @@ public class PerformanceTester {
         }
 
         public boolean log() {
-            return true;
+            return false;
         }
+
     }
 
     /**
@@ -30,6 +31,7 @@ public class PerformanceTester {
         boolean log();
 
         void execute() throws Throwable;
+
     }
 
     private static final Logger LOGGER = Logger.getLogger(PerformanceTester.class);
@@ -52,7 +54,7 @@ public class PerformanceTester {
             for (int i = 0; i < iterations; i++) {
                 perform.execute();
             }
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             LOGGER.error("Exception executing the action : " + perform + ", " + type + ", " + iterations, e);
         }
         double end = System.currentTimeMillis();
@@ -71,7 +73,7 @@ public class PerformanceTester {
 
     private static void printMemory(final String text, final long before, final long after) {
         long meg = 1 * 1000 * 1000;
-        LOGGER.info(text + ", before : " + (before / meg) + ", after : " + (after / meg) + ", increase/decrease : " + ((after - before) / meg));
+        LOGGER.error(text + ", before : " + (before / meg) + ", after : " + (after / meg) + ", increase/decrease : " + ((after - before) / meg));
     }
 
     /**

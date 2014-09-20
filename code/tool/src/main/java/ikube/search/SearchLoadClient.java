@@ -103,7 +103,8 @@ public class SearchLoadClient extends Client {
                 @Override
                 public void run() {
                     double duration = Timer.execute(timed);
-                    LOGGER.error("Duration for searching : " + iterations + ", is : " + duration + ", per second is : " + iterations / (duration / 1000));
+                    LOGGER.error("Duration for searching : " + iterations + ", is : " + duration +
+                            ", per second is : " + iterations / (duration / 1000));
                 }
             }
 

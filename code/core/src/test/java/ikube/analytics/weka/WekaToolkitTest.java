@@ -58,10 +58,8 @@ public class WekaToolkitTest extends AbstractTest {
         for (int i = 0; i < matrix.length; i++) {
             matrix[i] = new Object[]{1, "2", "3.5"};
         }
-        int[] columnsToExclude = {2};
-        Instances instances = WekaToolkit.matrixToInstances(matrix, 0, Double.class, columnsToExclude);
+        Instances instances = WekaToolkit.matrixToInstances(matrix, 0, Double.class);
         assertEquals(matrix.length, instances.numInstances());
-        assertEquals(matrix[0].length - columnsToExclude.length, instances.numAttributes());
     }
 
 }

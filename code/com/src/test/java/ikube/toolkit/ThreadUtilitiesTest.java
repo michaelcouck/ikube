@@ -74,10 +74,11 @@ public class ThreadUtilitiesTest extends AbstractTest {
 
     @Test
     public void waitForFuture() {
-        // We just wait for this future to finish, must be less than the time we expect to wait
+        // We just wait for this future to finish,
+        // must be less than the time we expect to wait
         long start = System.currentTimeMillis();
         Future<?> future = ThreadUtilities.submit(null, new Sleepy(3000));
-        ThreadUtilities.waitForFuture(future, 3);
+        ThreadUtilities.waitForFuture(future, Integer.MAX_VALUE);
         assertTrue(System.currentTimeMillis() - start < 4000);
 
         // We destroy this future and return from the wait method
@@ -113,7 +114,8 @@ public class ThreadUtilitiesTest extends AbstractTest {
     }
 
     /**
-     * This method just checks the concurrency of the threading, that there are no blocking synchronized blocks.
+     * This method just checks the concurrency of the
+     * threading, that there are no blocking/deadlocking synchronized blocks.
      */
     @Test
     public void multiThreaded() {
@@ -140,7 +142,7 @@ public class ThreadUtilitiesTest extends AbstractTest {
     }
 
     @Test
-    public void cancellForkJoinPool() {
+    public void cancelForkJoinPool() {
         ForkJoinPool forkJoinPool = ThreadUtilities.getForkJoinPool(this.getClass().getSimpleName(), 3);
         ForkJoinPool cancelledForkJoinPool = ThreadUtilities.cancelForkJoinPool(this.getClass().getSimpleName());
         assertEquals(forkJoinPool, cancelledForkJoinPool);
@@ -149,7 +151,7 @@ public class ThreadUtilitiesTest extends AbstractTest {
     }
 
     @Test
-    public void cancellAllForkJoinPools() {
+    public void cancelAllForkJoinPools() {
         ForkJoinPool forkJoinPool = ThreadUtilities.getForkJoinPool(this.getClass().getSimpleName(), 3);
         ThreadUtilities.cancelAllForkJoinPools();
         assertTrue(forkJoinPool.isShutdown());
