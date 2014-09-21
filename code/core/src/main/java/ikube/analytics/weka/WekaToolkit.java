@@ -1,16 +1,13 @@
 package ikube.analytics.weka;
 
-import ikube.model.Context;
 import ikube.toolkit.CsvFileTools;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.Timer;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import weka.clusterers.Clusterer;
-import weka.core.Attribute;
-import weka.core.FastVector;
-import weka.core.Instance;
-import weka.core.Instances;
+import weka.classifiers.Classifier;
+import weka.classifiers.Evaluation;
+import weka.core.*;
 import weka.core.converters.ArffSaver;
 import weka.filters.Filter;
 import weka.filters.unsupervised.instance.NonSparseToSparse;
@@ -19,7 +16,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Random;
 
+import static ikube.toolkit.FileUtilities.getOrCreateFile;
 import static ikube.toolkit.MatrixUtilities.objectVectorToDoubleVector;
 import static ikube.toolkit.MatrixUtilities.objectVectorToStringVector;
 
@@ -45,7 +44,7 @@ public final class WekaToolkit {
         try {
             ArffSaver arffSaver = new ArffSaver();
             arffSaver.setInstances(instances);
-            File file = FileUtilities.getOrCreateFile(filePath);
+            File file = getOrCreateFile(filePath);
             arffSaver.setFile(file);
             arffSaver.writeBatch();
         } catch (final Exception e) {
@@ -174,21 +173,44 @@ public final class WekaToolkit {
         return filteredInstances;
     }
 
-    public static void printClusterInstances(final Context context) throws Exception {
-        Object[] clusterers = context.getAlgorithms();
-        Object[] instancesArray = context.getModels();
-        for (int i = 0; i < clusterers.length; i++) {
-            Clusterer clusterer = (Clusterer) clusterers[i];
-            Instances instances = (Instances) instancesArray[i];
-            LOGGER.warn("Num clusters : " + clusterer.numberOfClusters());
-            for (int j = 0; j < instances.numAttributes(); j++) {
-                Attribute attribute = instances.attribute(j);
-                LOGGER.warn("Attribute : " + attribute.name() + ", " + attribute.type());
-                for (int k = 0; k < attribute.numValues(); k++) {
-                    LOGGER.warn("          : " + attribute.value(k));
+    /**
+     * This method will cross train a classifier using the number of folds, and then evaluate the model. Note
+     * that cross validation is expensive, and with a million vectors can take several hours on a single thread.
+     *
+     * @param classifier the classifier to cross validate
+     * @param instances  the instances to be used for the cross validation
+     * @param folds      the number of folds to cross validate the model
+     * @return the error rate of the cross validation
+     * @throws Exception
+     */
+    public static double crossValidate(final Classifier classifier, final Instances instances, final int folds) throws Exception {
+        final Evaluation evaluation = new Evaluation(instances);
+        final StringBuffer predictionsOutput = new StringBuffer();
+        double duration = Timer.execute(new Timer.Timed() {
+            @Override
+            public void execute() {
+                try {
+                    evaluation.crossValidateModel(classifier, instances, folds, new Random(), predictionsOutput, new Range(), true);
+                } catch (final Exception e) {
+                    LOGGER.error("Exception cross validating the classifier : ", e);
                 }
             }
-        }
+        });
+        LOGGER.warn("Duration for cross validation : " + duration);
+
+        duration = Timer.execute(new Timer.Timed() {
+            @Override
+            public void execute() {
+                try {
+                    evaluation.evaluateModel(classifier, instances);
+                } catch (final Exception e) {
+                    LOGGER.error("Exception evaluating the classifier : ", e);
+                }
+            }
+        });
+        LOGGER.warn("Duration for model evaluation : " + duration);
+
+        return evaluation.relativeAbsoluteError();
     }
 
     private WekaToolkit() {
