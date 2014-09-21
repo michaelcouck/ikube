@@ -2,7 +2,9 @@ package ikube.use;
 
 import ikube.AbstractTest;
 import ikube.IConstants;
+import ikube.analytics.weka.WekaToolkit;
 import ikube.toolkit.CsvFileTools;
+import ikube.toolkit.FileUtilities;
 import org.junit.Ignore;
 import org.junit.Test;
 import weka.classifiers.Classifier;
@@ -17,7 +19,10 @@ import java.io.FileInputStream;
 
 import static ikube.analytics.weka.WekaToolkit.filter;
 import static ikube.analytics.weka.WekaToolkit.matrixToInstances;
+import static ikube.analytics.weka.WekaToolkit.writeToArff;
+import static ikube.toolkit.FileUtilities.cleanFilePath;
 import static ikube.toolkit.FileUtilities.findFileRecursively;
+import static ikube.toolkit.FileUtilities.getOrCreateFile;
 
 /**
  * @author Michael Couck
@@ -31,11 +36,11 @@ public class ClickThroughTest extends AbstractTest {
     public void regression() throws Exception {
         String[] args = new String[]{
                 "-t", "8", // Threads
-                "-f", "3", // Folds
+                "-f", "0", // Folds
                 "-o", "regression", // Type
-                "-n", "click-through-0-1", // Name and file
-                "-e", "30", // Percentage permutations
-                "-r", "[]" // Reduce by columns
+                "-n", "click-through-8-9", // Name and file
+                "-e", "25", // Percentage permutations
+                "-r", "[0]" // Reduce by columns
         };
         new ClickThrough(args);
     }
@@ -46,6 +51,10 @@ public class ClickThroughTest extends AbstractTest {
         Object[][] matrix = new CsvFileTools().getCsvData(new FileInputStream(file));
         Instances instances = matrixToInstances(matrix, 0, String.class);
         instances = filter(instances, new StringToWordVector(), new NumericToNominal());
+
+        File outputTrainingFile = getOrCreateFile(new File(System.nanoTime() + ".arff"));
+        String outputTrainingFilePath = cleanFilePath(outputTrainingFile.getAbsolutePath());
+        writeToArff(instances, outputTrainingFilePath);
 
         instances.setClassIndex(0);
 

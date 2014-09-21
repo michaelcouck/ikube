@@ -100,33 +100,25 @@ public final class WekaToolkit {
      * matrix will be converted where necessary to a double vector to comply with the input requirements
      * of the Weka algorithms, or string depending on the type in the parameter list.
      *
-     * @param matrix             the matrix to convert into an instances object, or data set for Weka
-     * @param classIndex         the class index or index o the attribute that is 'missing' or to be predicted, if this is
-     *                           set to Integer.MAX_VALUE then the last attribute will be used as the class index
-     * @param type               the type of attributes to use in the instances, either double or string
-     * @param excludedAttributes attributes that should be excluded from the matrix. If these are specified then the
-     *                           matrix will be pruned of the 'columns' that are specified before creating the instances
-     *                           object
+     * @param matrix     the matrix to convert into an instances object, or data set for Weka
+     * @param classIndex the class index or index o the attribute that is 'missing' or to be predicted, if this is
+     *                   set to Integer.MAX_VALUE then the last attribute will be used as the class index
+     * @param type       the type of attributes to use in the instances, either double or string
      * @return the instances object created from the matrix, with all the attributes doubles or strings, ready for processing
      */
     public static Instances matrixToInstances(final Object[][] matrix, final int classIndex, final Class<?> type) {
         // Create the instances from the matrix data
         FastVector attributes = new FastVector();
-        // Check that we have the shortest vector
-        int shortestVectorLength = Integer.MAX_VALUE;
-        for (final Object[] vector : matrix) {
-            shortestVectorLength = Math.min(shortestVectorLength, vector.length);
-        }
         // Add the attributes to the data set
-        for (int i = 0; i < shortestVectorLength; i++) {
+        for (int i = 0; i < matrix[0].length; i++) {
             attributes.addElement(getAttribute(i, type));
         }
         // Create the instances data set from the data and the attributes
         Instances instances = new Instances("instances", attributes, 0);
-        instances.setClass(instances.attribute(Math.min(instances.numAttributes() - 1, classIndex)));
+        instances.setClass(instances.attribute(classIndex));
         // Populate the instances
         for (final Object[] vector : matrix) {
-            instances.add(getInstance(instances, vector, shortestVectorLength, type));
+            instances.add(getInstance(instances, vector, type));
         }
         return instances;
     }
@@ -141,12 +133,12 @@ public final class WekaToolkit {
         }
     }
 
-    private static Instance getInstance(final Instances instances, final Object[] vector, final int shortestVectorLength, final Class<?> type) {
+    private static Instance getInstance(final Instances instances, final Object[] vector, final Class<?> type) {
         if (Double.class.isAssignableFrom(type)) {
-            double[] doubleVector = objectVectorToDoubleVector(vector, shortestVectorLength);
+            double[] doubleVector = objectVectorToDoubleVector(vector);
             return new Instance(1.0, doubleVector);
         } else if (String.class.isAssignableFrom(type)) {
-            String[] stringVector = objectVectorToStringVector(vector, shortestVectorLength);
+            String[] stringVector = objectVectorToStringVector(vector);
             Instance instance = new Instance(stringVector.length);
             for (int i = 0; i < instances.numAttributes(); i++) {
                 Attribute attribute = instances.attribute(i);

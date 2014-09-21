@@ -14,7 +14,21 @@ public class AnalyzeTest extends AbstractTest {
 
     @Test
     public void analyze() throws Exception {
-        Analyze.main(null);
+        String[] args = {
+                "-n", "click-through-0-1-100000",
+                "-t", "test-1000.csv",
+                "-f", "3"
+        };
+        Analyze.main(args);
+    }
+
+    @Test
+    public void bitShift() {
+        System.out.println(" " + (1 | -1));
+        System.out.println(" " + (1 | 1));
+        System.out.println(" " + (1 | 0));
+        System.out.println(" " + (1 << 1));
+
     }
 
 }

@@ -91,8 +91,7 @@ public class CsvFileTools {
             List<String[]> lines = csvReader.readAll();
             Object[][] matrix = new Object[lines.size()][];
             for (int i = 0; i < lines.size(); i++) {
-                String[] row = excludeColumns(lines.get(i), excludedColumns);
-                matrix[i] = row;
+                matrix[i] = excludeColumns(lines.get(i), excludedColumns);;
             }
             return matrix;
         } catch (final IOException e) {

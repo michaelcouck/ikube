@@ -33,12 +33,11 @@ public final class MatrixUtilities {
      * Converts an object vector to a double[], with the specified length.
      *
      * @param vector the array to convert to the double array
-     * @param length the maximum length of the array
      * @return the double array from the input
      */
-    public static double[] objectVectorToDoubleVector(final Object[] vector, final int length) {
-        double[] doubleVector = new double[length];
-        for (int i = 0; i < vector.length && i < doubleVector.length; i++) {
+    public static double[] objectVectorToDoubleVector(final Object[] vector) {
+        double[] doubleVector = new double[vector.length];
+        for (int i = 0; i < vector.length; i++) {
             String element = vector[i].toString();
             if (StringUtilities.isNumeric(element)) {
                 doubleVector[i] = Double.parseDouble(element);
@@ -53,12 +52,11 @@ public final class MatrixUtilities {
      * Converts an object vector to a String[], with the specified length.
      *
      * @param vector the array to convert to the string array
-     * @param length the maximum length of the array
      * @return the string array from the input
      */
-    public static String[] objectVectorToStringVector(final Object[] vector, final int length) {
-        String[] stringVector = new String[length];
-        for (int i = 0; i < vector.length && i < stringVector.length; i++) {
+    public static String[] objectVectorToStringVector(final Object[] vector) {
+        String[] stringVector = new String[vector.length];
+        for (int i = 0; i < vector.length; i++) {
             if (String.class.isAssignableFrom(vector[i].getClass())) {
                 stringVector[i] = (String) vector[i];
             } else {

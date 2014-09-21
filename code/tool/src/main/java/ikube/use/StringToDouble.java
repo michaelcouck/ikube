@@ -50,6 +50,5 @@ public class StringToDouble extends Filter implements UnsupervisedFilter, Option
 
     @Override
     public void setOptions(final String[] options) throws Exception {
-
     }
 }

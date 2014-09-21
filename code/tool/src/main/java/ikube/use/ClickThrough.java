@@ -9,6 +9,7 @@ import ikube.toolkit.ThreadUtilities;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+import org.neuroph.nnet.RBFNetwork;
 import org.paukov.combinatorics.Factory;
 import org.paukov.combinatorics.Generator;
 import org.paukov.combinatorics.ICombinatoricsVector;
@@ -16,11 +17,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
-import weka.classifiers.functions.IsotonicRegression;
-import weka.classifiers.functions.LinearRegression;
-import weka.classifiers.functions.PaceRegression;
-import weka.classifiers.functions.SimpleLinearRegression;
-import weka.classifiers.meta.AdditiveRegression;
+import weka.classifiers.functions.LeastMedSq;
+import weka.classifiers.lazy.IBk;
+import weka.classifiers.meta.*;
+import weka.classifiers.rules.ConjunctiveRule;
+import weka.classifiers.rules.DecisionTable;
+import weka.classifiers.trees.M5P;
+import weka.classifiers.trees.REPTree;
 import weka.core.Instances;
 import weka.core.Range;
 import weka.filters.Filter;
@@ -38,6 +41,8 @@ import java.util.concurrent.Future;
 import static ikube.Constants.GSON;
 import static ikube.analytics.weka.WekaToolkit.filter;
 import static ikube.analytics.weka.WekaToolkit.matrixToInstances;
+import static ikube.toolkit.FileUtilities.findFileRecursively;
+import static ikube.toolkit.MatrixUtilities.excludeColumns;
 import static ikube.toolkit.PerformanceTester.APerform;
 import static ikube.toolkit.PerformanceTester.execute;
 import static ikube.toolkit.ThreadUtilities.submit;
@@ -96,7 +101,7 @@ public class ClickThrough {
         }
 
         ThreadUtilities.initialize();
-        File file = FileUtilities.findFileRecursively(new File("."), name + ".csv");
+        File file = findFileRecursively(new File("."), name + ".csv");
         try {
             matrix = new CsvFileTools().getCsvData(new FileInputStream(file));
         } catch (FileNotFoundException e) {
@@ -121,11 +126,18 @@ public class ClickThrough {
 
     public void regression() throws Exception {
         String[] classifiers = {
-                IsotonicRegression.class.getName(),
-                SimpleLinearRegression.class.getName(),
                 AdditiveRegression.class.getName(),
-                PaceRegression.class.getName(),
-                LinearRegression.class.getName()
+                // LeastMedSq.class.getName(),
+                RegressionByDiscretization.class.getName(), // 37
+                // M5P.class.getName(),
+                // REPTree.class.getName(),
+                // IBk.class.getName(), // 0
+                // ConjunctiveRule.class.getName(),
+                // RandomSubSpace.class.getName(),
+                // DecisionTable.class.getName(),
+                // MultiScheme.class.getName(),
+                Bagging.class.getName() // 74
+                // Vote.class.getName()
         };
         permuteVectorSpace(classifiers, matrix);
     }
@@ -138,7 +150,7 @@ public class ClickThrough {
         if (reduceDimensionalityByColumns == null) {
             reducedMatrix = matrix;
         } else {
-            reducedMatrix = MatrixUtilities.excludeColumns(matrix, GSON.fromJson(reduceDimensionalityByColumns, int[].class));
+            reducedMatrix = excludeColumns(matrix, GSON.fromJson(reduceDimensionalityByColumns, int[].class));
         }
         int[][] excludedColumnsPermutations = excludedColumnsPermutation(reducedMatrix);
         for (final int[] excludedColumns : excludedColumnsPermutations) {
@@ -154,7 +166,7 @@ public class ClickThrough {
                                 bestErrorRate.set(errorRate);
                                 LOGGER.error(classifier + " : " + GSON.toJson(errorRate) + " : " + GSON.toJson(excludedColumns));
                             }
-                            LOGGER.error("      : " + classifier + " : " + GSON.toJson(errorRate) + " : " + GSON.toJson(excludedColumns));
+                            // LOGGER.error("      : " + classifier + " : " + GSON.toJson(errorRate) + " : " + GSON.toJson(excludedColumns));
                         } catch (final Exception e) {
                             throw new RuntimeException(e);
                         }
@@ -174,11 +186,8 @@ public class ClickThrough {
 
 
     private Instances instances(final Object[][] matrix, final int[] excludedColumns, final Filter... filters) throws Exception {
-        Object[][] prunedMatrix = MatrixUtilities.excludeColumns(matrix, excludedColumns);
+        Object[][] prunedMatrix = excludeColumns(matrix, excludedColumns);
         Instances instances = matrixToInstances(prunedMatrix, 0, Double.class);
-        File outputTrainingFile = FileUtilities.getOrCreateFile(new File(System.nanoTime() + ".arff"));
-        String outputTrainingFilePath = FileUtilities.cleanFilePath(outputTrainingFile.getAbsolutePath());
-        WekaToolkit.writeToArff(instances, outputTrainingFilePath);
         return filter(instances, filters);
     }
 
@@ -198,14 +207,6 @@ public class ClickThrough {
                 evaluation.evaluateModel(classifier, instances);
             }
         }, "Duration for model evaluation : ", 1, true);
-
-//        String summary = evaluation.toSummaryString();
-//        LOGGER.error("Classifier : " + classifier.getClass().getName());
-//        LOGGER.error("           : " + predictionsOutput);
-//        LOGGER.error("           : " + evaluation.pctCorrect());
-//        LOGGER.error("           : " + evaluation.pctIncorrect());
-//        LOGGER.error("           : " + evaluation.pctUnclassified());
-//        LOGGER.error("           : " + summary);
 
         return evaluation.relativeAbsoluteError();
     }

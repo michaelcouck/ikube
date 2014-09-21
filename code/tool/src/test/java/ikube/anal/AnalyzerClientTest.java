@@ -61,7 +61,7 @@ public class AnalyzerClientTest extends AbstractTest {
         instances.setClass(instances.attribute(instances.numAttributes() - 1));
         // Populate the instances
         for (final Object[] row : invertedData) {
-            double[] doubleRow = MatrixUtilities.objectVectorToDoubleVector(row, invertedData[0].length);
+            double[] doubleRow = MatrixUtilities.objectVectorToDoubleVector(row);
             SparseInstance sparseInstance = new SparseInstance(1.0, doubleRow);
             instances.add(sparseInstance);
         }
@@ -75,7 +75,7 @@ public class AnalyzerClientTest extends AbstractTest {
         classifier.buildClassifier(instances);
         // Test the instances
         for (final Object[] invertedRow : invertedData) {
-            double[] doubleRow = MatrixUtilities.objectVectorToDoubleVector(invertedRow, invertedData[0].length);
+            double[] doubleRow = MatrixUtilities.objectVectorToDoubleVector(invertedRow);
             double[] doubleRowMissing = new double[doubleRow.length - 1];
             System.arraycopy(doubleRow, 0, doubleRowMissing, 0, doubleRowMissing.length - 1);
             Instance instance = new Instance(1.0, doubleRowMissing);
