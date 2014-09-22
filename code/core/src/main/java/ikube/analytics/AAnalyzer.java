@@ -1,7 +1,6 @@
 package ikube.analytics;
 
 import ikube.model.Context;
-import ikube.toolkit.FileUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,8 +22,6 @@ public abstract class AAnalyzer<I, O, C> implements IAnalyzer<I, O, C> {
 
     protected transient Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    protected String configFilePath = FileUtilities.cleanFilePath(getConfigFilePath());
-
     /**
      * This method returns the data file for the analyzer. The data file contains the relational attribute set that can be
      * used to train the analyzer. As with all configuration, we expect this file to reside in the {@link ikube.IConstants#IKUBE_DIRECTORY}
@@ -37,6 +34,8 @@ public abstract class AAnalyzer<I, O, C> implements IAnalyzer<I, O, C> {
      */
     @SuppressWarnings("ConstantConditions")
     protected File[] getDataFiles(final Context context) {
+        String configFilePath = cleanFilePath(getConfigFilePath());
+        logger.warn("Config file path : " + configFilePath);
         String[] dataFileNames = context.getFileNames();
         File[] dataFiles = context.getFileNames() != null ? new File[context.getFileNames().length] : null;
         File configurationDirectory = new File(configFilePath).getParentFile();

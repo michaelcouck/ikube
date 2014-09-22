@@ -1,6 +1,7 @@
 package ikube.toolkit;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -404,6 +405,26 @@ public final class FileUtilities {
     }
 
     /**
+     * This method will take a, potentially large input stream, and incrementally write it to the
+     * output file path location.
+     *
+     * @param filePath    the output file path, the file need not be created already, i.e. it will create the file on the fly if necessary
+     * @param inputStream the input stream to write to the file location
+     */
+    public static void setContents(final String filePath, final InputStream inputStream) {
+        File file = FileUtilities.getOrCreateFile(new File(filePath));
+        OutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(file);
+            IOUtils.copyLarge(inputStream, outputStream);
+        } catch (final IOException e) {
+            throw new RuntimeException("Exception writing the file to the", e);
+        } finally {
+            IOUtils.closeQuietly(outputStream);
+        }
+    }
+
+    /**
      * Gets a single file. First looking to find it, if it can not be found then it is created.
      *
      * @param filePath  the path to the file that is requested
@@ -653,7 +674,7 @@ public final class FileUtilities {
     /**
      * This is just a convenience method to find the file and clean the absolute path.
      *
-     * @param folder the folder to start looking for the patterns
+     * @param folder  the folder to start looking for the patterns
      * @param pattern the pattern of the file sought after
      * @return the cleaned absolute path to the file
      */

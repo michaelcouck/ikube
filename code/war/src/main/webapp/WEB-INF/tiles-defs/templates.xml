@@ -87,7 +87,7 @@
 	
 	<!-- Analytics and related templates -->
 	<definition name="analytics/analyze" extends=".mainTemplate">
-		<put-attribute name="title" value="Ikube Analytics" type="string" />
+		<put-attribute name="title" value="Ikube Analyze" type="string" />
 		<put-attribute name="menu">
 			<definition template="/WEB-INF/templates/menu.jsp">
 				<put-attribute name="sub-menu" value="/WEB-INF/jsp/menu/analytics.jsp" />
@@ -95,16 +95,25 @@
 		</put-attribute>
 		<put-attribute name="content" value="/WEB-INF/jsp/analytics/analyze.jsp" />
 	</definition>
-	<definition name="analytics/admin" extends=".mainTemplate">
-		<put-attribute name="title" value="Ikube Analytics" type="string" />
+	<definition name="analytics/create" extends=".mainTemplate">
+		<put-attribute name="title" value="Ikube Create Analyzer" type="string" />
 		<put-attribute name="menu">
 			<definition template="/WEB-INF/templates/menu.jsp">
 				<put-attribute name="sub-menu" value="/WEB-INF/jsp/menu/analytics.jsp" />
 			</definition>
 		</put-attribute>
-		<put-attribute name="content" value="/WEB-INF/jsp/analytics/admin.jsp" />
+		<put-attribute name="content" value="/WEB-INF/jsp/analytics/create.jsp" />
 	</definition>
-	
+	<definition name="analytics/train" extends=".mainTemplate">
+		<put-attribute name="title" value="Ikube Train Analyzer" type="string" />
+		<put-attribute name="menu">
+			<definition template="/WEB-INF/templates/menu.jsp">
+				<put-attribute name="sub-menu" value="/WEB-INF/jsp/menu/analytics.jsp" />
+			</definition>
+		</put-attribute>
+		<put-attribute name="content" value="/WEB-INF/jsp/analytics/train.jsp" />
+	</definition>
+
 	<!-- Application templates, Twitter and Happy Planet -->
 	<definition name="application/happy" extends=".mainTemplate">
 		<put-attribute name="title" value="Ikube Geo Tweets" type="string" />

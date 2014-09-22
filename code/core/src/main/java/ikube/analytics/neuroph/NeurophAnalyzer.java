@@ -222,6 +222,9 @@ public class NeurophAnalyzer extends AAnalyzer<Analysis, Analysis, Analysis> {
         } else if (JordanNetwork.class.isAssignableFrom(clazz)) {
             neuralNetwork = new JordanNetwork(inputNeuronsCount, hiddenNeuronsCount, contextNeuronsCount, outputNeuronsCount);
         }
+        if (neuralNetwork == null) {
+            throw new RuntimeException("Network null, have you specified all the parameters to create it?");
+        }
         return neuralNetwork;
     }
 

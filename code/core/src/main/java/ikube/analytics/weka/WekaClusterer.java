@@ -7,6 +7,8 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.filters.Filter;
 
+import static ikube.analytics.weka.WekaToolkit.filter;
+
 /**
  * This class is the Weka clusterer wrapper. Ultimately just wrapping the Weka
  * algorithm(any one of the clustering algorithms) and adds some easier to understand
@@ -38,10 +40,10 @@ public class WekaClusterer extends WekaAnalyzer {
     @SuppressWarnings("unchecked")
     public synchronized Analysis<Object, Object> analyze(final Context context, final Analysis analysis) throws Exception {
         int majorityCluster = 0;
-        double[] majorityDistributionForInstance = null;
+        double[][] distributionForInstance = new double[context.getAlgorithms().length][];
+
         StringBuilder algorithmsOutput = new StringBuilder();
 
-        double highestProbability = -1.0;
         for (int i = 0; i < context.getAlgorithms().length; i++) {
             Clusterer clusterer = (Clusterer) context.getAlgorithms()[i];
             Instances instances = (Instances) context.getModels()[i];
@@ -54,16 +56,9 @@ public class WekaClusterer extends WekaAnalyzer {
 
             // Cluster the instance
             Instance filteredInstance = filter(instance, filter);
+            @SuppressWarnings("UnusedDeclaration")
             int cluster = clusterer.clusterInstance(filteredInstance);
-            double[] distributionForInstance = clusterer.distributionForInstance(instance);
-
-            for (final double probability : distributionForInstance) {
-                if (probability > highestProbability) {
-                    majorityCluster = cluster;
-                    highestProbability = probability;
-                    majorityDistributionForInstance = distributionForInstance;
-                }
-            }
+            distributionForInstance[i] = clusterer.distributionForInstance(instance);
 
             if (analysis.isAddAlgorithmOutput()) {
                 algorithmsOutput.append(clusterer.toString());
@@ -72,7 +67,7 @@ public class WekaClusterer extends WekaAnalyzer {
         }
 
         analysis.setClazz(Integer.toString(majorityCluster));
-        analysis.setOutput(majorityDistributionForInstance);
+        analysis.setOutput(distributionForInstance);
         analysis.setAlgorithmOutput(algorithmsOutput.toString());
 
         return analysis;
@@ -85,7 +80,6 @@ public class WekaClusterer extends WekaAnalyzer {
         for (int i = 0; i < clusterers.length; i++) {
             Clusterer clusterer = (Clusterer) clusterers[i];
             Filter filter = getFilter(context, i);
-            // Instance filteredInstance = filter(instance, filter);
             Instance filteredInstance = filter((Instance) instance.copy(), filter);
             distributionForInstance[i] = clusterer.distributionForInstance(filteredInstance);
         }

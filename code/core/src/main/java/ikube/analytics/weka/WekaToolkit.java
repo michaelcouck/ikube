@@ -59,6 +59,7 @@ public final class WekaToolkit {
      * @param instances the instances to convert to a sparse instances model
      * @return the sparse instances, more memory efficient
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static Instances nonSparseToSparse(final Instances instances) {
         try {
             NonSparseToSparse nonSparseToSparseInstance = new NonSparseToSparse();
@@ -151,6 +152,33 @@ public final class WekaToolkit {
     }
 
     /**
+     * This method will filter the instance using the filter defined. Ultimately the filter changes the input
+     * instance into an instance that is useful for the analyzer. For example in the case of a SVM classifier, the
+     * support vectors are exactly that, vectors of doubles. If we are trying to classify text, we need to change(filter)
+     * the text from words to feature vectors, most likely using the tf-idf logic. The filter essentially does that
+     * for us in this method.
+     *
+     * @param instance the instance to filter into the correct form for the analyser
+     * @param filters   the filter to use for the transformation
+     * @return the filtered instance that is usable in the analyzer
+     * @throws Exception
+     */
+    public static Instance filter(final Instance instance, final Filter... filters) throws Exception {
+        if (filters == null || filters.length == 0) {
+            return instance;
+        }
+        Instance filteredInstance = instance;
+        for (final Filter filter : filters) {
+            // Filter from string to inverse vector if necessary
+            if (filter != null) {
+                filter.input(filteredInstance);
+                filteredInstance = filter.output();
+            }
+        }
+        return filteredInstance;
+    }
+
+    /**
      * This method applies multiple filters on the {@link weka.core.Instances} object, hopefully
      * replacing missing values, converting to numbers and so on.
      *
@@ -183,6 +211,7 @@ public final class WekaToolkit {
      * @return the error rate of the cross validation
      * @throws Exception
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static double crossValidate(final Classifier classifier, final Instances instances, final int folds) throws Exception {
         final Evaluation evaluation = new Evaluation(instances);
         final StringBuffer predictionsOutput = new StringBuffer();

@@ -16,11 +16,14 @@ import java.lang.reflect.Type;
  * This is the Json provider for Jersey. Jackson was not playing nicely, so we switched to Gson. This class
  * will convert to and from Json for the rest web services.
  *
+ * @deprecated This was used because Jackson didn't like the inner arrays, but interferes with file upload,
+ * essentially to use this in place of Jackson you have to then also write a multipart upload provider, and of
+ * course the list goes on if you want other types...so back to Jackson
  * @author Michael couck
  * @version 01.00
  * @since 16-08-2014
  */
-@Provider
+// @Provider
 public class JsonProvider implements MessageBodyWriter<Object>, MessageBodyReader<Object> {
 
     /**

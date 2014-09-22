@@ -3,6 +3,7 @@ package ikube.analytics;
 import ikube.model.Analysis;
 import ikube.model.Context;
 
+import java.io.InputStream;
 import java.util.Map;
 
 /**
@@ -14,6 +15,8 @@ import java.util.Map;
 public interface IAnalyticsService<I, O> {
 
     Context create(final Context context);
+
+    String upload(final String filePath, final InputStream inputStream);
 
     Context train(final Analysis<I, O> analysis);
 

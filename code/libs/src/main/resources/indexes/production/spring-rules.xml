@@ -82,9 +82,11 @@
         property:name="id"
         property:parent-ref="rule"
         property:idColumn="true"
-        property:omitNorms="true"
-        property:stored="true"
+
         property:analyzed="true"
-        property:vectored="false"/>
+        property:stored="true"
+        property:vectored="false"
+        property:tokenized="false"
+        property:omitNorms="true"/>
 
 </beans>

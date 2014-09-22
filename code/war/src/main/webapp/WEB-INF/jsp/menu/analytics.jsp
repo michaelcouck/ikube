@@ -8,10 +8,16 @@
 		</a>
 	</li>
 	
-	<li href="admin" active-link="active">
-		<a href="<c:url value="/analytics/admin.html" />">
-			<i class="icon-upload-alt"></i>Analyzer admin
+	<li href="create" active-link="active">
+		<a href="<c:url value="/analytics/create.html" />">
+			<i class="icon-upload-alt"></i>Create analyzer
 		</a>
 	</li>
-	
+
+	<li href="train" active-link="active">
+		<a href="<c:url value="/analytics/train.html" />">
+			<i class="icon-cogs"></i>Train analyzer
+		</a>
+	</li>
+
 </ul>

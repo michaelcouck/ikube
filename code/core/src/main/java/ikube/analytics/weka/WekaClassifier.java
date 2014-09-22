@@ -9,6 +9,8 @@ import weka.filters.Filter;
 
 import java.util.Arrays;
 
+import static ikube.analytics.weka.WekaToolkit.filter;
+
 /**
  * This is a wrapper for the Weka classifiers. It is essentially a holder with some methods for
  * building and training and using the underlying Weka classification(any one, for example {@link weka.classifiers.functions.SMO})

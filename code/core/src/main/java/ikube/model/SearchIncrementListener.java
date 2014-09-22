@@ -12,7 +12,7 @@ public class SearchIncrementListener {
 
     @PreUpdate
     @PrePersist
-    public void prePersist(final Search search) {
+    public void prePersistUpdate(final Search search) {
         int count = search.getCount();
         count++;
         search.setCount(count);

@@ -44,11 +44,13 @@ public class Context extends Persistable {
      */
     @Transient
     private Object[] filters;
+
     /**
      * The underlying algorithms for the analyzers, for example KMeans or J48 for example.
      */
     @Transient
     private Object[] algorithms;
+
     /**
      * The model that will train the analyzer. Typically this model is used to build the classifiers
      * and or used in the clustering of the data int he clusterers.
@@ -72,26 +74,31 @@ public class Context extends Persistable {
      */
     @Transient
     private String[] fileNames;
+
     /**
      * If this is built using the rest api, then the files may not exist for the analyzers, in that
      * case the training data will be used for the training.
      */
     @Transient
     private String[] trainingDatas;
+
     /**
      * Ths maximum number of instances that can be used to train this analyzer.
      */
     @Transient
     private int[] maxTrainings;
+
     /**
      * The evaluation of the clusterer or classifier.
      */
     @Transient
     private String[] evaluations;
+
     /**
      * Whether this set of classifiers can be serialized and persisted on the file system.
      */
     private boolean persisted;
+
     /**
      * This flag is set when the model is built completely.
      */

@@ -35,10 +35,9 @@
         property:indexDirectoryPath="${index.directory.path}"
         property:indexDirectoryPathBackup="${index.directory.path.backup}"
         property:children-ref="ikube-indexables"/>
-    <!-- property:analyzer-ref="ikube.action.index.analyzer.NgramAnalyzer" -->
     <util:list id="ikube-indexables">
         <ref local="ikube-internet"/>
-        <ref local="ikube-google-code"/>
+        <ref local="ikube-svn-google-code"/>
     </util:list>
 
     <bean
@@ -49,39 +48,18 @@
         property:idFieldName="id"
         property:titleFieldName="title"
         property:contentFieldName="contents"
+
         property:analyzed="true"
         property:stored="true"
-        property:vectored="true"
-        property:tokenized="true"
+        property:vectored="false"
+        property:tokenized="false"
+        property:omitNorms="true"
 
         property:address="false"
         property:excludedPattern="${internet.excluded.pattern}"
         property:maxExceptions="100"
         property:maxReadLength="100000"
         property:timeout="60000"
-        property:omitNorms="false"
-        property:threads="3"
-        property:internetBatchSize="${internet.batch.size}"
-        property:strategies-ref="internet-strategies"/>
-
-    <bean
-        id="ikube-google-code"
-        class="ikube.model.IndexableInternet"
-        property:name="ikube-google-code"
-        property:url="http://code.google.com/p/ikube/"
-        property:idFieldName="id"
-        property:titleFieldName="title"
-        property:contentFieldName="contents"
-        property:analyzed="true"
-        property:stored="true"
-        property:vectored="true"
-        property:address="false"
-        property:excludedPattern="${internet.excluded.pattern}"
-        property:maxExceptions="100"
-        property:maxReadLength="100000"
-        property:tokenized="true"
-        property:timeout="60000"
-        property:omitNorms="false"
         property:threads="3"
         property:internetBatchSize="${internet.batch.size}"
         property:strategies-ref="internet-strategies"/>
@@ -100,8 +78,10 @@
 
         property:analyzed="true"
         property:stored="true"
-        property:vectored="true"
-        property:address="false"
-        property:tokenized="true"/>
+        property:vectored="false"
+        property:tokenized="false"
+        property:omitNorms="true"
+
+        property:address="false"/>
 
 </beans>

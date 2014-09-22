@@ -1,5 +1,7 @@
 package ikube.web.service;
 
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataParam;
 import ikube.analytics.IAnalyticsService;
 import ikube.model.Analysis;
 import ikube.model.Context;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Component;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -47,6 +50,7 @@ public class Analyzer extends Resource {
     public static final String DESTROY = "/destroy";
     public static final String CONTEXT = "/context";
     public static final String CONTEXTS = "/contexts";
+    public static final String UPLOAD = "/upload";
 
     @Autowired
     protected IAnalyticsService analyticsService;
@@ -63,6 +67,15 @@ public class Analyzer extends Resource {
     public Response create(final Context context) {
         analyticsService.create(context);
         return buildResponse(context(context));
+    }
+
+    @POST
+    @Path(Analyzer.UPLOAD)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Api(description = "This will upload a file to be used in the creation of an analyzer.",
+            produces = String.class)
+    public Response uploadFile(@FormDataParam("file") InputStream inputStream, @FormDataParam("file") FormDataContentDisposition fileDetail) {
+        return buildResponse(analyticsService.upload(fileDetail.getFileName(), inputStream));
     }
 
     @POST

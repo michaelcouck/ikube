@@ -4,15 +4,10 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Analysis;
 import ikube.model.Context;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.OsUtilities;
 import ikube.toolkit.ThreadUtilities;
-import mockit.Mock;
-import mockit.MockClass;
 import mockit.Mockit;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import weka.classifiers.functions.SMO;
 import weka.core.Attribute;
@@ -22,9 +17,7 @@ import weka.core.Instances;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
-import java.io.File;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Enumeration;
 
 import static junit.framework.Assert.*;
@@ -37,17 +30,6 @@ import static org.mockito.Mockito.when;
  * @since 21-11-2013
  */
 public class WekaAnalyzerTest extends AbstractTest {
-
-    static boolean WRITTEN = Boolean.FALSE;
-
-    @SuppressWarnings("UnusedDeclaration")
-    @MockClass(realClass = WekaToolkit.class)
-    public static class WekaToolkitMock {
-        @Mock
-        public static void writeToArff(final Instances instances, final String filePath) {
-            WRITTEN = Boolean.TRUE;
-        }
-    }
 
     private Context context;
     private Analysis analysis;
@@ -77,7 +59,7 @@ public class WekaAnalyzerTest extends AbstractTest {
 
         analysis = new Analysis();
 
-        Mockit.setUpMocks(WekaToolkitMock.class);
+        // Mockit.setUpMocks(WekaToolkitMock.class);
     }
 
     @After
@@ -176,7 +158,7 @@ public class WekaAnalyzerTest extends AbstractTest {
             Enumeration enumeration = instances.enumerateInstances();
             while (enumeration.hasMoreElements()) {
                 Instance instance = (Instance) enumeration.nextElement();
-                Instance filteredInstance = wekaAnalyzer.filter(instance, filter);
+                Instance filteredInstance = WekaToolkit.filter(instance, filter);
                 assertNotSame(instance.toString(), filteredInstance.toString());
             }
         }
@@ -190,7 +172,7 @@ public class WekaAnalyzerTest extends AbstractTest {
         for (int i = 0; i < filters.length; i++) {
             Filter filter = (Filter) filters[i];
             Instances instances = models[i];
-            Instances filteredInstances = wekaAnalyzer.filter(instances, filter);
+            Instances filteredInstances = WekaToolkit.filter(instances, filter);
             assertNotSame(instances.firstInstance().toString(), filteredInstances.firstInstance().toString());
         }
     }
@@ -206,81 +188,6 @@ public class WekaAnalyzerTest extends AbstractTest {
                     for (final double probability : distributionInstance) {
                         assertTrue(probability == 0.0 || probability == 1.0);
                     }
-                }
-            }
-        }
-    }
-
-    @Test
-    @Ignore
-    public void serializeAnalyzers() throws Exception {
-        File[] serializedAnalyzerFiles = null;
-        try {
-            wekaAnalyzer.init(context);
-            wekaAnalyzer.build(context);
-            serializedAnalyzerFiles = wekaAnalyzer.serializeAnalyzers(context);
-            assertEquals(3, serializedAnalyzerFiles.length);
-            for (final File serializedAnalyzerFile : serializedAnalyzerFiles) {
-                assertTrue(serializedAnalyzerFile.exists());
-            }
-        } finally {
-            if (serializedAnalyzerFiles != null) {
-                for (final File serializedAnalyzerFile : serializedAnalyzerFiles) {
-                    FileUtilities.deleteFile(serializedAnalyzerFile);
-                }
-            }
-        }
-    }
-
-    @Test
-    @Ignore
-    public void deserializeAnalyzers() throws Exception {
-        File[] serializedAnalyzerFiles = null;
-        try {
-            wekaAnalyzer.init(context);
-            wekaAnalyzer.build(context);
-            serializedAnalyzerFiles = wekaAnalyzer.serializeAnalyzers(context);
-
-            Object[] deserializedAnalyzers = wekaAnalyzer.deserializeAnalyzers(context);
-            assertNotNull(deserializedAnalyzers);
-            assertEquals(3, deserializedAnalyzers.length);
-            for (final Object deserializedAnalyzer : deserializedAnalyzers) {
-                assertTrue(SMO.class.isAssignableFrom(deserializedAnalyzer.getClass()));
-            }
-        } catch (final Throwable t) {
-            if (OsUtilities.isOs("3.11.0-12-generic")) {
-                throw t;
-            } else {
-                logger.info("Not correct operating system : " + OsUtilities.os());
-            }
-        } finally {
-            if (serializedAnalyzerFiles != null) {
-                for (final File serializedAnalyzerFile : serializedAnalyzerFiles) {
-                    FileUtilities.deleteFile(serializedAnalyzerFile);
-                }
-            }
-        }
-    }
-
-    @Test
-    @Ignore
-    public void getSerializedAnalyzerFiles() throws Exception {
-        File[] serializedAnalyzerFiles = null;
-        try {
-            wekaAnalyzer.init(context);
-            wekaAnalyzer.build(context);
-            wekaAnalyzer.serializeAnalyzers(context);
-
-            serializedAnalyzerFiles = wekaAnalyzer.getSerializedAnalyzerFiles(context);
-            assertNotNull(serializedAnalyzerFiles);
-            assertTrue(serializedAnalyzerFiles.length >= 3);
-            for (final File serializedAnalyzerFile : serializedAnalyzerFiles) {
-                assertTrue(serializedAnalyzerFile.exists());
-            }
-        } finally {
-            if (serializedAnalyzerFiles != null) {
-                for (final File serializedAnalyzerFile : serializedAnalyzerFiles) {
-                    FileUtilities.deleteFile(serializedAnalyzerFile);
                 }
             }
         }

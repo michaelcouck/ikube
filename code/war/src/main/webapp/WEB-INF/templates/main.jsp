@@ -60,7 +60,9 @@
 	<%--<script src="<c:url value="/assets/javascripts/ui-bootstrap-tpls-0.6.0.js" />" type='text/javascript'></script>--%>
 	<%-- <script src="<c:url value="/assets/javascripts/ui-bootstrap-tpls-0.4.0.js" />" type='text/javascript'></script> --%>
 	<script type="text/javascript" src="http://angular-ui.github.io/ui-slider/src/slider.js"></script>
-	
+    <%--<script src="<c:url value="/assets/javascripts/ng-flow-standalone.js" />" type="text/javascript"></script>--%>
+    <%--<script src="<c:url value="/assets/javascripts/upload.js" />" type="text/javascript"></script>--%>
+
 	<!-- Must be after Angular -->
 	<script src="<c:url value="/assets/javascripts/ng-google-chart.js" />" type="text/javascript"></script>
 	<!-- Services that are injected into controllers. -->
@@ -94,6 +96,7 @@
 	<script src="<c:url value="/assets/javascripts/controllers/happy-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/notification-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/apis-controller.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/controllers/file-upload-controller.js" />" type="text/javascript"></script>
 
 </head>
 

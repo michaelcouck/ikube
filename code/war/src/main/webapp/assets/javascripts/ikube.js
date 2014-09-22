@@ -1,5 +1,7 @@
 /** Note: This file must be loaded after all the other JavaScript files. */
 
+'use strict';
+
 /**
  * This function will track the page view for Google Analytics..
  *
@@ -19,7 +21,8 @@ function track() {
 var refreshInterval = 15000;
 var chartRefreshInterval = 5000;
 var allLanguages = [];
-allLanguages.push('汉语', 'Nederlands', 'English', 'Español', '日本語', 'Le français', 'Deutsch', 'Svenska', 'ภาษาพูด', 'العربية', 'Türkçe', 'ру́сский');
+allLanguages.push('汉语', 'Nederlands', 'English', 'Español', '日本語', 'Le français', 'Deutsch', 'Svenska', 'ภาษาพูด',
+    'العربية', 'Türkçe', 'ру́сский');
 
 /**
  * This is the main Angular module for the iKube application on the

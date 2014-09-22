@@ -4,11 +4,13 @@ import ikube.analytics.action.*;
 import ikube.cluster.IClusterManager;
 import ikube.model.Analysis;
 import ikube.model.Context;
+import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -45,6 +47,16 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
         ThreadUtilities.waitForFutures(futures, 15);
         LOGGER.debug("Contexts : " + getContexts());
         return context;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String upload(final String filePath, final InputStream inputStream) {
+        FileUtilities.setContents(filePath, inputStream);
+        LOGGER.debug("Upload details : " + filePath + ","  + inputStream);
+        return "File uploaded via Jersey based RESTFul Webservice to: " + filePath;
     }
 
     /**

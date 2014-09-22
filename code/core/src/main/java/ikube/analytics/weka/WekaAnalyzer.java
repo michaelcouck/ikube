@@ -1,7 +1,6 @@
 package ikube.analytics.weka;
 
 import com.google.common.collect.Lists;
-import ikube.IConstants;
 import ikube.analytics.AAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
@@ -20,15 +19,13 @@ import weka.core.OptionHandler;
 import weka.filters.Filter;
 
 import java.io.*;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Future;
 
-import static ikube.toolkit.FileUtilities.*;
+import static ikube.analytics.weka.WekaToolkit.filter;
 import static ikube.toolkit.ThreadUtilities.waitForAnonymousFutures;
-import static org.apache.commons.io.FilenameUtils.getBaseName;
 
 /**
  * This is the base class for the Weka implementation of the analytics API. It has base methods for creating
@@ -49,7 +46,6 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
     @Override
     @SuppressWarnings("unchecked")
     public void init(final Context context) throws Exception {
-        logger.warn("Config file path : " + configFilePath);
         if (String.class.isAssignableFrom(context.getAnalyzer().getClass())) {
             context.setAnalyzer(Class.forName(context.getAnalyzer().toString()).newInstance());
         }
@@ -134,9 +130,6 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
         context.setAlgorithms(algorithms);
         context.setEvaluations(evaluations);
         context.setCapabilities(capabilities);
-        if (context.isPersisted() && !context.isBuilt()) {
-            serializeAnalyzers(context);
-        }
         context.setBuilt(Boolean.TRUE);
     }
 
@@ -277,116 +270,6 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
             }
         }
         return inputStreams;
-    }
-
-    File[] serializeAnalyzers(final Context context) {
-        String[] dataFileNames = context.getFileNames();
-        File[] serializedAnalyzerFiles = new File[dataFileNames.length];
-        File configurationDirectory = getOrCreateDirectory(new File(configFilePath).getParentFile());
-        File serializationDirectory = getOrCreateDirectory(new File(configurationDirectory, context.getName()));
-        Object[] analyzers = context.getAlgorithms();
-        for (int i = 0; i < analyzers.length; i++) {
-            Object analyzer = analyzers[i];
-            String fileName = getBaseName(dataFileNames[i]) + IConstants.ANALYZER_SERIALIZED_FILE_EXTENSION;
-            File serializedAnalyzerFile = getOrCreateFile(new File(serializationDirectory, fileName));
-            serializedAnalyzerFiles[i] = serializedAnalyzerFile;
-            logger.info("Serializing analyzer to file : " + serializedAnalyzerFile.getPath());
-            FileOutputStream fileOutputStream = null;
-            try {
-                fileOutputStream = new FileOutputStream(serializedAnalyzerFile);
-                ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-                objectOutputStream.writeObject(analyzer);
-            } catch (final Exception e) {
-                logger.error("Exception serializing analyzer : " + serializedAnalyzerFile + ", " + context.getName(), e);
-            } finally {
-                IOUtils.closeQuietly(fileOutputStream);
-            }
-        }
-        return serializedAnalyzerFiles;
-    }
-
-    Object[] deserializeAnalyzers(final Context context) {
-        List<Object> analyzers = Lists.newArrayList();
-        File[] serializedAnalyzerFiles = getSerializedAnalyzerFiles(context);
-        if (serializedAnalyzerFiles == null || serializedAnalyzerFiles.length == 0 ||
-                serializedAnalyzerFiles.length != context.getAlgorithms().length) {
-            logger.info("No analyzer files found : " + context.getName() + ", " + Arrays.toString(serializedAnalyzerFiles));
-            return null;
-        }
-        for (final File serializedAnalyzerFile : serializedAnalyzerFiles) {
-            FileInputStream fileInputStream = null;
-            try {
-                logger.info("De-serialising : " + serializedAnalyzerFile);
-                fileInputStream = new FileInputStream(serializedAnalyzerFile);
-                ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-                Object analyzer = objectInputStream.readObject();
-                analyzers.add(analyzer);
-            } catch (final Exception e) {
-                logger.error("Exception de-serializing analyzer : " + serializedAnalyzerFile + ", " + context.getName(), e);
-            } finally {
-                IOUtils.closeQuietly(fileInputStream);
-            }
-        }
-        return analyzers.toArray(new Object[analyzers.size()]);
-    }
-
-    File[] getSerializedAnalyzerFiles(final Context context) {
-        File configurationDirectory = new File(configFilePath).getParentFile();
-        File serializationDirectory = getOrCreateDirectory(new File(configurationDirectory, context.getName()));
-        List<File> dataFiles = Lists.newArrayList();
-        findFilesRecursively(serializationDirectory, dataFiles, IConstants.ANALYZER_SERIALIZED_FILE_EXTENSION);
-        return dataFiles.toArray(new File[dataFiles.size()]);
-    }
-
-    /**
-     * This method will filter the instance using the filter defined. Ultimately the filter changes the input
-     * instance into an instance that is useful for the analyzer. For example in the case of a SVM classifier, the
-     * support vectors are exactly that, vectors of doubles. If we are trying to classify text, we need to change(filter)
-     * the text from words to feature vectors, most likely using the tf-idf logic. The filter essentially does that
-     * for us in this method.
-     *
-     * @param instance the instance to filter into the correct form for the analyser
-     * @param filters   the filter to use for the transformation
-     * @return the filtered instance that is usable in the analyzer
-     * @throws Exception
-     */
-    synchronized Instance filter(final Instance instance, final Filter... filters) throws Exception {
-        if (filters == null || filters.length == 0) {
-            return instance;
-        }
-        Instance filteredInstance = instance;
-        for (final Filter filter : filters) {
-            // Filter from string to inverse vector if necessary
-            if (filter != null) {
-                filter.input(filteredInstance);
-                filteredInstance = filter.output();
-            }
-        }
-        return filteredInstance;
-    }
-
-    /**
-     * As with the {@link ikube.analytics.weka.WekaAnalyzer#filter(weka.core.Instance, weka.filters.Filter...)} method, this method filters
-     * the entire data set into something that is usable. Typically this is used in the training faze of the logic when the 'raw' data set
-     * needs to be transformed into a matrix that can be used for training the analyzer.
-     *
-     * @param instances the instances that are to be transformed using the filter
-     * @param filters    the filter to use for the transformation
-     * @return the transformed instances object, ready to be used in training the classifier
-     * @throws Exception
-     */
-    synchronized Instances filter(final Instances instances, final Filter... filters) throws Exception {
-        if (filters == null || filters.length == 0) {
-            return instances;
-        }
-        Instances filteredInstances = instances;
-        for (final Filter filter : filters) {
-            if (filter != null) {
-                filter.setInputFormat(filteredInstances);
-                filteredInstances = Filter.useFilter(filteredInstances, filter);
-            }
-        }
-        return filteredInstances;
     }
 
     /**

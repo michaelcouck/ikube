@@ -27,26 +27,84 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
         addAlgorithmOutput: true
     };
 
+    $scope.analyzers = [
+        'ikube.analytics.weka.WekaClassifier',
+        'ikube.analytics.neuroph.NeurophAnalyzer',
+        'ikube.analytics.weka.WekaClusterer'
+    ];
+
+    $scope.filters = [
+        'weka.filters.unsupervised.attribute.StringToNominal',
+        'weka.filters.unsupervised.attribute.StringToWordVector',
+        'weka.filters.unsupervised.attribute.ReplaceMissingValues',
+        'weka.filters.unsupervised.attribute.ClassAssigner',
+        'weka.filters.unsupervised.attribute.RandomSubset',
+        'weka.filters.unsupervised.attribute.RemoveUseless'
+    ];
+
+    $scope.algorithms = [
+        'weka.classifiers.lazy.IB1',
+        'weka.classifiers.bayes.ComplementNaiveBayes',
+        'weka.classifiers.meta.ClassificationViaClustering',
+        'weka.classifiers.functions.LeastMedSq',
+        'weka.classifiers.functions.SMOreg',
+        'weka.classifiers.functions.SimpleLogistic',
+        'weka.classifiers.functions.Logistic',
+        'weka.classifiers.functions.SMO',
+        'weka.classifiers.meta.AdditiveRegression',
+        'weka.classifiers.functions.LinearRegression',
+        'weka.classifiers.functions.IsotonicRegression',
+        'weka.classifiers.meta.RegressionByDiscretization'
+    ];
+
     $scope.context = {
         name: undefined,
-        options: undefined, // -N 6 (six clusters for example)
-        trainingDatas: undefined,
-        maxTrainings: 10000,
+
         analyzer: undefined,
         algorithms: undefined,
-        filters: undefined
+        filters: undefined,
+
+        options: undefined, // -N 6 (six clusters for example)
+        trainingDatas: undefined,
+        maxTrainings: undefined,
+        fileNames: undefined
     };
+
+    // Listen for the file selected event
+    $scope.$on("fileSelected", function (event, args) {
+        $scope.$apply(function () {
+            $scope.fileNames = args.file;
+        });
+    });
 
     $scope.doCreate = function () {
         var url = getServiceUrl('/ikube/service/analyzer/create');
 
         //noinspection JSUnresolvedVariable
         var context = angular.copy($scope.context);
+        if (!!context.algorithms) {
+            context.algorithms = context.algorithms.split(',');
+        }
+        if (!!context.filters) {
+            context.filters = context.filters.split(',');
+        }
+        if (!!context.trainingDatas) {
+            context.trainingDatas = context.trainingDatas.split(',');
+        }
+        if (!!context.maxTrainings) {
+            context.maxTrainings = context.maxTrainings.split(',');
+        }
         if (!!context.options) {
             context.options = context.options.split(',');
         }
+        if (!!context.fileNames) {
+            context.fileNames = context.fileNames.split(',');
+        }
+
         $scope.status = undefined;
+
         var promise = $http.post(url, context);
+
         promise.success(function (data, status) {
             $scope.status = status;
             $scope.doContexts();
