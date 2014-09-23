@@ -18,8 +18,8 @@ function track() {
 }
 
 /** The global variables. */
-var refreshInterval = 15000;
-var chartRefreshInterval = 5000;
+var refreshInterval = 1500000;
+var chartRefreshInterval = 5000000;
 var allLanguages = [];
 allLanguages.push('汉语', 'Nederlands', 'English', 'Español', '日本語', 'Le français', 'Deutsch', 'Svenska', 'ภาษาพูด',
     'العربية', 'Türkçe', 'ру́сский');
@@ -29,7 +29,7 @@ allLanguages.push('汉语', 'Nederlands', 'English', 'Español', '日本語', 'L
  * client. This module will spawn and create the controllers and other
  * artifacts as required.
  */
-var module = angular.module('ikube', [ 'ui.bootstrap', 'ikube-services', 'googlechart', 'ui.slider' ]);
+var module = angular.module('ikube', [ 'ui.bootstrap', 'ikube-services', 'googlechart', 'ui.slider', 'ngTable' ]);
 
 var ua = navigator.userAgent.toLowerCase();
 var check = function (r) {

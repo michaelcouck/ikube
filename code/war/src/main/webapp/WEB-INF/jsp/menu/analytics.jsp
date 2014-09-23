@@ -20,4 +20,10 @@
 		</a>
 	</li>
 
+    <li href="configure" active-link="active">
+        <a href="<c:url value="/analytics/configure.html" />">
+            <i class="icon-forward"></i>Configure analyzer
+        </a>
+    </li>
+
 </ul>

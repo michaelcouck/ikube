@@ -24,7 +24,7 @@
                                     ng-model="analysis.context"
                                     ng-model="contexts"
 									ng-options="context for context in contexts"
-                                    ng-change="doContext()"
+                                    ng-change="getContext()"
                                     class="fill-up">
 									<option style="display: none" value="">Analyzer...</option>
 								</select>

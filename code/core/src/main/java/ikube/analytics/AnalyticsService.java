@@ -1,15 +1,19 @@
 package ikube.analytics;
 
+import ikube.IConstants;
 import ikube.analytics.action.*;
 import ikube.cluster.IClusterManager;
 import ikube.model.Analysis;
 import ikube.model.Context;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.CsvFileTools;
 import ikube.toolkit.ThreadUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +21,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import static ikube.toolkit.FileUtilities.*;
 
 /**
  * This class is implemented as a state pattern. The user specifies the type of analyzer, and the
@@ -53,10 +59,35 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
      * {@inheritDoc}
      */
     @Override
-    public String upload(final String filePath, final InputStream inputStream) {
-        FileUtilities.setContents(filePath, inputStream);
-        LOGGER.debug("Upload details : " + filePath + ","  + inputStream);
-        return "File uploaded via Jersey based RESTFul Webservice to: " + filePath;
+    public boolean upload(final String filePath, final InputStream inputStream) {
+        File outputFile = getOrCreateFile(new File(IConstants.ANALYTICS_DIRECTORY, filePath));
+        setContents(outputFile, inputStream);
+        LOGGER.debug("Upload details : " + filePath + "," + inputStream);
+        return Boolean.TRUE;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object[][][] data(final Context context, final int rows) {
+        String[] fileNames = getContext(context.getName()).getFileNames();
+        Object[][][] prunedMatrices = new Object[fileNames.length][][];
+        for (int j = 0; j < fileNames.length; j++) {
+            String fileName = fileNames[j];
+            File file = findFileRecursively(new File(IConstants.ANALYTICS_DIRECTORY), fileName);
+            try {
+                FileInputStream fileInputStream = new FileInputStream(file);
+                Object[][] matrix = new CsvFileTools().getCsvData(fileInputStream);
+                int maxRows = Math.min(matrix.length, rows);
+                Object[][] prunedMatrix = new Object[maxRows][];
+                System.arraycopy(matrix, 0, prunedMatrix, 0, maxRows);
+                prunedMatrices[j] = prunedMatrix;
+            } catch (final FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return prunedMatrices;
     }
 
     /**

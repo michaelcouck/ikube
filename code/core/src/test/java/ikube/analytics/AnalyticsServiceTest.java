@@ -1,11 +1,13 @@
 package ikube.analytics;
 
 import ikube.AbstractTest;
+import ikube.IConstants;
 import ikube.analytics.action.*;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.ApplicationContextManager;
+import ikube.toolkit.FileUtilities;
 import mockit.MockClass;
 import mockit.Mockit;
 import org.junit.After;
@@ -17,12 +19,15 @@ import org.mockito.Spy;
 import weka.classifiers.functions.SMO;
 import weka.filters.Filter;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertNotNull;
+import static ikube.toolkit.FileUtilities.*;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -95,6 +100,36 @@ public class AnalyticsServiceTest extends AbstractTest {
         context = analyticsService.create(context);
         assertNotNull(context);
         verify(clusterManager, atLeastOnce()).sendTaskToAll(any(Create.class));
+    }
+
+    @Test
+    public void upload() {
+        String fileName = "some-file.txt";
+        File outputFile = null;
+        try {
+            boolean uploaded = analyticsService.upload("target/" + fileName, new ByteArrayInputStream("Some text here.".getBytes()));
+            assertTrue(uploaded);
+            outputFile = findFileRecursively(new File("."), fileName);
+            assertNotNull(outputFile);
+            assertTrue(outputFile.exists());
+        } finally {
+            FileUtilities.deleteFile(outputFile);
+        }
+    }
+
+    @Test
+    public void data() {
+        String fileName = "general.csv";
+        File file = findFileRecursively(new File("."), fileName);
+        setContents(new File(IConstants.IKUBE_DIRECTORY, fileName), getContent(file).getBytes());
+
+        when(context.getFileNames()).thenReturn(new String[]{fileName});
+
+        Object[][][] matrices = analyticsService.data(context, 10);
+        assertNotNull(matrices);
+        assertEquals(1, matrices.length);
+        assertEquals(10, matrices[0].length);
+        assertEquals(40, matrices[0][0].length);
     }
 
     @Test

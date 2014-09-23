@@ -1,4 +1,3 @@
-//noinspection JSUnusedLocalSymbols
 /**
  * @author Michael Couck
  * @since 24-11-2013
@@ -7,18 +6,17 @@
  * @param $http
  * @param $injector
  * @param $timeout
+ * @param $location
  */
-module.controller('AnalyticsController', function ($http, $scope, $injector, $timeout, notificationService) {
+module.controller('AnalyticsController', function ($scope, $http, $injector, $timeout, $location, notificationService) {
 
-    var textColour = "#aaaaaa";
+    $scope.someData = [[1,2,3], [1,2,3], [1,2,3]];
 
-    $scope.status = 200;
-
-    $scope.origin = [0, 0];
-    $scope.headers = ["Cluster", "Cluster probability"];
-
+    $scope.status = undefined;
     $scope.contexts = undefined;
-
+    $scope.file = undefined;
+    $scope.fileUploadStatus = undefined;
+    $scope.matrices = undefined;
     $scope.analysis = {
         context: undefined,
         clazz: undefined,
@@ -73,15 +71,51 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
     // Listen for the file selected event
     $scope.$on("fileSelected", function (event, args) {
         $scope.$apply(function () {
-            $scope.fileNames = args.file;
+            $scope.file = args.file;
+            $scope.context.fileNames = args.file.name;
         });
     });
 
+    // Listen for the file to be uploaded
+    $scope.$on("fileUploaded", function (event, args) {
+        $scope.fileUploadStatus = args.status;
+    });
+
     $scope.doCreate = function () {
+
+        if ($scope.fileUploadStatus != 200) {
+            var text = ['Please upload a data file before creating the analyzer : ', $scope.fileUploadStatus];
+            notificationService.notify(text, '/ikube/assets/images/icons/red_cross.png', 15);
+            return;
+        }
+
         var url = getServiceUrl('/ikube/service/analyzer/create');
 
-        //noinspection JSUnresolvedVariable
         var context = angular.copy($scope.context);
+        $scope.splitProperties(context);
+
+        $scope.status = undefined;
+
+        var promise = $http.post(url, context);
+
+        promise.success(function (data, status) {
+            $scope.status = status;
+            var text = ['Created analyzer : ', $scope.context.name, ', status : ', $scope.status];
+            notificationService.notify(text, '/ikube/assets/images/icons/green_tick.png', 5);
+            // Doesn't work
+            // $location.path(configureUrl);
+            document.location.href = '/ikube/analytics/configure.html';
+        });
+        promise.error(function (data, status) {
+            $scope.status = status;
+            var text = ['Exception creating analyzer : ', $scope.context.name, ', status : ', $scope.status];
+            notificationService.notify(text, '/ikube/assets/images/icons/red_cross.png', 15);
+            $scope.getContexts();
+        });
+    };
+
+    $scope.splitProperties = function(context) {
+        // $scope.fileNames = $scope.file;
         if (!!context.algorithms) {
             context.algorithms = context.algorithms.split(',');
         }
@@ -100,22 +134,6 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
         if (!!context.fileNames) {
             context.fileNames = context.fileNames.split(',');
         }
-
-        $scope.status = undefined;
-
-        var promise = $http.post(url, context);
-
-        promise.success(function (data, status) {
-            $scope.status = status;
-            $scope.doContexts();
-            var text = ['Created analyzer : ', $scope.context.name, ', status : ', $scope.status];
-            notificationService.notify(text, '/ikube/assets/images/icons/green_tick.png', 5);
-        });
-        promise.error(function (data, status) {
-            $scope.status = status;
-            var text = ['Exception creating analyzer : ', $scope.context.name, ', status : ', $scope.status];
-            notificationService.notify(text, '/ikube/assets/images/icons/red_cross.png', 15);
-        });
     };
 
     $scope.doTrain = function () {
@@ -155,7 +173,6 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
 
     $scope.doAnalysis = function () {
         var url = getServiceUrl('/ikube/service/analyzer/analyze');
-        //noinspection JSUnresolvedVariable
 
         $scope.analysis.clazz = undefined;
         $scope.analysis.output = undefined;
@@ -165,14 +182,15 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
         var promise = $http.post(url, $scope.analysis);
         promise.success(function (data, status) {
             $scope.status = status;
-            $scope.analysis = data;
+            $scope.analysis.clazz = data.clazz;
+            $scope.analysis.output = data.output;
         });
         promise.error(function (data, status) {
             $scope.status = status;
         });
     };
 
-    $scope.doContexts = function () {
+    $scope.getContexts = function () {
         var url = getServiceUrl('/ikube/service/analyzer/contexts');
         var promise = $http.get(url);
 
@@ -186,7 +204,7 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
         });
     };
 
-    $scope.doContext = function () {
+    $scope.getContext = function () {
         var url = getServiceUrl('/ikube/service/analyzer/context');
 
         $scope.status = undefined;
@@ -202,25 +220,21 @@ module.controller('AnalyticsController', function ($http, $scope, $injector, $ti
         });
     };
 
-    $scope.doContexts();
-
-    $scope.doChart = function (distributionForInstances) {
-        //noinspection JSUnresolvedVariable,JSUnresolvedFunction
-        return {
-            type: "ScatterChart",
-            cssStyle: "height:300px; width:100%;",
-            data: google.visualization.arrayToDataTable(distributionForInstances),
-            options: {
-                legend: { position: 'bottom', textStyle: { color: '#aaaaaa', fontSize: 10 } },
-                title: "Clustered instances",
-                titleTextStyle: { fontSize: 16, color: '#999999' },
-                vAxis: { title: 'Probability', titleTextStyle: { color: textColour, fontSize: 13 } },
-                hAxis: { title: 'Clusters', titleTextStyle: { color: textColour, fontSize: 13 } },
-                backgroundColor: { fill: 'transparent' }
-            }
-        };
+    $scope.getData = function() {
+        var url = getServiceUrl('/ikube/service/analyzer/data');
+        return $timeout(function() {
+            $scope.status = undefined;
+            var promise = $http.post(url, $scope.context);
+            promise.success(function (data, status) {
+                $scope.status = status;
+                $scope.matrices = data;
+            });
+            promise.error(function (data, status) {
+                $scope.status = status;
+            });
+        }, 1000);
     };
 
-    // $scope.chart = $scope.doChart($scope.analysis.distributionForInstances);
+    $scope.getContexts();
 
 });

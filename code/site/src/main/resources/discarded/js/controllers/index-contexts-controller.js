@@ -22,7 +22,7 @@ module.controller('IndexContextsController', function($http, $scope, $timeout) {
 		promise.error(function(data, status) {
 			$scope.status = status;
 		});
-	}
+	};
 	// Immediately refresh the data
 	$scope.refreshIndexContexts();
 	// Refresh the index contexts every so often
@@ -49,7 +49,7 @@ module.controller('IndexContextsController', function($http, $scope, $timeout) {
 		promise.error(function(data, status) {
 			$scope.status = status;
 		});
-	}
+	};
 	
 	// This function will delete the index completely on the file system
 	$scope.deleteIndex = function(indexName) {
@@ -70,7 +70,7 @@ module.controller('IndexContextsController', function($http, $scope, $timeout) {
 			$scope.status = status;
 			alert('Error sending delete message : ' + status);
 		});
-	}
+	};
 	
 	$scope.editing = function() {
 		return $scope.indexContext != undefined && $scope.indexContext != null;
@@ -78,14 +78,6 @@ module.controller('IndexContextsController', function($http, $scope, $timeout) {
 	
 	$scope.cancel = function() {
 		$scope.indexContext = null;
-	};
-	
-	$scope.update = function() {
-		// TODO Update the database
-	};
-	
-	$scope.parent = function() {
-		// TODO Get the parent on the page for editing
 	};
 	
 	$scope.dataTable = function dataTable(element, data) {
@@ -97,15 +89,13 @@ module.controller('IndexContextsController', function($http, $scope, $timeout) {
 			"aoColumns": [
 			    { "sTitle" : "Name" },
 			    { "sTitle" : "Open" },
-//			    { "sTitle" : "Max age" },
-//			    { "sTitle" : "Path" },
 			    { "sTitle" : "Documents" },
 			    { "sTitle" : "Size" }
 	        ],
 	        "aaData" : data,
-			 fnRowCallback : function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+			 fnRowCallback : function(nRow) {
 				// Row click
-				var row = $(nRow)
+				var row = $(nRow);
 				$('td', nRow).attr('nowrap','nowrap');
 				row.on("click", function() {
 					var name = row.find("td:first").text();
@@ -113,18 +103,17 @@ module.controller('IndexContextsController', function($http, $scope, $timeout) {
 						var indexContext = $scope.indexContexts[i];
 						if (name == indexContext.name) {
 							$scope.indexContext = indexContext;
-							// $scope.modal("#crud-modal");
 							$scope.$apply();
 						}
 					}
 				});
 			}
 	    } );
-	}
+	};
 	
 	$scope.modal = function modal(element) {
 		return $(element).modal();
-	}
+	};
 	
 	return $timeout(function() {
 		// We need to create an array of arrays for the data table
@@ -136,8 +125,6 @@ module.controller('IndexContextsController', function($http, $scope, $timeout) {
 			var row = [];
 			row.push(indexContext.name);
 			row.push(indexContext.open);
-//			row.push(indexContext.maxAge);
-//			row.push(indexContext.indexDirectoryPath);
 			row.push(indexContext.numDocsForSearchers);
 			row.push(indexContext.snapshot.indexSize);
 			table.push(row);

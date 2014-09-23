@@ -7,3 +7,46 @@
     line-height: 15px;
     position: relative;
 }
+
+.ng-table {
+    /*max-width: 100%;*/
+    background-color: transparent;
+    border-collapse: collapse;
+    border-spacing: 0;
+    border: 1px solid #dddddd;
+}
+
+.ng-table th,
+.ng-table td {
+    padding: 8px;
+    line-height: 20px;
+    text-align: left;
+    vertical-align: top;
+    /*border-top: 1px solid #dddddd;*/
+    border: 1px solid #dddddd;
+}
+
+/* line 31, bootstrap/_tables.css.scss */
+.ng-table th {
+    font-weight: bold;
+}
+
+/* line 35, bootstrap/_tables.css.scss */
+.ng-table thead th {
+    vertical-align: bottom;
+}
+
+/* line 44, bootstrap/_tables.css.scss */
+.ng-table caption + thead tr:first-child th,
+.ng-table caption + thead tr:first-child td,
+.ng-table colgroup + thead tr:first-child th,
+.ng-table colgroup + thead tr:first-child td,
+.ng-table thead:first-child tr:first-child th,
+.ng-table thead:first-child tr:first-child td {
+    border-top: 0;
+}
+
+/* line 48, bootstrap/_tables.css.scss */
+.ng-table tbody + tbody {
+    border-top: 2px solid #dddddd;
+}

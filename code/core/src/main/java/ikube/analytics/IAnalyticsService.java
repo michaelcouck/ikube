@@ -16,7 +16,9 @@ public interface IAnalyticsService<I, O> {
 
     Context create(final Context context);
 
-    String upload(final String filePath, final InputStream inputStream);
+    boolean upload(final String filePath, final InputStream inputStream);
+
+    Object[][][] data(final Context context, final int rows);
 
     Context train(final Analysis<I, O> analysis);
 

@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import java.lang.reflect.*;
 import java.util.*;
 
+import static org.springframework.util.ReflectionUtils.*;
+
 /**
  * This class has utility methods to generate object graphs for testing.
  *
@@ -18,15 +20,19 @@ import java.util.*;
  */
 public final class ObjectToolkit {
 
+    /**
+     * This is the interface that will determine whether an object can be built by the object toolkit. In some cases this is not required
+     * for example when the object is transient then the predicate would return false from a transient check.
+     *
+     * @author Michael Couck
+     */
+    public interface Predicate {
+        public boolean perform(final Object target);
+    }
+
     private static final Logger LOGGER = Logger.getLogger(ObjectToolkit.class);
     private static final Map<Class<?>, Field> ID_FIELDS = new HashMap<>();
     private static final List<Predicate> PREDICATES = new ArrayList<>();
-
-    /**
-     * Private constructor to avoid instantiation
-     */
-    private ObjectToolkit() {
-    }
 
     public static void registerPredicates(final Predicate... predicates) {
         Collections.addAll(PREDICATES, predicates);
@@ -55,8 +61,7 @@ public final class ObjectToolkit {
      * @param excludedFields the fields that will not be populated
      * @return the target with populated fields
      */
-    public static <T> T populateFields(final Class<?> klass, final T target, final boolean collections, final int maxDepth,
-                                       final String... excludedFields) {
+    public static <T> T populateFields(final Class<?> klass, final T target, final boolean collections, final int maxDepth, final String... excludedFields) {
         return populateFields(klass, target, collections, 0, maxDepth, excludedFields);
     }
 
@@ -79,17 +84,17 @@ public final class ObjectToolkit {
         if (depth > maxDepth) {
             return null;
         }
-        ReflectionUtils.FieldFilter fieldFilter = getFieldFilter();
-        ReflectionUtils.FieldCallback fieldCallback = getFieldCallback(target, collections, depth, maxDepth, excludedFields);
-        ReflectionUtils.doWithFields(klass, fieldCallback, fieldFilter);
+        FieldFilter fieldFilter = getFieldFilter();
+        FieldCallback fieldCallback = getFieldCallback(target, collections, depth, maxDepth, excludedFields);
+        doWithFields(klass, fieldCallback, fieldFilter);
         if (!Object.class.equals(klass.getSuperclass())) {
             populateFields(klass.getSuperclass(), target, collections, depth, maxDepth, excludedFields);
         }
         return target;
     }
 
-    private static ReflectionUtils.FieldFilter getFieldFilter() {
-        return new ReflectionUtils.FieldFilter() {
+    private static FieldFilter getFieldFilter() {
+        return new FieldFilter() {
             @Override
             public boolean matches(final Field field) {
                 // We don't set the fields that are static, final
@@ -99,9 +104,8 @@ public final class ObjectToolkit {
         };
     }
 
-    private static ReflectionUtils.FieldCallback getFieldCallback(final Object target, final Boolean collections, final int depth,
-                                                                  final int maxDepth, final String... excludedFields) {
-        return new ReflectionUtils.FieldCallback() {
+    private static FieldCallback getFieldCallback(final Object target, final Boolean collections, final int depth, final int maxDepth, final String... excludedFields) {
+        class ObjectCreatorFieldCallback implements FieldCallback {
             @Override
             @SuppressWarnings({"rawtypes", "unchecked"})
             public void doWith(final Field field) throws IllegalArgumentException, IllegalAccessException {
@@ -169,7 +173,8 @@ public final class ObjectToolkit {
                     LOGGER.error(e.getMessage() + ", " + field + ", " + fieldValue, e);
                 }
             }
-        };
+        }
+        return new ObjectCreatorFieldCallback();
     }
 
     private static boolean isIgnored(final Field field, final String[] excludedFields) {
@@ -280,7 +285,7 @@ public final class ObjectToolkit {
     }
 
     public static Field getField(final Object target, final String fieldName) {
-        Field field = ReflectionUtils.findField(target.getClass(), fieldName);
+        Field field = findField(target.getClass(), fieldName);
         field.setAccessible(Boolean.TRUE);
         return field;
     }
@@ -312,7 +317,7 @@ public final class ObjectToolkit {
     }
 
     public static void setField(final Object target, final String fieldName, final Object fieldValue) {
-        Field field = ReflectionUtils.findField(target.getClass(), fieldName);
+        Field field = findField(target.getClass(), fieldName);
         boolean accessible = field.isAccessible();
         field.setAccessible(Boolean.TRUE);
         ReflectionUtils.setField(field, target, fieldValue);
@@ -384,13 +389,9 @@ public final class ObjectToolkit {
     }
 
     /**
-     * This is the interface that will determine whether an object can be built by the object toolkit. In some cases this is not required
-     * for example when the object is transient then the predicate would return false from a transient check.
-     *
-     * @author Michael Couck
+     * Private constructor to avoid instantiation
      */
-    public interface Predicate {
-        public boolean perform(final Object target);
+    private ObjectToolkit() {
     }
 
 }

@@ -405,6 +405,25 @@ public final class FileUtilities {
     }
 
     /**
+     * Writes the contents of a byte array to a file.
+     *
+     * @param file        the file to write to
+     * @param inputStream the byte data to write
+     */
+    public static void setContents(final File file, final InputStream inputStream) {
+        FileOutputStream fileOutputStream = null;
+        try {
+            makeReadWrite(file);
+            fileOutputStream = new FileOutputStream(file);
+            IOUtils.copyLarge(inputStream, fileOutputStream);
+        } catch (final IOException e) {
+            LOGGER.error("IO exception writing file contents", e);
+        } finally {
+            close(fileOutputStream);
+        }
+    }
+
+    /**
      * This method will take a, potentially large input stream, and incrementally write it to the
      * output file path location.
      *

@@ -24,7 +24,8 @@
 							</span>
 						</span>
 					</div>
-					<form class="fill-up" ng-controller="FileUploadController">
+                    <%--target="/analytics/configure.html"--%>
+                    <form class="fill-up" ng-controller="FileUploadController">
 						<div class="row-fluid">
 							<div class="padded">
                                 <div class="note"><b>Specify the unique identifier for your analyzer...</b></div>
@@ -47,10 +48,10 @@
                                 </div>
                                 <div class="input">
                                     <select
-                                            ng-model="context.algorithms"
-                                            ng-model="algorithms"
-                                            ng-options="algorithm for algorithm in algorithms"
-                                            class="fill-up">
+                                        ng-model="context.algorithms"
+                                        ng-model="algorithms"
+                                        ng-options="algorithm for algorithm in algorithms"
+                                        class="fill-up">
                                         <option style="display:none" value="">Algorithm type...</option>
                                     </select>
                                 </div>
@@ -80,12 +81,11 @@
                                     <b>Select an input data file to train the model. Typically this is a csv file</b>
                                 </div>
                                 <input type="file" file-upload/>
-                                <%--<button type="submit" class="button blue" ng-click="upload();">Upload</button>--%>
 
                                 <div class="note" style="margin-top: 15px;">
                                     <i class="icon-warning-sign"></i> Warning: You overwrite the original analyzer when submitted
                                 </div>
-                                <button type="submit" class="button blue" ng-click="upload();doCreate();">Create</button>
+                                <button type="submit" class="button blue" ng-click="doCreate();">Create</button>
 							</div>
 						</div>
 					</form>

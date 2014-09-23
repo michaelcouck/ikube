@@ -82,16 +82,18 @@ public class NeurophAnalyzer extends AAnalyzer<Analysis, Analysis, Analysis> {
 
         Object[] options = context.getOptions();
 
-        Iterator optionsIterator = Arrays.asList(options).iterator();
-        List<String> stringOptions = new ArrayList<>();
-        while (optionsIterator.hasNext()) {
-            Object fieldName = optionsIterator.next();
-            if (fieldName.toString().startsWith("-") && optionsIterator.hasNext()) {
-                stringOptions.add(fieldName.toString());
-                stringOptions.add(optionsIterator.next().toString());
+        if (options != null && options.length > 0) {
+            Iterator optionsIterator = Arrays.asList(options).iterator();
+            List<String> stringOptions = new ArrayList<>();
+            while (optionsIterator.hasNext()) {
+                Object fieldName = optionsIterator.next();
+                if (fieldName.toString().startsWith("-") && optionsIterator.hasNext()) {
+                    stringOptions.add(fieldName.toString());
+                    stringOptions.add(optionsIterator.next().toString());
+                }
             }
+            parser.parseArgument(stringOptions);
         }
-        parser.parseArgument(stringOptions);
 
         Object[] algorithms = context.getAlgorithms();
         Object[] models = context.getModels() != null ? context.getModels() : new Object[algorithms.length];

@@ -51,6 +51,7 @@ public class Analyzer extends Resource {
     public static final String CONTEXT = "/context";
     public static final String CONTEXTS = "/contexts";
     public static final String UPLOAD = "/upload";
+    public static final String DATA = "/data";
 
     @Autowired
     protected IAnalyticsService analyticsService;
@@ -74,8 +75,17 @@ public class Analyzer extends Resource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Api(description = "This will upload a file to be used in the creation of an analyzer.",
             produces = String.class)
-    public Response uploadFile(@FormDataParam("file") InputStream inputStream, @FormDataParam("file") FormDataContentDisposition fileDetail) {
+    public Response upload(@FormDataParam("file") InputStream inputStream, @FormDataParam("file") FormDataContentDisposition fileDetail) {
         return buildResponse(analyticsService.upload(fileDetail.getFileName(), inputStream));
+    }
+
+    @POST
+    @Path(Analyzer.DATA)
+    @Api(description = "This method will just get some data that is attached to the analyzer.",
+            produces = Analysis.class)
+    @SuppressWarnings({"unchecked"})
+    public Response data(final Context context) {
+        return buildResponse(analyticsService.data(context, 10));
     }
 
     @POST

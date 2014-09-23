@@ -14,10 +14,4 @@
 		</a>
 	</li>
 	
-	<%-- <li href="crud" active-link="active">
-		<a href="<c:url value="/system/crud.html" />">
-			<i class="icon-th"></i>Database
-		</a>
-	</li> --%>
-	
 </ul>

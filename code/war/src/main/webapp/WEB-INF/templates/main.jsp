@@ -39,7 +39,8 @@
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
 	<!-- Angular core -->
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.4/angular.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.js"></script>
+	<%--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script>--%>
 	<!-- <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.js"></script> -->
 	<!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.4/angular.min.js"></script> -->
 	<!-- <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.2/angular.min.js"></script> -->
@@ -65,6 +66,7 @@
 
 	<!-- Must be after Angular -->
 	<script src="<c:url value="/assets/javascripts/ng-google-chart.js" />" type="text/javascript"></script>
+    <script src="<c:url value="/assets/javascripts/ng-table.js" />" type="text/javascript"></script>
 	<!-- Services that are injected into controllers. -->
 	<script src="<c:url value="/assets/javascripts/services/database-service.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/services/results-builder-service.js" />" type="text/javascript"></script>
@@ -97,7 +99,6 @@
 	<script src="<c:url value="/assets/javascripts/controllers/notification-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/apis-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/file-upload-controller.js" />" type="text/javascript"></script>
-
 </head>
 
 <body onload="JavaScript:track();">
