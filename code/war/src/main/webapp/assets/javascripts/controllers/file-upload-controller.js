@@ -26,11 +26,11 @@ module.controller('FileUploadController', function ($scope, $http, notificationS
             transformRequest: angular.identity,
             headers: {'Content-Type': undefined}
         }).success(function (data, status) {
-            var text = ['Uploaded file : ', JSON.stringify($scope.file, null, 2), ', status : ', $scope.status];
+            var text = ['Uploaded file : ', $scope.file.name + ' : ' + $scope.file.size, ', status : ', $scope.status];
             notificationService.notify(text, '/ikube/assets/images/icons/green_tick.png', 5);
             $scope.$emit('fileUploaded', {file : file, status : status});
         }).error(function (data, status) {
-            var text = ['Failed to uploaded file : ', JSON.stringify($scope.file, null, 2), ', status : ', $scope.status];
+            var text = ['Failed to uploaded file : ', $scope.file.name + ' : ' + $scope.file.size, ', status : ', $scope.status];
             notificationService.notify(text, '/ikube/assets/images/icons/red_cross.png', 5);
             $scope.$emit('fileNotUploaded', {file : file, status : status});
         });

@@ -1,10 +1,6 @@
-<%--suppress ALL --%>
 <%@ page errorPage="/WEB-INF/jsp/error.jsp"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <div ng-controller="AnalyticsController">
 	<div class="container-fluid">
@@ -31,35 +27,41 @@
                                     <b>Select an analyzer to configure and re-build</b>
                                 </div>
 
-                                <div class="input search">
-                                    <select
-                                        ng-model="analysis.context"
-                                        ng-model="contexts"
-                                        ng-options="context for context in contexts"
-                                        ng-change="getContext();getData();"
-                                        class="fill-up">
-                                        <option style="display: none" value="">Analyzer...</option>
-                                    </select>
+                                <div>
+                                    <label>
+                                        <select
+                                            ng-model="analysis.context"
+                                            ng-model="contexts"
+                                            ng-options="context for context in contexts"
+                                            ng-change="getContext();getData();"
+                                            class="fill-up">
+                                            <option style="display: none" value="">Analyzer...</option>
+                                        </select>
+                                    </label>
                                 </div>
 
-                                <%--<div ng-repeat="data in someData">--%>
-                                    <%--{{data}}--%>
-                                    <%--<div ng-repeat="row in data">--%>
-                                        <%--{{row}}--%>
-                                    <%--</div>--%>
-                                <%--</div>--%>
-
-                                <div ng-repeat="matrix in matrices track by $index">
-                                    <table ng-table>
-                                        <tr>
-                                            <th ng-repeat="column in matrix[$index] track by $index" nowrap>
-                                                {{$index}} <input type="checkbox">
-                                            </th>
-                                        </tr>
-                                        <tr ng-repeat="row in matrix track by $index">
-                                            <td ng-repeat="column in row track by $index">{{column}}</td>
-                                        </tr>
-                                    </table>
+                                <div ng-show="!!matrices">
+                                    <div class="note">
+                                        <b>The table below contains some example of the data with the columns horizontal. Select the columns that
+                                        you would like to ignore in the training set. Typically this would be columns that you think have no bearing
+                                        on the other features, i.e. there is no correlation to the instances. For example if you are predicting the probability
+                                        of rain, and in your data set is the colour of the weather woman's eyes, this probably does not have an influence on the
+                                        weather, and is safe to ignore in the training. Note that this feature will also be ignored in the data to be analyzed.
+                                        </b>
+                                    </div>
+                                    <div ng-repeat="matrix in matrices track by $index">
+                                        <table ng-table>
+                                            <tr ng-repeat="row in matrix track by $index">
+                                                <td ng-repeat="column in row track by $index">
+                                                    <span ng-show="$index == 0">
+                                                        Ex: &nbsp;<input type="checkbox" style="font-size: 20px;">
+                                                    </span>
+                                                    <span ng-show="$index != 0">{{column}}</span>
+                                                </td>
+                                                <td>...</td>
+                                            </tr>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -68,16 +70,4 @@
             </div>
         </div>
     </div>
-    <%--<div ng-repeat="matrix in matrices track by $index">--%>
-        <%--<table ng-table>--%>
-            <%--<tr>--%>
-                <%--<th ng-repeat="column in matrix[$index] track by $index" nowrap>--%>
-                    <%--{{$index}} <input type="checkbox">--%>
-                <%--</th>--%>
-            <%--</tr>--%>
-            <%--<tr ng-repeat="row in matrix track by $index">--%>
-                <%--<td ng-repeat="column in row track by $index">{{column}}</td>--%>
-            <%--</tr>--%>
-        <%--</table>--%>
-    <%--</div>--%>
 </div>

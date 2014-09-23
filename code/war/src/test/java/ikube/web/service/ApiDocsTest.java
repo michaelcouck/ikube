@@ -50,7 +50,7 @@ public class ApiDocsTest extends AbstractTest {
         Response response = apiDocs.api(Analyzer.class.getName());
         Api api = (Api) response.getEntity();
         assertEquals(Analyzer.class.getSimpleName(), api.getApi());
-        assertEquals(8, api.getApiMethods().size());
+        assertEquals(9, api.getApiMethods().size());
 
         Iterator<ApiMethod> apiMethodIterator = api.getApiMethods().iterator();
         ApiMethod apiMethod = apiMethodIterator.next();

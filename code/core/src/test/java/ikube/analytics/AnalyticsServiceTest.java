@@ -121,7 +121,8 @@ public class AnalyticsServiceTest extends AbstractTest {
     public void data() {
         String fileName = "general.csv";
         File file = findFileRecursively(new File("."), fileName);
-        setContents(new File(IConstants.IKUBE_DIRECTORY, fileName), getContent(file).getBytes());
+
+        setContents(new File(IConstants.ANALYTICS_DIRECTORY, fileName), getContent(file).getBytes());
 
         when(context.getFileNames()).thenReturn(new String[]{fileName});
 

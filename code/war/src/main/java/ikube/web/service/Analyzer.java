@@ -5,6 +5,7 @@ import com.sun.jersey.multipart.FormDataParam;
 import ikube.analytics.IAnalyticsService;
 import ikube.model.Analysis;
 import ikube.model.Context;
+import ikube.toolkit.MatrixUtilities;
 import ikube.toolkit.SerializationUtilities;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Map;
+
+import static ikube.toolkit.MatrixUtilities.invertMatrix;
 
 /**
  * NOTE: The reason that the methods take an {@link javax.servlet.http.HttpServletRequest} and not
@@ -85,7 +88,12 @@ public class Analyzer extends Resource {
             produces = Analysis.class)
     @SuppressWarnings({"unchecked"})
     public Response data(final Context context) {
-        return buildResponse(analyticsService.data(context, 10));
+        Object[][][] matrices = analyticsService.data(context, 9);
+        Object[][][] invertedMatrices = new Object[matrices.length][][];
+        for (int i = 0; i < matrices.length; i++) {
+            invertedMatrices[i] = invertMatrix(matrices[i]);
+        }
+        return buildResponse(invertedMatrices);
     }
 
     @POST
