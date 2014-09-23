@@ -4,7 +4,6 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Api;
 import ikube.model.ApiMethod;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -51,7 +50,7 @@ public class ApiDocsTest extends AbstractTest {
         Response response = apiDocs.api(Analyzer.class.getName());
         Api api = (Api) response.getEntity();
         assertEquals(Analyzer.class.getSimpleName(), api.getApi());
-        assertEquals(7, api.getApiMethods().size());
+        assertEquals(8, api.getApiMethods().size());
 
         Iterator<ApiMethod> apiMethodIterator = api.getApiMethods().iterator();
         ApiMethod apiMethod = apiMethodIterator.next();

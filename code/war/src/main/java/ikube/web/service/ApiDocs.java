@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import static ikube.toolkit.ObjectToolkit.getObject;
 import static ikube.toolkit.ObjectToolkit.getPrimitive;
 
 /**
@@ -198,7 +199,7 @@ public class ApiDocs extends Resource {
                 } else {
                     if (String.class.isAssignableFrom(parameterType)) {
                         parameters[i] = "string";
-                    } else {
+                    } else if (!parameterType.isInterface()) {
                         parameters[i] = populateFields(parameterType);
                     }
                 }
@@ -223,14 +224,20 @@ public class ApiDocs extends Resource {
             Class<?> returnType = method.getReturnType();
             if (String.class.isAssignableFrom(returnType)) {
                 apiMethod.setProduces("string");
-            } else if (!Void.class.isAssignableFrom(returnType) && !Response.class.isAssignableFrom(returnType)) {
+            } else if (!Void.class.isAssignableFrom(returnType)
+                    && !Response.class.isAssignableFrom(returnType)
+                    && !returnType.isInterface()) {
                 apiMethod.setProduces(populateFields(returnType));
             }
         }
     }
 
     private Object populateFields(final Class<?> clazz) throws IllegalAccessException, InstantiationException {
-        return ObjectToolkit.populateFields(clazz.newInstance(), true, 5, "parent", "id");
+        Object target = getObject(clazz);
+        if (target == null) {
+            return null;
+        }
+        return ObjectToolkit.populateFields(target, true, 5, "parent", "id");
     }
 
 }
