@@ -1,10 +1,10 @@
 package ikube.analytics.neuroph;
 
-import ikube.IConstants;
 import ikube.analytics.AAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
-import org.apache.commons.lang.StringUtils;
+import ikube.toolkit.CsvUtilities;
+import ikube.toolkit.MatrixUtilities;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -15,17 +15,17 @@ import org.neuroph.nnet.*;
 import org.neuroph.util.NeuralNetworkType;
 import org.neuroph.util.NeuronProperties;
 import org.neuroph.util.TransferFunctionType;
-import org.neuroph.util.io.FileInputAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.Future;
 
 import static ikube.Constants.GSON;
+import static ikube.toolkit.FileUtilities.cleanFilePath;
+import static ikube.toolkit.MatrixUtilities.stringVectorDoubleVector;
 import static ikube.toolkit.ThreadUtilities.submit;
 import static ikube.toolkit.ThreadUtilities.waitForAnonymousFutures;
 
@@ -230,43 +230,21 @@ public class NeurophAnalyzer extends AAnalyzer<Analysis, Analysis, Analysis> {
         return neuralNetwork;
     }
 
+    @SuppressWarnings("SuspiciousSystemArraycopy")
     private void populateDataSet(final DataSet dataSet, final File dataFile) throws FileNotFoundException {
-        FileInputAdapter fileInputAdapter = null;
-        try {
-            fileInputAdapter = new FileInputAdapter(dataFile) {
-                @Override
-                public double[] readInput() {
-                    try {
-                        String inputLine = bufferedReader.readLine();
-                        if (inputLine != null) {
-                            String[] splitInputLine = StringUtils.split(inputLine, IConstants.DELIMITER_CHARACTERS);
-                            double[] inputBuffer = new double[splitInputLine.length];
-                            for (int i = 0; i < splitInputLine.length; i++) {
-                                inputBuffer[i] = Double.parseDouble(splitInputLine[i]);
-                            }
-                            return inputBuffer;
-                        }
-                        return null;
-                    } catch (final IOException ex) {
-                        throw new RuntimeException("Error reading input from stream : ", ex);
-                    }
-                }
-            };
-            double[] data;
-            double[] inputData = new double[dataSet.getInputSize()];
-            double[] outputData = new double[dataSet.getOutputSize()];
-            while ((data = fileInputAdapter.readInput()) != null) {
-                System.arraycopy(data, 0, inputData, 0, inputData.length);
-                System.arraycopy(data, inputData.length - 1, outputData, 0, outputData.length);
-                if (outputData.length == 0) {
-                    dataSet.addRow(inputData);
-                } else {
-                    dataSet.addRow(inputData, outputData);
-                }
-            }
-        } finally {
-            if (fileInputAdapter != null) {
-                fileInputAdapter.close();
+        Object[][] matrix = CsvUtilities.getCsvData(cleanFilePath(dataFile.getAbsolutePath()));
+
+        double[] data;
+        double[] inputData = new double[dataSet.getInputSize()];
+        double[] outputData = new double[dataSet.getOutputSize()];
+        for (final Object[] row : matrix) {
+            double[] doubleVector = MatrixUtilities.objectVectorToDoubleVector(row);
+            System.arraycopy(doubleVector, 0, inputData, 0, inputData.length);
+            System.arraycopy(doubleVector, inputData.length - 1, outputData, 0, outputData.length);
+            if (outputData.length == 0) {
+                dataSet.addRow(inputData);
+            } else {
+                dataSet.addRow(inputData, outputData);
             }
         }
     }
@@ -380,23 +358,8 @@ public class NeurophAnalyzer extends AAnalyzer<Analysis, Analysis, Analysis> {
 
     @SuppressWarnings("unchecked")
     private void inputOutputStringToDoubleArray(final Analysis analysis) {
-        analysis.setInput(stringToDoubleArray(analysis.getInput()));
-        analysis.setOutput(stringToDoubleArray(analysis.getOutput()));
-    }
-
-    private double[] stringToDoubleArray(final Object object) {
-        if (object == null || double[].class.isAssignableFrom(object.getClass())) {
-            return (double[]) object;
-        }
-        if (String.class.isAssignableFrom(object.getClass())) {
-            String[] values = StringUtils.split(object.toString().trim(), IConstants.DELIMITER_CHARACTERS);
-            double[] doubleArray = new double[values.length];
-            for (int i = 0; i < values.length; i++) {
-                doubleArray[i] = Double.parseDouble(values[i].trim());
-            }
-            return doubleArray;
-        }
-        return null;
+        analysis.setInput(stringVectorDoubleVector(analysis.getInput()));
+        analysis.setOutput(stringVectorDoubleVector(analysis.getOutput()));
     }
 
     /**

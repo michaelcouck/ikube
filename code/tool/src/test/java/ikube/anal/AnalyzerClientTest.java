@@ -48,7 +48,7 @@ public class AnalyzerClientTest extends AbstractTest {
         // Get the matrix data
         File file = FileUtilities.findFileRecursively(new File("."), "stock.csv");
         String filePath = FileUtilities.cleanFilePath(file.getAbsolutePath());
-        Object[][] data = new CsvUtilities().getCsvData(filePath);
+        Object[][] data = CsvUtilities.getCsvData(filePath);
         Object[][] invertedData = MatrixUtilities.invertMatrix(data);
 
         // Create the instances from the matrix data

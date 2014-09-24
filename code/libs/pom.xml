@@ -748,6 +748,40 @@
                             <!--<url>${artifactory}</url>-->
                         <!--</configuration>-->
                     <!--</execution>-->
+                    <!--<execution>-->
+                        <!--<id>weka-time-series-forecasting</id>-->
+                        <!--<goals>-->
+                            <!--<goal>deploy-file</goal>-->
+                        <!--</goals>-->
+                        <!--<phase>install</phase>-->
+                        <!--<configuration>-->
+                            <!--<groupId>nz.ac.waikato.cms.weka</groupId>-->
+                            <!--<artifactId>weka-time-series-forecasting</artifactId>-->
+                            <!--<version>1.0.14</version>-->
+                            <!--<file>tools/analytics/weka-time-series-forecasting-1.0.14.jar</file>-->
+                            <!--<packaging>${packaging}</packaging>-->
+                            <!--<generatePom>${generate-pom}</generatePom>-->
+                            <!--<repositoryId>${repository-id}</repositoryId>-->
+                            <!--<url>${artifactory}</url>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                    <!--<execution>-->
+                        <!--<id>weka-time-series-forecasting-sources</id>-->
+                        <!--<goals>-->
+                            <!--<goal>deploy-file</goal>-->
+                        <!--</goals>-->
+                        <!--<phase>test</phase>-->
+                        <!--<configuration>-->
+                            <!--<groupId>nz.ac.waikato.cms.weka</groupId>-->
+                            <!--<artifactId>weka-time-series-forecasting-sources</artifactId>-->
+                            <!--<version>1.0.14</version>-->
+                            <!--<file>tools/analytics/weka-time-series-forecasting-1.0.14-sources.jar</file>-->
+                            <!--<packaging>${packaging}</packaging>-->
+                            <!--<generatePom>${generate-pom}</generatePom>-->
+                            <!--<repositoryId>${repository-id}</repositoryId>-->
+                            <!--<url>${artifactory}</url>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
                 </executions>
             </plugin>
         </plugins>

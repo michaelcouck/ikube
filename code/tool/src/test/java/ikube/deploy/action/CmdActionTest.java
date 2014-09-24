@@ -24,9 +24,9 @@ public class CmdActionTest extends AbstractTest {
     public void execute() throws Exception {
         Server server = populateFields(new Server(), Boolean.TRUE, Integer.MAX_VALUE);
         final SSHClient sshExec = mock(SSHClient.class);
-        final Session session = mock(Session.class);
-        final Session.Command command = mock(Session.Command.class);
-        final InputStream inputStream = new ByteArrayInputStream("hello world".getBytes());
+        Session session = mock(Session.class);
+        Session.Command command = mock(Session.Command.class);
+        InputStream inputStream = new ByteArrayInputStream("hello world".getBytes());
         when(sshExec.startSession()).thenReturn(session);
         when(session.exec(any(String.class))).thenReturn(command);
         when(command.getInputStream()).thenReturn(inputStream);
@@ -36,7 +36,6 @@ public class CmdActionTest extends AbstractTest {
 
         CmdAction commandAction = new CmdAction() {
             protected SSHClient getSshExec(final Server server) {
-                System.out.println("Ssh : " + sshExec);
                 return sshExec;
             }
         };

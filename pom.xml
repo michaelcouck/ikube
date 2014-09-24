@@ -1136,6 +1136,12 @@
             <scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>nz.ac.waikato.cms.weka</groupId>
+			<artifactId>weka-time-series-forecasting</artifactId>
+			<version>1.0.14</version>
+            <scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>squiggle</groupId>
 			<artifactId>squiggle</artifactId>
 			<version>1.4.0</version>

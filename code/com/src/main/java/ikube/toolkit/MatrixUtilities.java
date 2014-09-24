@@ -1,12 +1,15 @@
 package ikube.toolkit;
 
+import ikube.Constants;
+import org.apache.commons.lang.StringUtils;
 import org.paukov.combinatorics.Factory;
 import org.paukov.combinatorics.Generator;
 import org.paukov.combinatorics.ICombinatoricsVector;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * General matrix functions that are not available in open source libraries.
@@ -142,6 +145,57 @@ public final class MatrixUtilities {
             excludedColumnsArray[i] = excludedColumnsList.get(i);
         }
         return excludedColumnsArray;
+    }
+
+    public static double[] stringVectorDoubleVector(final Object object) {
+        if (object == null || double[].class.isAssignableFrom(object.getClass())) {
+            return (double[]) object;
+        }
+        if (String.class.isAssignableFrom(object.getClass())) {
+            String[] values = StringUtils.split(object.toString().trim(), Constants.DELIMITER_CHARACTERS);
+            double[] doubleArray = new double[values.length];
+            for (int i = 0; i < values.length; i++) {
+                doubleArray[i] = Double.parseDouble(values[i].trim());
+            }
+            return doubleArray;
+        }
+        return null;
+    }
+
+    /**
+     * This method will sort the matrix based on the field specified in the vectors. The date format is
+     * fixed for obvious reasons.
+     *
+     * @param matrix       the matrix to sort, ascending order of the column specified in the parameter list
+     * @param featureIndex the index of the feature in the vectors
+     * @param featureType  the type of feature, string, numeric and date
+     * @return the sorted vector according to the feature in the vectors
+     */
+    public static Object[][] sortOnFeature(final Object[][] matrix, final int featureIndex, final Class<?> featureType) {
+        final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Arrays.sort(matrix, new Comparator<Object[]>() {
+            @Override
+            public int compare(final Object[] o1, final Object[] o2) {
+                String valueOne = o1[featureIndex].toString();
+                String valueTwo = o2[featureIndex].toString();
+                if (Date.class.isAssignableFrom(featureType)) {
+                    try {
+                        Date one = dateFormat.parse(valueOne);
+                        Date two = dateFormat.parse(valueTwo);
+                        return one.getTime() < two.getTime() ? -1 : one.getTime() == two.getTime() ? 0 : 1;
+                    } catch (final ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else if (Double.class.isAssignableFrom(featureType)) {
+                    return Double.compare(Double.parseDouble(valueOne), Double.parseDouble(valueTwo));
+                } else if (String.class.isAssignableFrom(featureType)) {
+                    return valueOne.compareTo(valueTwo);
+                } else {
+                    throw new RuntimeException("Can't sort type : " + featureType);
+                }
+            }
+        });
+        return matrix;
     }
 
 }

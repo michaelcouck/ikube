@@ -3,8 +3,6 @@ package ikube.toolkit;
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.Arrays;
@@ -17,9 +15,7 @@ import java.util.List;
  */
 public class CsvUtilities {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CsvUtilities.class);
-
-    public Object[][] getCsvData(final String inputFilePath) {
+    public static Object[][] getCsvData(final String inputFilePath) {
         File inputFile = new File(inputFilePath);
         try (FileInputStream fileInputStream = new FileInputStream(inputFile)) {
             return getCsvData(fileInputStream);
@@ -28,7 +24,7 @@ public class CsvUtilities {
         }
     }
 
-    public Object[][] getCsvData(final InputStream inputStream, final int... excludedColumns) {
+    public static Object[][] getCsvData(final InputStream inputStream, final int... excludedColumns) {
         try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream);) {
             CSVReader csvReader = new CSVReader(inputStreamReader);
             List<String[]> lines = csvReader.readAll();
@@ -44,7 +40,7 @@ public class CsvUtilities {
         }
     }
 
-    public String[] excludeColumns(final String[] inputValues, final int... excludedColumns) {
+    public static String[] excludeColumns(final String[] inputValues, final int... excludedColumns) {
         if (excludedColumns != null && excludedColumns.length > 0) {
             String[] strippedRow = new String[inputValues.length - excludedColumns.length];
             for (int j = 0, k = 0; j < inputValues.length; j++) {
@@ -57,7 +53,7 @@ public class CsvUtilities {
         return inputValues;
     }
 
-    public void setCsvData(final String[] outputValues, final File outputFile, boolean append) {
+    public static void setCsvData(final String[] outputValues, final File outputFile, boolean append) {
         try (CSVWriter csvWriter = new CSVWriter(new FileWriter(outputFile, append))) {
             csvWriter.writeNext(outputValues);
         } catch (final Exception e) {

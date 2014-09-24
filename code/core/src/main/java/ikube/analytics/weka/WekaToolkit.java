@@ -2,23 +2,25 @@ package ikube.analytics.weka;
 
 import ikube.toolkit.CsvUtilities;
 import ikube.toolkit.Timer;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
-import weka.core.*;
+import weka.classifiers.evaluation.output.prediction.PlainText;
+import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.Instance;
+import weka.core.Instances;
 import weka.core.converters.ArffSaver;
 import weka.filters.Filter;
 import weka.filters.unsupervised.instance.NonSparseToSparse;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.text.ParseException;
+import java.util.*;
 
 import static ikube.toolkit.FileUtilities.getOrCreateFile;
 import static ikube.toolkit.MatrixUtilities.objectVectorToDoubleVector;
@@ -35,6 +37,7 @@ import static ikube.toolkit.MatrixUtilities.objectVectorToStringVector;
 public final class WekaToolkit {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WekaToolkit.class);
+    private static final String DATE_FORMAT = "yyyy-MM-dd";
 
     /**
      * Writes the instances to a file that can be loaded again and used to train algorithms.
@@ -84,16 +87,11 @@ public final class WekaToolkit {
      * the input data has vector lengths
      */
     public static Instances csvFileToInstances(final String filePath, final int classIndex, final Class<?> type) {
-        Object[][] matrix;
-        InputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(new File(filePath));
-            matrix = new CsvUtilities().getCsvData(inputStream);
+        try (InputStream inputStream = new FileInputStream(new File(filePath))) {
+            Object[][] matrix = CsvUtilities.getCsvData(inputStream);
             return matrixToInstances(matrix, classIndex, type);
-        } catch (FileNotFoundException e) {
+        } catch (final IOException e) {
             throw new RuntimeException(e);
-        } finally {
-            IOUtils.closeQuietly(inputStream);
         }
     }
 
@@ -125,17 +123,33 @@ public final class WekaToolkit {
         return instances;
     }
 
-    private static Attribute getAttribute(final int index, final Class<?> type) {
+    /**
+     * This method will create an attribute that can be used in the Weka models, specifically
+     * the {@link weka.core.Instances} objects.
+     *
+     * @param index   the index of the attribute in the {@link weka.core.Instances} object
+     *                and the name of the attribute, any arbitrary name
+     * @param type    the type of the attribute, numeric, nominal, string, date etc.
+     * @param nominal the attributes/names that are to be applied to the nominal attribute
+     * @return the attribute with the name and type specified
+     */
+    public static Attribute getAttribute(final int index, final Class<?> type, final String... nominal) {
+        String name = Integer.toString(index);
         if (Double.class.isAssignableFrom(type)) {
-            return new Attribute(Integer.toString(index));
+            return new Attribute(name);
         } else if (String.class.isAssignableFrom(type)) {
-            return new Attribute(Integer.toString(index), (List<String>) null);
+            return new Attribute(name, (List<String>) null);
+        } else if (Date.class.isAssignableFrom(type)) {
+            return new Attribute(name, DATE_FORMAT);
+        } else if (nominal != null && nominal.length > 0) {
+            List<String> nominalAttributes = Arrays.asList(nominal);
+            return new Attribute(name, nominalAttributes);
         } else {
             throw new RuntimeException("Attribute type not supported : " + type);
         }
     }
 
-    private static Instance getInstance(final Instances instances, final Object[] vector, final Class<?> type) {
+    public static Instance getInstance(final Instances instances, final Object[] vector, final Class<?> type) {
         if (Double.class.isAssignableFrom(type)) {
             double[] doubleVector = objectVectorToDoubleVector(vector);
             return new DenseInstance(1.0, doubleVector);
@@ -153,6 +167,35 @@ public final class WekaToolkit {
         }
     }
 
+    public static Instance getInstance(final Instances instances, final Object[] vector) throws ParseException {
+        Instance instance = new DenseInstance(vector.length);
+        instance.setDataset(instances);
+        for (int i = 0; i < instances.numAttributes(); i++) {
+            String value = vector[i] == null ? "" : vector[i].toString();
+            Attribute attribute = instances.attribute(i);
+            // LOGGER.error("Index : " + i + ", " + attribute);
+            switch (attribute.type()) {
+                case Attribute.DATE: {
+                    instance.setValue(i, attribute.parseDate(value));
+                    break;
+                }
+                case Attribute.STRING:
+                case Attribute.NOMINAL: {
+                    instance.setValue(i, value);
+                    break;
+                }
+                case Attribute.NUMERIC: {
+                    instance.setValue(i, Double.parseDouble(value));
+                    break;
+                }
+                default: {
+                    throw new RuntimeException("Attribute type not supported : " + attribute.type());
+                }
+            }
+        }
+        return instance;
+    }
+
     /**
      * This method will filter the instance using the filter defined. Ultimately the filter changes the input
      * instance into an instance that is useful for the analyzer. For example in the case of a SVM classifier, the
@@ -161,7 +204,7 @@ public final class WekaToolkit {
      * for us in this method.
      *
      * @param instance the instance to filter into the correct form for the analyser
-     * @param filters   the filter to use for the transformation
+     * @param filters  the filter to use for the transformation
      * @return the filtered instance that is usable in the analyzer
      * @throws Exception
      */
@@ -216,12 +259,16 @@ public final class WekaToolkit {
     @SuppressWarnings("UnusedDeclaration")
     public static double crossValidate(final Classifier classifier, final Instances instances, final int folds) throws Exception {
         final Evaluation evaluation = new Evaluation(instances);
-        final StringBuffer predictionsOutput = new StringBuffer();
+        final PlainText predictionsOutput = new PlainText();
+        predictionsOutput.setBuffer(new StringBuffer());
         double duration = Timer.execute(new Timer.Timed() {
             @Override
             public void execute() {
                 try {
-                    evaluation.crossValidateModel(classifier, instances, folds, new Random(), predictionsOutput, new Range(), true);
+                    // new Range(), true
+                    evaluation.crossValidateModel(classifier, instances, folds, new Random(), predictionsOutput);
+                    LOGGER.error(predictionsOutput.globalInfo());
+                    LOGGER.error(predictionsOutput.getDisplay());
                 } catch (final Exception e) {
                     LOGGER.error("Exception cross validating the classifier : ", e);
                 }

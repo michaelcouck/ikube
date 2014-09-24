@@ -19,8 +19,6 @@ import static org.junit.Assert.*;
 public class CsvUtilitiesTest extends AbstractTest {
 
     private String inputFilePath;
-    @Spy
-    private CsvUtilities csvUtilities;
 
     @Before
     public void before() {
@@ -30,7 +28,7 @@ public class CsvUtilitiesTest extends AbstractTest {
 
     @Test
     public void getCsvData() throws Exception {
-        Object[][] csvData = csvUtilities.getCsvData(inputFilePath);
+        Object[][] csvData = CsvUtilities.getCsvData(inputFilePath);
         assertNotNull(csvData);
         assertTrue(csvData.length == 2);
         assertTrue(csvData[0].length == 4);
@@ -40,7 +38,7 @@ public class CsvUtilitiesTest extends AbstractTest {
     public void getCsvDataStreamExcluded() throws Exception {
         String input = "1,2,3,4,5,6,7,8,9,10\n1,2,3,4,5,6,7,8,9,10\n1,2,3,4,5,6,7,8,9,10";
         InputStream inputStream = new ByteArrayInputStream(input.getBytes());
-        Object[][] csvData = csvUtilities.getCsvData(inputStream, 2, 8, 9);
+        Object[][] csvData = CsvUtilities.getCsvData(inputStream, 2, 8, 9);
         assertEquals(3, csvData.length);
         assertEquals(7, csvData[0].length);
     }

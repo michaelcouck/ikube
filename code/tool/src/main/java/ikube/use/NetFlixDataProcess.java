@@ -11,7 +11,9 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
+import static ikube.toolkit.CsvUtilities.getCsvData;
 import static ikube.toolkit.FileUtilities.deleteFile;
 import static ikube.toolkit.FileUtilities.getOrCreateFile;
 
@@ -32,16 +34,26 @@ public class NetFlixDataProcess {
         // Read the rating files
         // Write out the output file according to the input data
 
-        File outputFile = new File("code/tool/src/main/resources/mv_aggregated.csv");
-        deleteFile(outputFile);
-        outputFile = getOrCreateFile(outputFile);
+        File outputFile = null;
+        String outputFilePath = "/home/laptop/Downloads/netflix/processed-data/mv-aggregated-";
 
         File[] trainingFiles = FileUtilities.findFiles(new File("/home/laptop/Downloads/netflix/training_set"), "mv_00");
-        Object[][] movieTitleData = new CsvUtilities().getCsvData("/home/laptop/Downloads/netflix/movie_titles.txt");
+        Object[][] movieTitleData = getCsvData("/home/laptop/Downloads/netflix/movie_titles.txt");
 
+        int ratingCounter = 0;
         for (final File trainingFile : trainingFiles) {
+
+            if (ratingCounter == 0 || ratingCounter > 1000000) {
+                // Create a new output file
+                outputFile = new File(outputFilePath + System.currentTimeMillis() + ".csv");
+                deleteFile(outputFile);
+                outputFile = getOrCreateFile(outputFile);
+                ratingCounter = 0;
+                LOGGER.error("New file : " + outputFile);
+            }
+
             FileInputStream fileInputStream = new FileInputStream(trainingFile);
-            Object[][] ratingData = new CsvUtilities().getCsvData(fileInputStream);
+            Object[][] ratingData = getCsvData(fileInputStream);
             int movieId;
             Object[] movieTitleVector = null;
             for (final Object[] ratingInstance : ratingData) {
@@ -55,6 +67,14 @@ public class NetFlixDataProcess {
                     movieId = Integer.parseInt(strippedMovieId);
                     // Find the movie title for the id
                     movieTitleVector = findMovieTitleVector(movieId, movieTitleData);
+
+                    if (movieTitleVector.length > 3) {
+                        LOGGER.error("Too long : " + Arrays.toString(movieTitleVector));
+                        String[] movieTitleArray = Arrays.copyOfRange(movieTitleVector, 2, movieTitleVector.length, String[].class);
+                        String movieTitle = StringUtils.join(movieTitleArray);
+                        movieTitleVector[2] = movieTitle;
+                        movieTitleVector = Arrays.copyOfRange(movieTitleVector, 0, 3, Object[].class);
+                    }
                     continue;
                 }
                 // Create the vector to output
@@ -63,9 +83,9 @@ public class NetFlixDataProcess {
                 System.arraycopy(ratingInstance, 0, outputVector, movieTitleVector.length, ratingInstance.length);
                 // Write the data out
                 String[] outputValues = MatrixUtilities.objectVectorToStringVector(outputVector);
-                new CsvUtilities().setCsvData(outputValues, outputFile, Boolean.TRUE);
+                CsvUtilities.setCsvData(outputValues, outputFile, Boolean.TRUE);
+                ratingCounter++;
             }
-            break;
         }
     }
 
@@ -77,7 +97,7 @@ public class NetFlixDataProcess {
             int mid = (low + high) >>> 1;
             int midVal = Integer.parseInt(movieTitleData[mid][0].toString());
             int cmp = midVal < key ? -1 : key == midVal ? 0 : 1;
-            LOGGER.error("Key : " + key + ", value : " + movieTitleData[mid][0].toString());
+            // LOGGER.error("Key : " + key + ", value : " + movieTitleData[mid][0].toString());
             if (cmp < 0)
                 low = mid + 1;
             else if (cmp > 0)
