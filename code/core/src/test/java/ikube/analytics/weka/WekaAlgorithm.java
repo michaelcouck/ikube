@@ -8,9 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import weka.classifiers.Classifier;
 import weka.classifiers.functions.MultilayerPerceptron;
-import weka.classifiers.rules.DTNB;
-import weka.classifiers.trees.UserClassifier;
-import weka.clusterers.CLOPE;
 import weka.clusterers.Clusterer;
 import weka.core.Instances;
 import weka.filters.Filter;
@@ -52,11 +49,11 @@ public final class WekaAlgorithm {
         filters.add(null);
 
         Set<Class<? extends Clusterer>> clusterers = new Reflections("weka.clusterers").getSubTypesOf(Clusterer.class);
-        clusterers.remove(CLOPE.class);
+        // clusterers.remove(CLOPE.class);
 
         Set<Class<? extends Classifier>> classifiers = new Reflections("weka.classifiers").getSubTypesOf(Classifier.class);
-        classifiers.remove(UserClassifier.class);
-        classifiers.remove(DTNB.class);
+        // classifiers.remove(UserClassifier.class);
+        // classifiers.remove(DTNB.class);
         classifiers.remove(MultilayerPerceptron.class);
 
         File regressionFile = findFileRecursively(new File("."), "regression.arff");

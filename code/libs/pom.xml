@@ -714,6 +714,40 @@
                             <!--<url>${artifactory}</url>-->
                         <!--</configuration>-->
                     <!--</execution>-->
+                    <!--<execution>-->
+                        <!--<id>weka</id>-->
+                        <!--<goals>-->
+                            <!--<goal>deploy-file</goal>-->
+                        <!--</goals>-->
+                        <!--<phase>install</phase>-->
+                        <!--<configuration>-->
+                            <!--<groupId>nz.ac.waikato.cms.weka</groupId>-->
+                            <!--<artifactId>weka</artifactId>-->
+                            <!--<version>3.7.11</version>-->
+                            <!--<file>tools/analytics/weka-3.7.11.jar</file>-->
+                            <!--<packaging>${packaging}</packaging>-->
+                            <!--<generatePom>${generate-pom}</generatePom>-->
+                            <!--<repositoryId>${repository-id}</repositoryId>-->
+                            <!--<url>${artifactory}</url>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                    <!--<execution>-->
+                        <!--<id>weka-sources</id>-->
+                        <!--<goals>-->
+                            <!--<goal>deploy-file</goal>-->
+                        <!--</goals>-->
+                        <!--<phase>install</phase>-->
+                        <!--<configuration>-->
+                            <!--<groupId>nz.ac.waikato.cms.weka</groupId>-->
+                            <!--<artifactId>weka-sources</artifactId>-->
+                            <!--<version>3.7.11</version>-->
+                            <!--<file>tools/analytics/weka-3.7.11-sources.jar</file>-->
+                            <!--<packaging>${packaging}</packaging>-->
+                            <!--<generatePom>${generate-pom}</generatePom>-->
+                            <!--<repositoryId>${repository-id}</repositoryId>-->
+                            <!--<url>${artifactory}</url>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
                 </executions>
             </plugin>
         </plugins>

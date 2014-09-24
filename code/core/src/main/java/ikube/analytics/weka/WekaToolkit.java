@@ -136,10 +136,10 @@ public final class WekaToolkit {
     private static Instance getInstance(final Instances instances, final Object[] vector, final Class<?> type) {
         if (Double.class.isAssignableFrom(type)) {
             double[] doubleVector = objectVectorToDoubleVector(vector);
-            return new Instance(1.0, doubleVector);
+            return new DenseInstance(1.0, doubleVector);
         } else if (String.class.isAssignableFrom(type)) {
             String[] stringVector = objectVectorToStringVector(vector);
-            Instance instance = new Instance(stringVector.length);
+            Instance instance = new DenseInstance(stringVector.length);
             for (int i = 0; i < instances.numAttributes(); i++) {
                 Attribute attribute = instances.attribute(i);
                 String value = stringVector[i];

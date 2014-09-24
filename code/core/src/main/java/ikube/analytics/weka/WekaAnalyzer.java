@@ -12,10 +12,7 @@ import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.clusterers.ClusterEvaluation;
 import weka.clusterers.Clusterer;
-import weka.core.Attribute;
-import weka.core.Instance;
-import weka.core.Instances;
-import weka.core.OptionHandler;
+import weka.core.*;
 import weka.filters.Filter;
 
 import java.io.*;
@@ -188,7 +185,7 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
      * @return the instance, with the attributes set to the values of the tokens in the input string
      */
     Instance instance(final Object input, final Instances instances) {
-        Instance instance = new Instance(instances.numAttributes());
+        Instance instance = new DenseInstance(instances.numAttributes());
         Object[] values = null;
         if (String.class.isAssignableFrom(input.getClass())) {
             values = StringUtils.split((String) input, ',');

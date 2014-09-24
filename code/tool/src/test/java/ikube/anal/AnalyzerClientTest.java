@@ -47,8 +47,7 @@ public class AnalyzerClientTest extends AbstractTest {
         // Get the matrix data
         File file = FileUtilities.findFileRecursively(new File("."), "stock.csv");
         String filePath = FileUtilities.cleanFilePath(file.getAbsolutePath());
-        String[] args = {"-i", filePath};
-        Object[][] data = CsvFileTools.getCsvData(args);
+        Object[][] data = new CsvFileTools().getCsvData(filePath);
         Object[][] invertedData = MatrixUtilities.invertMatrix(data);
 
         // Create the instances from the matrix data
@@ -78,7 +77,7 @@ public class AnalyzerClientTest extends AbstractTest {
             double[] doubleRow = MatrixUtilities.objectVectorToDoubleVector(invertedRow);
             double[] doubleRowMissing = new double[doubleRow.length - 1];
             System.arraycopy(doubleRow, 0, doubleRowMissing, 0, doubleRowMissing.length - 1);
-            Instance instance = new Instance(1.0, doubleRowMissing);
+            Instance instance = new DenseInstance(1.0, doubleRowMissing);
             // instance.setMissing(doubleRow.length - 1);
             instance.setDataset(instances);
             double index = classifier.classifyInstance(instance);
