@@ -2,7 +2,7 @@ package ikube.anal;
 
 import ikube.AbstractTest;
 import ikube.analytics.weka.WekaToolkit;
-import ikube.toolkit.CsvFileTools;
+import ikube.toolkit.CsvUtilities;
 import ikube.toolkit.FileUtilities;
 import ikube.toolkit.MatrixUtilities;
 import org.junit.Ignore;
@@ -12,6 +12,7 @@ import weka.classifiers.functions.LinearRegression;
 import weka.core.*;
 
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * TODO: Complete this test if necessary.
@@ -47,13 +48,13 @@ public class AnalyzerClientTest extends AbstractTest {
         // Get the matrix data
         File file = FileUtilities.findFileRecursively(new File("."), "stock.csv");
         String filePath = FileUtilities.cleanFilePath(file.getAbsolutePath());
-        Object[][] data = new CsvFileTools().getCsvData(filePath);
+        Object[][] data = new CsvUtilities().getCsvData(filePath);
         Object[][] invertedData = MatrixUtilities.invertMatrix(data);
 
         // Create the instances from the matrix data
-        FastVector attributes = new FastVector();
+        ArrayList<Attribute> attributes = new ArrayList<>();
         for (int i = 0; i < invertedData[0].length; i++) {
-            attributes.addElement(new Attribute(Integer.toHexString(i)));
+            attributes.add(new Attribute(Integer.toHexString(i)));
         }
 
         Instances instances = new Instances("instances", attributes, 0);

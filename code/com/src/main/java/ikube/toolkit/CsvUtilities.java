@@ -1,6 +1,7 @@
 package ikube.toolkit;
 
 import au.com.bytecode.opencsv.CSVReader;
+import au.com.bytecode.opencsv.CSVWriter;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,22 +15,21 @@ import java.util.List;
  * @version 01.00
  * @since 30-07-2012
  */
-public class CsvFileTools {
+public class CsvUtilities {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CsvFileTools.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CsvUtilities.class);
 
     public Object[][] getCsvData(final String inputFilePath) {
-        try {
-            File inputFile = new File(inputFilePath);
-            return getCsvData(new FileInputStream(inputFile));
+        File inputFile = new File(inputFilePath);
+        try (FileInputStream fileInputStream = new FileInputStream(inputFile)) {
+            return getCsvData(fileInputStream);
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     public Object[][] getCsvData(final InputStream inputStream, final int... excludedColumns) {
-        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-        try {
+        try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream);) {
             CSVReader csvReader = new CSVReader(inputStreamReader);
             List<String[]> lines = csvReader.readAll();
             Object[][] matrix = new Object[lines.size()][];
@@ -55,6 +55,14 @@ public class CsvFileTools {
             return strippedRow;
         }
         return inputValues;
+    }
+
+    public void setCsvData(final String[] outputValues, final File outputFile, boolean append) {
+        try (CSVWriter csvWriter = new CSVWriter(new FileWriter(outputFile, append))) {
+            csvWriter.writeNext(outputValues);
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

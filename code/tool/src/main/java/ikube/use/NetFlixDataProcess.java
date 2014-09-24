@@ -1,11 +1,19 @@
 package ikube.use;
 
-import ikube.toolkit.CsvFileTools;
+import ikube.toolkit.CsvUtilities;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.MatrixUtilities;
+import ikube.toolkit.StringUtilities;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileInputStream;
 import java.io.IOException;
+
+import static ikube.toolkit.FileUtilities.deleteFile;
+import static ikube.toolkit.FileUtilities.getOrCreateFile;
 
 /**
  * @author Michael Couck
@@ -14,6 +22,9 @@ import java.io.IOException;
  */
 public class NetFlixDataProcess {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(NetFlixDataProcess.class);
+
+    @SuppressWarnings("ConstantConditions")
     NetFlixDataProcess() throws IOException {
         // End result - 1,2003,Dinosaur Planet,1488844,3,2005-09-06
 
@@ -21,14 +32,60 @@ public class NetFlixDataProcess {
         // Read the rating files
         // Write out the output file according to the input data
 
-        File outputFile = FileUtilities.getOrCreateFile(new File("code/tool/src/main/resources"));
-        FileWriter outputFileWriter = new FileWriter(outputFile);
+        File outputFile = new File("code/tool/src/main/resources/mv_aggregated.csv");
+        deleteFile(outputFile);
+        outputFile = getOrCreateFile(outputFile);
 
         File[] trainingFiles = FileUtilities.findFiles(new File("/home/laptop/Downloads/netflix/training_set"), "mv_00");
-        Object[][] movieTitleData = new CsvFileTools().getCsvData("/home/laptop/Downloads/netflix/movie_titles.txt");
+        Object[][] movieTitleData = new CsvUtilities().getCsvData("/home/laptop/Downloads/netflix/movie_titles.txt");
+
         for (final File trainingFile : trainingFiles) {
-            // Object[][]
+            FileInputStream fileInputStream = new FileInputStream(trainingFile);
+            Object[][] ratingData = new CsvUtilities().getCsvData(fileInputStream);
+            int movieId;
+            Object[] movieTitleVector = null;
+            for (final Object[] ratingInstance : ratingData) {
+                if (ratingInstance == null || ratingInstance.length == 0) {
+                    continue;
+                }
+                if (ratingInstance.length == 1) {
+                    // This is the movie id
+                    String strippedMovieId = StringUtilities.strip(ratingInstance[0].toString(), ":");
+                    strippedMovieId = StringUtils.stripToEmpty(strippedMovieId);
+                    movieId = Integer.parseInt(strippedMovieId);
+                    // Find the movie title for the id
+                    movieTitleVector = findMovieTitleVector(movieId, movieTitleData);
+                    continue;
+                }
+                // Create the vector to output
+                Object[] outputVector = new Object[6];
+                System.arraycopy(movieTitleVector, 0, outputVector, 0, movieTitleVector.length);
+                System.arraycopy(ratingInstance, 0, outputVector, movieTitleVector.length, ratingInstance.length);
+                // Write the data out
+                String[] outputValues = MatrixUtilities.objectVectorToStringVector(outputVector);
+                new CsvUtilities().setCsvData(outputValues, outputFile, Boolean.TRUE);
+            }
+            break;
         }
+    }
+
+    private Object[] findMovieTitleVector(final int key, final Object[][] movieTitleData) {
+        int low = 0;
+        int high = movieTitleData.length - 1;
+
+        while (low <= high) {
+            int mid = (low + high) >>> 1;
+            int midVal = Integer.parseInt(movieTitleData[mid][0].toString());
+            int cmp = midVal < key ? -1 : key == midVal ? 0 : 1;
+            LOGGER.error("Key : " + key + ", value : " + movieTitleData[mid][0].toString());
+            if (cmp < 0)
+                low = mid + 1;
+            else if (cmp > 0)
+                high = mid - 1;
+            else
+                return movieTitleData[mid]; // key found
+        }
+        return null;  // key not found.
     }
 
 }

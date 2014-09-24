@@ -11,7 +11,6 @@ import org.junit.Before;
 import org.junit.Test;
 import weka.classifiers.functions.SMO;
 import weka.core.Attribute;
-import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.filters.Filter;
@@ -19,6 +18,7 @@ import weka.filters.unsupervised.attribute.StringToWordVector;
 
 import java.io.InputStream;
 import java.util.Enumeration;
+import java.util.List;
 
 import static junit.framework.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -43,7 +43,7 @@ public class WekaAnalyzerTest extends AbstractTest {
 
         String algorithm = SMO.class.getName();
         String filter = StringToWordVector.class.getName();
-        String[] options = new String[]{"-D", "-V", "100"};
+        String[] options = new String[]{"-V", "100"};
         int maxTraining = 10000;
 
         context = new Context();
@@ -52,14 +52,12 @@ public class WekaAnalyzerTest extends AbstractTest {
 
         context.setAlgorithms(algorithm, algorithm, algorithm);
         context.setFilters(filter, filter, filter);
-        context.setOptions(options, options, options);
+        context.setOptions(options);
 
         context.setFileNames("sentiment-smo-one.arff", "sentiment-smo-two.arff", "sentiment-smo-three.arff");
         context.setMaxTrainings(maxTraining, maxTraining, maxTraining);
 
         analysis = new Analysis();
-
-        // Mockit.setUpMocks(WekaToolkitMock.class);
     }
 
     @After
@@ -103,8 +101,8 @@ public class WekaAnalyzerTest extends AbstractTest {
     public void instance() throws Exception {
         init();
         Instances instances = mock(Instances.class);
-        Attribute attTwo = new Attribute("one", (FastVector) null, 1);
-        Attribute attThree = new Attribute("two", (FastVector) null, 2);
+        Attribute attTwo = new Attribute("one", (List<String>) null, 1);
+        Attribute attThree = new Attribute("two", (List<String>) null, 2);
 
         when(instances.numAttributes()).thenReturn(3);
         when(instances.attribute(1)).thenReturn(attTwo);

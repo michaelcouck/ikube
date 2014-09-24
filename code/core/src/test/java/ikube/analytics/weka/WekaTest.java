@@ -18,6 +18,7 @@ import weka.filters.unsupervised.attribute.StringToWordVector;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -64,17 +65,17 @@ public class WekaTest extends AbstractTest {
 
     @Test
     public void createProgrammatically() throws Exception {
-        FastVector attributes = new FastVector();
+        ArrayList<Attribute> attributes = new ArrayList<>();
 
-        attributes.addElement(new Attribute("att1"));
-        attributes.addElement(new Attribute("att2"));
-        attributes.addElement(new Attribute("att3"));
-        attributes.addElement(new Attribute("att4"));
+        attributes.add(new Attribute("att1"));
+        attributes.add(new Attribute("att2"));
+        attributes.add(new Attribute("att3"));
+        attributes.add(new Attribute("att4"));
 
-        FastVector nominalValues = new FastVector(2);
-        nominalValues.addElement(IConstants.POSITIVE);
-        nominalValues.addElement(IConstants.NEGATIVE);
-        attributes.addElement(new Attribute("class", nominalValues));
+        ArrayList<String> nominalValues = new ArrayList<>(2);
+        nominalValues.add(IConstants.POSITIVE);
+        nominalValues.add(IConstants.NEGATIVE);
+        attributes.add(new Attribute("class", nominalValues));
 
         Instances dataSet = new Instances("ESDN", attributes, 0);
         dataSet.setClass(dataSet.attribute(dataSet.numAttributes() - 1));

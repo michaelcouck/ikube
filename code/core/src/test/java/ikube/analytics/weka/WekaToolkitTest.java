@@ -6,10 +6,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import weka.core.Attribute;
-import weka.core.FastVector;
 import weka.core.Instances;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
@@ -34,9 +34,9 @@ public class WekaToolkitTest extends AbstractTest {
 
     @Test
     public void writeToArff() throws Exception {
-        FastVector fastVector = new FastVector(10);
+        ArrayList<Attribute> fastVector = new ArrayList<>();
         Attribute attribute = new Attribute("class");
-        fastVector.addElement(attribute);
+        fastVector.add(attribute);
         Instances instances = new Instances("instances", fastVector, 10);
         WekaToolkit.writeToArff(instances, filePath);
         assertTrue(new File(filePath).exists());

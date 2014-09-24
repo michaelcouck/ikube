@@ -5,7 +5,7 @@ import ikube.analytics.action.*;
 import ikube.cluster.IClusterManager;
 import ikube.model.Analysis;
 import ikube.model.Context;
-import ikube.toolkit.CsvFileTools;
+import ikube.toolkit.CsvUtilities;
 import ikube.toolkit.ThreadUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +78,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
             File file = findFileRecursively(new File(IConstants.ANALYTICS_DIRECTORY), fileName);
             try {
                 FileInputStream fileInputStream = new FileInputStream(file);
-                Object[][] matrix = new CsvFileTools().getCsvData(fileInputStream);
+                Object[][] matrix = new CsvUtilities().getCsvData(fileInputStream);
                 int maxRows = Math.min(matrix.length, rows);
                 Object[][] prunedMatrix = new Object[maxRows][];
                 System.arraycopy(matrix, 0, prunedMatrix, 0, maxRows);

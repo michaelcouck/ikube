@@ -1,6 +1,6 @@
 package ikube.analytics.weka;
 
-import ikube.toolkit.CsvFileTools;
+import ikube.toolkit.CsvUtilities;
 import ikube.toolkit.Timer;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -16,6 +16,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import static ikube.toolkit.FileUtilities.getOrCreateFile;
@@ -86,7 +88,7 @@ public final class WekaToolkit {
         InputStream inputStream = null;
         try {
             inputStream = new FileInputStream(new File(filePath));
-            matrix = new CsvFileTools().getCsvData(inputStream);
+            matrix = new CsvUtilities().getCsvData(inputStream);
             return matrixToInstances(matrix, classIndex, type);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -108,10 +110,10 @@ public final class WekaToolkit {
      */
     public static Instances matrixToInstances(final Object[][] matrix, final int classIndex, final Class<?> type) {
         // Create the instances from the matrix data
-        FastVector attributes = new FastVector();
+        ArrayList<Attribute> attributes = new ArrayList<>();
         // Add the attributes to the data set
         for (int i = 0; i < matrix[0].length; i++) {
-            attributes.addElement(getAttribute(i, type));
+            attributes.add(getAttribute(i, type));
         }
         // Create the instances data set from the data and the attributes
         Instances instances = new Instances("instances", attributes, 0);
@@ -127,7 +129,7 @@ public final class WekaToolkit {
         if (Double.class.isAssignableFrom(type)) {
             return new Attribute(Integer.toString(index));
         } else if (String.class.isAssignableFrom(type)) {
-            return new Attribute(Integer.toString(index), (FastVector) null);
+            return new Attribute(Integer.toString(index), (List<String>) null);
         } else {
             throw new RuntimeException("Attribute type not supported : " + type);
         }
