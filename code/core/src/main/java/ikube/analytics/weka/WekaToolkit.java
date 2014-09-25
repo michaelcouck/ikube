@@ -181,7 +181,7 @@ public final class WekaToolkit {
                 }
                 case Attribute.STRING:
                 case Attribute.NOMINAL: {
-                    instance.setValue(i, value);
+                    instance.setValue(i, attribute.addStringValue(value));
                     break;
                 }
                 case Attribute.NUMERIC: {
