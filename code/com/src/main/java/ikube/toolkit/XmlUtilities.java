@@ -1,6 +1,7 @@
 package ikube.toolkit;
 
 import org.apache.log4j.Logger;
+import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -19,13 +20,6 @@ public final class XmlUtilities {
     private static final Logger LOGGER = Logger.getLogger(XmlUtilities.class);
 
     /**
-     * Singularity.
-     */
-    private XmlUtilities() {
-        // Documented
-    }
-
-    /**
      * Finds the node in the xml with the specified name recursively iterating through the elements in the document.
      * This method will return the first tag with the name specified.
      *
@@ -37,12 +31,59 @@ public final class XmlUtilities {
         if (node.getName().equals(name)) {
             return node;
         }
-        List<?> elements = node.elements();
+        @SuppressWarnings("unchecked")
+        List<Element> elements = node.elements();
         for (final Object element : elements) {
             Element childElement = getElement((Element) element, name);
             if (childElement != null) {
                 return childElement;
             }
+        }
+        return null;
+    }
+
+    /**
+     * This method will return the element with the specified attribute value. Note that this will return the first,
+     * one found, so the attributes should be unique for meaningful results.
+     *
+     * @param node           the top level or root tag to start looking from
+     * @param name           the name of the tag or node
+     * @param attributeName  the  name of the attribute to find in the target element
+     * @param attributeValue the  value of the attribute to find in the elements
+     * @return the node or tag with the specified name or null if no such tag can be found
+     */
+    public static Element getElement(final Element node, final String name, final String attributeName, final String attributeValue) {
+        if (node == null) {
+            return null;
+        }
+        @SuppressWarnings("unchecked")
+        List<Element> elements = node.elements();
+        for (final Element element : elements) {
+            if (element.getName().equals(name)) {
+                String elementAttributeValue = getAttributeValue(element, attributeName);
+                if (elementAttributeValue != null && elementAttributeValue.equals(attributeValue)) {
+                    return element;
+                }
+            }
+            Element childElement = getElement(element, name, attributeName, attributeValue);
+            if (childElement != null) {
+                return childElement;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * This method simply returns the attribute value in the element specified.
+     *
+     * @param element       the element to get the attribute value from
+     * @param attributeName the name of the attribute to get the value from
+     * @return the attribute value in string form or null if there is no such attribute in the element
+     */
+    public static String getAttributeValue(final Element element, final String attributeName) {
+        Attribute attribute = element.attribute(attributeName);
+        if (attribute != null) {
+            return attribute.getValue();
         }
         return null;
     }
@@ -94,6 +135,13 @@ public final class XmlUtilities {
             }
         }
         return document;
+    }
+
+    /**
+     * Singularity.
+     */
+    private XmlUtilities() {
+        // Documented
     }
 
 }

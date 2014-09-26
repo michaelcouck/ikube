@@ -12,9 +12,9 @@ import java.util.Arrays;
 import static ikube.analytics.weka.WekaToolkit.filter;
 
 /**
- * This is a wrapper for the Weka classifiers. It is essentially a holder with some methods for
- * building and training and using the underlying Weka classification(any one, for example {@link weka.classifiers.functions.SMO})
- * algorithm.
+ * This is a wrapper for the Weka classifiers. It is essentially a holder with some
+ * methods for building and training and using the underlying Weka classification(any one, for
+ * example {@link weka.classifiers.functions.SMO}) algorithm.
  *
  * @author Michael Couck
  * @version 01.00
@@ -117,11 +117,6 @@ public class WekaClassifier extends WekaAnalyzer {
         double[][] distributionForInstance = new double[context.getAlgorithms().length][];
         Object[] classifiers = context.getAlgorithms();
         Filter[] filters = getFilters(context);
-        if (context.getFilters() != null) {
-            filters = new Filter[context.getFilters().length];
-            //noinspection SuspiciousSystemArraycopy
-            System.arraycopy(context.getFilters(), 0, filters, 0, filters.length);
-        }
         for (int i = 0; i < classifiers.length; i++) {
             Classifier classifier = (Classifier) classifiers[i];
             // Instance filteredInstance = filter(instance, filter);
