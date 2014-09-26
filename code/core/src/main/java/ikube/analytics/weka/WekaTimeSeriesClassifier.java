@@ -1,6 +1,9 @@
 package ikube.analytics.weka;
 
 import ikube.toolkit.MatrixUtilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import weka.classifiers.Classifier;
 import weka.classifiers.evaluation.NumericPrediction;
 import weka.classifiers.timeseries.WekaForecaster;
 import weka.core.Attribute;
@@ -22,63 +25,59 @@ public class WekaTimeSeriesClassifier {
 
     @SuppressWarnings("UnnecessaryLocalVariable")
     public void predictTimeSeries() throws Exception {
-        String filePath = "/home/laptop/Downloads/netflix/processed-data/mv-aggregated-1411559729692-1000.csv";
+        String filePath = "/home/laptop/Downloads/table.csv";
         Object[][] matrix = getCsvData(filePath);
-        MatrixUtilities.sortOnFeature(matrix, 5, Date.class);
+        MatrixUtilities.sortOnFeature(matrix, 0, Date.class);
 
         ArrayList<Attribute> attributes = new ArrayList<>();
 
-        attributes.add(getAttribute(0, Double.class));
+        attributes.add(getAttribute(0, Date.class));
         attributes.add(getAttribute(1, Double.class));
-        attributes.add(getAttribute(2, String.class));
+        attributes.add(getAttribute(2, Double.class));
         attributes.add(getAttribute(3, Double.class));
         attributes.add(getAttribute(4, Double.class));
-        attributes.add(getAttribute(5, Date.class));
+        attributes.add(getAttribute(5, Double.class));
+        attributes.add(getAttribute(6, Double.class));
 
-        Instances instances = new Instances("instances", attributes, 0);
+        Instances instances = new Instances("instances", attributes, attributes.size());
         for (final Object[] vector : matrix) {
             instances.add(getInstance(instances, vector));
         }
+        instances.setClassIndex(6);
 
-        Instances filteredInstances = instances; // filter(instances, new StringToWordVector());
-        writeToArff(filteredInstances, "target/mv-aggregated-filtered.arff");
+        writeToArff(instances, "target/table-filtered.arff");
 
         WekaForecaster forecaster = new WekaForecaster();
-        forecaster.setFieldsToForecast("4");
+        forecaster.setFieldsToForecast("6");
 
-        forecaster.getTSLagMaker().setTimeStampField("5"); // date time stamp
+        forecaster.getTSLagMaker().setTimeStampField("0"); // date time stamp
         forecaster.getTSLagMaker().setMinLag(1);
-        forecaster.getTSLagMaker().setMaxLag(12); // monthly data
+        forecaster.getTSLagMaker().setMaxLag(1); // 12 - monthly data
 
         // add a month of the year indicator field
         forecaster.getTSLagMaker().setAddMonthOfYear(true);
-
         // add a quarter of the year indicator field
         forecaster.getTSLagMaker().setAddQuarterOfYear(true);
-
         // build the model
-        forecaster.buildForecaster(filteredInstances, System.out);
-
+        forecaster.buildForecaster(instances, System.out);
         // prime the forecaster with enough recent historical data
         // to cover up to the maximum lag. In our case, we could just supply
         // the 12 most recent historical instances, as this covers our maximum
         // lag period
-        forecaster.primeForecaster(filteredInstances);
-
-        // forecast for 12 units (months) beyond the end of the
-        // training data
-        List<List<NumericPrediction>> forecast = forecaster.forecast(12, System.out);
-
-        // output the predictions. Outer list is over the steps; inner list is over
-        // the targets
-        for (int i = 0; i < 12; i++) {
-            List<NumericPrediction> predsAtStep = forecast.get(i);
-            for (int j = 0; j < 2; j++) {
-                NumericPrediction predForTarget = predsAtStep.get(j);
+        forecaster.primeForecaster(instances);
+        // forecast for 12 units (months) beyond the end of the training data
+        List<List<NumericPrediction>> forecast = forecaster.forecast(5, System.out);
+        // output the predictions. Outer list is over the steps; inner list is over the targets
+        for (List<NumericPrediction> predsAtStep : forecast) {
+            for (NumericPrediction predForTarget : predsAtStep) {
                 System.out.print("" + predForTarget.predicted() + " ");
             }
             System.out.println();
         }
+        System.out.println("Confidence : " + forecaster.getConfidenceLevel());
+        Classifier classifier = forecaster.getBaseForecaster();
+        double relativeAbsoluteError = WekaToolkit.crossValidate(classifier, instances, 3);
+        System.out.println("Relative absolute error : " + relativeAbsoluteError);
     }
 
 }

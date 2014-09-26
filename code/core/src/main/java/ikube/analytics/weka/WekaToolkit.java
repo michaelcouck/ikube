@@ -1,12 +1,14 @@
 package ikube.analytics.weka;
 
-import ikube.toolkit.CsvUtilities;
+import ikube.toolkit.StringUtilities;
 import ikube.toolkit.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.evaluation.output.prediction.PlainText;
+import weka.clusterers.ClusterEvaluation;
+import weka.clusterers.Clusterer;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
@@ -16,15 +18,10 @@ import weka.filters.Filter;
 import weka.filters.unsupervised.instance.NonSparseToSparse;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.ParseException;
 import java.util.*;
 
 import static ikube.toolkit.FileUtilities.getOrCreateFile;
-import static ikube.toolkit.MatrixUtilities.objectVectorToDoubleVector;
-import static ikube.toolkit.MatrixUtilities.objectVectorToStringVector;
 
 /**
  * This class contains general methods for manipulating the Weka data, and for writing
@@ -76,26 +73,6 @@ public final class WekaToolkit {
     }
 
     /**
-     * This is a convenience method to load a pure csv file and create an instances object that Weka
-     * can use. This would typically be used in an environment where there are missing values in the input
-     * data and the Weka loader doesn't like that.
-     *
-     * @param filePath   the path to the file to load the data from
-     * @param classIndex the class index that is missing, can be -1 if there is no known missing attribute,
-     *                   and the missing attribute will be set to 0, i.e. the first one, which is the default
-     * @return the instances object created from the input, data, with the same number of attributed labeled as
-     * the input data has vector lengths
-     */
-    public static Instances csvFileToInstances(final String filePath, final int classIndex, final Class<?> type) {
-        try (InputStream inputStream = new FileInputStream(new File(filePath))) {
-            Object[][] matrix = CsvUtilities.getCsvData(inputStream);
-            return matrixToInstances(matrix, classIndex, type);
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
      * This method will convert a matrix to a 'flat' {@link weka.core.Instances} object. Note that the
      * matrix will be converted where necessary to a double vector to comply with the input requirements
      * of the Weka algorithms, or string depending on the type in the parameter list.
@@ -103,22 +80,30 @@ public final class WekaToolkit {
      * @param matrix     the matrix to convert into an instances object, or data set for Weka
      * @param classIndex the class index or index o the attribute that is 'missing' or to be predicted, if this is
      *                   set to Integer.MAX_VALUE then the last attribute will be used as the class index
-     * @param type       the type of attributes to use in the instances, either double or string
      * @return the instances object created from the matrix, with all the attributes doubles or strings, ready for processing
      */
-    public static Instances matrixToInstances(final Object[][] matrix, final int classIndex, final Class<?> type) {
+    public static Instances matrixToInstances(final Object[][] matrix, final int classIndex) throws ParseException {
         // Create the instances from the matrix data
         ArrayList<Attribute> attributes = new ArrayList<>();
         // Add the attributes to the data set
         for (int i = 0; i < matrix[0].length; i++) {
-            attributes.add(getAttribute(i, type));
+            String value = matrix[0][i] == null ? "" : matrix[0][i].toString();
+            if (StringUtilities.isDate(value)) {
+                attributes.add(getAttribute(i, Date.class));
+            } else if (StringUtilities.isNumeric(value)) {
+                attributes.add(getAttribute(i, Double.class));
+            } else if (value.startsWith("{") && value.endsWith("}")) {
+                attributes.add(getAttribute(i, String.class, value));
+            } else {
+                attributes.add(getAttribute(i, String.class));
+            }
         }
         // Create the instances data set from the data and the attributes
         Instances instances = new Instances("instances", attributes, 0);
         instances.setClass(instances.attribute(classIndex));
         // Populate the instances
         for (final Object[] vector : matrix) {
-            instances.add(getInstance(instances, vector, type));
+            instances.add(getInstance(instances, vector));
         }
         return instances;
     }
@@ -135,48 +120,42 @@ public final class WekaToolkit {
      */
     public static Attribute getAttribute(final int index, final Class<?> type, final String... nominal) {
         String name = Integer.toString(index);
-        if (Double.class.isAssignableFrom(type)) {
+        if (nominal != null && nominal.length > 0) {
+            List<String> nominalAttributes = Arrays.asList(nominal);
+            return new Attribute(name, nominalAttributes);
+        } else if (Double.class.isAssignableFrom(type)) {
             return new Attribute(name);
         } else if (String.class.isAssignableFrom(type)) {
             return new Attribute(name, (List<String>) null);
         } else if (Date.class.isAssignableFrom(type)) {
             return new Attribute(name, DATE_FORMAT);
-        } else if (nominal != null && nominal.length > 0) {
-            List<String> nominalAttributes = Arrays.asList(nominal);
-            return new Attribute(name, nominalAttributes);
         } else {
             throw new RuntimeException("Attribute type not supported : " + type);
         }
     }
 
-    public static Instance getInstance(final Instances instances, final Object[] vector, final Class<?> type) {
-        if (Double.class.isAssignableFrom(type)) {
-            double[] doubleVector = objectVectorToDoubleVector(vector);
-            return new DenseInstance(1.0, doubleVector);
-        } else if (String.class.isAssignableFrom(type)) {
-            String[] stringVector = objectVectorToStringVector(vector);
-            Instance instance = new DenseInstance(stringVector.length);
-            for (int i = 0; i < instances.numAttributes(); i++) {
-                Attribute attribute = instances.attribute(i);
-                String value = stringVector[i];
-                instance.setValue(attribute, value);
-            }
-            return instance;
-        } else {
-            throw new RuntimeException("Attribute type not supported : " + type);
-        }
-    }
-
-    public static Instance getInstance(final Instances instances, final Object[] vector) throws ParseException {
+    /**
+     * This method will convert the vector to an instance. The type of attributes are gotten from
+     * the {@link weka.core.Instances} object.
+     *
+     * @param instances the data set to add this instance to, and to get the attribute types from
+     * @param vector    the vector of values to convert to an instance
+     * @return the instance object, with the instances set as the data set
+     * @throws ParseException
+     */
+    public static Instance getInstance(final Instances instances, final Object[] vector) {
         Instance instance = new DenseInstance(vector.length);
         instance.setDataset(instances);
         for (int i = 0; i < instances.numAttributes(); i++) {
             String value = vector[i] == null ? "" : vector[i].toString();
             Attribute attribute = instances.attribute(i);
-            // LOGGER.error("Index : " + i + ", " + attribute);
             switch (attribute.type()) {
                 case Attribute.DATE: {
-                    instance.setValue(i, attribute.parseDate(value));
+                    try {
+                        instance.setValue(i, attribute.parseDate(value));
+                    } catch (final ParseException e) {
+                        throw new RuntimeException(e);
+                    }
                     break;
                 }
                 case Attribute.STRING:
@@ -265,30 +244,29 @@ public final class WekaToolkit {
             @Override
             public void execute() {
                 try {
-                    // new Range(), true
                     evaluation.crossValidateModel(classifier, instances, folds, new Random(), predictionsOutput);
-                    LOGGER.error(predictionsOutput.globalInfo());
-                    LOGGER.error(predictionsOutput.getDisplay());
+                    LOGGER.warn(predictionsOutput.globalInfo());
+                    LOGGER.warn(predictionsOutput.getDisplay());
                 } catch (final Exception e) {
                     LOGGER.error("Exception cross validating the classifier : ", e);
                 }
             }
         });
         LOGGER.warn("Duration for cross validation : " + duration);
-
-        duration = Timer.execute(new Timer.Timed() {
-            @Override
-            public void execute() {
-                try {
-                    evaluation.evaluateModel(classifier, instances);
-                } catch (final Exception e) {
-                    LOGGER.error("Exception evaluating the classifier : ", e);
-                }
-            }
-        });
-        LOGGER.warn("Duration for model evaluation : " + duration);
-
         return evaluation.relativeAbsoluteError();
+    }
+
+    public static String evaluate(final Classifier classifier, final Instances instances) throws Exception {
+        final Evaluation evaluation = new Evaluation(instances);
+        evaluation.evaluateModel(classifier, instances);
+        return evaluation.toSummaryString(true);
+    }
+
+    public static String evaluate(final Clusterer clusterer, final Instances instances) throws Exception {
+        ClusterEvaluation clusterEvaluation = new ClusterEvaluation();
+        clusterEvaluation.setClusterer(clusterer);
+        clusterEvaluation.evaluateClusterer(instances);
+        return clusterEvaluation.clusterResultsToString();
     }
 
     private WekaToolkit() {

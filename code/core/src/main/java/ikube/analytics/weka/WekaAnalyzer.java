@@ -4,24 +4,23 @@ import com.google.common.collect.Lists;
 import ikube.analytics.AAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
-import ikube.toolkit.StringUtilities;
-import ikube.toolkit.ThreadUtilities;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import weka.classifiers.Classifier;
-import weka.classifiers.Evaluation;
-import weka.clusterers.ClusterEvaluation;
 import weka.clusterers.Clusterer;
-import weka.core.*;
+import weka.core.Attribute;
+import weka.core.Instance;
+import weka.core.Instances;
+import weka.core.OptionHandler;
 import weka.filters.Filter;
 
 import java.io.*;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.Future;
 
 import static ikube.analytics.weka.WekaToolkit.filter;
+import static ikube.toolkit.ThreadUtilities.submit;
 import static ikube.toolkit.ThreadUtilities.waitForAnonymousFutures;
 
 /**
@@ -72,8 +71,10 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
 
     @Override
     public void build(final Context context) throws Exception {
+
         final Object[] algorithms = context.getAlgorithms();
         final Object[] models = context.getModels();
+
         final String[] evaluations = new String[algorithms.length];
         final Object[] capabilities = new Object[algorithms.length];
 
@@ -87,10 +88,11 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
             public void run() {
                 try {
                     Instances instances = (Instances) models[index];
-                    Filter filter = getFilter(context, index);
+                    // Filter filter = getFilter(context, index);
+                    Filter[] filters = (Filter[]) context.getFilters();
 
                     // Filter the data if necessary
-                    Instances filteredInstances = filter(instances, filter);
+                    Instances filteredInstances = filter(instances, filters);
                     filteredInstances.setRelationName("filtered-instances");
 
                     Object analyzer = algorithms[index];
@@ -98,7 +100,7 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
                         Clusterer clusterer = ((Clusterer) analyzer);
                         logger.info("Building clusterer : " + instances.numInstances());
                         clusterer.buildClusterer(filteredInstances);
-                        evaluations[index] = evaluate(clusterer, instances);
+                        evaluations[index] = WekaToolkit.evaluate(clusterer, instances);
                         capabilities[index] = clusterer.getCapabilities().toString();
                         logger.info("Clusterer built : " + filteredInstances.numInstances() + ", " + context.getName());
                     } else if (Classifier.class.isAssignableFrom(analyzer.getClass())) {
@@ -108,7 +110,7 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
                         classifier.buildClassifier(filteredInstances);
                         logger.error("Classifier built : " + filteredInstances.numInstances() + ", " + context.getName());
                         // Set the evaluation of the classifier and the training model
-                        evaluations[index] = evaluate(classifier, filteredInstances);
+                        evaluations[index] = WekaToolkit.evaluate(classifier, filteredInstances);
                         capabilities[index] = classifier.getCapabilities().toString();
                     }
                 } catch (final Exception e) {
@@ -119,7 +121,7 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
 
         List<Future> futures = Lists.newArrayList();
         for (int i = 0; i < context.getAlgorithms().length; i++) {
-            Future<?> future = ThreadUtilities.submit(this.getClass().getName(), new AnalyzerBuilder(i));
+            Future<?> future = submit(this.getClass().getName(), new AnalyzerBuilder(i));
             futures.add(future);
         }
         waitForAnonymousFutures(futures, Long.MAX_VALUE);
@@ -128,20 +130,6 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
         context.setEvaluations(evaluations);
         context.setCapabilities(capabilities);
         context.setBuilt(Boolean.TRUE);
-    }
-
-    private String evaluate(final Clusterer clusterer, final Instances instances) throws Exception {
-        ClusterEvaluation clusterEvaluation = new ClusterEvaluation();
-        clusterEvaluation.setClusterer(clusterer);
-        clusterEvaluation.evaluateClusterer(instances);
-        return clusterEvaluation.clusterResultsToString();
-    }
-
-    private String evaluate(final Classifier classifier, final Instances instances) throws Exception {
-        Evaluation evaluation = new Evaluation(instances);
-        evaluation.crossValidateModel(classifier, instances, 3, new Random());
-        evaluation.evaluateModel(classifier, instances);
-        return evaluation.toSummaryString();
     }
 
     /**
@@ -178,39 +166,20 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
     }
 
     /**
-     * This method will create an instance from the input string. The string is assumed to be a comma separated list of values, with the same dimensions as the
-     * attributes in the instances data set. If not, then the results are undefined.
+     * This method will create an instance from the input string. The string is assumed to be a comma separated list of values,
+     * with the same dimensions as the attributes in the instances data set. If not, then the results are undefined.
      *
      * @param input the input string, a comma separated list of values, i.e. '35_51,FEMALE,INNER_CITY,0_24386,NO,1,NO,NO,NO,NO,YES'
      * @return the instance, with the attributes set to the values of the tokens in the input string
      */
     Instance instance(final Object input, final Instances instances) {
-        Instance instance = new DenseInstance(instances.numAttributes());
         Object[] values = null;
         if (String.class.isAssignableFrom(input.getClass())) {
             values = StringUtils.split((String) input, ',');
         } else if (input.getClass().isArray()) {
             values = (Object[]) input;
         }
-        assert values != null;
-        for (int i = instances.numAttributes() - 1, j = values.length - 1; i >= 1 && j >= 0; i--, j--) {
-            Object value = values[j];
-            Attribute attribute = instances.attribute(i);
-            if (attribute.isNumeric()) {
-                instance.setValue(attribute, Double.parseDouble(value.toString()));
-            } else if (attribute.isString()) {
-                instance.setValue(attribute, attribute.addStringValue(value.toString()));
-            } else {
-                if (StringUtilities.isNumeric(value.toString())) {
-                    instance.setValue(attribute, Double.parseDouble(value.toString()));
-                } else {
-                    instance.setValue(attribute, value.toString());
-                }
-            }
-        }
-        // instance.setMissing(0);
-        instance.setDataset(instances);
-        return instance;
+        return WekaToolkit.getInstance(instances, values);
     }
 
     /**

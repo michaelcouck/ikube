@@ -1,7 +1,9 @@
 package ikube.toolkit;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
 
+import java.text.ParseException;
 import java.util.Arrays;
 
 /**
@@ -75,11 +77,28 @@ public final class StringUtilities {
     }
 
     /**
+     * This method will check that the string is a valid date of the format 'yyyy-MM-dd'. It is lenient
+     * so strings like '71-5-1' will also be valid, it will be assumed that the year is a shortened version,
+     * and month and day.
+     *
+     * @param dateString the string to check for valie date foemat
+     * @return whether the string can be parsed into a date
+     */
+    public static boolean isDate(final String dateString) {
+        try {
+            DateUtils.parseDate(dateString, new String[]{"yyyy-MM-dd"});
+            return Boolean.TRUE;
+        } catch (final ParseException e) {
+            return Boolean.FALSE;
+        }
+    }
+
+    /**
      * This method strips all the characters out of the target string that are specified in the parameter list. For example
      * the string 'Hello! World!' stripped of '!' will become, 'Hello World', having had the exclamation marks removed.
      *
      * @param string the string to strip of characters
-     * @param strip the characters to strip from teh string
+     * @param strip  the characters to strip from teh string
      * @return the stripped string, sans the characters for strip
      */
     public static String strip(final String string, final String strip) {

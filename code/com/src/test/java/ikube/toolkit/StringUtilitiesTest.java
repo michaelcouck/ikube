@@ -90,4 +90,14 @@ public class StringUtilitiesTest extends AbstractTest {
         }, "Strip performance : ", 10000, false);
     }
 
+    @Test
+    public void isDate() {
+        boolean isDate = StringUtilities.isDate("");
+        assertFalse(isDate);
+        isDate = StringUtilities.isDate("1971-05-27");
+        assertTrue(isDate);
+        isDate = StringUtilities.isDate("71-5-7");
+        assertTrue(isDate);
+    }
+
 }
