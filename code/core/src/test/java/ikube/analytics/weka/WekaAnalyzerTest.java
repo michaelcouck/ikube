@@ -51,7 +51,7 @@ public class WekaAnalyzerTest extends AbstractTest {
         context.setAnalyzer(wekaAnalyzer);
 
         context.setAlgorithms(algorithm, algorithm, algorithm);
-        context.setFilters(filter, filter, filter);
+        context.setFilters(filter);
         context.setOptions(options);
 
         context.setFileNames("sentiment-smo-one.arff", "sentiment-smo-two.arff", "sentiment-smo-three.arff");
@@ -68,9 +68,9 @@ public class WekaAnalyzerTest extends AbstractTest {
     @Test
     public void init() throws Exception {
         wekaAnalyzer.init(context);
+        assertTrue(Filter.class.isAssignableFrom(context.getFilters()[0].getClass()));
         for (int i = 0; i < context.getAlgorithms().length; i++) {
             assertTrue(SMO.class.isAssignableFrom(context.getAlgorithms()[i].getClass()));
-            assertTrue(Filter.class.isAssignableFrom(context.getFilters()[i].getClass()));
             assertTrue(Instances.class.isAssignableFrom(context.getModels()[i].getClass()));
         }
         wekaAnalyzer.build(context);
@@ -101,21 +101,21 @@ public class WekaAnalyzerTest extends AbstractTest {
     public void instance() throws Exception {
         init();
         Instances instances = mock(Instances.class);
-        Attribute attTwo = new Attribute("one", (List<String>) null, 1);
-        Attribute attThree = new Attribute("two", (List<String>) null, 2);
+        Attribute attOne = new Attribute("one", (List<String>) null, 1);
+        Attribute attTwo = new Attribute("two", (List<String>) null, 2);
 
-        when(instances.numAttributes()).thenReturn(3);
+        when(instances.numAttributes()).thenReturn(2);
+        when(instances.attribute(0)).thenReturn(attOne);
         when(instances.attribute(1)).thenReturn(attTwo);
-        when(instances.attribute(2)).thenReturn(attThree);
 
         String input = "my beautiful little girl";
         Instance instance = wekaAnalyzer.instance(input + ", " + input, instances);
         assertEquals(instances, instance.dataset());
-        assertEquals(3, instance.numAttributes());
-        assertEquals(3, instance.numValues());
+        assertEquals(2, instance.numAttributes());
+        assertEquals(2, instance.numValues());
 
+        assertEquals(attOne, instance.attribute(0));
         assertEquals(attTwo, instance.attribute(1));
-        assertEquals(attThree, instance.attribute(2));
     }
 
     @Test

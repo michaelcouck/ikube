@@ -74,6 +74,7 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
 
         final Object[] algorithms = context.getAlgorithms();
         final Object[] models = context.getModels();
+        final Filter[] filters = getFilters(context);
 
         final String[] evaluations = new String[algorithms.length];
         final Object[] capabilities = new Object[algorithms.length];
@@ -88,8 +89,6 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
             public void run() {
                 try {
                     Instances instances = (Instances) models[index];
-                    // Filter filter = getFilter(context, index);
-                    Filter[] filters = (Filter[]) context.getFilters();
 
                     // Filter the data if necessary
                     Instances filteredInstances = filter(instances, filters);
@@ -201,7 +200,7 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
                 try {
                     Reader reader = new InputStreamReader(inputStream);
                     instances[i] = new Instances(reader);
-                    instances[i].setRelationName("instances");
+                    // instances[i].setRelationName("instances");
                 } finally {
                     if (inputStream != null) {
                         IOUtils.closeQuietly(inputStream);
@@ -257,13 +256,16 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
         return distributionForInstances;
     }
 
-    Filter getFilter(final Context context, final int i) {
-        Object[] filters = context.getFilters();
-        Filter filter = null;
-        if (filters != null && filters.length > i) {
-            filter = (Filter) filters[i];
+    Filter[] getFilters(final Context context) {
+        Filter[] filters;
+        if (context.getFilters() == null) {
+            filters = new Filter[0];
+        } else {
+            filters = new Filter[context.getFilters().length];
+            //noinspection SuspiciousSystemArraycopy
+            System.arraycopy(context.getFilters(), 0, filters, 0, filters.length);
         }
-        return filter;
+        return filters;
     }
 
     /**

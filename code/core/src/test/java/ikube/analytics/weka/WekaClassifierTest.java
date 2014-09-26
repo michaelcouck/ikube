@@ -28,6 +28,8 @@ import static junit.framework.Assert.*;
 public class WekaClassifierTest extends AbstractTest {
 
     private String positive = "my beautiful little girl";
+    @SuppressWarnings("FieldCanBeLocal")
+    private String negative = "I hate this selfish woman";
 
     @Mock
     private Context context;
@@ -50,7 +52,7 @@ public class WekaClassifierTest extends AbstractTest {
         context.setName("classification");
         context.setAnalyzer(WekaClassifier.class.getName());
         context.setAlgorithms(algorithm, algorithm, algorithm);
-        context.setFilters(filter, filter, filter);
+        context.setFilters(filter);
         context.setOptions(options);
         context.setFileNames(fileName, fileName, fileName);
         context.setMaxTrainings(maxTraining, maxTraining, maxTraining);
@@ -84,7 +86,7 @@ public class WekaClassifierTest extends AbstractTest {
             int iterations = IConstants.ONE_THOUSAND;
             int numInstances = instances.numInstances();
             do {
-                Analysis<Object, Object> analysis = getAnalysis(IConstants.POSITIVE, positive);
+                Analysis<Object, Object> analysis = getAnalysis(IConstants.POSITIVE, positive + "," + positive);
                 boolean trained = wekaClassifier.train(context, analysis);
                 assertTrue(trained);
             } while (--iterations >= 0);
@@ -94,27 +96,25 @@ public class WekaClassifierTest extends AbstractTest {
 
     @Test
     public void analyze() throws Exception {
-        String negative = "narryontop harry styles hello harry";
-        Analysis<Object, Object> analysis = getAnalysis(IConstants.NEGATIVE, negative);
+        Analysis<Object, Object> analysis = getAnalysis(IConstants.NEGATIVE, IConstants.NEGATIVE + "," + negative);
         wekaClassifier.train(context, analysis);
         wekaClassifier.build(context);
-        ThreadUtilities.sleep(1000);
 
-        analysis = getAnalysis(null, positive);
+        analysis = getAnalysis(null, "?," + positive);
         Analysis<Object, Object> result = wekaClassifier.analyze(context, analysis);
         assertEquals(IConstants.POSITIVE, result.getClazz());
 
-        analysis = getAnalysis(null, negative);
+        analysis = getAnalysis(null, "?," + negative);
         result = wekaClassifier.analyze(context, analysis);
         assertEquals(IConstants.NEGATIVE, result.getClazz());
 
         System.gc();
         long before = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / IConstants.MILLION;
         for (int i = 0; i < IConstants.ONE_THOUSAND; i++) {
-            analysis = getAnalysis(null, positive);
+            analysis = getAnalysis(null, "?," + positive);
             analysis = wekaClassifier.analyze(context, analysis);
             assertEquals(IConstants.POSITIVE, analysis.getClazz());
-            analysis = getAnalysis(null, negative);
+            analysis = getAnalysis(null, "?," + negative);
             analysis = wekaClassifier.analyze(context, analysis);
             assertEquals(IConstants.NEGATIVE, analysis.getClazz());
         }

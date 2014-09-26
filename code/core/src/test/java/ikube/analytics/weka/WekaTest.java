@@ -5,6 +5,7 @@ import ikube.IConstants;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.FileUtilities;
+import ikube.toolkit.ThreadUtilities;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
@@ -53,7 +54,7 @@ public class WekaTest extends AbstractTest {
 
         classifier.buildClassifier(filteredData);
 
-        Instance instance = wekaClassifier.instance(IConstants.NEGATIVE, instances);
+        Instance instance = wekaClassifier.instance(IConstants.NEGATIVE + ", " + IConstants.NEGATIVE, instances);
         filter.input(instance);
         Instance filteredInstance = filter.output();
 
@@ -107,6 +108,7 @@ public class WekaTest extends AbstractTest {
 
     @Test
     public void regression() throws Exception {
+        ThreadUtilities.initialize();
         File file = FileUtilities.findFileRecursively(new File("."), "regression.arff");
 
         FileReader fileReader = new FileReader(file);

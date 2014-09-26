@@ -39,6 +39,9 @@ public class WekaClusterer extends WekaAnalyzer {
     @Override
     @SuppressWarnings("unchecked")
     public synchronized Analysis<Object, Object> analyze(final Context context, final Analysis analysis) throws Exception {
+
+        Filter[] filters = getFilters(context);
+
         int majorityCluster = 0;
         double[][] distributionForInstance = new double[context.getAlgorithms().length][];
 
@@ -48,14 +51,12 @@ public class WekaClusterer extends WekaAnalyzer {
             Clusterer clusterer = (Clusterer) context.getAlgorithms()[i];
             Instances instances = (Instances) context.getModels()[i];
 
-            Filter filter = getFilter(context, i);
-
             // Create the instance from the data
             Object input = analysis.getInput();
             Instance instance = instance(input, instances);
 
             // Cluster the instance
-            Instance filteredInstance = filter(instance, filter);
+            Instance filteredInstance = filter(instance, filters);
             @SuppressWarnings("UnusedDeclaration")
             int cluster = clusterer.clusterInstance(filteredInstance);
             distributionForInstance[i] = clusterer.distributionForInstance(instance);
@@ -77,10 +78,10 @@ public class WekaClusterer extends WekaAnalyzer {
     double[][] distributionForInstance(final Context context, final Instance instance) throws Exception {
         double[][] distributionForInstance = new double[context.getAlgorithms().length][];
         Object[] clusterers = context.getAlgorithms();
+        Filter[] filters = getFilters(context);
         for (int i = 0; i < clusterers.length; i++) {
             Clusterer clusterer = (Clusterer) clusterers[i];
-            Filter filter = getFilter(context, i);
-            Instance filteredInstance = filter((Instance) instance.copy(), filter);
+            Instance filteredInstance = filter((Instance) instance.copy(), filters);
             distributionForInstance[i] = clusterer.distributionForInstance(filteredInstance);
         }
         return distributionForInstance;

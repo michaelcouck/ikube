@@ -62,12 +62,12 @@ public class WekaClassifier extends WekaAnalyzer {
         String majorityClass = null;
         double[] majorityDistributionForInstance = null;
         StringBuilder algorithmsOutput = new StringBuilder();
+        Filter[] filters = getFilters(context);
 
         double highestProbability = -1.0;
         for (int i = 0; i < context.getAlgorithms().length; i++) {
             Classifier classifier = (Classifier) context.getAlgorithms()[i];
             Instances instances = (Instances) context.getModels()[i];
-            Filter filter = getFilter(context, i);
 
             // Create the instance from the data
             Object input = analysis.getInput();
@@ -75,7 +75,7 @@ public class WekaClassifier extends WekaAnalyzer {
             instance.setMissing(0);
 
             // Classify the instance
-            Instance filteredInstance = filter(instance, filter);
+            Instance filteredInstance = filter(instance, filters);
             double classification = classifier.classifyInstance(filteredInstance);
             String clazz = instances.classAttribute().value((int) classification);
             double[] distributionForInstance = classifier.distributionForInstance(filteredInstance);
@@ -116,17 +116,16 @@ public class WekaClassifier extends WekaAnalyzer {
     double[][] distributionForInstance(final Context context, final Instance instance) throws Exception {
         double[][] distributionForInstance = new double[context.getAlgorithms().length][];
         Object[] classifiers = context.getAlgorithms();
-        Object[] filters = context.getFilters();
+        Filter[] filters = getFilters(context);
+        if (context.getFilters() != null) {
+            filters = new Filter[context.getFilters().length];
+            //noinspection SuspiciousSystemArraycopy
+            System.arraycopy(context.getFilters(), 0, filters, 0, filters.length);
+        }
         for (int i = 0; i < classifiers.length; i++) {
             Classifier classifier = (Classifier) classifiers[i];
-
-            Filter filter = null;
-            if (filters != null && filters.length > i) {
-                filter = (Filter) filters[i];
-            }
-
             // Instance filteredInstance = filter(instance, filter);
-            Instance filteredInstance = filter((Instance) instance.copy(), filter);
+            Instance filteredInstance = filter((Instance) instance.copy(), filters);
             distributionForInstance[i] = classifier.distributionForInstance(filteredInstance);
         }
         return distributionForInstance;

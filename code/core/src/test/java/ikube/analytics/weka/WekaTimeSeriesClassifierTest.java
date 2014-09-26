@@ -1,5 +1,6 @@
 package ikube.analytics.weka;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -7,6 +8,7 @@ import org.junit.Test;
  * @version 01.00
  * @since 23-09-2014
  */
+@Ignore
 public class WekaTimeSeriesClassifierTest {
 
     @Test

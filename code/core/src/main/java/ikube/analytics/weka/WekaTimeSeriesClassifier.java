@@ -25,6 +25,14 @@ public class WekaTimeSeriesClassifier {
 
     @SuppressWarnings("UnnecessaryLocalVariable")
     public void predictTimeSeries() throws Exception {
+        // Get the data for the general trend in the sector type
+        // Get the data for the general trend in all the sectors
+        // Get the data for the general trend in the overall market
+
+        // Add the trends for the sector to the stock type
+        // Add the trends for the other sectors to the stock type
+        // Add the trends for the market to the stock type
+
         String filePath = "/home/laptop/Downloads/table.csv";
         Object[][] matrix = getCsvData(filePath);
         MatrixUtilities.sortOnFeature(matrix, 0, Date.class);

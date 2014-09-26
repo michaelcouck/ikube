@@ -141,11 +141,11 @@ public final class WekaToolkit {
      * @param instances the data set to add this instance to, and to get the attribute types from
      * @param vector    the vector of values to convert to an instance
      * @return the instance object, with the instances set as the data set
-     * @throws ParseException
      */
     public static Instance getInstance(final Instances instances, final Object[] vector) {
         Instance instance = new DenseInstance(vector.length);
         instance.setDataset(instances);
+        //  && i < vector.length
         for (int i = 0; i < instances.numAttributes(); i++) {
             String value = vector[i] == null ? "" : vector[i].toString();
             Attribute attribute = instances.attribute(i);
