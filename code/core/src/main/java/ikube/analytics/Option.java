@@ -62,7 +62,7 @@ public abstract class Option implements IOption {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getOption(final Class<?>... types) {
-        if (types == null) {
+        if (types == null || options == null) {
             return null;
         }
         for (final Object option : options) {
@@ -80,7 +80,7 @@ public abstract class Option implements IOption {
     }
 
     private boolean isOneOfType(final Object object, final Class<?>... types) {
-        if (object == null || types == null || types.length == 0) {
+        if (object == null || types == null) {
             return Boolean.FALSE;
         }
         for (final Class<?> type : types) {

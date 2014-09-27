@@ -47,7 +47,7 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
         Object[] algorithms = context.getAlgorithms();
         Object[] filters = context.getFilters();
         // Create the analyzer algorithm, the filter and the model
-        for (int i = 0; i < algorithms.length; i++) {
+        for (int i = 0; algorithms != null && i < algorithms.length; i++) {
             Object algorithm = Class.forName(algorithms[i].toString()).newInstance();
             algorithms[i] = algorithm;
             if (filters != null && filters.length > i) {
@@ -193,7 +193,7 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
         } else if (inputClass.isArray()) {
             return (Object[]) input;
         } else {
-            // Should we throw a fit here?
+            // Should we throw the toys here?
             return split(input.toString(), ',');
         }
     }
@@ -207,13 +207,16 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
      */
     Instances[] instances(final Context context) throws IOException {
         InputStream[] inputStreams = getInputStreams(context);
+        if (inputStreams == null) {
+            return null;
+        }
         Instances[] instances = new Instances[context.getAlgorithms().length];
-        for (int i = 0; inputStreams != null && i < inputStreams.length; i++) {
+        for (int i = 0; i < inputStreams.length; i++) {
             if (inputStreams[i] == null) {
                 logger.warn("Input stream for instances null : ");
                 continue;
             }
-            instances[i] = WekaToolkit.arffToInstances(inputStreams[i]);
+            instances[i] = arffToInstances(inputStreams[i]);
         }
         return instances;
     }
@@ -227,7 +230,10 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
      * @throws FileNotFoundException
      */
     InputStream[] getInputStreams(final Context context) throws FileNotFoundException {
-        InputStream[] inputStreams = new InputStream[context.getAlgorithms().length];
+        if (context.getFileNames() == null) {
+            return null;
+        }
+        InputStream[] inputStreams = new InputStream[context.getFileNames().length];
         if (context.getTrainingDatas() != null) {
             for (int i = 0; i < context.getTrainingDatas().length; i++) {
                 inputStreams[i] = new ByteArrayInputStream(context.getTrainingDatas()[i].getBytes());

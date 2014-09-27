@@ -65,7 +65,7 @@
         <write-classes>-Dwrite.classes=true</write-classes>
         <clean-classes>-Dclean.classes=true</clean-classes>
         <included-packages>-Dincluded.packages=ikube</included-packages>
-        <excluded-packages>-Dexcluded.packages=model:Mock:Test:Integration</excluded-packages>
+        <excluded-packages>-Dexcluded.packages=model:Mock:Test:Integration:Option</excluded-packages>
         <included-adapters>-Dincluded.adapters=coverage:complexity:dependency</included-adapters>
         <serenity-parameters>${write-classes} ${clean-classes} ${included-packages} ${excluded-packages} ${included-adapters} -noverify</serenity-parameters>
         <memory-parameters>-XX:PermSize=256m -XX:MaxPermSize=1024m -Xms1024m -Xmx4096m</memory-parameters>
@@ -228,7 +228,7 @@
                 <version>2.7.1</version>
                 <configuration>
                     <forkMode>once</forkMode>
-                    <testFailureIgnore>true</testFailureIgnore>
+                    <testFailureIgnore>false</testFailureIgnore>
                     <!--suppress MavenModelInspection -->
                     <argLine>-javaagent:${project.parent.basedir}/serenity/serenity.jar ${serenity-parameters} ${memory-parameters}</argLine>
                 </configuration>
@@ -240,7 +240,7 @@
 				<configuration>
 					<forkMode>once</forkMode>
                     <argLine>-XX:PermSize=512m -XX:MaxPermSize=1024m -Xms2048m -Xmx4096m</argLine>
-                    <testFailureIgnore>true</testFailureIgnore>
+                    <testFailureIgnore>false</testFailureIgnore>
                     <includes>
                         <include>**/*Integration*.java</include>
                     </includes>

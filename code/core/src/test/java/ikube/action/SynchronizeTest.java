@@ -8,7 +8,9 @@ import ikube.toolkit.FileUtilities;
 import ikube.toolkit.OsUtilities;
 import mockit.Deencapsulation;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Spy;
 
 import java.io.File;
 import java.util.Arrays;
@@ -26,6 +28,14 @@ import static org.mockito.Mockito.*;
  */
 public class SynchronizeTest extends AbstractTest {
 
+    @Spy
+    private Synchronize synchronize;
+
+    @Before
+    public void before() {
+        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+    }
+
     @After
     public void after() {
         FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
@@ -36,23 +46,21 @@ public class SynchronizeTest extends AbstractTest {
     public void internalExecute() throws Exception {
         Future<String[]> indexFilesFuture = getIndexFilesFuture();
         Future<byte[]> chunkFuture = getChunkFuture();
-
         Map<String, Server> servers = getServers();
 
         when(clusterManager.getServer()).thenReturn(servers.get(IConstants.ADDRESS));
         when(clusterManager.getServers()).thenReturn(servers);
         when(clusterManager.sendTaskTo(any(Server.class), any(Callable.class))).thenReturn(indexFilesFuture, chunkFuture);
 
-        Synchronize synchronize = new Synchronize();
         Deencapsulation.setField(synchronize, "clusterManager", clusterManager);
         synchronize.execute(indexContext);
 
         try {
             // There are five chunks and four extra files, so nine calls
-            verify(chunkFuture, times(9)).get();
-        } catch (final Throwable e) {
+            verify(chunkFuture, times(10)).get();
+        } catch (final Exception e) {
             logger.error("Exception doing the synchronize test on os : ", e);
-            if (OsUtilities.isOs("3.11.0-12-generic")) {
+            if (!OsUtilities.isOs("3.11.0-12-generic")) {
                 throw e;
             }
         }

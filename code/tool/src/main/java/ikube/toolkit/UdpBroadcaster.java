@@ -11,6 +11,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import static ikube.toolkit.StringUtilities.isNumeric;
+import static ikube.toolkit.ThreadUtilities.submit;
+import static ikube.toolkit.ThreadUtilities.waitForFutures;
+
 /**
  * This class can be used as a test bean to see if udp is supported on a network. The class will start a client and a server that will then
  * talk to each other over multi casted udp. If there are any other instantiations on the network then they will also be involved in the
@@ -38,12 +42,12 @@ public class UdpBroadcaster {
     public static void main(final String[] args) {
         try {
             long timeToWait = 60;
-            if (args != null && args.length > 0 && StringUtilities.isNumeric(args[0])) {
+            if (args != null && args.length > 0 && isNumeric(args[0])) {
                 timeToWait = Integer.parseInt(args[0]);
             }
             GROUP = InetAddress.getByName(MCAST_ADDR);
             List<Future<Object>> futures = new UdpBroadcaster().initialize();
-            ThreadUtilities.waitForFutures(futures, timeToWait);
+            waitForFutures(futures, timeToWait);
         } catch (final Exception e) {
             LOGGER.error("Usage : [group-ip] [port]");
         }
@@ -61,21 +65,17 @@ public class UdpBroadcaster {
     }
 
     private Future<?> client() {
-        return ThreadUtilities.submit(this.getClass().getSimpleName(), new Runnable() {
+        return submit(this.getClass().getSimpleName(), new Runnable() {
             @SuppressWarnings("InfiniteLoopStatement")
             public void run() {
                 try (MulticastSocket multicastSocket = new MulticastSocket(PORT)) {
                     multicastSocket.joinGroup(GROUP);
                     while (true) {
-                        try {
-                            byte[] receiveData = new byte[256];
-                            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-                            multicastSocket.receive(receivePacket);
-                            UdpBroadcaster.MESSAGES_RECIEVED++;
-                            LOGGER.error("Client received from : " + receivePacket.getAddress() + ", " + new String(receivePacket.getData()));
-                        } catch (final Exception e) {
-                            LOGGER.error(null, e);
-                        }
+                        byte[] receiveData = new byte[256];
+                        DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+                        multicastSocket.receive(receivePacket);
+                        UdpBroadcaster.MESSAGES_RECIEVED++;
+                        LOGGER.warn("Client received from : " + receivePacket.getAddress());
                     }
                 } catch (final Exception e) {
                     LOGGER.error(null, e);
@@ -85,23 +85,17 @@ public class UdpBroadcaster {
     }
 
     private Future<?> server() {
-        return ThreadUtilities.submit(this.getClass().getSimpleName(), new Runnable() {
+        return submit(this.getClass().getSimpleName(), new Runnable() {
             @SuppressWarnings("InfiniteLoopStatement")
             public void run() {
-                DatagramSocket serverSocket;
-                try {
-                    serverSocket = new DatagramSocket();
-                    try {
-                        while (true) {
-                            byte[] sendData = new byte[256];
-                            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, GROUP, PORT);
-                            serverSocket.send(sendPacket);
-                            UdpBroadcaster.MESSAGES_SENT++;
-                            LOGGER.error("Server sent : " + Arrays.toString(sendData));
-                            ThreadUtilities.sleep(10000);
-                        }
-                    } catch (final Exception e) {
-                        LOGGER.error(null, e);
+                try (DatagramSocket serverSocket = new DatagramSocket()) {
+                    while (true) {
+                        byte[] sendData = new byte[256];
+                        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, GROUP, PORT);
+                        serverSocket.send(sendPacket);
+                        UdpBroadcaster.MESSAGES_SENT++;
+                        LOGGER.warn("Server sent : " + Arrays.toString(sendData));
+                        ThreadUtilities.sleep(10000);
                     }
                 } catch (final Exception e) {
                     LOGGER.error(null, e);

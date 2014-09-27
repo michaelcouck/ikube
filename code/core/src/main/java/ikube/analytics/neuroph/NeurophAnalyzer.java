@@ -24,7 +24,6 @@ import java.util.Random;
 import java.util.Vector;
 import java.util.concurrent.Future;
 
-import static ikube.Constants.GSON;
 import static ikube.toolkit.FileUtilities.cleanFilePath;
 import static ikube.toolkit.MatrixUtilities.stringVectorDoubleVector;
 import static ikube.toolkit.ThreadUtilities.submit;
@@ -48,7 +47,7 @@ public class NeurophAnalyzer extends AAnalyzer<Analysis, Analysis, Analysis> {
     private static final Logger LOGGER = LoggerFactory.getLogger(NeurophAnalyzer.class);
 
     private Random random;
-    private NeurophOption options;
+    private NeurophAnalyzerOption options;
 
     /**
      * {@inheritDoc}
@@ -57,7 +56,7 @@ public class NeurophAnalyzer extends AAnalyzer<Analysis, Analysis, Analysis> {
     @SuppressWarnings({"unchecked", "ConstantConditions"})
     public void init(final Context context) throws Exception {
         random = new Random();
-        options = new NeurophOption(context.getOptions());
+        options = new NeurophAnalyzerOption(context.getOptions());
 
         Object[] algorithms = context.getAlgorithms();
         Object[] models = context.getModels() != null ? context.getModels() : new Object[algorithms.length];

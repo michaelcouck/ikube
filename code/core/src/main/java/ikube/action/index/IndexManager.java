@@ -246,7 +246,7 @@ public final class IndexManager {
                 }
                 directory.close();
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOGGER.error("Exception releasing the lock on the index writer : " + indexWriter, e);
         }
     }

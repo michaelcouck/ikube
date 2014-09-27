@@ -240,10 +240,13 @@ public abstract class AbstractTest {
         }
     }
 
-    protected File createIndexFileSystem(final IndexContext indexContext, final long time, final String ip, final String... strings)
-            throws Exception {
+    protected File createIndexFileSystem(final IndexContext indexContext, final long time, final String ip, final String... strings) {
         IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, time, ip);
-        addDocuments(indexWriter, IConstants.CONTENTS, strings);
+        try {
+            addDocuments(indexWriter, IConstants.CONTENTS, strings);
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
         File indexDirectory = ((FSDirectory) indexWriter.getDirectory()).getDirectory();
         IndexManager.closeIndexWriter(indexWriter);
         return indexDirectory;

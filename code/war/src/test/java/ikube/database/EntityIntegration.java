@@ -20,6 +20,7 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Set;
 
+import static ikube.toolkit.ObjectToolkit.*;
 import static org.junit.Assert.*;
 
 /**
@@ -49,8 +50,8 @@ public class EntityIntegration extends IntegrationTest {
 
     @Before
     public void before() {
-        entityClasses = new Reflections("ikube.model").getSubTypesOf(Persistable.class);
-        ObjectToolkit.registerPredicates(new ObjectToolkit.Predicate() {
+        entityClasses = new Reflections(Persistable.class.getPackage().getName()).getSubTypesOf(Persistable.class);
+        registerPredicates(new ObjectToolkit.Predicate() {
             @Override
             public boolean perform(final Object target) {
                 Field field = (Field) target;
@@ -75,7 +76,7 @@ public class EntityIntegration extends IntegrationTest {
             @Override
             public void doWithEntity(final Object entity, final Class<?> entityClass) {
                 // Build a graph for all the entities, penetrating one level deep
-                ObjectToolkit.populateFields(entityClass, entity, true, 0, 3, SKIPPED_FIELDS);
+                populateFields(entityClass, entity, true, 0, 3, SKIPPED_FIELDS);
                 // Insert the object graph
                 dataBase.persist(entity);
                 // Verify that the object is inserted
@@ -94,19 +95,19 @@ public class EntityIntegration extends IntegrationTest {
             @Override
             public void doWithEntity(final Object entity, final Class<?> entityClass) {
                 // Build a graph for all the entities, penetrating one level deep
-                ObjectToolkit.populateFields(entityClass, entity, true, 0, 3, SKIPPED_FIELDS);
+                populateFields(entityClass, entity, true, 0, 3, SKIPPED_FIELDS);
                 // Insert the object graph
                 dataBase.persist(entity);
                 // Update each field independently
                 class FieldCallback implements ReflectionUtils.FieldCallback {
                     @Override
                     public void doWith(final Field field) {
-                        Object value = ObjectToolkit.getObject(field.getType());
+                        Object value = getObject(field.getType());
                         field.setAccessible(Boolean.TRUE);
                         ReflectionUtils.setField(field, entity, value);
                         dataBase.merge(entity);
                         // Check the database that the entity is updated
-                        Object id = ObjectToolkit.getIdFieldValue(entity);
+                        Object id = getIdFieldValue(entity);
                         if (id != null) {
                             Object result = dataBase.find(entity.getClass(), (Long) id);
                             logger.debug("Entity : " + entityClass.getName() + ", " + field + ", " + result + ", not null : " + (result != null));
@@ -153,7 +154,7 @@ public class EntityIntegration extends IntegrationTest {
                 logger.debug("Removing entity : " + entity);
                 int existingRecords = dataBase.count(entityClass).intValue();
                 // Build a graph for all the entities, penetrating one level deep
-                ObjectToolkit.populateFields(entityClass, entity, true, 0, 3, SKIPPED_FIELDS);
+                populateFields(entityClass, entity, true, 0, 3, SKIPPED_FIELDS);
                 // Insert the object graph
                 dataBase.persist(entity);
                 // Remove the entity

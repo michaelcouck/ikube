@@ -12,7 +12,8 @@ import static ikube.Constants.GSON;
  * @version 01.00
  * @since 27-09-2014
  */
-public class NeurophOption extends ikube.analytics.Option {
+@SuppressWarnings("UnusedDeclaration")
+public class NeurophAnalyzerOption extends ikube.analytics.Option {
 
     /**
      * Below are the parameters for initialising the neural networks.
@@ -41,7 +42,7 @@ public class NeurophOption extends ikube.analytics.Option {
     @Option(name = "-neuronsInLayers", usage = "This is a string that converts to an int[] in Json, i.e. [1, 2, ...]")
     private String neuronsInLayers;
 
-    NeurophOption(final Object[] options) {
+    NeurophAnalyzerOption(final Object[] options) {
         super(options);
     }
 

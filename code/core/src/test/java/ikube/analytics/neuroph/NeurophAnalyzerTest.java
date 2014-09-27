@@ -3,10 +3,6 @@ package ikube.analytics.neuroph;
 import ikube.AbstractTest;
 import ikube.model.Analysis;
 import ikube.model.Context;
-import ikube.toolkit.OsUtilities;
-import ikube.toolkit.StringUtilities;
-import mockit.Deencapsulation;
-import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -22,8 +18,12 @@ import org.neuroph.util.NeuralNetworkType;
 import org.neuroph.util.NeuronProperties;
 import org.neuroph.util.TransferFunctionType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Vector;
 
+import static java.util.Arrays.asList;
 import static junit.framework.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
@@ -46,27 +46,40 @@ public class NeurophAnalyzerTest extends AbstractTest {
     @InjectMocks
     private NeurophAnalyzer neurophAnalyzer;
 
-    private Object[] algorithms;
     private Object[] options;
-    private NeuronProperties neuronProperties;
-    private Vector<Integer> inputSetsVector;
+    private Object[] algorithms;
     private List<Integer> neuronsInLayer;
+    private Vector<Integer> inputSetsVector;
+    private NeuronProperties neuronProperties;
 
     @Before
     public void before() {
         neuronProperties = new NeuronProperties();
-        inputSetsVector = new Vector<>(Arrays.asList(1, 2, 3));
-        neuronsInLayer = new ArrayList<>(Arrays.asList(1, 2, 3));
+        inputSetsVector = new Vector<>(asList(1, 2, 3));
+        neuronsInLayer = new ArrayList<>(asList(1, 2, 3));
     }
 
     @Test
     public void init() throws Exception {
-        algorithms = new Object[]{Adaline.class.getName(), AutoencoderNetwork.class.getName(), BAM.class.getName(),
-                CompetitiveNetwork.class.getName(), ConvolutionalNetwork.class.getName(), // ElmanNetwork.class.getName(),
-                Hopfield.class.getName(), Instar.class.getName(), UnsupervisedHebbianNetwork.class.getName(), SupervisedHebbianNetwork.class.getName(),
-                RBFNetwork.class.getName(), Perceptron.class.getName(), Outstar.class.getName(), // NeuroFuzzyPerceptron.class.getName(),
-                MultiLayerPerceptron.class.getName(), MaxNet.class.getName(), Kohonen.class.getName(), JordanNetwork.class.getName()};
-
+        algorithms = new Object[]{
+                Adaline.class.getName(),
+                AutoencoderNetwork.class.getName(),
+                BAM.class.getName(),
+                CompetitiveNetwork.class.getName(),
+                ConvolutionalNetwork.class.getName(),
+                // ElmanNetwork.class.getName(),
+                Hopfield.class.getName(),
+                Instar.class.getName(),
+                UnsupervisedHebbianNetwork.class.getName(),
+                SupervisedHebbianNetwork.class.getName(),
+                RBFNetwork.class.getName(),
+                Perceptron.class.getName(),
+                Outstar.class.getName(),
+                // NeuroFuzzyPerceptron.class.getName(),
+                MultiLayerPerceptron.class.getName(),
+                MaxNet.class.getName(),
+                Kohonen.class.getName(),
+                JordanNetwork.class.getName()};
         options = new Object[]{
                 "-label", "label",
                 "-outputLabels", "[one, two, three]",
@@ -78,15 +91,15 @@ public class NeurophAnalyzerTest extends AbstractTest {
                 "-pointSets", "[[1, 1, 1, 1], [0, 0, 0, 0], [1, 1, 1, 0]]",
                 "-timeSets", "[[1, 1, 1, 1], [0, 0, 0, 0], [1, 1, 1, 0]]",
                 "-neuronsInLayers", "[3, 3, 3]",
-                learningRule, NeuralNetworkType.ADALINE, neuronProperties, TransferFunctionType.GAUSSIAN,
-                inputSetsVector, neuronsInLayer};
-        // The options from Kohsuke doesn't work on the server
-        if (!OsUtilities.isOs("3.11.0-12-generic")) {
-            options = setFieldValues(options);
-        }
+                learningRule,
+                NeuralNetworkType.ADALINE,
+                neuronProperties,
+                TransferFunctionType.GAUSSIAN,
+                inputSetsVector,
+                neuronsInLayer};
 
-        when(context.getAlgorithms()).thenReturn(algorithms);
         when(context.getOptions()).thenReturn(options);
+        when(context.getAlgorithms()).thenReturn(algorithms);
 
         neurophAnalyzer.init(context);
         for (final Object algorithm : context.getAlgorithms()) {
@@ -97,30 +110,13 @@ public class NeurophAnalyzerTest extends AbstractTest {
         }
     }
 
-    private Object[] setFieldValues(final Object[] options) {
-        List<Object> result = new ArrayList<>();
-        Iterator optionsIterator = Arrays.asList(options).iterator();
-        while (optionsIterator.hasNext()) {
-            Object option = optionsIterator.next();
-            if (option.toString().startsWith("-") && optionsIterator.hasNext()) {
-                Object fieldValue = optionsIterator.next();
-                logger.warn("Setting field : " + option + ":" + fieldValue);
-                if (StringUtilities.isNumeric(fieldValue.toString())) {
-                    fieldValue = Integer.parseInt(fieldValue.toString());
-                }
-                Deencapsulation.setField(neurophAnalyzer, StringUtils.strip(option.toString(), "-"), fieldValue);
-            } else {
-                result.add(option);
-            }
-        }
-        return result.toArray();
-    }
-
     @Test
     public void train() throws Exception {
         init();
+
         when(analysis.getInput()).thenReturn(new double[]{1, 0, 1});
         when(analysis.getOutput()).thenReturn(new double[]{1, 0, 1});
+
         neurophAnalyzer.train(context, analysis);
         Object[] models = context.getModels();
         boolean populated = Boolean.FALSE;
@@ -146,7 +142,9 @@ public class NeurophAnalyzerTest extends AbstractTest {
     @Test
     public void build() throws Exception {
         train();
+
         neurophAnalyzer.build(context);
+
         Object[] algorithms = context.getAlgorithms();
         for (final Object algorithm : algorithms) {
             NeuralNetwork neuralNetwork = (NeuralNetwork) algorithm;
@@ -171,13 +169,10 @@ public class NeurophAnalyzerTest extends AbstractTest {
                 "-neuronsInLayers", "[8, 8, 4]",
                 learningRule};
 
-        if (!OsUtilities.isOs("3.11.0-12-generic")) {
-            options = setFieldValues(options);
-        }
         String[] fileNames = {"bmw-browsers.csv"};
 
-        when(context.getAlgorithms()).thenReturn(algorithms);
         when(context.getOptions()).thenReturn(options);
+        when(context.getAlgorithms()).thenReturn(algorithms);
         when(context.getFileNames()).thenReturn(fileNames);
 
         when(analysis.getInput()).thenReturn(new double[]{0, 1, 1, 0});

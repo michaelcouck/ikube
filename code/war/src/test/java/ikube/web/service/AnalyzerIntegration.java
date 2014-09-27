@@ -34,7 +34,6 @@ public class AnalyzerIntegration extends AbstractTest {
     @SuppressWarnings("unchecked")
     public void create() throws Exception {
         Context context = getContext(dataFileName, contextName);
-        logger.error("Create : " + IConstants.GSON.toJson(context));
         String url = getUrl(Analyzer.CREATE);
         Context result = doPost(url, context, Context.class);
         assertNotNull(result);
@@ -51,7 +50,6 @@ public class AnalyzerIntegration extends AbstractTest {
         create();
 
         Analysis<String, double[]> analysis = getAnalysis(contextName, line);
-        logger.error("Train : " + IConstants.GSON.toJson(analysis));
         String url = getUrl(Analyzer.TRAIN);
         Analysis result = doPost(url, analysis, Analysis.class);
         assertNotNull(result);
@@ -62,7 +60,6 @@ public class AnalyzerIntegration extends AbstractTest {
         train();
 
         Analysis analysis = getAnalysis(contextName, null);
-        logger.error("Build : " + IConstants.GSON.toJson(analysis));
         String url = getUrl(Analyzer.BUILD);
         Context context = doPost(url, analysis, Context.class);
         assertTrue(context.isBuilt());
@@ -74,7 +71,6 @@ public class AnalyzerIntegration extends AbstractTest {
         build();
 
         Analysis<String, double[]> analysis = getAnalysis(contextName, line);
-        logger.error("Analyze : " + IConstants.GSON.toJson(analysis));
         String url = getUrl(Analyzer.ANALYZE);
         Analysis result = doPost(url, analysis, Analysis.class);
         assertTrue(Integer.parseInt(result.getClazz()) >= 0 && Integer.parseInt(result.getClazz()) <= 6);
@@ -85,7 +81,6 @@ public class AnalyzerIntegration extends AbstractTest {
         analyze();
 
         Analysis analysis = getAnalysis(contextName, null);
-        logger.error("Destroy : " + IConstants.GSON.toJson(analysis));
         String url = getUrl(Analyzer.CONTEXT);
         Context context = doPost(url, analysis, Context.class);
 

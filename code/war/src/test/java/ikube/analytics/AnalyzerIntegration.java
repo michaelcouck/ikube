@@ -23,10 +23,14 @@ import static junit.framework.Assert.assertTrue;
 public abstract class AnalyzerIntegration extends AbstractTest {
 
     @After
-    public void after() throws Exception {
-        Context context = getContext();
-        String destroyUri = getAnalyzerRestUri(Analyzer.DESTROY);
-        doPost(destroyUri, context, Context.class);
+    public void after() {
+        try {
+            Context context = getContext();
+            String destroyUri = getAnalyzerRestUri(Analyzer.DESTROY);
+            doPost(destroyUri, context, Context.class);
+        } catch (final Exception e) {
+            logger.error("Exception destroying the analyzer : ", e);
+        }
     }
 
     @Test

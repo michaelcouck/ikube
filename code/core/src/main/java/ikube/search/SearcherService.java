@@ -227,6 +227,9 @@ public class SearcherService implements ISearcherService {
      */
     @Override
     public Search doSearch(final Search search) {
+        if (search == null) {
+            return search;
+        }
         ikube.search.Search searchAction;
         try {
             if (search.getCoordinate() != null && search.getDistance() != 0) {
