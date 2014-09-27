@@ -1,4 +1,4 @@
-package ikube.analytics.neuroph;
+package ikube.analytics.weka;
 
 import ikube.IConstants;
 import ikube.analytics.AnalyzerIntegration;
@@ -6,8 +6,6 @@ import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.web.service.Analyzer;
 import org.junit.Test;
-import org.neuroph.nnet.MultiLayerPerceptron;
-import org.neuroph.util.TransferFunctionType;
 
 import static ikube.toolkit.HttpClientUtilities.doPost;
 import static junit.framework.Assert.assertFalse;
@@ -16,19 +14,20 @@ import static junit.framework.Assert.assertNotNull;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 09-09-2014
+ * @since 27-09-2014
  */
-public class NeurophAnalyzerIntegration extends AnalyzerIntegration {
+public class WekaForecastClassifierIntegration extends AnalyzerIntegration {
 
-    @Test
-    @SuppressWarnings("unchecked")
+    @Override
     public void train() throws Exception {
         create();
 
         Analysis analysis = new Analysis();
         analysis.setContext(getContext().getName());
-        analysis.setInput("1,0,1");
-        analysis.setOutput("1,0");
+        //noinspection unchecked
+        analysis.setInput("2014-09-26,587.55,587.98,574.18,575.06,1920700,575.06");
+        //noinspection unchecked
+        analysis.setOutput(null);
 
         String trainUri = getAnalyzerRestUri(Analyzer.TRAIN);
         logger.warn(trainUri + ":" + IConstants.GSON.toJson(analysis));
@@ -43,7 +42,7 @@ public class NeurophAnalyzerIntegration extends AnalyzerIntegration {
 
         Analysis analysis = new Analysis();
         analysis.setContext(getContext().getName());
-        analysis.setInput("0,1,0");
+        analysis.setInput(getOptions());
 
         String analyzeUri = getAnalyzerRestUri(Analyzer.ANALYZE);
         logger.warn(analyzeUri + ":" + IConstants.GSON.toJson(analysis));
@@ -53,23 +52,20 @@ public class NeurophAnalyzerIntegration extends AnalyzerIntegration {
 
     protected Context getContext() {
         Context context = new Context();
-        context.setName("multi-layer-perceptron");
-        context.setAnalyzer(NeurophAnalyzer.class.getName());
-
+        context.setName("forecast-classifier");
+        context.setAnalyzer(WekaForecastClassifier.class.getName());
         context.setOptions(getOptions());
-        context.setAlgorithms(MultiLayerPerceptron.class.getName());
         return context;
     }
 
     private Object[] getOptions() {
-        return new Object[]{
-                "-label", "label",
-                "-outputLabels", "[one, two, three]",
-                "-inputNeuronsCount", "3",
-                "-hiddenNeuronsCount", "3",
-                "-outputNeuronsCount", "2",
-                "-neuronsInLayers", "[3, 3, 2]",
-                TransferFunctionType.TANH};
+        return new String[]{
+                "-fieldsToForecast", "6",
+                "-timeStampField", "0",
+                "-minLag", "1",
+                "-maxLag", "1",
+                "-forecasts", "5"
+        };
     }
 
 }

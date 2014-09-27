@@ -1,5 +1,6 @@
 package ikube.analytics.weka;
 
+import ikube.IConstants;
 import ikube.toolkit.StringUtilities;
 import ikube.toolkit.Timer;
 import org.slf4j.Logger;
@@ -17,11 +18,13 @@ import weka.core.converters.ArffSaver;
 import weka.filters.Filter;
 import weka.filters.unsupervised.instance.NonSparseToSparse;
 
-import java.io.File;
+import java.io.*;
 import java.text.ParseException;
 import java.util.*;
 
 import static ikube.toolkit.FileUtilities.getOrCreateFile;
+import static org.apache.commons.lang.StringUtils.remove;
+import static org.apache.commons.lang.StringUtils.split;
 
 /**
  * This class contains general methods for manipulating the Weka data, and for writing
@@ -93,7 +96,9 @@ public final class WekaToolkit {
             } else if (StringUtilities.isNumeric(value)) {
                 attributes.add(getAttribute(i, Double.class));
             } else if (value.startsWith("{") && value.endsWith("}")) {
-                attributes.add(getAttribute(i, String.class, value));
+                String strippedValue = remove(remove(value, '}'), '{');
+                String[] nominalValues = split(strippedValue, IConstants.DELIMITER_CHARACTERS);
+                attributes.add(getAttribute(i, String.class, nominalValues));
             } else {
                 attributes.add(getAttribute(i, String.class));
             }
@@ -106,6 +111,21 @@ public final class WekaToolkit {
             instances.add(getInstance(instances, vector));
         }
         return instances;
+    }
+
+    /**
+     * This method will create an {@link weka.core.Instances} object from the input stream, which
+     * must be an arff input stream.
+     *
+     * @param inputStream the arff input data to create the instances from
+     * @return the instances data set from the arff data input
+     */
+    public static Instances arffToInstances(final InputStream inputStream) {
+        try (Reader reader = new InputStreamReader(inputStream)) {
+            return new Instances(reader);
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

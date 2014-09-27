@@ -4,8 +4,6 @@ import com.google.common.collect.Lists;
 import ikube.analytics.AAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import weka.classifiers.Classifier;
 import weka.clusterers.Clusterer;
 import weka.core.Attribute;
@@ -19,9 +17,10 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.Future;
 
-import static ikube.analytics.weka.WekaToolkit.filter;
+import static ikube.analytics.weka.WekaToolkit.*;
 import static ikube.toolkit.ThreadUtilities.submit;
 import static ikube.toolkit.ThreadUtilities.waitForAnonymousFutures;
+import static org.apache.commons.lang.StringUtils.split;
 
 /**
  * This is the base class for the Weka implementation of the analytics API. It has base methods for creating
@@ -69,9 +68,11 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
         context.setModels(instances(context));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void build(final Context context) throws Exception {
-
         final Object[] algorithms = context.getAlgorithms();
         final Object[] models = context.getModels();
         final Filter[] filters = getFilters(context);
@@ -99,7 +100,7 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
                         Clusterer clusterer = ((Clusterer) analyzer);
                         logger.info("Building clusterer : " + instances.numInstances());
                         clusterer.buildClusterer(filteredInstances);
-                        evaluations[index] = WekaToolkit.evaluate(clusterer, instances);
+                        evaluations[index] = evaluate(clusterer, instances);
                         capabilities[index] = clusterer.getCapabilities().toString();
                         logger.info("Clusterer built : " + filteredInstances.numInstances() + ", " + context.getName());
                     } else if (Classifier.class.isAssignableFrom(analyzer.getClass())) {
@@ -109,7 +110,7 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
                         classifier.buildClassifier(filteredInstances);
                         logger.error("Classifier built : " + filteredInstances.numInstances() + ", " + context.getName());
                         // Set the evaluation of the classifier and the training model
-                        evaluations[index] = WekaToolkit.evaluate(classifier, filteredInstances);
+                        evaluations[index] = evaluate(classifier, filteredInstances);
                         capabilities[index] = classifier.getCapabilities().toString();
                     }
                 } catch (final Exception e) {
@@ -172,13 +173,29 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
      * @return the instance, with the attributes set to the values of the tokens in the input string
      */
     Instance instance(final Object input, final Instances instances) {
-        Object[] values = null;
-        if (String.class.isAssignableFrom(input.getClass())) {
-            values = StringUtils.split((String) input, ',');
-        } else if (input.getClass().isArray()) {
-            values = (Object[]) input;
+        return getInstance(instances, inputToArray(input));
+    }
+
+    /**
+     * Converts the input object, either already an array, or s string, or if not either of these then
+     * to string, into an array that can be processed by the analyzers.
+     *
+     * @param input the input to convert to an array or vector for the analyzers
+     * @return the array from the input object, typically either a string like '[1,2,3,...]'
+     */
+    Object[] inputToArray(final Object input) {
+        if (input == null) {
+            return null;
         }
-        return WekaToolkit.getInstance(instances, values);
+        Class<?> inputClass = input.getClass();
+        if (String.class.isAssignableFrom(inputClass)) {
+            return split((String) input, ',');
+        } else if (inputClass.isArray()) {
+            return (Object[]) input;
+        } else {
+            // Should we throw a fit here?
+            return split(input.toString(), ',');
+        }
     }
 
     /**
@@ -192,24 +209,11 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
         InputStream[] inputStreams = getInputStreams(context);
         Instances[] instances = new Instances[context.getAlgorithms().length];
         for (int i = 0; inputStreams != null && i < inputStreams.length; i++) {
-            try {
-                if (inputStreams[i] == null) {
-                    continue;
-                }
-                InputStream inputStream = inputStreams[i];
-                try {
-                    Reader reader = new InputStreamReader(inputStream);
-                    instances[i] = new Instances(reader);
-                    // instances[i].setRelationName("instances");
-                } finally {
-                    if (inputStream != null) {
-                        IOUtils.closeQuietly(inputStream);
-                    }
-                }
-            } catch (final Exception e) {
-                logger.error("Exception building analyzer : " + context.getName(), e);
-                throw new RuntimeException(e);
+            if (inputStreams[i] == null) {
+                logger.warn("Input stream for instances null : ");
+                continue;
             }
+            instances[i] = WekaToolkit.arffToInstances(inputStreams[i]);
         }
         return instances;
     }

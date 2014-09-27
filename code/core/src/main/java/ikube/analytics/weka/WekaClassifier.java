@@ -7,9 +7,10 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.filters.Filter;
 
+import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 
-import static ikube.analytics.weka.WekaToolkit.filter;
+import static ikube.analytics.weka.WekaToolkit.*;
 
 /**
  * This is a wrapper for the Weka classifiers. It is essentially a holder with some
@@ -46,6 +47,19 @@ public class WekaClassifier extends WekaAnalyzer {
     public boolean train(final Context context, final Analysis analysis) throws Exception {
         for (int i = 0; i < context.getAlgorithms().length; i++) {
             Instances instances = (Instances) context.getModels()[i];
+            if (instances == null && analysis.getInput() != null) {
+                // Means that the models were not created from files during the init
+                if (analysis.getInput().toString().startsWith("@relation")) {
+                    // Arff format
+                    instances = arffToInstances(new ByteArrayInputStream(analysis.getInput().toString().getBytes()));
+                } else {
+                    // Csv format
+                    Object[] values = inputToArray(analysis.getInput());
+                    Object[][] matrix = {values};
+                    instances = matrixToInstances(matrix, 0);
+                }
+            }
+            assert instances != null;
             Instance instance = instance(analysis.getInput(), instances);
             instance.setClassValue(analysis.getClazz());
             instances.add(instance);

@@ -1,14 +1,19 @@
 package ikube.analytics.weka;
 
+import ikube.AbstractTest;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.MatrixUtilities;
+import junit.framework.Assert;
 import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Spy;
 import weka.core.Attribute;
 import weka.core.Instances;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 import static ikube.analytics.weka.WekaToolkit.getAttribute;
@@ -21,10 +26,44 @@ import static ikube.toolkit.FileUtilities.findFileAndGetCleanedPath;
  * @version 01.00
  * @since 23-09-2014
  */
-public class WekaForecastClassifierTest {
+public class WekaForecastClassifierTest extends AbstractTest {
+
+    @Spy
+    @InjectMocks
+    private WekaForecastClassifier wekaForecastClassifier;
 
     @Test
-    public void predictTimeSeries() throws Exception {
+    public void analyze() throws Exception {
+        Instances instances = getInstances();
+
+        Context context = new Context();
+        context.setModels(instances);
+
+        Analysis analysis = new Analysis();
+        //noinspection unchecked
+        analysis.setInput(new String[]{
+                "-fieldsToForecast", "6",
+                "-timeStampField", "0",
+                "-minLag", "1",
+                "-maxLag", "1",
+                "-forecasts", "5"
+        });
+
+        wekaForecastClassifier.analyze(context, analysis);
+
+        double[][][] modelPredictions = (double[][][]) analysis.getOutput();
+        Assert.assertEquals(1, modelPredictions.length);
+        for (final double[][] timePrediction : modelPredictions) {
+            for (final double[] fieldPrediction : timePrediction) {
+                logger.error("Prediction : " + Arrays.toString(fieldPrediction));
+                for (final double prediction : fieldPrediction) {
+                    Assert.assertTrue(prediction > 570 && prediction < 590);
+                }
+            }
+        }
+    }
+
+    private Instances getInstances() {
         String filePath = findFileAndGetCleanedPath(new File("."), "forecast-stock-data.csv");
         Object[][] matrix = getCsvData(filePath);
         MatrixUtilities.sortOnFeature(matrix, 0, Date.class);
@@ -44,12 +83,7 @@ public class WekaForecastClassifierTest {
             instances.add(getInstance(instances, vector));
         }
         // instances.setClassIndex(6);
-
-        Context context = new Context();
-        Analysis analysis = new Analysis();
-        context.setModels(instances);
-
-        new WekaForecastClassifier().analyze(context, analysis);
+        return instances;
     }
 
 }

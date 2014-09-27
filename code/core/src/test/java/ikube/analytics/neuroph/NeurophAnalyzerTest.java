@@ -80,6 +80,7 @@ public class NeurophAnalyzerTest extends AbstractTest {
                 "-neuronsInLayers", "[3, 3, 3]",
                 learningRule, NeuralNetworkType.ADALINE, neuronProperties, TransferFunctionType.GAUSSIAN,
                 inputSetsVector, neuronsInLayer};
+        // The options from Kohsuke doesn't work on the server
         if (!OsUtilities.isOs("3.11.0-12-generic")) {
             options = setFieldValues(options);
         }

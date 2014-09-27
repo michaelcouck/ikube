@@ -6,8 +6,6 @@ import ikube.model.Context;
 import ikube.toolkit.CsvUtilities;
 import ikube.toolkit.MatrixUtilities;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.Option;
 import org.neuroph.core.NeuralNetwork;
 import org.neuroph.core.data.DataSet;
 import org.neuroph.core.learning.LearningRule;
@@ -20,7 +18,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.Vector;
 import java.util.concurrent.Future;
 
 import static ikube.Constants.GSON;
@@ -30,7 +31,12 @@ import static ikube.toolkit.ThreadUtilities.submit;
 import static ikube.toolkit.ThreadUtilities.waitForAnonymousFutures;
 
 /**
- * Document me...
+ * This adapter wraps the Neuroph neural networks. As with all the {@link ikube.analytics.IAnalyzer} implementations,
+ * there are multiple networks defined for each analyzer, potentially all different. The result of the committee of networks
+ * is an aggregation of each one.
+ * <p/>
+ * The analysis is not parallelized, but the building of the networks is. This facilitates larger training sets, and can
+ * build the models in a reasonable time, as opposed to a single threaded model building operation.
  *
  * @author Michael Couck
  * @version 01.00
@@ -42,33 +48,7 @@ public class NeurophAnalyzer extends AAnalyzer<Analysis, Analysis, Analysis> {
     private static final Logger LOGGER = LoggerFactory.getLogger(NeurophAnalyzer.class);
 
     private Random random;
-
-    /**
-     * Below are the parameters for initialising the neural networks.
-     */
-
-    @Option(name = "-label", usage = "This is a simple string.")
-    private String label;
-    @Option(name = "-weights", usage = "This is a string that converts to a double[] in Json, i.e. [1.0, 0.0, ...]")
-    private String weights;
-    @Option(name = "-outputLabels", usage = "This is a string that converts to a String[] in Json, i.e. [one, two, ...]")
-    private String outputLabels;
-    @Option(name = "-inputNeuronsCount", usage = "Simple int input parameter")
-    private int inputNeuronsCount;
-    @Option(name = "-hiddenNeuronsCount", usage = "Simple int input parameter")
-    private int hiddenNeuronsCount;
-    @Option(name = "-contextNeuronsCount", usage = "Simple int input parameter")
-    private int contextNeuronsCount;
-    @Option(name = "-rbfNeuronsCount", usage = "Simple int input parameter")
-    private int rbfNeuronsCount;
-    @Option(name = "-outputNeuronsCount", usage = "Simple int input parameter")
-    private int outputNeuronsCount;
-    @Option(name = "-pointSets", usage = "This is a string that converts to a double[][] in Json, i.e. [[1.0, 1.0, ...], [1.0, 1.0, ...], ...]")
-    private String pointSets;
-    @Option(name = "-timeSets", usage = "This is a string that converts to a double[][] in Json, i.e. [[1.0, 1.0, ...], [1.0, 1.0, ...], ...]")
-    private String timeSets;
-    @Option(name = "-neuronsInLayers", usage = "This is a string that converts to an int[] in Json, i.e. [1, 2, ...]")
-    private String neuronsInLayers;
+    private NeurophOption options;
 
     /**
      * {@inheritDoc}
@@ -77,56 +57,40 @@ public class NeurophAnalyzer extends AAnalyzer<Analysis, Analysis, Analysis> {
     @SuppressWarnings({"unchecked", "ConstantConditions"})
     public void init(final Context context) throws Exception {
         random = new Random();
-        CmdLineParser parser = new CmdLineParser(this);
-        parser.setUsageWidth(1024);
-
-        Object[] options = context.getOptions();
-
-        if (options != null && options.length > 0) {
-            Iterator optionsIterator = Arrays.asList(options).iterator();
-            List<String> stringOptions = new ArrayList<>();
-            while (optionsIterator.hasNext()) {
-                Object fieldName = optionsIterator.next();
-                if (fieldName.toString().startsWith("-") && optionsIterator.hasNext()) {
-                    stringOptions.add(fieldName.toString());
-                    stringOptions.add(optionsIterator.next().toString());
-                }
-            }
-            parser.parseArgument(stringOptions);
-        }
+        options = new NeurophOption(context.getOptions());
 
         Object[] algorithms = context.getAlgorithms();
         Object[] models = context.getModels() != null ? context.getModels() : new Object[algorithms.length];
         File[] dataFiles = getDataFiles(context);
-        NeuronProperties neuronProperties = getOption(NeuronProperties.class, options);
-        TransferFunctionType transferFunctionType = getOption(TransferFunctionType.class, options);
+        NeuronProperties neuronProperties = options.getOption(NeuronProperties.class);
+        TransferFunctionType transferFunctionType = options.getOption(TransferFunctionType.class);
         for (int i = 0; i < algorithms.length; i++) {
-            NeuralNetwork neuralNetwork = createNeuralNetwork(algorithms[i].toString(), options, neuronProperties, transferFunctionType);
+            NeuralNetwork neuralNetwork = createNeuralNetwork(algorithms[i].toString(), neuronProperties, transferFunctionType);
             algorithms[i] = neuralNetwork;
-            neuralNetwork.setLabel(label);
-            LearningRule learningRule = getOption(LearningRule.class, options);
+            neuralNetwork.setLabel(options.getLabel());
+            LearningRule learningRule = options.getOption(LearningRule.class);
             if (learningRule != null) {
                 neuralNetwork.setLearningRule(learningRule);
             }
             // Is this necessary?
-            NeuralNetworkType neuralNetworkType = getOption(NeuralNetworkType.class, options);
+            NeuralNetworkType neuralNetworkType = options.getOption(NeuralNetworkType.class);
             if (neuralNetworkType != null) {
                 neuralNetwork.setNetworkType(neuralNetworkType);
             }
             // We need these for determining the 'name' of the output?
-            if (outputLabels != null) {
-                neuralNetwork.setOutputLabels(GSON.fromJson(outputLabels, String[].class));
+            if (options.getOutputLabels() != null) {
+                neuralNetwork.setOutputLabels(options.getOutputLabelsArray());
             }
             // Can we set the weights here? For which networks?
-            if (weights != null) {
-                neuralNetwork.setWeights(GSON.fromJson(weights, double[].class));
+            if (options.getWeights() != null) {
+                neuralNetwork.setWeights(options.getWeightsArray());
             }
             // The model could have been set in the Spring configuration
             if (models[i] == null) {
-                if (outputNeuronsCount <= 0) {
-                    models[i] = new DataSet(inputNeuronsCount);
+                if (options.getOutputNeuronsCount() <= 0) {
+                    models[i] = new DataSet(options.getInputNeuronsCount());
                 } else {
-                    models[i] = new DataSet(inputNeuronsCount, outputNeuronsCount);
+                    models[i] = new DataSet(options.getInputNeuronsCount(), options.getOutputNeuronsCount());
                 }
             }
             if (dataFiles != null && dataFiles.length > i) {
@@ -141,64 +105,66 @@ public class NeurophAnalyzer extends AAnalyzer<Analysis, Analysis, Analysis> {
     }
 
     @SuppressWarnings("unchecked")
-    private NeuralNetwork createNeuralNetwork(final String algorithm, final Object[] options, final NeuronProperties neuronProperties,
+    private NeuralNetwork createNeuralNetwork(final String algorithm, final NeuronProperties neuronProperties,
                                               final TransferFunctionType transferFunctionType) throws ClassNotFoundException {
         Class<?> clazz = Class.forName(algorithm);
         NeuralNetwork neuralNetwork = null;
         if (Adaline.class.isAssignableFrom(clazz)) {
-            neuralNetwork = new Adaline(inputNeuronsCount);
+            neuralNetwork = new Adaline(options.getInputNeuronsCount());
         } else if (AutoencoderNetwork.class.isAssignableFrom(clazz)) {
-            int[] neuronsInLayersArray = GSON.fromJson(neuronsInLayers, int[].class);
-            neuralNetwork = new AutoencoderNetwork(neuronsInLayersArray);
+            neuralNetwork = new AutoencoderNetwork(options.getNeuronsInLayersArray());
         } else if (BAM.class.isAssignableFrom(clazz)) {
-            neuralNetwork = new BAM(inputNeuronsCount, outputNeuronsCount);
+            neuralNetwork = new BAM(options.getInputNeuronsCount(), options.getOutputNeuronsCount());
         } else if (CompetitiveNetwork.class.isAssignableFrom(clazz)) {
-            neuralNetwork = new CompetitiveNetwork(inputNeuronsCount, outputNeuronsCount);
+            neuralNetwork = new CompetitiveNetwork(options.getInputNeuronsCount(), options.getOutputNeuronsCount());
         } else if (ConvolutionalNetwork.class.isAssignableFrom(clazz)) {
             neuralNetwork = new ConvolutionalNetwork();
         } else if (ElmanNetwork.class.isAssignableFrom(clazz)) {
-            neuralNetwork = new ElmanNetwork(inputNeuronsCount, hiddenNeuronsCount, contextNeuronsCount, outputNeuronsCount);
+            neuralNetwork = new ElmanNetwork(options.getInputNeuronsCount(),
+                    options.getHiddenNeuronsCount(), options.getContextNeuronsCount(), options.getOutputNeuronsCount());
         } else if (Hopfield.class.isAssignableFrom(clazz)) {
             if (neuronProperties == null) {
-                neuralNetwork = new Hopfield(inputNeuronsCount);
+                neuralNetwork = new Hopfield(options.getInputNeuronsCount());
             } else {
-                neuralNetwork = new Hopfield(inputNeuronsCount, neuronProperties);
+                neuralNetwork = new Hopfield(options.getInputNeuronsCount(), neuronProperties);
             }
         } else if (Instar.class.isAssignableFrom(clazz)) {
-            neuralNetwork = new Instar(inputNeuronsCount);
+            neuralNetwork = new Instar(options.getInputNeuronsCount());
         } else if (UnsupervisedHebbianNetwork.class.isAssignableFrom(clazz)) {
             if (transferFunctionType == null) {
-                neuralNetwork = new UnsupervisedHebbianNetwork(inputNeuronsCount, outputNeuronsCount);
+                neuralNetwork = new UnsupervisedHebbianNetwork(options.getInputNeuronsCount(), options.getOutputNeuronsCount());
             } else {
-                neuralNetwork = new UnsupervisedHebbianNetwork(inputNeuronsCount, outputNeuronsCount, transferFunctionType);
+                neuralNetwork = new UnsupervisedHebbianNetwork(options.getInputNeuronsCount(), options.getOutputNeuronsCount(),
+                        transferFunctionType);
             }
         } else if (SupervisedHebbianNetwork.class.isAssignableFrom(clazz)) {
             if (transferFunctionType == null) {
-                neuralNetwork = new SupervisedHebbianNetwork(inputNeuronsCount, outputNeuronsCount);
+                neuralNetwork = new SupervisedHebbianNetwork(options.getInputNeuronsCount(), options.getOutputNeuronsCount());
             } else {
-                neuralNetwork = new SupervisedHebbianNetwork(inputNeuronsCount, outputNeuronsCount, transferFunctionType);
+                neuralNetwork = new SupervisedHebbianNetwork(options.getInputNeuronsCount(), options.getOutputNeuronsCount(),
+                        transferFunctionType);
             }
         } else if (RBFNetwork.class.isAssignableFrom(clazz)) {
-            neuralNetwork = new RBFNetwork(inputNeuronsCount, rbfNeuronsCount, outputNeuronsCount);
+            neuralNetwork = new RBFNetwork(options.getInputNeuronsCount(), options.getRbfNeuronsCount(),
+                    options.getOutputNeuronsCount());
         } else if (Perceptron.class.isAssignableFrom(clazz)) {
             if (transferFunctionType == null) {
-                neuralNetwork = new Perceptron(inputNeuronsCount, outputNeuronsCount);
+                neuralNetwork = new Perceptron(options.getInputNeuronsCount(), options.getOutputNeuronsCount());
             } else {
-                neuralNetwork = new Perceptron(inputNeuronsCount, outputNeuronsCount, transferFunctionType);
+                neuralNetwork = new Perceptron(options.getInputNeuronsCount(), options.getOutputNeuronsCount(), transferFunctionType);
             }
         } else if (Outstar.class.isAssignableFrom(clazz)) {
-            neuralNetwork = new Outstar(outputNeuronsCount);
+            neuralNetwork = new Outstar(options.getOutputNeuronsCount());
         } else if (NeuroFuzzyPerceptron.class.isAssignableFrom(clazz)) {
-            Vector<Integer> inputSetsVector = getOption(Vector.class, options, Integer.class);
+            Vector<Integer> inputSetsVector = options.getInputSetsVector();
             if (inputSetsVector == null) {
-                double[][] inputPointSets = GSON.fromJson(pointSets, double[][].class);
-                double[][] outputPointSets = GSON.fromJson(timeSets, double[][].class);
-                neuralNetwork = new NeuroFuzzyPerceptron(inputPointSets, outputPointSets);
+                neuralNetwork = new NeuroFuzzyPerceptron(options.getPointSetsMatrix(), options.getTimeSetsMatrix());
             } else {
-                neuralNetwork = new NeuroFuzzyPerceptron(inputNeuronsCount, inputSetsVector, outputNeuronsCount);
+                neuralNetwork = new NeuroFuzzyPerceptron(options.getInputNeuronsCount(), inputSetsVector,
+                        options.getOutputNeuronsCount());
             }
         } else if (MultiLayerPerceptron.class.isAssignableFrom(clazz)) {
-            List<Integer> neuronsInLayer = getOption(List.class, options, Integer.class);
+            List<Integer> neuronsInLayer = options.getNeuronsInLayer();
             if (neuronsInLayer != null && !neuronsInLayer.isEmpty()) {
                 if (transferFunctionType != null) {
                     neuralNetwork = new MultiLayerPerceptron(neuronsInLayer, transferFunctionType);
@@ -208,8 +174,8 @@ public class NeurophAnalyzer extends AAnalyzer<Analysis, Analysis, Analysis> {
                     neuralNetwork = new MultiLayerPerceptron(neuronsInLayer);
                 }
             } else {
-                if (neuronsInLayers != null) {
-                    int[] neuronsInLayersArray = GSON.fromJson(neuronsInLayers, int[].class);
+                if (options.getNeuronsInLayers() != null) {
+                    int[] neuronsInLayersArray = options.getNeuronsInLayersArray();
                     if (transferFunctionType != null) {
                         neuralNetwork = new MultiLayerPerceptron(transferFunctionType, neuronsInLayersArray);
                     } else {
@@ -218,11 +184,12 @@ public class NeurophAnalyzer extends AAnalyzer<Analysis, Analysis, Analysis> {
                 }
             }
         } else if (MaxNet.class.isAssignableFrom(clazz)) {
-            neuralNetwork = new MaxNet(inputNeuronsCount);
+            neuralNetwork = new MaxNet(options.getInputNeuronsCount());
         } else if (Kohonen.class.isAssignableFrom(clazz)) {
-            neuralNetwork = new Kohonen(inputNeuronsCount, outputNeuronsCount);
+            neuralNetwork = new Kohonen(options.getInputNeuronsCount(), options.getOutputNeuronsCount());
         } else if (JordanNetwork.class.isAssignableFrom(clazz)) {
-            neuralNetwork = new JordanNetwork(inputNeuronsCount, hiddenNeuronsCount, contextNeuronsCount, outputNeuronsCount);
+            neuralNetwork = new JordanNetwork(options.getInputNeuronsCount(), options.getHiddenNeuronsCount(),
+                    options.getContextNeuronsCount(), options.getOutputNeuronsCount());
         }
         if (neuralNetwork == null) {
             throw new RuntimeException("Network null, have you specified all the parameters to create it?");
@@ -360,36 +327,6 @@ public class NeurophAnalyzer extends AAnalyzer<Analysis, Analysis, Analysis> {
     private void inputOutputStringToDoubleArray(final Analysis analysis) {
         analysis.setInput(stringVectorDoubleVector(analysis.getInput()));
         analysis.setOutput(stringVectorDoubleVector(analysis.getOutput()));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("unchecked")
-    private <T> T getOption(final Class<T> type, final Object[] options, final Class<?>... types) {
-        for (final Object option : options) {
-            if (type.isAssignableFrom(option.getClass())) {
-                if (Collection.class.isAssignableFrom(option.getClass()) && types != null) {
-                    if (!isOneOfType(option, types)) {
-                        continue;
-                    }
-                }
-                return (T) option;
-            }
-        }
-        return null;
-    }
-
-    private boolean isOneOfType(final Object object, final Class<?>... types) {
-        if (object == null || types == null || types.length == 0) {
-            return Boolean.FALSE;
-        }
-        for (final Class<?> type : types) {
-            if (type.isAssignableFrom(object.getClass())) {
-                return Boolean.TRUE;
-            }
-        }
-        return Boolean.FALSE;
     }
 
 }
