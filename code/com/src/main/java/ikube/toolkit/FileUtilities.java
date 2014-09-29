@@ -543,6 +543,10 @@ public final class FileUtilities {
      * @return the file contents in a byte array output stream
      */
     public static ByteArrayOutputStream getContents(final InputStream inputStream, final long maxLength) {
+        return getContents(inputStream, maxLength, Boolean.FALSE);
+    }
+
+    public static ByteArrayOutputStream getContents(final InputStream inputStream, final long maxLength, final boolean close) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         if (inputStream == null) {
             return byteArrayOutputStream;
@@ -557,7 +561,9 @@ public final class FileUtilities {
         } catch (final Exception e) {
             LOGGER.error("Exception accessing the file contents : " + inputStream, e);
         } finally {
-            close(inputStream);
+            if (close) {
+                close(inputStream);
+            }
         }
         return byteArrayOutputStream;
     }

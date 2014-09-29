@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import ikube.analytics.AAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
+import ikube.toolkit.FileUtilities;
 import weka.classifiers.Classifier;
 import weka.clusterers.Clusterer;
 import weka.core.Attribute;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.concurrent.Future;
 
 import static ikube.analytics.weka.WekaToolkit.*;
+import static ikube.toolkit.FileUtilities.getContents;
 import static ikube.toolkit.ThreadUtilities.submit;
 import static ikube.toolkit.ThreadUtilities.waitForAnonymousFutures;
 import static org.apache.commons.lang.StringUtils.split;
@@ -216,7 +218,11 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
                 logger.warn("Input stream for instances null : ");
                 continue;
             }
-            if (FileInputStream.class.isAssignableFrom(inputStreams[i].getClass())) {
+            int read = 1024;
+            inputStreams[i].mark(0);
+            String headers = getContents(inputStreams[i], read, false).toString();
+            inputStreams[i].reset();
+            if (headers.startsWith("@relation")) {
                 instances[i] = arffToInstances(inputStreams[i]);
             } else {
                 instances[i] = csvToInstances(inputStreams[i]);
@@ -245,7 +251,7 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
             inputStreams = new InputStream[context.getFileNames().length];
             File[] dataFiles = getDataFiles(context);
             for (int i = 0; dataFiles != null && i < dataFiles.length; i++) {
-                inputStreams[i] = new FileInputStream(dataFiles[i]);
+                inputStreams[i] = new BufferedInputStream(new FileInputStream(dataFiles[i]));
             }
         }
         return inputStreams;

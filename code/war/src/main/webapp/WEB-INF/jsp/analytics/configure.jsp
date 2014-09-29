@@ -8,7 +8,7 @@
             <div class="span12">
                 <div class="box">
                     <div class="tab-header">
-                        <b>Train analyzer</b>
+                        <b>Configure analyzer</b>
                         <img
                             ng-show="!status"
                             alt="Loading spinner"

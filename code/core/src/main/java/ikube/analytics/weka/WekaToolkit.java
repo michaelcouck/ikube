@@ -1,10 +1,8 @@
 package ikube.analytics.weka;
 
 import ikube.IConstants;
-import ikube.toolkit.FileUtilities;
 import ikube.toolkit.StringUtilities;
 import ikube.toolkit.Timer;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import weka.classifiers.Classifier;
@@ -24,6 +22,7 @@ import java.io.*;
 import java.text.ParseException;
 import java.util.*;
 
+import static ikube.toolkit.FileUtilities.getContents;
 import static ikube.toolkit.FileUtilities.getOrCreateFile;
 import static org.apache.commons.lang.StringUtils.remove;
 import static org.apache.commons.lang.StringUtils.split;
@@ -124,12 +123,12 @@ public final class WekaToolkit {
      */
     public static Instances csvToInstances(final InputStream inputStream) {
         try {
-            String input = FileUtilities.getContents(inputStream, Integer.MAX_VALUE).toString();
-            String[] rows = StringUtils.split(input, "\n\r");
+            String input = getContents(inputStream, Integer.MAX_VALUE).toString();
+            String[] rows = split(input, "\n\r");
             Object[][] matrix = new Object[rows.length][];
             for (int i = 0; i < rows.length; i++) {
                 String row = rows[i];
-                matrix[i] = StringUtils.split(row, ',');
+                matrix[i] = split(row, ',');
             }
             return matrixToInstances(matrix, 0);
         } catch (final Exception e) {

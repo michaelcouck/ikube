@@ -130,7 +130,7 @@ public class WekaAnalyzerTest extends AbstractTest {
         }
 
         context.setFileNames();
-        String trainingData = "[[1,2,3], [4,5,6], [7,8,9]]";
+        String trainingData = "1,2,3\n\r4,5,6\n\r7,8,9";
         context.setTrainingDatas(trainingData, trainingData, trainingData);
 
         models = wekaAnalyzer.instances(context);

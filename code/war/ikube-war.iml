@@ -296,7 +296,6 @@
     <orderEntry type="library" name="Maven: org.apache.tiles:tiles-jsp:2.2.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.tiles:tiles-template:2.2.0" level="project" />
     <orderEntry type="library" name="Maven: tomgibara:cluster-gvm:1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.codehaus.enunciate:enunciate-integration-jaxws-ri-rest-client:1.28" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.mockito:mockito-all:1.9.5" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: mockit:jmockit:0.999.4" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.dbunit:dbunit:2.4.8" level="project" />

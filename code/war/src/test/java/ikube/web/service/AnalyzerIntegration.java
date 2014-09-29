@@ -4,6 +4,7 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Analysis;
 import ikube.model.Context;
+import org.junit.After;
 import org.junit.Test;
 
 import java.net.MalformedURLException;
@@ -29,6 +30,11 @@ public class AnalyzerIntegration extends AbstractTest {
     private String line = "1,1,0,1,1,0,1,1";
     private String contextName = "bmw-browsers";
     private String dataFileName = "bmw-browsers.arff";
+
+    @After
+    public void after() throws Exception {
+        destroy();
+    }
 
     @Test
     @SuppressWarnings("unchecked")
