@@ -31,7 +31,7 @@ public class Analyze extends Action<Analysis> {
         // Get the remote analytics service
         IAnalyticsService service = getAnalyticsService();
         Context context = service.getContext(analysis.getContext());
-        if (context != null && context.isBuilt()) {
+        if (context != null) {
             IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();
             analyzer.analyze(context, analysis);
         }

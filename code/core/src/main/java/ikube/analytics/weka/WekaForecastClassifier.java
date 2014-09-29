@@ -13,9 +13,9 @@ import static org.apache.commons.lang.StringUtils.split;
 
 /**
  * This class will predict a value or values based on previous values in time. The trend for the
- * series is layed over the initial input data(typically a matrix), and the previous values for the time
+ * series is used as an overlay for the initial input data(typically a matrix), and the previous values for the time
  * series converted to fields in the vectors.
- *
+ * <p/>
  * Multiple fields in the vectors can be predicted in parallel, as well as multiple events into the future.
  *
  * @author Michael Couck
@@ -27,10 +27,17 @@ public class WekaForecastClassifier extends WekaClassifier {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     public synchronized Analysis<Object, Object> analyze(final Context context, final Analysis analysis) throws Exception {
         // For the forecaster we have already built the models, we just need
         // to specify the options for the forecast, like the number is days into the future etc.
-        WekaForecasterClassifierOption option = new WekaForecasterClassifierOption((Object[]) analysis.getInput());
+        Object input = analysis.getInput();
+        if (List.class.isAssignableFrom(input.getClass())) {
+            input = ((List) input).toArray();
+        } else if (!Object[].class.isAssignableFrom(input.getClass())) {
+            throw new RuntimeException("Input for time series classifier must be of object array : " + input);
+        }
+        WekaForecasterClassifierOption option = new WekaForecasterClassifierOption((Object[]) input);
 
         Object[] models = context.getModels();
         String[] fieldsToForecast = split(option.getFieldsToForecast(), DELIMITER_CHARACTERS);
@@ -81,10 +88,8 @@ public class WekaForecastClassifier extends WekaClassifier {
                 }
             }
         }
-        //noinspection unchecked
         analysis.setOutput(predictions);
 
-        //noinspection unchecked
         return analysis;
     }
 

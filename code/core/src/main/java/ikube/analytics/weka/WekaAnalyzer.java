@@ -210,13 +210,17 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
         if (inputStreams == null) {
             return null;
         }
-        Instances[] instances = new Instances[context.getAlgorithms().length];
+        Instances[] instances = new Instances[inputStreams.length];
         for (int i = 0; i < inputStreams.length; i++) {
             if (inputStreams[i] == null) {
                 logger.warn("Input stream for instances null : ");
                 continue;
             }
-            instances[i] = arffToInstances(inputStreams[i]);
+            if (FileInputStream.class.isAssignableFrom(inputStreams[i].getClass())) {
+                instances[i] = arffToInstances(inputStreams[i]);
+            } else {
+                instances[i] = csvToInstances(inputStreams[i]);
+            }
         }
         return instances;
     }
@@ -230,15 +234,15 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
      * @throws FileNotFoundException
      */
     InputStream[] getInputStreams(final Context context) throws FileNotFoundException {
-        if (context.getFileNames() == null) {
-            return null;
-        }
-        InputStream[] inputStreams = new InputStream[context.getFileNames().length];
+        InputStream[] inputStreams = null;
         if (context.getTrainingDatas() != null) {
+            inputStreams = new InputStream[context.getTrainingDatas().length];
             for (int i = 0; i < context.getTrainingDatas().length; i++) {
-                inputStreams[i] = new ByteArrayInputStream(context.getTrainingDatas()[i].getBytes());
+                String trainingData = context.getTrainingDatas()[i];
+                inputStreams[i] = new ByteArrayInputStream(trainingData.getBytes());
             }
-        } else {
+        } else if (context.getFileNames() != null) {
+            inputStreams = new InputStream[context.getFileNames().length];
             File[] dataFiles = getDataFiles(context);
             for (int i = 0; dataFiles != null && i < dataFiles.length; i++) {
                 inputStreams[i] = new FileInputStream(dataFiles[i]);
@@ -283,9 +287,11 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
      */
     @Override
     public void destroy(final Context context) throws Exception {
-        for (int i = 0; i < context.getAlgorithms().length; i++) {
-            Instances instances = (Instances) context.getModels()[i];
-            instances.delete();
+        if (context.getAlgorithms() != null) {
+            for (int i = 0; i < context.getAlgorithms().length; i++) {
+                Instances instances = (Instances) context.getModels()[i];
+                instances.delete();
+            }
         }
     }
 

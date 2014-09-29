@@ -228,14 +228,14 @@ public class SearcherService implements ISearcherService {
     @Override
     public Search doSearch(final Search search) {
         if (search == null) {
+            LOGGER.warn("Search null : ");
+            //noinspection ConstantConditions
             return search;
         }
         ikube.search.Search searchAction;
         try {
             if (search.getCoordinate() != null && search.getDistance() != 0) {
                 searchAction = getSearch(SearchSpatial.class, search.getIndexName());
-                ((SearchSpatial) searchAction).setDistance(search.getDistance());
-                ((SearchSpatial) searchAction).setCoordinate(search.getCoordinate());
             } else if (search.getSortFields() == null || search.getSortFields().size() == 0) {
                 searchAction = getSearch(SearchComplex.class, search.getIndexName());
             } else {
@@ -243,9 +243,15 @@ public class SearcherService implements ISearcherService {
             }
 
             if (searchAction == null) {
-                LOGGER.info("Searcher null for index : " + search.getIndexName());
+                LOGGER.warn("Search action null : " + search.getIndexName());
                 return search;
             }
+
+            if (SearchSpatial.class.isAssignableFrom(searchAction.getClass())) {
+                ((SearchSpatial) searchAction).setDistance(search.getDistance());
+                ((SearchSpatial) searchAction).setCoordinate(search.getCoordinate());
+            }
+
             String[] searchStrings = search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]);
             if (search.isStripToAlphaNumeric()) {
                 // Strip unwanted characters from the input string

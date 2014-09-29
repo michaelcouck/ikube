@@ -5,7 +5,6 @@ import com.sun.jersey.multipart.FormDataParam;
 import ikube.analytics.IAnalyticsService;
 import ikube.model.Analysis;
 import ikube.model.Context;
-import ikube.toolkit.MatrixUtilities;
 import ikube.toolkit.SerializationUtilities;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +21,9 @@ import java.util.Map;
 import static ikube.toolkit.MatrixUtilities.invertMatrix;
 
 /**
- * NOTE: The reason that the methods take an {@link javax.servlet.http.HttpServletRequest} and not
- * the Json object directly is because Jersey wants a converter for each type! I know crazzzzzy right,
- * so it is just easier to de-serialize by hand.
- * <p/>
  * This resource(rest api) class exposes the analytics over rest to a client. This class will
  * call the service layer to provide functions like creating the analyzer, training, and building,
- * and of course using the analyzer, i.e. doing anl analysis on a chunk of data.
+ * and of course using the analyzer, i.e. doing an analysis on a chunk of data.
  *
  * @author Michael couck
  * @version 01.00
@@ -129,7 +124,7 @@ public class Analyzer extends Resource {
 
     @POST
     @Path(Analyzer.ANALYZE)
-    @Api(description = "Analyses the data using the specified analyzer, and returns the analytis " +
+    @Api(description = "Analyses the data using the specified analyzer, and returns the analysis " +
             "object, containing among other things the result, and potentially the distribution " +
             "for the instance, and even the distribution for the entire data set.",
             produces = Analysis.class)
@@ -191,17 +186,22 @@ public class Analyzer extends Resource {
         } else {
             cloned.setAnalyzer(context.getAnalyzer().getClass().getName());
         }
-        String[] algorithms = new String[context.getAlgorithms().length];
-        String[] filters = new String[context.getAlgorithms().length];
-        for (int i = 0; i < context.getAlgorithms().length; i++) {
-            algorithms[i] = context.getAlgorithms()[i].getClass().getName();
-            if (context.getFilters() != null && context.getFilters().length > i && context.getFilters()[i] != null) {
-                filters[i] = context.getFilters()[i].getClass().getName();
+        if (context.getAlgorithms() != null) {
+            String[] algorithms = new String[context.getAlgorithms().length];
+            for (int i = 0; i < context.getAlgorithms().length; i++) {
+                algorithms[i] = context.getAlgorithms()[i].getClass().getName();
             }
+            cloned.setAlgorithms(algorithms);
         }
-        cloned.setAlgorithms(algorithms);
-        cloned.setFilters(filters);
-
+        if (context.getFilters() != null) {
+            String[] filters = new String[context.getFilters().length];
+            for (int i = 0; i < context.getFilters().length; i++) {
+                if (context.getFilters().length > i && context.getFilters()[i] != null) {
+                    filters[i] = context.getFilters()[i].getClass().getName();
+                }
+            }
+            cloned.setFilters(filters);
+        }
         return cloned;
     }
 

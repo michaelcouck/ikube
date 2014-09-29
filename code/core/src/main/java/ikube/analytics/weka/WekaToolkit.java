@@ -1,8 +1,10 @@
 package ikube.analytics.weka;
 
 import ikube.IConstants;
+import ikube.toolkit.FileUtilities;
 import ikube.toolkit.StringUtilities;
 import ikube.toolkit.Timer;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import weka.classifiers.Classifier;
@@ -111,6 +113,28 @@ public final class WekaToolkit {
             instances.add(getInstance(instances, vector));
         }
         return instances;
+    }
+
+    /**
+     * This method converts a Json representation of a matrix, i.e. [[1,2,3], [4,5,6], [7,8,9]]...
+     * to a real matrix of objects, using the Gson converter from Google.
+     *
+     * @param inputStream the Json matrix representation from the input stream to convert to the instances
+     * @return the instances object from the string input
+     */
+    public static Instances csvToInstances(final InputStream inputStream) {
+        try {
+            String input = FileUtilities.getContents(inputStream, Integer.MAX_VALUE).toString();
+            String[] rows = StringUtils.split(input, "\n\r");
+            Object[][] matrix = new Object[rows.length][];
+            for (int i = 0; i < rows.length; i++) {
+                String row = rows[i];
+                matrix[i] = StringUtils.split(row, ',');
+            }
+            return matrixToInstances(matrix, 0);
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

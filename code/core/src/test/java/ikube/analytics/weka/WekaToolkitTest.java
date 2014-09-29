@@ -9,12 +9,15 @@ import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -77,6 +80,21 @@ public class WekaToolkitTest extends AbstractTest {
         assertEquals(Attribute.STRING, instance.attribute(3).type());
         assertEquals(Attribute.DATE, instance.attribute(5).type());
         assertEquals(Attribute.NOMINAL, instance.attribute(6).type());
+    }
+
+    @Test
+    public void csvToInstances() {
+        String input = "1,2,3\n\r4,5,6\n\r7,8,9";
+        InputStream inputStream = new ByteArrayInputStream(input.getBytes());
+        Instances instances = WekaToolkit.csvToInstances(inputStream);
+        assertNotNull(instances);
+        assertEquals(3, instances.numAttributes());
+        assertEquals(3, instances.numInstances());
+        for (int i = 0; i < instances.numInstances(); i++) {
+            Instance instance = instances.instance(i);
+            assertEquals(3, instance.numAttributes());
+            assertEquals(3, instance.numValues());
+        }
     }
 
 }

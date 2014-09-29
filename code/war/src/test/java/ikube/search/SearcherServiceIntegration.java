@@ -14,6 +14,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import static java.util.Arrays.asList;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+import static mockit.Deencapsulation.invoke;
+
 /**
  * @author Michael Couck
  * @version 01.00
@@ -45,21 +50,21 @@ public class SearcherServiceIntegration extends IntegrationTest {
         results.add(statistics);
 
         search.setIndexName(IConstants.GEOSPATIAL);
-        search.setSearchStrings(Arrays.asList(IConstants.SEARCH_STRINGS));
+        search.setSearchStrings(asList(IConstants.SEARCH_STRINGS));
         search.setSearchResults(results);
 
-        Deencapsulation.invoke(searcherService, "persistSearch", search);
+        invoke(searcherService, "persistSearch", search);
 
         int iterations = 3;
         for (int i = 0; i < iterations; i++) {
-            Deencapsulation.invoke(searcherService, "persistSearch", search);
+            invoke(searcherService, "persistSearch", search);
         }
         ThreadUtilities.sleep(15000);
 
         Search dbSearch = clusterManager.get(IConstants.SEARCH, search.getHash());
         logger.info("Search count : " + dbSearch + ", iterations : " + iterations);
-        Assert.assertNotNull(dbSearch);
-        Assert.assertTrue(iterations <= dbSearch.getCount());
+        assertNotNull(dbSearch);
+        assertTrue(iterations <= dbSearch.getCount());
     }
 
 }

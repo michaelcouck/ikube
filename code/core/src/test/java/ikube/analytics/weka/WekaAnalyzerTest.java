@@ -120,7 +120,6 @@ public class WekaAnalyzerTest extends AbstractTest {
 
     @Test
     public void instances() throws Exception {
-        init();
         Instances[] models = wekaAnalyzer.instances(context);
         for (final Instances instances : models) {
             assertNotNull(instances);
@@ -128,6 +127,20 @@ public class WekaAnalyzerTest extends AbstractTest {
             assertEquals(7, instances.numInstances());
             assertEquals(Attribute.NOMINAL, instances.attribute(0).type());
             assertEquals(Attribute.STRING, instances.attribute(1).type());
+        }
+
+        context.setFileNames();
+        String trainingData = "[[1,2,3], [4,5,6], [7,8,9]]";
+        context.setTrainingDatas(trainingData, trainingData, trainingData);
+
+        models = wekaAnalyzer.instances(context);
+        for (final Instances instances : models) {
+            assertNotNull(instances);
+            assertEquals(3, instances.numAttributes());
+            assertEquals(3, instances.numInstances());
+            assertEquals(Attribute.NUMERIC, instances.attribute(0).type());
+            assertEquals(Attribute.NUMERIC, instances.attribute(1).type());
+            assertEquals(Attribute.NUMERIC, instances.attribute(2).type());
         }
     }
 

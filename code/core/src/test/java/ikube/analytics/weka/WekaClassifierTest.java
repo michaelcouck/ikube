@@ -81,8 +81,8 @@ public class WekaClassifierTest extends AbstractTest {
     @Test
     @SuppressWarnings("unchecked")
     public void train() throws Exception {
-        Instances[] instanceses = (Instances[]) context.getModels();
-        for (final Instances instances : instanceses) {
+        Instances[] instancesArray = (Instances[]) context.getModels();
+        for (final Instances instances : instancesArray) {
             int iterations = IConstants.ONE_THOUSAND;
             int numInstances = instances.numInstances();
             do {
