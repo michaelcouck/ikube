@@ -83,7 +83,7 @@ public class Forecast {
         // Create the analyzer, and initialize with the training data for the stock market prediction
         String body = gson.toJson(context);
         System.out.println("Create body : " + body);
-        WebResource webResource = client.resource("http://localhost:9090/ikube/service/analyzer/create");
+        WebResource webResource = client.resource("http://ikube.be/ikube/service/analyzer/create");
         String response = webResource.accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON).post(String.class, body);
         System.out.println("Create response : " + response);
 
@@ -93,7 +93,7 @@ public class Forecast {
         analysis.input = "-fieldsToForecast,6,-timeStampField,0,-minLag,1,-maxLag,1,-forecasts,5";
         body = gson.toJson(analysis);
         System.out.println("Analysis body : " + body);
-        webResource = client.resource("http://localhost:9090/ikube/service/analyzer/analyze");
+        webResource = client.resource("http://ikube.be/ikube/service/analyzer/analyze");
         response = webResource.accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON).post(String.class, body);
         // The result should be something like:
         // [[[579.3721684789788],[581.4060746802609],[583.233603088952],[584.8823713779697],[586.3763013969173]]]
