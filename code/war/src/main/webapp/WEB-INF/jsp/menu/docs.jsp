@@ -8,10 +8,10 @@
 		</a>
 	</li>
 	
-	<li href="docs" active-link="active">
-		<a href="<c:url value="/documentation/docs.html" />">
-			<i class="icon-book"></i>Documentation
-		</a>
-	</li>
+	<%--<li href="docs" active-link="active">--%>
+		<%--<a href="<c:url value="/documentation/docs.html" />">--%>
+			<%--<i class="icon-book"></i>Documentation--%>
+		<%--</a>--%>
+	<%--</li>--%>
 	
 </ul>

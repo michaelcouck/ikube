@@ -11,7 +11,7 @@
 					<li><a href="<c:url value="/system/dash.html" />"><i class="icon-home"></i>Home</a></li>
                     <li><a href="<c:url value="/analytics/analyze.html" />">Analytics</a></li>
                     <li><a href="<c:url value="/search/search.html" />">Search</a></li>
-					<li class="active"><a href="#">Here</a></li>
+					<li class="active"><a href="#">Welcome</a></li>
 					<button class="button mini inset black" title="<security:authentication property="authorities" />">
 						<spring:message code="security.logged.in.as" />
 						<img src="<c:url value="/assets/images/icons/person_obj.gif" />">

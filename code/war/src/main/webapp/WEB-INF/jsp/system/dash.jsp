@@ -9,18 +9,18 @@
 <div class="container-fluid">
 	<div class="row-fluid">
 		<div class="span6">
-			<div class="row-fluid">
-				<div style="margin-bottom: 20px;">
-					<div class="big-button-bar" ng-controller="NotificationController">
-						<a class="button large" href="#" ng-click="enterpriseNotification();"><i class="icon-list-ul"></i><span>Create Index</span></a>
-						<a class="button large" href="#" ng-click="enterpriseNotification();"><i class="icon-th"></i><span>Create Db</span></a>
-						<a class="button large" href="#" ng-click="enterpriseNotification();"><i class="icon-user"></i><span>Create User</span></a>
-						<a class="button large" href="#" ng-click="enterpriseNotification();"><i class="icon-folder-open"></i><span>File system</span></a>
-						<a class="button large" href="#" ng-click="enterpriseNotification();"><i class="icon-picture"></i><span>Photos</span></a>
-						<a class="button large" href="http://www.ikube.be/site"><i class="icon-file"></i><span>Docs</span></a>
-					</div>
-				</div>
-			</div>
+			<%--<div class="row-fluid">--%>
+				<%--<div style="margin-bottom: 20px;">--%>
+					<%--<div class="big-button-bar" ng-controller="NotificationController">--%>
+						<%--<a class="button large" href="#" ng-click="enterpriseNotification();"><i class="icon-list-ul"></i><span>Create Index</span></a>--%>
+						<%--<a class="button large" href="#" ng-click="enterpriseNotification();"><i class="icon-th"></i><span>Create Db</span></a>--%>
+						<%--<a class="button large" href="#" ng-click="enterpriseNotification();"><i class="icon-user"></i><span>Create User</span></a>--%>
+						<%--<a class="button large" href="#" ng-click="enterpriseNotification();"><i class="icon-folder-open"></i><span>File system</span></a>--%>
+						<%--<a class="button large" href="#" ng-click="enterpriseNotification();"><i class="icon-picture"></i><span>Photos</span></a>--%>
+						<%--<a class="button large" href="http://www.ikube.be/site"><i class="icon-file"></i><span>Docs</span></a>--%>
+					<%--</div>--%>
+				<%--</div>--%>
+			<%--</div>--%>
 
 			<!-- Servers -->
 			<div class="nav-menu box" ng-controller="ServersController">

@@ -16,21 +16,19 @@
         <li href="system" active-link="active"><a href="<c:url value="/system/dash.html" />"><i class="icon-cogs"></i>System</a></li>
         <li href="analytics" active-link="active"><a href="<c:url value="/analytics/analyze.html" />"><i class="icon-beaker"></i>Analytics</a></li>
         <li href="search" active-link="active"><a href="<c:url value="/search/search.html" />"><i class="icon-list-alt"></i>Search</a></li>
-        <li href="application" active-link="active"><a href="<c:url value="/application/happy.html" />"><i class="icon-twitter-sign"></i>Twitter</a></li>
+        <%--<li href="application" active-link="active"><a href="<c:url value="/application/happy.html" />"><i class="icon-twitter-sign"></i>Twitter</a></li>--%>
         <li href="documentation" active-link="active"><a href="<c:url value="/documentation/apis.html" />"><i class="icon-cloud"></i>Apis</a></li>
-        <li href="grid" active-link="active" ng-controller="NotificationController">
-            <a href="#" ng-click="enterpriseNotification();"><i class="icon-th"></i>Grid</a>
-        </li>
+        <%--<li href="grid" active-link="active" ng-controller="NotificationController">--%>
+            <%--<a href="#" ng-click="enterpriseNotification();"><i class="icon-th"></i>Grid</a>--%>
+        <%--</li>--%>
         <li class="dropdown">
             <a class="dropdown-toggle" data-toggle="dropdown">
                 <i class="icon-share-alt"></i>More<span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-                <li><a href="#" onClick="supportNotification();"><i class="icon-warning-sign"></i>Support</a></li>
+                <li><a href="mailto:michael.couck@gmail.com"><i class="icon-warning-sign"></i>Support</a></li>
                 <li class="divider"></li>
-                <li><a href="#"><i class="icon-file"></i>Documentation</a></li>
-                <li><a href="#"><i class="icon-bolt"></i>Quick start</a></li>
-                <li><a href="#"><i class="icon-bolt"></i>Creating indexes</a></li>
+                <li><a href="http://ikube.be/site/ass/index.html"><i class="icon-file"></i>Documentation</a></li>
                 <li class="divider"></li>
                 <li>
                     <a href="<spring:url value="/logout" htmlEscape="true" />"
