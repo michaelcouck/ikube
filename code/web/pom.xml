@@ -6,6 +6,31 @@
     <version>5.2.0</version>
 	<packaging>war</packaging>
 
+    <scm>
+        <url>https://github.com/michaelcouck/ikube</url>
+        <connection>scm:git:ssh://github.com/michaelcouck/ikube.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/michaelcouck/ikube.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <distributionManagement>
+        <site>
+            <id>ikube-releases</id>
+            <name>ikube-releases</name>
+            <url>file:/home/michael/.m2/repository</url>
+        </site>
+        <repository>
+            <id>libs-release-local</id>
+            <name>libs-release-local</name>
+            <url>http://ikube.be/artifactory/libs-release-local</url>
+        </repository>
+        <snapshotRepository>
+            <id>libs-snapshot-local</id>
+            <name>libs-snapshot-local</name>
+            <url>http://ikube.be/artifactory/libs-snapshot-local</url>
+        </snapshotRepository>
+    </distributionManagement>
+
 	<properties>
 		<webapps>webapps</webapps>
 		<final.name>${project.build.finalName}.${project.packaging}</final.name>
