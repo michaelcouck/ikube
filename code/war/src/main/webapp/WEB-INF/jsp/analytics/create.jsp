@@ -42,6 +42,7 @@
                                         ng-model="context.analyzer"
                                         ng-model="analyzers"
                                         ng-options="analyzer for analyzer in analyzers"
+                                        ng-change="getAlgorithms()"
                                         class="fill-up">
                                         <option style="display:none" value="">Analyzer type...</option>
                                     </select>
@@ -51,6 +52,7 @@
                                         ng-model="context.algorithms"
                                         ng-model="algorithms"
                                         ng-options="algorithm for algorithm in algorithms"
+                                        ng-change="getFilters()"
                                         class="fill-up">
                                         <option style="display:none" value="">Algorithm type...</option>
                                     </select>

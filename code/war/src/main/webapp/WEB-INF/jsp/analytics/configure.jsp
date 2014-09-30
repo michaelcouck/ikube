@@ -50,16 +50,17 @@
                                         </b>
                                     </div>
                                     <div ng-repeat="matrix in matrices track by $index">
-                                        <table ng-table>
-                                            <tr ng-repeat="row in matrix track by $index">
-                                                <td ng-repeat="column in row track by $index">
-                                                    <span ng-show="$index == 0">
-                                                        Ex: &nbsp;<input type="checkbox" style="font-size: 20px;">
-                                                    </span>
-                                                    <span ng-show="$index != 0">{{column}}</span>
-                                                </td>
-                                                <td>...</td>
+                                        <table ng-table width="100%" class="table table-striped table-condensed table-hover">
+                                            <tr>
+                                                <th width="100px">Exclude</th>
+                                                <th colspan="200" class="id">Feature values</th>
                                             </tr>
+                                            <tbody>
+                                            <tr ng-repeat="row in matrix track by $index">
+                                                <td><input type="checkbox" style="font-size: 20px;"></td>
+                                                <td ng-repeat="column in row track by $index" nowrap>{{column}}</td>
+                                            </tr>
+                                            </tbody>
                                         </table>
                                     </div>
                                 </div>

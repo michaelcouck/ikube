@@ -10,8 +10,6 @@
  */
 module.controller('AnalyticsController', function ($scope, $http, $injector, $timeout, $location, notificationService) {
 
-    $scope.someData = [[1,2,3], [1,2,3], [1,2,3]];
-
     $scope.status = undefined;
     $scope.contexts = undefined;
     $scope.file = undefined;
@@ -25,43 +23,15 @@ module.controller('AnalyticsController', function ($scope, $http, $injector, $ti
         addAlgorithmOutput: true
     };
 
-    $scope.analyzers = [
-        'ikube.analytics.weka.WekaClassifier',
-        'ikube.analytics.neuroph.NeurophAnalyzer',
-        'ikube.analytics.weka.WekaClusterer'
-    ];
-
-    $scope.filters = [
-        'weka.filters.unsupervised.attribute.StringToNominal',
-        'weka.filters.unsupervised.attribute.StringToWordVector',
-        'weka.filters.unsupervised.attribute.ReplaceMissingValues',
-        'weka.filters.unsupervised.attribute.ClassAssigner',
-        'weka.filters.unsupervised.attribute.RandomSubset',
-        'weka.filters.unsupervised.attribute.RemoveUseless'
-    ];
-
-    $scope.algorithms = [
-        'weka.classifiers.lazy.IB1',
-        'weka.classifiers.bayes.ComplementNaiveBayes',
-        'weka.classifiers.meta.ClassificationViaClustering',
-        'weka.classifiers.functions.LeastMedSq',
-        'weka.classifiers.functions.SMOreg',
-        'weka.classifiers.functions.SimpleLogistic',
-        'weka.classifiers.functions.Logistic',
-        'weka.classifiers.functions.SMO',
-        'weka.classifiers.meta.AdditiveRegression',
-        'weka.classifiers.functions.LinearRegression',
-        'weka.classifiers.functions.IsotonicRegression',
-        'weka.classifiers.meta.RegressionByDiscretization'
-    ];
+    $scope.analyzers = undefined;
+    $scope.algorithms = undefined;
+    $scope.filters = undefined;
 
     $scope.context = {
         name: undefined,
-
         analyzer: undefined,
         algorithms: undefined,
         filters: undefined,
-
         options: undefined, // -N 6 (six clusters for example)
         trainingDatas: undefined,
         maxTrainings: undefined,
@@ -116,23 +86,16 @@ module.controller('AnalyticsController', function ($scope, $http, $injector, $ti
 
     $scope.splitProperties = function(context) {
         // $scope.fileNames = $scope.file;
-        if (!!context.algorithms) {
-            context.algorithms = context.algorithms.split(',');
-        }
-        if (!!context.filters) {
-            context.filters = context.filters.split(',');
-        }
-        if (!!context.trainingDatas) {
-            context.trainingDatas = context.trainingDatas.split(',');
-        }
-        if (!!context.maxTrainings) {
-            context.maxTrainings = context.maxTrainings.split(',');
-        }
-        if (!!context.options) {
-            context.options = context.options.split(',');
-        }
-        if (!!context.fileNames) {
-            context.fileNames = context.fileNames.split(',');
+        $scope.splitProperty(context, 'algorithms', context.algorithms);
+        $scope.splitProperty(context, 'filters', context.filters);
+        $scope.splitProperty(context, 'trainingDatas', context.trainingDatas);
+        $scope.splitProperty(context, 'maxTrainings', context.maxTrainings);
+        $scope.splitProperty(context, 'options', context.options);
+        $scope.splitProperty(context, 'fileNames', context.fileNames);
+    };
+    $scope.splitProperty = function(context, name, property) {
+        if (!!property) {
+            context[name] = property.split(',');
         }
     };
 
@@ -235,6 +198,85 @@ module.controller('AnalyticsController', function ($scope, $http, $injector, $ti
         }, 1000);
     };
 
+    $scope.getSubTypes = function(type, pakkage, listener) {
+        var url = getServiceUrl('/ikube/service/monitor/sub-types');
+        var parameters = {type : type, package : pakkage};
+        var config = { params : parameters };
+        $scope.status = undefined;
+        var promise = $http.get(url, config);
+        promise.success(function (data, status) {
+            $scope.status = status;
+            return $timeout(function() {
+                $scope.$emit(listener, {data : data});
+            }, 250);
+
+        });
+        promise.error(function (data, status) {
+            $scope.status = status;
+            var text = ['Couldn\'t get filters for type : ', type, ', status : ', $scope.status];
+            notificationService.notify(text, '/ikube/assets/images/icons/red_cross.png', 15);
+        });
+    };
+
+    var analyzerType = 'ikube.analytics.IAnalyzer';
+    var analyzersListener = 'analyzers-listener';
+    var algorithmsListener = 'algorithms-listener';
+    var filtersListener = 'filters-listener';
+    $scope.$on(analyzersListener, function (event, args) {
+        $scope.$apply(function () {
+            $scope.analyzers = args.data;
+        });
+    });
+    $scope.$on(algorithmsListener, function (event, args) {
+        $scope.$apply(function () {
+            $scope.algorithms = args.data;
+        });
+    });
+    $scope.$on(filtersListener, function (event, args) {
+        $scope.$apply(function () {
+            $scope.filters = args.data;
+        });
+    });
+    $scope.getAnalyzers = function() {
+        $scope.getSubTypes(analyzerType, 'ikube.analytics', analyzersListener);
+    };
+    $scope.getAlgorithms = function() {
+        return $timeout(function() {
+            if (!$scope.context.analyzer) {
+                return;
+            }
+            var analyzer = $scope.context.analyzer.toString();
+            var algorithmType = undefined;
+            var algorithmPakkage = undefined;
+
+            if (analyzer.search('ikube.analytics.weka.WekaClassifier') > -1) {
+                algorithmType = 'weka.classifiers.Classifier';
+                algorithmPakkage = 'weka.classifiers';
+            } else if (analyzer.search('ikube.analytics.weka.WekaClusterer') > -1) {
+                algorithmType = 'weka.clusterers.Clusterer';
+                algorithmPakkage = 'weka.clusterer';
+            } else if (analyzer.search('ikube.analytics.neuroph.NeurophAnalyzer') > -1) {
+                algorithmType = 'org.neuroph.core.NeuralNetwork';
+                algorithmPakkage = 'org.neuroph.nnet';
+                $scope.filters = undefined;
+            } else if (analyzer.search('ikube.analytics.weka.WekaForecastClassifier') > -1) {
+                $scope.algorithms = undefined;
+                $scope.filters = undefined;
+                return;
+            } else {
+                throw 'Could not find analyzer type';
+            }
+            $scope.getSubTypes(algorithmType, algorithmPakkage, algorithmsListener);
+        }, 250);
+    };
+    $scope.getFilters = function() {
+        var algorithm = $scope.context.algorithms.toString();
+        if (algorithm.search('weka') > -1) {
+            $scope.getSubTypes('weka.filters.Filter', 'weka.filters', filtersListener);
+        }
+    };
+
     $scope.getContexts();
+    $scope.getAnalyzers();
 
 });

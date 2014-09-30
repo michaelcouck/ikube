@@ -1,7 +1,9 @@
 package ikube.analytics.weka;
 
+import ikube.IConstants;
 import ikube.model.Analysis;
 import ikube.model.Context;
+import org.apache.commons.lang.StringUtils;
 import weka.classifiers.evaluation.NumericPrediction;
 import weka.classifiers.timeseries.WekaForecaster;
 import weka.core.Instances;
@@ -32,7 +34,9 @@ public class WekaForecastClassifier extends WekaClassifier {
         // For the forecaster we have already built the models, we just need
         // to specify the options for the forecast, like the number is days into the future etc.
         Object input = analysis.getInput();
-        if (List.class.isAssignableFrom(input.getClass())) {
+        if (String.class.isAssignableFrom(input.getClass())) {
+            input = StringUtils.split(input.toString(), IConstants.DELIMITER_CHARACTERS);
+        } else if (List.class.isAssignableFrom(input.getClass())) {
             input = ((List) input).toArray();
         } else if (!Object[].class.isAssignableFrom(input.getClass())) {
             throw new RuntimeException("Input for time series classifier must be of object array : " + input);
@@ -46,6 +50,8 @@ public class WekaForecastClassifier extends WekaClassifier {
 
         for (int i = 0; i < models.length; i++) {
             Instances instances = (Instances) models[i];
+            // Always sort the instances in ascending order
+            instances.sort(instances.attribute(option.getTimeStampField()));
 
             WekaForecaster forecaster = new WekaForecaster();
             forecaster.setFieldsToForecast(option.getFieldsToForecast()); // ***** The fields to forecast, 6,3 for example
@@ -54,20 +60,19 @@ public class WekaForecastClassifier extends WekaClassifier {
             forecaster.getTSLagMaker().setMinLag(option.getMinLag());
             forecaster.getTSLagMaker().setMaxLag(option.getMaxLag()); // ***** The units to use, 12=months, 1=days
 
-            // add a month of the year indicator field
+            // Add a month of the year indicator field
             forecaster.getTSLagMaker().setAddMonthOfYear(true);
-            // add a quarter of the year indicator field
+            // Add a quarter of the year indicator field
             forecaster.getTSLagMaker().setAddQuarterOfYear(true);
-            // build the model
+            // Build the model
             forecaster.buildForecaster(instances, System.out);
-            // prime the forecaster with enough recent historical data
-            // to cover up to the maximum lag. In our case, we could just supply
-            // the 12 most recent historical instances, as this covers our maximum
+            // Prime the forecaster with enough recent historical data to cover up to the maximum lag. In
+            // our case, we could just supply the 12 most recent historical instances, as this covers our maximum
             // lag period
             forecaster.primeForecaster(instances);
-            // forecast for 12 units (months) beyond the end of the training data
+            // Forecast for 12 units (months) beyond the end of the training data
             List<List<NumericPrediction>> forecast = forecaster.forecast(option.getForecasts(), System.out); // ***** The number of predictions into the future
-            // output the predictions. Outer list is over the steps; inner list is over the targets
+            // Output the predictions. Outer list is over the steps; inner list is over the targets
             logger.warn("Confidence : " + forecaster.getConfidenceLevel());
 
             for (int j = 0; j < forecast.size(); j++) {
@@ -78,6 +83,8 @@ public class WekaForecastClassifier extends WekaClassifier {
                     predictions[i][j][k] += predictionAtStep.predicted();
                 }
             }
+
+            analysis.setAlgorithmOutput(forecaster.getBaseForecaster().toString());
         }
 
         // Aggregate the predictions

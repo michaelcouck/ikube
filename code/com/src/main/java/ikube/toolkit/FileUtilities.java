@@ -91,7 +91,7 @@ public final class FileUtilities {
             return folder;
         }
         int directories = upDirectories;
-        String upFolderPath = FileUtilities.cleanFilePath(folder.getAbsolutePath());
+        String upFolderPath = cleanFilePath(folder.getAbsolutePath());
         File upFolder = new File(upFolderPath);
         do {
             upFolder = upFolder.getParentFile();
@@ -298,7 +298,7 @@ public final class FileUtilities {
         // If this is the 'dot' folder then there is probably something wrong, just return, not
         // doing this will result in all the files from the working directory being deleted, which is
         // almost 99.99999% of the time the desired result
-        if (FileUtilities.cleanFilePath(file.getPath()).equals(FileUtilities.cleanFilePath(new File(".").getAbsolutePath()))) {
+        if (cleanFilePath(file.getPath()).equals(cleanFilePath(new File(".").getAbsolutePath()))) {
             LOGGER.warn("Not deleting dot folder : " + file.getAbsolutePath());
             return;
         }
@@ -400,7 +400,7 @@ public final class FileUtilities {
      * @param bytes    the byte data to write
      */
     public static void setContents(final String filePath, final byte[] bytes) {
-        File file = FileUtilities.getFile(filePath, Boolean.FALSE);
+        File file = getFile(filePath, Boolean.FALSE);
         setContents(file, bytes);
     }
 
@@ -450,32 +450,27 @@ public final class FileUtilities {
      * @param directory whether the file is a directory of a file
      * @return the file from the path, either from the file system or created on the fly
      */
-    public static synchronized File getFile(final String filePath, final boolean directory) {
+    public static File getFile(final String filePath, final boolean directory) {
         if (filePath == null) {
             return null;
         }
-        File file;
-        try {
-            file = new File(filePath);
-            if (directory) {
-                file = getOrCreateDirectory(file);
-                if (file != null && file.exists()) {
-                    makeReadWrite(file);
-                } else {
-                    LOGGER.warn("Didn't create directory/file : " + filePath);
-                }
+        File file = new File(filePath);
+        if (directory) {
+            file = getOrCreateDirectory(file);
+            if (file != null && file.exists()) {
+                makeReadWrite(file);
             } else {
-                file = getOrCreateFile(file);
-                if (file != null && !file.exists()) {
-                    makeReadWrite(file);
-                } else {
-                    LOGGER.warn("Didn't create directory/file : " + filePath);
-                }
+                LOGGER.warn("Didn't create directory/file : " + filePath);
             }
-            return file;
-        } finally {
-            FileUtilities.class.notifyAll();
+        } else {
+            file = getOrCreateFile(file);
+            if (file != null && !file.exists()) {
+                makeReadWrite(file);
+            } else {
+                LOGGER.warn("Didn't create directory/file : " + filePath);
+            }
         }
+        return file;
     }
 
     /**

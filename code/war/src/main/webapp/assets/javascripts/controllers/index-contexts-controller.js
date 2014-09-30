@@ -143,7 +143,7 @@ module.controller('IndexContextsController', function($http, $scope, $injector, 
 				});
 			}
 		});
-	}
+	};
 	$scope.buildTable = function() {
 		var table = [];
 		for ( var i = 0; i < $scope.indexContexts.length; i++) {

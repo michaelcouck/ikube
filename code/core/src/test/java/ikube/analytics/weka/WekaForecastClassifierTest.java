@@ -65,6 +65,10 @@ public class WekaForecastClassifierTest extends AbstractTest {
                 }
             }
         }
+
+        //noinspection unchecked
+        analysis.setInput("-fieldsToForecast,6,-timeStampField,0,-minLag,1,-maxLag,1,-forecasts,5");
+        wekaForecastClassifier.analyze(context, analysis);
     }
 
     protected Context getContext() {

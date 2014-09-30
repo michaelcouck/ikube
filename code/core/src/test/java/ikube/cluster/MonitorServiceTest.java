@@ -19,6 +19,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.neuroph.core.NeuralNetwork;
 
 import java.io.File;
 import java.io.IOException;
@@ -128,8 +129,9 @@ public class MonitorServiceTest extends AbstractTest {
     }
 
 	@Test
-	public void deleteDocuments() {
-		// TODO: Implement me
+	public void subTypesOf() {
+		String[] subTypesOfNeuralNetwork = monitorService.subTypesOf(NeuralNetwork.class.getName(), "org.neuroph.nnet");
+        assertEquals(18, subTypesOfNeuralNetwork.length);
 	}
 
 }

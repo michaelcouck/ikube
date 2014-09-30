@@ -7,7 +7,6 @@ import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.model.Snapshot;
 import ikube.scheduling.schedule.Event;
-import ikube.toolkit.MatrixUtilities;
 import ikube.toolkit.ObjectToolkit;
 import ikube.toolkit.SerializationUtilities;
 import org.apache.commons.lang.StringUtils;
@@ -67,6 +66,7 @@ public class Monitor extends Resource {
 
     public static final String DELETE_INDEX = "/delete-index";
     public static final String CPU_THROTTLING = "/cpu-throttling";
+    private static final String SUB_TYPES = "sub-types";
 
     @GET
     @Path(Monitor.FIELDS)
@@ -335,6 +335,16 @@ public class Monitor extends Resource {
     public Response cpuThrottling() {
         monitorService.cpuThrottling();
         return buildResponse(null);
+    }
+
+    @GET
+    @Path(Monitor.SUB_TYPES)
+    @Api(description = "Returns the sub classes as a string [] for the type specified, typically an interface.",
+            produces = String[].class)
+    @SuppressWarnings("unchecked")
+    public Response subTypesOf(@QueryParam(value = IConstants.TYPE) final String type,
+                               @QueryParam(value = IConstants.PACKAGE) final String pakkage) {
+        return buildResponse(monitorService.subTypesOf(type, pakkage));
     }
 
     private Server cloneServer(final Server server) {
