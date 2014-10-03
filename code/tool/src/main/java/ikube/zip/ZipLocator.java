@@ -24,7 +24,7 @@ import java.util.zip.ZipFile;
  *
  * @author Michael Couck
  * @version 01.00
- * @since 08.02.2011
+ * @since 08-02-2011
  */
 public class ZipLocator {
 
@@ -48,6 +48,7 @@ public class ZipLocator {
                 public FileVisitResult visitFile(final Path path, final BasicFileAttributes attrs) throws IOException {
                     File file = path.toFile();
                     if (fileType.matcher(file.getName()).matches()) {
+                        LOGGER.info("Path : " + path);
                         findInFile(file, fileEntry, fileContent);
                     }
                     return FileVisitResult.CONTINUE;
@@ -62,7 +63,7 @@ public class ZipLocator {
         } catch (final Exception e) {
             LOGGER.error(null, e);
         }
-        LOGGER.info("Found : " + ATOMIC_INTEGER.get() + " instances.");
+        LOGGER.warn("Found : " + ATOMIC_INTEGER.get() + " instances.");
     }
 
     private static void findInFile(final File file, final Pattern fileEntry, final Pattern fileContent) {
@@ -74,7 +75,7 @@ public class ZipLocator {
             try {
                 zip = new ZipFile(file);
             } catch (final Exception e) {
-                // LOGGER.error(e.getMessage() + ", " + file);
+                LOGGER.error(e.getMessage() + ", " + file);
             }
             assert zip != null;
             Enumeration<? extends ZipEntry> zipFileEntries = zip.entries();
@@ -83,14 +84,15 @@ public class ZipLocator {
                 ZipEntry entry = zipFileEntries.nextElement();
                 if (fileEntry.matcher(entry.getName()).matches()) {
                     if (fileContent == null) {
-                        LOGGER.error("In file : " + file + ", " + fileEntry + ", " + entry.getName() + ", " + entry);
+                        LOGGER.info("In file : " + file + ", " + fileEntry + ", " + entry.getName() + ", " + entry);
+                        ATOMIC_INTEGER.incrementAndGet();
                     } else {
                         InputStream inputStream = zip.getInputStream(entry);
                         String contents = FileUtilities.getContents(inputStream, Integer.MAX_VALUE).toString();
                         contents = StringUtilities.stripToAlphaNumeric(contents);
                         if (fileContent.matcher(contents).matches()) {
-                            LOGGER.error("In file : " + file + ", " + fileEntry + ", " + entry.getName() + ", " + entry);
-                            LOGGER.error("Contents : " + contents);
+                            LOGGER.info("In file : " + file + ", " + fileEntry + ", " + entry.getName() + ", " + entry);
+                            LOGGER.info("Contents : " + contents);
                             ATOMIC_INTEGER.incrementAndGet();
                         }
                     }

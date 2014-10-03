@@ -20,7 +20,7 @@
 
     <context:property-placeholder
         location="
-            classpath:*/**/spring.properties,
+            classpath:deploy/spring.properties,
             */**/spring-local.properties"
         properties-ref="ikube.toolkit.PropertyConfigurer"/>
 

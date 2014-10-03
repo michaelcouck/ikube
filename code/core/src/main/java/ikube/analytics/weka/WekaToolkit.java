@@ -189,7 +189,7 @@ public final class WekaToolkit {
         Instance instance = new DenseInstance(vector.length);
         instance.setDataset(instances);
         //  && i < vector.length
-        for (int i = 0; i < instances.numAttributes(); i++) {
+        for (int i = 0; i < instances.numAttributes() && i < vector.length; i++) {
             String value = vector[i] == null ? "" : vector[i].toString();
             Attribute attribute = instances.attribute(i);
             switch (attribute.type()) {

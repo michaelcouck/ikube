@@ -1,19 +1,22 @@
 package ikube.zip;
 
-import static junit.framework.Assert.assertTrue;
 import ikube.AbstractTest;
-
-import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore
+import static junit.framework.Assert.assertTrue;
+
+/**
+ * @author Michael Couck
+ * @version 01.00
+ * @since 08-02-2011
+ */
 public class ZipLocatorTest extends AbstractTest {
 
-	@Test
-	public void main() {
-		String[] args = { ".", ".*(serenity.jar).*", "index", "Serenity" };
-		ZipLocator.main(args);
-		assertTrue(ZipLocator.ATOMIC_INTEGER.get() > 0);
-	}
+    @Test
+    public void main() {
+        String[] args = {".", ".*(jar.jar).*", "OrderBy", "OrderBy"};
+        ZipLocator.main(args);
+        assertTrue(ZipLocator.ATOMIC_INTEGER.get() > 0);
+    }
 
 }

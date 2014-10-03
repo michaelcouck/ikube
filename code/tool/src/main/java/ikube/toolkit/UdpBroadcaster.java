@@ -8,6 +8,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -75,7 +76,7 @@ public class UdpBroadcaster {
                         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                         multicastSocket.receive(receivePacket);
                         UdpBroadcaster.MESSAGES_RECIEVED++;
-                        LOGGER.warn("Client received from : " + receivePacket.getAddress());
+                        LOGGER.warn("Client received at : " + new Date() + ", from : " + receivePacket.getAddress());
                     }
                 } catch (final Exception e) {
                     LOGGER.error(null, e);
@@ -94,7 +95,7 @@ public class UdpBroadcaster {
                         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, GROUP, PORT);
                         serverSocket.send(sendPacket);
                         UdpBroadcaster.MESSAGES_SENT++;
-                        LOGGER.warn("Server sent : " + Arrays.toString(sendData));
+                        LOGGER.warn("Server sent at : " + new Date());
                         ThreadUtilities.sleep(10000);
                     }
                 } catch (final Exception e) {
