@@ -12,34 +12,7 @@ import java.util.Date;
  */
 @Entity()
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@NamedQueries(value = {
-        @NamedQuery(name = GeoName.SELECT_FROM_GEONAME_COUNT, query = GeoName.SELECT_FROM_GEONAME_COUNT),
-        @NamedQuery(name = GeoName.SELECT_FROM_GEONAME_BY_NAME, query = GeoName.SELECT_FROM_GEONAME_BY_NAME),
-        @NamedQuery(name = GeoName.SELECT_FROM_GEONAME_BY_GEONAMEID, query = GeoName.SELECT_FROM_GEONAME_BY_GEONAMEID),
-        @NamedQuery(name = GeoName.SELECT_FROM_GEONAME_BY_CITY_AND_COUNTRY_NULL, query = GeoName.SELECT_FROM_GEONAME_BY_CITY_AND_COUNTRY_NULL),
-        @NamedQuery(name = GeoName.SELECT_FROM_GEONAME_BY_ID_GREATER_AND_SMALLER, query = GeoName.SELECT_FROM_GEONAME_BY_ID_GREATER_AND_SMALLER),
-        @NamedQuery(name = GeoName.SELECT_FROM_GEONAME_BY_FEATURECLASS_FEATURECODE_COUNTRYCODE, query = GeoName.SELECT_FROM_GEONAME_BY_FEATURECLASS_FEATURECODE_COUNTRYCODE)})
 public class GeoName extends Persistable {
-
-    public static final String SELECT_FROM_GEONAME_BY_ID_GREATER_AND_SMALLER = "select g from GeoName as g " + //
-            "where " + //
-            "g.city is null and " + //
-            "g.country is null and " + //
-            "g.id > :id " + //
-            "order by g.id";
-    public static final String SELECT_FROM_GEONAME_BY_FEATURECLASS_FEATURECODE_COUNTRYCODE = "select g from GeoName as g " + //
-            "where " + //
-            "g.featureClass = :featureclass and " + //
-            "g.featureCode = :featurecode and " + //
-            "g.countryCode = :countrycode";
-    public static final String SELECT_FROM_GEONAME_COUNT = "select count(g) from GeoName as g";
-    public static final String SELECT_FROM_GEONAME_BY_CITY_AND_COUNTRY_NULL = "select g from GeoName as g " + //
-            "where " + //
-            "g.city is null and " + //
-            "g.country is null " + //
-            "order by g.id";
-    public static final String SELECT_FROM_GEONAME_BY_NAME = "select g from GeoName as g where g.name = :name";
-    public static final String SELECT_FROM_GEONAME_BY_GEONAMEID = "select g from GeoName as g where g.geonameid = :geonameid";
 
     @Column()
     private Integer geonameid; // : integer id of record in geonames database

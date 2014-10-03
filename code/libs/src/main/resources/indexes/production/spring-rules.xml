@@ -66,27 +66,6 @@
         <ref bean="ikube.action.index.handler.strategy.LanguageFilterStrategy"/>
         <ref bean="ikube.action.index.handler.strategy.LanguageCleaningStrategy"/>
         <ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy"/>
-        <ref bean="rule-classification-strategy-en"/>
     </util:list>
-
-    <!-- Define the strategy that will intercept the processing to user the above defined analyzer. -->
-    <bean
-        name="rule-classification-strategy-en"
-        class="ikube.action.index.handler.strategy.AnalysisStrategy"
-        property:context-ref="english-sentiment"
-        init-method="initialize"/>
-
-    <bean
-        name="rule-id"
-        class="ikube.model.IndexableColumn"
-        property:name="id"
-        property:parent-ref="rule"
-        property:idColumn="true"
-
-        property:analyzed="true"
-        property:stored="true"
-        property:vectored="false"
-        property:tokenized="false"
-        property:omitNorms="true"/>
 
 </beans>

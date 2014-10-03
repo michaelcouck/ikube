@@ -18,9 +18,9 @@ function track() {
 }
 
 /** The global variables. */
-var refreshInterval = 1500000;
-var chartRefreshInterval = 5000000;
 var allLanguages = [];
+var refreshInterval = 15000;
+var chartRefreshInterval = 5000;
 allLanguages.push('汉语', 'Nederlands', 'English', 'Español', '日本語', 'Le français', 'Deutsch', 'Svenska', 'ภาษาพูด',
     'العربية', 'Türkçe', 'ру́сский');
 

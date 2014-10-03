@@ -20,21 +20,11 @@ import java.util.List;
 @SuppressWarnings("JpaQlInspection")
 @Inheritance(strategy = InheritanceType.JOINED)
 @EntityListeners(value = {SearchIncrementListener.class})
-@NamedQueries(value = {
-        @NamedQuery(name = Search.SELECT_FROM_SEARCH_BY_INDEX_NAME_AND_SEARCH_STRINGS, query = Search.SELECT_FROM_SEARCH_BY_INDEX_NAME_AND_SEARCH_STRINGS),
-        @NamedQuery(name = Search.SELECT_FROM_SEARCH_BY_INDEX_NAME, query = Search.SELECT_FROM_SEARCH_BY_INDEX_NAME),
-        @NamedQuery(name = Search.SELECT_FROM_SEARCH_COUNT_SEARCHES, query = Search.SELECT_FROM_SEARCH_COUNT_SEARCHES),
-        @NamedQuery(name = Search.UPDATE_SEARCH_COUNT_SEARCHES, query = Search.UPDATE_SEARCH_COUNT_SEARCHES)})
+@NamedQueries(value = {@NamedQuery(name = Search.SELECT_FROM_SEARCH_COUNT_SEARCHES, query = Search.SELECT_FROM_SEARCH_COUNT_SEARCHES)})
 public class Search extends Distributed {
 
-    public static final String SELECT_FROM_SEARCH_BY_INDEX_NAME_AND_SEARCH_STRINGS = //
-            "select s from Search as s where s.indexName = :indexName and s.searchStrings = :searchStrings";
-    public static final String SELECT_FROM_SEARCH_BY_INDEX_NAME = //
-            "select s from Search as s where s.indexName = :indexName";
     public static final String SELECT_FROM_SEARCH_COUNT_SEARCHES = //
             "select sum(s.count) from Search as s where s.indexName = :indexName";
-    public static final String UPDATE_SEARCH_COUNT_SEARCHES = //
-            "update Search as s set s.count = :count where s.indexName = :indexName";
 
     // No generation:
     /**

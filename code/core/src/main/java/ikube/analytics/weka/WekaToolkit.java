@@ -10,10 +10,7 @@ import weka.classifiers.Evaluation;
 import weka.classifiers.evaluation.output.prediction.PlainText;
 import weka.clusterers.ClusterEvaluation;
 import weka.clusterers.Clusterer;
-import weka.core.Attribute;
-import weka.core.DenseInstance;
-import weka.core.Instance;
-import weka.core.Instances;
+import weka.core.*;
 import weka.core.converters.ArffSaver;
 import weka.filters.Filter;
 import weka.filters.unsupervised.instance.NonSparseToSparse;
@@ -186,11 +183,13 @@ public final class WekaToolkit {
      * @return the instance object, with the instances set as the data set
      */
     public static Instance getInstance(final Instances instances, final Object[] vector) {
-        Instance instance = new DenseInstance(vector.length);
+        int featureSpace = Math.max(instances.numAttributes(), vector.length);
+        Instance instance = instances.numAttributes() == vector.length ? new DenseInstance(featureSpace) : new SparseInstance(featureSpace);
         instance.setDataset(instances);
         //  && i < vector.length
-        for (int i = 0; i < instances.numAttributes() && i < vector.length; i++) {
-            String value = vector[i] == null ? "" : vector[i].toString();
+        for (int i = instances.numAttributes() - 1, j = vector.length - 1; i >= 0 && j >= 0; i--, j--) {
+            // System.out.println("I : " + i + ", j : " + j);
+            String value = vector[j] == null ? "" : vector[j].toString();
             Attribute attribute = instances.attribute(i);
             switch (attribute.type()) {
                 case Attribute.DATE: {

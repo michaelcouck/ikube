@@ -344,7 +344,6 @@
         <entry key="${resources-directory}/analytics" value="${tomcat-production-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/production" value="${tomcat-production-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/mineco" value="${tomcat-production-bin}/ikube"/>
-        <entry key="${resources-directory}/indexes/twitter" value="${tomcat-production-bin}/ikube"/>
     </util:map>
     <bean
         id="start-action-production"
@@ -420,77 +419,5 @@
         <value>${tomcat-site-startup}</value>
     </util:list>
     <!-- End site -->
-
-    <!-- Bosal -->
-    <bean
-        id="server-bosal"
-        name="server-bosal"
-        class="ikube.deploy.model.Server"
-        property:name="server-bosal"
-        property:ip="${server-ip-bosal}"
-        property:username="${username-bosal}"
-        property:password="${password-bosal}"
-        property:actions-ref="actions-bosal"/>
-    <util:list id="actions-bosal">
-        <ref local="stop-action-bosal"/>
-        <ref local="clean-action-bosal"/>
-        <ref local="copy-action-bosal"/>
-        <ref local="start-action-bosal"/>
-    </util:list>
-    <bean
-        id="stop-action-bosal"
-        name="stop-action-bosal"
-        class="ikube.deploy.action.CmdAction"
-        property:sleep="${sleep}"
-        property:breakOnError="true"
-        property:commands-ref="stop-commands-bosal"/>
-    <util:list id="stop-commands-bosal">
-        <value>${tomcat-bosal-shutdown};</value>
-        <value>${tomcat-bosal-kill};</value>
-    </util:list>
-    <bean
-        id="clean-action-bosal"
-        name="clean-action-bosal"
-        class="ikube.deploy.action.CmdAction"
-        property:sleep="${sleep}"
-        property:breakOnError="true"
-        property:commands-ref="clean-commands-bosal"/>
-    <util:list id="clean-commands-bosal">
-        <value>chmod 777 -R ${tomcat-bosal};</value>
-        <value>rm -rf ${tomcat-bosal-webapps}/${ikube-war};</value>
-    </util:list>
-    <bean
-        id="copy-action-bosal"
-        name="copy-action-bosal"
-        class="ikube.deploy.action.CopyAction"
-        property:sleep="${sleep}"
-        property:breakOnError="true"
-        property:files-ref="files-bosal"
-        property:directories-ref="directories-bosal"/>
-    <util:map id="files-bosal">
-        <entry key="${tail-script}" value="${tomcat-bosal-bin}"/>
-        <entry key="code/war/target/${ikube-war}" value="${tomcat-bosal-webapps}"/>
-        <!-- This over writes the properties specific for the target environment -->
-        <entry key="${resources-directory}/environments/prd/spring.properties" value="${tomcat-bosal-bin}/ikube/common"/>
-    </util:map>
-    <util:map id="directories-bosal">
-        <entry key="${resources-directory}/ikube" value="${tomcat-bosal-bin}"/>
-        <entry key="${resources-directory}/analytics" value="${tomcat-bosal-bin}/ikube"/>
-        <entry key="${resources-directory}/indexes/production" value="${tomcat-bosal-bin}/ikube"/>
-        <entry key="${resources-directory}/indexes/mineco" value="${tomcat-bosal-bin}/ikube"/>
-        <entry key="${resources-directory}/indexes/twitter" value="${tomcat-bosal-bin}/ikube"/>
-    </util:map>
-    <bean
-        id="start-action-bosal"
-        name="start-action-bosal"
-        class="ikube.deploy.action.CmdAction"
-        property:sleep="${sleep}"
-        property:breakOnError="true"
-        property:commands-ref="start-commands-bosal"/>
-    <util:list id="start-commands-bosal">
-        <value>${tomcat-bosal-chmod}</value>
-        <value>${tomcat-bosal-startup}</value>
-    </util:list>
-    <!-- End Bosal -->
 
 </beans>

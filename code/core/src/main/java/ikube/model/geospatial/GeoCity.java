@@ -13,10 +13,7 @@ import javax.persistence.*;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@NamedQueries(value = {@NamedQuery(name = GeoCity.DELETE_ALL, query = GeoCity.DELETE_ALL)})
 public class GeoCity extends Persistable {
-
-    public static final String DELETE_ALL = "delete from GeoCity g";
 
     @Index(unique = true, enabled = true, name = "city_name_index", specified = true)
     private String name;
