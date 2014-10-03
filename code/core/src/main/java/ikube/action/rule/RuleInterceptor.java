@@ -54,33 +54,25 @@ public class RuleInterceptor implements IRuleInterceptor {
     @SuppressWarnings("rawtypes")
     public synchronized Object decide(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         try {
-            LOGGER.debug("Rule interceptor decide : ");
             Object target = proceedingJoinPoint.getTarget();
             boolean proceed = Boolean.TRUE;
             IndexContext indexContext = null;
             if (!IAction.class.isAssignableFrom(target.getClass())) {
                 LOGGER.warn("Can't intercept non action class, proceeding : " + target);
             } else {
-                LOGGER.debug("Trying action : ");
                 IAction action = (IAction) target;
                 try {
                     boolean gotLock = Boolean.TRUE;
                     if (action.requiresClusterLock()) {
                         gotLock = clusterManager.lock(IConstants.IKUBE);
-                    } else {
-                        LOGGER.debug("No lock required : ");
                     }
                     if (gotLock) {
-                        LOGGER.debug("Trying action : ");
                         // Find the index context
                         indexContext = getIndexContext(proceedingJoinPoint);
                         proceed = evaluateRules(indexContext, action);
-                        LOGGER.debug("Tried action : " + proceed);
                     } else {
                         proceed = Boolean.FALSE;
-                        LOGGER.debug("Couldn't get cluster lock : ", proceedingJoinPoint.getTarget());
                     }
-                    LOGGER.debug("Tried action finished : " + proceed);
                 } catch (final NullPointerException e) {
                     LOGGER.warn("Context closing down : ");
                 } catch (final Exception t) {
@@ -88,13 +80,9 @@ public class RuleInterceptor implements IRuleInterceptor {
                 } finally {
                     clusterManager.unlock(IConstants.IKUBE);
                 }
-                LOGGER.debug("Continuing : ");
             }
             if (proceed) {
-                LOGGER.debug("Proceeding : ");
                 proceed(indexContext, proceedingJoinPoint);
-            } else {
-                LOGGER.debug("Not proceeding : ");
             }
         } catch (final Exception e) {
             LOGGER.error("Exception in rule interceptor : ", e);
@@ -171,15 +159,17 @@ public class RuleInterceptor implements IRuleInterceptor {
             Expression expression = jexlEngine.createExpression(predicate);
             Object result = expression.evaluate(jexlContext);
             finalResult = result != null && (result.equals(1.0d) || result.equals(Boolean.TRUE));
-            String dump = expression.dump();
 
             Rule rule = new Rule();
-            rule.setAction(action.getClass().getName());
-            rule.setDump(dump);
+            rule.setAction(action.getClass().getSimpleName());
+            rule.setServer(clusterManager.getServer().getAddress());
+            rule.setIndexContext(indexContext.getName());
+
+            rule.setPredicate(predicate);
+
             rule.setResult(finalResult);
             rule.setEvaluations(evaluations);
-            rule.setServer(clusterManager.getServer().getAddress());
-            rule.setPredicate(predicate);
+
             dataBase.persist(rule);
 
             if (LOGGER.isDebugEnabled()) {

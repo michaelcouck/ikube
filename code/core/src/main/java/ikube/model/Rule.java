@@ -11,10 +11,10 @@ public class Rule extends Persistable {
     private String action;
     @Column
     private String server;
+    @Column
+    private String indexContext;
 
-    @Column(length = 1024)
-    private String dump;
-    @Column(length = 1024)
+    @Column(length = 4096)
     private String predicate;
     @Column
     private Boolean result;
@@ -26,7 +26,7 @@ public class Rule extends Persistable {
         return action;
     }
 
-    public void setAction(String action) {
+    public void setAction(final String action) {
         this.action = action;
     }
 
@@ -34,23 +34,23 @@ public class Rule extends Persistable {
         return server;
     }
 
-    public void setServer(String server) {
+    public void setServer(final String server) {
         this.server = server;
     }
 
-    public String getDump() {
-        return dump;
+    public String getIndexContext() {
+        return indexContext;
     }
 
-    public void setDump(String dump) {
-        this.dump = dump;
+    public void setIndexContext(final String indexContext) {
+        this.indexContext = indexContext;
     }
 
     public String getPredicate() {
         return predicate;
     }
 
-    public void setPredicate(String predicate) {
+    public void setPredicate(final String predicate) {
         this.predicate = predicate;
     }
 
@@ -58,7 +58,7 @@ public class Rule extends Persistable {
         return result;
     }
 
-    public void setResult(Boolean result) {
+    public void setResult(final Boolean result) {
         this.result = result;
     }
 
@@ -66,7 +66,7 @@ public class Rule extends Persistable {
         return evaluations;
     }
 
-    public void setEvaluations(List<Boolean> evaluations) {
+    public void setEvaluations(final List<Boolean> evaluations) {
         this.evaluations = evaluations;
     }
 }
