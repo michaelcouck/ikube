@@ -55,8 +55,7 @@
         property:tokenized="false"
         property:omitNorms="true"
 
-        property:children-ref="rule-columns"
-        property:dataSource-ref="nonXaDataSourceDb2"
+        property:dataSource-ref="${ikube.dataSource}"
         property:strategies-ref="rule-strategies"/>
 
     <util:list id="rule-strategies">
