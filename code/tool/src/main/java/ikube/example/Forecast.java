@@ -95,7 +95,8 @@ public class Forecast {
         System.out.println("Analysis body : " + body);
         webResource = client.resource("http://ikube.be/ikube/service/analyzer/analyze");
         response = webResource.accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON).post(String.class, body);
-        // The result should be something like:
+
+        // The result should be something like: This represents the forecast price for the shares specified in the training data
         // [[[579.3721684789788],[581.4060746802609],[583.233603088952],[584.8823713779697],[586.3763013969173]]]
         System.out.println("Analysis response : " + response);
     }

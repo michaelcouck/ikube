@@ -41,8 +41,11 @@ public class IndexSizeSchedule extends Schedule {
     @SuppressWarnings("rawtypes")
     public void run() {
         Map<String, IndexContext> indexContexts = monitorService.getIndexContexts();
-        for (Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
+        for (final Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
             IndexContext indexContext = mapEntry.getValue();
+            if (indexContext.isClosing()) {
+                continue;
+            }
 
             IndexWriter[] indexWriters = indexContext.getIndexWriters();
             if (indexWriters == null || indexWriters.length == 0) {
@@ -56,7 +59,6 @@ public class IndexSizeSchedule extends Schedule {
             if (indexSize / meg < maxIndexSize) {
                 continue;
             }
-            boolean success = Boolean.TRUE;
             File newIndexDirectory = null;
             IndexWriter newIndexWriter = null;
             try {
@@ -69,28 +71,24 @@ public class IndexSizeSchedule extends Schedule {
                 newIndexWriters[newIndexWriters.length - 1] = newIndexWriter;
                 LOGGER.error("Switched to the new index writer : " + indexContext);
                 indexContext.setIndexWriters(newIndexWriters);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 LOGGER.error("Exception starting a new index : ", e);
-                success = Boolean.FALSE;
-            } finally {
-                //noinspection StatementWithEmptyBody
-                if (success) {
-                    // Note: We don't close the index writers here any more because they can still be used in the
-                    // delta indexing. And we close all the indexes in the context in the index manager at the end of the job
-                    // Note: the delta is not implemented so we close them here again
-                    // IndexManager.closeIndexWriter(oldIndexWriter);
-                } else {
-                    // Try to close and delete the new index writer and index directory
-                    IndexManager.closeIndexWriter(newIndexWriter);
-                    FileUtilities.deleteFile(newIndexDirectory, 1);
-                    // Remove the new index writer from the end of the array
-                    if (newIndexWriter != null) {
-                        indexWriters = indexContext.getIndexWriters();
-                        if (indexWriters[indexWriters.length - 1] == newIndexWriter) {
-                            IndexWriter[] newIndexWriters = new IndexWriter[indexWriters.length - 1];
-                            System.arraycopy(indexWriters, 0, newIndexWriters, 0, indexWriters.length - 1);
-                            indexContext.setIndexWriters(newIndexWriters);
-                        }
+
+                // Note: We don't close the index writers here any more because they can still be used in the
+                // delta indexing. And we close all the indexes in the context in the index manager at the end of the job
+                // Note: the delta is not implemented so we close them here again
+                // IndexManager.closeIndexWriter(oldIndexWriter);
+
+                // Try to close and delete the new index writer and index directory
+                IndexManager.closeIndexWriter(newIndexWriter);
+                FileUtilities.deleteFile(newIndexDirectory, 1);
+                // Remove the new index writer from the end of the array
+                if (newIndexWriter != null) {
+                    indexWriters = indexContext.getIndexWriters();
+                    if (indexWriters[indexWriters.length - 1] == newIndexWriter) {
+                        IndexWriter[] newIndexWriters = new IndexWriter[indexWriters.length - 1];
+                        System.arraycopy(indexWriters, 0, newIndexWriters, 0, indexWriters.length - 1);
+                        indexContext.setIndexWriters(newIndexWriters);
                     }
                 }
             }

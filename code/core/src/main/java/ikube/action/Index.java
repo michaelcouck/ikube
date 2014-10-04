@@ -119,8 +119,13 @@ public class Index extends Action<IndexContext, Boolean> {
     @Override
     public boolean postExecute(final IndexContext indexContext) throws Exception {
         logger.info("Post process action : " + this.getClass() + ", " + indexContext.getName());
-        IndexManager.closeIndexWriters(indexContext);
-        indexContext.setIndexWriters();
+        try {
+            indexContext.setClosing(Boolean.TRUE);
+            IndexManager.closeIndexWriters(indexContext);
+        } finally {
+            indexContext.setIndexWriters();
+            indexContext.setClosing(Boolean.FALSE);
+        }
         return Boolean.TRUE;
     }
 

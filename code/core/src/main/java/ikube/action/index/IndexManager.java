@@ -227,6 +227,13 @@ public final class IndexManager {
             LOGGER.error("IO optimising the index : " + indexWriter, e);
         } catch (final Exception e) {
             LOGGER.error("General exception committing the index : " + indexWriter, e);
+        } finally {
+            try {
+                LOGGER.info("Unlocking the index directory : " + indexWriter.getDirectory());
+                IndexWriter.unlock(indexWriter.getDirectory());
+            } catch (final IOException e) {
+                LOGGER.error("Exception trying to unlock the index writer directory : " + indexWriter, e);
+            }
         }
         try {
             indexWriter.close();
@@ -234,9 +241,11 @@ public final class IndexManager {
             LOGGER.error("Exception closing the index writer : " + indexWriter, e);
         }
         try {
+            LOGGER.info("Checking that all the index writers are closed and unlocked : " + directory);
             if (directory != null) {
                 int retry = 10;
                 // We have to wait for the merges and the close
+                LOGGER.info("Unlocking : " + IndexWriter.isLocked(directory) + ", retry : " + retry);
                 while (IndexWriter.isLocked(directory) && --retry > 0) {
                     IndexWriter.unlock(directory);
                     if (IndexWriter.isLocked(directory)) {

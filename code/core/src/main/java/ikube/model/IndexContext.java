@@ -31,48 +31,31 @@ public class IndexContext extends Indexable implements Comparable<IndexContext> 
     @SuppressWarnings("JpaQlInspection")
     public static final String FIND_BY_NAME = "select i from IndexContext as i where i.name = :name";
 
-    /**
-     * Whether the searcher is open or not.
-     */
     @Transient
     @Attribute(field = false, description = "Whether this index is opened, for transport in the grid as the writers and searchers are not serializable")
     private boolean open;
-    /**
-     * Can be null if there are no indexes running.
-     */
+    @Transient
+    @Attribute(field = false, description = "Whether this index is in the process of closing")
+    private boolean closing;
+
     @Transient
     @Attribute(field = false, description = "The currently opened index writers, which can be null of course")
     private transient volatile IndexWriter[] indexWriters;
-    /**
-     * Can be null if there is no index created.
-     */
     @Transient
     @Attribute(field = false, description = "The index searcher for the index, opened with the correct parameters and analyzer")
     private transient volatile IndexSearcher multiSearcher;
-    /**
-     * This analyzer will be used to index the data, and indeed to do the searching.
-     */
     @Transient
     @Attribute(field = false, description = "The analyzer that was used for indexing this document set and is consequently used for searching")
     private transient volatile Analyzer analyzer;
-    /**
-     * A collection of currently processed resources, for duplication avoidance.
-     */
     @Transient
-    @Attribute(field = false, description = "An arbitrary collection of hashes for currently indexed documents, for disarding duplicates and delta indexing")
+    @Attribute(field = false, description = "An arbitrary collection of hashes for currently indexed documents, for discarding duplicates and delta indexing")
     private transient volatile Set<Long> hashes;
 
-    /**
-     * The maximum age of the index defined in minutes.
-     */
     @Column
     @Min(value = 1)
     @Max(value = Integer.MAX_VALUE)
     @Attribute(field = false, description = "This is the maximum age that the index can become before it is re-indexed")
     private long maxAge;
-    /**
-     * The delay between documents being indexed, slows the indexing down.
-     */
     @Column
     @Min(value = 0)
     @Max(value = 60000)
@@ -114,33 +97,21 @@ public class IndexContext extends Indexable implements Comparable<IndexContext> 
     @Max(value = 1000000)
     @Attribute(field = false, description = "The batch size of the category set for database indexing")
     private int batchSize;
-    /**
-     * Internet properties.
-     */
     @Column
     @Min(value = 1)
     @Max(value = 1000000)
     @Attribute(field = false, description = "The batch size of urls for the crawler")
     private int internetBatchSize;
-    /**
-     * The maximum length of a document that can be read.
-     */
     @Column
     @Min(value = 1)
     @Max(value = 1000000000)
     @Attribute(field = false, description = "The maximum read length for a document")
     private long maxReadLength;
-    /**
-     * The path to the index directory, either relative or absolute.
-     */
     @Column
     @NotNull
     @Size(min = 2, max = 256)
     @Attribute(field = false, description = "The absolute or relative path to the directory where the index will be written")
     private String indexDirectoryPath;
-    /**
-     * The path to the backup index directory, either relative or absolute.
-     */
     @Column
     @NotNull
     @Size(min = 2, max = 256)
@@ -156,8 +127,9 @@ public class IndexContext extends Indexable implements Comparable<IndexContext> 
     @Transient
     @Attribute(field = false, description = "The number of documents in the currently opened searcher")
     private long numDocsForSearchers;
+
     @Transient
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "FieldCanBeLocal"})
     @Attribute(field = false, description = "The latest snapshot for the index with static details for it, like size on disk etc.")
     private Snapshot snapshot;
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
@@ -281,6 +253,11 @@ public class IndexContext extends Indexable implements Comparable<IndexContext> 
         return multiSearcher;
     }
 
+    public void setMultiSearcher(final IndexSearcher multiSearcher) {
+        setOpen(multiSearcher != null);
+        this.multiSearcher = multiSearcher;
+    }
+
     public boolean isOpen() {
         return open;
     }
@@ -289,9 +266,12 @@ public class IndexContext extends Indexable implements Comparable<IndexContext> 
         this.open = open;
     }
 
-    public void setMultiSearcher(final IndexSearcher multiSearcher) {
-        setOpen(multiSearcher != null);
-        this.multiSearcher = multiSearcher;
+    public boolean isClosing() {
+        return closing;
+    }
+
+    public void setClosing(final boolean closing) {
+        this.closing = closing;
     }
 
     public Analyzer getAnalyzer() {
@@ -360,19 +340,19 @@ public class IndexContext extends Indexable implements Comparable<IndexContext> 
         return getIndexName().compareTo(other.getIndexName());
     }
 
-	public String toString() {
-		return getId() + ":" + getIndexName();
-	}
+    public String toString() {
+        return getId() + ":" + getIndexName();
+    }
 
-	public void destroy() {
-		try {
-			IndexSearcher indexSearcher = getMultiSearcher();
-			if (indexSearcher != null && indexSearcher.getIndexReader() != null) {
-				indexSearcher.getIndexReader().close();
-			}
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
-	}
+    public void destroy() {
+        try {
+            IndexSearcher indexSearcher = getMultiSearcher();
+            if (indexSearcher != null && indexSearcher.getIndexReader() != null) {
+                indexSearcher.getIndexReader().close();
+            }
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }
