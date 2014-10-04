@@ -58,9 +58,6 @@
         property:children-ref="rule-columns"
         property:dataSource-ref="nonXaDataSourceDb2"
         property:strategies-ref="rule-strategies"/>
-    <util:list id="rule-columns">
-        <ref bean="rule-id"/>
-    </util:list>
 
     <util:list id="rule-strategies">
         <ref bean="ikube.action.index.handler.strategy.LanguageFilterStrategy"/>
