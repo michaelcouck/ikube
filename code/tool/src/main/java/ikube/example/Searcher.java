@@ -8,49 +8,25 @@ import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 
 import javax.ws.rs.core.MediaType;
-import java.net.URL;
 import java.util.Arrays;
-import java.util.List;
 
 /**
- * This is an example in Java of how to access the rest web service to get results from the GeoSpatial index.
+ * This is an example in Java of how to access the rest web service to get results from a search(Lucene)
+ * index. In this case it is the GeoSpatial index. We need to specify the fields to search and the search string(s),
+ * in this case just one. The GeoSpatial index is, well obviously enriched with geospatial data, so we can search
+ * the index and have the results narrowed to an area around a particular point, and the results will be sorted
+ * according to distance from the point we specify.
+ * <p/>
+ * The results are in Json, but as easily have been in XML using the XML service instead of the Json service.
  *
  * @author Michael Couck
  * @version 01.00
  * @since 03-03-2012
  */
-public class Searcher {
-
-    public static class Coordinate {
-        double latitude;
-        double longitude;
-
-        Coordinate(double latitude, double longitude) {
-            this.latitude = latitude;
-            this.longitude = longitude;
-        }
-    }
-
-    public static class Search {
-        String indexName;
-        List<String> searchStrings;
-        List<String> typeFields;
-        List<String> searchFields;
-        List<String> occurrenceFields;
-        Coordinate coordinate;
-
-        int distance;
-        int firstResult;
-        int maxResults;
-        boolean fragment;
-        boolean distributed;
-    }
+public class Searcher extends Base {
 
     public static void main(final String[] args) throws Exception {
-        int port = 80;
-        String host = "ikube.be";
-        String path = "/ikube/service/search/json";
-        String url = new URL("http", host, port, path).toString();
+        String url = "http://ikube.be/ikube/service/search/json";
 
         // The search object that we sill convert to Json with all the parameters that
         // we need like the name of the index to query, the search strings and types and so on
@@ -63,7 +39,7 @@ public class Searcher {
         search.occurrenceFields = Arrays.asList("must");
         search.coordinate = new Coordinate(-33.9693580, 18.4622110);
 
-        search.distance  = 10;
+        search.distance = 10;
         search.firstResult = 0;
         search.maxResults = 10;
         search.fragment = Boolean.TRUE;

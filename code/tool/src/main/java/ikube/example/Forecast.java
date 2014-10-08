@@ -39,32 +39,7 @@ import java.io.IOException;
  * @version 01.00
  * @since 29-09-2014
  */
-public class Forecast {
-
-    /**
-     * Ths class to hold the information for the analyzer to be able to create it.
-     */
-    public static class Context {
-        /* The name of your specific analyzer */
-        String name;
-        /* The class of analyzer to use, perhaps WekaForecastClassifier, fully qualified name */
-        String analyzer;
-        /* The training data, in this case a couple of years data, closing price of the stock,
-        and some other features, please have a look at the forecast.csv for exactly the contents */
-        String[] trainingDatas;
-    }
-
-    /**
-     * This class just holds the name of the analyzer that is just created, and the input
-     * options for the forecaster.
-     */
-    public static class Analysis {
-        /* The analyzer name, forecast-classifier */
-        String context;
-        /* The input options, either string or array,
-         * '-fieldsToForecast,6,-timeStampField,0,-minLag,1,-maxLag,1,-forecasts,5' */
-        String input;
-    }
+public class Forecast extends Base {
 
     public static void main(final String[] args) throws IOException {
         // The Jersey client for accessing the rest service

@@ -40,6 +40,7 @@
           <file>file://$MODULE_DIR$/src/main/resources/indexes/vlapar/spring-vlapar.xml</file>
           <file>file://$MODULE_DIR$/src/main/resources/indexes/system/spring-wiki.xml</file>
           <file>file://$MODULE_DIR$/src/main/resources/ikube/spring.xml</file>
+          <file>file://$MODULE_DIR$/src/main/resources/indexes/artvens/spring-artvens.xml</file>
         </fileset>
       </configuration>
     </facet>

@@ -3,8 +3,6 @@ package ikube.analytics.neuroph;
 import ikube.analytics.AAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
-import ikube.toolkit.CsvUtilities;
-import ikube.toolkit.MatrixUtilities;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.neuroph.core.NeuralNetwork;
 import org.neuroph.core.data.DataSet;
@@ -24,7 +22,9 @@ import java.util.Random;
 import java.util.Vector;
 import java.util.concurrent.Future;
 
+import static ikube.toolkit.CsvUtilities.getCsvData;
 import static ikube.toolkit.FileUtilities.cleanFilePath;
+import static ikube.toolkit.MatrixUtilities.objectVectorToDoubleVector;
 import static ikube.toolkit.MatrixUtilities.stringVectorDoubleVector;
 import static ikube.toolkit.ThreadUtilities.submit;
 import static ikube.toolkit.ThreadUtilities.waitForAnonymousFutures;
@@ -198,13 +198,13 @@ public class NeurophAnalyzer extends AAnalyzer<Analysis, Analysis, Analysis> {
 
     @SuppressWarnings("SuspiciousSystemArraycopy")
     private void populateDataSet(final DataSet dataSet, final File dataFile) throws FileNotFoundException {
-        Object[][] matrix = CsvUtilities.getCsvData(cleanFilePath(dataFile.getAbsolutePath()));
+        Object[][] matrix = getCsvData(cleanFilePath(dataFile.getAbsolutePath()));
 
         double[] data;
         double[] inputData = new double[dataSet.getInputSize()];
         double[] outputData = new double[dataSet.getOutputSize()];
         for (final Object[] row : matrix) {
-            double[] doubleVector = MatrixUtilities.objectVectorToDoubleVector(row);
+            double[] doubleVector = objectVectorToDoubleVector(row);
             System.arraycopy(doubleVector, 0, inputData, 0, inputData.length);
             System.arraycopy(doubleVector, inputData.length - 1, outputData, 0, outputData.length);
             if (outputData.length == 0) {
