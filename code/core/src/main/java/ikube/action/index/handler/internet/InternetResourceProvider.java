@@ -54,6 +54,7 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
     private Stack<Url> urls = new Stack<>();
     private IDataBase dataBase;
     private IndexableInternet indexableInternet;
+    private boolean terminated;
 
     public InternetResourceProvider(final IndexableInternet indexableInternet, final IDataBase dataBase) {
         initialize(indexableInternet);
@@ -110,6 +111,9 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
 
                 @Override
                 public boolean shouldCrawl(final CrawlerTask crawlerTask, final CrawlerTask parent) {
+                    if (isTerminated()) {
+                        return Boolean.FALSE;
+                    }
                     boolean excluded = pattern != null ? pattern.matcher(crawlerTask.getUrl()).matches() : Boolean.FALSE;
                     boolean shouldCrawl = super.shouldCrawl(crawlerTask, parent) && !excluded;
                     logger.debug("Should crawl : " + shouldCrawl);
@@ -193,6 +197,22 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isTerminated() {
+        return terminated;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setTerminated(final boolean terminated) {
+        this.terminated = terminated;
+    }
+
+    /**
      * This method just walks up the parent hierarchy to find the index context.
      *
      * @param indexable the indexable to find the context for
@@ -210,6 +230,9 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
      */
     @Override
     public Url getResource() {
+        if (isTerminated()) {
+            return null;
+        }
         int retry = RETRY;
         Url url = !urls.isEmpty() ? urls.pop() : null;
         while (url == null && retry-- >= 0) {

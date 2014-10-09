@@ -62,6 +62,9 @@ public class WekaClassifier extends WekaAnalyzer {
     @Override
     @SuppressWarnings("unchecked")
     public synchronized Analysis<Object, Object> analyze(final Context context, final Analysis analysis) throws Exception {
+        if (!context.isBuilt()) {
+            return analysis;
+        }
         String majorityClass = null;
         double[] majorityDistributionForInstance = null;
         StringBuilder algorithmsOutput = new StringBuilder();

@@ -23,6 +23,7 @@ public class LogFileResourceProvider implements IResourceProvider<File> {
     private static final Logger LOGGER = LoggerFactory.getLogger(LogFileResourceProvider.class);
 
     private List<File> resources;
+    private boolean terminated;
 
     LogFileResourceProvider(final IndexableFileSystemLog indexableFileSystemLog) {
         String directoryPath = indexableFileSystemLog.getPath();
@@ -31,9 +32,25 @@ public class LogFileResourceProvider implements IResourceProvider<File> {
         getLogFiles(directory, indexableFileSystemLog.getSuffix());
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isTerminated() {
+        return terminated;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setTerminated(final boolean terminated) {
+        this.terminated = terminated;
+    }
+
     @Override
     public File getResource() {
-        if (resources.isEmpty()) {
+        if (resources.isEmpty() || isTerminated()) {
             return null;
         }
         return resources.remove(0);

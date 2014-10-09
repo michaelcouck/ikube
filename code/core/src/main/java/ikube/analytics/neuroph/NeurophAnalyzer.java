@@ -276,6 +276,10 @@ public class NeurophAnalyzer extends AAnalyzer<Analysis, Analysis, Analysis> {
     @Override
     @SuppressWarnings("unchecked")
     public Analysis analyze(final Context context, final Analysis analysis) throws Exception {
+        if (!context.isBuilt()) {
+            return analysis;
+        }
+
         inputOutputStringToDoubleArray(analysis);
         // This is a naive approach, purely an aggregation,
         // perhaps this should be reviewed by Zoran?

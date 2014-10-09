@@ -24,8 +24,11 @@ import java.util.Stack;
 class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListener {
 
     private static Logger LOGGER = LoggerFactory.getLogger(TwitterResourceProvider.class);
-    
+
     private int clones;
+    private Stream stream;
+    private boolean terminated;
+
     private Stack<Tweet> tweets;
 
     /**
@@ -44,7 +47,24 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
         StreamingOperations streamingOperations = twitterTemplate.streamingOperations();
         StreamListener streamListener = this;
         List<StreamListener> listeners = Arrays.asList(streamListener);
-        streamingOperations.sample(listeners);
+        stream = streamingOperations.sample(listeners);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isTerminated() {
+        return terminated;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setTerminated(final boolean terminated) {
+        this.terminated = terminated;
+        stream.close();
     }
 
     /**
@@ -52,6 +72,10 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
      */
     @Override
     public synchronized Tweet getResource() {
+        if (isTerminated()) {
+            stream.close();
+            return null;
+        }
         while (tweets.isEmpty()) {
             try {
                 LOGGER.debug("Waiting for tweets : ");

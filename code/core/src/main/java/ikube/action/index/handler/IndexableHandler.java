@@ -85,6 +85,7 @@ public abstract class IndexableHandler<T extends Indexable> implements IIndexabl
                                 ", completed normally : " + isCompletedNormally() +
                                 ", completed abnormally : " + isCompletedAbnormally() +
                                 ", thread count : " + threadCount);
+                        resourceProvider.setTerminated(Boolean.TRUE);
                         break;
                     }
                     // Call the handle resource on the sub-class(i.e. {@link ExchangeHandler}, which is

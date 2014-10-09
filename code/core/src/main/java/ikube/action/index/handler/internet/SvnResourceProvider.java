@@ -30,6 +30,7 @@ class SvnResourceProvider implements IResourceProvider<SVNDirEntry> {
 
     private final Pattern pattern;
     private final Stack<SVNDirEntry> svnDirEntries;
+    private boolean terminated;
 
     SvnResourceProvider(final IndexableSvn indexableSvn) throws Exception {
         svnDirEntries = new Stack<>();
@@ -73,6 +74,9 @@ class SvnResourceProvider implements IResourceProvider<SVNDirEntry> {
      */
     @Override
     public synchronized SVNDirEntry getResource() {
+        if (isTerminated()) {
+            return null;
+        }
         try {
             SVNDirEntry svnDirEntry = null;
             if (!svnDirEntries.isEmpty()) {
@@ -95,7 +99,26 @@ class SvnResourceProvider implements IResourceProvider<SVNDirEntry> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isTerminated() {
+        return terminated;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setTerminated(final boolean terminated) {
+        this.terminated = terminated;
+    }
+
     protected void walkRepository(final SVNRepository repository, final String filePath) {
+        if (isTerminated()) {
+            return;
+        }
         SVNProperties fileProperties = SVNProperties.wrap(new HashMap<>());
         Collection entries;
         try {

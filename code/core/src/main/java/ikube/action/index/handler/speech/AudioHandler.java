@@ -34,13 +34,38 @@ public class AudioHandler extends IndexableHandler<IndexableAudio> {
         AudioFileDataSource dataSource = (AudioFileDataSource) cm.lookup("audioFileDataSource");
         // dataSource.setAudioFile(audioFile, null);
         IResourceProvider<Object> twitterResourceProvider = new IResourceProvider<Object>() {
+
+            private boolean terminated;
+
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public Object getResource() {
                 return null;
             }
 
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public void setResources(List<Object> resources) {
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public boolean isTerminated() {
+                return terminated;
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public void setTerminated(final boolean terminated) {
+                this.terminated = terminated;
             }
         };
         return getRecursiveAction(indexContext, indexable, twitterResourceProvider);

@@ -33,4 +33,19 @@ public interface IResourceProvider<T> {
      */
     void setResources(final List<T> resources);
 
+    /**
+     * Sets the terminated flag to indicate that the resource provider should not continue crawling the resources.
+     *
+     * @param terminated the flag for termination
+     */
+    void setTerminated(final boolean terminated);
+
+    /**
+     * Indicates whether the handler was terminated, i.e. the job was terminated. The resource provider can then take
+     * action to stop crawling the resources.
+     *
+     * @return whether the job has been terminated
+     */
+    boolean isTerminated();
+
 }

@@ -36,6 +36,7 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
     private IndexableTable indexableTable;
     private DataSource dataSource;
     private AtomicLong currentId;
+    private boolean terminated;
 
     TableResourceProvider(final IndexContext indexContext, final IndexableTable indexableTable) throws IOException {
         this.indexContext = indexContext;
@@ -52,6 +53,9 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
     public synchronized ResultSet getResource() {
         try {
             do {
+                if (isTerminated()) {
+                    return null;
+                }
                 setMinAndMaxId(indexableTable, dataSource);
                 logger.info("Current id : " + currentId.get() + ", max id : " + indexableTable.getMaximumId());
                 ResultSet resultSet = getResultSet(indexContext, indexableTable);
@@ -78,6 +82,22 @@ class TableResourceProvider implements IResourceProvider<ResultSet> {
     @Override
     public void setResources(final List<ResultSet> resources) {
         // There is no feedback of resources from the table
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setTerminated(final boolean terminated) {
+        this.terminated = terminated;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isTerminated() {
+        return terminated;
     }
 
     void setMinAndMaxId(final IndexableTable indexableTable, final DataSource dataSource) {

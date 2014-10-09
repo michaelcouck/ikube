@@ -23,6 +23,7 @@ public class FileSystemCsvResourceProvider implements IResourceProvider<File> {
     private static final Logger LOGGER = LoggerFactory.getLogger(FileSystemCsvResourceProvider.class);
 
     private List<File> resources;
+    private boolean terminated;
 
     FileSystemCsvResourceProvider(final String filePath) {
         LOGGER.info("Csv start path : " + filePath);
@@ -39,6 +40,9 @@ public class FileSystemCsvResourceProvider implements IResourceProvider<File> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public synchronized File getResource() {
         if (resources == null || resources.isEmpty()) {
@@ -47,6 +51,25 @@ public class FileSystemCsvResourceProvider implements IResourceProvider<File> {
         return resources.remove(0);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isTerminated() {
+        return terminated;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setTerminated(final boolean terminated) {
+        this.terminated = terminated;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setResources(final List<File> resources) {
         this.resources = resources;
