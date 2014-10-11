@@ -62,55 +62,60 @@ public class WekaClassifier extends WekaAnalyzer {
     @Override
     @SuppressWarnings("unchecked")
     public synchronized Analysis<Object, Object> analyze(final Context context, final Analysis analysis) throws Exception {
-        if (!context.isBuilt()) {
-            return analysis;
-        }
-        String majorityClass = null;
-        double[] majorityDistributionForInstance = null;
-        StringBuilder algorithmsOutput = new StringBuilder();
-        Filter[] filters = getFilters(context);
 
-        double highestProbability = -1.0;
-        for (int i = 0; i < context.getAlgorithms().length; i++) {
-            Classifier classifier = (Classifier) context.getAlgorithms()[i];
-            Instances instances = (Instances) context.getModels()[i];
-
-            // Create the instance from the data
-            Object input = analysis.getInput();
-            Instance instance = instance(input, instances);
-            instance.setMissing(0);
-
-            // Classify the instance
-            Instance filteredInstance = filter(instance, filters);
-            double classification = classifier.classifyInstance(filteredInstance);
-            String clazz = instances.classAttribute().value((int) classification);
-            double[] distributionForInstance = classifier.distributionForInstance(filteredInstance);
-            if (logger.isDebugEnabled()) {
-                logger.error("Class : " + clazz + ", dist : " + Arrays.toString(distributionForInstance));
+        try {
+            if (!context.isBuilt()) {
+                return analysis;
             }
+            String majorityClass = null;
+            double[] majorityDistributionForInstance = null;
+            StringBuilder algorithmsOutput = new StringBuilder();
+            Filter[] filters = getFilters(context);
 
-            // Note: The distribution for instances for the instance coming from the
-            // classifier must be the probability for each of the classes. In the SMO
-            // class this is seemingly not possible, as such this will probably still
-            // perform properly, but there may be edge cases where the probabilities do
-            // not correspond to the aggregate of the classifiers
-            for (final double probability : distributionForInstance) {
-                if (probability > highestProbability) {
-                    majorityClass = clazz;
-                    highestProbability = probability;
-                    majorityDistributionForInstance = distributionForInstance;
+            double highestProbability = -1.0;
+            for (int i = 0; i < context.getAlgorithms().length; i++) {
+                Classifier classifier = (Classifier) context.getAlgorithms()[i];
+                Instances instances = (Instances) context.getModels()[i];
+
+                // Create the instance from the data
+                Object input = analysis.getInput();
+                Instance instance = instance(input, instances);
+                instance.setMissing(0);
+
+                // Classify the instance
+                Instance filteredInstance = filter(instance, filters);
+                double classification = classifier.classifyInstance(filteredInstance);
+                String clazz = instances.classAttribute().value((int) classification);
+                double[] distributionForInstance = classifier.distributionForInstance(filteredInstance);
+                if (logger.isDebugEnabled()) {
+                    logger.error("Class : " + clazz + ", dist : " + Arrays.toString(distributionForInstance));
+                }
+
+                // Note: The distribution for instances for the instance coming from the
+                // classifier must be the probability for each of the classes. In the SMO
+                // class this is seemingly not possible, as such this will probably still
+                // perform properly, but there may be edge cases where the probabilities do
+                // not correspond to the aggregate of the classifiers
+                for (final double probability : distributionForInstance) {
+                    if (probability > highestProbability) {
+                        majorityClass = clazz;
+                        highestProbability = probability;
+                        majorityDistributionForInstance = distributionForInstance;
+                    }
+                }
+
+                if (analysis.isAddAlgorithmOutput()) {
+                    algorithmsOutput.append(classifier.toString());
+                    algorithmsOutput.append("\n\r\n\r");
                 }
             }
 
-            if (analysis.isAddAlgorithmOutput()) {
-                algorithmsOutput.append(classifier.toString());
-                algorithmsOutput.append("\n\r\n\r");
-            }
+            analysis.setClazz(majorityClass);
+            analysis.setOutput(majorityDistributionForInstance);
+            analysis.setAlgorithmOutput(algorithmsOutput.toString());
+        } catch (final Exception e) {
+            logger.error("", e);
         }
-
-        analysis.setClazz(majorityClass);
-        analysis.setOutput(majorityDistributionForInstance);
-        analysis.setAlgorithmOutput(algorithmsOutput.toString());
 
         return analysis;
     }

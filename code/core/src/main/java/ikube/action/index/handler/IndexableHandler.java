@@ -117,7 +117,7 @@ public abstract class IndexableHandler<T extends Indexable> implements IIndexabl
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void computeRecursive(final IndexContext indexContext, final T indexable, final IResourceProvider<?> resourceProvider) {
-        if (indexable.incrementThreads(-1) <= 0) {
+        if (indexable.incrementThreads(-1) < 0) {
             return;
         }
         // Split off some more threads to help do the work
@@ -125,8 +125,6 @@ public abstract class IndexableHandler<T extends Indexable> implements IIndexabl
         T rightIndexable = (T) SerializationUtilities.clone(indexable);
         leftIndexable.setStrategies(indexable.getStrategies());
         rightIndexable.setStrategies(indexable.getStrategies());
-        leftIndexable.incrementThreads(-1);
-        rightIndexable.incrementThreads(-1);
 
         ForkJoinTask<?> leftRecursiveAction = getRecursiveAction(indexContext, leftIndexable, resourceProvider);
         ForkJoinTask<?> rightRecursiveAction = getRecursiveAction(indexContext, rightIndexable, resourceProvider);

@@ -2,6 +2,7 @@ package ikube.action.index.handler.strategy;
 
 import ikube.AbstractTest;
 import ikube.search.spelling.SpellingChecker;
+import mockit.Deencapsulation;
 import org.apache.lucene.document.Document;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,10 +33,19 @@ public class SpellingCorrectionStrategyTest extends AbstractTest {
     public void aroundProcess() throws Exception {
         when(spellingChecker.checkWord(anyString())).thenReturn("Thee", "words", "to", "be", "corrected");
 
-        Document document = new Document();
         String resource = "Theee, wordss:;to |be (corrrected)";
-        spellingCorrectionStrategy.aroundProcess(indexContext, indexableTable, document, resource);
-        verify(indexableTable, times(1)).setContent("Thee, words:;to |be (corrected)");
+        spellingCorrectionStrategy.aroundProcess(indexContext, indexableTable, new Document(), resource);
+        verify(indexableTable, times(1)).setContent("Thee words to be corrected");
+    }
+
+    @Test
+    public void aroundProcessDistance() throws Exception {
+        Deencapsulation.setField(spellingCorrectionStrategy, "maxSpellingDistanceAllowed", 0.3);
+        when(spellingChecker.checkWord(anyString())).thenReturn("Thee", "words", "to", "be", "corrected");
+
+        String resource = "Theee, wordss:;to |aa (zzzzz)";
+        spellingCorrectionStrategy.aroundProcess(indexContext, indexableTable, new Document(), resource);
+        verify(indexableTable, times(1)).setContent("Thee words to");
     }
 
 }

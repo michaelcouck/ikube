@@ -7,6 +7,7 @@ import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.CsvUtilities;
 import ikube.toolkit.ThreadUtilities;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,10 +60,10 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
      * {@inheritDoc}
      */
     @Override
-    public boolean upload(final String filePath, final InputStream inputStream) {
-        File outputFile = getOrCreateFile(new File(IConstants.ANALYTICS_DIRECTORY, filePath));
+    public boolean upload(final String fileName, final InputStream inputStream) {
+        File outputFile = getOrCreateFile(new File(IConstants.ANALYTICS_DIRECTORY, fileName));
         setContents(outputFile, inputStream);
-        LOGGER.debug("Upload details : " + filePath + "," + inputStream);
+        LOGGER.debug("Upload details : " + fileName + "," + inputStream);
         return Boolean.TRUE;
     }
 
@@ -137,6 +138,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
             try {
                 return analyzer.call();
             } catch (final Exception e) {
+                LOGGER.error("Exception processing analysis : " + ToStringBuilder.reflectionToString(analysis), e);
                 throw new RuntimeException(e);
             }
         }

@@ -34,9 +34,13 @@
         property:name="bank-data"
         property:analyzer-ref="analyzer-em"
         property:algorithms="weka.clusterers.EM"
-        property:options="-R,6"
+        property:options-ref="context-em-options"
         property:fileNames="bank-data.arff"
         property:maxTrainings="10000"/>
+    <util:list id="context-em-options">
+        <value type="java.lang.String">-R</value>
+        <value type="java.lang.String">6</value>
+    </util:list>
     <!-- END CLUSTERER DEFINITION: -->
 
     <!-- START CLASSIFIER DEFINITION: -->

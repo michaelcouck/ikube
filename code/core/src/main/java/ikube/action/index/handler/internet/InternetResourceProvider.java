@@ -100,7 +100,7 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
                 @Override
                 protected void afterCrawl(final CrawlerTask crawlerTask, final Page page) {
                     super.afterCrawl(crawlerTask, page);
-                    logger.debug("After crawl : " + urls.size() + ", " + page);
+                    logger.error("After crawl : " + urls.size() + ", " + page);
                     if (page != null) {
                         Url url = getUrl(page.getUrl().toExternalForm(), indexableInternet);
                         url.setRawContent(page.getContent());
@@ -267,7 +267,9 @@ public class InternetResourceProvider implements IResourceProvider<Url> {
                 url = this.urls.pop();
             }
         }
-        logger.debug("Doing url : " + url + ", " + urls.size());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Doing url : " + url + ", " + urls.size());
+        }
         return url;
     }
 

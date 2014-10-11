@@ -9,6 +9,7 @@ import ikube.model.geospatial.GeoCountry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.File;
 import java.io.FileReader;
@@ -21,6 +22,10 @@ import static ikube.toolkit.FileUtilities.findFileRecursively;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 
 /**
+ * This class is a utility class for any data loading that needs to be done in initialization. Like for
+ * example inserting the countries and cities with their languages and co-ordinates into the database for the
+ * Twitter geospatial lookup.
+ *
  * @author Michael Couck
  * @version 01.00
  * @since 06-04-2014
@@ -29,7 +34,9 @@ public class DataManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataManager.class);
 
-    protected static String countryCityFile = "country-city-language-coordinate.properties";
+
+    @Value("${country-city-language-coordinate-file-name}")
+    protected String countryCityFile = "cnt-cty-lng-co.properties";
 
     @Autowired
     @SuppressWarnings("SpringJavaAutowiringInspection")

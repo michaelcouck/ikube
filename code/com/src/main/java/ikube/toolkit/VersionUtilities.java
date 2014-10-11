@@ -1,6 +1,7 @@
 package ikube.toolkit;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -69,6 +70,12 @@ public class VersionUtilities {
             TIMESTAMP = lines.get(1).replaceAll("#", "");
         } catch (final IOException e) {
             LOGGER.error("Exception reading the Maven properties for the build : " + pomPropertiesFile + ", " + e.getMessage());
+            if (StringUtils.isEmpty(VERSION)) {
+                VERSION = " > 5.1.0 ";
+            }
+            if (StringUtils.isEmpty(TIMESTAMP)) {
+                TIMESTAMP = " > 11/10/2014";
+            }
         } finally {
             closeQuietly(inputStream);
         }
