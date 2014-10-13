@@ -36,7 +36,7 @@
         property:indexDirectoryPathBackup="${index.directory.path.backup}"
         property:children-ref="ikube-indexables"/>
     <util:list id="ikube-indexables">
-        <ref local="ikube-internet"/>
+        <!--<ref local="ikube-internet"/>-->
         <ref local="ikube-svn-google-code"/>
     </util:list>
 

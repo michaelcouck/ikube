@@ -344,7 +344,6 @@
         <entry key="${resources-directory}/analytics" value="${tomcat-production-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/production" value="${tomcat-production-bin}/ikube"/>
         <entry key="${resources-directory}/indexes/mineco" value="${tomcat-production-bin}/ikube"/>
-        <entry key="${resources-directory}/indexes/artvens" value="${tomcat-production-bin}/ikube"/>
     </util:map>
     <bean
         id="start-action-production"

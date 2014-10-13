@@ -14,6 +14,7 @@ import ikube.toolkit.UriUtilities;
 import org.apache.lucene.index.IndexWriter;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,6 +30,7 @@ import static org.junit.Assert.assertTrue;
  * @version 01.00
  * @since 21-11-2010
  */
+@Ignore
 @SuppressWarnings("SpringJavaAutowiringInspection")
 public class IndexableInternetHandlerIntegration extends IntegrationTest {
 

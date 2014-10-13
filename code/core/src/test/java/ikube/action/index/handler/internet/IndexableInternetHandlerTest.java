@@ -11,6 +11,7 @@ import mockit.Mockit;
 import org.apache.lucene.document.Document;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -26,6 +27,7 @@ import static org.mockito.Mockito.*;
  * @version 01.00
  * @since 21-11-2010
  */
+@Ignore
 public class IndexableInternetHandlerTest extends AbstractTest {
 
     @MockClass(realClass = InternetResourceProvider.class)
