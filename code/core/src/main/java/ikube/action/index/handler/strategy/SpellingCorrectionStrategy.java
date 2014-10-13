@@ -83,4 +83,9 @@ public class SpellingCorrectionStrategy extends AStrategy {
         return stringBuilder.toString().trim();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
+    public void setMaxSpellingDistanceAllowed(final double maxSpellingDistanceAllowed) {
+        this.maxSpellingDistanceAllowed = maxSpellingDistanceAllowed;
+    }
+
 }

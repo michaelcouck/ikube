@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This class essentially wraps the {@link ikube.IConstants#AUTOCOMPLETE} index, which is
@@ -26,15 +25,6 @@ public class SpellingChecker {
     private static SpellingChecker INSTANCE;
 
     /**
-     * This is one of the fex mandatory indexes that the system requires. It consists of lists of words, in
-     * different languages, in files, in a designated folder int he configuration structure. These files are then
-     * used to create an index, against the searches are executed for spelling and autocompletion.
-     */
-    @Autowired
-    @Qualifier(value = IConstants.AUTOCOMPLETE)
-    private IndexContext indexContext;
-
-    /**
      * Static access to the system spelling checker.
      *
      * @return the spelling checker
@@ -48,6 +38,15 @@ public class SpellingChecker {
     }
 
     /**
+     * This is one of the fex mandatory indexes that the system requires. It consists of lists of words, in
+     * different languages, in files, in a designated folder int he configuration structure. These files are then
+     * used to create an index, against the searches are executed for spelling and autocompletion.
+     */
+    @Autowired
+    @Qualifier(value = IConstants.AUTOCOMPLETE)
+    private IndexContext indexContext;
+
+    /**
      * The constructor sets the system wide static spelling checker.
      */
     public SpellingChecker() {
@@ -58,44 +57,39 @@ public class SpellingChecker {
      * This method will check one word against all the words in the language index and return the best suggestion for correction.
      *
      * @param word the word to check against all the words in the language files
-     * @return the first corrected spelling suggestion, probably based on a Levinshtein distance
+     * @return the first corrected spelling suggestion, probably based on a Levinshtein distance, if there are no results
+     * from the search against the auto-complete index then null is returned, otherwise the best match for the word, note that
+     * this can be the word it's self
      */
     public String checkWord(final String word) {
         try {
-            if (indexContext.getMultiSearcher() != null) {
-                Search search = new SearchComplex(indexContext.getMultiSearcher()) {
-                    protected void addStatistics(
-                            final String[] searchStrings,
-                            final ArrayList<HashMap<String, String>> results,
-                            final long totalHits,
-                            final float highScore,
-                            final long duration,
-                            final Exception exception) {
-                        // Do nothing, we don't want a recursive loop in the search
-                    }
-                };
-                search.setFirstResult(0);
-                search.setMaxResults(1);
-                search.setSearchStrings(word);
-                search.setFragment(Boolean.FALSE);
-                search.setTypeFields(IConstants.STRING);
-                search.setSearchFields(IConstants.WORD);
-                search.setOccurrenceFields(IConstants.SHOULD);
-
-                ArrayList<HashMap<String, String>> results = search.execute();
-                if (results.size() > 0) {
-                    for (final Map<String, String> result : results) {
-                        String resultWord = result.get(IConstants.WORD);
-                        if (!word.equals(resultWord)) {
-                            return resultWord;
-                        }
-                    }
+            Search search = new SearchComplex(indexContext.getMultiSearcher()) {
+                protected void addStatistics(
+                        final String[] searchStrings,
+                        final ArrayList<HashMap<String, String>> results,
+                        final long totalHits,
+                        final float highScore,
+                        final long duration,
+                        final Exception exception) {
+                    // Do nothing, we don't want a recursive loop in the search
                 }
+            };
+            search.setFirstResult(0);
+            search.setMaxResults(1);
+            search.setSearchStrings(word);
+            search.setFragment(Boolean.FALSE);
+            search.setTypeFields(IConstants.STRING);
+            search.setSearchFields(IConstants.WORD);
+            search.setOccurrenceFields(IConstants.SHOULD);
+
+            ArrayList<HashMap<String, String>> results = search.execute();
+            if (results.size() == 0) {
+                return null;
             }
+            return results.get(0).get(IConstants.WORD);
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
-        return null;
     }
 
     /**

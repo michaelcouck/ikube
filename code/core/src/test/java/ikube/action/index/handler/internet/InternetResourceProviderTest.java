@@ -8,10 +8,12 @@ import ikube.toolkit.ThreadUtilities;
 import mockit.Deencapsulation;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
@@ -24,6 +26,7 @@ import static org.mockito.Mockito.*;
  * @version 01.00
  * @since 21-06-2013
  */
+@Ignore
 public class InternetResourceProviderTest extends AbstractTest {
 
     @Mock
@@ -32,7 +35,7 @@ public class InternetResourceProviderTest extends AbstractTest {
 
     @Before
     @SuppressWarnings("unchecked")
-    public void before() {
+    public void before() throws MalformedURLException {
         when(indexableInternet.getThreads()).thenReturn(10);
         when(indexableInternet.getName()).thenReturn("indexable-internet");
         when(indexableInternet.getUrl()).thenReturn("http://www.ikube.be/ikube/login.html");
@@ -52,7 +55,7 @@ public class InternetResourceProviderTest extends AbstractTest {
     }
 
     @Test
-    public void initialize() {
+    public void initialize() throws MalformedURLException {
         internetResourceProvider = new InternetResourceProvider(indexableInternet, dataBase);
         ThreadUtilities.sleep(15000);
         verify(indexContext, atLeastOnce()).getName();

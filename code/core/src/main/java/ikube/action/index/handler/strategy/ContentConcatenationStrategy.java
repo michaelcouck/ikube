@@ -30,7 +30,8 @@ public class ContentConcatenationStrategy extends AStrategy {
      */
     @Override
     public boolean aroundProcess(final IndexContext indexContext, final Indexable indexable, final Document document, final Object resource) throws Exception {
-        concatenateContent(indexable, resource, new StringBuilder());
+        String content = concatenateContent(indexable, resource, new StringBuilder());
+        indexable.setContent(content);
         return super.aroundProcess(indexContext, indexable, document, resource);
     }
 

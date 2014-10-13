@@ -72,7 +72,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
                     } catch (final Exception e) {
                         logger.error("Error...", e);
                         try {
-                            logger.info("Restarting the grid!!!");
+                            logger.warn("Restarting the grid!!!");
                             Hazelcast.shutdownAll();
                             hazelcastInstance = Hazelcast.newHazelcastInstance(config);
                         } catch (final Exception ex) {

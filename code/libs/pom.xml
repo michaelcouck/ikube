@@ -782,6 +782,42 @@
                             <!--<url>${artifactory}</url>-->
                         <!--</configuration>-->
                     <!--</execution>-->
+
+                    <!--<execution>-->
+                        <!--<id>arachnid</id>-->
+                        <!--<goals>-->
+                            <!--<goal>deploy-file</goal>-->
+                        <!--</goals>-->
+                        <!--<phase>test</phase>-->
+                        <!--<configuration>-->
+                            <!--<groupId>arachnid</groupId>-->
+                            <!--<artifactId>arachnid</artifactId>-->
+                            <!--<version>0.4.0</version>-->
+                            <!--<file>tools/miscellaneous/arachnid-0.4.0.jar</file>-->
+                            <!--<packaging>${packaging}</packaging>-->
+                            <!--<generatePom>${generate-pom}</generatePom>-->
+                            <!--<repositoryId>${repository-id}</repositoryId>-->
+                            <!--<url>${artifactory}</url>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                    <!--<execution>-->
+                        <!--<id>arachnid-sources</id>-->
+                        <!--<goals>-->
+                            <!--<goal>deploy-file</goal>-->
+                        <!--</goals>-->
+                        <!--<phase>test</phase>-->
+                        <!--<configuration>-->
+                            <!--<groupId>arachnid</groupId>-->
+                            <!--<artifactId>arachnid-sources</artifactId>-->
+                            <!--<version>0.4.0</version>-->
+                            <!--<file>tools/miscellaneous/arachnid-0.4.0-sources.jar</file>-->
+                            <!--<packaging>${packaging}</packaging>-->
+                            <!--<generatePom>${generate-pom}</generatePom>-->
+                            <!--<repositoryId>${repository-id}</repositoryId>-->
+                            <!--<url>${artifactory}</url>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+
                 </executions>
             </plugin>
         </plugins>

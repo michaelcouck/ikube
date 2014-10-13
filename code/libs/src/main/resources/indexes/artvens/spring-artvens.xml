@@ -1,55 +1,101 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <beans
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns="http://www.springframework.org/schema/beans"
-        xmlns:property="http://www.springframework.org/schema/p"
-        xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:property="http://www.springframework.org/schema/p"
+    xmlns:util="http://www.springframework.org/schema/util"
 
-        xsi:schemaLocation="http://www.springframework.org/schema/beans
+    xsi:schemaLocation="
+            http://www.springframework.org/schema/beans
             http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
-
-
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util.xsd">
 
-	<description>This is the index for Artvens, the web design company.</description>
-	
-	<bean
-		id="artvens"
-		class="ikube.model.IndexContext"
-		property:name="artvens"
-		property:maxAge="600"
-		property:compoundFile="true"
-		property:bufferedDocs="10"
-		property:bufferSize="32"
-		property:internetBatchSize="10"
-		property:mergeFactor="10"
-		property:maxFieldLength="10000"
-		property:maxReadLength="10000000"
-		property:throttle="0"
-		property:indexDirectoryPath="${index.directory.path}"
-		property:indexDirectoryPathBackup="${index.directory.path.backup}"
-		property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer"
-		property:children-ref="artvens-indexables" />
-	<util:list id="artvens-indexables">
-		<ref local="artvens-internet" />
-	</util:list>
-	
-	<bean
-		id="artvens-internet"
-		class="ikube.model.IndexableInternet"
-		property:name="artvens-internet"
-		property:url="http://www.artvens.com"
-		property:idFieldName="id"
-		property:titleFieldName="title"
-		property:contentFieldName="content"
-		property:analyzed="true"
-		property:stored="true"
-		property:vectored="true"
-		property:threads="5"
-		property:maxReadLength="10000000"
-		property:excludedPattern="${internet.excluded.pattern}"
-		property:internetBatchSize="${internet.batch.size}" />
-		
+    <description>This is the index for Artvens, the web design company.</description>
+
+    <bean
+        id="artvens"
+        class="ikube.model.IndexContext"
+        property:name="artvens"
+        property:maxAge="3"
+        property:compoundFile="${compound.file}"
+        property:bufferedDocs="${buffered.docs}"
+        property:bufferSize="${buffer.size}"
+        property:batchSize="${jdbc.batch.size}"
+        property:internetBatchSize="${internet.batch.size}"
+        property:mergeFactor="${merge.factor}"
+        property:maxFieldLength="${max.field.length}"
+        property:maxReadLength="${max.read.length}"
+        property:address="true"
+        property:throttle="0"
+        property:indexDirectoryPath="${index.directory.path}"
+        property:indexDirectoryPathBackup="${index.directory.path.backup}"
+        property:analyzer-ref="stemming-analyzer"
+        property:strategies-ref="artvens-strategies"
+        property:children-ref="artvens-indexables"/>
+    <util:list id="artvens-indexables">
+        <ref local="artvens-internet"/>
+    </util:list>
+
+    <bean id="stemming-analyzer" class="ikube.action.index.analyzer.StemmingAnalyzer"/>
+
+    <bean
+        id="artvens-internet"
+        class="ikube.model.IndexableInternet"
+        property:name="artvens-internet"
+        property:url="http://www.artvens.com"
+
+        property:address="false"
+        property:contentFieldName="content"
+        property:idFieldName="id"
+        property:internetBatchSize="100"
+        property:maxExceptions="100"
+        property:maxReadLength="1000000"
+        property:parent-ref="artvens"
+        property:threads="10"
+        property:titleFieldName="title"
+
+        property:stored="true"
+        property:analyzed="true"
+        property:vectored="true"
+        property:omitNorms="true"
+        property:tokenized="true"
+
+        property:strategies-ref="artvens-strategies"/>
+
+    <util:list id="artvens-strategies">
+        <ref bean="artvens-concatenation-strategy"/>
+        <ref bean="artvens-cleaning-strategy"/>
+        <ref bean="artvens-filter-strategy"/>
+        <ref bean="artvens-spelling-strategy"/>
+        <ref bean="artvens-to-lowercase-strategy"/>
+        <ref bean="artvens-language-detection-strategy"/>
+        <!--<ref bean="artvens-document-analysis-strategy"/>-->
+    </util:list>
+
+    <bean
+        name="artvens-concatenation-strategy"
+        class="ikube.action.index.handler.strategy.ContentConcatenationStrategy"/>
+    <bean
+        name="artvens-cleaning-strategy"
+        class="ikube.action.index.handler.strategy.LanguageCleaningStrategy"/>
+    <bean
+        name="artvens-filter-strategy"
+        class="ikube.action.index.handler.strategy.LanguageFilterStrategy"/>
+    <bean
+        name="artvens-spelling-strategy"
+        class="ikube.action.index.handler.strategy.SpellingCorrectionStrategy"/>
+    <bean
+        name="artvens-to-lowercase-strategy"
+        class="ikube.action.index.handler.strategy.ToLowerCaseStrategy"/>
+    <bean
+        name="artvens-language-detection-strategy"
+        class="ikube.action.index.handler.strategy.LanguageDetectionStrategy"
+        init-method="initialize"/>
+    <bean
+        name="artvens-document-analysis-strategy"
+        class="ikube.action.index.handler.strategy.DocumentAnalysisStrategy"
+        property:context-ref="english-sentiment"/>
+
 </beans>

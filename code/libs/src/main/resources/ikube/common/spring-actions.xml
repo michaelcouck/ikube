@@ -89,7 +89,8 @@
         property:ruleExpression="
 	    	IsThisIndexCreated &#38;&#38;
 	    	!IsIndexCorrupt &#38;&#38;
-	    	    (!IsMultiSearcherInitialised || IsNewIndexCreated)"
+	    	    (!IsMultiSearcherInitialised || IsNewIndexCreated)
+	    	        &#38;&#38; !AnyServersWorkingThisIndex"
         property:requiresClusterLock="false">
         <property name="rules">
             <util:list>
@@ -97,6 +98,7 @@
                 <ref local="ikube.action.rule.IsIndexCorrupt"/>
                 <ref local="ikube.action.rule.IsMultiSearcherInitialised"/>
                 <ref local="ikube.action.rule.IsNewIndexCreated"/>
+                <ref local="ikube.action.rule.AnyServersWorkingThisIndex"/>
             </util:list>
         </property>
     </bean>

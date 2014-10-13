@@ -1,5 +1,6 @@
 package ikube.toolkit;
 
+import com.googlecode.flaxcrawler.CrawlerController;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
@@ -16,7 +17,6 @@ import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.util.Version;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -68,75 +68,29 @@ public class AdHocTest extends AbstractTest {
     }
 
     @Test
-    public void twitter() throws Exception {
-        File latestIndexDirectory = new File("/tmp/indexes/twitter/1407656295749/192.168.1.8");
+    public void search() throws Exception {
+        File latestIndexDirectory = new File("/tmp/indexes/artvens/1413103866703/192.168.1.8-8000");
         Directory directory = FSDirectory.open(latestIndexDirectory);
-        IndexReader indexReader = DirectoryReader.open(directory);
-        IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+        try (IndexReader indexReader = DirectoryReader.open(directory)) {
+            IndexSearcher indexSearcher = new IndexSearcher(indexReader);
 
-        SearchComplex searchComplex = new SearchComplex(indexSearcher, new StemmingAnalyzer());
-        searchComplex.setFirstResult(0);
-        searchComplex.setMaxResults(10);
-        searchComplex.setFragment(Boolean.TRUE);
+            // new StemmingAnalyzer()
+            SearchComplex searchComplex = new SearchComplex(indexSearcher);
+            searchComplex.setFirstResult(0);
+            searchComplex.setMaxResults(10);
+            searchComplex.setFragment(Boolean.TRUE);
 
-        String[] ranges = {"1407567157793-1407570757793",
-                "1407570757793-1407574357793",
-                "1407574357793-1407577957793",
-                "1407577957793-1407581557793",
-                "1407581557793-1407585157793",
-                "1407585157793-1407588757793",
-                "1407588757793-1407592357793",
-                "1407592357793-1407595957793",
-                "1407595957793-1407599557793",
-                "1407599557793-1407603157793",
-                "1407603157793-1407606757793",
-                "1407606757793-1407610357793",
-                "1407610357793-1407613957793",
-                "1407613957793-1407617557793",
-                "1407617557793-1407621157793",
-                "1407621157793-1407624757793",
-                "1407624757793-1407628357793",
-                "1407628357793-1407631957793",
-                "1407631957793-1407635557793",
-                "1407635557793-1407639157793",
-                "1407639157793-1407642757793",
-                "1407642757793-1407646357793",
-                "1407646357793-1407649957793",
-                "1407649957793-1407653557793"};
-
-        for (final String range : ranges) {
-            searchComplex.setSearchStrings(range, "positi*");
-            searchComplex.setTypeFields(RANGE, STRING);
-            searchComplex.setOccurrenceFields(MUST, MUST);
-            searchComplex.setSearchFields("created-at", CLASSIFICATION);
+            searchComplex.setSearchStrings("artvens");
+            searchComplex.setTypeFields(STRING);
+            searchComplex.setOccurrenceFields(MUST);
+            searchComplex.setSearchFields(CONTENT);
 
             ArrayList<HashMap<String, String>> results = searchComplex.execute();
-            if (results.size() > 1) {
-                // logger.error("Results : " + results.get(results.size() - 1).get(TOTAL) + ", range : " + range);
+
+            for (final HashMap<String, String> hashMap : results) {
+                logger.error("Results : " + hashMap);
             }
         }
-
-        long startTime = System.currentTimeMillis() - (1000 * 60 * 60 * 6);
-        do {
-            long oneHourMillis = 1000 * 60;
-            startTime += oneHourMillis;
-            long endTime = startTime + oneHourMillis;
-            String range = startTime + "-" + endTime;
-
-            searchComplex.setSearchStrings("", "", range, "positive");
-            searchComplex.setTypeFields(STRING, STRING, RANGE, STRING);
-            searchComplex.setOccurrenceFields(MUST, MUST, MUST, MUST);
-            searchComplex.setSearchFields("contents", "language-original", "created-at", CLASSIFICATION);
-
-            ArrayList<HashMap<String, String>> results = searchComplex.execute();
-            if (results.size() > 1) {
-                logger.error("Results : " + results.get(results.size() - 1).get(TOTAL));
-            }
-        } while (startTime < System.currentTimeMillis());
-
-        // printIndex(indexReader, 10);
-
-        indexSearcher.getIndexReader().close();
     }
 
     private void addFields(final IndexWriter indexWriter) throws IOException {
@@ -199,6 +153,12 @@ public class AdHocTest extends AbstractTest {
         } catch (final Exception e) {
             logger.error("", e);
         }
+    }
+
+    @Test
+    public void staticFinalField() {
+        CrawlerController crawlerController = new CrawlerController(null);
+        ObjectToolkit.setField(crawlerController, "STATS_DB_DIR", "whatever");
     }
 
     private void reThrowException() throws Exception {

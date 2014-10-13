@@ -188,9 +188,9 @@ public final class IndexManager {
                     closeIndexWriter(indexWriter);
                     LOGGER.info("Index optimized and closed : " + indexContext.getIndexName() + ", " + indexWriter);
                 }
-                indexContext.setIndexWriters();
             }
         } finally {
+            indexContext.setIndexWriters();
             IndexManager.class.notifyAll();
         }
     }

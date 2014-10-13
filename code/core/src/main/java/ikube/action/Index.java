@@ -123,7 +123,6 @@ public class Index extends Action<IndexContext, Boolean> {
             indexContext.setClosing(Boolean.TRUE);
             IndexManager.closeIndexWriters(indexContext);
         } finally {
-            indexContext.setIndexWriters();
             indexContext.setClosing(Boolean.FALSE);
         }
         return Boolean.TRUE;

@@ -163,6 +163,7 @@ public final class ObjectToolkit {
                         return;
                     }
                     // Don't set a field that is 0, not useful
+                    //noinspection ConstantConditions
                     if (Number.class.isAssignableFrom(fieldValue.getClass()) && ((Number) fieldValue).doubleValue() == 0) {
                         // LOGGER.info("Not setting field : " + fieldValue + ", " + field + ", " + target);
                         return;
@@ -320,6 +321,15 @@ public final class ObjectToolkit {
         Field field = findField(target.getClass(), fieldName);
         boolean accessible = field.isAccessible();
         field.setAccessible(Boolean.TRUE);
+        if (Modifier.isFinal(field.getModifiers())) {
+            try {
+                Field modifiersField = Field.class.getDeclaredField("modifiers");
+                modifiersField.setAccessible(Boolean.TRUE);
+                modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+            } catch (final IllegalAccessException | NoSuchFieldException e) {
+                LOGGER.error("Can't set the field non final : " + field, e);
+            }
+        }
         ReflectionUtils.setField(field, target, fieldValue);
         field.setAccessible(accessible);
     }
