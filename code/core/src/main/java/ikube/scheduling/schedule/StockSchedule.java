@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import static ikube.toolkit.FileUtilities.*;
@@ -27,6 +28,7 @@ import static ikube.toolkit.XmlUtilities.*;
 public class StockSchedule extends Schedule {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StockSchedule.class);
+
     @Value("${stock-api-uri}")
     // ?s=ACLZ&d=8&e=26&f=2014&g=d&a=2&b=27&c=2014&ignore=.csv
     private String stockApiUri = "http://ichart.yahoo.com/table.csv";
@@ -47,13 +49,28 @@ public class StockSchedule extends Schedule {
     @Value("${stock-prices-to}")
     private String stockPricesTo = "2014";
 
+    String[] parameterNames = {"s", "d", "e", "f", "g", "a", "b", "c", "ignore"};
+
     /**
      * {@inheritDoc}
      */
     @Override
     public void run() {
-        String[] parameterNames = {"s", "d", "e", "f", "g", "a", "b", "c", "ignore"};
+        String[] parameterValues = getParameterValues(parameterNames);
+        String[] companySymbols = getCompanySymbols();
+        for (final String companySymbol : companySymbols) {
+            try {
+                getHistoricalStockData(parameterNames, parameterValues, companySymbol);
+                sleep(1000);
+            } catch (final Exception e) {
+                LOGGER.error("Exception accessing the stock : " + companySymbol, e);
+            }
+        }
+    }
+
+    protected String[] getParameterValues(final String[] parameterNames) {
         String[] parameterValues = new String[parameterNames.length];
+
         parameterValues[1] = "8";
         parameterValues[2] = "26";
         parameterValues[3] = stockPricesTo;
@@ -63,28 +80,34 @@ public class StockSchedule extends Schedule {
         parameterValues[7] = stockPricesFrom;
         parameterValues[8] = ".csv";
 
+        return parameterValues;
+    }
+
+    protected String[] getCompanySymbols() {
+        List<String> companySymbols = new ArrayList<>();
+
         File file = findFileRecursively(new File(IConstants.ANALYTICS_DIRECTORY), stockSectorFileName);
-        try (InputStream inputStream = new FileInputStream(file)) {
+        List<Element> companyElements;
+        try (final InputStream inputStream = new FileInputStream(file)) {
             Document document = getDocument(inputStream, IConstants.ENCODING);
             Element sectorElement = getElement(document.getRootElement(), sectorTagName, sectorTagAttributeName, sectorTagAttributeValue);
-            List<Element> companyElements = getElements(sectorElement, companyTagName);
+            companyElements = getElements(sectorElement, companyTagName);
             for (final Element companyElement : companyElements) {
-                String companySymbol = null;
-                try {
-                    companySymbol = getAttributeValue(companyElement, companyTagAttributeSymbolName);
-                    parameterValues[0] = companySymbol;
-                    String result = doGet(stockApiUri, parameterNames, parameterValues, String.class);
-                    LOGGER.error("Result : " + result);
-                    File outputFile = getOrCreateFile(new File(IConstants.ANALYTICS_DIRECTORY, companySymbol + ".csv"));
-                    setContents(outputFile, result.getBytes());
-                    sleep(1000);
-                } catch (Exception e) {
-                    LOGGER.error("Exception accessing the stock : " + companySymbol, e);
-                }
+                String companySymbol = getAttributeValue(companyElement, companyTagAttributeSymbolName);
+                companySymbols.add(companySymbol);
             }
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }
 
+        return companySymbols.toArray(new String[companySymbols.size()]);
+    }
+
+    protected void getHistoricalStockData(final String[] parameterNames, final String[] parameterValues, final String companySymbol) {
+        parameterValues[0] = companySymbol;
+        String result = doGet(stockApiUri, parameterNames, parameterValues, String.class);
+        LOGGER.warn("Result : " + result);
+        File outputFile = getOrCreateFile(new File(IConstants.ANALYTICS_DIRECTORY, companySymbol + ".csv"));
+        setContents(outputFile, result.getBytes());
     }
 }

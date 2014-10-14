@@ -1,16 +1,13 @@
 package ikube.scheduling.schedule;
 
 import ikube.AbstractTest;
-import ikube.IConstants;
-import org.apache.commons.lang.StringUtils;
+import ikube.toolkit.FileUtilities;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
 
 import java.io.File;
 
-import static ikube.toolkit.FileUtilities.findFileRecursively;
-import static ikube.toolkit.FileUtilities.getContent;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -23,16 +20,23 @@ public class StockScheduleTest extends AbstractTest {
 
     @Spy
     @InjectMocks
-    private StockSchedule actionSchedule;
+    private StockSchedule stockSchedule;
 
     @Test
-    @SuppressWarnings("rawtypes")
-    public void run() {
-        actionSchedule.run();
-        File file = findFileRecursively(new File(IConstants.ANALYTICS_DIRECTORY), "AHII.csv");
-        assertNotNull(file);
-        String content = getContent(file);
-        assertTrue(StringUtils.isNotEmpty(content));
+    public void getCompanySymbols() {
+        String[] companySymbols = stockSchedule.getCompanySymbols();
+        assertNotNull(companySymbols);
+        assertTrue(companySymbols.length > 10);
+    }
+
+    @Test
+    public void getHistoricalStockData() {
+        String[] parameterNames = stockSchedule.parameterNames;
+        String[] parameterValues = stockSchedule.getParameterValues(parameterNames);
+        stockSchedule.getHistoricalStockData(parameterNames, parameterValues, "AHII");
+        File ahiiStockFile = FileUtilities.findFileRecursively(new File("."), "AHII.csv");
+        assertNotNull(ahiiStockFile);
+        assertTrue(ahiiStockFile.exists());
     }
 
 }

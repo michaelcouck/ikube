@@ -34,6 +34,25 @@ import java.io.IOException;
  * These methods can of course be executed in a browser using the Json generated from the context
  * and analysis object, and as such can be used from any platform and language that can access the
  * internet.
+ * <p/>
+ * Urls at the time for the data were:
+ * <pre>
+ *      http://download.finance.yahoo.com/d/quotes.csv?s=@%5EIXIC&f=sl1d1t1c1ohgv&e=.csv&h=0
+ *      finance.yahoo.com/d/quotes.csv?s=DKIENGKEUO.CO&f=snl1d1t1cc1p2pohgvmlt7a2ba
+ *
+ *      NOTE: This works:
+ *      http://ichart.finance.yahoo.com/table.csv?s=GOOG
+ *      http://ichart.yahoo.com/table.csv?s=BAS.DE&a=0&b=1&c=2005&d=0&e=31&f=2015&g=w&ignore=.csv
+ *      http://ichart.yahoo.com/table.csv?s=BAS.DE&a=0&b=1&c=2000&d=0&e=31&f=2010&g=w
+ *
+ *      http://ichart.yahoo.com/table.csv?s=GOOG&d=8&e=26&f=2009&g=d&a=2&b=27&c=2014&ignore=.csv
+ *
+ *      http://real-chart.finance.yahoo.com/table.csv?s=GOOG&d=8&e=26&f=2014&g=d&a=2&b=27&c=2014&ignore=.csv
+ *
+ *      This is to get all the stocks in an xml file:
+ *      http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.industry%20where%20id%20in%20(
+ *          select%20industry.id%20from%20yahoo.finance.sectors)&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys
+ * </pre>
  *
  * @author Michael Couck
  * @version 01.00
