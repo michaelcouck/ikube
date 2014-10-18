@@ -25,6 +25,9 @@
           <file>file://$MODULE_DIR$/ikube/indexes/bosal/spring-bosal.xml</file>
           <file>file://$MODULE_DIR$/ikube/spring.xml</file>
           <file>file://$MODULE_DIR$/ikube/common/spring-actions.xml</file>
+          <file>file://$MODULE_DIR$/code/libs/src/main/resources/indexes/production/spring-desktop.xml</file>
+          <file>file://$MODULE_DIR$/code/libs/src/main/resources/indexes/bosal/spring-bosal.xml</file>
+          <file>file://$MODULE_DIR$/code/libs/src/main/resources/indexes/bosal/spring-bosal.xml</file>
         </fileset>
       </configuration>
     </facet>

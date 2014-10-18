@@ -1,11 +1,11 @@
-  _   _  __   _    _   ___    ____
- | | | |/  / | |  | | |   \  | ___|
- | | |    /  | |  | | | |  / | |__
- | | |   |   | |  | | |   /  |  __|
- | | |    \  | |  | | |   \  | |
- | | | |\  \ | |__| | | |  / | |__
- |_| |_| \__\|______| |___/  |____|
 
- Platform: Distributed grid based analytics and search
- Version: %s - Release date: %s - Author: Michael Couck
+      _  _  __  _    _  ___   ____
+     | || |/  /| |  | ||   \ | ___|
+     | ||    / | |  | || |  /| |__
+     | ||   |  | |  | ||   / |  __|
+     | ||    \ | |  | ||   \ | |
+     | || |\  \| |__| || |  /| |__
+     |_||_| \__|______||___/ |____|
 
+     Platform: Distributed grid based analytics and search
+     Version: %s - Release date: %s - Author: Michael Couck

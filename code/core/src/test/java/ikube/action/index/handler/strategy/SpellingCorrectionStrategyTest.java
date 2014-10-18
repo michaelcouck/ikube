@@ -31,21 +31,30 @@ public class SpellingCorrectionStrategyTest extends AbstractTest {
 
     @Test
     public void aroundProcess() throws Exception {
-        when(spellingChecker.checkWord(anyString())).thenReturn("Thee", "words", "to", "be", "corrected");
+        when(spellingChecker.checkWord("Theee")).thenReturn("Thee");
+        when(spellingChecker.checkWord("wordss")).thenReturn("words");
+        when(spellingChecker.checkWord("to")).thenReturn("to");
+        when(spellingChecker.checkWord("be")).thenReturn("be");
+        when(spellingChecker.checkWord("corrrected")).thenReturn("corrected");
 
         String resource = "Theee, wordss:;to |be (corrrected)";
         spellingCorrectionStrategy.aroundProcess(indexContext, indexableTable, new Document(), resource);
-        verify(indexableTable, times(1)).setContent("Thee words to be corrected");
+        verify(indexableTable, times(1)).setContent("Thee, words:;to |be (corrected)");
     }
 
     @Test
     public void aroundProcessDistance() throws Exception {
         Deencapsulation.setField(spellingCorrectionStrategy, "maxSpellingDistanceAllowed", 0.3);
-        when(spellingChecker.checkWord(anyString())).thenReturn("Thee", "words", "to", "be", "corrected");
+
+        when(spellingChecker.checkWord("Theee")).thenReturn("Thee");
+        when(spellingChecker.checkWord("wordss")).thenReturn("words");
+        when(spellingChecker.checkWord("to")).thenReturn("to");
+        when(spellingChecker.checkWord("aa")).thenReturn("aaaaaaaaa");
+        when(spellingChecker.checkWord("zzzzz")).thenReturn("zzzzzzzzzzzzzzzz");
 
         String resource = "Theee, wordss:;to |aa (zzzzz)";
         spellingCorrectionStrategy.aroundProcess(indexContext, indexableTable, new Document(), resource);
-        verify(indexableTable, times(1)).setContent("Thee words to");
+        verify(indexableTable, times(1)).setContent("Thee, words:;to |aa (zzzzz)");
     }
 
 }

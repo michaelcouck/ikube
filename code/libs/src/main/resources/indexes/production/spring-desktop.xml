@@ -67,10 +67,20 @@
         property:strategies-ref="desktop-strategies"/>
 
     <util:list id="desktop-strategies">
+        <bean class="ikube.action.index.handler.strategy.ContentConcatenationStrategy"/>
+
         <ref bean="ikube.action.index.handler.strategy.LanguageFilterStrategy"/>
         <ref bean="ikube.action.index.handler.strategy.LanguageCleaningStrategy"/>
+
+        <bean class="ikube.action.index.handler.strategy.ToLowerCaseStrategy"/>
+        <!--<bean class="ikube.action.index.handler.strategy.SpellingCorrectionStrategy"/>-->
+
         <ref bean="ikube.action.index.handler.strategy.ContentTypeStrategy"/>
         <ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy"/>
+
+        <bean
+            class="ikube.action.index.handler.strategy.DocumentAnalysisStrategy"
+            property:context-ref="english-sentiment"/>
     </util:list>
 
 </beans>

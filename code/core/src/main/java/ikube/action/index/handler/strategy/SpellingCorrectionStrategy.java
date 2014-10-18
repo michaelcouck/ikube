@@ -1,6 +1,5 @@
 package ikube.action.index.handler.strategy;
 
-import ikube.IConstants;
 import ikube.action.index.handler.IStrategy;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
@@ -10,6 +9,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+
+import java.util.StringTokenizer;
 
 /**
  * This strategy will correct every word in the input content, and set the content back in the
@@ -52,31 +53,35 @@ public class SpellingCorrectionStrategy extends AStrategy {
 
     String cleanContent(final String content) {
         StringBuilder stringBuilder = new StringBuilder();
-        String[] words = StringUtils.splitPreserveAllTokens(content, ".,;: \n\r\t(){}[]\"@&|#!/*+_$");
-        for (final String word : words) {
-            String cleanedWord = StringUtilities.stripToAlphaNumeric(word);
-            if (StringUtils.isEmpty(cleanedWord) || !StringUtils.isAlpha(word)) {
+        StringTokenizer stringTokenizer = new StringTokenizer(content, ".,;: \n\r\t(){}[]\"@&|#!/*+_$", true);
+        while (stringTokenizer.hasMoreTokens()) {
+            String word = stringTokenizer.nextToken();
+            String strippedWord = StringUtilities.stripToAlphaNumeric(word);
+            if (StringUtils.isEmpty(strippedWord)) {
+                stringBuilder.append(word);
                 continue;
             }
-            String correctedWord = spellingChecker.checkWord(cleanedWord);
+            String correctedWord = spellingChecker.checkWord(strippedWord);
             if (StringUtils.isEmpty(correctedWord)) {
                 // No match at all, i.e. not even close to any word, something like 'zzzzzeeeee'?
+                stringBuilder.append(word);
                 continue;
             }
-            if (correctedWord.equals(cleanedWord)) {
+            if (correctedWord.equals(strippedWord)) {
                 stringBuilder.append(correctedWord);
-                stringBuilder.append(IConstants.SPACE);
             } else {
-                double cleanedLength = cleanedWord.length();
+                double cleanedLength = strippedWord.length();
                 double correctedLength = correctedWord.length();
-                double distance = StringUtils.getLevenshteinDistance(cleanedWord, correctedWord);
+                double distance = StringUtils.getLevenshteinDistance(strippedWord, correctedWord);
                 // Normalize the maximum distance as a percentage of the average length of the two
                 // words, and the distance between them as a value of the number of changes required
                 // to convert one to the other
                 double maxDistance = (distance / (cleanedLength + correctedLength / 2));
                 if (maxDistance <= maxSpellingDistanceAllowed) {
                     stringBuilder.append(correctedWord);
-                    stringBuilder.append(IConstants.SPACE);
+                } else {
+                    // If we can't find a correction then just put the word back
+                    stringBuilder.append(word);
                 }
             }
         }

@@ -142,6 +142,16 @@ public final class StringUtilities {
         return stripToAlphaNumeric(content, EXCLUSIONS);
     }
 
+    /**
+     * Strips all the non-alphanumeric characters from the string provided. The exclusions are characters
+     * that may be left in the string, for example commas and full stops. The exclusions must be sorted as
+     * a binary search is performed on them.
+     *
+     * @param content    the content to remove all non-alphanumeric characters from
+     * @param exclusions the characters that may be non-alphanumeric that can be ignored,
+     *                   the exclusions must be sorted lexically
+     * @return the string sans the non-alphanumeric characters
+     */
     public static String stripToAlphaNumeric(final String content, final char... exclusions) {
         if (!StringUtils.isEmpty(content)) {
             StringBuilder builder = new StringBuilder();

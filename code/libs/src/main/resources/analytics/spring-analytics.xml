@@ -38,8 +38,8 @@
         property:fileNames="bank-data.arff"
         property:maxTrainings="10000"/>
     <util:list id="context-em-options">
-        <value type="java.lang.String">-R</value>
-        <value type="java.lang.String">6</value>
+        <value type="java.lang.String">-V</value>
+        <value type="java.lang.String">3</value>
     </util:list>
     <!-- END CLUSTERER DEFINITION: -->
 

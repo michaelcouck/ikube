@@ -8,17 +8,17 @@ import org.junit.Test;
 import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.filters.unsupervised.attribute.StringToWordVector;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Michael Couck
@@ -94,6 +94,21 @@ public class WekaToolkitTest extends AbstractTest {
             Instance instance = instances.instance(i);
             assertEquals(3, instance.numAttributes());
             assertEquals(3, instance.numValues());
+        }
+    }
+
+    @Test
+    public void stringToWordVector() throws Exception {
+        File file = FileUtilities.findFileRecursively(new File("."), "sentiment-smo.arff");
+        try (InputStream inputStream = new FileInputStream(file)) {
+            Instances instances = WekaToolkit.arffToInstances(inputStream);
+            StringToWordVector stringToWordVector = new StringToWordVector(Integer.MAX_VALUE);
+            instances = WekaToolkit.filter(instances, stringToWordVector);
+
+            Instance instance = WekaToolkit.getInstance(instances, new Object[]{"to-be-predicted", "Have no idea what to write here"});
+
+            instance = WekaToolkit.filter(instance, stringToWordVector);
+            // logger.error("Instance : " + instance);
         }
     }
 

@@ -230,15 +230,14 @@ public final class WekaToolkit {
      * @throws Exception
      */
     public static Instance filter(final Instance instance, final Filter... filters) throws Exception {
-        if (filters == null || filters.length == 0) {
-            return instance;
-        }
         Instance filteredInstance = instance;
-        for (final Filter filter : filters) {
-            // Filter from string to inverse vector if necessary
-            if (filter != null) {
-                filter.input(filteredInstance);
-                filteredInstance = filter.output();
+        if (filters != null) {
+            for (final Filter filter : filters) {
+                // Filter from string to inverse vector if necessary
+                if (filter != null) {
+                    filter.input(instance);
+                    filteredInstance = filter.output();
+                }
             }
         }
         return filteredInstance;

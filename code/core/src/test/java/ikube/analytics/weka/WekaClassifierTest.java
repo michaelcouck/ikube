@@ -4,7 +4,9 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Analysis;
 import ikube.model.Context;
+import ikube.toolkit.FileUtilities;
 import ikube.toolkit.ThreadUtilities;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -15,6 +17,7 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Enumeration;
 
@@ -121,6 +124,17 @@ public class WekaClassifierTest extends AbstractTest {
         System.gc();
         long after = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / IConstants.MILLION;
         logger.warn("Before : " + before + ", after : " + after + ", difference : " + (after - before));
+
+        File file = FileUtilities.findFileRecursively(new File("."), "package.json");
+        String contents = FileUtilities.getContents(file, Integer.MAX_VALUE).toString();
+
+        analysis = new Analysis<>();
+        analysis.setClazz("?");
+        analysis.setInput(new String[]{"positive", contents});
+
+        analysis = wekaClassifier.analyze(context, analysis);
+        logger.error("Analysis : " + ToStringBuilder.reflectionToString(analysis));
+        assertNotNull(analysis);
     }
 
     @Test

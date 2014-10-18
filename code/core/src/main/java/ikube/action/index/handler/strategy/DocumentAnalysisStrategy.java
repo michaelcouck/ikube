@@ -55,12 +55,21 @@ public class DocumentAnalysisStrategy extends AStrategy {
     @Autowired
     private IAnalyticsService analyticsService;
 
+    private SentenceDetectorME sentenceDetector;
+
     public DocumentAnalysisStrategy() {
         this(null);
     }
 
     public DocumentAnalysisStrategy(final IStrategy nextStrategy) {
         super(nextStrategy);
+        File modelFile = FileUtilities.findFileRecursively(new File(IConstants.IKUBE_DIRECTORY), "en-sent.bin");
+        try {
+            SentenceModel sentenceModel = new SentenceModel(modelFile);
+            sentenceDetector = new SentenceDetectorME(sentenceModel);
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -71,12 +80,8 @@ public class DocumentAnalysisStrategy extends AStrategy {
         if (indexable.getContent() != null) {
             String content = indexable.getContent().toString();
             if (!StringUtils.isEmpty(StringUtils.stripToEmpty(content))) {
-                String language = document.get(IConstants.LANGUAGE);
-                if (language == null) {
-                    language = Locale.ENGLISH.getLanguage();
-                }
                 // Split the document text into sentences
-                List<String> sentences = breakDocumentIntoSentences(content, language);
+                List<String> sentences = breakDocumentIntoSentences(content);
                 String highestVotedClassification = aggregateClassificationForSentences(sentences);
                 // Add the highest voted result to the index
                 if (!StringUtils.isEmpty(highestVotedClassification)) {
@@ -105,7 +110,7 @@ public class DocumentAnalysisStrategy extends AStrategy {
             String sentence = sentences.get(i);
             sentence = StringUtilities.stripToAlphaNumeric(sentence);
             Analysis<Object, Object> analysis = new Analysis<>();
-            analysis.setInput(sentence);
+            analysis.setInput(new String[]{sentence});
             analysis.setContext(context.getName());
             analysis = analyticsService.analyze(analysis);
 
@@ -155,6 +160,8 @@ public class DocumentAnalysisStrategy extends AStrategy {
     }
 
     /**
+     * NOTE: This method only works with correct spaces and capitals, i.e. lowercase does not work!
+     * <p/>
      * This method will break the document into sentences. This is a very naive approach, the
      * {@link java.text.BreakIterator} will just tokenize the string, and look for sentence boundaries
      * using the punctuation in the text, apparently. But fine for a first implementation.
@@ -187,12 +194,11 @@ public class DocumentAnalysisStrategy extends AStrategy {
      * This method uses OpenNlp as the sentence boundary detector. Seemingly, this is also
      * just a tokenizer, looking for punctuation that indicates the end of sentences. Also not
      * very cleaver, what a disappointment.
+     * <p/>
+     * But at least it works.
      */
     @SuppressWarnings("UnusedDeclaration")
     List<String> breakDocumentIntoSentences(final String text) throws IOException {
-        File modelFile = FileUtilities.findFileRecursively(new File("."), "en-sent.bin");
-        SentenceModel sentenceModel = new SentenceModel(modelFile);
-        SentenceDetectorME sentenceDetector = new SentenceDetectorME(sentenceModel);
         String[] sentences = sentenceDetector.sentDetect(text);
         return Arrays.asList(sentences);
     }
