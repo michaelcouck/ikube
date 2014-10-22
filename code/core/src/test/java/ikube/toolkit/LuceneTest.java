@@ -3,7 +3,11 @@ package ikube.toolkit;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
+import ikube.action.index.analyzer.EdgeNgramAnalyzer;
+import ikube.action.index.analyzer.NgramAnalyzer;
 import ikube.action.index.analyzer.StemmingAnalyzer;
+import ikube.model.Indexable;
+import ikube.model.IndexableFileSystem;
 import ikube.search.Search;
 import ikube.search.SearchComplex;
 import org.apache.lucene.analysis.Analyzer;
@@ -21,7 +25,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,7 +42,6 @@ import static org.junit.Assert.assertTrue;
  * @version 01.00
  * @since 06-03-2010
  */
-@SuppressWarnings("deprecation")
 public class LuceneTest extends AbstractTest {
 
     class Writer implements Runnable {
@@ -291,5 +293,43 @@ public class LuceneTest extends AbstractTest {
         ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
     }
 
+    @Test
+    public void normalizeForLength() throws Exception {
+        Analyzer analyzer = new StemmingAnalyzer(); // EdgeNgramAnalyzer NgramAnalyzer StemmingAnalyzer;
+        IndexWriter indexWriter = getRamIndexWriter(analyzer);
+
+        Indexable indexable = new IndexableFileSystem();
+
+        indexable.setStored(Boolean.TRUE);
+        indexable.setAnalyzed(Boolean.TRUE);
+        indexable.setVectored(Boolean.FALSE);
+        indexable.setTokenized(Boolean.FALSE);
+
+        indexable.setOmitNorms(Boolean.TRUE);
+
+        String[] names = {"michaelangelo", "michaelina", "michaeline", "michaelmas", "michaela", "michaele", "michael"};
+        for (final String name : names) {
+            Document document = new Document();
+            IndexManager.addStringField(IConstants.CONTENTS, name, indexable, document);
+            indexWriter.addDocument(document);
+        }
+
+        indexWriter.forceMerge(5, Boolean.TRUE);
+        indexWriter.prepareCommit();
+        indexWriter.commit();
+
+        IndexReader indexReader = DirectoryReader.open(indexWriter.getDirectory());
+        IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+
+        SearchComplex searchSingle = new SearchComplex(indexSearcher, analyzer);
+        searchSingle.setFirstResult(0);
+        searchSingle.setFragment(true);
+        searchSingle.setMaxResults(10);
+        searchSingle.setSearchFields(IConstants.CONTENTS);
+        searchSingle.setSearchStrings("michael~");
+
+        ArrayList<HashMap<String, String>> results = searchSingle.execute();
+        printResults(results);
+    }
 
 }

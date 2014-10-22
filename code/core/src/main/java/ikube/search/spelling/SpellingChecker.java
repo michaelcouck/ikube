@@ -54,10 +54,10 @@ public class SpellingChecker {
     }
 
     /**
-     * This method will check one word against all the words in the language index and return the best suggestion for correction.
+     * This method will check one word against all the words in the language index and return the best suggestions for correction.
      *
      * @param word the word to check against all the words in the language files
-     * @return the first corrected spelling suggestion, probably based on a Levinshtein distance, if there are no results
+     * @return the first corrected spelling suggestions, probably based on a Levinshtein distance, if there are no results
      * from the search against the auto-complete index then null is returned, otherwise the best match for the word, note that
      * this can be the word it's self
      */
@@ -74,9 +74,12 @@ public class SpellingChecker {
                     // Do nothing, we don't want a recursive loop in the search
                 }
             };
+            // Typically we must do this because there is no n-gramming, as the results are skewed
+            String extendedWord = word.endsWith("~") || word.endsWith("*") ? word : word + "~";
+
             search.setFirstResult(0);
-            search.setMaxResults(1);
-            search.setSearchStrings(word);
+            search.setMaxResults(10);
+            search.setSearchStrings(extendedWord);
             search.setFragment(Boolean.FALSE);
             search.setTypeFields(IConstants.STRING);
             search.setSearchFields(IConstants.WORD);

@@ -388,9 +388,9 @@ public abstract class AbstractTest {
 
     protected void printResults(final ArrayList<HashMap<String, String>> results) {
         for (final HashMap<String, String> result : results) {
-            logger.info("Result : ");
+            logger.warn("Result : ");
             for (final Map.Entry<String, String> mapEntry : result.entrySet()) {
-                logger.info("       : " + mapEntry.getKey() + "-" + mapEntry.getValue());
+                logger.warn("       : " + mapEntry.getKey() + "-" + mapEntry.getValue());
             }
         }
     }

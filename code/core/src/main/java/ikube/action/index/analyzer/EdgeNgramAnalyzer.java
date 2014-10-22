@@ -43,7 +43,7 @@ public final class EdgeNgramAnalyzer extends Analyzer {
                 }
                 stringBuilder.append(cbuf, 0, read);
             } while (true);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOGGER.error(null, e);
         } finally {
             IOUtils.closeQuietly(reader);

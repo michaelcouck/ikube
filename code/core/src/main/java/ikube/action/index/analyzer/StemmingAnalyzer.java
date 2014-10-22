@@ -20,8 +20,9 @@ import org.springframework.beans.factory.annotation.Value;
 import java.io.Reader;
 
 /**
- * This analyzer will stem the words for plural and so on. All the stop words in all the languages that are available are also added to the analyzer, slowing
- * the performance down, but adding value to the results.
+ * This analyzer will stem the words for plural and so on. All the stop words in all the
+ * languages that are available are also added to the analyzer, slowing the performance down, but
+ * adding value to the results.
  *
  * @author Michael Couck
  * @version 01.00

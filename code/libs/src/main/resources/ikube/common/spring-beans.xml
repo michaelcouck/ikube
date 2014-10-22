@@ -393,6 +393,10 @@
         property:maxGram="21"/>
 
     <bean
+        name="ikube.action.index.analyzer.StemmingAnalyzer"
+        class="ikube.action.index.analyzer.StemmingAnalyzer"/>
+
+    <bean
         name="ikube.action.index.handler.strategy.LanguageCleaningStrategy"
         class="ikube.action.index.handler.strategy.LanguageCleaningStrategy"
         init-method="initialize"/>

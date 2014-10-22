@@ -22,7 +22,7 @@
         id="autocomplete"
         class="ikube.model.IndexContext"
         property:name="autocomplete"
-        property:maxAge="180"
+        property:maxAge="600"
         property:compoundFile="${compound.file}"
         property:bufferedDocs="${buffered.docs}"
         property:bufferSize="${buffer.size}"
@@ -35,7 +35,7 @@
         property:throttle="0"
         property:indexDirectoryPath="${index.directory.path}"
         property:indexDirectoryPathBackup="${index.directory.path}"
-        property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer"
+        property:analyzer-ref="ikube.action.index.analyzer.StemmingAnalyzer"
         property:children-ref="autocompleteIndexables"/>
     <util:list id="autocompleteIndexables">
         <ref local="autocomplete-lists"/>
@@ -79,9 +79,11 @@
         class="ikube.model.IndexableColumn"
         property:name="word"
         property:fieldName="word"
+
         property:analyzed="true"
         property:stored="true"
-        property:vectored="true"
+        property:vectored="false"
+        property:tokenized="false"
         property:omitNorms="true"/>
     <!-- Do not normalize for length -->
     <bean
@@ -89,9 +91,11 @@
         class="ikube.model.IndexableColumn"
         property:name="synonym"
         property:fieldName="synonym"
+
         property:analyzed="true"
         property:stored="true"
-        property:vectored="true"
+        property:vectored="false"
+        property:tokenized="false"
         property:omitNorms="true"/>
     <!-- Do not normalize for length -->
 
