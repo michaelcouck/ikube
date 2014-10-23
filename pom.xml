@@ -549,60 +549,6 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<!--<dependency>-->
-			<!--<groupId>org.apache.xbean</groupId>-->
-			<!--<artifactId>xbean-spring</artifactId>-->
-			<!--<version>3.6</version>-->
-			<!--<scope>compile</scope>-->
-		<!--</dependency>-->
-		<!--<dependency>-->
-			<!--<groupId>org.springbyexample</groupId>-->
-			<!--<artifactId>org.springbyexample.dynamic.tiles2</artifactId>-->
-			<!--<version>1.2</version>-->
-			<!--<scope>compile</scope>-->
-			<!--<exclusions>-->
-				<!--<exclusion>-->
-					<!--<artifactId>org.springframework.beans</artifactId>-->
-					<!--<groupId>org.springframework</groupId>-->
-				<!--</exclusion>-->
-				<!--<exclusion>-->
-					<!--<artifactId>org.springframework.context</artifactId>-->
-					<!--<groupId>org.springframework</groupId>-->
-				<!--</exclusion>-->
-				<!--<exclusion>-->
-					<!--<artifactId>org.springframework.context.support</artifactId>-->
-					<!--<groupId>org.springframework</groupId>-->
-				<!--</exclusion>-->
-				<!--<exclusion>-->
-					<!--<artifactId>org.springframework.core</artifactId>-->
-					<!--<groupId>org.springframework</groupId>-->
-				<!--</exclusion>-->
-				<!--<exclusion>-->
-					<!--<artifactId>org.springframework.web</artifactId>-->
-					<!--<groupId>org.springframework</groupId>-->
-				<!--</exclusion>-->
-				<!--<exclusion>-->
-					<!--<artifactId>org.springframework.webflow</artifactId>-->
-					<!--<groupId>org.springframework.webflow</groupId>-->
-				<!--</exclusion>-->
-				<!--<exclusion>-->
-					<!--<artifactId>org.springframework.web.servlet</artifactId>-->
-					<!--<groupId>org.springframework</groupId>-->
-				<!--</exclusion>-->
-				<!--<exclusion>-->
-					<!--<artifactId>org.springframework.js</artifactId>-->
-					<!--<groupId>org.springframework.webflow</groupId>-->
-				<!--</exclusion>-->
-				<!--<exclusion>-->
-					<!--<artifactId>com.springsource.org.apache.tiles</artifactId>-->
-					<!--<groupId>org.apache.tiles</groupId>-->
-				<!--</exclusion>-->
-				<!--<exclusion>-->
-					<!--<artifactId>com.springsource.org.apache.tiles.core</artifactId>-->
-					<!--<groupId>org.apache.tiles</groupId>-->
-				<!--</exclusion>-->
-			<!--</exclusions>-->
-		<!--</dependency>-->
 		<dependency>
 			<groupId>dom4j</groupId>
 			<artifactId>dom4j</artifactId>
@@ -935,27 +881,6 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<!--<dependency>-->
-			<!--<groupId>net.sourceforge.htmlunit</groupId>-->
-			<!--<artifactId>htmlunit</artifactId>-->
-			<!--<version>2.9</version>-->
-			<!--<type>jar</type>-->
-			<!--<scope>test</scope>-->
-		<!--</dependency>-->
-		<!--<dependency>-->
-			<!--<groupId>net.sf.ehcache</groupId>-->
-			<!--<artifactId>ehcache-core</artifactId>-->
-			<!--<version>2.4.5</version>-->
-			<!--<type>jar</type>-->
-			<!--<scope>compile</scope>-->
-		<!--</dependency>-->
-		<!--<dependency>-->
-			<!--<groupId>com.h2database</groupId>-->
-			<!--<artifactId>h2</artifactId>-->
-			<!--<version>1.3.163</version>-->
-			<!--<type>jar</type>-->
-			<!--<scope>compile</scope>-->
-		<!--</dependency>-->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -1234,11 +1159,6 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.2.2</version>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.encog</groupId>-->
-            <!--<artifactId>encog-core</artifactId>-->
-            <!--<version>3.0.1</version>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.tmatesoft.svnkit</groupId>
             <artifactId>svnkit</artifactId>
@@ -1320,13 +1240,6 @@
             <version>1.2.0</version>
             <scope>compile</scope>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>lingpipe</groupId>-->
-            <!--<artifactId>lingpipe</artifactId>-->
-            <!--<version>4.1.0</version>-->
-            <!--<scope>compile</scope>-->
-        <!--</dependency>-->
-
         <dependency>
             <groupId>org.apache.opennlp</groupId>
             <artifactId>opennlp-maxent</artifactId>
@@ -1380,6 +1293,12 @@
             <groupId>arachnid</groupId>
             <artifactId>arachnid</artifactId>
             <version>0.4.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.norconex.collectors</groupId>
+            <artifactId>norconex-collector-http</artifactId>
+            <version>1.3.4</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
@@ -1462,6 +1381,17 @@
         <repository>
             <id>GridGain External Repository</id>
             <url>http://www.gridgainsystems.com/nexus/content/repositories/external</url>
+        </repository>
+        <repository>
+            <id>norconex-release-repo</id>
+            <name>Norconex Release Repository</name>
+            <url>http://norconex.s3.amazonaws.com/repo/release</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
 	</repositories>
 

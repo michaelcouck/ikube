@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import ikube.analytics.AAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
-import ikube.toolkit.FileUtilities;
 import weka.classifiers.Classifier;
 import weka.clusterers.Clusterer;
 import weka.core.Attribute;

@@ -99,16 +99,32 @@ public class WekaToolkitTest extends AbstractTest {
 
     @Test
     public void stringToWordVector() throws Exception {
+
+        // Logic is as follows:
+        // Create the instances
+        // Create the instance from the instances' attributes
+        // Filter the instances and use the filtered instances to build the classifier
+        // Filter the instance and use it to perform the analysis in the classifier
+
+        // Note: Do not use the filtered instances to build the instance!!!
+
         File file = FileUtilities.findFileRecursively(new File("."), "sentiment-smo.arff");
         try (InputStream inputStream = new FileInputStream(file)) {
             Instances instances = WekaToolkit.arffToInstances(inputStream);
             StringToWordVector stringToWordVector = new StringToWordVector(Integer.MAX_VALUE);
-            instances = WekaToolkit.filter(instances, stringToWordVector);
 
             Instance instance = WekaToolkit.getInstance(instances, new Object[]{"to-be-predicted", "Have no idea what to write here"});
+            // Note: The instances still needs to be filtered, this sets the input format
+            // for the instance to be created. Without this the creation of the instance will throw
+            // 'No input instance format defined' exception
+            WekaToolkit.filter(instances, stringToWordVector);
 
             instance = WekaToolkit.filter(instance, stringToWordVector);
-            // logger.error("Instance : " + instance);
+            logger.warn("Number of attributes : " + instance.numAttributes());
+            for (int i = 0; i < instance.numAttributes(); i++) {
+                logger.warn("        : " + instance.attribute(i));
+            }
+            assertEquals(22, instance.numAttributes());
         }
     }
 
