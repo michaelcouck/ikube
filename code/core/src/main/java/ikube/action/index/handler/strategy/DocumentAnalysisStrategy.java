@@ -117,10 +117,10 @@ public class DocumentAnalysisStrategy extends AStrategy {
             classes[i] = analysis.getClazz();
             distributionForInstances[i] = (double[]) analysis.getOutput();
 
-            if (logger.isInfoEnabled()) {
-                logger.info("Class : " + classes[i]);
-                logger.info("Distribution : " + distributionForInstances[i]);
-                logger.info("Sentence : " + sentence);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Class : " + classes[i]);
+                logger.debug("Distribution : " + distributionForInstances[i]);
+                logger.debug("Sentence : " + sentence);
             }
         }
         if (distributionForInstances[0] == null) {
@@ -155,7 +155,9 @@ public class DocumentAnalysisStrategy extends AStrategy {
                 mostProbableClass = classes[i];
             }
         }
-        logger.error("Most probable class : " + mostProbableClass + ", sentence size : " + sentences.size());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Most probable class : " + mostProbableClass + ", sentence size : " + sentences.size());
+        }
         return mostProbableClass;
     }
 

@@ -81,7 +81,7 @@ public class Forecast extends Base {
         String response = webResource.accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON).post(String.class, body);
         System.out.println("Create response : " + response);
 
-        // User the analyzer to get a specified number of predictions, in this case days into the future, 5 days forecasts
+        // Use the analyzer to get a specified number of predictions, in this case days into the future, 5 day forecast
         Analysis analysis = new Analysis();
         analysis.context = context.name;
         analysis.input = "-fieldsToForecast,6,-timeStampField,0,-minLag,1,-maxLag,1,-forecasts,5";

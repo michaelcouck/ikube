@@ -5,7 +5,10 @@ import ikube.toolkit.ThreadUtilities;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 import java.util.concurrent.Future;
 
 /**
@@ -17,7 +20,6 @@ import java.util.concurrent.Future;
 public class GCMXBeanAnalyzerTest extends AbstractTest {
 
     @Test
-    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     public void analyze() {
         final GCMXBeanAnalyzer gcmxBeanAnalyzer = new GCMXBeanAnalyzer();
         ThreadUtilities.submit("gc-analyzer", new Runnable() {
@@ -28,20 +30,15 @@ public class GCMXBeanAnalyzerTest extends AbstractTest {
         List<Future<Object>> futures = populateMemory(100);
         ThreadUtilities.waitForFutures(futures, Long.MAX_VALUE);
         ThreadUtilities.sleep(5000);
-        LinkedList<GCMXBeanAnalyzer.GCSnapshot> gcSnapshots = gcmxBeanAnalyzer.gcSnapshots;
-        for (final GCMXBeanAnalyzer.GCSnapshot gcSnapshot : gcSnapshots) {
-            logger.error(gcSnapshot.interval + ":" + gcSnapshot.duration + ":" + gcSnapshot.delta + ":" + gcSnapshot.available);
-        }
     }
 
-    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private List<Future<Object>> populateMemory(int threads) {
         List<Future<Object>> futures = new ArrayList<>();
-        final List<Object> objects = Collections.synchronizedList(new ArrayList<Object>());
+        final List<Object> objects = Collections.synchronizedList(new ArrayList<>());
         while (threads-- >= 0) {
             Future future = ThreadUtilities.submit("memory-populate", new Runnable() {
                 public void run() {
-                    int retry = 10;
+                    int retry = 3;
                     Random random = new Random();
                     //noinspection InfiniteLoopStatement
                     while (true) {
