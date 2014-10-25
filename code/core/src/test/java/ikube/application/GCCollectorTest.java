@@ -17,14 +17,13 @@ import java.util.concurrent.Future;
  * @since 23-10-2014
  */
 @Ignore
-public class GCMXBeanAnalyzerTest extends AbstractTest {
+public class GCCollectorTest extends AbstractTest {
 
     @Test
     public void analyze() {
-        final GCMXBeanAnalyzer gcmxBeanAnalyzer = new GCMXBeanAnalyzer();
         ThreadUtilities.submit("gc-analyzer", new Runnable() {
             public void run() {
-                gcmxBeanAnalyzer.analyze();
+                new GCCollector();
             }
         });
         List<Future<Object>> futures = populateMemory(100);

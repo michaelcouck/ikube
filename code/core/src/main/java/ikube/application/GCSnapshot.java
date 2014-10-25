@@ -6,21 +6,18 @@ package ikube.application;
  * @since 23-10-2014
  */
 class GCSnapshot {
-    double start;
-    double end;
-    double duration;
+    long start;
+    long end;
+    long duration;
 
-    double interval;
+    long interval;
     double delta;
     double available;
     double usedToMaxRatio;
 
-    double runsPerSecond = 1;
+    int runsPerTimeUnit = 1;
     double cpuLoad;
-    double processors;
+    int processors;
     double perCoreLoad;
-    double threads;
-
-    // Used in the calculations
-    double slope;
+    int threads;
 }
