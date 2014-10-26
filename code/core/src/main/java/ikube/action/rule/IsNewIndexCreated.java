@@ -50,13 +50,11 @@ public class IsNewIndexCreated extends ARule<IndexContext> {
         try {
             CompositeReaderContext compositeReaderContext = multiReader.getContext();
             atomicReaderContexts = compositeReaderContext.leaves();
-        } catch (final AlreadyClosedException e ) {
-            // Close this searcher then
-            logger.error("This index is closed : " + indexContext.getName(), e);
+        } catch (final AlreadyClosedException e) {
+            logger.error("This index is closed : " + indexContext.getName());
+            logger.debug(null, e);
             return Boolean.FALSE;
         }
-
-        // printReaders(atomicReaderContexts);
 
         File openedIndexDirectory = null;
         for (final AtomicReaderContext atomicReaderContext : atomicReaderContexts) {
@@ -90,20 +88,6 @@ public class IsNewIndexCreated extends ARule<IndexContext> {
                 ", " + latest.getTime() +
                 ", " + current.getTime());
         return isNewIndexCreated;
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    private void printReaders(final List<AtomicReaderContext> atomicReaderContexts) {
-        try {
-            for (final AtomicReaderContext atomicReaderContext : atomicReaderContexts) {
-                SegmentReader atomicReader = (SegmentReader) atomicReaderContext.reader();
-                MMapDirectory directory = (MMapDirectory) atomicReader.directory();
-                File openedIndexDirectory = directory.getDirectory();
-                logger.debug("        : Opened index directory : " + openedIndexDirectory);
-            }
-        } catch (final Exception e) {
-            logger.error(null, e);
-        }
     }
 
 }

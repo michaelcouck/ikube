@@ -37,7 +37,6 @@ import static java.text.BreakIterator.getSentenceInstance;
  * @version 01.00
  * @since 20-07-2014
  */
-@SuppressWarnings({"SpringJavaAutowiredMembersInspection", "SpringJavaAutowiringInspection"})
 public class DocumentAnalysisStrategy extends AStrategy {
 
     /**
