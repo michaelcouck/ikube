@@ -1,7 +1,9 @@
 package ikube.application;
 
 import ikube.AbstractTest;
+import ikube.toolkit.ThreadUtilities;
 import junit.framework.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
@@ -17,6 +19,7 @@ import static java.util.concurrent.TimeUnit.MINUTES;
  * @version 01.00
  * @since 23-10-2014
  */
+@Ignore
 public class GCAnalyzerTest extends AbstractTest {
 
     @Spy
@@ -26,9 +29,10 @@ public class GCAnalyzerTest extends AbstractTest {
     @Test
     public void registerCollector() throws Exception {
         try {
-            gcAnalyzer.registerCollector(null);
+            gcAnalyzer.registerCollector("localhost", 8500);
+            ThreadUtilities.sleep(60000);
         } catch (final Exception e) {
-            logger.error(null, e);
+            logger.error(e.getMessage(), e);
         }
     }
 

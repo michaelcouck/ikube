@@ -2,15 +2,16 @@ package ikube.application;
 
 import com.sun.management.GcInfo;
 import ikube.IConstants;
+import ikube.toolkit.ThreadUtilities;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.management.Notification;
-import javax.management.NotificationBroadcaster;
-import javax.management.NotificationFilter;
-import javax.management.NotificationListener;
-import java.lang.management.*;
+import java.io.Serializable;
+import java.lang.management.GarbageCollectorMXBean;
+import java.lang.management.MemoryUsage;
+import java.lang.management.OperatingSystemMXBean;
+import java.lang.management.ThreadMXBean;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
@@ -18,6 +19,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.springframework.util.ReflectionUtils.*;
 
@@ -26,7 +28,7 @@ import static org.springframework.util.ReflectionUtils.*;
  * @version 01.00
  * @since 23-10-2014
  */
-class GCCollector {
+class GCCollector implements Serializable {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(GCCollector.class);
 
@@ -44,33 +46,39 @@ class GCCollector {
     @SuppressWarnings("UnusedDeclaration")
     static final String CODE_CACHE = "Code Cache";
 
-    GCCollector() {
+    private transient ThreadMXBean threadMXBean;
+    private transient OperatingSystemMXBean operatingSystemMXBean;
+
+    GCCollector(final ThreadMXBean threadMXBean, final OperatingSystemMXBean operatingSystemMXBean,
+                final List<GarbageCollectorMXBean> garbageCollectorMXBeans) {
+
+        this.threadMXBean = threadMXBean;
+        this.operatingSystemMXBean = operatingSystemMXBean;
+
         Map<String, LinkedList<GCSnapshot>> gcSnapshots = new HashMap<>();
         for (final String memoryBlock : MEMORY_BLOCKS) {
             gcSnapshots.put(memoryBlock, new LinkedList<GCSnapshot>());
         }
-        List<GarbageCollectorMXBean> garbageCollectorMXBeans = ManagementFactory.getGarbageCollectorMXBeans();
         for (final GarbageCollectorMXBean garbageCollectorMXBean : garbageCollectorMXBeans) {
             registerGcNotificationListener(garbageCollectorMXBean, gcSnapshots);
         }
     }
 
     private void registerGcNotificationListener(final GarbageCollectorMXBean garbageCollectorMXBean, final Map<String, LinkedList<GCSnapshot>> gcSnapshots) {
-        NotificationBroadcaster notificationBroadcaster = (NotificationBroadcaster) garbageCollectorMXBean;
-        notificationBroadcaster.addNotificationListener(new NotificationListener() {
+        ThreadUtilities.submit(garbageCollectorMXBean.toString(), new Runnable() {
             @Override
-            public void handleNotification(final Notification notification, final Object handback) {
-                getGcSnapshots(garbageCollectorMXBean, gcSnapshots);
+            @SuppressWarnings("InfiniteLoopStatement")
+            public void run() {
+                while (true) {
+                    getGcSnapshots(garbageCollectorMXBean, gcSnapshots);
+                    ThreadUtilities.sleep(250);
+                }
             }
-        }, new NotificationFilter() {
-            @Override
-            public boolean isNotificationEnabled(final Notification notification) {
-                return true;
-            }
-        }, null);
+        });
     }
 
     private void getGcSnapshots(final GarbageCollectorMXBean garbageCollectorMXBean, final Map<String, LinkedList<GCSnapshot>> gcSnapshots) {
+        final AtomicReference<GcInfo> gcInfoAtomicReference = new AtomicReference<>();
         doWithMethods(garbageCollectorMXBean.getClass(), new MethodCallback() {
             @Override
             public void doWith(final Method method) throws IllegalArgumentException, IllegalAccessException {
@@ -78,16 +86,7 @@ class GCCollector {
                     boolean isAccessible = method.isAccessible();
                     method.setAccessible(Boolean.TRUE);
                     GcInfo gcInfo = (GcInfo) method.invoke(garbageCollectorMXBean);
-                    if (gcInfo != null) {
-                        for (final String memoryBlock : MEMORY_BLOCKS) {
-                            LinkedList<GCSnapshot> snapshots = gcSnapshots.get(memoryBlock);
-                            GCSnapshot previousGcSnapshot = snapshots.isEmpty() ? null : snapshots.getLast();
-                            GCSnapshot gcSnapshot = getGcSnapshot(memoryBlock, previousGcSnapshot, gcInfo);
-                            if (gcSnapshot != null) {
-                                snapshots.add(gcSnapshot);
-                            }
-                        }
-                    }
+                    gcInfoAtomicReference.set(gcInfo);
                     method.setAccessible(isAccessible);
                 } catch (final InvocationTargetException e) {
                     throw new RuntimeException(e);
@@ -99,6 +98,18 @@ class GCCollector {
                 return method.getName().equals("getLastGcInfo");
             }
         });
+
+        GcInfo gcInfo = gcInfoAtomicReference.get();
+        if (gcInfo != null) {
+            for (final String memoryBlock : MEMORY_BLOCKS) {
+                LinkedList<GCSnapshot> snapshots = gcSnapshots.get(memoryBlock);
+                GCSnapshot previousGcSnapshot = snapshots.isEmpty() ? null : snapshots.getLast();
+                GCSnapshot gcSnapshot = getGcSnapshot(memoryBlock, previousGcSnapshot, gcInfo);
+                if (gcSnapshot != null) {
+                    snapshots.add(gcSnapshot);
+                }
+            }
+        }
     }
 
     private GCSnapshot getGcSnapshot(final String memoryBlock, final GCSnapshot previousGcSnapshot, final GcInfo gcInfo) {
@@ -111,8 +122,6 @@ class GCCollector {
             }
         }
 
-        ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
-        OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
         Map<String, MemoryUsage> usageMap = gcInfo.getMemoryUsageBeforeGc();
         MemoryUsage memoryUsage = usageMap.get(memoryBlock);
 

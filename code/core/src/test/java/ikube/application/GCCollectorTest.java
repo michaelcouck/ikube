@@ -23,7 +23,7 @@ public class GCCollectorTest extends AbstractTest {
     public void analyze() {
         ThreadUtilities.submit("gc-analyzer", new Runnable() {
             public void run() {
-                new GCCollector();
+                new GCCollector(null, null, null);
             }
         });
         List<Future<Object>> futures = populateMemory(100);
