@@ -66,8 +66,15 @@ public class Forecast extends Base {
         // For converting from Java to Json
         Gson gson = new GsonBuilder().create();
 
+        String inputFilePath;
+        if (args != null && args.length > 0) {
+            inputFilePath = args[0];
+        } else {
+            inputFilePath = "code/tool/src/main/resources/anal/example/forecast.csv";
+        }
+
         // Get the training data from the file
-        File trainingDataFile = new File("code/tool/src/main/resources/anal/example/forecast.csv");
+        File trainingDataFile = new File(inputFilePath);
         // Create the context for the creation
         Context context = new Context();
         context.name = "forecast-classifier";

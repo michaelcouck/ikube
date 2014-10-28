@@ -1,44 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
-  <component name="FacetManager">
-    <facet type="Spring" name="Spring">
-      <configuration>
-        <fileset id="fileset" name="Spring Application Context" removed="false">
-          <file>file://$MODULE_DIR$/ikube/common/spring-hazelcast.xml</file>
-          <file>file://$MODULE_DIR$/ikube/indexes/twitter/spring-twitter.xml</file>
-          <file>file://$MODULE_DIR$/ikube/analytics/spring-analytics.xml</file>
-          <file>file://$MODULE_DIR$/ikube/common/spring-grid-gain.xml</file>
-          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-desktop.xml</file>
-          <file>file://$MODULE_DIR$/ikube/indexes/integration/spring-geoname-csv.xml</file>
-          <file>file://$MODULE_DIR$/ikube/indexes/integration/spring-custom.xml</file>
-          <file>file://$MODULE_DIR$/ikube/indexes/integration/spring-client.xml</file>
-          <file>file://$MODULE_DIR$/ikube/common/spring-aop.xml</file>
-          <file>file://$MODULE_DIR$/ikube/common/spring-beans.xml</file>
-          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-ikube.xml</file>
-          <file>file://$MODULE_DIR$/ikube/common/spring-h2-jdbc.xml</file>
-          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-db2-jdbc.xml</file>
-          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-system.xml</file>
-          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-auto.xml</file>
-          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-rules.xml</file>
-          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-geo.xml</file>
-          <file>file://$MODULE_DIR$/ikube/common/spring-users.xml</file>
-          <file>file://$MODULE_DIR$/ikube/indexes/bosal/spring-bosal.xml</file>
-          <file>file://$MODULE_DIR$/ikube/spring.xml</file>
-          <file>file://$MODULE_DIR$/ikube/common/spring-actions.xml</file>
-          <file>file://$MODULE_DIR$/code/libs/src/main/resources/indexes/production/spring-desktop.xml</file>
-          <file>file://$MODULE_DIR$/code/libs/src/main/resources/indexes/bosal/spring-bosal.xml</file>
-          <file>file://$MODULE_DIR$/code/libs/src/main/resources/indexes/bosal/spring-bosal.xml</file>
-        </fileset>
-      </configuration>
-    </facet>
-  </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="1.7" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context:3.2.4.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-beans:3.2.4.RELEASE" level="project" />

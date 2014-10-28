@@ -15,16 +15,6 @@
         </sourceRoots>
       </configuration>
     </facet>
-    <facet type="Spring" name="Spring">
-      <configuration>
-        <fileset id="fileset" name="Spring Application Context" removed="false">
-          <file>file://$MODULE_DIR$/src/main/webapp/WEB-INF/spring/spring-security.xml</file>
-          <file>file://$MODULE_DIR$/src/main/webapp/WEB-INF/spring/spring-web.xml</file>
-          <file>file://$MODULE_DIR$/ikube/indexes/artvens/spring-artvens.xml</file>
-          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-desktop.xml</file>
-        </fileset>
-      </configuration>
-    </facet>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
@@ -36,7 +26,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="1.7" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="ikube-core" />
     <orderEntry type="module" module-name="ikube-com" />
