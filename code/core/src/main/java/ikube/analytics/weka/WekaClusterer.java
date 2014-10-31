@@ -68,6 +68,9 @@ public class WekaClusterer extends WekaAnalyzer {
                 algorithmsOutput.append(clusterer.toString());
                 algorithmsOutput.append("\n\r\n\r");
             }
+
+            // Do we need this?
+            instances.remove(instance);
         }
 
         analysis.setClazz(Integer.toString(majorityCluster));

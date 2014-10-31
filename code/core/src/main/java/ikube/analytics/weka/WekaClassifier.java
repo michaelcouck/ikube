@@ -106,6 +106,9 @@ public class WekaClassifier extends WekaAnalyzer {
                 algorithmsOutput.append(classifier.toString());
                 algorithmsOutput.append("\n\r\n\r");
             }
+
+            // Do we need this?
+            instances.remove(instance);
         }
 
         analysis.setClazz(majorityClass);

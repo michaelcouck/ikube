@@ -65,7 +65,7 @@ class GCCollector implements Serializable {
     }
 
     private void registerGcNotificationListener(final GarbageCollectorMXBean garbageCollectorMXBean, final Map<String, LinkedList<GCSnapshot>> gcSnapshots) {
-        ThreadUtilities.submit(garbageCollectorMXBean.toString(), new Runnable() {
+        ThreadUtilities.submit(this.toString(), new Runnable() {
             @Override
             @SuppressWarnings("InfiniteLoopStatement")
             public void run() {
