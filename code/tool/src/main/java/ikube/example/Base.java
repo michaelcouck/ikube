@@ -34,6 +34,8 @@ public abstract class Base {
         /* The input options, either string or array,
          * '-fieldsToForecast,6,-timeStampField,0,-minLag,1,-maxLag,1,-forecasts,5' */
         String input;
+        @SuppressWarnings("UnusedDeclaration")
+        Object output;
     }
 
     public static class Coordinate {

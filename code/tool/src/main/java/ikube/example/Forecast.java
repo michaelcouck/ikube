@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 import javax.ws.rs.core.MediaType;
 import java.io.File;
@@ -61,6 +62,13 @@ import java.io.IOException;
 public class Forecast extends Base {
 
     public static void main(final String[] args) throws IOException {
+        Analysis analysis = doAnalysis(args);
+        // The result should be something like: This represents the forecast price for the shares specified in the training data
+        // [[[579.3721684789788],[581.4060746802609],[583.233603088952],[584.8823713779697],[586.3763013969173]]]
+        System.out.println("Analysis response : " + ToStringBuilder.reflectionToString(analysis));
+    }
+
+    static Analysis doAnalysis(final String[] args) throws IOException {
         // The Jersey client for accessing the rest service
         Client client = Client.create();
         // For converting from Java to Json
@@ -97,9 +105,7 @@ public class Forecast extends Base {
         webResource = client.resource("http://ikube.be/ikube/service/analyzer/analyze");
         response = webResource.accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON).post(String.class, body);
 
-        // The result should be something like: This represents the forecast price for the shares specified in the training data
-        // [[[579.3721684789788],[581.4060746802609],[583.233603088952],[584.8823713779697],[586.3763013969173]]]
-        System.out.println("Analysis response : " + response);
+        return gson.fromJson(response, Analysis.class);
     }
 
 }
