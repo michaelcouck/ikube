@@ -3,9 +3,13 @@ package ikube.application;
 import ikube.AbstractTest;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
 
 import static java.lang.System.currentTimeMillis;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Michael Couck
@@ -16,32 +20,51 @@ public class GCSmootherTest extends AbstractTest {
 
     @Test
     public void getSmoothedSnapshots() {
-        Map<String, LinkedList<GCSnapshot>> gcSnapshots = new HashMap<>();
         LinkedList<GCSnapshot> snapshots = new LinkedList<>();
-        gcSnapshots.put(GCCollector.OLD_GEN, snapshots);
 
-        double minutes = 3600;
-        double previousAvailable = Long.MAX_VALUE;
+        double seconds = 36000;
+        final double maxAvailable = 16000d;
+        GCSnapshot previousGcSnapshot = new GCSnapshot() {
+            {
+                this.available = maxAvailable;
+            }
+        };
         Random random = new Random();
-        for (int i = 0; i < minutes; i++) {
+        for (int i = 0; i < seconds; i++) {
             GCSnapshot gcSnapshot = new GCSnapshot();
 
-            gcSnapshot.available = minutes - random.nextInt(Math.max(1, i));
-            gcSnapshot.available = Math.min(previousAvailable, gcSnapshot.available);
-            previousAvailable = gcSnapshot.available;
-            gcSnapshot.available = gcSnapshot.available - random.nextInt(5);
+            gcSnapshot.processors = 8;
 
-            gcSnapshot.start = currentTimeMillis() + (i * 1000);
-            gcSnapshot.end = gcSnapshot.start + 10;
+            gcSnapshot.duration = random.nextInt(10000);
+            gcSnapshot.available = previousGcSnapshot.available - (random.nextDouble() * 0.5d);
+            gcSnapshot.usedToMaxRatio = (maxAvailable - gcSnapshot.available) / maxAvailable;
+            gcSnapshot.cpuLoad = random.nextDouble() * gcSnapshot.processors;
+            gcSnapshot.perCoreLoad = gcSnapshot.cpuLoad + gcSnapshot.processors;
+            gcSnapshot.threads = 28;
+            gcSnapshot.interval = random.nextInt(10000);
+            gcSnapshot.delta = gcSnapshot.available - previousGcSnapshot.available;
+
+            gcSnapshot.start = (long) (currentTimeMillis() + (i * 1000d));
+            gcSnapshot.end = (long) (gcSnapshot.start + (random.nextDouble() * 10d));
             snapshots.add(gcSnapshot);
+
+            assertTrue(previousGcSnapshot.available >= gcSnapshot.available);
+
+            previousGcSnapshot = gcSnapshot;
         }
 
         GCSmoother gcSmoother = new GCSmoother();
-        Map<String, LinkedList<GCSnapshot>> smoothedGcSnapshots = gcSmoother.getSmoothedSnapshots(gcSnapshots);
-        for (final LinkedList<GCSnapshot> smoothedSnapshots : smoothedGcSnapshots.values()) {
-            for (final GCSnapshot snapshot : smoothedSnapshots) {
-                logger.warn("Smoothed snapshot : " + new Date(snapshot.start) + ", " + snapshot.available);
-            }
+        List<GCSnapshot> gcSnapshotsSmooth = gcSmoother.getSmoothedSnapshots(snapshots);
+        Iterator<GCSnapshot> gcSnapshotIterator = gcSnapshotsSmooth.iterator();
+
+        previousGcSnapshot = gcSnapshotIterator.next();
+        while (gcSnapshotIterator.hasNext()) {
+            GCSnapshot gcSnapshot = gcSnapshotIterator.next();
+
+            assertTrue(previousGcSnapshot.available >= gcSnapshot.available);
+            assertTrue(previousGcSnapshot.start <= gcSnapshot.start);
+
+            previousGcSnapshot = gcSnapshot;
         }
     }
 

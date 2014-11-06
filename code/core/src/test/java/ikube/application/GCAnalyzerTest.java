@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import static java.lang.System.currentTimeMillis;
@@ -28,12 +29,11 @@ public class GCAnalyzerTest extends AbstractTest {
 
     @Test
     public void registerCollector() throws Exception {
-        try {
-            gcAnalyzer.registerCollector("localhost", 8500);
-            ThreadUtilities.sleep(60000);
-        } catch (final Exception e) {
-            logger.error(e.getMessage(), e);
-        }
+        String address = "localhost";
+        gcAnalyzer.registerCollector(address, 8500);
+        ThreadUtilities.sleep(1000 * 60 * 10);
+        Object[][][] gcMatrices = gcAnalyzer.getGcData(address);
+        logger.error("Matrices : " + Arrays.deepToString(gcMatrices));
     }
 
     @Test

@@ -132,10 +132,10 @@ public final class SerializationUtilities {
 						pd.setValue("transient", Boolean.TRUE);
 					}
 					if (Collection.class.isAssignableFrom(field.getType())) {
-						Type parameterizedType = field.getGenericType();
-						if (parameterizedType != null) {
-							if (ParameterizedType.class.isAssignableFrom(parameterizedType.getClass())) {
-								Type[] typeArguments = ((ParameterizedType) parameterizedType).getActualTypeArguments();
+						Type parametrisedType = field.getGenericType();
+						if (parametrisedType != null) {
+							if (ParameterizedType.class.isAssignableFrom(parametrisedType.getClass())) {
+								Type[] typeArguments = ((ParameterizedType) parametrisedType).getActualTypeArguments();
 								for (final Type typeArgument : typeArguments) {
 									if (ParameterizedType.class.isAssignableFrom(typeArgument.getClass())) {
 										Type rawType = ((ParameterizedType) typeArgument).getRawType();

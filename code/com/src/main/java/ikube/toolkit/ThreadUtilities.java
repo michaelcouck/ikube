@@ -305,7 +305,9 @@ public final class ThreadUtilities {
 
         // Check that there are not runnables still active
         List<Runnable> runnables = EXECUTOR_SERVICE.shutdownNow();
-        LOGGER.info("Not running runnables : " + runnables);
+        if (!runnables.isEmpty()) {
+            LOGGER.info("Not running runnables : " + runnables);
+        }
 
         // Clear everything just to be sure
         FUTURES.clear();

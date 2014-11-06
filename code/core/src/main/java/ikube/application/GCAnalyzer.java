@@ -1,5 +1,6 @@
 package ikube.application;
 
+import com.sun.management.GarbageCollectorMXBean;
 import ikube.analytics.IAnalyticsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +11,6 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import java.io.IOException;
-import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.ThreadMXBean;
 import java.util.*;
@@ -25,13 +25,21 @@ public class GCAnalyzer {
 
     static final Logger LOGGER = LoggerFactory.getLogger(GCAnalyzer.class);
 
+    static final String EDEN_SPACE = "PS Eden Space"; // New object, and stack
+    static final String PERM_GEN = "PS Perm Gen"; // Class loading area
+    static final String OLD_GEN = "PS Old Gen"; // Tenured space, permanent
+
+    /**
+     * The memory areas that we will monitor.
+     */
+    static final String[] MEMORY_BLOCKS = {EDEN_SPACE, PERM_GEN, OLD_GEN};
+
     @Autowired
-    @SuppressWarnings("SpringJavaAutowiredMembersInspection")
     private IAnalyticsService analyticsService;
 
-    private Map<String, GCCollector> gcCollectorMap = new HashMap<>();
+    private Map<String, List<GCCollector>> gcCollectorMap = new HashMap<>();
 
-    public void registerCollector(final String address, final int port) throws IOException, MalformedObjectNameException {
+    public void registerCollector(final String address, final int port) throws Exception {
         String url = buildUri(address, port);
 
         JMXServiceURL jmxServiceUrl = new JMXServiceURL(url);
@@ -44,20 +52,63 @@ public class GCAnalyzer {
 
         ThreadMXBean threadMXBean = JMX.newMXBeanProxy(mBeanServerConnection, threadInstance.getObjectName(), ThreadMXBean.class, false);
         OperatingSystemMXBean operatingSystemMXBean = JMX.newMXBeanProxy(mBeanServerConnection, osInstance.getObjectName(), OperatingSystemMXBean.class, false);
-        List<GarbageCollectorMXBean> garbageCollectorMXBeans = new ArrayList<>();
-        for (final ObjectInstance gcInstance : gcInstances) {
-            GarbageCollectorMXBean garbageCollectorMXBean = JMX.newMXBeanProxy(mBeanServerConnection, gcInstance.getObjectName(), GarbageCollectorMXBean.class, true);
-            garbageCollectorMXBeans.add(garbageCollectorMXBean);
-        }
 
-        GCCollector gcCollector = new GCCollector(threadMXBean, operatingSystemMXBean, garbageCollectorMXBeans);
+        List<GCCollector> gcCollectors = new ArrayList<>();
+        for (final ObjectInstance gcInstance : gcInstances) {
+            // Create one collector per garbage collector and memory block, so
+            // the total collectors will be n(gcs) * m(memory blocks), about 6 then
+            ObjectName gcObjectName = gcInstance.getObjectName();
+            GarbageCollectorMXBean garbageCollectorMXBean = JMX.newMXBeanProxy(mBeanServerConnection, gcObjectName, GarbageCollectorMXBean.class, true);
+
+            for (final String memoryBlock : MEMORY_BLOCKS) {
+                final GCCollector gcCollector = new GCCollector(memoryBlock, threadMXBean, operatingSystemMXBean, garbageCollectorMXBean);
+                NotificationListener listener = new NotificationListener() {
+                    public void handleNotification(final Notification notification, final Object handback) {
+                        gcCollector.getGcSnapshot();
+                        // LOGGER.error(notification + ":" + handback);
+                    }
+                };
+                mBeanServerConnection.addNotificationListener(gcObjectName, listener, null, null);
+                gcCollectors.add(gcCollector);
+                // LOGGER.error("GCCollector : " + gcCollector);
+            }
+        }
+        gcCollectorMap.put(address, gcCollectors);
     }
 
     public void unregisterCollector(final String address) {
     }
 
-    public Object[][][] getGCData(final String address) {
-        return null;
+    public Object[][][] getGcData(final String address) {
+        List<GCCollector> gcCollectors = gcCollectorMap.get(address);
+        if (gcCollectors == null) {
+            return null;
+        }
+        Object[][][] gcTimeSeriesMatrices = new Object[gcCollectors.size()][][];
+        for (int i = 0; i < gcCollectors.size(); i++) {
+            GCCollector gcCollector = gcCollectors.get(i);
+            GCSmoother gcSmoother = new GCSmoother();
+            List<GCSnapshot> smoothedGcSnapshots = gcSmoother.getSmoothedSnapshots(gcCollector.getGcSnapshots());
+
+            LOGGER.debug("Snapshots : " + gcCollector.getGcSnapshots().size());
+            LOGGER.debug("Smooth snapshots : " + smoothedGcSnapshots.size());
+
+            Object[][] gcTimeSeriesMatrix = new Object[smoothedGcSnapshots.size()][];
+            for (int j = 0; j < smoothedGcSnapshots.size(); j++) {
+                GCSnapshot gcSnapshot = smoothedGcSnapshots.get(j);
+                Object[] gcTimeSeriesVector = new Object[7];
+                gcTimeSeriesVector[0] = gcSnapshot.delta;
+                gcTimeSeriesVector[1] = gcSnapshot.duration;
+                gcTimeSeriesVector[2] = gcSnapshot.interval;
+                gcTimeSeriesVector[3] = gcSnapshot.perCoreLoad;
+                gcTimeSeriesVector[4] = gcSnapshot.runsPerTimeUnit;
+                gcTimeSeriesVector[5] = gcSnapshot.usedToMaxRatio;
+                gcTimeSeriesVector[6] = new Date(gcSnapshot.start);
+                gcTimeSeriesMatrix[j] = gcTimeSeriesVector;
+            }
+            gcTimeSeriesMatrices[i] = gcTimeSeriesMatrix;
+        }
+        return gcTimeSeriesMatrices;
     }
 
     @SuppressWarnings("StringBufferReplaceableByString")
@@ -70,6 +121,14 @@ public class GCAnalyzer {
                 .append(port)
                 .append("/jmxrmi");
         return stringBuilder.toString();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    private void printMBeans(final MBeanServerConnection mBeanServerConnection) throws IOException {
+        Set<ObjectName> objectNames = mBeanServerConnection.queryNames(null, null);
+        for (final ObjectName objectName : objectNames) {
+            LOGGER.error("Object name : " + objectName);
+        }
     }
 
 }

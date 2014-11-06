@@ -4,7 +4,7 @@
 	<groupId>ikube</groupId>
 	<artifactId>ikube-site</artifactId>
 	<packaging>war</packaging>
-    <version>${ikube-version}</version>
+    <version>5.2.0</version>
 
     <scm>
         <url>https://github.com/michaelcouck/ikube</url>
@@ -41,7 +41,6 @@
     </distributionManagement>
 
 	<properties>
-        <ikube-version>5.2.0</ikube-version>
 		<webapps>webapps</webapps>
 		<ikube.war>site.war</ikube.war>
 		<final.name>${project.build.finalName}.${project.packaging}</final.name>

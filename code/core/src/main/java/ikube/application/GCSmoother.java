@@ -1,70 +1,88 @@
 package ikube.application;
 
-import java.util.HashMap;
+import ikube.toolkit.SerializationUtilities;
+
+import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map;
+import java.util.List;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static java.util.concurrent.TimeUnit.MINUTES;
 
 /**
+ * This class will take the garbage collector snapshots and aggregate the values for the duration, the available
+ * memory over a period(one minute at the time of writing). So for example if there are 28 garbage collections over
+ * a particular minute, the average memory will be calculated for the time period and the value used to populate
+ * a smoothed/averaged {@link ikube.application.GCSnapshot} object. These smoothed snapshots will then be returned
+ * to the caller as a chronological list of averaged minutes.
+ *
  * @author Michael Couck
  * @version 01.00
  * @since 23-10-2014
  */
 class GCSmoother {
 
-    Map<String, LinkedList<GCSnapshot>> getSmoothedSnapshots(final Map<String, LinkedList<GCSnapshot>> gcSnapshots) {
-        Map<String, LinkedList<GCSnapshot>> smoothedGcSnapshots = new HashMap<>();
-        // Smooth the snapshots, using one minute as the time interval
-        // Calculate slope: y2 - y1 / x2 - x1
-        // Calculate a point per minute: y = mx + c
-        for (final Map.Entry<String, LinkedList<GCSnapshot>> mapEntry : gcSnapshots.entrySet()) {
-            LinkedList<GCSnapshot> snapshots = mapEntry.getValue();
-            LinkedList<GCSnapshot> smoothedSnapshots = getSmoothedSnapshots(snapshots);
-            smoothedGcSnapshots.put(mapEntry.getKey(), smoothedSnapshots);
+    /**
+     * This method aggregates the snapshots over a period of a minute. The original snapshots have the current
+     * time in milliseconds as the starting value, but the smoothed snapshots have the minute as the starting value,
+     * as the averages are over a minute and not milliseconds.
+     *
+     * @param gcSnapshots the snapshots that need to be averaged over a minute
+     * @return the smoothed or averaged snapshots, typically there will be far less than the input, and note that
+     * the start value is the minute and not the millisecond
+     */
+    @SuppressWarnings("unchecked")
+    List<GCSnapshot> getSmoothedSnapshots(final List<GCSnapshot> gcSnapshots) {
+        List<GCSnapshot> smoothedSnapshots = new LinkedList<>();
+        if (gcSnapshots.isEmpty()) {
+            return smoothedSnapshots;
         }
-        return smoothedGcSnapshots;
-    }
 
-    private LinkedList<GCSnapshot> getSmoothedSnapshots(final LinkedList<GCSnapshot> snapshots) {
-        LinkedList<GCSnapshot> smoothedSnapshots = new LinkedList<>();
-        // Average all the values per minute for the snapshots in the time range
-        long startMinute = MILLISECONDS.toMinutes(snapshots.getFirst().start);
-        int snapshotsPerMinute = 0;
-        GCSnapshot smoothedGcSnapshot = new GCSnapshot();
-        for (final GCSnapshot gcSnapshot : snapshots) {
-            snapshotsPerMinute++;
-            long gcMinute = MILLISECONDS.toMinutes(gcSnapshot.start);
-            if (gcMinute > startMinute) {
-                // Calculate the averages for the smoothed snapshot
-                aggregateSnapshotValues(smoothedGcSnapshot, snapshotsPerMinute);
-                smoothedSnapshots.add(smoothedGcSnapshot);
+        GCSnapshot gcSnapshotSmooth = null;
+        Iterator<GCSnapshot> gcSnapshotIterator = gcSnapshots.iterator();
+        do {
+            GCSnapshot gcSnapshot = gcSnapshotIterator.next();
+            long nextMinute = MILLISECONDS.toMinutes(gcSnapshot.start);
 
-                // Reset the average running totals
-                smoothedGcSnapshot = new GCSnapshot();
-                snapshotsPerMinute = 1;
-                startMinute = gcMinute;
+            if (gcSnapshotSmooth == null) {
+                gcSnapshotSmooth = SerializationUtilities.clone(GCSnapshot.class, gcSnapshot);
+                gcSnapshotSmooth.start = nextMinute;
+                gcSnapshotSmooth.end = nextMinute + 1;
+                smoothedSnapshots.add(gcSnapshotSmooth);
+                continue;
             }
-            accumulateSnapshotValues(gcSnapshot, smoothedGcSnapshot, startMinute);
-        }
+
+            if (nextMinute > gcSnapshotSmooth.start) {
+
+                aggregateSnapshotValues(gcSnapshotSmooth);
+                gcSnapshotSmooth = new GCSnapshot();
+                gcSnapshotSmooth.start = nextMinute;
+                gcSnapshotSmooth.end = nextMinute + 1;
+
+                smoothedSnapshots.add(gcSnapshotSmooth);
+            }
+            accumulateSnapshotValues(gcSnapshot, gcSnapshotSmooth);
+            if (!gcSnapshotIterator.hasNext()) {
+                aggregateSnapshotValues(gcSnapshotSmooth);
+                break;
+            }
+        } while (true);
+
         return smoothedSnapshots;
     }
 
-    private void aggregateSnapshotValues(final GCSnapshot smoothedGcSnapshot, final int snapshotsPerMinute) {
-        smoothedGcSnapshot.duration = smoothedGcSnapshot.duration / snapshotsPerMinute;
-        smoothedGcSnapshot.available = smoothedGcSnapshot.available / snapshotsPerMinute;
-        smoothedGcSnapshot.usedToMaxRatio = smoothedGcSnapshot.usedToMaxRatio / snapshotsPerMinute;
-        smoothedGcSnapshot.cpuLoad = smoothedGcSnapshot.cpuLoad / snapshotsPerMinute;
-        smoothedGcSnapshot.processors = smoothedGcSnapshot.processors / snapshotsPerMinute;
-        smoothedGcSnapshot.perCoreLoad = smoothedGcSnapshot.perCoreLoad / snapshotsPerMinute;
-        smoothedGcSnapshot.threads = smoothedGcSnapshot.threads / snapshotsPerMinute;
-        smoothedGcSnapshot.interval = smoothedGcSnapshot.interval / snapshotsPerMinute;
-        smoothedGcSnapshot.delta = smoothedGcSnapshot.delta / snapshotsPerMinute;
-        smoothedGcSnapshot.runsPerTimeUnit = smoothedGcSnapshot.runsPerTimeUnit / snapshotsPerMinute;
+    private void aggregateSnapshotValues(final GCSnapshot smoothedGcSnapshot) {
+        smoothedGcSnapshot.duration = smoothedGcSnapshot.duration / smoothedGcSnapshot.runsPerTimeUnit;
+        smoothedGcSnapshot.available = smoothedGcSnapshot.available / smoothedGcSnapshot.runsPerTimeUnit;
+        smoothedGcSnapshot.usedToMaxRatio = smoothedGcSnapshot.usedToMaxRatio / smoothedGcSnapshot.runsPerTimeUnit;
+        smoothedGcSnapshot.cpuLoad = smoothedGcSnapshot.cpuLoad / smoothedGcSnapshot.runsPerTimeUnit;
+        smoothedGcSnapshot.processors = smoothedGcSnapshot.processors / smoothedGcSnapshot.runsPerTimeUnit;
+        smoothedGcSnapshot.perCoreLoad = smoothedGcSnapshot.perCoreLoad / smoothedGcSnapshot.runsPerTimeUnit;
+        smoothedGcSnapshot.threads = smoothedGcSnapshot.threads / smoothedGcSnapshot.runsPerTimeUnit;
+        smoothedGcSnapshot.interval = smoothedGcSnapshot.interval / smoothedGcSnapshot.runsPerTimeUnit;
+        smoothedGcSnapshot.delta = smoothedGcSnapshot.delta / smoothedGcSnapshot.runsPerTimeUnit;
     }
 
-    private void accumulateSnapshotValues(final GCSnapshot gcSnapshot, final GCSnapshot smoothedGcSnapshot, final long minute) {
+    private void accumulateSnapshotValues(final GCSnapshot gcSnapshot, final GCSnapshot smoothedGcSnapshot) {
         smoothedGcSnapshot.duration += gcSnapshot.duration;
         smoothedGcSnapshot.available += gcSnapshot.available;
         smoothedGcSnapshot.usedToMaxRatio += gcSnapshot.usedToMaxRatio;
@@ -75,9 +93,6 @@ class GCSmoother {
         smoothedGcSnapshot.interval += gcSnapshot.interval;
         smoothedGcSnapshot.delta += gcSnapshot.delta;
         smoothedGcSnapshot.runsPerTimeUnit += gcSnapshot.runsPerTimeUnit;
-
-        smoothedGcSnapshot.start = MINUTES.toMillis(minute);
-        smoothedGcSnapshot.end = MINUTES.toMillis(minute + 1);
     }
 
 }
