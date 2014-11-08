@@ -18,6 +18,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * This class will accumulate several properties from the running JVM via the MBeans over a
+ * JMX connection. The types of data accumulated, the duration of the garbage collection, the interval
+ * between garbage collections, the cpu load etc., are then used to populate a {@link ikube.application.GCSnapshot}
+ * object. These populated snapshots then will be used an analysis to predict failure in the JVMs, or as
+ * a monitoring feature.
+ * <p/>
  * Unused memory areas are:
  * <pre>
  *     * Code Cache
@@ -31,15 +37,16 @@ import java.util.Map;
 class GCCollector implements Serializable {
 
     static final Logger LOGGER = LoggerFactory.getLogger(GCCollector.class);
+
     static final double PRUNE_THRESHOLD = IConstants.HUNDRED_THOUSAND;
     static final double PRUNE_RATIO = 0.75;
+
+    private transient final List<GCSnapshot> gcSnapshots;
 
     private transient final String memoryBlock;
     private transient final ThreadMXBean threadMXBean;
     private transient final OperatingSystemMXBean operatingSystemMXBean;
     private transient final GarbageCollectorMXBean garbageCollectorMXBean;
-
-    private transient final List<GCSnapshot> gcSnapshots;
 
     GCCollector(final String memoryBlock,
                 final ThreadMXBean threadMXBean,

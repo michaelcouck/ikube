@@ -2,17 +2,17 @@ package ikube.toolkit;
 
 public class Solution {
 
-    public int solution(final int[][] matrix) {
-        int countries = matrix.length * matrix[0].length;
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                if (matrix[i].length > j + 1) {
-                    if (matrix[i][j] == matrix[i][j + 1]) {
+    public int solution(final int[][] A) {
+        int countries = A.length * A[0].length;
+        for (int i = 0; i < A.length; i++) {
+            for (int j = 0; j < A[i].length; j++) {
+                if (A[i].length > j + 1) {
+                    if (A[i][j] == A[i][j + 1]) {
                         countries--;
                     }
                 }
-                if (matrix.length > i + 1) {
-                    if (matrix[i][j] == matrix[i + 1][j]) {
+                if (A.length > i + 1) {
+                    if (A[i][j] == A[i + 1][j]) {
                         countries--;
                     }
                 }
@@ -30,6 +30,7 @@ public class Solution {
             flags[offset] = Boolean.TRUE;
             int previous = offset;
             offset += A[offset];
+
             if (offset == previous) {
                 break;
             }
