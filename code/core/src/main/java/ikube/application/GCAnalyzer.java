@@ -37,8 +37,22 @@ public class GCAnalyzer {
     @Autowired
     private IAnalyticsService analyticsService;
 
+    /**
+     * A map of all the collectors keyed by the ip address and the port.
+     */
     private Map<String, List<GCCollector>> gcCollectorMap = new HashMap<>();
 
+    /**
+     * This registers the collector, connecting to the remote machine, getting access to various
+     * m-beans, {@link java.lang.management.ThreadMXBean}, {@link java.lang.management.OperatingSystemMXBean} and the
+     * {@link com.sun.management.GarbageCollectorMXBean}s. A {@link ikube.application.GCCollector} object is instantiated
+     * for each garbage collector bean and each memory area. These collectors will then gather data from their respective
+     * m-beans, being notified of events and polling for the data, and hold references to snapshots of the collected data.
+     *
+     * @param address the ip address of the remote jvm to be monitored
+     * @param port    the port of the remote machine to access the jndi registry at, i.e. the rmi registry for the m-beans
+     * @throws Exception
+     */
     public void registerCollector(final String address, final int port) throws Exception {
         // TODO: This should be in a retry block
         MBeanServerConnection mBeanServerConnection = getMBeanServerConnection(address, port);
@@ -62,6 +76,46 @@ public class GCAnalyzer {
         }
 
         gcCollectorMap.put(address, gcCollectors);
+    }
+
+    /**
+     * This method accesses all the data for all the snapshots in all the collectors. Normalizes the data to be
+     * consistent over equal time periods using the {@link ikube.application.GCSmoother}. Then creates a matrix of
+     * matrices, ...
+     *
+     * @param address the address of the target jvm get get the garbage collection and system data for
+     * @return a vector of matrices of the snapshot data of the target jvm
+     */
+    public Object[][][] getGcData(final String address) {
+        List<GCCollector> gcCollectors = gcCollectorMap.get(address);
+        if (gcCollectors == null) {
+            return null;
+        }
+        Object[][][] gcTimeSeriesMatrices = new Object[gcCollectors.size()][][];
+        for (int i = 0; i < gcCollectors.size(); i++) {
+            GCCollector gcCollector = gcCollectors.get(i);
+            GCSmoother gcSmoother = new GCSmoother();
+            List<GCSnapshot> smoothedGcSnapshots = gcSmoother.getSmoothedSnapshots(gcCollector.getGcSnapshots());
+
+            LOGGER.debug("Snapshots : " + gcCollector.getGcSnapshots().size());
+            LOGGER.debug("Smooth snapshots : " + smoothedGcSnapshots.size());
+
+            Object[][] gcTimeSeriesMatrix = new Object[smoothedGcSnapshots.size()][];
+            for (int j = 0; j < smoothedGcSnapshots.size(); j++) {
+                GCSnapshot gcSnapshot = smoothedGcSnapshots.get(j);
+                Object[] gcTimeSeriesVector = new Object[7];
+                gcTimeSeriesVector[0] = gcSnapshot.delta;
+                gcTimeSeriesVector[1] = gcSnapshot.duration;
+                gcTimeSeriesVector[2] = gcSnapshot.interval;
+                gcTimeSeriesVector[3] = gcSnapshot.perCoreLoad;
+                gcTimeSeriesVector[4] = gcSnapshot.runsPerTimeUnit;
+                gcTimeSeriesVector[5] = gcSnapshot.usedToMaxRatio;
+                gcTimeSeriesVector[6] = new Date(gcSnapshot.start);
+                gcTimeSeriesMatrix[j] = gcTimeSeriesVector;
+            }
+            gcTimeSeriesMatrices[i] = gcTimeSeriesMatrix;
+        }
+        return gcTimeSeriesMatrices;
     }
 
     MBeanServerConnection getMBeanServerConnection(final String address, final int port) throws IOException {
@@ -95,38 +149,6 @@ public class GCAnalyzer {
     }
 
     public void unregisterCollector(final String address) {
-    }
-
-    public Object[][][] getGcData(final String address) {
-        List<GCCollector> gcCollectors = gcCollectorMap.get(address);
-        if (gcCollectors == null) {
-            return null;
-        }
-        Object[][][] gcTimeSeriesMatrices = new Object[gcCollectors.size()][][];
-        for (int i = 0; i < gcCollectors.size(); i++) {
-            GCCollector gcCollector = gcCollectors.get(i);
-            GCSmoother gcSmoother = new GCSmoother();
-            List<GCSnapshot> smoothedGcSnapshots = gcSmoother.getSmoothedSnapshots(gcCollector.getGcSnapshots());
-
-            LOGGER.debug("Snapshots : " + gcCollector.getGcSnapshots().size());
-            LOGGER.debug("Smooth snapshots : " + smoothedGcSnapshots.size());
-
-            Object[][] gcTimeSeriesMatrix = new Object[smoothedGcSnapshots.size()][];
-            for (int j = 0; j < smoothedGcSnapshots.size(); j++) {
-                GCSnapshot gcSnapshot = smoothedGcSnapshots.get(j);
-                Object[] gcTimeSeriesVector = new Object[7];
-                gcTimeSeriesVector[0] = gcSnapshot.delta;
-                gcTimeSeriesVector[1] = gcSnapshot.duration;
-                gcTimeSeriesVector[2] = gcSnapshot.interval;
-                gcTimeSeriesVector[3] = gcSnapshot.perCoreLoad;
-                gcTimeSeriesVector[4] = gcSnapshot.runsPerTimeUnit;
-                gcTimeSeriesVector[5] = gcSnapshot.usedToMaxRatio;
-                gcTimeSeriesVector[6] = new Date(gcSnapshot.start);
-                gcTimeSeriesMatrix[j] = gcTimeSeriesVector;
-            }
-            gcTimeSeriesMatrices[i] = gcTimeSeriesMatrix;
-        }
-        return gcTimeSeriesMatrices;
     }
 
     @SuppressWarnings("StringBufferReplaceableByString")

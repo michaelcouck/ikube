@@ -30,7 +30,7 @@ import static junit.framework.Assert.*;
  */
 public class WekaClassifierTest extends AbstractTest {
 
-    private String positive = "my beautiful little girl";
+    private String positive = "My beautiful little girl";
     @SuppressWarnings("FieldCanBeLocal")
     private String negative = "I hate this selfish woman";
 
