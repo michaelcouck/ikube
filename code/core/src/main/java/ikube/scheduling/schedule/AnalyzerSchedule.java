@@ -6,7 +6,9 @@ import ikube.scheduling.Schedule;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * This schedule will build the analyzers.
+ * This schedule will build the analyzers. Generally we want the analyzers to be built
+ * once the rest of the system is up and running so we can have a stable fully instantiated
+ * application context for any resources that we need for the build.
  *
  * @author Michael Couck
  * @version 01.00
@@ -23,9 +25,8 @@ public class AnalyzerSchedule extends Schedule {
     @Override
     public void run() {
         try {
-            logger.info("Starting the analyzer build : ");
+            logger.info("Starting to build the analyzers : ");
             analyzerManager.buildAnalyzers(analyticsService.getContexts());
-            logger.info("Finished the analyzer build : ");
         } catch (final Exception e) {
             logger.error("Exception building the analyzers : ", e);
         }

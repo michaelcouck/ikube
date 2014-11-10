@@ -40,10 +40,9 @@ public class AnalyzerManager {
             public void run() {
                 try {
                     analyzer.init(context);
-                    LOGGER.info("Building analyzer : " + context.getName());
                     analyzer.build(context);
-                    LOGGER.info("Analyzer built and ready : " + context.getName());
                     context.setBuilt(Boolean.TRUE);
+                    LOGGER.info("Analyzer built and ready : " + context.getName());
                 } catch (final Exception e) {
                     LOGGER.error("Exception building analyzer : " + analyzer + ", " + context.getName(), e);
                 } finally {
@@ -59,11 +58,6 @@ public class AnalyzerManager {
         if (waitForBuild) {
             // We'll wait until the analyzer is built completely
             ThreadUtilities.waitForFuture(future, Integer.MAX_VALUE);
-        } else {
-            // We'll wait a bit for the future to end, but potentially
-            // this process can take hours, to build a large classifier of a million
-            // vectors for example, so we return
-            ThreadUtilities.waitForFuture(future, 3);
         }
         if (future != null && future.isDone()) {
             LOGGER.info("Analyzer finished building : " + future.isDone());
