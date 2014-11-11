@@ -3,8 +3,8 @@ package ikube.application;
 import com.sun.management.GarbageCollectorMXBean;
 import ikube.AbstractTest;
 import junit.framework.Assert;
+import org.apache.commons.beanutils.BeanUtilsBean2;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -13,20 +13,20 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import javax.management.MBeanServerConnection;
-import javax.management.ObjectInstance;
-import javax.management.ObjectName;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.ThreadMXBean;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 import static java.lang.System.currentTimeMillis;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.MINUTES;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 /**
@@ -34,7 +34,6 @@ import static org.mockito.Mockito.when;
  * @version 01.00
  * @since 23-10-2014
  */
-@Ignore
 public class GCAnalyzerTest extends AbstractTest {
 
     @Spy
@@ -48,12 +47,21 @@ public class GCAnalyzerTest extends AbstractTest {
     private OperatingSystemMXBean operatingSystemMXBean;
     @Mock
     private GarbageCollectorMXBean garbageCollectorMXBean;
+    @Mock
+    private GCCollector edenCollector;
+    @Mock
+    private GCCollector permCollector;
+    @Mock
+    private GCCollector oldCollector;
+    @Mock
+    private GCSmoother gcSmoother;
 
     private List<GarbageCollectorMXBean> garbageCollectorMXBeans;
 
     @Before
     public void before() {
         garbageCollectorMXBeans = new ArrayList<>();
+        garbageCollectorMXBeans.add(garbageCollectorMXBean);
     }
 
     @Test
@@ -65,26 +73,68 @@ public class GCAnalyzerTest extends AbstractTest {
                 return mBeanConnectionServer;
             }
         }).when(gcAnalyzer).getMBeanServerConnection(address, port);
-
         when(gcAnalyzer.getMBeanServerConnection(address, port)).thenReturn(mBeanConnectionServer);
-
-
-        // when(gcAnalyzer.getThreadMXBean(mBeanConnectionServer)).thenReturn(threadMXBean);
         doAnswer(new Answer() {
             @Override
             public Object answer(final InvocationOnMock invocation) throws Throwable {
                 return threadMXBean;
             }
         }).when(gcAnalyzer).getThreadMXBean(mBeanConnectionServer);
-
-        when(gcAnalyzer.getOperatingSystemMXBean(mBeanConnectionServer)).thenReturn(operatingSystemMXBean);
-        when(gcAnalyzer.getGarbageCollectorMXBeans(mBeanConnectionServer)).thenReturn(garbageCollectorMXBeans);
-        garbageCollectorMXBeans.add(garbageCollectorMXBean);
-
-        // ObjectInstance objectInstance = null;
-        // when(mBeanConnectionServer.queryMBeans(any(ObjectName.class), null)).thenReturn(new TreeSet<ObjectInstance>(Arrays.asList(objectInstance)));
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(final InvocationOnMock invocation) throws Throwable {
+                return operatingSystemMXBean;
+            }
+        }).when(gcAnalyzer).getOperatingSystemMXBean(mBeanConnectionServer);
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(final InvocationOnMock invocation) throws Throwable {
+                return garbageCollectorMXBeans;
+            }
+        }).when(gcAnalyzer).getGarbageCollectorMXBeans(mBeanConnectionServer);
 
         gcAnalyzer.registerCollector(address, port);
+        assertTrue(gcAnalyzer.gcCollectorMap.containsKey(address));
+        assertEquals(GCAnalyzer.MEMORY_BLOCKS.length, gcAnalyzer.gcCollectorMap.get(address).size());
+    }
+
+    @Test
+    @SuppressWarnings({"NullArgumentToVariableArgMethod", "unchecked", "ResultOfMethodCallIgnored"})
+    public void getGcData() {
+        List<GCSnapshot> smoothGcSnapshots = Arrays.asList(getGcSnapshot(), getGcSnapshot(), getGcSnapshot());
+        when(gcSmoother.getSmoothedSnapshots(any(List.class))).thenReturn(smoothGcSnapshots);
+        gcAnalyzer.gcCollectorMap.put(address, Arrays.asList(edenCollector, permCollector, oldCollector));
+
+        Object[][][] gcData = gcAnalyzer.getGcData(address);
+        for (final Object[][] matrix : gcData) {
+            for (int i = 0; i < matrix.length; i++) {
+                Object[] vector = matrix[i];
+                GCSnapshot gcSnapshot = smoothGcSnapshots.get(i);
+
+                assertTrue(vector[0].equals(gcSnapshot.delta));
+                assertTrue(vector[1].equals(gcSnapshot.duration));
+                assertTrue(vector[2].equals(gcSnapshot.interval));
+                assertTrue(vector[3].equals(gcSnapshot.perCoreLoad));
+                assertTrue(vector[4].equals(gcSnapshot.runsPerTimeUnit));
+                assertTrue(vector[5].equals(gcSnapshot.usedToMaxRatio));
+                assertTrue(vector[6].equals(new Date(gcSnapshot.start)));
+            }
+        }
+    }
+
+    GCSnapshot getGcSnapshot() {
+        GCSnapshot gcSnapshot = new GCSnapshot();
+        gcSnapshot.available = 6;
+        gcSnapshot.cpuLoad = 4.32;
+        gcSnapshot.delta = -0.23;
+        gcSnapshot.duration = 213l;
+        gcSnapshot.end = 0;
+        gcSnapshot.perCoreLoad = 0.581;
+        gcSnapshot.runsPerTimeUnit = 3;
+        gcSnapshot.start = 0;
+        gcSnapshot.threads = 28;
+        gcSnapshot.usedToMaxRatio = 0.568;
+        return gcSnapshot;
     }
 
     @Test

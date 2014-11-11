@@ -41,7 +41,7 @@ public class WekaForecastClassifier extends WekaClassifier {
         } else if (!Object[].class.isAssignableFrom(input.getClass())) {
             throw new RuntimeException("Input for time series classifier must be of object array : " + input);
         }
-        WekaForecasterClassifierOption option = new WekaForecasterClassifierOption((Object[]) input);
+        WekaForecastClassifierOption option = new WekaForecastClassifierOption((Object[]) input);
 
         Object[] models = context.getModels();
         String[] fieldsToForecast = split(option.getFieldsToForecast(), DELIMITER_CHARACTERS);

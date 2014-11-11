@@ -8,7 +8,7 @@ import org.kohsuke.args4j.Option;
  * @since 27-09-2014
  */
 @SuppressWarnings("UnusedDeclaration")
-public class WekaForecasterClassifierOption extends ikube.analytics.Option {
+public class WekaForecastClassifierOption extends ikube.analytics.Option {
 
     @Option(name = "-fieldsToForecast")
     private String fieldsToForecast;
@@ -21,7 +21,7 @@ public class WekaForecasterClassifierOption extends ikube.analytics.Option {
     @Option(name = "-forecasts")
     private int forecasts;
 
-    public WekaForecasterClassifierOption(final Object[] options) {
+    public WekaForecastClassifierOption(final Object[] options) {
         super(options);
     }
 

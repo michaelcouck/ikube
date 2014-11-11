@@ -34,13 +34,26 @@ public class GCAnalyzer {
      */
     static final String[] MEMORY_BLOCKS = {EDEN_SPACE, PERM_GEN, OLD_GEN};
 
+    /**
+     * This bean will generate the forecasts from the data collected in the collectors.
+     */
     @Autowired
-    private IAnalyticsService analyticsService;
+    IAnalyticsService analyticsService;
+
+    /**
+     * This object normalizes the snapshots, aggregating them into snapshots of one minute.
+     */
+    GCSmoother gcSmoother;
 
     /**
      * A map of all the collectors keyed by the ip address and the port.
      */
-    private Map<String, List<GCCollector>> gcCollectorMap = new HashMap<>();
+    Map<String, List<GCCollector>> gcCollectorMap;
+
+    GCAnalyzer() {
+        gcSmoother = new GCSmoother();
+        gcCollectorMap = new HashMap<>();
+    }
 
     /**
      * This registers the collector, connecting to the remote machine, getting access to various
@@ -94,11 +107,7 @@ public class GCAnalyzer {
         Object[][][] gcTimeSeriesMatrices = new Object[gcCollectors.size()][][];
         for (int i = 0; i < gcCollectors.size(); i++) {
             GCCollector gcCollector = gcCollectors.get(i);
-            GCSmoother gcSmoother = new GCSmoother();
             List<GCSnapshot> smoothedGcSnapshots = gcSmoother.getSmoothedSnapshots(gcCollector.getGcSnapshots());
-
-            LOGGER.debug("Snapshots : " + gcCollector.getGcSnapshots().size());
-            LOGGER.debug("Smooth snapshots : " + smoothedGcSnapshots.size());
 
             Object[][] gcTimeSeriesMatrix = new Object[smoothedGcSnapshots.size()][];
             for (int j = 0; j < smoothedGcSnapshots.size(); j++) {
@@ -111,9 +120,15 @@ public class GCAnalyzer {
                 gcTimeSeriesVector[4] = gcSnapshot.runsPerTimeUnit;
                 gcTimeSeriesVector[5] = gcSnapshot.usedToMaxRatio;
                 gcTimeSeriesVector[6] = new Date(gcSnapshot.start);
+
                 gcTimeSeriesMatrix[j] = gcTimeSeriesVector;
             }
             gcTimeSeriesMatrices[i] = gcTimeSeriesMatrix;
+
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.error("Snapshots : " + gcCollector.getGcSnapshots().size());
+                LOGGER.error("Smooth snapshots : " + smoothedGcSnapshots.size());
+            }
         }
         return gcTimeSeriesMatrices;
     }
@@ -152,7 +167,7 @@ public class GCAnalyzer {
     }
 
     @SuppressWarnings("StringBufferReplaceableByString")
-    private String buildUri(final String address, final int port) {
+    String buildUri(final String address, final int port) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder
                 .append("service:jmx:rmi:///jndi/rmi://")

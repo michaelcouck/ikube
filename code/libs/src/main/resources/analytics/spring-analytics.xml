@@ -76,7 +76,6 @@
         class="ikube.model.Context"
         property:name="english-sentiment"
         property:analyzer="ikube.analytics.weka.WekaClassifier"
-        property:options="-D"
         property:persisted="false"
         property:buildInParallel="true">
 
