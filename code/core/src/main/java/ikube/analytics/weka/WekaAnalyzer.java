@@ -19,8 +19,7 @@ import java.util.concurrent.Future;
 
 import static ikube.analytics.weka.WekaToolkit.*;
 import static ikube.toolkit.FileUtilities.getContents;
-import static ikube.toolkit.ThreadUtilities.submit;
-import static ikube.toolkit.ThreadUtilities.waitForAnonymousFutures;
+import static ikube.toolkit.ThreadUtilities.*;
 import static org.apache.commons.lang.StringUtils.split;
 
 /**
@@ -78,59 +77,56 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
         final Object[] models = context.getModels();
         final Filter[] filters = getFilters(context);
 
-        final String[] evaluations = new String[algorithms.length];
-        final Object[] capabilities = new Object[algorithms.length];
-
-        class AnalyzerBuilder implements Runnable {
-            final int index;
-
-            AnalyzerBuilder(final int index) {
-                this.index = index;
+        List<Future> futures = Lists.newArrayList();
+        for (int i = 0; i < context.getAlgorithms().length; i++) {
+            Runnable builder = getAnalyzerBuilder(algorithms[i], (Instances) models[i], filters[i]);
+            logger.error("Analyzer : " + i + ":" + builder);
+            Future<?> future = submit(this.getClass().getName(), builder);
+            if (context.isBuildInParallel()) {
+                futures.add(future);
+            } else {
+                waitForFuture(future, Long.MAX_VALUE);
             }
+        }
 
+        logger.error("Waiting for futures : ");
+        waitForAnonymousFutures(futures, Long.MAX_VALUE);
+
+        context.setBuilt(Boolean.TRUE);
+    }
+
+    private Runnable getAnalyzerBuilder(final Object analyzer, final Instances instances, final Filter filter) {
+        class AnalyzerBuilder implements Runnable {
             public void run() {
                 try {
-                    Instances instances = (Instances) models[index];
-
                     // Filter the data if necessary
-                    Instances filteredInstances = filter(instances, filters);
+                    Instances filteredInstances = filter(instances, filter);
                     filteredInstances.setRelationName("filtered-instances");
 
-                    Object analyzer = algorithms[index];
                     if (Clusterer.class.isAssignableFrom(analyzer.getClass())) {
                         Clusterer clusterer = ((Clusterer) analyzer);
                         logger.info("Building clusterer : " + instances.numInstances());
                         clusterer.buildClusterer(filteredInstances);
-                        evaluations[index] = evaluate(clusterer, instances);
-                        capabilities[index] = clusterer.getCapabilities().toString();
-                        logger.info("Clusterer built : " + filteredInstances.numInstances() + ", " + context.getName());
+                        // evaluations[index] = evaluate(clusterer, instances);
+                        // capabilities[index] = clusterer.getCapabilities().toString();
+                        logger.info("Clusterer built : " + filteredInstances.numInstances());
                     } else if (Classifier.class.isAssignableFrom(analyzer.getClass())) {
                         Classifier classifier = (Classifier) analyzer;
                         // And build the model
-                        logger.error("Building classifier : " + instances.numInstances() + ", " + context.getName());
+                        logger.error("Building classifier : " + instances.numInstances());
                         classifier.buildClassifier(filteredInstances);
-                        logger.error("Classifier built : " + filteredInstances.numInstances() + ", " + context.getName());
+                        logger.error("Classifier built : " + filteredInstances.numInstances());
                         // Set the evaluation of the classifier and the training model
-                        evaluations[index] = evaluate(classifier, filteredInstances);
-                        capabilities[index] = classifier.getCapabilities().toString();
+                        // evaluations[index] = evaluate(classifier, filteredInstances);
+                        evaluate(classifier, filteredInstances);
+                        // capabilities[index] = classifier.getCapabilities().toString();
                     }
                 } catch (final Exception e) {
                     throw new RuntimeException(e);
                 }
             }
         }
-
-        List<Future> futures = Lists.newArrayList();
-        for (int i = 0; i < context.getAlgorithms().length; i++) {
-            Future<?> future = submit(this.getClass().getName(), new AnalyzerBuilder(i));
-            futures.add(future);
-        }
-        waitForAnonymousFutures(futures, Long.MAX_VALUE);
-
-        context.setAlgorithms(algorithms);
-        context.setEvaluations(evaluations);
-        context.setCapabilities(capabilities);
-        context.setBuilt(Boolean.TRUE);
+        return new AnalyzerBuilder();
     }
 
     /**

@@ -14,9 +14,7 @@ import java.util.List;
 
 import static ikube.toolkit.FileUtilities.findFileRecursively;
 import static ikube.toolkit.XmlUtilities.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Michael Couck
@@ -27,20 +25,19 @@ public class XmlUtilitiesTest extends AbstractTest {
 
     @Test
     public void getDocumentElementsAndElement() throws FileNotFoundException {
-        File file = findFileRecursively(new File(".").getAbsoluteFile(), 3, "spring.xml");
+        File file = findFileRecursively(new File("."), "doctors.xml");
         InputStream inputStream = new FileInputStream(file);
         Document document = getDocument(inputStream, Constants.ENCODING);
-        assertNotNull("This should be the Spring configuration file : ", document);
-        List<Element> elements = getElements(document.getRootElement(), "import");
-        assertTrue("There are at least one imports in this file : ", elements.size() > 0);
-        Element beanElement = getElement(document.getRootElement(), "import");
-        assertNotNull("The bean element is the configurer : ", beanElement);
+        assertNotNull("This should be the file : ", document);
+        List<Element> elements = getElements(document.getRootElement(), "pagination");
+        assertTrue("There are at least one in this file : ", elements.size() > 0);
+        Element beanElement = getElement(document.getRootElement(), "email");
+        assertNotNull("The email tag : ", beanElement);
     }
 
     @Test
     public void getElementNodeNameAttributeValue() throws FileNotFoundException {
-        File file = findFileRecursively(new File(".").getAbsoluteFile(), "xml-utilities.xml");
-        logger.error("File : " + file);
+        File file = findFileRecursively(new File("."), "xml-utilities.xml");
         InputStream inputStream = new FileInputStream(file);
         Document document = getDocument(inputStream, Constants.ENCODING);
 

@@ -81,7 +81,7 @@ public class WekaClassifier extends WekaAnalyzer {
             instance.setMissing(0);
 
             // Classify the instance
-            Instance filteredInstance = filter(instance, filters);
+            Instance filteredInstance = filter(instance, filters[i]);
             double classification = classifier.classifyInstance(filteredInstance);
             String clazz = instances.classAttribute().value((int) classification);
             double[] distributionForInstance = classifier.distributionForInstance(filteredInstance);
@@ -108,7 +108,7 @@ public class WekaClassifier extends WekaAnalyzer {
             }
 
             // Do we need this?
-            instances.remove(instance);
+            // instances.remove(instance);
         }
 
         analysis.setClazz(majorityClass);
@@ -129,7 +129,7 @@ public class WekaClassifier extends WekaAnalyzer {
         for (int i = 0; i < classifiers.length; i++) {
             Classifier classifier = (Classifier) classifiers[i];
             // Instance filteredInstance = filter(instance, filter);
-            Instance filteredInstance = filter((Instance) instance.copy(), filters);
+            Instance filteredInstance = filter((Instance) instance.copy(), filters[i]);
             distributionForInstance[i] = classifier.distributionForInstance(filteredInstance);
         }
         return distributionForInstance;

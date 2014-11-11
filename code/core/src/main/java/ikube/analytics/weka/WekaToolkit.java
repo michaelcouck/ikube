@@ -225,20 +225,16 @@ public final class WekaToolkit {
      * for us in this method.
      *
      * @param instance the instance to filter into the correct form for the analyser
-     * @param filters  the filter to use for the transformation
+     * @param filter   the filter to use for the transformation
      * @return the filtered instance that is usable in the analyzer
      * @throws Exception
      */
-    public static Instance filter(final Instance instance, final Filter... filters) throws Exception {
+    public static Instance filter(final Instance instance, final Filter filter) throws Exception {
         Instance filteredInstance = instance;
-        if (filters != null) {
-            for (final Filter filter : filters) {
-                // Filter from string to inverse vector if necessary
-                if (filter != null) {
-                    filter.input(instance);
-                    filteredInstance = filter.output();
-                }
-            }
+        // Filter from string to inverse vector if necessary
+        if (filter != null) {
+            filter.input(instance);
+            filteredInstance = filter.output();
         }
         return filteredInstance;
     }
@@ -248,20 +244,15 @@ public final class WekaToolkit {
      * replacing missing values, converting to numbers and so on.
      *
      * @param instances the instances data set to apply the filters on, converting and returning a new instances object potentially
-     * @param filters   the filters to be applied to the data in the instances object
+     * @param filter    the filter to be applied to the data in the instances object
      * @return a filtered instances, potentially a new instance
      * @throws Exception
      */
-    public static synchronized Instances filter(final Instances instances, final Filter... filters) throws Exception {
-        if (filters == null || filters.length == 0) {
-            return instances;
-        }
+    public static synchronized Instances filter(final Instances instances, final Filter filter) throws Exception {
         Instances filteredInstances = instances;
-        for (final Filter filter : filters) {
-            if (filter != null) {
-                filter.setInputFormat(filteredInstances);
-                filteredInstances = Filter.useFilter(filteredInstances, filter);
-            }
+        if (filter != null) {
+            filter.setInputFormat(filteredInstances);
+            filteredInstances = Filter.useFilter(filteredInstances, filter);
         }
         return filteredInstances;
     }

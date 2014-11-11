@@ -51,7 +51,7 @@ public class WekaAnalyzerTest extends AbstractTest {
         context.setAnalyzer(wekaAnalyzer);
 
         context.setAlgorithms(algorithm, algorithm, algorithm);
-        context.setFilters(filter);
+        context.setFilters(filter, filter, filter);
         context.setOptions(options);
 
         context.setFileNames("sentiment-smo-one.arff", "sentiment-smo-two.arff", "sentiment-smo-three.arff");

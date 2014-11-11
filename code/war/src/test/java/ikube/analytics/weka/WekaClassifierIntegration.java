@@ -6,10 +6,15 @@ import ikube.analytics.AnalyzerManager;
 import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
-import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
-import weka.classifiers.bayes.NaiveBayesMultinomial;
+import weka.classifiers.functions.SMO;
 import weka.filters.unsupervised.attribute.StringToWordVector;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Michael Couck
@@ -18,16 +23,48 @@ import weka.filters.unsupervised.attribute.StringToWordVector;
  */
 public class WekaClassifierIntegration extends AbstractTest {
 
+    private Object[] algorithms;
+    private String[] fileNames;
+    private Object[] filters;
+    private int[] maxTrainings;
+
+    @Before
+    public void before() {
+        List<String> modelFiles = new ArrayList<>();
+        modelFiles.add("xaa-s.arff");
+        modelFiles.add("xab-s.arff");
+        modelFiles.add("xac-s.arff");
+        modelFiles.add("xad-s.arff");
+        modelFiles.add("xae-s.arff");
+        modelFiles.add("xaf-s.arff");
+        modelFiles.add("xag-s.arff");
+        modelFiles.add("xah-s.arff");
+        modelFiles.add("xai-s.arff");
+
+        algorithms = new Object[modelFiles.size()];
+        filters = new Object[modelFiles.size()];
+        maxTrainings = new int[modelFiles.size()];
+
+        for (int i = 0; i < modelFiles.size(); i++) {
+            algorithms[i] = SMO.class.getName();
+            filters[i] = StringToWordVector.class.getName();
+            maxTrainings[i] = 1000000;
+        }
+
+        fileNames = modelFiles.toArray(new String[modelFiles.size()]);
+    }
+
     @Test
     @SuppressWarnings("unchecked")
     public void analyze() throws Exception {
         Context context = new Context();
         context.setAnalyzer(WekaClassifier.class.getName());
-        context.setAlgorithms(NaiveBayesMultinomial.class.getName());
-        context.setOptions("-D");
-        context.setFileNames("sentiment-model-150000-300000.arff");
-        context.setFilters(StringToWordVector.class.getName());
-        context.setMaxTrainings(1000000);
+        context.setAlgorithms(algorithms);
+        context.setFileNames(fileNames);
+        context.setFilters(filters);
+        context.setMaxTrainings(maxTrainings);
+        context.setBuildInParallel(Boolean.TRUE);
+        // context.setOptions("-D");
 
         IAnalyzer analyzer = new AnalyzerManager().buildAnalyzer(context, Boolean.TRUE);
         Analysis analysis = new Analysis();
@@ -35,33 +72,25 @@ public class WekaClassifierIntegration extends AbstractTest {
         analysis.setContext(context.getName());
         analysis.setDistributed(Boolean.FALSE);
 
-        analysis.setInput("I hate you");
+        analysis.setInput("i missed the new moon trailer");
         analysis = (Analysis) analyzer.analyze(context, analysis);
-        Assert.assertEquals(IConstants.NEGATIVE, analysis.getClazz());
+        logger.error("1) " + analysis.getClazz());
+        assertEquals(IConstants.NEGATIVE, analysis.getClazz());
 
-        analysis.setInput("I love you");
+        analysis.setInput("omg its already o");
         analysis = (Analysis) analyzer.analyze(context, analysis);
-        Assert.assertEquals(IConstants.POSITIVE, analysis.getClazz());
+        logger.error("2) " + analysis.getClazz());
+        assertEquals(IConstants.POSITIVE, analysis.getClazz());
 
-        analysis.setInput("What terrible weather we are having");
+        analysis.setInput("or i just worry too much");
         analysis = (Analysis) analyzer.analyze(context, analysis);
-        Assert.assertEquals(IConstants.NEGATIVE, analysis.getClazz());
+        logger.error("3) " + analysis.getClazz());
+        assertEquals(IConstants.NEGATIVE, analysis.getClazz());
 
-        analysis.setInput("My beautiful little girl");
+        analysis.setInput("hmmmm i wonder how she my number");
         analysis = (Analysis) analyzer.analyze(context, analysis);
-        Assert.assertEquals(IConstants.POSITIVE, analysis.getClazz());
-    }
-
-    protected Context getContext() {
-        Context context = new Context();
-        context.setAnalyzer(WekaClassifier.class.getName());
-        context.setAlgorithms(NaiveBayesMultinomial.class.getName());
-        context.setOptions("-D");
-        context.setFileNames("sentiment-model-150000-300000.arff");
-        context.setFilters(StringToWordVector.class.getName());
-        context.setMaxTrainings(1000000);
-
-        return context;
+        logger.error("4) " + analysis.getClazz());
+        assertEquals(IConstants.POSITIVE, analysis.getClazz());
     }
 
 }

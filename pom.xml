@@ -1060,6 +1060,13 @@
 			<version>3.7.11</version>
             <scope>compile</scope>
 		</dependency>
+
+        <!--<dependency>-->
+            <!--<groupId>nz.ac.waikato.cms.weka</groupId>-->
+            <!--<artifactId>weka-stable</artifactId>-->
+            <!--<version>3.6.11</version>-->
+        <!--</dependency>-->
+
 		<dependency>
 			<groupId>nz.ac.waikato.cms.weka</groupId>
 			<artifactId>weka-time-series-forecasting</artifactId>
@@ -1311,7 +1318,7 @@
 				<enabled>true</enabled>
 			</releases>
 			<snapshots>
-				<enabled>false</enabled>
+				<enabled>true</enabled>
 			</snapshots>
 		</repository>
 		<repository>

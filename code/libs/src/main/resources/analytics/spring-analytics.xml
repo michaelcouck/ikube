@@ -77,20 +77,21 @@
         property:name="english-sentiment"
         property:analyzer="ikube.analytics.weka.WekaClassifier"
         property:options="-D"
-        property:persisted="false">
+        property:persisted="false"
+        property:buildInParallel="true">
 
         <property name="algorithms">
             <list>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
             </list>
         </property>
 

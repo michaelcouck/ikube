@@ -100,6 +100,11 @@ public class Context extends Persistable {
     private boolean persisted;
 
     /**
+     * Whether the analyzer will build the models in parallel.
+     */
+    private boolean buildInParallel;
+
+    /**
      * This flag is set when the model is built completely.
      */
     private boolean built;
@@ -208,5 +213,11 @@ public class Context extends Persistable {
         this.built = built;
     }
 
+    public boolean isBuildInParallel() {
+        return buildInParallel;
+    }
 
+    public void setBuildInParallel(final boolean buildInParallel) {
+        this.buildInParallel = buildInParallel;
+    }
 }
