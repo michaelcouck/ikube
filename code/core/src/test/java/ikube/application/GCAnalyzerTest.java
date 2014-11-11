@@ -1,19 +1,33 @@
 package ikube.application;
 
+import com.sun.management.GarbageCollectorMXBean;
 import ikube.AbstractTest;
-import ikube.toolkit.ThreadUtilities;
 import junit.framework.Assert;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Spy;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
-import java.util.Arrays;
-import java.util.Date;
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectInstance;
+import javax.management.ObjectName;
+import java.lang.management.OperatingSystemMXBean;
+import java.lang.management.ThreadMXBean;
+import java.util.*;
 
 import static java.lang.System.currentTimeMillis;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.MINUTES;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Michael Couck
@@ -26,14 +40,51 @@ public class GCAnalyzerTest extends AbstractTest {
     @Spy
     @InjectMocks
     private GCAnalyzer gcAnalyzer;
+    @Mock
+    private MBeanServerConnection mBeanConnectionServer;
+    @Mock
+    private ThreadMXBean threadMXBean;
+    @Mock
+    private OperatingSystemMXBean operatingSystemMXBean;
+    @Mock
+    private GarbageCollectorMXBean garbageCollectorMXBean;
+
+    private List<GarbageCollectorMXBean> garbageCollectorMXBeans;
+
+    @Before
+    public void before() {
+        garbageCollectorMXBeans = new ArrayList<>();
+    }
 
     @Test
     public void registerCollector() throws Exception {
-        String address = "localhost";
-        gcAnalyzer.registerCollector(address, 8500);
-        ThreadUtilities.sleep(1000 * 60 * 10);
-        Object[][][] gcMatrices = gcAnalyzer.getGcData(address);
-        logger.error("Matrices : " + Arrays.deepToString(gcMatrices));
+        int port = 8500;
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(final InvocationOnMock invocation) throws Throwable {
+                return mBeanConnectionServer;
+            }
+        }).when(gcAnalyzer).getMBeanServerConnection(address, port);
+
+        when(gcAnalyzer.getMBeanServerConnection(address, port)).thenReturn(mBeanConnectionServer);
+
+
+        // when(gcAnalyzer.getThreadMXBean(mBeanConnectionServer)).thenReturn(threadMXBean);
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(final InvocationOnMock invocation) throws Throwable {
+                return threadMXBean;
+            }
+        }).when(gcAnalyzer).getThreadMXBean(mBeanConnectionServer);
+
+        when(gcAnalyzer.getOperatingSystemMXBean(mBeanConnectionServer)).thenReturn(operatingSystemMXBean);
+        when(gcAnalyzer.getGarbageCollectorMXBeans(mBeanConnectionServer)).thenReturn(garbageCollectorMXBeans);
+        garbageCollectorMXBeans.add(garbageCollectorMXBean);
+
+        // ObjectInstance objectInstance = null;
+        // when(mBeanConnectionServer.queryMBeans(any(ObjectName.class), null)).thenReturn(new TreeSet<ObjectInstance>(Arrays.asList(objectInstance)));
+
+        gcAnalyzer.registerCollector(address, port);
     }
 
     @Test

@@ -79,7 +79,11 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
 
         List<Future> futures = Lists.newArrayList();
         for (int i = 0; i < context.getAlgorithms().length; i++) {
-            Runnable builder = getAnalyzerBuilder(algorithms[i], (Instances) models[i], filters[i]);
+            Filter filter = null;
+            if (filters != null && filters.length > i) {
+                filter = filters[i];
+            }
+            Runnable builder = getAnalyzerBuilder(algorithms[i], (Instances) models[i], filter);
             logger.error("Analyzer : " + i + ":" + builder);
             Future<?> future = submit(this.getClass().getName(), builder);
             if (context.isBuildInParallel()) {

@@ -58,8 +58,13 @@ public class WekaClusterer extends WekaAnalyzer {
             Object input = analysis.getInput();
             Instance instance = instance(input, instances);
 
+            Filter filter = null;
+            if (filters != null && filters.length > i) {
+                filter = filters[i];
+            }
+
             // Cluster the instance
-            Instance filteredInstance = filter(instance, filters[i]);
+            Instance filteredInstance = filter(instance, filter);
             @SuppressWarnings("UnusedDeclaration")
             int cluster = clusterer.clusterInstance(filteredInstance);
             distributionForInstance[i] = clusterer.distributionForInstance(instance);
@@ -87,7 +92,11 @@ public class WekaClusterer extends WekaAnalyzer {
         Filter[] filters = getFilters(context);
         for (int i = 0; i < clusterers.length; i++) {
             Clusterer clusterer = (Clusterer) clusterers[i];
-            Instance filteredInstance = filter((Instance) instance.copy(), filters[i]);
+            Filter filter = null;
+            if (filters != null && filters.length > i) {
+                filter = filters[i];
+            }
+            Instance filteredInstance = filter((Instance) instance.copy(), filter);
             distributionForInstance[i] = clusterer.distributionForInstance(filteredInstance);
         }
         return distributionForInstance;
