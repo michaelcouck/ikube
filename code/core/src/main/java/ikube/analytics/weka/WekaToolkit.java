@@ -35,7 +35,6 @@ import static org.apache.commons.lang.StringUtils.split;
 public final class WekaToolkit {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WekaToolkit.class);
-    private static final String DATE_FORMAT = "yyyy-MM-dd";
 
     /**
      * Writes the instances to a file that can be loaded again and used to train algorithms.
@@ -168,7 +167,7 @@ public final class WekaToolkit {
         } else if (String.class.isAssignableFrom(type)) {
             return new Attribute(name, (List<String>) null);
         } else if (Date.class.isAssignableFrom(type)) {
-            return new Attribute(name, DATE_FORMAT);
+            return new Attribute(name, IConstants.ANALYTICS_DATE_FORMAT);
         } else {
             throw new RuntimeException("Attribute type not supported : " + type);
         }

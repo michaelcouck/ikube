@@ -90,6 +90,7 @@ public interface IConstants extends Constants {
     String HASH = "hash";
     String END = "end";
     String ADDRESS = "address";
+    String PORT = "port";
     String INDEX_CONTEXT = "indexContext";
     String GEOSPATIAL = "geospatial";
     String AUTOCOMPLETE = "autocomplete";
@@ -178,4 +179,5 @@ public interface IConstants extends Constants {
     String SERVICE = "service";
     String TYPE = "type";
     String PACKAGE = "package";
+    String FORECASTS = "forecasts";
 }

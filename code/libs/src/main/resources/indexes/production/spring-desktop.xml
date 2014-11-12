@@ -72,11 +72,11 @@
         <ref bean="ikube.action.index.handler.strategy.LanguageFilterStrategy"/>
         <ref bean="ikube.action.index.handler.strategy.LanguageCleaningStrategy"/>
 
-        <bean class="ikube.action.index.handler.strategy.ToLowerCaseStrategy"/>
-        <bean class="ikube.action.index.handler.strategy.SpellingCorrectionStrategy"/>
+        <!--<bean class="ikube.action.index.handler.strategy.ToLowerCaseStrategy"/>-->
+        <!--<bean class="ikube.action.index.handler.strategy.SpellingCorrectionStrategy"/>-->
 
-        <ref bean="ikube.action.index.handler.strategy.ContentTypeStrategy"/>
-        <ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy"/>
+        <!--<ref bean="ikube.action.index.handler.strategy.ContentTypeStrategy"/>-->
+        <!--<ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy"/>-->
 
         <!--<bean-->
             <!--class="ikube.action.index.handler.strategy.DocumentAnalysisStrategy"-->

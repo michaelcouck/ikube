@@ -111,13 +111,13 @@ public class GCAnalyzerTest extends AbstractTest {
                 Object[] vector = matrix[i];
                 GCSnapshot gcSnapshot = smoothGcSnapshots.get(i);
 
-                assertTrue(vector[0].equals(gcSnapshot.delta));
-                assertTrue(vector[1].equals(gcSnapshot.duration));
-                assertTrue(vector[2].equals(gcSnapshot.interval));
-                assertTrue(vector[3].equals(gcSnapshot.perCoreLoad));
-                assertTrue(vector[4].equals(gcSnapshot.runsPerTimeUnit));
-                assertTrue(vector[5].equals(gcSnapshot.usedToMaxRatio));
-                assertTrue(vector[6].equals(new Date(gcSnapshot.start)));
+                assertTrue(vector[0].equals(new Date(gcSnapshot.start)));
+                assertTrue(vector[1].equals(gcSnapshot.delta));
+                assertTrue(vector[2].equals(gcSnapshot.duration));
+                assertTrue(vector[3].equals(gcSnapshot.interval));
+                assertTrue(vector[4].equals(gcSnapshot.perCoreLoad));
+                assertTrue(vector[5].equals(gcSnapshot.runsPerTimeUnit));
+                assertTrue(vector[6].equals(gcSnapshot.usedToMaxRatio));
             }
         }
     }

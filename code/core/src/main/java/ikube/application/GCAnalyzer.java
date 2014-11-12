@@ -91,6 +91,10 @@ public class GCAnalyzer {
         gcCollectorMap.put(address, gcCollectors);
     }
 
+    public void unregisterCollector(final String address, final int port) {
+        // TODO: Implement this
+    }
+
     /**
      * This method accesses all the data for all the snapshots in all the collectors. Normalizes the data to be
      * consistent over equal time periods using the {@link ikube.application.GCSmoother}. Then creates a matrix of
@@ -113,13 +117,13 @@ public class GCAnalyzer {
             for (int j = 0; j < smoothedGcSnapshots.size(); j++) {
                 GCSnapshot gcSnapshot = smoothedGcSnapshots.get(j);
                 Object[] gcTimeSeriesVector = new Object[7];
-                gcTimeSeriesVector[0] = gcSnapshot.delta;
-                gcTimeSeriesVector[1] = gcSnapshot.duration;
-                gcTimeSeriesVector[2] = gcSnapshot.interval;
-                gcTimeSeriesVector[3] = gcSnapshot.perCoreLoad;
-                gcTimeSeriesVector[4] = gcSnapshot.runsPerTimeUnit;
-                gcTimeSeriesVector[5] = gcSnapshot.usedToMaxRatio;
-                gcTimeSeriesVector[6] = new Date(gcSnapshot.start);
+                gcTimeSeriesVector[0] = new Date(gcSnapshot.start);
+                gcTimeSeriesVector[1] = gcSnapshot.delta;
+                gcTimeSeriesVector[2] = gcSnapshot.duration;
+                gcTimeSeriesVector[3] = gcSnapshot.interval;
+                gcTimeSeriesVector[4] = gcSnapshot.perCoreLoad;
+                gcTimeSeriesVector[5] = gcSnapshot.runsPerTimeUnit;
+                gcTimeSeriesVector[6] = gcSnapshot.usedToMaxRatio;
 
                 gcTimeSeriesMatrix[j] = gcTimeSeriesVector;
             }

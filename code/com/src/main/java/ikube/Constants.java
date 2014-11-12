@@ -101,6 +101,8 @@ public interface Constants {
     String POSITIVE = "positive";
     String NEGATIVE = "negative";
 
+    String ANALYTICS_DATE_FORMAT = "yyyy-MM-dd";
+
     Gson GSON = new GsonBuilder()
         .addSerializationExclusionStrategy(new IdExclusionStrategy())
         .addDeserializationExclusionStrategy(new IdExclusionStrategy())
