@@ -67,19 +67,18 @@ public class WekaForecastClassifier extends WekaClassifier {
             // Build the model
             forecaster.buildForecaster(instances, System.out);
             // Prime the forecaster with enough recent historical data to cover up to the maximum lag. In
-            // our case, we could just supply the 12 most recent historical instances, as this covers our maximum
-            // lag period
+            // our case, we could just supply the 12 most recent historical instances, as this covers our maximum lag period
             forecaster.primeForecaster(instances);
             // Forecast for 12 units (months) beyond the end of the training data
             List<List<NumericPrediction>> forecast = forecaster.forecast(option.getForecasts(), System.out); // ***** The number of predictions into the future
             // Output the predictions. Outer list is over the steps; inner list is over the targets
-            logger.warn("Confidence : " + forecaster.getConfidenceLevel());
+            logger.info("Confidence : " + forecaster.getConfidenceLevel());
 
             for (int j = 0; j < forecast.size(); j++) {
                 List<NumericPrediction> predictionsAtStep = forecast.get(j);
                 for (int k = 0; k < predictionsAtStep.size(); k++) {
                     NumericPrediction predictionAtStep = predictionsAtStep.get(k);
-                    logger.warn("Prediction : " + predictionAtStep.predicted());
+                    logger.info("Prediction : " + predictionAtStep.predicted());
                     predictions[i][j][k] += predictionAtStep.predicted();
                 }
             }

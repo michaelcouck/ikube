@@ -97,10 +97,14 @@ public class GCAnalyzer extends Resource {
         // Build the data for the context
         StringBuilder stringBuilder = new StringBuilder();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(IConstants.ANALYTICS_DATE_FORMAT);
-        for (final Object[] vector : matrix) {
-            boolean first = Boolean.TRUE;
-            for (final Object instance : vector) {
-                if (!first) {
+        for (int i = 0; i < matrix.length; i++) {
+            Object[] vector = matrix[i];
+            if (i > 0) {
+                stringBuilder.append("\n\r");
+            }
+            for (int j = 0; j < vector.length; j++) {
+                Object instance = vector[j];
+                if (j > 0) {
                     stringBuilder.append(",");
                 }
                 if (Date.class.isAssignableFrom(instance.getClass())) {
@@ -108,9 +112,7 @@ public class GCAnalyzer extends Resource {
                 } else {
                     stringBuilder.append(instance);
                 }
-                first = Boolean.FALSE;
             }
-            stringBuilder.append("\n\r");
         }
         return stringBuilder.toString();
     }
