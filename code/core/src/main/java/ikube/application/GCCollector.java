@@ -8,14 +8,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryUsage;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.ThreadMXBean;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class will accumulate several properties from the running JVM via the MBeans over a
@@ -72,9 +70,14 @@ class GCCollector implements Serializable {
 
         Map<String, MemoryUsage> usageMap = gcInfo.getMemoryUsageBeforeGc();
         MemoryUsage memoryUsage = usageMap.get(memoryBlock);
+        long jvmStartTime = ManagementFactory.getRuntimeMXBean().getStartTime();
 
-        gcSnapshot.start = gcInfo.getStartTime();
-        gcSnapshot.end = gcInfo.getEndTime();
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.error("Jvm start time : " + new Date(jvmStartTime).toString());
+        }
+
+        gcSnapshot.start = jvmStartTime + gcInfo.getStartTime();
+        gcSnapshot.end = jvmStartTime + gcInfo.getEndTime();
         gcSnapshot.duration = gcInfo.getDuration();
         gcSnapshot.available = memoryUsage.getMax() - memoryUsage.getUsed();
         gcSnapshot.usedToMaxRatio = (double) memoryUsage.getUsed() / (double) memoryUsage.getMax();
@@ -90,9 +93,11 @@ class GCCollector implements Serializable {
 
         DecimalFormat decimalFormat = new DecimalFormat("#.###");
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(
+            LOGGER.error(
                     "Type : " + StringUtils.substring(memoryBlock, 0, 10) +
                             ", int : " + decimalFormat.format(gcSnapshot.interval) +
+                            ", start : " + new Date(gcSnapshot.start) +
+                            ", end : " + new Date(gcSnapshot.end) +
                             ", dura : " + decimalFormat.format(gcSnapshot.duration) +
                             ", delta : " + decimalFormat.format((gcSnapshot.delta / IConstants.MILLION)) +
                             ", avail : " + decimalFormat.format((gcSnapshot.available / IConstants.MILLION)) +

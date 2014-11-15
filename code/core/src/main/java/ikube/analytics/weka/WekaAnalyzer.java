@@ -84,7 +84,7 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
                 filter = filters[i];
             }
             Runnable builder = getAnalyzerBuilder(algorithms[i], (Instances) models[i], filter);
-            logger.error("Analyzer : " + i + ":" + builder);
+            logger.info("Analyzer : " + i + ":" + builder);
             Future<?> future = submit(this.getClass().getName(), builder);
             if (context.isBuildInParallel()) {
                 futures.add(future);
@@ -93,7 +93,7 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
             }
         }
 
-        logger.error("Waiting for futures : ");
+        logger.info("Waiting for futures : ");
         waitForAnonymousFutures(futures, Long.MAX_VALUE);
 
         context.setBuilt(Boolean.TRUE);
@@ -117,9 +117,9 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
                     } else if (Classifier.class.isAssignableFrom(analyzer.getClass())) {
                         Classifier classifier = (Classifier) analyzer;
                         // And build the model
-                        logger.error("Building classifier : " + instances.numInstances());
+                        logger.info("Building classifier : " + instances.numInstances());
                         classifier.buildClassifier(filteredInstances);
-                        logger.error("Classifier built : " + filteredInstances.numInstances());
+                        logger.info("Classifier built : " + filteredInstances.numInstances());
                         // Set the evaluation of the classifier and the training model
                         // evaluations[index] = evaluate(classifier, filteredInstances);
                         evaluate(classifier, filteredInstances);

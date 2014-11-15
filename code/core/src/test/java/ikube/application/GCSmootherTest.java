@@ -55,14 +55,14 @@ public class GCSmootherTest extends AbstractTest {
 
         GCSmoother gcSmoother = new GCSmoother();
         List<GCSnapshot> gcSnapshotsSmooth = gcSmoother.getSmoothedSnapshots(snapshots);
-        Iterator<GCSnapshot> gcSnapshotIterator = gcSnapshotsSmooth.iterator();
+        Iterator<GCSnapshot> gcSnapshotSmoothIterator = gcSnapshotsSmooth.iterator();
 
-        previousGcSnapshot = gcSnapshotIterator.next();
-        while (gcSnapshotIterator.hasNext()) {
-            GCSnapshot gcSnapshot = gcSnapshotIterator.next();
+        previousGcSnapshot = gcSnapshotSmoothIterator.next();
+        while (gcSnapshotSmoothIterator.hasNext()) {
+            GCSnapshot gcSnapshot = gcSnapshotSmoothIterator.next();
 
             assertTrue(previousGcSnapshot.available >= gcSnapshot.available);
-            assertTrue(previousGcSnapshot.start <= gcSnapshot.start);
+            assertTrue(previousGcSnapshot.start < gcSnapshot.start);
 
             previousGcSnapshot = gcSnapshot;
         }

@@ -138,8 +138,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
             try {
                 return analyzer.call();
             } catch (final Exception e) {
-                LOGGER.error("Exception processing analysis : " + ToStringBuilder.reflectionToString(analysis), e);
-                throw new RuntimeException(e);
+                throw new RuntimeException("Exception processing analysis : " + ToStringBuilder.reflectionToString(analysis), e);
             }
         }
     }

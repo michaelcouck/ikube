@@ -172,7 +172,7 @@ public final class MatrixUtilities {
      * @return the sorted vector according to the feature in the vectors
      */
     public static Object[][] sortOnFeature(final Object[][] matrix, final int featureIndex, final Class<?> featureType) {
-        final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        final DateFormat dateFormat = new SimpleDateFormat(Constants.ANALYTICS_DATE_FORMAT);
         Arrays.sort(matrix, new Comparator<Object[]>() {
             @Override
             public int compare(final Object[] o1, final Object[] o2) {

@@ -1,12 +1,13 @@
 package ikube.application;
 
 import ikube.toolkit.SerializationUtilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 /**
  * This class will take the garbage collector snapshots and aggregate the values for the duration, the available
@@ -20,6 +21,8 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
  * @since 23-10-2014
  */
 class GCSmoother {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GCSmoother.class);
 
     /**
      * This method aggregates the snapshots over a period of a minute. The original snapshots have the current
@@ -41,31 +44,24 @@ class GCSmoother {
         Iterator<GCSnapshot> gcSnapshotIterator = gcSnapshots.iterator();
         do {
             GCSnapshot gcSnapshot = gcSnapshotIterator.next();
-            long nextMinute = MILLISECONDS.toMinutes(gcSnapshot.start);
-
             if (gcSnapshotSmooth == null) {
                 gcSnapshotSmooth = SerializationUtilities.clone(GCSnapshot.class, gcSnapshot);
-                gcSnapshotSmooth.start = nextMinute;
-                gcSnapshotSmooth.end = nextMinute + 1;
-                smoothedSnapshots.add(gcSnapshotSmooth);
+                gcSnapshotSmooth.start = gcSnapshot.start - (gcSnapshot.start % 60000);
+                gcSnapshotSmooth.end = gcSnapshotSmooth.start + 60000;
                 continue;
             }
-
-            if (nextMinute > gcSnapshotSmooth.start) {
-
+            if (gcSnapshot.start - (gcSnapshot.start % 60000) > gcSnapshotSmooth.start || !gcSnapshotIterator.hasNext()) {
                 aggregateSnapshotValues(gcSnapshotSmooth);
-                gcSnapshotSmooth = new GCSnapshot();
-                gcSnapshotSmooth.start = nextMinute;
-                gcSnapshotSmooth.end = nextMinute + 1;
-
                 smoothedSnapshots.add(gcSnapshotSmooth);
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.error("Start : " + new Date(gcSnapshotSmooth.start).toString());
+                    LOGGER.error("End   : " + new Date(gcSnapshotSmooth.end).toString());
+                }
+                gcSnapshotSmooth = null;
+                continue;
             }
             accumulateSnapshotValues(gcSnapshot, gcSnapshotSmooth);
-            if (!gcSnapshotIterator.hasNext()) {
-                aggregateSnapshotValues(gcSnapshotSmooth);
-                break;
-            }
-        } while (true);
+        } while (gcSnapshotIterator.hasNext());
 
         return smoothedSnapshots;
     }

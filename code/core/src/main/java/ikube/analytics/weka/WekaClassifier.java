@@ -86,7 +86,7 @@ public class WekaClassifier extends WekaAnalyzer {
             String clazz = instances.classAttribute().value((int) classification);
             double[] distributionForInstance = classifier.distributionForInstance(filteredInstance);
             if (logger.isDebugEnabled()) {
-                logger.error("Class : " + clazz + ", dist : " + Arrays.toString(distributionForInstance));
+                logger.debug("Class : " + clazz + ", dist : " + Arrays.toString(distributionForInstance));
             }
 
             // Note: The distribution for instances for the instance coming from the

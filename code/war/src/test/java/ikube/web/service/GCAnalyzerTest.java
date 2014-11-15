@@ -11,6 +11,8 @@ import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import java.util.Date;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -30,23 +32,25 @@ public class GCAnalyzerTest extends AbstractTest {
     @Mock
     private ikube.application.GCAnalyzer gcAnalyzerService;
 
+    private Date date = new Date(1415956490991l);
     private Object[][][] matrices = new Object[][][]{
-            {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}},
-            {{10, 11, 12}, {13, 14, 15}, {16, 17, 18}},
-            {{19, 20, 21}, {22, 23, 24}, {25, 26, 27}}
+            {{date, 1, 2, 3}, {date, 4, 5, 6}, {date, 7, 8, 9}},
+            {{date, 10, 11, 12}, {date, 13, 14, 15}, {date, 16, 17, 18}},
+            {{date, 19, 20, 21}, {date, 22, 23, 24}, {date, 25, 26, 27}}
     };
 
     @Test
     @SuppressWarnings("unchecked")
     public void usedToMaxRatioPrediction() {
+        int port = 8500;
         doAnswer(new Answer() {
             @Override
             public Object answer(final InvocationOnMock invocation) throws Throwable {
                 return matrices;
             }
-        }).when(gcAnalyzerService).getGcData(LOCALHOST);
+        }).when(gcAnalyzerService).getGcData(LOCALHOST, port);
 
-        gcAnalyzer.usedToMaxRatioPrediction(LOCALHOST, 60);
+        gcAnalyzer.usedToMaxRatioPrediction(LOCALHOST, port, 60);
 
         verify(analyticsService, times(3)).create(any(Context.class));
         verify(analyticsService, times(3)).analyze(any(Analysis.class));
@@ -59,9 +63,9 @@ public class GCAnalyzerTest extends AbstractTest {
         String second = gcAnalyzer.matrixToString(matrices[1]);
         String third = gcAnalyzer.matrixToString(matrices[2]);
 
-        assertEquals("1,2,3\n\r4,5,6\n\r7,8,9", first);
-        assertEquals("10,11,12\n\r13,14,15\n\r16,17,18", second);
-        assertEquals("19,20,21\n\r22,23,24\n\r25,26,27", third);
+        assertEquals("2014-11-14,1,2,3\n\r2014-11-14,4,5,6\n\r2014-11-14,7,8,9", first);
+        assertEquals("2014-11-14,10,11,12\n\r2014-11-14,13,14,15\n\r2014-11-14,16,17,18", second);
+        assertEquals("2014-11-14,19,20,21\n\r2014-11-14,22,23,24\n\r2014-11-14,25,26,27", third);
     }
 
 }

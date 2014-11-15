@@ -1,5 +1,6 @@
 package ikube.toolkit;
 
+import ikube.Constants;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 
@@ -77,16 +78,16 @@ public final class StringUtilities {
     }
 
     /**
-     * This method will check that the string is a valid date of the format 'yyyy-MM-dd'. It is lenient
+     * This method will check that the string is a valid date of the format 'yyyy-MM-dd-Hh-mm-ss'. It is lenient
      * so strings like '71-5-1' will also be valid, it will be assumed that the year is a shortened version,
      * and month and day.
      *
-     * @param dateString the string to check for valie date foemat
+     * @param dateString the string to check for valid date format
      * @return whether the string can be parsed into a date
      */
     public static boolean isDate(final String dateString) {
         try {
-            DateUtils.parseDate(dateString, new String[]{"yyyy-MM-dd"});
+            DateUtils.parseDate(dateString, new String[]{Constants.ANALYTICS_DATE_FORMAT, Constants.SHORT_DATE_FORMAT});
             return Boolean.TRUE;
         } catch (final ParseException e) {
             return Boolean.FALSE;

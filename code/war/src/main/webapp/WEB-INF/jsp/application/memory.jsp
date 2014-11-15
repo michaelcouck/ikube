@@ -13,6 +13,7 @@
     final Random random = new Random();
     final List<Double> doubles = new ArrayList<Double>();
     Thread thread = new Thread(new Runnable() {
+        @SuppressWarnings({"UnnecessaryBoxing", "InfiniteLoopStatement"})
         public void run() {
             int count = 0;
             while (true) {

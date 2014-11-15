@@ -19,6 +19,7 @@ import static junit.framework.Assert.*;
  * Note to self: For some reason this test does not work on the Dell server!!!
  * Update: Does now it seems... :)
  * This test must still be completed and verified, perhaps with all sorts of analytics, like regression etc.
+ * Update: Done.
  *
  * @author Michael Couck
  * @version 01.00

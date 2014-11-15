@@ -46,12 +46,20 @@ public class GCAnalyzer {
     GCSmoother gcSmoother;
 
     /**
-     * A map of all the collectors keyed by the ip address and the port.
+     * A map of JMX connectors keyed by the url built from the address and the port. We keep a reference to
+     * these so we can poll them to see if they are still alive, and disconnect from them when the collector is
+     * discarded.
+     */
+    Map<String, JMXConnector> gcConnectorMap;
+
+    /**
+     * A map of all the collectors keyed by the url built from the address and the port.
      */
     Map<String, List<GCCollector>> gcCollectorMap;
 
     GCAnalyzer() {
         gcSmoother = new GCSmoother();
+        gcConnectorMap = new HashMap<>();
         gcCollectorMap = new HashMap<>();
     }
 
@@ -60,15 +68,17 @@ public class GCAnalyzer {
      * m-beans, {@link java.lang.management.ThreadMXBean}, {@link java.lang.management.OperatingSystemMXBean} and the
      * {@link com.sun.management.GarbageCollectorMXBean}s. A {@link ikube.application.GCCollector} object is instantiated
      * for each garbage collector bean and each memory area. These collectors will then gather data from their respective
-     * m-beans, being notified of events and polling for the data, and hold references to snapshots of the collected data.
+     * m-beans, being notified of events and polling for the data, and hold references to snapshots of the collected
+     * data.
      *
      * @param address the ip address of the remote jvm to be monitored
      * @param port    the port of the remote machine to access the jndi registry at, i.e. the rmi registry for the m-beans
-     * @throws Exception
      */
     public void registerCollector(final String address, final int port) throws Exception {
         // TODO: This should be in a retry block
-        MBeanServerConnection mBeanServerConnection = getMBeanServerConnection(address, port);
+        String url = buildUri(address, port);
+        JMXConnector jmxConnector = getJMXConnector(url);
+        MBeanServerConnection mBeanServerConnection = jmxConnector.getMBeanServerConnection();
         ThreadMXBean threadMXBean = getThreadMXBean(mBeanServerConnection);
         OperatingSystemMXBean operatingSystemMXBean = getOperatingSystemMXBean(mBeanServerConnection);
         List<GarbageCollectorMXBean> garbageCollectorMXBeans = getGarbageCollectorMXBeans(mBeanServerConnection);
@@ -88,11 +98,23 @@ public class GCAnalyzer {
             }
         }
 
-        gcCollectorMap.put(address, gcCollectors);
+        gcConnectorMap.put(url, jmxConnector);
+        gcCollectorMap.put(url, gcCollectors);
     }
 
     public void unregisterCollector(final String address, final int port) {
-        // TODO: Implement this
+        String url = buildUri(address, port);
+        gcCollectorMap.remove(url);
+        JMXConnector jmxConnector = gcConnectorMap.get(url);
+        if (jmxConnector != null) {
+            try {
+                jmxConnector.close();
+            } catch (final IOException e) {
+                throw new RuntimeException(e);
+            } finally {
+                gcConnectorMap.remove(url);
+            }
+        }
     }
 
     /**
@@ -103,8 +125,8 @@ public class GCAnalyzer {
      * @param address the address of the target jvm get get the garbage collection and system data for
      * @return a vector of matrices of the snapshot data of the target jvm
      */
-    public Object[][][] getGcData(final String address) {
-        List<GCCollector> gcCollectors = gcCollectorMap.get(address);
+    public Object[][][] getGcData(final String address, final int port) {
+        List<GCCollector> gcCollectors = gcCollectorMap.get(buildUri(address, port));
         if (gcCollectors == null) {
             return null;
         }
@@ -112,7 +134,6 @@ public class GCAnalyzer {
         for (int i = 0; i < gcCollectors.size(); i++) {
             GCCollector gcCollector = gcCollectors.get(i);
             List<GCSnapshot> smoothedGcSnapshots = gcSmoother.getSmoothedSnapshots(gcCollector.getGcSnapshots());
-
             Object[][] gcTimeSeriesMatrix = new Object[smoothedGcSnapshots.size()][];
             for (int j = 0; j < smoothedGcSnapshots.size(); j++) {
                 GCSnapshot gcSnapshot = smoothedGcSnapshots.get(j);
@@ -137,11 +158,9 @@ public class GCAnalyzer {
         return gcTimeSeriesMatrices;
     }
 
-    MBeanServerConnection getMBeanServerConnection(final String address, final int port) throws IOException {
-        String url = buildUri(address, port);
+    JMXConnector getJMXConnector(final String url) throws IOException {
         JMXServiceURL jmxServiceUrl = new JMXServiceURL(url);
-        JMXConnector jmxConnector = JMXConnectorFactory.connect(jmxServiceUrl);
-        return jmxConnector.getMBeanServerConnection();
+        return JMXConnectorFactory.connect(jmxServiceUrl);
     }
 
     OperatingSystemMXBean getOperatingSystemMXBean(final MBeanServerConnection mBeanServerConnection) throws MalformedObjectNameException, IOException {
@@ -167,11 +186,9 @@ public class GCAnalyzer {
         return garbageCollectorMXBeans;
     }
 
-    public void unregisterCollector(final String address) {
-    }
-
     @SuppressWarnings("StringBufferReplaceableByString")
     String buildUri(final String address, final int port) {
+        // Could we switch to JMXMP, seems nicer!
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder
                 .append("service:jmx:rmi:///jndi/rmi://")
@@ -183,7 +200,7 @@ public class GCAnalyzer {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    private void printMBeans(final MBeanServerConnection mBeanServerConnection) throws IOException {
+    void printMBeans(final MBeanServerConnection mBeanServerConnection) throws IOException {
         Set<ObjectName> objectNames = mBeanServerConnection.queryNames(null, null);
         for (final ObjectName objectName : objectNames) {
             LOGGER.error("Object name : " + objectName);

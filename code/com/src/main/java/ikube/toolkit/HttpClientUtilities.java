@@ -107,7 +107,7 @@ public class HttpClientUtilities {
             client.addFilter(new HTTPBasicAuthFilter(username, password));
         }
         String body;
-        if (String.class.isAssignableFrom(entity.getClass())) {
+        if (entity == null || String.class.isAssignableFrom(entity.getClass())) {
             body = (String) entity;
         } else {
             body = Constants.GSON.toJson(entity);

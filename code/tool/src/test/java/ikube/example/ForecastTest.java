@@ -20,6 +20,7 @@ public class ForecastTest extends AbstractTest {
     @Test
     public void doAnalysis() throws IOException {
         String inputFilePath = findFileAndGetCleanedPath(new File("."), "forecast.csv");
+
         Base.Analysis analysis = Forecast.doAnalysis(new String[]{inputFilePath});
         assertTrue(analysis.output.toString().contains("579.3721684789788"));
         assertTrue(analysis.output.toString().contains("581.4060746802609"));

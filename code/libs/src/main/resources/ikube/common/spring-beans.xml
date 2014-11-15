@@ -81,8 +81,8 @@
         <entry key="openjpa.Log"
                value="DefaultLevel=INFO,JDBC=INFO,SQL=INFO,File=ikube/openjpa.log,Runtime=INFO,Tool=INFO"/>
 
-        <entry key="openjpa.DataCache" value="true(CacheSize=10000,SoftReferenceSize=10000)"/>
-        <entry key="openjpa.QueryCache" value="true(CacheSize=10000,SoftReferenceSize=10000)"/>
+        <entry key="openjpa.DataCache" value="true(CacheSize=0,SoftReferenceSize=0)"/>
+        <entry key="openjpa.QueryCache" value="true(CacheSize=0,SoftReferenceSize=0)"/>
 
         <entry key="openjpa.Optimistic" value="false"/>
         <entry key="openjpa.ReadLockLevel" value="read"/>

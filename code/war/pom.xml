@@ -83,7 +83,17 @@
 							<maxIdleTime>60000</maxIdleTime>
 						</connector>
 					</connectors>
+                    <!-- These are not taken into account apparently -->
                     <jvmArgs>-Xms512m -Xmx4096m -XX:MaxPermSize=512m -XX:+CMSClassUnloadingEnabled</jvmArgs>
+                    <!--
+                        -Djava.rmi.server.hostname=localhost
+                        -Dcom.sun.management.jmxremote
+                        -Dcom.sun.management.jmxremote.port=8500
+                        -Dcom.sun.management.jmxremote.rmi.port=8500
+                        -Dcom.sun.management.jmxremote.local.only=false
+                        -Dcom.sun.management.jmxremote.authenticate=false
+                        -Dcom.sun.management.jmxremote.ssl=false
+                    -->
 				</configuration>
 				<executions>
 					<execution>

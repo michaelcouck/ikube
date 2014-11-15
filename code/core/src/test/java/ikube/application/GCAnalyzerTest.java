@@ -3,7 +3,6 @@ package ikube.application;
 import com.sun.management.GarbageCollectorMXBean;
 import ikube.AbstractTest;
 import junit.framework.Assert;
-import org.apache.commons.beanutils.BeanUtilsBean2;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -13,6 +12,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import javax.management.MBeanServerConnection;
+import javax.management.remote.JMXConnector;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
@@ -40,6 +40,8 @@ public class GCAnalyzerTest extends AbstractTest {
     @InjectMocks
     private GCAnalyzer gcAnalyzer;
     @Mock
+    private JMXConnector jmxConnector;
+    @Mock
     private MBeanServerConnection mBeanConnectionServer;
     @Mock
     private ThreadMXBean threadMXBean;
@@ -56,6 +58,7 @@ public class GCAnalyzerTest extends AbstractTest {
     @Mock
     private GCSmoother gcSmoother;
 
+    private int port = 8500;
     private List<GarbageCollectorMXBean> garbageCollectorMXBeans;
 
     @Before
@@ -66,14 +69,14 @@ public class GCAnalyzerTest extends AbstractTest {
 
     @Test
     public void registerCollector() throws Exception {
-        int port = 8500;
         doAnswer(new Answer() {
             @Override
             public Object answer(final InvocationOnMock invocation) throws Throwable {
-                return mBeanConnectionServer;
+                return jmxConnector;
             }
-        }).when(gcAnalyzer).getMBeanServerConnection(address, port);
-        when(gcAnalyzer.getMBeanServerConnection(address, port)).thenReturn(mBeanConnectionServer);
+        }).when(gcAnalyzer).getJMXConnector(any(String.class));
+        // when(gcAnalyzer.getJMXConnector(address)).thenReturn(jmxConnector);
+        when(jmxConnector.getMBeanServerConnection()).thenReturn(mBeanConnectionServer);
         doAnswer(new Answer() {
             @Override
             public Object answer(final InvocationOnMock invocation) throws Throwable {
@@ -94,8 +97,8 @@ public class GCAnalyzerTest extends AbstractTest {
         }).when(gcAnalyzer).getGarbageCollectorMXBeans(mBeanConnectionServer);
 
         gcAnalyzer.registerCollector(address, port);
-        assertTrue(gcAnalyzer.gcCollectorMap.containsKey(address));
-        assertEquals(GCAnalyzer.MEMORY_BLOCKS.length, gcAnalyzer.gcCollectorMap.get(address).size());
+        assertTrue(gcAnalyzer.gcCollectorMap.size() == 1);
+        assertEquals(GCAnalyzer.MEMORY_BLOCKS.length, gcAnalyzer.gcCollectorMap.values().iterator().next().size());
     }
 
     @Test
@@ -103,9 +106,9 @@ public class GCAnalyzerTest extends AbstractTest {
     public void getGcData() {
         List<GCSnapshot> smoothGcSnapshots = Arrays.asList(getGcSnapshot(), getGcSnapshot(), getGcSnapshot());
         when(gcSmoother.getSmoothedSnapshots(any(List.class))).thenReturn(smoothGcSnapshots);
-        gcAnalyzer.gcCollectorMap.put(address, Arrays.asList(edenCollector, permCollector, oldCollector));
+        gcAnalyzer.gcCollectorMap.put(gcAnalyzer.buildUri(address, port), Arrays.asList(edenCollector, permCollector, oldCollector));
 
-        Object[][][] gcData = gcAnalyzer.getGcData(address);
+        Object[][][] gcData = gcAnalyzer.getGcData(address, port);
         for (final Object[][] matrix : gcData) {
             for (int i = 0; i < matrix.length; i++) {
                 Object[] vector = matrix[i];

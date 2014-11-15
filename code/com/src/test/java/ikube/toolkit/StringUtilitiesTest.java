@@ -94,7 +94,9 @@ public class StringUtilitiesTest extends AbstractTest {
     public void isDate() {
         boolean isDate = StringUtilities.isDate("");
         assertFalse(isDate);
-        isDate = StringUtilities.isDate("1971-05-27");
+        isDate = StringUtilities.isDate("1971-05-27-12-12-12");
+        assertTrue(isDate);
+        isDate = StringUtilities.isDate("71-5-7-12-12-12");
         assertTrue(isDate);
         isDate = StringUtilities.isDate("71-5-7");
         assertTrue(isDate);

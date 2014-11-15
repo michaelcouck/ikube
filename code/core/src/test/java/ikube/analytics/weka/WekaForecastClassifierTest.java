@@ -59,7 +59,7 @@ public class WekaForecastClassifierTest extends AbstractTest {
         assertEquals(1, modelPredictions.length);
         for (final double[][] timePrediction : modelPredictions) {
             for (final double[] fieldPrediction : timePrediction) {
-                logger.error("Prediction : " + Arrays.toString(fieldPrediction));
+                logger.info("Prediction : " + Arrays.toString(fieldPrediction));
                 for (final double prediction : fieldPrediction) {
                     assertTrue(prediction > 570 && prediction < 590);
                 }
