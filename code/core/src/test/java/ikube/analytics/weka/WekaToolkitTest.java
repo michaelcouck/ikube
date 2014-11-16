@@ -120,10 +120,6 @@ public class WekaToolkitTest extends AbstractTest {
             WekaToolkit.filter(instances, stringToWordVector);
 
             instance = WekaToolkit.filter(instance, stringToWordVector);
-            logger.warn("Number of attributes : " + instance.numAttributes());
-            for (int i = 0; i < instance.numAttributes(); i++) {
-                logger.warn("        : " + instance.attribute(i));
-            }
             assertEquals(22, instance.numAttributes());
         }
     }

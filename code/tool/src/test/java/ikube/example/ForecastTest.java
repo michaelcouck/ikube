@@ -2,6 +2,7 @@ package ikube.example;
 
 import ikube.AbstractTest;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -15,6 +16,7 @@ import static org.junit.Assert.assertTrue;
  * @version 01.00
  * @since 29-09-2014
  */
+@Ignore
 public class ForecastTest extends AbstractTest {
 
     @Test

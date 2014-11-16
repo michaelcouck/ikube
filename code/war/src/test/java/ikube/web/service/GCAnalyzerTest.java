@@ -63,9 +63,9 @@ public class GCAnalyzerTest extends AbstractTest {
         String second = gcAnalyzer.matrixToString(matrices[1]);
         String third = gcAnalyzer.matrixToString(matrices[2]);
 
-        assertEquals("2014-11-14,1,2,3\n\r2014-11-14,4,5,6\n\r2014-11-14,7,8,9", first);
-        assertEquals("2014-11-14,10,11,12\n\r2014-11-14,13,14,15\n\r2014-11-14,16,17,18", second);
-        assertEquals("2014-11-14,19,20,21\n\r2014-11-14,22,23,24\n\r2014-11-14,25,26,27", third);
+        assertEquals("2014-11-14-10-14-50,1,2,3\n\r2014-11-14-10-14-50,4,5,6\n\r2014-11-14-10-14-50,7,8,9", first);
+        assertEquals("2014-11-14-10-14-50,10,11,12\n\r2014-11-14-10-14-50,13,14,15\n\r2014-11-14-10-14-50,16,17,18", second);
+        assertEquals("2014-11-14-10-14-50,19,20,21\n\r2014-11-14-10-14-50,22,23,24\n\r2014-11-14-10-14-50,25,26,27", third);
     }
 
 }

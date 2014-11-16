@@ -167,7 +167,7 @@ public final class WekaToolkit {
         } else if (String.class.isAssignableFrom(type)) {
             return new Attribute(name, (List<String>) null);
         } else if (Date.class.isAssignableFrom(type)) {
-            return new Attribute(name, IConstants.ANALYTICS_DATE_FORMAT);
+            return new Attribute(name, IConstants.SHORT_DATE_FORMAT);
         } else {
             throw new RuntimeException("Attribute type not supported : " + type);
         }

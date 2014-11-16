@@ -2,13 +2,12 @@ package ikube.toolkit;
 
 import ikube.Constants;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.paukov.combinatorics.Factory;
 import org.paukov.combinatorics.Generator;
 import org.paukov.combinatorics.ICombinatoricsVector;
 
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -172,7 +171,7 @@ public final class MatrixUtilities {
      * @return the sorted vector according to the feature in the vectors
      */
     public static Object[][] sortOnFeature(final Object[][] matrix, final int featureIndex, final Class<?> featureType) {
-        final DateFormat dateFormat = new SimpleDateFormat(Constants.ANALYTICS_DATE_FORMAT);
+        final String[] dateFormats = new String[]{Constants.SHORT_DATE_FORMAT, Constants.ANALYTICS_DATE_FORMAT};
         Arrays.sort(matrix, new Comparator<Object[]>() {
             @Override
             public int compare(final Object[] o1, final Object[] o2) {
@@ -180,8 +179,8 @@ public final class MatrixUtilities {
                 String valueTwo = o2[featureIndex].toString();
                 if (Date.class.isAssignableFrom(featureType)) {
                     try {
-                        Date one = dateFormat.parse(valueOne);
-                        Date two = dateFormat.parse(valueTwo);
+                        Date one = DateUtils.parseDate(valueOne, dateFormats);
+                        Date two = DateUtils.parseDate(valueTwo, dateFormats);
                         return one.getTime() < two.getTime() ? -1 : one.getTime() == two.getTime() ? 0 : 1;
                     } catch (final ParseException e) {
                         throw new RuntimeException(e);
