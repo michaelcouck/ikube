@@ -15,7 +15,11 @@
 		<webapps>webapps</webapps>
 		<final.name>${project.build.finalName}.${project.packaging}</final.name>
 		<maven.build.timestamp.format>dd-MM-yyyy HH:mm:ss</maven.build.timestamp.format>
+
         <jetty-version>7.6.15.v20140411</jetty-version>
+        <jetty-stop-key>stop</jetty-stop-key>
+        <jetty-stop-port>9180</jetty-stop-port>
+        <jetty-jvm-args>-Xms512m -Xmx4096m -XX:MaxPermSize=512m -XX:+CMSClassUnloadingEnabled -Djava.rmi.server.hostname=localhost -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=8500 -Dcom.sun.management.jmxremote.rmi.port=8500 -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false</jetty-jvm-args>
 	</properties>
 
 	<build>
@@ -71,8 +75,10 @@
 				<artifactId>jetty-maven-plugin</artifactId>
 				<version>${jetty-version}</version>
 				<configuration>
-					<stopKey>stop</stopKey>
-					<stopPort>9180</stopPort>
+					<stopKey>${jetty-stop-key}</stopKey>
+					<stopPort>${jetty-stop-port}</stopPort>
+                    <waitForChild>false</waitForChild>
+                    <jvmArgs>${jetty-jvm-args}</jvmArgs>
                     <scanIntervalSeconds>10000</scanIntervalSeconds>
                     <webApp>
                         <contextPath>/ikube</contextPath>
@@ -83,28 +89,20 @@
 							<maxIdleTime>60000</maxIdleTime>
 						</connector>
 					</connectors>
-                    <!-- These are not taken into account apparently -->
-                    <jvmArgs>-Xms512m -Xmx4096m -XX:MaxPermSize=512m -XX:+CMSClassUnloadingEnabled</jvmArgs>
-                    <!--
-                        -Djava.rmi.server.hostname=localhost
-                        -Dcom.sun.management.jmxremote
-                        -Dcom.sun.management.jmxremote.port=8500
-                        -Dcom.sun.management.jmxremote.rmi.port=8500
-                        -Dcom.sun.management.jmxremote.local.only=false
-                        -Dcom.sun.management.jmxremote.authenticate=false
-                        -Dcom.sun.management.jmxremote.ssl=false
-                    -->
-				</configuration>
+                </configuration>
 				<executions>
 					<execution>
 						<id>start-jetty</id>
 						<phase>pre-integration-test</phase>
 						<goals>
-							<goal>run</goal>
+							<goal>run-forked</goal>
 						</goals>
 						<configuration>
-							<daemon>true</daemon>
-						</configuration>
+                            <stopKey>${jetty-stop-key}</stopKey>
+                            <stopPort>${jetty-stop-port}</stopPort>
+                            <waitForChild>false</waitForChild>
+                            <jvmArgs>${jetty-jvm-args}</jvmArgs>
+                        </configuration>
 					</execution>
 					<execution>
 						<id>stop-jetty</id>
@@ -112,6 +110,10 @@
 						<goals>
 							<goal>stop</goal>
 						</goals>
+                        <configuration>
+                            <stopKey>${jetty-stop-key}</stopKey>
+                            <stopPort>${jetty-stop-port}</stopPort>
+                        </configuration>
 					</execution>
 				</executions>
 			</plugin>
