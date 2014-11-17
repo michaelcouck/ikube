@@ -3,6 +3,7 @@ package ikube.analytics.weka;
 import ikube.IConstants;
 import ikube.toolkit.StringUtilities;
 import ikube.toolkit.Timer;
+import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import weka.classifiers.Classifier;
@@ -185,6 +186,7 @@ public final class WekaToolkit {
         int featureSpace = Math.max(instances.numAttributes(), vector.length);
         Instance instance = instances.numAttributes() == vector.length ? new DenseInstance(featureSpace) : new SparseInstance(featureSpace);
         instance.setDataset(instances);
+        String[] dateFormats = new String[] {IConstants.SHORT_DATE_FORMAT, IConstants.ANALYTICS_DATE_FORMAT};
         //  && i < vector.length
         for (int i = instances.numAttributes() - 1, j = vector.length - 1; i >= 0 && j >= 0; i--, j--) {
             // System.out.println("I : " + i + ", j : " + j);
@@ -193,7 +195,8 @@ public final class WekaToolkit {
             switch (attribute.type()) {
                 case Attribute.DATE: {
                     try {
-                        instance.setValue(i, attribute.parseDate(value));
+                        double time = DateUtils.parseDate(value, dateFormats).getTime();
+                        instance.setValue(i, time);
                     } catch (final ParseException e) {
                         throw new RuntimeException(e);
                     }

@@ -2,7 +2,9 @@ package ikube.application;
 
 import ikube.AbstractTest;
 import ikube.IConstants;
+import ikube.model.Analysis;
 import ikube.toolkit.ThreadUtilities;
+import org.junit.Assert;
 import org.junit.Test;
 
 import javax.management.MBeanServerConnection;
@@ -30,6 +32,7 @@ public class GCAnalyzerIntegration extends AbstractTest {
     private String address = "localhost";
 
     @Test
+    @SuppressWarnings("unchecked")
     public void integration() throws Exception {
         // Create the collector and register it
         String url = "http://" + address + ":" + SERVER_PORT + "/ikube/service/gc-analyzer/register-collector";
@@ -42,10 +45,22 @@ public class GCAnalyzerIntegration extends AbstractTest {
 
         // Get the data from the collectors
         url = "http://" + address + ":" + SERVER_PORT + "/ikube/service/gc-analyzer/used-to-max-ratio-prediction";
-        List list = doGet(url,
+        List<Analysis> analyses = doGet(url,
                 new String[]{IConstants.ADDRESS, IConstants.PORT, IConstants.FORECASTS},
                 new String[]{address, Integer.toString(jmxPort), Integer.toString(forecasts)}, List.class);
-        logger.error(Arrays.deepToString(list.toArray()));
+        logger.info(Arrays.deepToString(analyses.toArray()));
+        Assert.assertEquals(6, analyses.size());
+        for (final Analysis analysis : analyses) {
+            double[][][] predictions = (double[][][]) analysis.getOutput();
+            for (final double[][] prediction : predictions) {
+                for (final double[] vector : prediction) {
+                    Assert.assertEquals(60, vector.length);
+                    for (final double point : vector) {
+                        Assert.assertTrue(point >= 0);
+                    }
+                }
+            }
+        }
 
         // Unregister the collector, terminating the connection
         url = "http://" + address + ":" + SERVER_PORT + "/ikube/service/gc-analyzer/unregister-collector";
