@@ -149,7 +149,7 @@ public class NeurophAnalyzerTest extends AbstractTest {
         for (final Object algorithm : algorithms) {
             NeuralNetwork neuralNetwork = (NeuralNetwork) algorithm;
             Double[] weights = neuralNetwork.getWeights();
-            logger.warn(neuralNetwork.getClass().getName() + ":" + Arrays.deepToString(weights));
+            logger.debug(neuralNetwork.getClass().getName() + ":" + Arrays.deepToString(weights));
         }
         assertTrue(context.isBuilt());
     }
