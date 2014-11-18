@@ -77,8 +77,8 @@
 				<configuration>
 					<stopKey>${jetty-stop-key}</stopKey>
 					<stopPort>${jetty-stop-port}</stopPort>
-                    <waitForChild>false</waitForChild>
-                    <jvmArgs>${jetty-jvm-args}</jvmArgs>
+                    <!--<waitForChild>false</waitForChild>-->
+                    <!--<jvmArgs>${jetty-jvm-args}</jvmArgs>-->
                     <scanIntervalSeconds>10000</scanIntervalSeconds>
                     <webApp>
                         <contextPath>/ikube</contextPath>
@@ -97,6 +97,9 @@
 						<goals>
 							<goal>run</goal>
 						</goals>
+                        <configuration>
+                            <daemon>true</daemon>
+                        </configuration>
                         <!--<configuration>-->
                             <!--<stopKey>${jetty-stop-key}</stopKey>-->
                             <!--<stopPort>${jetty-stop-port}</stopPort>-->

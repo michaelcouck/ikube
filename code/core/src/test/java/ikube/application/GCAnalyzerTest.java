@@ -2,6 +2,7 @@ package ikube.application;
 
 import com.sun.management.GarbageCollectorMXBean;
 import ikube.AbstractTest;
+import ikube.scanner.Scanner;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,8 +27,9 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Michael Couck
@@ -57,6 +59,8 @@ public class GCAnalyzerTest extends AbstractTest {
     private GCCollector oldCollector;
     @Mock
     private GCSmoother gcSmoother;
+    @Mock
+    private Scanner scanner;
 
     private int port = 8500;
     private List<GarbageCollectorMXBean> garbageCollectorMXBeans;
@@ -65,6 +69,20 @@ public class GCAnalyzerTest extends AbstractTest {
     public void before() {
         garbageCollectorMXBeans = new ArrayList<>();
         garbageCollectorMXBeans.add(garbageCollectorMXBean);
+    }
+
+    @Test
+    public void registerCollectors() throws Exception {
+        ArrayList<String> addresses = new ArrayList<>(Arrays.asList("192.168.1.0:8500"));
+        when(scanner.scan(anyString(), anyInt())).thenReturn(addresses);
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(final InvocationOnMock invocation) throws Throwable {
+                return null;
+            }
+        }).when(gcAnalyzer).registerCollector(any(String.class), anyInt());
+        gcAnalyzer.registerCollectors("192.168.1.0");
+        verify(gcAnalyzer, times(1)).registerCollector(anyString(), anyInt());
     }
 
     @Test
@@ -106,7 +124,7 @@ public class GCAnalyzerTest extends AbstractTest {
     public void getGcData() {
         List<GCSnapshot> smoothGcSnapshots = Arrays.asList(getGcSnapshot(), getGcSnapshot(), getGcSnapshot());
         when(gcSmoother.getSmoothedSnapshots(any(List.class))).thenReturn(smoothGcSnapshots);
-        gcAnalyzer.gcCollectorMap.put(gcAnalyzer.buildUri(address, port), Arrays.asList(edenCollector, permCollector, oldCollector));
+        gcAnalyzer.gcCollectorMap.put(gcAnalyzer.getAddressAndPort(address, port), Arrays.asList(edenCollector, permCollector, oldCollector));
 
         Object[][][] gcData = gcAnalyzer.getGcData(address, port);
         for (final Object[][] matrix : gcData) {
