@@ -8,7 +8,11 @@ import ikube.model.Analysis;
 import ikube.model.Context;
 import org.junit.Before;
 import org.junit.Test;
+import weka.classifiers.functions.LinearRegression;
 import weka.classifiers.functions.SMO;
+import weka.classifiers.functions.SimpleLinearRegression;
+import weka.classifiers.meta.AdditiveRegression;
+import weka.classifiers.pmml.consumer.GeneralRegression;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
 import java.util.ArrayList;
@@ -46,7 +50,7 @@ public class WekaClassifierIntegration extends AbstractTest {
         maxTrainings = new int[modelFiles.size()];
 
         for (int i = 0; i < modelFiles.size(); i++) {
-            algorithms[i] = SMO.class.getName();
+            algorithms[i] = SimpleLinearRegression.class.getName();
             filters[i] = StringToWordVector.class.getName();
             maxTrainings[i] = 1000000;
         }

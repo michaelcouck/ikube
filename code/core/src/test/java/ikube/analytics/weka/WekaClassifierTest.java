@@ -128,7 +128,6 @@ public class WekaClassifierTest extends AbstractTest {
         analysis.setInput(new String[]{"positive", IConstants.POSITIVE});
 
         analysis = wekaClassifier.analyze(context, analysis);
-        logger.info("Analysis : " + ToStringBuilder.reflectionToString(analysis));
         assertNotNull(analysis);
     }
 
