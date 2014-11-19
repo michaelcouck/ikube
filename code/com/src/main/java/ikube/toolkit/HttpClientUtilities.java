@@ -9,9 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
+import java.lang.reflect.Type;
 
 /**
  * TODO: Migrate to {@link com.sun.jersey.api.client.Client}. Document... Write tests...
+ * TODO: Done, just the documentation and the tests ;)
  *
  * @author Michael Couck
  * @version 01.00
@@ -23,7 +25,7 @@ public class HttpClientUtilities {
 
     public static <T> T doGet(
             final String url,
-            final Class<T> returnType) {
+            final Type returnType) {
         return doGet(url, null, null, returnType);
     }
 
@@ -32,7 +34,7 @@ public class HttpClientUtilities {
             final String url,
             final String[] names,
             final String[] values,
-            final Class<T> returnType) {
+            final Type returnType) {
         return doGet(url, null, null, names, values, returnType);
     }
 
@@ -42,7 +44,7 @@ public class HttpClientUtilities {
             final String password,
             final String[] names,
             final String[] values,
-            final Class<T> returnType) {
+            final Type returnType) {
         return doGet(url, username, password, names, values, MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON, returnType);
     }
 
@@ -55,7 +57,7 @@ public class HttpClientUtilities {
             final String[] values,
             final String consumes,
             final String produces,
-            final Class<T> returnType) {
+            final Type returnType) {
         Client client = Client.create();
         if (StringUtils.isNotEmpty(username) && StringUtils.isNotEmpty(password)) {
             client.addFilter(new HTTPBasicAuthFilter(username, password));
@@ -68,7 +70,7 @@ public class HttpClientUtilities {
                 .accept(consumes)
                 .type(produces)
                 .get(String.class);
-        if (String.class.isAssignableFrom(returnType)) {
+        if (String.class.isAssignableFrom(returnType.getClass())) {
             return (T) response;
         }
         return Constants.GSON.fromJson(response, returnType);

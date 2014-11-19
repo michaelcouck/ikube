@@ -136,7 +136,7 @@ public class GCAnalyzer extends Resource {
             // Do the analysis, one by one on the gc data
             Analysis analysis = new Analysis();
             analysis.setContext(context.getName());
-            analysis.setInput("-fieldsToForecast,6,-timeStampField,0,-minLag,1,-maxLag,1,-forecasts," + forecasts);
+            analysis.setInput("-fieldsToForecast,7,-timeStampField,0,-minLag,1,-maxLag,1,-forecasts," + forecasts);
             analyticsService.analyze(analysis);
             analyses.add(analysis);
 

@@ -187,7 +187,7 @@ public class GCAnalyzer {
             Object[][] gcTimeSeriesMatrix = new Object[smoothedGcSnapshots.size()][];
             for (int j = 0; j < smoothedGcSnapshots.size(); j++) {
                 GCSnapshot gcSnapshot = smoothedGcSnapshots.get(j);
-                Object[] gcTimeSeriesVector = new Object[7];
+                Object[] gcTimeSeriesVector = new Object[8];
                 gcTimeSeriesVector[0] = new Date(gcSnapshot.start);
                 gcTimeSeriesVector[1] = gcSnapshot.delta;
                 gcTimeSeriesVector[2] = gcSnapshot.duration;
@@ -195,6 +195,7 @@ public class GCAnalyzer {
                 gcTimeSeriesVector[4] = gcSnapshot.perCoreLoad;
                 gcTimeSeriesVector[5] = gcSnapshot.runsPerTimeUnit;
                 gcTimeSeriesVector[6] = gcSnapshot.usedToMaxRatio;
+                gcTimeSeriesVector[7] = gcSnapshot.available;
 
                 gcTimeSeriesMatrix[j] = gcTimeSeriesVector;
             }
