@@ -5,6 +5,7 @@ import ikube.IConstants;
 import ikube.analytics.IAnalyticsService;
 import ikube.scanner.Scanner;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -186,16 +187,19 @@ public class GCAnalyzer {
             List<GCSnapshot> smoothedGcSnapshots = gcSmoother.getSmoothedSnapshots(gcCollector.getGcSnapshots());
             Object[][] gcTimeSeriesMatrix = new Object[smoothedGcSnapshots.size()][];
             for (int j = 0; j < smoothedGcSnapshots.size(); j++) {
-                GCSnapshot gcSnapshot = smoothedGcSnapshots.get(j);
+                GCSnapshot smoothedGcSnapshot = smoothedGcSnapshots.get(j);
+
+                LOGGER.error("Smooth snapshot : " + ToStringBuilder.reflectionToString(smoothedGcSnapshot));
+
                 Object[] gcTimeSeriesVector = new Object[8];
-                gcTimeSeriesVector[0] = new Date(gcSnapshot.start);
-                gcTimeSeriesVector[1] = gcSnapshot.delta;
-                gcTimeSeriesVector[2] = gcSnapshot.duration;
-                gcTimeSeriesVector[3] = gcSnapshot.interval;
-                gcTimeSeriesVector[4] = gcSnapshot.perCoreLoad;
-                gcTimeSeriesVector[5] = gcSnapshot.runsPerTimeUnit;
-                gcTimeSeriesVector[6] = gcSnapshot.usedToMaxRatio;
-                gcTimeSeriesVector[7] = gcSnapshot.available;
+                gcTimeSeriesVector[0] = new Date(smoothedGcSnapshot.start);
+                gcTimeSeriesVector[1] = smoothedGcSnapshot.delta;
+                gcTimeSeriesVector[2] = smoothedGcSnapshot.duration;
+                gcTimeSeriesVector[3] = smoothedGcSnapshot.interval;
+                gcTimeSeriesVector[4] = smoothedGcSnapshot.perCoreLoad;
+                gcTimeSeriesVector[5] = smoothedGcSnapshot.runsPerTimeUnit;
+                gcTimeSeriesVector[6] = smoothedGcSnapshot.usedToMaxRatio;
+                gcTimeSeriesVector[7] = smoothedGcSnapshot.available;
 
                 gcTimeSeriesMatrix[j] = gcTimeSeriesVector;
             }

@@ -61,6 +61,7 @@ class GCCollector implements Serializable {
 
     synchronized GCSnapshot getGcSnapshot() {
         GCSnapshot gcSnapshot = new GCSnapshot();
+        DecimalFormat decimalFormat = new DecimalFormat("#.#####");
         GcInfo gcInfo = garbageCollectorMXBean.getLastGcInfo();
         if (gcInfo == null) {
             return gcSnapshot;
@@ -80,7 +81,7 @@ class GCCollector implements Serializable {
         gcSnapshot.end = jvmStartTime + gcInfo.getEndTime();
         gcSnapshot.duration = gcInfo.getDuration();
         gcSnapshot.available = memoryUsage.getMax() - memoryUsage.getUsed();
-        gcSnapshot.usedToMaxRatio = (double) memoryUsage.getUsed() / (double) memoryUsage.getMax();
+        gcSnapshot.usedToMaxRatio = Double.parseDouble(decimalFormat.format((double) memoryUsage.getUsed() / (double) memoryUsage.getMax()));
         gcSnapshot.cpuLoad = operatingSystemMXBean.getSystemLoadAverage();
         gcSnapshot.processors = operatingSystemMXBean.getAvailableProcessors();
         gcSnapshot.perCoreLoad = gcSnapshot.cpuLoad / gcSnapshot.processors;
@@ -88,10 +89,9 @@ class GCCollector implements Serializable {
 
         if (previousGcSnapshot != null) {
             gcSnapshot.interval = gcSnapshot.start - previousGcSnapshot.start;
-            gcSnapshot.delta = previousGcSnapshot.available - gcSnapshot.available;
+            gcSnapshot.delta = Double.parseDouble(decimalFormat.format(previousGcSnapshot.available - gcSnapshot.available));
         }
 
-        DecimalFormat decimalFormat = new DecimalFormat("#.###");
         if (LOGGER.isDebugEnabled()) {
             LOGGER.error(
                     "Type : " + StringUtils.substring(memoryBlock, 0, 10) +

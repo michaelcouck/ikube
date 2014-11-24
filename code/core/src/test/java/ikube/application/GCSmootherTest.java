@@ -23,7 +23,7 @@ public class GCSmootherTest extends AbstractTest {
         LinkedList<GCSnapshot> snapshots = new LinkedList<>();
 
         double seconds = 36000;
-        final double maxAvailable = 16000d;
+        final long maxAvailable = 16000;
         GCSnapshot previousGcSnapshot = new GCSnapshot() {
             {
                 this.available = maxAvailable;
@@ -36,7 +36,7 @@ public class GCSmootherTest extends AbstractTest {
             gcSnapshot.processors = 8;
 
             gcSnapshot.duration = random.nextInt(10000);
-            gcSnapshot.available = previousGcSnapshot.available - (random.nextDouble() * 0.5d);
+            gcSnapshot.available = (long) (previousGcSnapshot.available - (random.nextLong() * 0.5));
             gcSnapshot.usedToMaxRatio = (maxAvailable - gcSnapshot.available) / maxAvailable;
             gcSnapshot.cpuLoad = random.nextDouble() * gcSnapshot.processors;
             gcSnapshot.perCoreLoad = gcSnapshot.cpuLoad + gcSnapshot.processors;

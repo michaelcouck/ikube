@@ -100,12 +100,6 @@
                         <configuration>
                             <daemon>true</daemon>
                         </configuration>
-                        <!--<configuration>-->
-                            <!--<stopKey>${jetty-stop-key}</stopKey>-->
-                            <!--<stopPort>${jetty-stop-port}</stopPort>-->
-                            <!--<waitForChild>false</waitForChild>-->
-                            <!--<jvmArgs>${jetty-jvm-args}</jvmArgs>-->
-                        <!--</configuration>-->
 					</execution>
 					<execution>
 						<id>stop-jetty</id>
@@ -113,10 +107,6 @@
 						<goals>
 							<goal>stop</goal>
 						</goals>
-                        <!--<configuration>-->
-                            <!--<stopKey>${jetty-stop-key}</stopKey>-->
-                            <!--<stopPort>${jetty-stop-port}</stopPort>-->
-                        <!--</configuration>-->
 					</execution>
 				</executions>
 			</plugin>

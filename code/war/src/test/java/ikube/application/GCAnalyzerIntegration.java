@@ -5,6 +5,7 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Analysis;
 import ikube.toolkit.ThreadUtilities;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.management.MBeanServerConnection;
@@ -25,13 +26,14 @@ import static java.lang.management.ManagementFactory.newPlatformMXBeanProxy;
  * @version 01.00
  * @since 23-10-2014
  */
+@Ignore
 @SuppressWarnings("FieldCanBeLocal")
 public class GCAnalyzerIntegration extends AbstractTest {
 
     private int jmxPort = 8500;
-    private int serverPort = 8080;
-    private int forecasts = 60;
-    private String address = "192.168.1.20";
+    private int serverPort = 9090;
+    private int forecasts = 60 * 24;
+    private String address = "localhost";
 
     @Test
     @SuppressWarnings("unchecked")
@@ -43,7 +45,7 @@ public class GCAnalyzerIntegration extends AbstractTest {
                 new String[]{address, Integer.toString(jmxPort)}, Boolean.class);
 
         // Call the garbage collector a couple of times
-        gc(30, 10000);
+        gc(6 * 60, 10000);
 
         // Get the data from the collectors
         url = "http://" + address + ":" + serverPort + "/ikube/service/gc-analyzer/used-to-max-ratio-prediction";
@@ -65,10 +67,10 @@ public class GCAnalyzerIntegration extends AbstractTest {
         }
 
         // Unregister the collector, terminating the connection
-        url = "http://" + address + ":" + serverPort + "/ikube/service/gc-analyzer/unregister-collector";
-        doPost(url, null,
-                new String[]{IConstants.ADDRESS, IConstants.PORT},
-                new String[]{address, Integer.toString(jmxPort)}, Boolean.class);
+//        url = "http://" + address + ":" + serverPort + "/ikube/service/gc-analyzer/unregister-collector";
+//        doPost(url, null,
+//                new String[]{IConstants.ADDRESS, IConstants.PORT},
+//                new String[]{address, Integer.toString(jmxPort)}, Boolean.class);
     }
 
     void gc(final int calls, final long sleep) throws IOException {

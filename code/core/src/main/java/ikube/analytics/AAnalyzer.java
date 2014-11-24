@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.Arrays;
 
 import static ikube.IConstants.ANALYTICS_DIRECTORY;
 import static ikube.toolkit.ApplicationContextManager.getConfigFilePath;
@@ -35,7 +36,7 @@ public abstract class AAnalyzer<I, O, C> implements IAnalyzer<I, O, C> {
     @SuppressWarnings("ConstantConditions")
     protected File[] getDataFiles(final Context context) {
         String configFilePath = cleanFilePath(getConfigFilePath());
-        logger.warn("Config file path : " + configFilePath);
+        logger.info("Config file path : " + configFilePath);
         String[] dataFileNames = context.getFileNames();
         File[] dataFiles = context.getFileNames() != null ? new File[context.getFileNames().length] : null;
         File configurationDirectory = new File(configFilePath).getParentFile();
@@ -54,7 +55,7 @@ public abstract class AAnalyzer<I, O, C> implements IAnalyzer<I, O, C> {
                 logger.warn("Couldn't find file for analyzer or can't read file, will create it : " + dataFileName);
                 File analyticsDirectory = getOrCreateDirectory(ANALYTICS_DIRECTORY);
                 dataFile = getOrCreateFile(new File(analyticsDirectory, dataFileName));
-                logger.info("Created data file : " + dataFile.getAbsolutePath());
+                logger.warn("Created data file : " + dataFile.getAbsolutePath());
             } else {
                 logger.info("Found data file : " + dataFile.getAbsolutePath());
             }
@@ -63,6 +64,7 @@ public abstract class AAnalyzer<I, O, C> implements IAnalyzer<I, O, C> {
             }
             dataFiles[i] = dataFile;
         }
+        logger.info("Data files : " + Arrays.toString(dataFiles));
         return dataFiles;
     }
 

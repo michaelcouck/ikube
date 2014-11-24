@@ -36,7 +36,8 @@
         <snapshotRepository>
             <id>libs-snapshot-local</id>
             <name>libs-snapshot-local</name>
-            <url>http://ikube.be/artifactory/libs-snapshot-local</url>
+            <url>http://ikube.be/artifactory/libs-release-local</url>
+            <!--<url>http://ikube.be/artifactory/libs-snapshot-local</url>-->
         </snapshotRepository>
 	</distributionManagement>
 
@@ -1312,7 +1313,7 @@
         <dependency>
             <groupId>ikube</groupId>
             <artifactId>scanner</artifactId>
-            <version>1.1</version>
+            <version>1.2</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

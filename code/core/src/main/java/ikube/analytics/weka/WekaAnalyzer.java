@@ -250,7 +250,9 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
             inputStreams = new InputStream[context.getFileNames().length];
             File[] dataFiles = getDataFiles(context);
             for (int i = 0; dataFiles != null && i < dataFiles.length; i++) {
-                inputStreams[i] = new BufferedInputStream(new FileInputStream(dataFiles[i]));
+                FileInputStream fileInputStream = new FileInputStream(dataFiles[i]);
+                inputStreams[i] = new BufferedInputStream(fileInputStream);
+                logger.info("Data file : " + dataFiles[i] + ", length : " + dataFiles[i].length());
             }
         }
         return inputStreams;

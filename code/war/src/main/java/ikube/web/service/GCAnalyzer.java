@@ -128,8 +128,8 @@ public class GCAnalyzer extends Resource {
             // Get the vectors of data from the analyzer
             String stringMatrix = matrixToString(matrix);
             if (logger.isDebugEnabled()) {
-                logger.error("Matrix to time series analyze : " + stringMatrix);
             }
+            logger.error("Matrix to time series analyze : " + stringMatrix);
             context.setTrainingDatas(stringMatrix);
             analyticsService.create(context);
 

@@ -8,6 +8,7 @@ import ikube.model.Analysis;
 import ikube.model.Context;
 import org.junit.Before;
 import org.junit.Test;
+import weka.classifiers.bayes.NaiveBayesMultinomial;
 import weka.classifiers.functions.LinearRegression;
 import weka.classifiers.functions.SMO;
 import weka.classifiers.functions.SimpleLinearRegression;
@@ -35,6 +36,18 @@ public class WekaClassifierIntegration extends AbstractTest {
     @Before
     public void before() {
         List<String> modelFiles = new ArrayList<>();
+//        modelFiles.add("sentiment-model-0-150000.arff");
+//        modelFiles.add("sentiment-model-150000-300000.arff");
+//        modelFiles.add("sentiment-model-300000-450000.arff");
+//        modelFiles.add("sentiment-model-450000-600000.arff");
+//        modelFiles.add("sentiment-model-600000-750000.arff");
+//        modelFiles.add("sentiment-model-750000-900000.arff");
+//        modelFiles.add("sentiment-model-900000-1050000.arff");
+//        modelFiles.add("sentiment-model-1050000-1200000.arff");
+//        modelFiles.add("sentiment-model-1200000-1350000.arff");
+//        modelFiles.add("sentiment-model-1350000-1500000.arff");
+//        modelFiles.add("sentiment-model-1500000-1650000.arff");
+
         modelFiles.add("xaa-s.arff");
         modelFiles.add("xab-s.arff");
         modelFiles.add("xac-s.arff");
@@ -50,7 +63,7 @@ public class WekaClassifierIntegration extends AbstractTest {
         maxTrainings = new int[modelFiles.size()];
 
         for (int i = 0; i < modelFiles.size(); i++) {
-            algorithms[i] = SimpleLinearRegression.class.getName();
+            algorithms[i] = SMO.class.getName();
             filters[i] = StringToWordVector.class.getName();
             maxTrainings[i] = 1000000;
         }
@@ -78,22 +91,22 @@ public class WekaClassifierIntegration extends AbstractTest {
 
         analysis.setInput("i missed the new moon trailer");
         analysis = (Analysis) analyzer.analyze(context, analysis);
-        logger.error("1) " + analysis.getClazz());
+        logger.warn("1) " + analysis.getClazz());
         assertEquals(IConstants.NEGATIVE, analysis.getClazz());
 
         analysis.setInput("omg its already o");
         analysis = (Analysis) analyzer.analyze(context, analysis);
-        logger.error("2) " + analysis.getClazz());
+        logger.warn("2) " + analysis.getClazz());
         assertEquals(IConstants.POSITIVE, analysis.getClazz());
 
         analysis.setInput("or i just worry too much");
         analysis = (Analysis) analyzer.analyze(context, analysis);
-        logger.error("3) " + analysis.getClazz());
+        logger.warn("3) " + analysis.getClazz());
         assertEquals(IConstants.NEGATIVE, analysis.getClazz());
 
         analysis.setInput("hmmmm i wonder how she my number");
         analysis = (Analysis) analyzer.analyze(context, analysis);
-        logger.error("4) " + analysis.getClazz());
+        logger.warn("4) " + analysis.getClazz());
         assertEquals(IConstants.POSITIVE, analysis.getClazz());
     }
 

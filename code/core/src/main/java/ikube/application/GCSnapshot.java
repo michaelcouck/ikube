@@ -33,7 +33,7 @@ class GCSnapshot implements Serializable {
     /**
      * The amount of memory available after the collection, the maximum memory for the Jvm less the used portion.
      */
-    double available;
+    long available;
     /**
      * The ratio of used memory to maximum.
      */
