@@ -1,7 +1,6 @@
 package ikube.action.index.handler.strategy;
 
 import ikube.IConstants;
-import ikube.action.index.IndexManager;
 import ikube.action.index.handler.IStrategy;
 import ikube.model.Coordinate;
 import ikube.model.IndexContext;
@@ -10,8 +9,8 @@ import ikube.model.IndexableTweets;
 import ikube.model.geospatial.GeoCity;
 import ikube.model.geospatial.GeoCountry;
 import ikube.search.ISearcherService;
-import ikube.toolkit.HashUtilities;
-import ikube.toolkit.StringUtilities;
+import ikube.toolkit.HASH;
+import ikube.toolkit.STRING;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,7 +115,7 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
             // This seems to be the most accurate
             String city = getCityFromTimeZone(timeZone);
             if (!StringUtils.isEmpty(city)) {
-                Long hash = HashUtilities.hash(city.toLowerCase());
+                Long hash = HASH.hash(city.toLowerCase());
                 GeoCity geoCity = GEO_CITY.get(hash);
                 if (geoCity != null) {
                     timeZoneCoordinate = geoCity.getCoordinate();
@@ -174,7 +173,7 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
         for (final String utcTimeZone : utcTimeZones) {
             String city = getCityFromTimeZone(utcTimeZone);
             // Find the country where this city is so we can find the language and match it against the user language
-            Long hash = HashUtilities.hash(city);
+            Long hash = HASH.hash(city);
             GeoCity geoCity = GEO_CITY.get(hash);
             if (geoCity != null) {
                 // Try to find the location based on the time zone and matched to the language to get the latitude
@@ -195,7 +194,7 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
 
     Coordinate findLocationCoordinates(final String location, final String searchField) {
         // We need to clean the text for Lucene
-        String searchString = StringUtilities.stripToAlphaNumeric(location);
+        String searchString = STRING.stripToAlphaNumeric(location);
         String[] searchStrings = new String[]{searchString};
         String[] searchFields = new String[]{searchField};
         ArrayList<HashMap<String, String>> results = searcherService.search(IConstants.GEOSPATIAL, searchStrings,

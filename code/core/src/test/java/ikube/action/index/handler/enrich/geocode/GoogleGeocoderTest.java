@@ -7,7 +7,7 @@ import ikube.action.index.handler.strategy.geocode.GoogleGeocoder;
 import ikube.mock.FileUtilitiesMock;
 import ikube.mock.URLMock;
 import ikube.model.Coordinate;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -26,8 +26,8 @@ public class GoogleGeocoderTest extends AbstractTest {
 	@Test
 	public void getCoordinate() throws Exception {
 		try {
-			File file = FileUtilities.findFileRecursively(new File("."), "address.xml");
-			ByteArrayOutputStream contents = FileUtilities.getContents(file, Integer.MAX_VALUE);
+			File file = FILE.findFileRecursively(new File("."), "address.xml");
+			ByteArrayOutputStream contents = FILE.getContents(file, Integer.MAX_VALUE);
 			FileUtilitiesMock.setContents(contents);
 			URLMock.setContents(contents);
 			Mockit.setUpMocks(URLMock.class, FileUtilitiesMock.class);

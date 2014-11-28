@@ -5,7 +5,7 @@ import ikube.IConstants;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.IndexContext;
 import ikube.model.Snapshot;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import mockit.Deencapsulation;
 import mockit.Mockit;
 import org.apache.lucene.index.CorruptIndexException;
@@ -43,17 +43,17 @@ public class IndexSizeScheduleTest extends AbstractTest {
         when(snapshot.getIndexSize()).thenReturn(Long.MAX_VALUE);
         when(indexContext.getSnapshot()).thenReturn(snapshot);
         when(indexContext.getIndexWriters()).thenReturn(new IndexWriter[]{indexWriter});
-        File indexDirectory = FileUtilities.getFile(indexDirectoryPath + IConstants.SEP + "127.0.0.1.8000", Boolean.TRUE);
+        File indexDirectory = FILE.getFile(indexDirectoryPath + IConstants.SEP + "127.0.0.1.8000", Boolean.TRUE);
         when(fsDirectory.getDirectory()).thenReturn(indexDirectory);
 
         Deencapsulation.setField(indexSizeSchedule, monitorService);
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
     }
 
     @After
     public void after() {
         Mockit.tearDownMocks(ApplicationContextManagerMock.class);
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
     }
 
     @Test

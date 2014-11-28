@@ -3,7 +3,7 @@ package ikube.action.index.handler.strategy;
 import ikube.action.index.handler.IStrategy;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
-import ikube.toolkit.StringUtilities;
+import ikube.toolkit.STRING;
 import org.apache.lucene.document.Document;
 
 /**
@@ -36,7 +36,7 @@ public final class LanguageFilterStrategy extends AStrategy {
     }
 
     String cleanContent(final String content) {
-        return StringUtilities.stripToAlphaNumeric(content);
+        return STRING.stripToAlphaNumeric(content);
     }
 
 }

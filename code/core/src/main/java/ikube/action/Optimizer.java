@@ -2,7 +2,7 @@ package ikube.action;
 
 import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import ikube.toolkit.Timer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
@@ -31,7 +31,7 @@ public class Optimizer extends Action<IndexContext, Boolean> {
     public boolean internalExecute(final IndexContext indexContext) throws IOException {
         File baseDirectory = new File(indexContext.getIndexDirectoryPath());
         logger.debug("Starting at directory : " + baseDirectory);
-        List<File> segmentsFiles = FileUtilities.findFilesRecursively(baseDirectory, new ArrayList<File>(), "segments.gen");
+        List<File> segmentsFiles = FILE.findFilesRecursively(baseDirectory, new ArrayList<File>(), "segments.gen");
         logger.debug("Segments files : " + segmentsFiles);
         for (final File segmentsFile : segmentsFiles) {
             final File indexDirectory = segmentsFile.getParentFile();

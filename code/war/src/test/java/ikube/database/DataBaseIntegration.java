@@ -3,8 +3,8 @@ package ikube.database;
 import ikube.IConstants;
 import ikube.IntegrationTest;
 import ikube.model.*;
-import ikube.toolkit.ObjectToolkit;
-import ikube.toolkit.PerformanceTester;
+import ikube.toolkit.OBJECT;
+import ikube.toolkit.PERFORMANCE;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,7 +111,7 @@ public class DataBaseIntegration extends IntegrationTest {
         final int batchSize = 100;
         double minimumInsertsPerSecond = 10d;
         for (int i = 0; i < iterations; i++) {
-            double perSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+            double perSecond = PERFORMANCE.execute(new PERFORMANCE.APerform() {
                 @Override
                 public void execute() throws Throwable {
                     final List<Url> urls = getUrls(batchSize);
@@ -273,7 +273,7 @@ public class DataBaseIntegration extends IntegrationTest {
     public void execute() {
         String indexName = "indexName";
         for (int i = 0; i < 10; i++) {
-            Search search = ObjectToolkit.populateFields(Search.class, new Search(), Boolean.TRUE, 5, IConstants.ID, IConstants.TIMESTAMP);
+            Search search = OBJECT.populateFields(Search.class, new Search(), Boolean.TRUE, 5, IConstants.ID, IConstants.TIMESTAMP);
             search.setCount(i);
             search.setIndexName(indexName);
             dataBase.persist(search);

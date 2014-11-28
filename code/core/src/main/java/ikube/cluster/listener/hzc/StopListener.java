@@ -4,7 +4,7 @@ import com.hazelcast.core.Message;
 import com.hazelcast.core.MessageListener;
 import ikube.cluster.listener.IListener;
 import ikube.scheduling.schedule.Event;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,12 +37,12 @@ public class StopListener implements IListener<Message<Object>>, MessageListener
             if (Event.TERMINATE.equals(event.getType())) {
                 String indexName = event.getObject().toString();
                 logger.info("Terminating indexing : " + indexName);
-                ThreadUtilities.destroy(indexName);
-                ThreadUtilities.cancelForkJoinPool(indexName);
+                THREAD.destroy(indexName);
+                THREAD.cancelForkJoinPool(indexName);
             } else if (Event.TERMINATE_ALL.equals(event.getType())) {
                 logger.info("Terminating all indexing : ");
-                ThreadUtilities.destroy();
-                ThreadUtilities.cancelAllForkJoinPools();
+                THREAD.destroy();
+                THREAD.cancelAllForkJoinPools();
             }
         }
     }

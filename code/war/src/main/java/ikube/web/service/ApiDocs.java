@@ -4,8 +4,8 @@ import com.google.common.collect.Lists;
 import ikube.IConstants;
 import ikube.model.Api;
 import ikube.model.ApiMethod;
-import ikube.toolkit.ObjectToolkit;
-import ikube.toolkit.StringUtilities;
+import ikube.toolkit.OBJECT;
+import ikube.toolkit.STRING;
 import org.apache.commons.lang.StringUtils;
 import org.reflections.Reflections;
 import org.springframework.context.annotation.Scope;
@@ -22,8 +22,8 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import static ikube.toolkit.ObjectToolkit.getObject;
-import static ikube.toolkit.ObjectToolkit.getPrimitive;
+import static ikube.toolkit.OBJECT.getObject;
+import static ikube.toolkit.OBJECT.getPrimitive;
 
 /**
  * This rest web service exposes the web services that are annotated with the {@link ikube.web.service.Api}
@@ -157,7 +157,7 @@ public class ApiDocs extends Resource {
             if (methodAnnotations != null) {
                 for (final Annotation methodAnnotation : methodAnnotations) {
                     if (OPTIONS.matcher(methodAnnotation.toString()).matches()) {
-                        apiMethod.setMethod(StringUtilities.stripToAlphaNumeric(methodAnnotation.toString()));
+                        apiMethod.setMethod(STRING.stripToAlphaNumeric(methodAnnotation.toString()));
                     }
                 }
             }
@@ -237,7 +237,7 @@ public class ApiDocs extends Resource {
         if (target == null) {
             return null;
         }
-        return ObjectToolkit.populateFields(target, true, 5, "parent", "id");
+        return OBJECT.populateFields(target, true, 5, "parent", "id");
     }
 
 }

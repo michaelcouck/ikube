@@ -4,7 +4,7 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.mock.SpellingCheckerMock;
 import ikube.search.Search;
-import ikube.toolkit.PerformanceTester;
+import ikube.toolkit.PERFORMANCE;
 import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockClass;
@@ -61,14 +61,14 @@ public class SpellingCheckerTest extends AbstractTest {
 
     @Test
     public void checkPerformance() {
-        double iterationsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+        double iterationsPerSecond = PERFORMANCE.execute(new PERFORMANCE.APerform() {
             @Override
             public void execute() throws Throwable {
                 spellingChecker.checkWord("michael");
             }
         }, "Spelling checking performance : ", 1000, Boolean.FALSE);
         assertTrue(iterationsPerSecond > 100);
-        iterationsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+        iterationsPerSecond = PERFORMANCE.execute(new PERFORMANCE.APerform() {
             @Override
             public void execute() throws Throwable {
                 spellingChecker.checkWord("couck");

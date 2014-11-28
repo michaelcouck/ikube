@@ -15,10 +15,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ikube.toolkit.FileUtilities.*;
-import static ikube.toolkit.HttpClientUtilities.doGet;
-import static ikube.toolkit.ThreadUtilities.sleep;
-import static ikube.toolkit.XmlUtilities.*;
+import static ikube.toolkit.FILE.*;
+import static ikube.toolkit.REST.doGet;
+import static ikube.toolkit.THREAD.sleep;
+import static ikube.toolkit.XML.*;
 
 /**
  * @author Michael Couck

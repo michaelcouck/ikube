@@ -4,8 +4,8 @@ import ikube.IConstants;
 import ikube.action.index.analyzer.StemmingAnalyzer;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.FILE;
+import ikube.toolkit.THREAD;
 import ikube.toolkit.UriUtilities;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -103,7 +103,7 @@ public final class IndexManager {
         try {
             String indexDirectoryPath = getIndexDirectory(indexContext, time, ip);
             // indexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
-            indexDirectory = FileUtilities.getOrCreateDirectory(indexDirectoryPath);
+            indexDirectory = FILE.getOrCreateDirectory(indexDirectoryPath);
             boolean readable = indexDirectory.setReadable(true);
             boolean writable = indexDirectory.setWritable(true, false);
             if (!readable || !writable) {
@@ -125,7 +125,7 @@ public final class IndexManager {
             LOGGER.error("Unexpected exception detected while initializing the IndexWriter", e);
         } finally {
             if (delete && indexDirectory != null && indexDirectory.exists()) {
-                FileUtilities.deleteFile(indexDirectory, 1);
+                FILE.deleteFile(indexDirectory, 1);
             }
             IndexManager.class.notifyAll();
         }
@@ -210,7 +210,7 @@ public final class IndexManager {
             // We'll sleep a few seconds to give the other threads a chance
             // to release themselves from work and more importantly the index files
             // specially over the network...
-            ThreadUtilities.sleep(3000);
+            THREAD.sleep(3000);
             directory = indexWriter.getDirectory();
             indexWriter.prepareCommit();
             indexWriter.commit();
@@ -250,7 +250,7 @@ public final class IndexManager {
                     IndexWriter.unlock(directory);
                     if (IndexWriter.isLocked(directory)) {
                         LOGGER.warn("Index still locked : " + directory);
-                        ThreadUtilities.sleep(1000);
+                        THREAD.sleep(1000);
                     }
                 }
                 directory.close();
@@ -295,7 +295,7 @@ public final class IndexManager {
      */
     public static synchronized File getLatestIndexDirectory(final String baseIndexDirectoryPath) {
         try {
-            File baseIndexDirectory = FileUtilities.getFile(baseIndexDirectoryPath, Boolean.TRUE);
+            File baseIndexDirectory = FILE.getFile(baseIndexDirectoryPath, Boolean.TRUE);
             return getLatestIndexDirectory(baseIndexDirectory, null);
         } finally {
             IndexManager.class.notifyAll();
@@ -467,7 +467,7 @@ public final class IndexManager {
         builder.append(new File(indexDirectory).getAbsolutePath()); // Path
         builder.append(File.separator);
         builder.append(indexContext.getIndexName()); // Index name
-        return FileUtilities.cleanFilePath(builder.toString());
+        return FILE.cleanFilePath(builder.toString());
     }
 
     public static Document addStringField(final String fieldName, final String fieldContent, final Indexable indexable, final Document document) {
@@ -565,9 +565,9 @@ public final class IndexManager {
                 } catch (final Exception e) {
                     LOGGER.error("Exception writing the field value with the file writer : ", e);
                 } finally {
-                    FileUtilities.close(writer);
-                    FileUtilities.close(finalReader);
-                    FileUtilities.close(fieldReader);
+                    FILE.close(writer);
+                    FILE.close(finalReader);
+                    FILE.close(fieldReader);
                 }
             }
         }

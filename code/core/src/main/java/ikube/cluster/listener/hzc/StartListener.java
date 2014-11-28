@@ -7,7 +7,7 @@ import ikube.cluster.IMonitorService;
 import ikube.cluster.listener.IListener;
 import ikube.model.IndexContext;
 import ikube.scheduling.schedule.Event;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,13 +49,13 @@ public class StartListener implements IListener<Message<Object>>, MessageListene
             final long maxAge = indexContext.getMaxAge();
             indexContext.setMaxAge(0);
             // Start a thread to revert the max age of the index
-            ThreadUtilities.submit(this.getClass().getSimpleName(), new Runnable() {
+            THREAD.submit(this.getClass().getSimpleName(), new Runnable() {
                 public void run() {
                     Date newIndexDate;
                     Date indexDate = IndexManager.getLatestIndexDirectoryDate(indexContext);
                     if (indexDate != null) {
                         do {
-                            ThreadUtilities.sleep(60000);
+                            THREAD.sleep(60000);
                             newIndexDate = IndexManager.getLatestIndexDirectoryDate(indexContext);
                             LOGGER.info("Index date : " + indexDate + ", new date : " + newIndexDate);
                         } while (indexDate.equals(newIndexDate));
@@ -67,7 +67,7 @@ public class StartListener implements IListener<Message<Object>>, MessageListene
         } else if (Event.STARTUP_ALL.equals(event.getType())) {
             event.setConsumed(Boolean.TRUE);
             LOGGER.info("Re-starting the indexing threads");
-            ThreadUtilities.initialize();
+            THREAD.initialize();
         }
     }
 

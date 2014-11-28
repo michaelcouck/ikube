@@ -1,8 +1,8 @@
 package ikube.action.rule;
 
 import ikube.AbstractTest;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.OsUtilities;
+import ikube.toolkit.FILE;
+import ikube.toolkit.OS;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.MultiReader;
@@ -31,14 +31,14 @@ public class IsNewIndexCreatedTest extends AbstractTest {
 
     @After
     public void after() {
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 
     @Test
     @SuppressWarnings("deprecation")
     public void evaluate() throws Exception {
         // TODO: This doesnt' work on CentOs!!!
-        if (!OsUtilities.isOs("3.11.0-12-generic")) {
+        if (!OS.isOs("3.11.0-12-generic")) {
             return;
         }
         when(indexContext.getMultiSearcher()).thenReturn(null);

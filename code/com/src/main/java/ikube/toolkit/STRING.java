@@ -14,7 +14,7 @@ import java.util.Arrays;
  * @version 01.00
  * @since 10-01-2012
  */
-public final class StringUtilities {
+public final class STRING {
 
     public static final char SPACE = ' ';
     public static final char[] EXCLUSIONS = {'.', ',', ';', ':', '?', '!', '\'', '-'};

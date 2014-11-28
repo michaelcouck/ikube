@@ -2,7 +2,7 @@ package ikube.data;
 
 import ikube.database.ADataBaseJpa;
 import ikube.database.DataBaseJpaH2;
-import ikube.toolkit.ObjectToolkit;
+import ikube.toolkit.OBJECT;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
@@ -45,7 +45,7 @@ public abstract class ADatabase {
 	static ADataBaseJpa getDataBase(final Class<? extends ADataBaseJpa> type, final String persistenceUnit) throws Exception {
 		EntityManager entityManager = Persistence.createEntityManagerFactory(persistenceUnit).createEntityManager();
 		ADataBaseJpa aDataBaseJpa = type.newInstance();
-		ObjectToolkit.setField(aDataBaseJpa, "entityManager", entityManager);
+		OBJECT.setField(aDataBaseJpa, "entityManager", entityManager);
 		return aDataBaseJpa;
 	}
 

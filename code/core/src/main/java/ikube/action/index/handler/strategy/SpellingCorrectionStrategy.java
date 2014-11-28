@@ -4,7 +4,7 @@ import ikube.action.index.handler.IStrategy;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.search.spelling.SpellingChecker;
-import ikube.toolkit.StringUtilities;
+import ikube.toolkit.STRING;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +56,7 @@ public class SpellingCorrectionStrategy extends AStrategy {
         StringTokenizer stringTokenizer = new StringTokenizer(content, ".,;: \n\r\t(){}[]\"@&|#!/*+_$", true);
         while (stringTokenizer.hasMoreTokens()) {
             String word = stringTokenizer.nextToken();
-            String strippedWord = StringUtilities.stripToAlphaNumeric(word);
+            String strippedWord = STRING.stripToAlphaNumeric(word);
             if (StringUtils.isEmpty(strippedWord)) {
                 stringBuilder.append(word);
                 continue;

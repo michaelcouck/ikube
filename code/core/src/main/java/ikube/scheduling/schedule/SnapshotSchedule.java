@@ -1,14 +1,13 @@
 package ikube.scheduling.schedule;
 
 import ikube.IConstants;
-import ikube.action.index.IndexManager;
 import ikube.cluster.IClusterManager;
 import ikube.cluster.IMonitorService;
 import ikube.database.IDataBase;
 import ikube.model.*;
 import ikube.scheduling.Schedule;
-import ikube.toolkit.Logging;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.LOGGING;
+import ikube.toolkit.THREAD;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -127,7 +126,7 @@ public class SnapshotSchedule extends Schedule {
         server.setFreeMemory(Runtime.getRuntime().freeMemory() / IConstants.MILLION);
         server.setMaxMemory(Runtime.getRuntime().maxMemory() / IConstants.MILLION);
         server.setTotalMemory(Runtime.getRuntime().totalMemory() / IConstants.MILLION);
-        server.setThreadsRunning(ThreadUtilities.isInitialized());
+        server.setThreadsRunning(THREAD.isInitialized());
         server.setAge(System.currentTimeMillis());
         server.setTimestamp(new Timestamp(System.currentTimeMillis()));
         /*try {
@@ -142,7 +141,7 @@ public class SnapshotSchedule extends Schedule {
     }
 
     void setLogTail(final Server server) {
-        File logFile = Logging.getLogFile();
+        File logFile = LOGGING.getLogFile();
         if (logFile == null || !logFile.exists() || !logFile.isFile() || !logFile.canRead()) {
             String message = "Can't find log file : " + logFile;
             logger.warn(message);

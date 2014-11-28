@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
  * @version 01.00
  * @since 16-09-2014
  */
-public class MatrixUtilitiesTest {
+public class MATRIXTest {
 
     @Test
     public void invertMatrix() {

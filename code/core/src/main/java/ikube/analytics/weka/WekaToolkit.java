@@ -1,7 +1,7 @@
 package ikube.analytics.weka;
 
 import ikube.IConstants;
-import ikube.toolkit.StringUtilities;
+import ikube.toolkit.STRING;
 import ikube.toolkit.Timer;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
@@ -20,8 +20,8 @@ import java.io.*;
 import java.text.ParseException;
 import java.util.*;
 
-import static ikube.toolkit.FileUtilities.getContents;
-import static ikube.toolkit.FileUtilities.getOrCreateFile;
+import static ikube.toolkit.FILE.getContents;
+import static ikube.toolkit.FILE.getOrCreateFile;
 import static org.apache.commons.lang.StringUtils.remove;
 import static org.apache.commons.lang.StringUtils.split;
 
@@ -89,9 +89,9 @@ public final class WekaToolkit {
         // Add the attributes to the data set
         for (int i = 0; i < matrix[0].length; i++) {
             String value = matrix[0][i] == null ? "" : matrix[0][i].toString();
-            if (StringUtilities.isDate(value)) {
+            if (STRING.isDate(value)) {
                 attributes.add(getAttribute(i, Date.class));
-            } else if (StringUtilities.isNumeric(value)) {
+            } else if (STRING.isNumeric(value)) {
                 attributes.add(getAttribute(i, Double.class));
             } else if (value.startsWith("{") && value.endsWith("}")) {
                 String strippedValue = remove(remove(value, '}'), '{');

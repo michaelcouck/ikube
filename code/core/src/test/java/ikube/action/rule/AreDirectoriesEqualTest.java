@@ -3,7 +3,7 @@ package ikube.action.rule;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 
 import java.io.File;
 
@@ -23,22 +23,22 @@ public class AreDirectoriesEqualTest extends AbstractTest {
 	@Before
 	public void before() {
 		directoriesEqual = new AreDirectoriesEqual();
-		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 
 	@After
 	public void after() {
-		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 
 	@Test
 	public void evaluate() {
-		File fileOne = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
-		File fileTwo = FileUtilities.getFile(indexDirectoryPathBackup, Boolean.TRUE);
+		File fileOne = FILE.getFile(indexDirectoryPath, Boolean.TRUE);
+		File fileTwo = FILE.getFile(indexDirectoryPathBackup, Boolean.TRUE);
 		boolean result = directoriesEqual.evaluate(new File[] { fileOne, fileTwo });
 		assertFalse(result);
 
-		fileTwo = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
+		fileTwo = FILE.getFile(indexDirectoryPath, Boolean.TRUE);
 		result = directoriesEqual.evaluate(new File[] { fileOne, fileTwo });
 		assertTrue(result);
 	}

@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static ikube.toolkit.ApplicationContextManager.getBean;
-import static ikube.toolkit.ObjectToolkit.populateFields;
+import static ikube.toolkit.OBJECT.populateFields;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
@@ -58,10 +58,10 @@ public abstract class AbstractTest {
 
     static {
         try {
-            Logging.configure();
+            LOGGING.configure();
             new MimeTypes(IConstants.MIME_TYPES);
             new MimeMapper(IConstants.MIME_MAPPING);
-            ThreadUtilities.initialize();
+            THREAD.initialize();
             Mockit.setUpMocks(SpellingCheckerMock.class);
         } catch (final Exception e) {
             e.printStackTrace();
@@ -290,7 +290,7 @@ public abstract class AbstractTest {
             for (int i = 0; i < row.length; i++) {
                 final String column = row[i];
                 String field = fields[i];
-                if (StringUtilities.isNumeric(column.trim())) {
+                if (STRING.isNumeric(column.trim())) {
                     IndexManager.addNumericField(field, column.trim(), document, Boolean.TRUE, indexable.getBoost());
                 } else {
                     IndexManager.addStringField(field, column, indexable, document);
@@ -330,7 +330,7 @@ public abstract class AbstractTest {
         Indexable indexable = getIndexable();
         IndexManager.addStringField(IConstants.ID, id, indexable, document);
         IndexManager.addStringField(IConstants.NAME, string, indexable, document);
-        if (StringUtilities.isNumeric(string.trim())) {
+        if (STRING.isNumeric(string.trim())) {
             IndexManager.addNumericField(field, string.trim(), document, Boolean.TRUE, indexable.getBoost());
         } else {
             IndexManager.addStringField(field, string, indexable, document);
@@ -355,7 +355,7 @@ public abstract class AbstractTest {
         boolean gotLock = lock.obtain(Lock.LOCK_OBTAIN_WAIT_FOREVER);
         logger.debug("Got lock : " + gotLock + ", is locked : " + lock.isLocked());
         if (!gotLock) {
-            FileUtilities.getFile(new File(serverIndexDirectory, IndexWriter.WRITE_LOCK_NAME).getAbsolutePath(),
+            FILE.getFile(new File(serverIndexDirectory, IndexWriter.WRITE_LOCK_NAME).getAbsolutePath(),
                     Boolean.FALSE);
         } else {
             assertTrue(IndexWriter.isLocked(directory));

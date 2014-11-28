@@ -7,7 +7,7 @@ import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import ikube.IConstants;
 import ikube.model.Coordinate;
 import ikube.model.Search;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,14 +84,14 @@ public class Geocoder implements IGeocoder {
             }
         } catch (final Exception e) {
             // We'll disable this geocoder for a while
-            ThreadUtilities.submit(this.getClass().getSimpleName(), new Runnable() {
+            THREAD.submit(this.getClass().getSimpleName(), new Runnable() {
                 public void run() {
                     try {
                         disabled = true;
-                        ThreadUtilities.sleep(600000);
+                        THREAD.sleep(600000);
                     } finally {
                         disabled = false;
-                        ThreadUtilities.destroy(this.getClass().getSimpleName());
+                        THREAD.destroy(this.getClass().getSimpleName());
                     }
                 }
             });

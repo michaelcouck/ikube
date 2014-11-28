@@ -4,7 +4,7 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableFileSystemCsv;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import org.apache.lucene.document.Document;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -35,7 +35,7 @@ public class RowResourceHandlerTest extends AbstractTest {
     @Test
     @SuppressWarnings("unchecked")
     public void handleResource() throws Exception {
-        File file = FileUtilities.findFileRecursively(new File("."), ".csv");
+        File file = FILE.findFileRecursively(new File("."), ".csv");
         List children = Arrays.asList(indexableColumn);
         when(indexableFileSystemCsv.getChildren()).thenReturn(children);
         when(indexableFileSystemCsv.getFile()).thenReturn(file);

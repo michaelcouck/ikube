@@ -4,7 +4,7 @@ import ikube.action.index.IndexManager;
 import ikube.cluster.IMonitorService;
 import ikube.model.IndexContext;
 import ikube.scheduling.Schedule;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.FSDirectory;
 import org.slf4j.Logger;
@@ -81,7 +81,7 @@ public class IndexSizeSchedule extends Schedule {
 
                 // Try to close and delete the new index writer and index directory
                 IndexManager.closeIndexWriter(newIndexWriter);
-                FileUtilities.deleteFile(newIndexDirectory, 1);
+                FILE.deleteFile(newIndexDirectory, 1);
                 // Remove the new index writer from the end of the array
                 if (newIndexWriter != null) {
                     indexWriters = indexContext.getIndexWriters();
@@ -105,7 +105,7 @@ public class IndexSizeSchedule extends Schedule {
         stringBuilder.append(indexDirectory.getAbsolutePath());
         stringBuilder.append(".");
         stringBuilder.append(Long.toString(System.currentTimeMillis()));
-        return FileUtilities.getFile(stringBuilder.toString(), Boolean.TRUE);
+        return FILE.getFile(stringBuilder.toString(), Boolean.TRUE);
     }
 
 }

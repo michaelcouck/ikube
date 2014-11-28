@@ -2,7 +2,7 @@ package ikube.action.index.handler.strategy;
 
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import org.apache.lucene.document.Document;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,8 +39,8 @@ public class ContentTypeStrategyTest extends AbstractTest {
 		assertEquals(null, document.get(IConstants.MIME_TYPE));
 
 		// Read a word document, no file type and see
-		File file = FileUtilities.findFileRecursively(new File("."), "pdf.pdf");
-		byte[] content = FileUtilities.getContents(file, Integer.MAX_VALUE).toByteArray();
+		File file = FILE.findFileRecursively(new File("."), "pdf.pdf");
+		byte[] content = FILE.getContents(file, Integer.MAX_VALUE).toByteArray();
 		Mockito.when(indexableColumn.getRawContent()).thenReturn(content);
 		document = new Document();
 		resource = "/a/folder/perhaps";

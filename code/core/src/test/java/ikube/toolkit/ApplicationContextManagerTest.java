@@ -21,9 +21,9 @@ public class ApplicationContextManagerTest extends AbstractTest {
 
     @Before
     public void before() {
-        File externalConfig = FileUtilities.findDirectoryRecursively(new File("."), "external");
-        File springConfig = FileUtilities.findFileRecursively(externalConfig, "spring\\.xml");
-        String springConfigPath = FileUtilities.cleanFilePath(springConfig.getParentFile().getAbsolutePath());
+        File externalConfig = FILE.findDirectoryRecursively(new File("."), "external");
+        File springConfig = FILE.findFileRecursively(externalConfig, "spring\\.xml");
+        String springConfigPath = FILE.cleanFilePath(springConfig.getParentFile().getAbsolutePath());
         System.setProperty(IConstants.IKUBE_CONFIGURATION, springConfigPath);
     }
 

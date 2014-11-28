@@ -8,7 +8,7 @@ import ikube.action.index.IndexManager;
 import ikube.action.index.handler.IStrategy;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 
@@ -105,12 +105,12 @@ public final class LanguageDetectionStrategy extends AStrategy {
 			File dotDirectory = new File(".");
 			do {
 				logger.info("Dot directory : " + dotDirectory.getAbsolutePath());
-				profileDirectory = FileUtilities.findDirectoryRecursively(dotDirectory, IConstants.LANGUAGE_PROFILES_DIRECTORY);
-				dotDirectory = FileUtilities.moveUpDirectories(dotDirectory, 1);
+				profileDirectory = FILE.findDirectoryRecursively(dotDirectory, IConstants.LANGUAGE_PROFILES_DIRECTORY);
+				dotDirectory = FILE.moveUpDirectories(dotDirectory, 1);
 			} while (upDirectories-- > 0 && (profileDirectory == null || !profileDirectory.exists()));
 			try {
 				if (profileDirectory != null) {
-					String profileDirectoryPath = FileUtilities.cleanFilePath(profileDirectory.getAbsolutePath());
+					String profileDirectoryPath = FILE.cleanFilePath(profileDirectory.getAbsolutePath());
 					DetectorFactory.loadProfile(profileDirectoryPath);
 					logger.debug("Loading language language-profiles from : " + profileDirectoryPath + ", " + DetectorFactory.getLangList());
 				} else {

@@ -13,8 +13,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
 
-import static ikube.toolkit.FileUtilities.findFileRecursively;
-import static ikube.toolkit.FileUtilities.findFilesRecursively;
+import static ikube.toolkit.FILE.findFileRecursively;
+import static ikube.toolkit.FILE.findFilesRecursively;
 
 /**
  * This class will scan the classpath and the file system below where the process was started
@@ -30,7 +30,7 @@ public class PropertyConfigurer extends Properties {
     private static final Logger LOGGER;
 
     static {
-        Logging.configure();
+        LOGGING.configure();
         LOGGER = Logger.getLogger(PropertyConfigurer.class);
     }
 

@@ -14,7 +14,7 @@ import ikube.model.Server;
 import ikube.model.Snapshot;
 import ikube.model.Task;
 import ikube.scheduling.schedule.Event;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import mockit.*;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -208,7 +208,7 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
         event.setObject(indexName);
         event.setType(Event.TERMINATE);
         clusterManagerHazelcast.sendMessage(event);
-        ThreadUtilities.sleep(1000);
+        THREAD.sleep(1000);
 
         server.getActions().remove(action);
 
@@ -217,18 +217,18 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
 
     @Test
     public void submitDestroy() {
-        ThreadUtilities.initialize();
+        THREAD.initialize();
         Runnable runnable = new Runnable() {
             @Override
             @SuppressWarnings("InfiniteLoopStatement")
             public void run() {
                 while (true) {
-                    ThreadUtilities.sleep(10000);
+                    THREAD.sleep(10000);
                 }
             }
         };
         String name = "name";
-        Future<?> future = ThreadUtilities.submit(name, runnable);
+        Future<?> future = THREAD.submit(name, runnable);
         logger.info("Future : " + future.isCancelled() + ", " + future.isDone() + ", " + future);
         Event event = IListener.EventGenerator.getEvent(Event.TERMINATE, System.currentTimeMillis(), name, Boolean.FALSE);
         StopListener stopListener = new StopListener();
@@ -238,7 +238,7 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
         Deencapsulation.setField(clusterManagerHazelcast, hazelcastInstance);
 
         clusterManagerHazelcast.sendMessage(event);
-        ThreadUtilities.sleep(5000);
+        THREAD.sleep(5000);
         assertTrue(future.isCancelled());
     }
 
@@ -270,16 +270,16 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
                         validate(locks);
                         clusterManagerHazelcast.unlock(IConstants.IKUBE);
                         locks[thread] = false;
-                        ThreadUtilities.sleep((long) (sleep * Math.random()));
+                        THREAD.sleep((long) (sleep * Math.random()));
                     }
                 }
             }
 
             Runnable runnable = new ClusterRunnable();
-            Future<Object> future = (Future<Object>) ThreadUtilities.submit(null, runnable);
+            Future<Object> future = (Future<Object>) THREAD.submit(null, runnable);
             futures.add(future);
         }
-        ThreadUtilities.waitForFutures(futures, Long.MAX_VALUE);
+        THREAD.waitForFutures(futures, Long.MAX_VALUE);
     }
 
     @Test
@@ -295,7 +295,7 @@ public class ClusterManagerHazelcastTest extends AbstractTest {
     @SuppressWarnings("unchecked")
     public void sendTaskToAll() throws Exception {
         List<Future<Object>> futures = clusterManagerHazelcast.sendTaskToAll(new Task());
-        ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
+        THREAD.waitForFutures(futures, Integer.MAX_VALUE);
         for (final Future<?> future : futures) {
             assertTrue((Boolean) future.get());
         }

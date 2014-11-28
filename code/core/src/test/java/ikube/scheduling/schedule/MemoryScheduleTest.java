@@ -2,7 +2,7 @@ package ikube.scheduling.schedule;
 
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mockit;
@@ -29,22 +29,22 @@ public class MemoryScheduleTest extends AbstractTest {
 
     @Before
     public void before() {
-        ThreadUtilities.initialize();
+        THREAD.initialize();
         Mockit.setUpMock(RuntimeMock.class);
     }
 
     @After
     public void after() {
-        ThreadUtilities.initialize();
+        THREAD.initialize();
         Mockit.tearDownMocks(RuntimeMock.class);
     }
 
     @Test
     @SuppressWarnings("rawtypes")
     public void run() {
-        assertTrue(ThreadUtilities.isInitialized());
+        assertTrue(THREAD.isInitialized());
         memorySchedule.run();
-        assertFalse(ThreadUtilities.isInitialized());
+        assertFalse(THREAD.isInitialized());
     }
 
     @MockClass(realClass = Runtime.class)

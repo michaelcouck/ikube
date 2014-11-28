@@ -112,7 +112,7 @@
 		<put-attribute name="content" value="/WEB-INF/jsp/analytics/configure.jsp" />
 	</definition>
 
-	<!-- Application templates, Twitter and Happy Planet -->
+	<!-- Application templates, Twitter and Happy Planet, etc... -->
 	<definition name="application/happy" extends=".mainTemplate">
 		<put-attribute name="title" value="Ikube Geo Tweets" type="string" />
 		<put-attribute name="menu">
@@ -130,6 +130,15 @@
 			</definition>
 		</put-attribute>
 		<put-attribute name="content" value="/WEB-INF/jsp/application/twitter.jsp" />
+	</definition>
+	<definition name="application/monitor" extends=".mainTemplate">
+		<put-attribute name="title" value="Ikube Jvm Monitor App" type="string" />
+		<put-attribute name="menu">
+			<definition template="/WEB-INF/templates/menu.jsp">
+				<put-attribute name="sub-menu" value="/WEB-INF/jsp/menu/monitor.jsp" />
+			</definition>
+		</put-attribute>
+		<put-attribute name="content" value="/WEB-INF/jsp/application/monitor.jsp" />
 	</definition>
 
 </tiles-definitions>

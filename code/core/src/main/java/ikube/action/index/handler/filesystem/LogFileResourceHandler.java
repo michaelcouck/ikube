@@ -4,7 +4,7 @@ import ikube.action.index.IndexManager;
 import ikube.action.index.handler.ResourceHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystemLog;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import org.apache.lucene.document.Document;
 
 import java.io.BufferedReader;
@@ -58,8 +58,8 @@ public class LogFileResourceHandler extends ResourceHandler<IndexableFileSystemL
         } catch (final Exception e) {
             throw new RuntimeException(e);
         } finally {
-            FileUtilities.close(bufferedReader);
-            FileUtilities.close(reader);
+            FILE.close(bufferedReader);
+            FILE.close(reader);
         }
         logger.info("Indexed lines : " + lineNumber);
 

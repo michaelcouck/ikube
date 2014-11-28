@@ -1,8 +1,8 @@
 package ikube.search;
 
 import ikube.AbstractTest;
-import ikube.toolkit.HttpClientUtilities;
-import ikube.toolkit.ObjectToolkit;
+import ikube.toolkit.REST;
+import ikube.toolkit.OBJECT;
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mockit;
@@ -27,7 +27,7 @@ public class SearchLoadTest extends AbstractTest {
 
     @After
     public void after() {
-        Mockit.tearDownMocks(HttpClientUtilities.class);
+        Mockit.tearDownMocks(REST.class);
     }
 
     @Test
@@ -40,13 +40,13 @@ public class SearchLoadTest extends AbstractTest {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    @MockClass(realClass = HttpClientUtilities.class)
+    @MockClass(realClass = REST.class)
     public static class HttpClientUtilitiesMock {
         @Mock
         @SuppressWarnings("unchecked")
         public static <T> T doPost(final String url, final Object entity, final Class<T> returnType) {
             EXECUTIONS++;
-            return (T) ObjectToolkit.populateFields(new ikube.model.Search(), true, 3);
+            return (T) OBJECT.populateFields(new ikube.model.Search(), true, 3);
         }
     }
 

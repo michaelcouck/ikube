@@ -2,7 +2,7 @@ package ikube.action.index.handler.filesystem;
 
 import ikube.action.index.handler.IResourceProvider;
 import ikube.model.IndexableFileSystemLog;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +27,7 @@ public class LogFileResourceProvider implements IResourceProvider<File> {
 
     LogFileResourceProvider(final IndexableFileSystemLog indexableFileSystemLog) {
         String directoryPath = indexableFileSystemLog.getPath();
-        File directory = FileUtilities.getFile(directoryPath, Boolean.TRUE);
+        File directory = FILE.getFile(directoryPath, Boolean.TRUE);
         resources = new ArrayList<>();
         getLogFiles(directory, indexableFileSystemLog.getSuffix());
     }

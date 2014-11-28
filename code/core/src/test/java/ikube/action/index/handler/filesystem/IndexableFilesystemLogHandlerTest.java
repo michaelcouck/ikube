@@ -3,8 +3,8 @@ package ikube.action.index.handler.filesystem;
 import ikube.AbstractTest;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystemLog;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.FILE;
+import ikube.toolkit.THREAD;
 import org.apache.lucene.document.Document;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -35,7 +35,7 @@ public class IndexableFilesystemLogHandlerTest extends AbstractTest {
     @SuppressWarnings("unchecked")
     public void handle() throws Exception {
         IndexableFileSystemLog indexableFileSystemLog = new IndexableFileSystemLog();
-        File logDirectory = FileUtilities.findFileRecursively(new File("."), "subLogs");
+        File logDirectory = FILE.findFileRecursively(new File("."), "subLogs");
         indexableFileSystemLog.setPath(logDirectory.getAbsolutePath());
         indexableFileSystemLog.setFileFieldName("countryCityFile");
         indexableFileSystemLog.setPathFieldName("filePath");
@@ -43,9 +43,9 @@ public class IndexableFilesystemLogHandlerTest extends AbstractTest {
         indexableFileSystemLog.setContentFieldName("lineContents");
 
         ForkJoinTask<?> forkJoinTask = indexableFilesystemLogHandler.handleIndexableForked(indexContext, indexableFileSystemLog);
-        ThreadUtilities.executeForkJoinTasks(this.getClass().getSimpleName(), 3, forkJoinTask);
-        ThreadUtilities.sleep(3000);
-        ThreadUtilities.cancelForkJoinPool(this.getClass().getSimpleName());
+        THREAD.executeForkJoinTasks(this.getClass().getSimpleName(), 3, forkJoinTask);
+        THREAD.sleep(3000);
+        THREAD.cancelForkJoinPool(this.getClass().getSimpleName());
         verify(logFileResourceHandler, atLeastOnce())
                 .handleResource(any(IndexContext.class), any(IndexableFileSystemLog.class), any(Document.class), any(Object.class));
     }

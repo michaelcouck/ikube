@@ -6,7 +6,7 @@ import ikube.action.remote.SynchronizeLatestIndexCallable;
 import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.model.Snapshot;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -97,7 +97,7 @@ public class Synchronize extends Action<IndexContext, Boolean> {
 				if (currentIndexFile != null) {
 					File indexDirectory = getOutputFile(indexContext, currentIndexFile);
 					logger.warn("Deleting index file coming from remote server : " + indexDirectory);
-					FileUtilities.deleteFile(indexDirectory);
+					FILE.deleteFile(indexDirectory);
 				}
 			}
 		}
@@ -154,7 +154,7 @@ public class Synchronize extends Action<IndexContext, Boolean> {
 
 		logger.debug("Writing to file : " + builder.toString());
 
-		return FileUtilities.getOrCreateFile(new File(builder.toString()));
+		return FILE.getOrCreateFile(new File(builder.toString()));
 	}
 
 	Server getTargetRemoteServer(final IndexContext indexContext) {

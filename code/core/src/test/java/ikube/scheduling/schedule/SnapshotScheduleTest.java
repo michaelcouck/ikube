@@ -1,9 +1,9 @@
 package ikube.scheduling.schedule;
 
-import static ikube.toolkit.FileUtilities.deleteFile;
-import static ikube.toolkit.FileUtilities.getOrCreateFile;
-import static ikube.toolkit.FileUtilities.setContents;
-import static ikube.toolkit.ObjectToolkit.populateFields;
+import static ikube.toolkit.FILE.deleteFile;
+import static ikube.toolkit.FILE.getOrCreateFile;
+import static ikube.toolkit.FILE.setContents;
+import static ikube.toolkit.OBJECT.populateFields;
 import static java.util.Arrays.asList;
 import static mockit.Deencapsulation.setField;
 import static mockit.Mockit.setUpMock;
@@ -21,10 +21,8 @@ import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.model.Snapshot;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.Logging;
-import ikube.toolkit.ObjectToolkit;
-import ikube.toolkit.SerializationUtilities;
+import ikube.toolkit.LOGGING;
+import ikube.toolkit.SERIALIZATION;
 
 import java.io.File;
 import java.sql.Timestamp;
@@ -33,9 +31,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import mockit.Deencapsulation;
-import mockit.Mockit;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.junit.After;
@@ -115,16 +110,16 @@ public class SnapshotScheduleTest extends AbstractTest {
 		previous.setTimestamp(new Timestamp(System.currentTimeMillis() - 65000));
 		previous.setNumDocsForIndexWriters(125);
 		
-		Snapshot one = (Snapshot) SerializationUtilities.clone(previous);
-		Snapshot two = (Snapshot) SerializationUtilities.clone(previous);
-		Snapshot three = (Snapshot) SerializationUtilities.clone(previous);
-		Snapshot four = (Snapshot) SerializationUtilities.clone(previous);
-		Snapshot five = (Snapshot) SerializationUtilities.clone(previous);
-		Snapshot six = (Snapshot) SerializationUtilities.clone(previous);
-		Snapshot seven = (Snapshot) SerializationUtilities.clone(previous);
-		Snapshot eight = (Snapshot) SerializationUtilities.clone(previous);
-		Snapshot nine = (Snapshot) SerializationUtilities.clone(previous);
-		Snapshot ten = (Snapshot) SerializationUtilities.clone(previous);
+		Snapshot one = (Snapshot) SERIALIZATION.clone(previous);
+		Snapshot two = (Snapshot) SERIALIZATION.clone(previous);
+		Snapshot three = (Snapshot) SERIALIZATION.clone(previous);
+		Snapshot four = (Snapshot) SERIALIZATION.clone(previous);
+		Snapshot five = (Snapshot) SERIALIZATION.clone(previous);
+		Snapshot six = (Snapshot) SERIALIZATION.clone(previous);
+		Snapshot seven = (Snapshot) SERIALIZATION.clone(previous);
+		Snapshot eight = (Snapshot) SERIALIZATION.clone(previous);
+		Snapshot nine = (Snapshot) SERIALIZATION.clone(previous);
+		Snapshot ten = (Snapshot) SERIALIZATION.clone(previous);
 		
 		one.setNumDocsForIndexWriters(0);
 		five.setNumDocsForIndexWriters(Integer.MAX_VALUE);
@@ -166,7 +161,7 @@ public class SnapshotScheduleTest extends AbstractTest {
 		String string = "Log tail";
 		File outputFile = getOrCreateFile("./" + IConstants.IKUBE + IConstants.SEP + IConstants.IKUBE_LOG);
 		setContents(outputFile, string.getBytes());
-		setField(Logging.class, "LOG_FILE", outputFile);
+		setField(LOGGING.class, "LOG_FILE", outputFile);
 		Server server = new Server();
 		snapshotSchedule.setLogTail(server);
 		assertEquals(string, server.getLogTail());
@@ -183,7 +178,7 @@ public class SnapshotScheduleTest extends AbstractTest {
 		String string = "Log tail";
 		File outputFile = getOrCreateFile("./" + IConstants.IKUBE + IConstants.SEP + IConstants.IKUBE_LOG);
 		setContents(outputFile, string.getBytes());
-		setField(Logging.class, "LOG_FILE", outputFile);
+		setField(LOGGING.class, "LOG_FILE", outputFile);
 		
 		List<Snapshot> snapshots = new ArrayList<>();
 		for (int i = 0; i < 10; i++) {

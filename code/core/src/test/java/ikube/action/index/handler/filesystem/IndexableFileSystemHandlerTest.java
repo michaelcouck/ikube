@@ -3,8 +3,8 @@ package ikube.action.index.handler.filesystem;
 import ikube.AbstractTest;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.FILE;
+import ikube.toolkit.THREAD;
 import org.apache.lucene.document.Document;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,8 +44,8 @@ public class IndexableFileSystemHandlerTest extends AbstractTest {
 
     @Before
     public void before() {
-        File analyticsFolder = FileUtilities.findDirectoryRecursively(new File("."), "analytics");
-        analyticsFolderPath = FileUtilities.cleanFilePath(analyticsFolder.getAbsolutePath());
+        File analyticsFolder = FILE.findDirectoryRecursively(new File("."), "analytics");
+        analyticsFolderPath = FILE.cleanFilePath(analyticsFolder.getAbsolutePath());
     }
 
     @Test
@@ -53,14 +53,14 @@ public class IndexableFileSystemHandlerTest extends AbstractTest {
         IndexableFileSystem indexableFileSystem = getIndexableFileSystem(analyticsFolderPath);
         indexableFileSystem.setUnpackZips(Boolean.FALSE);
         ForkJoinTask<?> forkJoinTask = indexableFileSystemHandler.handleIndexableForked(indexContext, indexableFileSystem);
-        ThreadUtilities.executeForkJoinTasks(this.getClass().getSimpleName(), 3, forkJoinTask);
-        ThreadUtilities.waitForFuture(forkJoinTask, Integer.MAX_VALUE);
+        THREAD.executeForkJoinTasks(this.getClass().getSimpleName(), 3, forkJoinTask);
+        THREAD.waitForFuture(forkJoinTask, Integer.MAX_VALUE);
         verify(resourceHandler, atLeastOnce()).handleResource(any(IndexContext.class), any(IndexableFileSystem.class), any(Document.class), any(File.class));
     }
 
     @Test
     public void handleFile() throws Exception {
-        File file = FileUtilities.findFileRecursively(new File("."), 1, "apache-tomcat-7.0.33.zip");
+        File file = FILE.findFileRecursively(new File("."), 1, "apache-tomcat-7.0.33.zip");
         IndexableFileSystem indexableFileSystem = getIndexableFileSystem(analyticsFolderPath);
         indexableFileSystem.setUnpackZips(Boolean.TRUE);
         indexableFileSystemHandler.handleFile(indexContext, indexableFileSystem, file);
@@ -77,22 +77,22 @@ public class IndexableFileSystemHandlerTest extends AbstractTest {
         Mockito.when(file.getName()).thenReturn("image.png");
         Mockito.when(file.getAbsolutePath()).thenReturn("/tmp/image.png");
         Pattern pattern = Pattern.compile(".*(png).*");
-        boolean isExcluded = FileUtilities.isExcluded(file, pattern);
+        boolean isExcluded = FILE.isExcluded(file, pattern);
         assertTrue(isExcluded);
 
         File symlinkFile;
         File folder = null;
         Path symlink = null;
         try {
-            folder = FileUtilities.getFile("/tmp/folder", Boolean.TRUE);
+            folder = FILE.getFile("/tmp/folder", Boolean.TRUE);
             symlinkFile = new File("/tmp/symlink");
             if (folder != null) {
                 symlink = Files.createSymbolicLink(symlinkFile.toPath(), folder.toPath());
-                isExcluded = FileUtilities.isExcluded(symlinkFile, pattern);
+                isExcluded = FILE.isExcluded(symlinkFile, pattern);
                 assertTrue(isExcluded);
             }
         } finally {
-            FileUtilities.deleteFile(folder, 1);
+            FILE.deleteFile(folder, 1);
             if (symlink != null) {
                 Files.deleteIfExists(symlink);
             }
@@ -106,21 +106,21 @@ public class IndexableFileSystemHandlerTest extends AbstractTest {
         IndexableFileSystem indexableFileSystem = getIndexableFileSystem(analyticsFolderPath);
         indexableFileSystem.setUnpackZips(Boolean.FALSE);
         final ForkJoinTask<?> forkJoinTask = indexableFileSystemHandler.handleIndexableForked(indexContext, indexableFileSystem);
-        final ForkJoinPool forkJoinPool = ThreadUtilities.getForkJoinPool(indexContext.getName(), indexableFileSystem.getThreads());
+        final ForkJoinPool forkJoinPool = THREAD.getForkJoinPool(indexContext.getName(), indexableFileSystem.getThreads());
 
-        ThreadUtilities.submit(null, new Runnable() {
+        THREAD.submit(null, new Runnable() {
             public void run() {
                 forkJoinPool.invoke(forkJoinTask);
             }
         });
 
-        ThreadUtilities.sleep(1000);
-        ThreadUtilities.submit("interrupt-test", new Runnable() {
+        THREAD.sleep(1000);
+        THREAD.submit("interrupt-test", new Runnable() {
             public void run() {
-                ThreadUtilities.cancelForkJoinPool(indexContext.getName());
+                THREAD.cancelForkJoinPool(indexContext.getName());
             }
         });
-        ThreadUtilities.sleep(1000);
+        THREAD.sleep(1000);
         assertTrue("The future must be cancelled or done : ", forkJoinPool.isTerminated() || forkJoinPool.isTerminating());
     }
 

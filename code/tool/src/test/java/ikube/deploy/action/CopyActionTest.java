@@ -2,7 +2,7 @@ package ikube.deploy.action;
 
 import ikube.AbstractTest;
 import ikube.deploy.model.Server;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import mockit.Cascading;
 import mockit.Mockit;
 import net.schmizz.sshj.SSHClient;
@@ -64,8 +64,8 @@ public class CopyActionTest extends AbstractTest {
         Map<String, String> files = new HashMap<>();
         Map<String, String> directories = new HashMap<>();
 
-        File file = FileUtilities.findFileRecursively(new File("."), "deployer.xml");
-        File directory = FileUtilities.findDirectoryRecursively(new File("."), file.getParentFile().getName());
+        File file = FILE.findFileRecursively(new File("."), "deployer.xml");
+        File directory = FILE.findDirectoryRecursively(new File("."), file.getParentFile().getName());
 
         files.put(file.getName(), "/tmp");
         directories.put(directory.getName(), "/tmp");

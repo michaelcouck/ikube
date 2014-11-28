@@ -8,10 +8,10 @@ import ikube.model.Coordinate;
 import ikube.model.IndexContext;
 import ikube.model.Search;
 import ikube.search.Search.TypeField;
-import ikube.toolkit.HashUtilities;
-import ikube.toolkit.SerializationUtilities;
-import ikube.toolkit.StringUtilities;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.HASH;
+import ikube.toolkit.SERIALIZATION;
+import ikube.toolkit.STRING;
+import ikube.toolkit.THREAD;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.search.BooleanClause;
@@ -29,7 +29,7 @@ import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import static ikube.toolkit.StringUtilities.stripToAlphaNumeric;
+import static ikube.toolkit.STRING.stripToAlphaNumeric;
 import static org.apache.commons.lang.StringUtils.stripToEmpty;
 
 /**
@@ -256,7 +256,7 @@ public class SearcherService implements ISearcherService {
             if (search.isStripToAlphaNumeric()) {
                 // Strip unwanted characters from the input string
                 for (int i = 0; i < searchStrings.length; i++) {
-                    searchStrings[i] = StringUtilities.stripToAlphaNumeric(searchStrings[i], '*', '~');
+                    searchStrings[i] = STRING.stripToAlphaNumeric(searchStrings[i], '*', '~');
                 }
             }
             String[] searchFields = search.getSearchFields().toArray(new String[search.getSearchFields().size()]);
@@ -293,7 +293,7 @@ public class SearcherService implements ISearcherService {
                 boosts = new float[search.getBoosts().size()];
                 for (final String boost : search.getBoosts()) {
                     float f = 0.0f;
-                    if (StringUtilities.isNumeric(boost)) {
+                    if (STRING.isNumeric(boost)) {
                         f = Float.parseFloat(boost);
                     }
                     boosts[i++] = f;
@@ -354,12 +354,12 @@ public class SearcherService implements ISearcherService {
                     }
                 };
                 String name = Integer.toString(clonedSearch.hashCode());
-                Future<Object> future = (Future<Object>) ThreadUtilities.submit(name, searchRunnable);
+                Future<Object> future = (Future<Object>) THREAD.submit(name, searchRunnable);
                 futures.add(future);
             }
-            ThreadUtilities.waitForFutures(futures, 60);
+            THREAD.waitForFutures(futures, 60);
             for (final Search clonedSearch : searches) {
-                ThreadUtilities.destroy(Integer.toString(clonedSearch.hashCode()));
+                THREAD.destroy(Integer.toString(clonedSearch.hashCode()));
             }
             aggregateResults(search, searches);
         } catch (final Exception e) {
@@ -416,7 +416,7 @@ public class SearcherService implements ISearcherService {
 
     @SuppressWarnings("unchecked")
     private Search cloneSearch(final Search search, final String indexName) {
-        final Search clonedSearch = (Search) SerializationUtilities.clone(search);
+        final Search clonedSearch = (Search) SERIALIZATION.clone(search);
         clonedSearch.setIndexName(indexName);
 
         String[] searchStrings = search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]);
@@ -541,7 +541,7 @@ public class SearcherService implements ISearcherService {
         if (cleanedSearchStrings.size() == 0) {
             return;
         }
-        Long hash = HashUtilities.hash(cleanedSearchStrings.toString().toLowerCase());
+        Long hash = HASH.hash(cleanedSearchStrings.toString().toLowerCase());
         try {
             Search cacheSearch = clusterManager.get(IConstants.SEARCH, hash);
             if (cacheSearch == null) {

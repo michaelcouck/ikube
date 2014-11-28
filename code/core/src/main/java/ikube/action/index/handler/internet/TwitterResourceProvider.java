@@ -3,7 +3,7 @@ package ikube.action.index.handler.internet;
 import ikube.IConstants;
 import ikube.action.index.handler.IResourceProvider;
 import ikube.model.IndexableTweets;
-import ikube.toolkit.SerializationUtilities;
+import ikube.toolkit.SERIALIZATION;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.social.twitter.api.*;
@@ -113,7 +113,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
             if (this.clones > 0) {
                 int clones = this.clones;
                 do {
-                    Tweet clone = (Tweet) SerializationUtilities.clone(tweet);
+                    Tweet clone = (Tweet) SERIALIZATION.clone(tweet);
                     tweets.push(clone);
                 } while (--clones > 0);
             }

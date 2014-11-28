@@ -11,7 +11,7 @@ import ikube.action.index.parse.mime.MimeTypes;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
-import ikube.toolkit.HashUtilities;
+import ikube.toolkit.HASH;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
@@ -42,7 +42,7 @@ public class InternetResourceHandler extends ResourceHandler<IndexableInternet> 
         if (parsedContent == null) {
             return document;
         }
-        url.setHash(HashUtilities.hash(parsedContent));
+        url.setHash(HASH.hash(parsedContent));
         if (indexContext.getHashes() != null && !indexContext.getHashes().add(url.getHash())) {
             // Duplicate content, not interesting
             logger.info("Duplicate : " + url.getUrl());

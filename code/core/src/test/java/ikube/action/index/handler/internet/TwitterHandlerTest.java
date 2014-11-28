@@ -2,8 +2,8 @@ package ikube.action.index.handler.internet;
 
 import ikube.AbstractTest;
 import ikube.model.IndexableTweets;
-import ikube.toolkit.ObjectToolkit;
-import ikube.toolkit.PerformanceTester;
+import ikube.toolkit.OBJECT;
+import ikube.toolkit.PERFORMANCE;
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mockit;
@@ -71,13 +71,13 @@ public class TwitterHandlerTest extends AbstractTest {
 
     @Test
     public void handleResource() {
-        final Tweet tweet = (Tweet) ObjectToolkit.getObject(Tweet.class);
-        ObjectToolkit.populateFields(tweet, Boolean.TRUE, 10);
-        TwitterProfile twitterProfile = (TwitterProfile) ObjectToolkit.getObject(TwitterProfile.class);
-        ObjectToolkit.populateFields(twitterProfile, Boolean.TRUE, 10);
+        final Tweet tweet = (Tweet) OBJECT.getObject(Tweet.class);
+        OBJECT.populateFields(tweet, Boolean.TRUE, 10);
+        TwitterProfile twitterProfile = (TwitterProfile) OBJECT.getObject(TwitterProfile.class);
+        OBJECT.populateFields(twitterProfile, Boolean.TRUE, 10);
         tweet.setUser(twitterProfile);
 
-        double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+        double executionsPerSecond = PERFORMANCE.execute(new PERFORMANCE.APerform() {
             public void execute() throws Throwable {
                 twitterHandler.handleResource(indexContext, indexableTweets, tweet);
             }

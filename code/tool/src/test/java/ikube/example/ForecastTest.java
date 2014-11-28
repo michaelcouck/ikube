@@ -1,14 +1,13 @@
 package ikube.example;
 
 import ikube.AbstractTest;
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 
-import static ikube.toolkit.FileUtilities.findFileAndGetCleanedPath;
+import static ikube.toolkit.FILE.findFileAndGetCleanedPath;
 import static org.junit.Assert.assertTrue;
 
 /**

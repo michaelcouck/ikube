@@ -18,7 +18,7 @@ import static org.junit.Assert.*;
  * @version 01.00
  * @since 20-03-2011
  */
-public class ThreadUtilitiesTest extends AbstractTest {
+public class THREADTest extends AbstractTest {
 
     // The runnable to sleep for a while
     class Sleepy implements Runnable {
@@ -34,26 +34,26 @@ public class ThreadUtilitiesTest extends AbstractTest {
         }
 
         public void run() {
-            ThreadUtilities.sleep(sleep);
+            THREAD.sleep(sleep);
         }
     }
 
     // The class to destroy the executor pool
     class Destroyer implements Runnable {
         public void run() {
-            ThreadUtilities.sleep(1000);
-            ThreadUtilities.destroy();
+            THREAD.sleep(1000);
+            THREAD.destroy();
         }
     }
 
     @Before
     public void before() {
-        ThreadUtilities.initialize();
+        THREAD.initialize();
     }
 
     @After
     public void after() {
-        ThreadUtilities.destroy();
+        THREAD.destroy();
     }
 
     @Test
@@ -64,7 +64,7 @@ public class ThreadUtilitiesTest extends AbstractTest {
             thread.start();
             threads.add(thread);
         }
-        ThreadUtilities.waitForThreads(threads);
+        THREAD.waitForThreads(threads);
         // Verify that all the threads are dead
         for (final Thread thread : threads) {
             assertFalse("All the threads should have died : ", thread.isAlive());
@@ -77,16 +77,16 @@ public class ThreadUtilitiesTest extends AbstractTest {
         // We just wait for this future to finish,
         // must be less than the time we expect to wait
         long start = System.currentTimeMillis();
-        Future<?> future = ThreadUtilities.submit(null, new Sleepy(3000));
-        ThreadUtilities.waitForFuture(future, Integer.MAX_VALUE);
+        Future<?> future = THREAD.submit(null, new Sleepy(3000));
+        THREAD.waitForFuture(future, Integer.MAX_VALUE);
         assertTrue(System.currentTimeMillis() - start < 4000);
 
         // We destroy this future and return from the wait method
         start = System.currentTimeMillis();
-        future = ThreadUtilities.submit(null, new Sleepy(Integer.MAX_VALUE));
+        future = THREAD.submit(null, new Sleepy(Integer.MAX_VALUE));
         logger.info("Going into wait before destroying the thread pool : " + future);
         new Thread(new Destroyer()).start();
-        ThreadUtilities.waitForFuture(future, Integer.MAX_VALUE);
+        THREAD.waitForFuture(future, Integer.MAX_VALUE);
         long duration = System.currentTimeMillis() - start;
         logger.info("Duration : " + duration);
         assertTrue(duration < 20000);
@@ -94,18 +94,18 @@ public class ThreadUtilitiesTest extends AbstractTest {
 
     @Test
     public void submitDestroy() {
-        if (!ThreadUtilities.isInitialized()) {
-            ThreadUtilities.initialize();
+        if (!THREAD.isInitialized()) {
+            THREAD.initialize();
         }
         String name = Long.toHexString(System.currentTimeMillis());
         Runnable sleepy = new Sleepy(Integer.MAX_VALUE);
-        Future<?> future = ThreadUtilities.submit(name, sleepy);
+        Future<?> future = THREAD.submit(name, sleepy);
         logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
-        ThreadUtilities.destroy(name);
+        THREAD.destroy(name);
         logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
 
         // TODO: This does not work on CentOs!!!!!! WTFN? (Why the fuck not?)
-        if (OsUtilities.isOs("3.11.0-12-generic")) {
+        if (OS.isOs("3.11.0-12-generic")) {
             assertTrue(future.isDone());
             assertTrue(future.isCancelled());
         } else {
@@ -126,25 +126,25 @@ public class ThreadUtilitiesTest extends AbstractTest {
                 public void run() {
                     int i = iterations;
                     do {
-                        ThreadUtilities.sleep(10);
-                        ThreadUtilities.submit(this.toString(), new Sleepy());
-                        ThreadUtilities.getFutures(this.toString());
-                        ThreadUtilities.submit(null, new Sleepy());
-                        ThreadUtilities.destroy(this.toString());
+                        THREAD.sleep(10);
+                        THREAD.submit(this.toString(), new Sleepy());
+                        THREAD.getFutures(this.toString());
+                        THREAD.submit(null, new Sleepy());
+                        THREAD.destroy(this.toString());
                     } while (i-- > 0);
                 }
             });
             thread.start();
             threads.add(thread);
         }
-        ThreadUtilities.waitForThreads(threads);
+        THREAD.waitForThreads(threads);
         // If it dead locks we will never get here
     }
 
     @Test
     public void cancelForkJoinPool() {
-        ForkJoinPool forkJoinPool = ThreadUtilities.getForkJoinPool(this.getClass().getSimpleName(), 3);
-        ForkJoinPool cancelledForkJoinPool = ThreadUtilities.cancelForkJoinPool(this.getClass().getSimpleName());
+        ForkJoinPool forkJoinPool = THREAD.getForkJoinPool(this.getClass().getSimpleName(), 3);
+        ForkJoinPool cancelledForkJoinPool = THREAD.cancelForkJoinPool(this.getClass().getSimpleName());
         assertEquals(forkJoinPool, cancelledForkJoinPool);
         assertTrue(cancelledForkJoinPool.isShutdown());
         assertTrue(cancelledForkJoinPool.isTerminated());
@@ -152,8 +152,8 @@ public class ThreadUtilitiesTest extends AbstractTest {
 
     @Test
     public void cancelAllForkJoinPools() {
-        ForkJoinPool forkJoinPool = ThreadUtilities.getForkJoinPool(this.getClass().getSimpleName(), 3);
-        ThreadUtilities.cancelAllForkJoinPools();
+        ForkJoinPool forkJoinPool = THREAD.getForkJoinPool(this.getClass().getSimpleName(), 3);
+        THREAD.cancelAllForkJoinPools();
         assertTrue(forkJoinPool.isShutdown());
         assertTrue(forkJoinPool.isTerminated());
     }
@@ -164,19 +164,19 @@ public class ThreadUtilitiesTest extends AbstractTest {
         ForkJoinTask<Object> forkJoinTask = new RecursiveTask<Object>() {
             @Override
             protected Object compute() {
-                ThreadUtilities.sleep(5000);
+                THREAD.sleep(5000);
                 return null;
             }
         };
         new Thread(new Runnable() {
             public void run() {
-                ThreadUtilities.sleep(3000);
-                ThreadUtilities.cancelForkJoinPool(forkJoinPoolName);
+                THREAD.sleep(3000);
+                THREAD.cancelForkJoinPool(forkJoinPoolName);
             }
         }).start();
         try {
-            ThreadUtilities.executeForkJoinTasks(forkJoinPoolName, 3, forkJoinTask);
-            ThreadUtilities.sleep(10000);
+            THREAD.executeForkJoinTasks(forkJoinPoolName, 3, forkJoinTask);
+            THREAD.sleep(10000);
         } catch (CancellationException e) {
             // Ignore?
         }

@@ -10,7 +10,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 
-import static ikube.toolkit.ObjectToolkit.populateFields;
+import static ikube.toolkit.OBJECT.populateFields;
 import static org.mockito.Mockito.*;
 
 /**

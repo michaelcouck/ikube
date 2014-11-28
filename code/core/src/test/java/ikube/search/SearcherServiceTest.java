@@ -6,7 +6,7 @@ import ikube.cluster.IClusterManager;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.Server;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockClass;
@@ -26,7 +26,7 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.Callable;
 
-import static ikube.toolkit.ObjectToolkit.populateFields;
+import static ikube.toolkit.OBJECT.populateFields;
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -66,7 +66,7 @@ public class SearcherServiceTest extends AbstractTest {
             @Override
             public Object answer(final InvocationOnMock invocation) throws Throwable {
                 final Callable callable = (Callable) invocation.getArguments()[0];
-                return ThreadUtilities.submit(IConstants.IKUBE, new Runnable() {
+                return THREAD.submit(IConstants.IKUBE, new Runnable() {
                     public void run() {
                         try {
                             callable.call();
@@ -139,7 +139,7 @@ public class SearcherServiceTest extends AbstractTest {
 
     @Test
     public void searchAllIntegrate() {
-        ThreadUtilities.initialize();
+        THREAD.initialize();
         try {
             searcherService = new SearcherService() {
                 @SuppressWarnings({ "unchecked" })
@@ -169,7 +169,7 @@ public class SearcherServiceTest extends AbstractTest {
             assertEquals("There should be a result for each index and the statistics : ", totalResultsPlusStats,
                     searchResult.getSearchResults().size());
         } finally {
-            ThreadUtilities.destroy();
+            THREAD.destroy();
         }
     }
 

@@ -2,7 +2,7 @@ package ikube.action.rule;
 
 import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
-import ikube.toolkit.StringUtilities;
+import ikube.toolkit.STRING;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.CompositeReaderContext;
 import org.apache.lucene.index.MultiReader;
@@ -63,7 +63,7 @@ public class IsNewIndexCreated extends ARule<IndexContext> {
             try {
                 openedIndexDirectory = directory.getDirectory();
                 do {
-                    if (StringUtilities.isNumeric(openedIndexDirectory.getName())) {
+                    if (STRING.isNumeric(openedIndexDirectory.getName())) {
                         current = new Date(Long.parseLong(openedIndexDirectory.getName()));
                         break;
                     }

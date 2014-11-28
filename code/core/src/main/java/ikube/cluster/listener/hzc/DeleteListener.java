@@ -7,7 +7,7 @@ import ikube.cluster.IMonitorService;
 import ikube.cluster.listener.IListener;
 import ikube.model.IndexContext;
 import ikube.scheduling.schedule.Event;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import org.apache.lucene.search.IndexSearcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,8 +56,8 @@ public class DeleteListener implements IListener<Message<Object>>, MessageListen
 				String indexDirectoryBackupPath = IndexManager.getIndexDirectoryPathBackup(indexContext);
 				logger.warn("Deleting index directory : " + indexDirectoryPath);
 				logger.warn("Deleting backup index directory : " + indexDirectoryBackupPath);
-				FileUtilities.deleteFile(new File(indexDirectoryPath), 3);
-				FileUtilities.deleteFile(new File(indexDirectoryBackupPath), 3);
+				FILE.deleteFile(new File(indexDirectoryPath), 3);
+				FILE.deleteFile(new File(indexDirectoryBackupPath), 3);
 			}
 		}
 	}

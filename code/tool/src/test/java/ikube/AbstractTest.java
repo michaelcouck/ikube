@@ -3,8 +3,8 @@ package ikube;
 import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
-import ikube.toolkit.Logging;
-import ikube.toolkit.StringUtilities;
+import ikube.toolkit.LOGGING;
+import ikube.toolkit.STRING;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.FSDirectory;
@@ -27,7 +27,7 @@ import java.io.IOException;
 public abstract class AbstractTest {
 
     static {
-        Logging.configure();
+        LOGGING.configure();
     }
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -68,7 +68,7 @@ public abstract class AbstractTest {
         Indexable indexable = getIndexable();
         IndexManager.addStringField(IConstants.ID, id, indexable, document);
         IndexManager.addStringField(IConstants.NAME, string, indexable, document);
-        if (StringUtilities.isNumeric(string.trim())) {
+        if (STRING.isNumeric(string.trim())) {
             IndexManager.addNumericField(field, string.trim(), document, Boolean.TRUE, indexable.getBoost());
         } else {
             IndexManager.addStringField(field, string, indexable, document);

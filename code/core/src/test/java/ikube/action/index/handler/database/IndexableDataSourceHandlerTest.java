@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
 import ikube.model.Indexable;
 import ikube.model.IndexableDataSource;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -73,9 +73,9 @@ public class IndexableDataSourceHandlerTest extends AbstractTest {
 		when(indexableDataSource.getDataSource()).thenReturn(dataSource);
 
 		ForkJoinTask<?> forkJoinTask = indexableDataSourceHandler.handleIndexableForked(indexContext, indexableDataSource);
-		ThreadUtilities.executeForkJoinTasks(indexContext.getName(), 1, forkJoinTask);
+		THREAD.executeForkJoinTasks(indexContext.getName(), 1, forkJoinTask);
 		
-		ThreadUtilities.sleep(1000);
+		THREAD.sleep(1000);
 
 		verify(indexContext, atLeastOnce()).getChildren();
 	}

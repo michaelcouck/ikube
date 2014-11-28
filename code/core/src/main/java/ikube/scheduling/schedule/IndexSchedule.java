@@ -4,7 +4,7 @@ import ikube.action.IAction;
 import ikube.cluster.IMonitorService;
 import ikube.model.IndexContext;
 import ikube.scheduling.Schedule;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -59,7 +59,7 @@ public class IndexSchedule extends Schedule {
         LOGGER.debug("Actions : " + actions.size());
         for (final IAction<IndexContext, Boolean> action : actions) {
             try {
-                ThreadUtilities.sleep(random.nextInt(30));
+                THREAD.sleep(random.nextInt(30));
                 Runnable runnable = new Runnable() {
                     public void run() {
                         try {
@@ -71,13 +71,13 @@ public class IndexSchedule extends Schedule {
                             LOGGER.error("Exception executing action : " + action, e);
                         } finally {
                             // We remove ourselves from the schedules in the thread utilities
-                            ThreadUtilities.destroy(this.toString());
+                            THREAD.destroy(this.toString());
                         }
                     }
                 };
-                Future<?> future = ThreadUtilities.submit(runnable.toString(), runnable);
+                Future<?> future = THREAD.submit(runnable.toString(), runnable);
                 // We'll wait a few seconds for this action, perhaps it is a fast one
-                ThreadUtilities.waitForFuture(future, Math.max(15, random.nextInt(15)));
+                THREAD.waitForFuture(future, Math.max(15, random.nextInt(15)));
             } catch (final Exception e) {
                 LOGGER.error("Exception executing action : " + action, e);
             }

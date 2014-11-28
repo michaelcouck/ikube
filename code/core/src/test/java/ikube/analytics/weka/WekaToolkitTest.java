@@ -1,7 +1,7 @@
 package ikube.analytics.weka;
 
 import ikube.AbstractTest;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +41,7 @@ public class WekaToolkitTest extends AbstractTest {
 
     @After
     public void after() {
-        FileUtilities.deleteFile(new File(filePath));
+        FILE.deleteFile(new File(filePath));
     }
 
     @Test
@@ -108,7 +108,7 @@ public class WekaToolkitTest extends AbstractTest {
 
         // Note: Do not use the filtered instances to build the instance!!!
 
-        File file = FileUtilities.findFileRecursively(new File("."), "sentiment-smo.arff");
+        File file = FILE.findFileRecursively(new File("."), "sentiment-smo.arff");
         try (InputStream inputStream = new FileInputStream(file)) {
             Instances instances = WekaToolkit.arffToInstances(inputStream);
             StringToWordVector stringToWordVector = new StringToWordVector(Integer.MAX_VALUE);

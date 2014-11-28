@@ -5,8 +5,8 @@ import ikube.analytics.action.*;
 import ikube.cluster.IClusterManager;
 import ikube.model.Analysis;
 import ikube.model.Context;
-import ikube.toolkit.CsvUtilities;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.CSV;
+import ikube.toolkit.THREAD;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static ikube.toolkit.FileUtilities.*;
+import static ikube.toolkit.FILE.*;
 
 /**
  * This class is implemented as a state pattern. The user specifies the type of analyzer, and the
@@ -51,7 +51,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
     public Context create(final Context context) {
         Create creator = new Create(context);
         List<Future<Boolean>> futures = clusterManager.sendTaskToAll(creator);
-        ThreadUtilities.waitForFutures(futures, 15);
+        THREAD.waitForFutures(futures, 15);
         LOGGER.debug("Contexts : " + getContexts());
         return context;
     }
@@ -79,7 +79,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
             File file = findFileRecursively(new File(IConstants.ANALYTICS_DIRECTORY), fileName);
             try {
                 FileInputStream fileInputStream = new FileInputStream(file);
-                Object[][] matrix = CsvUtilities.getCsvData(fileInputStream);
+                Object[][] matrix = CSV.getCsvData(fileInputStream);
                 int maxRows = Math.min(matrix.length, rows);
                 Object[][] prunedMatrix = new Object[maxRows][];
                 System.arraycopy(matrix, 0, prunedMatrix, 0, maxRows);
@@ -99,7 +99,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
     public Context train(final Analysis<I, O> analysis) {
         Train trainer = new Train(analysis);
         List<Future<Boolean>> futures = clusterManager.sendTaskToAll(trainer);
-        ThreadUtilities.waitForFutures(futures, 15);
+        THREAD.waitForFutures(futures, 15);
         LOGGER.debug("Contexts : " + getContexts());
         return getContext(analysis.getContext());
     }
@@ -112,7 +112,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
     public Context build(final Analysis<I, O> analysis) {
         Build builder = new Build(analysis);
         List<Future<Boolean>> futures = clusterManager.sendTaskToAll(builder);
-        ThreadUtilities.waitForFutures(futures, 15);
+        THREAD.waitForFutures(futures, 15);
         LOGGER.debug("Contexts : " + getContexts());
         return getContext(analysis.getContext());
     }
@@ -178,7 +178,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
         // Create the callable that will be executed on the remote node
         Destroy destroyer = new Destroy(context);
         List<Future<Boolean>> futures = clusterManager.sendTaskToAll(destroyer);
-        ThreadUtilities.waitForFutures(futures, 15);
+        THREAD.waitForFutures(futures, 15);
         LOGGER.debug("Contexts : " + getContexts());
     }
 

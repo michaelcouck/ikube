@@ -1,7 +1,7 @@
 package ikube.deploy.action;
 
 import ikube.deploy.model.Server;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import net.schmizz.sshj.common.IOUtils;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import org.apache.commons.lang.StringUtils;
@@ -31,7 +31,7 @@ public class CmdAction extends Action {
         if (commands != null) {
             for (final String command : commands) {
                 execute(server, command);
-                ThreadUtilities.sleep(getSleep());
+                THREAD.sleep(getSleep());
             }
         }
         return Boolean.TRUE;

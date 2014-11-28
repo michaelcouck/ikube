@@ -6,7 +6,7 @@ import ikube.action.index.handler.IResourceProvider;
 import ikube.action.index.handler.IndexableHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import org.apache.lucene.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -69,7 +69,7 @@ public class IndexableFileSystemHandler extends IndexableHandler<IndexableFileSy
                 if (tFiles != null) {
                     Pattern pattern = getPattern(indexableFileSystem.getExcludedPattern());
                     for (final File innerTFile : tFiles) {
-                        if (FileUtilities.isExcluded(innerTFile, pattern)) {
+                        if (FILE.isExcluded(innerTFile, pattern)) {
                             continue;
                         }
                         handleFile(indexContext, indexableFileSystem, innerTFile);

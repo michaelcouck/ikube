@@ -2,7 +2,7 @@ package ikube.action.index.handler.internet;
 
 import ikube.action.index.handler.IResourceProvider;
 import ikube.model.IndexableSvn;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,10 +52,10 @@ class SvnResourceProvider implements IResourceProvider<SVNDirEntry> {
         walkRepository(repository, indexableSvn.getFilePath());
         logger.info("Walk finished normally : ");
 
-        ThreadUtilities.submit(indexableSvn.getName(), new Runnable() {
+        THREAD.submit(indexableSvn.getName(), new Runnable() {
             public void run() {
                 while (!svnDirEntries.isEmpty()) {
-                    ThreadUtilities.sleep(1000);
+                    THREAD.sleep(1000);
                 }
                 try {
                     repository.closeSession();
@@ -64,7 +64,7 @@ class SvnResourceProvider implements IResourceProvider<SVNDirEntry> {
                 }
                 indexableSvn.setRepository(null);
                 logger.info("Terminating walk : ");
-                ThreadUtilities.destroy(indexableSvn.getName());
+                THREAD.destroy(indexableSvn.getName());
             }
         });
     }
@@ -139,7 +139,7 @@ class SvnResourceProvider implements IResourceProvider<SVNDirEntry> {
             SVNNodeKind svnNodeKind = dirEntry.getKind();
             if (SVNNodeKind.FILE.equals(svnNodeKind)) {
                 while (svnDirEntries.size() > MAX_RESOURCES) {
-                    ThreadUtilities.sleep(SLEEP_TIME);
+                    THREAD.sleep(SLEEP_TIME);
                 }
                 svnDirEntries.add(dirEntry);
             } else {

@@ -3,11 +3,10 @@ package ikube.scheduling.schedule;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import ikube.toolkit.UriUtilities;
 import mockit.Deencapsulation;
 import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -41,7 +40,7 @@ public class IndexCommitScheduleTest extends AbstractTest {
 
 	@After
 	public void after() {
-		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+		FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
 	}
 
 	@Test

@@ -4,7 +4,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import ikube.AbstractTest;
 import ikube.model.IndexableFileSystem;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +23,7 @@ public class FileSystemResourceProviderTest extends AbstractTest {
 
 	@Before
 	public void before() throws IOException {
-		ThreadUtilities.initialize();
+		THREAD.initialize();
 		IndexableFileSystem indexableFileSystem = new IndexableFileSystem();
 		indexableFileSystem.setPath(".");
 		fileSystemResourceProvider = new FileSystemResourceProvider(indexableFileSystem, null);

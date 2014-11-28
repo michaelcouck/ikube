@@ -1,7 +1,7 @@
 package ikube.scheduling.schedule;
 
 import ikube.AbstractTest;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
@@ -34,7 +34,7 @@ public class StockScheduleTest extends AbstractTest {
         String[] parameterNames = stockSchedule.parameterNames;
         String[] parameterValues = stockSchedule.getParameterValues(parameterNames);
         stockSchedule.getHistoricalStockData(parameterNames, parameterValues, "AHII");
-        File ahiiStockFile = FileUtilities.findFileRecursively(new File("."), "AHII.csv");
+        File ahiiStockFile = FILE.findFileRecursively(new File("."), "AHII.csv");
         assertNotNull(ahiiStockFile);
         assertTrue(ahiiStockFile.exists());
     }

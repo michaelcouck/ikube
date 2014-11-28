@@ -1,6 +1,6 @@
 package ikube.application;
 
-import ikube.toolkit.SerializationUtilities;
+import ikube.toolkit.SERIALIZATION;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +45,7 @@ class GCSmoother {
         do {
             GCSnapshot gcSnapshot = gcSnapshotIterator.next();
             if (gcSnapshotSmooth == null) {
-                gcSnapshotSmooth = SerializationUtilities.clone(GCSnapshot.class, gcSnapshot);
+                gcSnapshotSmooth = SERIALIZATION.clone(GCSnapshot.class, gcSnapshot);
                 gcSnapshotSmooth.start = gcSnapshot.start - (gcSnapshot.start % 60000);
                 gcSnapshotSmooth.end = gcSnapshotSmooth.start + 60000;
                 continue;

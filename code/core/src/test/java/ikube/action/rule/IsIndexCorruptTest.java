@@ -1,7 +1,7 @@
 package ikube.action.rule;
 
 import ikube.AbstractTest;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -35,7 +35,7 @@ public class IsIndexCorruptTest extends AbstractTest {
 
     @After
     public void after() {
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 
     @Test
@@ -56,7 +56,7 @@ public class IsIndexCorruptTest extends AbstractTest {
         lock.close();
         directory.clearLock(IndexWriter.WRITE_LOCK_NAME);
         // Delete the segments files
-        FileUtilities.deleteFiles(latestIndexDirectory, "segments");
+        FILE.deleteFiles(latestIndexDirectory, "segments");
         // The index should be corrupt
         isCorrupt = isIndexCorrupt.evaluate(indexContext);
         assertTrue(isCorrupt);

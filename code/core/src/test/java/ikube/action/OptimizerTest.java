@@ -1,7 +1,7 @@
 package ikube.action;
 
 import ikube.AbstractTest;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +32,7 @@ public class OptimizerTest extends AbstractTest {
 
     @After
     public void after() {
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 
     @Test

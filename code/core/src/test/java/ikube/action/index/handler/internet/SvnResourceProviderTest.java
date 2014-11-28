@@ -2,7 +2,7 @@ package ikube.action.index.handler.internet;
 
 import ikube.AbstractTest;
 import ikube.model.IndexableSvn;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockClass;
@@ -108,15 +108,15 @@ public class SvnResourceProviderTest extends AbstractTest {
         SVNDirEntry svnDirEntryCache = svnResourceProvider.getResource();
         Assert.assertEquals(svnDirEntry, svnDirEntryCache);
 
-        ThreadUtilities.initialize();
-        ThreadUtilities.submit(this.getClass().getSimpleName(), new Runnable() {
+        THREAD.initialize();
+        THREAD.submit(this.getClass().getSimpleName(), new Runnable() {
             public void run() {
                 SVNDirEntry svnDirEntryCache = svnResourceProvider.getResource();
                 Assert.assertNotNull(svnDirEntryCache);
             }
         });
         svnDirEntries.push(svnDirEntry);
-        ThreadUtilities.sleep(3000);
+        THREAD.sleep(3000);
     }
 
     @Test

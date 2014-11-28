@@ -4,7 +4,7 @@ import ikube.AbstractTest;
 import ikube.deploy.action.CmdAction;
 import ikube.deploy.action.CopyAction;
 import ikube.deploy.model.Server;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mockit;
@@ -47,7 +47,7 @@ public class DeployerTest extends AbstractTest {
 
     @Before
     public void before() {
-        ThreadUtilities.initialize();
+        THREAD.initialize();
         ATOMIC_INTEGER = new AtomicInteger();
         System.setProperty("username", "username");
         System.setProperty("password", "password");

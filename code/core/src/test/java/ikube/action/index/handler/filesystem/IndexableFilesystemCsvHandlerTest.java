@@ -6,8 +6,8 @@ import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableFileSystemCsv;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.PerformanceTester;
+import ikube.toolkit.FILE;
+import ikube.toolkit.PERFORMANCE;
 import mockit.Deencapsulation;
 import org.apache.lucene.document.Document;
 import org.junit.Before;
@@ -53,7 +53,7 @@ public class IndexableFilesystemCsvHandlerTest extends AbstractTest {
 
     @Test
     public void handleFile() throws Exception {
-        File file = FileUtilities.findFileRecursively(new File("."), "csv.csv");
+        File file = FILE.findFileRecursively(new File("."), "csv.csv");
 
         when(indexableColumn.getFieldName()).thenReturn("field-name");
         when(indexableColumn.getContent()).thenReturn("field-content");
@@ -65,9 +65,9 @@ public class IndexableFilesystemCsvHandlerTest extends AbstractTest {
                 any(IndexableFileSystemCsv.class), any(Document.class),
                 any(Object.class));
 
-        double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+        double executionsPerSecond = PERFORMANCE.execute(new PERFORMANCE.APerform() {
             public void execute() throws Throwable {
-                File file = FileUtilities.findFileRecursively(new File("."), "csv-large.csv");
+                File file = FILE.findFileRecursively(new File("."), "csv-large.csv");
                 filesystemCsvHandler.handleFile(indexContext, indexableFileSystem, file);
             }
         }, "Csv file reader performance : ", 1, Boolean.TRUE);
@@ -81,7 +81,7 @@ public class IndexableFilesystemCsvHandlerTest extends AbstractTest {
         indexableFileSystem.setAllColumns(Boolean.TRUE);
         indexableFileSystem.setMaxReadLength(Integer.MAX_VALUE);
         indexableFileSystem.setMaxLines(Integer.MAX_VALUE);
-        List<File> files = FileUtilities.findFilesRecursively(new File("."), 2, new ArrayList<File>(), "english.csv");
+        List<File> files = FILE.findFilesRecursively(new File("."), 2, new ArrayList<File>(), "english.csv");
         filesystemCsvHandler.handleFile(indexContext, indexableFileSystem, files.get(0));
     }
 

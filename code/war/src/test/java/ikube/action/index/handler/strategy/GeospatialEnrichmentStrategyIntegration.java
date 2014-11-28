@@ -6,8 +6,8 @@ import ikube.action.index.IndexManager;
 import ikube.action.index.handler.filesystem.IndexableFilesystemCsvHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystemCsv;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.FILE;
+import ikube.toolkit.THREAD;
 import ikube.toolkit.UriUtilities;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
@@ -42,15 +42,15 @@ public class GeospatialEnrichmentStrategyIntegration extends IntegrationTest {
 
     @Test
     public void aroundProcess() throws Exception {
-        File file = FileUtilities.findFileRecursively(new File("."), "min-eco.csv");
+        File file = FILE.findFileRecursively(new File("."), "min-eco.csv");
         indexableFileSystemCsv.setPath(file.getParentFile().getAbsolutePath());
         IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), UriUtilities.getIp());
         indexContext.setIndexWriters(indexWriter);
         ForkJoinTask<?> forkJoinTask = indexableHandlerFilesystemCsvHandler.handleIndexableForked(indexContext, indexableFileSystemCsv);
 
-        ThreadUtilities.executeForkJoinTasks(indexContext.getName(), indexableFileSystemCsv.getThreads(), forkJoinTask);
-        ThreadUtilities.sleep(15000);
-        ThreadUtilities.cancelForkJoinPool(indexContext.getName());
+        THREAD.executeForkJoinTasks(indexContext.getName(), indexableFileSystemCsv.getThreads(), forkJoinTask);
+        THREAD.sleep(15000);
+        THREAD.cancelForkJoinPool(indexContext.getName());
 
         IndexManager.closeIndexWriter(indexWriter);
         String indexPath = IndexManager.getIndexDirectoryPath(indexContext);

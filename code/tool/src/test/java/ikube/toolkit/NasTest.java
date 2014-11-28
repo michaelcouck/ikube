@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.Constants;
-import ikube.toolkit.FileUtilities;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -25,7 +24,7 @@ public class NasTest {
 				"/media/nas/xfs-four/directory/foo.txt", //
 				"/media/nas/xfs-five/directory/foo.txt" };
 		for (String nasFile : nasFiles) {
-			File file = FileUtilities.getFile(nasFile, Boolean.FALSE);
+			File file = FILE.getFile(nasFile, Boolean.FALSE);
 			assertNotNull(file);
 			assertTrue(file.exists());
 
@@ -35,9 +34,9 @@ public class NasTest {
 			fileOutputStream.close();
 
 			// FileUtils.writeStringToFile(file, string);
-			FileUtilities.setContents(file.getAbsolutePath(), string.getBytes());
+			FILE.setContents(file.getAbsolutePath(), string.getBytes());
 
-			String content = FileUtilities.getContents(file, Constants.ENCODING);
+			String content = FILE.getContents(file, Constants.ENCODING);
 			assertEquals(string, content);
 		}
 	}

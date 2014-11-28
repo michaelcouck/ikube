@@ -18,8 +18,8 @@ import java.util.Date;
 
 import static ikube.analytics.weka.WekaToolkit.getAttribute;
 import static ikube.analytics.weka.WekaToolkit.getInstance;
-import static ikube.toolkit.CsvUtilities.getCsvData;
-import static ikube.toolkit.FileUtilities.findFileAndGetCleanedPath;
+import static ikube.toolkit.CSV.getCsvData;
+import static ikube.toolkit.FILE.findFileAndGetCleanedPath;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;

@@ -1,6 +1,6 @@
 package ikube;
 
-import ikube.toolkit.Logging;
+import ikube.toolkit.LOGGING;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +19,7 @@ public final class Ikube {
     private static final Logger LOGGER;
 
     static {
-        Logging.configure();
+        LOGGING.configure();
         LOGGER = LoggerFactory.getLogger(Ikube.class);
     }
 

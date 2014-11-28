@@ -47,10 +47,10 @@ public final class MatrixUtilities {
         double[] doubleVector = new double[vector.length];
         for (int i = 0; i < vector.length; i++) {
             String element = vector[i].toString();
-            if (StringUtilities.isNumeric(element)) {
+            if (STRING.isNumeric(element)) {
                 doubleVector[i] = Double.parseDouble(element);
             } else {
-                doubleVector[i] = HashUtilities.hash(element);
+                doubleVector[i] = HASH.hash(element);
             }
         }
         return doubleVector;

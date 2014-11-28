@@ -22,12 +22,12 @@ import java.util.Random;
 import java.util.Vector;
 import java.util.concurrent.Future;
 
-import static ikube.toolkit.CsvUtilities.getCsvData;
-import static ikube.toolkit.FileUtilities.cleanFilePath;
+import static ikube.toolkit.CSV.getCsvData;
+import static ikube.toolkit.FILE.cleanFilePath;
 import static ikube.toolkit.MatrixUtilities.objectVectorToDoubleVector;
 import static ikube.toolkit.MatrixUtilities.stringVectorDoubleVector;
-import static ikube.toolkit.ThreadUtilities.submit;
-import static ikube.toolkit.ThreadUtilities.waitForAnonymousFutures;
+import static ikube.toolkit.THREAD.submit;
+import static ikube.toolkit.THREAD.waitForAnonymousFutures;
 
 /**
  * This adapter wraps the Neuroph neural networks. As with all the {@link ikube.analytics.IAnalyzer} implementations,

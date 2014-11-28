@@ -2,7 +2,7 @@ package ikube.action.index.parse;
 
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -21,8 +21,8 @@ public class AsposeExcelParserTest extends AbstractTest {
 	public void parse() throws Exception {
 		// final InputStream inputStream, final OutputStream outputStream
 		AsposeExcelParser asposeExcelParser = new AsposeExcelParser();
-		File file = FileUtilities.findFileRecursively(new File("."), "xlsx.xlsx");
-		byte[] bytes = FileUtilities.getContents(file, Integer.MAX_VALUE).toByteArray();
+		File file = FILE.findFileRecursively(new File("."), "xlsx.xlsx");
+		byte[] bytes = FILE.getContents(file, Integer.MAX_VALUE).toByteArray();
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		asposeExcelParser.parse(inputStream, outputStream);

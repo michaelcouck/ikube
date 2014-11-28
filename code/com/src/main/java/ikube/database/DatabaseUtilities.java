@@ -1,10 +1,8 @@
 package ikube.database;
 
-import ikube.toolkit.Logging;
+import ikube.toolkit.LOGGING;
 import org.apache.log4j.Logger;
 
-import javax.sql.DataSource;
-import java.lang.reflect.Field;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +17,7 @@ import java.util.List;
 public final class DatabaseUtilities {
 
     static {
-        Logging.configure();
+        LOGGING.configure();
     }
 
     private static final Logger LOGGER = Logger.getLogger(DatabaseUtilities.class);

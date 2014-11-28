@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static ikube.toolkit.FileUtilities.findFileRecursively;
+import static ikube.toolkit.FILE.findFileRecursively;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 
 /**

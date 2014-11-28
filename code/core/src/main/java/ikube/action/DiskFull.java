@@ -2,8 +2,8 @@ package ikube.action;
 
 import ikube.IConstants;
 import ikube.model.IndexContext;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.FILE;
+import ikube.toolkit.THREAD;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -34,7 +34,7 @@ public class DiskFull extends Action<IndexContext, Boolean> {
 	 */
 	@Override
 	boolean internalExecute(final IndexContext indexContext) {
-		File indexesDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
+		File indexesDirectory = FILE.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
 		if (indexesDirectory == null || !indexesDirectory.exists() || !indexesDirectory.isDirectory()) {
 			return Boolean.FALSE;
 		}
@@ -67,8 +67,8 @@ public class DiskFull extends Action<IndexContext, Boolean> {
 				logger.error(subject + " " + body);
 				sendNotification(subject, body);
 				// Terminate all indexing
-				ThreadUtilities.destroy();
-				ThreadUtilities.cancelAllForkJoinPools();
+				THREAD.destroy();
+				THREAD.cancelAllForkJoinPools();
 				return Boolean.TRUE;
 			}
 			if (freeSpaceMegabytes < minimumFreeSpaceForNotifications) {
@@ -129,7 +129,7 @@ public class DiskFull extends Action<IndexContext, Boolean> {
 				ps.destroy();
 			}
 			if (reader != null) {
-				FileUtilities.close(reader);
+				FILE.close(reader);
 			}
 		}
 	}

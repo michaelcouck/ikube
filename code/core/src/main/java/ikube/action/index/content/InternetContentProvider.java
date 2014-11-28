@@ -1,7 +1,7 @@
 package ikube.action.index.content;
 
 import ikube.model.IndexableInternet;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -23,7 +23,7 @@ public class InternetContentProvider implements IContentProvider<IndexableIntern
     public void getContent(final IndexableInternet indexableInternet, final OutputStream outputStream) {
         try {
             InputStream inputStream = indexableInternet.getCurrentInputStream();
-            FileUtilities.getContents(inputStream, outputStream, indexableInternet.getMaxReadLength());
+            FILE.getContents(inputStream, outputStream, indexableInternet.getMaxReadLength());
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }

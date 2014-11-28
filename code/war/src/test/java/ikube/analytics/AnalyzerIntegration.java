@@ -11,7 +11,7 @@ import org.junit.Test;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import static ikube.toolkit.HttpClientUtilities.doPost;
+import static ikube.toolkit.REST.doPost;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 

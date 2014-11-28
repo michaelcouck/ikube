@@ -4,7 +4,7 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Analysis;
 import ikube.model.Context;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import mockit.Mockit;
 import org.junit.After;
 import org.junit.Before;
@@ -38,7 +38,7 @@ public class WekaAnalyzerTest extends AbstractTest {
     @Before
     @SuppressWarnings("unchecked")
     public void before() throws Exception {
-        ThreadUtilities.initialize();
+        THREAD.initialize();
         wekaAnalyzer = new WekaClassifier();
 
         String algorithm = SMO.class.getName();

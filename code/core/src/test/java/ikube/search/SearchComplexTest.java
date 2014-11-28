@@ -2,7 +2,7 @@ package ikube.search;
 
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -32,7 +32,7 @@ public class SearchComplexTest extends AbstractTest {
 
     @Before
     public void before() throws Exception {
-        File file = FileUtilities.findFileRecursively(new File("."), "index-data.csv");
+        File file = FILE.findFileRecursively(new File("."), "index-data.csv");
         List<String> lines = FileUtils.readLines(file);
         String[] columns = StringUtils.split(lines.get(0), ';');
         List<String[]> data = new ArrayList<>();

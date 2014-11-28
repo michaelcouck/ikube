@@ -6,8 +6,8 @@ import ikube.database.IDataBase;
 import ikube.scheduling.Scheduler;
 import ikube.security.WebServiceAuthentication;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.FILE;
+import ikube.toolkit.THREAD;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -21,7 +21,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ikube.toolkit.ObjectToolkit.populateFields;
+import static ikube.toolkit.OBJECT.populateFields;
 
 /**
  * This base class for the integration tests will load some snapshots
@@ -45,7 +45,7 @@ public abstract class IntegrationTest extends AbstractTest {
         try {
             new MimeTypes(IConstants.MIME_TYPES);
             new MimeMapper(IConstants.MIME_MAPPING);
-            FileUtilities.deleteFiles(DOT_DIRECTORY, "ikube.h2.db", "ikube.lobs.db", "ikube.log", "openjpa.log");
+            FILE.deleteFiles(DOT_DIRECTORY, "ikube.h2.db", "ikube.lobs.db", "ikube.log", "openjpa.log");
             new WebServiceAuthentication().authenticate(HTTP_CLIENT, LOCALHOST, SERVER_PORT, REST_USER_NAME, REST_PASSWORD);
         } catch (final Exception e) {
             LOGGER.error(null, e);
@@ -54,13 +54,13 @@ public abstract class IntegrationTest extends AbstractTest {
 
     @BeforeClass
     public static void beforeClass() {
-        ThreadUtilities.initialize();
+        THREAD.initialize();
     }
 
     @AfterClass
     public static void afterClass() {
         try {
-            ThreadUtilities.destroy();
+            THREAD.destroy();
             ApplicationContextManager.getBean(Scheduler.class).shutdown();
         } catch (final Exception e) {
             LOGGER.error("Exception closing down the thread pools : ", e);

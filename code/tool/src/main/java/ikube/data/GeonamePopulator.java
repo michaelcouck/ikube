@@ -7,7 +7,7 @@ import ikube.database.ADataBaseJpa;
 import ikube.database.DataBaseJpaH2;
 import ikube.database.IDataBase;
 import ikube.model.geospatial.GeoName;
-import ikube.toolkit.ObjectToolkit;
+import ikube.toolkit.OBJECT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +69,7 @@ public final class GeonamePopulator extends ADatabase {
 	}
 
 	private static void persistBatch(IDataBase dataBase, List<Object> geoNames) {
-		EntityManager entityManager = (EntityManager) ObjectToolkit.getFieldValue(dataBase, "entityManager");
+		EntityManager entityManager = (EntityManager) OBJECT.getFieldValue(dataBase, "entityManager");
 		// EntityManager entityManager = Deencapsulation.getField(dataBase, EntityManager.class);
 		try {
 			entityManager.getTransaction().begin();

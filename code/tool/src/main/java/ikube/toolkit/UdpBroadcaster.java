@@ -12,9 +12,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Future;
 
-import static ikube.toolkit.StringUtilities.isNumeric;
-import static ikube.toolkit.ThreadUtilities.submit;
-import static ikube.toolkit.ThreadUtilities.waitForFutures;
+import static ikube.toolkit.STRING.isNumeric;
+import static ikube.toolkit.THREAD.submit;
+import static ikube.toolkit.THREAD.waitForFutures;
 
 /**
  * This class can be used as a test bean to see if udp is supported on a network. The class will start a client and a server that will then
@@ -56,10 +56,10 @@ public class UdpBroadcaster {
 
     @SuppressWarnings("unchecked")
     public List<Future<Object>> initialize() {
-        ThreadUtilities.initialize();
+        THREAD.initialize();
 
         Future<Object> server = (Future<Object>) server();
-        ThreadUtilities.sleep(3000);
+        THREAD.sleep(3000);
         Future<Object> client = (Future<Object>) client();
 
         return Arrays.asList(server, client);
@@ -96,7 +96,7 @@ public class UdpBroadcaster {
                         serverSocket.send(sendPacket);
                         UdpBroadcaster.MESSAGES_SENT++;
                         LOGGER.warn("Server sent at : " + new Date());
-                        ThreadUtilities.sleep(10000);
+                        THREAD.sleep(10000);
                     }
                 } catch (final Exception e) {
                     LOGGER.error(null, e);

@@ -2,8 +2,8 @@ package ikube.action.index.handler.strategy.geocode;
 
 import ikube.IConstants;
 import ikube.model.Coordinate;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.XmlUtilities;
+import ikube.toolkit.FILE;
+import ikube.toolkit.XML;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -42,12 +42,12 @@ public class GoogleGeocoder implements IGeocoder {
 			// Call the geocoder with the address
 			String uri = getUri(strippedAddress);
 			URL url = new URL(uri);
-			String xml = FileUtilities.getContents(url.openStream(), Integer.MAX_VALUE).toString();
+			String xml = FILE.getContents(url.openStream(), Integer.MAX_VALUE).toString();
 			InputStream inputStream = new ByteArrayInputStream(xml.getBytes());
-			Element rootElement = XmlUtilities.getDocument(inputStream, IConstants.ENCODING).getRootElement();
-			Element element = XmlUtilities.getElement(rootElement, IConstants.LOCATION);
-			Element latitudeElement = XmlUtilities.getElement(element, IConstants.LAT);
-			Element longitudeElement = XmlUtilities.getElement(element, IConstants.LNG);
+			Element rootElement = XML.getDocument(inputStream, IConstants.ENCODING).getRootElement();
+			Element element = XML.getElement(rootElement, IConstants.LOCATION);
+			Element latitudeElement = XML.getElement(element, IConstants.LAT);
+			Element longitudeElement = XML.getElement(element, IConstants.LNG);
 			double lat = Double.parseDouble(latitudeElement.getText());
 			double lng = Double.parseDouble(longitudeElement.getText());
 			return new Coordinate(lat, lng, strippedAddress);

@@ -9,8 +9,8 @@ import ikube.action.index.parse.IParser;
 import ikube.action.index.parse.ParserProvider;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.HashUtilities;
+import ikube.toolkit.FILE;
+import ikube.toolkit.HASH;
 import org.apache.lucene.document.Document;
 import org.xml.sax.SAXParseException;
 
@@ -82,7 +82,7 @@ public class FileResourceHandler extends ResourceHandler<IndexableFileSystem> {
             String parsedContent = parser.parse(byteInputStream, byteOutputStream).toString();
 
             // This is the unique id of the resource to be able to delete it
-            String fileId = HashUtilities.hash(file.getAbsolutePath()).toString();
+            String fileId = HASH.hash(file.getAbsolutePath()).toString();
             String pathFieldName = indexableFileSystem.getPathFieldName();
             String nameFieldName = indexableFileSystem.getNameFieldName();
             String modifiedFieldName = indexableFileSystem.getLastModifiedFieldName();
@@ -100,9 +100,9 @@ public class FileResourceHandler extends ResourceHandler<IndexableFileSystem> {
 
             indexableFileSystem.setContent(parsedContent);
         } finally {
-            FileUtilities.close(inputStream);
-            FileUtilities.close(byteInputStream);
-            FileUtilities.close(byteOutputStream);
+            FILE.close(inputStream);
+            FILE.close(byteInputStream);
+            FILE.close(byteOutputStream);
         }
         return document;
     }

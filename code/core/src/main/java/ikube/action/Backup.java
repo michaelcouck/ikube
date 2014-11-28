@@ -2,7 +2,6 @@ package ikube.action;
 
 import ikube.IConstants;
 import ikube.model.IndexContext;
-import ikube.toolkit.FileUtilities;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -10,7 +9,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 
 import static ikube.action.index.IndexManager.*;
-import static ikube.toolkit.FileUtilities.getFile;
+import static ikube.toolkit.FILE.getFile;
 
 /**
  * This class backs up the index to a place on the network in the case where the index becomes corrupted.

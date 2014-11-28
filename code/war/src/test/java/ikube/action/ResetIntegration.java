@@ -4,7 +4,7 @@ import ikube.IntegrationTest;
 import ikube.cluster.IMonitorService;
 import ikube.database.IDataBase;
 import ikube.model.Url;
-import ikube.toolkit.ObjectToolkit;
+import ikube.toolkit.OBJECT;
 import mockit.Deencapsulation;
 import org.junit.After;
 import org.junit.Before;
@@ -49,7 +49,7 @@ public class ResetIntegration extends IntegrationTest {
         List<Url> urls = dataBase.find(Url.class, 0, Integer.MAX_VALUE);
         assertEquals("There should be no urls in the database : ", 0, urls.size());
 
-        Url url = ObjectToolkit.populateFields(new Url(), Boolean.TRUE, 3, "id");
+        Url url = OBJECT.populateFields(new Url(), Boolean.TRUE, 3, "id");
         url.setName("indexContext");
 
         dataBase.persist(url);

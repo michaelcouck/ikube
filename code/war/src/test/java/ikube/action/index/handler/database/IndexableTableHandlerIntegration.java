@@ -24,7 +24,7 @@ import static ikube.action.index.IndexManager.openIndexWriter;
 import static ikube.action.index.handler.database.QueryBuilder.getIdColumn;
 import static ikube.database.DatabaseUtilities.close;
 import static ikube.toolkit.ApplicationContextManager.getBean;
-import static ikube.toolkit.ThreadUtilities.*;
+import static ikube.toolkit.THREAD.*;
 import static ikube.toolkit.UriUtilities.getIp;
 import static java.lang.System.currentTimeMillis;
 import static java.net.InetAddress.getLocalHost;

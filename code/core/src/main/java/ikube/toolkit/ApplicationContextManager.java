@@ -51,10 +51,10 @@ public final class ApplicationContextManager implements ApplicationContextAware 
     private static ApplicationContext APPLICATION_CONTEXT;
 
     static {
-        Logging.configure();
+        LOGGING.configure();
         LOGGER = LoggerFactory.getLogger(ApplicationContextManager.class);
         try {
-            SerializationUtilities.setTransientFields(//
+            SERIALIZATION.setTransientFields(//
                     ikube.model.File.class, //
                     Url.class, //
                     Analysis.class, //
@@ -125,10 +125,10 @@ public final class ApplicationContextManager implements ApplicationContextAware 
                 } else {
                     configDirectory = new File(ikubeConfigurationPathProperty.toString());
                 }
-                consoleOutputFile = FileUtilities.findFileRecursively(configDirectory, "console");
+                consoleOutputFile = FILE.findFileRecursively(configDirectory, "console");
 
-                String version = VersionUtilities.version();
-                String timestamp = VersionUtilities.timestamp();
+                String version = VERSION.version();
+                String timestamp = VERSION.timestamp();
                 inputStream = new FileInputStream(consoleOutputFile);
                 List<String> lines = IOUtils.readLines(inputStream);
                 for (final String line : lines) {
@@ -166,7 +166,7 @@ public final class ApplicationContextManager implements ApplicationContextAware 
         }
         if (configFile.isFile()) {
             // From the file system
-            String configFilePath = FileUtilities.cleanFilePath(configFile.getAbsolutePath());
+            String configFilePath = FILE.cleanFilePath(configFile.getAbsolutePath());
             // Why did I do this? Because Spring context wants it!
             configFilePath = "file:" + configFilePath;
             LOGGER.info("Configuration file path : " + configFilePath);

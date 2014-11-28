@@ -4,8 +4,8 @@ import ikube.IntegrationTest;
 import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.FILE;
+import ikube.toolkit.THREAD;
 import ikube.toolkit.UriUtilities;
 import org.apache.lucene.index.IndexWriter;
 import org.junit.After;
@@ -38,7 +38,7 @@ public class IndexableFilesystemHandlerIntegration extends IntegrationTest {
 
     @Before
     public void before() {
-        String dataIndexFolderPath = FileUtilities.cleanFilePath(new File(".").getAbsolutePath());
+        String dataIndexFolderPath = FILE.cleanFilePath(new File(".").getAbsolutePath());
         IndexWriter indexWriter = IndexManager.openIndexWriter(desktop, System.currentTimeMillis(), UriUtilities.getIp());
 
         desktopFolder.setPath(dataIndexFolderPath);
@@ -52,16 +52,16 @@ public class IndexableFilesystemHandlerIntegration extends IntegrationTest {
 
     @After
     public void after() {
-        FileUtilities.deleteFile(new File(desktop.getIndexDirectoryPath()), 1);
+        FILE.deleteFile(new File(desktop.getIndexDirectoryPath()), 1);
     }
 
     @Test
     public void handleIndexable() throws Exception {
         try {
             ForkJoinTask<?> forkJoinTask = indexableFilesystemHandler.handleIndexableForked(desktop, desktopFolder);
-            ThreadUtilities.executeForkJoinTasks(desktop.getName(), desktopFolder.getThreads(), forkJoinTask);
-            ThreadUtilities.sleep(15000);
-            ThreadUtilities.cancelForkJoinPool(desktop.getName());
+            THREAD.executeForkJoinTasks(desktop.getName(), desktopFolder.getThreads(), forkJoinTask);
+            THREAD.sleep(15000);
+            THREAD.cancelForkJoinPool(desktop.getName());
             // Verify that there are some documents in the index
             assertNotNull("The index writer should still be available : ", desktop.getIndexWriters());
             assertEquals("There should only be one index writer : ", 1, desktop.getIndexWriters().length);

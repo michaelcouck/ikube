@@ -24,7 +24,7 @@
     <bean
         id="ikube.toolkit.Logging"
         class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-        property:staticMethod="ikube.toolkit.Logging.configure"/>
+        property:staticMethod="ikube.toolkit.LOGGING.configure"/>
 
     <!-- This bean will look through the classpath and load every Spring properties file it finds. -->
     <bean
@@ -76,6 +76,7 @@
 
     <mvc:view-controller path="/application/happy.html"/>
     <mvc:view-controller path="/application/twitter.html"/>
+    <mvc:view-controller path="/application/monitor.html"/>
 
     <mvc:interceptors>
         <bean

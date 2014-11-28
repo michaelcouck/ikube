@@ -14,9 +14,9 @@ import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.HashUtilities;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.FILE;
+import ikube.toolkit.HASH;
+import ikube.toolkit.THREAD;
 import org.apache.lucene.document.Document;
 
 import java.io.ByteArrayInputStream;
@@ -72,7 +72,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
                     handleRow(indexableTable, resultSet, document, contentProvider);
                     // Add the document to the index
                     resourceHandler.handleResource(indexContext, indexableTable, document, null);
-                    ThreadUtilities.sleep(indexContext.getThrottle());
+                    THREAD.sleep(indexContext.getThrottle());
                 } catch (final InterruptedException e) {
                     throw new RuntimeException("Indexing terminated : ", e);
                 } catch (final Exception e) {
@@ -154,7 +154,7 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
             String fieldContent = parsedOutputStream.toString();
             if (indexableColumn.isNumeric()) {
                 if (indexableColumn.isHashed()) {
-                    fieldContent = HashUtilities.hash(fieldContent).toString();
+                    fieldContent = HASH.hash(fieldContent).toString();
                 }
                 IndexManager.addNumericField(fieldName, fieldContent, document, indexableColumn.isStored(), indexableColumn.getBoost());
             } else {
@@ -167,9 +167,9 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
             builder.append(" ");
             builder.append(fieldContent);
         } finally {
-            FileUtilities.close(inputStream);
-            FileUtilities.close(parsedOutputStream);
-            FileUtilities.close(byteOutputStream);
+            FILE.close(inputStream);
+            FILE.close(parsedOutputStream);
+            FILE.close(byteOutputStream);
         }
     }
 

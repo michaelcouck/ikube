@@ -5,7 +5,7 @@ import ikube.database.IDataBase;
 import ikube.model.IndexContext;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import mockit.MockClass;
 import mockit.Mockit;
 import org.apache.lucene.document.Document;
@@ -60,7 +60,7 @@ public class IndexableInternetHandlerTest extends AbstractTest {
     public void handleIndexable() throws Exception {
         when(indexableInternet.getUrl()).thenReturn("http://www.google.com:8080");
         ForkJoinTask<?> forkJoinTask = indexableInternetHandler.handleIndexableForked(indexContext, indexableInternet);
-        ThreadUtilities.waitForFuture(forkJoinTask, 10);
+        THREAD.waitForFuture(forkJoinTask, 10);
         assertNotNull(forkJoinTask);
     }
 

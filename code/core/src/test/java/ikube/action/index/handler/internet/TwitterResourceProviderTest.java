@@ -4,7 +4,7 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.mock.TwitterTemplateMock;
 import ikube.model.IndexableTweets;
-import ikube.toolkit.PerformanceTester;
+import ikube.toolkit.PERFORMANCE;
 import mockit.Mockit;
 import org.junit.After;
 import org.junit.Before;
@@ -52,7 +52,7 @@ public class TwitterResourceProviderTest extends AbstractTest {
         Tweet returnTweet = twitterResourceProvider.getResource();
         assertNotNull(returnTweet);
         // Now we'll deplete the stream and see that we always get a tweet
-        PerformanceTester.execute(new PerformanceTester.APerform() {
+        PERFORMANCE.execute(new PERFORMANCE.APerform() {
             public void execute() {
                 twitterResourceProvider.setResources(Arrays.asList(tweet));
                 Tweet tweet = twitterResourceProvider.getResource();
@@ -68,7 +68,7 @@ public class TwitterResourceProviderTest extends AbstractTest {
         final long before = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / IConstants.MILLION;
         final AtomicInteger atomicInteger = new AtomicInteger(0);
         twitterResourceProvider.onTweet(tweet);
-        PerformanceTester.execute(new PerformanceTester.APerform() {
+        PERFORMANCE.execute(new PERFORMANCE.APerform() {
             public void execute() {
                 if (atomicInteger.incrementAndGet() % 10000 == 0) {
                     printMemoryDelta(before);

@@ -5,7 +5,7 @@ import ikube.cluster.IClusterManager;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
 import ikube.mock.IndexReaderMock;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import mockit.Deencapsulation;
 import mockit.Mockit;
 import org.apache.lucene.index.IndexReader;
@@ -29,7 +29,7 @@ public class CloseTest extends AbstractTest {
     @Before
     public void before() {
         close = new Close();
-        ThreadUtilities.initialize();
+        THREAD.initialize();
         IClusterManager clusterManager = mock(IClusterManager.class);
         Deencapsulation.setField(close, clusterManager);
         Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class, IndexReaderMock.class);
@@ -46,7 +46,7 @@ public class CloseTest extends AbstractTest {
         when(indexContext.getMultiSearcher()).thenReturn(multiSearcher);
 
         boolean closed = close.execute(indexContext);
-        ThreadUtilities.sleep(11000);
+        THREAD.sleep(11000);
 
         assertTrue("The index was open and it should have been closed in the action : ", closed);
         // verify(indexReader, Mockito.atLeastOnce()).close();

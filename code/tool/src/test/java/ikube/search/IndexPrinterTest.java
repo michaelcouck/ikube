@@ -3,8 +3,7 @@ package ikube.search;
 import ikube.AbstractTest;
 import ikube.action.index.analyzer.NgramAnalyzer;
 import ikube.model.IndexContext;
-import ikube.search.IndexPrinter;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import mockit.Deencapsulation;
 import org.junit.After;
 import org.junit.Before;
@@ -53,7 +52,7 @@ public class IndexPrinterTest extends AbstractTest {
 
     @After
     public void after() {
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 
     @Test

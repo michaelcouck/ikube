@@ -5,7 +5,7 @@ import ikube.mock.QueryBuilderMock;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import mockit.Mockit;
 import org.junit.After;
 import org.junit.Before;
@@ -30,8 +30,8 @@ public class QueryBuilderTest extends AbstractTest {
     @Before
     public void before() {
         ApplicationContextManager.closeApplicationContext();
-        File file = FileUtilities.findFileRecursively(new File("."), "spring-geo-prod.xml");
-        String filePath = FileUtilities.cleanFilePath(file.getAbsolutePath());
+        File file = FILE.findFileRecursively(new File("."), "spring-geo-prod.xml");
+        String filePath = FILE.cleanFilePath(file.getAbsolutePath());
         // "src/test/resources/spring/spring-geo-prod.xml"
         ApplicationContextManager.getApplicationContextFilesystem("file:" + filePath);
         queryBuilder = new QueryBuilder();

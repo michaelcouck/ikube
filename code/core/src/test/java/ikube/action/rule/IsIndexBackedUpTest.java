@@ -2,7 +2,7 @@ package ikube.action.rule;
 
 import ikube.AbstractTest;
 import ikube.action.index.IndexManager;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -26,14 +26,14 @@ public class IsIndexBackedUpTest extends AbstractTest {
     @Before
     public void before() {
         isIndexBackedUp = new IsIndexBackedUp();
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()));
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()));
     }
 
     @After
     public void after() {
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()));
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()));
     }
 
     @Test

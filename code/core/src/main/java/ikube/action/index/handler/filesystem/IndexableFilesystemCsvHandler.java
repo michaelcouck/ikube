@@ -7,7 +7,7 @@ import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableFileSystemCsv;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang.StringUtils;
@@ -90,7 +90,7 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
                 int lineNumber = 0;
                 Map<Integer, String> differentLines = new HashMap<>();
                 while (lineIterator.hasNext() &&
-                        ThreadUtilities.isInitialized() &&
+                        THREAD.isInitialized() &&
                         lineNumber < indexableFileSystemCsv.getMaxLines()) {
                     indexableFileSystemCsv.setLineNumber(lineNumber);
                     try {
@@ -105,7 +105,7 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
                         }
                         Document document = new Document();
                         rowResourceHandler.handleResource(indexContext, indexableFileSystemCsv, document, file);
-                        ThreadUtilities.sleep(indexContext.getThrottle());
+                        THREAD.sleep(indexContext.getThrottle());
                     } catch (final Exception e) {
                         logger.error("Exception processing file : " + file, e);
                         handleException(indexableFileSystemCsv, e);
@@ -141,8 +141,8 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
             }
         }
         IndexableFileSystemCsvHandlerExecutor executor = new IndexableFileSystemCsvHandlerExecutor();
-        ThreadUtilities.executeForkJoinTasks(indexContext.getName(), indexableFileSystemCsv.getThreads(), executor);
-        ThreadUtilities.waitForFuture(executor, Long.MAX_VALUE);
+        THREAD.executeForkJoinTasks(indexContext.getName(), indexableFileSystemCsv.getThreads(), executor);
+        THREAD.waitForFuture(executor, Long.MAX_VALUE);
         LineIterator.closeQuietly(lineIterator);
     }
 

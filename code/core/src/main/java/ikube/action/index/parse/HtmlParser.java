@@ -1,7 +1,7 @@
 package ikube.action.index.parse;
 
 import ikube.IConstants;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import net.htmlparser.jericho.*;
 import org.slf4j.*;
 import org.slf4j.Logger;
@@ -43,7 +43,7 @@ public class HtmlParser implements IParser {
             LOGGER.debug("Text length : " + extractedText.length() + ", " + bytes.length);
             outputStream.write(bytes);
         } finally {
-            FileUtilities.close(inputStream);
+            FILE.close(inputStream);
         }
         return outputStream;
     }

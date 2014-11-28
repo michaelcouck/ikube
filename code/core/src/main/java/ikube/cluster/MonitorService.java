@@ -8,7 +8,7 @@ import ikube.model.Attribute;
 import ikube.model.IndexContext;
 import ikube.scheduling.schedule.Event;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
@@ -146,15 +146,15 @@ public class MonitorService implements IMonitorService {
         }
         Map<String, String> filesAndProperties = new HashMap<>();
         File dotFolder = new File(ikubeConfiguration);
-        List<File> propertyFiles = FileUtilities.findFilesRecursively(dotFolder, new ArrayList<File>(), "spring.properties");
+        List<File> propertyFiles = FILE.findFilesRecursively(dotFolder, new ArrayList<File>(), "spring.properties");
         for (final File propertyFile : propertyFiles) {
             try {
                 if (propertyFile == null || !propertyFile.canRead() || propertyFile.isDirectory()) {
                     continue;
                 }
                 String filePath = propertyFile.getAbsolutePath();
-                filePath = FileUtilities.cleanFilePath(filePath);
-                String fileContents = FileUtilities.getContents(propertyFile, Integer.MAX_VALUE).toString();
+                filePath = FILE.cleanFilePath(filePath);
+                String fileContents = FILE.getContents(propertyFile, Integer.MAX_VALUE).toString();
                 filesAndProperties.put(filePath, fileContents);
             } catch (final Exception e) {
                 LOGGER.error("Exception reading property file : " + propertyFile, e);
@@ -170,12 +170,12 @@ public class MonitorService implements IMonitorService {
     public void setProperties(final Map<String, String> filesAndProperties) {
         for (final Map.Entry<String, String> mapEntry : filesAndProperties.entrySet()) {
             try {
-                File file = FileUtilities.getFile(mapEntry.getKey(), Boolean.FALSE);
+                File file = FILE.getFile(mapEntry.getKey(), Boolean.FALSE);
                 if (file == null || !file.exists() || !file.isFile() || !file.canWrite()) {
                     LOGGER.warn("Can't write to file : " + file);
                     continue;
                 }
-                FileUtilities.setContents(mapEntry.getKey(), mapEntry.getValue().getBytes());
+                FILE.setContents(mapEntry.getKey(), mapEntry.getValue().getBytes());
             } catch (final Exception e) {
                 LOGGER.error("Exception setting properties in file : " + mapEntry.getKey(), e);
             }

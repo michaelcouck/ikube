@@ -44,6 +44,7 @@ public class GCAnalyzer extends Resource {
     public static final String REGISTER_COLLECTOR = "/register-collector";
     public static final String UNREGISTER_COLLECTOR = "/unregister-collector";
     public static final String USED_TO_MAX_RATIO_PREDICTION = "/used-to-max-ratio-prediction";
+    private static final String COLLECTOR_ADDRESSES_AND_PORTS = "/collector-addresses-and-ports";
 
     @Autowired
     private ikube.application.GCAnalyzer gcAnalyzer;
@@ -127,9 +128,9 @@ public class GCAnalyzer extends Resource {
             context.setAnalyzer(WekaForecastClassifier.class.getName());
             // Get the vectors of data from the analyzer
             String stringMatrix = matrixToString(matrix);
-            if (logger.isDebugEnabled()) {
+            if (logger.isErrorEnabled()) {
+                logger.error("Matrix to time series analyze : " + stringMatrix);
             }
-            logger.error("Matrix to time series analyze : " + stringMatrix);
             context.setTrainingDatas(stringMatrix);
             analyticsService.create(context);
 
@@ -144,6 +145,17 @@ public class GCAnalyzer extends Resource {
         }
 
         return buildResponse(analyses);
+    }
+
+    /**
+     * Please read the description in the annotation.
+     */
+    @GET
+    @SuppressWarnings("unchecked")
+    @Path(GCAnalyzer.COLLECTOR_ADDRESSES_AND_PORTS)
+    @Api(description = "Bla...", produces = List.class)
+    public Response collectorAddressesAndPorts() {
+        return buildResponse(gcAnalyzer.collectorAddressesAndPorts());
     }
 
     String matrixToString(final Object[][] matrix) {

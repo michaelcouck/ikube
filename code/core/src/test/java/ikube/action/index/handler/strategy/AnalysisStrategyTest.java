@@ -8,7 +8,7 @@ import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.model.IndexableTweets;
-import ikube.toolkit.ObjectToolkit;
+import ikube.toolkit.OBJECT;
 import mockit.Deencapsulation;
 import org.apache.lucene.document.Document;
 import org.junit.Assert;
@@ -66,8 +66,8 @@ public class AnalysisStrategyTest extends AbstractTest {
         IndexManager.addStringField(IConstants.LANGUAGE, Locale.ENGLISH.getLanguage(), indexableTweets, document);
         IndexManager.addStringField(IConstants.CLASSIFICATION, IConstants.POSITIVE, indexableTweets, document);
 
-        Tweet tweet = (Tweet) ObjectToolkit.getObject(Tweet.class);
-        ObjectToolkit.populateFields(tweet, Boolean.TRUE, 10);
+        Tweet tweet = (Tweet) OBJECT.getObject(Tweet.class);
+        OBJECT.populateFields(tweet, Boolean.TRUE, 10);
 
         analysisStrategy.aroundProcess(indexContext, indexableTweets, document, tweet);
 

@@ -2,7 +2,7 @@ package ikube.action.index.parse;
 
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -21,8 +21,8 @@ public class AsposePowerPointParserTest extends AbstractTest {
 	public void parse() throws Exception {
 		// final InputStream inputStream, final OutputStream outputStream
 		AsposePowerPointParser asposePowerPointParser = new AsposePowerPointParser();
-		File file = FileUtilities.findFileRecursively(new File("."), "pptx.pptx");
-		byte[] bytes = FileUtilities.getContents(file, Integer.MAX_VALUE).toByteArray();
+		File file = FILE.findFileRecursively(new File("."), "pptx.pptx");
+		byte[] bytes = FILE.getContents(file, Integer.MAX_VALUE).toByteArray();
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		asposePowerPointParser.parse(inputStream, outputStream);

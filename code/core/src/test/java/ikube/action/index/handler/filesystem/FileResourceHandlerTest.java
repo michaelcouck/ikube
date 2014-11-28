@@ -2,7 +2,7 @@ package ikube.action.index.handler.filesystem;
 
 import ikube.AbstractTest;
 import ikube.model.IndexableFileSystem;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
 import org.junit.Before;
@@ -37,7 +37,7 @@ public class FileResourceHandlerTest extends AbstractTest {
 		indexableFileSystem.setContentFieldName("contentFieldName");
 
 		Document document = new Document();
-		File resource = FileUtilities.findFileRecursively(new File("."), "words.txt");
+		File resource = FILE.findFileRecursively(new File("."), "words.txt");
 		document = fileResourceHandler.handleResource(indexContext, indexableFileSystem, document, resource);
 
 		IndexableField fieldable = document.getField(indexableFileSystem.getContentFieldName());

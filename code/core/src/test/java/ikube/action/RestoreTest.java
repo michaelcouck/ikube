@@ -3,7 +3,7 @@ package ikube.action;
 import ikube.AbstractTest;
 import ikube.action.index.IndexManager;
 import ikube.mock.ApplicationContextManagerMock;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import mockit.Deencapsulation;
 import mockit.Mockit;
 import org.apache.lucene.index.DirectoryReader;
@@ -36,14 +36,14 @@ public class RestoreTest extends AbstractTest {
     public void before() throws Exception {
         restore = new Restore();
         Deencapsulation.setField(restore, clusterManager);
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()));
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()));
     }
 
     @After
     public void after() throws Exception {
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()));
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()));
     }
 
     @Test
@@ -57,7 +57,7 @@ public class RestoreTest extends AbstractTest {
         when(indexContext.getIndexDirectoryPath()).thenReturn(indexDirectoryPath);
 
         // Corrupt the index
-        FileUtilities.deleteFiles(latestIndexDirectory, "segments");
+        FILE.deleteFiles(latestIndexDirectory, "segments");
 
         // Run the restore
         Mockit.setUpMocks(ApplicationContextManagerMock.class);
@@ -67,7 +67,7 @@ public class RestoreTest extends AbstractTest {
         indexExists();
 
         // Delete the index and restore it from the backup
-        FileUtilities.deleteFile(latestIndexDirectory, 1);
+        FILE.deleteFile(latestIndexDirectory, 1);
         assertFalse("The index directory should be deleted : ", latestIndexDirectory.exists());
 
         restore.execute(indexContext);

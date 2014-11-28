@@ -4,7 +4,7 @@ import ikube.AbstractTest;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import mockit.Mockit;
 import org.junit.After;
 import org.junit.Before;
@@ -33,7 +33,7 @@ public class SynchronizeLatestIndexCallableTest extends AbstractTest {
     @After
     public void after() {
 		Mockit.tearDownMocks(ApplicationContextManager.class);
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 
     @Test

@@ -11,9 +11,9 @@ import org.slf4j.LoggerFactory;
  * @version 01.00
  * @since 28-03-2014
  */
-public final class OsUtilities {
+public final class OS {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OsUtilities.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OS.class);
 
     public static boolean isOs(final String osName) {
         return os().contains(osName);

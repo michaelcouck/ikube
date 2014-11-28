@@ -20,7 +20,7 @@ import java.io.InputStream;
  * @version 01.00
  * @since 08-07-2013
  */
-public class VersionUtilitiesTest extends AbstractTest {
+public class VERSIONTest extends AbstractTest {
 
     @Before
     public void before() {
@@ -34,13 +34,13 @@ public class VersionUtilitiesTest extends AbstractTest {
 
     @Test
     public void version() {
-        String version = VersionUtilities.version();
+        String version = VERSION.version();
         Assert.assertNotNull(version);
     }
 
     @Test
     public void timestamp() {
-        String timestamp = VersionUtilities.timestamp();
+        String timestamp = VERSION.timestamp();
         Assert.assertNotNull(timestamp);
     }
 
@@ -54,8 +54,8 @@ public class VersionUtilitiesTest extends AbstractTest {
 
         @Mock
         public InputStream getInputStream() throws IOException {
-            File file = FileUtilities.findFileRecursively(new File("."), 1, "pom.properties");
-            return new ByteArrayInputStream(FileUtilities.getContent(file).getBytes());
+            File file = FILE.findFileRecursively(new File("."), 1, "pom.properties");
+            return new ByteArrayInputStream(FILE.getContent(file).getBytes());
         }
     }
 

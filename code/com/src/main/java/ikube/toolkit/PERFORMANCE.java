@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
  * @version 01.00
  * @since 10-02-2010
  */
-public class PerformanceTester {
+public class PERFORMANCE {
 
     public static class APerform implements IPerform {
 
@@ -34,7 +34,7 @@ public class PerformanceTester {
 
     }
 
-    private static final Logger LOGGER = Logger.getLogger(PerformanceTester.class);
+    private static final Logger LOGGER = Logger.getLogger(PERFORMANCE.class);
 
     /**
      * Executes the perform object a set number of times, prints the duration and iterations per second
@@ -79,7 +79,7 @@ public class PerformanceTester {
     /**
      * Singularity.
      */
-    private PerformanceTester() {
+    private PERFORMANCE() {
         // Documented
     }
 

@@ -1,6 +1,6 @@
 package ikube.action.index.parse.mime;
 
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -69,7 +69,7 @@ public final class MimeTypes {
     public MimeTypes(final String fileName) {
         InputStream inputStream = null;
         try {
-            File file = FileUtilities.findFileRecursively(new File("."), fileName);
+            File file = FILE.findFileRecursively(new File("."), fileName);
             inputStream = new FileInputStream(file);
             MimeTypes instance;
             synchronized (INSTANCES) {
@@ -83,7 +83,7 @@ public final class MimeTypes {
         } catch (Exception e) {
             LOGGER.error("Exception loading the mapping file for mime types : ", e);
         } finally {
-            FileUtilities.close(inputStream);
+            FILE.close(inputStream);
         }
 
     }

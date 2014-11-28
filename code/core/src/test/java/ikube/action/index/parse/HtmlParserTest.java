@@ -3,8 +3,7 @@ package ikube.action.index.parse;
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.action.index.parse.HtmlParser;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -22,8 +21,8 @@ public class HtmlParserTest extends AbstractTest {
 
 	@Test
 	public void parse() throws Exception {
-		File file = FileUtilities.findFileRecursively(new File("."), "html.html");
-		byte[] bytes = FileUtilities.getContents(file, IConstants.ENCODING).getBytes();
+		File file = FILE.findFileRecursively(new File("."), "html.html");
+		byte[] bytes = FILE.getContents(file, IConstants.ENCODING).getBytes();
 		// URL url = new URL("http://www.oki.com");
 		HtmlParser parser = new HtmlParser();
 		// byte[] bytes = FileUtilities.getContents(url.openStream(), Integer.MAX_VALUE).toByteArray();

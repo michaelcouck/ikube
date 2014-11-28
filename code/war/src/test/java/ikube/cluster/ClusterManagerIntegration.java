@@ -3,7 +3,7 @@ package ikube.cluster;
 import com.hazelcast.core.Hazelcast;
 import ikube.IntegrationTest;
 import ikube.model.Task;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -30,7 +30,7 @@ public class ClusterManagerIntegration extends IntegrationTest {
     @Test
     public void sendTask() {
         Future<?> future = clusterManager.sendTask(new Task());
-        ThreadUtilities.waitForFuture(future, Integer.MAX_VALUE);
+        THREAD.waitForFuture(future, Integer.MAX_VALUE);
         assertNotNull("There should be one execution only : ", future);
     }
 
@@ -38,7 +38,7 @@ public class ClusterManagerIntegration extends IntegrationTest {
     @SuppressWarnings("unchecked")
     public void sendTaskToAll() throws Exception {
         List<Future<Object>> futures = clusterManager.sendTaskToAll(new Task());
-        ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
+        THREAD.waitForFutures(futures, Integer.MAX_VALUE);
         for (final Future<?> future : futures) {
             assertTrue((Boolean) future.get());
         }

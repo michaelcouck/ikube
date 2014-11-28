@@ -5,7 +5,7 @@ import ikube.IntegrationTest;
 import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,7 +30,7 @@ public class IsRemoteIndexCurrentIntegration extends IntegrationTest {
         isRemoteIndexCurrent = ApplicationContextManager.getBean(IsRemoteIndexCurrent.class);
         IndexContext geospatialIndexContext = ApplicationContextManager.getBean(IConstants.GEOSPATIAL);
         String indexDirectoryPath = IndexManager.getIndexDirectoryPath(geospatialIndexContext);
-        FileUtilities.deleteFile(new File(indexDirectoryPath));
+        FILE.deleteFile(new File(indexDirectoryPath));
     }
 
     @Test

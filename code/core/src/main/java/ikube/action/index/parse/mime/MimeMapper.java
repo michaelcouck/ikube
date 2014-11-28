@@ -1,6 +1,6 @@
 package ikube.action.index.parse.mime;
 
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,7 +30,7 @@ public final class MimeMapper {
 	public MimeMapper(final String fileName) {
 		InputStream inputStream = null;
 		try {
-			File file = FileUtilities.findFileRecursively(new File("."), fileName);
+			File file = FILE.findFileRecursively(new File("."), fileName);
 			inputStream = new FileInputStream(file);
 			SAXReader reader = new SAXReader();
 			Document doc = reader.read(inputStream);
@@ -51,7 +51,7 @@ public final class MimeMapper {
 			LOGGER.error(message, e);
 			// throw new RuntimeException(message, e);
 		} finally {
-			FileUtilities.close(inputStream);
+			FILE.close(inputStream);
 		}
 	}
 

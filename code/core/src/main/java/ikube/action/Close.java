@@ -1,7 +1,7 @@
 package ikube.action;
 
 import ikube.model.IndexContext;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import org.apache.lucene.search.IndexSearcher;
 
 import java.io.IOException;
@@ -23,16 +23,16 @@ public class Close extends Action<IndexContext, Boolean> {
         final IndexSearcher indexSearcher = indexContext.getMultiSearcher();
         if (indexSearcher != null && indexSearcher.getIndexReader() != null) {
             final String name = Long.toHexString(System.currentTimeMillis());
-            ThreadUtilities.submit(name, new Runnable() {
+            THREAD.submit(name, new Runnable() {
                 public void run() {
                     try {
-                        ThreadUtilities.sleep(10000);
+                        THREAD.sleep(10000);
                         logger.info("Closing searcher : " + indexContext.getName() + ", " + indexSearcher.hashCode());
                         indexSearcher.getIndexReader().close();
                     } catch (final IOException e) {
                         throw new RuntimeException(e);
                     } finally {
-                        ThreadUtilities.destroy(name);
+                        THREAD.destroy(name);
                     }
                 }
             });

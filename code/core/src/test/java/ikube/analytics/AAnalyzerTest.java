@@ -2,7 +2,7 @@ package ikube.analytics;
 
 import ikube.AbstractTest;
 import ikube.model.Context;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import org.junit.Before;
 import org.junit.Test;
 import weka.classifiers.functions.SMO;
@@ -91,7 +91,7 @@ public class AAnalyzerTest extends AbstractTest {
             try {
                 assertTrue(dataFile.exists());
             } finally {
-                FileUtilities.deleteFile(dataFile);
+                FILE.deleteFile(dataFile);
             }
         }
     }

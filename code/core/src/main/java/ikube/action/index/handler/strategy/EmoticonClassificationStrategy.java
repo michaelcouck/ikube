@@ -5,8 +5,8 @@ import ikube.action.index.IndexManager;
 import ikube.action.index.handler.IStrategy;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.HashUtilities;
+import ikube.toolkit.FILE;
+import ikube.toolkit.HASH;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 
@@ -61,7 +61,7 @@ public final class EmoticonClassificationStrategy extends AStrategy {
                 StringTokenizer stringTokenizer = new StringTokenizer(content, " @");
                 while (stringTokenizer.hasMoreTokens()) {
                     String token = stringTokenizer.nextToken();
-                    long hash = HashUtilities.hash(token);
+                    long hash = HASH.hash(token);
                     if (emoticonHashesPos.contains(hash)) {
                         positive++;
                     }
@@ -98,13 +98,13 @@ public final class EmoticonClassificationStrategy extends AStrategy {
     }
 
     private void loadEmoticonHashes(final String file, final Set<Long> emoticonHashes) throws IOException {
-        File emoticonPosFile = FileUtilities.findFileRecursively(new File("."), file);
+        File emoticonPosFile = FILE.findFileRecursively(new File("."), file);
         List<String> linesPos = Files.readAllLines(emoticonPosFile.toPath(), Charset.forName(IConstants.ENCODING));
         for (final String linePos : linesPos) {
             StringTokenizer stringTokenizer = new StringTokenizer(linePos, "\n\r ", false);
             while (stringTokenizer.hasMoreTokens()) {
                 String emoticon = stringTokenizer.nextToken();
-                Long emoticonHash = HashUtilities.hash(emoticon);
+                Long emoticonHash = HASH.hash(emoticon);
                 emoticonHashes.add(emoticonHash);
             }
         }

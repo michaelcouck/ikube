@@ -3,7 +3,7 @@ package ikube.action.rule;
 import ikube.AbstractTest;
 import ikube.action.index.IndexManager;
 import ikube.mock.IndexManagerMock;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import mockit.Mockit;
 import org.junit.After;
 import org.junit.Before;
@@ -35,7 +35,7 @@ public class IsIndexCurrentTest extends AbstractTest {
     @After
     public void after() {
         Mockit.tearDownMocks(IndexManager.class);
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 
     @Test

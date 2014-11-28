@@ -3,7 +3,7 @@ package ikube.web.service;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Search;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
@@ -15,8 +15,8 @@ import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static ikube.toolkit.HttpClientUtilities.doPost;
-import static ikube.toolkit.ObjectToolkit.populateFields;
+import static ikube.toolkit.REST.doPost;
+import static ikube.toolkit.OBJECT.populateFields;
 import static org.junit.Assert.assertNotNull;
 
 public abstract class SearcherIntegration extends AbstractTest {
@@ -187,7 +187,7 @@ public abstract class SearcherIntegration extends AbstractTest {
             @Override
             public String handleResponse(final HttpResponse response) {
                 try {
-                    return FileUtilities.getContents(response.getEntity().getContent(), Long.MAX_VALUE).toString();
+                    return FILE.getContents(response.getEntity().getContent(), Long.MAX_VALUE).toString();
                 } catch (final IOException e) {
                     throw new RuntimeException(e);
                 }

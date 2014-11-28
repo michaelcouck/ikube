@@ -9,7 +9,7 @@ import java.util.Arrays;
 
 import static ikube.IConstants.ANALYTICS_DIRECTORY;
 import static ikube.toolkit.ApplicationContextManager.getConfigFilePath;
-import static ikube.toolkit.FileUtilities.*;
+import static ikube.toolkit.FILE.*;
 
 /**
  * Common logic for analyzers.

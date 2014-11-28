@@ -2,8 +2,7 @@ package ikube.action.index.parse;
 
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
-import ikube.action.index.parse.PdfParser;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -22,8 +21,8 @@ public class PdfParserTest extends AbstractTest {
 	@Test
 	public void parse() throws Exception {
 		PdfParser pdfParser = new PdfParser();
-		File file = FileUtilities.findFileRecursively(new File("."), new String[] { "pdf.pdf" });
-		byte[] bytes = FileUtilities.getContents(file, Integer.MAX_VALUE).toByteArray();
+		File file = FILE.findFileRecursively(new File("."), new String[]{"pdf.pdf"});
+		byte[] bytes = FILE.getContents(file, Integer.MAX_VALUE).toByteArray();
 		OutputStream parsed = pdfParser.parse(new ByteArrayInputStream(bytes), new ByteArrayOutputStream());
 		assertTrue(parsed.toString().contains("Application form for affiliation"));
 	}

@@ -3,8 +3,8 @@ package ikube.action.index.handler.internet;
 import ikube.AbstractTest;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.FILE;
+import ikube.toolkit.THREAD;
 import mockit.Deencapsulation;
 import org.junit.After;
 import org.junit.Before;
@@ -51,13 +51,13 @@ public class InternetResourceProviderTest extends AbstractTest {
 
     @After
     public void after() {
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 
     @Test
     public void initialize() throws MalformedURLException {
         internetResourceProvider = new InternetResourceProvider(indexableInternet, dataBase);
-        ThreadUtilities.sleep(15000);
+        THREAD.sleep(15000);
         verify(indexContext, atLeastOnce()).getName();
     }
 

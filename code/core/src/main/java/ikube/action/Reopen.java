@@ -51,13 +51,13 @@ public class Reopen extends Open {
             IndexReader oldIndexReader = indexReaderContext.reader();
             IndexReader newIndexReader = DirectoryReader.openIfChanged((DirectoryReader) oldIndexReader);
             if (newIndexReader != null && oldIndexReader != newIndexReader) {
-                logger.info("New index reader : " + indexContext.getName());
+                logger.debug("New index reader : " + indexContext.getName());
                 newIndexReaders.add(newIndexReader);
                 oldIndexReaders.add(oldIndexReader);
             } else {
                 if (oldIndexReader != null) {
                     newIndexReaders.add(oldIndexReader);
-                    logger.info("Keeping old index reader : " + indexContext.getName());
+                    logger.debug("Keeping old index reader : " + indexContext.getName());
                 }
             }
         }
@@ -69,14 +69,14 @@ public class Reopen extends Open {
         for (final IndexReader oldIndexReader : oldIndexReaders) {
             try {
                 if (oldIndexReader != null) {
-                    logger.info("Closing index reader : " + indexContext.getName());
+                    logger.debug("Closing index reader : " + indexContext.getName());
                     oldIndexReader.close();
                 }
             } catch (final Exception e) {
                 logger.error("Exception closing the old index reader : " + oldIndexReader, e);
             }
         }
-        logger.info("Opened new searcher : " + indexContext.getName() + ", " + indexContext.getMultiSearcher().getIndexReader().numDocs());
+        logger.debug("Opened new searcher : " + indexContext.getName() + ", " + indexContext.getMultiSearcher().getIndexReader().numDocs());
     }
 
     // NOTE: 13-09-2014: This finally runs out of memory, open file handles increase gradually

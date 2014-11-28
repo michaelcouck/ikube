@@ -3,9 +3,9 @@ package ikube.deploy;
 import ikube.IConstants;
 import ikube.deploy.action.IAction;
 import ikube.deploy.model.Server;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.Logging;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.FILE;
+import ikube.toolkit.LOGGING;
+import ikube.toolkit.THREAD;
 import net.schmizz.sshj.SSHClient;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -38,8 +38,8 @@ public final class Deployer {
 	private static final Logger LOGGER;
 
 	static {
-		Logging.configure();
-		ThreadUtilities.initialize();
+		LOGGING.configure();
+		THREAD.initialize();
 		LOGGER = LoggerFactory.getLogger(Deployer.class);
 	}
 
@@ -73,19 +73,19 @@ public final class Deployer {
             LOGGER.info("Args : " + upDirectories + ", " + Arrays.deepToString(args));
             configurationDirectory = new File(args[0]);
             LOGGER.info("Conf dir before : " + configurationDirectory);
-            configurationDirectory = FileUtilities.moveUpDirectories(configurationDirectory, upDirectories);
+            configurationDirectory = FILE.moveUpDirectories(configurationDirectory, upDirectories);
             LOGGER.info("Conf dir after moving : " + configurationDirectory);
             configurationFile = args[1];
 			if (args.length >= 3) {
 				execute = Boolean.valueOf(args[2]);
 			}
 		}
-		String configurationDirectoryPath = FileUtilities.cleanFilePath(configurationDirectory.getAbsolutePath());
+		String configurationDirectoryPath = FILE.cleanFilePath(configurationDirectory.getAbsolutePath());
 		LOGGER.info("Directory : " + configurationDirectoryPath + ", file : " + configurationFile);
 		// Find the configuration file
-		File deployerConfiguration = FileUtilities.findFileRecursively(new File(configurationDirectoryPath), configurationFile);
+		File deployerConfiguration = FILE.findFileRecursively(new File(configurationDirectoryPath), configurationFile);
 		LOGGER.info("Configuration file : " + deployerConfiguration);
-		String deployerConfigurationPath = "file:" + FileUtilities.cleanFilePath(deployerConfiguration.getAbsolutePath());
+		String deployerConfigurationPath = "file:" + FILE.cleanFilePath(deployerConfiguration.getAbsolutePath());
 		LOGGER.info("Configuration file path : " + deployerConfigurationPath);
 		APPLICATION_CONTEXT = new FileSystemXmlApplicationContext(deployerConfigurationPath);
 		// Get the command line ips that we will deploy to, if any of course
@@ -122,13 +122,13 @@ public final class Deployer {
 							execute(server);
 						}
 					}
-					Future<Object> future = (Future<Object>) ThreadUtilities.submit(null, new Executor());
+					Future<Object> future = (Future<Object>) THREAD.submit(null, new Executor());
 					futures.add(future);
 				}
 			}
-			ThreadUtilities.waitForFutures(futures, 600 * 6);
+			THREAD.waitForFutures(futures, 600 * 6);
 		}
-		ThreadUtilities.destroy();
+		THREAD.destroy();
 		// System.exit(0);
 	}
 

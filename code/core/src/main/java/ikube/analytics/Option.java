@@ -5,7 +5,7 @@ import org.kohsuke.args4j.CmdLineParser;
 
 import java.util.*;
 
-import static ikube.toolkit.ObjectToolkit.getFieldValue;
+import static ikube.toolkit.OBJECT.getFieldValue;
 
 /**
  * @author Michael Couck

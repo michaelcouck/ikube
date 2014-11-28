@@ -7,8 +7,8 @@ import ikube.action.Open;
 import ikube.mock.IndexWriterMock;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.FILE;
+import ikube.toolkit.THREAD;
 import mockit.Mockit;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -47,22 +47,22 @@ public class IndexManagerTest extends AbstractTest {
         when(indexContext.getIndexDirectoryPath()).thenReturn(this.getClass().getSimpleName());
         indexable = new Indexable() {
         };
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
         getFile(indexContext.getIndexDirectoryPath(), indexContext.getName(), "/1234567889/127.0.0.1");
         indexFolderTwo = getFile(indexContext.getIndexDirectoryPath(), indexContext.getName(), "/1234567891/127.0.0.2");
         getFile(indexContext.getIndexDirectoryPath(), indexContext.getName(), "/1234567890/127.0.0.3");
-        ThreadUtilities.sleep(1000);
+        THREAD.sleep(1000);
     }
 
     private File getFile(final String base, final String folder, final String name) {
         File file = new File(base, folder + IConstants.SEP + name);
-        String folderPath = FileUtilities.cleanFilePath(file.getAbsolutePath());
-        return FileUtilities.getFile(folderPath, Boolean.TRUE);
+        String folderPath = FILE.cleanFilePath(file.getAbsolutePath());
+        return FILE.getFile(folderPath, Boolean.TRUE);
     }
 
     @After
     public void after() {
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 
     @Test
@@ -162,7 +162,7 @@ public class IndexManagerTest extends AbstractTest {
         File base = new File(indexContext.getIndexDirectoryPath(), indexContext.getName());
         File latest = IndexManager.getLatestIndexDirectory(base, null);
         logger.info("Latest : " + latest.getAbsolutePath());
-        assertEquals(indexFolderTwo.getParentFile().getAbsolutePath(), FileUtilities.cleanFilePath(latest.getAbsolutePath()));
+        assertEquals(indexFolderTwo.getParentFile().getAbsolutePath(), FILE.cleanFilePath(latest.getAbsolutePath()));
 
         Date latestIndexDirectoryDate = IndexManager.getLatestIndexDirectoryDate(indexContext);
         logger.info("Latest date : " + latestIndexDirectoryDate.getTime() + ", " + latest.getName());
@@ -257,7 +257,7 @@ public class IndexManagerTest extends AbstractTest {
     public void openIndexWriterDelta() throws Exception {
         IndexWriter[] indexWriters = null;
         try {
-            FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+            FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
             indexWriters = IndexManager.openIndexWriterDelta(indexContext);
             assertEquals("There should be one new writers open : ", 1, indexWriters.length);
 

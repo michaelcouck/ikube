@@ -4,7 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 
 import java.io.File;
 
@@ -27,12 +27,12 @@ public class AreIndexesCreatedTest extends AbstractTest {
 	public void before() {
 		indexesCreated = new AreIndexesCreated();
 		when(indexContext.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
-		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 
 	@After
 	public void after() {
-		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 
 	@Test

@@ -4,7 +4,7 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import junit.framework.Assert;
 import org.apache.lucene.document.Document;
 import org.junit.Before;
@@ -48,8 +48,8 @@ public class InternetResourceHandlerTest extends AbstractTest {
 
         Document document = new Document();
 
-        File file = FileUtilities.findFileRecursively(new File("."), "html.html");
-        String contents = FileUtilities.getContents(file, Integer.MAX_VALUE).toString();
+        File file = FILE.findFileRecursively(new File("."), "html.html");
+        String contents = FILE.getContents(file, Integer.MAX_VALUE).toString();
         Url url = mock(Url.class);
         when(url.getUrl()).thenReturn(uri);
         when(url.getContentType()).thenReturn("text/html");
@@ -65,8 +65,8 @@ public class InternetResourceHandlerTest extends AbstractTest {
 
     @Test
     public void parseContent() {
-        File file = FileUtilities.findFileRecursively(new File("."), "html.html");
-        String contents = FileUtilities.getContents(file, Integer.MAX_VALUE).toString();
+        File file = FILE.findFileRecursively(new File("."), "html.html");
+        String contents = FILE.getContents(file, Integer.MAX_VALUE).toString();
         Url url = mock(Url.class);
         when(url.getUrl()).thenReturn("http://www.ikube.be/ikube");
         when(url.getRawContent()).thenReturn(contents.getBytes());

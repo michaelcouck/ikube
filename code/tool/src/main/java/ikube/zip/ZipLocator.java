@@ -1,7 +1,7 @@
 package ikube.zip;
 
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.StringUtilities;
+import ikube.toolkit.FILE;
+import ikube.toolkit.STRING;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,8 +88,8 @@ public class ZipLocator {
                         ATOMIC_INTEGER.incrementAndGet();
                     } else {
                         InputStream inputStream = zip.getInputStream(entry);
-                        String contents = FileUtilities.getContents(inputStream, Integer.MAX_VALUE).toString();
-                        contents = StringUtilities.stripToAlphaNumeric(contents);
+                        String contents = FILE.getContents(inputStream, Integer.MAX_VALUE).toString();
+                        contents = STRING.stripToAlphaNumeric(contents);
                         if (fileContent.matcher(contents).matches()) {
                             LOGGER.info("In file : " + file + ", " + fileEntry + ", " + entry.getName() + ", " + entry);
                             LOGGER.info("Contents : " + contents);

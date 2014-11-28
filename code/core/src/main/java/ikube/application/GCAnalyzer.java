@@ -4,6 +4,7 @@ import com.sun.management.GarbageCollectorMXBean;
 import ikube.IConstants;
 import ikube.analytics.IAnalyticsService;
 import ikube.scanner.Scanner;
+import ikube.toolkit.THREAD;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
@@ -39,11 +40,6 @@ public class GCAnalyzer {
     static final String[] MEMORY_BLOCKS = {EDEN_SPACE, PERM_GEN, OLD_GEN};
 
     /**
-     * This object will scan the network for addresses and open ports to connect to over JMX.
-     */
-    Scanner scanner;
-
-    /**
      * This object normalizes the snapshots, aggregating them into snapshots of one minute.
      */
     GCSmoother gcSmoother;
@@ -67,7 +63,6 @@ public class GCAnalyzer {
     Map<String, List<GCCollector>> gcCollectorMap;
 
     GCAnalyzer() {
-        scanner = new Scanner();
         gcSmoother = new GCSmoother();
         gcConnectorMap = new HashMap<>();
         gcCollectorMap = new HashMap<>();
@@ -81,7 +76,13 @@ public class GCAnalyzer {
      * @param addressRange the range of addresses to scan on the network, in the form '192.168.1.0/24'
      */
     public void registerCollectors(final String addressRange) {
-        List<String> addressesAndPorts = scanner.scan(addressRange, 1000);
+        List<String> addressesAndPorts = Scanner.scan(addressRange, 10000, Boolean.FALSE);
+        // We'll wait a bit for the scanner to finish completely
+        THREAD.sleep(10000);
+        LOGGER.info("Addresses : " + addressesAndPorts.size());
+        for (final String addressAndPort : addressesAndPorts) {
+            LOGGER.info("    : " + addressAndPort);
+        }
         for (final String addressAndPort : addressesAndPorts) {
             String[] splitAddressAndPort = StringUtils.split(addressAndPort, IConstants.DELIMITER_CHARACTERS);
             try {
@@ -106,8 +107,13 @@ public class GCAnalyzer {
      * @param port    the port of the remote machine to access the jndi registry at, i.e. the rmi registry for the m-beans
      */
     public void registerCollector(final String address, final int port) throws Exception {
+        String addressAndPort = getAddressAndPort(address, port);
         // We'll unregister the collector just in case
-        unregisterCollector(address, port);
+        // unregisterCollector(address, port);
+        if (collectorAddressesAndPorts().contains(addressAndPort)) {
+            LOGGER.warn("Already registered, first unregister the collector : " + addressAndPort);
+            return;
+        }
         // TODO: This should be in a retry block
         String url = buildUri(address, port);
         JMXConnector jmxConnector = getJMXConnector(url);
@@ -131,8 +137,8 @@ public class GCAnalyzer {
             }
         }
 
-        gcConnectorMap.put(getAddressAndPort(address, port), jmxConnector);
-        gcCollectorMap.put(getAddressAndPort(address, port), gcCollectors);
+        gcConnectorMap.put(addressAndPort, jmxConnector);
+        gcCollectorMap.put(addressAndPort, gcCollectors);
     }
 
     /**
@@ -160,7 +166,7 @@ public class GCAnalyzer {
      *
      * @return the list of addresses and ports currently being monitored by the system
      */
-    public List<String> getCollectorAddressesAndPorts() {
+    public List<String> collectorAddressesAndPorts() {
         List<String> addresses = new ArrayList<>();
         for (final Map.Entry<String, JMXConnector> mapEntry : gcConnectorMap.entrySet()) {
             addresses.add(mapEntry.getKey());

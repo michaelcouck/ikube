@@ -13,7 +13,7 @@ import java.util.List;
  * @version 01.00
  * @since 30-07-2012
  */
-public class CsvUtilities {
+public class CSV {
 
     public static Object[][] getCsvData(final String inputFilePath) {
         File inputFile = new File(inputFilePath);

@@ -1,6 +1,6 @@
 package ikube.mock;
 
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -8,7 +8,7 @@ import java.io.InputStream;
 import mockit.Mock;
 import mockit.MockClass;
 
-@MockClass(realClass = FileUtilities.class)
+@MockClass(realClass = FILE.class)
 public class FileUtilitiesMock {
 
 	private static ByteArrayOutputStream CONTENTS;

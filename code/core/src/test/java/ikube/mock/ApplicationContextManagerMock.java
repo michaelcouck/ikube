@@ -1,7 +1,7 @@
 package ikube.mock;
 
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.Logging;
+import ikube.toolkit.LOGGING;
 import mockit.Mock;
 import mockit.MockClass;
 import org.slf4j.Logger;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.mock;
 public class ApplicationContextManagerMock {
 
     static {
-        Logging.configure();
+        LOGGING.configure();
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContextManagerMock.class);

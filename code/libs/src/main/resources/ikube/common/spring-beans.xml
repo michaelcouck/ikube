@@ -169,7 +169,7 @@
 
     <bean
         name="ikube.toolkit.ThreadUtilities"
-        class="ikube.toolkit.ThreadUtilities"
+        class="ikube.toolkit.THREAD"
         lazy-init="false"
         init-method="initialize"
         destroy-method="destroy"/>

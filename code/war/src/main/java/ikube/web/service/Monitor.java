@@ -7,8 +7,8 @@ import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.model.Snapshot;
 import ikube.scheduling.schedule.Event;
-import ikube.toolkit.ObjectToolkit;
-import ikube.toolkit.SerializationUtilities;
+import ikube.toolkit.OBJECT;
+import ikube.toolkit.SERIALIZATION;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -116,8 +116,8 @@ public class Monitor extends Resource {
             Collections.sort(indexContexts, new Comparator<Object>() {
                 @Override
                 public int compare(final Object o1, final Object o2) {
-                    Object v1 = ObjectToolkit.getFieldValue(o1, sortField);
-                    Object v2 = ObjectToolkit.getFieldValue(o2, sortField);
+                    Object v1 = OBJECT.getFieldValue(o1, sortField);
+                    Object v2 = OBJECT.getFieldValue(o2, sortField);
                     return descending ? CompareToBuilder.reflectionCompare(v1, v2) : -(CompareToBuilder.reflectionCompare(v1, v2));
                 }
             });
@@ -241,7 +241,7 @@ public class Monitor extends Resource {
             List<Action> actions = server.getActions();
             server.setActions(null);
             for (final Action action : actions) {
-                Action clonedAction = (Action) SerializationUtilities.clone(action);
+                Action clonedAction = (Action) SERIALIZATION.clone(action);
                 server.setIndexContexts(null);
                 clonedAction.setServer(server);
                 clonedActions.add(clonedAction);
@@ -348,7 +348,7 @@ public class Monitor extends Resource {
     }
 
     private Server cloneServer(final Server server) {
-        Server cloneServer = (Server) SerializationUtilities.clone(server);
+        Server cloneServer = (Server) SERIALIZATION.clone(server);
         cloneServer.setIndexContexts(null);
         List<Action> actions = cloneServer.getActions();
         for (Action cloneAction : actions) {
@@ -360,7 +360,7 @@ public class Monitor extends Resource {
     @SuppressWarnings("unchecked")
     private IndexContext cloneIndexContext(
             final IndexContext indexContext) {
-        IndexContext cloneIndexContext = (IndexContext) SerializationUtilities.clone(indexContext);
+        IndexContext cloneIndexContext = (IndexContext) SERIALIZATION.clone(indexContext);
         cloneIndexContext.setChildren(null);
         // cloneIndexContext.setSnapshots(null);
         return cloneIndexContext;

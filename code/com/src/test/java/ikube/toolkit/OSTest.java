@@ -10,11 +10,11 @@ import static org.junit.Assert.assertFalse;
  * @version 01.00
  * @since 28-03-2014
  */
-public class OsUtilitiesTest extends AbstractTest {
+public class OSTest extends AbstractTest {
 
     @Test
     public void isOs() {
-        boolean isOs = OsUtilities.isOs("don't know what os we are on");
+        boolean isOs = OS.isOs("don't know what os we are on");
         assertFalse(isOs);
     }
 

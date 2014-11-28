@@ -1,6 +1,6 @@
 package ikube;
 
-import ikube.toolkit.Logging;
+import ikube.toolkit.LOGGING;
 
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractTest {
 
 	static {
-		Logging.configure();
+		LOGGING.configure();
 	}
 
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());

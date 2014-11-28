@@ -13,9 +13,9 @@ import java.util.List;
  * @version 01.00
  * @since 06-10-2009
  */
-public class PermutationUtilities {
+public class PERMUTAION {
 
-    protected Logger logger = Logger.getLogger(PermutationUtilities.class);
+    protected Logger logger = Logger.getLogger(PERMUTAION.class);
 
     /**
      * @param objects

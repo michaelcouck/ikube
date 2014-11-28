@@ -4,7 +4,7 @@ import ikube.AbstractTest;
 import ikube.action.index.IndexManager;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import ikube.toolkit.UriUtilities;
 import mockit.Deencapsulation;
 import mockit.Mockit;
@@ -34,14 +34,14 @@ public class IsThisIndexCreatedTest extends AbstractTest {
         isThisIndexCreated = new IsThisIndexCreated();
         Deencapsulation.setField(isThisIndexCreated, clusterManager);
         when(indexContext.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
         Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
     }
 
     @After
     public void after() {
         Mockit.tearDownMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 
     @Test

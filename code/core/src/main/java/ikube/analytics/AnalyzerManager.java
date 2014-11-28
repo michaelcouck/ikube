@@ -1,7 +1,7 @@
 package ikube.analytics;
 
 import ikube.model.Context;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,18 +46,18 @@ public class AnalyzerManager {
                 } catch (final Exception e) {
                     LOGGER.error("Exception building analyzer : " + analyzer + ", " + context.getName(), e);
                 } finally {
-                    ThreadUtilities.destroy(this.toString());
+                    THREAD.destroy(this.toString());
                 }
             }
         }
         Builder builder = new Builder();
-        if (!ThreadUtilities.isInitialized()) {
-            ThreadUtilities.initialize();
+        if (!THREAD.isInitialized()) {
+            THREAD.initialize();
         }
-        Future future = ThreadUtilities.submit(builder.toString(), builder);
+        Future future = THREAD.submit(builder.toString(), builder);
         if (waitForBuild) {
             // We'll wait until the analyzer is built completely
-            ThreadUtilities.waitForFuture(future, Integer.MAX_VALUE);
+            THREAD.waitForFuture(future, Integer.MAX_VALUE);
         }
         if (future != null && future.isDone()) {
             LOGGER.info("Analyzer finished building : " + future.isDone());

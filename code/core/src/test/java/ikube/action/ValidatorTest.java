@@ -3,7 +3,7 @@ package ikube.action;
 import ikube.AbstractTest;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import mockit.Deencapsulation;
 import mockit.Mockit;
 import org.apache.lucene.index.IndexWriter;
@@ -48,13 +48,13 @@ public class ValidatorTest extends AbstractTest {
         }).when(validator).sendNotification(anyString(), anyString());
         Deencapsulation.setField(validator, clusterManager);
         when(indexContext.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 
     @After
     public void after() {
         Mockit.tearDownMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 
     @Test
@@ -95,9 +95,9 @@ public class ValidatorTest extends AbstractTest {
         verify(validator, Mockito.times(invocations)).sendNotification(anyString(), anyString());
 
         // Delete one file in the index and there should be an exception
-        List<File> files = FileUtilities.findFilesRecursively(latestIndexDirectory, new ArrayList<File>(), "segments");
+        List<File> files = FILE.findFilesRecursively(latestIndexDirectory, new ArrayList<File>(), "segments");
         for (File file : files) {
-            FileUtilities.deleteFile(file, 1);
+            FILE.deleteFile(file, 1);
         }
         result = validator.execute(indexContext);
         assertFalse("The index is corrupt : ", result);

@@ -2,7 +2,7 @@ package ikube.search;
 
 import ikube.AbstractTest;
 import ikube.model.IndexContext;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,7 +38,7 @@ public class SearchToolkitTest extends AbstractTest {
     public void main() {
         String text = "and some data for hello world search";
         File indexDirectory = createIndexFileSystem(indexContext, System.currentTimeMillis(), "127.0.1.1", text);
-        String indexDirectoryPath = FileUtilities.cleanFilePath(indexDirectory.getAbsolutePath());
+        String indexDirectoryPath = FILE.cleanFilePath(indexDirectory.getAbsolutePath());
         String[] args = {indexDirectoryPath, "contents", "hello world"};
         SearchToolkit.main(args);
     }

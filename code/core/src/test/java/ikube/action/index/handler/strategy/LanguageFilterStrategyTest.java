@@ -2,7 +2,7 @@ package ikube.action.index.handler.strategy;
 
 import ikube.AbstractTest;
 import ikube.model.Indexable;
-import ikube.toolkit.PerformanceTester;
+import ikube.toolkit.PERFORMANCE;
 import org.apache.lucene.document.Document;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +45,7 @@ public class LanguageFilterStrategyTest extends AbstractTest {
 
         int iterations = 1000;
         final Document document = new Document();
-        double perSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+        double perSecond = PERFORMANCE.execute(new PERFORMANCE.APerform() {
             public void execute() throws Throwable {
                 languageFilterStrategy.aroundProcess(indexContext, indexableTable, document, null);
             }

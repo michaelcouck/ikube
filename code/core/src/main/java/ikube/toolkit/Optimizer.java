@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 public final class Optimizer {
 
 	static {
-		Logging.configure();
+		LOGGING.configure();
 	}
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Optimizer.class);

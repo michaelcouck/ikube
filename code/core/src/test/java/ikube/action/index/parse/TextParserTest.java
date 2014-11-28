@@ -3,8 +3,7 @@ package ikube.action.index.parse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
-import ikube.action.index.parse.TextParser;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -36,7 +35,7 @@ public class TextParserTest extends AbstractTest {
 
 	@Test
 	public void parse() throws Exception {
-		File file = FileUtilities.findFileRecursively(new File("."), new String[] { "txt.txt" });
+		File file = FILE.findFileRecursively(new File("."), new String[]{"txt.txt"});
 		InputStream inputStream = new FileInputStream(file);
 		OutputStream outputStream = textParser.parse(inputStream, new ByteArrayOutputStream());
 		String string = outputStream.toString();

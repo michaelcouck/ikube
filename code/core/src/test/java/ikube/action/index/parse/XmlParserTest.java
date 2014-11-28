@@ -3,9 +3,7 @@ package ikube.action.index.parse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
-import ikube.action.index.parse.IParser;
-import ikube.action.index.parse.ParserProvider;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -23,8 +21,8 @@ public class XmlParserTest extends AbstractTest {
 
 	@Test
 	public void parse() throws Exception {
-		File file = FileUtilities.findFileRecursively(new File("."), new String[] { "xml.xml" });
-		byte[] bytes = FileUtilities.getContents(file, Integer.MAX_VALUE).toByteArray();
+		File file = FILE.findFileRecursively(new File("."), new String[]{"xml.xml"});
+		byte[] bytes = FILE.getContents(file, Integer.MAX_VALUE).toByteArray();
 		IParser parser = ParserProvider.getParser("text/xml", bytes);
 		OutputStream parsed = parser.parse(new ByteArrayInputStream(bytes), new ByteArrayOutputStream());
 		assertNotNull(parsed);
@@ -35,8 +33,8 @@ public class XmlParserTest extends AbstractTest {
 
 	@Test
 	public void noDtd() throws Exception {
-		File file = FileUtilities.findFileRecursively(new File("."), new String[] { "69-language-selector-zh-cn.conf" });
-		byte[] bytes = FileUtilities.getContents(file, Integer.MAX_VALUE).toByteArray();
+		File file = FILE.findFileRecursively(new File("."), new String[]{"69-language-selector-zh-cn.conf"});
+		byte[] bytes = FILE.getContents(file, Integer.MAX_VALUE).toByteArray();
 		IParser parser = ParserProvider.getParser("text/xml", bytes);
 		OutputStream parsed = parser.parse(new ByteArrayInputStream(bytes), new ByteArrayOutputStream());
 		assertNotNull(parsed);

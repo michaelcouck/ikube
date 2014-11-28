@@ -8,7 +8,7 @@ import org.junit.Test;
 import javax.ws.rs.core.Response;
 import java.util.Arrays;
 
-import static ikube.toolkit.ObjectToolkit.populateFields;
+import static ikube.toolkit.OBJECT.populateFields;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 

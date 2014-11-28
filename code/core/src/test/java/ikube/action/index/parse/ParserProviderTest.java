@@ -5,12 +5,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.IConstants;
-import ikube.action.index.parse.IParser;
-import ikube.action.index.parse.ParserProvider;
-import ikube.action.index.parse.TextParser;
-import ikube.action.index.parse.XMLParser;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.PerformanceTester;
+import ikube.toolkit.FILE;
+import ikube.toolkit.PERFORMANCE;
 
 import java.io.File;
 
@@ -34,8 +30,8 @@ public class ParserProviderTest extends AbstractTest {
 		assertEquals("This should be the text parser : ", TextParser.class, parser.getClass());
 
 		mimeTypeString = ".xml";
-		File file = FileUtilities.findFileRecursively(new File("."), IConstants.SPRING_XML);
-		bytes = FileUtilities.getContents(file, Integer.MAX_VALUE).toByteArray();
+		File file = FILE.findFileRecursively(new File("."), IConstants.SPRING_XML);
+		bytes = FILE.getContents(file, Integer.MAX_VALUE).toByteArray();
 
 		parser = ParserProvider.getParser(mimeTypeString, bytes);
 		assertNotNull("Xml parser can never be null : ", parser);
@@ -52,12 +48,12 @@ public class ParserProviderTest extends AbstractTest {
 		int iterations = 100;
 		final String mimeTypeString = ".txt";
 		final byte[] bytes = "hello world".getBytes();
-		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
-			@Override
-			public void execute() throws Throwable {
-				ParserProvider.getParser(mimeTypeString, bytes);
-			}
-		}, "Get parser performance : ", iterations, Boolean.FALSE);
+		double executionsPerSecond = PERFORMANCE.execute(new PERFORMANCE.APerform() {
+            @Override
+            public void execute() throws Throwable {
+                ParserProvider.getParser(mimeTypeString, bytes);
+            }
+        }, "Get parser performance : ", iterations, Boolean.FALSE);
 		assertTrue("This function must be fast : " + executionsPerSecond, executionsPerSecond > 10);
 	}
 

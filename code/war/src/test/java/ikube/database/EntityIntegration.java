@@ -3,7 +3,7 @@ package ikube.database;
 import ikube.IConstants;
 import ikube.IntegrationTest;
 import ikube.model.Persistable;
-import ikube.toolkit.ObjectToolkit;
+import ikube.toolkit.OBJECT;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +20,7 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Set;
 
-import static ikube.toolkit.ObjectToolkit.*;
+import static ikube.toolkit.OBJECT.*;
 import static org.junit.Assert.*;
 
 /**
@@ -51,7 +51,7 @@ public class EntityIntegration extends IntegrationTest {
     @Before
     public void before() {
         entityClasses = new Reflections(Persistable.class.getPackage().getName()).getSubTypesOf(Persistable.class);
-        registerPredicates(new ObjectToolkit.Predicate() {
+        registerPredicates(new OBJECT.Predicate() {
             @Override
             public boolean perform(final Object target) {
                 Field field = (Field) target;

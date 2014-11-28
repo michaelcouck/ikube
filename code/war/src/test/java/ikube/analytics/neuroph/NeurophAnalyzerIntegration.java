@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.neuroph.nnet.MultiLayerPerceptron;
 import org.neuroph.util.TransferFunctionType;
 
-import static ikube.toolkit.HttpClientUtilities.doPost;
+import static ikube.toolkit.REST.doPost;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 

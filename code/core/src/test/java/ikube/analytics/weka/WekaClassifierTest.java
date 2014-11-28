@@ -4,8 +4,7 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Analysis;
 import ikube.model.Context;
-import ikube.toolkit.ThreadUtilities;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import ikube.toolkit.THREAD;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -40,7 +39,7 @@ public class WekaClassifierTest extends AbstractTest {
 
     @Before
     public void before() throws Exception {
-        ThreadUtilities.initialize();
+        THREAD.initialize();
 
         String algorithm = NaiveBayesMultinomial.class.getName();
         String filter = StringToWordVector.class.getName();
@@ -64,7 +63,7 @@ public class WekaClassifierTest extends AbstractTest {
     @Test
     public void build() throws Exception {
         wekaClassifier.build(context);
-        ThreadUtilities.sleep(1000);
+        THREAD.sleep(1000);
         // assertEquals(3, context.getEvaluations().length);
 //        for (final String evaluation : context.getEvaluations()) {
 //            logger.error("Evaluation : " + evaluation);
@@ -75,7 +74,7 @@ public class WekaClassifierTest extends AbstractTest {
         context.setPersisted(Boolean.FALSE);
 
         wekaClassifier.build(context);
-        ThreadUtilities.sleep(1000);
+        THREAD.sleep(1000);
         assertTrue(context.isBuilt());
     }
 
@@ -134,7 +133,7 @@ public class WekaClassifierTest extends AbstractTest {
     @Test
     public void distributionForInstance() throws Exception {
         wekaClassifier.build(context);
-        ThreadUtilities.sleep(1000);
+        THREAD.sleep(1000);
         for (final Object model : context.getModels()) {
             Instances instances = (Instances) model;
             Enumeration instanceEnumeration = instances.enumerateInstances();

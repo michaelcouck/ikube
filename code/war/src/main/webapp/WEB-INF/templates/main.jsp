@@ -100,6 +100,7 @@
 	<script src="<c:url value="/assets/javascripts/controllers/notification-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/apis-controller.js" />" type="text/javascript"></script>
 	<script src="<c:url value="/assets/javascripts/controllers/file-upload-controller.js" />" type="text/javascript"></script>
+	<script src="<c:url value="/assets/javascripts/controllers/monitor-controller.js" />" type="text/javascript"></script>
 </head>
 
 <body onload="JavaScript:track();">

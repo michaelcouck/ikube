@@ -33,7 +33,7 @@ public class DeltaIndexableTableHandler extends IndexableTableHandler {
             if (indexContext.isDelta()) {
                 SavePoint savePoint = clusterManager.get(IConstants.SAVE_POINT, indexableTable.getName());
                 if (savePoint != null) {
-                    logger.warn("Save point start : " + ToStringBuilder.reflectionToString(savePoint));
+                    logger.debug("Save point start : " + ToStringBuilder.reflectionToString(savePoint));
                     indexableTable.setMinimumId(savePoint.getIdentifier());
                 }
             }
@@ -45,12 +45,12 @@ public class DeltaIndexableTableHandler extends IndexableTableHandler {
                     savePoint = new SavePoint();
                     savePoint.setIdentifier(0l);
                 }
-                logger.warn("From to point : " + ToStringBuilder.reflectionToString(savePoint));
-                logger.info("Min id : " + indexableTable.getMaximumId() + ", diff : " + (indexableTable.getMaximumId() - savePoint.getIdentifier()));
+                logger.debug("From to point : " + ToStringBuilder.reflectionToString(savePoint));
+                logger.debug("Min id : " + indexableTable.getMaximumId() + ", diff : " + (indexableTable.getMaximumId() - savePoint.getIdentifier()));
                 savePoint.setIndexable(indexableTable.getName());
                 savePoint.setIndexContext(indexContext.getName());
                 savePoint.setIdentifier(indexableTable.getMaximumId());
-                logger.warn("Save point end : " + ToStringBuilder.reflectionToString(savePoint));
+                logger.debug("Save point end : " + ToStringBuilder.reflectionToString(savePoint));
                 clusterManager.put(IConstants.SAVE_POINT, indexableTable.getName(), savePoint);
             }
         }

@@ -1,8 +1,8 @@
 package ikube.deploy.action;
 
 import ikube.deploy.model.Server;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.FILE;
+import ikube.toolkit.THREAD;
 import net.schmizz.sshj.xfer.FileSystemFile;
 import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
 import net.schmizz.sshj.xfer.scp.SCPUploadClient;
@@ -25,20 +25,20 @@ public class CopyAction extends Action {
 
     @Override
     public boolean execute(final Server server) {
-        String dotFolder = FileUtilities.cleanFilePath(new File(".").getAbsolutePath());
+        String dotFolder = FILE.cleanFilePath(new File(".").getAbsolutePath());
         logger.info("Dot folder : " + dotFolder);
         // sshExec.useCompression();
         getSshExec(server);
         if (directories != null) {
             for (final Map.Entry<String, String> filePair : directories.entrySet()) {
                 execute(dotFolder, server, filePair.getKey(), filePair.getValue());
-                ThreadUtilities.sleep(getSleep());
+                THREAD.sleep(getSleep());
             }
         }
         if (files != null) {
             for (final Map.Entry<String, String> filePair : files.entrySet()) {
                 execute(dotFolder, server, filePair.getKey(), filePair.getValue());
-                ThreadUtilities.sleep(getSleep());
+                THREAD.sleep(getSleep());
             }
         }
         return Boolean.TRUE;
@@ -69,10 +69,10 @@ public class CopyAction extends Action {
     private String getAbsoluteFile(final String dotFolder, final String path) {
         File relative = new File(dotFolder, path);
         if (!relative.exists()) {
-            relative = FileUtilities.findFileRecursively(new File(dotFolder), relative.getName());
+            relative = FILE.findFileRecursively(new File(dotFolder), relative.getName());
             logger.info("Found file : " + relative);
         }
-        return FileUtilities.cleanFilePath(relative.getAbsolutePath());
+        return FILE.cleanFilePath(relative.getAbsolutePath());
     }
 
     public void setFiles(final Map<String, String> files) {

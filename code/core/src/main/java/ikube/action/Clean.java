@@ -3,7 +3,7 @@ package ikube.action;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
@@ -31,7 +31,7 @@ public class Clean extends Action<IndexContext, Boolean> {
 	@Override
 	boolean internalExecute(final IndexContext indexContext) {
 		String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
-		File baseIndexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
+		File baseIndexDirectory = FILE.getFile(indexDirectoryPath, Boolean.TRUE);
 		File[] timeIndexDirectories = baseIndexDirectory.listFiles();
 		if (timeIndexDirectories == null || timeIndexDirectories.length == 0) {
 			return Boolean.FALSE;
@@ -47,7 +47,7 @@ public class Clean extends Action<IndexContext, Boolean> {
 			processDirectories(indexContext, serverIndexDirectories);
 		}
 		// Try to delete the temporary unzipped files
-		FileUtilities.deleteFile(new File(IConstants.TMP_UNZIPPED_FOLDER));
+		FILE.deleteFile(new File(IConstants.TMP_UNZIPPED_FOLDER));
 		return Boolean.TRUE;
 	}
 
@@ -67,7 +67,7 @@ public class Clean extends Action<IndexContext, Boolean> {
                     } catch (final Exception e) {
                         logger.error("Couldn't close director before delete : " + indexContext.getName(), e);
                     }
-                    FileUtilities.deleteFile(serverIndexDirectory);
+                    FILE.deleteFile(serverIndexDirectory);
 				}
 			} catch (final CorruptIndexException e) {
 				logger.error("Index corrupt : " + serverIndexDirectory + ", will try to delete : ", e);

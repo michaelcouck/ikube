@@ -2,8 +2,8 @@ package ikube.action.index.handler;
 
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
-import ikube.toolkit.SerializationUtilities;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.SERIALIZATION;
+import ikube.toolkit.THREAD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,7 +97,7 @@ public abstract class IndexableHandler<T extends Indexable> implements IIndexabl
                     // Set any returned resources back in the resource provider, like a feed back mechanism
                     resourceProvider.setResources(resources);
                     // Sleep for the required time
-                    ThreadUtilities.sleep(indexContext.getThrottle());
+                    THREAD.sleep(indexContext.getThrottle());
                 } while (true);
             }
         }
@@ -117,15 +117,15 @@ public abstract class IndexableHandler<T extends Indexable> implements IIndexabl
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void computeRecursive(final IndexContext indexContext, final T indexable, final IResourceProvider<?> resourceProvider) {
-        Indexable clonedIndexable = SerializationUtilities.clone(Indexable.class, indexable);
+        Indexable clonedIndexable = SERIALIZATION.clone(Indexable.class, indexable);
         clonedIndexable.setStrategies(indexable.getStrategies());
         if (clonedIndexable.incrementThreads(-1) < 0) {
             return;
         }
 
         // Split off some more threads to help do the work
-        T leftIndexable = (T) SerializationUtilities.clone(clonedIndexable);
-        T rightIndexable = (T) SerializationUtilities.clone(clonedIndexable);
+        T leftIndexable = (T) SERIALIZATION.clone(clonedIndexable);
+        T rightIndexable = (T) SERIALIZATION.clone(clonedIndexable);
         leftIndexable.setStrategies(clonedIndexable.getStrategies());
         rightIndexable.setStrategies(clonedIndexable.getStrategies());
 

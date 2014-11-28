@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.concurrent.Future;
 
 import static ikube.analytics.weka.WekaToolkit.*;
-import static ikube.toolkit.FileUtilities.getContents;
-import static ikube.toolkit.ThreadUtilities.*;
+import static ikube.toolkit.FILE.getContents;
+import static ikube.toolkit.THREAD.*;
 import static org.apache.commons.lang.StringUtils.split;
 
 /**

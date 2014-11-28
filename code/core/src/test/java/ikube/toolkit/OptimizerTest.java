@@ -28,15 +28,15 @@ public class OptimizerTest extends AbstractTest {
 
 	@After
 	public void after() {
-		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 	}
 
 	@Test
 	public void main() {
 		for (final String ip : ips) {
-			File indexDirectory = FileUtilities.findDirectoryRecursively(new File("."), ip);
+			File indexDirectory = FILE.findDirectoryRecursively(new File("."), ip);
 			logger.info("Index directory : " + indexDirectory.getAbsolutePath());
-			String[] args = { FileUtilities.cleanFilePath(indexDirectory.getAbsolutePath()) };
+			String[] args = { FILE.cleanFilePath(indexDirectory.getAbsolutePath()) };
 			Optimizer.main(args);
 		}
 	}

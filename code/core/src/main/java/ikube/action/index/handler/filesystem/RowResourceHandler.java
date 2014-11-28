@@ -7,7 +7,7 @@ import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableFileSystemCsv;
-import ikube.toolkit.StringUtilities;
+import ikube.toolkit.STRING;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 
@@ -47,10 +47,10 @@ public class RowResourceHandler extends ResourceHandler<IndexableFileSystemCsv> 
             if (fieldValue == null) {
                 continue;
             }
-            if (StringUtilities.isNumeric(fieldValue)) {
+            if (STRING.isNumeric(fieldValue)) {
                 IndexManager.addNumericField(fieldName, fieldValue, document, indexableColumn.isStored(), indexableColumn.getBoost());
             } else {
-                fieldValue = StringUtilities.strip(fieldValue, "\"");
+                fieldValue = STRING.strip(fieldValue, "\"");
                 IndexManager.addStringField(fieldName, fieldValue, indexableFileSystemCsv, document);
             }
             indexableColumn.setContent(null);

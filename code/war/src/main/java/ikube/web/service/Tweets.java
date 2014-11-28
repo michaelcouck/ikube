@@ -8,9 +8,8 @@ import ikube.IConstants;
 import ikube.analytics.IAnalyticsService;
 import ikube.model.Search;
 import ikube.model.SearchTwitter;
-import ikube.toolkit.MatrixUtilities;
-import ikube.toolkit.SerializationUtilities;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.SERIALIZATION;
+import ikube.toolkit.THREAD;
 import ikube.toolkit.Timer;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -183,7 +182,7 @@ public class Tweets extends Resource {
             startTime += HOUR_MILLIS;
             endTime += HOUR_MILLIS;
         } while (startTime < currentTime);
-        ThreadUtilities.waitForFutures(futures, 300);
+        THREAD.waitForFutures(futures, 300);
 
         ArrayList<HashMap<String, String>> searchResults = search.getSearchResults();
         HashMap<String, String> statistics = searchResults.get(searchResults.size() - 1);
@@ -203,7 +202,7 @@ public class Tweets extends Resource {
     }
 
     Future<?> search(final Search search, final int period, final long startTime, final long endTime, final Object[][] timeLineSentiment) {
-        return ThreadUtilities.submit(this.getClass().getSimpleName(), new Runnable() {
+        return THREAD.submit(this.getClass().getSimpleName(), new Runnable() {
             public void run() {
                 int positiveCount = search(search, startTime, endTime, IConstants.POSITIVE);
                 int negativeCount = search(search, startTime, endTime, IConstants.NEGATIVE);
@@ -226,7 +225,7 @@ public class Tweets extends Resource {
 
     @SuppressWarnings("StringBufferReplaceableByString")
     int search(final Search search, final long startTime, final long endTime, final String classification) {
-        Search searchClone = SerializationUtilities.clone(Search.class, search);
+        Search searchClone = SERIALIZATION.clone(Search.class, search);
         String timeRange = new StringBuilder(Long.toString(startTime)).append("-").append(endTime).toString();
 
         List<String> searchStrings = new ArrayList<>(searchClone.getSearchStrings());

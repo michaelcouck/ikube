@@ -2,6 +2,7 @@ package ikube.action.index.handler.internet;
 
 import java.io.File;
 
+import ikube.toolkit.FILE;
 import org.apache.lucene.document.Document;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +15,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
 import ikube.model.IndexableTweets;
-import ikube.toolkit.FileUtilities;
 
 /**
  * @author Michael Couck
@@ -34,8 +34,8 @@ public class TwitterResourceHandlerTest extends AbstractTest {
 
 	@Test
 	public void handleResource() throws Exception {
-		File file = FileUtilities.findFileRecursively(new File("."), "tweet.json");
-		String json = FileUtilities.getContent(file);
+		File file = FILE.findFileRecursively(new File("."), "tweet.json");
+		String json = FILE.getContent(file);
 		Tweet tweet = new GsonBuilder().disableHtmlEscaping().create().fromJson(json, Tweet.class);
 		Document document = new Document();
 		IndexableTweets indexableTweets = mock(IndexableTweets.class);

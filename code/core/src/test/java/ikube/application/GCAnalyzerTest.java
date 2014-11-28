@@ -2,7 +2,6 @@ package ikube.application;
 
 import com.sun.management.GarbageCollectorMXBean;
 import ikube.AbstractTest;
-import ikube.scanner.Scanner;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,8 +58,6 @@ public class GCAnalyzerTest extends AbstractTest {
     private GCCollector oldCollector;
     @Mock
     private GCSmoother gcSmoother;
-    @Mock
-    private Scanner scanner;
 
     private int port = 8500;
     private List<GarbageCollectorMXBean> garbageCollectorMXBeans;
@@ -73,16 +70,16 @@ public class GCAnalyzerTest extends AbstractTest {
 
     @Test
     public void registerCollectors() throws Exception {
-        ArrayList<String> addresses = new ArrayList<>(Arrays.asList("192.168.1.0:8500"));
-        when(scanner.scan(anyString(), anyInt())).thenReturn(addresses);
+        // ArrayList<String> addresses = new ArrayList<>(Arrays.asList("192.168.1.0:8500"));
+        // when(scanner.scan(anyString(), anyInt())).thenReturn(addresses);
         doAnswer(new Answer() {
             @Override
             public Object answer(final InvocationOnMock invocation) throws Throwable {
                 return null;
             }
         }).when(gcAnalyzer).registerCollector(any(String.class), anyInt());
-        gcAnalyzer.registerCollectors("192.168.1.0");
-        verify(gcAnalyzer, times(1)).registerCollector(anyString(), anyInt());
+        gcAnalyzer.registerCollectors("192.168.1.0/28");
+        verify(gcAnalyzer, atLeast(1)).registerCollector(anyString(), anyInt());
     }
 
     @Test

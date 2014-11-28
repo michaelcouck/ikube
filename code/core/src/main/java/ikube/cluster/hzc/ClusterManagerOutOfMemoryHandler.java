@@ -2,7 +2,7 @@ package ikube.cluster.hzc;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.OutOfMemoryHandler;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,8 +26,8 @@ public class ClusterManagerOutOfMemoryHandler extends OutOfMemoryHandler {
     public void onOutOfMemory(final OutOfMemoryError oom, final HazelcastInstance[] hazelcastInstances) {
         System.err.println("Out of memory, exiting jobs with extreme prejudice : ");
         // First we'll try to destroy everything
-        ThreadUtilities.destroy();
-        ThreadUtilities.sleep(60000);
+        THREAD.destroy();
+        THREAD.sleep(60000);
         // Now dump all the threads to the log
         Map<Thread, StackTraceElement[]> threads = Thread.getAllStackTraces();
         LOGGER.info("Threads : " + threads.size());

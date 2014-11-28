@@ -5,7 +5,7 @@ import ikube.action.index.handler.IIndexableHandler;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.Server;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.index.IndexWriter;
 
@@ -36,7 +36,7 @@ public class Index extends Action<IndexContext, Boolean> {
      */
     @Override
     public boolean preExecute(final IndexContext indexContext) throws Exception {
-        logger.info("Pre process action : " + this.getClass() + ", " + indexContext.getName());
+        logger.debug("Pre process action : " + this.getClass() + ", " + indexContext.getName());
         Server server = clusterManager.getServer();
         IndexWriter[] indexWriters;
         if (indexContext.isDelta()) {
@@ -73,8 +73,8 @@ public class Index extends Action<IndexContext, Boolean> {
             // This task it potentially the grand parent of multiple sub
             // tasks that have been split off recursively by the handler
             ForkJoinTask<?> forkJoinTask = handler.handleIndexableForked(indexContext, indexable);
-            ThreadUtilities.executeForkJoinTasks(indexContext.getName(), indexable.getThreads(), forkJoinTask);
-            ThreadUtilities.waitForFuture(forkJoinTask, Long.MAX_VALUE);
+            THREAD.executeForkJoinTasks(indexContext.getName(), indexable.getThreads(), forkJoinTask);
+            THREAD.waitForFuture(forkJoinTask, Long.MAX_VALUE);
             logger.info("Finished indexable : " + indexable.getName());
         }
         return Boolean.TRUE;

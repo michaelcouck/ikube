@@ -2,7 +2,7 @@ package ikube.action;
 
 import ikube.AbstractTest;
 import ikube.action.index.IndexManager;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import mockit.Deencapsulation;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.store.Directory;
@@ -28,15 +28,15 @@ public class BackupTest extends AbstractTest {
 	public void before() throws Exception {
 		backup = new Backup();
 		Deencapsulation.setField(backup, clusterManager);
-		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
-		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()), 1);
+		FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		FILE.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()), 1);
 		
 	}
 
 	@After
 	public void after() throws Exception {
-		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
-		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()), 1);
+		FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		FILE.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()), 1);
 	}
 
 	@Test

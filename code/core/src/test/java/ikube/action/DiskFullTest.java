@@ -1,10 +1,10 @@
 package ikube.action;
 
 import ikube.AbstractTest;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import ikube.toolkit.Mailer;
-import ikube.toolkit.PerformanceTester;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.PERFORMANCE;
+import ikube.toolkit.THREAD;
 import mockit.*;
 import org.apache.commons.io.FileSystemUtils;
 import org.junit.After;
@@ -40,7 +40,7 @@ public class DiskFullTest extends AbstractTest {
     @Cascading
     private Mailer mailer;
     @Cascading
-    private ThreadUtilities threadUtilities;
+    private THREAD THREAD;
 
     @Before
     public void before() throws Exception {
@@ -50,7 +50,7 @@ public class DiskFullTest extends AbstractTest {
 
     @After
     public void after() throws Exception {
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 
     @Test
@@ -72,7 +72,7 @@ public class DiskFullTest extends AbstractTest {
     public void getLinuxRoot() {
         String root = diskFull.getNixRoot("/tmp");
         assertTrue(root.startsWith("/dev"));
-        double iterationsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+        double iterationsPerSecond = PERFORMANCE.execute(new PERFORMANCE.APerform() {
             @Override
             public void execute() {
                 diskFull.getNixRoot("/media/sdb");

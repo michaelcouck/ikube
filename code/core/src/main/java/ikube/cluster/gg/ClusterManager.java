@@ -4,9 +4,8 @@ import ikube.IConstants;
 import ikube.cluster.AClusterManager;
 import ikube.model.Action;
 import ikube.model.Server;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import ikube.toolkit.UriUtilities;
-import org.gridgain.client.impl.connection.GridClientTopology;
 import org.gridgain.grid.*;
 import org.gridgain.grid.cache.GridCache;
 import org.gridgain.grid.compute.*;
@@ -195,7 +194,7 @@ public class ClusterManager extends AClusterManager {
 
     @SuppressWarnings("unchecked")
     <T> Future<T> wrapFuture(final GridFuture<?> gridFuture) {
-        return (Future<T>) ThreadUtilities.submit(IConstants.IKUBE, new Runnable() {
+        return (Future<T>) THREAD.submit(IConstants.IKUBE, new Runnable() {
             public void run() {
                 while (!gridFuture.isDone() && !gridFuture.isCancelled()) {
                     try {

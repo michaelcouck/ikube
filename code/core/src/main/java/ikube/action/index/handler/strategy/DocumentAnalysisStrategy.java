@@ -8,8 +8,8 @@ import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.StringUtilities;
+import ikube.toolkit.FILE;
+import ikube.toolkit.STRING;
 import opennlp.tools.sentdetect.SentenceDetectorME;
 import opennlp.tools.sentdetect.SentenceModel;
 import org.apache.commons.lang.StringUtils;
@@ -62,7 +62,7 @@ public class DocumentAnalysisStrategy extends AStrategy {
 
     public DocumentAnalysisStrategy(final IStrategy nextStrategy) {
         super(nextStrategy);
-        File modelFile = FileUtilities.findFileRecursively(new File(IConstants.IKUBE_DIRECTORY), "en-sent.bin");
+        File modelFile = FILE.findFileRecursively(new File(IConstants.IKUBE_DIRECTORY), "en-sent.bin");
         try {
             SentenceModel sentenceModel = new SentenceModel(modelFile);
             sentenceDetector = new SentenceDetectorME(sentenceModel);
@@ -107,7 +107,7 @@ public class DocumentAnalysisStrategy extends AStrategy {
         double[][] distributionForInstances = new double[sentences.size()][];
         for (int i = 0; i < distributionForInstances.length; i++) {
             String sentence = sentences.get(i);
-            sentence = StringUtilities.stripToAlphaNumeric(sentence);
+            sentence = STRING.stripToAlphaNumeric(sentence);
             Analysis<Object, Object> analysis = new Analysis<>();
             analysis.setInput(new String[]{sentence});
             analysis.setContext(context.getName());

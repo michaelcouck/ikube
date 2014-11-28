@@ -15,19 +15,19 @@ import java.util.concurrent.*;
  * @version 01.00
  * @since 12-02-2011
  */
-public final class ThreadUtilities {
+public final class THREAD {
 
     private static class ShutdownThread extends Thread {
         public void run() {
             try {
-                ThreadUtilities.destroy();
+                THREAD.destroy();
             } catch (final Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ThreadUtilities.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(THREAD.class);
     /**
      * Executes the 'threads' and returns a future.
      */
@@ -74,7 +74,7 @@ public final class ThreadUtilities {
         if (name != null) {
             getFutures(name).add(future);
         } else {
-            getFutures(ThreadUtilities.class.getSimpleName()).add(future);
+            getFutures(THREAD.class.getSimpleName()).add(future);
         }
         return future;
     }
@@ -106,7 +106,7 @@ public final class ThreadUtilities {
                         LOGGER.debug("Cancelled future : " + name + ", " + future + ", " + maxRetryCount);
                         break;
                     }
-                    ThreadUtilities.sleep(1);
+                    THREAD.sleep(1);
                 }
                 if (!future.isCancelled() && !future.isDone()) {
                     LOGGER.warn("Couldn't cancel future : " + name + ", " + future + ", " + maxRetryCount);
@@ -130,7 +130,7 @@ public final class ThreadUtilities {
     }
 
     /**
-     * This method, similar to the {@link ikube.toolkit.ThreadUtilities#waitForFutures(java.util.List, long)},
+     * This method, similar to the {@link THREAD#waitForFutures(java.util.List, long)},
      * halts the current thread, to wait for the futures to complete, but the signature is not parameterized, making it
      * easier to access
      *

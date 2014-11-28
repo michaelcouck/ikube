@@ -5,7 +5,7 @@ import ikube.IntegrationTest;
 import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import ikube.toolkit.UriUtilities;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -51,7 +51,7 @@ public class IndexDeltaIntegration extends IntegrationTest {
 
     @After
     public void after() {
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
     }
 
     @Test
@@ -61,7 +61,7 @@ public class IndexDeltaIntegration extends IntegrationTest {
         try {
             String inserted = "Delta file data";
             // Create the index, delta or otherwise
-            File deltaFile = FileUtilities.findFileRecursively(new File("."), "delta.txt");
+            File deltaFile = FILE.findFileRecursively(new File("."), "delta.txt");
             OutputStream outputStream = new FileOutputStream(deltaFile);
             IOUtils.write(inserted.getBytes(), outputStream);
             IOUtils.closeQuietly(outputStream);
@@ -93,7 +93,7 @@ public class IndexDeltaIntegration extends IntegrationTest {
             stringBuilder.append(IConstants.SEP);
             stringBuilder.append(deltaFile.getName());
 
-            secondDeltaFile = FileUtilities.getFile(stringBuilder.toString(), Boolean.FALSE);
+            secondDeltaFile = FILE.getFile(stringBuilder.toString(), Boolean.FALSE);
             outputStream = new FileOutputStream(secondDeltaFile);
             IOUtils.write("Second delta file".getBytes(), outputStream);
             IOUtils.closeQuietly(outputStream);
@@ -113,7 +113,7 @@ public class IndexDeltaIntegration extends IntegrationTest {
             // Verify that the length and the time stamps are the same and the number in the index
         } finally {
             if (secondDeltaFile != null) {
-                FileUtilities.deleteFile(secondDeltaFile.getParentFile(), 1);
+                FILE.deleteFile(secondDeltaFile.getParentFile(), 1);
             }
         }
     }

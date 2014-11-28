@@ -3,7 +3,7 @@ package ikube.action;
 import ikube.action.index.IndexManager;
 import ikube.action.rule.DirectoryExistsAndIsLocked;
 import ikube.model.IndexContext;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 
 import java.io.File;
 import java.util.Arrays;
@@ -33,7 +33,7 @@ public class Delete extends Action<IndexContext, Boolean> {
     }
 
     private boolean deleteOldIndexes(final String indexDirectoryPath) {
-        File baseIndexDirectory = FileUtilities.getFile(indexDirectoryPath, Boolean.TRUE);
+        File baseIndexDirectory = FILE.getFile(indexDirectoryPath, Boolean.TRUE);
         File[] timeIndexDirectories = baseIndexDirectory.listFiles();
         if (timeIndexDirectories == null || timeIndexDirectories.length <= 2) {
             return Boolean.FALSE;
@@ -67,7 +67,7 @@ public class Delete extends Action<IndexContext, Boolean> {
             for (int i = 0; i < indexesToDelete; i++) {
                 File indexToDelete = timeIndexDirectories[i];
                 logger.info("Deleting index directory : " + indexToDelete.getAbsolutePath());
-                boolean deleted = FileUtilities.deleteFile(indexToDelete, 1);
+                boolean deleted = FILE.deleteFile(indexToDelete, 1);
                 if (!deleted) {
                     logger.warn("Didn't delete directory : " + indexToDelete.getAbsolutePath());
                 }

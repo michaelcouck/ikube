@@ -12,8 +12,8 @@ import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableTable;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.FILE;
+import ikube.toolkit.THREAD;
 import mockit.Deencapsulation;
 import mockit.Mockit;
 import org.junit.After;
@@ -81,8 +81,8 @@ public class IndexTest extends AbstractTest {
 
     @After
     public void after() {
-        Mockit.tearDownMocks(IndexManager.class, ApplicationContextManager.class, ThreadUtilities.class);
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        Mockit.tearDownMocks(IndexManager.class, ApplicationContextManager.class, THREAD.class);
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 
     @Test

@@ -3,7 +3,7 @@ package ikube.action;
 import ikube.AbstractTest;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import mockit.Deencapsulation;
 import mockit.Mockit;
 import org.apache.lucene.index.DirectoryReader;
@@ -33,14 +33,14 @@ public class CleanTest extends AbstractTest {
     @Before
     public void before() {
         when(indexContext.getIndexDirectoryPath()).thenReturn("./" + this.getClass().getSimpleName());
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
         Mockit.setUpMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
     }
 
     @After
     public void after() {
         Mockit.tearDownMocks(ApplicationContextManagerMock.class, ClusterManagerMock.class);
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
     }
 
     /**
@@ -65,9 +65,9 @@ public class CleanTest extends AbstractTest {
             directory.close();
         }
 
-        List<File> files = FileUtilities.findFilesRecursively(latestIndexDirectory, new ArrayList<File>(), "segments");
+        List<File> files = FILE.findFilesRecursively(latestIndexDirectory, new ArrayList<File>(), "segments");
         for (File file : files) {
-            FileUtilities.deleteFile(file, 1);
+            FILE.deleteFile(file, 1);
         }
 
         clean.execute(indexContext);

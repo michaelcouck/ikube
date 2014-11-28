@@ -1,7 +1,7 @@
 package ikube.database;
 
 import ikube.AbstractTest;
-import ikube.toolkit.ObjectToolkit;
+import ikube.toolkit.OBJECT;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,7 +12,6 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 /**
@@ -62,11 +61,11 @@ public class DatabaseUtilitiesTest extends AbstractTest {
     public void setIdFieldGetIdFieldValueGetIdFieldName() {
         long id = System.nanoTime();
         Url url = new Url();
-        ObjectToolkit.setIdField(url, id);
+        OBJECT.setIdField(url, id);
         assertEquals("The id should have been set : ", url.getId(), id);
-        Object idField = ObjectToolkit.getIdFieldValue(url);
+        Object idField = OBJECT.getIdFieldValue(url);
         assertEquals("The id field should be found : ", idField, id);
-        String idFieldName = ObjectToolkit.getIdFieldName(Url.class);
+        String idFieldName = OBJECT.getIdFieldName(Url.class);
         assertEquals("The id field is 'id' : ", "id", idFieldName);
     }
 

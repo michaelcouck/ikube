@@ -1,7 +1,7 @@
 package ikube.action.remote;
 
 import ikube.AbstractTest;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import org.junit.After;
 import org.junit.Test;
 
@@ -26,7 +26,7 @@ public class SynchronizeCallableTest extends AbstractTest {
 
 	@After
 	public void after() {
-		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+		FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
 	}
 
 	@Test
@@ -63,7 +63,7 @@ public class SynchronizeCallableTest extends AbstractTest {
 
 	@Test
 	public void readChunks() throws Exception {
-		File file = FileUtilities.findFileRecursively(new File("."), "english.txt");
+		File file = FILE.findFileRecursively(new File("."), "english.txt");
 		RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
 		long offset = 0;
 		long chunk = 1024 * 1024;

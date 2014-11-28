@@ -1,7 +1,7 @@
 package ikube.action.index.content;
 
 import ikube.model.IndexableColumn;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -133,7 +133,7 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 						inputStream = (InputStream) method.invoke(object, (Object[]) null);
 					}
 				}
-				FileUtilities.getContents(inputStream, outputStream, Integer.MAX_VALUE);
+				FILE.getContents(inputStream, outputStream, Integer.MAX_VALUE);
 				break;
 			case Types.CLOB:
 				// Get an input stream method, as this can be different for each driver blob or clob
@@ -151,7 +151,7 @@ public class ColumnContentProvider implements IContentProvider<IndexableColumn> 
 					}
 				}
 				// inputStream = new ReaderInputStream(reader);
-				FileUtilities.getContents(reader, outputStream, Integer.MAX_VALUE);
+				FILE.getContents(reader, outputStream, Integer.MAX_VALUE);
 				break;
 			default:
 				throw new Exception("Type of column not known : " + columnType + ", " + indexable);

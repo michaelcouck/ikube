@@ -5,7 +5,7 @@ import ikube.IntegrationTest;
 import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.model.Search;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +46,7 @@ public class ClusterManagerCacheSearchIntegration extends IntegrationTest {
 
         long count = dataBase.count(Search.class);
         Search dbSearch = dataBase.find(Search.class, search.getId());
-        ThreadUtilities.sleep(5000);
+        THREAD.sleep(5000);
         Assert.assertEquals(1, count);
         Assert.assertEquals(iterations + 1, dbSearch.getCount());
     }

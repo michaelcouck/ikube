@@ -3,7 +3,7 @@ package ikube.action.index.handler.strategy;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Indexable;
-import ikube.toolkit.PerformanceTester;
+import ikube.toolkit.PERFORMANCE;
 import org.apache.lucene.document.Document;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +44,7 @@ public class EmoticonClassificationStrategyTest extends AbstractTest {
 		emoticonClassificationStrategy.aroundProcess(indexContext, indexable, document, resource);
 		assertNull(document.get(IConstants.CLASSIFICATION));
 
-		double executionsPerSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+		double executionsPerSecond = PERFORMANCE.execute(new PERFORMANCE.APerform() {
             public void execute() throws Throwable {
                 emoticonClassificationStrategy.aroundProcess(indexContext, indexable, new Document(), resource);
             }

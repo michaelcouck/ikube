@@ -5,10 +5,10 @@ import ikube.IConstants;
 import ikube.model.IndexContext;
 import org.junit.Test;
 
-import static ikube.toolkit.ObjectToolkit.populateFields;
+import static ikube.toolkit.OBJECT.populateFields;
 import static org.junit.Assert.assertTrue;
 
-public class ObjectToolkitTest extends AbstractTest {
+public class OBJECTTest extends AbstractTest {
 
     @Test
     @SuppressWarnings("rawtypes")

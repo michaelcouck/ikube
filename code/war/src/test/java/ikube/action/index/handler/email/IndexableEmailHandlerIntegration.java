@@ -1,6 +1,5 @@
 package ikube.action.index.handler.email;
 
-import java.net.InetAddress;
 import java.util.concurrent.ForkJoinTask;
 
 import org.apache.lucene.index.IndexWriter;
@@ -11,18 +10,16 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import com.sun.mail.smtp.SMTPSendFailedException;
 
 import static ikube.action.index.IndexManager.openIndexWriter;
-import static ikube.toolkit.ThreadUtilities.cancelForkJoinPool;
-import static ikube.toolkit.ThreadUtilities.executeForkJoinTasks;
-import static ikube.toolkit.ThreadUtilities.sleep;
+import static ikube.toolkit.THREAD.cancelForkJoinPool;
+import static ikube.toolkit.THREAD.executeForkJoinTasks;
+import static ikube.toolkit.THREAD.sleep;
 import static java.net.InetAddress.getLocalHost;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import ikube.IntegrationTest;
-import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.model.IndexableEmail;
 import ikube.toolkit.IMailer;
-import ikube.toolkit.ThreadUtilities;
 
 /**
  * Test for the mail handler. Put a mail on the account because once the mail is

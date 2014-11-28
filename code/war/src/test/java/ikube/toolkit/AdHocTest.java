@@ -4,7 +4,6 @@ import com.googlecode.flaxcrawler.CrawlerController;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
-import ikube.action.index.analyzer.StemmingAnalyzer;
 import ikube.model.IndexContext;
 import ikube.search.SearchComplex;
 import org.apache.lucene.analysis.standard.ClassicAnalyzer;
@@ -158,7 +157,7 @@ public class AdHocTest extends AbstractTest {
     @Test
     public void staticFinalField() {
         CrawlerController crawlerController = new CrawlerController(null);
-        ObjectToolkit.setField(crawlerController, "STATS_DB_DIR", "whatever");
+        OBJECT.setField(crawlerController, "STATS_DB_DIR", "whatever");
     }
 
     private void reThrowException() throws Exception {

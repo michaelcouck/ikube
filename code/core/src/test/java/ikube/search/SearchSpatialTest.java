@@ -5,7 +5,7 @@ import ikube.IConstants;
 import ikube.action.index.IndexManager;
 import ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy;
 import ikube.model.Coordinate;
-import ikube.toolkit.PerformanceTester;
+import ikube.toolkit.PERFORMANCE;
 import mockit.Deencapsulation;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
@@ -124,11 +124,11 @@ public class SearchSpatialTest extends AbstractTest {
 		assertEquals(1, results.size());
 
 		searchSpatial.setSearchStrings("Switzerland");
-		double perSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
-			public void execute() throws Throwable {
-				searchSpatial.execute();
-			}
-		}, "Spatial search performance : ", 1000, Boolean.TRUE);
+		double perSecond = PERFORMANCE.execute(new PERFORMANCE.APerform() {
+            public void execute() throws Throwable {
+                searchSpatial.execute();
+            }
+        }, "Spatial search performance : ", 1000, Boolean.TRUE);
 		assertTrue(perSecond > 100);
 	}
 

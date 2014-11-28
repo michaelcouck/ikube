@@ -4,14 +4,11 @@ import ikube.IConstants;
 import ikube.IntegrationTest;
 import ikube.cluster.IClusterManager;
 import ikube.model.Search;
-import ikube.toolkit.ThreadUtilities;
-import junit.framework.Assert;
-import mockit.Deencapsulation;
+import ikube.toolkit.THREAD;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import static java.util.Arrays.asList;
@@ -59,7 +56,7 @@ public class SearcherServiceIntegration extends IntegrationTest {
         for (int i = 0; i < iterations; i++) {
             invoke(searcherService, "persistSearch", search);
         }
-        ThreadUtilities.sleep(15000);
+        THREAD.sleep(15000);
 
         Search dbSearch = clusterManager.get(IConstants.SEARCH, search.getHash());
         logger.info("Search count : " + dbSearch + ", iterations : " + iterations);

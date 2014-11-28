@@ -7,7 +7,7 @@ import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableEmail;
 import ikube.model.IndexableFileSystem;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import mockit.Mockit;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -49,7 +49,7 @@ public class MonitorServiceTest extends AbstractTest {
         indexContext.setChildren(indexables);
 
         Mockit.setUpMocks(ApplicationContextManagerMock.class);
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
 
         ApplicationContextManagerMock.setBean(IndexContext.class, indexContext);
     }
@@ -57,7 +57,7 @@ public class MonitorServiceTest extends AbstractTest {
     @After
     public void after() {
         Mockit.tearDownMocks(ApplicationContextManagerMock.class);
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
         System.getProperties().remove(IConstants.IKUBE_CONFIGURATION);
     }
 
@@ -102,14 +102,14 @@ public class MonitorServiceTest extends AbstractTest {
     public void getSetProperties() throws IOException {
         File propertiesFile = null;
         try {
-            File file = FileUtilities.findFileRecursively(new File("."), "spring.properties");
-            String contents = FileUtilities.getContents(file, Integer.MAX_VALUE).toString();
+            File file = FILE.findFileRecursively(new File("."), "spring.properties");
+            String contents = FILE.getContents(file, Integer.MAX_VALUE).toString();
 
-            propertiesFile = FileUtilities.getOrCreateFile(IConstants.IKUBE_DIRECTORY + "/properties/spring.properties");
-            FileUtilities.setContents(propertiesFile, contents.getBytes());
+            propertiesFile = FILE.getOrCreateFile(IConstants.IKUBE_DIRECTORY + "/properties/spring.properties");
+            FILE.setContents(propertiesFile, contents.getBytes());
 
             Map<String, String> filesAndProperties = monitorService.getProperties();
-            String cleanPath = FileUtilities.cleanFilePath(propertiesFile.getAbsolutePath());
+            String cleanPath = FILE.cleanFilePath(propertiesFile.getAbsolutePath());
             assertTrue(filesAndProperties.containsKey(cleanPath));
 
             filesAndProperties.clear();
@@ -117,13 +117,13 @@ public class MonitorServiceTest extends AbstractTest {
             filesAndProperties.put(propertiesFile.getAbsolutePath(), propertiesFileContents);
             monitorService.setProperties(filesAndProperties);
 
-            String propertiesFileContentsRead = FileUtilities.getContents(propertiesFile,
+            String propertiesFileContentsRead = FILE.getContents(propertiesFile,
                     Integer.MAX_VALUE).toString();
             assertEquals("The properties file should contain the contents in the map : ", propertiesFileContents,
                     propertiesFileContentsRead);
         } finally {
             if (propertiesFile != null) {
-                FileUtilities.deleteFile(propertiesFile.getParentFile());
+                FILE.deleteFile(propertiesFile.getParentFile());
             }
         }
     }

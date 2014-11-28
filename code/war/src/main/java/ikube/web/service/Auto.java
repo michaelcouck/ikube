@@ -2,7 +2,7 @@ package ikube.web.service;
 
 import ikube.IConstants;
 import ikube.model.Search;
-import ikube.toolkit.SerializationUtilities;
+import ikube.toolkit.SERIALIZATION;
 import ikube.toolkit.Timer;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.Scope;
@@ -100,7 +100,7 @@ public class Auto extends Resource {
      */
     @SuppressWarnings("MismatchedQueryAndUpdateOfStringBuilder")
     String[] suggestions(final String searchString, final Search search) {
-        Search clone = (Search) SerializationUtilities.clone(search);
+        Search clone = (Search) SERIALIZATION.clone(search);
         int rows = clone.getMaxResults();
         String[] words = StringUtils.split(searchString, ' ');
         String[][] matrix = new String[rows][words.length];

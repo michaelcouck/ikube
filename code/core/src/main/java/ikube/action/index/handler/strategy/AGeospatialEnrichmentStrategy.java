@@ -8,8 +8,8 @@ import ikube.action.index.handler.strategy.geocode.IGeocoder;
 import ikube.database.IDataBase;
 import ikube.model.Coordinate;
 import ikube.model.geospatial.GeoCity;
-import ikube.toolkit.HashUtilities;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.HASH;
+import ikube.toolkit.THREAD;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.index.IndexableField;
@@ -83,24 +83,24 @@ public abstract class AGeospatialEnrichmentStrategy extends AStrategy {
         SpatialPrefixTree spatialPrefixTree = new GeohashPrefixTree(spatialContext, maxGeohashLevels);
         this.spatialStrategy = new RecursivePrefixTreeStrategy(spatialPrefixTree, IConstants.POSITION_FIELD_NAME);
 
-        if (!ThreadUtilities.isInitialized()) {
-            ThreadUtilities.initialize();
+        if (!THREAD.isInitialized()) {
+            THREAD.initialize();
         }
         final String name = "wait-for-data-load";
-        ThreadUtilities.submit(name, new Runnable() {
+        THREAD.submit(name, new Runnable() {
             public void run() {
                 try {
-                    ThreadUtilities.sleep(120000);
+                    THREAD.sleep(120000);
                     Collection<GeoCity> geoCities = dataBase.find(GeoCity.class, 0, Integer.MAX_VALUE);
                     if (geoCities != null) {
                         for (final GeoCity geoCity : geoCities) {
-                            Long hash = HashUtilities.hash(geoCity.getName().toLowerCase());
+                            Long hash = HASH.hash(geoCity.getName().toLowerCase());
                             GEO_CITY.put(hash, geoCity);
                         }
                         logger.info("Loaded country/city map : " + GEO_CITY.size());
                     }
                 } finally {
-                    ThreadUtilities.destroy(name);
+                    THREAD.destroy(name);
                 }
             }
         });

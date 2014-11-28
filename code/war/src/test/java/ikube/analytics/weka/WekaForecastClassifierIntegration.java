@@ -8,7 +8,7 @@ import ikube.web.service.Analyzer;
 import org.junit.Test;
 import weka.classifiers.functions.SMO;
 
-import static ikube.toolkit.HttpClientUtilities.doPost;
+import static ikube.toolkit.REST.doPost;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 

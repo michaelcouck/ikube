@@ -4,8 +4,8 @@ import ikube.AbstractTest;
 import ikube.mock.IndexReaderMock;
 import ikube.model.Indexable;
 import ikube.model.IndexableFileSystem;
-import ikube.toolkit.HashUtilities;
-import ikube.toolkit.PerformanceTester;
+import ikube.toolkit.HASH;
+import ikube.toolkit.PERFORMANCE;
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mockit;
@@ -77,9 +77,9 @@ public class DeltaIndexableFilesystemStrategyTest extends AbstractTest {
         boolean mustProcess = deltaStrategy.aroundProcess(indexContext, indexableFileSystem, new Document(), file);
         assertTrue(mustProcess);
 
-        indexContext.getHashes().add(HashUtilities.hash(file.getAbsolutePath(), file.length(), file.lastModified()));
-        indexContext.getHashes().add(HashUtilities.hash(file.getAbsolutePath(), file.length(), Integer.MIN_VALUE));
-        indexContext.getHashes().add(HashUtilities.hash(file.getAbsolutePath(), file.length(), Integer.MAX_VALUE));
+        indexContext.getHashes().add(HASH.hash(file.getAbsolutePath(), file.length(), file.lastModified()));
+        indexContext.getHashes().add(HASH.hash(file.getAbsolutePath(), file.length(), Integer.MIN_VALUE));
+        indexContext.getHashes().add(HASH.hash(file.getAbsolutePath(), file.length(), Integer.MAX_VALUE));
 
         mustProcess = deltaStrategy.aroundProcess(indexContext, indexableFileSystem, new Document(), file);
         assertFalse(mustProcess);
@@ -91,7 +91,7 @@ public class DeltaIndexableFilesystemStrategyTest extends AbstractTest {
     public void aroundProcessPerformance() {
         int iterations = 1000;
         final File file = mock(File.class);
-        double perSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+        double perSecond = PERFORMANCE.execute(new PERFORMANCE.APerform() {
             public void execute() throws Throwable {
                 deltaStrategy.aroundProcess(indexContext, indexableFileSystem, new Document(), file);
             }

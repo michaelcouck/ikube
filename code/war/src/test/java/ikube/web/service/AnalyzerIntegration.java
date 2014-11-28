@@ -11,8 +11,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 
-import static ikube.toolkit.HttpClientUtilities.doGet;
-import static ikube.toolkit.HttpClientUtilities.doPost;
+import static ikube.toolkit.REST.doGet;
+import static ikube.toolkit.REST.doPost;
 import static junit.framework.Assert.*;
 
 /**

@@ -7,7 +7,7 @@ import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import mockit.MockClass;
 import mockit.Mockit;
 import org.junit.After;
@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import static ikube.toolkit.FileUtilities.*;
+import static ikube.toolkit.FILE.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -113,7 +113,7 @@ public class AnalyticsServiceTest extends AbstractTest {
             assertNotNull(outputFile);
             assertTrue(outputFile.exists());
         } finally {
-            FileUtilities.deleteFile(outputFile);
+            FILE.deleteFile(outputFile);
         }
     }
 

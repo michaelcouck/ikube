@@ -4,8 +4,8 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Server;
 import ikube.model.Snapshot;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.OsUtilities;
+import ikube.toolkit.FILE;
+import ikube.toolkit.OS;
 import mockit.Deencapsulation;
 import org.junit.After;
 import org.junit.Before;
@@ -33,12 +33,12 @@ public class SynchronizeTest extends AbstractTest {
 
     @Before
     public void before() {
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 
     @After
     public void after() {
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 
     @Test
@@ -60,7 +60,7 @@ public class SynchronizeTest extends AbstractTest {
             verify(chunkFuture, times(10)).get();
         } catch (final Exception e) {
             logger.error("Exception doing the synchronize test on os : ", e);
-            if (!OsUtilities.isOs("3.11.0-12-generic")) {
+            if (!OS.isOs("3.11.0-12-generic")) {
                 throw e;
             }
         }

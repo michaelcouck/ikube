@@ -9,7 +9,7 @@ import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableInternet;
 import ikube.model.Url;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +65,7 @@ public class InternetResourceProvider extends Arachnid implements IResourceProvi
         urls = new Stack<>();
         random = new Random();
 
-        ThreadUtilities.submit(indexableInternet.getName(), new Runnable() {
+        THREAD.submit(indexableInternet.getName(), new Runnable() {
             public void run() {
                 InternetResourceProvider.this.traverse();
             }
@@ -124,7 +124,7 @@ public class InternetResourceProvider extends Arachnid implements IResourceProvi
         while (url == null && retry-- >= 0) {
             logger.info("Sleeping : " + urls.size());
             // ThreadUtilities.sleep(SLEEP);
-            ThreadUtilities.sleep(SLEEP);
+            THREAD.sleep(SLEEP);
             if (urls.isEmpty()) {
                 continue;
             }

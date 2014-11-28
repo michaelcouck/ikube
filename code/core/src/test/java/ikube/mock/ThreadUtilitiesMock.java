@@ -1,6 +1,6 @@
 package ikube.mock;
 
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import mockit.Mock;
 import mockit.MockClass;
 
@@ -14,7 +14,7 @@ import java.util.concurrent.Future;
  * @since 30-01-2014
  */
 @SuppressWarnings("UnusedParameters")
-@MockClass(realClass = ThreadUtilities.class)
+@MockClass(realClass = THREAD.class)
 public class ThreadUtilitiesMock {
 
     @Mock()

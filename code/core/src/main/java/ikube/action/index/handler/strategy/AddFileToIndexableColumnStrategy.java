@@ -6,7 +6,7 @@ import ikube.action.index.parse.ParserProvider;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import org.apache.lucene.document.Document;
 
 import java.io.*;
@@ -72,9 +72,9 @@ public class AddFileToIndexableColumnStrategy extends AStrategy {
 
             indexableColumn.setContent(contentOutputStream.toString());
         } finally {
-            FileUtilities.close(inputStream);
-            FileUtilities.close(byteInputStream);
-            FileUtilities.close(byteOutputStream);
+            FILE.close(inputStream);
+            FILE.close(byteInputStream);
+            FILE.close(byteOutputStream);
         }
     }
 

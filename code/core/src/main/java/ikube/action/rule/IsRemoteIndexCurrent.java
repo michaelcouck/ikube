@@ -1,7 +1,7 @@
 package ikube.action.rule;
 
 import ikube.model.IndexContext;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -24,7 +24,7 @@ public class IsRemoteIndexCurrent extends ARule<IndexContext> {
     public boolean evaluate(final IndexContext indexContext) {
         IsIndexCurrentCallable isIndexCurrentCallable = new IsIndexCurrentCallable(indexContext);
         List<Future<Boolean>> futures = clusterManager.sendTaskToAll(isIndexCurrentCallable);
-        ThreadUtilities.waitForFutures(futures, 60);
+        THREAD.waitForFutures(futures, 60);
         boolean isRemoteIndexCurrent = Boolean.FALSE;
         for (final Future<Boolean> future : futures) {
             if (!future.isDone()) {

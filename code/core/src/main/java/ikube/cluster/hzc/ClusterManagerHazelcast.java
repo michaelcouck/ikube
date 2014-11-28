@@ -9,7 +9,7 @@ import ikube.cluster.IMonitorService;
 import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Server;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import ikube.toolkit.UriUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -81,11 +81,11 @@ public class ClusterManagerHazelcast extends AClusterManager {
                     } finally {
                         unlock(IConstants.HAZELCAST_WATCHER);
                     }
-                    ThreadUtilities.sleep(IConstants.HUNDRED_THOUSAND * 6);
+                    THREAD.sleep(IConstants.HUNDRED_THOUSAND * 6);
                 } while (true);
             }
         }
-        ThreadUtilities.submit(IConstants.HAZELCAST_WATCHER, new HazelcastWatcher());
+        THREAD.submit(IConstants.HAZELCAST_WATCHER, new HazelcastWatcher());
     }
 
     /**

@@ -2,7 +2,7 @@ package ikube.action.index.handler.filesystem;
 
 import ikube.AbstractTest;
 import ikube.model.IndexableFileSystemLog;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import org.apache.lucene.document.Document;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -30,7 +30,7 @@ public class LogFileResourceHandlerTest extends AbstractTest {
 
     @Test
     public void handleResource() throws Exception {
-        File file = FileUtilities.findFileRecursively(new File("."), "2012-03-05-some.log");
+        File file = FILE.findFileRecursively(new File("."), "2012-03-05-some.log");
         logFileResourceHandler.handleResource(indexContext, indexableFileSystemLog, new Document(), file);
         verify(indexWriter, atLeast(1)).addDocument(any(Document.class));
     }

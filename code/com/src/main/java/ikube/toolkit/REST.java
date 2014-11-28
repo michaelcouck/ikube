@@ -19,9 +19,9 @@ import java.lang.reflect.Type;
  * @version 01.00
  * @since 17-06-2014
  */
-public class HttpClientUtilities {
+public class REST {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(HttpClientUtilities.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(REST.class);
 
     public static <T> T doGet(
             final String url,

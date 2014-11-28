@@ -4,7 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
 import ikube.action.index.IndexManager;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,14 +26,14 @@ public class IsBackupIndexCurrentTest extends AbstractTest {
 	@Before
 	public void before() {
 		isBackupIndexCurrent = new IsBackupIndexCurrent();
-		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
-		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()), 1);
+		FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		FILE.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()), 1);
 	}
 
 	@After
 	public void after() {
-		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
-		FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()), 1);
+		FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+		FILE.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()), 1);
 	}
 
 	@Test

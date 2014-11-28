@@ -1,7 +1,7 @@
 package ikube.web.toolkit;
 
 import ikube.toolkit.ApplicationContextManager;
-import ikube.toolkit.SerializationUtilities;
+import ikube.toolkit.SERIALIZATION;
 import mockit.Mock;
 import mockit.MockClass;
 import org.apache.log4j.Logger;
@@ -64,7 +64,7 @@ public class MockFactory {
         }
     }
 
-    @MockClass(realClass = SerializationUtilities.class)
+    @MockClass(realClass = SERIALIZATION.class)
     public static class SerializationUtilitiesMock {
         @Mock
         @SuppressWarnings({"unchecked", "UnusedParameters"})

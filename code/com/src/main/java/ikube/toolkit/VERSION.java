@@ -21,9 +21,9 @@ import static org.apache.commons.io.IOUtils.closeQuietly;
  * @version 01.00
  * @since 08-07-2013
  */
-public class VersionUtilities {
+public class VERSION {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(VersionUtilities.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ikube.toolkit.VERSION.class);
 
     private static String VERSION;
     private static String TIMESTAMP;
@@ -56,7 +56,7 @@ public class VersionUtilities {
         InputStream inputStream = null;
         String pomPropertiesFile = "META-INF/maven/ikube/ikube-core/pom.properties";
         try {
-            ClassPathResource classPathResource = new ClassPathResource(pomPropertiesFile, VersionUtilities.class.getClassLoader());
+            ClassPathResource classPathResource = new ClassPathResource(pomPropertiesFile, ikube.toolkit.VERSION.class.getClassLoader());
             inputStream = classPathResource.getInputStream();
 
             Properties properties = new Properties();
@@ -64,7 +64,7 @@ public class VersionUtilities {
             VERSION = properties.getProperty("version");
             closeQuietly(inputStream);
 
-            classPathResource = new ClassPathResource(pomPropertiesFile, VersionUtilities.class.getClassLoader());
+            classPathResource = new ClassPathResource(pomPropertiesFile, ikube.toolkit.VERSION.class.getClassLoader());
             inputStream = classPathResource.getInputStream();
             List<String> lines = IOUtils.readLines(inputStream);
             TIMESTAMP = lines.get(1).replaceAll("#", "");

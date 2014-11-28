@@ -2,7 +2,7 @@ package ikube.action;
 
 import ikube.AbstractTest;
 import ikube.mock.ApplicationContextManagerMock;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import mockit.Deencapsulation;
 import mockit.Mockit;
 import org.apache.lucene.index.IndexWriter;
@@ -32,21 +32,21 @@ public class DeleteTest extends AbstractTest {
         Deencapsulation.setField(delete, clusterManager);
 
         Mockit.setUpMocks(ApplicationContextManagerMock.class);
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 
     @After
     public void after() throws Exception {
         Mockit.tearDownMocks(ApplicationContextManagerMock.class);
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 
     @Test
     @SuppressWarnings("ConstantConditions")
     public void execute() throws Exception {
-        File baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
-        FileUtilities.deleteFile(baseIndexDirectory, 1);
-        baseIndexDirectory = FileUtilities.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
+        File baseIndexDirectory = FILE.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
+        FILE.deleteFile(baseIndexDirectory, 1);
+        baseIndexDirectory = FILE.getFile(indexContext.getIndexDirectoryPath(), Boolean.TRUE);
         assertTrue("We should start with no directories : ", baseIndexDirectory.exists());
 
         // 1) No indexes so far, nothing to delete
@@ -97,7 +97,7 @@ public class DeleteTest extends AbstractTest {
         lock.close();
         directory.clearLock(IndexWriter.WRITE_LOCK_NAME);
 
-        FileUtilities.deleteFile(latestIndexDirectory, 1);
+        FILE.deleteFile(latestIndexDirectory, 1);
 
         assertFalse(latestIndexDirectory.exists());
     }

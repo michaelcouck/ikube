@@ -2,7 +2,7 @@ package ikube.action.rule;
 
 import ikube.AbstractTest;
 import ikube.action.index.IndexManager;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import ikube.toolkit.UriUtilities;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.Lock;
@@ -29,12 +29,12 @@ public class DirectoryExistsAndNotLockedTest extends AbstractTest {
     public void before() {
         existsAndNotLocked = new DirectoryExistsAndNotLocked();
         when(indexContext.getIndexDirectoryPath()).thenReturn(this.getClass().getSimpleName());
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 
     @After
     public void afterClass() {
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 
     @Test

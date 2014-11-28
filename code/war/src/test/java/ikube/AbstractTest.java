@@ -4,8 +4,8 @@ import ikube.analytics.weka.WekaClusterer;
 import ikube.mock.SpellingCheckerMock;
 import ikube.model.Analysis;
 import ikube.model.Context;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.Logging;
+import ikube.toolkit.FILE;
+import ikube.toolkit.LOGGING;
 import mockit.Mockit;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -38,15 +38,15 @@ public abstract class AbstractTest {
     protected static HttpClient HTTP_CLIENT = new DefaultHttpClient();
 
     static {
-        Logging.configure();
+        LOGGING.configure();
         Mockit.setUpMocks(SpellingCheckerMock.class);
     }
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     protected Context getContext(final String fileName, final String name) throws Exception {
-        File trainingDataFile = FileUtilities.findFileRecursively(new File("."), fileName);
-        String trainingData = FileUtilities.getContent(trainingDataFile);
+        File trainingDataFile = FILE.findFileRecursively(new File("."), fileName);
+        String trainingData = FILE.getContent(trainingDataFile);
 
         Context context = new Context();
         context.setName(name);

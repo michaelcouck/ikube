@@ -3,7 +3,7 @@ package ikube.action.index.handler.strategy;
 import ikube.action.index.handler.IStrategy;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
-import ikube.toolkit.HashUtilities;
+import ikube.toolkit.HASH;
 import org.apache.lucene.document.Document;
 
 import java.io.File;
@@ -44,7 +44,7 @@ public class DeltaIndexableFilesystemStrategy extends AStrategy {
         String path = file.getAbsolutePath();
         String length = Long.toString(file.length());
         String lastModified = Long.toString(file.lastModified());
-        Long identifier = HashUtilities.hash(path, length, lastModified);
+        Long identifier = HASH.hash(path, length, lastModified);
         boolean mustProceed = !indexContext.getHashes().remove(identifier);
         // logger.info("Around process delta file strategy : " + mustProceed);
         return mustProceed && super.aroundProcess(indexContext, indexable, document, resource);

@@ -5,9 +5,9 @@ import ikube.IConstants;
 import ikube.model.Search;
 import ikube.model.SearchTwitter;
 import ikube.search.SearcherService;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.PerformanceTester;
-import ikube.toolkit.SerializationUtilities;
+import ikube.toolkit.FILE;
+import ikube.toolkit.PERFORMANCE;
+import ikube.toolkit.SERIALIZATION;
 import ikube.web.toolkit.MockFactory;
 import org.junit.After;
 import org.junit.Before;
@@ -54,9 +54,9 @@ public class TweetsTest extends AbstractTest {
     @Before
     @SuppressWarnings("unchecked")
     public void before() throws Exception {
-        File file = FileUtilities.findFileRecursively(new File("."), "geospatial.results.xml");
-        String xml = FileUtilities.getContent(file);
-        results = (ArrayList<HashMap<String, String>>) SerializationUtilities.deserialize(xml);
+        File file = FILE.findFileRecursively(new File("."), "geospatial.results.xml");
+        String xml = FILE.getContent(file);
+        results = (ArrayList<HashMap<String, String>>) SERIALIZATION.deserialize(xml);
 
         searchTwitter = new SearchTwitter();
         searchTwitter.setSearchStrings(new ArrayList<>(Arrays.asList("hello world")));
@@ -113,7 +113,7 @@ public class TweetsTest extends AbstractTest {
         assertTrue("Must be less than the total results : ", heatMapData.length < moreResults.size());
         assertTrue("Must be less than the clustered capacity too : ", heatMapData.length <= searchTwitter.getClusters());
 
-        PerformanceTester.execute(new PerformanceTester.APerform() {
+        PERFORMANCE.execute(new PERFORMANCE.APerform() {
             @Override
             public void execute() throws Throwable {
                 tweets.heatMapData(moreResults, searchTwitter.getClusters());

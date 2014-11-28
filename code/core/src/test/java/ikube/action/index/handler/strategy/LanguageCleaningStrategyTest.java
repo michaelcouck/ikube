@@ -3,14 +3,14 @@ package ikube.action.index.handler.strategy;
 import ikube.AbstractTest;
 import ikube.action.index.handler.IStrategy;
 import ikube.model.Indexable;
-import ikube.toolkit.PerformanceTester;
+import ikube.toolkit.PERFORMANCE;
 import org.apache.lucene.document.Document;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 
-import static ikube.toolkit.PerformanceTester.execute;
+import static ikube.toolkit.PERFORMANCE.execute;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
@@ -38,7 +38,7 @@ public class LanguageCleaningStrategyTest extends AbstractTest {
         languageCleaningStrategy.aroundProcess(indexContext, indexable, document, resource);
         verify(indexable, atLeastOnce()).setContent("What a loovely dai where theere are moneyy mistaces aahh thereerereree.");
 
-        double perSecond = execute(new PerformanceTester.APerform() {
+        double perSecond = execute(new PERFORMANCE.APerform() {
             public void execute() throws Throwable {
                 languageCleaningStrategy.aroundProcess(indexContext, indexable, new Document(), resource);
             }

@@ -7,7 +7,7 @@ import ikube.database.IDataBase;
 import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Rule;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import org.apache.commons.jexl2.Expression;
 import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.jexl2.JexlEngine;
@@ -119,11 +119,11 @@ public class RuleInterceptor implements IRuleInterceptor {
                     } finally {
                         // Remove the action in the cluster
                         clusterManager.stopWorking(action);
-                        ThreadUtilities.destroy(this.toString());
+                        THREAD.destroy(this.toString());
                     }
                 }
             };
-            ThreadUtilities.submit(runnable.toString(), runnable);
+            THREAD.submit(runnable.toString(), runnable);
         } finally {
             notifyAll();
         }

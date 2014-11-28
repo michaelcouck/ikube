@@ -6,7 +6,7 @@ import ikube.action.Index;
 import ikube.cluster.IMonitorService;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.model.IndexContext;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import mockit.Deencapsulation;
 import mockit.Mockit;
 import org.junit.After;
@@ -42,7 +42,7 @@ public class IndexScheduleTest extends AbstractTest {
     @Before
     @SuppressWarnings("rawtypes")
     public void before() {
-        ThreadUtilities.initialize();
+        THREAD.initialize();
         List<IAction<IndexContext, Boolean>> actions = new ArrayList<>();
 
         Map<String, IndexContext> indexContexts = new HashMap<>();
@@ -72,12 +72,12 @@ public class IndexScheduleTest extends AbstractTest {
         event.setType(Event.TIMER);
 
         indexSchedule.run();
-        ThreadUtilities.sleep(3000);
+        THREAD.sleep(3000);
         verify(index, times(1)).execute(any(IndexContext.class));
 
         when(server.isWorking()).thenReturn(Boolean.TRUE);
         indexSchedule.run();
-        ThreadUtilities.sleep(3000);
+        THREAD.sleep(3000);
         verify(index, times(2)).execute(any(IndexContext.class));
     }
 

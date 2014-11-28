@@ -5,7 +5,7 @@ import com.sun.jersey.multipart.FormDataParam;
 import ikube.analytics.IAnalyticsService;
 import ikube.model.Analysis;
 import ikube.model.Context;
-import ikube.toolkit.SerializationUtilities;
+import ikube.toolkit.SERIALIZATION;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -102,7 +102,7 @@ public class Analyzer extends Resource {
         String data = analysis.getInput();
         String[] inputs = StringUtils.split(data, "\n\r");
         for (final String input : inputs) {
-            Analysis<String, String> clone = SerializationUtilities.clone(Analysis.class, analysis);
+            Analysis<String, String> clone = SERIALIZATION.clone(Analysis.class, analysis);
             clone.setInput(input);
             analyticsService.train(clone);
         }

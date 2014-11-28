@@ -3,9 +3,9 @@ package ikube.search;
 import ikube.Client;
 import ikube.IConstants;
 import ikube.model.Search;
-import ikube.toolkit.HttpClientUtilities;
-import ikube.toolkit.SerializationUtilities;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.REST;
+import ikube.toolkit.SERIALIZATION;
+import ikube.toolkit.THREAD;
 import ikube.toolkit.Timer;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -65,7 +65,7 @@ public class SearchLoadClient extends Client {
         parser.setUsageWidth(140);
         parser.parseArgument(args);
 
-        ThreadUtilities.initialize();
+        THREAD.initialize();
 
         final Search search = new Search();
         search.setFirstResult(0);
@@ -89,8 +89,8 @@ public class SearchLoadClient extends Client {
                 public void execute() {
                     int searches = iterations / threads;
                     do {
-                        Search searchClone = (Search) SerializationUtilities.clone(search);
-                        Search searchResult = HttpClientUtilities.doPost(url, searchClone, Search.class);
+                        Search searchClone = (Search) SERIALIZATION.clone(search);
+                        Search searchResult = REST.doPost(url, searchClone, Search.class);
                         if (searches > 0 && searches % printEvery == 0) {
                             LOGGER.error("Search : " + searchResult);
                         }
@@ -109,10 +109,10 @@ public class SearchLoadClient extends Client {
             }
 
             Runnable runnable = new Runner();
-            Future<Object> future = (Future<Object>) ThreadUtilities.submit(runnable.toString(), runnable);
+            Future<Object> future = (Future<Object>) THREAD.submit(runnable.toString(), runnable);
             futures.add(future);
         } while (++count <= threads);
-        ThreadUtilities.waitForFutures(futures, Long.MAX_VALUE);
+        THREAD.waitForFutures(futures, Long.MAX_VALUE);
     }
 
 }

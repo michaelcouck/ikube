@@ -3,8 +3,6 @@ package ikube.toolkit;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
-import ikube.action.index.analyzer.EdgeNgramAnalyzer;
-import ikube.action.index.analyzer.NgramAnalyzer;
 import ikube.action.index.analyzer.StemmingAnalyzer;
 import ikube.model.Indexable;
 import ikube.model.IndexableFileSystem;
@@ -64,7 +62,7 @@ public class LuceneTest extends AbstractTest {
                     this.indexWriter.commit();
                     this.indexWriter.forceMerge(5, Boolean.FALSE);
                     logger.debug("Adding document : " + this.indexWriter.numDocs());
-                    ThreadUtilities.sleep(10);
+                    THREAD.sleep(10);
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -87,12 +85,12 @@ public class LuceneTest extends AbstractTest {
 
     @Before
     public void before() {
-        ThreadUtilities.initialize();
+        THREAD.initialize();
     }
 
     @After
     public void after() {
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
     }
 
     @Test
@@ -206,7 +204,7 @@ public class LuceneTest extends AbstractTest {
                     int previousSize = 0;
                     int index = iterations * 100;
                     while (index-- > 0) {
-                        ThreadUtilities.sleep(sleep);
+                        THREAD.sleep(sleep);
 
                         IndexReader reader = DirectoryReader.open(indexWriter, Boolean.TRUE);
                         IndexSearcher indexSearcher = new IndexSearcher(reader);
@@ -232,13 +230,13 @@ public class LuceneTest extends AbstractTest {
             }
         }
         Writer writer = new Writer(indexWriter, Integer.MAX_VALUE);
-        ThreadUtilities.submit(null, writer);
+        THREAD.submit(null, writer);
         for (int i = 0; i < 3; i++) {
             Searcher searcher = new Searcher();
-            Future<Object> future = (Future<Object>) ThreadUtilities.submit(Integer.toHexString(i), searcher);
+            Future<Object> future = (Future<Object>) THREAD.submit(Integer.toHexString(i), searcher);
             futures.add(future);
         }
-        ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
+        THREAD.waitForFutures(futures, Integer.MAX_VALUE);
     }
 
     @Test
@@ -258,7 +256,7 @@ public class LuceneTest extends AbstractTest {
                     int previousSize = 0;
                     int index = iterations * 100;
                     while (index-- > 0) {
-                        ThreadUtilities.sleep(sleep);
+                        THREAD.sleep(sleep);
                         IndexSearcher indexSearcher = searcherManager.acquire();
                         SearchComplex searchSingle = new SearchComplex(indexSearcher);
                         searchSingle.setFirstResult(0);
@@ -284,13 +282,13 @@ public class LuceneTest extends AbstractTest {
 
         List<Future<Object>> futures = new ArrayList<>();
         Runnable writer = new Writer(indexWriter, Integer.MAX_VALUE);
-        ThreadUtilities.submit(null, writer);
+        THREAD.submit(null, writer);
         for (int i = 0; i < 3; i++) {
             Runnable searcher = new Searcher();
-            Future<Object> future = (Future<Object>) ThreadUtilities.submit(Integer.toHexString(i), searcher);
+            Future<Object> future = (Future<Object>) THREAD.submit(Integer.toHexString(i), searcher);
             futures.add(future);
         }
-        ThreadUtilities.waitForFutures(futures, Integer.MAX_VALUE);
+        THREAD.waitForFutures(futures, Integer.MAX_VALUE);
     }
 
     @Test

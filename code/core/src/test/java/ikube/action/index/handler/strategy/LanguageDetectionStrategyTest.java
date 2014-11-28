@@ -3,7 +3,7 @@ package ikube.action.index.handler.strategy;
 import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Indexable;
-import ikube.toolkit.PerformanceTester;
+import ikube.toolkit.PERFORMANCE;
 import org.apache.lucene.document.Document;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,7 +63,7 @@ public class LanguageDetectionStrategyTest extends AbstractTest {
 		when(indexableColumn.getContent()).thenReturn("господи");
 		int iterations = 1000;
 		final Document document = new Document();
-		double perSecond = PerformanceTester.execute(new PerformanceTester.APerform() {
+		double perSecond = PERFORMANCE.execute(new PERFORMANCE.APerform() {
             public void execute() throws Exception {
                 languageDetectionStrategy.aroundProcess(indexContext, indexableColumn, document, null);
             }

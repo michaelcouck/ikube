@@ -3,7 +3,7 @@ package ikube.action.index.parse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import ikube.AbstractTest;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -22,8 +22,8 @@ public class ExcelParserTest extends AbstractTest {
 
 	@Test
 	public void parse() throws Exception {
-		File file = FileUtilities.findFileRecursively(new File("."), new String[] { "xls.xls" });
-		byte[] bytes = FileUtilities.getContents(file, Integer.MAX_VALUE).toByteArray();
+		File file = FILE.findFileRecursively(new File("."), new String[]{"xls.xls"});
+		byte[] bytes = FILE.getContents(file, Integer.MAX_VALUE).toByteArray();
 		IParser parser = ParserProvider.getParser("application/vnd.ms-excel", bytes);
 		InputStream inputStream = new ByteArrayInputStream(bytes);
 		OutputStream parsed = parser.parse(inputStream, new ByteArrayOutputStream());

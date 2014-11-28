@@ -5,11 +5,7 @@ import ikube.IConstants;
 import ikube.action.index.IndexManager;
 import ikube.mock.IndexManagerMock;
 import ikube.model.Indexable;
-import ikube.model.IndexableInternet;
 import ikube.model.IndexableSvn;
-import ikube.model.Url;
-import ikube.toolkit.FileUtilities;
-import junit.framework.Assert;
 import mockit.Mockit;
 import org.apache.lucene.document.Document;
 import org.junit.After;
@@ -17,15 +13,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.io.SVNRepository;
 
-import java.io.File;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;

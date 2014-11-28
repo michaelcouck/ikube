@@ -2,7 +2,7 @@ package ikube.scheduling.schedule;
 
 import ikube.IConstants;
 import ikube.scheduling.Schedule;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +32,7 @@ public class MemorySchedule extends Schedule {
         Runtime runtime = Runtime.getRuntime();
         if ((runtime.totalMemory() / IConstants.MILLION) > maxMemory) {
             LOGGER.info("Terminating schedules, memory exceeded : " + maxMemory);
-            ThreadUtilities.destroy();
+            THREAD.destroy();
         }
     }
 

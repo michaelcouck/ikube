@@ -3,7 +3,7 @@ package ikube.data;
 import ikube.database.ADataBaseJpa;
 import ikube.database.DataBaseJpaH2;
 import ikube.model.geospatial.GeoName;
-import ikube.toolkit.ObjectToolkit;
+import ikube.toolkit.OBJECT;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +83,7 @@ public final class DatabaseCopy extends ADatabase {
      * @throws Exception
      */
     private static void copyEntities(final ADataBaseJpa dataBaseJpa, final Collection<GeoName> geoNames) throws Exception {
-		EntityManager entityManager = (EntityManager) ObjectToolkit.getFieldValue(dataBaseJpa, "entityManager");
+		EntityManager entityManager = (EntityManager) OBJECT.getFieldValue(dataBaseJpa, "entityManager");
         entityManager.getTransaction().begin();
         List<Object> batch = new ArrayList<>();
         for (final GeoName geoName : geoNames) {

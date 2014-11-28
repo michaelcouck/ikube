@@ -1,7 +1,5 @@
 package ikube.web.tag;
 
-import ikube.toolkit.VersionUtilities;
-
 /**
  * A set of functions that can be used in Jsp pages, like concatenation of strings and getting the size of collections.
  *
@@ -16,16 +14,16 @@ public class Toolkit {
 
     public static String version() {
         if (VERSION == null) {
-            VersionUtilities.readPomProperties();
-            VERSION = VersionUtilities.version();
+            ikube.toolkit.VERSION.readPomProperties();
+            VERSION = ikube.toolkit.VERSION.version();
         }
         return VERSION;
     }
 
     public static String timestamp() {
         if (TIMESTAMP == null) {
-            VersionUtilities.readPomProperties();
-            TIMESTAMP = VersionUtilities.timestamp();
+            ikube.toolkit.VERSION.readPomProperties();
+            TIMESTAMP = ikube.toolkit.VERSION.timestamp();
         }
         return TIMESTAMP;
     }

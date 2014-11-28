@@ -3,7 +3,7 @@ package ikube.analytics.weka;
 import ikube.AbstractTest;
 import ikube.model.Analysis;
 import ikube.model.Context;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.THREAD;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -51,7 +51,7 @@ public class WekaClustererTest extends AbstractTest {
     @Test
     public void build() throws Exception {
         wekaClusterer.build(context);
-        ThreadUtilities.sleep(1000);
+        THREAD.sleep(1000);
 //        assertEquals(3, context.getEvaluations().length);
 //        for (final String evaluation : context.getEvaluations()) {
 //            assertNotNull(evaluation);
@@ -61,7 +61,7 @@ public class WekaClustererTest extends AbstractTest {
     @Test
     public void analyze() throws Exception {
         wekaClusterer.build(context);
-        ThreadUtilities.sleep(1000);
+        THREAD.sleep(1000);
         Analysis<Object, Object> analysis = getAnalysis(null, "1,0,1,1,1,1,1,1");
 
         Analysis<Object, Object> result = wekaClusterer.analyze(context, analysis);
@@ -72,7 +72,7 @@ public class WekaClustererTest extends AbstractTest {
     @Test
     public void getDistributionForInstances() throws Exception {
         wekaClusterer.build(context);
-        ThreadUtilities.sleep(1000);
+        THREAD.sleep(1000);
         for (final Object model : context.getModels()) {
             Instances instances = (Instances) model;
             double[][][] distributionForInstances = wekaClusterer.getDistributionForInstances(context, instances);

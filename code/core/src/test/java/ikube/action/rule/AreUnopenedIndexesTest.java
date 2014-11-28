@@ -2,6 +2,7 @@ package ikube.action.rule;
 
 import java.io.File;
 
+import ikube.toolkit.FILE;
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -13,12 +14,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static ikube.toolkit.FileUtilities.getOrCreateDirectory;
+import static ikube.toolkit.FILE.getOrCreateDirectory;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import ikube.AbstractTest;
-import ikube.toolkit.FileUtilities;
 
 /**
  * @author Michael Couck
@@ -39,7 +39,7 @@ public class AreUnopenedIndexesTest extends AbstractTest {
 
     @After
     public void after() {
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
     }
 
     @Test

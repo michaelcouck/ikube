@@ -4,7 +4,7 @@ import com.hazelcast.core.Message;
 import ikube.AbstractTest;
 import ikube.action.index.IndexManager;
 import ikube.scheduling.schedule.Event;
-import ikube.toolkit.FileUtilities;
+import ikube.toolkit.FILE;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Test;
@@ -32,8 +32,8 @@ public class DeleteListenerTest extends AbstractTest {
 
     @After
     public void after() {
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
-        FileUtilities.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()), 1);
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()), 1);
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPathBackup()), 1);
     }
 
     @Test

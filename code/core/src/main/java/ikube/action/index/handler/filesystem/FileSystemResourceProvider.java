@@ -3,8 +3,8 @@ package ikube.action.index.handler.filesystem;
 import ikube.IConstants;
 import ikube.action.index.handler.IResourceProvider;
 import ikube.model.IndexableFileSystem;
-import ikube.toolkit.FileUtilities;
-import ikube.toolkit.ThreadUtilities;
+import ikube.toolkit.FILE;
+import ikube.toolkit.THREAD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +44,7 @@ class FileSystemResourceProvider implements IResourceProvider<File> {
         files = new Stack<>();
         final File startDirectory = new File(indexableFileSystem.getPath());
         LOGGER.info("Start directory :" + startDirectory);
-        ThreadUtilities.submit(this.toString(), new Runnable() {
+        THREAD.submit(this.toString(), new Runnable() {
 
             /**
              * {@inheritDoc}
@@ -61,9 +61,9 @@ class FileSystemResourceProvider implements IResourceProvider<File> {
                 }
                 try {
                     while (files.size() > IConstants.MILLION) {
-                        ThreadUtilities.sleep(10000);
+                        THREAD.sleep(10000);
                     }
-                    if (FileUtilities.isExcluded(file, pattern)) {
+                    if (FILE.isExcluded(file, pattern)) {
                         excluded++;
                         return;
                     }
@@ -120,7 +120,7 @@ class FileSystemResourceProvider implements IResourceProvider<File> {
             } else {
                 if (!finished) {
                     LOGGER.info("Waiting for walker : ");
-                    ThreadUtilities.sleep(10000);
+                    THREAD.sleep(10000);
                     file = getResource(retry - 1);
                 } else {
                     LOGGER.info("No more files : ");
