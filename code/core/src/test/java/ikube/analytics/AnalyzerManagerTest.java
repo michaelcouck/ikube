@@ -3,6 +3,7 @@ package ikube.analytics;
 import ikube.AbstractTest;
 import ikube.model.Context;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -20,23 +21,34 @@ import static org.mockito.Mockito.*;
  */
 public class AnalyzerManagerTest extends AbstractTest {
 
-    @Spy
-    @InjectMocks
-    private AnalyzerManager analyzerManager;
     @Mock
     private Context context;
     @Mock
     private IAnalyzer analyzer;
+    private Map<String, Context> contexts;
+    @Spy
+    @InjectMocks
+    private AnalyzerManager analyzerManager;
+
+    @Before
+    public void before() {
+        contexts = new HashMap<>();
+        when(context.getAnalyzer()).thenReturn(analyzer);
+        contexts.put("context", context);
+    }
 
     @Test
-    public void buildAnalyzers() throws Exception {
-        when(context.getAnalyzer()).thenReturn(analyzer);
-        Map<String, Context> contexts = new HashMap<>();
-        contexts.put("context", context);
-        analyzerManager.buildAnalyzers(contexts);
+    public void buildAnalyzer() throws Exception {
+        analyzerManager.buildAnalyzer(context, Boolean.TRUE);
         IAnalyzer analyzer = (IAnalyzer) contexts.get("context").getAnalyzer();
         Assert.assertEquals(this.analyzer, analyzer);
         verify(context, times(1)).setBuilt(Boolean.TRUE);
+    }
+
+    @Test
+    public void buildAnalyzers() throws Exception {
+        analyzerManager.buildAnalyzers(contexts);
+        verify(analyzerManager, times(1)).buildAnalyzer(any(Context.class));
     }
 
 }

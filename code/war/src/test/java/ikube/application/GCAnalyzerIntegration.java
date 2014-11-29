@@ -5,6 +5,7 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Analysis;
 import ikube.toolkit.THREAD;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.management.MBeanServerConnection;
@@ -26,6 +27,7 @@ import static java.lang.management.ManagementFactory.newPlatformMXBeanProxy;
  * @version 01.00
  * @since 23-10-2014
  */
+@Ignore
 @SuppressWarnings("FieldCanBeLocal")
 public class GCAnalyzerIntegration extends AbstractTest {
 
