@@ -76,23 +76,28 @@ public class GCAnalyzer {
      * @param addressRange the range of addresses to scan on the network, in the form '192.168.1.0/24'
      */
     public void registerCollectors(final String addressRange) {
-        List<String> addressesAndPorts = Scanner.scan(addressRange, 10000, Boolean.FALSE);
-        // We'll wait a bit for the scanner to finish completely
-        THREAD.sleep(10000);
-        LOGGER.info("Addresses : " + addressesAndPorts.size());
-        for (final String addressAndPort : addressesAndPorts) {
-            LOGGER.info("    : " + addressAndPort);
-        }
-        for (final String addressAndPort : addressesAndPorts) {
-            String[] splitAddressAndPort = StringUtils.split(addressAndPort, IConstants.DELIMITER_CHARACTERS);
-            try {
-                registerCollector(splitAddressAndPort[0], Integer.valueOf(splitAddressAndPort[1]));
-            } catch (final Exception e) {
-                // As we are scanning the network looking for Jvms to connect to
-                // this will happen frequently of course, so we can safely ignore it
-                LOGGER.debug("Couldn't connect to : " + addressAndPort, e);
+        THREAD.submit("register-collectors", new Runnable() {
+            public void run() {
+                THREAD.sleep(30000);
+                List<String> addressesAndPorts = Scanner.scan(addressRange, 10000, Boolean.FALSE);
+                // We'll wait a bit for the scanner to finish completely
+                THREAD.sleep(10000);
+                LOGGER.info("Addresses : " + addressesAndPorts.size());
+                for (final String addressAndPort : addressesAndPorts) {
+                    LOGGER.info("    : " + addressAndPort);
+                }
+                for (final String addressAndPort : addressesAndPorts) {
+                    String[] splitAddressAndPort = StringUtils.split(addressAndPort, IConstants.DELIMITER_CHARACTERS);
+                    try {
+                        registerCollector(splitAddressAndPort[0], Integer.valueOf(splitAddressAndPort[1]));
+                    } catch (final Exception e) {
+                        // As we are scanning the network looking for Jvms to connect to
+                        // this will happen frequently of course, so we can safely ignore it
+                        LOGGER.debug("Couldn't connect to : " + addressAndPort, e);
+                    }
+                }
             }
-        }
+        });
     }
 
     /**

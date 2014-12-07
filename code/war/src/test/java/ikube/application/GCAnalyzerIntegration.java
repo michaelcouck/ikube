@@ -32,18 +32,18 @@ import static java.lang.management.ManagementFactory.newPlatformMXBeanProxy;
 public class GCAnalyzerIntegration extends AbstractTest {
 
     private int jmxPort = 8500;
-    private int serverPort = 8080;
+    private int serverPort = 9090;
     private int forecasts = 60;
-    private String address = "192.168.1.20";
+    private String address = "192.168.1.40";
 
     @Test
     @SuppressWarnings("unchecked")
-    public void integration() throws Exception {
+    public void registerCollector() throws Exception {
         // Create the collector and register it
         String url = "http://" + address + ":" + serverPort + "/ikube/service/gc-analyzer/register-collector";
-//        doPost(url, null,
-//                new String[]{IConstants.ADDRESS, IConstants.PORT},
-//                new String[]{address, Integer.toString(jmxPort)}, Boolean.class);
+        doPost(url, null,
+                new String[]{IConstants.ADDRESS, IConstants.PORT},
+                new String[]{address, Integer.toString(jmxPort)}, Boolean.class);
 
         // Call the garbage collector a couple of times
         gc(6 * 60, 10000);
@@ -67,12 +67,34 @@ public class GCAnalyzerIntegration extends AbstractTest {
                 }
             }
         }
+        // TODO: Verify that there are collectors on the server
+    }
 
-        // Unregister the collector, terminating the connection
-//        url = "http://" + address + ":" + serverPort + "/ikube/service/gc-analyzer/unregister-collector";
-//        doPost(url, null,
-//                new String[]{IConstants.ADDRESS, IConstants.PORT},
-//                new String[]{address, Integer.toString(jmxPort)}, Boolean.class);
+    @Test
+    public void unregisterCollector() {
+        String url = "http://" + address + ":" + serverPort + "/ikube/service/gc-analyzer/unregister-collector";
+        doPost(url, null,
+                new String[]{IConstants.ADDRESS, IConstants.PORT},
+                new String[]{address, Integer.toString(jmxPort)}, Boolean.class);
+        // TODO: Verify that there are no collectors left on the server
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void registerCollectors() throws Exception {
+        String url = "http://" + address + ":" + serverPort + "/ikube/service/gc-analyzer/register-collectors";
+        doPost(url, null, new String[]{IConstants.ADDRESS}, new String[]{"192.168.1.0/24"}, Boolean.class);
+        // TODO: Get all the addresses of the collectors and verify that there are some at least
+    }
+
+    @Test
+    public void collectorAddressesAndPorts() throws Exception {
+        String url = "http://" + address + ":" + serverPort + "/ikube/service/gc-analyzer/collector-addresses-and-ports";
+        Type listType = new TypeToken<List<Analysis>>() {
+        }.getType();
+        Object result = doGet(url, new String[]{}, new String[]{}, listType);
+        logger.error("Result : " + result);
+        // TODO: Verify that there are some results
     }
 
     void gc(final int calls, final long sleep) throws IOException {

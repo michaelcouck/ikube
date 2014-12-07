@@ -42,6 +42,7 @@ public class GCAnalyzer extends Resource {
      */
     public static final String GC_ANALYZER = "/gc-analyzer";
     public static final String REGISTER_COLLECTOR = "/register-collector";
+    public static final String REGISTER_COLLECTORS = "/register-collectors";
     public static final String UNREGISTER_COLLECTOR = "/unregister-collector";
     public static final String USED_TO_MAX_RATIO_PREDICTION = "/used-to-max-ratio-prediction";
     private static final String COLLECTOR_ADDRESSES_AND_PORTS = "/collector-addresses-and-ports";
@@ -73,6 +74,18 @@ public class GCAnalyzer extends Resource {
             @QueryParam(value = IConstants.ADDRESS) final String address,
             @QueryParam(value = IConstants.PORT) final int port) throws Exception {
         gcAnalyzer.registerCollector(address, port);
+        return buildResponse(Boolean.TRUE);
+    }
+
+    /**
+     * Please read the description in the annotation.
+     */
+    @POST
+    @SuppressWarnings("unchecked")
+    @Path(GCAnalyzer.REGISTER_COLLECTORS)
+    @Api(description = "Bla...", produces = Boolean.class)
+    public Response registerCollectors(@QueryParam(value = IConstants.ADDRESS) final String addressRange) throws Exception {
+        gcAnalyzer.registerCollectors(addressRange);
         return buildResponse(Boolean.TRUE);
     }
 
