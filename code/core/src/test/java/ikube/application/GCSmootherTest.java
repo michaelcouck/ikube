@@ -36,7 +36,10 @@ public class GCSmootherTest extends AbstractTest {
             gcSnapshot.processors = 8;
 
             gcSnapshot.duration = random.nextInt(10000);
-            gcSnapshot.available = (long) (previousGcSnapshot.available - (random.nextLong() * 0.5));
+
+            long nextRandom = random.nextInt(100);
+
+            gcSnapshot.available = previousGcSnapshot.available - nextRandom;
             gcSnapshot.usedToMaxRatio = (maxAvailable - gcSnapshot.available) / maxAvailable;
             gcSnapshot.cpuLoad = random.nextDouble() * gcSnapshot.processors;
             gcSnapshot.perCoreLoad = gcSnapshot.cpuLoad + gcSnapshot.processors;

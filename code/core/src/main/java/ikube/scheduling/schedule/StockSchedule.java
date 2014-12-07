@@ -106,7 +106,6 @@ public class StockSchedule extends Schedule {
     protected void getHistoricalStockData(final String[] parameterNames, final String[] parameterValues, final String companySymbol) {
         parameterValues[0] = companySymbol;
         String result = doGet(stockApiUri, parameterNames, parameterValues, String.class);
-        LOGGER.debug("Result : " + result);
         File outputFile = getOrCreateFile(new File(IConstants.ANALYTICS_DIRECTORY, companySymbol + ".csv"));
         setContents(outputFile, result.getBytes());
     }

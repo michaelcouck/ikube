@@ -2,6 +2,7 @@ package ikube.application;
 
 import com.sun.management.GarbageCollectorMXBean;
 import ikube.AbstractTest;
+import ikube.toolkit.THREAD;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -79,6 +80,7 @@ public class GCAnalyzerTest extends AbstractTest {
             }
         }).when(gcAnalyzer).registerCollector(any(String.class), anyInt());
         gcAnalyzer.registerCollectors("192.168.1.0/28");
+        THREAD.sleep(60000);
         verify(gcAnalyzer, atLeast(1)).registerCollector(anyString(), anyInt());
     }
 

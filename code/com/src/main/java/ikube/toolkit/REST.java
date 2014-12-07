@@ -66,11 +66,8 @@ public class REST {
         if (names != null && values != null) {
             webResource = setParameters(webResource, names, values);
         }
-        String response = webResource
-                .accept(consumes)
-                .type(produces)
-                .get(String.class);
-        if (String.class.isAssignableFrom(returnType.getClass())) {
+        String response = webResource.accept(consumes).type(produces).get(String.class);
+        if (String.class.isAssignableFrom((Class) returnType)) {
             return (T) response;
         }
         return Constants.GSON.fromJson(response, returnType);
