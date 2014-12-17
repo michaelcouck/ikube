@@ -19,4 +19,10 @@ public class ZipLocatorTest extends AbstractTest {
         assertTrue(ZipLocator.ATOMIC_INTEGER.get() > 0);
     }
 
+    @Test
+    public void adHoc() {
+        String[] args = {"/opt/IBM", ".*.jar\\Z", "com.ibm.ws.Transaction.TransactionManagerFactory"};
+        ZipLocator.main(args);
+    }
+
 }

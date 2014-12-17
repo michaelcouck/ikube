@@ -84,15 +84,15 @@ public class ZipLocator {
                 ZipEntry entry = zipFileEntries.nextElement();
                 if (fileEntry.matcher(entry.getName()).matches()) {
                     if (fileContent == null) {
-                        LOGGER.info("In file : " + file + ", " + fileEntry + ", " + entry.getName() + ", " + entry);
+                        LOGGER.error("In file : " + file + ", " + fileEntry + ", " + entry.getName() + ", " + entry);
                         ATOMIC_INTEGER.incrementAndGet();
                     } else {
                         InputStream inputStream = zip.getInputStream(entry);
                         String contents = FILE.getContents(inputStream, Integer.MAX_VALUE).toString();
                         contents = STRING.stripToAlphaNumeric(contents);
                         if (fileContent.matcher(contents).matches()) {
-                            LOGGER.info("In file : " + file + ", " + fileEntry + ", " + entry.getName() + ", " + entry);
-                            LOGGER.info("Contents : " + contents);
+                            LOGGER.error("In file : " + file + ", " + fileEntry + ", " + entry.getName() + ", " + entry);
+                            LOGGER.error("Contents : " + contents);
                             ATOMIC_INTEGER.incrementAndGet();
                         }
                     }
