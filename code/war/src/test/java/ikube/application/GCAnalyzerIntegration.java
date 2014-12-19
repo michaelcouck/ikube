@@ -5,7 +5,6 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Analysis;
 import ikube.toolkit.THREAD;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.management.MBeanServerConnection;
@@ -27,7 +26,6 @@ import static java.lang.management.ManagementFactory.newPlatformMXBeanProxy;
  * @version 01.00
  * @since 23-10-2014
  */
-@Ignore
 @SuppressWarnings("FieldCanBeLocal")
 public class GCAnalyzerIntegration extends AbstractTest {
 
@@ -47,26 +45,6 @@ public class GCAnalyzerIntegration extends AbstractTest {
 
         // Call the garbage collector a couple of times
         gc(6 * 60, 10000);
-
-        // Get the data from the collectors
-        url = "http://" + address + ":" + serverPort + "/ikube/service/gc-analyzer/used-to-max-ratio-prediction";
-        Type listType = new TypeToken<List<Analysis>>() {
-        }.getType();
-        List<Analysis> analyses = doGet(url,
-                new String[]{IConstants.ADDRESS, IConstants.PORT, IConstants.FORECASTS},
-                new String[]{address, Integer.toString(jmxPort), Integer.toString(forecasts)}, listType);
-        // Assert.assertEquals(6, analyses.size());
-        DecimalFormat decimalFormat = new DecimalFormat("#.#####");
-        for (final Analysis analysis : analyses) {
-            ArrayList predictions = (ArrayList) analysis.getOutput();
-            for (Object prediction : predictions) {
-                for (Object p : (ArrayList) prediction) {
-                    for (Object v : (ArrayList) p) {
-                        logger.error("V : " + decimalFormat.format(v) + ", " + v.getClass());
-                    }
-                }
-            }
-        }
         // TODO: Verify that there are collectors on the server
     }
 
@@ -90,11 +68,34 @@ public class GCAnalyzerIntegration extends AbstractTest {
     @Test
     public void collectorAddressesAndPorts() throws Exception {
         String url = "http://" + address + ":" + serverPort + "/ikube/service/gc-analyzer/collector-addresses-and-ports";
-        Type listType = new TypeToken<List<Analysis>>() {
-        }.getType();
-        Object result = doGet(url, new String[]{}, new String[]{}, listType);
+        Type rawType = new TypeToken<List<Analysis>>() {
+        }.getRawType();
+        Object result = doGet(url, new String[]{}, new String[]{}, rawType);
         logger.error("Result : " + result);
         // TODO: Verify that there are some results
+    }
+
+    @Test
+    public void usedToMaxRatioPrediction() {
+        // Get the data from the collectors
+        String url = "http://" + address + ":" + serverPort + "/ikube/service/gc-analyzer/used-to-max-ratio-prediction";
+        Type listType = new TypeToken<List<Analysis>>() {
+        }.getRawType();
+        List<Analysis> analyses = doGet(url,
+                new String[]{IConstants.ADDRESS, IConstants.PORT, IConstants.FORECASTS},
+                new String[]{address, Integer.toString(jmxPort), Integer.toString(forecasts)}, listType);
+        // Assert.assertEquals(6, analyses.size());
+        DecimalFormat decimalFormat = new DecimalFormat("#.#####");
+        for (final Analysis analysis : analyses) {
+            ArrayList predictions = (ArrayList) analysis.getOutput();
+            for (Object prediction : predictions) {
+                for (Object p : (ArrayList) prediction) {
+                    for (Object v : (ArrayList) p) {
+                        logger.error("V : " + decimalFormat.format(v) + ", " + v.getClass());
+                    }
+                }
+            }
+        }
     }
 
     void gc(final int calls, final long sleep) throws IOException {

@@ -7,7 +7,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -89,10 +93,22 @@ public class PropertyConfigurer extends Properties {
     private void checkOwnJar() {
         try {
             // We check our own jar
-            File thisJar = new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+            ProtectionDomain protectionDomain = getClass().getProtectionDomain();
+            LOGGER.warn("Protection domain : " + protectionDomain);
+            CodeSource codeSource = protectionDomain.getCodeSource();
+            LOGGER.warn("Code source : " + codeSource);
+            URL location = codeSource.getLocation();
+            LOGGER.warn("Location : " + location);
+            URI uri = location.toURI();
+            LOGGER.warn("Uri : " + uri);
+            String jarPath = uri.getPath();
+            LOGGER.warn("Path to jar : " + jarPath);
+            File thisJar = new File(jarPath);
             checkJar(thisJar);
         } catch (final URISyntaxException e) {
             LOGGER.error("Aaai karumbi! Where am I?", e);
+        } catch (final Exception e) {
+            LOGGER.error("Is this Websphere?", e);
         }
     }
 

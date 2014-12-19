@@ -182,7 +182,7 @@ public final class THREAD {
             return;
         }
         outer:
-        while (true) {
+        do {
             for (final Thread thread : threads) {
                 if (thread.isAlive()) {
                     try {
@@ -194,7 +194,7 @@ public final class THREAD {
                 }
             }
             break;
-        }
+        } while (true);
     }
 
     /**

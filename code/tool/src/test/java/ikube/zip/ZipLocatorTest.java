@@ -1,6 +1,7 @@
 package ikube.zip;
 
 import ikube.AbstractTest;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertTrue;
@@ -20,8 +21,9 @@ public class ZipLocatorTest extends AbstractTest {
     }
 
     @Test
+    @Ignore
     public void adHoc() {
-        String[] args = {"/opt/IBM", ".*.jar\\Z", "com.ibm.ws.Transaction.TransactionManagerFactory"};
+        String[] args = {"/opt/IBM", "*.jar\\Z", "com.ibm.ws.Transaction.TransactionManagerFactory"};
         ZipLocator.main(args);
     }
 
