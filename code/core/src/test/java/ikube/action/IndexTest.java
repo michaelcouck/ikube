@@ -6,7 +6,7 @@ import ikube.action.index.handler.IIndexableHandler;
 import ikube.action.index.handler.database.IndexableTableHandler;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.IndexManagerMock;
-import ikube.mock.ThreadUtilitiesMock;
+import ikube.mock.THREADMock;
 import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
@@ -56,7 +56,7 @@ public class IndexTest extends AbstractTest {
         indexableHandlers.add(indexableTableHandler);
         List<Indexable> indexables = new ArrayList<Indexable>(Arrays.asList(indexableTable));
 
-        Mockit.setUpMocks(IndexManagerMock.class, ApplicationContextManagerMock.class, ThreadUtilitiesMock.class);
+        Mockit.setUpMocks(IndexManagerMock.class, ApplicationContextManagerMock.class, THREADMock.class);
         ForkJoinTask forkJoinTask = new RecursiveAction() {
             @Override
             protected void compute() {

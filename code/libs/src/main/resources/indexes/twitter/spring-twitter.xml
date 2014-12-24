@@ -127,18 +127,18 @@
         property:analyzer="ikube.analytics.weka.WekaClassifier">
         <property name="algorithms">
             <list>
-                <value>weka.classifiers.functions.LinearRegression</value>
-                <value>weka.classifiers.functions.LinearRegression</value>
-                <value>weka.classifiers.functions.LinearRegression</value>
-                <value>weka.classifiers.functions.LinearRegression</value>
-                <value>weka.classifiers.functions.LinearRegression</value>
-                <value>weka.classifiers.functions.LinearRegression</value>
-                <value>weka.classifiers.functions.LinearRegression</value>
-                <value>weka.classifiers.functions.LinearRegression</value>
-                <value>weka.classifiers.functions.LinearRegression</value>
-                <value>weka.classifiers.functions.LinearRegression</value>
-                <value>weka.classifiers.functions.LinearRegression</value>
-                <value>weka.classifiers.functions.LinearRegression</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
             </list>
         </property>
         <property name="fileNames">

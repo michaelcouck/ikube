@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import ikube.AbstractTest;
 import ikube.action.index.handler.strategy.geocode.GoogleGeocoder;
-import ikube.mock.FileUtilitiesMock;
+import ikube.mock.FILEMock;
 import ikube.mock.URLMock;
 import ikube.model.Coordinate;
 import ikube.toolkit.FILE;
@@ -28,9 +28,9 @@ public class GoogleGeocoderTest extends AbstractTest {
 		try {
 			File file = FILE.findFileRecursively(new File("."), "address.xml");
 			ByteArrayOutputStream contents = FILE.getContents(file, Integer.MAX_VALUE);
-			FileUtilitiesMock.setContents(contents);
+			FILEMock.setContents(contents);
 			URLMock.setContents(contents);
-			Mockit.setUpMocks(URLMock.class, FileUtilitiesMock.class);
+			Mockit.setUpMocks(URLMock.class, FILEMock.class);
 
 			GoogleGeocoder geocoder = new GoogleGeocoder();
 			geocoder.setSearchUrl("http://maps.googleapis.com/maps/api/geocode/xml");
@@ -41,7 +41,7 @@ public class GoogleGeocoderTest extends AbstractTest {
 			assertEquals("We know that this address exists and where it is : ", -33.9693580, lat, 1.0);
 			assertEquals("We know that this address exists and where it is : ", 18.4622110, lon, 1.0);
 		} finally {
-			Mockit.tearDownMocks(URLMock.class, FileUtilitiesMock.class);
+			Mockit.tearDownMocks(URLMock.class, FILEMock.class);
 		}
 	}
 

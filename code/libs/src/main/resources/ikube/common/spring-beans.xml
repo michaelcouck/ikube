@@ -139,7 +139,7 @@
         name="ikube.database.IDataBase"
         class="${ikube.dataBaseClass}"
         lazy-init="false"
-        depends-on="ikube.toolkit.ThreadUtilities"/>
+        depends-on="ikube.toolkit.THREAD"/>
 
     <bean
         name="ikube.toolkit.DataManager"
@@ -168,7 +168,7 @@
         class="ikube.cluster.MonitorService"/>
 
     <bean
-        name="ikube.toolkit.ThreadUtilities"
+        name="ikube.toolkit.THREAD"
         class="ikube.toolkit.THREAD"
         lazy-init="false"
         init-method="initialize"
@@ -178,7 +178,7 @@
     <bean
         name="ikube.analytics.AnalyzerManager"
         class="ikube.analytics.AnalyzerManager"
-        depends-on="ikube.toolkit.ThreadUtilities"/>
+        depends-on="ikube.toolkit.THREAD"/>
 
     <bean
         name="ikube.analytics.IAnalyticsService"

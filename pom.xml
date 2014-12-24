@@ -959,8 +959,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-all</artifactId>
-            <version>2.2.1</version>
+            <artifactId>openjpa</artifactId>
+            <version>2.3.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

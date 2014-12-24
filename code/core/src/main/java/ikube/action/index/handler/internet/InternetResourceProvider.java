@@ -123,7 +123,6 @@ public class InternetResourceProvider extends Arachnid implements IResourceProvi
         logger.error("Get resource : " + url);
         while (url == null && retry-- >= 0) {
             logger.info("Sleeping : " + urls.size());
-            // ThreadUtilities.sleep(SLEEP);
             THREAD.sleep(SLEEP);
             if (urls.isEmpty()) {
                 continue;

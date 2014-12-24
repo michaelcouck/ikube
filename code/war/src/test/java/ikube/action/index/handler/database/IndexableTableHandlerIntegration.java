@@ -81,7 +81,6 @@ public class IndexableTableHandlerIntegration extends IntegrationTest {
         delete(dataBase, Snapshot.class);
         IClusterManager clusterManager = getBean(IClusterManager.class);
         clusterManager.getServer().getActions().clear();
-        // ThreadUtilities.cancelAllForkJoinPools();
     }
 
     @Test

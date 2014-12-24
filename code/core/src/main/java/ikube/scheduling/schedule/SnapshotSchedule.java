@@ -54,8 +54,8 @@ public class SnapshotSchedule extends Schedule {
         setServerStatistics(server);
         Map<String, IndexContext> indexContexts = monitorService.getIndexContexts();
         for (final Map.Entry<String, IndexContext> mapEntry : indexContexts.entrySet()) {
+            IndexContext indexContext = mapEntry.getValue();
             try {
-                IndexContext indexContext = mapEntry.getValue();
                 indexContext.setNumDocsForSearchers(getNumDocsForIndexSearchers(indexContext));
                 indexContext.setIndexing(indexContext.getIndexWriters() != null && indexContext.getIndexWriters().length > 0);
 
@@ -80,6 +80,7 @@ public class SnapshotSchedule extends Schedule {
                 }
 
                 dataBase.persist(snapshot);
+                logger.info("Persisted snapshot for : " + indexContext.getName());
                 String[] names = new String[]{IConstants.INDEX_CONTEXT};
                 Object[] values = new Object[]{indexContext.getName()};
                 List<Snapshot> snapshots = dataBase.find(
@@ -100,7 +101,7 @@ public class SnapshotSchedule extends Schedule {
                     }
                 }
             } catch (final Exception e) {
-                logger.error("Exception persisting snapshot : ", e);
+                logger.error("Exception persisting snapshot : " + indexContext.getName(), e);
             }
         }
     }
@@ -136,7 +137,7 @@ public class SnapshotSchedule extends Schedule {
         } catch (Exception e) {
             logger.error("Exception accessing the disk space : ", e);
         }*/
-        // logger.info("Threads running : " + server.isThreadsRunning() + ", " + ThreadUtilities.isInitialized());
+        // logger.info("Threads running : " + server.isThreadsRunning() + ", " + THREAD.isInitialized());
         setLogTail(server);
     }
 
@@ -170,9 +171,17 @@ public class SnapshotSchedule extends Schedule {
     protected Number getTotalSearchesForIndex(final IndexContext indexContext) {
         String[] fields = {"indexName"};
         Object[] values = {indexContext.getIndexName()};
-        long totalSearches = dataBase.execute(Search.SELECT_FROM_SEARCH_COUNT_SEARCHES, fields, values);
-        logger.debug("Total search database : " + indexContext.getIndexName() + ", " + totalSearches);
-        return totalSearches;
+        logger.info("Database : " + dataBase + ", " + indexContext.getIndexName() + ", " + indexContext.getName());
+        try {
+            long totalSearches = dataBase.execute(Search.SELECT_FROM_SEARCH_COUNT_SEARCHES, fields, values);
+            logger.info("Total search database : " + indexContext.getIndexName() + ", " + totalSearches);
+            return totalSearches;
+        } catch (final Exception e) {
+            // Ignore, this can throw a null pointer because the return should be a long,
+            // but converting from null to long from Long throws un unboxing exception, at least
+            // that is my guess
+        }
+        return 0;
     }
 
     protected long getSearchesPerMinute(final IndexContext indexContext, final Snapshot snapshot) {
