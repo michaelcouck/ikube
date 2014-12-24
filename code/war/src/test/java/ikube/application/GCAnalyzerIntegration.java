@@ -32,7 +32,7 @@ public class GCAnalyzerIntegration extends AbstractTest {
     private int jmxPort = 8500;
     private int serverPort = 9090;
     private int forecasts = 60;
-    private String address = "192.168.1.40";
+    private String address = "localhost";
 
     @Test
     @SuppressWarnings("unchecked")
@@ -44,7 +44,7 @@ public class GCAnalyzerIntegration extends AbstractTest {
                 new String[]{address, Integer.toString(jmxPort)}, Boolean.class);
 
         // Call the garbage collector a couple of times
-        gc(6 * 60, 10000);
+        // gc(6 * 60, 10000);
         // TODO: Verify that there are collectors on the server
     }
 
@@ -76,9 +76,15 @@ public class GCAnalyzerIntegration extends AbstractTest {
     }
 
     @Test
-    public void usedToMaxRatioPrediction() {
+    public void usedToMaxRatioPrediction() throws Exception {
+        // Create the collector and register it
+        String url = "http://" + address + ":" + serverPort + "/ikube/service/gc-analyzer/register-collector";
+        doPost(url, null,
+                new String[]{IConstants.ADDRESS, IConstants.PORT},
+                new String[]{address, Integer.toString(jmxPort)}, Boolean.class);
+
         // Get the data from the collectors
-        String url = "http://" + address + ":" + serverPort + "/ikube/service/gc-analyzer/used-to-max-ratio-prediction";
+        url = "http://" + address + ":" + serverPort + "/ikube/service/gc-analyzer/used-to-max-ratio-prediction";
         Type listType = new TypeToken<List<Analysis>>() {
         }.getRawType();
         List<Analysis> analyses = doGet(url,
