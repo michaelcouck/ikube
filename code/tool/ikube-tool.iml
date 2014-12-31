@@ -274,6 +274,10 @@
     <orderEntry type="library" name="Maven: combinatoricslib:combinatoricslib:2.0" level="project" />
     <orderEntry type="library" name="Maven: arachnid:arachnid:0.4.0" level="project" />
     <orderEntry type="library" name="Maven: ikube:scanner:1.4" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.bval:bval-jsr303:0.5" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.bval:bval-core:0.5" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.1" level="project" />
+    <orderEntry type="library" name="Maven: commons-beanutils:commons-beanutils-core:1.8.3" level="project" />
     <orderEntry type="library" name="Maven: sevenzip:jbinding:4.65.1" level="project" />
     <orderEntry type="library" name="Maven: sevenzip:jbinding-linux:4.65.1" level="project" />
     <orderEntry type="library" name="Maven: canyon:canyon:0.9.8" level="project" />

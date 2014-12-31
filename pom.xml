@@ -1297,6 +1297,12 @@
             <version>1.4</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.bval</groupId>
+            <artifactId>bval-jsr303</artifactId>
+            <version>0.5</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <repositories>
