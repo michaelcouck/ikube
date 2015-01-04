@@ -1,28 +1,22 @@
 package ikube.toolkit;
 
 import ikube.Constants;
+import org.apache.commons.lang.SerializationUtils;
+import org.apache.log4j.Logger;
 
-import java.beans.BeanInfo;
-import java.beans.ExceptionListener;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.beans.XMLDecoder;
-import java.beans.XMLEncoder;
+import javax.persistence.Transient;
+import java.beans.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import javax.persistence.Transient;
-
-import org.apache.commons.beanutils.BeanUtilsBean2;
-import org.apache.commons.lang.SerializationUtils;
-import org.apache.log4j.Logger;
 
 /**
  * @author Michael Couck
@@ -87,11 +81,11 @@ public final class SERIALIZATION {
 
 	public static Object clone(final Object object) {
 		Object clone = SerializationUtils.clone((Serializable) object);
-		try {
-			BeanUtilsBean2.getInstance().copyProperties(clone, object);
-		} catch (final IllegalAccessException | InvocationTargetException e) {
-			LOGGER.error("Exception setting properties to cloned object : " + clone, e);
-		}
+//		try {
+//			BeanUtilsBean2.getInstance().copyProperties(clone, object);
+//		} catch (final IllegalAccessException | InvocationTargetException e) {
+//			LOGGER.error("Exception setting properties to cloned object : " + clone, e);
+//		}
 		return clone;
 	}
 
