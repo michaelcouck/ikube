@@ -83,7 +83,7 @@
 
         property:threads="5"
         property:address="false"
-        proeprty:excludedPattern=".*(.jar).*|.*(.zip).*|.*(.png).*|.*(.jpeg).*|.*(.ico).*|.*(.svg).*|.*(.gif).*|.*(.ttf).*"
+        property:excludedPattern=".*(.jar).*|.*(.zip).*|.*(.png).*|.*(.jpeg).*|.*(.ico).*|.*(.svg).*|.*(.gif).*|.*(.ttf).*"
         property:strategies-ref="ikube-strategies"/>
 
     <util:list id="ikube-strategies">
