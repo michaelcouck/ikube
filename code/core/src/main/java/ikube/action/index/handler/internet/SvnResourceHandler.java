@@ -2,6 +2,11 @@ package ikube.action.index.handler.internet;
 
 import ikube.action.index.IndexManager;
 import ikube.action.index.handler.ResourceHandler;
+import ikube.action.index.parse.IParser;
+import ikube.action.index.parse.ParserProvider;
+import ikube.action.index.parse.XMLParser;
+import ikube.action.index.parse.mime.MimeType;
+import ikube.action.index.parse.mime.MimeTypes;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableSvn;
@@ -12,11 +17,16 @@ import org.tmatesoft.svn.core.SVNProperties;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.io.SVNRepository;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.HashMap;
 
 /**
+ * This class will be called by the framework to index the resources
+ * from the SVN provider, during the indexing of an SVN repository.
+ *
  * @author Michael Couck
  * @version 01.00
  * @since 04-06-2013
@@ -25,16 +35,13 @@ public class SvnResourceHandler extends ResourceHandler<IndexableSvn> {
 
     /**
      * {@inheritDoc}
-     *
-     * @throws Exception
      */
     @Override
-    public Document handleResource(
-            final IndexContext indexContext,
-            final IndexableSvn indexableSvn,
-            final Document document,
-            final Object resource) throws Exception {
+    public Document handleResource(final IndexContext indexContext, final IndexableSvn indexableSvn, final Document document,
+                                   final Object resource) throws Exception {
         SVNDirEntry dirEntry = (SVNDirEntry) resource;
+
+        // Can't do this because it is cloned: indexableSvn.getRepository()
         SVNRepository repository = getSvnRepository(indexContext, indexableSvn.getName());
         SVNNodeKind svnNodeKind = dirEntry.getKind();
 
@@ -44,10 +51,7 @@ public class SvnResourceHandler extends ResourceHandler<IndexableSvn> {
         // Strip the repository root off the url to get the relative path to the resource
         String path = url.replace(repositoryRoot, "");
 
-        logger.info("Url : " + url + ", repository root : " + repositoryRoot + ", path : " + path);
-        logger.info("Host : " + svnurl.getHost() +
-                ", path : " + svnurl.getPath() +
-                ", port : " + svnurl.getPort());
+        logger.debug("Url : " + url + ", repository root : " + repositoryRoot + ", path : " + path);
 
         if (SVNNodeKind.FILE.equals(svnNodeKind)) {
             String author = dirEntry.getAuthor();
@@ -61,8 +65,15 @@ public class SvnResourceHandler extends ResourceHandler<IndexableSvn> {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             repository.getFile(path, -1, fileProperties, byteArrayOutputStream);
 
-            String contents = new String(byteArrayOutputStream.toByteArray());
-            logger.info("Kind : " + svnNodeKind +
+            indexableSvn.setRawContent(byteArrayOutputStream.toByteArray());
+
+            parseContent(indexableSvn);
+
+            String contents = indexableSvn.getContents();
+            logger.warn("Host : " + svnurl.getHost() +
+                    ", path : " + svnurl.getPath() +
+                    ", port : " + svnurl.getPort() +
+                    ", kind : " + svnNodeKind +
                     ", author : " + author +
                     ", commit : " + commit +
                     ", date : " + date +
@@ -81,6 +92,42 @@ public class SvnResourceHandler extends ResourceHandler<IndexableSvn> {
         }
 
         return super.handleResource(indexContext, indexableSvn, document, resource);
+    }
+
+    protected void parseContent(final IndexableSvn indexableSvn) {
+        try {
+            byte[] buffer = (byte[]) indexableSvn.getRawContent();
+            String contentType;
+
+            MimeType mimeType = MimeTypes.getMimeType(buffer);
+
+            // The first few bytes so we can guess the content type
+            byte[] bytes = new byte[Math.min(buffer.length, 1024)];
+            System.arraycopy(buffer, 0, bytes, 0, bytes.length);
+            IParser parser = ParserProvider.getParser(mimeType.getName(), bytes);
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buffer, 0, buffer.length);
+            OutputStream outputStream = null;
+            try {
+                outputStream = parser.parse(byteArrayInputStream, new ByteArrayOutputStream());
+            } catch (final Exception e) {
+                // If this is an XML exception then try the HTML parser
+                if (XMLParser.class.isAssignableFrom(parser.getClass())) {
+                    contentType = "text/html";
+                    parser = ParserProvider.getParser(contentType, bytes);
+                    outputStream = parser.parse(byteArrayInputStream, new ByteArrayOutputStream());
+                } else {
+                    String message = "Exception parsing content from url : " + indexableSvn.getUrl();
+                    logger.error(message, e);
+                }
+            }
+            if (outputStream != null) {
+                String parsedContent = outputStream.toString();
+                logger.debug("Parsed content length : " + parsedContent.length() + ", content type : " + mimeType);
+                indexableSvn.setContents(parsedContent);
+            }
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     SVNRepository getSvnRepository(final Indexable indexable, final String name) {

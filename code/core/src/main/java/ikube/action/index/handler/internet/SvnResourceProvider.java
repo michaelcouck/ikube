@@ -2,7 +2,6 @@ package ikube.action.index.handler.internet;
 
 import ikube.action.index.handler.IResourceProvider;
 import ikube.model.IndexableSvn;
-import ikube.toolkit.THREAD;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +15,14 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 /**
+ * This provider will walk over an SVN repository, adding all the entries to a stack. This
+ * collection can then be accessed by clients, taking resources off the top as needed until there are,
+ * no more resources to take, each get resource pops the next file from the stack.
+ * <p/>
+ * The session is not closed to the SVN {@link org.tmatesoft.svn.core.io.SVNRepository} as clients
+ * will still need to read the files, they are not completely downloaded in the provider, for obvious
+ * reasons.
+ *
  * @author Michael Couck
  * @version 01.00
  * @since 04-06-2014
@@ -23,13 +30,22 @@ import java.util.regex.Pattern;
 @SuppressWarnings("unchecked")
 class SvnResourceProvider implements IResourceProvider<SVNDirEntry> {
 
-    private static final int SLEEP_TIME = 1000;
-    private static final int MAX_RESOURCES = 1000;
-
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    /**
+     * The pattern to ignore when fetching resources, like .*(private)*. for example.
+     */
     private final Pattern pattern;
+    /**
+     * The stack of {@link org.tmatesoft.svn.core.SVNDirEntry} that will be put on the stack while
+     * walking the SVN directories. Note that these are just references to the files, they do not contain
+     * the contents of the files. The contents still need to be read using the
+     * {@link org.tmatesoft.svn.core.io.SVNRepository}.
+     */
     private final Stack<SVNDirEntry> svnDirEntries;
+    /**
+     * Flag set to true when the job is terminated.
+     */
     private boolean terminated;
 
     SvnResourceProvider(final IndexableSvn indexableSvn) throws Exception {
@@ -48,25 +64,9 @@ class SvnResourceProvider implements IResourceProvider<SVNDirEntry> {
         }
         indexableSvn.setRepository(repository);
 
-        logger.info("Starting walk : ");
+        logger.warn("Starting walk : ");
         walkRepository(repository, indexableSvn.getFilePath());
-        logger.info("Walk finished normally : ");
-
-        THREAD.submit(indexableSvn.getName(), new Runnable() {
-            public void run() {
-                while (!svnDirEntries.isEmpty()) {
-                    THREAD.sleep(1000);
-                }
-                try {
-                    repository.closeSession();
-                } catch (final Exception e) {
-                    logger.error(null, e);
-                }
-                indexableSvn.setRepository(null);
-                logger.info("Terminating walk : ");
-                THREAD.destroy(indexableSvn.getName());
-            }
-        });
+        logger.warn("Walk finished normally : ");
     }
 
     /**
@@ -81,8 +81,8 @@ class SvnResourceProvider implements IResourceProvider<SVNDirEntry> {
             SVNDirEntry svnDirEntry = null;
             if (!svnDirEntries.isEmpty()) {
                 svnDirEntry = svnDirEntries.pop();
+                logger.warn("Popped : " + svnDirEntries.size() + ", " + svnDirEntry);
             }
-            logger.info("Popped : " + svnDirEntries.size() + ", " + svnDirEntry);
             return svnDirEntry;
         } finally {
             notifyAll();
@@ -122,29 +122,28 @@ class SvnResourceProvider implements IResourceProvider<SVNDirEntry> {
         SVNProperties fileProperties = SVNProperties.wrap(new HashMap<>());
         Collection entries;
         try {
-            logger.info("Getting entries for : " + filePath);
             entries = repository.getDir(filePath, -1, fileProperties, new ArrayList());
+            logger.warn("Files in directory : " + filePath + " : " + entries.size() + ", " + svnDirEntries.size());
         } catch (final SVNException e) {
             logger.error("Exception accessing svn resource : " + filePath, e);
             return;
         }
-        logger.info("Entries : " + entries.size());
         for (final Object entry : entries) {
             SVNDirEntry dirEntry = (SVNDirEntry) entry;
-            String relativePath = dirEntry.getRelativePath();
-            String childFilePath = filePath + "/" + relativePath;
-            if (isExcluded(childFilePath, pattern)) {
-                continue;
-            }
-            SVNNodeKind svnNodeKind = dirEntry.getKind();
-            if (SVNNodeKind.FILE.equals(svnNodeKind)) {
-                while (svnDirEntries.size() > MAX_RESOURCES) {
-                    THREAD.sleep(SLEEP_TIME);
+            try {
+                String relativePath = dirEntry.getRelativePath();
+                String childFilePath = filePath + "/" + relativePath;
+                if (!isExcluded(childFilePath, pattern)) {
+                    SVNNodeKind svnNodeKind = dirEntry.getKind();
+                    if (SVNNodeKind.FILE.equals(svnNodeKind)) {
+                        svnDirEntries.add(dirEntry);
+                    } else {
+                        logger.info("Recursing, walking directory : " + childFilePath);
+                        walkRepository(repository, childFilePath);
+                    }
                 }
-                svnDirEntries.add(dirEntry);
-            } else {
-                logger.info("Recursing, walking directory : " + childFilePath);
-                walkRepository(repository, childFilePath);
+            } catch (final Exception e) {
+                logger.error("Exception walking the svn repository : " + dirEntry, e);
             }
         }
     }
@@ -165,7 +164,7 @@ class SvnResourceProvider implements IResourceProvider<SVNDirEntry> {
         }
         boolean excluded = pattern.matcher(string).matches();
         if (excluded) {
-            logger.info("Excluding : " + string);
+            logger.warn("Excluding : " + string);
         }
         return excluded;
     }

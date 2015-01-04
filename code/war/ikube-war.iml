@@ -208,7 +208,7 @@
     <orderEntry type="library" name="Maven: org.apache.xmlbeans:xmlbeans:2.3.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.geronimo.specs:geronimo-stax-api_1.0_spec:1.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.ccil.cowan.tagsoup:tagsoup:1.2.1" level="project" />
-    <orderEntry type="library" name="Maven: asm:asm:3.1" level="project" />
+    <orderEntry type="library" name="Maven: asm:asm:3.2" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.mp4parser:isoparser:1.0-RC-1" level="project" />
     <orderEntry type="library" name="Maven: com.drewnoakes:metadata-extractor:2.6.2" level="project" />
     <orderEntry type="library" name="Maven: com.adobe.xmp:xmpcore:5.1.2" level="project" />
@@ -223,12 +223,11 @@
     <orderEntry type="library" name="Maven: org.pcollections:pcollections:2.1.2" level="project" />
     <orderEntry type="library" name="Maven: org.gridgain:gridgain-datagrid:6.1.6" level="project" />
     <orderEntry type="library" name="Maven: javax.validation:validation-api:1.1.0.Final" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.openjpa:openjpa:2.3.0" level="project" />
-    <orderEntry type="library" name="Maven: net.sourceforge.serp:serp:1.14.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.openjpa:openjpa:2.2.1" level="project" />
+    <orderEntry type="library" name="Maven: net.sourceforge.serp:serp:1.13.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.geronimo.specs:geronimo-jta_1.1_spec:1.1.1" level="project" />
     <orderEntry type="library" name="Maven: commons-pool:commons-pool:1.5.4" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.xbean:xbean-asm4-shaded:3.14" level="project" />
     <orderEntry type="library" name="Maven: org.apache.geronimo.specs:geronimo-jpa_2.0_spec:1.1" level="project" />
     <orderEntry type="library" name="Maven: de.schlichtherle.truezip:truezip-kernel:7.7.1" level="project" />
     <orderEntry type="library" name="Maven: de.schlichtherle.truezip:truezip-file:7.7.1" level="project" />

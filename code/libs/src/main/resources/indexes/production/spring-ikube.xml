@@ -62,12 +62,7 @@
         property:timeout="60000"
         property:threads="3"
         property:internetBatchSize="${internet.batch.size}"
-        property:strategies-ref="internet-strategies"/>
-
-    <util:list id="internet-strategies">
-        <ref bean="ikube.action.index.handler.strategy.ContentTypeStrategy"/>
-        <ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy"/>
-    </util:list>
+        property:strategies-ref="ikube-strategies"/>
 
     <bean
         id="ikube-svn-google-code"
@@ -75,6 +70,10 @@
         property:name="ikube-svn-google-code"
         property:url="https://ikube.googlecode.com/svn"
         property:filePath="trunk"
+        property:revision="revision"
+        property:revisionDate="revision-date"
+        property:size="size"
+        property:contents="contents"
 
         property:analyzed="true"
         property:stored="true"
@@ -82,6 +81,16 @@
         property:tokenized="false"
         property:omitNorms="true"
 
-        property:address="false"/>
+        property:threads="5"
+        property:address="false"
+        proeprty:excludedPattern=".*(.jar).*|.*(.zip).*|.*(.png).*|.*(.jpeg).*|.*(.ico).*|.*(.svg).*|.*(.gif).*|.*(.ttf).*"
+        property:strategies-ref="ikube-strategies"/>
+
+    <util:list id="ikube-strategies">
+        <ref bean="ikube.action.index.handler.strategy.ContentTypeStrategy"/>
+        <ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy"/>
+        <ref bean="ikube.action.index.handler.strategy.LanguageCleaningStrategy"/>
+        <ref bean="ikube.action.index.handler.strategy.LanguageFilterStrategy"/>
+    </util:list>
 
 </beans>
