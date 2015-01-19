@@ -27,7 +27,7 @@ import java.util.concurrent.Future;
  * @since 15-08-2014
  */
 @SuppressWarnings("SpringJavaAutowiringInspection")
-public class ClusterManager extends AClusterManager {
+public class ClusterManagerGridGain extends AClusterManager {
 
     private Grid grid;
 
@@ -243,7 +243,9 @@ public class ClusterManager extends AClusterManager {
             @Override
             public Map<? extends GridComputeJob, GridNode> map(final List subgrid, @Nullable final Object arg) throws GridException {
                 gridComputeTaskContinuousMapper.send(gridComputeJob, gridNode);
-                return null;
+                Map<GridComputeJob, GridNode> gridNodeMap = new HashMap<>();
+                gridNodeMap.put(gridComputeJob, gridNode);
+                return gridNodeMap;
             }
 
             @Override

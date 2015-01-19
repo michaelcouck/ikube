@@ -7,16 +7,20 @@ import mockit.MockClass;
 import org.gridgain.grid.Grid;
 import org.gridgain.grid.GridGain;
 import org.gridgain.grid.GridIllegalStateException;
+import org.gridgain.grid.cache.GridCache;
 import org.jetbrains.annotations.Nullable;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mockito;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Michael Couck
@@ -24,44 +28,52 @@ import org.mockito.stubbing.Answer;
  * @since 15-08-2014
  */
 @Ignore
-public class ClusterManagerTest extends AbstractTest {
+public class ClusterManagerGridGainTest extends AbstractTest {
 
+    @Mock
+    private Grid grid;
+    @Mock
+    private GridCache gridCache;
     @Spy
     private Server server;
     @Spy
     @InjectMocks
-    private ClusterManager clusterManager;
+    private ClusterManagerGridGain clusterManager;
 
     @Before
+    @SuppressWarnings("unchecked")
     public void before() throws Exception {
-        // Mockit.setUpMock(GridGainMock.class);
-        clusterManager.initialize();
-    }
-
-    @After
-    public void after() {
-        // Mockit.tearDownMocks(GridGain.class);
+        Mockito.when(grid.cache(Matchers.anyString())).thenReturn(gridCache);
     }
 
     @Test
-    public void lock() {
-        clusterManager.lock(IConstants.IKUBE);
+    @SuppressWarnings("unchecked")
+    public void lock() throws Exception {
+        Mockito.when(gridCache.lock(any(), anyInt())).thenReturn(Boolean.TRUE);
+        boolean locked = clusterManager.lock(IConstants.IKUBE);
+        assertTrue(locked);
     }
 
     @Test
-    public void unlock() {
-        clusterManager.unlock(null);
+    public void unlock() throws Exception {
+        boolean unlocked = clusterManager.unlock(null);
+        assertTrue(unlocked);
     }
 
     @Test
     public void anyWorking() {
-        Mockito.doAnswer(new Answer() {
+        doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 return servers;
             }
         }).when(clusterManager).getServers();
-        clusterManager.anyWorking();
+        boolean anyWorking = clusterManager.anyWorking();
+        assertFalse(anyWorking);
+        assertTrue(servers.size() > 0);
+        for (final Server server : servers.values()) {
+            verify(server.isWorking(), atLeastOnce());
+        }
     }
 
     @Test
