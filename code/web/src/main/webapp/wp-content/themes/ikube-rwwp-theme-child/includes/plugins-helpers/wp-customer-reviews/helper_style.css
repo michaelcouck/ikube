@@ -1,0 +1,55 @@
+/*Add this style to main CSS file if reviews needed*/
+
+.reviews .review-item{
+    margin-bottom: 15px;
+    color: #727272;
+}
+
+.reviews .review-item .second-line{
+
+}
+
+.reviews .review-item .stars img{
+
+}
+
+.reviews .review-item .stars, .reviews .review-item .date, .reviews .review-item .author{
+
+}
+
+.reviews .review-item .caption{
+    color: #93d255;
+    font-size: 14px;
+    text-decoration: underline;
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
+.reviews .review-item .caption a{
+    color: #93d255;
+    text-transform: none;
+}
+
+.reviews .review-item .stars{
+    margin-right: 6px;
+    margin-top: 1px;
+    float: left;
+}
+.reviews .review-item .date{
+    font-size: 14px;
+    line-height: 16px;
+    text-transform: none;
+}
+.reviews .review-item .author{
+    font-size: 14px;
+    line-height: 18px;
+    text-transform: none;
+    margin-top: 1px;
+}
+
+.reviews .review-item .text{
+    font-size: 14px;
+    line-height: 16px;
+    font-weight: normal;
+    text-transform: none;
+}

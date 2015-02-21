@@ -1,0 +1,98 @@
+/*Default styles used in WP sites*/
+p {padding-bottom: 10px;}
+.text_bottom_margin {
+    margin-bottom: 35px;
+}
+.post_metadata_header {
+    background-color: #FFFFFF;
+    border-color: #8E99CD;
+    border-style: solid;
+    border-width: 1px;
+    padding: 1px;
+}
+.post_header_icons {
+    padding: 1px;
+    color: #283958;
+    font-size: 11px;
+}
+.post_header_icons img {
+    vertical-align: middle;
+    margin: 2px;
+}
+.post_header_icons a {
+    color: #283958;
+    text-decoration: underline;
+}
+.post_header_icons a:hover {
+    text-decoration: none;
+}
+.art_metadata_icons {
+    border: medium none;
+    margin: 2px;
+    vertical-align: middle;
+}
+
+/* WP-Eccomerce Styles */
+.shopping-cart-wrapper {
+    padding: 0px 10px;
+}
+.checkout_cart .header th {
+    padding-right: 10px;
+}
+.checkout_cart .product_row td {
+    padding-right: 10px !important;
+}
+.wpsc_email_address {
+    padding-top: 10px;
+}
+.wpsc_billing_forms {
+    padding-top: 5px !important;
+    padding-bottom: 10px !important;
+}
+.wpsc_checkout_table {
+    margin-bottom: 10px;
+}
+.total_price td {
+    padding-left: 0px !important;
+}
+.checkout-total {
+    padding-left: 5px;
+}
+#checkout_page_container .wpsc_make_purchase {
+    margin-right: 35px;
+}
+/* WP-Eccomerce Styles -- END*/
+/* Wordpress elemets style */
+.alignleft
+{
+    float: left;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+.alignright
+{
+    float: right;
+    margin-left: 5px;
+    margin-bottom: 5px;
+}
+.aligncenter
+{
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+.alignnone
+{
+    margin: 5px 5px 5px 0;
+}
+.more-link
+{
+    display: block;
+    padding-top: 5px;
+    text-decoration: none;
+}
+.more-link:hover
+{
+    text-decoration: underline;
+}
+/* Wordpress elemets style -- END*/
