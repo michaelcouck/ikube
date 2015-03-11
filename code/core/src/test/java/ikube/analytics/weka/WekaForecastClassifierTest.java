@@ -3,7 +3,7 @@ package ikube.analytics.weka;
 import ikube.AbstractTest;
 import ikube.model.Analysis;
 import ikube.model.Context;
-import ikube.toolkit.MatrixUtilities;
+import ikube.toolkit.MATRIX;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -93,7 +93,7 @@ public class WekaForecastClassifierTest extends AbstractTest {
     private Instances getInstances() {
         String filePath = findFileAndGetCleanedPath(new File("."), "forecast-stock-data.csv");
         Object[][] matrix = getCsvData(filePath);
-        MatrixUtilities.sortOnFeature(matrix, 0, Date.class);
+        MATRIX.sortOnFeature(matrix, 0, Date.class);
 
         ArrayList<Attribute> attributes = new ArrayList<>();
 

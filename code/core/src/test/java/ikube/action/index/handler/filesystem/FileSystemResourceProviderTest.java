@@ -33,7 +33,8 @@ public class FileSystemResourceProviderTest extends AbstractTest {
 	public void getResource() {
 		File file = fileSystemResourceProvider.getResource();
 		assertNotNull(file);
-		while (file != null) {
+        //noinspection ConstantConditions
+        while (file != null) {
 			file = fileSystemResourceProvider.getResource();
 		}
 		// All files consumed

@@ -24,8 +24,8 @@ import java.util.concurrent.Future;
 
 import static ikube.toolkit.CSV.getCsvData;
 import static ikube.toolkit.FILE.cleanFilePath;
-import static ikube.toolkit.MatrixUtilities.objectVectorToDoubleVector;
-import static ikube.toolkit.MatrixUtilities.stringVectorDoubleVector;
+import static ikube.toolkit.MATRIX.objectVectorToDoubleVector;
+import static ikube.toolkit.MATRIX.stringVectorDoubleVector;
 import static ikube.toolkit.THREAD.submit;
 import static ikube.toolkit.THREAD.waitForAnonymousFutures;
 

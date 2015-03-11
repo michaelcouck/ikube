@@ -17,7 +17,7 @@ import java.util.*;
  * @version 01.00
  * @since 16-09-2014
  */
-public final class MatrixUtilities {
+public final class MATRIX {
 
     /**
      * Inverts a matrix from an m-n to an n-m matrix.

@@ -41,11 +41,11 @@ public class FileResourceHandler extends ResourceHandler<IndexableFileSystem> {
             if (logger.isDebugEnabled()) {
                 logger.debug("Processing file : " + file);
             }
-            handleResource(indexContext, indexableFileSystem, document, file, file.getName());
+            handleResource(indexContext, indexableFileSystem, document, file);
         } catch (Exception e) {
             if (SAXParseException.class.isAssignableFrom(e.getClass())) {
                 // If this is an xml exception then try the html parser it is more lenient
-                handleResource(indexContext, indexableFileSystem, document, file, "text/html");
+                handleResource(indexContext, indexableFileSystem, document, file);
             }
         }
         return document;
@@ -55,8 +55,7 @@ public class FileResourceHandler extends ResourceHandler<IndexableFileSystem> {
             final IndexContext indexContext,
             final IndexableFileSystem indexableFileSystem,
             final Document document,
-            final File file,
-            final String mimeType)
+            final File file)
             throws Exception {
         InputStream inputStream = null;
         ByteArrayInputStream byteInputStream = null;

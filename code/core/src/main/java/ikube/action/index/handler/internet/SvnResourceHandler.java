@@ -54,15 +54,16 @@ public class SvnResourceHandler extends ResourceHandler<IndexableSvn> {
         logger.debug("Url : " + url + ", repository root : " + repositoryRoot + ", path : " + path);
 
         if (SVNNodeKind.FILE.equals(svnNodeKind)) {
+            String name = dirEntry.getName();
             String author = dirEntry.getAuthor();
             String commit = dirEntry.getCommitMessage();
             Date date = dirEntry.getDate();
-            String name = dirEntry.getName();
             long revision = dirEntry.getRevision();
             long size = dirEntry.getSize();
 
             SVNProperties fileProperties = SVNProperties.wrap(new HashMap<>());
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            // TODO: Search the index for the revision first, only index if it is changed
             repository.getFile(path, -1, fileProperties, byteArrayOutputStream);
 
             indexableSvn.setRawContent(byteArrayOutputStream.toByteArray());

@@ -286,6 +286,18 @@ public final class FILE {
     }
 
     /**
+     * This method will find the file(s) with the specified name patterns, iteratively through all the
+     * directories specified, then get the contents of the file and return it.
+     *
+     * @param folder the folder to start looking for the file
+     * @param stringPatterns the name patterns of the file
+     * @return the contents of the first file found that matches the pattern
+     */
+    public static String findFileRecursivelyAndGetContents(final File folder, final String... stringPatterns) {
+        return getContent(findFileRecursively(folder, stringPatterns));
+    }
+
+    /**
      * Deletes all files recursively, that have the specified pattern in the path. Note
      * that this is dangerous and you really need to know what files are in the directory that
      * you feed this method. There is no turning back, these files will be completely deleted, no

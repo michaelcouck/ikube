@@ -238,6 +238,12 @@ public class FILETest extends AbstractTest {
         assertEquals(inputContents, outputContents);
     }
 
+    @Test
+    public void findFileRecursivelyAndGetContents() {
+        String contents = FILE.findFileRecursivelyAndGetContents(new File("."), "csv-file-tools.csv");
+        assertNotNull(contents);
+    }
+
     private HttpClient getHttpClient() {
         return new AutoRetryHttpClient();
     }

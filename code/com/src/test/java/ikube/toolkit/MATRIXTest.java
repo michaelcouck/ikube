@@ -16,7 +16,7 @@ public class MATRIXTest {
     @Test
     public void invertMatrix() {
         Object[][] matrix = {{1, 2, 3}, {2, 3, 4}, {3, 4, 5}};
-        Object[][] invertedMatrix = MatrixUtilities.invertMatrix(matrix);
+        Object[][] invertedMatrix = MATRIX.invertMatrix(matrix);
 
         assertEquals(1, matrix[0][0]);
         assertEquals(3, matrix[1][1]);
@@ -30,7 +30,7 @@ public class MATRIXTest {
     @Test
     public void excludeColumns() {
         Object[][] data = new Object[][]{{1, 2, 3, 4}, {1, 2, 3, 4}, {1, 2, 3, 4}};
-        Object[][] strippedData = MatrixUtilities.excludeColumns(data, 2);
+        Object[][] strippedData = MATRIX.excludeColumns(data, 2);
         assertEquals(3, strippedData.length);
         assertEquals(3, strippedData[0].length);
     }
@@ -42,13 +42,13 @@ public class MATRIXTest {
         assertEquals(3, matrix[1][1]);
         assertEquals(3, matrix[2][2]);
 
-        MatrixUtilities.sortOnFeature(matrix, 1, String.class);
+        MATRIX.sortOnFeature(matrix, 1, String.class);
         assertEquals(1, matrix[0][0]);
         assertEquals(3, matrix[1][1]);
         assertEquals(5, matrix[2][2]);
 
         matrix = new Object[][]{{1, 2, "2000-05-27"}, {2, 3, "1999-05-27"}, {3, 4, "1998-05-27"}};
-        MatrixUtilities.sortOnFeature(matrix, 2, Date.class);
+        MATRIX.sortOnFeature(matrix, 2, Date.class);
         assertEquals(3, matrix[0][0]);
         assertEquals(3, matrix[1][1]);
         assertEquals("2000-05-27", matrix[2][2]);

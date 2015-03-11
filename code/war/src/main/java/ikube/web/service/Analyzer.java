@@ -18,7 +18,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Map;
 
-import static ikube.toolkit.MatrixUtilities.invertMatrix;
+import static ikube.toolkit.MATRIX.invertMatrix;
 
 /**
  * This resource(rest api) class exposes the analytics over rest to a client. This class will

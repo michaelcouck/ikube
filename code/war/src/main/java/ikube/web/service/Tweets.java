@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Future;
 
-import static ikube.toolkit.MatrixUtilities.invertMatrix;
+import static ikube.toolkit.MATRIX.invertMatrix;
 
 /**
  * Strangely enough, if this class name is changed to 'Twitter', Spring and Jersey
