@@ -265,24 +265,16 @@ public final class FILE {
      * @return the contents of the file or null if there was an exception reading the file
      */
     public static String getContent(final File file) {
-        FileInputStream fileInputStream = null;
-        try {
-            fileInputStream = new FileInputStream(file);
+        // FileInputStream fileInputStream = null;
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            // fileInputStream = new FileInputStream(file);
             byte[] bytes = new byte[(int) file.length()];
             int read = fileInputStream.read(bytes);
             return new String(bytes, 0, read);
         } catch (final Exception e) {
-            LOGGER.error("Exception creating file : " + file, e);
-        } finally {
-            if (fileInputStream != null) {
-                try {
-                    fileInputStream.close();
-                } catch (final Exception e) {
-                    LOGGER.error("Exception closing the file stream : " + file, e);
-                }
-            }
+            LOGGER.error("Exception getting contents from file : " + file, e);
         }
-        return null;
+        return "";
     }
 
     /**
@@ -444,14 +436,12 @@ public final class FILE {
      */
     public static void setContents(final String filePath, final InputStream inputStream) {
         File file = FILE.getOrCreateFile(new File(filePath));
-        OutputStream outputStream = null;
-        try {
-            outputStream = new FileOutputStream(file);
+        // OutputStream outputStream = null;
+        try (OutputStream outputStream = new FileOutputStream(file)) {
+            // outputStream = new FileOutputStream(file);
             IOUtils.copyLarge(inputStream, outputStream);
         } catch (final IOException e) {
             throw new RuntimeException("Exception writing the file to the", e);
-        } finally {
-            IOUtils.closeQuietly(outputStream);
         }
     }
 

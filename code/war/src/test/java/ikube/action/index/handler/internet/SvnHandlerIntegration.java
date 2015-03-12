@@ -45,7 +45,7 @@ public class SvnHandlerIntegration extends IntegrationTest {
     public void handleIndexableForked() throws Exception {
         IndexWriter indexWriter = null;
         try {
-            indexableSvn.setUrl("https://ikube.googlecode.com/svn");
+            indexableSvn.setUrl("https://ikube-client.googlecode.com/svn");
             indexableSvn.setFilePath("/trunk");
             String ip = InetAddress.getLocalHost().getHostAddress();
             indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), ip);
