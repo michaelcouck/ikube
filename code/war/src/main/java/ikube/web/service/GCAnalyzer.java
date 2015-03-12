@@ -61,8 +61,8 @@ public class GCAnalyzer extends Resource {
             "Note that the JVM must be started with the following parameters:" +
             "-Djava.rmi.server.hostname=localhost " +
             "-Dcom.sun.management.jmxremote " +
-            "-Dcom.sun.management.jmxremote.port=8500 " +
-            "-Dcom.sun.management.jmxremote.rmi.port=8500 " +
+            "-Dcom.sun.management.jmxremote.port=8600 " +
+            "-Dcom.sun.management.jmxremote.rmi.port=8600 " +
             "-Dcom.sun.management.jmxremote.local.only=false " +
             "-Dcom.sun.management.jmxremote.authenticate=false " +
             "-Dcom.sun.management.jmxremote.ssl=false " +

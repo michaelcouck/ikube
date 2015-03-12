@@ -42,7 +42,7 @@ public class GCAnalyzerTest extends AbstractTest {
     @Test
     @SuppressWarnings("unchecked")
     public void usedToMaxRatioPrediction() {
-        int port = 8500;
+        int port = 8600;
         doAnswer(new Answer() {
             @Override
             public Object answer(final InvocationOnMock invocation) throws Throwable {

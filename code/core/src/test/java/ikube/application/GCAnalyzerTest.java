@@ -38,30 +38,30 @@ import static org.mockito.Mockito.*;
  */
 public class GCAnalyzerTest extends AbstractTest {
 
+    private int port = 8600;
+    private List<GarbageCollectorMXBean> garbageCollectorMXBeans;
+
     @Spy
     @InjectMocks
     private GCAnalyzer gcAnalyzer;
     @Mock
-    private JMXConnector jmxConnector;
+    private GCSmoother gcSmoother;
     @Mock
-    private MBeanServerConnection mBeanConnectionServer;
+    private GCCollector oldCollector;
     @Mock
     private ThreadMXBean threadMXBean;
+    @Mock
+    private GCCollector edenCollector;
+    @Mock
+    private JMXConnector jmxConnector;
+    @Mock
+    private GCCollector permCollector;
+    @Mock
+    private MBeanServerConnection mBeanConnectionServer;
     @Mock
     private OperatingSystemMXBean operatingSystemMXBean;
     @Mock
     private GarbageCollectorMXBean garbageCollectorMXBean;
-    @Mock
-    private GCCollector edenCollector;
-    @Mock
-    private GCCollector permCollector;
-    @Mock
-    private GCCollector oldCollector;
-    @Mock
-    private GCSmoother gcSmoother;
-
-    private int port = 8500;
-    private List<GarbageCollectorMXBean> garbageCollectorMXBeans;
 
     @Before
     public void before() {
@@ -92,7 +92,6 @@ public class GCAnalyzerTest extends AbstractTest {
                 return jmxConnector;
             }
         }).when(gcAnalyzer).getJMXConnector(any(String.class));
-        // when(gcAnalyzer.getJMXConnector(address)).thenReturn(jmxConnector);
         when(jmxConnector.getMBeanServerConnection()).thenReturn(mBeanConnectionServer);
         doAnswer(new Answer() {
             @Override

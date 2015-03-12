@@ -72,11 +72,6 @@
         <serenity-parameters>${write-classes} ${clean-classes} ${included-packages} ${excluded-packages} ${included-adapters} -noverify</serenity-parameters>
 
         <memory-parameters>-XX:PermSize=256m -XX:MaxPermSize=1024m -Xms1024m -Xmx4096m</memory-parameters>
-        <jmx-parameters>-Djava.rmi.server.hostname=localhost -Dcom.sun.management.jmxremote
-            -Dcom.sun.management.jmxremote.port=8500 -Dcom.sun.management.jmxremote.rmi.port=8500
-            -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false
-            -Dcom.sun.management.jmxremote.ssl=false
-        </jmx-parameters>
 
         <!--
             Lucene:
