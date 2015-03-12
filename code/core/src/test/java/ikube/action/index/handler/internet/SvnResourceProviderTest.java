@@ -24,7 +24,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Stack;
+import java.util.concurrent.Future;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
@@ -96,7 +98,7 @@ public class SvnResourceProviderTest extends AbstractTest {
     @Test
     public void init() throws Exception {
         svnResourceProvider = new SvnResourceProvider(indexableSvn);
-        verify(indexableSvn, atLeastOnce()).getName();
+        verify(indexableSvn, atLeastOnce()).getFilePath();
     }
 
     @Test
@@ -106,17 +108,17 @@ public class SvnResourceProviderTest extends AbstractTest {
         SVNDirEntry svnDirEntry = mock(SVNDirEntry.class);
         svnDirEntries.push(svnDirEntry);
         SVNDirEntry svnDirEntryCache = svnResourceProvider.getResource();
-        Assert.assertEquals(svnDirEntry, svnDirEntryCache);
+        assertEquals(svnDirEntry, svnDirEntryCache);
 
         THREAD.initialize();
-        THREAD.submit(this.getClass().getSimpleName(), new Runnable() {
+        Future future = THREAD.submit(this.getClass().getSimpleName(), new Runnable() {
             public void run() {
                 SVNDirEntry svnDirEntryCache = svnResourceProvider.getResource();
                 Assert.assertNotNull(svnDirEntryCache);
             }
         });
         svnDirEntries.push(svnDirEntry);
-        THREAD.sleep(3000);
+        THREAD.waitForFuture(future, 3000);
     }
 
     @Test
@@ -137,9 +139,9 @@ public class SvnResourceProviderTest extends AbstractTest {
         svnResourceProvider.walkRepository(repository, null);
 
         Stack<SVNDirEntry> svnDirEntries = Deencapsulation.getField(svnResourceProvider, "svnDirEntries");
-        Assert.assertEquals("There should be two entries in the list : ", 2, svnDirEntries.size());
-        Assert.assertEquals("And both of them should be the Mockito defined one : ", svnDirEntry, svnDirEntries.pop());
-        Assert.assertEquals("And both of them should be the Mockito defined one : ", svnDirEntry, svnDirEntries.pop());
+        assertEquals("There should be two entries in the list : ", 2, svnDirEntries.size());
+        assertEquals("And both of them should be the Mockito defined one : ", svnDirEntry, svnDirEntries.pop());
+        assertEquals("And both of them should be the Mockito defined one : ", svnDirEntry, svnDirEntries.pop());
     }
 
 }

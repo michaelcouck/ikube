@@ -12,8 +12,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNURL;
@@ -21,8 +24,6 @@ import org.tmatesoft.svn.core.io.SVNRepository;
 
 import java.util.Date;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 /**
@@ -34,25 +35,22 @@ import static org.mockito.Mockito.*;
 public class SvnResourceHandlerTest extends AbstractTest {
 
     private Document document;
-    @org.mockito.Mock
-    private SVNDirEntry dirEntry;
-    @org.mockito.Mock
-    private IndexableSvn indexableSvn;
-    @org.mockito.Mock
-    private SVNRepository repository;
-    @org.mockito.Mock
-    private SVNURL svnurl;
 
+    @Mock
+    private SVNURL svnurl;
+    @Mock
+    private SVNDirEntry dirEntry;
+    @Mock
+    private IndexableSvn indexableSvn;
+    @Mock
+    private SVNRepository repository;
+
+    @Spy
     private SvnResourceHandler svnResourceHandler;
 
     @Before
     public void before() {
         document = new Document();
-        svnResourceHandler = new SvnResourceHandler() {
-            SVNRepository getSvnRepository(final Indexable indexable, final String name) {
-                return repository;
-            }
-        };
         Mockit.setUpMocks(IndexManagerMock.class);
     }
 
@@ -72,12 +70,20 @@ public class SvnResourceHandlerTest extends AbstractTest {
         when(dirEntry.getDate()).thenReturn(new Date());
 
         when(indexableSvn.getName()).thenReturn(IConstants.NAME);
-        when(indexableSvn.getRepository()).thenReturn(repository);
         when(indexableSvn.getContent()).thenReturn(IConstants.CONTENT);
+        when(indexableSvn.getRawContent()).thenReturn(IConstants.CONTENT.getBytes());
+
+        doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                return repository;
+            }
+        }).when(svnResourceHandler).getSvnRepository(any(Indexable.class), any(String.class));
 
         svnResourceHandler.handleResource(indexContext, indexableSvn, document, dirEntry);
 
-        Mockito.verify(indexableSvn, Mockito.atLeastOnce()).getContents();
+        verify(indexableSvn, atLeastOnce()).getContent();
+        verify(indexableSvn, times(1)).setContent(anyString());
     }
 
 }

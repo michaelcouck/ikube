@@ -34,8 +34,8 @@ public final class MimeTypes {
     private static final Map<String, MimeType> TYPES = new HashMap<>();
     /**
      * My registered instances There is one instance associated for each specified file while
-     * calling the {@link #get(String)} method. Key is the specified file path in the
-     * {@link ikube.action.index.parse.mime.MimeTypes#get(String)} method. Value is the associated
+     * calling the {@link MimeTypes#getMimeTypes(String)} method. Key is the specified file path in the
+     * {@link ikube.action.index.parse.mime.MimeTypes#getMimeTypes(String)} method. Value is the associated
      * MimeType instance.
      */
     private static final Map<Integer, MimeTypes> INSTANCES = new HashMap<>();
@@ -103,12 +103,10 @@ public final class MimeTypes {
         if (mimeType == null) {
             for (MimeType m : TYPES.values()) {
                 String[] extensions = m.getExtensions();
-                if (extensions != null) {
-                    for (String extension : extensions) {
-                        if (type.endsWith(extension)) {
-                            mimeType = m;
-                            break;
-                        }
+                for (String extension : extensions) {
+                    if (type.endsWith(extension)) {
+                        mimeType = m;
+                        break;
                     }
                 }
             }
@@ -233,17 +231,15 @@ public final class MimeTypes {
         minLength = Math.max(minLength, type.getMinLength());
         // Update the extensions index...
         String[] exts = type.getExtensions();
-        if (exts != null) {
-            for (final String ext : exts) {
-                List<MimeType> list = extIdx.get(ext);
-                if (list == null) {
-                    // No type already registered for this extension...
-                    // So, create a list of types
-                    list = new ArrayList<>();
-                    extIdx.put(ext, list);
-                }
-                list.add(type);
+        for (final String ext : exts) {
+            List<MimeType> list = extIdx.get(ext);
+            if (list == null) {
+                // No type already registered for this extension...
+                // So, create a list of types
+                list = new ArrayList<>();
+                extIdx.put(ext, list);
             }
+            list.add(type);
         }
         // Update the magics index...
         if (type.hasMagic()) {

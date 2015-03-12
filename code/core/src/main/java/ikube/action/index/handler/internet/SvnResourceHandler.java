@@ -68,9 +68,12 @@ public class SvnResourceHandler extends ResourceHandler<IndexableSvn> {
 
             indexableSvn.setRawContent(byteArrayOutputStream.toByteArray());
 
-            parseContent(indexableSvn);
+            parseContent(indexableSvn, name);
 
-            String contents = indexableSvn.getContents();
+            Object content = indexableSvn.getContent();
+            if (content == null) {
+                content = "";
+            }
             logger.warn("Host : " + svnurl.getHost() +
                     ", path : " + svnurl.getPath() +
                     ", port : " + svnurl.getPort() +
@@ -89,18 +92,21 @@ public class SvnResourceHandler extends ResourceHandler<IndexableSvn> {
             IndexManager.addNumericField(indexableSvn.getRevision(), Long.toString(revision), document, Boolean.TRUE, indexableSvn.getBoost());
             IndexManager.addNumericField(indexableSvn.getRevisionDate(), Long.toString(date.getTime()), document, Boolean.TRUE, indexableSvn.getBoost());
             IndexManager.addNumericField(indexableSvn.getSize(), Long.toString(size), document, Boolean.TRUE, indexableSvn.getBoost());
-            IndexManager.addStringField(indexableSvn.getContents(), contents, indexableSvn, document);
+            IndexManager.addStringField(indexableSvn.getContents(), content.toString(), indexableSvn, document);
         }
 
         return super.handleResource(indexContext, indexableSvn, document, resource);
     }
 
-    protected void parseContent(final IndexableSvn indexableSvn) {
+    protected void parseContent(final IndexableSvn indexableSvn, final String name) {
         try {
             byte[] buffer = (byte[]) indexableSvn.getRawContent();
             String contentType;
 
-            MimeType mimeType = MimeTypes.getMimeType(buffer);
+            MimeType mimeType = MimeTypes.getMimeType(name, buffer);
+            if (mimeType == null) {
+                mimeType = new MimeType("text", "plain");
+            }
 
             // The first few bytes so we can guess the content type
             byte[] bytes = new byte[Math.min(buffer.length, 1024)];
@@ -124,7 +130,7 @@ public class SvnResourceHandler extends ResourceHandler<IndexableSvn> {
             if (outputStream != null) {
                 String parsedContent = outputStream.toString();
                 logger.debug("Parsed content length : " + parsedContent.length() + ", content type : " + mimeType);
-                indexableSvn.setContents(parsedContent);
+                indexableSvn.setContent(parsedContent);
             }
         } catch (final Exception e) {
             throw new RuntimeException(e);

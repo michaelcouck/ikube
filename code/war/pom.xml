@@ -19,7 +19,8 @@
         <jetty-version>7.6.15.v20140411</jetty-version>
         <jetty-stop-key>stop</jetty-stop-key>
         <jetty-stop-port>9180</jetty-stop-port>
-        <jetty-jvm-args>-Xms512m -Xmx4096m -XX:MaxPermSize=512m -XX:+CMSClassUnloadingEnabled</jetty-jvm-args>
+        <jetty-jmx-args>-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9010 -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false</jetty-jmx-args>
+        <jetty-jvm-args>-Xms512m -Xmx2048m -XX:MaxPermSize=512m -XX:+CMSClassUnloadingEnabled ${jetty-jmx-args}</jetty-jvm-args>
 	</properties>
 
 	<build>
@@ -114,6 +115,9 @@
 							<goal>run</goal>
 						</goals>
                         <configuration>
+                            <!--<stopKey>${jetty-stop-key}</stopKey>-->
+                            <!--<stopPort>${jetty-stop-port}</stopPort>-->
+                            <!--<waitForChild>false</waitForChild>-->
                             <daemon>true</daemon>
                         </configuration>
 					</execution>
