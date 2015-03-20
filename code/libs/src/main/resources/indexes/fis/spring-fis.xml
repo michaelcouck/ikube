@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:property="http://www.springframework.org/schema/p"
+    xmlns:util="http://www.springframework.org/schema/util"
+
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <!-- This configuration is for FIS documentation and source code. -->
+    <bean
+        id="fis"
+        class="ikube.model.IndexContext"
+        property:name="fis"
+        property:maxAge="6000"
+        property:compoundFile="${compound.file}"
+        property:bufferedDocs="${buffered.docs}"
+        property:bufferSize="${buffer.size}"
+        property:batchSize="${jdbc.batch.size}"
+        property:internetBatchSize="${internet.batch.size}"
+        property:mergeFactor="${merge.factor}"
+        property:maxFieldLength="${max.field.length}"
+        property:maxReadLength="${max.read.length}"
+        property:throttle="0"
+        property:threads="1"
+        property:delta="false"
+        property:indexDirectoryPath="${index.directory.path}"
+        property:indexDirectoryPathBackup="${index.directory.path}"
+        property:children-ref="folders" />
+    <util:list id="folders">
+        <ref local="opf-source"/>
+        <ref local="xct-source"/>
+        <ref local="sepa-source"/>
+        <ref local="cobaxt-source"/>
+        <ref local="cobaxt-security-source"/>
+    </util:list>
+
+    <bean
+        id="opf-source"
+        class="ikube.model.IndexableFileSystem"
+        property:name="opf-source"
+        property:path="/home/fis/opf"
+        property:pathFieldName="path"
+        property:nameFieldName="name"
+        property:lengthFieldName="length"
+        property:contentFieldName="contents"
+        property:lastModifiedFieldName="lastmodified"
+        property:unpackZips="false"
+        property:stored="${stored}"
+        property:analyzed="${analyzed}"
+        property:vectored="${vectored}"
+        property:batchSize="${file.batch.size}"
+        property:maxReadLength="${max.read.length}"
+        property:maxExceptions="1000"
+        property:threads="1"
+        property:strategies-ref="fis-strategies" />
+
+    <bean
+        id="xct-source"
+        class="ikube.model.IndexableFileSystem"
+        property:name="xct-source"
+        property:path="/home/fis/xct"
+        property:pathFieldName="path"
+        property:nameFieldName="name"
+        property:lengthFieldName="length"
+        property:contentFieldName="contents"
+        property:lastModifiedFieldName="lastmodified"
+        property:unpackZips="false"
+        property:stored="${stored}"
+        property:analyzed="${analyzed}"
+        property:vectored="${vectored}"
+        property:batchSize="${file.batch.size}"
+        property:maxReadLength="${max.read.length}"
+        property:maxExceptions="1000"
+        property:threads="1"
+        property:strategies-ref="fis-strategies" />
+
+    <bean
+        id="sepa-source"
+        class="ikube.model.IndexableFileSystem"
+        property:name="sepa-source"
+        property:path="/home/fis/sepa"
+        property:pathFieldName="path"
+        property:nameFieldName="name"
+        property:lengthFieldName="length"
+        property:contentFieldName="contents"
+        property:lastModifiedFieldName="lastmodified"
+        property:unpackZips="false"
+        property:stored="${stored}"
+        property:analyzed="${analyzed}"
+        property:vectored="${vectored}"
+        property:batchSize="${file.batch.size}"
+        property:maxReadLength="${max.read.length}"
+        property:maxExceptions="1000"
+        property:threads="1"
+        property:strategies-ref="fis-strategies" />
+
+    <bean
+        id="cobaxt-source"
+        class="ikube.model.IndexableFileSystem"
+        property:name="cobaxt-source"
+        property:path="/home/fis/cobaxt"
+        property:pathFieldName="path"
+        property:nameFieldName="name"
+        property:lengthFieldName="length"
+        property:contentFieldName="contents"
+        property:lastModifiedFieldName="lastmodified"
+        property:unpackZips="false"
+        property:stored="${stored}"
+        property:analyzed="${analyzed}"
+        property:vectored="${vectored}"
+        property:batchSize="${file.batch.size}"
+        property:maxReadLength="${max.read.length}"
+        property:maxExceptions="1000"
+        property:threads="1"
+        property:strategies-ref="fis-strategies" />
+
+    <bean
+        id="cobaxt-security-source"
+        class="ikube.model.IndexableFileSystem"
+        property:name="cobaxt-security-source"
+        property:path="/home/fis/cobaxt-security"
+        property:pathFieldName="path"
+        property:nameFieldName="name"
+        property:lengthFieldName="length"
+        property:contentFieldName="contents"
+        property:lastModifiedFieldName="lastmodified"
+        property:unpackZips="false"
+        property:stored="${stored}"
+        property:analyzed="${analyzed}"
+        property:vectored="${vectored}"
+        property:batchSize="${file.batch.size}"
+        property:maxReadLength="${max.read.length}"
+        property:maxExceptions="1000"
+        property:threads="1"
+        property:strategies-ref="fis-strategies" />
+
+    <util:list id="fis-strategies">
+        <bean class="ikube.action.index.handler.strategy.ContentConcatenationStrategy"/>
+        <ref bean="ikube.action.index.handler.strategy.LanguageFilterStrategy"/>
+        <ref bean="ikube.action.index.handler.strategy.LanguageCleaningStrategy"/>
+        <bean class="ikube.action.index.handler.strategy.ToLowerCaseStrategy"/>
+        <ref bean="ikube.action.index.handler.strategy.ContentTypeStrategy"/>
+        <ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy"/>
+    </util:list>
+
+</beans>
