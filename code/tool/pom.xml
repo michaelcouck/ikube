@@ -40,7 +40,7 @@
                 <version>1.2.1</version>
                 <executions>
                     <execution>
-                        <phase>deploy</phase>
+                        <phase>site</phase>
                         <configuration>
                             <mainClass>ikube.deploy.Deployer</mainClass>
                             <arguments>
@@ -147,7 +147,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-all</artifactId>
+            <artifactId>activemq-core</artifactId>
             <version>5.7.0</version>
         </dependency>
     </dependencies>

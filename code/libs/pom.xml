@@ -18,20 +18,12 @@
     </parent>
 
     <properties>
-        <phase>site</phase>
+        <phase>compile</phase>
         <packaging>jar</packaging>
         <generate-pom>true</generate-pom>
         <repository-id>libs-release-local</repository-id>
         <artifactory>http://ikube.be/artifactory/libs-release-local</artifactory>
     </properties>
-
-    <dependencies>
-        <!--<dependency>-->
-            <!--<groupId>ikube</groupId>-->
-            <!--<artifactId>ikube-core</artifactId>-->
-            <!--<version>${project.version}</version>-->
-        <!--</dependency>-->
-    </dependencies>
 
     <build>
         <resources>
@@ -40,15 +32,15 @@
             </resource>
         </resources>
         <plugins>
-            <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-antrun-plugin</artifactId>-->
-            <!--</plugin>-->
-            <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-deploy-plugin</artifactId>-->
-                <!--<version>2.7</version>-->
-                <!--<executions>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.7</version>
+                <executions>
                     <!--<execution>-->
                         <!--<id>install-db2-driver</id>-->
                         <!--<goals>-->
@@ -59,7 +51,7 @@
                             <!--<groupId>com.ibm.db2.jcc</groupId>-->
                             <!--<artifactId>db2jcc4</artifactId>-->
                             <!--<version>9.7.2</version>-->
-                            <!--<file>drivers/db2jcc4-9.7.2.jar</file>-->
+                            <!--<file>tools/drivers/db2jcc4-9.7.2.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->
                             <!--<repositoryId>${repository-id}</repositoryId>-->
@@ -76,7 +68,7 @@
                             <!--<groupId>com.ibm.db2.jcc_license_cu</groupId>-->
                             <!--<artifactId>db2jcc_license_cu</artifactId>-->
                             <!--<version>9.7.2</version>-->
-                            <!--<file>drivers/db2jcc_license_cu-9.7.2.jar</file>-->
+                            <!--<file>tools/drivers/db2jcc_license_cu-9.7.2.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->
                             <!--<repositoryId>${repository-id}</repositoryId>-->
@@ -93,7 +85,7 @@
                             <!--<groupId>oracle.ojdbc6</groupId>-->
                             <!--<artifactId>ojdbc6</artifactId>-->
                             <!--<version>11</version>-->
-                            <!--<file>drivers/ojdbc6-11.jar</file>-->
+                            <!--<file>tools/drivers/ojdbc6-11.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->
                             <!--<repositoryId>${repository-id}</repositoryId>-->
@@ -110,7 +102,7 @@
                             <!--<groupId>org.nfunk</groupId>-->
                             <!--<artifactId>jep</artifactId>-->
                             <!--<version>2.4.1</version>-->
-                            <!--<file>tools/jep-2.4.1.jar</file>-->
+                            <!--<file>tools/miscellaneous/jep-2.4.1.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->
                             <!--<repositoryId>${repository-id}</repositoryId>-->
@@ -127,7 +119,7 @@
                             <!--<groupId>aspose</groupId>-->
                             <!--<artifactId>aspose.cells</artifactId>-->
                             <!--<version>7.0.0</version>-->
-                            <!--<file>aspose/aspose-cells-7.0.0.jar</file>-->
+                            <!--<file>tools/aspose/aspose-cells-7.0.0.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->
                             <!--<repositoryId>${repository-id}</repositoryId>-->
@@ -144,7 +136,7 @@
                             <!--<groupId>aspose</groupId>-->
                             <!--<artifactId>aspose.pdf</artifactId>-->
                             <!--<version>2.9.0</version>-->
-                            <!--<file>aspose/aspose-pdf-2.9.0-jdk16.jar</file>-->
+                            <!--<file>tools/aspose/aspose-pdf-2.9.0-jdk16.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->
                             <!--<repositoryId>${repository-id}</repositoryId>-->
@@ -161,7 +153,7 @@
                             <!--<groupId>aspose</groupId>-->
                             <!--<artifactId>aspose.slides</artifactId>-->
                             <!--<version>2.6.0</version>-->
-                            <!--<file>aspose/aspose.slides-2.6.0.jar</file>-->
+                            <!--<file>tools/aspose/aspose.slides-2.6.0.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->
                             <!--<repositoryId>${repository-id}</repositoryId>-->
@@ -178,7 +170,7 @@
                             <!--<groupId>aspose</groupId>-->
                             <!--<artifactId>aspose.words</artifactId>-->
                             <!--<version>7.0.0</version>-->
-                            <!--<file>aspose/aspose.words.jdk16-7.0.0.jar</file>-->
+                            <!--<file>tools/aspose/aspose.words.jdk16-7.0.0.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->
                             <!--<repositoryId>${repository-id}</repositoryId>-->
@@ -195,7 +187,7 @@
                             <!--<groupId>canyon</groupId>-->
                             <!--<artifactId>canyon</artifactId>-->
                             <!--<version>0.9.8</version>-->
-                            <!--<file>tools/canyon-0.9.8.jar</file>-->
+                            <!--<file>tools/miscellaneous/canyon-0.9.8.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->
                             <!--<repositoryId>${repository-id}</repositoryId>-->
@@ -212,7 +204,7 @@
                             <!--<groupId>jai</groupId>-->
                             <!--<artifactId>jai.codec</artifactId>-->
                             <!--<version>1.1.3</version>-->
-                            <!--<file>tools/jai_codec-1.1.3-alpha.jar</file>-->
+                            <!--<file>tools/miscellaneous/jai_codec-1.1.3-alpha.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->
                             <!--<repositoryId>${repository-id}</repositoryId>-->
@@ -229,7 +221,7 @@
                             <!--<groupId>lzma</groupId>-->
                             <!--<artifactId>jio</artifactId>-->
                             <!--<version>1.1.3</version>-->
-                            <!--<file>tools/lzma-4.63-jio-0.94.jar</file>-->
+                            <!--<file>tools/miscellaneous/lzma-4.63-jio-0.94.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->
                             <!--<repositoryId>${repository-id}</repositoryId>-->
@@ -297,7 +289,7 @@
                             <!--<groupId>sshxcute</groupId>-->
                             <!--<artifactId>sshxcute</artifactId>-->
                             <!--<version>1.0.0</version>-->
-                            <!--<file>tools/sshxcute-1.0.0.jar</file>-->
+                            <!--<file>tools/linux/sshxcute-1.0.0.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->
                             <!--<repositoryId>${repository-id}</repositoryId>-->
@@ -314,7 +306,7 @@
                             <!--<groupId>cybozu</groupId>-->
                             <!--<artifactId>langdetect</artifactId>-->
                             <!--<version>1.0.0</version>-->
-                            <!--<file>tools/langdetect-1.0.0.jar</file>-->
+                            <!--<file>tools/analytics/langdetect-1.0.0.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->
                             <!--<repositoryId>${repository-id}</repositoryId>-->
@@ -331,7 +323,7 @@
                             <!--<groupId>jsonic</groupId>-->
                             <!--<artifactId>jsonic</artifactId>-->
                             <!--<version>1.2.4</version>-->
-                            <!--<file>tools/jsonic-1.2.4.jar</file>-->
+                            <!--<file>tools/miscellaneous/jsonic-1.2.4.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->
                             <!--<repositoryId>${repository-id}</repositoryId>-->
@@ -348,7 +340,7 @@
                             <!--<groupId>lingpipe</groupId>-->
                             <!--<artifactId>lingpipe</artifactId>-->
                             <!--<version>4.1.0</version>-->
-                            <!--<file>tools/lingpipe-4.1.0.jar</file>-->
+                            <!--<file>tools/analytics/lingpipe-4.1.0.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->
                             <!--<repositoryId>${repository-id}</repositoryId>-->
@@ -400,7 +392,7 @@
                             <!--<groupId>squiggle</groupId>-->
                             <!--<artifactId>squiggle</artifactId>-->
                             <!--<version>1.4.0</version>-->
-                            <!--<file>tools/squiggle-1.4.0.jar</file>-->
+                            <!--<file>tools/miscellaneous/squiggle-1.4.0.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->
                             <!--<repositoryId>${repository-id}</repositoryId>-->
@@ -417,13 +409,14 @@
                             <!--<groupId>tomgibara</groupId>-->
                             <!--<artifactId>cluster-gvm</artifactId>-->
                             <!--<version>1.0</version>-->
-                            <!--<file>tools/cluster-gvm-1.0.jar</file>-->
+                            <!--<file>tools/miscellaneous/cluster-gvm-1.0.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->
                             <!--<repositoryId>${repository-id}</repositoryId>-->
                             <!--<url>${artifactory}</url>-->
                         <!--</configuration>-->
                     <!--</execution>-->
+
                     <!--<execution>-->
                         <!--<id>install-niocchi</id>-->
                         <!--<goals>-->
@@ -434,7 +427,7 @@
                             <!--<groupId>niocchi</groupId>-->
                             <!--<artifactId>niocchi</artifactId>-->
                             <!--<version>1.1</version>-->
-                            <!--<file>tools/niocchi-1.1.jar</file>-->
+                            <!--<file>tools/miscellaneous/niocchi-1.1.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->
                             <!--<repositoryId>${repository-id}</repositoryId>-->
@@ -451,7 +444,7 @@
                             <!--<groupId>net.schmizz</groupId>-->
                             <!--<artifactId>sshj</artifactId>-->
                             <!--<version>0.8.1</version>-->
-                            <!--<file>tools/sshj-0.8.1.jar</file>-->
+                            <!--<file>tools/linux/sshj-0.8.1.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->
                             <!--<repositoryId>${repository-id}</repositoryId>-->
@@ -468,7 +461,7 @@
                             <!--<groupId>net.schmizz</groupId>-->
                             <!--<artifactId>sshj</artifactId>-->
                             <!--<version>0.8.1</version>-->
-                            <!--<file>tools/sshj-0.8.1-sources.jar</file>-->
+                            <!--<file>tools/linux/sshj-0.8.1-sources.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->
                             <!--<repositoryId>${repository-id}</repositoryId>-->
@@ -485,7 +478,7 @@
                             <!--<groupId>flaxcrawler</groupId>-->
                             <!--<artifactId>flaxcrawler</artifactId>-->
                             <!--<version>1.1.0</version>-->
-                            <!--<file>tools/flaxcrawler-1.1.0.jar</file>-->
+                            <!--<file>tools/miscellaneous/flaxcrawler-1.1.0.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->
                             <!--<repositoryId>${repository-id}</repositoryId>-->
@@ -502,7 +495,7 @@
                             <!--<groupId>dsiutils</groupId>-->
                             <!--<artifactId>dsiutils</artifactId>-->
                             <!--<version>1.0.10</version>-->
-                            <!--<file>tools/dsiutils-1.0.10.jar</file>-->
+                            <!--<file>tools/miscellaneous/dsiutils-1.0.10.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->
                             <!--<repositoryId>${repository-id}</repositoryId>-->
@@ -519,7 +512,7 @@
                             <!--<groupId>fastutil</groupId>-->
                             <!--<artifactId>fastutil</artifactId>-->
                             <!--<version>5.1.5</version>-->
-                            <!--<file>tools/fastutil-5.1.5.jar</file>-->
+                            <!--<file>tools/miscellaneous/fastutil-5.1.5.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->
                             <!--<repositoryId>${repository-id}</repositoryId>-->
@@ -536,7 +529,7 @@
                             <!--<groupId>org.springframework.social</groupId>-->
                             <!--<artifactId>spring-social-twitter</artifactId>-->
                             <!--<version>1.1.0</version>-->
-                            <!--<file>tools/spring-social-twitter-1.1.0.jar</file>-->
+                            <!--<file>tools/miscellaneous/spring-social-twitter-1.1.0.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->
                             <!--<repositoryId>${repository-id}</repositoryId>-->
@@ -554,7 +547,7 @@
                             <!--<groupId>com.microsoft</groupId>-->
                             <!--<artifactId>ews-java-api</artifactId>-->
                             <!--<version>1.2.0</version>-->
-                            <!--<file>tools/ews-java-api-1.2.0.jar</file>-->
+                            <!--<file>tools/windoze/ews-java-api-1.2.0.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->
                             <!--<repositoryId>${repository-id}</repositoryId>-->
@@ -572,7 +565,7 @@
                             <!--<groupId>de.independantsoft</groupId>-->
                             <!--<artifactId>jwebservices</artifactId>-->
                             <!--<version>2.0</version>-->
-                            <!--<file>tools/jwebservices-2.0.jar</file>-->
+                            <!--<file>tools/windoze/jwebservices-2.0.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->
                             <!--<repositoryId>${repository-id}</repositoryId>-->
@@ -589,7 +582,7 @@
                             <!--<groupId>jcifs.samba.org</groupId>-->
                             <!--<artifactId>jcifs</artifactId>-->
                             <!--<version>1.3.14</version>-->
-                            <!--<file>tools/jcifs-1.3.14.jar</file>-->
+                            <!--<file>tools/windoze/jcifs-1.3.14.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->
                             <!--<repositoryId>${repository-id}</repositoryId>-->
@@ -664,12 +657,31 @@
                             <!--<url>${artifactory}</url>-->
                         <!--</configuration>-->
                     <!--</execution>-->
+
                     <!--<execution>-->
                         <!--<id>neuroph</id>-->
                         <!--<goals>-->
                             <!--<goal>deploy-file</goal>-->
                         <!--</goals>-->
-                        <!--<phase>install</phase>-->
+                        <!--<phase>${phase}</phase>-->
+                        <!--<configuration>-->
+                            <!--<groupId>org.neuroph</groupId>-->
+                            <!--<artifactId>neuroph-core</artifactId>-->
+                            <!--<version>2.9</version>-->
+                            <!--<file>tools/analytics/neuroph-core-2.9.jar</file>-->
+                            <!--<packaging>${packaging}</packaging>-->
+                            <!--<generatePom>${generate-pom}</generatePom>-->
+                            <!--<repositoryId>${repository-id}</repositoryId>-->
+                            <!--<url>${artifactory}</url>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+
+                    <!--<execution>-->
+                        <!--<id>neuroph</id>-->
+                        <!--<goals>-->
+                            <!--<goal>deploy-file</goal>-->
+                        <!--</goals>-->
+                        <!--<phase>${phase}</phase>-->
                         <!--<configuration>-->
                             <!--<groupId>org.neuroph</groupId>-->
                             <!--<artifactId>neuroph-core-sources</artifactId>-->
@@ -686,7 +698,7 @@
                         <!--<goals>-->
                             <!--<goal>deploy-file</goal>-->
                         <!--</goals>-->
-                        <!--<phase>install</phase>-->
+                        <!--<phase>${phase}</phase>-->
                         <!--<configuration>-->
                             <!--<groupId>combinatoricslib</groupId>-->
                             <!--<artifactId>combinatoricslib</artifactId>-->
@@ -703,7 +715,7 @@
                         <!--<goals>-->
                             <!--<goal>deploy-file</goal>-->
                         <!--</goals>-->
-                        <!--<phase>install</phase>-->
+                        <!--<phase>${phase}</phase>-->
                         <!--<configuration>-->
                             <!--<groupId>nz.ac.waikato.cms.weka</groupId>-->
                             <!--<artifactId>weka</artifactId>-->
@@ -720,7 +732,7 @@
                         <!--<goals>-->
                             <!--<goal>deploy-file</goal>-->
                         <!--</goals>-->
-                        <!--<phase>install</phase>-->
+                        <!--<phase>${phase}</phase>-->
                         <!--<configuration>-->
                             <!--<groupId>nz.ac.waikato.cms.weka</groupId>-->
                             <!--<artifactId>weka-sources</artifactId>-->
@@ -737,7 +749,7 @@
                         <!--<goals>-->
                             <!--<goal>deploy-file</goal>-->
                         <!--</goals>-->
-                        <!--<phase>install</phase>-->
+                        <!--<phase>${phase}</phase>-->
                         <!--<configuration>-->
                             <!--<groupId>nz.ac.waikato.cms.weka</groupId>-->
                             <!--<artifactId>weka-time-series-forecasting</artifactId>-->
@@ -802,8 +814,8 @@
                         <!--</configuration>-->
                     <!--</execution>-->
 
-                <!--</executions>-->
-            <!--</plugin>-->
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

@@ -754,7 +754,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>integration</artifactId>
-            <version>1.5.7</version>
+            <version>1.5.8</version>
             <type>jar</type>
             <scope>compile</scope>
             <exclusions>
@@ -767,7 +767,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.5.10</version>
+            <version>1.5.8</version>
             <type>jar</type>
             <scope>compile</scope>
             <exclusions>
@@ -780,7 +780,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.5.10</version>
+            <version>1.5.8</version>
             <type>jar</type>
             <scope>compile</scope>
             <exclusions>
@@ -1287,7 +1287,7 @@
         <dependency>
             <groupId>ikube</groupId>
             <artifactId>scanner</artifactId>
-            <version>1.4</version>
+            <version>1.6</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -1299,13 +1299,6 @@
     </dependencies>
 
     <repositories>
-        <repository>
-            <id>ikube</id>
-            <url>http://ikube.be/artifactory/libs-release-local/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
         <repository>
             <id>central</id>
             <url>http://repo1.maven.org/maven2</url>
@@ -1339,7 +1332,28 @@
             <id>snapshots-repo</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
             <releases>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <!--<repository>-->
+            <!--<id>sourceforge-repo</id>-->
+            <!--<url>http://neuroph.sourceforge.net/maven2</url>-->
+            <!--<releases>-->
+                <!--<enabled>false</enabled>-->
+            <!--</releases>-->
+            <!--<snapshots>-->
+                <!--<enabled>true</enabled>-->
+            <!--</snapshots>-->
+        <!--</repository>-->
+
+        <repository>
+            <id>ikube</id>
+            <url>http://ikube.be/artifactory/libs-release-local/</url>
+            <releases>
+                <enabled>true</enabled>
             </releases>
             <snapshots>
                 <enabled>true</enabled>
