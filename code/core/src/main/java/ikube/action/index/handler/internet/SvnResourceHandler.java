@@ -2,15 +2,13 @@ package ikube.action.index.handler.internet;
 
 import ikube.action.index.IndexManager;
 import ikube.action.index.handler.ResourceHandler;
-import ikube.action.index.parse.IParser;
-import ikube.action.index.parse.ParserProvider;
-import ikube.action.index.parse.XMLParser;
-import ikube.action.index.parse.mime.MimeType;
-import ikube.action.index.parse.mime.MimeTypes;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableSvn;
 import org.apache.lucene.document.Document;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.AutoDetectParser;
+import org.apache.tika.sax.BodyContentHandler;
 import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNProperties;
@@ -19,7 +17,6 @@ import org.tmatesoft.svn.core.io.SVNRepository;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -27,8 +24,10 @@ import java.util.HashMap;
  * This class will be called by the framework to index the resources
  * from the SVN provider, during the indexing of an SVN repository.
  *
+ * Updated the parsers to the Tika framework from Apache.
+ *
  * @author Michael Couck
- * @version 01.00
+ * @version 01.10
  * @since 04-06-2013
  */
 public class SvnResourceHandler extends ResourceHandler<IndexableSvn> {
@@ -101,37 +100,45 @@ public class SvnResourceHandler extends ResourceHandler<IndexableSvn> {
     protected void parseContent(final IndexableSvn indexableSvn, final String name) {
         try {
             byte[] buffer = (byte[]) indexableSvn.getRawContent();
-            String contentType;
+            // String contentType;
 
-            MimeType mimeType = MimeTypes.getMimeType(name, buffer);
-            if (mimeType == null) {
-                mimeType = new MimeType("text", "plain");
-            }
+            //MimeType mimeType = MimeTypes.getMimeType(name, buffer);
+            //if (mimeType == null) {
+            //    mimeType = new MimeType("text", "plain");
+            //}
 
             // The first few bytes so we can guess the content type
             byte[] bytes = new byte[Math.min(buffer.length, 1024)];
             System.arraycopy(buffer, 0, bytes, 0, bytes.length);
-            IParser parser = ParserProvider.getParser(mimeType.getName(), bytes);
+            // IParser parser = ParserProvider.getParser(mimeType.getName(), bytes);
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buffer, 0, buffer.length);
-            OutputStream outputStream = null;
-            try {
-                outputStream = parser.parse(byteArrayInputStream, new ByteArrayOutputStream());
-            } catch (final Exception e) {
-                // If this is an XML exception then try the HTML parser
-                if (XMLParser.class.isAssignableFrom(parser.getClass())) {
-                    contentType = "text/html";
-                    parser = ParserProvider.getParser(contentType, bytes);
-                    outputStream = parser.parse(byteArrayInputStream, new ByteArrayOutputStream());
-                } else {
-                    String message = "Exception parsing content from url : " + indexableSvn.getUrl();
-                    logger.error(message, e);
-                }
-            }
-            if (outputStream != null) {
-                String parsedContent = outputStream.toString();
-                logger.debug("Parsed content length : " + parsedContent.length() + ", content type : " + mimeType);
-                indexableSvn.setContent(parsedContent);
-            }
+            //OutputStream outputStream = null;
+            //try {
+            //    outputStream = parser.parse(byteArrayInputStream, new ByteArrayOutputStream());
+            //} catch (final Exception e) {
+            //    // If this is an XML exception then try the HTML parser
+            //    if (XMLParser.class.isAssignableFrom(parser.getClass())) {
+            //        contentType = "text/html";
+            //        parser = ParserProvider.getParser(contentType, bytes);
+            //        outputStream = parser.parse(byteArrayInputStream, new ByteArrayOutputStream());
+            //    } else {
+            //        String message = "Exception parsing content from url : " + indexableSvn.getUrl();
+            //        logger.error(message, e);
+            //    }
+            //}
+            //if (outputStream != null) {
+            //    String parsedContent = outputStream.toString();
+            //    logger.debug("Parsed content length : " + parsedContent.length() + ", content type : " + mimeType);
+            //    indexableSvn.setContent(parsedContent);
+            //}
+
+            AutoDetectParser parser = new AutoDetectParser();
+            BodyContentHandler handler = new BodyContentHandler((int) indexableSvn.getMaxReadLength());
+            Metadata metadata = new Metadata();
+
+            parser.parse(byteArrayInputStream, handler, metadata);
+            String parsedContent = handler.toString();
+            indexableSvn.setContent(parsedContent);
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }

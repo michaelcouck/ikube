@@ -2,7 +2,7 @@ package ikube.action.index.handler.internet;
 
 import ikube.action.index.handler.IResourceProvider;
 import ikube.action.index.handler.internet.exchange.ExchangeClient;
-import ikube.action.index.handler.internet.exchange.IndexableMessage;
+import ikube.model.IndexableMessage;
 import ikube.model.IndexableExchange;
 
 import java.util.Date;

@@ -72,6 +72,7 @@ public class SvnResourceHandlerTest extends AbstractTest {
         when(indexableSvn.getName()).thenReturn(IConstants.NAME);
         when(indexableSvn.getContent()).thenReturn(IConstants.CONTENT);
         when(indexableSvn.getRawContent()).thenReturn(IConstants.CONTENT.getBytes());
+        when(indexableSvn.getMaxReadLength()).thenReturn(Long.MAX_VALUE);
 
         doAnswer(new Answer<Object>() {
             @Override

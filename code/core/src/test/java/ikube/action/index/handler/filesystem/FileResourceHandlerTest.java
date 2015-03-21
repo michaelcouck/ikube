@@ -13,6 +13,11 @@ import java.io.File;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
+/**
+ * @author Michael Couck
+ * @version 01.00
+ * @since 25-03-2013
+ */
 public class FileResourceHandlerTest extends AbstractTest {
 
 	private FileResourceHandler fileResourceHandler;

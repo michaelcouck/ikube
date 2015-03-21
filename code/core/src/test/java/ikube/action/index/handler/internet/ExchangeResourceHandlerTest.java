@@ -1,7 +1,7 @@
 package ikube.action.index.handler.internet;
 
 import ikube.AbstractTest;
-import ikube.action.index.handler.internet.exchange.IndexableMessage;
+import ikube.model.IndexableMessage;
 import ikube.model.IndexableExchange;
 import org.apache.lucene.document.Document;
 import org.junit.Before;

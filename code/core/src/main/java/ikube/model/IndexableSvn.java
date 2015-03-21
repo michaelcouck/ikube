@@ -41,38 +41,42 @@ public class IndexableSvn extends Indexable {
     @NotNull
     @Attribute(field = true, description = "The resources that should be ignored, could be part of the path")
     private String excludedPattern;
+    @Column
+    @NotNull
+    @Attribute(field = true, description = "The maximum read length of the resource, i.e. don't read 1 gig from the source")
+    private long maxReadLength = 1000000; // 1 meg default
 
     @Column
     @NotNull
-    @Attribute(field = true, description = "")
+    @Attribute(field = true, description = "The relative path on the SVN server")
     private String relativeFilePath;
     @Column
     @NotNull
-    @Attribute(field = true, description = "")
+    @Attribute(field = true, description = "The author of the commit")
     private String author;
     @Column
     @NotNull
-    @Attribute(field = true, description = "")
+    @Attribute(field = true, description = "The comment for the commit")
     private String commitComment;
     @Column
     @NotNull
-    @Attribute(field = true, description = "")
+    @Attribute(field = true, description = "The date of the commit")
     private String revisionDate;
     @Column
     @NotNull
-    @Attribute(field = true, description = "")
+    @Attribute(field = true, description = "The name of the resource")
     private String resourceName;
     @Column
     @NotNull
-    @Attribute(field = true, description = "")
+    @Attribute(field = true, description = "The revision of the resource, probably a number")
     private String revision;
     @Column
     @NotNull
-    @Attribute(field = true, description = "")
+    @Attribute(field = true, description = "The size of the resource, i.e. file size")
     private String size;
     @Column
     @NotNull
-    @Attribute(field = true, description = "")
+    @Attribute(field = true, description = "The contents of the file on the server")
     private String contents;
 
     public SVNRepository getRepository() {
@@ -185,5 +189,13 @@ public class IndexableSvn extends Indexable {
 
     public void setExcludedPattern(String excludedPattern) {
         this.excludedPattern = excludedPattern;
+    }
+
+    public long getMaxReadLength() {
+        return maxReadLength;
+    }
+
+    public void setMaxReadLength(final long maxReadLength) {
+        this.maxReadLength = maxReadLength;
     }
 }

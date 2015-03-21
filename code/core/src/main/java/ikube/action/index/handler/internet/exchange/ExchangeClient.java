@@ -1,6 +1,8 @@
 package ikube.action.index.handler.internet.exchange;
 
 import com.independentsoft.exchange.*;
+import ikube.model.Email;
+import ikube.model.IndexableMessage;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.NTCredentials;
@@ -464,7 +466,7 @@ public class ExchangeClient {
             IndexableMessage im = new IndexableMessage();
 
             im.mailboxName       = FOLDER.name();
-            im.mailboxOwner      = new IndexableMessage.Email(useraccount.firstname, useraccount.surname, useraccount.displayname, useraccount.email); 
+            im.mailboxOwner      = new Email(useraccount.firstname, useraccount.surname, useraccount.displayname, useraccount.email);
             im.messageExchangeId = message.getItemId().getId();
             im.messageInternetId = message.getInternetMessageId();
             im.conversationId    = message.getConversationId().getId(); 
@@ -505,13 +507,13 @@ public class ExchangeClient {
             return null;
         }
 
-        private IndexableMessage.Email toEmail(Mailbox mailbox){
+        private Email toEmail(Mailbox mailbox){
         	return (mailbox == null) ? null :
-        		new IndexableMessage.Email(null, mailbox.getName(), mailbox.getOriginalDisplayName(), mailbox.getEmailAddress());
+        		new Email(null, mailbox.getName(), mailbox.getOriginalDisplayName(), mailbox.getEmailAddress());
         }
 
-        private List<IndexableMessage.Email> toEmails(List<Mailbox> mailboxes){
-            List<IndexableMessage.Email> emails = new ArrayList<IndexableMessage.Email>();
+        private List<Email> toEmails(List<Mailbox> mailboxes){
+            List<Email> emails = new ArrayList<Email>();
             for(Mailbox mailbox : mailboxes){
                 if(mailbox.getEmailAddress() != null)
                     emails.add( toEmail( mailbox ) );

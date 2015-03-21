@@ -45,6 +45,7 @@ public class InternetResourceHandlerTest extends AbstractTest {
         when(indexableInternet.isOmitNorms()).thenReturn(Boolean.FALSE);
         when(indexableInternet.isTokenized()).thenReturn(Boolean.FALSE);
         when(indexableInternet.isVectored()).thenReturn(Boolean.FALSE);
+        when(indexableInternet.getMaxReadLength()).thenReturn(Long.MAX_VALUE);
 
         Document document = new Document();
 
@@ -74,11 +75,11 @@ public class InternetResourceHandlerTest extends AbstractTest {
             @Override
             public Object answer(final InvocationOnMock invocation) throws Throwable {
                 int length = invocation.getArguments()[0].toString().length();
-                assertEquals(48695, length);
+                assertEquals(55883, length);
                 return null;
             }
         }).when(url).setParsedContent(any(String.class));
-        internetResourceHandler.parseContent(url);
+        internetResourceHandler.parseContent(url, Integer.MAX_VALUE);
         verify(url, atLeastOnce()).setParsedContent(any(String.class));
     }
 

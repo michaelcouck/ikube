@@ -1,5 +1,6 @@
 package ikube.action.index.handler.internet.exchange;
 
+import ikube.model.IndexableMessage;
 import org.junit.Ignore;
 import org.junit.Test;
 

@@ -1,9 +1,10 @@
 package ikube.action.index.handler.internet;
 
 import ikube.action.index.handler.ResourceHandler;
-import ikube.action.index.handler.internet.exchange.IndexableMessage;
+import ikube.model.Email;
 import ikube.model.IndexContext;
 import ikube.model.IndexableExchange;
+import ikube.model.IndexableMessage;
 import org.apache.lucene.document.Document;
 
 import java.text.SimpleDateFormat;
@@ -74,13 +75,13 @@ public class ExchangeResourceHandler extends ResourceHandler<IndexableExchange> 
         return (date != null) ? DATE_TIME_FORMAT.format(date) : null;
     }
 
-    private String toEmailString(IndexableMessage.Email email){
+    private String toEmailString(Email email){
         return (email != null) ? email.toString() : null;
     }
 
-    private String toEmailsString(List<IndexableMessage.Email> emails){
+    private String toEmailsString(List<Email> emails){
         StringBuffer str = new StringBuffer();
-        for(IndexableMessage.Email email : emails){
+        for(Email email : emails){
             if(str.length() > 0)
                 str.append(", ");
             str.append(toEmailString(email));

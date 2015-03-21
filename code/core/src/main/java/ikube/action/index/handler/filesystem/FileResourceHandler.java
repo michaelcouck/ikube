@@ -5,13 +5,14 @@ import de.schlichtherle.truezip.file.TFileInputStream;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
 import ikube.action.index.handler.ResourceHandler;
-import ikube.action.index.parse.IParser;
-import ikube.action.index.parse.ParserProvider;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
 import ikube.toolkit.FILE;
 import ikube.toolkit.HASH;
 import org.apache.lucene.document.Document;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.AutoDetectParser;
+import org.apache.tika.sax.BodyContentHandler;
 import org.xml.sax.SAXParseException;
 
 import java.io.*;
@@ -20,8 +21,10 @@ import java.io.*;
  * This resource handler will handle files from the file system handler. Getting the correct parser for the type and
  * extracting the data, eventually adding the data to the specified fields in the Lucene index.
  *
+ * Switched parsers to Tika from Apache.
+ *
  * @author Michael Couck
- * @version 01.00
+ * @version 01.10
  * @since 25-03-2013
  */
 public class FileResourceHandler extends ResourceHandler<IndexableFileSystem> {
@@ -77,8 +80,12 @@ public class FileResourceHandler extends ResourceHandler<IndexableFileSystem> {
             byteInputStream = new ByteArrayInputStream(byteBuffer, 0, read);
             byteOutputStream = new ByteArrayOutputStream();
 
-            IParser parser = ParserProvider.getParser(file.getName(), byteBuffer);
-            String parsedContent = parser.parse(byteInputStream, byteOutputStream).toString();
+            AutoDetectParser parser = new AutoDetectParser();
+            BodyContentHandler handler = new BodyContentHandler((int) indexableFileSystem.getMaxReadLength());
+            Metadata metadata = new Metadata();
+
+            parser.parse(byteInputStream, handler, metadata);
+            String parsedContent = handler.toString();
 
             // This is the unique id of the resource to be able to delete it
             String fileId = HASH.hash(file.getAbsolutePath()).toString();
