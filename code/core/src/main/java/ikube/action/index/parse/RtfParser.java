@@ -16,7 +16,9 @@ import javax.swing.text.rtf.RTFEditorKit;
  * @author Michael Couck
  * @since 12.05.04
  * @version 01.00
+ * @deprecated Switched to the {@link org.apache.tika.Tika} framework for content extraction
  */
+@Deprecated
 public class RtfParser implements IParser {
 
 	/**

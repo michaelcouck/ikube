@@ -13,9 +13,11 @@ import org.apache.log4j.Logger;
  * Provides parsers based on the content(magic offsets) and content type like 'text/html' for example.
  * 
  * @author Michael Couck
- * @since 21.11.10
+ * @since 21-11-2010
  * @version 01.00
+ * @deprecated Switched to the {@link org.apache.tika.Tika} framework for content extraction
  */
+@Deprecated
 public final class ParserProvider {
 
 	private static final Logger LOGGER = Logger.getLogger(ParserProvider.class);

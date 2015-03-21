@@ -20,7 +20,11 @@
 
     <context:property-placeholder
         location="
-            classpath:deploy/spring.properties,
+            classpath*:spring.properties,
+            classpath*:deploy/spring.properties,
+            classpath*:spring-local.properties,
+            classpath*:**/spring-local.properties,
+            classpath*:**/**/spring-local.properties,
             */**/spring-local.properties"
         properties-ref="ikube.toolkit.PropertyConfigurer"/>
 
@@ -55,8 +59,8 @@
         class="ikube.deploy.model.Server"
 	    property:name="server-one"
         property:ip="${server-system-ip}"
-        property:username="${username}"
-        property:password="${password}"
+        property:username="michael"
+        property:password="we6tPf43egdRYeF"
         property:actions-ref="actions-one"/>
     <util:list id="actions-one">
         <ref local="stop-action-one"/>
@@ -133,8 +137,8 @@
         class="ikube.deploy.model.Server"
     	property:name="server-two"
         property:ip="${server-system-ip}"
-        property:username="${username}"
-        property:password="${password}"
+        property:username="michael"
+        property:password="we6tPf43egdRYeF"
         property:actions-ref="actions-two"/>
     <util:list id="actions-two">
         <ref local="stop-action-two"/>
@@ -211,8 +215,8 @@
         class="ikube.deploy.model.Server"
     	property:name="server-three"
         property:ip="${server-system-ip}"
-        property:username="${username}"
-        property:password="${password}"
+        property:username="michael"
+        property:password="we6tPf43egdRYeF"
         property:actions-ref="actions-three"/>
     <util:list id="actions-three">
         <ref local="stop-action-three"/>
@@ -290,8 +294,8 @@
         class="ikube.deploy.model.Server"
 	    property:name="server-production"
         property:ip="${server-production-ip}"
-        property:username="${username}"
-        property:password="${password}"
+        property:username="michael"
+        property:password="we6tPf43egdRYeF"
         property:actions-ref="actions-production"/>
     <util:list id="actions-production">
         <ref local="stop-action-production"/>
@@ -367,8 +371,8 @@
         class="ikube.deploy.model.Server"
         property:name="server-site"
         property:ip="${server-site-ip}"
-        property:username="${username}"
-        property:password="${password}"
+        property:username="michael"
+        property:password="we6tPf43egdRYeF"
         property:actions-ref="actions-site"/>
     <util:list id="actions-site">
         <!-- ref local="stop-action-site"/ -->
@@ -420,5 +424,81 @@
         <value>${tomcat-site-startup}</value>
     </util:list>
     <!-- End site -->
+
+    <!-- FIS -->
+    <bean
+        id="server-fis"
+        name="server-fis"
+        class="ikube.deploy.model.Server"
+        property:name="server-fis"
+        property:ip="${server-fis-ip}"
+        property:username="michael"
+        property:password="we6tPf43egdRYeF"
+        property:actions-ref="actions-fis"/>
+    <util:list id="actions-fis">
+        <ref local="stop-action-fis"/>
+        <ref local="clean-action-fis"/>
+        <ref local="copy-action-fis"/>
+        <ref local="start-action-fis"/>
+    </util:list>
+    <bean
+        id="stop-action-fis"
+        name="stop-action-fis"
+        class="ikube.deploy.action.CmdAction"
+        property:sleep="${sleep}"
+        property:breakOnError="false"
+        property:commands-ref="stop-commands-fis"/>
+    <util:list id="stop-commands-fis">
+        <value>${tomcat-fis-shutdown};</value>
+        <value>${tomcat-fis-kill};</value>
+    </util:list>
+    <bean
+        id="clean-action-fis"
+        name="clean-action-fis"
+        class="ikube.deploy.action.CmdAction"
+        property:sleep="${sleep}"
+        property:breakOnError="false"
+        property:commands-ref="clean-commands-fis"/>
+    <util:list id="clean-commands-fis">
+        <value>chmod 777 -R ${tomcat-fis};</value>
+        <value>rm -rf ${tomcat-fis-bin}/ikube/*;</value>
+        <value>rm -rf ${tomcat-fis-webapps}/ikube*;</value>
+        <value>rm -rf ${tomcat-fis}/logs/*;</value>
+        <value>rm -rf ${tomcat-fis}/temp/*;</value>
+        <value>rm -rf ${tomcat-fis}/work/*;</value>
+    </util:list>
+    <bean
+        id="copy-action-fis"
+        name="copy-action-fis"
+        class="ikube.deploy.action.CopyAction"
+        property:sleep="${sleep}"
+        property:breakOnError="false"
+        property:files-ref="files-fis"
+        property:directories-ref="directories-fis"/>
+    <util:map id="files-fis">
+        <entry key="${tail-script}" value="${tomcat-fis-bin}"/>
+        <entry key="code/war/target/${ikube-war}" value="${tomcat-fis-webapps}"/>
+        <!-- This over writes the properties specific for the target environment -->
+        <entry key="${resources-directory}/environments/prd/spring.properties" value="${tomcat-fis-bin}/ikube/common"/>
+        <entry key="${resources-directory}/indexes/production/spring.properties" value="${tomcat-fis-bin}/ikube/production"/>
+        <entry key="${resources-directory}/indexes/production/spring-auto.xml" value="${tomcat-fis-bin}/ikube/production"/>
+    </util:map>
+    <util:map id="directories-fis">
+        <entry key="${resources-directory}/ikube" value="${tomcat-fis-bin}"/>
+        <entry key="${resources-directory}/analytics" value="${tomcat-fis-bin}/ikube"/>
+        <entry key="${resources-directory}/indexes/fis" value="${tomcat-fis-bin}/ikube"/>
+    </util:map>
+    <bean
+        id="start-action-fis"
+        name="start-action-fis"
+        class="ikube.deploy.action.CmdAction"
+        property:sleep="${sleep}"
+        property:breakOnError="false"
+        property:commands-ref="start-commands-fis"/>
+    <util:list id="start-commands-fis">
+        <value>${tomcat-fis-chmod}</value>
+        <value>${tomcat-fis-startup}</value>
+    </util:list>
+    <!-- End FIS -->
 
 </beans>

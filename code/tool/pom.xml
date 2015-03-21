@@ -40,7 +40,7 @@
                 <version>1.2.1</version>
                 <executions>
                     <execution>
-                        <phase>site</phase>
+                        <phase>deploy</phase>
                         <configuration>
                             <mainClass>ikube.deploy.Deployer</mainClass>
                             <arguments>

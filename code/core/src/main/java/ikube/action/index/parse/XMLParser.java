@@ -20,7 +20,9 @@ import java.util.List;
  * @author Michael Couck
  * @version 01.00
  * @since 03-09-2010
+ * @deprecated Switched to the {@link org.apache.tika.Tika} framework for content extraction
  */
+@Deprecated
 public class XMLParser implements IParser {
 
 	/**

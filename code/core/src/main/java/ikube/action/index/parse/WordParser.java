@@ -17,7 +17,9 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
  * @version 01.1
  * @since 22.08.08<br>
  *        Changed the access to the text from the classes from Ackly chap to the POI WordExtractor class.
+ * @deprecated Switched to the {@link org.apache.tika.Tika} framework for content extraction
  */
+@Deprecated
 public class WordParser implements IParser {
 
 	/**

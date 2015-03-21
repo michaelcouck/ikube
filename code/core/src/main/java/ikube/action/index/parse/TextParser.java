@@ -12,7 +12,9 @@ import java.io.OutputStream;
  * @author Michael Couck
  * @since 03.09.10
  * @version 01.00
+ * @deprecated Switched to the {@link org.apache.tika.Tika} framework for content extraction
  */
+@Deprecated
 public class TextParser implements IParser {
 
 	private static final char SPACE = ' ';

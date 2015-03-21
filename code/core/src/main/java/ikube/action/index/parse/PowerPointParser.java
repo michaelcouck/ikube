@@ -17,7 +17,9 @@ import org.apache.poi.util.LittleEndian;
  * @author Michael Couck
  * @since 12.05.04
  * @version 01.00
+ * @deprecated Switched to the {@link org.apache.tika.Tika} framework for content extraction
  */
+@Deprecated
 public class PowerPointParser implements IParser, POIFSReaderListener {
 
 	/** The output stream for the parsed data. */

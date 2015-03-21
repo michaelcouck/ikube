@@ -7,9 +7,11 @@ import java.io.OutputStream;
  * This is the base interface for all parsers. Parsers that can different content types like xml, Word and so on.
  * 
  * @author Michael Couck
- * @since 21.11.10
+ * @since 21-11-2010
  * @version 01.00
+ * @deprecated Switched to the {@link org.apache.tika.Tika} framework for content extraction
  */
+@Deprecated
 public interface IParser {
 
 	/**

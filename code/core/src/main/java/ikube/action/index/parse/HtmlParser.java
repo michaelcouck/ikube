@@ -17,7 +17,9 @@ import java.io.Reader;
  * @author Michael Couck
  * @version 01.00
  * @since 03-09-2010
+ * @deprecated Switched to the {@link org.apache.tika.Tika} framework for content extraction
  */
+@Deprecated
 public class HtmlParser implements IParser {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HtmlParser.class);

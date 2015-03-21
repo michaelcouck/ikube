@@ -15,7 +15,9 @@ import java.io.OutputStream;
  * @author Michael Couck
  * @version 01.00
  * @since 12-05-2004
+ * @deprecated Switched to the {@link org.apache.tika.Tika} framework for content extraction
  */
+@Deprecated
 public class PdfParser implements IParser {
 
     /**

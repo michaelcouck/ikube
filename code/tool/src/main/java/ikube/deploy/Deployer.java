@@ -29,6 +29,12 @@ import java.util.concurrent.Future;
  * specified. The actions can be executed in parallel or one at a time. Typically each action will try several
  * times to execute the logic before giving up.
  *
+ * Example execution:
+ *
+ * <pre>
+ *     java -jar ikube-tool-5.2.0.jar ikube.deploy.Deployer -Ddeploy-to-servers=server-fis -Dusername=michael -Dpassword=we6tPf43egdRYeF
+ * </pre>
+ *
  * @author Michael Couck
  * @version 01.00
  * @since 18-06-2013

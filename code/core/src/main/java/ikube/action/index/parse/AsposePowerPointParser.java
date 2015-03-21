@@ -21,9 +21,11 @@ import com.aspose.slides.pptx.TextFrameEx;
  * Parser and extractor for the PowerPoint format.
  * 
  * @author Michael Couck
- * @since 10.09.2011
+ * @since 10-09-2011
  * @version 01.00
+ * @deprecated Switched to the {@link org.apache.tika.Tika} framework for content extraction
  */
+@Deprecated
 public class AsposePowerPointParser implements IParser {
 
 	/** Logger for the parser class. */

@@ -29,7 +29,7 @@ import static java.lang.management.ManagementFactory.newPlatformMXBeanProxy;
 @SuppressWarnings("FieldCanBeLocal")
 public class GCAnalyzerIntegration extends AbstractTest {
 
-    private int jmxPort = 8600;
+    private int jmxPort = 8700;
     private int serverPort = 9090;
     private int forecasts = 60;
     private String address = "localhost";
