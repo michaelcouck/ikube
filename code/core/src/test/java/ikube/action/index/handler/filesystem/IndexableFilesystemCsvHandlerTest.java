@@ -79,7 +79,7 @@ public class IndexableFilesystemCsvHandlerTest extends AbstractTest {
     @Test
     public void handleAutoCompleteFiles() throws Exception {
         indexableFileSystem.setAllColumns(Boolean.TRUE);
-        indexableFileSystem.setMaxReadLength(Integer.MAX_VALUE);
+        indexableFileSystem.setMaxReadLength(100000);
         indexableFileSystem.setMaxLines(Integer.MAX_VALUE);
         List<File> files = FILE.findFilesRecursively(new File("."), 2, new ArrayList<File>(), "english.csv");
         filesystemCsvHandler.handleFile(indexContext, indexableFileSystem, files.get(0));

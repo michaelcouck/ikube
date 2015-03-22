@@ -134,7 +134,7 @@ public class IndexableFileSystemHandlerTest extends AbstractTest {
         indexableFileSystem.setLastModifiedFieldName("last-modified");
         indexableFileSystem.setLengthFieldName("length");
         indexableFileSystem.setMaxExceptions(100l);
-        indexableFileSystem.setMaxReadLength(1000000l);
+        indexableFileSystem.setMaxReadLength(100000l);
         indexableFileSystem.setName("name");
         indexableFileSystem.setNameFieldName("name");
         indexableFileSystem.setPathFieldName("path");

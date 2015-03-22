@@ -25,32 +25,30 @@ public class CopyAction extends Action {
 
     @Override
     public boolean execute(final Server server) {
-        String dotFolder = FILE.cleanFilePath(new File(".").getAbsolutePath());
-        logger.info("Dot folder : " + dotFolder);
         // sshExec.useCompression();
         getSshExec(server);
         if (directories != null) {
             for (final Map.Entry<String, String> filePair : directories.entrySet()) {
-                execute(dotFolder, server, filePair.getKey(), filePair.getValue());
+                execute(server, filePair.getKey(), filePair.getValue());
                 THREAD.sleep(getSleep());
             }
         }
         if (files != null) {
             for (final Map.Entry<String, String> filePair : files.entrySet()) {
-                execute(dotFolder, server, filePair.getKey(), filePair.getValue());
+                execute(server, filePair.getKey(), filePair.getValue());
                 THREAD.sleep(getSleep());
             }
         }
         return Boolean.TRUE;
     }
 
-    private void execute(final String dotFolder, final Server server, final String srcFile, final String destFile) {
+    private void execute(final Server server, final String srcFile, final String destFile) {
         int retry = RETRY;
         int returnCode = 1;
         do {
             String source = null;
             try {
-                source = getAbsoluteFile(dotFolder, srcFile);
+                source = getAbsoluteFile(srcFile);
                 logger.info("Copying : " + source + ", to : " + destFile + ", on server : " + server.getIp());
                 SCPFileTransfer scpFileTransfer = server.getSshExec().newSCPFileTransfer();
                 SCPUploadClient scpUploadClient = scpFileTransfer.newSCPUploadClient();
@@ -66,12 +64,17 @@ public class CopyAction extends Action {
         } while (returnCode > 0 && --retry >= 0);
     }
 
-    private String getAbsoluteFile(final String dotFolder, final String path) {
-        File relative = new File(dotFolder, path);
+    private String getAbsoluteFile(final String path) {
+        logger.info("Looking for file/folder : " + path);
+        File relative = new File(path);
         if (!relative.exists()) {
-            relative = FILE.findFileRecursively(new File(dotFolder), relative.getName());
-            logger.info("Found file : " + relative);
+            // Try and look for it from teh dot directory
+            relative = FILE.findFileRecursively(new File("."), relative.getName());
+            if (relative == null || !relative.exists()) {
+                throw new RuntimeException("Couldn't find file : " + relative);
+            }
         }
+        logger.info("Found file : " + relative);
         return FILE.cleanFilePath(relative.getAbsolutePath());
     }
 

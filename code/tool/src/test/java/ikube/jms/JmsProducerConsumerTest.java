@@ -8,6 +8,7 @@ import org.junit.Test;
  * @version 01.00
  * @since 11-03-2015
  */
+
 public class JmsProducerConsumerTest {
 
     @Before

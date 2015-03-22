@@ -23,7 +23,9 @@ public class SearchToolkitTest extends AbstractTest {
     @Before
     public void before() {
         indexContext = mock(IndexContext.class);
-        when(indexContext.getIndexDirectoryPath()).thenReturn("/tmp");
+        File tmpFile = FILE.getFile("./target/indexes", Boolean.TRUE);
+        String indexDirectoryPath = FILE.cleanFilePath(tmpFile.getAbsolutePath());
+        when(indexContext.getIndexDirectoryPath()).thenReturn(indexDirectoryPath);
         when(indexContext.getName()).thenReturn("index");
         when(indexContext.getIndexName()).thenReturn("index");
         when(indexContext.getBufferedDocs()).thenReturn(10);

@@ -12,8 +12,11 @@ import org.mockito.Spy;
 import javax.jms.*;
 import javax.naming.InitialContext;
 
+import static mockit.Mockit.setUpMocks;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -55,7 +58,7 @@ public class PublisherTest extends AbstractTest {
 
     @Before
     public void before() throws Exception {
-        Mockit.setUpMocks(this.new InitialContextMock());
+        setUpMocks(this.new InitialContextMock());
         when(connectionFactory.createConnection(anyString(), anyString())).thenReturn(connection);
         when(connection.createSession(Boolean.FALSE, TopicSession.AUTO_ACKNOWLEDGE)).thenReturn(session);
         when(session.createProducer(destination)).thenReturn(producer);
@@ -65,7 +68,7 @@ public class PublisherTest extends AbstractTest {
     @Test
     public void publish() throws Exception {
         publisher.publish("userid", "password", "connection-factory", "destination", "jms-client.xml", "property", "value");
-        Mockito.verify(producer, Mockito.times(1)).send(any(Destination.class), any(Message.class));
+        verify(producer, times(1)).send(any(Destination.class), any(Message.class));
     }
 
 }
