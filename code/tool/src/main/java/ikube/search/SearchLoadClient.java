@@ -40,7 +40,7 @@ public class SearchLoadClient extends Client {
     @Option(name = "-t")
     int threads = 5;
     @Option(name = "-i")
-    int iterations = 1000;
+    int iterations = 100;
     @Option(name = "-u")
     private String url = "ikube.be";
     @Option(name = "-p")

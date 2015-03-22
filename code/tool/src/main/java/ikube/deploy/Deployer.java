@@ -29,10 +29,15 @@ import java.util.concurrent.Future;
  * specified. The actions can be executed in parallel or one at a time. Typically each action will try several
  * times to execute the logic before giving up.
  *
+ * NB: You must execute this in the directory where the deployer.xml file is, and the spring-local.properties is or
+ * Spring will not find the properties. Note the second invocation of the deployer below. In the first example it is assumed
+ * that the deployer.xml and the properties files, and indeed the jar is in the directory where the invocation takes place.
+ *
  * Example execution:
  *
  * <pre>
- *     java -jar ikube-tool-5.2.0.jar ikube.deploy.Deployer -Ddeploy-to-servers=server-fis -Dusername=michael -Dpassword=we6tPf43egdRYeF
+ *     java -Ddeploy-to-servers=server-fis -Dusername=michael -Dpassword=we6tPf43egdRYeF -jar ikube-tool-5.2.0.jar ikube.deploy.Deployer
+ *     java -Ddeploy-to-servers=server-fis -Dusername=michael -Dpassword=we6tPf43egdRYeF -jar ../../../../target/ikube-tool-5.2.0.jar ikube.deploy.Deployer . deployer.xml
  * </pre>
  *
  * @author Michael Couck
@@ -173,6 +178,11 @@ public final class Deployer {
 		}
 		return APPLICATION_CONTEXT;
 	}
+
+    private static void usage() {
+        LOGGER.error("Usage: " + "java -Ddeploy-to-servers=server-fis -Dusername=michael -Dpassword=we6tPf43egdRYeF -jar ikube-tool-5.2.0.jar ikube.deploy.Deployer");
+        LOGGER.error("Usage: " + "java -Ddeploy-to-servers=server-fis -Dusername=michael -Dpassword=we6tPf43egdRYeF -jar ../../../../target/ikube-tool-5.2.0.jar ikube.deploy.Deployer . deployer.xml");
+    }
 
 	private boolean parallel;
 	private long maxWaitTime = 60;

@@ -200,7 +200,7 @@ public class GCAnalyzer {
             for (int j = 0; j < smoothedGcSnapshots.size(); j++) {
                 GCSnapshot smoothedGcSnapshot = smoothedGcSnapshots.get(j);
 
-                LOGGER.error("Smooth snapshot : " + ToStringBuilder.reflectionToString(smoothedGcSnapshot));
+                LOGGER.info("Smooth snapshot : " + ToStringBuilder.reflectionToString(smoothedGcSnapshot));
 
                 Object[] gcTimeSeriesVector = new Object[8];
                 gcTimeSeriesVector[0] = new Date(smoothedGcSnapshot.start);
@@ -217,8 +217,8 @@ public class GCAnalyzer {
             gcTimeSeriesMatrices[i] = gcTimeSeriesMatrix;
 
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.error("Snapshots : " + gcCollector.getGcSnapshots().size());
-                LOGGER.error("Smooth snapshots : " + smoothedGcSnapshots.size());
+                LOGGER.debug("Snapshots : " + gcCollector.getGcSnapshots().size());
+                LOGGER.debug("Smooth snapshots : " + smoothedGcSnapshots.size());
             }
         }
         return gcTimeSeriesMatrices;

@@ -1,7 +1,7 @@
 package ikube.example;
 
 import ikube.AbstractTest;
-import org.junit.Ignore;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.junit.Test;
 
 import java.io.File;
@@ -15,7 +15,6 @@ import static org.junit.Assert.assertTrue;
  * @version 01.00
  * @since 29-09-2014
  */
-@Ignore
 public class ForecastTest extends AbstractTest {
 
     @Test
@@ -23,9 +22,10 @@ public class ForecastTest extends AbstractTest {
         String inputFilePath = findFileAndGetCleanedPath(new File("."), "forecast.csv");
 
         Base.Analysis analysis = Forecast.doAnalysis(new String[]{inputFilePath});
-        assertTrue(analysis.output.toString().contains("579.3721684789788"));
-        assertTrue(analysis.output.toString().contains("581.4060746802609"));
-        assertTrue(analysis.output.toString().contains("584.8823713779697"));
-        assertTrue(analysis.output.toString().contains("586.3763013969173"));
+        logger.debug("Analysis : " + ToStringBuilder.reflectionToString(analysis));
+        assertTrue(analysis.output.toString().contains("579.3721"));
+        assertTrue(analysis.output.toString().contains("581.4060"));
+        assertTrue(analysis.output.toString().contains("584.8823"));
+        assertTrue(analysis.output.toString().contains("586.3763"));
     }
 }

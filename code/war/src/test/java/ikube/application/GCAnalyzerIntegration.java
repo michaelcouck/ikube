@@ -5,6 +5,7 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Analysis;
 import ikube.toolkit.THREAD;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.management.MBeanServerConnection;
@@ -26,13 +27,14 @@ import static java.lang.management.ManagementFactory.newPlatformMXBeanProxy;
  * @version 01.00
  * @since 23-10-2014
  */
+@Ignore
 @SuppressWarnings("FieldCanBeLocal")
 public class GCAnalyzerIntegration extends AbstractTest {
 
-    private int jmxPort = 8700;
+    private int jmxPort = 8500;
     private int serverPort = 9090;
     private int forecasts = 60;
-    private String address = "localhost";
+    private String address = "192.168.1.42";
 
     @Test
     @SuppressWarnings("unchecked")
