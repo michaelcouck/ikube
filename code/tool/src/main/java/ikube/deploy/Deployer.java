@@ -36,8 +36,9 @@ import java.util.concurrent.Future;
  * Example execution:
  *
  * <pre>
- *     java -Ddeploy-to-servers=server-fis -Dusername=michael -Dpassword=we6tPf43egdRYeF -jar ikube-tool-5.2.0.jar ikube.deploy.Deployer
- *     java -Ddeploy-to-servers=server-fis -Dusername=michael -Dpassword=we6tPf43egdRYeF -jar ../../../../target/ikube-tool-5.2.0.jar ikube.deploy.Deployer . deployer.xml
+ *     java -Ddeploy-to-servers=server-fis -Dusername=michael -Dpassword=bla -jar ikube-tool-5.2.0.jar ikube.deploy.Deployer
+ *     java -Ddeploy-to-servers=server-fis -Dusername=michael -Dpassword=bla -jar ../../../../target/ikube-tool-5.2.0.jar ikube.deploy.Deployer . deployer.xml
+ *     java -Ddeploy-to-servers=server-production -Dusername=michael -Dpassword=bla -jar ../../../../target/ikube-tool-5.2.0.jar ikube.deploy.Deployer . deployer.xml
  * </pre>
  *
  * @author Michael Couck
