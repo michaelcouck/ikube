@@ -46,6 +46,7 @@ public final class SearchToolkit {
             TopDocs topDocs = indexSearcher.search(query, 100);
             long totalHits = topDocs.totalHits;
             long scoreHits = topDocs.scoreDocs.length;
+            LOGGER.error("Query : " + query + ", total hits : " + totalHits + ", score hits : " + scoreHits);
             for (int i = 0; i < totalHits && i < scoreHits; i++) {
                 Document document = indexSearcher.doc(topDocs.scoreDocs[i].doc);
                 LOGGER.error("Document : " + i + ", " + document);

@@ -12,8 +12,8 @@
 
     <bean
         id="geoname-csv"
-        property:name="geoname-csv"
         class="ikube.model.IndexContext"
+        property:name="geoname-csv"
 		property:throttle="0"
         property:maxAge="6000"
         property:batchSize="${jdbc.batch.size}"

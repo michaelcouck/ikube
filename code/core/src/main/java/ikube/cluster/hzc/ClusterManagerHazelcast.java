@@ -9,7 +9,6 @@ import ikube.cluster.IMonitorService;
 import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Server;
-import ikube.toolkit.THREAD;
 import ikube.toolkit.UriUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -55,37 +54,37 @@ public class ClusterManagerHazelcast extends AClusterManager {
         address = new StringBuilder(ip).append("-").append(port).toString();
         final Config config = hazelcastInstance.getConfig();
         config.getNetworkConfig().getInterfaces().setInterfaces(Arrays.asList(ip));
-        // Start a thread that will keep an eye on Hazelcast
-        class HazelcastWatcher implements Runnable {
-            @SuppressWarnings("InfiniteLoopStatement")
-            public void run() {
-                do {
-                    try {
-                        boolean locked = lock(IConstants.HAZELCAST_WATCHER);
-                        logger.info("Hazelcast watcher lock : " + locked);
-                        // printStatistics(hazelcastInstance);
-                        Member member = hazelcastInstance.getCluster().getLocalMember();
-                        Collection<Member> members = hazelcastInstance.getCluster().getMembers();
-                        if (!members.contains(member)) {
-                            throw new RuntimeException("Hazelcast down, restarting grid : " + member);
-                        }
-                    } catch (final Exception e) {
-                        logger.error("Error...", e);
-                        try {
-                            logger.warn("Restarting the grid!!!");
-                            Hazelcast.shutdownAll();
-                            hazelcastInstance = Hazelcast.newHazelcastInstance(config);
-                        } catch (final Exception ex) {
-                            logger.error("Error restarting the grid : ", ex);
-                        }
-                    } finally {
-                        unlock(IConstants.HAZELCAST_WATCHER);
-                    }
-                    THREAD.sleep(IConstants.HUNDRED_THOUSAND * 6);
-                } while (true);
-            }
-        }
-        THREAD.submit(IConstants.HAZELCAST_WATCHER, new HazelcastWatcher());
+        //// Start a thread that will keep an eye on Hazelcast
+        //class HazelcastWatcher implements Runnable {
+        //    @SuppressWarnings("InfiniteLoopStatement")
+        //    public void run() {
+        //        do {
+        //            THREAD.sleep(IConstants.HUNDRED_THOUSAND * 6);
+        //            try {
+        //                boolean locked = lock(IConstants.HAZELCAST_WATCHER);
+        //                logger.info("Hazelcast watcher lock : " + locked);
+        //                // printStatistics(hazelcastInstance);
+        //                Member member = hazelcastInstance.getCluster().getLocalMember();
+        //                Collection<Member> members = hazelcastInstance.getCluster().getMembers();
+        //                if (!members.contains(member)) {
+        //                    throw new RuntimeException("Hazelcast down, restarting grid : " + member);
+        //                }
+        //            } catch (final Exception e) {
+        //                logger.error("Error...", e);
+        //                try {
+        //                    logger.warn("Restarting the grid!!!");
+        //                    Hazelcast.shutdownAll();
+        //                    hazelcastInstance = Hazelcast.newHazelcastInstance(config);
+        //                } catch (final Exception ex) {
+        //                    logger.error("Error restarting the grid : ", ex);
+        //                }
+        //            } finally {
+        //                unlock(IConstants.HAZELCAST_WATCHER);
+        //            }
+        //        } while (true);
+        //    }
+        //}
+        //THREAD.submit(IConstants.HAZELCAST_WATCHER, new HazelcastWatcher());
     }
 
     /**

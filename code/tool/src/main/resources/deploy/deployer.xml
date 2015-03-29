@@ -21,11 +21,7 @@
     <context:property-placeholder
         location="
             classpath*:spring.properties,
-            classpath*:deploy/spring.properties,
-            classpath*:spring-local.properties,
-            classpath*:**/spring-local.properties,
-            classpath*:**/**/spring-local.properties,
-            */**/spring-local.properties"
+            classpath*:spring-local.properties"
         properties-ref="ikube.toolkit.PropertyConfigurer"/>
 
     <bean
@@ -466,6 +462,8 @@
         <value>rm -rf ${tomcat-fis}/logs/*;</value>
         <value>rm -rf ${tomcat-fis}/temp/*;</value>
         <value>rm -rf ${tomcat-fis}/work/*;</value>
+        <value>mkdir ${tomcat-fis-bin}/ikube;</value>
+        <value>mkdir ${tomcat-fis-bin}/ikube/production;</value>
     </util:list>
     <bean
         id="copy-action-fis"
@@ -479,9 +477,9 @@
         <entry key="${tail-script}" value="${tomcat-fis-bin}"/>
         <entry key="${target-directory}/${ikube-war}" value="${tomcat-fis-webapps}"/>
         <!-- This over writes the properties specific for the target environment -->
-        <entry key="${resources-directory}/environments/prd/spring.properties" value="${tomcat-fis-bin}/ikube/common"/>
-        <entry key="${resources-directory}/indexes/production/spring.properties" value="${tomcat-fis-bin}/ikube/production"/>
-        <entry key="${resources-directory}/indexes/production/spring-auto.xml" value="${tomcat-fis-bin}/ikube/production"/>
+        <entry key="${resources-directory}/environments/fis/spring.properties" value="${tomcat-fis-bin}/ikube/common"/>
+        <entry key="${resources-directory}/indexes/production/spring.properties" value="${tomcat-fis-bin}/ikube/production/spring.properties"/>
+        <entry key="${resources-directory}/indexes/production/spring-auto.xml" value="${tomcat-fis-bin}/ikube/production/spring-auto.xml"/>
     </util:map>
     <util:map id="directories-fis">
         <entry key="${resources-directory}/ikube" value="${tomcat-fis-bin}"/>

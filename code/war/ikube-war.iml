@@ -55,8 +55,8 @@
     </content>
     <orderEntry type="jdk" jdkName="1.7" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: ikube:ikube-core:5.2.0" level="project" />
-    <orderEntry type="library" name="Maven: ikube:ikube-com:5.2.0" level="project" />
+    <orderEntry type="module" module-name="ikube-core" />
+    <orderEntry type="module" module-name="ikube-com" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context:3.2.4.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-beans:3.2.4.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-core:3.2.4.RELEASE" level="project" />

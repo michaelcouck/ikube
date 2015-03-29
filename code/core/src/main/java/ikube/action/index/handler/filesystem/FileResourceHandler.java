@@ -66,6 +66,7 @@ public class FileResourceHandler extends ResourceHandler<IndexableFileSystem> {
 
         try {
             int length = (int) Math.min(file.length(), indexableFileSystem.getMaxReadLength());
+            logger.info("Read length : " + length + ", file : " + file);
             byte[] byteBuffer = new byte[length];
 
             if (TFile.class.isAssignableFrom(file.getClass())) {
@@ -105,6 +106,10 @@ public class FileResourceHandler extends ResourceHandler<IndexableFileSystem> {
             addDocument(indexContext, document);
 
             indexableFileSystem.setContent(parsedContent);
+
+            if (parsedContent != null) {
+                logger.info("Parsed content : " + parsedContent.length());
+            }
         } finally {
             FILE.close(inputStream);
             FILE.close(byteInputStream);

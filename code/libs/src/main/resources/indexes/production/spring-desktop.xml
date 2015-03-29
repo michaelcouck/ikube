@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!-- xmlns:property="http://www.springframework.org/schema/p" -->
 <beans
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="http://www.springframework.org/schema/beans"
-    xmlns:property="http://www.springframework.org/schema/p"
     xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:property="http://www.springframework.org/schema/p"
 
-    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    xsi:schemaLocation="
+            http://www.springframework.org/schema/beans
             http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util.xsd">
@@ -17,6 +19,7 @@
 
         Extra 'fuzzy search' property, makes the index much larger
         property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer"
+        property:analyzer-ref="ikube.action.index.analyzer.StemmingAnalyzer"
     -->
     <bean
         id="desktop"
@@ -32,11 +35,14 @@
         property:maxFieldLength="${max.field.length}"
         property:maxReadLength="${max.read.length}"
         property:throttle="0"
-        property:threads="1"
+        property:threads="3"
         property:delta="false"
+
+        property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer"
+
         property:indexDirectoryPath="${index.directory.path}"
         property:indexDirectoryPathBackup="${index.directory.path}"
-        property:children-ref="desktopFolders"/>
+        property:children-ref="desktopFolders" />
     <util:list id="desktopFolders">
         <ref local="desktopFolder"/>
     </util:list>
@@ -56,27 +62,32 @@
         property:contentFieldName="contents"
         property:lastModifiedFieldName="lastmodified"
         property:unpackZips="false"
-        property:stored="${stored}"
-        property:analyzed="${analyzed}"
-        property:vectored="${vectored}"
+
+        property:stored="true"
+        property:analyzed="true"
+        property:tokenized="true"
+        property:omitNorms="true"
+
+        property:vectored="false"
+
         property:excludedPattern="${files.excluded.pattern}"
         property:batchSize="${file.batch.size}"
         property:maxReadLength="${max.read.length}"
-        property:maxExceptions="1000"
-        property:threads="1"
+        property:maxExceptions="1000000"
+        property:threads="5"
         property:strategies-ref="desktop-strategies"/>
 
     <util:list id="desktop-strategies">
-        <bean class="ikube.action.index.handler.strategy.ContentConcatenationStrategy"/>
+        <!--<bean class="ikube.action.index.handler.strategy.ContentConcatenationStrategy"/>-->
 
-        <ref bean="ikube.action.index.handler.strategy.LanguageFilterStrategy"/>
-        <ref bean="ikube.action.index.handler.strategy.LanguageCleaningStrategy"/>
+        <!--<ref bean="ikube.action.index.handler.strategy.LanguageFilterStrategy"/>-->
+        <!--<ref bean="ikube.action.index.handler.strategy.LanguageCleaningStrategy"/>-->
 
         <!--<bean class="ikube.action.index.handler.strategy.ToLowerCaseStrategy"/>-->
         <!--<bean class="ikube.action.index.handler.strategy.SpellingCorrectionStrategy"/>-->
 
-        <!--<ref bean="ikube.action.index.handler.strategy.ContentTypeStrategy"/>-->
-        <!--<ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy"/>-->
+        <ref bean="ikube.action.index.handler.strategy.ContentTypeStrategy"/>
+        <ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy"/>
 
         <!--<bean-->
             <!--class="ikube.action.index.handler.strategy.DocumentAnalysisStrategy"-->

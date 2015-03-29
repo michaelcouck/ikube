@@ -32,7 +32,7 @@
         <level value="WARN"/>
     </logger>
     <logger name="ikube">
-        <level value="WARN"/>
+        <level value="INFO"/>
     </logger>
 
     <root>

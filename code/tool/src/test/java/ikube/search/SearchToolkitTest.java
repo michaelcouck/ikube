@@ -45,4 +45,12 @@ public class SearchToolkitTest extends AbstractTest {
         SearchToolkit.main(args);
     }
 
+    @Test
+    public void adHoc() {
+        SearchToolkit.main(new String[] {
+                "/mnt/sdb/home/indexes/desktop/1427401340270/192.168.1.42-8000",
+                "contents",
+                "couck"});
+    }
+
 }

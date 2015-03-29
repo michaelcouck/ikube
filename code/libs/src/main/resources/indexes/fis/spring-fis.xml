@@ -28,6 +28,9 @@
         property:throttle="0"
         property:threads="1"
         property:delta="false"
+
+        property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer"
+
         property:indexDirectoryPath="${index.directory.path}"
         property:indexDirectoryPathBackup="${index.directory.path}"
         property:children-ref="folders" />
@@ -49,14 +52,19 @@
         property:lengthFieldName="length"
         property:contentFieldName="contents"
         property:lastModifiedFieldName="lastmodified"
-        property:unpackZips="false"
-        property:stored="${stored}"
-        property:analyzed="${analyzed}"
-        property:vectored="${vectored}"
+        property:unpackZips="true"
+
+        property:stored="true"
+        property:analyzed="true"
+        property:tokenized="true"
+        property:omitNorms="true"
+
+        property:vectored="false"
+
         property:batchSize="${file.batch.size}"
         property:maxReadLength="${fis-max-read-length}"
-        property:maxExceptions="1000"
-        property:threads="1"
+        property:maxExceptions="1000000"
+        property:threads="5"
         property:strategies-ref="fis-strategies" />
 
     <bean
@@ -69,14 +77,19 @@
         property:lengthFieldName="length"
         property:contentFieldName="contents"
         property:lastModifiedFieldName="lastmodified"
-        property:unpackZips="false"
-        property:stored="${stored}"
-        property:analyzed="${analyzed}"
-        property:vectored="${vectored}"
+        property:unpackZips="true"
+
+        property:stored="true"
+        property:analyzed="true"
+        property:tokenized="true"
+        property:omitNorms="true"
+
+        property:vectored="false"
+
         property:batchSize="${file.batch.size}"
         property:maxReadLength="${fis-max-read-length}"
-        property:maxExceptions="1000"
-        property:threads="1"
+        property:maxExceptions="1000000"
+        property:threads="5"
         property:strategies-ref="fis-strategies" />
 
     <bean
@@ -89,14 +102,19 @@
         property:lengthFieldName="length"
         property:contentFieldName="contents"
         property:lastModifiedFieldName="lastmodified"
-        property:unpackZips="false"
-        property:stored="${stored}"
-        property:analyzed="${analyzed}"
-        property:vectored="${vectored}"
+        property:unpackZips="true"
+
+        property:stored="true"
+        property:analyzed="true"
+        property:tokenized="true"
+        property:omitNorms="true"
+
+        property:vectored="false"
+
         property:batchSize="${file.batch.size}"
         property:maxReadLength="${fis-max-read-length}"
-        property:maxExceptions="1000"
-        property:threads="1"
+        property:maxExceptions="10000"
+        property:threads="5"
         property:strategies-ref="fis-strategies" />
 
     <bean
@@ -109,14 +127,19 @@
         property:lengthFieldName="length"
         property:contentFieldName="contents"
         property:lastModifiedFieldName="lastmodified"
-        property:unpackZips="false"
-        property:stored="${stored}"
-        property:analyzed="${analyzed}"
-        property:vectored="${vectored}"
+        property:unpackZips="true"
+
+        property:stored="true"
+        property:analyzed="true"
+        property:tokenized="true"
+        property:omitNorms="true"
+
+        property:vectored="false"
+
         property:batchSize="${file.batch.size}"
         property:maxReadLength="${fis-max-read-length}"
-        property:maxExceptions="1000"
-        property:threads="1"
+        property:maxExceptions="1000000"
+        property:threads="5"
         property:strategies-ref="fis-strategies" />
 
     <bean
@@ -129,21 +152,27 @@
         property:lengthFieldName="length"
         property:contentFieldName="contents"
         property:lastModifiedFieldName="lastmodified"
-        property:unpackZips="false"
-        property:stored="${stored}"
-        property:analyzed="${analyzed}"
-        property:vectored="${vectored}"
+        property:unpackZips="true"
+
+        property:stored="true"
+        property:analyzed="true"
+        property:tokenized="true"
+        property:omitNorms="true"
+
+        property:vectored="false"
+
         property:batchSize="${file.batch.size}"
         property:maxReadLength="${fis-max-read-length}"
-        property:maxExceptions="1000"
-        property:threads="1"
+        property:maxExceptions="1000000"
+        property:threads="5"
         property:strategies-ref="fis-strategies" />
 
     <util:list id="fis-strategies">
-        <bean class="ikube.action.index.handler.strategy.ContentConcatenationStrategy"/>
-        <ref bean="ikube.action.index.handler.strategy.LanguageFilterStrategy"/>
-        <ref bean="ikube.action.index.handler.strategy.LanguageCleaningStrategy"/>
-        <bean class="ikube.action.index.handler.strategy.ToLowerCaseStrategy"/>
+        <!--<bean class="ikube.action.index.handler.strategy.ContentConcatenationStrategy"/>-->
+        <!--<ref bean="ikube.action.index.handler.strategy.LanguageFilterStrategy"/>-->
+        <!--<ref bean="ikube.action.index.handler.strategy.LanguageCleaningStrategy"/>-->
+        <!--<bean class="ikube.action.index.handler.strategy.ToLowerCaseStrategy"/>-->
+
         <ref bean="ikube.action.index.handler.strategy.ContentTypeStrategy"/>
         <ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy"/>
     </util:list>

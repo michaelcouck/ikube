@@ -44,6 +44,30 @@
           <file>file://$MODULE_DIR$/src/main/resources/indexes/vlapar/spring-vlapar.xml</file>
           <file>file://$MODULE_DIR$/src/main/resources/indexes/system/spring-wiki.xml</file>
           <file>file://$MODULE_DIR$/src/main/resources/ikube/spring.xml</file>
+          <file>file://$MODULE_DIR$/src/main/resources/indexes/fis/spring-fis.xml</file>
+          <file>file://$MODULE_DIR$/src/main/resources/indexes/fis/spring-fis.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-actions.xml</file>
+          <file>file://$MODULE_DIR$/ikube/analytics/spring-analytics.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-aop.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-application.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-auto.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-beans.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/integration/spring-client.xml</file>
+          <file>file://$MODULE_DIR$/ikube/application/spring-collector.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/integration/spring-custom.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-db2-jdbc.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-desktop.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-geo.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/integration/spring-geoname-csv.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-grid-gain.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-h2-jdbc.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-hazelcast.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-ikube.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-rules.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-system.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/twitter/spring-twitter.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-users.xml</file>
+          <file>file://$MODULE_DIR$/ikube/spring.xml</file>
         </fileset>
       </configuration>
     </facet>
