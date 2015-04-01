@@ -30,7 +30,7 @@ public class FileResourceHandlerTest extends AbstractTest {
 	@Test
 	public void handleResource() throws Exception {
 		IndexableFileSystem indexableFileSystem = new IndexableFileSystem();
-		indexableFileSystem.setMaxReadLength(100000);
+		indexableFileSystem.setMaxReadLength(Long.MAX_VALUE);
 		indexableFileSystem.setStored(Boolean.TRUE);
 		indexableFileSystem.setAnalyzed(Boolean.TRUE);
 		indexableFileSystem.setVectored(Boolean.TRUE);

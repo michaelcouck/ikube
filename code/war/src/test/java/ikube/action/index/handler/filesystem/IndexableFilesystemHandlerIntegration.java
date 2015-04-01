@@ -1,5 +1,6 @@
 package ikube.action.index.handler.filesystem;
 
+import ikube.IConstants;
 import ikube.IntegrationTest;
 import ikube.action.Open;
 import ikube.action.index.IndexManager;
@@ -75,22 +76,34 @@ public class IndexableFilesystemHandlerIntegration extends IntegrationTest {
                 assertTrue(indexWriter.numDocs() > 0);
             }
 
-            new Open().execute(desktop);
-            IndexSearcher indexSearcher = desktop.getMultiSearcher();
-            SearchComplex searchComplex = new SearchComplex(indexSearcher);
-
-            searchComplex.setFirstResult(0);
-            searchComplex.setFragment(Boolean.TRUE);
-            searchComplex.setMaxResults(10);
-            searchComplex.setOccurrenceFields("must");
-            searchComplex.setSearchFields("contents");
-            searchComplex.setSearchStrings("Interchange");
-            searchComplex.setTypeFields("string");
-
-            ArrayList<HashMap<String, String>> results = searchComplex.execute();
-            assertTrue("Must be some results : " + results.size(), results.size() > 2);
+            search("AssignBusinessReference", "Interchange", "Business View", "Functionality", "Architecture", "COBAXT", "XMLReportQ");
         } finally {
             IndexManager.closeIndexWriters(desktop);
+        }
+    }
+
+    private void search(final String... searchStrings) throws Exception {
+        new Open().execute(desktop);
+        IndexSearcher indexSearcher = desktop.getMultiSearcher();
+        SearchComplex searchComplex = new SearchComplex(indexSearcher);
+
+        searchComplex.setFirstResult(0);
+        searchComplex.setMaxResults(10);
+        searchComplex.setFragment(Boolean.TRUE);
+        searchComplex.setOccurrenceFields("must");
+        searchComplex.setSearchFields("contents");
+        searchComplex.setTypeFields("string");
+
+        outer: for (final String searchString : searchStrings) {
+            searchComplex.setSearchStrings(searchString);
+            ArrayList<HashMap<String, String>> results = searchComplex.execute();
+            assertTrue("Must be some results : " + results.size(), results.size() > 2);
+            for (final HashMap<String, String> result : results) {
+                if ("docx.docx".equals(result.get(IConstants.NAME))) {
+                    continue outer;
+                }
+            }
+            assertTrue("Couldn't find the docx document in the results : ", Boolean.FALSE);
         }
     }
 

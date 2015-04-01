@@ -35,10 +35,10 @@
         property:maxFieldLength="${max.field.length}"
         property:maxReadLength="${max.read.length}"
         property:throttle="0"
-        property:threads="3"
+        property:threads="1"
         property:delta="false"
 
-        property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer"
+        property:analyzer-ref="ikube.action.index.analyzer.StemmingAnalyzer"
 
         property:indexDirectoryPath="${index.directory.path}"
         property:indexDirectoryPathBackup="${index.directory.path}"
@@ -74,7 +74,7 @@
         property:batchSize="${file.batch.size}"
         property:maxReadLength="${max.read.length}"
         property:maxExceptions="1000000"
-        property:threads="5"
+        property:threads="1"
         property:strategies-ref="desktop-strategies"/>
 
     <util:list id="desktop-strategies">

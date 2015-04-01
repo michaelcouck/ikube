@@ -30,6 +30,8 @@
         property:threads="1"
         property:delta="false"
 
+        property:analyzer-ref="ikube.action.index.analyzer.StemmingAnalyzer"
+
         property:indexDirectoryPath="${index.directory.path}"
         property:indexDirectoryPathBackup="${index.directory.path}"
         property:children-ref="folders" />
@@ -138,7 +140,7 @@
         property:batchSize="10"
         property:maxReadLength="10000000"
         property:maxExceptions="1000000"
-        property:threads="5"
+        property:threads="1"
         property:strategies-ref="fis-strategies" />
 
     <!--<bean-->
