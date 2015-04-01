@@ -13,6 +13,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ikube.action.index.IndexManager.closeIndexWriter;
+import static ikube.action.index.IndexManager.openIndexWriter;
+
 /**
  * This class will find all the 'segments.gen' files in a directory, then open index writers on the directories
  * and close them, essentially optimizing all the indexes recursively in a directory, potentially removing all the
@@ -30,20 +33,19 @@ public class Optimizer extends Action<IndexContext, Boolean> {
     @Override
     public boolean internalExecute(final IndexContext indexContext) throws IOException {
         File baseDirectory = new File(indexContext.getIndexDirectoryPath());
-        logger.debug("Starting at directory : " + baseDirectory);
+        logger.info("Starting at directory : " + baseDirectory);
         List<File> segmentsFiles = FILE.findFilesRecursively(baseDirectory, new ArrayList<File>(), "segments.gen");
         logger.debug("Segments files : " + segmentsFiles);
         for (final File segmentsFile : segmentsFiles) {
             final File indexDirectory = segmentsFile.getParentFile();
             // Can't optimize this index if it is open or being written to
             if (indexContext.getMultiSearcher() != null || (indexContext.getIndexWriters() != null && indexContext.getIndexWriters().length > 0)) {
-                logger.debug("Index already opened : " + indexContext.getIndexDirectoryPath());
+                logger.info("Index already opened, can't optimize now : " + indexContext.getIndexDirectoryPath());
                 continue;
             }
-            final Directory directory = NIOFSDirectory.open(indexDirectory);
-            try {
+            try (Directory directory = NIOFSDirectory.open(indexDirectory)) {
                 if (IndexWriter.isLocked(directory)) {
-                    logger.debug("Index locked : " + indexContext.getIndexDirectoryPath());
+                    logger.info("Index locked : " + indexContext.getIndexDirectoryPath());
                     continue;
                 }
                 logger.info("Optimizing index : " + indexDirectory);
@@ -51,19 +53,15 @@ public class Optimizer extends Action<IndexContext, Boolean> {
                     @Override
                     public void execute() {
                         try {
-                            IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, directory, Boolean.FALSE);
-                            IndexManager.closeIndexWriter(indexWriter);
-                        } catch (Exception e) {
+                            IndexWriter indexWriter = openIndexWriter(indexContext, directory, Boolean.FALSE);
+                            closeIndexWriter(indexWriter);
+                        } catch (final Exception e) {
                             logger.error("Exception optimizing index segments file : " + segmentsFile, e);
                         }
                     }
                 };
                 double timeTaken = Timer.execute(timed) / 1000000000 / 60;
                 logger.info("Finished optimizing index : " + timeTaken + ", directory :" + indexDirectory);
-            } finally {
-                if (directory != null) {
-                    directory.close();
-                }
             }
         }
         return Boolean.TRUE;

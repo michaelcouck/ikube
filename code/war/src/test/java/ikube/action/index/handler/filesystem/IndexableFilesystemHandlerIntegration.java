@@ -1,13 +1,16 @@
 package ikube.action.index.handler.filesystem;
 
 import ikube.IntegrationTest;
+import ikube.action.Open;
 import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
+import ikube.search.SearchComplex;
 import ikube.toolkit.FILE;
 import ikube.toolkit.THREAD;
 import ikube.toolkit.UriUtilities;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.search.IndexSearcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ForkJoinTask;
 
 import static org.junit.Assert.*;
@@ -58,16 +63,32 @@ public class IndexableFilesystemHandlerIntegration extends IntegrationTest {
     @Test
     public void handleIndexable() throws Exception {
         try {
+            THREAD.sleep(30000);
             ForkJoinTask<?> forkJoinTask = indexableFilesystemHandler.handleIndexableForked(desktop, desktopFolder);
             THREAD.executeForkJoinTasks(desktop.getName(), desktopFolder.getThreads(), forkJoinTask);
-            THREAD.sleep(15000);
-            THREAD.cancelForkJoinPool(desktop.getName());
+            THREAD.waitForFuture(forkJoinTask, Long.MAX_VALUE);
+
             // Verify that there are some documents in the index
             assertNotNull("The index writer should still be available : ", desktop.getIndexWriters());
             assertEquals("There should only be one index writer : ", 1, desktop.getIndexWriters().length);
             for (final IndexWriter indexWriter : desktop.getIndexWriters()) {
                 assertTrue(indexWriter.numDocs() > 0);
             }
+
+            new Open().execute(desktop);
+            IndexSearcher indexSearcher = desktop.getMultiSearcher();
+            SearchComplex searchComplex = new SearchComplex(indexSearcher);
+
+            searchComplex.setFirstResult(0);
+            searchComplex.setFragment(Boolean.TRUE);
+            searchComplex.setMaxResults(10);
+            searchComplex.setOccurrenceFields("must");
+            searchComplex.setSearchFields("contents");
+            searchComplex.setSearchStrings("Interchange");
+            searchComplex.setTypeFields("string");
+
+            ArrayList<HashMap<String, String>> results = searchComplex.execute();
+            assertTrue("Must be some results : " + results.size(), results.size() > 2);
         } finally {
             IndexManager.closeIndexWriters(desktop);
         }

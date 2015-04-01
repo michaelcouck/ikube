@@ -9,6 +9,7 @@ import ikube.model.IndexableFileSystem;
 import ikube.toolkit.FILE;
 import org.apache.lucene.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.File;
 import java.util.List;
@@ -28,7 +29,9 @@ import java.util.regex.Pattern;
 public class IndexableFileSystemHandler extends IndexableHandler<IndexableFileSystem> {
 
     @Autowired
-    private FileResourceHandler resourceHandler;
+    @SuppressWarnings("SpringJavaAutowiringInspection")
+    @Qualifier("ikube.action.index.handler.filesystem.FileResourceHandler")
+    protected FileResourceHandler resourceHandler;
 
     /**
      * {@inheritDoc}
