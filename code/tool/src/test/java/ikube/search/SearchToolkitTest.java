@@ -4,6 +4,7 @@ import ikube.AbstractTest;
 import ikube.model.IndexContext;
 import ikube.toolkit.FILE;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -46,6 +47,7 @@ public class SearchToolkitTest extends AbstractTest {
     }
 
     @Test
+    @Ignore
     public void adHoc() {
         SearchToolkit.main(new String[] {
                 "/mnt/sdb/home/indexes/desktop/1427401340270/192.168.1.42-8000",
