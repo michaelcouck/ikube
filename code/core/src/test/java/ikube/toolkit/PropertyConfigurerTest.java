@@ -11,7 +11,7 @@ import org.junit.Test;
 
 /**
  * @author Michael Couck
- * @since 27.03.11
+ * @since 27-03-2011
  * @version 01.00
  */
 public class PropertyConfigurerTest extends AbstractTest {
@@ -27,7 +27,7 @@ public class PropertyConfigurerTest extends AbstractTest {
 
 	@Test
 	public void checkJarFile() {
-		File[] jarFiles = FILE.findFiles(new File("."), new String[]{"ikube-core-"});
+		File[] jarFiles = FILE.findFiles(new File("."), "ikube-core-");
 		if (jarFiles == null || jarFiles.length == 0) {
 			return;
 		}
@@ -41,7 +41,7 @@ public class PropertyConfigurerTest extends AbstractTest {
 
 	@Test
 	public void checkJarJarFile() throws Exception {
-		File[] jarFiles = FILE.findFiles(new File("."), new String[]{"ikube-core-"});
+		File[] jarFiles = FILE.findFiles(new File("."), "ikube-core-");
 		if (jarFiles == null || jarFiles.length == 0) {
 			return;
 		}

@@ -36,9 +36,9 @@ import java.util.concurrent.Future;
  * Example execution:
  *
  * <pre>
- *     java -Ddeploy-to-servers=server-fis -Dusername=michael -Dpassword=bla -jar ikube-tool-5.2.0.jar ikube.deploy.Deployer
- *     java -Ddeploy-to-servers=server-fis -Dusername=michael -Dpassword=bla -jar ../../../../target/ikube-tool-5.2.0.jar ikube.deploy.Deployer . deployer.xml
- *     java -Ddeploy-to-servers=server-production -Dusername=michael -Dpassword=bla -jar ../../../../target/ikube-tool-5.2.0.jar ikube.deploy.Deployer . deployer.xml
+ *     -- With -Ddeploy-to-servers=server-production -Dusername=michael -Dpassword=bla in the system.properties file in the current directory
+ *     1) java -jar ../../../../target/ikube-tool-5.3.0.jar ikube.deploy.Deployer . deployer.xml
+ *     2) java -jar ../../../../target/ikube-tool-5.3.0.jar ikube.deploy.Deployer . deployer.xml -Ddeploy-to-servers=server-production -Dusername=michael -Dpassword=bla
  * </pre>
  *
  * @author Michael Couck
@@ -65,7 +65,9 @@ public final class Deployer {
 	@SuppressWarnings("unchecked")
 	public static void main(final String[] args) {
         if (args != null && args.length > 1) {
+            usage();
             LOGGER.info("Args null, not deploying : ");
+            return;
         }
 
 		File configurationDirectory = new File(DOT_DIRECTORY);
@@ -181,8 +183,11 @@ public final class Deployer {
 	}
 
     private static void usage() {
-        LOGGER.error("Usage: " + "java -Ddeploy-to-servers=server-fis -Dusername=michael -Dpassword=we6tPf43egdRYeF -jar ikube-tool-5.2.0.jar ikube.deploy.Deployer");
-        LOGGER.error("Usage: " + "java -Ddeploy-to-servers=server-fis -Dusername=michael -Dpassword=we6tPf43egdRYeF -jar ../../../../target/ikube-tool-5.2.0.jar ikube.deploy.Deployer . deployer.xml");
+        LOGGER.error("Usage: From in the directory where the deploy.xml file is so Spring can find the properties files");
+        LOGGER.error("Usage: java -jar ../../../../target/ikube-tool-5.3.0.jar ikube.deploy.Deployer . deployer.xml -Ddeploy-to-servers=server-production");
+        LOGGER.error("Usage: The username and password can be specified in a system.properties file, or put on the command line as system properties");
+        LOGGER.error("Usage: using the -D option for Java main invocation. Alternatively is using the properties file, then the property deploy-to-servers=server-production");
+        LOGGER.error("Usage: should also be defined in the properties file.");
     }
 
 	private boolean parallel;

@@ -24,6 +24,10 @@ import static ikube.toolkit.FILE.findFilesRecursively;
  * This class will scan the classpath and the file system below where the process was started
  * looking for properties files to load matching the file name set in the file name pattern variable.
  *
+ * Any file called system.properties will over ride the system properties set either on the command
+ * line & or set in the properties files, for example the user name and password property can be set in this
+ * file and used locally.
+ *
  * @author Michael Couck
  * @version 01.00
  * @since 27-03-2011
@@ -47,7 +51,7 @@ public class PropertyConfigurer extends Properties {
      * pattern to load into the property map.
      */
     public void initialize() {
-        LOGGER.debug("User directory : " + new File(".").getAbsolutePath());
+        LOGGER.info("User directory : " + new File(".").getAbsolutePath());
         // Check all the jars on the class path
         checkClasspathJars();
         // Check the file system for jars that have the properties files
@@ -71,6 +75,7 @@ public class PropertyConfigurer extends Properties {
                 properties.load(inputStream);
                 for (final Map.Entry<Object, Object> mapEntry : properties.entrySet()) {
                     if (mapEntry.getValue() != null) {
+                        LOGGER.info("Setting system property : " + mapEntry.getKey() + ":" + mapEntry.getValue());
                         System.setProperty((String) mapEntry.getKey(), (String) mapEntry.getValue());
                     }
                 }
@@ -94,15 +99,15 @@ public class PropertyConfigurer extends Properties {
         try {
             // We check our own jar
             ProtectionDomain protectionDomain = getClass().getProtectionDomain();
-            LOGGER.warn("Protection domain : " + protectionDomain);
+            LOGGER.info("Protection domain : " + protectionDomain);
             CodeSource codeSource = protectionDomain.getCodeSource();
-            LOGGER.warn("Code source : " + codeSource);
+            LOGGER.info("Code source : " + codeSource);
             URL location = codeSource.getLocation();
-            LOGGER.warn("Location : " + location);
+            LOGGER.info("Location : " + location);
             URI uri = location.toURI();
-            LOGGER.warn("Uri : " + uri);
+            LOGGER.info("Uri : " + uri);
             String jarPath = uri.getPath();
-            LOGGER.warn("Path to jar : " + jarPath);
+            LOGGER.info("Path to jar : " + jarPath);
             File thisJar = new File(jarPath);
             checkJar(thisJar);
         } catch (final URISyntaxException e) {
@@ -119,7 +124,7 @@ public class PropertyConfigurer extends Properties {
                 if (propertyFile == null || !propertyFile.canRead() || propertyFile.isDirectory() || propertyFile.getAbsolutePath().contains(".svn")) {
                     continue;
                 }
-                LOGGER.debug("         : Loading properties from : " + propertyFile);
+                LOGGER.info("         : Loading properties from : " + propertyFile);
                 this.load(new FileInputStream(propertyFile));
             } catch (final Exception e) {
                 LOGGER.error("Exception reading property file : " + propertyFile, e);
@@ -167,7 +172,7 @@ public class PropertyConfigurer extends Properties {
             return;
         }
         try {
-            LOGGER.debug("Reading properties from jar : " + file);
+            LOGGER.info("Reading properties from jar : " + file);
             checkJar(new JarFile(file));
         } catch (final Exception e) {
             LOGGER.error("Exception accessing the properties in jar file : " + file, e);
@@ -186,7 +191,7 @@ public class PropertyConfigurer extends Properties {
                 JarEntry jarEntry = jarEntries.nextElement();
                 String entryName = jarEntry.getName();
                 if (fileNamePattern != null && Pattern.compile(".*(" + fileNamePattern + ").*").matcher(entryName).matches()) {
-                    LOGGER.debug("Jar file : " + jarFile.getName() + ", " + jarEntry);
+                    LOGGER.info("Jar file : " + jarFile.getName() + ", " + jarEntry);
                     InputStream inputStream = jarFile.getInputStream(jarEntry);
                     this.load(inputStream);
                 }

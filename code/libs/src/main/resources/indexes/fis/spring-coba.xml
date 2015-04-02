@@ -11,11 +11,10 @@
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util.xsd">
 
-    <!-- This configuration is for FIS documentation and source code. -->
     <bean
-        id="fis"
+        id="coba"
         class="ikube.model.IndexContext"
-        property:name="fis"
+        property:name="coba"
         property:maxAge="60000"
         property:compoundFile="true"
         property:bufferedDocs="10"
@@ -33,95 +32,11 @@
 
         property:indexDirectoryPath="${index.directory.path}"
         property:indexDirectoryPathBackup="${index.directory.path}"
-        property:children-ref="fis-folders" />
-    <util:list id="fis-folders">
-        <ref local="opf-source"/>
-        <ref local="xct-source"/>
-        <ref local="sepa-source"/>
+        property:children-ref="folders" />
+    <util:list id="folders">
         <ref local="cobaxt-source"/>
         <ref local="cobaxt-security-source"/>
     </util:list>
-
-    <bean
-        id="opf-source"
-        class="ikube.model.IndexableFileSystem"
-        property:name="opf-source"
-        property:path="/home/fis/opf"
-        property:pathFieldName="path"
-        property:nameFieldName="name"
-        property:lengthFieldName="length"
-        property:contentFieldName="contents"
-        property:lastModifiedFieldName="lastmodified"
-        property:unpackZips="true"
-
-        property:stored="true"
-        property:analyzed="true"
-        property:tokenized="true"
-        property:omitNorms="true"
-
-        property:vectored="false"
-
-        property:excludedPattern="fis-excluded-files"
-
-        property:batchSize="10"
-        property:maxReadLength="${fis-max-read-length}"
-        property:maxExceptions="1000000"
-        property:threads="1"
-        property:strategies-ref="fis-strategies" />
-
-    <bean
-        id="xct-source"
-        class="ikube.model.IndexableFileSystem"
-        property:name="xct-source"
-        property:path="/home/fis/xct"
-        property:pathFieldName="path"
-        property:nameFieldName="name"
-        property:lengthFieldName="length"
-        property:contentFieldName="contents"
-        property:lastModifiedFieldName="lastmodified"
-        property:unpackZips="true"
-
-        property:stored="true"
-        property:analyzed="true"
-        property:tokenized="true"
-        property:omitNorms="true"
-
-        property:vectored="false"
-
-        property:excludedPattern="fis-excluded-files"
-
-        property:batchSize="10"
-        property:maxReadLength="${fis-max-read-length}"
-        property:maxExceptions="1000000"
-        property:threads="1"
-        property:strategies-ref="fis-strategies" />
-
-    <bean
-        id="sepa-source"
-        class="ikube.model.IndexableFileSystem"
-        property:name="sepa-source"
-        property:path="/home/fis/sepa"
-        property:pathFieldName="path"
-        property:nameFieldName="name"
-        property:lengthFieldName="length"
-        property:contentFieldName="contents"
-        property:lastModifiedFieldName="lastmodified"
-        property:unpackZips="true"
-
-        property:stored="true"
-        property:analyzed="true"
-        property:tokenized="true"
-        property:omitNorms="true"
-
-        property:vectored="false"
-
-        property:excludedPattern="fis-excluded-files"
-
-        property:batchSize="10"
-        property:maxReadLength="${fis-max-read-length}"
-        property:maxExceptions="10000"
-        property:threads="5"
-        property:strategies-ref="fis-strategies" />
 
     <bean
         id="cobaxt-source"
@@ -176,10 +91,5 @@
         property:maxExceptions="1000000"
         property:threads="1"
         property:strategies-ref="fis-strategies" />
-
-    <util:list id="fis-strategies">
-        <ref bean="ikube.action.index.handler.strategy.ContentTypeStrategy"/>
-        <ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy"/>
-    </util:list>
 
 </beans>

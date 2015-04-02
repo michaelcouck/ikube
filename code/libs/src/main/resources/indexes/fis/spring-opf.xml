@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:property="http://www.springframework.org/schema/p"
+    xmlns:util="http://www.springframework.org/schema/util"
+
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <bean
+        id="opf"
+        class="ikube.model.IndexContext"
+        property:name="opf"
+        property:maxAge="60000"
+        property:compoundFile="true"
+        property:bufferedDocs="10"
+        property:bufferSize="1024"
+        property:batchSize="1000"
+        property:internetBatchSize="10"
+        property:mergeFactor="10"
+        property:maxFieldLength="10000000"
+        property:maxReadLength="10000000"
+        property:throttle="0"
+        property:threads="1"
+        property:delta="false"
+
+        property:analyzer-ref="ikube.action.index.analyzer.StemmingAnalyzer"
+
+        property:indexDirectoryPath="${index.directory.path}"
+        property:indexDirectoryPathBackup="${index.directory.path}"
+        property:children-ref="opf-folders" />
+    <util:list id="opf-folders">
+        <ref local="opf-source"/>
+    </util:list>
+
+    <bean
+        id="opf-source"
+        class="ikube.model.IndexableFileSystem"
+        property:name="opf-source"
+        property:path="/home/fis/opf"
+        property:pathFieldName="path"
+        property:nameFieldName="name"
+        property:lengthFieldName="length"
+        property:contentFieldName="contents"
+        property:lastModifiedFieldName="lastmodified"
+        property:unpackZips="true"
+
+        property:stored="true"
+        property:analyzed="true"
+        property:tokenized="true"
+        property:omitNorms="true"
+
+        property:vectored="false"
+
+        property:excludedPattern="fis-excluded-files"
+
+        property:batchSize="10"
+        property:maxReadLength="${fis-max-read-length}"
+        property:maxExceptions="1000000"
+        property:threads="1"
+        property:strategies-ref="fis-strategies" />
+
+</beans>
