@@ -133,7 +133,7 @@
         property:stored="true"
         property:analyzed="true"
         property:tokenized="true"
-        property:omitNorms="false"
+        property:omitNorms="true"
 
         property:vectored="false"
 

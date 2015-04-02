@@ -26,7 +26,7 @@
             -Dcom.sun.management.jmxremote.authenticate=false
             -Dcom.sun.management.jmxremote.ssl=false
         </jetty-jmx-args>
-        <jetty-jvm-args>-Xms512m -Xmx2048m -XX:MaxPermSize=512m -XX:+CMSClassUnloadingEnabled</jetty-jvm-args>
+        <jetty-jvm-args>-Djava.awt.headless=true -Xms512m -Xmx2048m -XX:MaxPermSize=512m -XX:+CMSClassUnloadingEnabled</jetty-jvm-args>
 	</properties>
 
 	<build>
@@ -101,7 +101,7 @@
 					<stopKey>${jetty-stop-key}</stopKey>
 					<stopPort>${jetty-stop-port}</stopPort>
                     <!--<waitForChild>false</waitForChild>-->
-                    <!--<jvmArgs>${jetty-jvm-args}</jvmArgs>-->
+                    <jvmArgs>${jetty-jvm-args}</jvmArgs>
                     <scanIntervalSeconds>10000</scanIntervalSeconds>
                     <webApp>
                         <contextPath>/ikube</contextPath>
