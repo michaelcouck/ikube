@@ -31,17 +31,6 @@ public class WekaClassifierIntegration extends AbstractTest {
     @Before
     public void before() {
         List<String> modelFiles = new ArrayList<>();
-        //modelFiles.add("sentiment-model-0-150000.arff");
-        //modelFiles.add("sentiment-model-150000-300000.arff");
-        //modelFiles.add("sentiment-model-300000-450000.arff");
-        //modelFiles.add("sentiment-model-450000-600000.arff");
-        //modelFiles.add("sentiment-model-600000-750000.arff");
-        //modelFiles.add("sentiment-model-750000-900000.arff");
-        //modelFiles.add("sentiment-model-900000-1050000.arff");
-        //modelFiles.add("sentiment-model-1050000-1200000.arff");
-        //modelFiles.add("sentiment-model-1200000-1350000.arff");
-        //modelFiles.add("sentiment-model-1350000-1500000.arff");
-        //modelFiles.add("sentiment-model-1500000-1650000.arff");
 
         modelFiles.add("xaa-s.arff");
         modelFiles.add("xab-s.arff");
