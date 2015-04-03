@@ -64,7 +64,7 @@ public final class Deployer {
 
 	@SuppressWarnings("unchecked")
 	public static void main(final String[] args) {
-        if (args != null && args.length > 1) {
+        if (args == null || args.length == 0) {
             usage();
             LOGGER.info("Args null, not deploying : ");
             return;
@@ -74,7 +74,7 @@ public final class Deployer {
 		String configurationFile = CONFIGURATION_FILE;
 		boolean execute = Boolean.TRUE;
 
-		if (args != null && args.length > 1) {
+		if (args.length > 1) {
             int upDirectories = 0;
             while (args[0].contains("../")) {
                 LOGGER.info("Args 0 : " + args[0]);

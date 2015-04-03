@@ -75,6 +75,10 @@ public class PropertyConfigurer extends Properties {
                 properties.load(inputStream);
                 for (final Map.Entry<Object, Object> mapEntry : properties.entrySet()) {
                     if (mapEntry.getValue() != null) {
+                        String key = mapEntry.getKey().toString();
+                        if ("password".equalsIgnoreCase(key) || "passwd".equalsIgnoreCase(key)) {
+                            continue;
+                        }
                         LOGGER.info("Setting system property : " + mapEntry.getKey() + ":" + mapEntry.getValue());
                         System.setProperty((String) mapEntry.getKey(), (String) mapEntry.getValue());
                     }
