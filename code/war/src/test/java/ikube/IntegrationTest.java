@@ -4,12 +4,18 @@ import ikube.action.index.parse.mime.MimeMapper;
 import ikube.action.index.parse.mime.MimeTypes;
 import ikube.database.IDataBase;
 import ikube.scheduling.Scheduler;
+import ikube.security.WebServiceAuthentication;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FILE;
 import ikube.toolkit.THREAD;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -25,12 +31,12 @@ import static ikube.toolkit.OBJECT.populateFields;
  * @version 01.00
  * @since 12-10-2010
  */
-//@Ignore
-//@Configurable
-//@RunWith(SpringJUnit4ClassRunner.class)
-//@ContextConfiguration(locations = {"file:ikube/spring.xml"})
+@Ignore
+@Configurable
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"file:ikube/spring.xml"})
 @SuppressWarnings("SpringJavaAutowiringInspection")
-public abstract class IntegrationTest /* extends AbstractTest */ {
+public abstract class IntegrationTest extends AbstractTest {
 
     protected static final Logger LOGGER = Logger.getLogger(IntegrationTest.class);
     private static final File DOT_DIRECTORY = new File(".");
@@ -40,7 +46,7 @@ public abstract class IntegrationTest /* extends AbstractTest */ {
             new MimeTypes(IConstants.MIME_TYPES);
             new MimeMapper(IConstants.MIME_MAPPING);
             FILE.deleteFiles(DOT_DIRECTORY, "ikube.h2.db", "ikube.lobs.db", "ikube.log", "openjpa.log");
-            // new WebServiceAuthentication().authenticate(HTTP_CLIENT, LOCALHOST, SERVER_PORT, REST_USER_NAME, REST_PASSWORD);
+            new WebServiceAuthentication().authenticate(HTTP_CLIENT, LOCALHOST, SERVER_PORT, REST_USER_NAME, REST_PASSWORD);
         } catch (final Exception e) {
             LOGGER.error(null, e);
         }

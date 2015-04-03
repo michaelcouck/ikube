@@ -237,7 +237,7 @@
                     <forkMode>once</forkMode>
                     <testFailureIgnore>true</testFailureIgnore>
                     <!--suppress MavenModelInspection -->
-                    <!--<argLine>-javaagent:${project.parent.basedir}/serenity/serenity.jar -Djava.awt.headless=true ${serenity-parameters} ${memory-parameters}</argLine>-->
+                    <argLine>-javaagent:${project.parent.basedir}/serenity/serenity.jar -Djava.awt.headless=true ${serenity-parameters} ${memory-parameters}</argLine>
                 </configuration>
             </plugin>
             <!-- This plugin runs the integration tests. -->
@@ -1353,16 +1353,16 @@
             <version>0.5</version>
             <scope>compile</scope>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.apache.tika</groupId>-->
-            <!--<artifactId>tika-core</artifactId>-->
-            <!--<version>1.7</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.apache.tika</groupId>-->
-            <!--<artifactId>tika-parsers</artifactId>-->
-            <!--<version>1.7</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
+            <version>1.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-parsers</artifactId>
+            <version>1.7</version>
+        </dependency>
     </dependencies>
 
     <repositories>

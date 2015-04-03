@@ -13,6 +13,9 @@ import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
 import org.apache.lucene.document.Document;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.AutoDetectParser;
+import org.apache.tika.sax.BodyContentHandler;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -81,45 +84,12 @@ public class InternetResourceHandler extends ResourceHandler<IndexableInternet> 
     protected void parseContent(final Url url, final int maxReadLength) {
         try {
             byte[] buffer = url.getRawContent();
-            //logger.debug("Buffer length : " + buffer.length);
-            //String contentType;
-            //if (url.getContentType() != null) {
-            //    contentType = url.getContentType();
-            //} else {
-            //    contentType = URI.create(url.getUrl()).toURL().getFile();
-            //    url.setContentType(contentType);
-            //}
-            //// The first few bytes so we can guess the content type
-            byte[] bytes = new byte[Math.min(buffer.length, 1024)];
-            System.arraycopy(buffer, 0, bytes, 0, bytes.length);
-            //IParser parser = ParserProvider.getParser(contentType, bytes);
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buffer, 0, buffer.length);
-            //OutputStream outputStream = null;
-            //try {
-            //    outputStream = parser.parse(byteArrayInputStream, new ByteArrayOutputStream());
-            //} catch (final Exception e) {
-            //    // If this is an XML exception then try the HTML parser
-            //    if (XMLParser.class.isAssignableFrom(parser.getClass())) {
-            //        contentType = "text/html";
-            //        parser = ParserProvider.getParser(contentType, bytes);
-            //        outputStream = parser.parse(byteArrayInputStream, new ByteArrayOutputStream());
-            //    } else {
-            //        String message = "Exception parsing content from url : " + url.getUrl();
-            //        logger.error(message, e);
-            //    }
-            //}
-            //if (outputStream != null) {
-            //    String parsedContent = outputStream.toString();
-            //    logger.debug("Parsed content length : " + parsedContent.length() + ", content type : " + url.getContentType());
-            //    url.setParsedContent(parsedContent);
-            //}
-
-            //AutoDetectParser parser = new AutoDetectParser();
-            //BodyContentHandler handler = new BodyContentHandler(maxReadLength);
-            //Metadata metadata = new Metadata();
-            //
-            //parser.parse(byteArrayInputStream, handler, metadata);
-            String parsedContent = ""; // handler.toString();
+            AutoDetectParser parser = new AutoDetectParser();
+            BodyContentHandler handler = new BodyContentHandler(maxReadLength);
+            Metadata metadata = new Metadata();
+            parser.parse(byteArrayInputStream, handler, metadata);
+            String parsedContent = handler.toString();
             url.setParsedContent(parsedContent);
         } catch (final Exception e) {
             throw new RuntimeException(e);

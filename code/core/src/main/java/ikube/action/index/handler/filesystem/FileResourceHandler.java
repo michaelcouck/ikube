@@ -10,6 +10,9 @@ import ikube.model.IndexableFileSystem;
 import ikube.toolkit.FILE;
 import ikube.toolkit.HASH;
 import org.apache.lucene.document.Document;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.AutoDetectParser;
+import org.apache.tika.sax.BodyContentHandler;
 import org.xml.sax.SAXParseException;
 
 import java.io.*;
@@ -78,12 +81,12 @@ public class FileResourceHandler extends ResourceHandler<IndexableFileSystem> {
             byteInputStream = new ByteArrayInputStream(byteBuffer, 0, read);
             byteOutputStream = new ByteArrayOutputStream();
 
-            //AutoDetectParser parser = new AutoDetectParser();
-            //BodyContentHandler handler = new BodyContentHandler((int) indexableFileSystem.getMaxReadLength());
-            //Metadata metadata = new Metadata();
-            //
-            //parser.parse(byteInputStream, handler, metadata);
-            String parsedContent = ""; // handler.toString();
+            AutoDetectParser parser = new AutoDetectParser();
+            BodyContentHandler handler = new BodyContentHandler((int) indexableFileSystem.getMaxReadLength());
+            Metadata metadata = new Metadata();
+
+            parser.parse(byteInputStream, handler, metadata);
+            String parsedContent = handler.toString();
 
             // This is the unique id of the resource to be able to delete it
             String fileId = HASH.hash(file.getAbsolutePath()).toString();
