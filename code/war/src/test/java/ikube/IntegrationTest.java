@@ -10,11 +10,6 @@ import ikube.toolkit.THREAD;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -30,10 +25,10 @@ import static ikube.toolkit.OBJECT.populateFields;
  * @version 01.00
  * @since 12-10-2010
  */
-@Ignore
-@Configurable
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"file:ikube/spring.xml"})
+//@Ignore
+//@Configurable
+//@RunWith(SpringJUnit4ClassRunner.class)
+//@ContextConfiguration(locations = {"file:ikube/spring.xml"})
 @SuppressWarnings("SpringJavaAutowiringInspection")
 public abstract class IntegrationTest /* extends AbstractTest */ {
 
