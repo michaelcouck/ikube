@@ -33,7 +33,10 @@ public class ClusterManagerGridGain extends AClusterManager {
 
     public void initialize() throws GridException {
         ip = UriUtilities.getIp();
-        GridGain.start();
+        // TODO: This must be started in the configuration somehow
+        if (!GridGainState.STARTED.equals(GridGain.state())) {
+            GridGain.start();
+        }
         grid = GridGain.grid(IConstants.IKUBE);
         Collection<GridNode> gridNodes = grid.nodes();
         for (final GridNode gridNode : gridNodes) {

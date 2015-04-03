@@ -140,7 +140,7 @@ public class TweetsTest extends AbstractTest {
         }).when(tweets).addCount(any(Object[].class), anyString(), any(HashMap.class));
         Object[][] data = tweets.setTimeLineSentiment(searchTwitter);
 
-        logger.error(Arrays.deepToString(data));
+        logger.info(Arrays.deepToString(data));
 
         assertNotNull(data);
         assertEquals(7, data.length);

@@ -23,4 +23,11 @@
         </property>
     </bean>
 
+    <!--<bean-->
+        <!--id="ikube.cluster.IClusterManager"-->
+        <!--class="ikube.cluster.gg.ClusterManagerGridGain"-->
+        <!--lazy-init="false"-->
+        <!--init-method="initialize"-->
+        <!--destroy-method="destroy"/>-->
+
 </beans>

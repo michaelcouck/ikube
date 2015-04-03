@@ -141,9 +141,7 @@ public class GCAnalyzer extends Resource {
             context.setAnalyzer(WekaForecastClassifier.class.getName());
             // Get the vectors of data from the analyzer
             String stringMatrix = matrixToString(matrix);
-            if (logger.isErrorEnabled()) {
-                logger.error("Matrix to time series analyze : " + stringMatrix);
-            }
+            logger.info("Matrix to time series analyze : " + stringMatrix);
             context.setTrainingDatas(stringMatrix);
             analyticsService.create(context);
 

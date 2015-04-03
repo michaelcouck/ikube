@@ -16,7 +16,8 @@
 		<final.name>${project.build.finalName}.${project.packaging}</final.name>
 		<maven.build.timestamp.format>dd-MM-yyyy HH:mm:ss</maven.build.timestamp.format>
 
-        <jetty-version>7.6.15.v20140411</jetty-version>
+        <!--<jetty-version>7.6.15.v20140411</jetty-version>-->
+        <jetty-version>9.0.5</jetty-version>
         <jetty-stop-key>stop</jetty-stop-key>
         <jetty-stop-port>9180</jetty-stop-port>
         <jetty-jmx-args>
@@ -96,7 +97,8 @@
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
-				<version>${jetty-version}</version>
+				<!--<version>${jetty-version}</version>-->
+				<version>8.1.16.v20140903</version>
 				<configuration>
 					<stopKey>${jetty-stop-key}</stopKey>
 					<stopPort>${jetty-stop-port}</stopPort>
@@ -114,29 +116,29 @@
 					</connectors>
                 </configuration>
 				<executions>
-					<execution>
-						<id>start-jetty</id>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-                        <configuration>
-                            <!--
-                                To run in forked mode this causes H2 to complain that the database is locked
-                            -->
-                            <!--<stopKey>${jetty-stop-key}</stopKey>-->
-                            <!--<stopPort>${jetty-stop-port}</stopPort>-->
-                            <!--<waitForChild>false</waitForChild>-->
-                            <daemon>true</daemon>
-                        </configuration>
-					</execution>
-					<execution>
-						<id>stop-jetty</id>
-						<phase>post-integration-test</phase>
-						<goals>
-							<goal>stop</goal>
-						</goals>
-					</execution>
+					<!--<execution>-->
+						<!--<id>start-jetty</id>-->
+						<!--<phase>pre-integration-test</phase>-->
+						<!--<goals>-->
+							<!--<goal>run</goal>-->
+						<!--</goals>-->
+                        <!--<configuration>-->
+                            <!--&lt;!&ndash;-->
+                                <!--To run in forked mode this causes H2 to complain that the database is locked-->
+                            <!--&ndash;&gt;-->
+                            <!--&lt;!&ndash;<stopKey>${jetty-stop-key}</stopKey>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<stopPort>${jetty-stop-port}</stopPort>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<waitForChild>false</waitForChild>&ndash;&gt;-->
+                            <!--<daemon>true</daemon>-->
+                        <!--</configuration>-->
+					<!--</execution>-->
+					<!--<execution>-->
+						<!--<id>stop-jetty</id>-->
+						<!--<phase>post-integration-test</phase>-->
+						<!--<goals>-->
+							<!--<goal>stop</goal>-->
+						<!--</goals>-->
+					<!--</execution>-->
 				</executions>
 			</plugin>
 		</plugins>
@@ -149,32 +151,32 @@
 			<version>${ikube-version}</version>
 			<scope>compile</scope>
 		</dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-server</artifactId>
-            <version>${jetty-version}</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-util</artifactId>
-            <version>${jetty-version}</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>example-jetty-embedded</artifactId>
-            <version>${jetty-version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-embedded-examples</artifactId>
-            <version>7.0.0.M2</version>
-            <scope>provided</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.eclipse.jetty</groupId>-->
+            <!--<artifactId>jetty-server</artifactId>-->
+            <!--<version>${jetty-version}</version>-->
+            <!--<type>jar</type>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.eclipse.jetty</groupId>-->
+            <!--<artifactId>jetty-util</artifactId>-->
+            <!--<version>${jetty-version}</version>-->
+            <!--<type>jar</type>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.eclipse.jetty</groupId>-->
+            <!--<artifactId>example-jetty-embedded</artifactId>-->
+            <!--<version>${jetty-version}</version>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.eclipse.jetty</groupId>-->
+            <!--<artifactId>jetty-embedded-examples</artifactId>-->
+            <!--<version>7.0.0.M2</version>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
 
 		<dependency>
 			<groupId>javax.servlet</groupId>

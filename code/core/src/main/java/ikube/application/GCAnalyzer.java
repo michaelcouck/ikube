@@ -273,7 +273,7 @@ public class GCAnalyzer {
     void printMBeans(final MBeanServerConnection mBeanServerConnection) throws IOException {
         Set<ObjectName> objectNames = mBeanServerConnection.queryNames(null, null);
         for (final ObjectName objectName : objectNames) {
-            LOGGER.error("Object name : " + objectName);
+            LOGGER.info("Object name : " + objectName);
         }
     }
 
