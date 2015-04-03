@@ -91,22 +91,22 @@ public class WekaClassifierIntegration extends AbstractTest {
 
         analysis.setInput("i missed the new moon trailer");
         analysis = (Analysis) analyzer.analyze(context, analysis);
-        logger.warn("1) " + analysis.getClazz());
+        logger.info("1) " + analysis.getClazz());
         assertEquals(IConstants.NEGATIVE, analysis.getClazz());
 
         analysis.setInput("omg its already o");
         analysis = (Analysis) analyzer.analyze(context, analysis);
-        logger.warn("2) " + analysis.getClazz());
+        logger.info("2) " + analysis.getClazz());
         assertEquals(IConstants.POSITIVE, analysis.getClazz());
 
         analysis.setInput("or i just worry too much");
         analysis = (Analysis) analyzer.analyze(context, analysis);
-        logger.warn("3) " + analysis.getClazz());
+        logger.info("3) " + analysis.getClazz());
         assertEquals(IConstants.NEGATIVE, analysis.getClazz());
 
         analysis.setInput("hmmmm i wonder how she my number");
         analysis = (Analysis) analyzer.analyze(context, analysis);
-        logger.warn("4) " + analysis.getClazz());
+        logger.info("4) " + analysis.getClazz());
         assertEquals(IConstants.POSITIVE, analysis.getClazz());
     }
 

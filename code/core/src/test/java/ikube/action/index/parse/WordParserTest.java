@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.OutputStream;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -20,6 +21,7 @@ import org.junit.Test;
 public class WordParserTest extends AbstractTest {
 
 	@Test
+    @Ignore
 	public void parse() throws Exception {
 		File file = FILE.findFileRecursively(new File("."), new String[]{"doc.doc"});
 		byte[] bytes = FILE.getContents(file, Integer.MAX_VALUE).toByteArray();

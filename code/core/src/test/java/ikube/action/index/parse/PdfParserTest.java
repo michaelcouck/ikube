@@ -9,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.OutputStream;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -19,6 +20,7 @@ import org.junit.Test;
 public class PdfParserTest extends AbstractTest {
 
 	@Test
+    @Ignore
 	public void parse() throws Exception {
 		PdfParser pdfParser = new PdfParser();
 		File file = FILE.findFileRecursively(new File("."), "pdf.pdf");
