@@ -6,6 +6,7 @@ import ikube.model.*;
 import ikube.toolkit.OBJECT;
 import ikube.toolkit.PERFORMANCE;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -20,6 +21,7 @@ import static org.junit.Assert.*;
  * @version 01.00
  * @since long time
  */
+@Ignore
 @SuppressWarnings("SpringJavaAutowiringInspection")
 public class DataBaseIntegration extends IntegrationTest {
 
