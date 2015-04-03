@@ -101,12 +101,12 @@ public class IndexDeltaIntegration extends IntegrationTest {
             random = appendRandomString(secondDeltaFile);
             // Only a hit from the second delta file
             executeDelta();
-            logger.info("Searching for random : " + random);
+            LOGGER.info("Searching for random : " + random);
             verifyIndex(random);
             verifyNumDocs(2);
 
             // No documents should be added after here
-            logger.warn("******************** NO DOCUMENTS *************************************");
+            LOGGER.warn("******************** NO DOCUMENTS *************************************");
             executeDelta();
             verifyIndex(random);
 
@@ -124,7 +124,7 @@ public class IndexDeltaIntegration extends IntegrationTest {
             Document document = indexReader.document(i);
             for (final IndexableField fieldable : document.getFields()) {
                 String fieldableValue = fieldable.stringValue();
-                logger.info("Field value : " + fieldableValue);
+                LOGGER.info("Field value : " + fieldableValue);
                 if (fieldableValue.contains(random)) {
                     return;
                 }

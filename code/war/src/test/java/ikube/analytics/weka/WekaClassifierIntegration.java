@@ -7,7 +7,6 @@ import ikube.analytics.IAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import weka.classifiers.functions.SMO;
 import weka.filters.unsupervised.attribute.StringToWordVector;
@@ -22,7 +21,6 @@ import static org.junit.Assert.assertEquals;
  * @version 01.00
  * @since 10-11-2014
  */
-@Ignore
 public class WekaClassifierIntegration extends AbstractTest {
 
     private Object[] algorithms;

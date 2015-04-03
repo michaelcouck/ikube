@@ -63,15 +63,15 @@ public class IndexableEmailHandlerIntegration extends IntegrationTest {
 			// mail server setup that can send more than a few thousand mails in a day!!!
 			// assertTrue("Should be some documents, we just put a mail in the account : ", indexWriter.numDocs() > 0);
 		} catch (final SMTPSendFailedException e) {
-            logger.error("Exception sending mail, again. Bla, bla, bla...", e);
-            logger.error("Message : " + e.getMessage());
-            logger.error("Command : " + e.getCommand());
+            LOGGER.error("Exception sending mail, again. Bla, bla, bla...", e);
+            LOGGER.error("Message : " + e.getMessage());
+            LOGGER.error("Command : " + e.getCommand());
             if (e.getReturnCode() != 550) {
                 // TODO: Check the message output
                 // throw e;
             }
         } catch (final Exception e) {
-            logger.error("Exception sending mail, again. Bla, bla, bla...", e);
+            LOGGER.error("Exception sending mail, again. Bla, bla, bla...", e);
         }
 	}
 

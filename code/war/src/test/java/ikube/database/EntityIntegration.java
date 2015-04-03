@@ -110,12 +110,12 @@ public class EntityIntegration extends IntegrationTest {
                         Object id = getIdFieldValue(entity);
                         if (id != null) {
                             Object result = dataBase.find(entity.getClass(), (Long) id);
-                            logger.debug("Entity : " + entityClass.getName() + ", " + field + ", " + result + ", not null : " + (result != null));
+                            LOGGER.debug("Entity : " + entityClass.getName() + ", " + field + ", " + result + ", not null : " + (result != null));
                             assertNotNull(result);
                         }
                         if (value != null) {
                             Object fieldValue = ReflectionUtils.getField(field, entity);
-                            logger.debug("Entity : " + entityClass.getName() + ", " + field + ", " + value + ", " + fieldValue + ", values equal : " + (value == fieldValue));
+                            LOGGER.debug("Entity : " + entityClass.getName() + ", " + field + ", " + value + ", " + fieldValue + ", values equal : " + (value == fieldValue));
                             assertEquals(value, fieldValue);
                         }
                     }
@@ -151,7 +151,7 @@ public class EntityIntegration extends IntegrationTest {
             @Override
             @SuppressWarnings("synthetic-access")
             public void doWithEntity(final Object entity, final Class<?> entityClass) {
-                logger.debug("Removing entity : " + entity);
+                LOGGER.debug("Removing entity : " + entity);
                 int existingRecords = dataBase.count(entityClass).intValue();
                 // Build a graph for all the entities, penetrating one level deep
                 populateFields(entityClass, entity, true, 0, 3, SKIPPED_FIELDS);

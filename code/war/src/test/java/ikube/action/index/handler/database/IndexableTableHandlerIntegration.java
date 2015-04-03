@@ -178,7 +178,7 @@ public class IndexableTableHandlerIntegration extends IntegrationTest {
                 executeForkJoinTasks(indexContext.getName(), snapshotTable.getThreads(), forkJoinTask);
                 sleep(5000);
             } catch (final Exception e) {
-                logger.error(e.getMessage());
+                LOGGER.error(e.getMessage());
             }
         }
         assertTrue("There must be some data in the index : ", indexContext.getIndexWriters()[0].numDocs() > 0);

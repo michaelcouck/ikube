@@ -1,10 +1,15 @@
 package ikube.analytics;
 
 import ikube.IntegrationTest;
+import ikube.analytics.weka.WekaClusterer;
 import ikube.model.Analysis;
 import ikube.model.Context;
+import ikube.toolkit.FILE;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import weka.clusterers.SimpleKMeans;
+
+import java.io.File;
 
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
@@ -72,6 +77,29 @@ public class AnalyticsServiceIntegration extends IntegrationTest {
         analyticsService.destroy(context);
         context = analyticsService.getContext(contextName);
         assertNull(context);
+    }
+
+    protected Context getContext(final String fileName, final String name) throws Exception {
+        File trainingDataFile = FILE.findFileRecursively(new File("."), fileName);
+        String trainingData = FILE.getContent(trainingDataFile);
+
+        Context context = new Context();
+        context.setName(name);
+        context.setAnalyzer(WekaClusterer.class.getName());
+        context.setAlgorithms(SimpleKMeans.class.getName());
+        context.setOptions("-N", "6");
+
+        context.setTrainingDatas(trainingData);
+        context.setMaxTrainings(Integer.MAX_VALUE);
+
+        return context;
+    }
+
+    protected Analysis getAnalysis(final String context, final String input) {
+        Analysis<String, double[]> analysis = new Analysis<>();
+        analysis.setContext(context);
+        analysis.setInput(input);
+        return analysis;
     }
 
 }

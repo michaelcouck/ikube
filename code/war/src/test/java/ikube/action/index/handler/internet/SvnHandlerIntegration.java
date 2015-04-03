@@ -55,7 +55,7 @@ public class SvnHandlerIntegration extends IntegrationTest {
             THREAD.executeForkJoinTasks(indexContext.getName(), indexableSvn.getThreads(), forkJoinTask);
             THREAD.waitForFuture(forkJoinTask, Integer.MAX_VALUE);
 
-            logger.info("Documents : " + indexWriter.numDocs());
+            LOGGER.info("Documents : " + indexWriter.numDocs());
             assertTrue("There must be some documents in the index : ", indexWriter.numDocs() > 0);
         } finally {
             IndexManager.closeIndexWriter(indexWriter);

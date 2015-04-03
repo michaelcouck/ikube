@@ -73,7 +73,7 @@ public class IndexableInternetHandlerIntegration extends IntegrationTest {
             THREAD.executeForkJoinTasks(indexContext.getName(), indexableInternet.getThreads(), forkJoinTask);
             THREAD.waitForFuture(forkJoinTask, Integer.MAX_VALUE);
 
-            logger.info("Documents : " + indexWriter.numDocs());
+            LOGGER.info("Documents : " + indexWriter.numDocs());
             assertTrue("There must be some documents in the index : ", indexWriter.numDocs() > 0);
         } finally {
             IndexManager.closeIndexWriter(indexWriter);
@@ -88,7 +88,7 @@ public class IndexableInternetHandlerIntegration extends IntegrationTest {
         new Thread(new Runnable() {
             public void run() {
                 THREAD.sleep(15000);
-                logger.info("Terminating the internet job : " + indexContext.getName());
+                LOGGER.info("Terminating the internet job : " + indexContext.getName());
                 THREAD.cancelForkJoinPool(indexContext.getName());
             }
         }).start();
@@ -106,15 +106,15 @@ public class IndexableInternetHandlerIntegration extends IntegrationTest {
                 try {
                     assertTrue(forkJoinTask.isDone() || forkJoinTask.isCancelled());
                 } finally {
-                    logger.info("Should destroy the thread pools here : " + indexContext.getName());
+                    LOGGER.info("Should destroy the thread pools here : " + indexContext.getName());
                     THREAD.destroy();
                 }
             }
         }).start();
 
-        logger.info("Starting the job : " + indexContext.getName());
+        LOGGER.info("Starting the job : " + indexContext.getName());
         THREAD.executeForkJoinTasks(indexContext.getName(), indexableInternet.getThreads(), forkJoinTask);
-        logger.info("Waiting for the job : " + indexContext.getName());
+        LOGGER.info("Waiting for the job : " + indexContext.getName());
         THREAD.waitForFuture(forkJoinTask, 60 * 10);
         // If this test does not work then we will never get here
     }

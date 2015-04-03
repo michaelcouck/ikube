@@ -122,7 +122,7 @@ public class DataBaseIntegration extends IntegrationTest {
                 }
             }, "Iterations per second : ", iterations, false);
             double insertsPerSecond = (perSecond * batchSize);
-            logger.info("Inserts per second : " + insertsPerSecond);
+            LOGGER.info("Inserts per second : " + insertsPerSecond);
             assertTrue("We must have at least " + minimumInsertsPerSecond + " inserts per second : " + insertsPerSecond,
                     insertsPerSecond > minimumInsertsPerSecond);
             delete(dataBase, Url.class);

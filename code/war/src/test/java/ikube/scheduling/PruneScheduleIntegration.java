@@ -37,24 +37,24 @@ public class PruneScheduleIntegration extends IntegrationTest {
         int startIndex = 0;
         int maxResults = 10;
         List<Action> actions = dataBase.find(Action.class, startIndex, maxResults);
-        logger.warn("Actions : " + actions.size());
+        LOGGER.warn("Actions : " + actions.size());
         assertEquals("There should be no actions in the database : ", 0, actions.size());
 
         // persistAction(1);
         insert(dataBase, Action.class, 1, "id", "indexContext", "snapshot");
         actions = dataBase.find(Action.class, startIndex, maxResults);
-        logger.warn("Actions : " + actions.size());
+        LOGGER.warn("Actions : " + actions.size());
         assertEquals("There should be one action in the database : ", 1, actions.size());
 
         prune.run();
         actions = dataBase.find(Action.class, startIndex, maxResults);
-        logger.warn("Actions : " + actions.size());
+        LOGGER.warn("Actions : " + actions.size());
         assertEquals("There should be one action in the database : ", 1, actions.size());
 
         // persistAction((int) IConstants.MAX_ACTIONS + 10);
         insert(dataBase, Action.class, (int) IConstants.MAX_ACTIONS + 10, "id", "indexContext", "snapshot");
         actions = dataBase.find(Action.class, 0, Integer.MAX_VALUE);
-        logger.warn("Actions : " + actions.size());
+        LOGGER.warn("Actions : " + actions.size());
         assertTrue("There should be a lot of actions in the database : ", actions.size() > IConstants.MAX_ACTIONS);
 
         prune.run();

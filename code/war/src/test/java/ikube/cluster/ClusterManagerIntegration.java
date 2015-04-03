@@ -45,7 +45,7 @@ public class ClusterManagerIntegration extends IntegrationTest {
             assertTrue((Boolean) future.get());
         }
         int sizeOfCluster = Hazelcast.getAllHazelcastInstances().iterator().next().getCluster().getMembers().size();
-        logger.info("Executions : " + futures.size() + ", cluster size : " + sizeOfCluster);
+        LOGGER.info("Executions : " + futures.size() + ", cluster size : " + sizeOfCluster);
         assertEquals("There should be one execution per node in the cluster : ", sizeOfCluster, futures.size());
     }
 

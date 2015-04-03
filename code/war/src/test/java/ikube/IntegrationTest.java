@@ -4,7 +4,6 @@ import ikube.action.index.parse.mime.MimeMapper;
 import ikube.action.index.parse.mime.MimeTypes;
 import ikube.database.IDataBase;
 import ikube.scheduling.Scheduler;
-import ikube.security.WebServiceAuthentication;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FILE;
 import ikube.toolkit.THREAD;
@@ -36,9 +35,9 @@ import static ikube.toolkit.OBJECT.populateFields;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"file:ikube/spring.xml"})
 @SuppressWarnings("SpringJavaAutowiringInspection")
-public abstract class IntegrationTest extends AbstractTest {
+public abstract class IntegrationTest /* extends AbstractTest */ {
 
-    private static final Logger LOGGER = Logger.getLogger(IntegrationTest.class);
+    protected static final Logger LOGGER = Logger.getLogger(IntegrationTest.class);
     private static final File DOT_DIRECTORY = new File(".");
 
     static {
@@ -46,7 +45,7 @@ public abstract class IntegrationTest extends AbstractTest {
             new MimeTypes(IConstants.MIME_TYPES);
             new MimeMapper(IConstants.MIME_MAPPING);
             FILE.deleteFiles(DOT_DIRECTORY, "ikube.h2.db", "ikube.lobs.db", "ikube.log", "openjpa.log");
-            new WebServiceAuthentication().authenticate(HTTP_CLIENT, LOCALHOST, SERVER_PORT, REST_USER_NAME, REST_PASSWORD);
+            // new WebServiceAuthentication().authenticate(HTTP_CLIENT, LOCALHOST, SERVER_PORT, REST_USER_NAME, REST_PASSWORD);
         } catch (final Exception e) {
             LOGGER.error(null, e);
         }
