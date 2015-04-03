@@ -6,9 +6,6 @@ import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.model.IndexableSvn;
 import org.apache.lucene.document.Document;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.parser.AutoDetectParser;
-import org.apache.tika.sax.BodyContentHandler;
 import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNProperties;
@@ -132,12 +129,12 @@ public class SvnResourceHandler extends ResourceHandler<IndexableSvn> {
             //    indexableSvn.setContent(parsedContent);
             //}
 
-            AutoDetectParser parser = new AutoDetectParser();
-            BodyContentHandler handler = new BodyContentHandler((int) indexableSvn.getMaxReadLength());
-            Metadata metadata = new Metadata();
-
-            parser.parse(byteArrayInputStream, handler, metadata);
-            String parsedContent = handler.toString();
+            //AutoDetectParser parser = new AutoDetectParser();
+            //BodyContentHandler handler = new BodyContentHandler((int) indexableSvn.getMaxReadLength());
+            //Metadata metadata = new Metadata();
+            //
+            //parser.parse(byteArrayInputStream, handler, metadata);
+            String parsedContent = ""; // handler.toString();
             indexableSvn.setContent(parsedContent);
         } catch (final Exception e) {
             throw new RuntimeException(e);

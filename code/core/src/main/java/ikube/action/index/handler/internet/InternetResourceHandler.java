@@ -13,9 +13,6 @@ import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
 import org.apache.lucene.document.Document;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.parser.AutoDetectParser;
-import org.apache.tika.sax.BodyContentHandler;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -117,12 +114,12 @@ public class InternetResourceHandler extends ResourceHandler<IndexableInternet> 
             //    url.setParsedContent(parsedContent);
             //}
 
-            AutoDetectParser parser = new AutoDetectParser();
-            BodyContentHandler handler = new BodyContentHandler(maxReadLength);
-            Metadata metadata = new Metadata();
-
-            parser.parse(byteArrayInputStream, handler, metadata);
-            String parsedContent = handler.toString();
+            //AutoDetectParser parser = new AutoDetectParser();
+            //BodyContentHandler handler = new BodyContentHandler(maxReadLength);
+            //Metadata metadata = new Metadata();
+            //
+            //parser.parse(byteArrayInputStream, handler, metadata);
+            String parsedContent = ""; // handler.toString();
             url.setParsedContent(parsedContent);
         } catch (final Exception e) {
             throw new RuntimeException(e);
