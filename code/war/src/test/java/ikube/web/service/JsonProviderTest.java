@@ -48,7 +48,6 @@ public class JsonProviderTest extends AbstractTest {
         MultivaluedMap<String, Object> multivaluedMap = new OutBoundHeaders();
         jsonProvider.writeTo(search, Object.class, Search.class, new Annotation[0],
                 MediaType.WILDCARD_TYPE, multivaluedMap, outputStream);
-        logger.error(outputStream.toString());
         Search response = IConstants.GSON.fromJson(outputStream.toString(), Search.class);
         assertNotNull(response);
         assertEquals(search.getIndexName(), response.getIndexName());

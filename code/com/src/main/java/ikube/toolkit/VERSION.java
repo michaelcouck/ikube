@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
@@ -53,30 +52,40 @@ public class VERSION {
      * them available to the web pages via the static class properties of the same name.
      */
     public static synchronized void readPomProperties() {
-        InputStream inputStream = null;
         String pomPropertiesFile = "META-INF/maven/ikube/ikube-core/pom.properties";
+        InputStream inputStream = null;
         try {
-            ClassPathResource classPathResource = new ClassPathResource(pomPropertiesFile, ikube.toolkit.VERSION.class.getClassLoader());
+            ClassPathResource classPathResource = new ClassPathResource(pomPropertiesFile, VERSION.class.getClassLoader());
             inputStream = classPathResource.getInputStream();
-
             Properties properties = new Properties();
             properties.load(inputStream);
             VERSION = properties.getProperty("version");
+        } catch (final Exception e) {
+            LOGGER.error("Exception reading the Maven properties for the build : " + pomPropertiesFile + ", " + e.getMessage());
+            if (LOGGER.isInfoEnabled()) {
+                LOGGER.info(null, e);
+            }
+        } finally {
+            if (StringUtils.isEmpty(VERSION)) {
+                VERSION = " > 5.3.0 ";
+            }
             closeQuietly(inputStream);
+        }
 
-            classPathResource = new ClassPathResource(pomPropertiesFile, ikube.toolkit.VERSION.class.getClassLoader());
+        try {
+            ClassPathResource classPathResource = new ClassPathResource(pomPropertiesFile, VERSION.class.getClassLoader());
             inputStream = classPathResource.getInputStream();
             List<String> lines = IOUtils.readLines(inputStream);
             TIMESTAMP = lines.get(1).replaceAll("#", "");
-        } catch (final IOException e) {
+        } catch (final Exception e) {
             LOGGER.error("Exception reading the Maven properties for the build : " + pomPropertiesFile + ", " + e.getMessage());
-            if (StringUtils.isEmpty(VERSION)) {
-                VERSION = " > 5.1.0 ";
-            }
-            if (StringUtils.isEmpty(TIMESTAMP)) {
-                TIMESTAMP = " > 11/10/2014";
+            if (LOGGER.isInfoEnabled()) {
+                LOGGER.info(null, e);
             }
         } finally {
+            if (StringUtils.isEmpty(TIMESTAMP)) {
+                TIMESTAMP = " > 01/01/2015";
+            }
             closeQuietly(inputStream);
         }
     }

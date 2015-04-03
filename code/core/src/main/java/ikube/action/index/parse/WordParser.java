@@ -4,9 +4,6 @@ package ikube.action.index.parse;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.apache.poi.hwpf.extractor.WordExtractor;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-
 /**
  * Parser for the Word format.
  * 
@@ -27,9 +24,10 @@ public class WordParser implements IParser {
 	 */
 	@Override
 	public final OutputStream parse(final InputStream inputStream, final OutputStream outputStream) throws Exception {
-		POIFSFileSystem fileSystem = new POIFSFileSystem(inputStream);
-		WordExtractor extractor = new WordExtractor(fileSystem);
-		outputStream.write(extractor.getText().trim().getBytes());
-		return outputStream;
+		//POIFSFileSystem fileSystem = new POIFSFileSystem(inputStream);
+		//WordExtractor extractor = new WordExtractor(fileSystem);
+		//outputStream.write(extractor.getText().trim().getBytes());
+		//return outputStream;
+        return null;
 	}
 }
