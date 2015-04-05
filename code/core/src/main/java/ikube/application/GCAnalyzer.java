@@ -78,10 +78,10 @@ public class GCAnalyzer {
     public void registerCollectors(final String addressRange) {
         THREAD.submit("register-collectors", new Runnable() {
             public void run() {
-                // THREAD.sleep(30000);
+                THREAD.sleep(30000);
                 List<String> addressesAndPorts = Scanner.scan(addressRange, 60000, Boolean.FALSE, Boolean.TRUE);
                 // We'll wait a bit for the scanner to finish completely
-                // THREAD.sleep(10000);
+                THREAD.sleep(10000);
                 LOGGER.info("Addresses : " + addressesAndPorts.size());
                 for (final String addressAndPort : addressesAndPorts) {
                     LOGGER.info("    : " + addressAndPort);

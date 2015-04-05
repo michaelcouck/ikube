@@ -1,10 +1,12 @@
 package ikube;
 
 import ikube.analytics.weka.WekaClusterer;
+import ikube.mock.SpellingCheckerMock;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.FILE;
 import ikube.toolkit.LOGGING;
+import mockit.Mockit;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.junit.runner.RunWith;
@@ -37,7 +39,7 @@ public abstract class AbstractTest {
 
     static {
         LOGGING.configure();
-        // Mockit.setUpMocks(SpellingCheckerMock.class);
+        Mockit.setUpMocks(SpellingCheckerMock.class);
     }
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());

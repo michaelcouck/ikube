@@ -9,16 +9,16 @@
 
     <description>Bla...</description>
 
-    <bean
-        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-        depends-on="ikube.application.GCAnalyzer">
-        <property name="targetObject" ref="ikube.application.GCAnalyzer"/>
-        <property name="targetMethod" value="registerCollectors"/>
-        <property name="arguments">
-            <list>
-                <value>192.168.1.1/24</value>
-            </list>
-        </property>
-    </bean>
+    <!--<bean-->
+        <!--class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"-->
+        <!--depends-on="ikube.application.GCAnalyzer">-->
+        <!--<property name="targetObject" ref="ikube.application.GCAnalyzer"/>-->
+        <!--<property name="targetMethod" value="registerCollectors"/>-->
+        <!--<property name="arguments">-->
+            <!--<list>-->
+                <!--<value>192.168.1.1/24</value>-->
+            <!--</list>-->
+        <!--</property>-->
+    <!--</bean>-->
 
 </beans>

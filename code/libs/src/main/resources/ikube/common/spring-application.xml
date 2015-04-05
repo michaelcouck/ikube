@@ -9,8 +9,8 @@
 
     <description>This configuration is for beans that are used in applications.</description>
 
-    <bean
-        id="ikube.application.GCAnalyzer"
-        class="ikube.application.GCAnalyzer"/>
+    <!--<bean-->
+        <!--id="ikube.application.GCAnalyzer"-->
+        <!--class="ikube.application.GCAnalyzer"/>-->
 
 </beans>
