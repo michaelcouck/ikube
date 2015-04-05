@@ -1,9 +1,6 @@
 package ikube.model;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -14,9 +11,6 @@ import java.util.Date;
  * @version 01.00
  * @since 11-07-2014
  */
-@Entity
-@SuppressWarnings("serial")
-@Inheritance(strategy = InheritanceType.JOINED)
 public class IndexableExchange extends Indexable {
 
     @Column
@@ -56,7 +50,7 @@ public class IndexableExchange extends Indexable {
     @Attribute(field = false, description = "the mailbox owners email address")
     private String messageMailboxOwnerField;
     @Column
-    @Attribute(field = false, description = "the mailbox namem for instance Inbox")
+    @Attribute(field = false, description = "the mailbox name for instance Inbox")
     private String messageMailboxNameField;
     @Column
     @Attribute(field = false, description = "the message unique exchange identifier")

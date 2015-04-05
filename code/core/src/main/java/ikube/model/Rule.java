@@ -14,6 +14,7 @@ public class Rule extends Persistable {
     @Column
     private String indexContext;
 
+    @Lob
     @Column(length = 4096)
     private String predicate;
     @Column

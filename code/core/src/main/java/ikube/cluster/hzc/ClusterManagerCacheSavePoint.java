@@ -94,6 +94,7 @@ public class ClusterManagerCacheSavePoint implements MapStore<String, SavePoint>
     public Map<String, SavePoint> loadAll(final Collection<String> indexables) {
         Map<String, SavePoint> savePoints = new HashMap<>();
         for (final String indexable : indexables) {
+            LOGGER.warn("Loading save point : " + indexable);
             SavePoint savePoint = load(indexable);
             if (savePoint != null) {
                 savePoints.put(indexable, savePoint);
@@ -109,6 +110,7 @@ public class ClusterManagerCacheSavePoint implements MapStore<String, SavePoint>
     public Set<String> loadAllKeys() {
         Set<String> indexables = new TreeSet<>();
         List<SavePoint> savePoints = dataBase.find(SavePoint.class, 0, 10000);
+        LOGGER.warn("Loading save points : " + savePoints.size());
         for (final SavePoint savePoint : savePoints) {
             indexables.add(savePoint.getIndexable());
         }

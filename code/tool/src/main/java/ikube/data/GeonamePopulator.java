@@ -4,6 +4,7 @@ import co.uk.hjcs.canyon.session.Session;
 import co.uk.hjcs.canyon.session.SessionFactory;
 import ikube.IConstants;
 import ikube.database.ADataBaseJpa;
+import ikube.database.DataBaseJpaDb2;
 import ikube.database.DataBaseJpaH2;
 import ikube.database.IDataBase;
 import ikube.model.geospatial.GeoName;
@@ -38,7 +39,7 @@ public final class GeonamePopulator extends ADatabase {
 		int batchSize = 10000;
 		String sessionName = "geoname";
 		Session session = SessionFactory.getSession(sessionName);
-		ADataBaseJpa dataBase = getDataBase(DataBaseJpaH2.class, IConstants.PERSISTENCE_UNIT_H2);
+		ADataBaseJpa dataBase = getDataBase(DataBaseJpaDb2.class, IConstants.PERSISTENCE_UNIT_DB2);
 		List<Object> geoNames = new ArrayList<>();
 		skipTo(clazz, session, start);
 		while (session.hasNext(clazz)) {

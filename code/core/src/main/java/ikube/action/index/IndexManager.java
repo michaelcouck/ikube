@@ -1,6 +1,7 @@
 package ikube.action.index;
 
 import ikube.IConstants;
+import ikube.action.Optimizer;
 import ikube.action.index.analyzer.StemmingAnalyzer;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
@@ -186,9 +187,12 @@ public final class IndexManager {
                 for (final IndexWriter indexWriter : indexContext.getIndexWriters()) {
                     LOGGER.info("Optimizing and closing the index : " + indexContext.getIndexName() + ", " + indexWriter);
                     closeIndexWriter(indexWriter);
+                    new Optimizer().execute(indexContext);
                     LOGGER.info("Index optimized and closed : " + indexContext.getIndexName() + ", " + indexWriter);
                 }
             }
+        } catch (final Exception e) {
+            LOGGER.error("Exception optimizing index : " + indexContext.getName(), e);
         } finally {
             indexContext.setIndexWriters();
             IndexManager.class.notifyAll();
@@ -210,7 +214,7 @@ public final class IndexManager {
             // We'll sleep a few seconds to give the other threads a chance
             // to release themselves from work and more importantly the index files
             // specially over the network...
-            THREAD.sleep(3000);
+            THREAD.sleep(15000);
             directory = indexWriter.getDirectory();
             indexWriter.prepareCommit();
             indexWriter.commit();
@@ -218,6 +222,7 @@ public final class IndexManager {
             indexWriter.forceMerge(10, Boolean.TRUE);
             indexWriter.waitForMerges();
             indexWriter.deleteUnusedFiles();
+            THREAD.sleep(15000);
         } catch (final NullPointerException e) {
             LOGGER.error("Null pointer, in the index writer : " + indexWriter);
             LOGGER.debug(null, e);

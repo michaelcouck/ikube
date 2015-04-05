@@ -67,7 +67,6 @@ public class Synchronize extends Action<IndexContext, Boolean> {
 		}
 
 		// Iterate over the index files and copy them to the local file system
-		boolean exception = Boolean.FALSE;
 		String currentIndexFile = null;
 		try {
 			// Ten megs at a time should be fine
@@ -88,18 +87,15 @@ public class Synchronize extends Action<IndexContext, Boolean> {
 				} while (true);
 			}
 		} catch (final Exception e) {
-			exception = Boolean.TRUE;
+            // Try to delete the potentially corrupt index files
+            //noinspection ConstantConditions
+            if (currentIndexFile != null) {
+                File indexDirectory = getOutputFile(indexContext, currentIndexFile);
+                logger.warn("Deleting index file coming from remote server : " + indexDirectory);
+                boolean deleted = FILE.deleteFile(indexDirectory);
+                logger.warn("Deleted index file : " + indexDirectory);
+            }
 			throw new RuntimeException("Exception synchronizing remote index : ", e);
-		} finally {
-			if (exception) {
-				// Try to delete the potentially corrupt index files
-				//noinspection ConstantConditions
-				if (currentIndexFile != null) {
-					File indexDirectory = getOutputFile(indexContext, currentIndexFile);
-					logger.warn("Deleting index file coming from remote server : " + indexDirectory);
-					FILE.deleteFile(indexDirectory);
-				}
-			}
 		}
 		return Boolean.TRUE;
 	}

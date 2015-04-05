@@ -1,6 +1,5 @@
 package ikube.action;
 
-import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.toolkit.FILE;
 import ikube.toolkit.Timer;
@@ -40,12 +39,12 @@ public class Optimizer extends Action<IndexContext, Boolean> {
             final File indexDirectory = segmentsFile.getParentFile();
             // Can't optimize this index if it is open or being written to
             if (indexContext.getMultiSearcher() != null || (indexContext.getIndexWriters() != null && indexContext.getIndexWriters().length > 0)) {
-                logger.info("Index already opened, can't optimize now : " + indexContext.getIndexDirectoryPath());
+                logger.warn("Index already opened, can't optimize now : " + indexContext.getIndexDirectoryPath());
                 continue;
             }
             try (Directory directory = NIOFSDirectory.open(indexDirectory)) {
                 if (IndexWriter.isLocked(directory)) {
-                    logger.info("Index locked : " + indexContext.getIndexDirectoryPath());
+                    logger.warn("Index locked : " + indexContext.getIndexDirectoryPath());
                     continue;
                 }
                 logger.info("Optimizing index : " + indexDirectory);

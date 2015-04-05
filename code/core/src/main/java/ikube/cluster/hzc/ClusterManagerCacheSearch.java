@@ -100,6 +100,7 @@ public class ClusterManagerCacheSearch implements MapStore<Long, Search> {
     public Map<Long, Search> loadAll(final Collection<Long> hashes) {
         Map<Long, Search> searches = new HashMap<>();
         for (final Long hash : hashes) {
+            LOGGER.warn("Loading search : " + hash);
             Search search = load(hash);
             if (search != null) {
                 searches.put(hash, search);
@@ -115,6 +116,7 @@ public class ClusterManagerCacheSearch implements MapStore<Long, Search> {
     public Set<Long> loadAllKeys() {
         Set<Long> hashes = new TreeSet<>();
         List<Search> searches = dataBase.find(Search.class, 0, 10000);
+        LOGGER.warn("Loading searches : " + searches.size());
         for (final Search search : searches) {
             hashes.add(search.getHash());
         }
