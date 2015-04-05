@@ -55,7 +55,6 @@ public abstract class IntegrationTest extends AbstractTest {
     @BeforeClass
     public static void beforeClass() {
         THREAD.initialize();
-        ApplicationContextManager.getApplicationContext();
     }
 
     @AfterClass
