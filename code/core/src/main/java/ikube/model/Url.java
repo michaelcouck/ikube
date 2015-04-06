@@ -35,6 +35,7 @@ public class Url extends Persistable {
     @Column(length = 1024)
     @Index(name = "name_index", enabled = true)
     private String name;
+    @Lob
     @Column(length = 4096)
     private String url;
     @Lob

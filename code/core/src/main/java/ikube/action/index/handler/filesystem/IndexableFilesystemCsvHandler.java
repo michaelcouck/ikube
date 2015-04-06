@@ -65,7 +65,7 @@ public class IndexableFilesystemCsvHandler extends IndexableHandler<IndexableFil
             final IndexableFileSystemCsv indexableFileSystemCsv,
             final File file)
             throws Exception {
-        String encoding = indexableFileSystemCsv.getEncoding() != null ? indexableFileSystemCsv.getEncoding() : IConstants.ENCODING;
+        final String encoding = indexableFileSystemCsv.getEncoding() != null ? indexableFileSystemCsv.getEncoding() : IConstants.ENCODING;
         logger.info("Using encoding for file : " + encoding + ", " + file);
         final LineIterator lineIterator = FileUtils.lineIterator(file, encoding);
 

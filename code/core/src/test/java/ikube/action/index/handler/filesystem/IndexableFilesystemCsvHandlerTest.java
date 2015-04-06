@@ -28,12 +28,12 @@ import static org.mockito.Mockito.when;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 08.02.2011
+ * @since 08-02-2011
  */
 public class IndexableFilesystemCsvHandlerTest extends AbstractTest {
 
     private RowResourceHandler rowResourceHandler;
-    private IndexableFileSystemCsv indexableFileSystem;
+    private IndexableFileSystemCsv indexableFileSystemCsv;
     /**
      * Class under test.
      */
@@ -41,10 +41,12 @@ public class IndexableFilesystemCsvHandlerTest extends AbstractTest {
 
     @Before
     public void before() throws Exception {
-        indexableFileSystem = new IndexableFileSystemCsv();
-        indexableFileSystem.setEncoding(IConstants.ENCODING);
-        indexableFileSystem.setSeparator(",");
-        indexableFileSystem.setMaxLines(Integer.MAX_VALUE);
+        indexableFileSystemCsv = new IndexableFileSystemCsv();
+        indexableFileSystemCsv.setSeparator(",");
+        indexableFileSystemCsv.setAllColumns(Boolean.TRUE);
+        indexableFileSystemCsv.setMaxLines(Integer.MAX_VALUE);
+        indexableFileSystemCsv.setEncoding(IConstants.ENCODING);
+
         rowResourceHandler = Mockito.mock(RowResourceHandler.class);
 
         filesystemCsvHandler = new IndexableFilesystemCsvHandler();
@@ -59,8 +61,8 @@ public class IndexableFilesystemCsvHandlerTest extends AbstractTest {
         when(indexableColumn.getContent()).thenReturn("field-content");
 
         List<Indexable> children = new ArrayList<Indexable>(Arrays.asList(indexableColumn));
-        indexableFileSystem.setChildren(children);
-        filesystemCsvHandler.handleFile(indexContext, indexableFileSystem, file);
+        indexableFileSystemCsv.setChildren(children);
+        filesystemCsvHandler.handleFile(indexContext, indexableFileSystemCsv, file);
         verify(rowResourceHandler, Mockito.atLeastOnce()).handleResource(any(IndexContext.class),
                 any(IndexableFileSystemCsv.class), any(Document.class),
                 any(Object.class));
@@ -68,7 +70,7 @@ public class IndexableFilesystemCsvHandlerTest extends AbstractTest {
         double executionsPerSecond = PERFORMANCE.execute(new PERFORMANCE.APerform() {
             public void execute() throws Throwable {
                 File file = FILE.findFileRecursively(new File("."), "csv-large.csv");
-                filesystemCsvHandler.handleFile(indexContext, indexableFileSystem, file);
+                filesystemCsvHandler.handleFile(indexContext, indexableFileSystemCsv, file);
             }
         }, "Csv file reader performance : ", 1, Boolean.TRUE);
         double linesPerSecond = executionsPerSecond * 100000;
@@ -77,25 +79,16 @@ public class IndexableFilesystemCsvHandlerTest extends AbstractTest {
     }
 
     @Test
-    public void handleAutoCompleteFiles() throws Exception {
-        indexableFileSystem.setAllColumns(Boolean.TRUE);
-        indexableFileSystem.setMaxReadLength(100000);
-        indexableFileSystem.setMaxLines(Integer.MAX_VALUE);
-        List<File> files = FILE.findFilesRecursively(new File("."), 2, new ArrayList<File>(), "english.csv");
-        filesystemCsvHandler.handleFile(indexContext, indexableFileSystem, files.get(0));
-    }
-
-    @Test
     public void getIndexableColumns() {
         String[] columns = new String[]{"NAME", "ADDRESS", "CD_LATITUDE", "CD_LONGITUDE"};
-        // IndexableFileSystemCsv indexableFileSystem = new IndexableFileSystemCsv();
+        // IndexableFileSystemCsv indexableFileSystemCsv = new IndexableFileSystemCsv();
         List<Indexable> children = new ArrayList<>();
         IndexableColumn indexableColumn = new IndexableColumn();
         indexableColumn.setFieldName(columns[3]);
         children.add(indexableColumn);
-        indexableFileSystem.setChildren(children);
-        indexableFileSystem.setAllColumns(Boolean.TRUE);
-        List<Indexable> sortedChildren = filesystemCsvHandler.getIndexableColumns(indexableFileSystem, columns);
+        indexableFileSystemCsv.setChildren(children);
+        indexableFileSystemCsv.setAllColumns(Boolean.TRUE);
+        List<Indexable> sortedChildren = filesystemCsvHandler.getIndexableColumns(indexableFileSystemCsv, columns);
         assertEquals("There must be four columns, the existing one plus the three from the file : ", 4,
                 sortedChildren.size());
         for (int i = 0; i < columns.length; i++) {

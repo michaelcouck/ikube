@@ -297,6 +297,10 @@ public class ClusterManagerHazelcast extends AClusterManager {
      */
     @Override
     public void put(final String map, final Object key, final Serializable value) {
+        if (map == null || key == null || value == null) {
+            logger.warn("Map, key or value null : " + map + ", " + key + ", " + value);
+            return;
+        }
         hazelcastInstance.getMap(map).put(key, value);
     }
 
@@ -305,6 +309,10 @@ public class ClusterManagerHazelcast extends AClusterManager {
      */
     @Override
     public void remove(final String map, final Object key) {
+        if (map == null || key == null) {
+            logger.warn("Map or key null : " + map + ", " + key);
+            return;
+        }
         hazelcastInstance.getMap(map).remove(key);
     }
 

@@ -7,7 +7,7 @@ import javax.persistence.Transient;
 
 /**
  * @author Michael Couck
- * @since 21.11.10
+ * @since 21-11-2010
  * @version 01.00
  */
 @Entity()
@@ -23,7 +23,7 @@ public class IndexableFileSystemCsv extends IndexableFileSystem {
 	private String separator;
 	private String encoding;
 	private String lineNumberFieldName;
-	private boolean allColumns;
+	private boolean allColumns = Boolean.TRUE;
 	private int maxLines;
 
 	public String getSeparator() {
