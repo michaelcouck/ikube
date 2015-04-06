@@ -4,7 +4,7 @@
 
     <appender name="console" class="org.apache.log4j.ConsoleAppender">
         <param name="ImmediateFlush" value="true"/>
-        <param name="Threshold" value="WARN"/>
+        <param name="Threshold" value="DEBUG"/>
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %-5p %C{1}.%M(%L) - %m%n"/>
         </layout>
@@ -16,7 +16,7 @@
         <param name="ImmediateFlush" value="true"/>
         <param name="MaxBackupIndex" value="4"/>
         <param name="MaxFileSize" value="25MB"/>
-        <param name="Threshold" value="WARN"/>
+        <param name="Threshold" value="DEBUG"/>
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %-5p %C{1}.%M(%L) - %m%n"/>
         </layout>
@@ -34,9 +34,12 @@
     <logger name="ikube">
         <level value="WARN"/>
     </logger>
+    <logger name="ikube.action.index.handler.filesystem">
+        <level value="DEBUG"/>
+    </logger>
 
     <root>
-        <level value="WARN"/>
+        <level value="DEBUG"/>
         <appender-ref ref="console"/>
         <appender-ref ref="file"/>
     </root>
