@@ -116,6 +116,9 @@ class FileSystemResourceProvider implements IResourceProvider<File> {
         if (retry > 0) {
             if (includedFiles.size() > 0) {
                 file = includedFiles.pop();
+                if (includedFiles.size() % 1000 == 0) {
+                    LOGGER.warn("Files left : " + includedFiles.size());
+                }
             } else {
                 if (!finished) {
                     LOGGER.info("Waiting for walker : ");

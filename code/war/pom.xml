@@ -124,7 +124,8 @@
 						</goals>
                         <configuration>
                             <!--
-                                To run in forked mode this causes H2 to complain that the database is locked
+                                To run in forked mode this causes H2
+                                to complain that the database is locked
                             -->
                             <!--<stopKey>${jetty-stop-key}</stopKey>-->
                             <!--<stopPort>${jetty-stop-port}</stopPort>-->
@@ -151,32 +152,6 @@
 			<version>${ikube-version}</version>
 			<scope>compile</scope>
 		</dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.eclipse.jetty</groupId>-->
-            <!--<artifactId>jetty-server</artifactId>-->
-            <!--<version>${jetty-version}</version>-->
-            <!--<type>jar</type>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.eclipse.jetty</groupId>-->
-            <!--<artifactId>jetty-util</artifactId>-->
-            <!--<version>${jetty-version}</version>-->
-            <!--<type>jar</type>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.eclipse.jetty</groupId>-->
-            <!--<artifactId>example-jetty-embedded</artifactId>-->
-            <!--<version>${jetty-version}</version>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.eclipse.jetty</groupId>-->
-            <!--<artifactId>jetty-embedded-examples</artifactId>-->
-            <!--<version>7.0.0.M2</version>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
 
 		<dependency>
 			<groupId>javax.servlet</groupId>
