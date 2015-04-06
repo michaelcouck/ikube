@@ -13,19 +13,20 @@ import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.Arrays;
 
-import static ikube.toolkit.REST.doPost;
 import static ikube.toolkit.OBJECT.populateFields;
+import static ikube.toolkit.REST.doPost;
 import static org.junit.Assert.assertNotNull;
 
 public abstract class SearcherIntegration extends AbstractTest {
 
-    protected abstract String getUrl(String path) throws Exception;
+    protected abstract String getSearchUrl(String path) throws MalformedURLException;
 
     @Test
     public void searchSingle() throws Exception {
-        String url = getUrl(SearcherXml.SIMPLE);
+        String url = getSearchUrl(SearcherXml.SIMPLE);
 
         String[] names = { //
                 IConstants.INDEX_NAME, //
@@ -46,7 +47,7 @@ public abstract class SearcherIntegration extends AbstractTest {
 
     @Test
     public void searchMulti() throws Exception {
-        String url = getUrl(SearcherXml.SIMPLE);
+        String url = getSearchUrl(SearcherXml.SIMPLE);
 
         String[] names = { //
                 IConstants.INDEX_NAME, //
@@ -67,7 +68,7 @@ public abstract class SearcherIntegration extends AbstractTest {
 
     @Test
     public void searchMultiSorted() throws Exception {
-        String url = getUrl(SearcherXml.SORTED);
+        String url = getSearchUrl(SearcherXml.SORTED);
 
         String[] names = { //
                 IConstants.INDEX_NAME, //
@@ -90,7 +91,7 @@ public abstract class SearcherIntegration extends AbstractTest {
 
     @Test
     public void searchMultiSpacial() throws Exception {
-        String url = getUrl(SearcherXml.GEOSPATIAL);
+        String url = getSearchUrl(SearcherXml.GEOSPATIAL);
 
         String[] names = { //
                 IConstants.INDEX_NAME, //
@@ -119,7 +120,7 @@ public abstract class SearcherIntegration extends AbstractTest {
 
     @Test
     public void searchComplex() throws Exception {
-        String url = getUrl(SearcherXml.SORTED_TYPED);
+        String url = getSearchUrl(SearcherXml.SORTED_TYPED);
 
         String[] names = { //
                 IConstants.INDEX_NAME, //
@@ -144,12 +145,12 @@ public abstract class SearcherIntegration extends AbstractTest {
 
     @Test
     public void search() throws Exception {
-        verify(getUrl(""));
+        verify(getSearchUrl(""));
     }
 
     @Test
     public void searchAll() throws Exception {
-        verify(getUrl(Searcher.ALL));
+        verify(getSearchUrl(Searcher.ALL));
     }
 
     protected void verify(final String url) throws Exception {
@@ -172,8 +173,6 @@ public abstract class SearcherIntegration extends AbstractTest {
         String response = doPost(url, null, null, search, consumes, produces, null, null, String.class);
         assertNotNull(response);
     }
-
-
 
     protected void verify(final String url, final String[] names, final Object[] values) throws IOException {
         HttpGet getMethod = new HttpGet(url);

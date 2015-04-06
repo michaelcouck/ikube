@@ -13,14 +13,14 @@ import java.net.URL;
 public class SearcherXmlIntegration extends SearcherIntegration {
 
     @SuppressWarnings("StringBufferReplaceableByString")
-    protected String getUrl(String path) throws MalformedURLException {
+    protected String getSearchUrl(final String service) throws MalformedURLException {
         StringBuilder builder = new StringBuilder();
         builder.append(IConstants.SEP);
         builder.append(IConstants.IKUBE);
         builder.append(SERVICE);
         builder.append(SearcherXml.SEARCH);
         builder.append(SearcherXml.XML);
-        builder.append(path);
+        builder.append(service);
         return new URL("http", LOCALHOST, SERVER_PORT, builder.toString()).toString();
     }
 

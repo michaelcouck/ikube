@@ -41,7 +41,7 @@ public class AnalyzerIntegration extends AbstractTest {
     @SuppressWarnings("unchecked")
     public void create() throws Exception {
         Context context = getContext(dataFileName, contextName);
-        String url = getUrl(Analyzer.CREATE);
+        String url = getUrl(Analyzer.ANALYZER + Analyzer.CREATE);
         Context result = doPost(url, context, Context.class);
         assertNotNull(result);
         assertTrue(result.getAlgorithms().length > 0);
@@ -57,7 +57,7 @@ public class AnalyzerIntegration extends AbstractTest {
         create();
 
         Analysis<String, double[]> analysis = getAnalysis(contextName, line);
-        String url = getUrl(Analyzer.TRAIN);
+        String url = getUrl(Analyzer.ANALYZER + Analyzer.TRAIN);
         Analysis result = doPost(url, analysis, Analysis.class);
         assertNotNull(result);
     }
@@ -67,7 +67,7 @@ public class AnalyzerIntegration extends AbstractTest {
         train();
 
         Analysis analysis = getAnalysis(contextName, null);
-        String url = getUrl(Analyzer.BUILD);
+        String url = getUrl(Analyzer.ANALYZER + Analyzer.BUILD);
         Context context = doPost(url, analysis, Context.class);
         assertTrue(context.isBuilt());
     }
@@ -78,7 +78,7 @@ public class AnalyzerIntegration extends AbstractTest {
         build();
 
         Analysis<String, double[]> analysis = getAnalysis(contextName, line);
-        String url = getUrl(Analyzer.ANALYZE);
+        String url = getUrl(Analyzer.ANALYZER + Analyzer.ANALYZE);
         Analysis result = doPost(url, analysis, Analysis.class);
         assertTrue(Integer.parseInt(result.getClazz()) >= 0 && Integer.parseInt(result.getClazz()) <= 6);
     }
@@ -88,12 +88,12 @@ public class AnalyzerIntegration extends AbstractTest {
         analyze();
 
         Analysis analysis = getAnalysis(contextName, null);
-        String url = getUrl(Analyzer.CONTEXT);
+        String url = getUrl(Analyzer.ANALYZER + Analyzer.CONTEXT);
         Context context = doPost(url, analysis, Context.class);
 
         assertNotNull(context);
 
-        String destroyUrl = getUrl(Analyzer.DESTROY);
+        String destroyUrl = getUrl(Analyzer.ANALYZER + Analyzer.DESTROY);
         doPost(destroyUrl, context, Context.class);
 
         context = doPost(url, analysis, Context.class);
@@ -105,7 +105,7 @@ public class AnalyzerIntegration extends AbstractTest {
         build();
 
         Analysis analysis = getAnalysis(contextName, null);
-        String url = getUrl(Analyzer.CONTEXT);
+        String url = getUrl(Analyzer.ANALYZER + Analyzer.CONTEXT);
         Context context = doPost(url, analysis, Context.class);
         assertNotNull(context);
     }
@@ -115,20 +115,9 @@ public class AnalyzerIntegration extends AbstractTest {
     public void contexts() throws Exception {
         build();
 
-        String contextsUrl = getUrl(Analyzer.CONTEXTS);
+        String contextsUrl = getUrl(Analyzer.ANALYZER + Analyzer.CONTEXTS);
         String[] contexts = doGet(contextsUrl, String[].class);
         assertTrue(Arrays.toString(contexts).contains(this.contextName));
-    }
-
-    @SuppressWarnings("StringBufferReplaceableByString")
-    protected String getUrl(final String service) throws MalformedURLException {
-        StringBuilder builder = new StringBuilder();
-        builder.append(IConstants.SEP);
-        builder.append(IConstants.IKUBE);
-        builder.append(AbstractTest.SERVICE);
-        builder.append(Analyzer.ANALYZER);
-        builder.append(service);
-        return new URL("http", LOCALHOST, SERVER_PORT, builder.toString()).toString();
     }
 
 }
