@@ -18,6 +18,7 @@ import ikube.toolkit.FILE;
 import ikube.toolkit.HASH;
 import ikube.toolkit.THREAD;
 import org.apache.lucene.document.Document;
+import org.omg.SendingContext.RunTime;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -73,9 +74,10 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
                     // Add the document to the index
                     resourceHandler.handleResource(indexContext, indexableTable, document, null);
                     THREAD.sleep(indexContext.getThrottle());
-                } catch (final InterruptedException e) {
-                    throw new RuntimeException("Indexing terminated : ", e);
                 } catch (final Exception e) {
+                    if (Thread.currentThread().isInterrupted()) {
+                        throw new RuntimeException(e);
+                    }
                     handleException(indexableTable, e, "Exception indexing table : " + indexableTable.getName());
                 }
             } while (resultSet.next());

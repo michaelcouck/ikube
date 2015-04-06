@@ -63,7 +63,8 @@ public abstract class Action implements IAction {
     }
 
     protected void handleException(final String message, final Exception exception) {
-        logger.error(message, exception);
+        logger.error(message);
+        logger.info(null, exception);
         if (isBreakOnError()) {
             throw new RuntimeException(exception);
         }

@@ -22,6 +22,16 @@ import static org.mockito.Mockito.*;
  */
 public class ActionTest extends AbstractTest {
 
+    @SuppressWarnings("UnusedDeclaration")
+    @MockClass(realClass = SSHClient.class)
+    public static class SSHClientMock {
+        @Mock
+        public void authPassword(final String username, final char[] password)
+                throws UserAuthException, TransportException {
+            // Do nothing
+        }
+    }
+
     private Action action;
 
     @Before
@@ -44,7 +54,7 @@ public class ActionTest extends AbstractTest {
         Server server = mock(Server.class);
         when(server.getIp()).thenReturn("127.0.0.1");
         when(server.getName()).thenReturn("localhost");
-        when(server.getUsername()).thenReturn("username");
+        when(server.getUsername()).thenReturn("userid");
         when(server.getPassword()).thenReturn("password");
 
         action.getSshExec(server);
@@ -54,16 +64,6 @@ public class ActionTest extends AbstractTest {
         Mockit.setUpMocks(SSHClientMock.class);
         action.getSshExec(server);
         verify(server, times(4)).setSshExec(any(SSHClient.class));
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    @MockClass(realClass = SSHClient.class)
-    public static class SSHClientMock {
-        @Mock
-        public void authPassword(final String username, final char[] password)
-                throws UserAuthException, TransportException {
-            // Do nothing
-        }
     }
 
 }
