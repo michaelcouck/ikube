@@ -66,15 +66,12 @@ public final class Deployer {
 	public static void main(final String[] args) {
         if (args == null || args.length == 0) {
             usage();
-            LOGGER.info("Args null, not deploying : ");
-            return;
         }
 
 		File configurationDirectory = new File(DOT_DIRECTORY);
 		String configurationFile = CONFIGURATION_FILE;
-		boolean execute = Boolean.TRUE;
 
-		if (args.length > 1) {
+		if (args != null && args.length > 1) {
             int upDirectories = 0;
             while (args[0].contains("../")) {
                 LOGGER.info("Args 0 : " + args[0]);
@@ -90,9 +87,6 @@ public final class Deployer {
             configurationDirectory = FILE.moveUpDirectories(configurationDirectory, upDirectories);
             LOGGER.info("Conf dir after moving : " + configurationDirectory);
             configurationFile = args[1];
-			if (args.length >= 3) {
-				execute = Boolean.valueOf(args[2]);
-			}
 		}
 		String configurationDirectoryPath = FILE.cleanFilePath(configurationDirectory.getAbsolutePath());
 		LOGGER.info("Directory : " + configurationDirectoryPath + ", file : " + configurationFile);
@@ -108,8 +102,8 @@ public final class Deployer {
 		if (serversProperty != null) {
 			deployToServers.addAll(Arrays.asList(StringUtils.split(serversProperty, IConstants.DELIMITER_CHARACTERS)));
 		}
-		LOGGER.info("Deploy to servers : " + deployToServers);
-		if (execute && deployToServers.size() > 0) {
+		LOGGER.warn("Deploy to servers : " + deployToServers + ", " + (deployToServers.size() > 0));
+		if (deployToServers.size() > 0) {
 			List<Future<Object>> futures = new ArrayList<>();
 			Deployer deployer = APPLICATION_CONTEXT.getBean(Deployer.class);
 			Map<String, Server> servers = APPLICATION_CONTEXT.getBeansOfType(Server.class);

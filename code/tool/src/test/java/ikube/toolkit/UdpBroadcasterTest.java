@@ -15,7 +15,7 @@ public class UdpBroadcasterTest extends AbstractTest {
     public void main() {
         UdpBroadcaster.main(new String[]{"10"});
         Assert.assertTrue(UdpBroadcaster.MESSAGES_SENT > 0);
-        Assert.assertTrue(UdpBroadcaster.MESSAGES_RECIEVED > 0);
+        Assert.assertTrue(UdpBroadcaster.MESSAGES_RECEIVED > 0);
     }
 
 }

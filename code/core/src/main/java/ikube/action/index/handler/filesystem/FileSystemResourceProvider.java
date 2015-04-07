@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
  *
  * @author Michael Couck
  * @version 01.00
- * @since 25.03.13
+ * @since 25-03-2013
  */
 class FileSystemResourceProvider implements IResourceProvider<File> {
 
@@ -112,6 +112,9 @@ class FileSystemResourceProvider implements IResourceProvider<File> {
     }
 
     private File getResource(final int retry) {
+        if (isTerminated()) {
+            return null;
+        }
         File file = null;
         if (retry > 0) {
             if (includedFiles.size() > 0) {
