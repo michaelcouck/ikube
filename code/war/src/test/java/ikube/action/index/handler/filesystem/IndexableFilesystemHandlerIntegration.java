@@ -6,11 +6,13 @@ import ikube.action.Open;
 import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
+import ikube.search.Search;
 import ikube.search.SearchComplex;
 import ikube.toolkit.FILE;
 import ikube.toolkit.THREAD;
 import ikube.toolkit.UriUtilities;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.IndexSearcher;
 import org.junit.After;
 import org.junit.Before;
@@ -44,15 +46,17 @@ public class IndexableFilesystemHandlerIntegration extends IntegrationTest {
 
     @Before
     public void before() {
-        String dataIndexFolderPath = FILE.cleanFilePath(new File(".").getAbsolutePath());
+        File resources = FILE.findDirectoryRecursively(new File("."), "resources");
+        desktopFolder.setPath(FILE.cleanFilePath(resources.getAbsolutePath()));
+        // desktopFolder.setExcludedPattern(null);
+        desktopFolder.setUnpackZips(Boolean.TRUE);
+
+        // String dataIndexFolderPath = FILE.cleanFilePath(new File(".").getAbsolutePath());
         IndexWriter indexWriter = IndexManager.openIndexWriter(desktop, System.currentTimeMillis(), UriUtilities.getIp());
 
-        desktopFolder.setPath(dataIndexFolderPath);
-        desktopFolder.setExcludedPattern(null);
         // This should be true for performance testing, however there is a problem with running this test
         // in Eclipse with the unpack to true, OpenJpa throws a stack over flow for some reason, I think because
         // the classes are not enhanced
-        desktopFolder.setUnpackZips(Boolean.TRUE);
         desktop.setIndexWriters(indexWriter);
     }
 
@@ -64,7 +68,7 @@ public class IndexableFilesystemHandlerIntegration extends IntegrationTest {
     @Test
     public void handleIndexable() throws Exception {
         try {
-            THREAD.sleep(30000);
+            // THREAD.sleep(30000);
             ForkJoinTask<?> forkJoinTask = indexableFilesystemHandler.handleIndexableForked(desktop, desktopFolder);
             THREAD.executeForkJoinTasks(desktop.getName(), desktopFolder.getThreads(), forkJoinTask);
             THREAD.waitForFuture(forkJoinTask, Long.MAX_VALUE);
@@ -90,9 +94,9 @@ public class IndexableFilesystemHandlerIntegration extends IntegrationTest {
         searchComplex.setFirstResult(0);
         searchComplex.setMaxResults(10);
         searchComplex.setFragment(Boolean.TRUE);
-        searchComplex.setOccurrenceFields("must");
-        searchComplex.setSearchFields("contents");
-        searchComplex.setTypeFields("string");
+        searchComplex.setOccurrenceFields(BooleanClause.Occur.MUST.toString());
+        searchComplex.setSearchFields(IConstants.CONTENTS);
+        searchComplex.setTypeFields(Search.TypeField.STRING.toString());
 
         outer: for (final String searchString : searchStrings) {
             searchComplex.setSearchStrings(searchString);
