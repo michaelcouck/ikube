@@ -6,6 +6,7 @@ import ikube.action.index.analyzer.StemmingAnalyzer;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.toolkit.FILE;
+import ikube.toolkit.STRING;
 import ikube.toolkit.THREAD;
 import ikube.toolkit.UriUtilities;
 import org.apache.commons.lang.StringUtils;
@@ -316,7 +317,7 @@ public final class IndexManager {
             File[] children = file.listFiles();
             if (children != null) {
                 for (final File child : children) {
-                    if (IndexManager.isDigits(child.getName())) {
+                    if (STRING.isDigits(child.getName())) {
                         if (latest == null) {
                             latest = child;
                         }
@@ -330,25 +331,6 @@ public final class IndexManager {
             }
         }
         return latest;
-    }
-
-    /**
-     * Verifies that all the characters in a string are digits, ie. the string is a number.
-     *
-     * @param string the string to verify for digit data
-     * @return whether every character in a string is a digit
-     */
-    public static boolean isDigits(final String string) {
-        if (string == null || string.trim().equals("")) {
-            return false;
-        }
-        char[] chars = string.toCharArray();
-        for (char c : chars) {
-            if (!Character.isDigit(c)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     @SuppressWarnings("StringBufferReplaceableByString")
