@@ -19,9 +19,43 @@
 	</description>
 	
 	<context:property-placeholder
-		location="classpath:*/**/spring.properties" 
+		location="
+		    classpath:*/spring.properties,
+		    classpath*:*/spring.properties"
+        order="0"
 		properties-ref="ikube.toolkit.PropertyConfigurer" />
-	
+
+	<!--<context:property-placeholder-->
+		<!--location="-->
+		    <!--classpath:*/spring.properties,-->
+		    <!--classpath*:*/spring.properties"-->
+        <!--order="1" />-->
+
+	<!--<context:property-placeholder-->
+		<!--location="-->
+		    <!--file:*/spring.properties,-->
+		    <!--file*:*/spring.properties"-->
+        <!--order="2"-->
+        <!--ignore-unresolvable="true"-->
+        <!--ignore-resource-not-found="true" />-->
+
+	<!--<context:property-placeholder-->
+		<!--location="-->
+		    <!--file*:ikube/spring.properties"-->
+        <!--order="3"-->
+        <!--ignore-unresolvable="true"-->
+        <!--ignore-resource-not-found="true"-->
+        <!--properties-ref="ikube.toolkit.PropertyConfigurer" />-->
+
+	<!--<context:property-placeholder-->
+		<!--location="-->
+		    <!--file:*/ikube/spring.properties,-->
+		    <!--file*:*/ikube/spring.properties"-->
+        <!--order="2"-->
+        <!--ignore-unresolvable="true"-->
+        <!--ignore-resource-not-found="true"-->
+        <!--properties-ref="ikube.toolkit.PropertyConfigurer" />-->
+
 	<bean 
 		id="ikube.toolkit.Logging" 
 		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"

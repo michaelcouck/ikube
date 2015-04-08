@@ -97,6 +97,11 @@ public class PropertyConfigurer extends Properties {
         }
         // Finally overwrite the properties with the system properties
         this.putAll(System.getProperties());
+        if (LOGGER.isDebugEnabled()) {
+            for (final Object key : this.keySet()) {
+                LOGGER.debug("Property : " + key + ":" + this.get(key));
+            }
+        }
     }
 
     private void checkOwnJar() {
@@ -123,6 +128,7 @@ public class PropertyConfigurer extends Properties {
 
     private void checkPropertiesFilesOnFileSystemFromDotFolder() {
         List<File> propertyFiles = findFilesRecursively(new File("."), new ArrayList<File>(), fileNamePattern);
+        LOGGER.info("         : Found properties files : " + propertyFiles.size());
         for (final File propertyFile : propertyFiles) {
             try {
                 if (propertyFile == null || !propertyFile.canRead() || propertyFile.isDirectory() || propertyFile.getAbsolutePath().contains(".svn")) {
