@@ -46,10 +46,10 @@
         <module>code/com</module>
         <module>code/core</module>
         <module>code/war</module>
-        <!--<module>code/libs</module>-->
-        <!--<module>code/site</module>-->
-        <!--<module>code/web</module>-->
-        <!--<module>code/tool</module>-->
+        <module>code/libs</module>
+        <module>code/site</module>
+        <module>code/web</module>
+        <module>code/tool</module>
     </modules>
 
     <properties>

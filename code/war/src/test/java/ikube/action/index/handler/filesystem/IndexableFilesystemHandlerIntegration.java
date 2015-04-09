@@ -111,7 +111,7 @@ public class IndexableFilesystemHandlerIntegration extends IntegrationTest {
                 logger.warn("Couldn't find : " + searchString);
                 printResults(results);
             }
-            // assertTrue("Must be some results : " + results.size(), results.size() > 1);
+            assertTrue("Must be some results : " + results.size(), results.size() > 1);
         }
     }
 
