@@ -64,36 +64,11 @@ public final class Deployer {
 
 	@SuppressWarnings("unchecked")
 	public static void main(final String[] args) {
-        if (args == null || args.length == 0) {
-            usage();
-            LOGGER.info("Args null, not deploying : ");
-            return;
-        }
+        usage();
 
 		File configurationDirectory = new File(DOT_DIRECTORY);
 		String configurationFile = CONFIGURATION_FILE;
-		boolean execute = Boolean.TRUE;
 
-		if (args.length > 1) {
-            int upDirectories = 0;
-            while (args[0].contains("../")) {
-                LOGGER.info("Args 0 : " + args[0]);
-                args[0] = args[0].replace("../", "");
-                upDirectories++;
-            }
-            if (StringUtils.isEmpty(args[0])) {
-                args[0] = ".";
-            }
-            LOGGER.info("Args : " + upDirectories + ", " + Arrays.deepToString(args));
-            configurationDirectory = new File(args[0]);
-            LOGGER.info("Conf dir before : " + configurationDirectory);
-            configurationDirectory = FILE.moveUpDirectories(configurationDirectory, upDirectories);
-            LOGGER.info("Conf dir after moving : " + configurationDirectory);
-            configurationFile = args[1];
-			if (args.length >= 3) {
-				execute = Boolean.valueOf(args[2]);
-			}
-		}
 		String configurationDirectoryPath = FILE.cleanFilePath(configurationDirectory.getAbsolutePath());
 		LOGGER.info("Directory : " + configurationDirectoryPath + ", file : " + configurationFile);
 		// Find the configuration file
@@ -109,7 +84,7 @@ public final class Deployer {
 			deployToServers.addAll(Arrays.asList(StringUtils.split(serversProperty, IConstants.DELIMITER_CHARACTERS)));
 		}
 		LOGGER.info("Deploy to servers : " + deployToServers);
-		if (execute && deployToServers.size() > 0) {
+		if (deployToServers.size() > 0) {
 			List<Future<Object>> futures = new ArrayList<>();
 			Deployer deployer = APPLICATION_CONTEXT.getBean(Deployer.class);
 			Map<String, Server> servers = APPLICATION_CONTEXT.getBeansOfType(Server.class);

@@ -112,6 +112,10 @@ class FileSystemResourceProvider implements IResourceProvider<File> {
     }
 
     private File getResource(final int retry) {
+        if (isTerminated()) {
+            includedFiles.clear();
+            return null;
+        }
         File file = null;
         if (retry > 0) {
             if (includedFiles.size() > 0) {
