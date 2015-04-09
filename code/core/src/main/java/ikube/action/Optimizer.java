@@ -38,29 +38,32 @@ public class Optimizer extends Action<IndexContext, Boolean> {
         for (final File segmentsFile : segmentsFiles) {
             final File indexDirectory = segmentsFile.getParentFile();
             // Can't optimize this index if it is open or being written to
-            if (indexContext.getMultiSearcher() != null || (indexContext.getIndexWriters() != null && indexContext.getIndexWriters().length > 0)) {
-                logger.warn("Index already opened, can't optimize now : " + indexContext.getIndexDirectoryPath());
-                continue;
-            }
+            //if (indexContext.getMultiSearcher() != null) {
+            //    logger.info("Index already opened, can't optimize now : " + indexContext.getIndexDirectoryPath());
+            //    continue;
+            //}
             try (Directory directory = NIOFSDirectory.open(indexDirectory)) {
                 if (IndexWriter.isLocked(directory)) {
                     logger.warn("Index locked : " + indexContext.getIndexDirectoryPath());
                     continue;
                 }
-                logger.info("Optimizing index : " + indexDirectory);
-                Timer.Timed timed = new Timer.Timed() {
-                    @Override
-                    public void execute() {
-                        try {
-                            IndexWriter indexWriter = openIndexWriter(indexContext, directory, Boolean.FALSE);
-                            closeIndexWriter(indexWriter);
-                        } catch (final Exception e) {
-                            logger.error("Exception optimizing index segments file : " + segmentsFile, e);
+                if (directory.listAll() != null && directory.listAll().length > 100) {
+                    logger.info("Optimizing index : " + indexDirectory);
+                    Timer.Timed timed = new Timer.Timed() {
+                        @Override
+                        public void execute() {
+                            try {
+                                IndexWriter indexWriter = openIndexWriter(indexContext, directory, Boolean.FALSE);
+                                closeIndexWriter(indexWriter);
+                                new Reopen().execute(indexContext);
+                            } catch (final Exception e) {
+                                logger.error("Exception optimizing index segments file : " + segmentsFile, e);
+                            }
                         }
-                    }
-                };
-                double timeTaken = Timer.execute(timed) / 1000000000 / 60;
-                logger.info("Finished optimizing index : " + timeTaken + ", directory :" + indexDirectory);
+                    };
+                    double timeTaken = Timer.execute(timed) / 1000000000 / 60;
+                    logger.info("Finished optimizing index : " + timeTaken + ", directory :" + indexDirectory);
+                }
             }
         }
         return Boolean.TRUE;

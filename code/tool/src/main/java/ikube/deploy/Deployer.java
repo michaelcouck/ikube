@@ -5,6 +5,7 @@ import ikube.deploy.action.IAction;
 import ikube.deploy.model.Server;
 import ikube.toolkit.FILE;
 import ikube.toolkit.LOGGING;
+import ikube.toolkit.PropertyConfigurer;
 import ikube.toolkit.THREAD;
 import net.schmizz.sshj.SSHClient;
 import org.apache.commons.lang.StringUtils;
@@ -79,7 +80,11 @@ public final class Deployer {
 		APPLICATION_CONTEXT = new FileSystemXmlApplicationContext(deployerConfigurationPath);
 		// Get the command line ips that we will deploy to, if any of course
 		List<String> deployToServers = new ArrayList<>();
-		String serversProperty = System.getProperty(DEPLOY_TO_SERVERS);
+        PropertyConfigurer propertyConfigurer = APPLICATION_CONTEXT.getBean(PropertyConfigurer.class);
+        String serversProperty = (String) propertyConfigurer.get(DEPLOY_TO_SERVERS);
+        if (serversProperty == null) {
+            serversProperty = System.getProperty(DEPLOY_TO_SERVERS);
+        }
 		if (serversProperty != null) {
 			deployToServers.addAll(Arrays.asList(StringUtils.split(serversProperty, IConstants.DELIMITER_CHARACTERS)));
 		}

@@ -35,7 +35,7 @@
         <level value="INFO"/>
     </logger>
     <logger name="ikube.action.index.handler.filesystem">
-        <level value="DEBUG"/>
+        <level value="INFO"/>
     </logger>
 
     <root>

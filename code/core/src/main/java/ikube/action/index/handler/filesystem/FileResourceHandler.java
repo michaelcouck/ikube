@@ -104,8 +104,8 @@ public class FileResourceHandler extends ResourceHandler<IndexableFileSystem> {
             IndexManager.addStringField(contentFieldName, parsedContent, indexableFileSystem, document);
             addDocument(indexContext, document);
 
-            logger.info("Read length : " + length + ", file : " + file + ", " + (parsedContent != null ? parsedContent.length() : 0));
             if (logger.isDebugEnabled()) {
+                logger.debug("Read length : " + length + ", file : " + file + ", " + (parsedContent != null ? parsedContent.length() : 0));
             }
 
             indexableFileSystem.setContent(parsedContent);
