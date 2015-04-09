@@ -9,6 +9,9 @@ import ikube.toolkit.LOGGING;
 import mockit.Mockit;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexableField;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
@@ -18,6 +21,10 @@ import weka.clusterers.SimpleKMeans;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This is the base test class for the unit tests.
@@ -77,6 +84,37 @@ public abstract class AbstractTest {
         builder.append(SERVICE);
         builder.append(path);
         return new URL("http", LOCALHOST, SERVER_PORT, builder.toString()).toString();
+    }
+
+    /**
+     * This method will just print the data in the index reader.L
+     *
+     * @param indexReader the reader to print the documents for
+     * @throws Exception
+     */
+    protected void printIndex(final IndexReader indexReader, final int numDocs) throws Exception {
+        logger.error("Num docs : " + indexReader.numDocs());
+        for (int i = 0; i < numDocs && i < indexReader.numDocs(); i++) {
+            Document document = indexReader.document(i);
+            logger.error("Document : " + i + ", " + document.toString().length());
+            printDocument(document);
+        }
+    }
+
+    protected void printDocument(final Document document) {
+        List<IndexableField> fields = document.getFields();
+        for (IndexableField indexableField : fields) {
+            logger.error("        : {}", indexableField);
+        }
+    }
+
+    protected void printResults(final ArrayList<HashMap<String, String>> results) {
+        for (final HashMap<String, String> result : results) {
+            logger.warn("Result : ");
+            for (final Map.Entry<String, String> mapEntry : result.entrySet()) {
+                logger.warn("       : " + mapEntry.getKey() + "-" + mapEntry.getValue());
+            }
+        }
     }
 
 }

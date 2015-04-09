@@ -254,7 +254,8 @@ public final class OBJECT {
             try {
                 return constructor.newInstance(parameters);
             } catch (final Exception e) {
-                LOGGER.debug("Error, oh oh... :(", e);
+                LOGGER.debug("Error, oh oh... :(");
+                LOGGER.trace(null, e);
             }
         }
 

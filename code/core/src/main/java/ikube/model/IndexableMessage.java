@@ -41,13 +41,13 @@ public class IndexableMessage extends Indexable {
     public String toString() {
         return "\nUser Mail Message : " +
                 "\n  mailboxName:       " + mailboxName +
-                "\n  mailboxOwner:      " + mailboxOwner.toString() +
+                "\n  mailboxOwner:      " + mailboxOwner +
                 "\n  messageExchangeId: " + messageExchangeId +
                 "\n  messageInternetId: " + messageInternetId +
-                "\n  from:              " + from.toString() +
-                "\n  to:                " + to.toString() +
-                "\n  cc:                " + cc.toString() +
-                "\n  bcc:               " + bcc.toString() +
+                "\n  from:              " + from +
+                "\n  to:                " + to +
+                "\n  cc:                " + cc +
+                "\n  bcc:               " + bcc +
                 "\n  subject:           " + subject +
                 "\n  sent:              " + sent +
                 "\n  received:          " + received +

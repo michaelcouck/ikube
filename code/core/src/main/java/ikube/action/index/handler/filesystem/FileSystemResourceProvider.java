@@ -30,7 +30,7 @@ class FileSystemResourceProvider implements IResourceProvider<File> {
     private final Stack<File> includedFiles;
     private final Stack<File> excludedFiles;
     private boolean finished = Boolean.FALSE;
-    private boolean terminated;
+    private boolean terminated = Boolean.FALSE;
 
     /**
      * The constructor takes the configuration for the walk of the file system, and start a thread that will do the actual walk,
@@ -113,13 +113,21 @@ class FileSystemResourceProvider implements IResourceProvider<File> {
 
     private File getResource(final int retry) {
         if (isTerminated()) {
+            LOGGER.info("Indexing terminated : " + includedFiles.size());
             includedFiles.clear();
+            excludedFiles.clear();
             return null;
         }
         File file = null;
         if (retry > 0) {
             if (includedFiles.size() > 0) {
                 file = includedFiles.pop();
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.info("Popping : " + file);
+                }
+                if (includedFiles.size() % 1000 == 0) {
+                    LOGGER.info("Files left : " + includedFiles.size() + ", excluded : " + excludedFiles.size() + ", popping : " + file);
+                }
             } else {
                 if (!finished) {
                     LOGGER.info("Waiting for walker : ");

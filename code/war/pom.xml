@@ -116,29 +116,29 @@
 					</connectors>
                 </configuration>
 				<executions>
-					<execution>
-						<id>start-jetty</id>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-                        <configuration>
-                            <!--
-                                To run in forked mode this causes H2 to complain that the database is locked
-                            -->
-                            <!--<stopKey>${jetty-stop-key}</stopKey>-->
-                            <!--<stopPort>${jetty-stop-port}</stopPort>-->
-                            <!--<waitForChild>false</waitForChild>-->
-                            <daemon>true</daemon>
-                        </configuration>
-					</execution>
-					<execution>
-						<id>stop-jetty</id>
-						<phase>post-integration-test</phase>
-						<goals>
-							<goal>stop</goal>
-						</goals>
-					</execution>
+					<!--<execution>-->
+						<!--<id>start-jetty</id>-->
+						<!--<phase>pre-integration-test</phase>-->
+						<!--<goals>-->
+							<!--<goal>run</goal>-->
+						<!--</goals>-->
+                        <!--<configuration>-->
+                            <!--&lt;!&ndash;-->
+                                <!--To run in forked mode this causes H2 to complain that the database is locked-->
+                            <!--&ndash;&gt;-->
+                            <!--&lt;!&ndash;<stopKey>${jetty-stop-key}</stopKey>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<stopPort>${jetty-stop-port}</stopPort>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<waitForChild>false</waitForChild>&ndash;&gt;-->
+                            <!--<daemon>true</daemon>-->
+                        <!--</configuration>-->
+					<!--</execution>-->
+					<!--<execution>-->
+						<!--<id>stop-jetty</id>-->
+						<!--<phase>post-integration-test</phase>-->
+						<!--<goals>-->
+							<!--<goal>stop</goal>-->
+						<!--</goals>-->
+					<!--</execution>-->
 				</executions>
 			</plugin>
 		</plugins>
