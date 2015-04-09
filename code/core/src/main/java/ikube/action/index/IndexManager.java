@@ -187,6 +187,7 @@ public final class IndexManager {
                 for (final IndexWriter indexWriter : indexContext.getIndexWriters()) {
                     LOGGER.info("Optimizing and closing the index : " + indexContext.getIndexName() + ", " + indexWriter);
                     closeIndexWriter(indexWriter);
+                    THREAD.sleep(60000);
                     new Optimizer().execute(indexContext);
                     LOGGER.info("Index optimized and closed : " + indexContext.getIndexName() + ", " + indexWriter);
                 }
