@@ -7,7 +7,9 @@ import ikube.scheduling.Scheduler;
 import ikube.security.WebServiceAuthentication;
 import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FILE;
+import ikube.toolkit.REST;
 import ikube.toolkit.THREAD;
+import ikube.web.service.Monitor;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -49,6 +51,13 @@ public abstract class IntegrationTest extends AbstractTest {
             new WebServiceAuthentication().authenticate(HTTP_CLIENT, LOCALHOST, SERVER_PORT, REST_USER_NAME, REST_PASSWORD);
         } catch (final Exception e) {
             LOGGER.error(null, e);
+        }
+
+        try {
+            String url = getUrl(Monitor.MONITOR + Monitor.TERMINATE_ALL);
+            REST.doPost(url, null, String.class);
+        } catch (final Exception e) {
+            LOGGER.info(null, e);
         }
     }
 

@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import weka.clusterers.SimpleKMeans;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * This is the base test class for the unit tests.
@@ -65,6 +67,16 @@ public abstract class AbstractTest {
         analysis.setContext(context);
         analysis.setInput(input);
         return analysis;
+    }
+
+    @SuppressWarnings("StringBufferReplaceableByString")
+    protected static String getUrl(String path) throws MalformedURLException {
+        StringBuilder builder = new StringBuilder();
+        builder.append(IConstants.SEP);
+        builder.append(IConstants.IKUBE);
+        builder.append(SERVICE);
+        builder.append(path);
+        return new URL("http", LOCALHOST, SERVER_PORT, builder.toString()).toString();
     }
 
 }
