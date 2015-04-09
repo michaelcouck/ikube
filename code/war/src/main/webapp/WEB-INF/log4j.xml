@@ -23,19 +23,19 @@
     </appender>
 
     <logger name="com">
-        <level value="DEBUG"/>
+        <level value="WARN"/>
     </logger>
     <logger name="net">
-        <level value="DEBUG"/>
+        <level value="WARN"/>
     </logger>
     <logger name="org">
-        <level value="DEBUG"/>
+        <level value="WARN"/>
     </logger>
     <logger name="ikube">
-        <level value="DEBUG"/>
+        <level value="WARN"/>
     </logger>
     <logger name="ikube.action.index.handler.filesystem">
-        <level value="DEBUG"/>
+        <level value="WARN"/>
     </logger>
 
     <root>

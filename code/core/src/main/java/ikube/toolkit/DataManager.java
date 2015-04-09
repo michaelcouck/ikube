@@ -34,6 +34,7 @@ public class DataManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataManager.class);
 
+
     @Value("${country-city-language-coordinate-file-name}")
     protected String countryCityFile = "cnt-cty-lng-co.properties";
 
@@ -57,10 +58,6 @@ public class DataManager {
         Reader reader = null;
         CSVReader csvReader = null;
         try {
-            if (file == null || !file.exists() || !file.isFile() || file.canRead() || dataBase == null) {
-                LOGGER.warn("Not loading data for cities and countries : " + file + ", " + dataBase);
-                return;
-            }
             reader = new FileReader(file);
             csvReader = new CSVReader(reader, '|');
             List<String[]> data = csvReader.readAll();

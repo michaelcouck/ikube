@@ -78,25 +78,6 @@ public final class STRING {
     }
 
     /**
-     * Verifies that all the characters in a string are digits, ie. the string is a number.
-     *
-     * @param string the string to verify for digit data
-     * @return whether every character in a string is a digit
-     */
-    public static boolean isDigits(final String string) {
-        if (string == null || string.trim().equals("")) {
-            return false;
-        }
-        char[] chars = string.toCharArray();
-        for (char c : chars) {
-            if (!Character.isDigit(c)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
      * This method will check that the string is a valid date of the format 'yyyy-MM-dd-Hh-mm-ss'. It is lenient
      * so strings like '71-5-1' will also be valid, it will be assumed that the year is a shortened version,
      * and month and day.

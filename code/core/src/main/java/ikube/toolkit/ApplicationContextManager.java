@@ -106,6 +106,46 @@ public final class ApplicationContextManager implements ApplicationContextAware 
     }
 
     /**
+     * This method is called by the 'web' part of the Spring configuration, which sets the context for us.
+     */
+    @Override
+    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
+        if (APPLICATION_CONTEXT == null) {
+            LOGGER.info("Setting the application context from the web part : " + applicationContext + ", " + applicationContext.getClass());
+            APPLICATION_CONTEXT = applicationContext;
+            ((AbstractApplicationContext) APPLICATION_CONTEXT).registerShutdownHook();
+            File configDirectory = null;
+            File consoleOutputFile = null;
+            InputStream inputStream = null;
+            try {
+                Object ikubeConfigurationPathProperty = System.getProperty(IConstants.IKUBE_CONFIGURATION);
+                // First try the configuration property
+                if (ikubeConfigurationPathProperty == null) {
+                    configDirectory = new File(IConstants.IKUBE_DIRECTORY);
+                } else {
+                    configDirectory = new File(ikubeConfigurationPathProperty.toString());
+                }
+                consoleOutputFile = FILE.findFileRecursively(configDirectory, "console");
+
+                String version = VERSION.version();
+                String timestamp = VERSION.timestamp();
+                inputStream = new FileInputStream(consoleOutputFile);
+                List<String> lines = IOUtils.readLines(inputStream);
+                for (final String line : lines) {
+                    String formatted = String.format(line, version, timestamp);
+                    System.out.println(formatted);
+                }
+            } catch (final Exception e) {
+                LOGGER.error("Error reading the console file : " + configDirectory + ", " + consoleOutputFile, e);
+            } finally {
+                IOUtils.closeQuietly(inputStream);
+            }
+        } else {
+            LOGGER.info("Application context already loaded : " + APPLICATION_CONTEXT);
+        }
+    }
+
+    /**
      * This method will return the configuration path on the local file system. If the user specifies the system
      * property 'ikube-configuration', then this will be the starting point. If this property is not set then we will
      * look in the './ikube' directory for the configuration.
@@ -258,46 +298,6 @@ public final class ApplicationContextManager implements ApplicationContextAware 
 
     public void initialize() {
         // What to do?
-    }
-
-    /**
-     * This method is called by the 'web' part of the Spring configuration, which sets the context for us.
-     */
-    @Override
-    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
-        if (APPLICATION_CONTEXT == null) {
-            LOGGER.info("Setting the application context from the web part : " + applicationContext + ", " + applicationContext.getClass());
-            APPLICATION_CONTEXT = applicationContext;
-            ((AbstractApplicationContext) APPLICATION_CONTEXT).registerShutdownHook();
-            File configDirectory = null;
-            File consoleOutputFile = null;
-            InputStream inputStream = null;
-            try {
-                Object ikubeConfigurationPathProperty = System.getProperty(IConstants.IKUBE_CONFIGURATION);
-                // First try the configuration property
-                if (ikubeConfigurationPathProperty == null) {
-                    configDirectory = new File(IConstants.IKUBE_DIRECTORY);
-                } else {
-                    configDirectory = new File(ikubeConfigurationPathProperty.toString());
-                }
-                consoleOutputFile = FILE.findFileRecursively(configDirectory, "console");
-
-                String version = VERSION.version();
-                String timestamp = VERSION.timestamp();
-                inputStream = new FileInputStream(consoleOutputFile);
-                List<String> lines = IOUtils.readLines(inputStream);
-                for (final String line : lines) {
-                    String formatted = String.format(line, version, timestamp);
-                    System.out.println(formatted);
-                }
-            } catch (final Exception e) {
-                LOGGER.error("Error reading the console file : " + configDirectory + ", " + consoleOutputFile, e);
-            } finally {
-                IOUtils.closeQuietly(inputStream);
-            }
-        } else {
-            LOGGER.info("Application context already loaded : " + APPLICATION_CONTEXT);
-        }
     }
 
 }

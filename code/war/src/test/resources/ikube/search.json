@@ -1,0 +1,44 @@
+{
+	"fragment":true,
+	"firstResult":0,
+	"maxResults":100,
+	"distance":20,
+	"startHour":-168,
+	"endHour":0,
+	"coordinate":{
+		"latitude":"38.48799",
+		"longitude":"21.2915"
+	},
+	"indexName":"twitter",
+	"searchStrings":["386757227472-2387362027472"],
+	"searchFields":["created-at"],
+	"typeFields":["range"]
+}
+
+
+{
+	"indexName":"geospatial",
+	"searchStrings":[
+		"-33.9",
+		"18.4",
+		"cape town"
+	],
+	"fragment":true,
+	"firstResult":0,
+	"maxResults":10,
+	"distance":20,
+	"coordinate":{
+		"latitude":"-33.9",
+		"longitude":"18.4"
+	},
+	"searchFields":[
+		"latitude",
+		"longitude",
+		"name"
+	],
+	"typeFields":[
+		"numeric",
+		"numeric",
+		"string"
+	]
+}

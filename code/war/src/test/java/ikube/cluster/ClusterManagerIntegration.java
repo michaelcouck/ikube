@@ -4,6 +4,7 @@ import com.hazelcast.core.Hazelcast;
 import ikube.IntegrationTest;
 import ikube.model.Task;
 import ikube.toolkit.THREAD;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,6 +22,7 @@ import static org.junit.Assert.*;
  * @version 01.00
  * @since 25-02-2014
  */
+@Ignore
 @SuppressWarnings("SpringJavaAutowiringInspection")
 public class ClusterManagerIntegration extends IntegrationTest {
 

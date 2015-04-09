@@ -27,7 +27,6 @@ import java.util.Stack;
 import java.util.concurrent.Future;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
 /**
@@ -112,13 +111,13 @@ public class SvnResourceProviderTest extends AbstractTest {
         assertEquals(svnDirEntry, svnDirEntryCache);
 
         THREAD.initialize();
-        svnDirEntries.push(svnDirEntry);
         Future future = THREAD.submit(this.getClass().getSimpleName(), new Runnable() {
             public void run() {
                 SVNDirEntry svnDirEntryCache = svnResourceProvider.getResource();
-                assertNotNull(svnDirEntryCache);
+                Assert.assertNotNull(svnDirEntryCache);
             }
         });
+        svnDirEntries.push(svnDirEntry);
         THREAD.waitForFuture(future, 3000);
     }
 

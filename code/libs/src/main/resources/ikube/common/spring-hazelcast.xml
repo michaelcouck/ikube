@@ -149,6 +149,7 @@
         id="ikube.cluster.IClusterManager"
         class="ikube.cluster.hzc.ClusterManagerHazelcast"
         lazy-init="false"
-        init-method="initialize" />
+        init-method="initialize"
+        destroy-method="destroy"/>
 
 </beans>

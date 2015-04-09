@@ -35,7 +35,7 @@
     <bean
         name="ikube.toolkit.ApplicationContextManager"
         class="ikube.toolkit.ApplicationContextManager"
-        lazy-init="true" />
+        depends-on="ikube.database.IDataBase"/>
 
     <!--
         The default persistence manager so we can specify more than one persistence file, and
@@ -139,7 +139,7 @@
         name="ikube.database.IDataBase"
         class="${ikube.dataBaseClass}"
         lazy-init="false"
-        depends-on="ikube.toolkit.PropertyConfigurer"/>
+        depends-on="ikube.toolkit.THREAD"/>
 
     <bean
         name="ikube.toolkit.DataManager"

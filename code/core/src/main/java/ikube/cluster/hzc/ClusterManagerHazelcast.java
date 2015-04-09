@@ -1,5 +1,6 @@
 package ikube.cluster.hzc;
 
+import com.hazelcast.config.Config;
 import com.hazelcast.core.*;
 import ikube.IConstants;
 import ikube.cluster.AClusterManager;
@@ -51,8 +52,8 @@ public class ClusterManagerHazelcast extends AClusterManager {
         int port = hazelcastInstance.getCluster().getLocalMember().getInetSocketAddress().getPort();
 
         address = new StringBuilder(ip).append("-").append(port).toString();
-        // final Config config = hazelcastInstance.getConfig();
-        // config.getNetworkConfig().getInterfaces().setInterfaces(Arrays.asList(ip));
+        final Config config = hazelcastInstance.getConfig();
+        config.getNetworkConfig().getInterfaces().setInterfaces(Arrays.asList(ip));
     }
 
     /**

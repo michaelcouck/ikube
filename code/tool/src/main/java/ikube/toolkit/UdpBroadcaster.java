@@ -36,26 +36,21 @@ public class UdpBroadcaster {
     // private static final String MCAST_ADDR = "FF7E:230::1234";
 
     static int MESSAGES_SENT = 0;
-    static int MESSAGES_RECEIVED = 0;
+    static int MESSAGES_RECIEVED = 0;
 
     private static InetAddress GROUP;
 
     public static void main(final String[] args) {
-        List<Future<Object>> futures = Arrays.asList();
         try {
             long timeToWait = 60;
             if (args != null && args.length > 0 && isNumeric(args[0])) {
                 timeToWait = Integer.parseInt(args[0]);
             }
             GROUP = InetAddress.getByName(MCAST_ADDR);
-            futures = new UdpBroadcaster().initialize();
+            List<Future<Object>> futures = new UdpBroadcaster().initialize();
             waitForFutures(futures, timeToWait);
         } catch (final Exception e) {
             LOGGER.error("Usage : [group-ip] [port]");
-        } finally {
-            for (Future<Object> future : futures) {
-                future.cancel(true);
-            }
         }
     }
 
@@ -80,7 +75,7 @@ public class UdpBroadcaster {
                         byte[] receiveData = new byte[256];
                         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                         multicastSocket.receive(receivePacket);
-                        UdpBroadcaster.MESSAGES_RECEIVED++;
+                        UdpBroadcaster.MESSAGES_RECIEVED++;
                         LOGGER.warn("Client received at : " + new Date() + ", from : " + receivePacket.getAddress());
                     }
                 } catch (final Exception e) {

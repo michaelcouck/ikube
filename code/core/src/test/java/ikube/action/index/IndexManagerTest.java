@@ -171,7 +171,7 @@ public class IndexManagerTest extends AbstractTest {
         createIndexFileSystem(indexContext, "The data in the index");
         latest = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
         logger.info("Latest : " + latest.getAbsolutePath());
-        assertTrue(latest.exists());
+        assertTrue(latest != null && latest.exists());
         assertNotSame(indexFolderTwo.getParentFile(), latest);
 
         when(indexContext.getIndexName()).thenReturn("different-index-context");

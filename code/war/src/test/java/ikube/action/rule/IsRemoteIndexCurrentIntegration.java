@@ -4,11 +4,10 @@ import ikube.IConstants;
 import ikube.IntegrationTest;
 import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
+import ikube.toolkit.ApplicationContextManager;
 import ikube.toolkit.FILE;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.File;
 
@@ -24,16 +23,12 @@ public class IsRemoteIndexCurrentIntegration extends IntegrationTest {
     /**
      * Class under test.
      */
-    @Autowired
-    @SuppressWarnings("SpringJavaAutowiringInspection")
     private IsRemoteIndexCurrent isRemoteIndexCurrent;
-    @Autowired
-    @Qualifier(IConstants.GEOSPATIAL)
-    @SuppressWarnings("SpringJavaAutowiringInspection")
-    private IndexContext geospatialIndexContext;
 
     @Before
     public void before() {
+        isRemoteIndexCurrent = ApplicationContextManager.getBean(IsRemoteIndexCurrent.class);
+        IndexContext geospatialIndexContext = ApplicationContextManager.getBean(IConstants.GEOSPATIAL);
         String indexDirectoryPath = IndexManager.getIndexDirectoryPath(geospatialIndexContext);
         FILE.deleteFile(new File(indexDirectoryPath));
     }
@@ -41,7 +36,8 @@ public class IsRemoteIndexCurrentIntegration extends IntegrationTest {
     @Test
     @SuppressWarnings("unchecked")
     public void evaluate() throws Exception {
-        boolean indexCurrent = isRemoteIndexCurrent.evaluate(geospatialIndexContext);
+        IndexContext indexContext = ApplicationContextManager.getBean(IConstants.GEOSPATIAL);
+        boolean indexCurrent = isRemoteIndexCurrent.evaluate(indexContext);
         assertFalse("This index should never be current in the tests : ", indexCurrent);
     }
 

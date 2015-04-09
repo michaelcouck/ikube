@@ -46,10 +46,10 @@
         <module>code/com</module>
         <module>code/core</module>
         <module>code/war</module>
-        <!--<module>code/libs</module>-->
-        <!--<module>code/site</module>-->
-        <!--<module>code/web</module>-->
-        <!--<module>code/tool</module>-->
+        <module>code/libs</module>
+        <module>code/site</module>
+        <module>code/web</module>
+        <module>code/tool</module>
     </modules>
 
     <properties>
@@ -140,9 +140,18 @@
                     <executions>
                         <execution>
                             <id>copy-configuration</id>
-                            <phase>test-compile</phase>
+                            <phase>test</phase>
                             <configuration>
                                 <target>
+                                    <!--<echo message="basedir : ${basedir}, ">basedir : ${basedir}</echo>
+                                    <echo message="pom.basedir : ${pom.basedir}, ">pom.basedir : ${pom.basedir}</echo>
+                                    <echo message="pom.baseUri : ${pom.baseUri}, ">pom.baseUri : ${pom.baseUri}</echo>
+                                    <echo message="project.basedir : ${project.basedir}, ">project.basedir : ${project.basedir}</echo>
+                                    <echo message="project.baseUri : ${project.baseUri}, ">project.baseUri : ${project.baseUri}</echo>
+                                    <echo message="parent.basedir : ${parent.basedir}, ">parent.basedir : ${parent.basedir}</echo>
+                                    <echo message="project.parent.basedir : ${project.parent.basedir}">project.parent.basedir : ${project.parent.basedir}</echo>
+                                    <echo message="project.parent.relativePath : ${project.parent.relativePath}, ">project.parent.relativePath : ${project.parent.relativePath}</echo>-->
+
                                     <delete dir="ikube"/>
 
                                     <copy todir="ikube">
