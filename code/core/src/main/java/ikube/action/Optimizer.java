@@ -2,6 +2,7 @@ package ikube.action;
 
 import ikube.model.IndexContext;
 import ikube.toolkit.FILE;
+import ikube.toolkit.THREAD;
 import ikube.toolkit.Timer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
@@ -10,6 +11,7 @@ import org.apache.lucene.store.NIOFSDirectory;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static ikube.action.index.IndexManager.closeIndexWriter;
@@ -48,11 +50,13 @@ public class Optimizer extends Action<IndexContext, Boolean> {
                     continue;
                 }
                 if (directory.listAll() != null && directory.listAll().length > 100) {
-                    logger.info("Optimizing index : " + indexDirectory);
+                    logger.info("Optimizing index : " + indexDirectory + ", " + Arrays.toString(directory.listAll()));
                     Timer.Timed timed = new Timer.Timed() {
                         @Override
                         public void execute() {
                             try {
+                                new Close().execute(indexContext);
+                                THREAD.sleep(60000);
                                 IndexWriter indexWriter = openIndexWriter(indexContext, directory, Boolean.FALSE);
                                 closeIndexWriter(indexWriter);
                                 new Reopen().execute(indexContext);

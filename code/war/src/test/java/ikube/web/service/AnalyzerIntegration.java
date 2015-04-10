@@ -1,14 +1,12 @@
 package ikube.web.service;
 
 import ikube.AbstractTest;
-import ikube.IConstants;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import org.junit.After;
 import org.junit.Test;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 
 import static ikube.toolkit.REST.doGet;
@@ -122,10 +120,6 @@ public class AnalyzerIntegration extends AbstractTest {
 
     @SuppressWarnings("StringBufferReplaceableByString")
     protected String getAnalyzerUrl(final String service) throws MalformedURLException {
-        StringBuilder builder = new StringBuilder();
-        builder.append(IConstants.SEP);
-        builder.append(IConstants.IKUBE);
-        builder.append(AbstractTest.SERVICE);
         return getUrl(Analyzer.ANALYZER + service);
     }
 

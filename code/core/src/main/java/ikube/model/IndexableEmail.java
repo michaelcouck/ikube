@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 
 /**
  * @author Michael Couck
- * @since 21.11.10
+ * @since 21-11-2010
  * @version 01.00
  */
 @Entity
@@ -30,7 +30,7 @@ public class IndexableEmail extends Indexable {
 	@Column
 	@NotNull
 	@Size(min = 1, max = 256)
-	@Attribute(field = false, description = "This is the namd of the content field in the Lucene index")
+	@Attribute(field = false, description = "This is the name of the content field in the Lucene index")
 	private String contentField;
 
 	@Column

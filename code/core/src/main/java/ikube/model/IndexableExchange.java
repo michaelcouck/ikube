@@ -1,6 +1,9 @@
 package ikube.model;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -11,31 +14,35 @@ import java.util.Date;
  * @version 01.00
  * @since 11-07-2014
  */
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public class IndexableExchange extends Indexable {
 
     @Column
     @NotNull
     @Pattern(regexp = "^(https?|http?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]", message = "The url must be valid")
-    @Attribute(field = false, description = "This is the endpoint url for the web service")
+    @Attribute(field = false, description = "This is the endpoint url for the web service.")
     private String exchangeUrl;
 
     @Column
     @Size(min = 1, max = 256)
-    @Attribute(field = false, description = "This is the userid to login to the server")
+    @Attribute(field = false, description = "This is the userid to login to the server.")
     private String exchangeUserid;
 
     @Column
     @Size(min = 1, max = 256)
-    @Attribute(field = false, description = "This is the password to login to the server")
+    @Attribute(field = false, description = "This is the password to login to the server.")
     private String exchangePassword;
 
     @Column
-    @Attribute(field = false, description = "This is the date to start indexing all user email messages from (message send date). Null indicates start from the beginning of time.")
+    @Attribute(field = false, description = "This is the date to start indexing all user email messages from " +
+            "(message send date). Null indicates start from the beginning of time.")
     private Date   indexFromDate;
 
     @Column
-    @Size(min = 4, max = 60)
-    @Attribute(field = false, description = "Resume indexing messages from this user account email onward. Null indicates start from the beginning.")
+    @Size(min = 4, max = 64)
+    @Attribute(field = false, description = "Resume indexing messages from this user account email onward. Null " +
+            "indicates start from the beginning.")
     private String resumeIndexFrom;
 
     @Column
@@ -47,52 +54,50 @@ public class IndexableExchange extends Indexable {
      * Type names and format to be indexed.
      */
     @Column
-    @Attribute(field = false, description = "the mailbox owners email address")
+    @Attribute(field = false, description = "The mailbox owners email address.")
     private String messageMailboxOwnerField;
     @Column
-    @Attribute(field = false, description = "the mailbox name for instance Inbox")
+    @Attribute(field = false, description = "The mailbox name for instance Inbox.")
     private String messageMailboxNameField;
     @Column
-    @Attribute(field = false, description = "the message unique exchange identifier")
+    @Attribute(field = false, description = "The message unique exchange identifier.")
     private String messageExchangeIdField;
     @Column
-    @Attribute(field = false, description = "the message unique internet identifier")
+    @Attribute(field = false, description = "The message unique internet identifier.")
     private String messageInternetIdField;
     @Column
-    @Attribute(field = false, description = "the message unique conversation identifier")
+    @Attribute(field = false, description = "The message unique conversation identifier.")
     private String messageConversationIdField;
     @Column
-    @Attribute(field = false, description = "the date and time the message was created")
+    @Attribute(field = false, description = "The date and time the message was created.")
     private String messageCreatedDateField;
     @Column
-    @Attribute(field = false, description = "the date and time the message was sent to the recipients, which includes the mailbox owner.")
+    @Attribute(field = false, description = "The date and time the message was sent to the recipients, which includes the mailbox owner.")
     private String messageSentDateField;
     @Column
-    @Attribute(field = false, description = "the date and time the message was received by the mailbox owner")
+    @Attribute(field = false, description = "The date and time the message was received by the mailbox owner.")
     private String messageReceivedDateField;
     @Column
-    @Attribute(field = false, description = "whom the message is from")
+    @Attribute(field = false, description = "Whom the message is from.")
     private String messageFromField;
     @Column
-    @Attribute(field = false, description = "the to recipients of the message")
+    @Attribute(field = false, description = "The to recipients of the message.")
     private String messageToField;
     @Column
-    @Attribute(field = false, description = "the cc recipients of the message")
+    @Attribute(field = false, description = "The cc recipients of the message.")
     private String messageBccField;
     @Column
-    @Attribute(field = false, description = "the bcc recipients of the message")
+    @Attribute(field = false, description = "The bcc recipients of the message.")
     private String messageCcField;
     @Column
-    @Attribute(field = false, description = "the message body subject title")
+    @Attribute(field = false, description = "The message body subject title.")
     private String messageSubjectField;
     @Column
-    @Attribute(field = false, description = "the message body text")
+    @Attribute(field = false, description = "The message body text.")
     private String messageBodyField;
     @Column
-    @Attribute(field = false, description = "the message body text type - HTML, TEXT, BEST.")
+    @Attribute(field = false, description = "The message body text type - HTML, TEXT, BEST.")
     private String messageBodyTypeField;
-
-
 
     public String getExchangeUrl() {
         return exchangeUrl;

@@ -29,7 +29,7 @@ import static org.junit.Assert.*;
  *
  * @author Michael Couck
  * @version 01.00
- * @since 16-may-12
+ * @since 16-05-2012
  */
 @SuppressWarnings("SpringJavaAutowiringInspection")
 public class EntityIntegration extends IntegrationTest {

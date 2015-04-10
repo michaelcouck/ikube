@@ -21,30 +21,26 @@ public class Indexable extends Persistable {
     @Transient
     private String type = this.getClass().getName();
 
-    /**
-     * This is the content of the indexable, it is therefore only valid while indexing and for the current resource.
-     */
     @Transient
+    @Attribute(field = false, description = "This is the content of the indexable, it is therefore only valid " +
+            "while indexing and for the current resource.")
     private transient volatile Object content;
-    /**
-     * Similar to the above, this is the raw unprocessed content, potentially binary data, numbers and characters etc.
-     */
+
     @Transient
+    @Attribute(field = false, description = "Similar to the above, this is the raw unprocessed content, potentially binary data, " +
+            "numbers and characters etc.")
     private transient volatile Object rawContent;
-    /**
-     * This is the address constructed content, the handler will construct and use this if necessary.
-     */
+
     @Transient
+    @Attribute(field = false, description = "This is the address constructed content, the handler will construct and use this if necessary.")
     private transient volatile String addressContent;
-    /**
-     * The holder for the maximum number of exceptions that this handler will allow before terminating.
-     */
+    
     @Transient
+    @Attribute(field = false, description = "The holder for the maximum number of exceptions that this handler will allow before terminating.")
     private AtomicInteger exceptions = new AtomicInteger(0);
-    /**
-     * These strategies will be processed before processing the indexable.
-     */
+
     @Transient
+    @Attribute(field = false, description = "These strategies will be processed before processing the indexable.")
     private transient List<IStrategy> strategies;
 
     @Column
