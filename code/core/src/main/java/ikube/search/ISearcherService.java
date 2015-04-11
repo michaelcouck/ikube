@@ -1,6 +1,7 @@
 package ikube.search;
 
 import ikube.model.Search;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import java.util.HashMap;
  * @version 01.00
  * @since 21-11-2010
  */
+@Service
 public interface ISearcherService {
 
     /**

@@ -39,15 +39,14 @@ public class Optimizer extends Action<IndexContext, Boolean> {
         logger.debug("Segments files : " + segmentsFiles);
         for (final File segmentsFile : segmentsFiles) {
             final File indexDirectory = segmentsFile.getParentFile();
-            // Can't optimize this index if it is open or being written to
-            //if (indexContext.getMultiSearcher() != null) {
-            //    logger.info("Index already opened, can't optimize now : " + indexContext.getIndexDirectoryPath());
-            //    continue;
-            //}
             try (Directory directory = NIOFSDirectory.open(indexDirectory)) {
                 if (IndexWriter.isLocked(directory)) {
-                    logger.warn("Index locked : " + indexContext.getIndexDirectoryPath());
-                    continue;
+                    IndexWriter.unlock(directory);
+                    THREAD.sleep(15000);
+                    if (IndexWriter.isLocked(directory)) {
+                        logger.warn("Index locked, can't unlock : " + indexContext.getIndexDirectoryPath());
+                        continue;
+                    }
                 }
                 if (directory.listAll() != null && directory.listAll().length > 100) {
                     logger.info("Optimizing index : " + indexDirectory + ", " + Arrays.toString(directory.listAll()));

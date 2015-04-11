@@ -1,6 +1,7 @@
 package ikube.security;
 
 import org.apache.http.client.HttpClient;
+import org.springframework.stereotype.Service;
 
 /**
  * This interface is for the various kinds of authentication that
@@ -10,6 +11,7 @@ import org.apache.http.client.HttpClient;
  * @version 01.00
  * @since 12-04-2013
  */
+@Service
 public interface IAuthentication {
 
 	/**
