@@ -26,7 +26,7 @@ public class IsRemoteIndexCurrent extends ARule<IndexContext> {
         List<Future<Boolean>> futures = clusterManager.sendTaskToAll(isIndexCurrentCallable);
         THREAD.waitForFutures(futures, 60);
         boolean isRemoteIndexCurrent = Boolean.FALSE;
-        logger.info("Remote index current : " + futures.size());
+        logger.debug("Remote index current : " + futures.size());
         for (final Future<Boolean> future : futures) {
             if (!future.isDone()) {
                 logger.info("Remote execution not finished : " + future);
@@ -35,12 +35,12 @@ public class IsRemoteIndexCurrent extends ARule<IndexContext> {
             try {
                 boolean remoteIndexCurrent = future.get();
                 isRemoteIndexCurrent |= remoteIndexCurrent;
-                logger.info("Remote index current : " + isRemoteIndexCurrent);
+                logger.debug("Remote index current : " + isRemoteIndexCurrent);
             } catch (final InterruptedException | ExecutionException e) {
                 logger.error("Exception getting result from remote future : ", e);
             }
         }
-        logger.info("Is remote index current : " + isRemoteIndexCurrent);
+        logger.debug("Is remote index current : " + isRemoteIndexCurrent);
         return isRemoteIndexCurrent;
     }
 

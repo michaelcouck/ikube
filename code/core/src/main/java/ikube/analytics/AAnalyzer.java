@@ -21,7 +21,7 @@ import static ikube.toolkit.FILE.*;
  */
 public abstract class AAnalyzer<I, O, C> implements IAnalyzer<I, O, C> {
 
-    protected transient Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * This method returns the data file for the analyzer. The data file contains the relational attribute set that can be

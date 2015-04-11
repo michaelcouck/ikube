@@ -84,7 +84,9 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
                 filter = filters[i];
             }
             Runnable builder = getAnalyzerBuilder(algorithms[i], (Instances) models[i], filter);
-            logger.info("Analyzer : " + i + ":" + builder);
+            if (logger != null) {
+                logger.info("Analyzer : " + i + ":" + builder);
+            }
             Future<?> future = submit(this.getClass().getName(), builder);
             if (context.isBuildInParallel()) {
                 futures.add(future);
@@ -93,7 +95,9 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
             }
         }
 
-        logger.info("Waiting for futures : ");
+        if (logger != null) {
+            logger.info("Waiting for futures : ");
+        }
         waitForAnonymousFutures(futures, Long.MAX_VALUE);
 
         context.setBuilt(Boolean.TRUE);

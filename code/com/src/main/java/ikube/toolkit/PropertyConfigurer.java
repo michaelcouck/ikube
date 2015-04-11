@@ -103,15 +103,15 @@ public class PropertyConfigurer extends Properties {
         try {
             // We check our own jar
             ProtectionDomain protectionDomain = getClass().getProtectionDomain();
-            LOGGER.info("Protection domain : " + protectionDomain);
+            LOGGER.debug("Protection domain : " + protectionDomain);
             CodeSource codeSource = protectionDomain.getCodeSource();
-            LOGGER.info("Code source : " + codeSource);
+            LOGGER.debug("Code source : " + codeSource);
             URL location = codeSource.getLocation();
-            LOGGER.info("Location : " + location);
+            LOGGER.debug("Location : " + location);
             URI uri = location.toURI();
-            LOGGER.info("Uri : " + uri);
+            LOGGER.debug("Uri : " + uri);
             String jarPath = uri.getPath();
-            LOGGER.info("Path to jar : " + jarPath);
+            LOGGER.debug("Path to jar : " + jarPath);
             File thisJar = new File(jarPath);
             checkJar(thisJar);
         } catch (final URISyntaxException e) {
@@ -128,7 +128,7 @@ public class PropertyConfigurer extends Properties {
                 if (propertyFile == null || !propertyFile.canRead() || propertyFile.isDirectory() || propertyFile.getAbsolutePath().contains(".svn")) {
                     continue;
                 }
-                LOGGER.info("         : Loading properties from : " + propertyFile);
+                LOGGER.info("Loading properties from : " + propertyFile);
                 this.load(new FileInputStream(propertyFile));
             } catch (final Exception e) {
                 LOGGER.error("Exception reading property file : " + propertyFile, e);
@@ -176,7 +176,7 @@ public class PropertyConfigurer extends Properties {
             return;
         }
         try {
-            LOGGER.info("Reading properties from jar : " + file);
+            LOGGER.debug("Reading properties from jar : " + file);
             checkJar(new JarFile(file));
         } catch (final Exception e) {
             LOGGER.error("Exception accessing the properties in jar file : " + file, e);
@@ -195,7 +195,7 @@ public class PropertyConfigurer extends Properties {
                 JarEntry jarEntry = jarEntries.nextElement();
                 String entryName = jarEntry.getName();
                 if (fileNamePattern != null && Pattern.compile(".*(" + fileNamePattern + ").*").matcher(entryName).matches()) {
-                    LOGGER.info("Jar file : " + jarFile.getName() + ", " + jarEntry);
+                    LOGGER.debug("Loading properties from : " + jarFile.getName() + ", " + jarEntry);
                     InputStream inputStream = jarFile.getInputStream(jarEntry);
                     this.load(inputStream);
                 }

@@ -3,6 +3,7 @@ package ikube.action;
 import ikube.model.IndexContext;
 import org.apache.lucene.index.*;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.store.AlreadyClosedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,47 +37,53 @@ public class Reopen extends Open {
 
     @SuppressWarnings("UnusedDeclaration")
     void openNewReaders(final IndexContext indexContext) throws Exception {
-        IndexSearcher oldIndexSearcher = indexContext.getMultiSearcher();
+        try {
+            IndexSearcher oldIndexSearcher = indexContext.getMultiSearcher();
 
-        if (oldIndexSearcher == null) {
-            openOnFile(indexContext);
-            return;
-        }
+            if (oldIndexSearcher == null) {
+                openOnFile(indexContext);
+                return;
+            }
 
-        List<IndexReader> newIndexReaders = new ArrayList<>();
-        List<IndexReader> oldIndexReaders = new ArrayList<>();
-        MultiReader multiReader = (MultiReader) oldIndexSearcher.getIndexReader();
-        CompositeReaderContext compositeReaderContext = multiReader.getContext();
-        for (final IndexReaderContext indexReaderContext : compositeReaderContext.children()) {
-            IndexReader oldIndexReader = indexReaderContext.reader();
-            IndexReader newIndexReader = DirectoryReader.openIfChanged((DirectoryReader) oldIndexReader);
-            if (newIndexReader != null && oldIndexReader != newIndexReader) {
-                logger.debug("New index reader : " + indexContext.getName());
-                newIndexReaders.add(newIndexReader);
-                oldIndexReaders.add(oldIndexReader);
-            } else {
-                if (oldIndexReader != null) {
+            List<IndexReader> newIndexReaders = new ArrayList<>();
+            List<IndexReader> oldIndexReaders = new ArrayList<>();
+
+            MultiReader multiReader = (MultiReader) oldIndexSearcher.getIndexReader();
+            CompositeReaderContext compositeReaderContext = multiReader.getContext();
+            for (final IndexReaderContext indexReaderContext : compositeReaderContext.children()) {
+                IndexReader oldIndexReader = indexReaderContext.reader();
+                IndexReader newIndexReader = DirectoryReader.openIfChanged((DirectoryReader) oldIndexReader);
+                if (newIndexReader != null && oldIndexReader != newIndexReader) {
+                    logger.debug("New index reader : " + indexContext.getName());
+                    newIndexReaders.add(newIndexReader);
+                    oldIndexReaders.add(oldIndexReader);
+                } else {
                     newIndexReaders.add(oldIndexReader);
                     logger.debug("Keeping old index reader : " + indexContext.getName());
                 }
             }
-        }
-        int newIndexReadersSize = newIndexReaders.size();
-        IndexReader[] newIndexReaderArray = newIndexReaders.toArray(new IndexReader[newIndexReadersSize]);
-        IndexReader indexReader = new MultiReader(newIndexReaderArray, Boolean.FALSE);
-        IndexSearcher indexSearcher = new IndexSearcher(indexReader);
-        indexContext.setMultiSearcher(indexSearcher);
-        for (final IndexReader oldIndexReader : oldIndexReaders) {
-            try {
-                if (oldIndexReader != null) {
-                    logger.debug("Closing index reader : " + indexContext.getName());
-                    oldIndexReader.close();
+
+            int newIndexReadersSize = newIndexReaders.size();
+            IndexReader[] newIndexReaderArray = newIndexReaders.toArray(new IndexReader[newIndexReadersSize]);
+            IndexReader indexReader = new MultiReader(newIndexReaderArray, Boolean.FALSE);
+            IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+            indexContext.setMultiSearcher(indexSearcher);
+            for (final IndexReader oldIndexReader : oldIndexReaders) {
+                try {
+                    if (oldIndexReader != null) {
+                        logger.debug("Closing index reader : " + indexContext.getName());
+                        oldIndexReader.close();
+                    }
+                } catch (final Exception e) {
+                    logger.error("Exception closing the old index reader : " + oldIndexReader, e);
                 }
-            } catch (final Exception e) {
-                logger.error("Exception closing the old index reader : " + oldIndexReader, e);
             }
+            logger.debug("Opened new searcher : " + indexContext.getName() + ", " + indexContext.getMultiSearcher().getIndexReader().numDocs());
+        } catch (final AlreadyClosedException e) {
+            logger.warn("Already closed, setting searcher to null and wait for open : " +
+                    indexContext.getName() + ", " + indexContext.getIndexDirectoryPath(), e);
+            indexContext.setMultiSearcher(null);
         }
-        logger.debug("Opened new searcher : " + indexContext.getName() + ", " + indexContext.getMultiSearcher().getIndexReader().numDocs());
     }
 
     // NOTE: 13-09-2014: This finally runs out of memory, open file handles increase gradually

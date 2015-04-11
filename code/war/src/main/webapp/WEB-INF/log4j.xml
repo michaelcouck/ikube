@@ -23,13 +23,13 @@
     </appender>
 
     <logger name="com">
-        <level value="INFO"/>
+        <level value="WARN"/>
     </logger>
     <logger name="net">
-        <level value="INFO"/>
+        <level value="WARN"/>
     </logger>
     <logger name="org">
-        <level value="INFO"/>
+        <level value="WARN"/>
     </logger>
     <logger name="ikube">
         <level value="INFO"/>

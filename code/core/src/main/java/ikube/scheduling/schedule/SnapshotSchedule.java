@@ -80,7 +80,9 @@ public class SnapshotSchedule extends Schedule {
                 }
 
                 dataBase.persist(snapshot);
-                logger.info("Persisted snapshot for : " + indexContext.getName());
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Persisted snapshot for : " + indexContext.getName());
+                }
                 String[] names = new String[]{IConstants.INDEX_CONTEXT};
                 Object[] values = new Object[]{indexContext.getName()};
                 List<Snapshot> snapshots = dataBase.find(
@@ -171,10 +173,14 @@ public class SnapshotSchedule extends Schedule {
     protected Number getTotalSearchesForIndex(final IndexContext indexContext) {
         String[] fields = {"indexName"};
         Object[] values = {indexContext.getIndexName()};
-        logger.info("Database : " + dataBase + ", " + indexContext.getIndexName() + ", " + indexContext.getName());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Database : " + dataBase + ", " + indexContext.getIndexName() + ", " + indexContext.getName());
+        }
         try {
             long totalSearches = dataBase.execute(Search.SELECT_FROM_SEARCH_COUNT_SEARCHES, fields, values);
-            logger.info("Total search database : " + indexContext.getIndexName() + ", " + totalSearches);
+            if (logger.isDebugEnabled()) {
+                logger.info("Total search database : " + indexContext.getIndexName() + ", " + totalSearches);
+            }
             return totalSearches;
         } catch (final Exception e) {
             // Ignore, this can throw a null pointer because the return should be a long,

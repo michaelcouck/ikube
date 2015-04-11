@@ -1,5 +1,7 @@
 package ikube.database;
 
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +14,7 @@ import java.util.Map;
  * @version 01.00
  * @since 20-04-2009
  */
+@Service
 public interface IDataBase {
 
 	/**
