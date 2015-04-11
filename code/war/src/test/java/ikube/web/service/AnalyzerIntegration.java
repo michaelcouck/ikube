@@ -31,8 +31,12 @@ public class AnalyzerIntegration extends AbstractTest {
     private String dataFileName = "bmw-browsers.arff";
 
     @After
-    public void after() throws Exception {
-        destroy();
+    public void after() {
+        try {
+            destroy();
+        } catch (final Exception e) {
+            logger.error(null, e);
+        }
     }
 
     @Test

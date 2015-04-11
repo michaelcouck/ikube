@@ -166,8 +166,9 @@ public abstract class IndexableHandler<T extends Indexable> implements IIndexabl
                     "Maximum exceptions exceeded for resource : " + indexable.getName() +
                             ", " + message, exception);
         }
-        if (InterruptedException.class.isAssignableFrom(exception.getClass()) ||
-                CancellationException.class.isAssignableFrom(exception.getClass())) {
+        Class<?> exceptionClass = exception.getClass();
+        if (exceptionClass.isAssignableFrom(InterruptedException.class) ||
+                exceptionClass.isAssignableFrom(CancellationException.class)) {
             throw new RuntimeException("Worker thread interrupted : " + message, exception);
         }
         logger.error("Exception handling resource : " + message + ", " + exception.getLocalizedMessage());

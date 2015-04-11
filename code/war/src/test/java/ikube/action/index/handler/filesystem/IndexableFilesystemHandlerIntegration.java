@@ -91,15 +91,15 @@ public class IndexableFilesystemHandlerIntegration extends IntegrationTest {
         THREAD.sleep(15000);
 
         // "Vivamus"
-        search("TimeoutHandlerQ", "Ikokoon", "français", "Hibernate", "Application",
-                "Humble", "Autosuggested", "Reporting", "consectetur", "encrypted", "assumptions");
+        search("TimeoutHandlerQ", "Ikokoon", "français", "consectetur",
+                "Hibernate", "Application", "Humble", "Autosuggested", "Reporting", "encrypted", "assumptions");
     }
 
     private void search(final String... searchStrings) throws Exception {
         IndexSearcher indexSearcher = desktop.getMultiSearcher();
         SearchComplex searchComplex = new SearchComplex(indexSearcher);
 
-        // printIndex(indexSearcher.getIndexReader(), 1000);
+        printIndex(indexSearcher.getIndexReader(), 10000);
 
         searchComplex.setFirstResult(0);
         searchComplex.setMaxResults(10);

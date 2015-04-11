@@ -51,11 +51,8 @@ public class WekaClustererTest extends AbstractTest {
     @Test
     public void build() throws Exception {
         wekaClusterer.build(context);
-        THREAD.sleep(1000);
-//        assertEquals(3, context.getEvaluations().length);
-//        for (final String evaluation : context.getEvaluations()) {
-//            assertNotNull(evaluation);
-//        }
+        THREAD.sleep(5000);
+        assertNotNull(context.getAnalyzer());
     }
 
     @Test
@@ -75,9 +72,10 @@ public class WekaClustererTest extends AbstractTest {
         THREAD.sleep(1000);
         for (final Object model : context.getModels()) {
             Instances instances = (Instances) model;
+            // printInstances(instances);
             double[][][] distributionForInstances = wekaClusterer.getDistributionForInstances(context, instances);
             for (final double[][] distributionForInstance : distributionForInstances) {
-                logger.info("Probability : " + Arrays.toString(distributionForInstance));
+                logger.debug("Probability : " + Arrays.toString(distributionForInstance));
                 for (final double[] distribution : distributionForInstance) {
                     for (final double probability : distribution) {
                         assertTrue(probability >= 0 && probability <= 1.0);

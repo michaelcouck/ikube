@@ -11,6 +11,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,6 +34,7 @@ import static ikube.toolkit.FILE.*;
  * @version 01.00
  * @since 10-04-2013
  */
+@Service
 @SuppressWarnings("SpringJavaAutowiringInspection")
 public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
 
@@ -51,6 +53,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
     public Context create(final Context context) {
         Create creator = new Create(context);
         List<Future<Boolean>> futures = clusterManager.sendTaskToAll(creator);
+        LOGGER.info("Calling remote members in cluster with task : " + futures.size() + ", " + creator);
         THREAD.waitForFutures(futures, 15);
         LOGGER.debug("Contexts : " + getContexts());
         return context;
@@ -99,6 +102,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
     public Context train(final Analysis<I, O> analysis) {
         Train trainer = new Train(analysis);
         List<Future<Boolean>> futures = clusterManager.sendTaskToAll(trainer);
+        LOGGER.info("Calling remote members in cluster with task : " + futures.size() + ", " + trainer);
         THREAD.waitForFutures(futures, 15);
         LOGGER.debug("Contexts : " + getContexts());
         return getContext(analysis.getContext());
@@ -112,6 +116,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
     public Context build(final Analysis<I, O> analysis) {
         Build builder = new Build(analysis);
         List<Future<Boolean>> futures = clusterManager.sendTaskToAll(builder);
+        LOGGER.info("Calling remote members in cluster with task : " + futures.size() + ", " + builder);
         THREAD.waitForFutures(futures, 15);
         LOGGER.debug("Contexts : " + getContexts());
         return getContext(analysis.getContext());
@@ -130,6 +135,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
             // Create the callable that will be executed on one of the nodes
             Future<?> future = clusterManager.sendTask(analyzer);
             try {
+                LOGGER.info("Calling remote members in cluster with task : " + analyzer);
                 return (Analysis<I, O>) future.get(60, TimeUnit.SECONDS);
             } catch (final InterruptedException | ExecutionException | TimeoutException e) {
                 throw new RuntimeException(e);
@@ -156,6 +162,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
             analysis.setDistributed(Boolean.FALSE);
             Future<?> future = clusterManager.sendTask(sizesForClassesOrClusters);
             try {
+                LOGGER.info("Calling remote members in cluster with task : " + sizesForClassesOrClusters);
                 return (Analysis<I, O>) future.get(60, TimeUnit.SECONDS);
             } catch (final InterruptedException | ExecutionException | TimeoutException e) {
                 throw new RuntimeException(e);
@@ -178,6 +185,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
         // Create the callable that will be executed on the remote node
         Destroy destroyer = new Destroy(context);
         List<Future<Boolean>> futures = clusterManager.sendTaskToAll(destroyer);
+        LOGGER.info("Calling remote members in cluster with task : " + futures.size() + ", " + destroyer);
         THREAD.waitForFutures(futures, 15);
         LOGGER.debug("Contexts : " + getContexts());
     }

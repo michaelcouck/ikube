@@ -299,9 +299,8 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
     @Override
     public void destroy(final Context context) throws Exception {
         if (context.getAlgorithms() != null) {
-            for (int i = 0; i < context.getAlgorithms().length; i++) {
-                Instances instances = (Instances) context.getModels()[i];
-                instances.delete();
+            for (int i = 0; context.getModels() != null && i < context.getAlgorithms().length; i++) {
+                ((Instances) context.getModels()[i]).delete();
             }
         }
     }
