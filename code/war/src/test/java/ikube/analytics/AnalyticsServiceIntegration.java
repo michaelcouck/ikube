@@ -33,13 +33,13 @@ public class AnalyticsServiceIntegration extends IntegrationTest {
     @SuppressWarnings("unchecked")
     public void create() throws Exception {
         Context context = getContext(analyzerModelFileName, contextName);
-        context = analyticsService.create(context);
-        assertNotNull(context);
-        context = analyticsService.getContext(contextName);
-        assertNotNull(context);
-        for (int i = 0; i < context.getAlgorithms().length; i++) {
-            assertNotNull(context.getAlgorithms()[i]);
-            assertNotNull(context.getModels()[i]);
+        Context createdContext = analyticsService.create(context);
+        assertNotNull(createdContext);
+        createdContext = analyticsService.getContext(contextName);
+        assertNotNull("The context must be created : ", createdContext);
+        for (int i = 0; i < createdContext.getAlgorithms().length; i++) {
+            assertNotNull(createdContext.getAlgorithms()[i]);
+            assertNotNull(createdContext.getModels()[i]);
         }
     }
 

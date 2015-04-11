@@ -23,7 +23,7 @@
     </appender>
 
     <logger name="com">
-        <level value="WARN"/>
+        <level value="DEBUG"/>
     </logger>
     <logger name="net">
         <level value="WARN"/>

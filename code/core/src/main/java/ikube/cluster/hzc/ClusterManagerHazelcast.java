@@ -11,7 +11,9 @@ import ikube.model.IndexContext;
 import ikube.model.Server;
 import ikube.toolkit.UriUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -26,6 +28,8 @@ import java.util.concurrent.TimeUnit;
  * @see IClusterManager
  * @since 15-07-2012
  */
+@Service
+@Configurable
 @SuppressWarnings("SpringJavaAutowiringInspection")
 public class ClusterManagerHazelcast extends AClusterManager {
 

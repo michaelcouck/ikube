@@ -104,6 +104,9 @@ public class DataManager {
 
                 dataBase.mergeBatch(geoCities);
             }
+        } catch (final NullPointerException e) {
+            LOGGER.warn("Null pointer in data manager : ");
+            LOGGER.debug(null, e);
         } catch (final Exception e) {
             throw new RuntimeException(e);
         } finally {

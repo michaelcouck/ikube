@@ -21,13 +21,15 @@
 
     <description>This is the configuration for the Hazelcast grid</description>
 
-    <context:spring-configured/>
-    <context:annotation-config/>
-    <context:component-scan base-package="ikube"/>
+    <!--<context:spring-configured/>-->
+    <!--<context:annotation-config/>-->
+    <!--<context:component-scan base-package="ikube"/>-->
 
     <!-- Hazelcast Instance configuration -->
     <!--suppress UnparsedCustomBeanInspection -->
-    <hz:hazelcast id="ikube-hazelcast">
+    <hz:hazelcast
+        id="ikube-hazelcast"
+        lazy-init="false">
         <hz:config>
             <!-- Hazelcast Instance Name -->
             <hz:instance-name>${hz-instance-name}</hz:instance-name>
@@ -39,9 +41,9 @@
                 <hz:property name="hazelcast.redo.wait.millis">15000</hz:property>
                 <hz:property name="hazelcast.operation.call.timeout.millis">600000</hz:property>
                 <hz:property name="hazelcast.redo.giveup.threshold">10</hz:property>
-                <!--<hz:property name="hazelcast.redo.giveup.threshold">1000</hz:property>-->
+                <!--<hz:property name="hazelcast.redo.giveup.threshold">100</hz:property>-->
                 <hz:property name="hazelcast.max.operation.timeout">600000</hz:property>
-                <!--<hz:property name="hazelcast.socket.bind.any">true</hz:property>-->
+                <hz:property name="hazelcast.socket.bind.any">true</hz:property>
                 <hz:property name="hazelcast.icmp.enabled">true</hz:property>
                 <!--<hz:property name="hazelcast.elastic.memory.enabled">true</hz:property>-->
             </hz:properties>
@@ -109,6 +111,7 @@
             </hz:topic>
         </hz:config>
     </hz:hazelcast>
+
     <!-- Caches are backed up to the database with these beans -->
     <bean
         id="ikube.cluster.hzc.ClusterManagerCacheSearch"
@@ -148,8 +151,9 @@
     <bean
         id="ikube.cluster.IClusterManager"
         class="ikube.cluster.hzc.ClusterManagerHazelcast"
-        lazy-init="false"
+        lazy-init="true"
         init-method="initialize"
-        destroy-method="destroy"/>
+        destroy-method="destroy"
+        depends-on="ikube-hazelcast"/>
 
 </beans>

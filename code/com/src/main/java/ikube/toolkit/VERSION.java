@@ -62,8 +62,8 @@ public class VERSION {
             VERSION = properties.getProperty("version");
         } catch (final Exception e) {
             LOGGER.error("Exception reading the Maven properties for the build : " + pomPropertiesFile + ", " + e.getMessage());
-            if (LOGGER.isInfoEnabled()) {
-                LOGGER.info(null, e);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug(null, e);
             }
         } finally {
             if (StringUtils.isEmpty(VERSION)) {
@@ -79,8 +79,8 @@ public class VERSION {
             TIMESTAMP = lines.get(1).replaceAll("#", "");
         } catch (final Exception e) {
             LOGGER.error("Exception reading the Maven properties for the build : " + pomPropertiesFile + ", " + e.getMessage());
-            if (LOGGER.isInfoEnabled()) {
-                LOGGER.info(null, e);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug(null, e);
             }
         } finally {
             if (StringUtils.isEmpty(TIMESTAMP)) {

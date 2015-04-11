@@ -57,7 +57,8 @@ public abstract class IntegrationTest extends AbstractTest {
             String url = getUrl(Monitor.MONITOR + Monitor.TERMINATE_ALL);
             REST.doPost(url, null, String.class);
         } catch (final Exception e) {
-            LOGGER.info(null, e);
+            LOGGER.info("Server not running?");
+            LOGGER.debug(null, e);
         }
     }
 

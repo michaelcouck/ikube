@@ -167,8 +167,8 @@ public abstract class IndexableHandler<T extends Indexable> implements IIndexabl
                             ", " + message, exception);
         }
         Class<?> exceptionClass = exception.getClass();
-        if (exceptionClass.isAssignableFrom(InterruptedException.class) ||
-                exceptionClass.isAssignableFrom(CancellationException.class)) {
+        if (InterruptedException.class.isAssignableFrom(exceptionClass) ||
+                CancellationException.class.isAssignableFrom(exceptionClass)) {
             throw new RuntimeException("Worker thread interrupted : " + message, exception);
         }
         logger.error("Exception handling resource : " + message + ", " + exception.getLocalizedMessage());
