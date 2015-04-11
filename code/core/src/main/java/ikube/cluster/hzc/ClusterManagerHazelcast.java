@@ -28,8 +28,6 @@ import java.util.concurrent.TimeUnit;
  * @see IClusterManager
  * @since 15-07-2012
  */
-@Service
-@Configurable
 @SuppressWarnings("SpringJavaAutowiringInspection")
 public class ClusterManagerHazelcast extends AClusterManager {
 

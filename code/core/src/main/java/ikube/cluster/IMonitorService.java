@@ -3,7 +3,6 @@ package ikube.cluster;
 import ikube.model.IndexContext;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
-import org.springframework.stereotype.Service;
 
 import javax.persistence.Column;
 import java.util.Map;
@@ -16,7 +15,6 @@ import java.util.Map;
  * @version 01.00
  * @since 12-10-2010
  */
-@Service
 public interface IMonitorService {
 
     /**

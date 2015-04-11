@@ -182,8 +182,7 @@
 
     <bean
         name="ikube.analytics.IAnalyticsService"
-        class="ikube.analytics.AnalyticsService"
-        depends-on="ikube.cluster.IClusterManager"/>
+        class="ikube.analytics.AnalyticsService" />
 
     <bean
         id="ikube.scheduling.Scheduler"

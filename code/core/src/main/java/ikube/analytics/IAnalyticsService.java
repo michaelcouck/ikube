@@ -2,7 +2,6 @@ package ikube.analytics;
 
 import ikube.model.Analysis;
 import ikube.model.Context;
-import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
 import java.util.Map;
@@ -18,7 +17,6 @@ import java.util.Map;
  * @see ikube.analytics.IAnalyzer for details on the parameterized types
  * @since 10-04-2013
  */
-@Service
 public interface IAnalyticsService<I, O> {
 
     /**

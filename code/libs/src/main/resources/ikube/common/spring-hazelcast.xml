@@ -28,8 +28,7 @@
     <!-- Hazelcast Instance configuration -->
     <!--suppress UnparsedCustomBeanInspection -->
     <hz:hazelcast
-        id="ikube-hazelcast"
-        lazy-init="false">
+        id="ikube-hazelcast">
         <hz:config>
             <!-- Hazelcast Instance Name -->
             <hz:instance-name>${hz-instance-name}</hz:instance-name>
@@ -113,14 +112,14 @@
     </hz:hazelcast>
 
     <!-- Caches are backed up to the database with these beans -->
+    <!-- depends-on="ikube.database.IDataBase" -->
     <bean
         id="ikube.cluster.hzc.ClusterManagerCacheSearch"
-        class="ikube.cluster.hzc.ClusterManagerCacheSearch"
-        depends-on="ikube.database.IDataBase"/>
+        class="ikube.cluster.hzc.ClusterManagerCacheSearch" />
+    <!-- depends-on="ikube.database.IDataBase" -->
     <bean
         id="ikube.cluster.hzc.ClusterManagerCacheSavePoint"
-        class="ikube.cluster.hzc.ClusterManagerCacheSavePoint"
-        depends-on="ikube.database.IDataBase"/>
+        class="ikube.cluster.hzc.ClusterManagerCacheSavePoint" />
 
     <!-- Listeners for the grid to persist items and stop actions -->
     <bean
@@ -153,7 +152,6 @@
         class="ikube.cluster.hzc.ClusterManagerHazelcast"
         lazy-init="true"
         init-method="initialize"
-        destroy-method="destroy"
-        depends-on="ikube-hazelcast"/>
+        destroy-method="destroy" />
 
 </beans>

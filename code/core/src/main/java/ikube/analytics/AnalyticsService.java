@@ -34,7 +34,6 @@ import static ikube.toolkit.FILE.*;
  * @version 01.00
  * @since 10-04-2013
  */
-@Service
 @SuppressWarnings("SpringJavaAutowiringInspection")
 public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
 
