@@ -33,7 +33,7 @@ public class AnalyzerIntegration extends AbstractTest {
     @After
     public void after() {
         try {
-            destroy();
+            // destroy();
         } catch (final Exception e) {
             logger.error(null, e);
         }

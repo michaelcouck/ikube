@@ -182,4 +182,6 @@ public interface IConstants extends Constants {
     String FORECASTS = "forecasts";
 
     int MAX_SEGMENTS = 25;
+
+    int ANALYTICS_CLUSTER_WAIT_TIME = 600;
 }

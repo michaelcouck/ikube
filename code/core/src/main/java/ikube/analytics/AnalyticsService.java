@@ -52,7 +52,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
         Create creator = new Create(context);
         List<Future<Boolean>> futures = clusterManager.sendTaskToAll(creator);
         LOGGER.info("Calling remote members in cluster with task : " + futures.size() + ", " + creator);
-        THREAD.waitForFutures(futures, 15);
+        THREAD.waitForFutures(futures, IConstants.ANALYTICS_CLUSTER_WAIT_TIME);
         LOGGER.debug("Contexts : " + getContexts());
         return context;
     }
@@ -101,7 +101,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
         Train trainer = new Train(analysis);
         List<Future<Boolean>> futures = clusterManager.sendTaskToAll(trainer);
         LOGGER.info("Calling remote members in cluster with task : " + futures.size() + ", " + trainer);
-        THREAD.waitForFutures(futures, 15);
+        THREAD.waitForFutures(futures, IConstants.ANALYTICS_CLUSTER_WAIT_TIME);
         LOGGER.debug("Contexts : " + getContexts());
         return getContext(analysis.getContext());
     }
@@ -115,7 +115,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
         Build builder = new Build(analysis);
         List<Future<Boolean>> futures = clusterManager.sendTaskToAll(builder);
         LOGGER.info("Calling remote members in cluster with task : " + futures.size() + ", " + builder);
-        THREAD.waitForFutures(futures, 15);
+        THREAD.waitForFutures(futures, IConstants.ANALYTICS_CLUSTER_WAIT_TIME);
         LOGGER.debug("Contexts : " + getContexts());
         return getContext(analysis.getContext());
     }
@@ -184,7 +184,7 @@ public class AnalyticsService<I, O> implements IAnalyticsService<I, O> {
         Destroy destroyer = new Destroy(context);
         List<Future<Boolean>> futures = clusterManager.sendTaskToAll(destroyer);
         LOGGER.info("Calling remote members in cluster with task : " + futures.size() + ", " + destroyer);
-        THREAD.waitForFutures(futures, 15);
+        THREAD.waitForFutures(futures, IConstants.ANALYTICS_CLUSTER_WAIT_TIME);
         LOGGER.debug("Contexts : " + getContexts());
     }
 
