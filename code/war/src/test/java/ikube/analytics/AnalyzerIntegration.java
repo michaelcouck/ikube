@@ -4,6 +4,7 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.model.Analysis;
 import ikube.model.Context;
+import ikube.toolkit.THREAD;
 import ikube.web.service.Analyzer;
 import org.junit.After;
 import org.junit.Test;
@@ -28,6 +29,7 @@ public abstract class AnalyzerIntegration extends AbstractTest {
             Context context = getContext();
             String destroyUri = getAnalyzerRestUri(Analyzer.DESTROY);
             doPost(destroyUri, context, Context.class);
+            THREAD.sleep(15000);
         } catch (final Exception e) {
             logger.error("Exception destroying the analyzer : ", e);
         }
