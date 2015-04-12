@@ -180,4 +180,6 @@ public interface IConstants extends Constants {
     String TYPE = "type";
     String PACKAGE = "package";
     String FORECASTS = "forecasts";
+
+    int MAX_SEGMENTS = 25;
 }

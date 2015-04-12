@@ -1,5 +1,6 @@
 package ikube.action;
 
+import ikube.IConstants;
 import ikube.model.IndexContext;
 import ikube.toolkit.FILE;
 import ikube.toolkit.THREAD;
@@ -14,8 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static ikube.action.index.IndexManager.closeIndexWriter;
-import static ikube.action.index.IndexManager.openIndexWriter;
+import static ikube.action.index.IndexManager.*;
 
 /**
  * This class will find all the 'segments.gen' files in a directory, then open index writers on the directories
@@ -32,7 +32,7 @@ public class Optimizer extends Action<IndexContext, Boolean> {
      * {@inheritDoc}
      */
     @Override
-    public boolean internalExecute(final IndexContext indexContext) throws IOException {
+    public boolean internalExecute(final IndexContext indexContext) throws Exception {
         File baseDirectory = new File(indexContext.getIndexDirectoryPath());
         logger.info("Starting at directory : " + baseDirectory);
         List<File> segmentsFiles = FILE.findFilesRecursively(baseDirectory, new ArrayList<File>(), "segments.gen");
@@ -40,34 +40,74 @@ public class Optimizer extends Action<IndexContext, Boolean> {
         for (final File segmentsFile : segmentsFiles) {
             final File indexDirectory = segmentsFile.getParentFile();
             try (Directory directory = NIOFSDirectory.open(indexDirectory)) {
-                if (IndexWriter.isLocked(directory)) {
-                    IndexWriter.unlock(directory);
-                    THREAD.sleep(15000);
-                    if (IndexWriter.isLocked(directory)) {
-                        logger.warn("Index locked, can't unlock : " + indexContext.getIndexDirectoryPath());
-                        continue;
-                    }
+                if (!unlockIfLocked(indexContext, directory)) {
+                    // Couldn't unlock this index
+                    continue;
                 }
-                if (directory.listAll() != null && directory.listAll().length > 100) {
-                    logger.info("Optimizing index : " + indexDirectory + ", " + Arrays.toString(directory.listAll()));
-                    Timer.Timed timed = new Timer.Timed() {
-                        @Override
-                        public void execute() {
-                            try {
-                                new Close().execute(indexContext);
-                                THREAD.sleep(60000);
-                                IndexWriter indexWriter = openIndexWriter(indexContext, directory, Boolean.FALSE);
-                                closeIndexWriter(indexWriter);
-                                new Reopen().execute(indexContext);
-                            } catch (final Exception e) {
-                                logger.error("Exception optimizing index segments file : " + segmentsFile, e);
-                            }
-                        }
-                    };
-                    double timeTaken = Timer.execute(timed) / 1000000000 / 60;
-                    logger.info("Finished optimizing index : " + timeTaken + ", directory :" + indexDirectory);
+                String[] indexFiles = directory.listAll();
+                if (indexFiles != null && indexFiles.length > IConstants.MAX_SEGMENTS * 4) {
+                    optimizeIndex(indexContext, indexDirectory, directory);
                 }
             }
+        }
+        return Boolean.TRUE;
+    }
+
+    /**
+     * This method will close readers on the index(must or the redundant files will not be deleted), optimize
+     * the index by opening the index writer, then closing it and forcing Lucene to merge the segments.
+     *
+     * @param indexContext   the context to optimize the index for
+     * @param indexDirectory the index directory that will be optimized
+     * @param directory      the Lucene directory that should now be open on the index
+     */
+    void optimizeIndex(final IndexContext indexContext, final File indexDirectory, final Directory directory) {
+        logger.info("Optimizing index : " + indexDirectory + ", " + Arrays.toString(indexDirectory.list()));
+        class TimedOptimizer implements Timer.Timed {
+            @Override
+            public void execute() {
+                try {
+                    THREAD.sleep(10000);
+                    IndexWriter indexWriter = openIndexWriter(indexContext, directory, Boolean.FALSE);
+                    closeIndexWriter(indexWriter);
+                } catch (final Exception e) {
+                    logger.error("Exception optimizing index : " + indexDirectory, e);
+                }
+            }
+        }
+        Timer.Timed timed = new TimedOptimizer();
+        double timeTaken = Timer.execute(timed) / 1000000000 / 60;
+        logger.info("Finished optimizing index : " + timeTaken + ", directory :" + indexDirectory);
+    }
+
+    /**
+     * This method tries to unlock the directory, even if it is a delta index with the writers on the directory,
+     * and returns true if the directory is now unlocked, and can proceed to optimize the index, and delete the old
+     * index files.
+     *
+     * @param indexContext the index context to unlock the index directory
+     * @param directory    the directory to unlock if necessary
+     * @return whether the directory is now unlocked
+     * @throws IOException
+     */
+    boolean unlockIfLocked(final IndexContext indexContext, final Directory directory) throws Exception {
+        if (IndexWriter.isLocked(directory)) {
+            // Close the readers so we can delete the old files
+            if (!new Close().execute(indexContext)) {
+                logger.warn("Couldn't close the index reader for optimize : " + indexContext.getName());
+            }
+            // See if this is a delta index, if so then close the writers first
+            if (indexContext.isDelta()) {
+                logger.info("Closing index writers for delta index : " + indexContext.getName());
+                closeIndexWriters(indexContext);
+            }
+            IndexWriter.unlock(directory);
+            THREAD.sleep(10000);
+        }
+        if (IndexWriter.isLocked(directory)) {
+            // TODO: Should we just delete the lock file here? Dangerous?
+            logger.warn("Index locked, can't unlock : " + indexContext.getIndexDirectoryPath());
+            return Boolean.FALSE;
         }
         return Boolean.TRUE;
     }

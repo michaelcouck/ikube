@@ -43,8 +43,10 @@
 
     <bean
         class="ikube.deploy.Deployer"
+        lazy-init="true"
+        depends-on="ikube.toolkit.PropertyConfigurer"
         property:parallel="${in-parallel}"
-        property:maxWaitTime="60"/>
+        property:maxWaitTime="60" />
 
     <!-- Cluster servers one, two and three on the 32 core machine -->
 

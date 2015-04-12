@@ -16,10 +16,7 @@ import ikube.toolkit.*;
 import mockit.Mockit;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.index.*;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -52,7 +49,6 @@ import static org.mockito.Mockito.when;
  * @since 21-11-2010
  */
 @Ignore
-@SuppressWarnings("deprecation")
 @RunWith(MockitoJUnitRunner.class)
 public abstract class AbstractTest {
 
@@ -66,6 +62,35 @@ public abstract class AbstractTest {
         } catch (final Exception e) {
             e.printStackTrace();
         }
+    }
+
+    protected static void delete(final IDataBase dataBase, final Class<?>... klasses) {
+        for (final Class<?> klass : klasses) {
+            List<?> list = dataBase.find(klass, 0, 1000);
+            do {
+                dataBase.removeBatch(list);
+                list = dataBase.find(klass, 0, 1000);
+            } while (list.size() > 0);
+        }
+    }
+
+    protected static <T> void insert(final Class<T> klass, final int entities) {
+        IDataBase dataBase = getBean(IDataBase.class);
+        List<T> tees = new ArrayList<>();
+        for (int i = 0; i < entities; i++) {
+            T tee;
+            try {
+                tee = populateFields(klass, klass.newInstance(), Boolean.TRUE, 1, "id", "indexContext");
+                tees.add(tee);
+                if (tees.size() >= 1000) {
+                    dataBase.persistBatch(tees);
+                    tees.clear();
+                }
+            } catch (final Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        dataBase.persistBatch(tees);
     }
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -102,35 +127,6 @@ public abstract class AbstractTest {
 
     {
         initialize();
-    }
-
-    protected static void delete(final IDataBase dataBase, final Class<?>... klasses) {
-        for (final Class<?> klass : klasses) {
-            List<?> list = dataBase.find(klass, 0, 1000);
-            do {
-                dataBase.removeBatch(list);
-                list = dataBase.find(klass, 0, 1000);
-            } while (list.size() > 0);
-        }
-    }
-
-    protected static <T> void insert(final Class<T> klass, final int entities) {
-        IDataBase dataBase = getBean(IDataBase.class);
-        List<T> tees = new ArrayList<>();
-        for (int i = 0; i < entities; i++) {
-            T tee;
-            try {
-                tee = populateFields(klass, klass.newInstance(), Boolean.TRUE, 1, "id", "indexContext");
-                tees.add(tee);
-                if (tees.size() >= 1000) {
-                    dataBase.persistBatch(tees);
-                    tees.clear();
-                }
-            } catch (final Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-        dataBase.persistBatch(tees);
     }
 
     private void initialize() {
@@ -232,6 +228,25 @@ public abstract class AbstractTest {
         ApplicationContextManagerMock.setBean(IClusterManager.class, clusterManager);
     }
 
+    protected File createIndexFileSystem(final IndexContext indexContext, final int documents, final String... strings) {
+        return createIndexFileSystem(indexContext, System.currentTimeMillis(), ip, documents, strings);
+    }
+
+    protected File createIndexFileSystem(final IndexContext indexContext, final long time, final String ip, final int documents, final String... strings) {
+        IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, time, ip);
+        try {
+            for (int i = 0; i < documents; i++) {
+                addDocuments(indexWriter, IConstants.CONTENTS, strings);
+            }
+            commitIndexWriter(indexWriter);
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
+        File indexDirectory = ((FSDirectory) indexWriter.getDirectory()).getDirectory();
+        IndexManager.closeIndexWriter(indexWriter);
+        return indexDirectory;
+    }
+
     protected File createIndexFileSystem(final IndexContext indexContext, final String... strings) {
         try {
             return createIndexFileSystem(indexContext, System.currentTimeMillis(), ip, strings);
@@ -244,6 +259,7 @@ public abstract class AbstractTest {
         IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, time, ip);
         try {
             addDocuments(indexWriter, IConstants.CONTENTS, strings);
+            commitIndexWriter(indexWriter);
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
@@ -269,7 +285,8 @@ public abstract class AbstractTest {
             throws Exception {
         IndexWriter indexWriter = getRamIndexWriter(analyzer);
         addDocuments(indexWriter, field, strings);
-        IndexReader indexReader = IndexReader.open(indexWriter.getDirectory());
+        commitIndexWriter(indexWriter);
+        IndexReader indexReader = DirectoryReader.open(indexWriter.getDirectory());
         IndexSearcher searcher = new IndexSearcher(indexReader);
         return searchClass.getConstructor(IndexSearcher.class, Analyzer.class).newInstance(searcher, analyzer);
     }
@@ -304,7 +321,7 @@ public abstract class AbstractTest {
         indexWriter.forceMerge(5);
 
         Directory directory = indexWriter.getDirectory();
-        IndexReader indexReader = IndexReader.open(directory);
+        IndexReader indexReader = DirectoryReader.open(directory);
         IndexSearcher searcher = new IndexSearcher(indexReader);
 
         return searchClass.getConstructor(IndexSearcher.class, Analyzer.class).newInstance(searcher, analyzer);
@@ -317,6 +334,9 @@ public abstract class AbstractTest {
             Document document = getDocument(id, string, field);
             indexWriter.addDocument(document);
         }
+    }
+
+    protected void commitIndexWriter(final IndexWriter indexWriter) throws IOException {
         try {
             indexWriter.commit();
             indexWriter.maybeMerge();

@@ -1,7 +1,6 @@
 package ikube.action.index;
 
 import ikube.IConstants;
-import ikube.action.Optimizer;
 import ikube.action.index.analyzer.StemmingAnalyzer;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
@@ -187,8 +186,6 @@ public final class IndexManager {
                 for (final IndexWriter indexWriter : indexContext.getIndexWriters()) {
                     LOGGER.info("Optimizing and closing the index : " + indexContext.getIndexName() + ", " + indexWriter);
                     closeIndexWriter(indexWriter);
-                    THREAD.sleep(60000);
-                    new Optimizer().execute(indexContext);
                     LOGGER.info("Index optimized and closed : " + indexContext.getIndexName() + ", " + indexWriter);
                 }
             }
@@ -220,9 +217,10 @@ public final class IndexManager {
             indexWriter.prepareCommit();
             indexWriter.commit();
             indexWriter.maybeMerge();
-            indexWriter.forceMerge(10, Boolean.TRUE);
+            indexWriter.forceMerge(IConstants.MAX_SEGMENTS, Boolean.TRUE);
             indexWriter.waitForMerges();
             indexWriter.deleteUnusedFiles();
+
             THREAD.sleep(15000);
         } catch (final NullPointerException e) {
             LOGGER.error("Null pointer, in the index writer : " + indexWriter);
@@ -242,7 +240,7 @@ public final class IndexManager {
             }
         }
         try {
-            indexWriter.close();
+            indexWriter.close(Boolean.TRUE);
         } catch (final Exception e) {
             LOGGER.error("Exception closing the index writer : " + indexWriter, e);
         }
