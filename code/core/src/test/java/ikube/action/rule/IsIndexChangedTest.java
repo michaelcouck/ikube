@@ -11,6 +11,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -26,11 +27,12 @@ import static org.junit.Assert.assertTrue;
 public class IsIndexChangedTest extends AbstractTest {
 
     private IndexSearcher multiSearcher;
+    @Spy
     private IsIndexChanged isIndexChanged;
 
     @Before
     public void before() {
-        isIndexChanged = new IsIndexChanged();
+        // isIndexChanged = new IsIndexChanged();
         Mockito.when(indexContext.isDelta()).thenReturn(Boolean.TRUE);
         Mockito.doAnswer(new Answer<Void>() {
             @Override
@@ -56,13 +58,16 @@ public class IsIndexChangedTest extends AbstractTest {
         // Add some documents to the index and reopen
         Mockito.when(indexContext.getMultiSearcher()).thenReturn(multiSearcher);
         IndexWriter[] indexWriters = IndexManager.openIndexWriterDelta(indexContext);
+        IndexWriter indexWriter = indexWriters[0];
 
-        addDocuments(indexWriters[0], IConstants.CONTENTS, "Michael Couck");
+        addDocuments(indexWriter, IConstants.CONTENTS, "Michael Couck");
+        commitIndexWriter(indexWriter);
         boolean changed = isIndexChanged.evaluate(indexContext);
         assertTrue("The index should be changed : ", changed);
 
         // Add some more documents to the index and reopen
         addDocuments(indexWriters[0], IConstants.CONTENTS, "Michael Couck again");
+        commitIndexWriter(indexWriter);
         changed = isIndexChanged.evaluate(indexContext);
         assertTrue("The index should be open : ", changed);
     }

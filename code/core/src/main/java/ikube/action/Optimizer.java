@@ -40,12 +40,13 @@ public class Optimizer extends Action<IndexContext, Boolean> {
         for (final File segmentsFile : segmentsFiles) {
             final File indexDirectory = segmentsFile.getParentFile();
             try (Directory directory = NIOFSDirectory.open(indexDirectory)) {
-                if (!unlockIfLocked(indexContext, directory)) {
-                    // Couldn't unlock this index
-                    continue;
-                }
                 String[] indexFiles = directory.listAll();
+                // We only unlock if we need to optimize this index
                 if (indexFiles != null && indexFiles.length > IConstants.MAX_SEGMENTS * 4) {
+                    if (!unlockIfLocked(indexContext, directory)) {
+                        // Couldn't unlock this index
+                        continue;
+                    }
                     optimizeIndex(indexContext, indexDirectory, directory);
                 }
             }

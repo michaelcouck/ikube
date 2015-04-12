@@ -501,4 +501,76 @@
     </util:list>
     <!-- End FIS -->
 
+    <!-- Development -->
+    <bean
+        id="server-development"
+        name="server-development"
+        class="ikube.deploy.model.Server"
+        property:name="server-development"
+        property:ip="${server-development-ip}"
+        property:username="wid"
+        property:password="password"
+        property:actions-ref="actions-development"/>
+    <util:list id="actions-development">
+        <ref local="stop-action-development"/>
+        <ref local="clean-action-development"/>
+        <ref local="copy-action-development"/>
+        <ref local="start-action-development"/>
+    </util:list>
+    <bean
+        id="stop-action-development"
+        name="stop-action-development"
+        class="ikube.deploy.action.CmdAction"
+        property:sleep="${sleep}"
+        property:breakOnError="false"
+        property:commands-ref="stop-commands-development"/>
+    <util:list id="stop-commands-development">
+        <value>${tomcat-development-shutdown};</value>
+        <value>${tomcat-development-kill};</value>
+    </util:list>
+    <bean
+        id="clean-action-development"
+        name="clean-action-development"
+        class="ikube.deploy.action.CmdAction"
+        property:sleep="${sleep}"
+        property:breakOnError="false"
+        property:commands-ref="clean-commands-development"/>
+    <util:list id="clean-commands-development">
+        <value>chmod 777 -R ${tomcat-development};</value>
+        <value>rm -rf ${tomcat-development-bin}/ikube/*;</value>
+        <value>rm -rf ${tomcat-development-webapps}/ikube*;</value>
+        <value>rm -rf ${tomcat-development}/logs/*;</value>
+        <value>rm -rf ${tomcat-development}/temp/*;</value>
+        <value>rm -rf ${tomcat-development}/work/*;</value>
+    </util:list>
+    <bean
+        id="copy-action-development"
+        name="copy-action-development"
+        class="ikube.deploy.action.CopyAction"
+        property:sleep="${sleep}"
+        property:breakOnError="false"
+        property:files-ref="files-development"
+        property:directories-ref="directories-development"/>
+    <util:map id="files-development">
+        <entry key="${tail-script}" value="${tomcat-development-bin}"/>
+        <entry key="${target-directory}/${ikube-war}" value="${tomcat-development-webapps}"/>
+    </util:map>
+    <util:map id="directories-development">
+        <entry key="${resources-directory}/ikube" value="${tomcat-development-bin}"/>
+        <entry key="${resources-directory}/analytics" value="${tomcat-development-bin}/ikube"/>
+        <entry key="${resources-directory}/indexes/production" value="${tomcat-development-bin}/ikube"/>
+    </util:map>
+    <bean
+        id="start-action-development"
+        name="start-action-development"
+        class="ikube.deploy.action.CmdAction"
+        property:sleep="${sleep}"
+        property:breakOnError="false"
+        property:commands-ref="start-commands-development"/>
+    <util:list id="start-commands-development">
+        <value>${tomcat-development-chmod}</value>
+        <value>${tomcat-development-startup}</value>
+    </util:list>
+    <!-- End production -->
+
 </beans>
