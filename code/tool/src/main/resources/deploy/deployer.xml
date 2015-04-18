@@ -571,6 +571,6 @@
         <value>${tomcat-development-chmod}</value>
         <value>${tomcat-development-startup}</value>
     </util:list>
-    <!-- End production -->
+    <!-- End development -->
 
 </beans>

@@ -18,7 +18,7 @@
     </parent>
 
     <properties>
-        <phase>compile</phase>
+        <phase>deploy</phase>
         <packaging>jar</packaging>
         <generate-pom>true</generate-pom>
         <repository-id>libs-release-local</repository-id>
@@ -735,8 +735,9 @@
                         <!--<phase>${phase}</phase>-->
                         <!--<configuration>-->
                             <!--<groupId>nz.ac.waikato.cms.weka</groupId>-->
-                            <!--<artifactId>weka-sources</artifactId>-->
+                            <!--<artifactId>weka</artifactId>-->
                             <!--<version>3.7.11</version>-->
+                            <!--<classifier>sources</classifier>-->
                             <!--<file>tools/analytics/weka-3.7.11-sources.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->

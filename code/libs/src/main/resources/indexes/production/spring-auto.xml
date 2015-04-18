@@ -64,7 +64,7 @@
         property:excludedPattern="${files.excluded.pattern}"
         property:batchSize="${file.batch.size}"
         property:maxReadLength="${max.read.length}"
-        property:maxExceptions="1000"
+        property:maxExceptions="10"
         property:maxLines="1000000"
         property:threads="1"
         property:children-ref="autocomplete-word-lists-columns"/>

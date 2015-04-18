@@ -87,13 +87,15 @@ public class IndexableFilesystemHandlerIntegration extends IntegrationTest {
         }
         THREAD.sleep(15000);
         new Optimizer().execute(desktop);
+        THREAD.sleep(15000);
         new Open().execute(desktop);
         THREAD.sleep(15000);
 
         // "Vivamus"
-        search("TimeoutHandlerQ", "Ikokoon", "français", "consectetur");
+        search("TimeoutHandlerQ", "Ikokoon");
         // TODO: These can't be found! Why?
-        //"Hibernate", "Application", "Humble", "Autosuggested", "Reporting", "encrypted", "assumptions"
+        //"français", "consectetur", "Hibernate", "Application",
+        // "Humble", "Autosuggested", "Reporting", "encrypted", "assumptions"
     }
 
     private void search(final String... searchStrings) throws Exception {

@@ -32,6 +32,7 @@ public class Create extends Action<Boolean> {
         }
         IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();
         if (analyzer != null) {
+            System.out.println("Initializing context : " + context.getName());
             analyzer.init(context);
             service.getContexts().put(context.getName(), context);
             return Boolean.TRUE;

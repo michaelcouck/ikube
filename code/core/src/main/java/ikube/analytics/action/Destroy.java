@@ -29,16 +29,18 @@ public class Destroy extends Action<Boolean> {
     public Boolean call() throws Exception {
         IAnalyticsService service = getAnalyticsService();
         // Get the local context
-        context = service.getContext(context.getName());
-        if (context == null) {
+        Context localContext = service.getContext(context.getName());
+        if (localContext == null) {
             // Doesn't exist on this server
+            System.out.println("Couldn't find context : " + context.getName());
             return Boolean.FALSE;
         }
-        // Get the local context, but in fact we are on the remote machine of course
-        service.getContexts().remove(context.getName());
-        IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();
+        System.out.println("Destroying context : " + localContext.getName());
+        IAnalyzer analyzer = (IAnalyzer) localContext.getAnalyzer();
         // And destroy the analyzer
-        analyzer.destroy(context);
+        analyzer.destroy(localContext);
+        // Get the local context, but in fact we are on the remote machine of course
+        service.getContexts().remove(localContext.getName());
         return Boolean.TRUE;
     }
 }

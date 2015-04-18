@@ -40,7 +40,8 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
      */
     @Override
     @SuppressWarnings("unchecked")
-    public void init(final Context context) throws Exception {
+    public synchronized void init(final Context context) throws Exception {
+        logger.warn("Analyzer context : " + context.getName() + " : " + context.hashCode());
         if (String.class.isAssignableFrom(context.getAnalyzer().getClass())) {
             context.setAnalyzer(Class.forName(context.getAnalyzer().toString()).newInstance());
         }
@@ -48,7 +49,16 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
         Object[] filters = context.getFilters();
         // Create the analyzer algorithm, the filter and the model
         for (int i = 0; algorithms != null && i < algorithms.length; i++) {
-            Object algorithm = Class.forName(algorithms[i].toString()).newInstance();
+            Object algorithm = algorithms[i];
+            String algorithmClass;
+            logger.warn("Building analyzer : " + algorithm.getClass());
+            logger.warn("                  : " + algorithm.toString());
+            if (algorithm.getClass().getName().equals(String.class.getName())) {
+                algorithmClass = (String) algorithm;
+            } else {
+                algorithmClass = algorithm.getClass().getName();
+            }
+            algorithm = Class.forName(algorithmClass).newInstance();
             algorithms[i] = algorithm;
             if (filters != null && filters.length > i) {
                 Filter filter = (Filter) Class.forName(filters[i].toString()).newInstance();

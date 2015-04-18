@@ -35,6 +35,8 @@ public abstract class AnalyzerIntegration extends AbstractTest {
         }
     }
 
+    protected abstract Context getContext();
+
     @Test
     @SuppressWarnings("unchecked")
     public void create() throws Exception {
@@ -64,8 +66,6 @@ public abstract class AnalyzerIntegration extends AbstractTest {
         Context context = doPost(buildUri, analysis, Context.class);
         assertTrue(context.isBuilt());
     }
-
-    protected abstract Context getContext();
 
     @SuppressWarnings("StringBufferReplaceableByString")
     protected String getAnalyzerRestUri(final String service) throws MalformedURLException {

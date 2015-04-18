@@ -57,7 +57,7 @@
 
         property:address="false"
         property:excludedPattern="${internet.excluded.pattern}"
-        property:maxExceptions="100"
+        property:maxExceptions="10"
         property:maxReadLength="100000"
         property:timeout="60000"
         property:threads="3"

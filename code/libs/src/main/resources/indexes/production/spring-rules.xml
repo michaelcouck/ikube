@@ -45,7 +45,7 @@
         class="ikube.model.IndexableTable"
         property:name="rule"
         property:address="true"
-        property:maxExceptions="1000"
+        property:maxExceptions="10"
         property:threads="1"
         property:allColumns="true"
 
