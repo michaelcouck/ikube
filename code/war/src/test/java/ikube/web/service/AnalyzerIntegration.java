@@ -3,6 +3,7 @@ package ikube.web.service;
 import ikube.AbstractTest;
 import ikube.model.Analysis;
 import ikube.model.Context;
+import ikube.toolkit.THREAD;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +28,7 @@ import static junit.framework.Assert.*;
 @SuppressWarnings("FieldCanBeLocal")
 public class AnalyzerIntegration extends AbstractTest {
 
+    private int sleep = 3000;
     private String line = "1,1,0,1,1,0,1,1";
     private String contextName = "bmw-browsers";
     private String dataFileName = "bmw-browsers.arff";
@@ -55,6 +57,7 @@ public class AnalyzerIntegration extends AbstractTest {
         Context context = getContext(dataFileName, contextName);
         String url = getAnalyzerUrl(Analyzer.CREATE);
         Context result = doPost(url, context, Context.class);
+        THREAD.sleep(sleep);
         assertNotNull(result);
         assertTrue(result.getAlgorithms().length > 0);
         assertNotNull(result.getAnalyzer());
@@ -71,6 +74,7 @@ public class AnalyzerIntegration extends AbstractTest {
         Analysis<String, double[]> analysis = getAnalysis(contextName, line);
         String url = getAnalyzerUrl(Analyzer.TRAIN);
         Analysis result = doPost(url, analysis, Analysis.class);
+        THREAD.sleep(sleep);
         assertNotNull(result);
     }
 
@@ -81,6 +85,7 @@ public class AnalyzerIntegration extends AbstractTest {
         Analysis analysis = getAnalysis(contextName, null);
         String url = getAnalyzerUrl(Analyzer.BUILD);
         Context context = doPost(url, analysis, Context.class);
+        THREAD.sleep(sleep);
         assertTrue(context.isBuilt());
     }
 
@@ -92,6 +97,7 @@ public class AnalyzerIntegration extends AbstractTest {
         Analysis<String, double[]> analysis = getAnalysis(contextName, line);
         String url = getAnalyzerUrl(Analyzer.ANALYZE);
         Analysis result = doPost(url, analysis, Analysis.class);
+        THREAD.sleep(sleep);
         assertTrue(Integer.parseInt(result.getClazz()) >= 0 && Integer.parseInt(result.getClazz()) <= 6);
     }
 
@@ -102,11 +108,13 @@ public class AnalyzerIntegration extends AbstractTest {
         Analysis analysis = getAnalysis(contextName, null);
         String url = getAnalyzerUrl(Analyzer.CONTEXT);
         Context context = doPost(url, analysis, Context.class);
+        THREAD.sleep(sleep);
 
         assertNotNull(context);
 
         String destroyUrl = getAnalyzerUrl(Analyzer.DESTROY);
         doPost(destroyUrl, context, Context.class);
+        THREAD.sleep(sleep);
 
         context = doPost(url, analysis, Context.class);
         assertNull(context);
@@ -119,6 +127,7 @@ public class AnalyzerIntegration extends AbstractTest {
         Analysis analysis = getAnalysis(contextName, null);
         String url = getAnalyzerUrl(Analyzer.CONTEXT);
         Context context = doPost(url, analysis, Context.class);
+        THREAD.sleep(sleep);
         assertNotNull(context);
     }
 
@@ -129,6 +138,7 @@ public class AnalyzerIntegration extends AbstractTest {
 
         String contextsUrl = getAnalyzerUrl(Analyzer.CONTEXTS);
         String[] contexts = doGet(contextsUrl, String[].class);
+        THREAD.sleep(sleep);
         assertTrue(Arrays.toString(contexts).contains(this.contextName));
     }
 
