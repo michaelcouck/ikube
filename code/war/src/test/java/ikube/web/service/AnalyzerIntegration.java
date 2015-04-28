@@ -6,6 +6,7 @@ import ikube.model.Context;
 import ikube.toolkit.THREAD;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.net.MalformedURLException;
@@ -52,6 +53,7 @@ public class AnalyzerIntegration extends AbstractTest {
     }
 
     @Test
+    @Ignore
     @SuppressWarnings("unchecked")
     public void create() throws Exception {
         Context context = getContext(dataFileName, contextName);
@@ -67,6 +69,7 @@ public class AnalyzerIntegration extends AbstractTest {
     }
 
     @Test
+    @Ignore
     @SuppressWarnings("unchecked")
     public void train() throws Exception {
         create();
@@ -79,6 +82,7 @@ public class AnalyzerIntegration extends AbstractTest {
     }
 
     @Test
+    @Ignore
     public void build() throws Exception {
         train();
 
@@ -102,6 +106,7 @@ public class AnalyzerIntegration extends AbstractTest {
     }
 
     @Test
+    @Ignore
     public void destroy() throws Exception {
         analyze();
 
@@ -121,6 +126,7 @@ public class AnalyzerIntegration extends AbstractTest {
     }
 
     @Test
+    @Ignore
     public void context() throws Exception {
         build();
 
@@ -132,6 +138,7 @@ public class AnalyzerIntegration extends AbstractTest {
     }
 
     @Test
+    @Ignore
     @SuppressWarnings("unchecked")
     public void contexts() throws Exception {
         build();
