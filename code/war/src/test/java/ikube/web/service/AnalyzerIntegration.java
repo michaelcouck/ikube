@@ -37,7 +37,7 @@ public class AnalyzerIntegration extends AbstractTest {
     @Before
     public void before() {
         try {
-            destroy();
+            // destroy();
         } catch (final Exception e) {
             logger.error(null, e);
         }
@@ -46,7 +46,7 @@ public class AnalyzerIntegration extends AbstractTest {
     @After
     public void after() {
         try {
-            destroy();
+            // destroy();
         } catch (final Exception e) {
             logger.error(null, e);
         }
@@ -96,13 +96,17 @@ public class AnalyzerIntegration extends AbstractTest {
     @Test
     @SuppressWarnings("unchecked")
     public void analyze() throws Exception {
-        build();
+        Context context = getContext(dataFileName, contextName);
+        String url = getAnalyzerUrl(Analyzer.CREATE);
+        Context result = doPost(url, context, Context.class);
 
-        Analysis<String, double[]> analysis = getAnalysis(contextName, line);
-        String url = getAnalyzerUrl(Analyzer.ANALYZE);
-        Analysis result = doPost(url, analysis, Analysis.class);
-        THREAD.sleep(sleep);
-        assertTrue(Integer.parseInt(result.getClazz()) >= 0 && Integer.parseInt(result.getClazz()) <= 6);
+        Analysis analysis = getAnalysis(contextName, null);
+        url = getAnalyzerUrl(Analyzer.BUILD);
+        context = doPost(url, analysis, Context.class);
+
+        analysis = getAnalysis(contextName, line);
+        url = getAnalyzerUrl(Analyzer.ANALYZE);
+        analysis = doPost(url, analysis, Analysis.class);
     }
 
     @Test
@@ -147,6 +151,15 @@ public class AnalyzerIntegration extends AbstractTest {
         String[] contexts = doGet(contextsUrl, String[].class);
         THREAD.sleep(sleep);
         assertTrue(Arrays.toString(contexts).contains(this.contextName));
+    }
+
+    @Test
+    public void createBuildAnalyzeDestroy() throws Exception {
+        Context context = getContext(dataFileName, contextName);
+        String url = getAnalyzerUrl(Analyzer.CREATE_BUILD_ANALYZE_DESTROY);
+        Analysis<?, ?> result = doPost(url, context, Analysis.class);
+        // Verify that the result is ok, i.e. validate the prediction
+        // Verify that the context and the analyzer is removed from the server
     }
 
     @SuppressWarnings("StringBufferReplaceableByString")
