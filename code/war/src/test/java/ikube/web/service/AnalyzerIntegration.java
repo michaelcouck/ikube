@@ -4,9 +4,6 @@ import ikube.AbstractTest;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.THREAD;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.net.MalformedURLException;
@@ -34,32 +31,13 @@ public class AnalyzerIntegration extends AbstractTest {
     private String contextName = "bmw-browsers";
     private String dataFileName = "bmw-browsers.arff";
 
-    @Before
-    public void before() {
-        try {
-            // destroy();
-        } catch (final Exception e) {
-            logger.error(null, e);
-        }
-    }
-
-    @After
-    public void after() {
-        try {
-            // destroy();
-        } catch (final Exception e) {
-            logger.error(null, e);
-        }
-    }
-
     @Test
-    @Ignore
     @SuppressWarnings("unchecked")
     public void create() throws Exception {
         Context context = getContext(dataFileName, contextName);
         String url = getAnalyzerUrl(Analyzer.CREATE);
         Context result = doPost(url, context, Context.class);
-        THREAD.sleep(sleep);
+        // THREAD.sleep(sleep);
         assertNotNull(result);
         assertTrue(result.getAlgorithms().length > 0);
         assertNotNull(result.getAnalyzer());
@@ -69,26 +47,28 @@ public class AnalyzerIntegration extends AbstractTest {
     }
 
     @Test
-    @Ignore
     @SuppressWarnings("unchecked")
     public void train() throws Exception {
-        create();
+        Context context = getContext(dataFileName, contextName);
+        String url = getAnalyzerUrl(Analyzer.CREATE);
+        doPost(url, context, Context.class);
 
         Analysis<String, double[]> analysis = getAnalysis(contextName, line);
-        String url = getAnalyzerUrl(Analyzer.TRAIN);
-        Analysis result = doPost(url, analysis, Analysis.class);
-        THREAD.sleep(sleep);
-        assertNotNull(result);
+        url = getAnalyzerUrl(Analyzer.TRAIN);
+        analysis = doPost(url, analysis, Analysis.class);
+        // THREAD.sleep(sleep);
+        assertNotNull(analysis);
     }
 
     @Test
-    @Ignore
     public void build() throws Exception {
-        train();
+        Context context = getContext(dataFileName, contextName);
+        String url = getAnalyzerUrl(Analyzer.CREATE);
+        doPost(url, context, Context.class);
 
         Analysis analysis = getAnalysis(contextName, null);
-        String url = getAnalyzerUrl(Analyzer.BUILD);
-        Context context = doPost(url, analysis, Context.class);
+        url = getAnalyzerUrl(Analyzer.BUILD);
+        context = doPost(url, analysis, Context.class);
         THREAD.sleep(sleep);
         assertTrue(context.isBuilt());
     }
@@ -98,58 +78,83 @@ public class AnalyzerIntegration extends AbstractTest {
     public void analyze() throws Exception {
         Context context = getContext(dataFileName, contextName);
         String url = getAnalyzerUrl(Analyzer.CREATE);
-        Context result = doPost(url, context, Context.class);
+        doPost(url, context, Context.class);
 
         Analysis analysis = getAnalysis(contextName, null);
         url = getAnalyzerUrl(Analyzer.BUILD);
-        context = doPost(url, analysis, Context.class);
+        doPost(url, analysis, Context.class);
 
         analysis = getAnalysis(contextName, line);
         url = getAnalyzerUrl(Analyzer.ANALYZE);
         analysis = doPost(url, analysis, Analysis.class);
+
+        // TODO: Verify something here...
     }
 
     @Test
-    @Ignore
     public void destroy() throws Exception {
-        analyze();
+        Context context = getContext(dataFileName, contextName);
+        String url = getAnalyzerUrl(Analyzer.CREATE);
+        doPost(url, context, Context.class);
 
         Analysis analysis = getAnalysis(contextName, null);
-        String url = getAnalyzerUrl(Analyzer.CONTEXT);
-        Context context = doPost(url, analysis, Context.class);
-        THREAD.sleep(sleep);
+        url = getAnalyzerUrl(Analyzer.BUILD);
+        doPost(url, analysis, Context.class);
+
+        analysis = getAnalysis(contextName, line);
+        url = getAnalyzerUrl(Analyzer.ANALYZE);
+        doPost(url, analysis, Analysis.class);
+
+        analysis = getAnalysis(contextName, null);
+        url = getAnalyzerUrl(Analyzer.CONTEXT);
+        context = doPost(url, analysis, Context.class);
+        // THREAD.sleep(sleep);
 
         assertNotNull(context);
 
         String destroyUrl = getAnalyzerUrl(Analyzer.DESTROY);
         doPost(destroyUrl, context, Context.class);
-        THREAD.sleep(sleep);
+        // THREAD.sleep(sleep);
 
         context = doPost(url, analysis, Context.class);
         assertNull(context);
     }
 
     @Test
-    @Ignore
     public void context() throws Exception {
-        build();
+        Context context = getContext(dataFileName, contextName);
+        String url = getAnalyzerUrl(Analyzer.CREATE);
+        doPost(url, context, Context.class);
 
         Analysis analysis = getAnalysis(contextName, null);
-        String url = getAnalyzerUrl(Analyzer.CONTEXT);
-        Context context = doPost(url, analysis, Context.class);
-        THREAD.sleep(sleep);
+        url = getAnalyzerUrl(Analyzer.BUILD);
+        doPost(url, analysis, Context.class);
+
+        analysis = getAnalysis(contextName, line);
+        url = getAnalyzerUrl(Analyzer.ANALYZE);
+        doPost(url, analysis, Analysis.class);
+
+        analysis = getAnalysis(contextName, null);
+        url = getAnalyzerUrl(Analyzer.CONTEXT);
+        context = doPost(url, analysis, Context.class);
+        // THREAD.sleep(sleep);
         assertNotNull(context);
     }
 
     @Test
-    @Ignore
     @SuppressWarnings("unchecked")
     public void contexts() throws Exception {
-        build();
+        Context context = getContext(dataFileName, contextName);
+        String url = getAnalyzerUrl(Analyzer.CREATE);
+        doPost(url, context, Context.class);
+
+        Analysis analysis = getAnalysis(contextName, null);
+        url = getAnalyzerUrl(Analyzer.BUILD);
+        doPost(url, analysis, Context.class);
 
         String contextsUrl = getAnalyzerUrl(Analyzer.CONTEXTS);
         String[] contexts = doGet(contextsUrl, String[].class);
-        THREAD.sleep(sleep);
+        // THREAD.sleep(sleep);
         assertTrue(Arrays.toString(contexts).contains(this.contextName));
     }
 
