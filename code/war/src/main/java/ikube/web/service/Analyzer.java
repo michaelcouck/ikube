@@ -50,6 +50,7 @@ public class Analyzer extends Resource {
     public static final String CONTEXTS = "/contexts";
     public static final String UPLOAD = "/upload";
     public static final String DATA = "/data";
+    public static final String CREATE_BUILD_ANALYZE_DESTROY = "/create-build-train-analyze-destroy";
 
     @Autowired
     protected IAnalyticsService analyticsService;
@@ -132,6 +133,25 @@ public class Analyzer extends Resource {
     public Response analyze(final Analysis analysis) {
         analyticsService.analyze(analysis);
         return buildResponse(analysis);
+    }
+
+    @POST
+    @Path(Analyzer.CREATE_BUILD_ANALYZE_DESTROY)
+    @Api(description = "Creates an analyzer, build it(mandatory), uses it for the analysis" +
+            "and finally destroys it releasing resources.",
+            produces = Context.class)
+    @SuppressWarnings("unchecked")
+    public Response createBuildAnalyzeDestroy(final Context context, final String input) {
+        Analysis<String, String> analysis = new Analysis<>();
+        analysis.setContext(context.getName());
+        analysis.setInput(input);
+        try {
+            create(context);
+            build(analysis);
+            return analyze(analysis);
+        } finally {
+            destroy(context);
+        }
     }
 
     @POST

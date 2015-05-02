@@ -3,10 +3,10 @@ package ikube.web.service;
 import ikube.AbstractTest;
 import ikube.model.Analysis;
 import ikube.model.Context;
-import ikube.toolkit.THREAD;
 import org.junit.Test;
 
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static ikube.toolkit.REST.doGet;
@@ -26,7 +26,6 @@ import static junit.framework.Assert.*;
 @SuppressWarnings("FieldCanBeLocal")
 public class AnalyzerIntegration extends AbstractTest {
 
-    private int sleep = 3000;
     private String line = "1,1,0,1,1,0,1,1";
     private String contextName = "bmw-browsers";
     private String dataFileName = "bmw-browsers.arff";
@@ -37,7 +36,6 @@ public class AnalyzerIntegration extends AbstractTest {
         Context context = getContext(dataFileName, contextName);
         String url = getAnalyzerUrl(Analyzer.CREATE);
         Context result = doPost(url, context, Context.class);
-        // THREAD.sleep(sleep);
         assertNotNull(result);
         assertTrue(result.getAlgorithms().length > 0);
         assertNotNull(result.getAnalyzer());
@@ -56,7 +54,6 @@ public class AnalyzerIntegration extends AbstractTest {
         Analysis<String, double[]> analysis = getAnalysis(contextName, line);
         url = getAnalyzerUrl(Analyzer.TRAIN);
         analysis = doPost(url, analysis, Analysis.class);
-        // THREAD.sleep(sleep);
         assertNotNull(analysis);
     }
 
@@ -69,7 +66,6 @@ public class AnalyzerIntegration extends AbstractTest {
         Analysis analysis = getAnalysis(contextName, null);
         url = getAnalyzerUrl(Analyzer.BUILD);
         context = doPost(url, analysis, Context.class);
-        THREAD.sleep(sleep);
         assertTrue(context.isBuilt());
     }
 
@@ -88,7 +84,12 @@ public class AnalyzerIntegration extends AbstractTest {
         url = getAnalyzerUrl(Analyzer.ANALYZE);
         analysis = doPost(url, analysis, Analysis.class);
 
-        // TODO: Verify something here...
+        // logger.info("BMW dealer cluster analysis result : " + ToStringBuilder.reflectionToString(analysis));
+
+        ArrayList<ArrayList<Double>> output = (ArrayList<ArrayList<Double>>) analysis.getOutput();
+        ArrayList<Double> result = output.get(0);
+        // logger.info("BMW dealer cluster analysis result : " + result);
+        assertEquals("The result from the analysis is the fourth group in the cluster : ", result.get(4), 1d);
     }
 
     @Test
@@ -108,13 +109,11 @@ public class AnalyzerIntegration extends AbstractTest {
         analysis = getAnalysis(contextName, null);
         url = getAnalyzerUrl(Analyzer.CONTEXT);
         context = doPost(url, analysis, Context.class);
-        // THREAD.sleep(sleep);
 
         assertNotNull(context);
 
         String destroyUrl = getAnalyzerUrl(Analyzer.DESTROY);
         doPost(destroyUrl, context, Context.class);
-        // THREAD.sleep(sleep);
 
         context = doPost(url, analysis, Context.class);
         assertNull(context);
@@ -137,7 +136,6 @@ public class AnalyzerIntegration extends AbstractTest {
         analysis = getAnalysis(contextName, null);
         url = getAnalyzerUrl(Analyzer.CONTEXT);
         context = doPost(url, analysis, Context.class);
-        // THREAD.sleep(sleep);
         assertNotNull(context);
     }
 
@@ -154,7 +152,6 @@ public class AnalyzerIntegration extends AbstractTest {
 
         String contextsUrl = getAnalyzerUrl(Analyzer.CONTEXTS);
         String[] contexts = doGet(contextsUrl, String[].class);
-        // THREAD.sleep(sleep);
         assertTrue(Arrays.toString(contexts).contains(this.contextName));
     }
 
@@ -162,9 +159,18 @@ public class AnalyzerIntegration extends AbstractTest {
     public void createBuildAnalyzeDestroy() throws Exception {
         Context context = getContext(dataFileName, contextName);
         String url = getAnalyzerUrl(Analyzer.CREATE_BUILD_ANALYZE_DESTROY);
-        Analysis<?, ?> result = doPost(url, context, Analysis.class);
+        Analysis<?, ?> analysis = doPost(url, context, Analysis.class);
+
+        @SuppressWarnings("unchecked")
+        ArrayList<ArrayList<Double>> output = (ArrayList<ArrayList<Double>>) analysis.getOutput();
+        ArrayList<Double> result = output.get(0);
         // Verify that the result is ok, i.e. validate the prediction
+        assertEquals("The result from the analysis is the fourth group in the cluster : ", result.get(4), 1d);
+
         // Verify that the context and the analyzer is removed from the server
+        String contextsUrl = getAnalyzerUrl(Analyzer.CONTEXTS);
+        String[] contexts = doGet(contextsUrl, String[].class);
+        assertFalse(Arrays.toString(contexts).contains(this.contextName));
     }
 
     @SuppressWarnings("StringBufferReplaceableByString")
