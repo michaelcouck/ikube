@@ -54,11 +54,11 @@
                                 <argument>-classpath</argument>
                             </arguments>
                             <!--<workingDirectory>../</workingDirectory>-->
-                            <includePluginDependencies>true</includePluginDependencies>
-                            <includeProjectDependencies>true</includeProjectDependencies>
                             <keepAlive>false</keepAlive>
                             <cleanupDaemonThreads>true</cleanupDaemonThreads>
                             <daemonThreadJoinTimeout>60000</daemonThreadJoinTimeout>
+                            <includePluginDependencies>true</includePluginDependencies>
+                            <includeProjectDependencies>true</includeProjectDependencies>
                             <stopUnresponsiveDaemonThreads>true</stopUnresponsiveDaemonThreads>
                         </configuration>
                         <goals>

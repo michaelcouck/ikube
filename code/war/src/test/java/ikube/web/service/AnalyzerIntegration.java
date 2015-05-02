@@ -3,6 +3,8 @@ package ikube.web.service;
 import ikube.AbstractTest;
 import ikube.model.Analysis;
 import ikube.model.Context;
+import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.net.MalformedURLException;
@@ -29,6 +31,17 @@ public class AnalyzerIntegration extends AbstractTest {
     private String line = "1,1,0,1,1,0,1,1";
     private String contextName = "bmw-browsers";
     private String dataFileName = "bmw-browsers.arff";
+
+    @After
+    public void after() throws Exception {
+        try {
+            Context context = getContext(dataFileName, contextName);
+            String destroyUrl = getAnalyzerUrl(Analyzer.DESTROY);
+            doPost(destroyUrl, context, Context.class);
+        } catch (final Exception e) {
+            logger.error(null, e);
+        }
+    }
 
     @Test
     @SuppressWarnings("unchecked")
@@ -156,6 +169,7 @@ public class AnalyzerIntegration extends AbstractTest {
     }
 
     @Test
+    @Ignore
     public void createBuildAnalyzeDestroy() throws Exception {
         Context context = getContext(dataFileName, contextName);
         String url = getAnalyzerUrl(Analyzer.CREATE_BUILD_ANALYZE_DESTROY);
