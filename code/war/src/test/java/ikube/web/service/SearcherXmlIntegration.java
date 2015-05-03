@@ -11,7 +11,7 @@ public class SearcherXmlIntegration extends SearcherIntegration {
 
     @SuppressWarnings("StringBufferReplaceableByString")
     protected String getSearchUrl(String path) throws MalformedURLException {
-        return getUrl(SearcherXml.SEARCH + SearcherXml.XML + path);
+        return getServiceUrl(SearcherXml.SEARCH + SearcherXml.XML + path);
     }
 
 }

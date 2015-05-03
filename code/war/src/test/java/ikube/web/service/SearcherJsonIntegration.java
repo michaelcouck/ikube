@@ -6,7 +6,7 @@ public class SearcherJsonIntegration extends SearcherIntegration {
 
 	@SuppressWarnings("StringBufferReplaceableByString")
     protected String getSearchUrl(String path) throws MalformedURLException {
-        return getUrl(SearcherJson.SEARCH + SearcherJson.JSON + path);
+        return getServiceUrl(SearcherJson.SEARCH + SearcherJson.JSON + path);
 	}
 
 }

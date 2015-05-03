@@ -77,7 +77,7 @@ public abstract class AbstractTest {
     }
 
     @SuppressWarnings("StringBufferReplaceableByString")
-    protected static String getUrl(String path) throws MalformedURLException {
+    protected static String getServiceUrl(String path) throws MalformedURLException {
         StringBuilder builder = new StringBuilder();
         builder.append(IConstants.SEP);
         builder.append(IConstants.IKUBE);

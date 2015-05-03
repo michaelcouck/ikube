@@ -3,8 +3,6 @@ package ikube.web.service;
 import ikube.AbstractTest;
 import ikube.model.Analysis;
 import ikube.model.Context;
-import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.net.MalformedURLException;
@@ -21,6 +19,8 @@ import static junit.framework.Assert.*;
  * This test must still be completed and verified, perhaps with all sorts of analytics, like regression etc.
  * Update: Done.
  *
+ * TODO: Need to verify that all the operations are performed in the entire cluster
+ *
  * @author Michael Couck
  * @version 01.00
  * @since 05-02-2014
@@ -31,17 +31,6 @@ public class AnalyzerIntegration extends AbstractTest {
     private String line = "1,1,0,1,1,0,1,1";
     private String contextName = "bmw-browsers";
     private String dataFileName = "bmw-browsers.arff";
-
-    @After
-    public void after() throws Exception {
-        try {
-            Context context = getContext(dataFileName, contextName);
-            String destroyUrl = getAnalyzerUrl(Analyzer.DESTROY);
-            doPost(destroyUrl, context, Context.class);
-        } catch (final Exception e) {
-            logger.error(null, e);
-        }
-    }
 
     @Test
     @SuppressWarnings("unchecked")
@@ -115,14 +104,8 @@ public class AnalyzerIntegration extends AbstractTest {
         url = getAnalyzerUrl(Analyzer.BUILD);
         doPost(url, analysis, Context.class);
 
-        analysis = getAnalysis(contextName, line);
-        url = getAnalyzerUrl(Analyzer.ANALYZE);
-        doPost(url, analysis, Analysis.class);
-
-        analysis = getAnalysis(contextName, null);
         url = getAnalyzerUrl(Analyzer.CONTEXT);
         context = doPost(url, analysis, Context.class);
-
         assertNotNull(context);
 
         String destroyUrl = getAnalyzerUrl(Analyzer.DESTROY);
@@ -142,11 +125,6 @@ public class AnalyzerIntegration extends AbstractTest {
         url = getAnalyzerUrl(Analyzer.BUILD);
         doPost(url, analysis, Context.class);
 
-        analysis = getAnalysis(contextName, line);
-        url = getAnalyzerUrl(Analyzer.ANALYZE);
-        doPost(url, analysis, Analysis.class);
-
-        analysis = getAnalysis(contextName, null);
         url = getAnalyzerUrl(Analyzer.CONTEXT);
         context = doPost(url, analysis, Context.class);
         assertNotNull(context);
@@ -169,7 +147,6 @@ public class AnalyzerIntegration extends AbstractTest {
     }
 
     @Test
-    @Ignore
     public void createBuildAnalyzeDestroy() throws Exception {
         Context context = getContext(dataFileName, contextName);
         String url = getAnalyzerUrl(Analyzer.CREATE_BUILD_ANALYZE_DESTROY);
@@ -189,7 +166,7 @@ public class AnalyzerIntegration extends AbstractTest {
 
     @SuppressWarnings("StringBufferReplaceableByString")
     protected String getAnalyzerUrl(final String service) throws MalformedURLException {
-        return getUrl(Analyzer.ANALYZER + service);
+        return getServiceUrl(Analyzer.ANALYZER + service);
     }
 
 }
