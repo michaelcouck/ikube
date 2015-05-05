@@ -1,13 +1,12 @@
 package ikube.web.service;
 
-import ikube.IntegrationTest;
-import ikube.cluster.IMonitorService;
+import ikube.AbstractTest;
 import ikube.model.Analysis;
 import ikube.model.Context;
-import ikube.toolkit.THREAD;
+import ikube.toolkit.REST;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -30,24 +29,22 @@ import static junit.framework.Assert.*;
  * @since 05-02-2014
  */
 @SuppressWarnings("FieldCanBeLocal")
-public class AnalyzerIntegration extends IntegrationTest {
+public class AnalyzerIntegration extends AbstractTest {
 
     private String line = "1,1,0,1,1,0,1,1";
     private String contextName = "bmw-browsers";
     private String dataFileName = "bmw-browsers.arff";
 
-    @Autowired
-    private IMonitorService monitorService;
-
     @Before
-    public void before() {
-        // Start the executor service in the cluster
-        monitorService.startupAll();
-        THREAD.sleep(3000);
-        if (!THREAD.isInitialized()) {
-            logger.warn("Executor service not started! Starting manually...");
-            THREAD.initialize();
-        }
+    public void before() throws MalformedURLException {
+        String url = getServiceUrl(Monitor.MONITOR + Monitor.STARTUP_ALL);
+        REST.doPost(url, null, String.class);
+    }
+
+    @After
+    public void after() throws MalformedURLException {
+        String url = getServiceUrl(Monitor.MONITOR + Monitor.TERMINATE_ALL);
+        REST.doPost(url, null, String.class);
     }
 
     @Test
@@ -168,13 +165,13 @@ public class AnalyzerIntegration extends IntegrationTest {
     public void createBuildAnalyzeDestroy() throws Exception {
         Context context = getContext(dataFileName, contextName);
         String url = getAnalyzerUrl(Analyzer.CREATE_BUILD_ANALYZE_DESTROY);
-        Analysis<?, ?> analysis = doPost(url, context, Analysis.class);
+        Analysis<?, ?> analysis = doPost(url, context, new String[]{"input"}, new String[]{line}, Analysis.class);
 
         @SuppressWarnings("unchecked")
         ArrayList<ArrayList<Double>> output = (ArrayList<ArrayList<Double>>) analysis.getOutput();
         ArrayList<Double> result = output.get(0);
         // Verify that the result is ok, i.e. validate the prediction
-        assertEquals("The result from the analysis is the fourth group in the cluster : ", result.get(4), 1d);
+        assertEquals("The result from the analysis is the fourth group in the cluster : ", result.get(1), 0d);
 
         // Verify that the context and the analyzer is removed from the server
         String contextsUrl = getAnalyzerUrl(Analyzer.CONTEXTS);

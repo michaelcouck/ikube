@@ -6,7 +6,9 @@ import ikube.analytics.IAnalyticsService;
 import ikube.model.Analysis;
 import ikube.model.Context;
 import ikube.toolkit.SERIALIZATION;
+import ikube.toolkit.THREAD;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -142,16 +144,27 @@ public class Analyzer extends Resource {
             "analysis result.",
             produces = Context.class)
     @SuppressWarnings("unchecked")
-    public Response createBuildAnalyzeDestroy(final Context context, final String input) {
+    public Response createBuildAnalyzeDestroy(final Context context,
+                                              @QueryParam(value = "input") final String input) {
+        THREAD.initialize();
+        Context cloneContext = (Context) SERIALIZATION.clone(context);
         Analysis<String, String> analysis = new Analysis<>();
         analysis.setContext(context.getName());
         analysis.setInput(input);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Context : " + ToStringBuilder.reflectionToString(context));
+            logger.debug("Analysis : " + ToStringBuilder.reflectionToString(analysis));
+        }
         try {
+            logger.debug("Creating : ");
             create(context);
+            logger.debug("Building : ");
             build(analysis);
+            logger.debug("Analyzing : ");
             return analyze(analysis);
         } finally {
-            destroy(context);
+            logger.debug("Destroying : ");
+            destroy(cloneContext);
         }
     }
 
