@@ -12,6 +12,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -39,6 +40,7 @@ import static org.junit.Assert.assertTrue;
  * @version 01.00
  * @since 12-10-2010
  */
+@Ignore
 public class IndexableTableHandlerIntegration extends IntegrationTest {
 
     private Connection connection;
