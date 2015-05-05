@@ -63,6 +63,7 @@ public class IndexableTableHandlerIntegration extends IntegrationTest {
         indexContext.setIndexDirectoryPath("./indexes");
         snapshotTable.setThreads(4);
         snapshotTable.setContent(new StringBuilder());
+        snapshotTable.setMaxExceptions(10);
 
         snapshotTableChildren = snapshotTable.getChildren();
         snapshotColumn = getIdColumn(snapshotTableChildren);

@@ -73,8 +73,6 @@ public class IndexableTableHandler extends IndexableHandler<IndexableTable> {
                     // Add the document to the index
                     resourceHandler.handleResource(indexContext, indexableTable, document, null);
                     THREAD.sleep(indexContext.getThrottle());
-                } catch (final InterruptedException e) {
-                    throw new RuntimeException("Indexing terminated : ", e);
                 } catch (final Exception e) {
                     handleException(indexableTable, e, "Exception indexing table : " + indexableTable.getName());
                 }

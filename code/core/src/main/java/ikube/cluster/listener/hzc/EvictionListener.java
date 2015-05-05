@@ -41,6 +41,10 @@ public class EvictionListener implements IListener<Message<Object>>, MessageList
                 return;
             }
             Long key = (Long) event.getObject();
+            if (key == null) {
+                logger.warn("Trying to evict object with null key : " + event.getType());
+                return;
+            }
             event.setConsumed(Boolean.TRUE);
             logger.info("Evicting object with key : " + key);
             clusterManager.remove(IConstants.SEARCH, key);
