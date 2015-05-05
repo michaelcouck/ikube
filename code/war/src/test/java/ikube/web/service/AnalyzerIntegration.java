@@ -1,9 +1,13 @@
 package ikube.web.service;
 
-import ikube.AbstractTest;
+import ikube.IntegrationTest;
+import ikube.cluster.IMonitorService;
 import ikube.model.Analysis;
 import ikube.model.Context;
+import ikube.toolkit.THREAD;
+import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -18,7 +22,7 @@ import static junit.framework.Assert.*;
  * Update: Does now it seems... :)
  * This test must still be completed and verified, perhaps with all sorts of analytics, like regression etc.
  * Update: Done.
- *
+ * <p/>
  * TODO: Need to verify that all the operations are performed in the entire cluster
  *
  * @author Michael Couck
@@ -26,11 +30,25 @@ import static junit.framework.Assert.*;
  * @since 05-02-2014
  */
 @SuppressWarnings("FieldCanBeLocal")
-public class AnalyzerIntegration extends AbstractTest {
+public class AnalyzerIntegration extends IntegrationTest {
 
     private String line = "1,1,0,1,1,0,1,1";
     private String contextName = "bmw-browsers";
     private String dataFileName = "bmw-browsers.arff";
+
+    @Autowired
+    private IMonitorService monitorService;
+
+    @Before
+    public void before() {
+        // Start the executor service in the cluster
+        monitorService.startupAll();
+        THREAD.sleep(3000);
+        if (!THREAD.isInitialized()) {
+            logger.warn("Executor service not started! Starting manually...");
+            THREAD.initialize();
+        }
+    }
 
     @Test
     @SuppressWarnings("unchecked")
