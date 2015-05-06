@@ -38,8 +38,8 @@ import java.util.concurrent.Future;
  *
  * <pre>
  *     -- With -Ddeploy-to-servers=server-production -Dusername=michael -Dpassword=bla in the system.properties file in the current directory
- *     1) java -jar ../../../../target/ikube-tool-5.3.0.jar ikube.deploy.Deployer . deployer.xml
- *     2) java -jar ../../../../target/ikube-tool-5.3.0.jar ikube.deploy.Deployer . deployer.xml -Ddeploy-to-servers=server-production -Dusername=michael -Dpassword=bla
+ *     1) java -jar ikube-tool-5.3.0.jar ikube.deploy.Deployer . deployer.xml
+ *     2) java -jar target/ikube-tool-5.3.0.jar ikube.deploy.Deployer . deployer.xml -Ddeploy-to-servers=server-production
  * </pre>
  *
  * @author Michael Couck

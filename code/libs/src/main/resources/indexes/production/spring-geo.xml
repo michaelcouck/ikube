@@ -56,7 +56,7 @@
         property:omitNorms="true"
 
         property:children-ref="geonameColumns"
-        property:dataSource-ref="nonXaDataSourceDb2"
+        property:dataSource-ref="nonXaDataSourceOracle"
         property:strategies-ref="geoname-strategies"/>
     <util:list id="geonameColumns">
         <ref local="geospatialId"/>
