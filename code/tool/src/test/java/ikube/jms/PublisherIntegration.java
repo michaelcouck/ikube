@@ -2,6 +2,7 @@ package ikube.jms;
 
 import ikube.AbstractTest;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Spy;
 
@@ -10,6 +11,7 @@ import org.mockito.Spy;
  * @version 01.00
  * @since 11-03-2015
  */
+@Ignore
 public class PublisherIntegration extends AbstractTest {
 
     @Spy
@@ -21,9 +23,44 @@ public class PublisherIntegration extends AbstractTest {
     }
 
     @Test
-    public void publish() throws Exception {
-        // This just has to pass, we have verified the logic in the unit test
-        publisher.publish("userid", "password", "ConnectionFactory", "MyTopic", "jms-client.xml", "property", "value");
+    public void publishRemoteWebLogic() throws Exception {
+        publisher.publish(
+                "qcfuser",
+                "passw0rd",
+                "t3://be-qa-cs-18.clear2pay.com:8001",
+                "jms/QCF",
+                "jms/InterchangeLoaderQ",
+                "headerName",
+                "headerValue",
+                "payload",
+                "ikube.jms.connection.Weblogic");
+    }
+
+    @Test
+    public void publishRemoteMQ() throws Exception {
+        publisher.publish(
+                "qcfuser",
+                "passw0rd",
+                "iiop:ikube.be:2809",
+                "jms/QCF",
+                "jms/InterchangeLoaderQ",
+                "headerName",
+                "headerValue",
+                "payload",
+                "ikube.jms.connection.MQ");
+    }
+
+    @Test
+    public void publishRemoteActiveMQ() throws Exception {
+        publisher.publish("userid",
+                "password",
+                "tcp://localhost:61616",
+                "jms/QCF",
+                "jms/InterchangeLoaderQ",
+                "headerName",
+                "headerValue",
+                "payload",
+                "ikube.jms.connection.ActiveMQ");
     }
 
 }

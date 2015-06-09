@@ -3,7 +3,9 @@ package ikube.data;
 import co.uk.hjcs.canyon.session.Session;
 import co.uk.hjcs.canyon.session.SessionFactory;
 import ikube.IConstants;
-import ikube.database.*;
+import ikube.database.ADataBaseJpa;
+import ikube.database.DataBaseJpaOracle;
+import ikube.database.IDataBase;
 import ikube.model.geospatial.GeoName;
 import ikube.toolkit.OBJECT;
 import org.slf4j.Logger;
@@ -24,22 +26,22 @@ import java.util.List;
  */
 public final class GeonamePopulator extends ADatabase {
 
-	static Logger LOGGER = LoggerFactory.getLogger(GeonamePopulator.class);
+    static Logger LOGGER = LoggerFactory.getLogger(GeonamePopulator.class);
 
-	public static void main(String[] args) throws Exception {
-		persist(GeoName.class);
-		// persist(GeoAltName.class);
-	}
+    public static void main(String[] args) throws Exception {
+        persist(GeoName.class);
+        // persist(GeoAltName.class);
+    }
 
-	protected static void persist(final Class<?> clazz) throws Exception {
-		int start = 0;
-		int count = 0;
-		int batchSize = 10000;
-		String sessionName = "geoname";
-		Session session = SessionFactory.getSession(sessionName);
-		ADataBaseJpa dataBase = getDataBase(DataBaseJpaOracle.class, IConstants.PERSISTENCE_UNIT_ORACLE);
-		List<Object> geoNames = new ArrayList<>();
-		skipTo(clazz, session, start);
+    protected static void persist(final Class<?> clazz) throws Exception {
+        int start = 0;
+        int count = 0;
+        int batchSize = 10000;
+        String sessionName = "geoname";
+        Session session = SessionFactory.getSession(sessionName);
+        ADataBaseJpa dataBase = getDataBase(DataBaseJpaOracle.class, IConstants.PERSISTENCE_UNIT_ORACLE);
+        List<Object> geoNames = new ArrayList<>();
+        skipTo(clazz, session, start);
         do {
             count++;
             try {
@@ -49,46 +51,45 @@ public final class GeonamePopulator extends ADatabase {
                     LOGGER.info("Count : " + count);
                     persistBatch(dataBase, geoNames);
                 }
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 LOGGER.error("Exception inserting geoname : ", e);
                 persistBatch(dataBase, geoNames);
             }
         } while (session.hasNext(clazz));
-	}
+    }
 
-	private static void skipTo(final Class<?> clazz, final Session session, final int index) {
-		int start = index;
-		while (session.hasNext(clazz) && start-- > 0) {
-			try {
-				session.next(clazz);
-			} catch (Exception e) {
-				LOGGER.error("Exception scrolling to the correct index in the data : ", e);
-			}
-		}
-	}
+    private static void skipTo(final Class<?> clazz, final Session session, final int index) {
+        int start = index;
+        while (session.hasNext(clazz) && start-- > 0) {
+            try {
+                session.next(clazz);
+            } catch (final Exception e) {
+                LOGGER.error("Exception scrolling to the correct index in the data : ", e);
+            }
+        }
+    }
 
-	private static void persistBatch(IDataBase dataBase, List<Object> geoNames) {
-		EntityManager entityManager = (EntityManager) OBJECT.getFieldValue(dataBase, "entityManager");
-		// EntityManager entityManager = Deencapsulation.getField(dataBase, EntityManager.class);
+    private static void persistBatch(final IDataBase dataBase, final List<Object> geoNames) {
+        EntityManager entityManager = (EntityManager) OBJECT.getFieldValue(dataBase, "entityManager");
         EntityTransaction transaction = entityManager.getTransaction();
         try {
             transaction.begin();
-			dataBase.persistBatch(geoNames);
-		} catch (final Exception e) {
-			LOGGER.error("Exception inserting geoname : ", e);
-		} finally {
-			for (final Object geoName : geoNames) {
-				try {
-					dataBase.persist(geoName);
-				} catch (final Exception ex) {
-					LOGGER.error(ex.getMessage());
-				}
-			}
-			geoNames.clear();
-			entityManager.flush();
-			entityManager.clear();
+            dataBase.persistBatch(geoNames);
+        } catch (final Exception e) {
+            LOGGER.error("Exception inserting geoname : ", e);
+        } finally {
+            for (final Object geoName : geoNames) {
+                try {
+                    dataBase.persist(geoName);
+                } catch (final Exception ex) {
+                    LOGGER.error(ex.getMessage());
+                }
+            }
+            geoNames.clear();
+            entityManager.flush();
+            entityManager.clear();
             transaction.commit();
-		}
-	}
+        }
+    }
 
 }

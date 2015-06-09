@@ -164,10 +164,10 @@ public final class Deployer {
 
     private static void usage() {
         LOGGER.error("Usage: From in the directory where the deploy.xml file is so Spring can find the properties files");
-        LOGGER.error("Usage: java -jar ../../../../target/ikube-tool-5.3.0.jar ikube.deploy.Deployer . deployer.xml -Ddeploy-to-servers=server-production");
+        LOGGER.error("Usage: java -jar target/ikube-tool-5.3.0.jar ikube.deploy.Deployer . deployer.xml -Ddeploy-to-servers=server-production");
         LOGGER.error("Usage: The username and password can be specified in a system.properties file, or put on the command line as system properties");
-        LOGGER.error("Usage: using the -D option for Java main invocation. Alternatively is using the properties file, then the property deploy-to-servers=server-production");
-        LOGGER.error("Usage: should also be defined in the properties file.");
+        LOGGER.error("Usage: using the -D option for Java main invocation. Alternatively is using the properties file, then the property");
+        LOGGER.error("Usage: deploy-to-servers=server-production should also be defined in the properties file.");
     }
 
 	private boolean parallel;

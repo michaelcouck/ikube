@@ -1,23 +1,28 @@
 package ikube.jms;
 
-import ikube.toolkit.FILE;
+import ikube.jms.connect.IConnector;
 import org.apache.commons.lang.StringUtils;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 
-import javax.jms.*;
-import javax.naming.Context;
-import javax.naming.InitialContext;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
+import javax.jms.TextMessage;
 import javax.naming.NamingException;
-import java.io.File;
 
 /**
  * This is a simple JMS client that will publish a message to either a topic or a queue. Parameters
- * can be passed to the publisher, and optionally a file can be used for the message body, in this way
- * a trivially large message can be published to the queue.
+ * can be passed to the publisher.
  * <p/>
- * The connection factory details must be configured in the jndi.properties file, that must be in the
- * same directory that the jvm is started in. An example of the jndi file is available.
+ * <pre>
+ *     java -jar ikube-tool-5.2.0.jar ikube.jms.Publisher userid password url ConnectionFactory MyTopic property value payload
+ * </pre>
  *
  * @author Michael Couck
  * @version 01.00
@@ -25,76 +30,111 @@ import java.io.File;
  */
 public class Publisher {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Publisher.class);
+    @SuppressWarnings("UnusedDeclaration")
+    private Logger logger = LoggerFactory.getLogger(Publisher.class);
+
+    @Option(name = "-u")
+    private String username;
+    @Option(name = "-p")
+    private String password;
+    @Option(name = "-url")
+    private String url;
+    @Option(name = "-cf")
+    private String connectionFactory;
+    @Option(name = "-d")
+    private String destination;
+    @Option(name = "-h")
+    private String headerNames;
+    @Option(name = "-v")
+    private String headerValues;
+    @Option(name = "-pl")
+    private String payload;
+    @Option(name = "-ct")
+    private String connection;
 
     /**
      * The main that will be called from the {@link ikube.Ikube} class.
      *
-     * @param args arguments are very
+     * @param args arguments are very specific, and they are all mandatory except for the header names and values. So
+     *             to enumerate the required parameters:
+     *             username, password, url, connectionFactory, destination, headerNames, headerValues, payload, connection
      * @throws Exception
      */
     public static void main(final String[] args) throws Exception {
-        new Publisher().publish(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
+        new Publisher(args).publish();
     }
 
     /**
-     * Publishes a message to either a queue or a topic. There can be parameters added to
-     * the message and a file specified as the input for the test message. An example of input
-     * would be:
+     * Default constructor, the parameters for the message then passed into the
+     * {@link ikube.jms.Publisher#publish(String, String, String, String, String, String, String, String, String)} method.
+     */
+    public Publisher() {
+    }
+
+    /**
+     * The constructor that will take the runtime properties from the command line.
      *
-     * <pre>
-     *     java -jar ikube-tool-5.2.0.jar ikube.jms.Publisher userid password ConnectionFactory MyTopic jms-client.xml property value
-     * </pre>
+     * @param args the properties and arguments to be used to connect to the provider and the message payload
+     * @throws CmdLineException
+     */
+    public Publisher(final String[] args) throws CmdLineException {
+        CmdLineParser parser = new CmdLineParser(this);
+        parser.setUsageWidth(140);
+        parser.parseArgument(args);
+    }
+
+    /**
+     * Publishes a message to a destination using the properties that are parsed on the command line.
      *
-     * @param userid                the userid to connect to the connection factory
-     * @param password              the password for the connection factory
-     * @param connectionFactoryName the name of the connection factory in JNDI
-     * @param destinationName       the destination name, for example my-topic
-     * @param fileName              the name of the file that will be used as the input for the message body
-     * @param parameterNames        parameter names
-     * @param parameterValues       parameter values
+     * @throws JMSException
+     * @throws NamingException
+     */
+    public void publish() throws JMSException, NamingException, IllegalAccessException, InstantiationException, ClassNotFoundException {
+        publish(username, password, url, connectionFactory, destination, headerNames, headerValues, payload, connection);
+    }
+
+    /**
+     * Publishes a message to either a queue or a topic.
+     *
+     * @param userid            the userid to connect to the connection factory
+     * @param password          the password for the connection factory, for example
+     * @param url               the url string to the provider, for example 't3://be-qa-cs-18.clear2pay.com:8001'
+     * @param connectionFactory the name of the connection factory in JNDI, for example 'jms/QCF'
+     * @param destination       the destination name, for example my-queue, or 'jms/InterchangeloaderQ'
+     * @param headerNames       header keys for the message, for example 'BankName'
+     * @param headerValues      header values for the message, for example 'Credit Suisse'
+     * @param payload           the message body, typically text or xml
+     * @param connectionType    the connection type, i.e. Weblogic, MQ etc, for example 'ikube.jms.connection.Weblogic'
      * @throws NamingException
      * @throws JMSException
      */
     public void publish(
             final String userid,
             final String password,
-            final String connectionFactoryName,
-            final String destinationName,
-            final String fileName,
-            final String parameterNames,
-            final String parameterValues)
-            throws NamingException, JMSException {
-
-        String[] parameterNamesArray = StringUtils.split(parameterNames, ",;:|");
-        String[] parameterValuesArray = StringUtils.split(parameterValues, ",;:|");
-
-        String contents = "";
-        File file = FILE.findFileRecursively(new File("."), fileName);
-        if (file != null) {
-            contents = FILE.getContent(file);
-        } else {
-            LOGGER.warn("No file found for message body : " + fileName);
-        }
-
-        Context context = new InitialContext();
-        ConnectionFactory factory = (ConnectionFactory) context.lookup(connectionFactoryName);
-        Connection connection = factory.createConnection(userid, password);
-        connection.start();
-
-        Destination destination = (Destination) context.lookup(destinationName);
-        Session session = connection.createSession(Boolean.FALSE, TopicSession.AUTO_ACKNOWLEDGE);
-
-        MessageProducer producer = session.createProducer(destination);
-        Message message = session.createTextMessage(contents);
-
-        for (int i = 0; i < parameterNamesArray.length; i++) {
-            message.setStringProperty(parameterNamesArray[i], parameterValuesArray[i]);
-        }
-
-        LOGGER.info("Sending message : " + message);
-
-        producer.send(destination, message);
+            final String url,
+            final String connectionFactory,
+            final String destination,
+            final String headerNames,
+            final String headerValues,
+            final String payload,
+            final String connectionType)
+            throws NamingException, JMSException, ClassNotFoundException, IllegalAccessException, InstantiationException {
+        IConnector connector = (IConnector) Class.forName(connectionType).newInstance();
+        JmsTemplate jmsTemplate = connector.connect(userid, password, url, connectionFactory, destination);
+        MessageCreator messageCreator = new MessageCreator() {
+            @Override
+            public Message createMessage(final Session session) throws JMSException {
+                TextMessage textMessage = session.createTextMessage(payload);
+                String[] headers = StringUtils.split(headerNames, ",;:|");
+                String[] values = StringUtils.split(headerValues, ",;:|");
+                for (int i = 0; i < headers.length; i++) {
+                    String header = headers[i];
+                    textMessage.setObjectProperty(header, values[i]);
+                }
+                return textMessage;
+            }
+        };
+        jmsTemplate.send(messageCreator);
     }
 
 }

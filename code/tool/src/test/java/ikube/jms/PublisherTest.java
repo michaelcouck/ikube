@@ -1,23 +1,22 @@
 package ikube.jms;
 
 import ikube.AbstractTest;
+import ikube.jms.connect.Weblogic;
 import mockit.Mock;
 import mockit.MockClass;
-import mockit.Mockit;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.mockito.Spy;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 
-import javax.jms.*;
-import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import static mockit.Mockit.setUpMocks;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * @author Michael Couck
@@ -28,47 +27,47 @@ public class PublisherTest extends AbstractTest {
 
     @Spy
     private Publisher publisher;
+    private JmsTemplate jmsTemplate;
 
-    @org.mockito.Mock
-    private Session session;
-    @org.mockito.Mock
-    private TextMessage message;
-    @org.mockito.Mock
-    private Connection connection;
-    @org.mockito.Mock
-    private Destination destination;
-    @org.mockito.Mock
-    private MessageProducer producer;
-    @org.mockito.Mock
-    private ConnectionFactory connectionFactory;
+    @SuppressWarnings("UnusedDeclaration")
+    @MockClass(realClass = Weblogic.class)
+    public class WeblogicMock {
 
-    @MockClass(realClass = InitialContext.class)
-    class InitialContextMock {
         @Mock
-        @SuppressWarnings("UnusedDeclaration")
-        public Object lookup(final String name) {
-            if (name.contains("connection")) {
-                return connectionFactory;
-            } else if (name.contains("destination")) {
-                return destination;
-            }
-            throw new RuntimeException("Only connection factory and destination allowed : " + name);
+        public void $init() {
         }
+
+        @Mock
+        public JmsTemplate connect(
+                final String userid,
+                final String password,
+                final String url,
+                final String connectionFactory,
+                final String destination) throws NamingException {
+            jmsTemplate = mock(JmsTemplate.class);
+            return jmsTemplate;
+        }
+
     }
 
     @Before
     public void before() throws Exception {
-        setUpMocks(this.new InitialContextMock());
-        when(connectionFactory.createConnection(anyString(), anyString())).thenReturn(connection);
-        when(connection.createSession(Boolean.FALSE, TopicSession.AUTO_ACKNOWLEDGE)).thenReturn(session);
-        when(session.createProducer(destination)).thenReturn(producer);
-        when(session.createTextMessage(anyString())).thenReturn(message);
+        setUpMocks(this.new WeblogicMock());
     }
 
     @Test
     public void publish() throws Exception {
-        publisher.publish("userid", "password", "connection-factory", "destination", "jms-client.xml", "property", "value");
-        verify(producer, times(1)).send(any(Destination.class), any(Message.class));
+        publisher.publish(
+                "userid",
+                "password",
+                "url",
+                "connection-factory",
+                "destination",
+                "property",
+                "value",
+                "payload",
+                "ikube.jms.connection.Weblogic");
+        verify(jmsTemplate, times(1)).send(any(MessageCreator.class));
     }
 
 }

@@ -182,4 +182,28 @@
         <ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy"/>
     </util:list>
 
+    <bean
+        id="fis-cobaxt-svn"
+        class="ikube.model.IndexableSvn"
+        property:name="fis-cobaxt-svn"
+        property:url="https://be-svn-01.clear2pay.com/svn/repos/cobaxt"
+        property:filePath="trunk"
+        property:revision="revision"
+        property:revisionDate="revision-date"
+        property:size="size"
+        property:contents="contents"
+
+        property:analyzed="true"
+        property:stored="true"
+        property:vectored="false"
+        property:tokenized="false"
+        property:omitNorms="true"
+
+        property:threads="5"
+        property:address="false"
+        property:username="mcouck"
+        property:address="Caherl4ne2013"
+        property:excludedPattern=".*(.jar).*|.*(.zip).*|.*(.png).*|.*(.jpeg).*|.*(.ico).*|.*(.svg).*|.*(.gif).*|.*(.ttf).*"
+        property:strategies-ref="ikube-strategies"/>
+
 </beans>

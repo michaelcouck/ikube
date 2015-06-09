@@ -2,6 +2,8 @@ package ikube.jms;
 
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.TransportConnector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 
@@ -12,6 +14,13 @@ import java.net.URI;
  */
 public class JmsUtilities {
 
+    private static Logger LOGGER = LoggerFactory.getLogger(JmsUtilities.class);
+
+    /**
+     * This starts a JMS server, using the default(ActiveMQ) JMS provider,
+     * so that we can test the JMS functionality in a dynamic way in integration
+     * tests.
+     */
     public static void startServer() {
         // Set up the broker, i.e. the jms server
         BrokerService broker = new BrokerService();
@@ -25,7 +34,7 @@ public class JmsUtilities {
             broker.addConnector(connector);
             broker.start();
         } catch (final Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Exception starting the JMS server programmatically : ", e);
         }
     }
 

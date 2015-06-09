@@ -18,7 +18,7 @@
     </parent>
 
     <properties>
-        <phase>deploy</phase>
+        <phase>test</phase>
         <packaging>jar</packaging>
         <generate-pom>true</generate-pom>
         <repository-id>libs-release-local</repository-id>
@@ -767,7 +767,7 @@
                         <!--<goals>-->
                             <!--<goal>deploy-file</goal>-->
                         <!--</goals>-->
-                        <!--<phase>test</phase>-->
+                        <!--<phase>${phase}</phase>-->
                         <!--<configuration>-->
                             <!--<groupId>nz.ac.waikato.cms.weka</groupId>-->
                             <!--<artifactId>weka-time-series-forecasting-sources</artifactId>-->
@@ -785,7 +785,7 @@
                         <!--<goals>-->
                             <!--<goal>deploy-file</goal>-->
                         <!--</goals>-->
-                        <!--<phase>test</phase>-->
+                        <!--<phase>${phase}</phase>-->
                         <!--<configuration>-->
                             <!--<groupId>arachnid</groupId>-->
                             <!--<artifactId>arachnid</artifactId>-->
@@ -802,12 +802,202 @@
                         <!--<goals>-->
                             <!--<goal>deploy-file</goal>-->
                         <!--</goals>-->
-                        <!--<phase>test</phase>-->
+                        <!--<phase>${phase}</phase>-->
                         <!--<configuration>-->
                             <!--<groupId>arachnid</groupId>-->
                             <!--<artifactId>arachnid-sources</artifactId>-->
                             <!--<version>0.4.0</version>-->
                             <!--<file>tools/miscellaneous/arachnid-0.4.0-sources.jar</file>-->
+                            <!--<packaging>${packaging}</packaging>-->
+                            <!--<generatePom>${generate-pom}</generatePom>-->
+                            <!--<repositoryId>${repository-id}</repositoryId>-->
+                            <!--<url>${artifactory}</url>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                    <!--<execution>-->
+                        <!--<id>mq</id>-->
+                        <!--<goals>-->
+                            <!--<goal>deploy-file</goal>-->
+                        <!--</goals>-->
+                        <!--<phase>${phase}</phase>-->
+                        <!--<configuration>-->
+                            <!--<groupId>ibm-mq</groupId>-->
+                            <!--<artifactId>mq</artifactId>-->
+                            <!--<version>1.1.0</version>-->
+                            <!--<file>tools/drivers/com.ibm.mq-1.1.0.jar</file>-->
+                            <!--<packaging>${packaging}</packaging>-->
+                            <!--<generatePom>${generate-pom}</generatePom>-->
+                            <!--<repositoryId>${repository-id}</repositoryId>-->
+                            <!--<url>${artifactory}</url>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                    <!--<execution>-->
+                        <!--<id>ibm-jms</id>-->
+                        <!--<goals>-->
+                            <!--<goal>deploy-file</goal>-->
+                        <!--</goals>-->
+                        <!--<phase>${phase}</phase>-->
+                        <!--<configuration>-->
+                            <!--<groupId>ibm-mq</groupId>-->
+                            <!--<artifactId>mq-jms</artifactId>-->
+                            <!--<version>1.1.0</version>-->
+                            <!--<file>tools/drivers/com.ibm.mqjms-1.1.0.jar</file>-->
+                            <!--<packaging>${packaging}</packaging>-->
+                            <!--<generatePom>${generate-pom}</generatePom>-->
+                            <!--<repositoryId>${repository-id}</repositoryId>-->
+                            <!--<url>${artifactory}</url>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                    <!--<execution>-->
+                        <!--<id>ibm-core</id>-->
+                        <!--<goals>-->
+                            <!--<goal>deploy-file</goal>-->
+                        <!--</goals>-->
+                        <!--<phase>${phase}</phase>-->
+                        <!--<configuration>-->
+                            <!--<groupId>ibm-mq</groupId>-->
+                            <!--<artifactId>mq-core</artifactId>-->
+                            <!--<version>1.1.0</version>-->
+                            <!--<file>tools/drivers/com.ibm.dhbcore-1.1.0.jar</file>-->
+                            <!--<packaging>${packaging}</packaging>-->
+                            <!--<generatePom>${generate-pom}</generatePom>-->
+                            <!--<repositoryId>${repository-id}</repositoryId>-->
+                            <!--<url>${artifactory}</url>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                    <!--<execution>-->
+                        <!--<id>ibm-thin-client</id>-->
+                        <!--<goals>-->
+                            <!--<goal>deploy-file</goal>-->
+                        <!--</goals>-->
+                        <!--<phase>${phase}</phase>-->
+                        <!--<configuration>-->
+                            <!--<groupId>ibm</groupId>-->
+                            <!--<artifactId>ibm-thin-client</artifactId>-->
+                            <!--<version>8.5.0</version>-->
+                            <!--<file>tools/drivers/com.ibm.ws.ejb.thinclient-8.5.0.jar</file>-->
+                            <!--<packaging>${packaging}</packaging>-->
+                            <!--<generatePom>${generate-pom}</generatePom>-->
+                            <!--<repositoryId>${repository-id}</repositoryId>-->
+                            <!--<url>${artifactory}</url>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                    <!--<execution>-->
+                        <!--<id>ibm-orb</id>-->
+                        <!--<goals>-->
+                            <!--<goal>deploy-file</goal>-->
+                        <!--</goals>-->
+                        <!--<phase>${phase}</phase>-->
+                        <!--<configuration>-->
+                            <!--<groupId>ibm-orb</groupId>-->
+                            <!--<artifactId>ibm-orb</artifactId>-->
+                            <!--<version>1.0.0</version>-->
+                            <!--<file>tools/drivers/ibmorb-1.0.0.jar</file>-->
+                            <!--<packaging>${packaging}</packaging>-->
+                            <!--<generatePom>${generate-pom}</generatePom>-->
+                            <!--<repositoryId>${repository-id}</repositoryId>-->
+                            <!--<url>${artifactory}</url>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                    <!--<execution>-->
+                        <!--<id>ibm-sibus</id>-->
+                        <!--<goals>-->
+                            <!--<goal>deploy-file</goal>-->
+                        <!--</goals>-->
+                        <!--<phase>${phase}</phase>-->
+                        <!--<configuration>-->
+                            <!--<groupId>ibm</groupId>-->
+                            <!--<artifactId>ibm-sibus</artifactId>-->
+                            <!--<version>8.5.0</version>-->
+                            <!--<file>tools/drivers/com.ibm.ws.sib.client.thin.jms-8.5.0.jar</file>-->
+                            <!--<packaging>${packaging}</packaging>-->
+                            <!--<generatePom>${generate-pom}</generatePom>-->
+                            <!--<repositoryId>${repository-id}</repositoryId>-->
+                            <!--<url>${artifactory}</url>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+
+                    <!--<execution>-->
+                        <!--<id>ibm-sibus-ext</id>-->
+                        <!--<goals>-->
+                            <!--<goal>deploy-file</goal>-->
+                        <!--</goals>-->
+                        <!--<phase>${phase}</phase>-->
+                        <!--<configuration>-->
+                            <!--<groupId>ibm</groupId>-->
+                            <!--<artifactId>ibm-sibus-ext</artifactId>-->
+                            <!--<version>1.0.0</version>-->
+                            <!--<file>tools/drivers/com.ibm.ws.runtime-1.0.0.jar</file>-->
+                            <!--<packaging>${packaging}</packaging>-->
+                            <!--<generatePom>${generate-pom}</generatePom>-->
+                            <!--<repositoryId>${repository-id}</repositoryId>-->
+                            <!--<url>${artifactory}</url>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+
+                    <!--<execution>-->
+                        <!--<id>ibm-sibus-orb</id>-->
+                        <!--<goals>-->
+                            <!--<goal>deploy-file</goal>-->
+                        <!--</goals>-->
+                        <!--<phase>${phase}</phase>-->
+                        <!--<configuration>-->
+                            <!--<groupId>ibm</groupId>-->
+                            <!--<artifactId>ibm-sibus-orb</artifactId>-->
+                            <!--<version>8.5.0</version>-->
+                            <!--<file>tools/drivers/com.ibm.ws.orb-8.5.0.jar</file>-->
+                            <!--<packaging>${packaging}</packaging>-->
+                            <!--<generatePom>${generate-pom}</generatePom>-->
+                            <!--<repositoryId>${repository-id}</repositoryId>-->
+                            <!--<url>${artifactory}</url>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+
+                    <!--<execution>-->
+                        <!--<id>oracle-wlclient</id>-->
+                        <!--<goals>-->
+                            <!--<goal>deploy-file</goal>-->
+                        <!--</goals>-->
+                        <!--<phase>${phase}</phase>-->
+                        <!--<configuration>-->
+                            <!--<groupId>oracle</groupId>-->
+                            <!--<artifactId>wlclient</artifactId>-->
+                            <!--<version>1.0.0</version>-->
+                            <!--<file>tools/drivers/wlclient-1.0.0.jar</file>-->
+                            <!--<packaging>${packaging}</packaging>-->
+                            <!--<generatePom>${generate-pom}</generatePom>-->
+                            <!--<repositoryId>${repository-id}</repositoryId>-->
+                            <!--<url>${artifactory}</url>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                    <!--<execution>-->
+                        <!--<id>oracle-wljmsclient</id>-->
+                        <!--<goals>-->
+                            <!--<goal>deploy-file</goal>-->
+                        <!--</goals>-->
+                        <!--<phase>${phase}</phase>-->
+                        <!--<configuration>-->
+                            <!--<groupId>oracle</groupId>-->
+                            <!--<artifactId>wljmsclient</artifactId>-->
+                            <!--<version>1.0.0</version>-->
+                            <!--<file>tools/drivers/wljmsclient-1.0.0.jar</file>-->
+                            <!--<packaging>${packaging}</packaging>-->
+                            <!--<generatePom>${generate-pom}</generatePom>-->
+                            <!--<repositoryId>${repository-id}</repositoryId>-->
+                            <!--<url>${artifactory}</url>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                    <!--<execution>-->
+                        <!--<id>oracle-wlthint3client</id>-->
+                        <!--<goals>-->
+                            <!--<goal>deploy-file</goal>-->
+                        <!--</goals>-->
+                        <!--<phase>${phase}</phase>-->
+                        <!--<configuration>-->
+                            <!--<groupId>oracle</groupId>-->
+                            <!--<artifactId>wlthint3client</artifactId>-->
+                            <!--<version>1.0.0</version>-->
+                            <!--<file>tools/drivers/wlthint3client-1.0.0.jar</file>-->
                             <!--<packaging>${packaging}</packaging>-->
                             <!--<generatePom>${generate-pom}</generatePom>-->
                             <!--<repositoryId>${repository-id}</repositoryId>-->
