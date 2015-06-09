@@ -66,7 +66,7 @@ public class PublisherTest extends AbstractTest {
                 "property",
                 "value",
                 "payload",
-                "ikube.jms.connection.Weblogic");
+                Weblogic.class.getName());
         verify(jmsTemplate, times(1)).send(any(MessageCreator.class));
     }
 

@@ -78,11 +78,26 @@ public final class FILE {
      * search for the directory pattern specified.
      *
      * @param folder         the folder to start looking through
+     * @param upDirectories  the number of directories to go up before searching
      * @param stringPatterns the patterns to look for in the file paths
      * @return the directory that matches the pattern startup from a higher directory
      */
     public static File findDirectoryRecursively(final File folder, final int upDirectories, final String... stringPatterns) {
         File upFolder = moveUpDirectories(folder, upDirectories);
+        return findDirectoryRecursively(upFolder, stringPatterns);
+    }
+
+    /**
+     * This method will first walk backwards through the directories, looking for a parent with a
+     * specific name, before doing a search for the directory/file pattern specified.
+     *
+     * @param folder         the folder to start looking through
+     * @param toDirectory    the name of the parent directory to start looking for the file
+     * @param stringPatterns the patterns to look for in the file paths
+     * @return the directory that matches the pattern startup from a higher directory
+     */
+    public static File findDirectoryRecursively(final File folder, final String toDirectory, final String... stringPatterns) {
+        File upFolder = moveUpDirectories(folder, toDirectory);
         return findDirectoryRecursively(upFolder, stringPatterns);
     }
 
@@ -97,6 +112,14 @@ public final class FILE {
             upFolder = upFolder.getParentFile();
         } while (--directories > 0 && upFolder != null);
         return upFolder;
+    }
+
+    public static File moveUpDirectories(final File folder, final String toFolder) {
+        if (folder.getName().equals(toFolder)) {
+            return folder;
+        }
+        File upFolder = moveUpDirectories(folder, 1);
+        return moveUpDirectories(upFolder, toFolder);
     }
 
     /**
@@ -281,7 +304,7 @@ public final class FILE {
      * This method will find the file(s) with the specified name patterns, iteratively through all the
      * directories specified, then get the contents of the file and return it.
      *
-     * @param folder the folder to start looking for the file
+     * @param folder         the folder to start looking for the file
      * @param stringPatterns the name patterns of the file
      * @return the contents of the first file found that matches the pattern
      */

@@ -134,7 +134,7 @@ public class FILETest extends AbstractTest {
 
     @Test
     public void findDirectoryRecursively() {
-        File file = FILE.findDirectoryRecursively(new File("."), "data");
+        File file = FILE.findDirectoryRecursively(new File("."), new String[]{"data"});
         assertNotNull(file);
         assertTrue(file.exists());
         assertTrue(file.isDirectory());
@@ -242,6 +242,15 @@ public class FILETest extends AbstractTest {
     public void findFileRecursivelyAndGetContents() {
         String contents = FILE.findFileRecursivelyAndGetContents(new File("."), "csv-file-tools.csv");
         assertNotNull(contents);
+    }
+
+    @Test
+    public void moveUpDirectoriesToFolder() {
+        File fromFolder = new File("./target");
+        File ikubeFolder = FILE.moveUpDirectories(fromFolder, "ikube");
+        assertEquals("ikube", ikubeFolder.getName());
+        File anotherIkubeFolder = FILE.moveUpDirectories(ikubeFolder, "ikube");
+        assertEquals(anotherIkubeFolder, ikubeFolder);
     }
 
     private HttpClient getHttpClient() {
