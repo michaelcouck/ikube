@@ -228,8 +228,6 @@
 
         property:threads="5"
         property:address="false"
-        property:username="mcouck"
-        property:address="Caherl4ne2013"
         property:excludedPattern=".*(.jar).*|.*(.zip).*|.*(.png).*|.*(.jpeg).*|.*(.ico).*|.*(.svg).*|.*(.gif).*|.*(.ttf).*"
         property:strategies-ref="ikube-strategies"/>
 
