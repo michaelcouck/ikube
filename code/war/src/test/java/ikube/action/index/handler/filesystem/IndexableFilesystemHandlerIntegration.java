@@ -47,7 +47,7 @@ public class IndexableFilesystemHandlerIntegration extends IntegrationTest {
 
     @Before
     public void before() {
-        File resources = FILE.findDirectoryRecursively(new File("."), "resources");
+        File resources = FILE.findDirectoryRecursively(new File("."), new String[] {"resources"});
         String dataIndexFolderPath = FILE.cleanFilePath(resources.getAbsolutePath());
 
         desktopFolder.setExcludedPattern(null);

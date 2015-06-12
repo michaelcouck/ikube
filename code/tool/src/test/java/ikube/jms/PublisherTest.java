@@ -11,12 +11,12 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
 import javax.naming.NamingException;
+import java.util.Arrays;
+import java.util.List;
 
 import static mockit.Mockit.setUpMocks;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Michael Couck
@@ -27,7 +27,7 @@ public class PublisherTest extends AbstractTest {
 
     @Spy
     private Publisher publisher;
-    private JmsTemplate jmsTemplate;
+    private JmsTemplate jmsTemplate = mock(JmsTemplate.class);
 
     @SuppressWarnings("UnusedDeclaration")
     @MockClass(realClass = Weblogic.class)
@@ -44,7 +44,6 @@ public class PublisherTest extends AbstractTest {
                 final String url,
                 final String connectionFactory,
                 final String destination) throws NamingException {
-            jmsTemplate = mock(JmsTemplate.class);
             return jmsTemplate;
         }
 
@@ -53,6 +52,39 @@ public class PublisherTest extends AbstractTest {
     @Before
     public void before() throws Exception {
         setUpMocks(this.new WeblogicMock());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void publishText() {
+        publisher.publishText(jmsTemplate, "payload", null, null, 1);
+        verify(publisher, times(1)).publish(any(JmsTemplate.class), any(List.class), any(String[].class), any(String[].class));
+
+        publisher.publishText(jmsTemplate, "payload", null, null, 100);
+        verify(publisher, times(2)).publish(any(JmsTemplate.class), any(List.class), any(String[].class), any(String[].class));
+
+        publisher.publishText(jmsTemplate, "payload", null, null, 1000);
+        verify(publisher, times(12)).publish(any(JmsTemplate.class), any(List.class), any(String[].class), any(String[].class));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void publishFiles() {
+        publisher.publishFiles(jmsTemplate, "messages", null, null, 1);
+        verify(publisher, times(1)).publish(any(JmsTemplate.class), any(List.class), any(String[].class), any(String[].class));
+
+        publisher.publishFiles(jmsTemplate, "messages", null, null, 100);
+        verify(publisher, times(51)).publish(any(JmsTemplate.class), any(List.class), any(String[].class), any(String[].class));
+
+        publisher.publishFiles(jmsTemplate, "messages", null, null, 1000);
+        verify(publisher, times(551)).publish(any(JmsTemplate.class), any(List.class), any(String[].class), any(String[].class));
+    }
+
+    @Test
+    public void publishMessage() {
+        List<String> payloads = Arrays.asList("one", "two", "three");
+        publisher.publish(jmsTemplate, payloads, null, null);
+        verify(jmsTemplate, times(3)).send(any(MessageCreator.class));
     }
 
     @Test
@@ -66,8 +98,20 @@ public class PublisherTest extends AbstractTest {
                 "property",
                 "value",
                 "payload",
-                Weblogic.class.getName());
+                Weblogic.class.getName(), 1, null);
         verify(jmsTemplate, times(1)).send(any(MessageCreator.class));
+
+        publisher.publish(
+                "userid",
+                "password",
+                "url",
+                "connection-factory",
+                "destination",
+                "property",
+                "value",
+                "payload",
+                Weblogic.class.getName(), 10, "messages");
+        verify(jmsTemplate, times(11)).send(any(MessageCreator.class));
     }
 
 }

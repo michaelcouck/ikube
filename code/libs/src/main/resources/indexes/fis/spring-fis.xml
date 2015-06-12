@@ -177,6 +177,33 @@
         property:threads="1"
         property:strategies-ref="fis-strategies" />
 
+    <bean
+        id="credit-suisse"
+        class="ikube.model.IndexableFileSystem"
+        property:name="credit-suisse"
+        property:path="/home/fis/credit-suisse"
+        property:pathFieldName="path"
+        property:nameFieldName="name"
+        property:lengthFieldName="length"
+        property:contentFieldName="contents"
+        property:lastModifiedFieldName="lastmodified"
+        property:unpackZips="true"
+
+        property:stored="true"
+        property:analyzed="true"
+        property:tokenized="true"
+        property:omitNorms="true"
+
+        property:vectored="false"
+
+        property:excludedPattern="fis-excluded-files"
+
+        property:batchSize="10"
+        property:maxReadLength="${fis-max-read-length}"
+        property:maxExceptions="1000000"
+        property:threads="4"
+        property:strategies-ref="fis-strategies" />
+
     <util:list id="fis-strategies">
         <ref bean="ikube.action.index.handler.strategy.ContentTypeStrategy"/>
         <ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy"/>

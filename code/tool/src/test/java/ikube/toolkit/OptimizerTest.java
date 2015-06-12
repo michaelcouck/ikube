@@ -3,7 +3,6 @@ package ikube.toolkit;
 import ikube.AbstractTest;
 import ikube.model.IndexContext;
 import ikube.model.Indexable;
-import org.apache.lucene.index.IndexWriter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,7 +56,7 @@ public class OptimizerTest extends AbstractTest {
 	@Test
 	public void main() {
 		for (final String ip : ips) {
-			File indexDirectory = FILE.findDirectoryRecursively(new File("."), ip);
+			File indexDirectory = FILE.findDirectoryRecursively(new File("."), new String[] {ip});
 			logger.info("Index directory : " + indexDirectory.getAbsolutePath());
 			String[] args = { FILE.cleanFilePath(indexDirectory.getAbsolutePath()) };
 			Optimizer.main(args);

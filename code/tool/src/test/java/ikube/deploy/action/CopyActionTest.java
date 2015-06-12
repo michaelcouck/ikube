@@ -65,7 +65,7 @@ public class CopyActionTest extends AbstractTest {
         Map<String, String> directories = new HashMap<>();
 
         File file = FILE.findFileRecursively(new File("."), "deployer.xml");
-        File directory = FILE.findDirectoryRecursively(new File("."), file.getParentFile().getName());
+        File directory = FILE.findDirectoryRecursively(new File("."), new String[] {file.getParentFile().getName()});
 
         files.put(file.getName(), "/tmp");
         directories.put(directory.getName(), "/tmp");

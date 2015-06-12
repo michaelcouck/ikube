@@ -21,6 +21,7 @@ import java.io.IOException;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * This test just has to run without exception, the number of index files
@@ -79,18 +80,18 @@ public class OptimizerTest extends AbstractTest {
 
     @Test
     public void unlockIfLocked() throws Exception {
-        Mockito.when(indexContext.isDelta()).thenReturn(Boolean.TRUE);
+        when(indexContext.isDelta()).thenReturn(Boolean.TRUE);
 
         // Open an index writer, creating the lock file
         File indexDirectory = createIndexFileSystem(indexContext, 1000, "Old McDonald had a farm, he hi he hi ho.");
         IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, indexDirectory, Boolean.FALSE);
-        Mockito.when(indexContext.getIndexWriters()).thenReturn(new IndexWriter[]{indexWriter});
+        when(indexContext.getIndexWriters()).thenReturn(new IndexWriter[]{indexWriter});
 
         // Now open an index reader on the index too
         Directory directory = FSDirectory.open(indexDirectory);
         IndexReader indexReader = DirectoryReader.open(directory);
         IndexSearcher indexSearcher = new IndexSearcher(indexReader);
-        Mockito.when(indexContext.getMultiSearcher()).thenReturn(indexSearcher);
+        when(indexContext.getMultiSearcher()).thenReturn(indexSearcher);
 
         // Verify that the index is locked, i.e. there is a lock file
         assertTrue(IndexWriter.isLocked(directory));

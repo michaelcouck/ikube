@@ -44,7 +44,7 @@ public class IndexableFileSystemHandlerTest extends AbstractTest {
 
     @Before
     public void before() {
-        File analyticsFolder = FILE.findDirectoryRecursively(new File("."), "analytics");
+        File analyticsFolder = FILE.findDirectoryRecursively(new File("."), new String[] {"analytics"});
         analyticsFolderPath = FILE.cleanFilePath(analyticsFolder.getAbsolutePath());
     }
 

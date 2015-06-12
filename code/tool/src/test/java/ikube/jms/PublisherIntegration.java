@@ -1,6 +1,9 @@
 package ikube.jms;
 
 import ikube.AbstractTest;
+import ikube.jms.connect.ActiveMQ;
+import ikube.jms.connect.WebSphereMQ;
+import ikube.jms.connect.Weblogic;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -33,7 +36,7 @@ public class PublisherIntegration extends AbstractTest {
                 "headerName",
                 "headerValue",
                 "payload",
-                "ikube.jms.connection.Weblogic");
+                Weblogic.class.getName(), 1, null);
     }
 
     @Test
@@ -47,7 +50,7 @@ public class PublisherIntegration extends AbstractTest {
                 "headerName",
                 "headerValue",
                 "payload",
-                "ikube.jms.connection.MQ");
+                WebSphereMQ.class.getName(), 1, null);
     }
 
     @Test
@@ -60,7 +63,7 @@ public class PublisherIntegration extends AbstractTest {
                 "headerName",
                 "headerValue",
                 "payload",
-                "ikube.jms.connection.ActiveMQ");
+                ActiveMQ.class.getCanonicalName(), 1, null);
     }
 
 }

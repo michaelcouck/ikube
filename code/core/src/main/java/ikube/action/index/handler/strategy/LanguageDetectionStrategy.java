@@ -99,13 +99,13 @@ public final class LanguageDetectionStrategy extends AStrategy {
 			String language = locale.getLanguage();
 			languageLocale.put(language, locale);
 		}
-		if (DetectorFactory.getLangList() == null || DetectorFactory.getLangList().size() == 0) {
+		if (/* DetectorFactory.getLangList() == null || */ DetectorFactory.getLangList().size() == 0) {
 			int upDirectories = 2;
 			File profileDirectory;
 			File dotDirectory = new File(".");
 			do {
 				logger.info("Dot directory : " + dotDirectory.getAbsolutePath());
-				profileDirectory = FILE.findDirectoryRecursively(dotDirectory, IConstants.LANGUAGE_PROFILES_DIRECTORY);
+				profileDirectory = FILE.findDirectoryRecursively(dotDirectory, new String[] {IConstants.LANGUAGE_PROFILES_DIRECTORY});
 				dotDirectory = FILE.moveUpDirectories(dotDirectory, 1);
 			} while (upDirectories-- > 0 && (profileDirectory == null || !profileDirectory.exists()));
 			try {

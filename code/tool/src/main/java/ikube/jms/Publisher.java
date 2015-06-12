@@ -1,6 +1,9 @@
 package ikube.jms;
 
+import ikube.IConstants;
 import ikube.jms.connect.IConnector;
+import ikube.toolkit.FILE;
+import ikube.toolkit.THREAD;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -15,13 +18,18 @@ import javax.jms.Message;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.naming.NamingException;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.Future;
 
 /**
  * This is a simple JMS client that will publish a message to either a topic or a queue. Parameters
  * can be passed to the publisher.
  * <p/>
  * <pre>
- *     java -jar ikube-tool-5.2.0.jar ikube.jms.Publisher userid password url ConnectionFactory MyTopic property value payload
+ *     java -jar ikube-tool-5.3.0.jar ikube.jms.Publisher -u qcfuser -p passw0rd -url t3://be-qa-cs-18.clear2pay.com:8001 -cf jms/QCF -d jms/InterchangeLoaderQ -pl Hello-World -ct ikube.jms.connect.Weblogic -i 10 -f messages
  * </pre>
  *
  * @author Michael Couck
@@ -29,6 +37,8 @@ import javax.naming.NamingException;
  * @since 11-03-2015
  */
 public class Publisher {
+
+    private static final int MAX_THREADS = 100;
 
     @SuppressWarnings("UnusedDeclaration")
     private Logger logger = LoggerFactory.getLogger(Publisher.class);
@@ -51,6 +61,10 @@ public class Publisher {
     private String payload;
     @Option(name = "-ct")
     private String connection;
+    @Option(name = "-i")
+    private int iterations;
+    @Option(name = "-f")
+    private String folder;
 
     /**
      * The main that will be called from the {@link ikube.Ikube} class.
@@ -66,9 +80,10 @@ public class Publisher {
 
     /**
      * Default constructor, the parameters for the message then passed into the
-     * {@link ikube.jms.Publisher#publish(String, String, String, String, String, String, String, String, String)} method.
+     * {@link ikube.jms.Publisher#publish(String, String, String, String, String, String, String, String, String, int, String)} method.
      */
     public Publisher() {
+        THREAD.initialize();
     }
 
     /**
@@ -78,6 +93,7 @@ public class Publisher {
      * @throws CmdLineException
      */
     public Publisher(final String[] args) throws CmdLineException {
+        this();
         CmdLineParser parser = new CmdLineParser(this);
         parser.setUsageWidth(140);
         parser.parseArgument(args);
@@ -89,8 +105,8 @@ public class Publisher {
      * @throws JMSException
      * @throws NamingException
      */
-    public void publish() throws JMSException, NamingException, IllegalAccessException, InstantiationException, ClassNotFoundException {
-        publish(username, password, url, connectionFactory, destination, headerNames, headerValues, payload, connection);
+    public void publish() throws Exception {
+        publish(username, password, url, connectionFactory, destination, headerNames, headerValues, payload, connection, iterations, folder);
     }
 
     /**
@@ -117,16 +133,80 @@ public class Publisher {
             final String headerNames,
             final String headerValues,
             final String payload,
-            final String connectionType)
-            throws NamingException, JMSException, ClassNotFoundException, IllegalAccessException, InstantiationException {
+            final String connectionType,
+            final int iterations,
+            final String folderName)
+            throws Exception {
+
+        String[] headers = StringUtils.split(headerNames, ",;:|");
+        String[] values = StringUtils.split(headerValues, ",;:|");
+        if (headers == null || values == null) {
+            headers = new String[0];
+            values = new String[0];
+            logger.debug("Headers and values not being populated : {}, {}", headerNames, headerValues);
+        }
+
         IConnector connector = (IConnector) Class.forName(connectionType).newInstance();
         JmsTemplate jmsTemplate = connector.connect(userid, password, url, connectionFactory, destination);
-        MessageCreator messageCreator = new MessageCreator() {
+        if (StringUtils.isEmpty(folderName)) {
+            publishText(jmsTemplate, payload, headers, values, iterations);
+        } else {
+            publishFiles(jmsTemplate, folderName, headers, values, iterations);
+        }
+    }
+
+    void publishText(final JmsTemplate jmsTemplate, final String payload, final String[] headers, final String[] values, final int iterations) {
+        String[] array = new String[Math.min(iterations, MAX_THREADS)];
+        Arrays.fill(array, payload);
+        List<String> payloads = Arrays.asList(array);
+        for (int i = 0; i < Math.max(1, (iterations / payloads.size())); i++) {
+            publish(jmsTemplate, payloads, headers, values);
+        }
+    }
+
+    void publishFiles(final JmsTemplate jmsTemplate, final String folderName, final String[] headers, final String[] values, final int iterations) {
+        File folder = FILE.findDirectoryRecursively(new File("."), new String[]{folderName});
+        File[] files = folder.listFiles();
+        if (files != null && files.length > 0) {
+            List<String> payloads = new ArrayList<>();
+            for (final File file : files) {
+                String payload = FILE.getContents(file, IConstants.ENCODING);
+                payloads.add(payload);
+            }
+            for (int i = 0; i < Math.max(1, (iterations / payloads.size())); i++) {
+                publish(jmsTemplate, payloads, headers, values);
+            }
+        } else {
+            logger.warn("Message folder empty : " + folder);
+        }
+    }
+
+    void publish(final JmsTemplate jmsTemplate, final List<String> payloads, final String[] headers, final String[] values) {
+        final String jobName = this.getClass().getSimpleName();
+        List<Future<Object>> futures = new ArrayList<>();
+        for (final String payload : payloads) {
+            @SuppressWarnings("unchecked")
+            Future<Object> future = (Future<Object>) THREAD.submit(jobName, new Runnable() {
+                public void run() {
+                    logger.debug("Sending message : {}, {}, {} ", new Object[]{payload, headers, values});
+                    MessageCreator messageCreator = getMessageCreator(payload, headers, values);
+                    jmsTemplate.send(messageCreator);
+                }
+            });
+            futures.add(future);
+            if (futures.size() >= MAX_THREADS) {
+                THREAD.waitForFutures(futures, 60);
+            }
+        }
+        THREAD.waitForFutures(futures, 60);
+        THREAD.destroy(jobName);
+    }
+
+    MessageCreator getMessageCreator(final String payload, final String[] headers, final String[] values) {
+        return new MessageCreator() {
             @Override
             public Message createMessage(final Session session) throws JMSException {
                 TextMessage textMessage = session.createTextMessage(payload);
-                String[] headers = StringUtils.split(headerNames, ",;:|");
-                String[] values = StringUtils.split(headerValues, ",;:|");
                 for (int i = 0; i < headers.length; i++) {
                     String header = headers[i];
                     textMessage.setObjectProperty(header, values[i]);
@@ -134,7 +214,6 @@ public class Publisher {
                 return textMessage;
             }
         };
-        jmsTemplate.send(messageCreator);
     }
 
 }
