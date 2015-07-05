@@ -24,7 +24,9 @@ public class ZipLocatorTest extends AbstractTest {
     @Ignore
     public void adHoc() {
         // String[] args = {"/opt", ".*(.jar)\\Z", "SLF4JLocationAwareLog"};
-        String[] args = {"/opt", ".*(.jar)\\Z", "JDK14LoggerFactory"};
+        // String[] args = {"/home/laptop/Workspace/credit-suisse", ".*(.jar)\\Z", "TagSupport"};
+        String[] args = {"/opt/Oracle/Middleware", ".*(.jar)\\Z", "RegistrySAXParserFactory"};
+        // String[] args = {"/home/laptop/.m2", ".*(.jar)\\Z", "EJBObject"};
         ZipLocator.main(args);
     }
 

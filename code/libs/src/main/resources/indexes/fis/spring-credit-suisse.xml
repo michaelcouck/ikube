@@ -12,9 +12,9 @@
             http://www.springframework.org/schema/util/spring-util.xsd">
 
     <bean
-        id="xct"
+        id="credit-suisse"
         class="ikube.model.IndexContext"
-        property:name="xct"
+        property:name="credit-suisse"
         property:maxAge="60000"
         property:compoundFile="true"
         property:bufferedDocs="10"
@@ -32,9 +32,9 @@
 
         property:indexDirectoryPath="${index.directory.path}"
         property:indexDirectoryPathBackup="${index.directory.path}"
-        property:children-ref="xct-folders" />
-    <util:list id="xct-folders">
-        <ref bean="xct-source"/>
+        property:children-ref="folders" />
+    <util:list id="folders">
+        <ref bean="credit-suisse-source"/>
     </util:list>
 
 </beans>

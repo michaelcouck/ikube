@@ -63,7 +63,8 @@ public class Optimizer extends Action<IndexContext, Boolean> {
      * @param directory      the Lucene directory that should now be open on the index
      */
     void optimizeIndex(final IndexContext indexContext, final File indexDirectory, final Directory directory) {
-        logger.info("Optimizing index : " + indexDirectory + ", " + Arrays.toString(indexDirectory.list()));
+        logger.info("Optimizing index : " + indexDirectory.list().length + ", " + indexDirectory);
+        logger.debug("Fragments and segments : " + indexDirectory.list().length + ", " + Arrays.toString(indexDirectory.list()));
         class TimedOptimizer implements Timer.Timed {
             @Override
             public void execute() {

@@ -34,34 +34,7 @@
         property:indexDirectoryPathBackup="${index.directory.path}"
         property:children-ref="opf-folders" />
     <util:list id="opf-folders">
-        <ref local="opf-source"/>
+        <ref bean="opf-source"/>
     </util:list>
-
-    <bean
-        id="opf-source"
-        class="ikube.model.IndexableFileSystem"
-        property:name="opf-source"
-        property:path="/home/fis/opf"
-        property:pathFieldName="path"
-        property:nameFieldName="name"
-        property:lengthFieldName="length"
-        property:contentFieldName="contents"
-        property:lastModifiedFieldName="lastmodified"
-        property:unpackZips="true"
-
-        property:stored="true"
-        property:analyzed="true"
-        property:tokenized="true"
-        property:omitNorms="true"
-
-        property:vectored="false"
-
-        property:excludedPattern="fis-excluded-files"
-
-        property:batchSize="10"
-        property:maxReadLength="${fis-max-read-length}"
-        property:maxExceptions="1000000"
-        property:threads="1"
-        property:strategies-ref="fis-strategies" />
 
 </beans>

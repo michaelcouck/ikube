@@ -48,7 +48,7 @@ public class ZipLocator {
                 public FileVisitResult visitFile(final Path path, final BasicFileAttributes attrs) throws IOException {
                     File file = path.toFile();
                     if (fileType.matcher(file.getName()).matches()) {
-                        LOGGER.info("Path : " + path);
+                        LOGGER.debug("Path : " + path);
                         findInFile(file, fileEntry, fileContent);
                     }
                     return FileVisitResult.CONTINUE;
@@ -84,7 +84,7 @@ public class ZipLocator {
                 ZipEntry entry = zipFileEntries.nextElement();
                 if (fileEntry.matcher(entry.getName()).matches()) {
                     if (fileContent == null) {
-                        LOGGER.error("In file : " + file + ", " + fileEntry + ", " + entry.getName() + ", " + entry);
+                        LOGGER.error("Found in file : " + file + ", " + fileEntry + ", " + entry.getName() + ", " + entry);
                         ATOMIC_INTEGER.incrementAndGet();
                     } else {
                         InputStream inputStream = zip.getInputStream(entry);

@@ -38,6 +38,7 @@
         <ref local="opf-source"/>
         <ref local="xct-source"/>
         <ref local="sepa-source"/>
+        <ref local="credit-suisse-source"/>
         <ref local="cobaxt-source"/>
         <ref local="cobaxt-security-source"/>
     </util:list>
@@ -178,9 +179,9 @@
         property:strategies-ref="fis-strategies" />
 
     <bean
-        id="credit-suisse"
+        id="credit-suisse-source"
         class="ikube.model.IndexableFileSystem"
-        property:name="credit-suisse"
+        property:name="credit-suisse-source"
         property:path="/home/fis/credit-suisse"
         property:pathFieldName="path"
         property:nameFieldName="name"

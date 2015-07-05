@@ -72,7 +72,7 @@ public class PERFORMANCE {
     }
 
     private static void printMemory(final String text, final long before, final long after) {
-        long meg = 1 * 1000 * 1000;
+        long meg = 1000 * 1000;
         LOGGER.error(text + ", before : " + (before / meg) + ", after : " + (after / meg) + ", increase/decrease : " + ((after - before) / meg));
     }
 
