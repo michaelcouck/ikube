@@ -10,7 +10,11 @@ import java.io.FileOutputStream;
 
 import org.junit.Ignore;
 import org.junit.Test;
-
+/**
+ * @author Michael Couck
+ * @since 08-02-2013
+ * @version 01.00
+ */
 public class NasTest {
 
 	@Test
