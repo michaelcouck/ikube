@@ -87,6 +87,8 @@
         <gridgain-version>6.1.6</gridgain-version>
 
         <junit-version>4.8.2</junit-version>
+
+        <slf4j-version>1.6.4</slf4j-version>
     </properties>
 
     <build>
@@ -754,7 +756,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>integration</artifactId>
-            <version>1.5.8</version>
+            <version>${slf4j-version}</version>
             <type>jar</type>
             <scope>compile</scope>
             <exclusions>
@@ -767,7 +769,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.5.8</version>
+            <version>${slf4j-version}</version>
             <type>jar</type>
             <scope>compile</scope>
             <exclusions>
@@ -780,7 +782,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.5.8</version>
+            <version>${slf4j-version}</version>
             <type>jar</type>
             <scope>compile</scope>
             <exclusions>
@@ -906,12 +908,24 @@
             <artifactId>tiles-servlet</artifactId>
             <version>2.2.2</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>jcl-over-slf4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.tiles</groupId>
             <artifactId>tiles-el</artifactId>
             <version>2.2.2</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>jcl-over-slf4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>commons-fileupload</groupId>
@@ -944,6 +958,18 @@
                     <!--<groupId>com.h2database</groupId>-->
                     <!--<artifactId>h2</artifactId>-->
                 <!--</exclusion>-->
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>jcl-over-slf4j</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -964,6 +990,18 @@
                     <!--<groupId>com.h2database</groupId>-->
                     <!--<artifactId>h2</artifactId>-->
                 <!--</exclusion>-->
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>jcl-over-slf4j</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -980,6 +1018,18 @@
                     <groupId>org.apache.tika</groupId>
                     <artifactId>tika-parsers</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>jcl-over-slf4j</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
@@ -987,6 +1037,20 @@
             <groupId>org.gridgain</groupId>
             <artifactId>gridgain-indexing</artifactId>
             <version>6.5.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>jcl-over-slf4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

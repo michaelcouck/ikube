@@ -8,6 +8,7 @@ import ikube.toolkit.THREAD;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import static mockit.Deencapsulation.invoke;
 public class SearcherServiceIntegration extends IntegrationTest {
 
     @Autowired
+    @Qualifier(value = "ikube.cluster.IClusterManager")
     private IClusterManager clusterManager;
     @Autowired
     private ISearcherService searcherService;

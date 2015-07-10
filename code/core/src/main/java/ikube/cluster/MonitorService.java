@@ -14,6 +14,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.reflections.Reflections;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.ReflectionUtils;
 
 import javax.persistence.Column;
@@ -35,6 +36,7 @@ public class MonitorService implements IMonitorService {
     private static final Logger LOGGER = Logger.getLogger(MonitorService.class);
 
     @Autowired
+    @Qualifier(value = "ikube.cluster.IClusterManager")
     private IClusterManager clusterManager;
 
     /**

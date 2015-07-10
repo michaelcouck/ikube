@@ -188,7 +188,7 @@ public class PropertyConfigurer extends Properties {
      *
      * @param jarFile the jar file to check for properties files
      */
-    protected void checkJar(JarFile jarFile) {
+    protected void checkJar(final JarFile jarFile) {
         Enumeration<JarEntry> jarEntries = jarFile.entries();
         while (jarEntries.hasMoreElements()) {
             try {
@@ -205,7 +205,7 @@ public class PropertyConfigurer extends Properties {
         }
     }
 
-    public void setFileNamePattern(String fileNamePattern) {
+    public void setFileNamePattern(final String fileNamePattern) {
         this.fileNamePattern = fileNamePattern;
     }
 

@@ -8,6 +8,7 @@ import ikube.scheduling.Schedule;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * This class constantly publishes it's index contexts to the other servers that may be new to the cluster.
@@ -22,6 +23,7 @@ public class IndexContextSchedule extends Schedule {
 	@Autowired
 	private IMonitorService monitorService;
 	@Autowired
+    @Qualifier(value = "ikube.cluster.IClusterManager")
 	private IClusterManager clusterManager;
 
 	/**

@@ -10,21 +10,21 @@
 
     <description>This is the configuration for the Grid Gain grid</description>
 
-    <bean class="org.gridgain.grid.GridConfiguration">
-        <property name="discoverySpi">
-            <bean class="org.gridgain.grid.spi.discovery.tcp.GridTcpDiscoverySpi">
-                <property name="ipFinder">
-                    <bean
-                        class="org.gridgain.grid.spi.discovery.tcp.ipfinder.multicast.GridTcpDiscoveryMulticastIpFinder">
-                        <property name="multicastGroup" value="224.0.0.1"/>
-                    </bean>
-                </property>
-            </bean>
-        </property>
-    </bean>
+    <!--<bean class="org.gridgain.grid.GridConfiguration">-->
+        <!--<property name="discoverySpi">-->
+            <!--<bean class="org.gridgain.grid.spi.discovery.tcp.GridTcpDiscoverySpi">-->
+                <!--<property name="ipFinder">-->
+                    <!--<bean-->
+                        <!--class="org.gridgain.grid.spi.discovery.tcp.ipfinder.multicast.GridTcpDiscoveryMulticastIpFinder">-->
+                        <!--<property name="multicastGroup" value="224.0.0.1"/>-->
+                    <!--</bean>-->
+                <!--</property>-->
+            <!--</bean>-->
+        <!--</property>-->
+    <!--</bean>-->
 
     <!--<bean-->
-        <!--id="ikube.cluster.IClusterManager"-->
+        <!--id="ikube.cluster.gg.ClusterManagerGridGain"-->
         <!--class="ikube.cluster.gg.ClusterManagerGridGain"-->
         <!--lazy-init="false"-->
         <!--init-method="initialize"-->

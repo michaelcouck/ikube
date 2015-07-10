@@ -254,11 +254,7 @@ public abstract class Search {
             totalHits = topDocs.totalHits;
             highScore = topDocs.getMaxScore();
             results = getResults(topDocs, query);
-        } catch (IllegalArgumentException e) {
-            // Do nothing this is something weird in TopScoreDocCollector if
-            // there are no hits this exception is thrown, for what ever reason...
-            exception = e;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             exception = e;
         } finally {
             if (exception != null) {

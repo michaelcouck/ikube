@@ -10,6 +10,7 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * @author Michael Couck
@@ -22,6 +23,7 @@ public class ClusterManagerCacheSearchIntegration extends IntegrationTest {
     @Autowired
     private IDataBase dataBase;
     @Autowired
+    @Qualifier(value = "ikube.cluster.IClusterManager")
     private IClusterManager clusterManager;
     @Autowired
     private ClusterManagerCacheSearch clusterManagerCacheSearch;

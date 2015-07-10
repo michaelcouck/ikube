@@ -31,7 +31,7 @@
                         <configuration>
                             <target>
                                 <delete dir="../../ikube"/>
-                                <copy todir="../../ikube"><fileset dir="ikube" includes="**"/></copy>
+                                <copy todir="../../ikube" failonerror="false"><fileset dir="ikube" includes="**" /></copy>
                             </target>
                         </configuration>
                         <goals>

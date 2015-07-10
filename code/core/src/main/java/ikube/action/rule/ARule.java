@@ -6,6 +6,7 @@ import ikube.model.IndexContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
@@ -23,6 +24,7 @@ public abstract class ARule<T> implements IRule<T> {
     protected transient Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
+    @Qualifier(value = "ikube.cluster.IClusterManager")
     protected transient IClusterManager clusterManager;
 
     /**

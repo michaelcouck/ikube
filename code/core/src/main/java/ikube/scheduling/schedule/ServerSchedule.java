@@ -7,6 +7,7 @@ import ikube.scheduling.Schedule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,6 +27,7 @@ public class ServerSchedule extends Schedule {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerSchedule.class);
 
     @Autowired
+    @Qualifier(value = "ikube.cluster.IClusterManager")
     private IClusterManager clusterManager;
 
     /**

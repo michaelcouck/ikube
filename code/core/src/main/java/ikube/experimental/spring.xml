@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--suppress ALL -->
+<beans
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:property="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+    <description>
+        This file is only used in the integration tests to load all the configuration files when normally
+        all the configuration files will be loaded by the web application configuration by scanning the
+        starting/user directory for spring-*.xml files.
+    </description>
+
+    <context:property-placeholder
+        location="classpath:external/spring.properties"
+        properties-ref="ikube.toolkit.PropertyConfigurer" />
+
+    <bean
+        id="ikube.toolkit.Logging"
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+        property:staticMethod="ikube.toolkit.LOGGING.configure" />
+
+    <!-- This bean will look through the classpath and load every Spring properties file it finds. -->
+    <bean
+        id="ikube.toolkit.PropertyConfigurer"
+        class="ikube.toolkit.PropertyConfigurer"
+        property:fileNamePattern="spring.properties"
+        lazy-init="false"
+        init-method="initialize" />
+
+    <!-- Turn on AspectJ @Configurable support -->
+    <context:spring-configured />
+    <context:component-scan base-package="ikube" />
+    <!--<context:component-scan base-package="ikube.cluster.gg" />-->
+    <!--<context:component-scan base-package="ikube.experimental" />-->
+
+    <import resource="spring-grid-gain.xml" />
+
+    <bean
+        id="ikube.experimental.Manager"
+        class="ikube.experimental.Manager"
+        lazy-init="false"
+        init-method="addTopicListener"
+        property:clusterManager-ref="ikube.cluster.gg.ClusterManagerGridGain" />
+</beans>

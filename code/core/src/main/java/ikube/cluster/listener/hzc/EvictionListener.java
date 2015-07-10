@@ -11,6 +11,7 @@ import ikube.scheduling.schedule.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * This listener will just evict objects from the grid that have been designated for deletion.
@@ -27,6 +28,7 @@ public class EvictionListener implements IListener<Message<Object>>, MessageList
     @Autowired
     private IDataBase dataBase;
     @Autowired
+    @Qualifier(value = "ikube.cluster.IClusterManager")
     private IClusterManager clusterManager;
 
     /**

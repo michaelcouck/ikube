@@ -7,6 +7,7 @@ import ikube.model.IndexableTable;
 import ikube.model.SavePoint;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.concurrent.ForkJoinTask;
 
@@ -22,6 +23,7 @@ import java.util.concurrent.ForkJoinTask;
 public class DeltaIndexableTableHandler extends IndexableTableHandler {
 
     @Autowired
+    @Qualifier(value = "ikube.cluster.IClusterManager")
     private IClusterManager clusterManager;
 
     /**

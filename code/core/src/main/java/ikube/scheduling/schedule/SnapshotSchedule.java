@@ -10,6 +10,7 @@ import ikube.toolkit.LOGGING;
 import ikube.toolkit.THREAD;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -42,6 +43,7 @@ public class SnapshotSchedule extends Schedule {
     @Autowired
     private IMonitorService monitorService;
     @Autowired
+    @Qualifier(value = "ikube.cluster.IClusterManager")
     private IClusterManager clusterManager;
 
     /**

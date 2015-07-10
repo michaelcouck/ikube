@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
@@ -36,6 +37,7 @@ public abstract class Resource {
     @Autowired
     protected ISearcherService searcherService;
     @Autowired
+    @Qualifier(value = "ikube.cluster.IClusterManager")
     protected IClusterManager clusterManager;
     @Autowired
     protected IAnalyticsService analyticsService;

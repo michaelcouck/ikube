@@ -7,6 +7,7 @@ import ikube.toolkit.THREAD;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.List;
 import java.util.concurrent.Future;
@@ -27,6 +28,7 @@ import static org.junit.Assert.*;
 public class ClusterManagerIntegration extends IntegrationTest {
 
     @Autowired
+    @Qualifier(value = "ikube.cluster.IClusterManager")
     private IClusterManager clusterManager;
 
     @Test

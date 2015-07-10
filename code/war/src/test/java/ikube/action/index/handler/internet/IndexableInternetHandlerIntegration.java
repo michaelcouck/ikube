@@ -40,6 +40,7 @@ public class IndexableInternetHandlerIntegration extends IntegrationTest {
     @Qualifier("ikube")
     private IndexContext indexContext;
     @Autowired
+    @Qualifier(value = "ikube.cluster.IClusterManager")
     private IClusterManager clusterManager;
     @Autowired
     @Qualifier("ikube-internet")

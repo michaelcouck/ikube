@@ -11,6 +11,7 @@ import org.apache.commons.jexl2.JexlEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.Closeable;
 import java.util.List;
@@ -46,6 +47,7 @@ public abstract class Action<E, F> implements IAction<IndexContext, Boolean> {
      * The cluster manager for locking the cluster during rule evaluation.
      */
     @Autowired
+    @Qualifier(value = "ikube.cluster.IClusterManager")
     protected IClusterManager clusterManager;
 
     /**

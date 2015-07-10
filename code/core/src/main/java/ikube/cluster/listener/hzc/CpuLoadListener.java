@@ -9,6 +9,7 @@ import ikube.scheduling.schedule.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * This listener is to set the cpu throttling flag in the server. If the flag is set then the jobs will
@@ -22,6 +23,7 @@ public class CpuLoadListener implements IListener<Message<Object>>, MessageListe
 
     private Logger logger = LoggerFactory.getLogger(CpuLoadListener.class);
     @Autowired
+    @Qualifier(value = "ikube.cluster.IClusterManager")
     private IClusterManager clusterManager;
 
     /**

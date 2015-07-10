@@ -75,8 +75,10 @@ public class SearchComplex extends Search {
                     min = Float.parseFloat(values[0]);
                     max = Float.parseFloat(values[1]);
                 } else {
-                    String message = "Field must have a type to create the query : " + typeField + ", " +
-                            "field : " + searchField + ", string : " + searchString;
+                    String message =
+                            "Field must have a type to create the query : " + typeField +
+                                    ", field : " + searchField +
+                                    ", string : " + searchString;
                     throw new RuntimeException(message);
                 }
                 query = NumericRangeQuery.newFloatRange(searchField, min, max, Boolean.TRUE, Boolean.TRUE);

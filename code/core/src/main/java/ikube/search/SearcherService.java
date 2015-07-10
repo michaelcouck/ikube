@@ -19,6 +19,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
@@ -50,6 +51,7 @@ public class SearcherService implements ISearcherService {
      * The service to distribute the searches in the cluster, and to put the searches in the grid.
      */
     @Autowired
+    @Qualifier(value = "ikube.cluster.IClusterManager")
     private IClusterManager clusterManager;
     /**
      * The service to get system contexts and other bric-a-brac.

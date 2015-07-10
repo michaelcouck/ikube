@@ -5,7 +5,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.springframework.org/schema/beans"
 	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:property="http://www.springframework.org/schema/p"
+    xmlns:property="http://www.springframework.org/schema/p"
+
 	xsi:schemaLocation="
 			http://www.springframework.org/schema/beans
             http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
@@ -31,9 +32,9 @@
 	<bean
 		id="ikube.toolkit.PropertyConfigurer"
 		class="ikube.toolkit.PropertyConfigurer"
-		property:fileNamePattern="spring.properties"
 		lazy-init="false"
-		init-method="initialize" />
+		init-method="initialize"
+        property:fileNamePattern="spring.properties" />
 	
 	<!-- Turn on AspectJ @Configurable support -->
 	<context:spring-configured />
