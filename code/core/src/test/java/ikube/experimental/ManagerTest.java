@@ -1,7 +1,6 @@
 package ikube.experimental;
 
 import com.jcraft.jsch.JSchException;
-import ikube.IConstants;
 import ikube.cluster.gg.ClusterManagerGridGain;
 import ikube.cluster.listener.IListener;
 import ikube.mock.SpellingCheckerMock;
@@ -56,7 +55,7 @@ public class ManagerTest extends AbstractTest {
 
     @After
     public void after() {
-        Mockit.tearDownMocks();
+        // Mockit.tearDownMocks();
     }
 
     @Test
