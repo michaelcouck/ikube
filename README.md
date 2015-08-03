@@ -14,7 +14,7 @@ or [GlassFish](https://glassfish.java.net/).
 Configuration for analytics models, and indeed all configuration is done in Spring configuration files. There is a base 
 configuration, that can be downloaded from the [Artifactory](http://ikube.be/artifactory) in the libs-release-local repository, 
 the ikube-war(to be dropped in the server) and the ikube-libs jar(to be unpacked). For more information please refer to the 
-documentation at [site](http://ikube.be/site) or [web](http://ikube.be/web) if available.
+site and documentation at [site](http://i-kube.be).
  
 ***
 
