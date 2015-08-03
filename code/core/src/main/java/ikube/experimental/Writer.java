@@ -27,14 +27,14 @@ import java.util.List;
  * @version 01.00
  * @since 09-07-2015
  */
-class Writer {
+public class Writer {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private long lastCommitTime;
     private IndexWriter indexWriter;
 
-    Writer() throws IOException {
+    public Writer() throws IOException {
         lastCommitTime = System.currentTimeMillis();
         Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_48);
         IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_48, analyzer);
@@ -63,6 +63,9 @@ class Writer {
                 counter++;
             }
             documents.add(document);
+            if (counter % 1000 == 0) {
+                logger.info("Documents created : " + documents.size() + " : " + counter);
+            }
         }
         return documents;
     }

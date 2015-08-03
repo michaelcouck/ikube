@@ -19,7 +19,7 @@ import java.util.List;
  * @version 01.00
  * @since 09-07-2015
  */
-class Searcher {
+public class Searcher {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 

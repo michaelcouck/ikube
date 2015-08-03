@@ -50,14 +50,18 @@ public class Manager {
     private Database database;
     private Searcher searcher;
 
-    @Autowired
+    @Autowired(required = false)
     @Qualifier("ikube.cluster.gg.ClusterManagerGridGain")
     private ClusterManagerGridGain clusterManager;
+
+    private boolean working = Boolean.FALSE;
 
     public Manager() throws IOException {
         writer = new Writer();
         database = new Database();
         searcher = new Searcher();
+
+        logger.info("Manager : " + this);
     }
 
     public void addTopicListener() {
@@ -73,24 +77,38 @@ public class Manager {
         });
     }
 
-    void writeToIndex(final Document document) throws IOException {
+    synchronized void writeToIndex(final Document document) throws IOException {
         writer.writeToIndex(document);
     }
 
     @Scheduled(initialDelay = 60000, fixedRate = 15000)
-    void openSearcher() throws IOException {
+    synchronized void openSearcher() throws IOException {
         searcher.openSearcher(writer.getDirectories());
     }
 
     @Scheduled(initialDelay = 60000, fixedRate = 15000)
     void indexRecords() throws SQLException, JSchException {
-        // Go to the database and get the changed records
-        List<List<Object>> changedRecords = database.readChangedRecords();
-        // Create the Lucene documents from the changed records
-        List<Document> documents = writer.createDocuments(changedRecords);
-        // Pop the documents in the grid to be indexed by all nodes
-        for (final Document document : documents) {
-            clusterManager.send(IConstants.IKUBE, document);
+        synchronized (this) {
+            try {
+                if (working) {
+                    return;
+                }
+                working = Boolean.TRUE;
+            } finally {
+                notifyAll();
+            }
+        }
+        try {
+            // Go to the database and get the changed records
+            List<List<Object>> changedRecords = database.readChangedRecords();
+            // Create the Lucene documents from the changed records
+            List<Document> documents = writer.createDocuments(changedRecords);
+            // Pop the documents in the grid to be indexed by all nodes
+            for (final Document document : documents) {
+                clusterManager.send(IConstants.IKUBE, document);
+            }
+        } finally {
+            working = Boolean.FALSE;
         }
     }
 

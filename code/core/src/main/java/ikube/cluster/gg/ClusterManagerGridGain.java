@@ -7,7 +7,10 @@ import ikube.model.Action;
 import ikube.model.Server;
 import ikube.toolkit.THREAD;
 import ikube.toolkit.UriUtilities;
-import org.gridgain.grid.*;
+import org.gridgain.grid.Grid;
+import org.gridgain.grid.GridException;
+import org.gridgain.grid.GridFuture;
+import org.gridgain.grid.GridNode;
 import org.gridgain.grid.cache.GridCache;
 import org.gridgain.grid.compute.*;
 import org.gridgain.grid.lang.GridBiPredicate;
@@ -15,6 +18,7 @@ import org.gridgain.grid.messaging.GridMessaging;
 import org.gridgain.grid.resources.GridTaskContinuousMapperResource;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -36,35 +40,12 @@ import java.util.concurrent.Future;
 @SuppressWarnings("SpringJavaAutowiringInspection")
 public class ClusterManagerGridGain extends AClusterManager {
 
-    @Autowired
-    // @Qualifier("org.gridgain.grid.Grid")
+    @Autowired(required = false)
+    @Qualifier("org.gridgain.grid.Grid")
     private Grid grid;
 
-    public ClusterManagerGridGain() {
-        logger.info("Grid : " + grid);
-    }
-
     public void initialize() throws GridException {
-        try {
-            // GridCacheConfiguration gridCacheConfiguration = new GridCacheConfiguration();
-
-            ip = UriUtilities.getIp();
-            // TODO: This must be started in the configuration somehow
-            //if (!GridGainState.STARTED.equals(GridGain.state())) {
-            //    logger.info("Starting GridGain : ");
-            //    grid = GridGain.start();
-            //} else {
-            //    if (grid == null) {
-            //        grid = GridGain.grid();
-            //    }
-            //}
-            Collection<GridNode> gridNodes = grid.nodes();
-            for (final GridNode gridNode : gridNodes) {
-                logger.info("Grid node : " + gridNode);
-            }
-        } catch (final Exception e) {
-            logger.error("Exception starting the grid : ", e);
-        }
+        ip = UriUtilities.getIp();
     }
 
     /**
@@ -403,13 +384,19 @@ public class ClusterManagerGridGain extends AClusterManager {
      * {@inheritDoc}
      */
     public void addTopicListener(final String topic, final IListener<Object> listener) {
-        grid.message().localListen(IConstants.TOPIC, new GridBiPredicate<UUID, Object>() {
+        GridMessaging gridMessaging = grid.message();
+        GridBiPredicate<UUID, Object> gridBiPredicate = new GridBiPredicate<UUID, Object>() {
             @Override
             public boolean apply(final UUID uuid, final Object o) {
                 listener.onMessage(o);
                 return Boolean.TRUE;
             }
-        });
+        };
+        try {
+            gridMessaging.remoteListen(IConstants.TOPIC, gridBiPredicate).get();
+        } catch (final GridException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

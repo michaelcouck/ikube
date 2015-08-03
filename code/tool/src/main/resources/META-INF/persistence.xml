@@ -55,7 +55,8 @@
 		<properties>
 			<property name="openjpa.ConnectionUserName" value="sa" />
 			<property name="openjpa.ConnectionPassword" value="" />
-			<property name="openjpa.ConnectionURL" value="jdbc:h2:tcp://ikube.be:9082/ikube" />
+			<property name="openjpa.ConnectionURL" value="jdbc:h2:file:ikube/ikube" />
+			<!--<property name="openjpa.ConnectionURL" value="jdbc:h2:tcp://ikube.be:9082/ikube" />-->
 			<property name="openjpa.ConnectionDriverName" value="org.h2.Driver" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
 			<property name="openjpa.jdbc.SchemaFactory" value="native(ForeignKeys=true)"/>

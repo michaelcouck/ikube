@@ -92,11 +92,12 @@ public final class FILE {
      * specific name, before doing a search for the directory/file pattern specified.
      *
      * @param folder         the folder to start looking through
-     * @param toDirectory    the name of the parent directory to start looking for the file
+     * @param toDirectory    the name of the parent directory to start looking for the file,
+     *                       i.e. move up to this directory before starting to search
      * @param stringPatterns the patterns to look for in the file paths
      * @return the directory that matches the pattern startup from a higher directory
      */
-    public static File findDirectoryRecursively(final File folder, final String toDirectory, final String... stringPatterns) {
+    public static File findDirectoryRecursivelyUp(final File folder, final String toDirectory, final String... stringPatterns) {
         File upFolder = moveUpDirectories(folder, toDirectory);
         return findDirectoryRecursively(upFolder, stringPatterns);
     }

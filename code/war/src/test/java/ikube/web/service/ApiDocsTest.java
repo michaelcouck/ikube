@@ -65,7 +65,7 @@ public class ApiDocsTest extends AbstractTest {
         Response response = apiDocs.apis();
         Object entity = response.getEntity();
         ArrayList apis = IConstants.GSON.fromJson(entity.toString(), ArrayList.class);
-        assertEquals(8, apis.size());
+        assertEquals(9, apis.size());
     }
 
     @Test

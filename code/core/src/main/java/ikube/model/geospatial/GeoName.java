@@ -14,8 +14,8 @@ import java.util.Date;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class GeoName extends Persistable {
 
-    @Column()
-    private Integer geonameid; // : integer id of record in geonames database
+    @Column
+    private int geonameid; // : integer id of record in geonames database
     @Column(length = 200)
     private String name; // : name of geographical point (utf8) varchar(200)
     @Column(length = 200)
@@ -28,10 +28,10 @@ public class GeoName extends Persistable {
     @Column(length = 5000)
     @Basic(fetch = FetchType.EAGER)
     private String alternatenames; // : alternate names, comma separated varchar(5000)
-    @Column()
-    private Double latitude; // : latitude in decimal degrees (wgs84)
-    @Column()
-    private Double longitude; // : longitude in decimal degrees (wgs84)
+    @Column
+    private double latitude; // : latitude in decimal degrees (wgs84)
+    @Column
+    private double longitude; // : longitude in decimal degrees (wgs84)
     @Column(length = 1)
     private String featureClass; // : see http://www.geonames.org/export/codes.html, char(1)
     @Column(length = 10)
@@ -49,22 +49,25 @@ public class GeoName extends Persistable {
     private String admin3Code; // : code for third level administrative division, varchar(20)
     @Column(length = 20)
     private String admin4Code; // : code for fourth level administrative division, varchar(20)
-    @Column()
-    private Integer population; // : bigint (8 byte int)
-    @Column()
-    private Integer elevation; // : in meters, integer
-    @Column()
-    private Integer gtopo30; // : average elevation of 30'x30' (ca 900mx900m) area in meters, integer
+    @Column
+    private int population = 0; // : bigint (8 byte int)
+    @Column
+    private int elevation; // : in meters, integer
+    @Column
+    private int gtopo30; // : average elevation of 30'x30' (ca 900mx900m) area in meters, integer
     @Column(length = 48)
     private String timezone; // : the timezone id (see file timeZone.txt)
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date modification; // date : date of last modification in yyyy-MM-dd format
 
-    public Integer getGeonameid() {
+    @Version
+    private long version;
+
+    public int getGeonameid() {
         return geonameid;
     }
 
-    public void setGeonameid(Integer geonameid) {
+    public void setGeonameid(final int geonameid) {
         this.geonameid = geonameid;
     }
 
@@ -72,7 +75,7 @@ public class GeoName extends Persistable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -80,7 +83,7 @@ public class GeoName extends Persistable {
         return city;
     }
 
-    public void setCity(String city) {
+    public void setCity(final String city) {
         this.city = city;
     }
 
@@ -88,7 +91,7 @@ public class GeoName extends Persistable {
         return country;
     }
 
-    public void setCountry(String country) {
+    public void setCountry(final String country) {
         this.country = country;
     }
 
@@ -96,7 +99,7 @@ public class GeoName extends Persistable {
         return asciiname;
     }
 
-    public void setAsciiname(String asciiname) {
+    public void setAsciiname(final String asciiname) {
         this.asciiname = asciiname;
     }
 
@@ -104,23 +107,23 @@ public class GeoName extends Persistable {
         return alternatenames;
     }
 
-    public void setAlternatenames(String alternatenames) {
+    public void setAlternatenames(final String alternatenames) {
         this.alternatenames = alternatenames;
     }
 
-    public Double getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(Double latitude) {
+    public void setLatitude(final double latitude) {
         this.latitude = latitude;
     }
 
-    public Double getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(Double longitude) {
+    public void setLongitude(final double longitude) {
         this.longitude = longitude;
     }
 
@@ -128,7 +131,7 @@ public class GeoName extends Persistable {
         return featureClass;
     }
 
-    public void setFeatureClass(String featureClass) {
+    public void setFeatureClass(final String featureClass) {
         this.featureClass = featureClass;
     }
 
@@ -136,7 +139,7 @@ public class GeoName extends Persistable {
         return featureCode;
     }
 
-    public void setFeatureCode(String featureCode) {
+    public void setFeatureCode(final String featureCode) {
         this.featureCode = featureCode;
     }
 
@@ -144,7 +147,7 @@ public class GeoName extends Persistable {
         return countryCode;
     }
 
-    public void setCountryCode(String countryCode) {
+    public void setCountryCode(final String countryCode) {
         this.countryCode = countryCode;
     }
 
@@ -152,7 +155,7 @@ public class GeoName extends Persistable {
         return cc2;
     }
 
-    public void setCc2(String cc2) {
+    public void setCc2(final String cc2) {
         this.cc2 = cc2;
     }
 
@@ -160,7 +163,7 @@ public class GeoName extends Persistable {
         return admin1Code;
     }
 
-    public void setAdmin1Code(String admin1Code) {
+    public void setAdmin1Code(final String admin1Code) {
         this.admin1Code = admin1Code;
     }
 
@@ -168,7 +171,7 @@ public class GeoName extends Persistable {
         return admin2Code;
     }
 
-    public void setAdmin2Code(String admin2Code) {
+    public void setAdmin2Code(final String admin2Code) {
         this.admin2Code = admin2Code;
     }
 
@@ -176,7 +179,7 @@ public class GeoName extends Persistable {
         return admin3Code;
     }
 
-    public void setAdmin3Code(String admin3Code) {
+    public void setAdmin3Code(final String admin3Code) {
         this.admin3Code = admin3Code;
     }
 
@@ -184,31 +187,31 @@ public class GeoName extends Persistable {
         return admin4Code;
     }
 
-    public void setAdmin4Code(String admin4Code) {
+    public void setAdmin4Code(final String admin4Code) {
         this.admin4Code = admin4Code;
     }
 
-    public Integer getPopulation() {
+    public int getPopulation() {
         return population;
     }
 
-    public void setPopulation(Integer population) {
+    public void setPopulation(final int population) {
         this.population = population;
     }
 
-    public Integer getElevation() {
+    public int getElevation() {
         return elevation;
     }
 
-    public void setElevation(Integer elevation) {
+    public void setElevation(final int elevation) {
         this.elevation = elevation;
     }
 
-    public Integer getGtopo30() {
+    public int getGtopo30() {
         return gtopo30;
     }
 
-    public void setGtopo30(Integer gtopo30) {
+    public void setGtopo30(final int gtopo30) {
         this.gtopo30 = gtopo30;
     }
 
@@ -216,7 +219,7 @@ public class GeoName extends Persistable {
         return timezone;
     }
 
-    public void setTimezone(String zone) {
+    public void setTimezone(final String zone) {
         this.timezone = zone;
     }
 
@@ -224,8 +227,15 @@ public class GeoName extends Persistable {
         return modification;
     }
 
-    public void setModification(Date modification) {
+    public void setModification(final Date modification) {
         this.modification = modification;
     }
 
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(final long version) {
+        this.version = version;
+    }
 }

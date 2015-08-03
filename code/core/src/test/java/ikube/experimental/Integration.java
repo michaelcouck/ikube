@@ -2,6 +2,7 @@ package ikube.experimental;
 
 import com.jcraft.jsch.JSchException;
 import ikube.toolkit.THREAD;
+import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,12 +22,17 @@ import java.sql.SQLException;
 @Ignore
 @Configurable
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"spring.xml"})
+@ContextConfiguration(locations = {"file:experimental/spring.xml"})
 public class Integration {
 
     @Autowired
     @Qualifier("ikube.experimental.Manager")
     public Manager manager;
+
+    @After
+    public void after() {
+        THREAD.sleep(60000000);
+    }
 
     @Test
     public void process() throws SQLException, JSchException {

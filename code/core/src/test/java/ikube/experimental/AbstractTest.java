@@ -10,6 +10,7 @@ import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ import java.util.List;
  * @version 01.00
  * @since 10-07-2015
  */
+@Ignore
 @RunWith(MockitoJUnitRunner.class)
 public class AbstractTest {
 

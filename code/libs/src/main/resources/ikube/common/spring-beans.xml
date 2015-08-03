@@ -84,15 +84,23 @@
         <entry key="openjpa.DataCache" value="true(CacheSize=0,SoftReferenceSize=0)"/>
         <entry key="openjpa.QueryCache" value="true(CacheSize=0,SoftReferenceSize=0)"/>
 
-        <entry key="openjpa.Optimistic" value="false"/>
-        <entry key="openjpa.ReadLockLevel" value="read"/>
+        <entry key="openjpa.Optimistic" value="true"/>
+        <entry key="openjpa.ReadLockLevel" value="none"/>
         <entry key="openjpa.WriteLockLevel" value="write"/>
         <entry key="openjpa.NontransactionalRead" value="true"/>
         <entry key="openjpa.LockTimeout" value="60000"/>
 
+        <!--
+            There is a bug somewhere, in OpenJpa or H2 but the 'FOR UPDATE LIMIT ?'
+             seems to be rejected by H2, and incidentally for MySql too. Perhaps the others
+             accept this syntax.
+        -->
+        <!-- (VersionCheckOnReadLock=false,VersionUpdateOnWriteLock=false) -->
+        <!--<entry key="openjpa.LockManager" value="pessimistic"/>-->
+
         <entry key="openjpa.Multithreaded" value="true"/>
         <entry key="openjpa.AutoDetach" value="commit"/>
-        <entry key="openjpa.FlushBeforeQueries" value="true"/>
+        <entry key="openjpa.FlushBeforeQueries" value="false"/>
         <entry key="openjpa.DynamicEnhancementAgent" value="true"/>
         <entry key="openjpa.RuntimeUnenhancedClasses" value="supported"/>
         <entry key="openjpa.jdbc.DBDictionary" value="${ikube.jdbc.dictionary}"/>
@@ -428,9 +436,9 @@
         class="ikube.action.index.handler.strategy.LanguageFilterStrategy"
         init-method="initialize"/>
 
-    <!-- 
+    <!--
 		This bean is the geocoder, it will enrich the data with spatial co-ordinates if
-		the indexables contain address fields. The Url for this service  
+		the indexables contain address fields. The Url for this service
 	-->
     <bean
         name="ikube.action.index.handler.strategy.geocode.Geocoder"
@@ -441,5 +449,11 @@
         property:searchUrl="${searcher.web.service.url}"/>
 
     <bean class="ikube.security.ProxyAuthenticator" init-method="initialize"/>
+
+    <!--<bean-->
+        <!--id="ikube.experimental.RaceService"-->
+        <!--class="ikube.experimental.RaceService"-->
+        <!--depends-on="ikube.database.IDataBase"-->
+        <!--property:dataBase-ref="ikube.database.IDataBase" />-->
 
 </beans>

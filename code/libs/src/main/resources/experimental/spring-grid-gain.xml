@@ -14,24 +14,27 @@
     <bean
         id="org.gridgain.grid.GridConfiguration"
         class="org.gridgain.grid.GridConfiguration"
-        lazy-init="false">
-        <property name="discoverySpi">
-            <bean class="org.gridgain.grid.spi.discovery.tcp.GridTcpDiscoverySpi">
-                <property name="ipFinder">
-                    <bean
-                        class="org.gridgain.grid.spi.discovery.tcp.ipfinder.multicast.GridTcpDiscoveryMulticastIpFinder">
-                        <property name="multicastGroup" value="224.0.0.1"/>
-                    </bean>
-                </property>
-            </bean>
-        </property>
+        lazy-init="false"
+        property:discoverySpi-ref="org.gridgain.grid.spi.discovery.tcp.GridTcpDiscoverySpi">
+    </bean>
+
+    <bean
+        id="org.gridgain.grid.spi.discovery.tcp.GridTcpDiscoverySpi"
+        class="org.gridgain.grid.spi.discovery.tcp.GridTcpDiscoverySpi"
+          property:ipFinder-ref="org.gridgain.grid.spi.discovery.tcp.ipfinder.multicast.GridTcpDiscoveryMulticastIpFinder">
+    </bean>
+
+    <bean
+        id="org.gridgain.grid.spi.discovery.tcp.ipfinder.multicast.GridTcpDiscoveryMulticastIpFinder"
+        class="org.gridgain.grid.spi.discovery.tcp.ipfinder.multicast.GridTcpDiscoveryMulticastIpFinder"
+        property:multicastGroup="224.0.0.1">
     </bean>
 
     <bean
         id="org.gridgain.grid.Grid"
         class="org.gridgain.grid.GridSpringBean"
-        lazy-init="false">
-        <property name="configuration" ref="org.gridgain.grid.GridConfiguration" />
+        lazy-init="false"
+        property:configuration-ref="org.gridgain.grid.GridConfiguration">
     </bean>
 
     <bean
