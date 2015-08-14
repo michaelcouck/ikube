@@ -1,14 +1,14 @@
 package ikube.experimental;
 
 import com.jcraft.jsch.JSchException;
+import ikube.IConstants;
+import ikube.action.index.IndexManager;
+import ikube.toolkit.STRING;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class writes documents to the indexes, some in memory, and some on the disk.
@@ -38,28 +39,35 @@ public class Writer {
         lastCommitTime = System.currentTimeMillis();
         Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_48);
         IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_48, analyzer);
+        indexWriterConfig.setRAMBufferSizeMB(512);
+        indexWriterConfig.setMaxBufferedDocs(10000);
         indexWriter = new IndexWriter(new RAMDirectory(), indexWriterConfig);
     }
 
     void writeToIndex(final Document document) throws IOException {
+        logger.debug("Writing document : " + document.get(IConstants.ID));
         indexWriter.addDocument(document);
-        if (System.currentTimeMillis() - lastCommitTime > 5000) {
-            indexWriter.commit();
-            logger.info("Num docs writer : " + indexWriter.numDocs());
+        if (indexWriter.hasUncommittedChanges() && System.currentTimeMillis() - lastCommitTime > 5000) {
             lastCommitTime = System.currentTimeMillis();
+            indexWriter.commit();
+            indexWriter.forceMerge(5);
+            logger.info("Num docs writer : " + indexWriter.numDocs());
         }
     }
 
-    List<Document> createDocuments(final List<List<Object>> records) throws SQLException, JSchException {
+    List<Document> createDocuments(final List<Map<Object, Object>> records) throws SQLException, JSchException {
         List<Document> documents = new ArrayList<>();
-        for (final List<Object> row : records) {
+        for (final Map<Object, Object> row : records) {
             int counter = 0;
             Document document = new Document();
-            for (final Object value : row) {
-                String fieldName = Integer.toString(counter);
-                String fieldValue = value != null ? value.toString() : "";
-                IndexableField indexableField = new StringField(fieldName, fieldValue, Field.Store.YES);
-                document.add(indexableField);
+            for (final Map.Entry<Object, Object> mapEntry : row.entrySet()) {
+                String fieldName = mapEntry.getKey().toString();
+                String fieldValue = mapEntry.getValue() != null ? mapEntry.getValue().toString() : "";
+                if (STRING.isNumeric(fieldValue)) {
+                    IndexManager.addNumericField(fieldName, fieldValue, document, true, 0);
+                } else {
+                    IndexManager.addStringField(document, fieldName, fieldValue, true, true, true, false, true, 0);
+                }
                 counter++;
             }
             documents.add(document);

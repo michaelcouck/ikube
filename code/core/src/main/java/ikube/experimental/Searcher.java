@@ -1,5 +1,6 @@
 package ikube.experimental;
 
+import ikube.toolkit.THREAD;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.MultiReader;
@@ -30,7 +31,10 @@ public class Searcher {
     }
 
     synchronized void openSearcher(final Directory... directories) throws IOException {
-        closeSearcher();
+        IndexReader oldIndexReader = null;
+        if (indexSearcher != null) {
+            oldIndexReader = indexSearcher.getIndexReader();
+        }
         List<IndexReader> subReaders = new ArrayList<>();
         for (final Directory directory : directories) {
             try {
@@ -43,13 +47,27 @@ public class Searcher {
                 logger.error("Exception writing to index : ", e);
             }
         }
-        IndexReader indexReader = new MultiReader(subReaders.toArray(new IndexReader[subReaders.size()]), Boolean.TRUE);
-        indexSearcher = new IndexSearcher(indexReader);
+        IndexReader[] indexReaders = subReaders.toArray(new IndexReader[subReaders.size()]);
+        IndexReader newIndexReader = new MultiReader(indexReaders, Boolean.TRUE);
+        indexSearcher = new IndexSearcher(newIndexReader);
+        closeSearcher(oldIndexReader);
     }
 
-    synchronized void closeSearcher() throws IOException {
-        if (indexSearcher != null && indexSearcher.getIndexReader() != null) {
-            indexSearcher.getIndexReader().close();
+    synchronized void closeSearcher(final IndexReader indexReader) {
+        if (indexReader != null) {
+            final String name = "index-reader-closer";
+            THREAD.submit(name, new Runnable() {
+                public void run() {
+                    try {
+                        THREAD.sleep(5000);
+                        indexReader.close();
+                    } catch (final IOException e) {
+                        logger.error("Exception closing the old index reader, could cause file handle leak : ", e);
+                    } finally {
+                        THREAD.destroy(name);
+                    }
+                }
+            });
         }
     }
 

@@ -43,6 +43,9 @@ public final class LOGGING implements Constants {
             try {
                 // First check the external logging properties file
                 File log4JPropertiesFile = FILE.findFileRecursively(new File("." + SEP + IKUBE), "log4j.properties");
+                if (log4JPropertiesFile == null) {
+                    log4JPropertiesFile = FILE.findFileRecursively(new File("."), "log4j.properties");
+                }
                 if (log4JPropertiesFile != null && log4JPropertiesFile.exists() && log4JPropertiesFile.canRead()) {
                     inputStream = log4JPropertiesFile.toURI().toURL().openStream();
                     System.out.println("Logging configuration : " + log4JPropertiesFile.toURI().toURL());

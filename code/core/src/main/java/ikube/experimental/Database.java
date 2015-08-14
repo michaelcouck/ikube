@@ -10,9 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Reads the database finds all changed records, inserts, updates and deletes.
@@ -84,8 +82,8 @@ public class Database {
     private int databasePort = 8082;
 
     // The url for the database
-    @Value("${database-url:jdbc:h2:tcp://localhost/~/ikube}")
-    private String url = "jdbc:h2:tcp://localhost/~/ikube";
+    @Value("${database-url:jdbc:h2:tcp://localhost:8043/mem:ikube;DB_CLOSE_ON_EXIT=TRUE}")
+    private String url = "jdbc:h2:tcp://localhost:8043/mem:ikube;DB_CLOSE_ON_EXIT=TRUE";
     // And this we get from the driver
     private Connection connection;
 
@@ -101,30 +99,33 @@ public class Database {
         logger.info("Database : " + this);
     }
 
-    List<List<Object>> readChangedRecords() throws SQLException, JSchException {
+    List<Map<Object, Object>> readChangedRecords() throws SQLException, JSchException {
         createSshTunnel();
         createDatabaseConnection();
 
-        List<List<Object>> results = new ArrayList<>();
+        List<Map<Object, Object>> results = new ArrayList<>();
 
-        String sql = "SELECT * FROM worklistitem WHERE whenmodified > ?";
+        long time = System.currentTimeMillis();
+        Timestamp previousTimestamp = modification;
+        // Reset the last modification timestamp
+        modification = new Timestamp(time);
+
+        String sql = "SELECT * FROM rule WHERE timestamp >= ?";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setTimestamp(1, modification);
+        preparedStatement.setTimestamp(1, previousTimestamp);
 
         ResultSet resultSet = preparedStatement.executeQuery();
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
 
-        // Reset the last modification timestamp
-        modification = new Timestamp(System.currentTimeMillis());
-
         while (resultSet.next()) {
-            List<Object> row = new ArrayList<>();
+            Map<Object, Object> row = new HashMap<>();
             for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
+                Object columnName = resultSetMetaData.getColumnName(columnIndex);
                 Object columnValue = resultSet.getObject(columnIndex);
-                row.add(columnValue);
+                row.put(columnName, columnValue);
             }
             results.add(row);
-            if (results.size() % 1000 == 0) {
+            if (results.size() % 10000 == 0) {
                 logger.info("Adding row : " + results.size() + ", " + row);
             }
         }

@@ -14,7 +14,6 @@ import org.apache.lucene.search.*;
 import org.apache.lucene.search.highlight.Highlighter;
 import org.apache.lucene.search.highlight.QueryScorer;
 import org.apache.lucene.search.highlight.Scorer;
-import org.apache.lucene.util.Version;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -126,6 +125,10 @@ public abstract class Search {
      * The end position in the results to stop returning results from.
      */
     protected transient int maxResults;
+    /**
+     * Whether to do a spelling check on the words.
+     */
+    protected transient boolean spellCheck = Boolean.TRUE;
 
     protected transient Analyzer analyzer;
 
@@ -227,6 +230,15 @@ public abstract class Search {
     }
 
     /**
+     * Sets whether the spelling should be checked on each word.
+     *
+     * @param spellCheck whether to check spelling
+     */
+    public void setSpellCheck(final boolean spellCheck) {
+        this.spellCheck = spellCheck;
+    }
+
+    /**
      * Sets whether the fields should contain these terms, or should not, or lenient, i.e. can contains these terms.
      *
      * @param occurrenceFields the occurrence for the field(s)
@@ -259,8 +271,8 @@ public abstract class Search {
         } finally {
             if (exception != null) {
                 String searchString = searchStrings != null && searchStrings.length > 0 ? Arrays.deepToString(searchStrings) : "null";
-                logger.error("Exception searching for string " + searchString + " in searcher");
-                logger.debug(searcher, exception);
+                logger.error("Exception searching for string " + searchString + " in searcher", exception);
+                // logger.error(searcher, exception);
             }
             // We never want to return a null result set, never
             if (results == null) {
@@ -424,15 +436,17 @@ public abstract class Search {
         }
         // Add the search results size as a last category
         HashMap<String, String> statistics = new HashMap<>();
-        String[] correctedSearchStrings = getCorrections(searchStrings);
         String searchString = StringUtils.strip(Arrays.deepToString(searchStrings), IConstants.STRIP_CHARACTERS);
-        String correctedSearchString = StringUtils.strip(Arrays.deepToString(correctedSearchStrings), IConstants.STRIP_CHARACTERS);
+        if (spellCheck) {
+            String[] correctedSearchStrings = getCorrections(searchStrings);
+            String correctedSearchString = StringUtils.strip(Arrays.deepToString(correctedSearchStrings), IConstants.STRIP_CHARACTERS);
+            statistics.put(IConstants.CORRECTIONS, correctedSearchString);
+        }
 
         statistics.put(IConstants.TOTAL, Long.toString(totalHits));
         statistics.put(IConstants.DURATION, Long.toString(duration));
         statistics.put(IConstants.SCORE, Float.toString(highScore));
         statistics.put(IConstants.SEARCH_STRINGS, searchString);
-        statistics.put(IConstants.CORRECTIONS, correctedSearchString);
 
         if (exception != null) {
             OutputStream outputStream = new ByteArrayOutputStream();

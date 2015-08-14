@@ -4,28 +4,40 @@
     <facet type="Spring" name="Spring">
       <configuration>
         <fileset id="fileset" name="Spring Application Context" removed="false">
+          <file>file://$MODULE_DIR$/ikube/common/spring-actions.xml</file>
           <file>file://$MODULE_DIR$/ikube/indexes/integration/spring-custom.xml</file>
-          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-desktop.xml</file>
-          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-ikube.xml</file>
+          <file>file://$MODULE_DIR$/.idea/copyright/profiles_settings.xml</file>
+          <file>file://$MODULE_DIR$/.idea/artifacts/ikube_site_war_exploded.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-application.xml</file>
+          <file>file://$MODULE_DIR$/.idea/artifacts/ikube_war_war_exploded.xml</file>
+          <file>file://$MODULE_DIR$/.idea/artifacts/ikube_web_war.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-hazelcast.xml</file>
+          <file>file://$MODULE_DIR$/.idea/compiler.xml</file>
+          <file>file://$MODULE_DIR$/ikube/spring.xml</file>
+          <file>file://$MODULE_DIR$/.idea/scopes</file>
+          <file>file://$MODULE_DIR$/.idea/scopes/scope_settings.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-h2-jdbc.xml</file>
           <file>file://$MODULE_DIR$/ikube/indexes/production/spring-db2-jdbc.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-beans.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-ikube.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-grid-gain.xml</file>
+          <file>file://$MODULE_DIR$/ikube/application/spring-collector.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/integration/spring-client.xml</file>
+          <file>file://$MODULE_DIR$/.idea/modules.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/integration/spring-geoname-csv.xml</file>
+          <file>file://$MODULE_DIR$/.idea/encodings.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-aop.xml</file>
+          <file>file://$MODULE_DIR$/ikube/analytics/spring-analytics.xml</file>
+          <file>file://$MODULE_DIR$/.idea/misc.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-desktop.xml</file>
           <file>file://$MODULE_DIR$/ikube/indexes/production/spring-system.xml</file>
           <file>file://$MODULE_DIR$/ikube/indexes/production/spring-auto.xml</file>
           <file>file://$MODULE_DIR$/ikube/indexes/production/spring-rules.xml</file>
           <file>file://$MODULE_DIR$/ikube/indexes/production/spring-geo.xml</file>
-          <file>file://$MODULE_DIR$/ikube/common/spring-beans.xml</file>
           <file>file://$MODULE_DIR$/ikube/indexes/twitter/spring-twitter.xml</file>
-          <file>file://$MODULE_DIR$/ikube/common/spring-h2-jdbc.xml</file>
-          <file>file://$MODULE_DIR$/ikube/common/spring-hazelcast.xml</file>
-          <file>file://$MODULE_DIR$/ikube/spring.xml</file>
-          <file>file://$MODULE_DIR$/ikube/application/spring-collector.xml</file>
-          <file>file://$MODULE_DIR$/ikube/common/spring-actions.xml</file>
-          <file>file://$MODULE_DIR$/ikube/analytics/spring-analytics.xml</file>
-          <file>file://$MODULE_DIR$/ikube/common/spring-grid-gain.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-oracle-jdbc.xml</file>
           <file>file://$MODULE_DIR$/ikube/common/spring-users.xml</file>
-          <file>file://$MODULE_DIR$/ikube/common/spring-application.xml</file>
-          <file>file://$MODULE_DIR$/ikube/indexes/integration/spring-geoname-csv.xml</file>
-          <file>file://$MODULE_DIR$/ikube/common/spring-aop.xml</file>
-          <file>file://$MODULE_DIR$/ikube/indexes/integration/spring-client.xml</file>
+          <file>file://$MODULE_DIR$/.idea/artifacts/ikube_war_war.xml</file>
         </fileset>
       </configuration>
     </facet>
@@ -36,7 +48,7 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
-    <orderEntry type="jdk" jdkName="1.7" jdkType="JavaSDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context:3.2.4.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-beans:3.2.4.RELEASE" level="project" />
@@ -92,11 +104,16 @@
     <orderEntry type="library" name="Maven: javax.activation:activation:1.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: mockit:jmockit:0.999.4" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.dbunit:dbunit:2.4.8" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.5.8" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.6.4" level="project" />
     <orderEntry type="library" name="Maven: commons-collections:commons-collections:3.2.1" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:integration:1.5.8" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:integration:1.6.4" level="project" />
     <orderEntry type="library" name="Maven: ant:ant-junit:1.6.5" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:slf4j-log4j12:1.5.8" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.felix:org.apache.felix.main:2.0.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.felix:org.apache.felix.framework:2.0.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.felix:org.apache.felix.shell:1.4.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.felix:org.apache.felix.shell.tui:1.4.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.felix:org.apache.felix.bundlerepository:1.4.2" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-log4j12:1.6.4" level="project" />
     <orderEntry type="library" name="Maven: simple-jndi:simple-jndi:0.11.4.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.geronimo.specs:geronimo-ejb_3.0_spec:1.0.1" level="project" />
     <orderEntry type="library" name="Maven: bouncycastle:bcmail-jdk16:140" level="project" />
@@ -120,7 +137,6 @@
     <orderEntry type="library" name="Maven: org.apache.tiles:tiles-api:2.2.2" level="project" />
     <orderEntry type="library" name="Maven: commons-digester:commons-digester:2.0" level="project" />
     <orderEntry type="library" name="Maven: commons-beanutils:commons-beanutils:1.8.3" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:jcl-over-slf4j:1.5.8" level="project" />
     <orderEntry type="library" name="Maven: org.apache.tiles:tiles-el:2.2.2" level="project" />
     <orderEntry type="library" name="Maven: commons-fileupload:commons-fileupload:1.2.2" level="project" />
     <orderEntry type="library" name="Maven: com.hazelcast:hazelcast-all:3.1.1" level="project" />

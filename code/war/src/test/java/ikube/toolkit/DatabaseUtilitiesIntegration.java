@@ -11,6 +11,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Michael Couck
@@ -32,10 +33,10 @@ public class DatabaseUtilitiesIntegration extends IntegrationTest {
         try {
             connection = getConnection(nonXaDataSourceH2);
             String allColumnsString = "[id, timestamp, admin1code, admin2code, admin3code, admin4code, alternatenames, asciiname, cc2, city, country, "
-                    + "countrycode, elevation, featureclass, featurecode, geonameid, gtopo30, latitude, longitude, modification, name, population, timezone]";
+                    + "countrycode, elevation, featureclass, featurecode, geonameid, gtopo30, latitude, longitude, modification, name, population, timezone, version]";
             allColumns = DatabaseUtilities.getAllColumns(connection, "geoname");
             LOGGER.info("All columns : " + allColumns);
-            assertEquals("All the columns from the geoname table : ", allColumnsString, allColumns.toString().toLowerCase());
+            assertTrue("All the columns from the geoname table : ", allColumns.toString().toLowerCase().startsWith(allColumnsString));
         } finally {
             DatabaseUtilities.close(connection);
         }

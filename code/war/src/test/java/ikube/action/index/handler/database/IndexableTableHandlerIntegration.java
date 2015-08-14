@@ -13,8 +13,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -50,10 +48,6 @@ public class IndexableTableHandlerIntegration extends IntegrationTest {
     private List<Indexable> snapshotTableChildren;
     private IndexableTableHandler indexableTableHandler;
 
-    @Autowired
-    @Qualifier(value = "ikube.cluster.IClusterManager")
-    private IClusterManager clusterManager;
-
     @Before
     public void before() throws SQLException {
         indexableTableHandler = getBean(IndexableTableHandler.class);
@@ -63,7 +57,7 @@ public class IndexableTableHandlerIntegration extends IntegrationTest {
 
         PropertyConfigurer propertyConfigurer = getBean(PropertyConfigurer.class);
         DataSource dataSource = getBean(propertyConfigurer.getProperty("ikube.dataSource"));
-        // IClusterManager clusterManager = getBean(IClusterManager.class);
+        IClusterManager clusterManager = getBean(IClusterManager.class);
 
         indexContext.setBatchSize(10000);
         indexContext.setIndexDirectoryPath("./indexes");

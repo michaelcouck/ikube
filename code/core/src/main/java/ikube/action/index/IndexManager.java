@@ -475,21 +475,35 @@ public final class IndexManager {
     }
 
     public static Document addStringField(final String fieldName, final String fieldContent, final Indexable indexable, final Document document) {
+        return addStringField(document, fieldName, fieldContent, indexable.isAnalyzed(), indexable.isStored(), indexable.isTokenized(), indexable.isOmitNorms(),
+                indexable.isVectored(), indexable.getBoost());
+    }
+
+    public static Document addStringField(
+            final Document document,
+            final String fieldName,
+            final String fieldContent,
+            final boolean analyzed,
+            final boolean stored,
+            final boolean tokenized,
+            final boolean omitNorms,
+            final boolean vectored,
+            final float boost) {
         if (fieldName != null && fieldContent != null) {
             Field field;
             FieldType fieldType = new FieldType();
-            fieldType.setIndexed(indexable.isAnalyzed());
-            fieldType.setStored(indexable.isStored());
+            fieldType.setIndexed(analyzed);
+            fieldType.setStored(stored);
             // NOTE: Must be tokenized to search correctly, not tokenized? no results!!!
-            fieldType.setTokenized(indexable.isTokenized());
+            fieldType.setTokenized(tokenized);
             // For normalization of the length, i.e. longer strings are scored higher
             // normally, but consider that a book with the word 3 times but 10 000 words, will
             // get a lower score than a sentence of two exact words. Omitting the norms will force the book
             // to get a higher score because it has the word three times, although the 'natural' relevance
             // would be the sentence with two words because of the length and matches
-            fieldType.setOmitNorms(indexable.isOmitNorms());
+            fieldType.setOmitNorms(omitNorms);
             // NOTE: If the term vectors are enabled the field cannot be searched, i.e. no results!!!
-            fieldType.setStoreTermVectors(indexable.isVectored());
+            fieldType.setStoreTermVectors(vectored);
 
             Field oldField = (Field) document.getField(fieldName);
             if (oldField == null) {
@@ -504,8 +518,8 @@ public final class IndexManager {
 
                 field = new Field(fieldName, builder.toString(), fieldType);
             }
-            if (indexable.getBoost() > 0) {
-                field.setBoost(indexable.getBoost());
+            if (boost > 0) {
+                field.setBoost(boost);
             }
             document.add(field);
         }

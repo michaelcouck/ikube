@@ -41,9 +41,9 @@
     <bean
         id="ikube.toolkit.PropertyConfigurer"
         class="ikube.toolkit.PropertyConfigurer"
-        property:fileNamePattern="spring.properties"
         lazy-init="false"
-        init-method="initialize" />
+        init-method="initialize"
+        property:fileNamePattern="spring.properties" />
 
     <!-- Turn on AspectJ @Configurable support -->
     <!--<context:spring-configured />-->

@@ -50,6 +50,7 @@
         <module>code/site</module>
         <module>code/web</module>
         <module>code/tool</module>
+        <module>code/patch</module>
     </modules>
 
     <properties>
@@ -173,6 +174,9 @@
                                     </copy>
                                     <copy todir="ikube/indexes/twitter">
                                         <fileset dir="../libs/src/main/resources/indexes/twitter" includes="**"/>
+                                    </copy>
+                                    <copy todir=".">
+                                        <fileset dir="../libs/src/main/resources/experimental" includes="**"/>
                                     </copy>
                                 </target>
                             </configuration>

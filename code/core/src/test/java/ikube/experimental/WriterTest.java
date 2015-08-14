@@ -13,7 +13,9 @@ import org.mockito.Spy;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Michael Couck
@@ -44,13 +46,21 @@ public class WriterTest extends AbstractTest {
 
     @Test
     public void createDocuments() throws SQLException, JSchException {
-        List<List<Object>> records = Arrays.asList(
-                Arrays.asList((Object) "one", "two", "three"),
-                Arrays.asList((Object) "two", "three", "four"),
-                Arrays.asList((Object) "three", "four", "five"));
+        List<Map<Object, Object>> records = Arrays.asList(
+                getMap(new Object[] {"one", "two", "three"}, new Object[] {"one", "two", "three"}),
+                getMap(new Object[] {"two", "three", "four"}, new Object[] {"two", "three", "four"}),
+                getMap(new Object[] {"three", "four", "five"}, new Object[] {"three", "four", "five"}));
         List<Document> documents = writer.createDocuments(records);
-        Assert.assertEquals("one", documents.get(0).getField("0").stringValue());
-        Assert.assertEquals("five", documents.get(2).getField("2").stringValue());
+        Assert.assertEquals("one", documents.get(0).getField("one").stringValue());
+        Assert.assertEquals("five", documents.get(2).getField("five").stringValue());
+    }
+
+    private Map<Object, Object> getMap(final Object[] keys, final Object[] values) {
+        Map<Object, Object> map = new HashMap<>();
+        for (int i = 0; i < keys.length; i++) {
+            map.put(keys[i], values[i]);
+        }
+        return map;
     }
 
 }

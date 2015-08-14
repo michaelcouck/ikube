@@ -14,6 +14,7 @@ import org.mockito.stubbing.Answer;
 
 import java.sql.*;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Michael Couck
@@ -65,14 +66,17 @@ public class DatabaseTest extends AbstractTest {
         Mockito.when(resultSet.next()).thenReturn(Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.FALSE);
         Mockito.when(resultSet.getMetaData()).thenReturn(resultSetMetaData, resultSetMetaData, resultSetMetaData);
         Mockito.when(resultSetMetaData.getColumnCount()).thenReturn(3, 3, 3);
+        Mockito.when(resultSetMetaData.getColumnName(1)).thenReturn("one");
+        Mockito.when(resultSetMetaData.getColumnName(2)).thenReturn("two");
+        Mockito.when(resultSetMetaData.getColumnName(3)).thenReturn("three");
 
         Mockito.when(resultSet.getObject(1)).thenReturn("one", "two", "three");
         Mockito.when(resultSet.getObject(2)).thenReturn("two", "three", "four");
         Mockito.when(resultSet.getObject(3)).thenReturn("three", "four", "five");
 
-        List<List<Object>> changedRecords = database.readChangedRecords();
-        Assert.assertEquals("1:1", "one", changedRecords.get(0).get(0));
-        Assert.assertEquals("3:3", "five", changedRecords.get(2).get(2));
+        List<Map<Object, Object>> changedRecords = database.readChangedRecords();
+        Assert.assertEquals("1:1", "one", changedRecords.get(0).get("one"));
+        Assert.assertEquals("3:3", "five", changedRecords.get(2).get("three"));
     }
 
 }

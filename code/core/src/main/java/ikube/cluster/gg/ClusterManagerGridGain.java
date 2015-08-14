@@ -327,8 +327,8 @@ public class ClusterManagerGridGain extends AClusterManager {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings({"ConstantConditions", "unchecked"})
     @Override
+    @SuppressWarnings({"ConstantConditions", "unchecked"})
     public void clear(final String map) {
         try {
             GridCache<Object, Object> gridCache = grid.cache(map);
@@ -384,17 +384,21 @@ public class ClusterManagerGridGain extends AClusterManager {
      * {@inheritDoc}
      */
     public void addTopicListener(final String topic, final IListener<Object> listener) {
+        // GridMessaging gridMessaging = (GridMessaging) grid.forRemotes();
         GridMessaging gridMessaging = grid.message();
         GridBiPredicate<UUID, Object> gridBiPredicate = new GridBiPredicate<UUID, Object>() {
             @Override
             public boolean apply(final UUID uuid, final Object o) {
+                logger.debug("Message : uuid : " + uuid + ", object : " + o);
                 listener.onMessage(o);
                 return Boolean.TRUE;
             }
         };
         try {
-            gridMessaging.remoteListen(IConstants.TOPIC, gridBiPredicate).get();
-        } catch (final GridException e) {
+            gridMessaging.remoteListen(topic, gridBiPredicate).get();
+            // gridMessaging.localListen(topic, gridBiPredicate);
+            logger.info("Added topic listeners : " + topic);
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
