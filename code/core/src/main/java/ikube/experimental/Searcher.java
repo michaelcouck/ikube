@@ -1,16 +1,30 @@
 package ikube.experimental;
 
+import ikube.IConstants;
+import ikube.experimental.listener.IEvent;
+import ikube.experimental.listener.IListener;
+import ikube.search.Search;
+import ikube.search.SearchComplex;
+import ikube.toolkit.STRING;
 import ikube.toolkit.THREAD;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.MultiReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
+import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -20,17 +34,49 @@ import java.util.List;
  * @version 01.00
  * @since 09-07-2015
  */
-public class Searcher {
+@Component
+@EnableAsync
+@Configuration
+@EnableScheduling
+public class Searcher implements IListener<IEvent<Writer, Directory[]>> {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private IndexSearcher indexSearcher;
 
-    synchronized IndexSearcher getSearcher() {
-        return indexSearcher;
+    @Override
+    public void notify(final IEvent<Writer, Directory[]> event) {
+        Directory[] directories = event.getData();
+        logger.debug("Opening searcher : {}", Arrays.toString(directories));
+        openSearcher(directories);
+        logger.debug("Number of documents in searcher : {}", indexSearcher.getIndexReader().numDocs());
     }
 
-    synchronized void openSearcher(final Directory... directories) throws IOException {
+    public ArrayList<HashMap<String, String>> doSearch(
+            final String fieldName,
+            final String queryString) {
+        // logger.debug("Doing search : field name : " + fieldName + ", query string : "  + queryString);
+        Search search = new SearchComplex(indexSearcher, new StandardAnalyzer(Version.LUCENE_48));
+        search.setFirstResult(0);
+        search.setMaxResults(10);
+        search.setFragment(Boolean.TRUE);
+
+        search.setSearchFields(fieldName);
+        search.setSearchStrings(queryString);
+
+        search.setOccurrenceFields(IConstants.SHOULD);
+        if (STRING.isNumeric(queryString)) {
+            search.setTypeFields(Search.TypeField.NUMERIC.name());
+        } else {
+            search.setTypeFields(Search.TypeField.STRING.name());
+        }
+
+        search.setSpellCheck(Boolean.FALSE);
+
+        return search.execute();
+    }
+
+    void openSearcher(final Directory... directories) {
         IndexReader oldIndexReader = null;
         if (indexSearcher != null) {
             oldIndexReader = indexSearcher.getIndexReader();
@@ -53,7 +99,7 @@ public class Searcher {
         closeSearcher(oldIndexReader);
     }
 
-    synchronized void closeSearcher(final IndexReader indexReader) {
+    void closeSearcher(final IndexReader indexReader) {
         if (indexReader != null) {
             final String name = "index-reader-closer";
             THREAD.submit(name, new Runnable() {

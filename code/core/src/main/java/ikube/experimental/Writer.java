@@ -1,22 +1,25 @@
 package ikube.experimental;
 
-import com.jcraft.jsch.JSchException;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
+import ikube.experimental.listener.*;
 import ikube.toolkit.STRING;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,15 +31,21 @@ import java.util.Map;
  * @version 01.00
  * @since 09-07-2015
  */
-public class Writer {
+@Component
+@EnableAsync
+@Configuration
+public class Writer implements IListener<IndexWriterEvent> {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private long lastCommitTime;
+    @Autowired
+    @SuppressWarnings("SpringJavaAutowiringInspection")
+    @Qualifier("ikube.experimental.listener.ListenerManager")
+    private ListenerManager listenerManager;
+
     private IndexWriter indexWriter;
 
     public Writer() throws IOException {
-        lastCommitTime = System.currentTimeMillis();
         Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_48);
         IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_48, analyzer);
         indexWriterConfig.setRAMBufferSizeMB(512);
@@ -44,18 +53,58 @@ public class Writer {
         indexWriter = new IndexWriter(new RAMDirectory(), indexWriterConfig);
     }
 
-    void writeToIndex(final Document document) throws IOException {
-        logger.debug("Writing document : " + document.get(IConstants.ID));
-        indexWriter.addDocument(document);
-        if (indexWriter.hasUncommittedChanges() && System.currentTimeMillis() - lastCommitTime > 5000) {
-            lastCommitTime = System.currentTimeMillis();
-            indexWriter.commit();
-            indexWriter.forceMerge(5);
-            logger.info("Num docs writer : " + indexWriter.numDocs());
+    @Override
+    public void notify(final IndexWriterEvent writerEvent) {
+        List<Map<Object, Object>> data = writerEvent.getData();
+        if (data != null) {
+            process(writerEvent.getContext(), data);
+        }
+        List<Document> documents = writerEvent.getSource();
+        if (documents != null) {
+            writeToIndex(documents);
+        }
+        if (indexWriter.hasUncommittedChanges()) {
+            try {
+                indexWriter.commit();
+                indexWriter.forceMerge(5);
+                logger.info("Num docs writer : " + indexWriter.numDocs());
+                // Fire JVM internal event for searcher to open on new directories
+                Context context = writerEvent.getContext();
+                Directory[] directories = new Directory[]{indexWriter.getDirectory()};
+                IEvent<?, ?> searcherEvent = new OpenSearcherEvent(context, directories);
+                listenerManager.fire(searcherEvent, true);
+            } catch (final IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
-    List<Document> createDocuments(final List<Map<Object, Object>> records) throws SQLException, JSchException {
+    public List<Map<Object, Object>> process(final Context context, final List<Map<Object, Object>> data) {
+        // Create the Lucene documents from the changed records
+        List<Document> documents = createDocuments(data);
+        if (documents.size() > 0) {
+            logger.info("Documents to add : " + documents.size());
+            // Pop the documents in the grid to be indexed by all nodes
+            IEvent<?, ?> indexWriterEvent = new IndexWriterEvent(context, documents, null);
+            listenerManager.fire(indexWriterEvent, false);
+        }
+        return data;
+    }
+
+    public void writeToIndex(final List<Document> documents) {
+        for (final Document document : documents) {
+            try {
+                // TODO: Delete the document by the id first! Only if it exists I guess.
+                logger.debug("Writing document : {}", document.get(IConstants.ID));
+                indexWriter.addDocument(document);
+            } catch (final IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public List<Document> createDocuments(final List<Map<Object, Object>> records) {
+        // TODO: Parse the data before creating documents for Lucene
         List<Document> documents = new ArrayList<>();
         for (final Map<Object, Object> row : records) {
             int counter = 0;
@@ -78,8 +127,31 @@ public class Writer {
         return documents;
     }
 
-    Directory[] getDirectories() {
-        return new Directory[]{indexWriter.getDirectory()};
+    @SuppressWarnings("UnusedDeclaration")
+    protected void printIndex(final int numDocs) {
+        IndexReader indexReader;
+        try {
+            indexReader = DirectoryReader.open(indexWriter.getDirectory());
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+        logger.error("Num docs : " + indexReader.numDocs());
+        for (int i = 0; i < numDocs && i < indexReader.numDocs(); i++) {
+            try {
+                Document document = indexReader.document(i);
+                logger.error("Document : " + i + ", " + document.toString().length());
+                printDocument(document);
+            } catch (final IOException e) {
+                logger.error(null, e);
+            }
+        }
+    }
+
+    protected void printDocument(final Document document) {
+        List<IndexableField> fields = document.getFields();
+        for (IndexableField indexableField : fields) {
+            logger.error("        : {}", indexableField);
+        }
     }
 
 }

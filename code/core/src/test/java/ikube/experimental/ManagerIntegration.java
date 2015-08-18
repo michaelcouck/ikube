@@ -68,7 +68,7 @@ public class ManagerIntegration {
                 do {
                     Rule rule = dataBase.find(Rule.class, 0, 1).get(0);
                     String id = Double.toString(rule.getId());
-                    ArrayList<HashMap<String, String>> results = manager.doSearch("ID", id);
+                    ArrayList<HashMap<String, String>> results = null; // manager.getSearcher().doSearch("ID", id);
                     Assert.assertEquals("Must be two results, the hit and the statistics : ", 2, results.size());
                     if (counter++ % 1000 == 0) {
                         logger.info("Results : " + results);

@@ -16,6 +16,9 @@ import org.mockito.*;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -27,14 +30,21 @@ import static org.mockito.Mockito.*;
  * @version 01.00
  * @since 15-08-2014
  */
-@Ignore
 public class ClusterManagerGridGainTest extends AbstractTest {
+
+    @MockClass(realClass = GridGain.class)
+    public static class GridGainMock {
+        @mockit.Mock
+        public static Grid grid(@Nullable String name) throws GridIllegalStateException {
+            return Mockito.mock(Grid.class);
+        }
+    }
 
     @Mock
     private Grid grid;
     @Mock
     private GridCache gridCache;
-    @Spy
+    @Mock
     private Server server;
     @Spy
     @InjectMocks
@@ -61,10 +71,13 @@ public class ClusterManagerGridGainTest extends AbstractTest {
     }
 
     @Test
+    @Ignore
     public void anyWorking() {
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
+                Map<String, Server> servers = new HashMap<String, Server>();
+                servers.put("192.168.1.40", server);
                 return servers;
             }
         }).when(clusterManager).getServers();
@@ -72,106 +85,116 @@ public class ClusterManagerGridGainTest extends AbstractTest {
         assertFalse(anyWorking);
         assertTrue(servers.size() > 0);
         for (final Server server : servers.values()) {
-            verify(server.isWorking(), atLeastOnce());
+            verify(server, atLeastOnce()).isWorking();
         }
     }
 
     @Test
+    @Ignore
     public void anyWorkingAction() {
         clusterManager.anyWorking(null);
     }
 
     @Test
+    @Ignore
     public void startWorking() {
         clusterManager.startWorking(null, null, null);
     }
 
     @Test
+    @Ignore
     public void stopWorking() {
         clusterManager.stopWorking(null);
     }
 
     @Test
+    @Ignore
     public void getServers() {
         clusterManager.getServers();
     }
 
     @Test
+    @Ignore
     public void getServer() {
         clusterManager.getServer();
     }
 
     @Test
+    @Ignore
     public void sendMessage() {
         clusterManager.sendMessage(null);
     }
 
     @Test
+    @Ignore
     public void sendTask() {
         clusterManager.sendTask(null);
     }
 
     @Test
+    @Ignore
     public void wrapFuture() {
         clusterManager.wrapFuture(null);
     }
 
     @Test
+    @Ignore
     public void sendTaskToServer() {
         clusterManager.sendTaskTo(null, null);
     }
 
     @Test
+    @Ignore
     public void sendTaskToAll() {
         clusterManager.sendTaskToAll(null);
     }
 
     @Test
+    @Ignore
     public void get() {
         clusterManager.get(null);
     }
 
     @Test
+    @Ignore
     public void put() {
         clusterManager.put(null, null);
     }
 
     @Test
+    @Ignore
     public void remove() {
         clusterManager.remove(null);
     }
 
     @Test
+    @Ignore
     public void clear() {
         clusterManager.clear(null);
     }
 
     @Test
+    @Ignore
     public void getMap() {
         clusterManager.get(null, null);
     }
 
     @Test
+    @Ignore
     public void putMap() {
         clusterManager.put(null, null, null);
     }
 
     @Test
+    @Ignore
     public void removeMap() {
         clusterManager.remove(null, null);
     }
 
     @Test
+    @Ignore
     public void destroy() {
         clusterManager.destroy();
-    }
-
-    @MockClass(realClass = GridGain.class)
-    public static class GridGainMock {
-        @mockit.Mock
-        public static Grid grid(@Nullable String name) throws GridIllegalStateException {
-            return null;
-        }
     }
 
 }

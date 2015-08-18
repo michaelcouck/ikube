@@ -3,8 +3,11 @@ package ikube.experimental;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import ikube.experimental.listener.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
@@ -29,14 +32,13 @@ import java.util.*;
  */
 @Component
 @Configuration
-public class Database {
+public class Database implements IListener<StartDatabaseProcessingEvent> {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * Ssh components, to be used for the ssh tunnel **
      */
-
     private JSch jsch;
     private Properties config;
     private Session session;
@@ -44,7 +46,6 @@ public class Database {
     /**
      * SSH credentials and properties **
      */
-
     // Can be any port, the start port for the ssh tunnel
     @Value("${local-port:10000}")
     private int localPort = 10000;
@@ -64,7 +65,6 @@ public class Database {
     /**
      * Database credentials and items **
      */
-
     // The remote host for the tunnel and the database
     @Value("${remote-host-for-ssh-and-database:localhost}")
     private String remoteHostForSshAndDatabase = "localhost";
@@ -82,55 +82,72 @@ public class Database {
     private int databasePort = 8082;
 
     // The url for the database
-    @Value("${database-url:jdbc:h2:tcp://localhost:8043/mem:ikube;DB_CLOSE_ON_EXIT=TRUE}")
-    private String url = "jdbc:h2:tcp://localhost:8043/mem:ikube;DB_CLOSE_ON_EXIT=TRUE";
+    @Value("${database-url:jdbc:h2:tcp://localhost:8043/mem:ikube;DB_CLOSE_ON_EXIT=FALSE}")
+    private String url = "jdbc:h2:tcp://localhost:8043/mem:ikube;DB_CLOSE_ON_EXIT=FALSE";
     // And this we get from the driver
     private Connection connection;
 
-    // The last timestamp for data that was indexed
-    private Timestamp modification;
+    @Autowired
+    @SuppressWarnings("SpringJavaAutowiringInspection")
+    @Qualifier("ikube.experimental.listener.ListenerManager")
+    private ListenerManager listenerManager;
 
     public Database() {
         jsch = new JSch();
         config = new Properties();
         config.put("StrictHostKeyChecking", "no");
-        modification = new Timestamp(0);
-
         logger.info("Database : " + this);
     }
 
-    List<Map<Object, Object>> readChangedRecords() throws SQLException, JSchException {
-        createSshTunnel();
-        createDatabaseConnection();
+    /**
+     * TODO: Set the last modification timestamp in an aspect around this, in the event of
+     * TODO: a failure set the timestamp back to what it was. However do not lock the cache over
+     * TODO: this method! Other nodes must still be able to set the timestamp
+     */
+    @Override
+    public void notify(final StartDatabaseProcessingEvent startDatabaseProcessingEvent) {
+        Context context = startDatabaseProcessingEvent.getContext();
+        //noinspection EmptyFinallyBlock
+        try {
+            createSshTunnel();
+            createDatabaseConnection();
 
-        List<Map<Object, Object>> results = new ArrayList<>();
+            Timestamp timestamp = context.getModification();
+            // Reset the last modification timestamp
+            context.setModification(new Timestamp(System.currentTimeMillis()));
 
-        long time = System.currentTimeMillis();
-        Timestamp previousTimestamp = modification;
-        // Reset the last modification timestamp
-        modification = new Timestamp(time);
+            String sql = "SELECT * FROM rule WHERE timestamp >= ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setTimestamp(1, timestamp);
 
-        String sql = "SELECT * FROM rule WHERE timestamp >= ?";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setTimestamp(1, previousTimestamp);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
 
-        ResultSet resultSet = preparedStatement.executeQuery();
-        ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+            List<Map<Object, Object>> data = new ArrayList<>();
 
-        while (resultSet.next()) {
-            Map<Object, Object> row = new HashMap<>();
-            for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
-                Object columnName = resultSetMetaData.getColumnName(columnIndex);
-                Object columnValue = resultSet.getObject(columnIndex);
-                row.put(columnName, columnValue);
+            while (resultSet.next()) {
+                Map<Object, Object> row = new HashMap<>();
+                for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
+                    Object columnName = resultSetMetaData.getColumnName(columnIndex);
+                    Object columnValue = resultSet.getObject(columnIndex);
+                    row.put(columnName, columnValue);
+                }
+                data.add(row);
+                // TODO: Get the memory available, locally and remotely, and put the maximum data in the grid
+                if (data.size() % 1000 == 0) {
+                    logger.info("Popping data in grid for processing : " + data.size() + ", " + row);
+                    // TODO: Failover - only fire event and carry on if successful
+                    // TODO: Send this data batch to the node with the lowest cpu
+                    IEvent<?, ?> indexWriterEvent = new IndexWriterEvent(context, null, data);
+                    listenerManager.fire(indexWriterEvent, false);
+                    data.clear();
+                }
             }
-            results.add(row);
-            if (results.size() % 10000 == 0) {
-                logger.info("Adding row : " + results.size() + ", " + row);
-            }
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            // TODO: Set the last modification timestamp back to the original if failed
         }
-
-        return results;
     }
 
     void createDatabaseConnection() throws SQLException {

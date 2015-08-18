@@ -2,7 +2,8 @@ package ikube.cluster.gg;
 
 import ikube.IConstants;
 import ikube.cluster.AClusterManager;
-import ikube.cluster.listener.IListener;
+import ikube.experimental.listener.IEvent;
+import ikube.experimental.listener.IListener;
 import ikube.model.Action;
 import ikube.model.Server;
 import ikube.toolkit.THREAD;
@@ -12,8 +13,14 @@ import org.gridgain.grid.GridException;
 import org.gridgain.grid.GridFuture;
 import org.gridgain.grid.GridNode;
 import org.gridgain.grid.cache.GridCache;
+import org.gridgain.grid.cache.datastructures.GridCacheDataStructures;
+import org.gridgain.grid.cache.datastructures.GridCacheQueue;
 import org.gridgain.grid.compute.*;
+import org.gridgain.grid.events.GridEvent;
+import org.gridgain.grid.events.GridEventType;
+import org.gridgain.grid.events.GridEvents;
 import org.gridgain.grid.lang.GridBiPredicate;
+import org.gridgain.grid.lang.GridPredicate;
 import org.gridgain.grid.messaging.GridMessaging;
 import org.gridgain.grid.resources.GridTaskContinuousMapperResource;
 import org.jetbrains.annotations.Nullable;
@@ -383,22 +390,64 @@ public class ClusterManagerGridGain extends AClusterManager {
     /**
      * {@inheritDoc}
      */
-    public void addTopicListener(final String topic, final IListener<Object> listener) {
-        // GridMessaging gridMessaging = (GridMessaging) grid.forRemotes();
+    public void addTopicListener(final String topic, final IListener<IEvent<?, ?>> listener) {
         GridMessaging gridMessaging = grid.message();
         GridBiPredicate<UUID, Object> gridBiPredicate = new GridBiPredicate<UUID, Object>() {
             @Override
             public boolean apply(final UUID uuid, final Object o) {
                 logger.debug("Message : uuid : " + uuid + ", object : " + o);
-                listener.onMessage(o);
+                listener.notify((IEvent<?, ?>) o);
                 return Boolean.TRUE;
             }
         };
         try {
             gridMessaging.remoteListen(topic, gridBiPredicate).get();
-            // gridMessaging.localListen(topic, gridBiPredicate);
             logger.info("Added topic listeners : " + topic);
         } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void addQueueListener(final String queue, final IListener<IEvent<?, ?>> listener) {
+        GridPredicate<GridEvent> gridPredicate = new GridPredicate<GridEvent>() {
+            @Override
+            public boolean apply(final GridEvent gridEvent) {
+                logger.debug("Event : " + gridEvent);
+                IEvent<?, ?> event = (IEvent<?, ?>) pop(queue);
+                listener.notify(event);
+                return Boolean.TRUE;
+            }
+        };
+        GridEvents gridEvents = grid.forCache(queue).events();
+        // We only listen locally, the result is that we only execute the logic on the machine that is
+        // closest to the data, i.e. the queue entry is on this machine. And we distribute the data on the
+        // queue according to the smallest size, i.e. put the next queue entry on the machine that has the lowest
+        // queue depth
+        gridEvents.localListen(gridPredicate, GridEventType.EVT_CACHE_OBJECT_PUT);
+    }
+
+    public void push(final String queue, final Object object) {
+        try {
+            GridCache gridCache = grid.cache(queue);
+            GridCacheDataStructures gridCacheDataStructures = gridCache.dataStructures();
+            GridCacheQueue<Object> gridQueue = gridCacheDataStructures.queue(queue, 1000000, true, true);
+            //noinspection ConstantConditions
+            // gridQueue.add(object);
+            //noinspection ConstantConditions
+            gridQueue.put(object);
+        } catch (final GridException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Object pop(final String queue) {
+        try {
+            GridCache gridCache = grid.cache(queue);
+            GridCacheDataStructures gridCacheDataStructures = gridCache.dataStructures();
+            GridCacheQueue<Object> gridQueue = gridCacheDataStructures.queue(queue, 1000000, true, true);
+            //noinspection ConstantConditions
+            return gridQueue.take();
+        } catch (final GridException e) {
             throw new RuntimeException(e);
         }
     }

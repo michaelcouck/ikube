@@ -1,6 +1,6 @@
 package ikube.web.service;
 
-import ikube.experimental.Manager;
+import ikube.experimental.Searcher;
 import ikube.model.Search;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +15,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Path looks like this: http://localhost:9080/ikube/service/search/json/xxx
@@ -34,8 +35,9 @@ public class Experimental extends Resource {
     static final String EXPERIMENTAL = "/experimental";
 
     @Autowired
-    @Qualifier("manager")
-    private Manager manager;
+    @Qualifier("searchers")
+    @SuppressWarnings("SpringJavaAutowiringInspection")
+    private Map<String, ikube.experimental.Searcher> searchers;
 
     /**
      * {@inheritDoc}
@@ -46,7 +48,11 @@ public class Experimental extends Resource {
     public Response search(final Search search) throws IOException, ParseException {
         String fieldName = search.getSearchFields().get(0);
         String searchString = search.getSearchStrings().get(0);
-        return buildResponse(manager.doSearch(fieldName, searchString));
+        Searcher searcher = searchers.get(search.getIndexName());
+        if (searcher == null) {
+            return buildResponse("No searcher defined for : " + search.getIndexName());
+        }
+        return buildResponse(searcher.doSearch(fieldName, searchString));
     }
 
 }

@@ -1,0 +1,108 @@
+package ikube.experimental.listener;
+
+import ikube.IConstants;
+import ikube.cluster.gg.ClusterManagerGridGain;
+import ikube.toolkit.THREAD;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @author Michael Couck
+ * @version 01.00
+ * @since 17-08-2015
+ */
+@Service
+@Component
+@EnableAsync
+@Configuration
+public class ListenerManager {
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private Map<String, List<IListener<IEvent<?, ?>>>> listeners = new HashMap<>();
+
+    @Autowired(required = false)
+    @Qualifier("ikube.cluster.gg.ClusterManagerGridGain")
+    @SuppressWarnings({"SpringJavaAutowiringInspection", "SpringJavaAutowiredMembersInspection"})
+    private ClusterManagerGridGain clusterManager;
+
+    public void add(final IListener<IEvent<?, ?>> listener, String type, String name) {
+        synchronized (this) {
+            get(type, name).add(listener);
+        }
+    }
+
+    public void remove(final IListener<IEvent<?, ?>> listener, String type, String name) {
+        synchronized (this) {
+            get(type, name).remove(listener);
+        }
+    }
+
+    List<IListener<IEvent<?, ?>>> get(final String type, final String name) {
+        List<IListener<IEvent<?, ?>>> listeners = this.listeners.get(type + name);
+        if (listeners == null) {
+            listeners = new ArrayList<>();
+            this.listeners.put(type, listeners);
+        }
+        return listeners;
+    }
+
+    public void fire(final IEvent<?, ?> event, final boolean local) {
+        if (local) {
+            notify(event);
+        } else {
+            clusterManager.send(IConstants.IKUBE, event);
+        }
+    }
+
+    public void notify(final IEvent<?, ?> event) {
+        String type = event.getClass().getSimpleName();
+        String name = event.getContext().getName();
+        List<IListener<IEvent<?, ?>>> listeners = this.listeners.get(type + name);
+        for (final IListener<IEvent<?, ?>> listener : listeners) {
+            final String jobName = Long.toString(System.nanoTime());
+            class Notifier implements Runnable {
+                public void run() {
+                    try {
+                        listener.notify(event);
+                    } finally {
+                        THREAD.destroy(jobName);
+                    }
+                }
+            }
+            THREAD.submit(jobName, new Notifier());
+        }
+    }
+
+    public void addTopicListener() {
+        clusterManager.addTopicListener(IConstants.IKUBE, new IListener<IEvent<?, ?>>() {
+            @Override
+            public void notify(final IEvent<?, ?> event) {
+                fire(event, true);
+            }
+        });
+        logger.info("Added topic listener : ");
+    }
+
+    public void addQueueListener() {
+        clusterManager.addQueueListener(IConstants.IKUBE, new IListener<IEvent<?, ?>>() {
+            @Override
+            public void notify(final IEvent<?, ?> event) {
+                fire(event, true);
+            }
+        });
+        logger.info("Added queue listener : ");
+    }
+
+}

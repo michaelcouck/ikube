@@ -1,4 +1,4 @@
-package ikube.experimental;
+package ikube.experimental.race;
 
 import ikube.database.IDataBase;
 import ikube.model.geospatial.GeoName;

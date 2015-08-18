@@ -451,8 +451,8 @@
     <bean class="ikube.security.ProxyAuthenticator" init-method="initialize"/>
 
     <!--<bean-->
-        <!--id="ikube.experimental.RaceService"-->
-        <!--class="ikube.experimental.RaceService"-->
+        <!--id="ikube.experimental.race.RaceService"-->
+        <!--class="ikube.experimental.race.RaceService"-->
         <!--depends-on="ikube.database.IDataBase"-->
         <!--property:dataBase-ref="ikube.database.IDataBase" />-->
 
