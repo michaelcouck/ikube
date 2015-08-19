@@ -3,7 +3,10 @@ package ikube.experimental;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import ikube.AbstractTest;
-import org.junit.Assert;
+import ikube.experimental.listener.IEvent;
+import ikube.experimental.listener.IndexWriterEvent;
+import ikube.experimental.listener.ListenerManager;
+import ikube.experimental.listener.StartDatabaseProcessingEvent;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -15,6 +18,10 @@ import org.mockito.stubbing.Answer;
 import java.sql.*;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
 
 /**
  * @author Michael Couck
@@ -26,6 +33,9 @@ public class DatabaseTest extends AbstractTest {
     @Spy
     @InjectMocks
     private Database database;
+
+    @Mock
+    private Session session;
     @Mock
     private Connection connection;
     @Mock
@@ -34,10 +44,17 @@ public class DatabaseTest extends AbstractTest {
     private PreparedStatement preparedStatement;
     @Mock
     private ResultSetMetaData resultSetMetaData;
+
     @Mock
-    private Session session;
+    private ListenerManager listenerManager;
+
+    @Mock
+    private Context context;
+    @Mock
+    private StartDatabaseProcessingEvent startDatabaseProcessingEvent;
 
     @Test
+    @SuppressWarnings("unchecked")
     public void readChangedRecords() throws JSchException, SQLException {
         Mockito.doAnswer(new Answer() {
             @Override
@@ -61,6 +78,15 @@ public class DatabaseTest extends AbstractTest {
             }
         }).when(session).disconnect();
 
+        final AtomicReference atomicReference = new AtomicReference(null);
+        Mockito.doAnswer(new Answer() {
+            @Override
+            public Object answer(final InvocationOnMock invocation) throws Throwable {
+                atomicReference.set(invocation.getArguments()[0]);
+                return null;
+            }
+        }).when(listenerManager).fire(any(IEvent.class), any(Boolean.class));
+
         Mockito.when(connection.prepareStatement(Mockito.anyString())).thenReturn(preparedStatement);
         Mockito.when(preparedStatement.executeQuery()).thenReturn(resultSet);
         Mockito.when(resultSet.next()).thenReturn(Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.FALSE);
@@ -74,9 +100,15 @@ public class DatabaseTest extends AbstractTest {
         Mockito.when(resultSet.getObject(2)).thenReturn("two", "three", "four");
         Mockito.when(resultSet.getObject(3)).thenReturn("three", "four", "five");
 
-        database.notify(null);
-        // Assert.assertEquals("1:1", "one", changedRecords.get(0).get("one"));
-        // Assert.assertEquals("3:3", "five", changedRecords.get(2).get("three"));
+        Mockito.when(startDatabaseProcessingEvent.getContext()).thenReturn(context);
+        Mockito.when(context.getModification()).thenReturn(new Timestamp(System.currentTimeMillis()));
+
+        database.notify(startDatabaseProcessingEvent);
+        Mockito.verify(listenerManager, Mockito.times(1)).fire(any(IEvent.class), any(Boolean.class));
+        IndexWriterEvent indexWriterEvent = (IndexWriterEvent) atomicReference.get();
+        List<Map<Object, Object>> changedRecords = indexWriterEvent.getData();
+        assertEquals("1:1", "one", changedRecords.get(0).get("one"));
+        assertEquals("3:3", "five", changedRecords.get(2).get("three"));
     }
 
 }

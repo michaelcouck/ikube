@@ -395,7 +395,7 @@ public class ClusterManagerGridGain extends AClusterManager {
         GridBiPredicate<UUID, Object> gridBiPredicate = new GridBiPredicate<UUID, Object>() {
             @Override
             public boolean apply(final UUID uuid, final Object o) {
-                logger.debug("Message : uuid : " + uuid + ", object : " + o);
+                logger.debug("Message : {}, object : {}", uuid , o);
                 listener.notify((IEvent<?, ?>) o);
                 return Boolean.TRUE;
             }
@@ -412,7 +412,7 @@ public class ClusterManagerGridGain extends AClusterManager {
         GridPredicate<GridEvent> gridPredicate = new GridPredicate<GridEvent>() {
             @Override
             public boolean apply(final GridEvent gridEvent) {
-                logger.debug("Event : " + gridEvent);
+                logger.debug("Event : {}", gridEvent);
                 IEvent<?, ?> event = (IEvent<?, ?>) pop(queue);
                 listener.notify(event);
                 return Boolean.TRUE;

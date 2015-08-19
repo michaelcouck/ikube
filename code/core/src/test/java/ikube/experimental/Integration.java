@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -31,33 +30,35 @@ import java.util.HashMap;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"file:experimental/spring.xml"})
 @SuppressWarnings({"SpringJavaAutowiringInspection", "SpringContextConfigurationInspection"})
-public class ManagerIntegration {
+public class Integration {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     boolean shuttingDown;
+
     @Autowired
-    @Qualifier("ikube.experimental.Manager")
-    public Manager manager;
+    private Searcher searcher;
     @Autowired
     private IDataBase dataBase;
 
     @Before
     public void before() {
         THREAD.initialize();
+        dataBase.removeBatch(dataBase.find(Rule.class, 0, Integer.MAX_VALUE));
     }
 
     @After
     public void after() {
+        dataBase.removeBatch(dataBase.find(Rule.class, 0, Integer.MAX_VALUE));
         shuttingDown = Boolean.TRUE;
-        THREAD.sleep(5000);
+        THREAD.sleep(30000);
     }
 
     @Test
     public void process() throws SQLException, JSchException {
         addRules();
         addSearches();
-        THREAD.sleep(5000 * 60);
+        THREAD.sleep(1000 * 60);
     }
 
     private void addSearches() {
@@ -68,7 +69,7 @@ public class ManagerIntegration {
                 do {
                     Rule rule = dataBase.find(Rule.class, 0, 1).get(0);
                     String id = Double.toString(rule.getId());
-                    ArrayList<HashMap<String, String>> results = null; // manager.getSearcher().doSearch("ID", id);
+                    ArrayList<HashMap<String, String>> results = searcher.doSearch("ID", id);
                     Assert.assertEquals("Must be two results, the hit and the statistics : ", 2, results.size());
                     if (counter++ % 1000 == 0) {
                         logger.info("Results : " + results);
@@ -84,10 +85,11 @@ public class ManagerIntegration {
         class Persister implements Runnable {
             public void run() {
                 long count;
+                int insertsPerSecond = 1000;
                 do {
                     long start = System.currentTimeMillis();
                     ArrayList<Rule> rules = new ArrayList<>();
-                    for (int i = 0; i < 5000; i++) {
+                    for (int i = 0; i < insertsPerSecond; i++) {
                         Rule rule = new Rule();
                         rule.setAction("action");
                         rule.setIndexContext("index-context");
@@ -102,10 +104,10 @@ public class ManagerIntegration {
                     count = dataBase.count(Rule.class);
                     long sleep = Math.abs((start + 1000) - System.currentTimeMillis());
                     if (count % 10000 == 0) {
-                        logger.error("Rule count : " + count + ", sleeping for : " + sleep);
+                        logger.info("Rule count : {}, sleeping for : {}", count, sleep);
                     }
                     THREAD.sleep(sleep);
-                } while (shuttingDown);
+                } while (!shuttingDown);
             }
         }
         THREAD.submit("rule-persister", new Persister());

@@ -29,13 +29,13 @@
     </description>
 
     <context:property-placeholder
-        location="classpath:external/spring.properties"
-        properties-ref="ikube.toolkit.PropertyConfigurer" />
+        location="classpath*:**/experimental/spring.properties"
+        properties-ref="ikube.toolkit.PropertyConfigurer"/>
 
     <bean
         id="ikube.toolkit.Logging"
         class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-        property:staticMethod="ikube.toolkit.LOGGING.configure" />
+        property:staticMethod="ikube.toolkit.LOGGING.configure"/>
 
     <!-- This bean will look through the classpath and load every Spring properties file it finds. -->
     <bean
@@ -43,7 +43,7 @@
         class="ikube.toolkit.PropertyConfigurer"
         lazy-init="false"
         init-method="initialize"
-        property:fileNamePattern="spring.properties" />
+        property:fileNamePattern="spring.properties"/>
 
     <!-- Turn on AspectJ @Configurable support -->
     <!--<context:spring-configured />-->
@@ -51,8 +51,8 @@
     <!--<context:component-scan base-package="ikube.cluster.gg" />-->
     <!--<context:component-scan base-package="ikube.experimental" />-->
 
-    <import resource="spring-h2-jdbc.xml" />
-    <import resource="spring-grid-gain.xml" />
+    <import resource="spring-h2-jdbc.xml"/>
+    <import resource="spring-grid-gain.xml"/>
 
     <bean
         name="defaultPersistenceUnitManager"
@@ -158,13 +158,71 @@
     <bean
         name="ikube.database.IDataBase"
         class="ikube.database.DataBaseJpaH2"
-        lazy-init="false" />
+        lazy-init="false"/>
 
     <bean
         id="ikube.experimental.Manager"
         class="ikube.experimental.Manager"
         lazy-init="false"
-        init-method="addTopicListener"
         depends-on="ikube.cluster.gg.ClusterManagerGridGain"
         property:clusterManager-ref="ikube.cluster.gg.ClusterManagerGridGain" />
+
+    <util:list id="contexts">
+        <ref local="search-context" />
+    </util:list>
+
+    <bean
+        id="search-context"
+        class="ikube.experimental.Context"
+        property:name="search-context"/>
+
+    <!--
+        And here we register the actors/listeners/observers to listen to specific events in the grid. The
+        data structure is a map of maps of lists
+    -->
+    <bean
+        id="ikube.experimental.listener.ListenerManager"
+        class="ikube.experimental.listener.ListenerManager"
+        init-method="addGridListeners"
+        property:listeners-ref="ikube.experimental.listener.ListenerManager.listeners"/>
+
+    <util:map id="ikube.experimental.listener.ListenerManager.listeners">
+        <entry key="IndexWriterEvent" value-ref="ikube.experimental.listener.ListenerManager.writers" />
+        <entry key="OpenSearcherEvent" value-ref="ikube.experimental.listener.ListenerManager.searchers" />
+        <entry key="StartDatabaseProcessingEvent" value-ref="ikube.experimental.listener.ListenerManager.databases" />
+    </util:map>
+
+    <!-- Maps keyed by the context name -->
+    <util:map id="ikube.experimental.listener.ListenerManager.writers">
+        <entry key="search-context" value-ref="ikube.experimental.Writer.writers" />
+    </util:map>
+    <util:map id="ikube.experimental.listener.ListenerManager.searchers">
+        <entry key="search-context" value-ref="ikube.experimental.Searcher.searchers" />
+    </util:map>
+    <util:map id="ikube.experimental.listener.ListenerManager.databases">
+        <entry key="search-context" value-ref="ikube.experimental.Database.databases" />
+    </util:map>
+
+    <!-- Lists of writers for the context name -->
+    <util:list id="ikube.experimental.Writer.writers">
+        <ref local="ikube.experimental.Writer" />
+    </util:list>
+    <util:list id="ikube.experimental.Searcher.searchers">
+        <ref local="ikube.experimental.Searcher" />
+    </util:list>
+    <util:list id="ikube.experimental.Database.databases">
+        <ref local="ikube.experimental.Database" />
+    </util:list>
+
+    <!-- These are the actors/listeners/observers that will act on the events published to the grid -->
+    <bean
+        id="ikube.experimental.Searcher"
+        class="ikube.experimental.Searcher"/>
+    <bean
+        id="ikube.experimental.Database"
+        class="ikube.experimental.Database"/>
+    <bean
+        id="ikube.experimental.Writer"
+        class="ikube.experimental.Writer"/>
+
 </beans>

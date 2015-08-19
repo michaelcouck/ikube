@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.springframework.org/schema/beans"
+
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <description>This is the configuration for the Grid Gain grid</description>
+
+    <bean
+        id="org.gridgain.grid.GridConfiguration"
+        class="org.gridgain.grid.GridConfiguration">
+        <property name="discoverySpi">
+            <bean class="org.gridgain.grid.spi.discovery.tcp.GridTcpDiscoverySpi">
+                <property name="ipFinder">
+                    <bean
+                        class="org.gridgain.grid.spi.discovery.tcp.ipfinder.multicast.GridTcpDiscoveryMulticastIpFinder">
+                        <property name="multicastGroup" value="224.0.0.1"/>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean
+        id="org.gridgain.grid.Grid"
+        class="org.gridgain.grid.GridSpringBean">
+        <property name="configuration" ref="org.gridgain.grid.GridConfiguration" />
+    </bean>
+
+    <bean
+        id="ikube.cluster.gg.ClusterManagerGridGain"
+        class="ikube.cluster.gg.ClusterManagerGridGain"
+        lazy-init="false"
+        init-method="initialize"
+        destroy-method="destroy"
+        depends-on="org.gridgain.grid.GridConfiguration" />
+
+</beans>

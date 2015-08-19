@@ -40,6 +40,7 @@
           <file>file://$MODULE_DIR$/ikube/common/spring-hazelcast.xml</file>
           <file>file://$MODULE_DIR$/ikube/common/spring-grid-gain.xml</file>
           <file>file://$MODULE_DIR$/ikube/indexes/production/spring-oracle-jdbc.xml</file>
+          <file>file://$MODULE_DIR$/experimental/spring-h2-jdbc.xml</file>
         </fileset>
       </configuration>
     </facet>

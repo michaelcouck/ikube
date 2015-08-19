@@ -1,8 +1,8 @@
 package ikube.experimental;
 
 import ikube.IConstants;
-import ikube.experimental.listener.IEvent;
 import ikube.experimental.listener.IListener;
+import ikube.experimental.listener.OpenSearcherEvent;
 import ikube.search.Search;
 import ikube.search.SearchComplex;
 import ikube.toolkit.STRING;
@@ -38,14 +38,14 @@ import java.util.List;
 @EnableAsync
 @Configuration
 @EnableScheduling
-public class Searcher implements IListener<IEvent<Writer, Directory[]>> {
+public class Searcher implements IListener<OpenSearcherEvent> {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private IndexSearcher indexSearcher;
 
     @Override
-    public void notify(final IEvent<Writer, Directory[]> event) {
+    public void notify(final OpenSearcherEvent event) {
         Directory[] directories = event.getData();
         logger.debug("Opening searcher : {}", Arrays.toString(directories));
         openSearcher(directories);

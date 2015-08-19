@@ -41,13 +41,22 @@ public class Manager {
     private List<Context> contexts;
 
     @SuppressWarnings("ConstantConditions")
-    @Scheduled(initialDelay = 10000, fixedRate = 5000)
+    @Scheduled(initialDelay = 10000, fixedRate = 10000)
     public void process() throws Exception {
         // Start the database(s) processing
         for (final Context context : contexts) {
+            logger.debug("Starting processing of : {}", context.getName());
             IEvent<?, ?> event = new StartDatabaseProcessingEvent(context);
             clusterManager.send(IConstants.IKUBE, event);
         }
+    }
+
+    public void setClusterManager(final ClusterManagerGridGain clusterManager) {
+        this.clusterManager = clusterManager;
+    }
+
+    public void setContexts(final List<Context> contexts) {
+        this.contexts = contexts;
     }
 
 }

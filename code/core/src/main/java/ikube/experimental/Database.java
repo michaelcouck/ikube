@@ -82,8 +82,8 @@ public class Database implements IListener<StartDatabaseProcessingEvent> {
     private int databasePort = 8082;
 
     // The url for the database
-    @Value("${database-url:jdbc:h2:tcp://localhost:8043/mem:ikube;DB_CLOSE_ON_EXIT=FALSE}")
-    private String url = "jdbc:h2:tcp://localhost:8043/mem:ikube;DB_CLOSE_ON_EXIT=FALSE";
+    @Value("${database-url:jdbc:h2:tcp://localhost:8082/ikube;DB_CLOSE_ON_EXIT=FALSE}")
+    private String url = "jdbc:h2:tcp://localhost:8082/ikube;DB_CLOSE_ON_EXIT=FALSE";
     // And this we get from the driver
     private Connection connection;
 
@@ -107,41 +107,46 @@ public class Database implements IListener<StartDatabaseProcessingEvent> {
     @Override
     public void notify(final StartDatabaseProcessingEvent startDatabaseProcessingEvent) {
         Context context = startDatabaseProcessingEvent.getContext();
+        logger.info("Starting database on : " + context.getName());
         //noinspection EmptyFinallyBlock
         try {
             createSshTunnel();
             createDatabaseConnection();
 
-            Timestamp timestamp = context.getModification();
-            // Reset the last modification timestamp
+            Timestamp from = context.getModification();
             context.setModification(new Timestamp(System.currentTimeMillis()));
+            Timestamp to = context.getModification();
 
-            String sql = "SELECT * FROM rule WHERE timestamp >= ?";
+            String sql = "SELECT * FROM rule WHERE timestamp >= ? and timestamp < ? order by timestamp asc";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setTimestamp(1, timestamp);
+            preparedStatement.setTimestamp(1, from);
+            preparedStatement.setTimestamp(2, to);
 
             ResultSet resultSet = preparedStatement.executeQuery();
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
 
             List<Map<Object, Object>> data = new ArrayList<>();
 
-            while (resultSet.next()) {
-                Map<Object, Object> row = new HashMap<>();
-                for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
-                    Object columnName = resultSetMetaData.getColumnName(columnIndex);
-                    Object columnValue = resultSet.getObject(columnIndex);
-                    row.put(columnName, columnValue);
+            if (resultSet.next()) {
+                do {
+                    Map<Object, Object> row = new HashMap<>();
+                    for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
+                        Object columnName = resultSetMetaData.getColumnName(columnIndex);
+                        Object columnValue = resultSet.getObject(columnIndex);
+                        row.put(columnName, columnValue);
+                    }
+                    data.add(row);
+                    // TODO: Get the memory available, locally and remotely, and put the maximum data in the grid
+                    if (data.size() % 1000 == 0) {
+                        fireDataEvent(context, data);
+                        data = new ArrayList<>();
+                    }
+                } while(resultSet.next());
+                if (data.size() > 0) {
+                    fireDataEvent(context, data);
                 }
-                data.add(row);
-                // TODO: Get the memory available, locally and remotely, and put the maximum data in the grid
-                if (data.size() % 1000 == 0) {
-                    logger.info("Popping data in grid for processing : " + data.size() + ", " + row);
-                    // TODO: Failover - only fire event and carry on if successful
-                    // TODO: Send this data batch to the node with the lowest cpu
-                    IEvent<?, ?> indexWriterEvent = new IndexWriterEvent(context, null, data);
-                    listenerManager.fire(indexWriterEvent, false);
-                    data.clear();
-                }
+            } else {
+                logger.info("No results for database : ", context.getName() + ", " + context.getModification());
             }
         } catch (final Exception e) {
             throw new RuntimeException(e);
@@ -150,10 +155,18 @@ public class Database implements IListener<StartDatabaseProcessingEvent> {
         }
     }
 
+    void fireDataEvent(final Context context, final List<Map<Object, Object>> data) {
+        logger.debug("Popping data in grid for processing : ", data.size());
+        // TODO: Failover - only fire event and carry on if successful
+        // TODO: Send this data batch to the node with the lowest cpu
+        IEvent<?, ?> indexWriterEvent = new IndexWriterEvent(context, null, data);
+        listenerManager.fire(indexWriterEvent, false);
+    }
+
     void createDatabaseConnection() throws SQLException {
         if (connection == null || connection.isClosed()) {
             connection = DriverManager.getConnection(url, userid, password);
-            logger.info("Connected JDBC through ssh tunnel : ");
+            logger.info("Connected JDBC through ssh tunnel : ", url);
         }
     }
 

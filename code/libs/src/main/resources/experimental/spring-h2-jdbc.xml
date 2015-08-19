@@ -15,33 +15,49 @@
 		used in production environments.
 	</description>
 	
-	<bean id="nonXaDataSourceH2"
-		class="com.mchange.v2.c3p0.ComboPooledDataSource"
-		destroy-method="close"
-		property:user="${h2.jdbc.userid}"
-		property:password="${h2.jdbc.password}"
-		property:driverClass="${h2.jdbc.driver}"
-		property:jdbcUrl="${h2.jdbc.url}"
-		property:initialPoolSize="${jdbc.minPoolSize}"
-		property:maxPoolSize="${jdbc.maxPoolSize}"
-		property:maxStatements="${jdbc.maxStatements}"
-		property:checkoutTimeout="${jdbc.checkOutTimeout}"
-		property:numHelperThreads="${jdbc.numHelperThreads}"
-		property:breakAfterAcquireFailure="${jdbc.breakAfterAcquireFailure}"
-		property:debugUnreturnedConnectionStackTraces="${jdbc.debugUnreturnedConnectionStackTraces}"
-		property:testConnectionOnCheckin="${jdbc.testConnectionOnCheckin}"
-		property:testConnectionOnCheckout="${jdbc.testConnectionOnCheckout}"
-		property:unreturnedConnectionTimeout="${jdbc.unreturnedConnectionTimeout}" />
-	
-	
-	<bean id="h2DataSourceBinder" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-		property:staticMethod="ikube.toolkit.JndiInjector.bind">
-		<property name="arguments">
-			<array>
-				<value>nonXaDataSourceH2</value>
-				<ref local="nonXaDataSourceH2" />
-			</array>
-		</property>
-	</bean>
+    <bean
+        id="org.h2.tools.Server"
+        class="org.h2.tools.Server"
+        factory-method="createTcpServer"
+        init-method="start"
+        destroy-method="stop">
+        <constructor-arg>
+            <array>
+                <value>-tcp</value>
+                <value>-tcpAllowOthers</value>
+                <value>-tcpPort</value>
+                <value>8082</value>
+            </array>
+        </constructor-arg>
+    </bean>
+
+    <bean id="nonXaDataSourceH2"
+          class="com.mchange.v2.c3p0.ComboPooledDataSource"
+          destroy-method="close"
+          property:user="${h2.jdbc.userid}"
+          property:password="${h2.jdbc.password}"
+          property:driverClass="${h2.jdbc.driver}"
+          property:jdbcUrl="${h2.jdbc.url}"
+          property:initialPoolSize="${jdbc.minPoolSize}"
+          property:maxPoolSize="${jdbc.maxPoolSize}"
+          property:maxStatements="${jdbc.maxStatements}"
+          property:checkoutTimeout="${jdbc.checkOutTimeout}"
+          property:numHelperThreads="${jdbc.numHelperThreads}"
+          property:breakAfterAcquireFailure="${jdbc.breakAfterAcquireFailure}"
+          property:debugUnreturnedConnectionStackTraces="${jdbc.debugUnreturnedConnectionStackTraces}"
+          property:testConnectionOnCheckin="${jdbc.testConnectionOnCheckin}"
+          property:testConnectionOnCheckout="${jdbc.testConnectionOnCheckout}"
+          property:unreturnedConnectionTimeout="${jdbc.unreturnedConnectionTimeout}" />
+
+
+    <bean id="h2DataSourceBinder" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+          property:staticMethod="ikube.toolkit.JndiInjector.bind">
+        <property name="arguments">
+            <array>
+                <value>nonXaDataSourceH2</value>
+                <ref local="nonXaDataSourceH2" />
+            </array>
+        </property>
+    </bean>
 
 </beans>

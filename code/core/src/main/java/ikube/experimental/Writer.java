@@ -59,23 +59,27 @@ public class Writer implements IListener<IndexWriterEvent> {
         if (data != null) {
             process(writerEvent.getContext(), data);
         }
-        List<Document> documents = writerEvent.getSource();
+        List<Document> documents = writerEvent.getDocuments();
         if (documents != null) {
             writeToIndex(documents);
         }
-        if (indexWriter.hasUncommittedChanges()) {
-            try {
-                indexWriter.commit();
-                indexWriter.forceMerge(5);
-                logger.info("Num docs writer : " + indexWriter.numDocs());
-                // Fire JVM internal event for searcher to open on new directories
-                Context context = writerEvent.getContext();
-                Directory[] directories = new Directory[]{indexWriter.getDirectory()};
-                IEvent<?, ?> searcherEvent = new OpenSearcherEvent(context, directories);
-                listenerManager.fire(searcherEvent, true);
-            } catch (final IOException e) {
-                throw new RuntimeException(e);
+        synchronized(this) {
+            if (indexWriter.hasUncommittedChanges()) {
+                try {
+                    indexWriter.commit();
+                    indexWriter.forceMerge(5);
+                    indexWriter.waitForMerges();
+                    logger.info("Num docs writer : " + indexWriter.numDocs());
+                    // Fire JVM internal event for searcher to open on new directories
+                    Context context = writerEvent.getContext();
+                    Directory[] directories = new Directory[]{indexWriter.getDirectory()};
+                    IEvent<?, ?> searcherEvent = new OpenSearcherEvent(context, directories);
+                    listenerManager.fire(searcherEvent, true);
+                } catch (final IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
+            notifyAll();
         }
     }
 
@@ -83,7 +87,7 @@ public class Writer implements IListener<IndexWriterEvent> {
         // Create the Lucene documents from the changed records
         List<Document> documents = createDocuments(data);
         if (documents.size() > 0) {
-            logger.info("Documents to add : " + documents.size());
+            logger.debug("Popping documents in grid : {}", documents.size());
             // Pop the documents in the grid to be indexed by all nodes
             IEvent<?, ?> indexWriterEvent = new IndexWriterEvent(context, documents, null);
             listenerManager.fire(indexWriterEvent, false);
@@ -107,7 +111,6 @@ public class Writer implements IListener<IndexWriterEvent> {
         // TODO: Parse the data before creating documents for Lucene
         List<Document> documents = new ArrayList<>();
         for (final Map<Object, Object> row : records) {
-            int counter = 0;
             Document document = new Document();
             for (final Map.Entry<Object, Object> mapEntry : row.entrySet()) {
                 String fieldName = mapEntry.getKey().toString();
@@ -117,12 +120,8 @@ public class Writer implements IListener<IndexWriterEvent> {
                 } else {
                     IndexManager.addStringField(document, fieldName, fieldValue, true, true, true, false, true, 0);
                 }
-                counter++;
             }
             documents.add(document);
-            if (counter % 1000 == 0) {
-                logger.info("Documents created : " + documents.size() + " : " + counter);
-            }
         }
         return documents;
     }

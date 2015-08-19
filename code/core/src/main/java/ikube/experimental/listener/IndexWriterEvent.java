@@ -11,12 +11,13 @@ import java.util.Map;
  * @version 01.00
  * @since 17-08-2015
  */
-public class IndexWriterEvent implements IEvent<List<Document>, List<Map<Object, Object>>> {
+public class IndexWriterEvent implements IEvent<Void, List<Map<Object, Object>>> {
 
     private Context context;
-    private List<Document> documents;
-    private List<Map<Object, Object>> data;
 
+    private List<Document> documents;
+
+    private List<Map<Object, Object>> data;
     public IndexWriterEvent(final Context context, final List<Document> documents, List<Map<Object, Object>> data) {
         this.context = context;
         this.documents = documents;
@@ -29,7 +30,11 @@ public class IndexWriterEvent implements IEvent<List<Document>, List<Map<Object,
     }
 
     @Override
-    public List<Document> getSource() {
+    public Void getSource() {
+        return null;
+    }
+
+    public List<Document> getDocuments() {
         return documents;
     }
 
