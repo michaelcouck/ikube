@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import java.sql.*;
@@ -31,7 +30,6 @@ import java.util.*;
  * @since 09-07-2015
  */
 @Component
-@Configuration
 public class Database implements IListener<StartDatabaseProcessingEvent> {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -117,7 +115,7 @@ public class Database implements IListener<StartDatabaseProcessingEvent> {
             context.setModification(new Timestamp(System.currentTimeMillis()));
             Timestamp to = context.getModification();
 
-            String sql = "SELECT * FROM rule WHERE timestamp >= ? and timestamp < ? order by timestamp asc";
+            String sql = "SELECT * FROM rule WHERE timestamp >= ? AND timestamp < ? ORDER BY timestamp ASC";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setTimestamp(1, from);
             preparedStatement.setTimestamp(2, to);
@@ -141,7 +139,7 @@ public class Database implements IListener<StartDatabaseProcessingEvent> {
                         fireDataEvent(context, data);
                         data = new ArrayList<>();
                     }
-                } while(resultSet.next());
+                } while (resultSet.next());
                 if (data.size() > 0) {
                     fireDataEvent(context, data);
                 }

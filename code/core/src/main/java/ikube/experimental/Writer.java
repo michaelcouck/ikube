@@ -15,8 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -32,8 +30,6 @@ import java.util.Map;
  * @since 09-07-2015
  */
 @Component
-@EnableAsync
-@Configuration
 public class Writer implements IListener<IndexWriterEvent> {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -63,7 +59,7 @@ public class Writer implements IListener<IndexWriterEvent> {
         if (documents != null) {
             writeToIndex(documents);
         }
-        synchronized(this) {
+        synchronized (this) {
             if (indexWriter.hasUncommittedChanges()) {
                 try {
                     indexWriter.commit();

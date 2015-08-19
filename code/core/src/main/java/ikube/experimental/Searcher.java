@@ -17,8 +17,6 @@ import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -35,9 +33,6 @@ import java.util.List;
  * @since 09-07-2015
  */
 @Component
-@EnableAsync
-@Configuration
-@EnableScheduling
 public class Searcher implements IListener<OpenSearcherEvent> {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());

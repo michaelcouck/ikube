@@ -187,31 +187,35 @@
         property:listeners-ref="ikube.experimental.listener.ListenerManager.listeners"/>
 
     <util:map id="ikube.experimental.listener.ListenerManager.listeners">
-        <entry key="IndexWriterEvent" value-ref="ikube.experimental.listener.ListenerManager.writers" />
-        <entry key="OpenSearcherEvent" value-ref="ikube.experimental.listener.ListenerManager.searchers" />
-        <entry key="StartDatabaseProcessingEvent" value-ref="ikube.experimental.listener.ListenerManager.databases" />
+        <entry key="IndexWriterEvent" value-ref="index-writer-event-listeners" />
+        <entry key="OpenSearcherEvent" value-ref="open-search-event-listeners" />
+        <entry key="StartDatabaseProcessingEvent" value-ref="start-database-processing-event-listeners" />
     </util:map>
 
     <!-- Maps keyed by the context name -->
-    <util:map id="ikube.experimental.listener.ListenerManager.writers">
-        <entry key="search-context" value-ref="ikube.experimental.Writer.writers" />
+    <util:map id="index-writer-event-listeners">
+        <entry key="search-context" value-ref="search-context-listeners" />
     </util:map>
-    <util:map id="ikube.experimental.listener.ListenerManager.searchers">
-        <entry key="search-context" value-ref="ikube.experimental.Searcher.searchers" />
+    <util:map id="open-search-event-listeners">
+        <entry key="search-context" value-ref="search-context-searcher-listeners" />
     </util:map>
-    <util:map id="ikube.experimental.listener.ListenerManager.databases">
-        <entry key="search-context" value-ref="ikube.experimental.Database.databases" />
+    <util:map id="start-database-processing-event-listeners">
+        <entry key="search-context" value-ref="search-context-database-listeners" />
     </util:map>
 
     <!-- Lists of writers for the context name -->
-    <util:list id="ikube.experimental.Writer.writers">
+    <util:list id="search-context-listeners">
         <ref local="ikube.experimental.Writer" />
+        <ref local="ikube.experimental.Publisher" />
     </util:list>
-    <util:list id="ikube.experimental.Searcher.searchers">
+    <util:list id="search-context-searcher-listeners">
         <ref local="ikube.experimental.Searcher" />
     </util:list>
-    <util:list id="ikube.experimental.Database.databases">
+    <util:list id="search-context-database-listeners">
         <ref local="ikube.experimental.Database" />
+    </util:list>
+    <util:list id="ikube.experimental.Publisher.publishers">
+        <ref local="ikube.experimental.Publisher" />
     </util:list>
 
     <!-- These are the actors/listeners/observers that will act on the events published to the grid -->
@@ -224,5 +228,8 @@
     <bean
         id="ikube.experimental.Writer"
         class="ikube.experimental.Writer"/>
+    <bean
+        id="ikube.experimental.Publisher"
+        class="ikube.experimental.Publisher"/>
 
 </beans>

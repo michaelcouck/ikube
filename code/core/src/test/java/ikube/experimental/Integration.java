@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 /**
  * @author Michael Couck
@@ -85,8 +86,9 @@ public class Integration {
         class Persister implements Runnable {
             public void run() {
                 long count;
-                int insertsPerSecond = 1000;
+                Random random = new Random();
                 do {
+                    int insertsPerSecond = random.nextInt(100);
                     long start = System.currentTimeMillis();
                     ArrayList<Rule> rules = new ArrayList<>();
                     for (int i = 0; i < insertsPerSecond; i++) {
