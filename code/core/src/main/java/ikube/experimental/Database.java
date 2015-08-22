@@ -30,7 +30,7 @@ import java.util.*;
  * @since 09-07-2015
  */
 @Component
-public class Database implements IListener<StartDatabaseProcessingEvent> {
+public class Database implements IConsumer<StartDatabaseProcessingEvent>, IProducer<IndexWriterEvent> {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -125,7 +125,8 @@ public class Database implements IListener<StartDatabaseProcessingEvent> {
 
             List<Map<Object, Object>> data = new ArrayList<>();
 
-            if (resultSet.next()) {
+            boolean next = resultSet.next();
+            if (next) {
                 do {
                     Map<Object, Object> row = new HashMap<>();
                     for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
@@ -134,17 +135,15 @@ public class Database implements IListener<StartDatabaseProcessingEvent> {
                         row.put(columnName, columnValue);
                     }
                     data.add(row);
+                    next = resultSet.next();
                     // TODO: Get the memory available, locally and remotely, and put the maximum data in the grid
-                    if (data.size() % 1000 == 0) {
-                        fireDataEvent(context, data);
-                        data = new ArrayList<>();
+                    if ((next && data.size() % 1000 == 0) || !next) {
+                        List<Map<Object, Object>> clonedData = new ArrayList<>();
+                        Collections.copy(clonedData, data);
+                        fire(new IndexWriterEvent(context, null, clonedData));
+                        data.clear();
                     }
-                } while (resultSet.next());
-                if (data.size() > 0) {
-                    fireDataEvent(context, data);
-                }
-            } else {
-                logger.info("No results for database : ", context.getName() + ", " + context.getModification());
+                } while (next);
             }
         } catch (final Exception e) {
             throw new RuntimeException(e);
@@ -153,18 +152,17 @@ public class Database implements IListener<StartDatabaseProcessingEvent> {
         }
     }
 
-    void fireDataEvent(final Context context, final List<Map<Object, Object>> data) {
-        logger.debug("Popping data in grid for processing : ", data.size());
+    @Override
+    public void fire(final IndexWriterEvent event) {
         // TODO: Failover - only fire event and carry on if successful
         // TODO: Send this data batch to the node with the lowest cpu
-        IEvent<?, ?> indexWriterEvent = new IndexWriterEvent(context, null, data);
-        listenerManager.fire(indexWriterEvent, false);
+        listenerManager.fire(event, false);
     }
 
     void createDatabaseConnection() throws SQLException {
         if (connection == null || connection.isClosed()) {
             connection = DriverManager.getConnection(url, userid, password);
-            logger.info("Connected JDBC through ssh tunnel : ", url);
+            logger.info("Connected JDBC through ssh tunnel : {}", url);
         }
     }
 
@@ -175,6 +173,7 @@ public class Database implements IListener<StartDatabaseProcessingEvent> {
             session.setConfig(config);
             session.connect();
             session.setPortForwardingL(localPort, remoteHostForSshAndDatabase, databasePort);
+            logger.info("Created ssh tunnel : {}, {}", sshUserid, remoteHostForSshAndDatabase);
         }
     }
 

@@ -1,7 +1,7 @@
 package ikube.experimental;
 
 import ikube.IConstants;
-import ikube.experimental.listener.IListener;
+import ikube.experimental.listener.IConsumer;
 import ikube.experimental.listener.OpenSearcherEvent;
 import ikube.search.Search;
 import ikube.search.SearchComplex;
@@ -16,7 +16,6 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -33,7 +32,7 @@ import java.util.List;
  * @since 09-07-2015
  */
 @Component
-public class Searcher implements IListener<OpenSearcherEvent> {
+public class Searcher implements IConsumer<OpenSearcherEvent> {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 

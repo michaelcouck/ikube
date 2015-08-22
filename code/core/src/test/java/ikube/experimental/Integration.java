@@ -59,7 +59,7 @@ public class Integration {
     public void process() throws SQLException, JSchException {
         addRules();
         addSearches();
-        THREAD.sleep(1000 * 60);
+        THREAD.sleep(1000 * 6000);
     }
 
     private void addSearches() {

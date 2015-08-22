@@ -1,16 +1,24 @@
 package ikube.experimental.publisher;
 
-import java.util.List;
-
 public class Push {
 
-    private List<Data> data;
+    private String api_key;
 
-    public List<Data> getData() {
+    private Data data;
+
+    public String getApi_key() {
+        return api_key;
+    }
+
+    public void setApi_key(final String api_key) {
+        this.api_key = api_key;
+    }
+
+    public Data getData() {
         return data;
     }
 
-    public void setData(final List<Data> data) {
+    public void setData(final Data data) {
         this.data = data;
     }
 

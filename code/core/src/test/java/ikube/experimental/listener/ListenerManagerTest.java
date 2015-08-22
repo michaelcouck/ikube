@@ -34,9 +34,9 @@ public class ListenerManagerTest extends AbstractTest {
     @InjectMocks
     private ListenerManager listenerManager;
     @Mock
-    private IListener<IEvent<?, ?>> listener;
+    private IConsumer<IEvent<?, ?>> listener;
     @Mock
-    private Map<String, List<IListener<IEvent<?, ?>>>> listeners;
+    private Map<String, List<IConsumer<IEvent<?, ?>>>> listeners;
     @Mock
     private ClusterManagerGridGain clusterManager;
 
@@ -63,14 +63,14 @@ public class ListenerManagerTest extends AbstractTest {
     @SuppressWarnings("unchecked")
     public void addQueueListener() {
         listenerManager.addQueueListener();
-        verify(clusterManager, times(1)).addQueueListener(any(String.class), any(IListener.class));
+        verify(clusterManager, times(1)).addQueueListener(any(String.class), any(IConsumer.class));
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void addTopicListener() {
         listenerManager.addTopicListener();
-        verify(clusterManager, times(1)).addTopicListener(any(String.class), any(IListener.class));
+        verify(clusterManager, times(1)).addTopicListener(any(String.class), any(IConsumer.class));
     }
 
     @Test
@@ -92,7 +92,7 @@ public class ListenerManagerTest extends AbstractTest {
 
     @Test
     public void get() {
-        List<IListener<IEvent<?, ?>>> listeners = listenerManager.get("type", "name");
+        List<IConsumer<IEvent<?, ?>>> listeners = listenerManager.get("type", "name");
         assertNotNull(listeners);
     }
 

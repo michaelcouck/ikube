@@ -30,7 +30,7 @@ import java.util.Map;
  * @since 09-07-2015
  */
 @Component
-public class Writer implements IListener<IndexWriterEvent> {
+public class Writer implements IConsumer<IndexWriterEvent>, IProducer<IndexWriterEvent> {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -65,7 +65,7 @@ public class Writer implements IListener<IndexWriterEvent> {
                     indexWriter.commit();
                     indexWriter.forceMerge(5);
                     indexWriter.waitForMerges();
-                    logger.info("Num docs writer : " + indexWriter.numDocs());
+                    logger.debug("Num docs writer : {}", indexWriter.numDocs());
                     // Fire JVM internal event for searcher to open on new directories
                     Context context = writerEvent.getContext();
                     Directory[] directories = new Directory[]{indexWriter.getDirectory()};
@@ -79,14 +79,19 @@ public class Writer implements IListener<IndexWriterEvent> {
         }
     }
 
+    @Override
+    public void fire(final IndexWriterEvent event) {
+        listenerManager.fire(event, false);
+    }
+
     public List<Map<Object, Object>> process(final Context context, final List<Map<Object, Object>> data) {
         // Create the Lucene documents from the changed records
         List<Document> documents = createDocuments(data);
         if (documents.size() > 0) {
             logger.debug("Popping documents in grid : {}", documents.size());
             // Pop the documents in the grid to be indexed by all nodes
-            IEvent<?, ?> indexWriterEvent = new IndexWriterEvent(context, documents, null);
-            listenerManager.fire(indexWriterEvent, false);
+            IndexWriterEvent indexWriterEvent = new IndexWriterEvent(context, documents, null);
+            fire(indexWriterEvent);
         }
         return data;
     }

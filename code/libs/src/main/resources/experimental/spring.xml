@@ -161,8 +161,8 @@
         lazy-init="false"/>
 
     <bean
-        id="ikube.experimental.Manager"
-        class="ikube.experimental.Manager"
+        id="ikube.experimental.Scheduler"
+        class="ikube.experimental.Scheduler"
         lazy-init="false"
         depends-on="ikube.cluster.gg.ClusterManagerGridGain"
         property:clusterManager-ref="ikube.cluster.gg.ClusterManagerGridGain" />
@@ -213,9 +213,6 @@
     </util:list>
     <util:list id="search-context-database-listeners">
         <ref local="ikube.experimental.Database" />
-    </util:list>
-    <util:list id="ikube.experimental.Publisher.publishers">
-        <ref local="ikube.experimental.Publisher" />
     </util:list>
 
     <!-- These are the actors/listeners/observers that will act on the events published to the grid -->

@@ -3,7 +3,7 @@ package ikube.cluster.gg;
 import ikube.IConstants;
 import ikube.cluster.AClusterManager;
 import ikube.experimental.listener.IEvent;
-import ikube.experimental.listener.IListener;
+import ikube.experimental.listener.IConsumer;
 import ikube.model.Action;
 import ikube.model.Server;
 import ikube.toolkit.THREAD;
@@ -390,7 +390,7 @@ public class ClusterManagerGridGain extends AClusterManager {
     /**
      * {@inheritDoc}
      */
-    public void addTopicListener(final String topic, final IListener<IEvent<?, ?>> listener) {
+    public void addTopicListener(final String topic, final IConsumer<IEvent<?, ?>> listener) {
         GridMessaging gridMessaging = grid.message();
         GridBiPredicate<UUID, Object> gridBiPredicate = new GridBiPredicate<UUID, Object>() {
             @Override
@@ -408,7 +408,7 @@ public class ClusterManagerGridGain extends AClusterManager {
         }
     }
 
-    public void addQueueListener(final String queue, final IListener<IEvent<?, ?>> listener) {
+    public void addQueueListener(final String queue, final IConsumer<IEvent<?, ?>> listener) {
         GridPredicate<GridEvent> gridPredicate = new GridPredicate<GridEvent>() {
             @Override
             public boolean apply(final GridEvent gridEvent) {

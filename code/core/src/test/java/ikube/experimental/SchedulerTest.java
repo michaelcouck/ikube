@@ -2,11 +2,8 @@ package ikube.experimental;
 
 import com.jcraft.jsch.JSchException;
 import ikube.cluster.gg.ClusterManagerGridGain;
-import ikube.cluster.listener.IListener;
 import ikube.mock.SpellingCheckerMock;
 import ikube.search.spelling.SpellingChecker;
-import junit.framework.Assert;
-import mockit.Deencapsulation;
 import mockit.Mockit;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -15,16 +12,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.internal.util.reflection.Whitebox;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -34,11 +27,11 @@ import static org.mockito.Mockito.*;
  * @version 01.00
  * @since 10-07-2015
  */
-public class ManagerTest extends AbstractTest {
+public class SchedulerTest extends AbstractTest {
 
     @Spy
     @InjectMocks
-    private Manager manager;
+    private Scheduler manager;
 
     @Mock
     private Writer writer;
@@ -54,7 +47,7 @@ public class ManagerTest extends AbstractTest {
 
     @After
     public void after() {
-        // Mockit.tearDownMocks();
+        Mockit.tearDownMocks();
     }
 
     @Test

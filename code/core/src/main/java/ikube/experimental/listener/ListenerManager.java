@@ -34,32 +34,32 @@ public class ListenerManager {
     @Autowired(required = false)
     @SuppressWarnings("SpringJavaAutowiringInspection")
     @Qualifier("ikube.experimental.listener.ListenerManager.listeners")
-    private Map<String, Map<String, List<IListener<IEvent<?, ?>>>>> listeners = new HashMap<>();
+    private Map<String, Map<String, List<IConsumer<IEvent<?, ?>>>>> listeners = new HashMap<>();
 
     @Autowired(required = false)
     @Qualifier("ikube.cluster.gg.ClusterManagerGridGain")
     @SuppressWarnings({"SpringJavaAutowiringInspection", "SpringJavaAutowiredMembersInspection"})
     private ClusterManagerGridGain clusterManager;
 
-    public void add(final IListener<IEvent<?, ?>> listener, String type, String name) {
+    public void add(final IConsumer<IEvent<?, ?>> listener, String type, String name) {
         synchronized (this) {
             get(type, name).add(listener);
         }
     }
 
-    public void remove(final IListener<IEvent<?, ?>> listener, String type, String name) {
+    public void remove(final IConsumer<IEvent<?, ?>> listener, String type, String name) {
         synchronized (this) {
             get(type, name).remove(listener);
         }
     }
 
-    List<IListener<IEvent<?, ?>>> get(final String type, final String name) {
-        Map<String, List<IListener<IEvent<?, ?>>>> listenersForType = listeners.get(type);
+    List<IConsumer<IEvent<?, ?>>> get(final String type, final String name) {
+        Map<String, List<IConsumer<IEvent<?, ?>>>> listenersForType = listeners.get(type);
         if (listenersForType == null) {
             listenersForType = new HashMap<>();
             listeners.put(type, listenersForType);
         }
-        List<IListener<IEvent<?, ?>>> listenersForName = listenersForType.get(name);
+        List<IConsumer<IEvent<?, ?>>> listenersForName = listenersForType.get(name);
         if (listenersForName == null) {
             listenersForName = new ArrayList<>();
             listenersForType.put(name, listenersForName);
@@ -79,18 +79,14 @@ public class ListenerManager {
     public void notify(final IEvent<?, ?> event) {
         String type = event.getClass().getSimpleName();
         String name = event.getContext().getName();
-        List<IListener<IEvent<?, ?>>> listeners = get(type, name);
+        List<IConsumer<IEvent<?, ?>>> listeners = get(type, name);
         logger.debug("Notifying listeners : {}", listeners);
-        for (final IListener<IEvent<?, ?>> listener : listeners) {
+        for (final IConsumer<IEvent<?, ?>> listener : listeners) {
             final String jobName = Long.toString(System.nanoTime());
             class Notifier implements Runnable {
                 public void run() {
-                    try {
-                        logger.debug("Notifying listener : {}", listener);
-                        listener.notify(event);
-                    } finally {
-                        THREAD.destroy(jobName);
-                    }
+                    logger.debug("Notifying listener : {}", listener);
+                    listener.notify(event);
                 }
             }
             THREAD.submit(jobName, new Notifier());
@@ -103,7 +99,7 @@ public class ListenerManager {
     }
 
     public void addTopicListener() {
-        clusterManager.addTopicListener(IConstants.IKUBE, new IListener<IEvent<?, ?>>() {
+        clusterManager.addTopicListener(IConstants.IKUBE, new IConsumer<IEvent<?, ?>>() {
             @Override
             public void notify(final IEvent<?, ?> event) {
                 fire(event, true);
@@ -113,7 +109,7 @@ public class ListenerManager {
     }
 
     public void addQueueListener() {
-        clusterManager.addQueueListener(IConstants.IKUBE, new IListener<IEvent<?, ?>>() {
+        clusterManager.addQueueListener(IConstants.IKUBE, new IConsumer<IEvent<?, ?>>() {
             @Override
             public void notify(final IEvent<?, ?> event) {
                 fire(event, true);
@@ -122,7 +118,7 @@ public class ListenerManager {
         logger.info("Added queue listener : ");
     }
 
-    public void setListeners(final Map<String, Map<String, List<IListener<IEvent<?, ?>>>>> listeners) {
+    public void setListeners(final Map<String, Map<String, List<IConsumer<IEvent<?, ?>>>>> listeners) {
         this.listeners = listeners;
     }
 
