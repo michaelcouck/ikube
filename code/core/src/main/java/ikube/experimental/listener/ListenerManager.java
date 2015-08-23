@@ -85,8 +85,13 @@ public class ListenerManager {
             final String jobName = Long.toString(System.nanoTime());
             class Notifier implements Runnable {
                 public void run() {
-                    logger.debug("Notifying listener : {}", listener);
-                    listener.notify(event);
+                    try {
+                        logger.debug("Notifying listener : {}", listener);
+                        listener.notify(event);
+                    } catch(final Exception e) {
+                        logger.error(null, e);
+                        throw new RuntimeException(e);
+                    }
                 }
             }
             THREAD.submit(jobName, new Notifier());

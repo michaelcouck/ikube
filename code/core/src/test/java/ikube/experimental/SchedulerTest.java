@@ -2,6 +2,7 @@ package ikube.experimental;
 
 import com.jcraft.jsch.JSchException;
 import ikube.cluster.gg.ClusterManagerGridGain;
+import ikube.experimental.connect.Database;
 import ikube.mock.SpellingCheckerMock;
 import ikube.search.spelling.SpellingChecker;
 import mockit.Mockit;
@@ -51,10 +52,10 @@ public class SchedulerTest extends AbstractTest {
     }
 
     @Test
-    public void process() throws Exception {
+    public void databaseSchedule() throws Exception {
         List<Context> contexts = Arrays.asList(new Context());
         Whitebox.setInternalState(manager, "contexts", contexts);
-        manager.process();
+        manager.databaseSchedule();
         verify(clusterManager, times(1)).send(anyString(), any(Document.class));
     }
 

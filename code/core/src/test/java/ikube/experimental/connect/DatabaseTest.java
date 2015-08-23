@@ -1,8 +1,10 @@
-package ikube.experimental;
+package ikube.experimental.connect;
 
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import ikube.AbstractTest;
+import ikube.experimental.Context;
+import ikube.experimental.connect.Database;
 import ikube.experimental.listener.IEvent;
 import ikube.experimental.listener.IndexWriterEvent;
 import ikube.experimental.listener.ListenerManager;

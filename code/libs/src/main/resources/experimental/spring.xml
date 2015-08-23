@@ -187,14 +187,18 @@
         property:listeners-ref="ikube.experimental.listener.ListenerManager.listeners"/>
 
     <util:map id="ikube.experimental.listener.ListenerManager.listeners">
+        <entry key="SystemMonitoringEvent" value-ref="system-event-listeners" />
         <entry key="IndexWriterEvent" value-ref="index-writer-event-listeners" />
         <entry key="OpenSearcherEvent" value-ref="open-search-event-listeners" />
         <entry key="StartDatabaseProcessingEvent" value-ref="start-database-processing-event-listeners" />
     </util:map>
 
     <!-- Maps keyed by the context name -->
+    <util:map id="system-event-listeners">
+        <entry key="search-context" value-ref="search-context-system-listeners" />
+    </util:map>
     <util:map id="index-writer-event-listeners">
-        <entry key="search-context" value-ref="search-context-listeners" />
+        <entry key="search-context" value-ref="search-context-writer-listeners" />
     </util:map>
     <util:map id="open-search-event-listeners">
         <entry key="search-context" value-ref="search-context-searcher-listeners" />
@@ -204,15 +208,18 @@
     </util:map>
 
     <!-- Lists of writers for the context name -->
-    <util:list id="search-context-listeners">
+    <util:list id="search-context-system-listeners">
+        <ref local="ikube.experimental.publish.SystemMonitoringPublisher" />
+    </util:list>
+    <util:list id="search-context-writer-listeners">
         <ref local="ikube.experimental.Writer" />
-        <ref local="ikube.experimental.Publisher" />
+        <ref local="ikube.experimental.publish.IndexWriterPublisher" />
     </util:list>
     <util:list id="search-context-searcher-listeners">
         <ref local="ikube.experimental.Searcher" />
     </util:list>
     <util:list id="search-context-database-listeners">
-        <ref local="ikube.experimental.Database" />
+        <ref local="ikube.experimental.connect.Database" />
     </util:list>
 
     <!-- These are the actors/listeners/observers that will act on the events published to the grid -->
@@ -220,13 +227,16 @@
         id="ikube.experimental.Searcher"
         class="ikube.experimental.Searcher"/>
     <bean
-        id="ikube.experimental.Database"
-        class="ikube.experimental.Database"/>
+        id="ikube.experimental.connect.Database"
+        class="ikube.experimental.connect.Database"/>
     <bean
         id="ikube.experimental.Writer"
         class="ikube.experimental.Writer"/>
     <bean
-        id="ikube.experimental.Publisher"
-        class="ikube.experimental.Publisher"/>
+        id="ikube.experimental.publish.IndexWriterPublisher"
+        class="ikube.experimental.publish.IndexWriterPublisher"/>
+    <bean
+        id="ikube.experimental.publish.SystemMonitoringPublisher"
+        class="ikube.experimental.publish.SystemMonitoringPublisher"/>
 
 </beans>

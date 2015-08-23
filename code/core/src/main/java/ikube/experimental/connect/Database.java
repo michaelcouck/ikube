@@ -1,8 +1,9 @@
-package ikube.experimental;
+package ikube.experimental.connect;
 
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import ikube.experimental.Context;
 import ikube.experimental.listener.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,7 +106,7 @@ public class Database implements IConsumer<StartDatabaseProcessingEvent>, IProdu
     @Override
     public void notify(final StartDatabaseProcessingEvent startDatabaseProcessingEvent) {
         Context context = startDatabaseProcessingEvent.getContext();
-        logger.info("Starting database on : " + context.getName());
+        logger.debug("Starting database on : " + context.getName());
         //noinspection EmptyFinallyBlock
         try {
             createSshTunnel();
@@ -137,9 +138,12 @@ public class Database implements IConsumer<StartDatabaseProcessingEvent>, IProdu
                     data.add(row);
                     next = resultSet.next();
                     // TODO: Get the memory available, locally and remotely, and put the maximum data in the grid
-                    if ((next && data.size() % 1000 == 0) || !next) {
-                        List<Map<Object, Object>> clonedData = new ArrayList<>();
-                        Collections.copy(clonedData, data);
+                    boolean nextAndDataSizeLimit = (next && data.size() % 1000 == 0);
+                    boolean nextAndDataSizeLimitOrNotNext = nextAndDataSizeLimit || !next;
+                    if (nextAndDataSizeLimitOrNotNext) {
+                        //noinspection ConstantConditions
+                        logger.debug("Fire event : " + nextAndDataSizeLimit + ", " + nextAndDataSizeLimitOrNotNext);
+                        List<Map<Object, Object>> clonedData = new ArrayList<>(data);
                         fire(new IndexWriterEvent(context, null, clonedData));
                         data.clear();
                     }
@@ -156,6 +160,7 @@ public class Database implements IConsumer<StartDatabaseProcessingEvent>, IProdu
     public void fire(final IndexWriterEvent event) {
         // TODO: Failover - only fire event and carry on if successful
         // TODO: Send this data batch to the node with the lowest cpu
+        logger.debug("Firing event in cluster : " + event);
         listenerManager.fire(event, false);
     }
 

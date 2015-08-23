@@ -5,6 +5,7 @@ import ikube.cluster.gg.ClusterManagerGridGain;
 import ikube.experimental.listener.IEvent;
 import ikube.experimental.listener.IProducer;
 import ikube.experimental.listener.StartDatabaseProcessingEvent;
+import ikube.experimental.listener.SystemMonitoringEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,9 +43,18 @@ public class Scheduler implements IProducer<IEvent<?, ?>> {
         clusterManager.send(IConstants.IKUBE, event);
     }
 
-    @SuppressWarnings("ConstantConditions")
+    @Scheduled(initialDelay = 10000, fixedRate = 10000)
+    public void systemSchedule() throws Exception {
+        // Start the database(s) processing
+        for (final Context context : contexts) {
+            logger.debug("Starting processing of : {}", context.getName());
+            IEvent<?, ?> event = new SystemMonitoringEvent(context);
+            fire(event);
+        }
+    }
+
     @Scheduled(initialDelay = 60000, fixedRate = 10000)
-    public void process() throws Exception {
+    public void databaseSchedule() throws Exception {
         // Start the database(s) processing
         for (final Context context : contexts) {
             logger.debug("Starting processing of : {}", context.getName());
@@ -53,11 +63,12 @@ public class Scheduler implements IProducer<IEvent<?, ?>> {
         }
     }
 
+    public void setContexts(final List<Context> contexts) {
+        this.contexts = contexts;
+    }
+
     public void setClusterManager(final ClusterManagerGridGain clusterManager) {
         this.clusterManager = clusterManager;
     }
 
-    public void setContexts(final List<Context> contexts) {
-        this.contexts = contexts;
-    }
 }

@@ -1,4 +1,4 @@
-package ikube.experimental.publisher;
+package ikube.experimental.publish;
 
 public class Point {
 

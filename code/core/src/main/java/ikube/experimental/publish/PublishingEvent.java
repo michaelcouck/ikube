@@ -1,6 +1,6 @@
-package ikube.experimental.publisher;
+package ikube.experimental.publish;
 
-public class Event {
+public class PublishingEvent {
 
     private String accessKey;
     private String streamName;

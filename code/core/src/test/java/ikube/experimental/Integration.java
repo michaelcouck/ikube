@@ -105,7 +105,7 @@ public class Integration {
 
                     count = dataBase.count(Rule.class);
                     long sleep = Math.abs((start + 1000) - System.currentTimeMillis());
-                    if (count % 10000 == 0) {
+                    if (count % 1000 == 0) {
                         logger.info("Rule count : {}, sleeping for : {}", count, sleep);
                     }
                     THREAD.sleep(sleep);
