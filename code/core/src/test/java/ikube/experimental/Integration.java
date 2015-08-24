@@ -2,6 +2,7 @@ package ikube.experimental;
 
 import com.jcraft.jsch.JSchException;
 import ikube.database.IDataBase;
+import ikube.experimental.search.Searcher;
 import ikube.model.Rule;
 import ikube.toolkit.THREAD;
 import org.junit.After;

@@ -1,5 +1,7 @@
-package ikube.experimental;
+package ikube.experimental.search;
 
+import ikube.experimental.AbstractTest;
+import ikube.experimental.search.Searcher;
 import ikube.toolkit.THREAD;
 import mockit.Deencapsulation;
 import org.apache.lucene.index.IndexReader;

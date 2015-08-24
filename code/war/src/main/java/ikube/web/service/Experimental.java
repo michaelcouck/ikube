@@ -1,6 +1,6 @@
 package ikube.web.service;
 
-import ikube.experimental.Searcher;
+import ikube.experimental.search.Searcher;
 import ikube.model.Search;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ public class Experimental extends Resource {
     @Autowired
     @Qualifier("searchers")
     @SuppressWarnings("SpringJavaAutowiringInspection")
-    private Map<String, ikube.experimental.Searcher> searchers;
+    private Map<String, Searcher> searchers;
 
     /**
      * {@inheritDoc}

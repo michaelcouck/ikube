@@ -31,7 +31,7 @@ import java.util.*;
  * @since 09-07-2015
  */
 @Component
-public class Database implements IConsumer<StartDatabaseProcessingEvent>, IProducer<IndexWriterEvent> {
+public class DatabaseConnector implements IConsumer<StartDatabaseProcessingEvent>, IProducer<IndexWriterEvent> {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -91,7 +91,7 @@ public class Database implements IConsumer<StartDatabaseProcessingEvent>, IProdu
     @Qualifier("ikube.experimental.listener.ListenerManager")
     private ListenerManager listenerManager;
 
-    public Database() {
+    public DatabaseConnector() {
         jsch = new JSch();
         config = new Properties();
         config.put("StrictHostKeyChecking", "no");

@@ -1,6 +1,8 @@
-package ikube.experimental;
+package ikube.experimental.write;
 
 import com.jcraft.jsch.JSchException;
+import ikube.experimental.AbstractTest;
+import ikube.experimental.write.Writer;
 import ikube.toolkit.THREAD;
 import mockit.Deencapsulation;
 import org.apache.lucene.document.Document;

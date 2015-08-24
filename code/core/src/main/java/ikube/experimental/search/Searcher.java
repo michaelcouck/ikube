@@ -1,4 +1,4 @@
-package ikube.experimental;
+package ikube.experimental.search;
 
 import ikube.IConstants;
 import ikube.experimental.listener.IConsumer;

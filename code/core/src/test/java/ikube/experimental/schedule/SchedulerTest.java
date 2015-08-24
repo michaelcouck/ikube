@@ -1,8 +1,12 @@
-package ikube.experimental;
+package ikube.experimental.schedule;
 
 import com.jcraft.jsch.JSchException;
 import ikube.cluster.gg.ClusterManagerGridGain;
-import ikube.experimental.connect.Database;
+import ikube.experimental.AbstractTest;
+import ikube.experimental.Context;
+import ikube.experimental.connect.DatabaseConnector;
+import ikube.experimental.schedule.Scheduler;
+import ikube.experimental.write.Writer;
 import ikube.mock.SpellingCheckerMock;
 import ikube.search.spelling.SpellingChecker;
 import mockit.Mockit;
@@ -37,7 +41,7 @@ public class SchedulerTest extends AbstractTest {
     @Mock
     private Writer writer;
     @Mock
-    private Database database;
+    private DatabaseConnector database;
     @Mock
     private ClusterManagerGridGain clusterManager;
 

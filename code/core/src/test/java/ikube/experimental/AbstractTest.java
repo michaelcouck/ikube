@@ -30,7 +30,7 @@ public class AbstractTest {
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    Directory[] getDirectories(final int numberOfDirectories) throws IOException {
+    protected Directory[] getDirectories(final int numberOfDirectories) throws IOException {
         Directory[] directories = new Directory[numberOfDirectories];
         for (int i = 0; i < numberOfDirectories; i++) {
             Directory directory = new RAMDirectory();
@@ -70,6 +70,7 @@ public class AbstractTest {
      * @param indexReader the reader to print the documents for
      * @throws Exception
      */
+    @SuppressWarnings("UnusedDeclaration")
     protected void printIndex(final IndexReader indexReader, final int numDocs) throws Exception {
         logger.error("Num docs : " + indexReader.numDocs());
         for (int i = 0; i < numDocs && i < indexReader.numDocs(); i++) {
