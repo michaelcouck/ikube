@@ -5,6 +5,7 @@ import ikube.IntegrationTest;
 import ikube.action.index.content.ColumnContentProvider;
 import ikube.action.index.content.IContentProvider;
 import ikube.cluster.IClusterManager;
+import ikube.cluster.hzc.ClusterManagerHazelcast;
 import ikube.database.IDataBase;
 import ikube.model.*;
 import ikube.toolkit.PropertyConfigurer;
@@ -57,7 +58,7 @@ public class IndexableTableHandlerIntegration extends IntegrationTest {
 
         PropertyConfigurer propertyConfigurer = getBean(PropertyConfigurer.class);
         DataSource dataSource = getBean(propertyConfigurer.getProperty("ikube.dataSource"));
-        IClusterManager clusterManager = getBean(IClusterManager.class);
+        IClusterManager clusterManager = getBean(ClusterManagerHazelcast.class);
 
         indexContext.setBatchSize(10000);
         indexContext.setIndexDirectoryPath("./indexes");
@@ -80,7 +81,7 @@ public class IndexableTableHandlerIntegration extends IntegrationTest {
         close(connection);
         IDataBase dataBase = getBean(IDataBase.class);
         delete(dataBase, Snapshot.class);
-        IClusterManager clusterManager = getBean(IClusterManager.class);
+        IClusterManager clusterManager = getBean(ClusterManagerHazelcast.class);
         clusterManager.getServer().getActions().clear();
     }
 

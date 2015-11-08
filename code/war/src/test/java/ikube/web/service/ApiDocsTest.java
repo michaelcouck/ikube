@@ -40,11 +40,6 @@ public class ApiDocsTest extends AbstractTest {
 
     private Method method;
 
-    @Before
-    public void before() throws NoSuchMethodException {
-        method = ApiDocs.class.getDeclaredMethod("apis");
-    }
-
     @Test
     public void api() throws Exception {
         Response response = apiDocs.api(Analyzer.class.getName());
@@ -59,13 +54,18 @@ public class ApiDocsTest extends AbstractTest {
         assertNotNull(apiMethod.getProduces());
     }
 
+    @Before
+    public void before() throws NoSuchMethodException {
+        method = ApiDocs.class.getDeclaredMethod("apis");
+    }
+
     @Test
     @SuppressWarnings("unchecked")
     public void apis() throws Exception {
         Response response = apiDocs.apis();
         Object entity = response.getEntity();
         ArrayList apis = IConstants.GSON.fromJson(entity.toString(), ArrayList.class);
-        assertEquals(9, apis.size());
+        assertEquals(8, apis.size());
     }
 
     @Test
