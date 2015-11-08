@@ -43,8 +43,10 @@ import java.io.IOException;
  *
  *      NOTE: This works:
  *      http://ichart.finance.yahoo.com/table.csv?s=GOOG
+ *      http://ichart.finance.yahoo.com/table.csv?s=INDO.PA
  *      http://ichart.yahoo.com/table.csv?s=BAS.DE&a=0&b=1&c=2005&d=0&e=31&f=2015&g=w&ignore=.csv
  *      http://ichart.yahoo.com/table.csv?s=BAS.DE&a=0&b=1&c=2000&d=0&e=31&f=2010&g=w
+ *      http://ichart.yahoo.com/table.csv?s=INDO.PA&a=0&b=1&c=2010&d=0&e=31&f=2015&g=w
  *
  *      http://ichart.yahoo.com/table.csv?s=GOOG&d=8&e=26&f=2009&g=d&a=2&b=27&c=2014&ignore=.csv
  *
@@ -53,6 +55,12 @@ import java.io.IOException;
  *      This is to get all the stocks in an xml file:
  *      http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.industry%20where%20id%20in%20(
  *          select%20industry.id%20from%20yahoo.finance.sectors)&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys
+ *
+ *
+ *      NOTE: For an individual quote
+ *      http://finance.yahoo.com/webservice/v1/symbols/YHOO/quote?format=json
+ *      http://finance.yahoo.com/webservice/v1/symbols/INDO.PA/quote?format=json&view=detail
+ *      https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quotes%20where%20symbol%20in%20%28%22INDO.PA%22%29&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=
  * </pre>
  *
  * @author Michael Couck

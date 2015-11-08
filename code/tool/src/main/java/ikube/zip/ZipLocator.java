@@ -77,7 +77,9 @@ public class ZipLocator {
             } catch (final Exception e) {
                 LOGGER.error(e.getMessage() + ", " + file);
             }
-            assert zip != null;
+            if (zip == null) {
+                return;
+            }
             Enumeration<? extends ZipEntry> zipFileEntries = zip.entries();
             while (zipFileEntries.hasMoreElements()) {
                 // Grab a zip file entry

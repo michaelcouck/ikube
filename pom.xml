@@ -45,12 +45,11 @@
     <modules>
         <module>code/com</module>
         <module>code/core</module>
-        <!--<module>code/war</module>-->
-        <!--<module>code/libs</module>-->
-        <!--<module>code/site</module>-->
-        <!--<module>code/web</module>-->
-        <!--<module>code/tool</module>-->
-        <!--<module>code/patch</module>-->
+        <module>code/war</module>
+        <module>code/libs</module>
+        <module>code/site</module>
+        <module>code/web</module>
+        <module>code/tool</module>
     </modules>
 
     <properties>
@@ -72,6 +71,7 @@
         <included-adapters>-Dincluded.adapters=coverage:complexity:dependency</included-adapters>
         <serenity-parameters>${write-classes} ${clean-classes} ${included-packages} ${excluded-packages} ${included-adapters} -noverify</serenity-parameters>
 
+        <headless-parameters>-Djava.awt.headless=true</headless-parameters>
         <memory-parameters>-XX:PermSize=256m -XX:MaxPermSize=512m -Xms1024m -Xmx4096m</memory-parameters>
 
         <!--
@@ -243,7 +243,7 @@
                     <forkMode>once</forkMode>
                     <testFailureIgnore>true</testFailureIgnore>
                     <!--suppress MavenModelInspection -->
-                    <!--<argLine>-javaagent:${project.parent.basedir}/serenity/serenity.jar -Djava.awt.headless=true ${serenity-parameters} ${memory-parameters}</argLine>-->
+                    <argLine>-javaagent:${project.parent.basedir}/serenity/serenity.jar ${headless-parameters} ${serenity-parameters} ${memory-parameters}</argLine>
                 </configuration>
             </plugin>
             <!-- This plugin runs the integration tests. -->
@@ -252,7 +252,8 @@
                 <version>2.6</version>
                 <configuration>
                     <forkMode>once</forkMode>
-                    <argLine>-XX:PermSize=256m -XX:MaxPermSize=512m -Xms1024m -Xmx4096m -Djava.awt.headless=true</argLine>
+                    <argLine>${headless-parameters} ${memory-parameters}</argLine>
+                    <!--<argLine>-XX:PermSize=256m -XX:MaxPermSize=512m -Xms1024m -Xmx4096m -Djava.awt.headless=true</argLine>-->
                     <testFailureIgnore>true</testFailureIgnore>
                     <includes>
                         <include>**/*Integration*.java</include>
@@ -1473,16 +1474,6 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-        <!--<repository>-->
-            <!--<id>sourceforge-repo</id>-->
-            <!--<url>http://neuroph.sourceforge.net/maven2</url>-->
-            <!--<releases>-->
-                <!--<enabled>false</enabled>-->
-            <!--</releases>-->
-            <!--<snapshots>-->
-                <!--<enabled>true</enabled>-->
-            <!--</snapshots>-->
-        <!--</repository>-->
 
         <repository>
             <id>ikube</id>

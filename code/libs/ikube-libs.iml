@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module type="JAVA_MODULE" version="4">
+<module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="Spring" name="Spring">
       <configuration>
@@ -342,3 +342,4 @@
     <orderEntry type="library" name="Maven: com.pff:java-libpst:0.8.1" level="project" />
   </component>
 </module>
+
